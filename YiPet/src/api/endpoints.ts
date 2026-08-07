@@ -43,3 +43,27 @@ export const STATE = {
 export const WEWORK = {
   SEND_MESSAGE: '/wework/send-message',
 } as const;
+
+// ── Knowledge base (YiKnowledge markdown tree) ─────────────────────────
+
+export const KNOWLEDGE = {
+  SCAN: '/knowledge-scan',
+  READ: '/knowledge-read',
+  STORIES: '/knowledge-stories',
+  STORY_READ: '/knowledge-story-read',
+  SYNC: '/knowledge-sync',
+  WRITE: '/knowledge-write',
+} as const;
+
+// ── RAG (llama_index over YiKnowledge) ─────────────────────────────────
+
+export const RAG = {
+  QUERY: '/rag-query',
+  STATUS: '/rag-status',
+  BUILD: '/rag-build',
+  CATEGORIES: '/rag-categories',
+  CHAT: '/rag-chat',
+  DECOMPOSE: '/rag-decompose',
+  FILE_QUERY: '/rag-file-query',
+  FILE_CHAT: '/rag-file-chat',
+} as const;

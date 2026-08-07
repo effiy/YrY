@@ -20,6 +20,7 @@ from typing import Optional
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from pymongo import DeleteOne, UpdateOne
 
 from data.database import db
 from domain.knowledge.scanner import _base_dir, _extract_meta
@@ -74,6 +75,28 @@ def _snapshot_diff(prev: dict[str, tuple[int, int]], curr: dict[str, tuple[int, 
     return {"added": added, "removed": removed, "changed": changed}
 
 
+_BULK_CHUNK = 1000  # cap ops per bulk_write round-trip
+
+
+def _build_all_snapshot(base: str) -> tuple[dict[str, str], dict[str, tuple[int, int]]]:
+    """Walk ``base`` and return (rel→abs, rel→(size, mtime_ms)) for all files."""
+    abs_paths: dict[str, str] = {}
+    snapshot: dict[str, tuple[int, int]] = {}
+    for dirpath, _dirs, filenames in os.walk(base):
+        for fn in filenames:
+            if _should_skip(fn):
+                continue
+            abs_path = os.path.join(dirpath, fn)
+            rel = _rel_from_abs(abs_path, base)
+            try:
+                st = os.stat(abs_path)
+            except OSError:
+                continue
+            abs_paths[rel] = abs_path
+            snapshot[rel] = (st.st_size, int(st.st_mtime * 1000))
+    return abs_paths, snapshot
+
+
 class KnowledgeWatcherManager:
     """Encapsulates watcher state and lifecycle."""
 
@@ -82,6 +105,7 @@ class KnowledgeWatcherManager:
         self._running = False
         self._last_snapshot: dict[str, tuple[int, int]] = {}
         self._last_rebuilt_snapshot: dict[str, tuple[int, int]] = {}
+        self._last_meta_snapshot: dict[str, tuple[int, int]] = {}
         self._rag_rebuild_task: Optional[asyncio.Task] = None
 
     @property
@@ -89,11 +113,10 @@ class KnowledgeWatcherManager:
         return self._running
 
     async def sync_knowledge_full(self) -> dict:
-        """Reconcile DB against disk: upsert every on-disk file, delete stale.
+        """Force full reconcile — bulk_write upsert every on-disk file, delete stale.
 
-        Also snapshots .md files' (size, mtime) and schedules a debounced
-        incremental RAG refresh when the snapshot differs from the last
-        rebuild.
+        Used by manual /knowledge-sync trigger and the bootstrap pass. Updates
+        ``_last_meta_snapshot`` so subsequent diff-based ticks have a baseline.
         """
         await db.initialize()
         collection = db.db[settings.collection_knowledge_files]
@@ -102,35 +125,99 @@ class KnowledgeWatcherManager:
             logger.warning(f"Knowledge base dir does not exist: {base}")
             return {"synced": 0, "deleted": 0}
 
-        on_disk: dict[str, str] = {}
-        for dirpath, _dirs, filenames in os.walk(base):
-            for fn in filenames:
-                if _should_skip(fn):
-                    continue
-                abs_path = os.path.join(dirpath, fn)
-                rel = _rel_from_abs(abs_path, base)
-                on_disk[rel] = abs_path
-
-        synced = 0
-        for rel, abs_path in on_disk.items():
-            try:
-                meta = _extract_meta(rel, abs_path)
-                await self._upsert(collection, meta)
-                synced += 1
-            except Exception as e:
-                logger.warning(f"Failed to sync {rel}: {e}")
-
-        deleted = 0
-        cursor = collection.find({}, {"path": 1, "_id": 0})
-        stale_paths = [doc["path"] async for doc in cursor if doc.get("path") not in on_disk]
-        for p in stale_paths:
-            await collection.delete_one({"path": p})
-            deleted += 1
+        abs_paths, snapshot = _build_all_snapshot(base)
+        synced = await self._bulk_upsert(collection, abs_paths)
+        deleted = await self._bulk_delete(collection, set(abs_paths.keys()))
+        self._last_meta_snapshot = snapshot
 
         logger.info(f"Knowledge full sync: {synced} upserted, {deleted} deleted")
 
         await self._maybe_trigger_rag_refresh(base)
         return {"synced": synced, "deleted": deleted}
+
+    async def _reconcile_diff(self) -> dict:
+        """Periodic diff-based reconcile — only writes files that changed/added,
+        only deletes files that were removed. Falls back to full sync on first
+        tick (when ``_last_meta_snapshot`` is empty).
+        """
+        await db.initialize()
+        collection = db.db[settings.collection_knowledge_files]
+        base = _base_dir()
+        if not os.path.isdir(base):
+            return {"synced": 0, "deleted": 0}
+
+        abs_paths, curr = _build_all_snapshot(base)
+
+        if not self._last_meta_snapshot:
+            return await self.sync_knowledge_full()
+
+        prev = self._last_meta_snapshot
+        prev_keys = set(prev.keys())
+        curr_keys = set(curr.keys())
+        added = sorted(curr_keys - prev_keys)
+        removed = sorted(prev_keys - curr_keys)
+        changed = sorted(k for k in (prev_keys & curr_keys) if prev[k] != curr[k])
+
+        to_upsert = {rel: abs_paths[rel] for rel in (added + changed)}
+        synced = await self._bulk_upsert(collection, to_upsert)
+        deleted = await self._bulk_delete(collection, set(curr_keys))
+        self._last_meta_snapshot = curr
+
+        await self._maybe_trigger_rag_refresh(base)
+        logger.info(
+            f"Knowledge diff sync: +{len(added)} ~{len(changed)} -{len(removed)} "
+            f"({synced} upserted, {deleted} deleted)"
+        )
+        return {"synced": synced, "deleted": deleted}
+
+    async def _bulk_upsert(self, collection, abs_paths: dict[str, str]) -> int:
+        """Bulk_write upsert metadata for each rel → abs_path. Returns actual write count."""
+        if not abs_paths:
+            return 0
+        now = _now_str()
+        ops: list[UpdateOne] = []
+        for rel, abs_path in abs_paths.items():
+            try:
+                meta = _extract_meta(rel, abs_path)
+            except Exception as e:
+                logger.warning(f"Failed to extract meta {rel}: {e}")
+                continue
+            # Use file mtime as updatedTime so stale detection works correctly
+            updated_at = meta.get("updatedAt")
+            if updated_at:
+                meta["updatedTime"] = datetime.fromtimestamp(
+                    updated_at / 1000, tz=timezone.utc
+                ).strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                meta["updatedTime"] = now
+            ops.append(UpdateOne(
+                {"path": meta["path"]},
+                {
+                    "$set": {**meta},
+                    "$setOnInsert": {"createdTime": now},
+                },
+                upsert=True,
+            ))
+        if not ops:
+            return 0
+        total_upserted = 0
+        total_modified = 0
+        for i in range(0, len(ops), _BULK_CHUNK):
+            result = await collection.bulk_write(ops[i:i + _BULK_CHUNK])
+            total_upserted += result.upserted_count
+            total_modified += result.modified_count
+        return total_upserted + total_modified
+
+    async def _bulk_delete(self, collection, keep_paths: set[str]) -> int:
+        """Delete DB docs whose ``path`` is not in ``keep_paths``. Returns count."""
+        cursor = collection.find({}, {"path": 1, "_id": 0})
+        stale = [doc["path"] async for doc in cursor if doc.get("path") not in keep_paths]
+        if not stale:
+            return 0
+        ops = [DeleteOne({"path": p}) for p in stale]
+        for i in range(0, len(ops), _BULK_CHUNK):
+            await collection.bulk_write(ops[i:i + _BULK_CHUNK])
+        return len(stale)
 
     async def _maybe_trigger_rag_refresh(self, base: str) -> None:
         """Schedule an incremental RAG refresh when .md files changed.
@@ -176,21 +263,15 @@ class KnowledgeWatcherManager:
 
         self._rag_rebuild_task = asyncio.create_task(_run())
 
-    async def _upsert(self, collection, meta: dict) -> None:
-        now = _now_str()
-        await collection.update_one(
-            {"path": meta["path"]},
-            {
-                "$set": {**meta, "updatedTime": now},
-                "$setOnInsert": {"createdTime": now},
-            },
-            upsert=True,
-        )
-
     async def _scheduler_job(self):
-        """Periodic reconciliation — silent on no-op, warn on errors."""
+        """Periodic diff-based reconcile — silent on no-op, warn on errors."""
         try:
-            await self.sync_knowledge_full()
+            await self._reconcile_diff()
+        except asyncio.CancelledError:
+            # scheduler.shutdown(wait=False) cancels in-flight jobs mid-await;
+            # not a real failure — next tick reconciles. Swallow so apscheduler's
+            # executor doesn't log it as an unhandled exception.
+            return
         except Exception as e:
             logger.warning(f"Knowledge periodic sync failed: {e}", exc_info=True)
 

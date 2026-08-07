@@ -1,10 +1,12 @@
 <script setup lang="ts" name="aiChatConversationListItem">
 import { computed } from "vue";
-import { Edit, Delete, Star, StarFilled } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { Star, StarFilled, Edit, Delete, Back, FolderOpened } from "@element-plus/icons-vue";
 import type { SessionDocument } from "@/api/interface/yiweb";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
 const CTX_PREFIX = "ctx:";
+const FROM_PREFIX = "from:";
 
 const props = defineProps<{
   conversation: SessionDocument;
@@ -16,10 +18,16 @@ const emit = defineEmits<{
   (e: "rename", key: string, title: string): void;
   (e: "delete", key: string, title: string): void;
   (e: "toggle-favorite", key: string): void;
+  (e: "edit-context", key: string): void;
 }>();
 
 const store = useAiChatStore();
+const router = useRouter();
 const isFavorite = computed(() => !!props.conversation.isFavorite);
+const sourceUrl = computed(() => {
+  const from = (props.conversation.tags ?? []).find(t => typeof t === "string" && t.startsWith(FROM_PREFIX));
+  return from ? from.slice(FROM_PREFIX.length) : "";
+});
 const isBatchChecked = computed(() => store.selectedKeys.has(props.conversation.key));
 
 const ctxCount = computed(() => {
@@ -28,6 +36,27 @@ const ctxCount = computed(() => {
 });
 
 const msgCount = computed(() => (props.conversation.messages || []).length);
+
+const SOURCE_DOMAIN_LABEL: Record<string, string> = {
+  brd: "BRD",
+  "tech-leadership": "TL",
+  "code-review": "CR",
+  story: "Story",
+  rag: "RAG",
+  aichat: "AI"
+};
+const sourceDomainLabel = computed<string>(() => {
+  const url = sourceUrl.value;
+  if (!url) return "";
+  const m = url.match(/^\/([^/?#]+)/);
+  if (!m) return "";
+  const head = m[1];
+  if (head === "code-review") {
+    if (url.startsWith("/code-review/bugs")) return "Bug";
+    return "CR";
+  }
+  return SOURCE_DOMAIN_LABEL[head] || head.toUpperCase();
+});
 
 function relativeTime(ts?: number): string {
   if (!ts) return "";
@@ -53,6 +82,11 @@ const metaText = computed(() => {
   if (time) parts.push(time);
   return parts.join("  ·  ");
 });
+
+function backToSource() {
+  if (!sourceUrl.value) return;
+  router.push(sourceUrl.value);
+}
 </script>
 
 <template>
@@ -71,6 +105,14 @@ const metaText = computed(() => {
     <div class="cs-item-body">
       <!-- Row 1: title left, meta right -->
       <div class="cs-item-row">
+        <el-tag
+          v-if="sourceDomainLabel"
+          size="small"
+          effect="plain"
+          class="cs-item-src"
+          :title="`From ${sourceUrl}`"
+          @click.stop="backToSource"
+        >{{ sourceDomainLabel }}</el-tag>
         <span class="cs-item-title">{{ conversation.title || "(Untitled)" }}</span>
         <span class="cs-item-meta">{{ metaText }}</span>
       </div>
@@ -85,6 +127,22 @@ const metaText = computed(() => {
         >
           <el-icon><component :is="isFavorite ? StarFilled : Star" /></el-icon>
         </el-button>
+        <el-button
+          text
+          size="small"
+          :title="ctxCount ? `Edit ${ctxCount} context file(s)` : 'Edit context files'"
+          @click="emit('edit-context', conversation.key)"
+        >
+          <el-icon><FolderOpened /></el-icon>
+        </el-button>
+        <el-button
+          v-if="sourceUrl"
+          text
+          :icon="Back"
+          size="small"
+          title="Back to source"
+          @click="backToSource"
+        />
         <el-button
           text
           :icon="Edit"
@@ -138,6 +196,19 @@ const metaText = computed(() => {
   gap: 8px;
   align-items: baseline;
   justify-content: space-between;
+}
+.cs-item-src {
+  flex-shrink: 0;
+  cursor: pointer;
+  font-size: 10px;
+  padding: 0 5px;
+  height: 16px;
+  line-height: 14px;
+  align-self: center;
+  &:hover {
+    color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
+  }
 }
 .cs-item-title {
   flex: 1;

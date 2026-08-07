@@ -10,6 +10,7 @@
     <el-card shadow="hover" class="rag-section">
       <div class="rag-query-form">
         <el-input
+          ref="compareInputRef"
           v-model="compareInput"
           type="textarea"
           :rows="2"
@@ -17,10 +18,13 @@
           @keyup.enter.ctrl="runCompare"
           :disabled="compareRunning"
         />
+        <div class="rag-query-hint">
+          <kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> compare
+        </div>
         <div class="rag-query-controls">
-          <div style="display: flex; align-items: center; gap: 8px">
+          <div class="rag-query-params">
             <span class="rag-param-label">Scope:</span>
-            <el-input v-model="compareScope" placeholder="Full KB" size="small" clearable style="width: 180px" :disabled="compareRunning" />
+            <el-input v-model="compareScope" placeholder="Full KB" size="small" clearable class="rag-scope-input" :disabled="compareRunning" />
           </div>
           <div class="rag-query-actions">
             <el-button v-if="compareRunning" type="danger" plain size="small" @click="stopCompare">
@@ -52,6 +56,14 @@
               <el-tag v-if="compareRagSources.length" size="small" type="info" effect="plain">
                 {{ compareRagSources.length }} source{{ compareRagSources.length > 1 ? "s" : "" }}
               </el-tag>
+              <el-button
+                v-if="compareRagAnswer"
+                text
+                size="small"
+                :icon="ChatDotRound"
+                title="Discuss this RAG answer in aiChat"
+                @click="discussRagInAiChat"
+              >aiChat</el-button>
             </div>
           </div>
         </template>
@@ -82,6 +94,14 @@
               <span v-if="comparePlainStreaming" class="streaming-badge">
                 <el-icon class="is-loading"><Loading /></el-icon> Streaming
               </span>
+              <el-button
+                v-if="comparePlainAnswer"
+                text
+                size="small"
+                :icon="ChatDotRound"
+                title="Discuss this baseline answer in aiChat"
+                @click="discussBaselineInAiChat"
+              >aiChat</el-button>
             </div>
           </div>
         </template>
@@ -110,7 +130,7 @@
         <el-descriptions-item label="Length Ratio">{{ (compareRagAnswer.length / Math.max(1, comparePlainAnswer.length)).toFixed(2) }}x</el-descriptions-item>
         <el-descriptions-item label="RAG Sources Used">{{ compareRagSources.length }}</el-descriptions-item>
         <el-descriptions-item label="Best Source Score">
-          <span :style="{ color: scoreColor(bestRagSourceScore), fontWeight: 600 }">
+          <span class="compare-score" :style="{ color: scoreColor(bestRagSourceScore) }">
             {{ scoreLabel(bestRagSourceScore) }}
           </span>
         </el-descriptions-item>
@@ -125,13 +145,75 @@
 </template>
 
 <script setup lang="ts" name="ragCompareMode">
-import { ref, computed, onBeforeUnmount } from "vue";
-import { Close, Switch, Loading, Document, WarningFilled, DataAnalysis } from "@element-plus/icons-vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { Close, Switch, Loading, Document, WarningFilled, DataAnalysis, ChatDotRound } from "@element-plus/icons-vue";
+import type { InputInstance } from "element-plus";
 import { streamRagChat } from "@/api/modules/ragService";
 import { streamChat } from "@/api/modules/chatService";
 import { scoreLabel, scoreColor, renderAnswer } from "@/views/rag/constants";
 import SourceChip from "./components/SourceChip.vue";
 import type { RagSource } from "@/api/interface/rag";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
+
+const { openInAiChat } = useAiChatBridge();
+
+function shortQuestion(q: string): string {
+  const t = q.trim().replace(/\s+/g, " ");
+  return t.length > 60 ? t.slice(0, 59) + "…" : t;
+}
+
+function ragSourcesBullets(srcs: RagSource[]): string {
+  if (!srcs.length) return "_(no sources retrieved)_";
+  return srcs.map((s, i) => `- [${i + 1}] \`${s.file_path ?? "unknown"}\`${s.score ? ` (score ${s.score})` : ""}`).join("\n");
+}
+
+async function discussRagInAiChat() {
+  if (!compareRagAnswer.value && !compareInput.value) return;
+  const q = compareInput.value.trim();
+  const pageContent = [
+    `# RAG compare — ${shortQuestion(q)}`,
+    "",
+    "## Question",
+    "",
+    q,
+    "",
+    "## RAG answer (retrieval-augmented)",
+    "",
+    compareRagAnswer.value || "_(no response)_",
+    "",
+    "## Retrieved sources",
+    "",
+    ragSourcesBullets(compareRagSources.value)
+  ].join("\n");
+  await openInAiChat({
+    title: `RAG compare — ${shortQuestion(q)}`,
+    pageContent,
+    tags: ["ctx:rag/compare", "rag:compare", `from:/rag/compare`]
+  });
+}
+
+async function discussBaselineInAiChat() {
+  if (!comparePlainAnswer.value && !compareInput.value) return;
+  const q = compareInput.value.trim();
+  const pageContent = [
+    `# Baseline compare — ${shortQuestion(q)}`,
+    "",
+    "## Question",
+    "",
+    q,
+    "",
+    "## Baseline answer (plain LLM, no retrieval)",
+    "",
+    comparePlainAnswer.value || "_(no response)_",
+    "",
+    "> ⚠️ Baseline answers may hallucinate — no knowledge base grounding."
+  ].join("\n");
+  await openInAiChat({
+    title: `Baseline compare — ${shortQuestion(q)}`,
+    pageContent,
+    tags: ["baseline", "rag:compare", `from:/rag/compare`]
+  });
+}
 
 const compareInput = ref("");
 const compareScope = ref("");
@@ -207,11 +289,51 @@ function clearCompare() {
   compareInput.value = "";
 }
 
-onBeforeUnmount(() => { stopCompare(); });
+const compareInputRef = ref<InputInstance>();
+
+function focusCompare() {
+  compareInputRef.value?.focus?.();
+}
+function slashKeyHandler(e: KeyboardEvent) {
+  if (e.key !== "/") return;
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
+  e.preventDefault();
+  focusCompare();
+}
+
+onMounted(() => {
+  focusCompare();
+  window.addEventListener("keydown", slashKeyHandler);
+});
+onBeforeUnmount(() => {
+  stopCompare();
+  window.removeEventListener("keydown", slashKeyHandler);
+});
 </script>
 
 <style scoped lang="scss">
 @use "./styles/shared.scss";
+
+.rag-query-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  text-align: right;
+
+  kbd {
+    display: inline-block;
+    min-width: 16px;
+    padding: 1px 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
+  }
+}
 
 .compare-results {
   display: grid;
@@ -307,4 +429,12 @@ onBeforeUnmount(() => { stopCompare(); });
 
 .text-danger { color: var(--el-color-danger); font-weight: 500; }
 .text-success { color: var(--el-color-success); font-weight: 500; }
+
+.rag-scope-input {
+  width: 180px;
+}
+
+.compare-score {
+  font-weight: 600;
+}
 </style>

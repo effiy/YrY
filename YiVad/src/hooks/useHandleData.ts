@@ -32,9 +32,11 @@ export const useHandleData = (
         resolve(true);
       })
       .catch((err: unknown) => {
-        // ElMessageBox rejects with 'cancel'/'close' on user dismissal;
-        // any other error is an actual API failure that must propagate.
-        if (err === "cancel" || err === "close") return;
+        // ElMessageBox rejects with 'cancel'/'close' on user dismissal.
+        if (err === "cancel" || err === "close") {
+          resolve(false);
+          return;
+        }
         reject(err);
       });
   });

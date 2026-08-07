@@ -151,9 +151,11 @@ class OllamaService:
             try:
                 response = client.chat(model=model_name, messages=ollama_messages)
                 if isinstance(response, dict):
-                    result = response.get("message", {}).get("content", "")
+                    msg = response.get("message", {}) or {}
+                    result = msg.get("content") or msg.get("thinking") or ""
                 else:
-                    result = getattr(response, "message", {}).get("content", "")
+                    msg = getattr(response, "message", {}) or {}
+                    result = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
                 return {
                     "success": True,
                     "model": model_name,
@@ -247,7 +249,13 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
 
     def _build_ollama_messages() -> List[Dict[str, Any]]:
         if use_messages:
-            return list(raw_messages)
+            msgs = list(raw_messages)
+            # Prepend system prompt when provided — the `system` param is
+            # otherwise ignored in the messages path, which broke translation
+            # and other single-message system-prompt-driven flows.
+            if system_prompt:
+                msgs.insert(0, {"role": "system", "content": system_prompt})
+            return msgs
         return [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_content},

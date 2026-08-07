@@ -8,7 +8,7 @@ import { getStoryList, createStory, updateStory, deleteStory } from "@/api/modul
 import { getHistoryList, createHistoryEntry, deleteHistoryEntry } from "@/api/modules/aiCodingHistory";
 import { listKnowledgeStories, readKnowledgeStory } from "@/api/modules/knowledgeService";
 import type { KnowledgeReadResponse, KnowledgeStoryEntry } from "@/api/interface/yiweb";
-import { PROJECTS } from "@/config";
+import { PROJECTS, PROJECT_LABELS } from "@/config";
 import type {
   StoryDocument,
   Scenario,
@@ -81,7 +81,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
   const viewMode = ref<"cards" | "list">("cards");
 
   // ── Knowledge bridge ──
-  // Story's story.md content (from YiKnowledge/projects/{project}/{name}/story.md).
+  // Story's story.md content (from YiKnowledge/engineer/projects/{project}/{name}/story.md).
   // Null when not yet loaded or no story.md exists for this story.
   const storyMarkdown = ref<KnowledgeReadResponse | null>(null);
   const storyMarkdownLoading = ref(false);
@@ -214,6 +214,10 @@ export const useStoryStore = defineStore("yivad-story", () => {
     for (const s of stories.value) if (s.project) set.add(s.project);
     return [...set].sort((a, b) => a.localeCompare(b, "zh-CN"));
   });
+
+  function projectLabel(value: string): string {
+    return PROJECT_LABELS[value] ?? value;
+  }
 
   const projectStoryCounts = computed(() => {
     const counts: Record<string, number> = {};
@@ -792,6 +796,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     scenarioForm,
     scenarioTab,
     projects,
+    projectLabel,
     projectStoryCounts,
     totalStories,
     filteredStories,

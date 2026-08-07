@@ -9,16 +9,69 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElCollapse, ElCollapseItem } from "element-plus";
-import { Document } from "@element-plus/icons-vue";
+import { Document, CopyDocument, ChatDotRound } from "@element-plus/icons-vue";
 import { useStoryStore } from "@/stores/modules/story";
 import { useAiPrompts } from "@/views/story/composables/useAiPrompts";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
+import { PROJECT_LABELS } from "@/config";
 import StoryStatusBadge from "./StoryStatusBadge.vue";
 import { STORY_STATUS_ORDER, PRIORITY_COLORS, fmtDate, formatSize } from "@/views/story/constants";
-import type { StoryDocument } from "@/api/modules/story";
+import type { StoryDocument, Scenario } from "@/api/modules/story";
 
 const { t } = useI18n();
 const store = useStoryStore();
 const { generatingCoding, generateCodingPrompt, copyToClipboard } = useAiPrompts();
+const { openInAiChat } = useAiChatBridge();
+
+function scenarioMarkdown(s: StoryDocument, sc: Scenario): string {
+  const steps = (sc.steps ?? [])
+    .map((st, i) => `${i + 1}. **${st.action}** — ${st.description}`)
+    .join("\n");
+  const tags = (sc.tags ?? []).length ? sc.tags.join(", ") : "—";
+  const files = (sc.files ?? []).map(f => `- \`${f.filePath}\`${f.fileName ? ` (${f.fileName})` : ""}${f.lines ? ` — ${f.lines} lines` : ""}`).join("\n");
+  const storyCtx = store.storyMarkdown?.content ?? "";
+  return [
+    `# Scenario: ${sc.name}`,
+    "",
+    `**Story:** ${s.name || s.key}`,
+    `**Project:** ${(PROJECT_LABELS[s.project] ?? s.project) || "unsorted"}`,
+    `**Scenario key:** \`${sc.key}\``,
+    `**Priority:** ${sc.priority}`,
+    `**Status:** ${sc.status}`,
+    ...(sc.trigger ? [`**Trigger:** ${sc.trigger}`] : []),
+    ...(sc.prerequisites ? [`**Prerequisites:** ${sc.prerequisites}`] : []),
+    ...(sc.expectedResult ? [`**Expected result:** ${sc.expectedResult}`] : []),
+    "",
+    "## Description",
+    "",
+    sc.description || "_(no description)_",
+    "",
+    "## Steps",
+    "",
+    steps || "_(no steps)_",
+    "",
+    "## Tags",
+    "",
+    tags,
+    "",
+    "## Files",
+    "",
+    files || "_(no files)_",
+    ...(storyCtx ? ["", "---", "", "## Story context", "", storyCtx] : [])
+  ].join("\n");
+}
+
+async function discussScenarioInAiChat(sc: Scenario) {
+  const s = store.selectedStory;
+  if (!s) return;
+  const ctxPath = `stories/${s.project || "unsorted"}/${s.key}`;
+  await openInAiChat({
+    title: `${sc.name || sc.key} — Story ${s.key}`,
+    pageContent: scenarioMarkdown(s, sc),
+    tags: [`ctx:${ctxPath}`, `story:${s.key}`, `scenario:${sc.key}`],
+    sourceUrl: `/story?project=${encodeURIComponent(s.project || "")}&story=${s.key}`
+  });
+}
 
 const story = computed(() => store.selectedStory);
 
@@ -59,7 +112,7 @@ const statusLabels = computed(() => ({
       :percentage="scenarioProgress(story)"
       :stroke-width="8"
       :color="scenarioProgress(story) === 100 ? '#67c23a' : '#409eff'"
-      style="margin-bottom: 16px"
+      class="sc-progress"
     />
     <el-empty v-if="!story.scenarios?.length" :description="$t('story.noScenarios')" :image-size="60" />
 
@@ -121,6 +174,7 @@ const statusLabels = computed(() => ({
                       <span v-if="f.language" class="sc-file-lang">{{ f.language }}</span>
                       <span v-if="f.lines" class="sc-file-lines">{{ f.lines }} lines</span>
                       <span v-if="f.size" class="sc-file-size">{{ formatSize(f.size) }}</span>
+                      <el-icon class="sc-file-copy"><CopyDocument /></el-icon>
                     </div>
                   </div>
                 </el-collapse-item>
@@ -154,6 +208,7 @@ const statusLabels = computed(() => ({
 
             <!-- Actions -->
             <div class="sc-acts">
+              <el-button size="small" text type="primary" :icon="ChatDotRound" @click="discussScenarioInAiChat(sc)">{{ t("common.discussInAiChat") }}</el-button>
               <el-button size="small" text @click="store.openScenarioEdit(idx)">{{ $t("story.edit") }}</el-button>
               <el-button size="small" text type="warning" :loading="generatingCoding.has(sc.key)" @click="generateCodingPrompt(sc)">
                 {{ $t("story.aiCoding") }}
@@ -180,6 +235,9 @@ const statusLabels = computed(() => ({
 .sc-count {
   font-size: 14px;
   color: var(--el-text-color-secondary);
+}
+.sc-progress {
+  margin-bottom: 16px;
 }
 .sc-group-hdr {
   display: flex;
@@ -271,7 +329,15 @@ const statusLabels = computed(() => ({
   margin-bottom: 4px;
   &:hover {
     background: var(--el-fill-color);
+    .sc-file-copy { opacity: 1; }
   }
+}
+.sc-file-copy {
+  font-size: 13px;
+  color: var(--el-text-color-placeholder);
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
 }
 .sc-file-info {
   display: flex;

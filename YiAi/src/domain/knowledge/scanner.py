@@ -25,17 +25,31 @@ from shared.exceptions import BusinessException
 logger = logging.getLogger(__name__)
 
 # Well-known YiKnowledge categories — surfaced first in the UI for stable ordering.
-# Additional top-level directories discovered on disk are appended alphabetically.
+# Updated 2026-08-05: YiKnowledge migrated from 9 legacy category dirs
+# (industry/lessons/methodology/people/product/projects/resources/tech/work)
+# to 20 bare-role dirs. Additional top-level directories discovered on disk are
+# appended alphabetically after these.
 _WELL_KNOWN_CATEGORIES = (
-    "industry",
-    "lessons",
-    "methodology",
-    "people",
-    "product",
-    "projects",
-    "resources",
-    "tech",
-    "work",
+    "engineer",
+    "ai-engineer",
+    "designer",
+    "product-manager",
+    "tech-lead",
+    "data-engineer",
+    "devops",
+    "security-engineer",
+    "qa-engineer",
+    "code-reviewer",
+    "release-manager",
+    "api-designer",
+    "performance-engineer",
+    "accessibility-engineer",
+    "technical-writer",
+    "knowledge-curator",
+    "skill-author",
+    "executive",
+    "new-hire",
+    "oncall-sre",
 )
 
 # Directories that should never be surfaced as knowledge categories.
@@ -250,6 +264,13 @@ def scan_knowledge(category: str | None = None) -> dict:
 def read_knowledge_file(rel_path: str) -> dict:
     """Read a single knowledge file, returning parsed frontmatter + body."""
     abs_path = _resolve_safe(rel_path)
+    # Directory link (e.g. README's "Top-level tree" role column) →
+    # resolve to README.md inside the directory.
+    if os.path.isdir(abs_path):
+        readme = os.path.join(abs_path, "README.md")
+        if os.path.isfile(readme):
+            abs_path = readme
+            rel_path = f"{rel_path.rstrip('/')}/README.md"
     if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
         raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Knowledge file not found: {rel_path}")
     with open(abs_path, "r", encoding="utf-8", errors="replace") as f:
@@ -264,20 +285,46 @@ def read_knowledge_file(rel_path: str) -> dict:
     }
 
 
-def list_stories(project: str | None = None) -> dict:
-    """List story.md files under ``projects/{project}/stories/``.
+def _resolve_project_dir(projects_root: str, project: str) -> str | None:
+    """Resolve a project name to its on-disk directory under projects_root.
 
-    The directory layout is semantic (per YiKnowledge/projects/README.md):
-    ``projects/{project}/stories/{story-name}/story.md``. Each story.md's
+    YiKnowledge directory names are lowercase (``yiai``, ``yipet``, …) but
+    MongoDB story records typically store the user-facing project name with
+    original casing (``YiAi``, ``YiPet``). Try exact match first, then
+    case-insensitive match against the actual directory listing.
+    """
+    exact = os.path.join(projects_root, project)
+    if os.path.isdir(exact):
+        return exact
+    target = project.lower()
+    try:
+        for name in os.listdir(projects_root):
+            if name.lower() == target and os.path.isdir(os.path.join(projects_root, name)):
+                return os.path.join(projects_root, name)
+    except OSError:
+        pass
+    return None
+
+
+def list_stories(project: str | None = None) -> dict:
+    """List story.md files under ``engineer/projects/{project}/stories/``.
+
+    The directory layout is semantic (per YiKnowledge/engineer/projects/README.md):
+    ``engineer/projects/{project}/stories/{story-name}/story.md``. Each story.md's
     frontmatter carries the database ``key`` for cross-referencing with the
     stories collection.
+
+    Updated 2026-08-05: ``projects/`` migrated under the ``engineer/`` role
+    directory as part of the 14-category → 20-role-dir restructure. Legacy
+    ``projects/`` root no longer exists.
     """
     base = _base_dir()
-    projects_root = os.path.join(base, "projects")
+    projects_root = os.path.join(base, "engineer", "projects")
     if not os.path.isdir(projects_root):
         return {"stories": []}
     if project:
-        targets = [(project, os.path.join(projects_root, project))]
+        resolved = _resolve_project_dir(projects_root, project)
+        targets = [(project, resolved)] if resolved else []
     else:
         targets = [
             (d, os.path.join(projects_root, d))
@@ -287,7 +334,7 @@ def list_stories(project: str | None = None) -> dict:
 
     stories: list[dict] = []
     for proj, root in targets:
-        if not os.path.isdir(root):
+        if not root or not os.path.isdir(root):
             continue
         stories_root = os.path.join(root, "stories")
         if not os.path.isdir(stories_root):
@@ -309,5 +356,10 @@ def list_stories(project: str | None = None) -> dict:
 
 def read_story_markdown(project: str, story_name: str) -> dict:
     """Read a story's story.md, returning parsed frontmatter + body."""
-    rel = f"projects/{project}/stories/{story_name}/story.md"
+    base = _base_dir()
+    projects_root = os.path.join(base, "engineer", "projects")
+    resolved = _resolve_project_dir(projects_root, project)
+    if not resolved:
+        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Project not found: {project}")
+    rel = f"engineer/projects/{os.path.basename(resolved)}/stories/{story_name}/story.md"
     return read_knowledge_file(rel)

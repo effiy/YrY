@@ -2,7 +2,7 @@
 
 > FastAPI-based AI services hub — chat inference, file storage with dual-write persistence, RSS aggregation, WeCom messaging, a generic module-execution engine, a state-store for arbitrary key-value records, a RAG (retrieval-augmented generation) layer over a markdown knowledge base, and a knowledge-base watcher. Runs on uvicorn (ASGI), MongoDB via Motor (async), with self-hosted LLM inference via Ollama, RAG via llama_index, and object storage via OSS.
 
-> **新人引导** → `YiKnowledge/projects/YiAi/onboarding.md`（8 节：setup / workflow / 坑速查 / Day-1 任务）
+> **Onboarding** → `YiKnowledge/projects/YiAi/onboarding.md` (8 sections: setup / workflow / known-pitfalls / Day-1 task)
 
 ---
 

@@ -198,6 +198,21 @@
   border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.35);
 }
 
+/* ── Sidebar resizer ──────────────────────────────────────────────────────── */
+.yipet-sidebar-resizer {
+  flex-shrink: 0;
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  z-index: 5;
+}
+
+.yipet-sidebar-resizer:hover,
+#yipet-chat-window.resizing .yipet-sidebar-resizer {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.4);
+}
+
 /* ── Resize handles ───────────────────────────────────────────────────────── */
 .yipet-resize-handle {
   position: absolute;
@@ -221,6 +236,52 @@
   cursor: sw-resize;
 }
 
+.yipet-resize-n {
+  left: 8px;
+  right: 8px;
+  top: 0;
+  height: 4px;
+  cursor: ns-resize;
+  z-index: 11;
+}
+
+.yipet-resize-n:hover,
+#yipet-chat-window.resizing .yipet-resize-n {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.45);
+}
+
 .yipet-resize-handle:hover {
   background: rgba(var(--primary-rgb, 99, 102, 241), 0.25);
+}
+
+/* ── Drag-and-drop overlay (knowledge file → session) ───────────────────── */
+.yipet-chat-drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+  border: 2px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.6);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.yipet-chat-drop-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 32px;
+  font-size: 13px;
+  color: var(--text-primary, #f5f3ff);
+  background: var(--bg-elevated, rgba(20, 18, 40, 0.85));
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.yipet-chat-drop-overlay-inner > :first-child {
+  font-size: 28px;
+  color: var(--primary-light, #818cf8);
 }

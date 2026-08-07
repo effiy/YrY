@@ -92,7 +92,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         tagTypeFn: statusTag
       },
-      { key: "decider", label: "Decider", width: 130 }
+      { key: "decider", label: "Decider", width: 130 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "adr_number", label: "ADR Number", type: "input", placeholder: "e.g. ADR-007" },
@@ -110,7 +111,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       },
       { key: "decider", label: "Decider", type: "input", placeholder: "e.g. Arch Group + FE Lead" },
       { key: "decision_date", label: "Decision Date", type: "date" },
-      { key: "supersedes", label: "Supersedes", type: "input", placeholder: "e.g. ADR-003" }
+      { key: "supersedes", label: "Supersedes", type: "input", placeholder: "e.g. ADR-003" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# ADR: [Title]
 
@@ -158,7 +160,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         tagTypeFn: statusTag
       },
-      { key: "evaluator", label: "Evaluator", width: 120 }
+      { key: "evaluator", label: "Evaluator", width: 120 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "capability", label: "Capability", type: "input", placeholder: "e.g. Frontend Build Tool", required: true },
@@ -177,7 +180,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "evaluator", label: "Evaluator", type: "input", placeholder: "e.g. FE Lead" },
       { key: "candidates", label: "Candidates", type: "textarea", rows: 2, placeholder: "e.g. Rsbuild, Webpack, Vite, Turbopack" },
       { key: "conclusion", label: "Conclusion", type: "textarea", rows: 2, placeholder: "Recommendation + rationale" },
-      { key: "adr_ref", label: "ADR Reference", type: "input", placeholder: "e.g. ADR-007" }
+      { key: "adr_ref", label: "ADR Reference", type: "input", placeholder: "e.g. ADR-007" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Tech Selection: [Capability]
 
@@ -250,7 +254,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         tagTypeFn: riskTag
       },
-      { key: "repayment_cost", label: "Repayment", width: 90 }
+      { key: "repayment_cost", label: "Repayment", width: 90 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       {
@@ -281,7 +286,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         required: true
       },
       { key: "interest_rate", label: "Interest Rate (person-days/mo)", type: "input", placeholder: "e.g. 2" },
-      { key: "repayment_cost", label: "Repayment Cost (person-days)", type: "input", placeholder: "e.g. 8" }
+      { key: "repayment_cost", label: "Repayment Cost (person-days)", type: "input", placeholder: "e.g. 8" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Tech Debt: [Title]
 
@@ -335,7 +341,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         enum: STATUS_OPTIONS,
         tagTypeFn: statusTag
       },
-      { key: "owner", label: "Owner", width: 110 }
+      { key: "owner", label: "Owner", width: 110 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       {
@@ -363,7 +370,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         type: "select",
         options: STATUS_OPTIONS,
         required: true
-      }
+      },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Risk: [Title]
 
@@ -407,7 +415,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         enum: SEVERITY_P,
         tagTypeFn: severityTag
       },
-      { key: "duration", label: "Duration", width: 110 }
+      { key: "duration", label: "Duration", width: 110 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "incident_date", label: "Incident Date", type: "date", required: true },
@@ -419,7 +428,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         required: true
       },
       { key: "duration_minutes", label: "Duration (minutes)", type: "number", min: 0 },
-      { key: "detection_method", label: "Detection Method", type: "input", placeholder: "e.g. PagerDuty alert, user report" }
+      { key: "detection_method", label: "Detection Method", type: "input", placeholder: "e.g. PagerDuty alert, user report" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Postmortem: [Incident Title]
 
@@ -473,14 +483,16 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
     metaColumns: [
       { key: "shift_period", label: "Shift", width: 160 },
       { key: "from", label: "From", width: 110 },
-      { key: "to", label: "To", width: 110 }
+      { key: "to", label: "To", width: 110 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "shift_period", label: "Shift Period", type: "input", placeholder: "e.g. 2026-W31", required: true },
       { key: "from_engineer", label: "From Engineer", type: "input", placeholder: "e.g. Alice" },
       { key: "to_engineer", label: "To Engineer", type: "input", placeholder: "e.g. Bob" },
       { key: "ongoing_incidents", label: "Ongoing Incidents", type: "number", min: 0 },
-      { key: "pending_alerts", label: "Pending Alerts", type: "number", min: 0 }
+      { key: "pending_alerts", label: "Pending Alerts", type: "number", min: 0 },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Oncall Handover: [Shift Period]
 
@@ -537,7 +549,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         label: "Level",
         width: 70,
         enum: MATURITY_LEVELS
-      }
+      },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "team", label: "Team", type: "input", placeholder: "e.g. Frontend Squad", required: true },
@@ -560,7 +573,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         type: "select",
         options: MATURITY_LEVELS,
         required: true
-      }
+      },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Org Diagnose: [Team] — [Dimension]
 
@@ -605,7 +619,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ]
       },
       { key: "audit_date", label: "Audit Date", width: 120 },
-      { key: "critical_cves", label: "Critical CVEs", width: 120 }
+      { key: "critical_cves", label: "Critical CVEs", width: 120 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       {
@@ -625,7 +640,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "total_deps", label: "Total Dependencies", type: "number", min: 0 },
       { key: "outdated", label: "Outdated", type: "number", min: 0 },
       { key: "vulnerable", label: "Vulnerable", type: "number", min: 0 },
-      { key: "unmaintained", label: "Unmaintained", type: "number", min: 0 }
+      { key: "unmaintained", label: "Unmaintained", type: "number", min: 0 },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Dependency Audit: [Ecosystem] — [Date]
 
@@ -685,7 +701,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         tagTypeFn: statusTag
       },
-      { key: "owner", label: "Owner", width: 110 }
+      { key: "owner", label: "Owner", width: 110 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "quarter", label: "Quarter", type: "input", placeholder: "e.g. 2026 Q3", required: true },
@@ -709,7 +726,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ],
         required: true
       },
-      { key: "owner", label: "Owner", type: "input", placeholder: "e.g. FE Lead" }
+      { key: "owner", label: "Owner", type: "input", placeholder: "e.g. FE Lead" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Roadmap Review: [Quarter]
 
@@ -763,7 +781,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
           { label: "Network", value: "network" },
           { label: "GPU", value: "gpu" }
         ]
-      }
+      },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "planning_period", label: "Planning Period", type: "input", placeholder: "e.g. 2026 Q3", required: true },
@@ -782,7 +801,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         required: true
       },
       { key: "current_capacity", label: "Current Capacity", type: "input", placeholder: "e.g. 200 cores" },
-      { key: "projected_growth_pct", label: "Projected Growth (%)", type: "number", min: 0, max: 1000 }
+      { key: "projected_growth_pct", label: "Projected Growth (%)", type: "number", min: 0, max: 1000 },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Capacity Plan: [System] — [Period]
 
@@ -823,7 +843,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
     metaColumns: [
       { key: "report_period", label: "Period", width: 110 },
       { key: "system", label: "System", width: 130 },
-      { key: "monthly_cost", label: "Monthly Cost", width: 120 }
+      { key: "monthly_cost", label: "Monthly Cost", width: 120 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       { key: "report_period", label: "Report Period", type: "input", placeholder: "e.g. 2026-07", required: true },
@@ -832,7 +853,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
       { key: "budget_variance_pct", label: "Budget Variance (%)", type: "number" },
       { key: "compute_pct", label: "Compute (%)", type: "number", min: 0, max: 100 },
       { key: "api_pct", label: "3rd-party API (%)", type: "number", min: 0, max: 100 },
-      { key: "storage_pct", label: "Storage (%)", type: "number", min: 0, max: 100 }
+      { key: "storage_pct", label: "Storage (%)", type: "number", min: 0, max: 100 },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# FinOps Report: [System] — [Period]
 
@@ -902,7 +924,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         label: "Target",
         width: 80,
         enum: MATURITY_LEVELS
-      }
+      },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       {
@@ -932,7 +955,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         type: "select",
         options: MATURITY_LEVELS,
         required: true
-      }
+      },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# Maturity Assessment: [Practice Area]
 
@@ -983,7 +1007,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
         ]
       },
       { key: "current_value", label: "Current", width: 110 },
-      { key: "period", label: "Period", width: 120 }
+      { key: "period", label: "Period", width: 120 },
+      { key: "project", label: "Project", width: 100, clickable: true }
     ],
     metaFields: [
       {
@@ -1010,7 +1035,8 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
           { label: "↓ Degrading", value: "down" },
           { label: "→ Flat", value: "flat" }
         ]
-      }
+      },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
     ],
     templateContent: `# DORA Metric: [Metric Type]
 
@@ -1045,6 +1071,384 @@ export const tlrMetaSchemas: Record<string, TopicMetaSchema> = {
 > References: YiKnowledge → [Engineering Productivity Metrics Summary](work/processes/engineering-productivity-metrics-summary.md) | [Metrics Template](work/processes/engineering-productivity-metrics-template.md)
 > Remember: all 4 DORA metrics must be tracked together. High deploy frequency + high failure rate = not real velocity.
 > Yi family: YiVad (SPA, manual deploy) | YiPet (Chrome extension, review-gated release) | YiAi (server, no CI/CD pipeline)
-`
+`,
+  },
+
+  // ── Mentorship & growth ──────────────────────────────────────────────────
+  "mentorship-growth": {
+    metaColumns: [
+      { key: "engineer", label: "Engineer", minWidth: 160 },
+      { key: "level", label: "Level", width: 100 },
+      { key: "track", label: "Track", width: 140 },
+      { key: "current_quarter_focus", label: "Quarter Focus", minWidth: 200 },
+      { key: "growth_area", label: "Growth Area", width: 160 },
+      { key: "last_review_at", label: "Last Review", width: 140 },
+      { key: "owner", label: "Mentor", width: 120 },
+      { key: "project", label: "Project", width: 100, clickable: true }
+    ],
+    metaFields: [
+      { key: "engineer", label: "Engineer", type: "input", required: true, colSpan: 12, placeholder: "Name" },
+      { key: "level", label: "Level", type: "input", colSpan: 6, placeholder: "e.g. L3, Senior" },
+      { key: "track", label: "Track", type: "select", colSpan: 6, options: [
+        { label: "Individual contributor (IC)", value: "ic" },
+        { label: "Tech lead", value: "tech-lead" },
+        { label: "Engineering management", value: "em" },
+        { label: "Hybrid", value: "hybrid" }
+      ] },
+      { key: "mentor", label: "Mentor", type: "input", required: true, colSpan: 12, placeholder: "Senior engineer / manager accountable for growth" },
+      { key: "team", label: "Team", type: "input", colSpan: 12 },
+      { key: "current_quarter_focus", label: "Current Quarter Focus", type: "textarea", required: true, colSpan: 24, placeholder: "What this engineer is intentionally growing this quarter" },
+      { key: "growth_area", label: "Growth Area", type: "select", required: true, colSpan: 8, options: [
+        { label: "Technical depth", value: "depth" },
+        { label: "Technical breadth", value: "breadth" },
+        { label: "Scope / autonomy", value: "scope" },
+        { label: "Leadership / influence", value: "leadership" },
+        { label: "Cross-team collaboration", value: "collaboration" },
+        { label: "Execution / delivery", value: "execution" },
+        { label: "Communication", value: "communication" },
+        { label: "Domain knowledge", value: "domain" }
+      ] },
+      { key: "aspiration", label: "Career Aspiration (12-18mo)", type: "textarea", colSpan: 24, placeholder: "What the engineer aspires to — including roles, scope, technologies" },
+      { key: "strengths", label: "Strengths", type: "textarea", colSpan: 24, placeholder: "What they do better than peers — concrete examples" },
+      { key: "growth_edges", label: "Growth Edges", type: "textarea", colSpan: 24, placeholder: "Where they're stretched — concrete examples" },
+      { key: "stretch_opportunities", label: "Stretch Opportunities", type: "textarea", colSpan: 24, placeholder: "Projects / roles that will move them forward" },
+      { key: "support_needed", label: "Support Needed", type: "textarea", colSpan: 24, placeholder: "Mentoring, training, sponsorship, shield from noise" },
+      { key: "last_review_at", label: "Last Review At", type: "date", colSpan: 12 },
+      { key: "next_review_at", label: "Next Review At", type: "date", colSpan: 12 },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — growth plateau, manager vs mentor split, sponsorship gaps." },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
+    ],
+    templateContent: `# Mentorship & Growth — [engineer]
+
+## Profile
+- Level: [level] · Track: [track] · Team: [team]
+- Mentor: [mentor]
+
+## Current Quarter Focus
+[current_quarter_focus]
+
+## Growth Area
+[growth_area]
+
+## Aspiration (12-18 months)
+[aspiration]
+
+## Strengths
+[strengths]
+
+## Growth Edges
+[growth_edges]
+
+## Stretch Opportunities
+[stretch_opportunities]
+
+## Support Needed
+[support_needed]
+
+## Cadence
+- Last review: [last_review_at] · Next: [next_review_at]
+
+## Notes
+[notes]`
+  },
+
+  // ── Project handoffs ─────────────────────────────────────────────────────
+  "project-handoffs": {
+    metaColumns: [
+      { key: "handoff_id", label: "Handoff ID", width: 140 },
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "from", label: "From", width: 140 },
+      { key: "to", label: "To", width: 140 },
+      { key: "status", label: "Status", width: 140, tagTypeFn: statusTag },
+      { key: "planned_at", label: "Planned", width: 140 },
+      { key: "completed_at", label: "Completed", width: 140 },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "handoff_id", label: "Handoff ID", type: "input", required: true, colSpan: 8, placeholder: "e.g. HO-2026-001" },
+      { key: "project", label: "Project", type: "input", required: true, colSpan: 16 },
+      { key: "from", label: "From", type: "input", required: true, colSpan: 8, placeholder: "Outgoing owner / team" },
+      { key: "to", label: "To", type: "input", required: true, colSpan: 8, placeholder: "Incoming owner / team" },
+      { key: "owner", label: "Handback Coordinator", type: "input", required: true, colSpan: 8, placeholder: "Person accountable for handoff" },
+      { key: "status", label: "Status", type: "select", required: true, colSpan: 8, options: [
+        { label: "Drafted", value: "draft" },
+        { label: "In progress", value: "in_progress" },
+        { label: "Knowledge transfer done", value: "kt-done" },
+        { label: "Completed", value: "delivered" },
+        { label: "Deferred", value: "deferred" }
+      ] },
+      { key: "planned_at", label: "Planned Handoff Date", type: "date", colSpan: 12 },
+      { key: "completed_at", label: "Completed At", type: "date", colSpan: 12 },
+      { key: "scope", label: "Scope", type: "textarea", required: true, colSpan: 24, placeholder: "What is being handed off — code, on-call, ownership, roadmap, vendor relationship" },
+      { key: "artifacts", label: "Artifacts", type: "textarea", colSpan: 24, placeholder: "Repos, dashboards, docs, runbooks, ADRs, secrets" },
+      { key: "open_work", label: "Open Work / WIP", type: "textarea", colSpan: 24, placeholder: "In-flight PRs / branches / tickets with status" },
+      { key: "known_issues", label: "Known Issues / Landmines", type: "textarea", colSpan: 24, placeholder: "Things the incoming owner must know" },
+      { key: "stakeholders", label: "Stakeholders to Notify", type: "textarea", colSpan: 24, placeholder: "Internal + external parties" },
+      { key: "kt_plan", label: "Knowledge Transfer Plan", type: "textarea", colSpan: 24, placeholder: "Pairing sessions, shadow on-call, code walkthroughs" },
+      { key: "acceptance_criteria", label: "Acceptance Criteria", type: "textarea", colSpan: 24, placeholder: "How we know the handoff is complete" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — hidden context, tribal knowledge, undocumented consumers, midnight pages." }
+    ],
+    templateContent: `# Project Handoff — [handoff_id]
+
+## Parties
+- Project: [project]
+- From: [from] → To: [to]
+- Coordinator: [owner]
+- Status: [status]
+
+## Scope
+[scope]
+
+## Artifacts
+[artifacts]
+
+## Open Work / WIP
+[open_work]
+
+## Known Issues / Landmines
+[known_issues]
+
+## Stakeholders to Notify
+[stakeholders]
+
+## Knowledge Transfer Plan
+[kt_plan]
+
+## Acceptance Criteria
+[acceptance_criteria]
+
+## Timing
+- Planned: [planned_at] · Completed: [completed_at]
+
+## Notes
+[notes]`
+  },
+
+  // ── Dependency adoption ───────────────────────────────────────────────────
+  "dependency-adoption": {
+    metaColumns: [
+      { key: "dependency", label: "Dependency", minWidth: 200 },
+      { key: "category", label: "Category", width: 160 },
+      { key: "phase", label: "Phase", width: 160, tagTypeFn: statusTag },
+      { key: "risk", label: "Risk", width: 100, enum: [
+        { label: "Critical", value: "critical" },
+        { label: "High", value: "high" },
+        { label: "Medium", value: "medium" },
+        { label: "Low", value: "low" }
+      ], tagTypeFn: riskTag },
+      { key: "owner", label: "Owner", width: 120 },
+      { key: "decided_at", label: "Decided", width: 140 },
+      { key: "updated_at", label: "Updated", width: 140 },
+      { key: "project", label: "Project", width: 100, clickable: true }
+    ],
+    metaFields: [
+      { key: "dependency", label: "Dependency", type: "input", required: true, colSpan: 16, placeholder: "Package / service / framework name + version" },
+      { key: "category", label: "Category", type: "select", required: true, colSpan: 8, options: [
+        { label: "Library / framework", value: "library" },
+        { label: "Service / SaaS", value: "saas" },
+        { label: "Infrastructure / runtime", value: "infra" },
+        { label: "Tooling (build / lint / format)", value: "tooling" },
+        { label: "Database / storage", value: "storage" },
+        { label: "Observability vendor", value: "observability" }
+      ] },
+      { key: "phase", label: "Phase", type: "select", required: true, colSpan: 8, options: [
+        { label: "Proposed", value: "proposed" },
+        { label: "Evaluating", value: "evaluating" },
+        { label: "Decided", value: "decided" },
+        { label: "Adopting", value: "in_progress" },
+        { label: "Adopted", value: "delivered" },
+        { label: "Deferred", value: "deferred" },
+        { label: "Rejected", value: "deprecated" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", required: true, colSpan: 8 },
+      { key: "team", label: "Team", type: "input", colSpan: 8 },
+      { key: "decided_by", label: "Decided By", type: "input", colSpan: 8, placeholder: "e.g. Architecture Council" },
+      { key: "use_case", label: "Use Case", type: "textarea", required: true, colSpan: 24, placeholder: "What problem this dependency solves + why now" },
+      { key: "alternatives", label: "Alternatives Considered", type: "textarea", colSpan: 24, placeholder: "Build vs buy vs OSS; other vendors; why this won" },
+      { key: "scoring", label: "Scoring / Decision Matrix", type: "textarea", colSpan: 24, placeholder: "Weighted criteria — maintainability, security, cost, lock-in, community" },
+      { key: "risk_assessment", label: "Risk Assessment", type: "textarea", colSpan: 24, placeholder: "Supply chain, license, CVE history, bus factor, lock-in" },
+      { key: "poc_link", label: "POC Link", type: "input", colSpan: 12, placeholder: "Link to POC / spike results" },
+      { key: "security_review_link", label: "Security Review", type: "input", colSpan: 12, placeholder: "TPRM / SIG / scan results" },
+      { key: "rollout_plan", label: "Rollout Plan", type: "textarea", colSpan: 24, placeholder: "Pilot → wave → fleet-wide; feature flag if needed" },
+      { key: "exit_plan", label: "Exit Plan", type: "textarea", colSpan: 24, placeholder: "How we would leave if it goes sideways — abstraction, dual-write, replace" },
+      { key: "decided_at", label: "Decided At", type: "date", colSpan: 12 },
+      { key: "adopted_at", label: "Adopted At", type: "date", colSpan: 12 },
+      { key: "updated_at", label: "Last Updated", type: "date", colSpan: 12 },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — sunk cost, license cliffs, surprise true-ups, vendor lock-in delay." },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
+    ],
+    templateContent: `# Dependency Adoption — [dependency]
+
+## Profile
+- Category: [category] · Phase: [phase] · Owner: [owner]
+- Decided by: [decided_by] on [decided_at]
+
+## Use Case
+[use_case]
+
+## Alternatives Considered
+[alternatives]
+
+## Scoring
+[scoring]
+
+## Risk Assessment
+[risk_assessment]
+
+## Reviews
+- POC: [poc_link]
+- Security: [security_review_link]
+
+## Rollout & Exit
+- Rollout: [rollout_plan]
+- Exit: [exit_plan]
+
+## Timing
+- Decided: [decided_at] · Adopted: [adopted_at] · Updated: [updated_at]
+
+## Notes
+[notes]`
+  },
+
+  // ── Project bootstrap ─────────────────────────────────────────────────────
+  "project-bootstrap": {
+    metaColumns: [
+      { key: "project_name", label: "Project", minWidth: 180 },
+      { key: "stack", label: "Stack", width: 200 },
+      { key: "phase", label: "Phase", width: 160, tagTypeFn: statusTag },
+      { key: "owner", label: "Owner", width: 120 },
+      { key: "target_ga_at", label: "Target GA", width: 140 },
+      { key: "updated_at", label: "Updated", width: 140 },
+      { key: "project", label: "Cross Project", width: 100, clickable: true }
+    ],
+    metaFields: [
+      { key: "project_name", label: "Project Name", type: "input", required: true, colSpan: 12 },
+      { key: "stack", label: "Stack", type: "input", required: true, colSpan: 12, placeholder: "Languages / frameworks / services" },
+      { key: "phase", label: "Phase", type: "select", required: true, colSpan: 8, options: [
+        { label: "Charter", value: "proposed" },
+        { label: "Repo + CI scaffold", value: "evaluating" },
+        { label: "Skeleton app runs", value: "decided" },
+        { label: "First feature shipped", value: "in_progress" },
+        { label: "GA / 1.0", value: "delivered" },
+        { label: "Deferred", value: "deferred" },
+        { label: "Cancelled", value: "deprecated" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", required: true, colSpan: 8 },
+      { key: "team", label: "Team", type: "input", colSpan: 8 },
+      { key: "target_ga_at", label: "Target GA Date", type: "date", colSpan: 12 },
+      { key: "first_release_at", label: "First Release At", type: "date", colSpan: 12 },
+      { key: "charter", label: "Charter", type: "textarea", required: true, colSpan: 24, placeholder: "Problem, scope, success criteria, non-goals" },
+      { key: "principles", label: "Guiding Principles", type: "textarea", colSpan: 24, placeholder: "Architecture direction, conventions, iron laws" },
+      { key: "repo_checklist", label: "Repo Bootstrap Checklist", type: "textarea", colSpan: 24, placeholder: "README, LICENSE, CI, lint, format, pre-commit, secrets scan, dep bot, ADR dir" },
+      { key: "runtime_checklist", label: "Runtime Checklist", type: "textarea", colSpan: 24, placeholder: "Local dev quick-start, env vars, seed data, smoke test" },
+      { key: "observability_checklist", label: "Observability Checklist", type: "textarea", colSpan: 24, placeholder: "Logs, metrics, traces, health endpoint, error reporting" },
+      { key: "release_checklist", label: "Release Checklist", type: "textarea", colSpan: 24, placeholder: "Version policy, changelog, semver, rollback plan" },
+      { key: "owners_and_roles", label: "Owners & Roles", type: "textarea", colSpan: 24, placeholder: "Codeowner, oncall, security, release captain" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — premature platform, missing golden path, tool drift between projects." },
+      { key: "project", label: "Cross Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
+    ],
+    templateContent: `# Project Bootstrap — [project_name]
+
+## Profile
+- Stack: [stack] · Phase: [phase]
+- Owner: [owner] ([team])
+- Target GA: [target_ga_at] · First release: [first_release_at]
+
+## Charter
+[charter]
+
+## Guiding Principles
+[principles]
+
+## Checklists
+### Repo
+[repo_checklist]
+
+### Runtime
+[runtime_checklist]
+
+### Observability
+[observability_checklist]
+
+### Release
+[release_checklist]
+
+## Owners & Roles
+[owners_and_roles]
+
+## Notes
+[notes]`
+  },
+
+  // ── Knowledge evolution ──────────────────────────────────────────────────
+  "knowledge-evolution": {
+    metaColumns: [
+      { key: "area", label: "Area", minWidth: 200 },
+      { key: "change_type", label: "Change Type", width: 160 },
+      { key: "status", label: "Status", width: 140, tagTypeFn: statusTag },
+      { key: "owner", label: "Owner", width: 120 },
+      { key: "updated_at", label: "Updated", width: 140 },
+      { key: "project", label: "Project", width: 100, clickable: true }
+    ],
+    metaFields: [
+      { key: "area", label: "Knowledge Area", type: "input", required: true, colSpan: 16, placeholder: "e.g. YiKnowledge/tech/ai-foundations/" },
+      { key: "change_type", label: "Change Type", type: "select", required: true, colSpan: 8, options: [
+        { label: "New — bootstrap area", value: "new" },
+        { label: "Refresh — stale content update", value: "refresh" },
+        { label: "Restructure — taxonomy change", value: "restructure" },
+        { label: "Merge — consolidate duplicates", value: "merge" },
+        { label: "Split — break into leaves", value: "split" },
+        { label: "Archive — superseded", value: "archive" },
+        { label: "Delete — wrong / harmful", value: "delete" }
+      ] },
+      { key: "status", label: "Status", type: "select", required: true, colSpan: 8, options: [
+        { label: "Proposed", value: "proposed" },
+        { label: "In progress", value: "in_progress" },
+        { label: "Done", value: "delivered" },
+        { label: "Deferred", value: "deferred" },
+        { label: "Cancelled", value: "deprecated" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", required: true, colSpan: 8 },
+      { key: "team", label: "Team", type: "input", colSpan: 8 },
+      { key: "rationale", label: "Rationale", type: "textarea", required: true, colSpan: 24, placeholder: "Why this change now — drivers, evidence, urgency" },
+      { key: "current_state", label: "Current State", type: "textarea", colSpan: 24, placeholder: "What the area looks like now — files, drift, gaps" },
+      { key: "target_state", label: "Target State", type: "textarea", colSpan: 24, placeholder: "What it should look like after — structure, metadata, lifecycle" },
+      { key: "migration", label: "Migration Plan", type: "textarea", colSpan: 24, placeholder: "Sequence of edits, redirects, cross-references, verification" },
+      { key: "affected_consumers", label: "Affected Consumers", type: "textarea", colSpan: 24, placeholder: "aicr, story, bug, aiChat, onboarding — surfaces that read this" },
+      { key: "review_cycle", label: "Review Cycle", type: "input", colSpan: 12, placeholder: "e.g. quarterly knowledge audit" },
+      { key: "last_audit_at", label: "Last Audit At", type: "date", colSpan: 12 },
+      { key: "started_at", label: "Started On", type: "date", colSpan: 8 },
+      { key: "delivered_at", label: "Delivered At", type: "date", colSpan: 8 },
+      { key: "updated_at", label: "Last Updated", type: "date", colSpan: 8 },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — link rot, stale YAML frontmatter, silent taxonomy drift, no owner." },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD entries + bugs with the same project" }
+    ],
+    templateContent: `# Knowledge Evolution — [area]
+
+## Change
+- Type: [change_type] · Status: [status]
+- Owner: [owner] ([team])
+
+## Rationale
+[rationale]
+
+## Current State
+[current_state]
+
+## Target State
+[target_state]
+
+## Migration Plan
+[migration]
+
+## Affected Consumers
+[affected_consumers]
+
+## Audit Cadence
+- Review cycle: [review_cycle] · Last audit: [last_audit_at]
+- Started: [started_at] · Delivered: [delivered_at] · Updated: [updated_at]
+
+## Notes
+[notes]`
   }
 };

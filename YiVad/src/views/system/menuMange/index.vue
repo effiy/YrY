@@ -6,34 +6,38 @@
       row-key="path"
       :pagination="false"
       :tree-props="{ children: 'children' }"
-      default-expand-all
+      :default-expand-all="false"
       :indent="20"
       :columns="columns"
       :data="menuData"
+      :height="tableHeight"
     >
       <!-- Table header buttons -->
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu</el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu <kbd class="mm-kbd">N</kbd></el-button>
+        <span class="mm-hint"><kbd>/</kbd> focus search · <kbd>?</kbd> help</span>
       </template>
       <!-- Menu icon -->
       <template #icon="scope">
-        <el-icon :size="18">
+        <el-icon v-if="scope.row.meta?.icon" :size="18">
           <component :is="scope.row.meta.icon"></component>
         </el-icon>
+        <span v-else class="mm-dash">-</span>
       </template>
       <!-- Redirect -->
       <template #redirect="scope">
         <span v-if="scope.row.redirect">{{ scope.row.redirect }}</span>
-        <span v-else style="color: #c0c4cc">-</span>
+        <span v-else class="mm-dash">-</span>
       </template>
       <!-- Order -->
       <template #order="scope">
-        <el-tag size="small" type="info">{{ scope.row.order }}</el-tag>
+        <el-tag v-if="scope.row.order != null" size="small" type="info">{{ scope.row.order }}</el-tag>
+        <span v-else class="mm-dash">-</span>
       </template>
       <!-- Parent Menu -->
       <template #parent="scope">
         <span v-if="scope.row.parent">{{ scope.row.parent }}</span>
-        <el-tag v-else size="small" type="">Top Level</el-tag>
+        <el-tag v-else size="small" type="info">Top Level</el-tag>
       </template>
       <!-- Visibility -->
       <template #isHide="scope">
@@ -56,7 +60,7 @@
       append-to-body
       destroy-on-close
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" label-suffix=":">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" label-suffix=":" @keydown.meta.s.prevent="handleSave" @keydown.ctrl.s.prevent="handleSave">
         <el-form-item label="Menu Name" prop="title">
           <el-input v-model="form.title" placeholder="Menu display name" clearable />
         </el-form-item>
@@ -69,7 +73,7 @@
             clearable
             check-strictly
             filterable
-            style="width: 100%"
+            class="mm-parent-select"
           />
         </el-form-item>
         <el-form-item label="Route Path" prop="path">
@@ -108,8 +112,30 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" :loading="saving" @click="handleSave">Save</el-button>
+        <span class="dialog-footer-hint"><kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> save</span>
+        <div>
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button type="primary" :loading="saving" @click="handleSave">Save</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <el-dialog
+      v-model="showShortcuts"
+      title="Keyboard shortcuts"
+      width="420px"
+      append-to-body
+      class="mm-shortcuts"
+    >
+      <ul class="mm-shortcut-list">
+        <li><kbd>N</kbd><span>Create a new menu</span></li>
+        <li><kbd>/</kbd><span>Focus the search form</span></li>
+        <li><kbd>⌘</kbd>+<kbd>Ctrl</kbd>+<kbd>S</kbd><span>Save the current edit dialog (inside the form)</span></li>
+        <li><kbd>Esc</kbd><span>Close this dialog</span></li>
+        <li><kbd>?</kbd><span>Show this help</span></li>
+      </ul>
+      <template #footer>
+        <el-button type="primary" @click="showShortcuts = false">Got it</el-button>
       </template>
     </el-dialog>
   </div>
@@ -117,7 +143,7 @@
 
 <script setup lang="ts" name="menuMange">
 import { CirclePlus, Delete, EditPen } from "@element-plus/icons-vue";
-import { computed, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
 
 import { useAuthStore } from "@/stores/modules/auth";
@@ -129,9 +155,60 @@ const proTable = ref();
 const formRef = ref<FormInstance>();
 const authStore = useAuthStore();
 const dialogVisible = ref(false);
+const showShortcuts = ref(false);
 const isAdd = ref(false);
 const editingKey = ref("");
 const saving = ref(false);
+
+const tableHeight = ref<number | undefined>(undefined);
+const updateTableHeight = () => {
+  // header(55) + tabs(40) + toolbar(47) + box padding(20) + table-main padding(40) = 202
+  tableHeight.value = Math.max(200, window.innerHeight - 202);
+};
+onMounted(() => {
+  updateTableHeight();
+  window.addEventListener("resize", updateTableHeight);
+  window.addEventListener("keydown", onKeydown);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", updateTableHeight);
+  window.removeEventListener("keydown", onKeydown);
+});
+
+function focusSearch() {
+  const form = document.querySelector(".table-box .el-form");
+  const input = form?.querySelector("input.el-input__inner") as HTMLInputElement | null;
+  input?.focus();
+  input?.select?.();
+}
+
+function onKeydown(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
+  // Esc closes the shortcuts dialog even when an overlay is open
+  if (e.key === "Escape" && showShortcuts.value) {
+    e.preventDefault();
+    showShortcuts.value = false;
+    return;
+  }
+  const inOverlay = !!document.querySelector(".el-dialog:not(.is-hidden), .el-drawer:not(.is-hide), .el-select-dropdown:not([style*='display: none'])");
+  if (inOverlay) return;
+  if (e.key === "?") {
+    e.preventDefault();
+    showShortcuts.value = true;
+    return;
+  }
+  if (e.key === "/") {
+    e.preventDefault();
+    focusSearch();
+    return;
+  }
+  if (e.key.toLowerCase() === "n") {
+    e.preventDefault();
+    openAdd();
+  }
+}
 
 import { sortMenuTree } from "@/utils";
 
@@ -269,12 +346,18 @@ async function handleSave() {
 
 // ── Delete ──
 async function handleDelete(row: any) {
+  const childCount = row.children?.length ?? 0;
+  const title = row.meta?.title ?? row.name;
+  const message = childCount > 0
+    ? `Menu "${title}" has ${childCount} child menu${childCount > 1 ? "s" : ""}. Deleting it will orphan the children — they will become top-level menus after refresh. Continue?`
+    : `Are you sure you want to delete menu "${title}"? Changes take effect after page refresh.`;
   try {
-    await ElMessageBox.confirm(
-      `Are you sure you want to delete menu "${row.meta?.title ?? row.name}"? Changes take effect after page refresh.`,
-      "Confirm Delete",
-      { confirmButtonText: "Confirm", cancelButtonText: "Cancel", type: "warning" }
-    );
+    await ElMessageBox.confirm(message, "Confirm Delete", {
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      type: childCount > 0 ? "error" : "warning",
+      confirmButtonClass: childCount > 0 ? "el-button--danger" : undefined
+    });
   } catch {
     return;
   }
@@ -304,18 +387,103 @@ const columns: ColumnProps[] = [
 
 <style scoped lang="scss">
 .table-box {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 55px - 40px);
   padding: 10px 12px;
-  box-sizing: border-box;
   overflow: hidden;
-
-  :deep(.table-main) {
-    flex: 1;
-    height: auto;
-    min-height: 0;
-    overflow-y: auto;
+}
+.dialog-footer-hint {
+  margin-right: auto;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  kbd {
+    display: inline-block;
+    min-width: 16px;
+    padding: 1px 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
   }
+}
+.mm-kbd {
+  display: inline-block;
+  min-width: 14px;
+  padding: 0 5px;
+  margin-left: 6px;
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 11px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border: 1px solid var(--el-color-primary-light-7);
+  border-radius: 3px;
+  line-height: 16px;
+}
+.mm-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  kbd {
+    display: inline-block;
+    min-width: 14px;
+    padding: 0 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
+    line-height: 16px;
+  }
+}
+
+.mm-dash {
+  color: var(--el-text-color-placeholder);
+}
+
+.mm-shortcut-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--el-border-color-lighter);
+    &:last-child { border-bottom: none; }
+    span { font-size: 14px; color: var(--el-text-color-regular); margin-left: 4px; }
+  }
+  kbd {
+    display: inline-block;
+    min-width: 24px;
+    padding: 2px 8px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 12px;
+    text-align: center;
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 var(--el-border-color-light);
+  }
+}
+
+.mm-parent-select {
+  width: 100%;
+}
+
+:deep(.el-dialog__footer) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 </style>

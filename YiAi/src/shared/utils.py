@@ -126,7 +126,7 @@ def is_valid_date(date_str: str) -> bool:
 
 def is_number(value: Any) -> bool:
     """Validate if value is a number"""
-    # bool 是 int 子类，但语义上不是数字；nan/inf 会破坏 Mongo 数值范围查询
+    # bool is a subclass of int but semantically not a number; nan/inf breaks Mongo numeric range queries
     if value is None or isinstance(value, bool):
         return False
     try:

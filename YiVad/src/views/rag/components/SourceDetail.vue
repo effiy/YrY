@@ -5,17 +5,20 @@
  *
  * Used by Retrieval Explorer (drawer), Chat (dialog), and History (drawer).
  */
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Document, Link, CopyDocument } from "@element-plus/icons-vue";
-import { scorePercent, scoreLabel, scoreColor, kbDetailLink } from "@/views/rag/constants";
+import { scorePercent, scoreLabel, scoreColor } from "@/views/rag/constants";
 import ScoreBar from "./ScoreBar.vue";
+import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const props = defineProps<{
   source: RagSource;
   index: number;
 }>();
+
+const knowledgeDialogRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 const visibleMeta = computed(() => {
   if (!props.source?.metadata) return {};
@@ -34,7 +37,7 @@ function copyText(text: string) {
 }
 
 function openInKb(filePath: string) {
-  window.open(kbDetailLink(filePath), "_blank");
+  knowledgeDialogRef.value?.open(filePath);
 }
 </script>
 
@@ -43,7 +46,7 @@ function openInKb(filePath: string) {
     <!-- Document -->
     <div class="sd-section">
       <h4>Document</h4>
-      <el-link :href="kbDetailLink(source.file_path)" target="_blank" type="primary" :underline="false">
+      <el-link type="primary" :underline="false" @click="openInKb(source.file_path)">
         <el-icon><Link /></el-icon> {{ source.file_path }}
       </el-link>
     </div>
@@ -71,7 +74,7 @@ function openInKb(filePath: string) {
           :label="String(key)"
         >
           <template v-if="Array.isArray(val)">
-            <el-tag v-for="(t, ti) in val" :key="ti" size="small" style="margin: 1px 2px">{{ t }}</el-tag>
+            <el-tag v-for="(t, ti) in val" :key="ti" size="small" class="sd-meta-tag">{{ t }}</el-tag>
           </template>
           <template v-else>{{ val }}</template>
         </el-descriptions-item>
@@ -95,6 +98,8 @@ function openInKb(filePath: string) {
         <el-icon><Document /></el-icon> Open in Knowledge Base
       </el-button>
     </div>
+
+    <KnowledgePreviewDialog ref="knowledgeDialogRef" />
   </div>
 </template>
 
@@ -135,6 +140,10 @@ function openInKb(filePath: string) {
 .sd-meta {
   :deep(.el-descriptions__label) { font-size: 12px; }
   :deep(.el-descriptions__content) { font-size: 12px; word-break: break-all; }
+}
+
+.sd-meta-tag {
+  margin: 1px 2px;
 }
 
 .sd-text {

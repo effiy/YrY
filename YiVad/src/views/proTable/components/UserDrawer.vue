@@ -10,7 +10,7 @@
       :hide-required-asterisk="drawerProps.isView"
     >
       <el-form-item label="Avatar" prop="avatar">
-        <UploadImg v-model:image-url="drawerProps.row!.avatar" width="135px" height="135px" :file-size="3">
+        <UploadImg v-model:image-url="drawerProps.row!.avatar!" width="135px" height="135px" :file-size="3">
           <template #empty>
             <el-icon><Avatar /></el-icon>
             <span>Please upload avatar</span>
@@ -19,7 +19,7 @@
         </UploadImg>
       </el-form-item>
       <el-form-item label="Photo" prop="photo">
-        <UploadImgs v-model:file-list="drawerProps.row!.photo" height="140px" width="140px" border-radius="50%">
+        <UploadImgs v-model:file-list="(drawerProps.row as any).photo" height="140px" width="140px" border-radius="50%">
           <template #empty>
             <el-icon><Picture /></el-icon>
             <span>Please upload photo</span>
@@ -103,7 +103,8 @@ const handleSubmit = () => {
       drawerProps.value.getTableList!();
       drawerVisible.value = false;
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      ElMessage.error({ message: `Failed to save user: ${error}` });
     }
   });
 };

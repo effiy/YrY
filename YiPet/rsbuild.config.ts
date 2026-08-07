@@ -31,6 +31,8 @@ function buildChatCSS() {
     'ChatInput/ChatInput.css',
     'ChatMessages/ChatMessages.css',
     'ChatSidebar/ChatSidebar.css',
+    'ContextScopeBar/ContextScopeBar.css',
+    'SessionStatusBar/SessionStatusBar.css',
   ];
 
   const parts: string[] = [];

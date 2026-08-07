@@ -11,12 +11,16 @@
     <el-card shadow="hover" class="rag-section">
       <div class="rag-query-form">
         <el-input
+          ref="questionInputRef"
           v-model="question"
           type="textarea"
           :rows="2"
           placeholder="Enter a query to retrieve semantically similar chunks from the knowledge base…"
           @keyup.enter.ctrl="runQuery"
         />
+        <div class="rag-query-hint">
+          <kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> retrieve
+        </div>
         <div class="rag-query-controls">
           <div class="rag-query-params">
             <span class="rag-param-label">Top-K</span>
@@ -24,10 +28,10 @@
             <span class="rag-param-label">Scope</span>
             <el-input
               v-model="scope"
-              placeholder="e.g. projects/YiVad"
+              placeholder="e.g. engineer/projects/yivad"
               size="small"
               clearable
-              style="width: 180px"
+              class="rag-scope-input"
             />
           </div>
           <div class="rag-query-actions">
@@ -60,8 +64,8 @@
         :data="sources"
         stripe
         highlight-current-row
-        @row-click="showDetail"
-        style="cursor: pointer"
+        @row-click="(row: any) => showDetail(row)"
+        class="rag-clickable-table"
         size="small"
         :default-sort="{ prop: 'score', order: 'descending' }"
       >
@@ -108,11 +112,18 @@
         <el-table-column label="Chars" width="70" align="center" sortable prop="metadata.char_count">
           <template #default="{ row }">{{ row.metadata?.char_count ?? (row.text?.length || 0) }}</template>
         </el-table-column>
-        <el-table-column label="Actions" width="100" align="center" fixed="right">
+        <el-table-column label="Actions" width="160" align="center" fixed="right">
           <template #default="{ row, $index }">
             <el-button text type="primary" size="small" @click.stop="showDetail(row, $index)">
               Inspect
             </el-button>
+            <el-button
+              text
+              size="small"
+              :icon="ChatDotRound"
+              title="Discuss this chunk in AI Chat"
+              @click.stop="discussChunkInAiChat(row)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -148,13 +159,16 @@
 </template>
 
 <script setup lang="ts" name="ragRetrievalExplorer">
-import { ref, computed } from "vue";
-import { Search, List, Document } from "@element-plus/icons-vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { Search, List, Document, ChatDotRound } from "@element-plus/icons-vue";
+import type { InputInstance } from "element-plus";
 import { useRagStore } from "@/stores/modules/rag";
 import { useRagQuery } from "@/views/rag/composables/useRagQuery";
+import { useAiChatStore } from "@/stores/modules/aiChat";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import {
   scoreLabel, bestScore, avgScore,
-  stripSourcePrefix, categoryTagType
+  stripSourcePrefix, categoryTagType, truncateText
 } from "@/views/rag/constants";
 import ScoreBar from "./components/ScoreBar.vue";
 import SourceDetail from "./components/SourceDetail.vue";
@@ -169,6 +183,27 @@ const topK = ref(ragStore.lastTopK || 4);
 const scope = ref(ragStore.lastScope || "");
 const searched = ref(false);
 
+// Auto-focus the query textarea on mount; `/` re-focuses when not in an input.
+const questionInputRef = ref<InputInstance>();
+function focusQuestion() {
+  questionInputRef.value?.focus?.();
+}
+function slashKeyHandler(e: KeyboardEvent) {
+  if (e.key !== "/") return;
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
+  e.preventDefault();
+  focusQuestion();
+}
+onMounted(() => {
+  focusQuestion();
+  window.addEventListener("keydown", slashKeyHandler);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", slashKeyHandler);
+});
+
 // Detail drawer
 const drawerVisible = ref(false);
 const detailSource = ref<RagSource | null>(null);
@@ -181,6 +216,34 @@ function showDetail(source: RagSource, index?: number) {
   detailSource.value = source;
   detailIndex.value = index ?? 0;
   drawerVisible.value = true;
+}
+
+const aiChatStore = useAiChatStore();
+const { openInAiChat } = useAiChatBridge();
+
+async function discussChunkInAiChat(source: RagSource) {
+  const pageContent = [
+    `# Retrieved Chunk — ${source.file_path}`,
+    "",
+    `**Query:** ${question.value || "_(no query)_"}${scope.value ? ` · **Scope:** ${scope.value}` : ""}`,
+    `**Score:** ${scoreLabel(source.score)}`,
+    `**Category:** ${source.metadata?.category ?? "—"}`,
+    `**Type:** ${source.metadata?.type ?? "—"}`,
+    "",
+    "## Chunk Text",
+    "",
+    truncateText(source.text, 800)
+  ].join("\n");
+  const tags: string[] = ["rag", "rag:retrieval"];
+  if (scope.value) tags.push(`ctx:${scope.value}`);
+  if (source.file_path) tags.push(`file:${source.file_path}`);
+  await openInAiChat({
+    title: `RAG chunk: ${truncateText(source.file_path, 60)}`,
+    pageContent,
+    tags,
+    sourceUrl: `/rag/retrieval`
+  });
+  aiChatStore.input = question.value || `Explain this chunk from \`${source.file_path}\`:`;
 }
 
 async function runQuery() {
@@ -197,6 +260,25 @@ function clearQuery() {
 
 <style scoped lang="scss">
 @use "./styles/shared.scss";
+
+.rag-query-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  text-align: right;
+
+  kbd {
+    display: inline-block;
+    min-width: 16px;
+    padding: 1px 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
+  }
+}
 
 .results-header {
   display: flex;
@@ -249,5 +331,9 @@ function clearQuery() {
     color: var(--el-text-color-secondary);
     line-height: 1.8;
   }
+}
+
+.rag-scope-input {
+  width: 180px;
 }
 </style>

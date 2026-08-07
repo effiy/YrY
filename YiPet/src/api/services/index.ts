@@ -8,15 +8,21 @@
  */
 
 export { AuthService } from './auth';
+export { BugService } from './bug';
 export { ChatService } from './chat';
 export { DatabaseService } from './database';
+export { KnowledgeService } from './knowledge';
+export { RagService } from './rag';
 export { SessionService } from './sessions';
 export { WeWorkService } from './wework';
 
 import { type ApiClient, type ApiClientConfig, createApiClient } from '../client';
 import { AuthService } from './auth';
+import { BugService } from './bug';
 import { ChatService } from './chat';
 import { DatabaseService } from './database';
+import { KnowledgeService } from './knowledge';
+import { RagService } from './rag';
 import { SessionService } from './sessions';
 import { WeWorkService } from './wework';
 
@@ -26,6 +32,9 @@ export interface ApiServices {
   sessions: SessionService;
   chat: ChatService;
   database: DatabaseService;
+  knowledge: KnowledgeService;
+  rag: RagService;
+  bug: BugService;
   wework: WeWorkService;
 }
 
@@ -41,6 +50,9 @@ export function createApiServices(config: ApiClientConfig): ApiServices {
     sessions: new SessionService(client),
     chat: new ChatService(client),
     database: new DatabaseService(client),
+    knowledge: new KnowledgeService(client),
+    rag: new RagService(client),
+    bug: new BugService(client),
     wework: new WeWorkService(client),
   };
 }

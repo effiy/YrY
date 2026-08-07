@@ -15,7 +15,7 @@ const DATA_SERVICE = "services.database.data_service";
  * Call any YiAi service module method.
  * Low-level — prefer using the convenience functions below.
  */
-export function callService<T = any>(module: string, method: string, params: Record<string, any> = {}): Promise<YiAiEnvelope<T>> {
+export function callService<T = any>(module: string, method: string, params: Record<string, any> = {}, timeout?: number): Promise<YiAiEnvelope<T>> {
   const payload: ServicePayload = {
     module_name: module,
     method_name: method,
@@ -25,7 +25,7 @@ export function callService<T = any>(module: string, method: string, params: Rec
   // loadSessions + loadFileTree + refreshTagUniverse all call getSessions with
   // identical payloads). The axios canceler would otherwise abort in-flight
   // duplicates, which breaks that pattern. Opt out at the call site.
-  return http.post<YiAiEnvelope<T>>("", payload, { cancel: false }) as any;
+  return http.post<YiAiEnvelope<T>>("", payload, { cancel: false, ...(timeout ? { timeout } : {}) }) as any;
 }
 
 /**

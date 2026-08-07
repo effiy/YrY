@@ -1,0 +1,36 @@
+.performance-box {
+  .top-box {
+    box-sizing: border-box; padding: 25px 40px 0; margin-bottom: 10px;
+    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .top-title { font-family: DIN; font-size: 18px; font-weight: bold; }
+    .top-actions { display: flex; align-items: center; gap: 12px; .last-updated { font-size: 12px; color: #909399; } }
+    .top-content { margin-top: 10px; }
+  }
+  .stat-card {
+    display: flex; align-items: center; box-sizing: border-box; height: 100%; padding: 20px 24px; border-radius: 12px;
+    .stat-icon { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin-right: 16px; font-size: 24px; border-radius: 12px; color: #fff; }
+    .stat-info { .stat-value { font-family: DIN; font-size: 28px; font-weight: bold; color: #303133; } .stat-label { font-size: 13px; color: #909399; margin-top: 2px; } .stat-sub { font-size: 11px; color: #c0c4cc; margin-top: 2px; } .stat-delta { font-size: 11px; margin-top: 3px; font-weight: 500; } .delta-up { color: #f56c6c; } .delta-down { color: #67c23a; } }
+  }
+  .stat-card.stat-critical { border-left: 3px solid #f56c6c; }
+  .stat-card.stat-warn { border-left: 3px solid #e6a23c; }
+  .stat-card.stat-ok { border-left: 3px solid #67c23a; }
+  .stat-cpu .stat-icon { background: linear-gradient(135deg, #5470c6, #4460b0); }
+  .stat-memory .stat-icon { background: linear-gradient(135deg, #67c23a, #529b2e); }
+  .stat-disk .stat-icon { background: linear-gradient(135deg, #e6a23c, #cf9236); }
+  .stat-uptime .stat-icon { background: linear-gradient(135deg, #909399, #7a7d82); }
+  .chart-row { padding: 20px 40px; margin-bottom: 10px; }
+  .resource-box {
+    box-sizing: border-box; border: 1px solid var(--el-border-color); border-radius: 12px; min-height: 260px;
+    .resource-title { padding: 15px 20px; font-family: DIN; font-size: 16px; font-weight: bold; border-bottom: 1px solid var(--el-border-color); }
+    .resource-body { padding: 20px; }
+    .resource-section { margin-bottom: 16px; &:last-child { margin-bottom: 0; } }
+    .resource-section-title { font-size: 13px; font-weight: 600; color: #606266; margin-bottom: 8px; }
+    .resource-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; .resource-label { font-size: 12px; color: #909399; } .resource-value { font-size: 13px; font-weight: 500; color: #303133; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+  }
+  .chart-box {
+    box-sizing: border-box; height: 320px; border: 1px solid var(--el-border-color); border-radius: 12px;
+    .chart-title { padding: 15px 20px; font-family: DIN; font-size: 16px; font-weight: bold; border-bottom: 1px solid var(--el-border-color); }
+    .chart-body { width: 100%; height: calc(100% - 55px); }
+  }
+  .mb20 { margin-bottom: 20px; }
+}

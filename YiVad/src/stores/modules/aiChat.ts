@@ -9,66 +9,46 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useToolRegistry } from "@/hooks/useToolRegistry";
+import { useConversationTree } from "@/hooks/useConversationTree";
+import { useContextChangePrompt } from "@/hooks/useContextChangePrompt";
+import { useContextChanges } from "@/hooks/useContextChanges";
+import { registerAiChatTools } from "@/hooks/useAiChatTools";
+import { useSlashCommands } from "@/hooks/useSlashCommands";
 import { getSessions, getSession, upsertSession, deleteSession } from "@/api/modules/sessions";
 import { streamChat } from "@/api/modules/chatService";
+import { streamAgentChat } from "@/api/modules/agentService";
+import type { AgentStreamEvent } from "@/api/modules/agentService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
-import { webSearch, webFetch, extractUrls, formatSearchResults, formatFetchedContent, compactConversation } from "@/api/modules/searchService";
+import { extractUrls, compactConversation } from "@/api/modules/searchService";
 import type { WebSearchResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
-import { normalizeEntries } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
-import type { FileNode } from "@/api/interface/yiweb";
-import type { AiChatFeedbackRating, AiChatStreamingType } from "@/views/aiChat/types";
+import type { AiChatFeedbackRating, AiChatStreamingType, AgentTurnSummary, ToolCallEntry } from "@/views/aiChat/types";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
+
+import { loadBool, saveBool, loadNum, saveNum, loadStr, saveStr, loadJson, saveJson } from "@/utils/storage";
+import { newKey, readFileAsDataUrl, normalizeSession } from "@/utils/chatNormalizers";
 
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
 const STORAGE_RAG_KEY = "aiChat.ragEnabled";
 const STORAGE_WEB_KEY = "aiChat.webSearchEnabled";
+const STORAGE_RAG_HYBRID_KEY = "aiChat.ragHybrid";
+const STORAGE_RAG_RERANK_KEY = "aiChat.ragRerank";
+const STORAGE_RAG_CITATIONS_KEY = "aiChat.ragCitations";
+const STORAGE_RAG_NUM_QUERIES_KEY = "aiChat.ragNumQueries";
+const STORAGE_RAG_CHAT_MODE_KEY = "aiChat.ragChatMode";
+const STORAGE_RAG_CATEGORY_KEY = "aiChat.ragCategory";
+const STORAGE_RAG_TAGS_KEY = "aiChat.ragTags";
+const STORAGE_AGENT_KEY = "aiChat.agentMode";
+const STORAGE_AGENT_MAX_TURNS_KEY = "aiChat.agentMaxTurns";
+const STORAGE_AGENT_SYSTEM_PROMPT_KEY = "aiChat.agentSystemPrompt";
+const STORAGE_AGENT_MODEL_ROTATION_KEY = "aiChat.agentModelRotation";
+const STORAGE_SELECTED_MODEL_KEY = "aiChat.selectedModel";
+const STORAGE_TEMPLATES_KEY = "aiChat.promptTemplates";
 const MAX_DRAFT_IMAGES = 4;
 const SCROLL_THROTTLE_MS = 120;
-
-function loadBool(key: string, fallback: boolean): boolean {
-  try { const v = localStorage.getItem(key); return v !== null ? v === "true" : fallback; }
-  catch { return fallback; }
-}
-function saveBool(key: string, value: boolean): void {
-  try { localStorage.setItem(key, String(value)); } catch { /* ignore */ }
-}
-
-function newKey(): string {
-  return `aichat_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || "").trim());
-    reader.onerror = () => reject(new Error("Failed to read image"));
-    reader.readAsDataURL(file);
-  });
-}
-
-// Legacy sessions stored messages under `content`; normalize to `message` on load.
-function normalizeMessage(m: ChatMessage): ChatMessage {
-  if (!m) return m;
-  const message = m.message ?? (m as { content?: string }).content ?? "";
-  return message === m.message ? m : { ...m, message };
-}
-
-function normalizeSession(s: SessionDocument | null): SessionDocument | null {
-  if (!s) return s;
-  // Step 1: normalize legacy {content} → {message}
-  const messages = (s.messages ?? []).map(normalizeMessage);
-  // Step 2: normalize to ChatEntry format (backward compat with Pi-inspired entry types)
-  // This is non-destructive: old ChatMessage objects are wrapped as entryType:"message"
-  const entries = normalizeEntries(messages as any);
-  // Store normalized entries as both messages (for backward compat) and entries (for new code)
-  const result = messages === s.messages ? s : { ...s, messages };
-  (result as any)._entries = entries;
-  return result;
-}
 
 export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const conversations = ref<SessionDocument[]>([]);
@@ -86,8 +66,37 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
   // ── Streaming phase (Pi-inspired: turn_start/message_start/message_end) ──
   // Tracks the current phase of the AI interaction for richer UI feedback.
-  type StreamingPhase = "idle" | "fetching" | "thinking" | "streaming" | "done";
+  type StreamingPhase = "idle" | "fetching" | "thinking" | "retrieving" | "streaming" | "done";
   const streamingPhase = ref<StreamingPhase>("idle");
+
+  // ── Agent mode (Pi-inspired: agent loop with tool calling) ──────────
+  // When enabled, chat uses the agent loop (/agent/chat) instead of direct
+  // chat. The agent can call tools (web_search, web_fetch, rag_search, etc.)
+  // in a multi-turn reasoning loop with full observability.
+  const agentMode = ref(loadBool(STORAGE_AGENT_KEY, false));
+  // Per-turn summaries for the current streaming message — cleared on each
+  // new send, populated by agent events.
+  const agentTurnSummaries = ref<AgentTurnSummary[]>([]);
+  // Raw agent events for the current turn (for detailed inspection).
+  const agentEvents = ref<AgentStreamEvent[]>([]);
+  // Max turns for the agent loop (user-configurable).
+  const agentMaxTurns = ref(loadNum(STORAGE_AGENT_MAX_TURNS_KEY, 10));
+  // Custom system prompt for the agent (user-configurable, persisted).
+  const agentSystemPrompt = ref(loadStr(STORAGE_AGENT_SYSTEM_PROMPT_KEY, ""));
+  // Model rotation list for prepareNextTurn (Pi: switch models between turns).
+  const agentModelRotation = ref<string[]>(loadJson(STORAGE_AGENT_MODEL_ROTATION_KEY, []));
+  // Selected model for chat/agent calls (Pi: model selection). Persisted.
+  const selectedModel = ref(loadStr(STORAGE_SELECTED_MODEL_KEY, DEFAULT_MODEL));
+  // Available models fetched from YiAi (Pi: model list from server).
+  const availableModels = ref<string[]>([]);
+  const modelsLoading = ref(false);
+  // Current token usage from agent events (turn_tokens + total_tokens).
+  const agentUsage = ref<{ turnTokens: number; totalTokens: number; turns: number } | null>(null);
+  // Last compaction event (surfaced in the UI as a transient notification).
+  const agentCompaction = ref<{ beforeCount: number; afterCount: number; savedTokens: number; timestamp: number } | null>(null);
+  // Pending tool confirmation (Pi-inspired: tool requires user approval).
+  // Surfaced as a banner in MessageList; auto-dismissed after 15s.
+  const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, any>; timestamp: number } | null>(null);
   const scrollTick = ref(0);
   const copyFeedback = ref<Record<string, string>>({});
   const feedback = ref<Record<number, AiChatFeedbackRating>>({});
@@ -107,6 +116,27 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // RAG toggle — user-controlled. Persisted to localStorage.
   const ragEnabled = ref(loadBool(STORAGE_RAG_KEY, true));
 
+  // Per-call RAG retrieval overrides — mirror yaml defaults (hybrid on,
+  // rerank off, citations on). User-controlled, persisted.
+  const ragHybrid = ref(loadBool(STORAGE_RAG_HYBRID_KEY, true));
+  const ragRerank = ref(loadBool(STORAGE_RAG_RERANK_KEY, false));
+  const ragCitations = ref(loadBool(STORAGE_RAG_CITATIONS_KEY, true));
+  // QueryFusionRetriever LLM query-variant count (1 = no expansion). Only
+  // honored when hybrid is on and no scope is active. Persisted per user.
+  const ragNumQueries = ref(loadNum(STORAGE_RAG_NUM_QUERIES_KEY, 1));
+  // llama_index chat engine mode — per-call selection of:
+  //   condense_plus_context (default) | condense_question | context | simple
+  // Lets the user A/B compare chat engines from the toolbar. Persisted.
+  const ragChatMode = ref<"condense_plus_context" | "condense_question" | "context" | "simple">(
+    loadStr(STORAGE_RAG_CHAT_MODE_KEY, "condense_plus_context") as any
+  );
+  // Metadata filters on frontmatter — narrow RAG retrieval to a specific
+  // category (TEXT_MATCH) and/or set of tags (TEXT_MATCH each, AND-combined).
+  // Like scope, metadata filters disable hybrid (BM25 doesn't support them).
+  // Empty category / empty tags = no filter (retriever uses default behavior).
+  const ragCategory = ref<string>(loadStr(STORAGE_RAG_CATEGORY_KEY, ""));
+  const ragTags = ref<string[]>(loadJson<string[]>(STORAGE_RAG_TAGS_KEY, []));
+
   // Web search toggle — user-controlled. Persisted to localStorage.
   const webSearchEnabled = ref(loadBool(STORAGE_WEB_KEY, false));
 
@@ -117,7 +147,12 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const webSearching = ref(false);
 
   // ── Tool Registry (Pi-inspired pluggable tools) ──
-  const { tools: _tools, toolEvents, activeTools, registerTool, setToolEnabled, executeTool, getToolsForSystemPrompt } = useToolRegistry();
+  const { tools: _tools, toolEvents, activeTools, allTools, registerTool, setToolEnabled, executeTool, getToolsForSystemPrompt } = useToolRegistry();
+
+  const { searchQuery, expandedFolders, toggleFolder, conversationTree, filteredConversationTree, isStreaming } =
+    useConversationTree({ conversations, sending, streamingTargetTimestamp });
+
+  const { contextChangeSystemPrompt } = useContextChangePrompt(activeConversation);
 
   // True when the active conversation has ctx:-tagged files (can use RAG).
   const ragActive = computed(() => {
@@ -137,127 +172,16 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     saveBool(STORAGE_WEB_KEY, webSearchEnabled.value);
   }, { immediate: true });
 
-  // Context change history for undo support. Each entry stores the state
-  // before a change was applied so it can be restored.
-  interface ContextChangeEntry {
-    path: string;
-    previousContent: string;
-    previousPageContent: string;
-    previousTags: string[];
-    timestamp: number;
-  }
-  const contextChangeHistory = ref<ContextChangeEntry[]>([]);
-  const MAX_CHANGE_HISTORY = 50;
-
-  /**
-   * System prompt snippet that teaches the AI how to propose context file edits
-   * and save content to the knowledge base. Always provides knowledge base write
-   * instructions; context file editing instructions are included when the session
-   * has ctx:-tagged files.
-   */
-  const contextChangeSystemPrompt = computed(() => {
-    const files = (activeConversation.value?.tags ?? [])
-      .filter(t => typeof t === "string" && t.startsWith("ctx:"))
-      .map(t => (t as string).slice(4));
-    const hasContent = (activeConversation.value?.pageContent ?? "").trim().length > 0;
-    const hasContextFiles = files.length > 0 || hasContent;
-
-    // Always provide KB write capability
-    const kbSection = [
-      "",
-      "## CRITICAL: Saving content to the Knowledge Base",
-      "",
-      "When the user asks you to save, generate, write, or create any document, report,",
-      "note, or file in the knowledge base, you MUST wrap your content in a",
-      "`knowledge:save <path>` fenced code block. This is REQUIRED — do NOT output",
-      "the content as plain markdown.",
-      "",
-      "**Format (required):**",
-      "",
-      "```knowledge:save <path/to/file.md>",
-      "<YOUR COMPLETE CONTENT HERE — the entire document>",
-      "```",
-      "",
-      "**Trigger phrases** (any of these → MUST use knowledge:save block):",
-      '- "生成一份报告放在知识库中"',
-      '- "保存到知识库" / "写到知识库"',
-      '- "create a document/report/note"',
-      '- "write this to YiKnowledge"',
-      '- "generate a report"',
-      '- "放在知识库" / "存入知识库"',
-      "",
-      "**Examples of correct responses:**",
-      "",
-      "User: 生成一份Q3销售报告放在知识库中",
-      "Your response (the ENTIRE content inside the block will be saved):",
-      "",
-      "```knowledge:save reports/q3-sales-analysis.md",
-      "# Q3 销售数据分析报告",
-      "",
-      "## 概述",
-      "...完整报告内容...",
-      "```",
-      "",
-      "User: 写一份部署文档到知识库",
-      "Your response:",
-      "",
-      "```knowledge:save docs/deployment-guide.md",
-      "# 部署指南",
-      "...完整文档内容...",
-      "```",
-      "",
-      "**Path naming**: Use descriptive paths like `reports/q3-sales.md`,",
-      "`docs/api-guide.md`, `notes/meeting-2026-08-02.md`.",
-      "**Content**: Include the COMPLETE document inside the block. The user",
-      "will see a visual card with a \"Save to Knowledge Base\" button.",
-      "",
-    ].join("\n");
-
-    // Context file editing instructions — only when session has context files
-    if (!hasContextFiles) return kbSection;
-
-    const fileList = files.map(f => `  - ${f}`).join("\n");
-    const contextSection = [
-      "",
-      "## Session context file editing",
-      "",
-      "You can also manage the session's context files. The user will see visual cards and can apply or reject your proposals.",
-      "",
-      "**Editing file content** — use `context:<path>`:",
-      "",
-      "```context:<path>",
-      "<the complete new markdown content for this file>",
-      "```",
-      "",
-      "**Adding a file to context** — use `context:add <path>` (tag only, no content required):",
-      "",
-      "```context:add <path>",
-      "```",
-      "",
-      "**Removing a file from context** — use `context:remove <path>`:",
-      "",
-      "```context:remove <path>",
-      "```",
-      "",
-      "**Showing a file to the user** — use `context:view <path>`:",
-      "",
-      "```context:view <path>",
-      "```",
-      "",
-      "**Actions summary:**",
-      "- **Create/Update session context**: use `context:<path>` with COMPLETE new content",
-      "- **Delete from context**: use an empty `context:<path>` block",
-      "- **Add to context**: use `context:add <path>` to link a file without editing it",
-      "- **Remove from context**: use `context:remove <path>` to unlink a file",
-      "- **View file**: use `context:view <path>` to show current content",
-      "",
-      "Current context files:",
-      fileList || "  (none)",
-      "",
-      "**Important:** For create/update, include COMPLETE file content, not just a diff.",
-    ].join("\n");
-
-    return kbSection + "\n" + contextSection;
+  // Persist per-call retrieval overrides — these don't gate tool registry
+  // state, they just flow into the streamRagChat payload.
+  watch([ragHybrid, ragRerank, ragCitations, ragNumQueries, ragChatMode, ragCategory, ragTags], () => {
+    saveBool(STORAGE_RAG_HYBRID_KEY, ragHybrid.value);
+    saveBool(STORAGE_RAG_RERANK_KEY, ragRerank.value);
+    saveBool(STORAGE_RAG_CITATIONS_KEY, ragCitations.value);
+    saveNum(STORAGE_RAG_NUM_QUERIES_KEY, ragNumQueries.value);
+    saveStr(STORAGE_RAG_CHAT_MODE_KEY, ragChatMode.value);
+    saveStr(STORAGE_RAG_CATEGORY_KEY, ragCategory.value);
+    saveJson(STORAGE_RAG_TAGS_KEY, ragTags.value);
   });
 
   // Backward-compat aliases
@@ -274,83 +198,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const selectedKeys = ref<Set<string>>(new Set());
 
   const messages = computed<ChatMessage[]>(() => activeConversation.value?.messages ?? []);
-
-  const searchQuery = ref("");
-  const expandedFolders = ref<Set<string>>(new Set());
-
-  function toggleFolder(key: string) {
-    const s = new Set(expandedFolders.value);
-    if (s.has(key)) s.delete(key);
-    else s.add(key);
-    expandedFolders.value = s;
-  }
-
-  function buildConversationTree(items: SessionDocument[]): FileNode[] {
-    const root: Record<string, FileNode> = {};
-    for (const c of items) {
-      const tags = (c.tags ?? []).map(t => String(t).trim()).filter(Boolean);
-      const parts = [...tags, c.key];
-      if (parts.length === 0) continue;
-      let current = root;
-      for (let i = 0; i < parts.length; i++) {
-        const seg = parts[i];
-        const isLast = i === parts.length - 1;
-        const key = parts.slice(0, i + 1).join("/");
-        if (!current[seg]) {
-          current[seg] = {
-            key,
-            name: isLast ? (c.title || "(Untitled)") : seg,
-            type: isLast ? "file" : "folder",
-            children: isLast ? undefined : {},
-            session: isLast ? c : undefined,
-            updatedAt: c.updatedAt
-          } as any;
-        }
-        if (!isLast) {
-          const node = current[seg];
-          if (!node.children || Array.isArray(node.children)) node.children = {} as any;
-          current = node.children as any;
-        }
-      }
-    }
-    function toArray(nodes: Record<string, FileNode>): FileNode[] {
-      return Object.values(nodes)
-        .map(n => ({
-          ...n,
-          children: n.children && !Array.isArray(n.children) ? toArray(n.children as any) : n.children
-        }))
-        .sort((a, b) => {
-          if (a.type !== b.type) return a.type === "folder" ? -1 : 1;
-          return a.name.localeCompare(b.name, "zh-CN");
-        });
-    }
-    return toArray(root);
-  }
-
-  function filterTreeByQuery(nodes: FileNode[], q: string): FileNode[] {
-    if (!q) return nodes;
-    const lower = q.toLowerCase();
-    const walk = (items: FileNode[]): FileNode[] => {
-      const out: FileNode[] = [];
-      for (const n of items) {
-        const selfMatch = n.name.toLowerCase().includes(lower) || n.key.toLowerCase().includes(lower);
-        const children = n.children ? walk(n.children) : [];
-        if (selfMatch || children.length > 0) out.push({ ...n, children: n.children ? children : n.children });
-      }
-      return out;
-    };
-    return walk(nodes);
-  }
-
-  const conversationTree = computed(() => buildConversationTree(conversations.value));
-  const filteredConversationTree = computed(() => filterTreeByQuery(conversationTree.value, searchQuery.value.trim()));
-
-  function isStreaming(msg: ChatMessage, _idx: number): boolean {
-    if (!sending.value) return false;
-    const targetTs = streamingTargetTimestamp.value;
-    if (typeof targetTs !== "number") return false;
-    return msg.timestamp === targetTs && msg.type === "pet";
-  }
 
   function rememberActive(key: string) {
     try {
@@ -424,6 +271,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (s.has(key)) s.delete(key);
     else s.add(key);
     selectedKeys.value = s;
+  }
+
+  function selectAll(keys: string[]) {
+    selectedKeys.value = new Set(keys);
+  }
+
+  function clearSelection() {
+    selectedKeys.value = new Set();
   }
 
   async function bulkDelete() {
@@ -540,6 +395,143 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
   }
 
+  /** Export the active conversation as markdown and trigger a download. */
+  function exportConversation() {
+    const s = activeConversation.value;
+    if (!s) return;
+    const lines: string[] = [];
+    lines.push(`# ${s.title || "Chat"}`);
+    lines.push("");
+    lines.push(`> Exported: ${new Date().toISOString()}`);
+    if (s.pageContent) {
+      lines.push("");
+      lines.push("## Context");
+      lines.push("");
+      lines.push(s.pageContent);
+    }
+    lines.push("");
+    lines.push("## Conversation");
+    lines.push("");
+    for (const m of s.messages ?? []) {
+      const role = m.type === "user" ? "**User**" : "**AI**";
+      const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
+      lines.push(`### ${role} ${time ? `(${time})` : ""}`);
+      lines.push("");
+      lines.push(m.message || "_(empty)_");
+      lines.push("");
+      if (m.toolCalls?.length) {
+        for (const tc of m.toolCalls) {
+          lines.push(`<details>`);
+          lines.push(`<summary>Tool: \`${tc.name}\`</summary>`);
+          lines.push("");
+          if (tc.content) {
+            lines.push("```");
+            lines.push(tc.content);
+            lines.push("```");
+          }
+          lines.push("");
+          lines.push(`</details>`);
+          lines.push("");
+        }
+      }
+    }
+    const md = lines.join("\n");
+    const blob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(s.title || "chat").replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, "_")}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportConversationHtml() {
+    const s = activeConversation.value;
+    if (!s) return;
+    const title = s.title || "Chat";
+    const exported = new Date().toISOString();
+    const parts: string[] = [];
+    parts.push(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(title)}</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; }
+  .meta { color: #6b7280; font-size: 0.875rem; margin-bottom: 2rem; }
+  .msg { margin: 1.5rem 0; padding: 1rem; border-radius: 8px; }
+  .msg--user { background: #f3f4f6; }
+  .msg--ai { background: #eff6ff; border-left: 3px solid #3b82f6; }
+  .msg__role { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #6b7280; margin-bottom: 0.5rem; }
+  .msg__time { font-weight: 400; color: #9ca3af; }
+  .msg__content { white-space: pre-wrap; }
+  .msg__content img { max-width: 100%; }
+  details { margin-top: 0.75rem; }
+  summary { cursor: pointer; color: #3b82f6; font-size: 0.875rem; }
+  pre { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8125rem; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.875em; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #111827; color: #f9fafb; }
+    .msg--user { background: #1f2937; }
+    .msg--ai { background: #1e3a5f; border-left-color: #60a5fa; }
+    .meta, .msg__role { color: #9ca3af; }
+    h1 { border-bottom-color: #374151; }
+  }
+</style>
+</head>
+<body>
+<h1>${escapeHtml(title)}</h1>
+<p class="meta">Exported: ${exported}</p>`);
+
+    if (s.pageContent) {
+      parts.push(`<h2>Context</h2>`);
+      parts.push(`<pre>${escapeHtml(s.pageContent)}</pre>`);
+    }
+
+    parts.push(`<h2>Conversation</h2>`);
+    for (const m of s.messages ?? []) {
+      const role = m.type === "user" ? "User" : "AI";
+      const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
+      parts.push(`<div class="msg msg--${m.type === "user" ? "user" : "ai"}">`);
+      parts.push(`<div class="msg__role">${role} <span class="msg__time">${time}</span></div>`);
+      parts.push(`<div class="msg__content">${escapeHtml(m.message || "(empty)")}</div>`);
+      if (m.toolCalls?.length) {
+        for (const tc of m.toolCalls) {
+          parts.push(`<details>`);
+          parts.push(`<summary>Tool: <code>${escapeHtml(tc.name)}</code></summary>`);
+          if (tc.content) {
+            parts.push(`<pre>${escapeHtml(tc.content)}</pre>`);
+          }
+          parts.push(`</details>`);
+        }
+      }
+      parts.push(`</div>`);
+    }
+
+    parts.push(`</body>\n</html>`);
+    const html = parts.join("\n");
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(s.title || "chat").replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, "_")}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeHtml(text: string): string {
+    const map: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+    return text.replace(/[&<>"']/g, c => map[c] || c);
+  }
+
+  const { contextChangeHistory, applyContextChange, deleteContextSection,
+          undoLastContextChange, addContextFile, removeContextFile,
+          getContextSectionContent } =
+    useContextChanges({ activeConversation, updateSessionMeta });
+
   function openSessionEdit() {
     if (!activeConversation.value) return;
     sessionEditVisible.value = true;
@@ -576,227 +568,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeContextEditor();
   }
 
-  /**
-   * Apply a context change proposal from an AI message.
-   *
-   * The session's pageContent is built by `ContextFilesPanel.buildPageContent()`
-   * as sections joined by `\n\n---\n\n`:
-   *
-   *   ## path1.md
-   *
-   *   content for path1
-   *
-   *   ---
-   *
-   *   ## path2.md
-   *
-   *   content for path2
-   *
-   * This method splits on the separator, locates the target section by its
-   * `## <path>` header, and replaces / inserts / removes it. It also keeps
-   * `ctx:<path>` tags in sync with the sections.
-   *
-   * @param path    File path within the context (e.g. "notes/deployment.md")
-   * @param content New markdown content for the section (empty = delete)
-   */
-  async function applyContextChange(path: string, content: string) {
-    const s = activeConversation.value;
-    if (!s) return;
-    const normalized = path.trim();
-    if (!normalized) return;
-
-    const current = s.pageContent || "";
-    const header = `## ${normalized}`;
-    const SEP = "\n\n---\n\n";
-
-    // Split into sections by separator, trim whitespace, drop empties
-    const sections = current
-      .split(SEP)
-      .map(sec => sec.trim())
-      .filter(Boolean);
-
-    // Find existing section index
-    let existingIdx = -1;
-    for (let i = 0; i < sections.length; i++) {
-      if (sections[i].startsWith(header)) {
-        existingIdx = i;
-        break;
-      }
-    }
-
-    const trimmedContent = content.trim();
-
-    // Save history for undo BEFORE mutating
-    const previousPageContent = current;
-    const previousTags = [...(s.tags ?? [])];
-    const previousSectionContent = existingIdx >= 0
-      ? getContextSectionContent(normalized)
-      : "";
-    const histEntry: ContextChangeEntry = {
-      path: normalized,
-      previousContent: previousSectionContent,
-      previousPageContent,
-      previousTags,
-      timestamp: Date.now()
-    };
-    contextChangeHistory.value = [
-      histEntry,
-      ...contextChangeHistory.value
-    ].slice(0, MAX_CHANGE_HISTORY);
-
-    if (!trimmedContent) {
-      // ── Delete ──
-      if (existingIdx < 0) return;
-      sections.splice(existingIdx, 1);
-    } else if (existingIdx >= 0) {
-      // ── Update ──
-      sections[existingIdx] = `${header}\n\n${trimmedContent}`;
-    } else {
-      // ── Create ──
-      sections.push(`${header}\n\n${trimmedContent}`);
-    }
-
-    const newPageContent = sections.join(SEP);
-
-    // Sync ctx: tags — keep them aligned with the sections so RAG scope
-    // stays accurate and ContextFilesPanel rebuilds the correct tree.
-    const tags = [...(s.tags ?? [])];
-    const ctxTag = `ctx:${normalized}`;
-    if (!trimmedContent) {
-      // Delete: remove the ctx: tag
-      const tagIdx = tags.indexOf(ctxTag);
-      if (tagIdx >= 0) tags.splice(tagIdx, 1);
-    } else if (existingIdx < 0 && !tags.includes(ctxTag)) {
-      // Create: add ctx: tag if not already present
-      tags.push(ctxTag);
-    }
-    // Update: keep existing tag (no change needed)
-
-    await updateSessionMeta(s.key, { pageContent: newPageContent, tags });
-  }
-
-  /**
-   * Remove a context file section from pageContent by path.
-   * Convenience wrapper — delegates to applyContextChange with empty content.
-   */
-  async function deleteContextSection(path: string) {
-    return applyContextChange(path, "");
-  }
-
-  /**
-   * Undo a context change from history.
-   *
-   * @param path  If provided, finds and restores the most recent change for
-   *              that specific path. If omitted, restores the most recent
-   *              change regardless of path (global undo).
-   */
-  async function undoLastContextChange(path?: string) {
-    const s = activeConversation.value;
-    if (!s) return;
-    if (!contextChangeHistory.value.length) return;
-
-    let idx = -1;
-    if (path) {
-      idx = contextChangeHistory.value.findIndex(e => e.path === path);
-    } else {
-      idx = 0;
-    }
-    if (idx < 0) return;
-
-    const entry = contextChangeHistory.value[idx];
-    contextChangeHistory.value = [
-      ...contextChangeHistory.value.slice(0, idx),
-      ...contextChangeHistory.value.slice(idx + 1)
-    ];
-    await updateSessionMeta(s.key, {
-      pageContent: entry.previousPageContent,
-      tags: entry.previousTags
-    });
-  }
-
-  /**
-   * Add a context file by path — adds a `ctx:<path>` tag to the session.
-   * The file content is NOT automatically loaded into pageContent;
-   * that happens via ContextFilesPanel or a subsequent context change.
-   */
-  async function addContextFile(path: string) {
-    const s = activeConversation.value;
-    if (!s) return;
-    const normalized = path.trim();
-    if (!normalized) return;
-    const ctxTag = `ctx:${normalized}`;
-    const tags = [...(s.tags ?? [])];
-    if (tags.includes(ctxTag)) return;
-    // Save history before mutating
-    contextChangeHistory.value = [
-      { path: normalized, previousContent: "", previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
-      ...contextChangeHistory.value
-    ].slice(0, MAX_CHANGE_HISTORY);
-    tags.push(ctxTag);
-    await updateSessionMeta(s.key, { tags });
-  }
-
-  /**
-   * Remove a context file by path — removes the `ctx:<path>` tag and the
-   * corresponding pageContent section (if any).
-   */
-  async function removeContextFile(path: string) {
-    const s = activeConversation.value;
-    if (!s) return;
-    const normalized = path.trim();
-    if (!normalized) return;
-    const ctxTag = `ctx:${normalized}`;
-    const tags = (s.tags ?? []).filter(t => t !== ctxTag);
-    if (tags.length === (s.tags ?? []).length && !getContextSectionContent(normalized)) {
-      return; // nothing to remove
-    }
-    // Save history before mutating (applyContextChange will add its own entry too,
-    // but we want a clean tag-only revert point)
-    contextChangeHistory.value = [
-      { path: normalized, previousContent: getContextSectionContent(normalized), previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
-      ...contextChangeHistory.value
-    ].slice(0, MAX_CHANGE_HISTORY);
-    // Also remove the section from pageContent
-    await applyContextChange(normalized, "");
-    // Then update tags (applyContextChange already handles tag removal, but
-    // this ensures the tag is gone even if there was no section)
-    await updateSessionMeta(s.key, { tags });
-  }
-
-  /**
-   * Get the current content of a context file section from pageContent.
-   * Uses the same split-on-separator approach as applyContextChange so
-   * the returned content never includes separator debris.
-   * Returns empty string if the section doesn't exist.
-   */
-  function getContextSectionContent(path: string): string {
-    const s = activeConversation.value;
-    if (!s) return "";
-    const current = s.pageContent || "";
-    const header = `## ${path.trim()}`;
-    const SEP = "\n\n---\n\n";
-    const sections = current.split(SEP);
-    for (const section of sections) {
-      const trimmed = section.trim();
-      if (trimmed.startsWith(header)) {
-        // Strip the header line + any blank line after it
-        const body = trimmed.slice(header.length).trim();
-        return body;
-      }
-    }
-    return "";
-  }
-
-  /**
-   * Persist a context file section to the YiKnowledge directory.
-   * This is the bridge between session-scoped context editing and permanent
-   * knowledge base storage. Called when the user applies a `knowledge:save`
-   * proposal or clicks "Save to Knowledge Base" on a context change card.
-   *
-   * @param path     Relative path under YiKnowledge (e.g. "reports/q3-sales.md")
-   * @param content  Markdown content to write
-   * @param metadata Optional frontmatter metadata (title, tags, category, etc.)
-   */
   async function saveContextToKnowledge(
     path: string,
     content: string,
@@ -806,6 +577,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     const result = await writeKnowledgeFile(path, content, metadata);
     return result;
   }
+
+  registerAiChatTools({
+    registerTool,
+    webSearchResults,
+    applyContextChange,
+    addContextFile,
+    removeContextFile,
+    saveContextToKnowledge,
+  });
 
   function openTagManager() {
     if (!activeConversation.value) return;
@@ -860,6 +640,41 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
   // RAG is auto — no user toggle. setContextSwitchEnabled kept for backward compat as no-op.
   function setContextSwitchEnabled(_v: boolean) { /* no-op: RAG auto-detected from conversation ctx: files */ }
+
+  // ── Agent mode toggle ─────────────────────────────────────────────
+  function toggleAgentMode() {
+    agentMode.value = !agentMode.value;
+    saveBool(STORAGE_AGENT_KEY, agentMode.value);
+  }
+
+  /** Fetch available models from YiAi server. */
+  async function fetchModels() {
+    if (modelsLoading.value) return;
+    modelsLoading.value = true;
+    try {
+      const { buildYiAiUrl } = await import("@/config/yiweb");
+      const res = await fetch(buildYiAiUrl("/models"));
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.data?.models) {
+          availableModels.value = data.data.models.map((m: any) => m.name || m.model || m);
+        } else if (data?.models) {
+          availableModels.value = data.models.map((m: any) => m.name || m.model || m);
+        }
+      }
+    } catch {
+      // Keep current list; models are best-effort
+    } finally {
+      modelsLoading.value = false;
+    }
+  }
+
+  // Persist agent max turns
+  watch(agentMaxTurns, (v) => saveNum(STORAGE_AGENT_MAX_TURNS_KEY, v));
+  // Persist agent system prompt
+  watch(agentSystemPrompt, (v) => saveStr(STORAGE_AGENT_SYSTEM_PROMPT_KEY, v));
+  watch(agentModelRotation, (v) => saveJson(STORAGE_AGENT_MODEL_ROTATION_KEY, v), { deep: true });
+  watch(selectedModel, (v) => saveStr(STORAGE_SELECTED_MODEL_KEY, v));
 
   function setSystemPrompt(text: string) {
     systemPrompt.value = (text || "").trim();
@@ -927,41 +742,90 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
   }
 
-  // ── Slash commands (Pi-inspired: registerCommand) ────────────────────
-
-  async function handleCommand(cmd: string): Promise<boolean> {
-    const parts = cmd.slice(1).trim().split(/\s+/);
-    const name = parts[0]?.toLowerCase();
-    const args = parts.slice(1).join(" ");
-
-    switch (name) {
-      case "compact":
-        await maybeCompact();
-        ElMessage.success("Conversation compacted");
-        return true;
-      case "clear":
-        if (!activeConversation.value) return true;
-        setActiveMessages(() => []);
-        await persistActive();
-        ElMessage.success("Conversation cleared");
-        return true;
-      case "retry":
-        await retryLastMessage();
-        return true;
-      case "stop":
-        if (sending.value) stopSending();
-        return true;
-      case "model":
-        ElMessage.info(`Current model: ${DEFAULT_MODEL} (switch via settings)`);
-        return true;
-      default:
-        return false; // Not a command, proceed as normal message
+  /**
+   * Attach the tool calls fired during a turn to the pet message for that
+   * turn (Pi-inspired: per-message tool timeline). Pairs `start` and `end`
+   * events from toolEvents[startIdx:] by tool name, in order of appearance.
+   */
+  function attachTurnToolCalls(petTimestamp: number, startIdx: number): void {
+    const slice = (toolEvents.value ?? []).slice(startIdx);
+    // Pair start/end by name; in-flight tools (start, no end) appear as running.
+    const starts = new Map<string, (typeof slice)[number]>();
+    const calls: NonNullable<ChatMessage["toolCalls"]>[number][] = [];
+    for (const e of slice) {
+      if (e.phase === "start") {
+        starts.set(e.name, e);
+      } else {
+        const s = starts.get(e.name);
+        if (!s) continue;
+        calls.push({
+          name: s.name,
+          label: s.label,
+          args: s.args,
+          content: e.content,
+          error: e.error,
+          durationMs: e.durationMs,
+        });
+        starts.delete(e.name);
+      }
     }
+    // In-flight tools (start without end) — show as running.
+    for (const s of starts.values()) {
+      calls.push({
+        name: s.name,
+        label: s.label,
+        args: s.args,
+        content: "(running)",
+      });
+    }
+    if (!calls.length) return;
+    setActiveMessages(msgs => {
+      const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+      if (idx < 0) return msgs;
+      const next = [...msgs];
+      next[idx] = { ...next[idx], toolCalls: calls };
+      return next;
+    });
+    // Best-effort persist — don't block the UI on save.
+    void persistActive();
   }
 
   async function sendMessage(text?: string) {
     const content = (text ?? input.value).trim();
     const hasImages = draftImages.value.length > 0;
+
+    // ── Agent steering (Pi-inspired: steer a running agent) ────────────
+    if (content.startsWith("/steer") && sending.value && agentMode.value) {
+      const steerMsg = content.slice(7).trim();
+      if (steerMsg && activeConversation.value) {
+        const { steerAgent } = await import("@/api/modules/agentService");
+        const ok = await steerAgent(activeConversation.value.key, steerMsg);
+        if (ok) {
+          ElMessage.success(`Steering: "${steerMsg.slice(0, 40)}${steerMsg.length > 40 ? "..." : ""}"`);
+        } else {
+          ElMessage.warning("Steering failed — agent may not be running");
+        }
+        input.value = "";
+      }
+      return;
+    }
+
+    // ── Agent follow-up (Pi-inspired: queue message after agent stops) ──
+    if (content.startsWith("/followup") && sending.value && agentMode.value) {
+      const followUpMsg = content.slice(10).trim();
+      if (followUpMsg && activeConversation.value) {
+        const { followUpAgent } = await import("@/api/modules/agentService");
+        const ok = await followUpAgent(activeConversation.value.key, followUpMsg);
+        if (ok) {
+          ElMessage.success(`Follow-up queued: "${followUpMsg.slice(0, 40)}${followUpMsg.length > 40 ? "..." : ""}"`);
+        } else {
+          ElMessage.warning("Follow-up failed — agent may not be running");
+        }
+        input.value = "";
+      }
+      return;
+    }
+
     if (!content && !hasImages && !sending.value) return;
     if (sending.value) return;
 
@@ -991,6 +855,10 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     setActiveMessages(msgs => [...msgs, userMsg, petMsg]);
     input.value = "";
     draftImages.value = [];
+
+    // Pi-inspired: snapshot toolEvents length so we can attach the calls
+    // fired during this turn to the pet message (per-message tool timeline).
+    const toolEventsStartIdx = toolEvents.value.length;
 
     // ── Tool execution (Pi-inspired pipeline) ──────────────────────────
     // Pre-stream tools (e.g. web_fetch for URLs in message) run first
@@ -1080,6 +948,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     await streamPromise;
 
+    // ── Attach per-message tool calls (Pi-inspired: tool timeline) ──
+    attachTurnToolCalls(petMsg.timestamp, toolEventsStartIdx);
+
     // ── Auto-detect KB save intent (Pi-inspired post-processing) ─────────
     // When the user asks to save content to the knowledge base but the AI
     // didn't use a knowledge:save block, auto-wrap the response so the user
@@ -1109,7 +980,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // ── KB intent detection ───────────────────────────────────────────────
 
   /** Patterns that indicate the user wants to save content to the knowledge base. */
-  const KB_INTENT_RE = /(放在|保存到|存到|写入|写到|生成.*放在|创建.*放在)(知识库|knowledge|YiKnowledge)/i;
+  const KB_INTENT_RE = /(save(?:s|d)?\s+(?:to|into|in)\s+(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base)|(?:put|place|store|write|save)\s+(?:it\s+)?(?:in(?:to)?|to)?\s*(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base)|(?:generate|create)\s+.*?(?:and\s+)?(?:save|put|place|store|write)\s+(?:it\s+)?(?:in(?:to)?|to)?\s*(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base))/i;
 
   function detectKBIntent(userMessage: string): { path: string } | null {
     if (!userMessage || !KB_INTENT_RE.test(userMessage)) return null;
@@ -1122,7 +993,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   function suggestKBPath(userMessage: string): string {
     const text = userMessage.trim();
     // Try to extract a descriptive name
-    const reportMatch = text.match(/(\w+(?:[一-鿿\w]+)*)\s*(?:报告|分析|文档|笔记|指南|说明)/);
+    const reportMatch = text.match(/(\w+(?:[\w-]+)*)\s*(?:report|analysis|document|note|guide|manual|doc)/i);
     if (reportMatch) {
       const name = reportMatch[1].replace(/\s+/g, "-").toLowerCase();
       return `reports/${name}.md`;
@@ -1177,13 +1048,36 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     let streamed = "";
     let lastScrollAt = 0;
+    let firstTokenAt = 0;
+    const streamStartAt = Date.now();
     sending.value = true;
     streamingTargetTimestamp.value = petTimestamp;
     streamingType.value = type;
     streamingPhase.value = "thinking";
 
+    const onPhase = (phase: string) => {
+      // Only honour phase frames while still pre-stream. Once the first
+      // chunk arrives, onChunk flips to "streaming" and phase frames are
+      // no-op (the backend still emits them but they'd be misleading).
+      if (streamingPhase.value !== "thinking" && streamingPhase.value !== "retrieving") return;
+      if (phase === "retrieving") streamingPhase.value = "retrieving";
+    };
     const onChunk = (chunk: string) => {
-      if (streamingPhase.value === "thinking") streamingPhase.value = "streaming";
+      if (streamingPhase.value === "thinking" || streamingPhase.value === "retrieving") streamingPhase.value = "streaming";
+      // Snapshot time-to-first-token on the first chunk — proxy for
+      // retrieval + condense + synthesis latency in RAG turns. Client-side
+      // measurement avoids a backend emit frame + clock-skew issues.
+      if (!firstTokenAt) {
+        firstTokenAt = Date.now();
+        const latencyMs = firstTokenAt - streamStartAt;
+        setActiveMessages(msgs => {
+          const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+          if (idx < 0) return msgs;
+          const next = [...msgs];
+          next[idx] = { ...next[idx], firstTokenLatencyMs: latencyMs };
+          return next;
+        });
+      }
       streamed += chunk;
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -1244,7 +1138,210 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     };
 
     let abort: () => void;
-    if (ragEnabled.value && ragActive.value) {
+    if (agentMode.value) {
+      // ── Agent mode (Pi-inspired agent loop) ──────────────────────────
+      const agentMessages = aiMessages
+        .filter(m => (m.message ?? "").trim().length > 0)
+        .map(m => ({ role: m.type === "user" ? "user" : "assistant", content: m.message }));
+
+      // Clear per-turn state for this new send
+      agentTurnSummaries.value = [];
+      agentEvents.value = [];
+      agentUsage.value = null;
+      agentCompaction.value = null;
+      pendingConfirmation.value = null;
+
+      let currentTurnIdx = 0;
+      let turnStartStreamLen = 0; // track streamed length at turn_start for thinkingText capture
+
+      abort = streamAgentChat(
+        {
+          messages: agentMessages,
+          model: selectedModel.value,
+          system_prompt: [agentSystemPrompt.value, systemPrompt.value, contextChangeSystemPrompt.value, getToolsForSystemPrompt()]
+            .map(s => s.trim())
+            .filter(Boolean)
+            .join("\n\n"),
+          max_turns: agentMaxTurns.value,
+          ...(agentModelRotation.value.length > 1 ? { model_rotation: agentModelRotation.value } : {}),
+          ...(images.length ? { images } : {}),
+          session_id: activeConversation.value?.key ?? "",
+        },
+        {
+          onDelta: (text: string) => {
+            if (streamingPhase.value === "thinking" || streamingPhase.value === "retrieving") {
+              streamingPhase.value = "streaming";
+            }
+            if (!firstTokenAt) {
+              firstTokenAt = Date.now();
+              const latencyMs = firstTokenAt - streamStartAt;
+              setActiveMessages(msgs => {
+                const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+                if (idx < 0) return msgs;
+                const next = [...msgs];
+                next[idx] = { ...next[idx], firstTokenLatencyMs: latencyMs };
+                return next;
+              });
+            }
+            streamed += text;
+            setActiveMessages(msgs => {
+              const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+              if (idx < 0) return msgs;
+              const next = [...msgs];
+              next[idx] = { ...next[idx], message: streamed, error: false, aborted: false };
+              return next;
+            });
+            const now = Date.now();
+            if (now - lastScrollAt > SCROLL_THROTTLE_MS) {
+              lastScrollAt = now;
+              scrollTick.value++;
+            }
+          },
+          onEvent: (event: AgentStreamEvent) => {
+            agentEvents.value = [...agentEvents.value, event];
+
+            switch (event.type) {
+              case "agent_start":
+                streamingPhase.value = "thinking";
+                break;
+              case "turn_start":
+                currentTurnIdx = event.turn_index ?? currentTurnIdx + 1;
+                turnStartStreamLen = streamed.length;
+                // Append a thinking separator for turns after the first.
+                if (currentTurnIdx > 1) {
+                  streamed += "\n\n---\n\n";
+                  setActiveMessages(msgs => {
+                    const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+                    if (idx < 0) return msgs;
+                    const next = [...msgs];
+                    next[idx] = { ...next[idx], message: streamed };
+                    return next;
+                  });
+                }
+                agentTurnSummaries.value = [
+                  ...agentTurnSummaries.value,
+                  {
+                    turnIndex: currentTurnIdx,
+                    toolCalls: [],
+                    startTime: event.timestamp,
+                  },
+                ];
+                break;
+              case "thinking":
+                if (event.phase === "retrieving") {
+                  streamingPhase.value = "retrieving";
+                }
+                break;
+              case "turn_end": {
+                // Update the current turn summary with tool results and thinking text
+                const summaries = [...agentTurnSummaries.value];
+                const last = summaries[summaries.length - 1];
+                if (last) {
+                  last.endTime = event.timestamp;
+                  last.stopReason = event.stop_reason;
+                  // Capture thinking text: content streamed between turn_start and turn_end
+                  const thinkingText = streamed.slice(turnStartStreamLen).trim();
+                  if (thinkingText) {
+                    last.thinkingText = thinkingText;
+                  }
+                  if (event.tool_results) {
+                    last.toolCalls = event.tool_results.map((tr: any) => ({
+                      name: tr.name,
+                      label: tr.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+                      content: tr.content,
+                      error: tr.error,
+                      durationMs: tr.duration_ms,
+                    }));
+                  }
+                  agentTurnSummaries.value = summaries;
+                }
+                // Track token usage from turn_end
+                if (event.usage) {
+                  agentUsage.value = {
+                    turnTokens: (event.usage.turn_tokens as number) ?? 0,
+                    totalTokens: (event.usage.total_tokens as number) ?? agentUsage.value?.totalTokens ?? 0,
+                    turns: currentTurnIdx,
+                  };
+                }
+                // Attach tool calls to the pet message
+                const lastSummary = summaries[summaries.length - 1];
+                if (lastSummary && lastSummary.toolCalls.length) {
+                  setActiveMessages(msgs => {
+                    const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+                    if (idx < 0) return msgs;
+                    const next = [...msgs];
+                    const existing = next[idx].toolCalls ?? [];
+                    next[idx] = {
+                      ...next[idx],
+                      toolCalls: [...existing, ...lastSummary.toolCalls],
+                    };
+                    return next;
+                  });
+                }
+                break;
+              }
+              case "agent_end":
+                streamingPhase.value = "done";
+                if (event.usage) {
+                  agentUsage.value = {
+                    turnTokens: 0,
+                    totalTokens: (event.usage.total_tokens as number) ?? agentUsage.value?.totalTokens ?? 0,
+                    turns: (event.usage.turns as number) ?? currentTurnIdx,
+                  };
+                }
+                break;
+              case "compaction":
+                agentCompaction.value = {
+                  beforeCount: event.before_count ?? 0,
+                  afterCount: event.after_count ?? 0,
+                  savedTokens: event.saved_tokens ?? 0,
+                  timestamp: event.timestamp,
+                };
+                break;
+              case "confirmation_required":
+                // Tool requires user confirmation — surfaced in MessageList as a banner.
+                pendingConfirmation.value = {
+                  toolName: (event.tool_name as string) || "unknown",
+                  toolArgs: (event.tool_args as Record<string, any>) || {},
+                  timestamp: event.timestamp,
+                };
+                console.warn(
+                  `[aiChat] Tool "${event.tool_name}" requires confirmation. ` +
+                  `Args: ${JSON.stringify(event.tool_args)}. Skipped for safety.`
+                );
+                break;
+              case "tool_execution_update": {
+                // Pi: partial progress during long-running tool execution.
+                // Update the current turn's tool call with the partial result.
+                if (event.tool_call_id && event.partial_result) {
+                  const summaries = [...agentTurnSummaries.value];
+                  const last = summaries[summaries.length - 1];
+                  if (last) {
+                    const partialContent = typeof event.partial_result.content === "string"
+                      ? event.partial_result.content
+                      : JSON.stringify(event.partial_result);
+                    // Find the matching tool call in the current turn
+                    const matchingCall = last.toolCalls.find(
+                      tc => tc.name === (event.tool as any)?.name
+                    );
+                    if (matchingCall) {
+                      matchingCall.content = `[partial] ${partialContent}`;
+                    }
+                    agentTurnSummaries.value = summaries;
+                  }
+                }
+                break;
+              }
+              case "error":
+                onError(new Error(event.error ?? "Agent error"));
+                break;
+            }
+          },
+          onDone,
+          onError,
+        }
+      ).abort;
+    } else if (ragEnabled.value && ragActive.value) {
       // RAG mode — scope to the conversation's ctx:-tagged files.
       const ctxPaths = (session.tags ?? [])
         .filter(t => typeof t === "string" && t.startsWith("ctx:"))
@@ -1275,8 +1372,44 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
           .filter(m => (m.message ?? "").trim().length > 0)
           .map(m => ({ role: m.type === "user" ? ("user" as const) : ("assistant" as const), content: m.message }))
       );
-      const handlers: RagStreamHandlers = { onChunk, onSources, onDone, onError };
-      abort = streamRagChat({ messages: ragMessages, scope }, handlers).abort;
+      const handlers: RagStreamHandlers = { onChunk, onSources, onPhase, onDone, onError };
+      // num_queries only honored when hybrid on + no scope (matches backend
+      // QueryFusionRetriever gating in domain/rag/engine.py).
+      const numQueries = ragHybrid.value && !scope ? ragNumQueries.value : undefined;
+      // Snapshot the RAG config used for this turn — badged on the pet
+      // message as provenance so the user can tell which llama_index engine
+      // mode + overrides produced each answer.
+      const ragMeta = {
+        chatMode: ragChatMode.value,
+        hybrid: ragHybrid.value,
+        rerank: ragRerank.value,
+        citations: ragCitations.value,
+        numQueries: numQueries ?? ragNumQueries.value,
+        scope,
+        category: ragCategory.value || undefined,
+        tags: ragTags.value.length ? [...ragTags.value] : undefined
+      };
+      setActiveMessages(msgs => {
+        const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+        if (idx < 0) return msgs;
+        const next = [...msgs];
+        next[idx] = { ...next[idx], ragMeta };
+        return next;
+      });
+      abort = streamRagChat(
+        {
+          messages: ragMessages,
+          scope,
+          hybrid: ragHybrid.value,
+          rerank: ragRerank.value,
+          citations: ragCitations.value,
+          ...(numQueries != null ? { num_queries: numQueries } : {}),
+          chat_mode: ragChatMode.value,
+          ...(ragCategory.value ? { category: ragCategory.value } : {}),
+          ...(ragTags.value.length ? { tags: [...ragTags.value] } : {})
+        },
+        handlers
+      ).abort;
     } else {
       // Build combined system prompt: caller-provided systemPrompt (e.g. file preview)
       // + context-editing instructions when the session has context files.
@@ -1293,7 +1426,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       const result = streamChat(
         {
           messages: aiMessages,
-          model: DEFAULT_MODEL,
+          model: selectedModel.value,
           images,
           ...(system ? { system } : {})
         },
@@ -1431,6 +1564,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     const toolSignal = new AbortController();
     toolAbortController.value = toolSignal;
     let initialSearchContext = "";
+    // Snapshot for per-message tool timeline (mirrors sendMessage).
+    const toolEventsStartIdx = toolEvents.value.length;
 
     if (webSearchEnabled.value && text) {
       const urls = extractUrls(text);
@@ -1487,6 +1622,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     const streamPromise = runStream(i, insertedPet.timestamp, "resend", initialSearchContext);
     await streamPromise;
+
+    // ── Attach per-message tool calls (Pi-inspired: tool timeline) ──
+    attachTurnToolCalls(insertedPet.timestamp, toolEventsStartIdx);
 
     // ── Auto-detect KB save intent for resend ──────────────────────────
     const kbIntent2 = detectKBIntent(text);
@@ -1630,180 +1768,40 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeFaq();
   }
 
-  // ── Tool registration ──────────────────────────────────────────────
-  // Register built-in tools. These can be overridden or augmented by
-  // extensions in the future (following Pi's extension model).
-
-  registerTool({
-    name: "web_fetch",
-    label: "Web Fetch",
-    description:
-      "Fetches and extracts clean text content from a URL. " +
-      "Use when the user provides a URL or when you need to read a web page.",
-    promptSnippet: "Fetches web page content from URLs the user provides",
-    promptGuidelines: [
-      "When the user includes a URL in their message, the page content is automatically fetched and provided to you before you respond.",
-      "Base your answer on the fetched content — cite specific details from the page.",
-      "If the fetched content is insufficient, tell the user what you could see and suggest what else to look for.",
-    ],
-    parameters: {
-      type: "object",
-      properties: {
-        url: { type: "string", description: "The URL to fetch" },
-      },
-      required: ["url"],
-    },
-    preStream: true, // Must complete before the AI responds
-    async execute(args) {
-      const url = args.url as string;
-      const result = await webFetch(url);
-      if (result.error) return { content: "", error: result.error };
-      return {
-        content: formatFetchedContent(result.url, result.text),
-        details: { url: result.url, charCount: result.text.length },
-      };
-    },
-  });
-
-  registerTool({
-    name: "web_search",
-    label: "Web Search",
-    description:
-      "Searches the web via DuckDuckGo and returns current information. " +
-      "Use for recent events, trending topics, or when you need up-to-date facts.",
-    promptSnippet: "Searches the web for current information (DuckDuckGo)",
-    promptGuidelines: [
-      "Web search runs in the background and arrives as a follow-up message. In your first response, briefly acknowledge the query and indicate you're checking.",
-      "When search results arrive, synthesize them into a clear, structured answer with source links.",
-      "If the search returns no useful results, tell the user and suggest alternative approaches.",
-    ],
-    parameters: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Search query" },
-        maxResults: { type: "number", description: "Max results (1-15)", default: 6 },
-      },
-      required: ["query"],
-    },
-    preStream: false, // Runs in background, arrives as follow-up
-    async execute(args) {
-      const query = args.query as string;
-      const maxResults = (args.maxResults as number) ?? 6;
-      const result = await webSearch(query, maxResults);
-      if (result.error) return { content: "", error: result.error };
-      const results = result.results ?? [];
-      webSearchResults.value = results;
-      return {
-        content: formatSearchResults(results),
-        details: { query, resultCount: results.length },
-      };
-    },
-  });
-
-  registerTool({
-    name: "rag_search",
-    label: "RAG Knowledge Search",
-    description:
-      "Searches the indexed knowledge base (YiKnowledge markdown files) " +
-      "for relevant context. Automatically active when the session has " +
-      "ctx:-tagged knowledge files.",
-    parameters: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Natural language query" },
-      },
-      required: ["query"],
-    },
-    preStream: false,
-    enabled: false,
-    async execute(_args) {
-      return { content: "", details: { mode: "streaming" } };
-    },
-  });
-
-  registerTool({
-    name: "context_edit",
-    label: "Context File Editor",
-    description:
-      "Proposes changes to the session's knowledge context files. " +
-      "Supports create, update, delete, addTag, removeTag, and view actions " +
-      "via fenced code blocks with `context:<path>` headers.",
-    promptSnippet: "Edits session context files via `context:<path>` code blocks",
-    promptGuidelines: [
-      "For file edits, use ```context:<path> blocks with the COMPLETE new content (not just a diff).",
-      "For linking files: ```context:add <path>  — for unlinking: ```context:remove <path>",
-      "For showing a file's current content: ```context:view <path>",
-      "The user must approve each change — they see visual cards with Apply/Reject buttons.",
-    ],
-    parameters: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "File path within the context" },
-        action: { type: "string", enum: ["create", "update", "delete", "addTag", "removeTag", "view"] },
-        content: { type: "string", description: "New content (for create/update)" },
-      },
-      required: ["path", "action"],
-    },
-    preStream: false,
-    enabled: true, // Always available when context files exist
-    async execute(args) {
-      const path = args.path as string;
-      const action = args.action as string;
-      const content = (args.content as string) ?? "";
-      if (action === "addTag") await addContextFile(path);
-      else if (action === "removeTag") await removeContextFile(path);
-      else await applyContextChange(path, content);
-      return {
-        content: `Context file "${path}" ${action}${action === "view" ? "" : "d"}.`,
-        details: { path, action },
-      };
-    },
-  });
-
-  registerTool({
-    name: "knowledge_write",
-    label: "Knowledge Base Writer",
-    description:
-      "Persists markdown content to the YiKnowledge directory. " +
-      "Use when the user asks to save, generate, or write content to the " +
-      "knowledge base.",
-    promptSnippet: "Saves content to YiKnowledge via `knowledge:save <path>` blocks",
-    promptGuidelines: [
-      "Use ```knowledge:save <path> blocks to persist content permanently to the knowledge base.",
-      "The user must approve — they see a visual card with Save/Reject buttons.",
-      'Examples: "生成一份报告放在知识库中" → knowledge:save reports/my-report.md',
-      "Include complete markdown content with proper structure (headings, lists, code blocks).",
-    ],
-    parameters: {
-      type: "object",
-      properties: {
-        path: { type: "string", description: "Relative path under YiKnowledge, e.g. reports/q3-sales.md" },
-        content: { type: "string", description: "Complete markdown content to write" },
-        metadata: { type: "object", description: "Optional YAML frontmatter (title, tags, category, etc.)" },
-      },
-      required: ["path", "content"],
-    },
-    preStream: false,
-    enabled: true,
-    async execute(args) {
-      const path = args.path as string;
-      const content = args.content as string;
-      const metadata = (args.metadata as Record<string, unknown>) ?? {};
-      await saveContextToKnowledge(path, content, metadata);
-      return {
-        content: `Saved "${path}" to the YiKnowledge directory.`,
-        details: { path, action: "knowledge_write" },
-      };
-    },
-  });
-
-  // Tool states are auto-managed by the watcher above — no manual init needed
-
   // ── Compaction trigger ────────────────────────────────────────────
   // Pi-inspired: when the conversation nears the context window limit,
   // summarize older messages so the model can continue coherently.
   const COMPACTION_THRESHOLD_TOKENS = 6554; // 80% of 8192
   const CHARS_PER_TOKEN = 4;
+
+  // ── Context overflow detection (Pi: isContextOverflow) ──────────────
+  // Warns when the conversation is approaching the context window limit.
+  const CONTEXT_WINDOW = 8192;
+  const contextPressure = computed(() => {
+    const s = activeConversation.value;
+    if (!s?.messages?.length) return { level: "low" as const, estimatedTokens: 0, pct: 0 };
+    const totalChars = s.messages.reduce((sum, m) => sum + (m.message?.length ?? 0), 0);
+    const estimatedTokens = Math.ceil(totalChars / CHARS_PER_TOKEN);
+    const pct = Math.round((estimatedTokens / CONTEXT_WINDOW) * 100);
+    const level = pct > 90 ? "critical" as const : pct > 70 ? "high" as const : pct > 40 ? "mid" as const : "low" as const;
+    return { level, estimatedTokens, pct };
+  });
+
+  // Compaction history (Pi-inspired: surface silent background state to the UI).
+  // Last 5 compaction events for the active session.
+  interface CompactionEntry {
+    sessionKey: string;
+    timestamp: number;
+    before: number;
+    after: number;
+    saved: number;
+  }
+  const compactionLog = ref<CompactionEntry[]>([]);
+  const MAX_COMPACTION_LOG = 5;
+  const lastCompaction = computed<CompactionEntry | null>(() => {
+    if (!compactionLog.value.length) return null;
+    return compactionLog.value[compactionLog.value.length - 1];
+  });
 
   async function maybeCompact() {
     const s = activeConversation.value;
@@ -1842,6 +1840,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
       setActiveMessages(() => compacted);
       await persistActive();
+      const entry: CompactionEntry = {
+        sessionKey: s.key,
+        timestamp: Date.now(),
+        before: result.original_count,
+        after: result.compacted_count,
+        saved: Math.max(0, result.original_count - result.compacted_count),
+      };
+      compactionLog.value = [...compactionLog.value.slice(-(MAX_COMPACTION_LOG - 1)), entry];
       console.log(
         `[aiChat] Compaction complete: ${result.original_count} → ${result.compacted_count} messages`
       );
@@ -1849,6 +1855,44 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       console.warn("[aiChat] Compaction failed:", e);
     }
   }
+
+  // ── Prompt templates (Pi-inspired: $1, $2 argument substitution) ──────
+  interface PromptTemplate { name: string; content: string }
+  const promptTemplates = ref<PromptTemplate[]>(loadJson(STORAGE_TEMPLATES_KEY, []));
+
+  function saveTemplates() {
+    saveJson(STORAGE_TEMPLATES_KEY, promptTemplates.value);
+  }
+
+  function addTemplate(name: string, content: string): boolean {
+    if (promptTemplates.value.some(t => t.name === name)) return false;
+    promptTemplates.value = [...promptTemplates.value, { name, content }];
+    saveTemplates();
+    return true;
+  }
+
+  function removeTemplate(name: string): boolean {
+    const idx = promptTemplates.value.findIndex(t => t.name === name);
+    if (idx < 0) return false;
+    promptTemplates.value = promptTemplates.value.filter(t => t.name !== name);
+    saveTemplates();
+    return true;
+  }
+
+  function applyTemplate(name: string, args: string[]): string | null {
+    const t = promptTemplates.value.find(t => t.name === name);
+    if (!t) return null;
+    let result = t.content;
+    args.forEach((arg, i) => {
+      result = result.replace(new RegExp(`\\$${i + 1}`, "g"), arg);
+    });
+    return result;
+  }
+
+  const { handleCommand } = useSlashCommands({
+    activeConversation, sending, input, allTools, setActiveMessages, persistActive,
+    createConversation, executeTool, maybeCompact, stopSending, retryLastMessage, renameConversation, exportConversation, exportConversationHtml, conversations, selectConversation, promptTemplates, addTemplate, removeTemplate, applyTemplate,
+  });
 
   return {
     conversations,
@@ -1877,6 +1921,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     knowledgeMode,
     contextSwitchEnabled,
     ragEnabled,
+    ragActive,
+    ragHybrid,
+    ragRerank,
+    ragCitations,
+    ragNumQueries,
+    ragChatMode,
+    ragCategory,
+    ragTags,
     webSearchEnabled,
     webSearchResults,
     webSearching,
@@ -1898,6 +1950,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     toggleFavorite,
     toggleBatchMode,
     toggleSelection,
+    selectAll,
+    clearSelection,
     bulkDelete,
     clearAllConversations,
     openSessionEdit,
@@ -1950,12 +2004,39 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     applyFaq,
     persistActive,
     maybeCompact,
+    compactionLog,
+    lastCompaction,
     saveContextToKnowledge,
+    exportConversation,
+    exportConversationHtml,
+    // Context overflow detection
+    contextPressure,
     // Tool registry (Pi-inspired)
     toolEvents,
     activeTools,
+    allTools,
     registerTool,
     setToolEnabled,
     getToolsForSystemPrompt,
+    // Agent mode (Pi-inspired agent loop)
+    agentMode,
+    toggleAgentMode,
+    agentTurnSummaries,
+    agentEvents,
+    agentMaxTurns,
+    agentModelRotation,
+    agentUsage,
+    agentCompaction,
+    pendingConfirmation,
+    agentSystemPrompt,
+    selectedModel,
+    availableModels,
+    modelsLoading,
+    fetchModels,
+    // Prompt templates
+    promptTemplates,
+    addTemplate,
+    removeTemplate,
+    applyTemplate,
   };
 });

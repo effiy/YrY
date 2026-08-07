@@ -42,7 +42,11 @@ projects:
 knowledge:
   base_dir: "../YiKnowledge"
   watcher_enabled: true
-  watcher_poll_seconds: 5
+  watcher_poll_seconds: 60
+
+# Menu Settings — scans YiVad src/views to auto-generate the sidebar menu
+menu:
+  views_base_dir: "../YiVad/src/views"
 
 # MongoDB Configuration
 mongodb:
@@ -134,6 +138,24 @@ observer:
 ollama:
   url: "http://localhost:11434"
   auth: ""
+  chat_timeout: 600
+
+# OpenAI Configuration
+openai:
+  api_key: ""
+  base_url: "https://api.openai.com/v1"
+  default_model: "gpt-4o"
+  chat_timeout: 120
+
+# Anthropic Configuration
+anthropic:
+  api_key: ""
+  base_url: "https://api.anthropic.com"
+  default_model: "claude-sonnet-4-6"
+  chat_timeout: 120
+
+# Default AI provider: ollama | openai | anthropic
+ai_provider: "ollama"
 
 # RAG (llama_index) Configuration
 rag:

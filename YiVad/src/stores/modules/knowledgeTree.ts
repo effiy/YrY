@@ -4,7 +4,7 @@
  */
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { scanKnowledge, readKnowledgeFile, listKnowledgeStories, readKnowledgeStory } from "@/api/modules/knowledgeService";
+import { scanKnowledge, listKnowledgeFiles, readKnowledgeFile, listKnowledgeStories, readKnowledgeStory } from "@/api/modules/knowledgeService";
 import { getSession, upsertSession, updateSession } from "@/api/modules/sessions";
 import type { KnowledgeFileEntry, KnowledgeReadResponse, KnowledgeStoryEntry, SessionDocument } from "@/api/interface/yiweb";
 
@@ -13,7 +13,7 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
   const stories = ref<KnowledgeStoryEntry[]>([]);
   const selectedPath = ref<string | null>(null);
   const currentFile = ref<KnowledgeReadResponse | null>(null);
-  const loading = ref(false);
+  const loading = ref(true);
   const fileLoading = ref(false);
   const error = ref<string | null>(null);
   const expandedCategories = ref<Set<string>>(new Set());
@@ -58,8 +58,30 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
     loading.value = true;
     error.value = null;
     try {
-      const [scan, storyList] = await Promise.all([scanKnowledge(), listKnowledgeStories()]);
-      categories.value = scan.categories ?? [];
+      // Try the DB mirror first (fast) — fall back to disk scan (slow but always accurate)
+      let cats: { category: string; files: KnowledgeFileEntry[] }[] = [];
+      try {
+        const dbResult = await listKnowledgeFiles();
+        if (dbResult.files?.length) {
+          const grouped = new Map<string, KnowledgeFileEntry[]>();
+          for (const f of dbResult.files) {
+            const cat = f.category || "__root__";
+            if (!grouped.has(cat)) grouped.set(cat, []);
+            grouped.get(cat)!.push(f);
+          }
+          cats = [...grouped.entries()].map(([category, files]) => ({ category, files }));
+        }
+      } catch {
+        // DB mirror unavailable — fall through to disk scan
+      }
+
+      if (!cats.length) {
+        const scan = await scanKnowledge();
+        cats = scan.categories ?? [];
+      }
+
+      const storyList = await listKnowledgeStories().catch(() => ({ stories: [] as KnowledgeStoryEntry[] }));
+      categories.value = cats;
       stories.value = storyList.stories ?? [];
     } catch (e: any) {
       error.value = e?.message || "Failed to load knowledge tree";

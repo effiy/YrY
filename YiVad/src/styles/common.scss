@@ -14,6 +14,34 @@
   align-items: center;
 }
 
+/* Inline citation chip — llama_index InlineCitationEngine style.
+ * Used by `utils/citations.ts::injectCitations` to turn `[N]` tokens in
+ * LLM answers into clickable superscripts. Global so any component
+ * rendering `v-html` with injected chips gets the styling for free
+ * (MessageBubble, LlamaIndexPanel, future consumers). */
+.cite-chip {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 1px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border: 1px solid var(--el-color-primary-light-7);
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: super;
+  transition: background 0.12s, transform 0.12s;
+  &:hover {
+    background: var(--el-color-primary-light-7);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+}
+
 /* clearfix */
 .clearfix::after {
   clear: both;

@@ -2,52 +2,52 @@
   "code": 200,
   "data": [{
     id: "1",
-    name: "华东分部",
+    name: "East China Branch",
     children: [{
       id: "11",
-      name: "研发部"
+      name: "R&D"
     }, {
       id: "12",
-      name: "市场部"
+      name: "Marketing"
     }, {
       id: "13",
-      name: "商务部"
+      name: "Business"
     }, {
       id: "14",
-      name: "财务部"
+      name: "Finance"
     }]
   }, {
     id: "2",
-    name: "华南分部",
+    name: "South China Branch",
     children: [{
       id: "21",
-      name: "研发部"
+      name: "R&D"
     }, {
       id: "22",
-      name: "市场部"
+      name: "Marketing"
     }, {
       id: "23",
-      name: "商务部"
+      name: "Business"
     }, {
       id: "24",
-      name: "财务部"
+      name: "Finance"
     }]
   }, {
     id: "3",
-    name: "西北分部",
+    name: "Northwest Branch",
     children: [{
       id: "31",
-      name: "研发部"
+      name: "R&D"
     }, {
       id: "32",
-      name: "市场部"
+      name: "Marketing"
     }, {
       id: "33",
-      name: "商务部"
+      name: "Business"
     }, {
       id: "34",
-      name: "财务部"
+      name: "Finance"
     }]
   }],
-  "msg": "成功"
+  "msg": "success"
 }

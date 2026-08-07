@@ -1,8 +1,10 @@
 <script setup lang="ts" name="aiChatInput">
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 import { Promotion, CircleClose } from "@element-plus/icons-vue";
+import { ElInput } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatShortcuts } from "@/hooks/useAiChatShortcuts";
+import { usePromptHistory, pushPromptHistory } from "@/hooks/usePromptHistory";
 import ChatToolbar from "./ChatToolbar.vue";
 import DraftImageList from "./DraftImageList.vue";
 import FileMentionDropdown from "./FileMentionDropdown.vue";
@@ -71,6 +73,32 @@ function onMentionClose() {
   mentionQuery.value = "";
 }
 
+// ── Prompt history (Pi-inspired: shell-style ArrowUp/ArrowDown recall) ──
+// State + persistence live in usePromptHistory (singleton shared with
+// ChatToolbar's history sub-panel). Navigation index stays local to input.
+const { promptHistory } = usePromptHistory();
+const historyIdx = ref<number>(-1); // -1 = not navigating, otherwise index into promptHistory (0 = most recent)
+function caretPos(): number {
+  const el = textareaRef.value?.ref as HTMLTextAreaElement | undefined;
+  return el?.selectionStart ?? store.input.length;
+}
+function recallPrompt(delta: number): void {
+  if (!promptHistory.value.length) return;
+  if (historyIdx.value === -1) {
+    if (delta < 0) historyIdx.value = promptHistory.value.length - 1; // start at most recent
+    else return; // nothing to go "next" to — stay empty
+  } else {
+    historyIdx.value = Math.max(-1, Math.min(promptHistory.value.length - 1, historyIdx.value + delta));
+    if (historyIdx.value === -1) { store.input = ""; return; }
+  }
+  store.input = promptHistory.value[historyIdx.value];
+  // Move caret to end so subsequent ArrowDown feels natural.
+  nextTick(() => {
+    const el = textareaRef.value?.ref as HTMLTextAreaElement | undefined;
+    el?.setSelectionRange(store.input.length, store.input.length);
+  });
+}
+
 // ── Keyboard with mention support ──
 
 function onKeydown(e: KeyboardEvent) {
@@ -109,6 +137,32 @@ function onKeydown(e: KeyboardEvent) {
     return;
   }
 
+  // ── Prompt history navigation (Pi: shell-style recall) ──
+  // ArrowUp at caret 0 OR empty input → recall previous prompt.
+  // ArrowDown at caret end → recall next prompt (or empty when past most recent).
+  if (!mod && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+    const atStart = caretPos() === 0;
+    const atEnd = caretPos() === store.input.length;
+    if (e.key === "ArrowUp" && (atStart || !store.input)) {
+      e.preventDefault();
+      recallPrompt(-1);
+      return;
+    }
+    if (e.key === "ArrowDown" && atEnd && historyIdx.value !== -1) {
+      e.preventDefault();
+      recallPrompt(1);
+      return;
+    }
+  }
+
+  // Push to history on Enter send (before baseOnKeydown consumes the event).
+  // baseOnKeydown gates on compositionEndTime; we push optimistically and
+  // dedupe on the next send so a no-op Enter doesn't pollute history.
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing && store.input.trim()) {
+    pushPromptHistory(store.input);
+    historyIdx.value = -1; // reset navigation
+  }
+
   baseOnKeydown(e);
 }
 
@@ -122,6 +176,13 @@ async function onImageChange(e: Event) {
   if (files.length) await store.addDraftImageFiles(files);
   if (input) input.value = "";
 }
+
+// Cycle Q-variants through 1 → 2 → 3 → 5 → 1 (llama_index QueryFusionRetriever).
+function cycleRagNumQueries() {
+  const cur = store.ragNumQueries ?? 1;
+  const next = cur === 1 ? 2 : cur === 2 ? 3 : cur === 3 ? 5 : 1;
+  store.ragNumQueries = next;
+}
 </script>
 
 <template>
@@ -133,15 +194,40 @@ async function onImageChange(e: Event) {
       :rag-toggle="store.ragEnabled"
       :rag-available="store.ragActive"
       :web-search-toggle="store.webSearchEnabled"
+      :rag-hybrid="store.ragHybrid"
+      :rag-rerank="store.ragRerank"
+      :rag-citations="store.ragCitations"
+      :rag-num-queries="store.ragNumQueries"
+      :rag-chat-mode="store.ragChatMode"
+      :rag-category="store.ragCategory"
+      :rag-tags="store.ragTags"
       :context-files="store.activeConversation?.tags?.filter(t => typeof t === 'string' && t.startsWith('ctx:')).map(t => (t as string).slice(4)) ?? []"
+      :agent-mode="store.agentMode"
+      :agent-max-turns="store.agentMaxTurns"
+      :agent-system-prompt="store.agentSystemPrompt"
+      :agent-model-rotation="store.agentModelRotation"
+      :selected-model="store.selectedModel"
+      :available-models="store.availableModels"
       @toggle-faq="store.toggleFaq()"
       @pick-image="openImagePicker"
       @manage-tags="store.openTagManager()"
       @open-wechat="store.openWeChat()"
       @toggle-rag="store.ragEnabled = !store.ragEnabled"
       @toggle-web-search="store.webSearchEnabled = !store.webSearchEnabled"
+      @toggle-rag-hybrid="store.ragHybrid = !store.ragHybrid"
+      @toggle-rag-rerank="store.ragRerank = !store.ragRerank"
+      @toggle-rag-citations="store.ragCitations = !store.ragCitations"
+      @cycle-rag-num-queries="cycleRagNumQueries"
+      @select-rag-chat-mode="m => store.ragChatMode = m"
+      @update-rag-category="c => store.ragCategory = c"
+      @update-rag-tags="t => store.ragTags = t"
       @stop="store.stopSending()"
       @remove-context-file="p => store.removeContextFile(p)"
+      @toggle-agent="store.toggleAgentMode()"
+      @update-agent-max-turns="t => store.agentMaxTurns = t"
+      @update-agent-system-prompt="p => store.agentSystemPrompt = p"
+      @update-agent-model-rotation="m => store.agentModelRotation = m"
+      @update-selected-model="m => store.selectedModel = m"
     />
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />
     <DraftImageList :images="store.draftImages" @remove="store.removeDraftImage" @clear="store.clearDraftImages" />
@@ -158,8 +244,8 @@ async function onImageChange(e: Event) {
           v-model="store.input"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 6 }"
-          :placeholder="store.input.startsWith('/') ? '/compact /clear /retry /stop /model — type a command' : store.streamingPhase === 'fetching' ? 'Fetching URL content...' : store.streamingPhase === 'thinking' ? 'AI thinking...' : store.streamingPhase === 'streaming' ? 'AI responding...' : store.webSearching ? 'Searching web...' : 'Ask anything, type @ to add files (Enter send, Shift+Enter newline)'"
-          :disabled="store.sending"
+          :placeholder="store.input.startsWith('/') ? '/compact /clear /retry /stop /model /steer /followup /export /template — type a command' : store.streamingPhase === 'fetching' ? 'Fetching URL content...' : store.streamingPhase === 'retrieving' ? 'Retrieving knowledge base...' : store.streamingPhase === 'thinking' ? 'AI thinking...' : store.streamingPhase === 'streaming' ? 'AI responding...' : store.webSearching ? 'Searching web...' : store.agentMode && store.sending ? 'Type /steer <msg> or /followup <msg> to guide the agent...' : 'Ask anything, type @ to add files (Enter send, Shift+Enter newline)'"
+          :disabled="store.sending && !store.agentMode"
           resize="none"
           @compositionstart="onCompositionStart"
           @compositionend="onCompositionEnd"

@@ -2,8 +2,13 @@
  * YiPet Chat — SearchBar Component (antd Input.Search + Button)
  */
 
-import { CloseOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { Button, Input } from 'antd';
+import {
+  CloseOutlined,
+  EnvironmentOutlined,
+  PlusOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
+import { Button, Input, Tooltip } from 'antd';
 import type { CSSProperties } from 'react';
 import type { ChatController } from '@/chat/controller';
 
@@ -52,6 +57,20 @@ export function SearchBar(props: SearchBarProps) {
           aria-label="Batch manage"
         />
       )}
+      <Tooltip
+        title={
+          s.sessionSiteFilter ? `Filtering by this page — click to clear` : 'Filter by current page'
+        }
+      >
+        <Button
+          size="small"
+          type={s.sessionSiteFilter ? 'primary' : 'default'}
+          icon={<EnvironmentOutlined />}
+          onClick={() => ctrl.filterSessionsByCurrentPage()}
+          aria-label="Filter by current page"
+          aria-pressed={!!s.sessionSiteFilter}
+        />
+      </Tooltip>
       <CloseOutlined style={{ display: 'none' }} />
     </div>
   );

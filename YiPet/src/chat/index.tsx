@@ -30,6 +30,9 @@ function initChatApp() {
     api.chat,
     api.sessions,
     api.wework,
+    api.knowledge,
+    api.rag,
+    api.bug,
     COLOR_INDEX,
     INITIAL_SYSTEM_PROMPT,
   );

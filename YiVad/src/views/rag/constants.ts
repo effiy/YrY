@@ -30,8 +30,8 @@ export function scoreColor(score: number | undefined | null): string {
 }
 
 /** Element Plus tag type for a relevance score. */
-export function scoreTagType(score: number | undefined | null): "" | "success" | "warning" | "danger" {
-  if (score == null || isNaN(score)) return "";
+export function scoreTagType(score: number | undefined | null): "info" | "success" | "warning" | "danger" {
+  if (score == null || isNaN(score)) return "info";
   if (score >= 0.7) return "success";
   if (score >= 0.4) return "warning";
   return "danger";
@@ -67,6 +67,10 @@ export function formatTimestamp(ts: number | string | undefined | null): string 
   }
 }
 
+// Re-exported from the shared util so RAG pages can keep importing from
+// `@/views/rag/constants` while the implementation lives in one place.
+export { formatRelativeTime } from "@/utils/datetime";
+
 /** Render answer text with inline citation highlighting and HTML escaping. */
 export function renderAnswer(text: string): string {
   if (!text) return "";
@@ -85,24 +89,36 @@ export function stripSourcePrefix(text: string): string {
 
 // ── Category display ────────────────────────────────────────────────────────
 
-export function categoryTagType(cat: string | undefined): string {
-  if (!cat) return "";
+export function categoryTagType(cat: string | undefined): "success" | "warning" | "info" | "primary" | "danger" {
+  if (!cat) return "info";
   const top = cat.split("/")[0];
-  const map: Record<string, string> = {
-    methodology: "",
-    tech: "success",
-    work: "warning",
-    projects: "primary",
-    resources: "info",
-    industry: "danger",
+  // Top-level = one of the 20 role directories (post-2026-08-05 migration)
+  // or `brd` / `static` / `__root__`. Assign distinct tag colors per role
+  // family so the source list is scannable at a glance.
+  const map: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = {
+    engineer: "primary",
+    "ai-engineer": "success",
+    designer: "warning",
+    "product-manager": "danger",
+    "tech-lead": "primary",
+    "data-engineer": "success",
+    devops: "info",
+    "security-engineer": "danger",
+    "qa-engineer": "warning",
+    "code-reviewer": "info",
+    "release-manager": "primary",
+    "api-designer": "success",
+    "performance-engineer": "warning",
+    "accessibility-engineer": "info",
+    "technical-writer": "primary",
+    "knowledge-curator": "success",
+    "skill-author": "warning",
+    executive: "danger",
+    "new-hire": "info",
+    "oncall-sre": "primary",
+    brd: "info",
   };
-  return map[top] || "";
-}
-
-// ── Knowledge-base linking ──────────────────────────────────────────────────
-
-export function kbDetailLink(filePath: string): string {
-  return `/knowledge/detail?path=${encodeURIComponent(filePath)}`;
+  return map[top] || "info";
 }
 
 // ── Example prompts (chat welcome screen) ───────────────────────────────────

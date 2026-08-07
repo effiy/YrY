@@ -6,9 +6,9 @@ Storage strategy (refactor 2026-07-30):
     category_path, file_path, createdTime, updatedTime. The full article
     body is NOT stored in MongoDB.
   - Article body is persisted as a markdown file under the YiKnowledge
-    knowledge base, auto-classified into a category subtree (e.g.
-    ``industry/reports`` / ``tech/ai-platform``), with YAML frontmatter
-    carrying the same metadata for self-describing files.
+    knowledge base, auto-classified into a role subdir (e.g.
+    ``ai-engineer/methodology`` / ``executive/industry``), with YAML
+    frontmatter carrying the same metadata for self-describing files.
   - Re-parsing an existing feed is idempotent: file already on disk → skip
     the write; metadata is upserted either way.
 
@@ -38,23 +38,35 @@ RSS_CHUNK_SIZE = 8192  # bytes per chunk when streaming RSS feed
 
 # ── Auto-classification rules ──
 # Ordered (first match wins). Keywords are matched case-insensitively against
-# title + description. ``industry/reports`` is the fallback when nothing else
+# title + description. ``executive/industry`` is the fallback when nothing else
 # matches, so RSS content always lands somewhere in the knowledge tree.
+#
+# Updated 2026-08-05: YiKnowledge migrated from legacy category dirs
+# (industry/tech/resources/methodology/lessons) to 20 bare-role dirs.
+# Each rule now routes to an existing subdir under the appropriate role:
+#   ai-engineer/methodology     — AI/LLM/RAG/prompt/agent news
+#   ai-engineer/foundations     — ML/DL/training/inference fundamentals
+#   data-engineer/patterns      — data/database/vector-db news
+#   devops/processes            — cloud/k8s/docker/infra news
+#   executive/industry          — competitor/market/trend/report/whitepaper
+#   product-manager/frameworks  — PM method/framework content
+#   technical-writer/patterns   — templates
+#   engineer/lessons            — failures/wins/best-practices
 _CLASSIFY_RULES: list[tuple[tuple[str, ...], str]] = [
-    (("ai", "llm", "gpt", "claude", "大模型", "transformer", "neural"), "tech/ai-platform"),
-    (("ml", "machine learning", "深度学习", "训练", "inference"), "tech/ai-foundations"),
-    (("data", "数据库", "postgres", "mongo", "vector db"), "tech/data"),
-    (("cloud", "k8s", "kubernetes", "docker", "infra", "基础设施", "devops"), "tech/infra"),
-    (("竞品", "competitor", "market", "市场", "趋势", "trend"), "industry/market-trends"),
-    (("use case", "案例", "应用案例", "落地"), "industry/use-cases"),
-    (("report", "报告", "白皮书", "whitepaper"), "industry/reports"),
-    (("prompt", "提示词", "rag", "agent"), "resources/prompts"),
-    (("template", "模板"), "resources/templates"),
-    (("method", "framework", "框架", "方法论"), "methodology/pm-frameworks"),
-    (("fail", "失败", "lesson", "教训"), "lessons/failures"),
-    (("win", "success", "成功", "best practice", "最佳实践"), "lessons/wins"),
+    (("ai", "llm", "gpt", "claude", "large model", "transformer", "neural"), "ai-engineer/methodology"),
+    (("ml", "machine learning", "deep learning", "training", "inference"), "ai-engineer/foundations"),
+    (("data", "database", "postgres", "mongo", "vector db"), "data-engineer/patterns"),
+    (("cloud", "k8s", "kubernetes", "docker", "infra", "infrastructure", "devops"), "devops/processes"),
+    (("competitor", "market", "trend"), "executive/industry"),
+    (("use case", "case study", "deployment"), "executive/industry"),
+    (("report", "whitepaper"), "executive/industry"),
+    (("prompt", "rag", "agent"), "ai-engineer/methodology"),
+    (("template"), "technical-writer/patterns"),
+    (("method", "framework", "methodology"), "product-manager/frameworks"),
+    (("fail", "failure", "lesson"), "engineer/lessons"),
+    (("win", "success", "best practice"), "engineer/lessons"),
 ]
-_CLASSIFY_FALLBACK = "industry/reports"
+_CLASSIFY_FALLBACK = "executive/industry"
 
 # Source-name → category override. If a feed's source name contains any of
 # these substrings, the source's configured category wins over the keyword
@@ -68,7 +80,7 @@ _SOURCE_CATEGORY_RULES: list[tuple[tuple[str, ...], str]] = [
 def _slugify(text: str) -> str:
     """Make a filesystem-safe slug from arbitrary text.
 
-    Keeps CJK characters (YiKnowledge already has Chinese file names).
+    Keeps CJK characters (YiKnowledge may have Chinese file names).
     Truncates to 60 chars and appends a short hash so two different
     entries with similar titles don't collide on disk.
     """
@@ -109,14 +121,14 @@ def _classify_entry(
     source_name: str = "",
     source_category: Optional[str] = None,
 ) -> str:
-    """Pick a YiKnowledge category subtree for the entry.
+    """Pick a YiKnowledge role subdir for the entry.
 
     Priority:
       1. ``source_category`` — explicitly configured on the seeds document
          (passed in from ``process_feed_from_url``).
       2. ``_SOURCE_CATEGORY_RULES`` — static keyword map on source name.
       3. ``_CLASSIFY_RULES`` — keyword heuristic on title + description.
-      4. ``_CLASSIFY_FALLBACK`` — ``industry/reports``.
+      4. ``_CLASSIFY_FALLBACK`` — ``executive/industry``.
     """
     if source_category and "/" in source_category:
         return source_category

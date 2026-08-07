@@ -489,6 +489,186 @@
     "order": 0
   },
   {
+    "key": "menu_systemHealth",
+    "path": "/dashboard/systemHealth",
+    "name": "systemHealth",
+    "component": "/dashboard/systemHealth/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Monitor",
+      "title": "System Health",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 1
+  },
+  {
+    "key": "menu_engineeringMaturity",
+    "path": "/dashboard/engineeringMaturity",
+    "name": "engineeringMaturity",
+    "component": "/dashboard/engineeringMaturity/index",
+    "redirect": "",
+    "meta": {
+      "icon": "TrendCharts",
+      "title": "Engineering Maturity",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 2
+  },
+  {
+    "key": "menu_rssContent",
+    "path": "/dashboard/rssContent",
+    "name": "rssContent",
+    "component": "/dashboard/rssContent/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Reading",
+      "title": "RSS Content",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 3
+  },
+  {
+    "key": "menu_knowledgeBase",
+    "path": "/dashboard/knowledgeBase",
+    "name": "knowledgeBase",
+    "component": "/dashboard/knowledgeBase/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Document",
+      "title": "Knowledge Base",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 4
+  },
+  {
+    "key": "menu_rssSources",
+    "path": "/dashboard/rssSources",
+    "name": "rssSources",
+    "component": "/dashboard/rssSources/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Connection",
+      "title": "RSS Sources",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 5
+  },
+  {
+    "key": "menu_organization",
+    "path": "/dashboard/organization",
+    "name": "organization",
+    "component": "/dashboard/organization/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Avatar",
+      "title": "Organization",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 6
+  },
+  {
+    "key": "menu_aiAnalytics",
+    "path": "/dashboard/aiAnalytics",
+    "name": "aiAnalytics",
+    "component": "/dashboard/aiAnalytics/index",
+    "redirect": "",
+    "meta": {
+      "icon": "ChatDotRound",
+      "title": "AI Analytics",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 7
+  },
+  {
+    "key": "menu_ragAnalytics",
+    "path": "/dashboard/ragAnalytics",
+    "name": "ragAnalytics",
+    "component": "/dashboard/ragAnalytics/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Search",
+      "title": "RAG Analytics",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 8
+  },
+  {
+    "key": "menu_performance",
+    "path": "/dashboard/performance",
+    "name": "performance",
+    "component": "/dashboard/performance/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Monitor",
+      "title": "Performance",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 9
+  },
+  {
+    "key": "menu_servicePerformance",
+    "path": "/dashboard/servicePerformance",
+    "name": "servicePerformance",
+    "component": "/dashboard/servicePerformance/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Connection",
+      "title": "Service Performance",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 10
+  },
+  {
     "key": "menu_form",
     "path": "/form",
     "name": "form",

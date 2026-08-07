@@ -84,12 +84,16 @@ class OllamaRuntime(ModelRuntime):
     def __init__(self, host: str | None = None, auth: str | None = None):
         self._host = host or settings.ollama_url
         self._auth = auth or settings.ollama_auth
+        self._timeout = settings.ollama_chat_timeout
 
     def _get_client(self) -> Client:
+        kwargs: Dict[str, Any] = {"host": self._host}
         if self._auth:
             username, _, password = self._auth.partition(":")
-            return Client(host=self._host, auth=(username, password))
-        return Client(host=self._host)
+            kwargs["auth"] = (username, password)
+        if self._timeout:
+            kwargs["timeout"] = self._timeout
+        return Client(**kwargs)
 
     def model_name(self) -> str:
         return "qwen3.5"
@@ -122,9 +126,11 @@ class OllamaRuntime(ModelRuntime):
                     try:
                         delta = ""
                         if isinstance(item, dict):
-                            delta = (item.get("message") or {}).get("content") or ""
+                            msg = item.get("message") or {}
+                            delta = msg.get("content") or msg.get("thinking") or ""
                         else:
-                            delta = getattr(item, "message", {}).get("content", "") or ""
+                            msg = getattr(item, "message", {}) or {}
+                            delta = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
                         if delta:
                             asyncio.run_coroutine_threadsafe(
                                 queue.put(str(delta)), loop
@@ -140,8 +146,22 @@ class OllamaRuntime(ModelRuntime):
 
         asyncio.create_task(asyncio.to_thread(_worker))
 
+        timeout = self._timeout or 300
+        # Send heartbeat events every 15s to keep the SSE connection alive
+        # through proxies/load-balancers while the model is generating.
+        heartbeat_interval = 15.0
+        start_time = asyncio.get_running_loop().time()
         while True:
-            item = await queue.get()
+            try:
+                item = await asyncio.wait_for(queue.get(), timeout=heartbeat_interval)
+            except asyncio.TimeoutError:
+                # No chunk yet — check overall timeout, then send heartbeat
+                now = asyncio.get_running_loop().time()
+                if now - start_time > timeout:
+                    yield {"error": f"Chat request timed out after {timeout}s"}
+                    break
+                yield {"data": {"phase": "thinking"}}
+                continue
             if item is None:
                 break
             if isinstance(item, dict) and "error" in item:
@@ -175,9 +195,11 @@ class OllamaRuntime(ModelRuntime):
                 try:
                     response = client.chat(model=model_name, messages=ollama_messages)
                     if isinstance(response, dict):
-                        result = response.get("message", {}).get("content", "")
+                        msg = response.get("message", {}) or {}
+                        result = msg.get("content") or msg.get("thinking") or ""
                     else:
-                        result = getattr(response, "message", {}).get("content", "")
+                        msg = getattr(response, "message", {}) or {}
+                        result = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
                     return {"success": True, "model": model_name, "message": result}
                 except Exception as e:
                     last_error = str(e)
@@ -191,7 +213,17 @@ class OllamaRuntime(ModelRuntime):
                 "model": model_name,
             }
 
-        return await loop.run_in_executor(None, _call)
+        timeout = self._timeout or 300
+        try:
+            return await asyncio.wait_for(
+                loop.run_in_executor(None, _call), timeout=timeout
+            )
+        except asyncio.TimeoutError:
+            return {
+                "success": False,
+                "error": f"Chat request timed out after {timeout}s",
+                "model": model_name,
+            }
 
 
 # ── RAGRuntime ──────────────────────────────────────────────────────────

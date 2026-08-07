@@ -6,6 +6,8 @@ import {
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useMarkdown } from "@/hooks/useMarkdown";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
+import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { webSearch, formatSearchResults } from "@/api/modules/searchService";
@@ -27,12 +29,16 @@ const props = withDefaults(
 );
 
 const { render } = useMarkdown();
+const { openInAiChat } = useAiChatBridge();
+const store = useAiChatStore();
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
 const STORAGE_PREFIX = "kchat:msgs:";
 const STORAGE_TAGS_PREFIX = "kchat:tags:";
 const STORAGE_SETTINGS_PREFIX = "kchat:cfg:";
+const STORAGE_MODEL_PREFIX = "kchat:model:";
+const DEFAULT_MODEL = "qwen3.5";
 const MAX_IMAGES = 4;
 
 interface LocalMessage {
@@ -56,12 +62,44 @@ const abortRef = ref<{ abort: () => void } | null>(null);
 const containerRef = ref<HTMLDivElement>();
 const scrollTick = ref(0);
 
+// ── IME composition ────────────────────────────────────────────────────────
+
+const isComposing = ref(false);
+const compositionEndTime = ref(0);
+const COMPOSITION_END_DELAY = 160;
+
+function onCompositionStart() {
+  isComposing.value = true;
+  compositionEndTime.value = 0;
+}
+
+function onCompositionEnd() {
+  isComposing.value = false;
+  compositionEndTime.value = Date.now();
+}
+
 // ── Toggles ───────────────────────────────────────────────────────────────
 
 const ragEnabled = ref(false);
 const webSearchEnabled = ref(false);
 const webSearching = ref(false);
 const ragAvailable = ref(true);
+
+// ── Model selection ─────────────────────────────────────────────────────────
+
+const selectedModel = ref(DEFAULT_MODEL);
+const modelKey = computed(() => `${STORAGE_MODEL_PREFIX}${props.filePath}`);
+
+function loadModel() {
+  try {
+    const raw = localStorage.getItem(modelKey.value);
+    if (raw) selectedModel.value = raw;
+  } catch { /* ignore */ }
+}
+function saveModel() {
+  try { localStorage.setItem(modelKey.value, selectedModel.value); } catch { /* ignore */ }
+}
+watch(selectedModel, () => saveModel());
 
 interface PanelSettings { ragEnabled: boolean; webSearchEnabled: boolean; }
 const settingsKey = computed(() => `${STORAGE_SETTINGS_PREFIX}${props.filePath}`);
@@ -247,11 +285,12 @@ function saveMessages() {
 watch(() => props.filePath, () => {
   loadMessages();
   loadTags();
+  loadModel();
   input.value = "";
   draftImages.value = [];
 });
 
-onMounted(() => { loadMessages(); loadTags(); loadSettings(); });
+onMounted(() => { loadMessages(); loadTags(); loadSettings(); loadModel(); });
 
 // ── Streaming type ────────────────────────────────────────────────────────
 
@@ -267,6 +306,8 @@ function scrollToBottom() {
   });
 }
 watch(() => messages.value.length, () => scrollToBottom(), { flush: "post" });
+// Auto-scroll during streaming — scrollTick is incremented by onChunk callbacks
+watch(scrollTick, () => scrollToBottom());
 
 // ── Send / Stop ───────────────────────────────────────────────────────────
 
@@ -274,6 +315,9 @@ async function send() {
   const text = input.value.trim();
   if (!text && !draftImages.value.length) return;
   if (sending.value) return;
+
+  sending.value = true;
+  streamingText.value = "";
 
   const images = [...draftImages.value];
   const userMsg: LocalMessage = {
@@ -285,9 +329,6 @@ async function send() {
   draftImages.value = [];
   saveMessages();
   scrollToBottom();
-
-  sending.value = true;
-  streamingText.value = "";
 
   // Web search (pre-stream)
   let searchContext = "";
@@ -304,6 +345,11 @@ async function send() {
   const petIdx = messages.value.length - 1;
   scrollTick.value++;
 
+  // Build system prompt with search context if available
+  const system = searchContext
+    ? `${props.systemPrompt}\n\n[Web search results]:\n${searchContext}`
+    : props.systemPrompt;
+
   if (ragEnabled.value && ragAvailable.value) {
     // ── RAG streaming ──
     const ragPayload = {
@@ -312,8 +358,7 @@ async function send() {
         content: m.message
       })),
       stream: true as const,
-      scope: props.ragScope || undefined,
-      ...(searchContext ? { searchContext } : {})
+      scope: props.ragScope || undefined
     };
 
     const handlers: RagStreamHandlers = {
@@ -335,12 +380,8 @@ async function send() {
       type: m.type, message: m.message, timestamp: m.timestamp
     }));
 
-    const system = searchContext
-      ? `${props.systemPrompt}\n\n[Web search results]:\n${searchContext}`
-      : props.systemPrompt;
-
     const { abort } = streamChat(
-      { model: "qwen3.5", messages: history, stream: true, system, ...(images.length ? { images } : {}) },
+      { model: selectedModel.value, messages: history, system, ...(images.length ? { images } : {}) },
       (chunk: string) => {
         streamingText.value += chunk;
         messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
@@ -426,6 +467,27 @@ async function copyMessage(msg: LocalMessage) {
   }
 }
 
+async function promoteToStandaloneSession(idx: number) {
+  const history = messages.value.slice(0, idx + 1)
+    .filter(m => (m.message ?? "").trim())
+    .map(m => `**${m.type === "user" ? "User" : "Assistant"}:** ${m.message ?? ""}`);
+  const transcript = history.length ? ["", "## Conversation so far", "", ...history].join("\n") : "";
+  const fp = props.filePath;
+  const pageContent = [
+    `# Knowledge file chat: \`${fp}\``,
+    "",
+    `**File:** \`${fp}\``,
+    ...(props.ragScope ? [`**RAG scope:** \`${props.ragScope}\``] : []),
+    transcript
+  ].join("\n");
+  const tags = [`ctx:${fp}`, `file:${fp}`, "knowledge", "knowledge-chat"];
+  await openInAiChat({
+    title: `Knowledge chat: ${fp.split("/").pop() || fp}`,
+    pageContent,
+    tags
+  });
+}
+
 async function editMessage(idx: number) {
   const msg = messages.value[idx];
   if (!msg) return;
@@ -497,6 +559,7 @@ async function searchWebResend(idx: number) {
 // ── Keyboard ──────────────────────────────────────────────────────────────
 
 function onKeydown(e: KeyboardEvent) {
+  if (isComposing.value) return;
   const mod = e.metaKey || e.ctrlKey;
 
   // Escape
@@ -517,9 +580,13 @@ function onKeydown(e: KeyboardEvent) {
     clearInput();
     return;
   }
-  // Enter: send
-  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+  // Enter: send (IME-aware)
+  if (e.key === "Enter" && !e.shiftKey) {
+    if (e.isComposing) return;
+    const elapsed = Date.now() - compositionEndTime.value;
+    if (compositionEndTime.value > 0 && elapsed < COMPOSITION_END_DELAY) return;
     e.preventDefault();
+    compositionEndTime.value = 0;
     send();
   }
 }
@@ -575,6 +642,13 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
               <el-button size="small" text :icon="RefreshRight" :disabled="sending" @click="regenerateMessage(idx)">
                 {{ msg.error || msg.aborted ? 'Retry' : 'Regenerate' }}
               </el-button>
+              <el-button
+                size="small"
+                text
+                :icon="Promotion"
+                title="Promote this conversation to a standalone AI Chat session"
+                @click="promoteToStandaloneSession(idx)"
+              >Promote</el-button>
               <el-button size="small" text :icon="Delete" :disabled="sending" @click="deleteMessage(idx)">Delete</el-button>
             </template>
             <template v-else>
@@ -605,12 +679,15 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
         :rag-available="ragAvailable"
         :web-search-toggle="webSearchEnabled"
         :context-files="contextFiles"
+        :selected-model="selectedModel"
+        :available-models="store.availableModels"
         @toggle-faq="toggleFaq"
         @pick-image="pickImage"
         @manage-tags="openTagManager"
         @open-wechat="openWechat"
         @toggle-rag="ragEnabled = !ragEnabled"
         @toggle-web-search="webSearchEnabled = !webSearchEnabled"
+        @update-selected-model="selectedModel = $event"
         @stop="stopSending"
         @remove-context-file="removeTag('ctx:' + $event)"
       />
@@ -651,7 +728,7 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
             <el-tag
               v-for="t in tags" :key="t"
               size="small" closable
-              :type="t.startsWith('ctx:') ? 'success' : ''"
+              :type="t.startsWith('ctx:') ? 'success' : undefined"
               @close="removeTag(t)"
             >{{ t }}</el-tag>
           </div>
@@ -669,6 +746,8 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
             :placeholder="sending ? 'AI responding...' : webSearching ? 'Searching web...' : 'Ask anything (Enter send, Shift+Enter newline)'"
             :disabled="sending"
             resize="none"
+            @compositionstart="onCompositionStart"
+            @compositionend="onCompositionEnd"
             @keydown="e => onKeydown(e as KeyboardEvent)"
           />
         </div>
@@ -706,7 +785,7 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
 .kcp-root {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   min-height: 0;
   background: var(--el-bg-color);
 }

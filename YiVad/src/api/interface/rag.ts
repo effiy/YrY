@@ -47,8 +47,20 @@ export interface RagQueryRequest {
   question: string;
   /** Number of chunks to retrieve (default 4). */
   top_k?: number;
-  /** Substring filter on file_path metadata (e.g. "projects/YiVad"). */
+  /** Substring filter on file_path metadata (e.g. "engineer/projects/yivad"). */
   scope?: string;
+  /** Per-call override of settings.rag_hybrid_retrieval_enabled. */
+  hybrid?: boolean;
+  /** Per-call override of settings.rag_rerank_enabled. */
+  rerank?: boolean;
+  /** Per-call override of settings.rag_inline_citations_enabled. */
+  citations?: boolean;
+  /** QueryFusionRetriever LLM query-variant count (1 = no expansion). */
+  num_queries?: number;
+  /** MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid. */
+  category?: string;
+  /** MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). */
+  tags?: string[];
 }
 
 export interface RagQueryResponse {
@@ -60,6 +72,22 @@ export interface RagQueryResponse {
 export interface RagChatPayload {
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }>;
   scope?: string;
+  /** Per-call override of settings.rag_top_k. */
+  top_k?: number;
+  /** Per-call override of settings.rag_hybrid_retrieval_enabled. */
+  hybrid?: boolean;
+  /** Per-call override of settings.rag_rerank_enabled. */
+  rerank?: boolean;
+  /** Per-call override of settings.rag_inline_citations_enabled. */
+  citations?: boolean;
+  /** Per-call override of QueryFusionRetriever LLM query-variant count. */
+  num_queries?: number;
+  /** Per-call override of the llama_index chat engine mode. */
+  chat_mode?: "condense_plus_context" | "condense_question" | "context" | "simple";
+  /** MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid. */
+  category?: string;
+  /** MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid. */
+  tags?: string[];
 }
 
 export interface RagFileChatPayload {
@@ -138,6 +166,17 @@ export interface RagQueryRecord {
   timestamp: string;
   /** Round-trip latency in milliseconds. */
   latency_ms: number;
+  /** Retrieval config used for this query — surfaces which knobs
+   *  produced the recorded scores/latency so the user can compare
+   *  across configs in the History tab. */
+  config?: {
+    hybrid: boolean;
+    rerank: boolean;
+    citations: boolean;
+    num_queries: number;
+    category: string;
+    tags: string[];
+  };
 }
 
 /** A turn in the RAG chat conversation. */
@@ -147,6 +186,43 @@ export interface RagChatTurn {
   sources?: RagSource[];
   /** ISO-8601 timestamp. */
   timestamp: string;
+}
+
+/** A recorded RAG chat turn (in-memory, max 20 on the backend ring buffer).
+ *  Mirrors RagQueryRecord but for chat: includes the streamed answer text,
+ *  the chat engine mode used, and the retrieval config that produced it. */
+export interface RagChatTurnRecord {
+  /** Unique id (timestamp-based). */
+  id: string;
+  /** The user's question (last user message). */
+  question: string;
+  /** Full streamed assistant answer. */
+  answer: string;
+  /** Scope filter applied (empty = full KB). */
+  scope: string;
+  /** llama_index chat engine mode used for this turn. */
+  chat_mode: "condense_plus_context" | "condense_question" | "context" | "simple";
+  /** Round-trip latency in milliseconds (stream_chat start → last token). */
+  latency_ms: number;
+  /** Number of sources returned by the chat engine. */
+  source_count: number;
+  /** Best relevance score among sources. */
+  top_score: number;
+  /** Average relevance score. */
+  avg_score: number;
+  /** Sources returned by the chat engine. */
+  sources: RagSource[];
+  /** ISO-8601 timestamp. */
+  timestamp: string;
+  /** Retrieval config used — mirrors RagQueryRecord.config. */
+  config?: {
+    hybrid: boolean;
+    rerank: boolean;
+    citations: boolean;
+    num_queries: number;
+    category: string;
+    tags: string[];
+  };
 }
 
 /** Lightweight summary of a chat session for history listing. */
@@ -161,11 +237,38 @@ export interface RagChatSessionSummary {
   updated_at: string;
 }
 
+// ─── Sub-question decomposition ──────────────────────────────────────
+
+/** A single sub-question produced by SubQuestionQueryEngine. */
+export interface RagSubQuestion {
+  /** The sub-question text the engine generated. */
+  sub_q: string;
+  /** The synthesized answer for this sub-question. */
+  answer: string;
+  /** Sources retrieved for this sub-question. */
+  sources: RagSource[];
+}
+
+/** Response shape of POST /rag-decompose. */
+export interface RagDecomposeResponse {
+  /** The original user question. */
+  original: string;
+  /** Final synthesized answer combining all sub-answers. */
+  synthesis: string;
+  /** Each sub-question with its own answer + sources. */
+  sub_questions: RagSubQuestion[];
+  /** Set when the backend caught an error mid-decomposition. */
+  error?: string;
+}
+
 // ─── Stream handlers ──────────────────────────────────────────────────
 
 export interface RagStreamHandlers {
   onChunk: (text: string) => void;
   onSources: (sources: RagSource[]) => void;
+  /** Backend emits `{"data":{"phase":"retrieving"}}` before retrieval
+   *  starts so the UI can refine "thinking" into "retrieving". */
+  onPhase?: (phase: string) => void;
   onDone: () => void;
   onError: (err: Error) => void;
 }

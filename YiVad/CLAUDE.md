@@ -77,7 +77,7 @@ src/
 ├── languages/    — i18n setup (zh-CN + en)
 ├── layouts/      — Multi-layout system (vertical, classic, transverse, columns)
 ├── routers/      — Dynamic routing with permission guards and menu-to-route mapping
-├── stores/       — Pinia stores (global, user, auth, tabs, keepAlive, aiChat, aicr/*)
+├── stores/       — Pinia stores (global, user, auth, tabs, keepAlive, aiChat, knowledge, knowledgeTree, rag, story, bug)
 ├── styles/       — Global SCSS, Element overrides, theme variables
 ├── typings/      — Global TypeScript type declarations
 ├── utils/        — General utilities (color, menu tree ops, localStorage, etc.)
@@ -148,7 +148,7 @@ ProTable receives { list, total } → renders rows + Pagination
 ### Chat (SSE streaming)
 
 ```
-aiChat store / aicr chat store — sendMessage / regenerateMessageAt / resendMessageAt
+aiChat store — sendMessage / regenerateMessageAt / resendMessageAt
    ▼ streamChat(payload, onChunk, onDone, onError)
 fetch POST /  body: {module_name: "services.ai.chat_service",
                      method_name: "chat",
@@ -210,7 +210,7 @@ View → fileService.writeFile(path, content)
 | Build / type-check fails | `vue-tsc --noEmit` blocks `pnpm build:*`; commit hooks block on lint errors |
 | Test framework absent | No test infrastructure yet — add Vitest when test coverage becomes a priority |
 | Browser unsupported (IE) | Build targets modern browsers only; ES module output |
-| SSE stream aborted | Pet message flagged `aborted=true`; persistence writes partial content; auto-forward to WeCom is skipped (see `aicr/chat.ts` fix) |
+| SSE stream aborted | Pet message flagged `aborted=true`; persistence writes partial content; auto-forward to WeCom is skipped (see `aiChat.ts` fix) |
 
 ## Self-Constraints
 
@@ -220,36 +220,34 @@ View → fileService.writeFile(path, content)
 - **No Options API** — `<script setup>` only; define state with `ref` / `reactive`, not `data()`.
 - **Stores must not import axios** — they call `@/api/modules/*` functions, which in turn call `http.post(...)` from `@/api/index.ts`.
 - **`filter` (not `query`) and `target_file` (not `path`)** — these two field names have been the source of past bugs. Always use the contract names when calling YiAi.
-- **SSE `onDone` must check `!aborted && !error`** before auto-forwarding to external channels (WeCom) — see `aicr/chat.ts` 2026-07-28 fix.
+- **SSE `onDone` must check `!aborted && !error`** before auto-forwarding to external channels (WeCom) — see `src/stores/modules/aiChat.ts` 2026-07-28 fix. (Earlier references to `aicr/chat.ts` were STALE — no aicr store exists.)
 
 ## Recent Changes
 
-### 2026-07-31 — Knowledge leaf view folders
+### 2026-08-05 — KnowledgeMetaStrip UX improvements
 
-- **`src/views/knowledge/leaves.ts`**: SSOT for the 28 2nd-level leaves (industry/competitors, tech/ai-foundations, work/processes, …) + helpers `leavesOf`, `leafListPath`, `leafListRouteName`.
-- **`src/components/KnowledgeLeafList/` + `KnowledgeLeafDetail/`**: Shared list + detail components — filter by `path.startsWith(`${category}/${leaf}/`)`, reuse `useKnowledgeStore` + `FileCard` + `MarkdownView`.
-- **`src/views/knowledge/<category>/<leaf>/{index,detail}.vue`**: 28 folders × 2 files = 56 thin 1-line wrappers (mirrors `tech-leadership/<topic>/` pattern).
-- **`src/routers/modules/staticRouter.ts`**: 56 literal routes under `/knowledge/detail`. Literal (not `map`-generated) so Rsbuild's static analyzer resolves the dynamic `import()`s.
-- **Hub + CategoryList**: Both now surface leaf chips for drill-down.
-- Old `/knowledge/:category` + `/knowledge/detail?path=…` kept for backwards-compat (deep links, aicr "Ask in aicr" flow).
+- **`src/components/KnowledgeMetaStrip.vue`**: Two UX fixes on the frontmatter strip surfaced in `KnowledgePreviewDialog` and Story Board drawer:
+  - **String `tacit` rendering** — 1573 knowledge files use `tacit:` as a string statement (e.g., "Brand Architecture is more than a logo; it is a contract..."), not a boolean. Previously the strip only rendered `tacit === true` (boolean), hiding these statements. Now string values render as a warning-toned callout (left border + background + 3-line clamp) above the badges row; boolean `true` still renders as a "tacit: yes" warning badge.
+  - **External `related` links** — `related:` entries with `http(s):` / `mailto:` / `tel:` schemes previously rendered as non-clickable tags (click did nothing). Now they open in a new browser tab via `window.open(href, "_blank", "noopener,noreferrer")`; internal relative paths still navigate via the parent's `navigate-related` event.
+- **`src/api/interface/yiweb.ts:411`**: Widened `KnowledgeMeta.tacit` from `boolean` to `boolean | string` to match the actual data shape.
 
-### 2026-07-31 — Knowledge + RAG pages
+### 2026-07-31 — Knowledge + RAG api modules
 
-- **`src/views/knowledge/`**: New page — browses the YiKnowledge markdown tree (CategoryList + Detail + MarkdownView). Calls `/knowledge/*` endpoints to list categories, read files, and surface metadata.
-- **`src/views/aicr/components/KnowledgeTree.vue`**: Bridges YiKnowledge metadata into the aicr FileTree — surfaces story.md / lessons / methodology for the file under review.
-- **`src/views/story/`**: Story detail page now displays `story.md` content via the same MarkdownView, with navigation to the aicr review when a story has been code-reviewed.
-- **`src/views/bug/`**: Bug list + detail page — `/bug` backend (per `YiKnowledge/projects/YrY/bug-logging-protocol.md`) backed by MongoDB `bugs` collection.
-- **`src/api/modules/`**: Added `knowledgeService.ts` and `ragService.ts` (RAG chat uses the existing SSE parser).
+- **`src/api/modules/`**: Added `knowledgeService.ts` (scan / read / write / stories) and `ragService.ts` (RAG chat uses the existing SSE parser). Backend routes live in `YiAi/src/server/routes/knowledge.py` and `rag.py`.
+- **`src/stores/modules/`**: Added `knowledge.ts`, `knowledgeTree.ts`, `story.ts` Pinia stores backing the aiChat knowledge features. `story.ts` exposes `storyMarkdown` (KnowledgeReadResponse) + `loadStoryMarkdown(story)` action called from `openDetail`.
+- **`src/views/aiChat/components/KnowledgePreviewDialog.vue`**: Knowledge detail dialog — renders markdown body + (since 2026-08-05) a frontmatter strip surfacing `status / lifecycle / review_cycle / tacit / type / roles / tags` and clickable `related` links.
+- **`src/views/story/index.vue`**: Story Board list + detail drawer. Since 2026-08-05 the Overview tab renders `store.storyMarkdown` (markdown body + frontmatter meta strip) — previously the store loaded it but the view didn't surface it.
+- **No standalone `/knowledge/*`, `/aicr/*`, or `/bug/*` routes or pages exist** — the "knowledge leaf view folders" + "KnowledgeLeafList/Detail" + `src/views/{knowledge,aicr,bug}/` + `KnowledgeTree.vue` + `useAicrKnowledgeStore` claims from earlier sessions were never landed on master. The stores and api modules back the aiChat features only.
 
 ### 2026-07-30 — Sidebar parity + RSS → YiKnowledge offload
 
-- **Sidebar parity**: ChatSidebar (`aiChat`), ConversationSidebar (`aicr`), and FileTree (`aicr`) all aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename.
+- **Sidebar parity**: ChatSidebar + ConversationSidebar + ConversationSessionSidebar (all under `src/views/aiChat/components/`) aligned to a FileTree-style baseline — favorites + batch operations + hover action row + inline rename. (Earlier-session claims of `ConversationSidebar (aicr)` + `FileTree (aicr)` were STALE — no aicr page tree exists.)
 - **RSS offload**: RSS body content moved to YiKnowledge markdown under `YiKnowledge/{category}`; MongoDB now stores metadata only (`category_path` + `file_path`).
 
 ### 2026-07-28 — Bug fixes
 
 - **`src/api/modules/fileService.ts`**: `readFile` and `writeFile` were sending `{ path }` but YiAi's `/read-file` / `/write-file` endpoints require `target_file` (Pydantic `FileReadRequest` / `FileWriteRequest`). Every call would 422. Fixed both to send `{ target_file: path, content }`.
-- **`src/stores/modules/aicr/chat.ts`**: On SSE `onDone`, the store now checks `!lastPet?.aborted && !lastPet?.error` before calling `autoForwardToRobots(streamed)`. Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots. Matches the `aiChat.ts` port pattern.
+- **`src/stores/modules/aiChat.ts`**: On SSE `onDone`, the store now checks `!lastPet?.aborted && !lastPet?.error` before calling `autoForwardToRobots(streamed)`. Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots. (Earlier references to `aicr/chat.ts` were STALE — this guard lives in the aiChat store, not aicr.)
 
 ### 2026-07-28 — Vite → Rsbuild migration
 
@@ -259,9 +257,10 @@ View → fileService.writeFile(path, content)
 
 - Ported YiWeb's `sessionChat` page. Per-message actions (regenerate / retry / resend / delete / edit), `streamingType`, `aborted` flag, `scrollTick` throttle. Fixed `index.vue` `useResizable` scaffold bug.
 
-### 2026-07-27 — aicr port (from YiWeb)
+### 2026-07-27 — aicr port (from YiWeb) — STALE
 
-- Ported YiWeb's `aicr` page end-to-end: 9 Pinia stores (`aicr/chat`, `sessions`, `faqs`, `fileTree`, `filters`, `modals`, `models`, `ui`, `weChat`) + 8 modal components + cards/graph views + full `CodeViewer`/`ChatPanel` parity. Build OK.
+- **Claimed**: Ported YiWeb's `aicr` page end-to-end: 9 Pinia stores (`aicr/chat`, `sessions`, `faqs`, `fileTree`, `filters`, `modals`, `models`, `ui`, `weChat`) + 8 modal components + cards/graph views + full `CodeViewer`/`ChatPanel` parity. Build OK.
+- **Reality (audited 2026-08-04)**: `src/views/aicr/` and `src/stores/modules/aicr/` do not exist on master. 0 aicr-specific commits. The claim was never landed — earlier-session hallucination. The aiChat port (above) is real and shipped; aicr-style functionality has been subsumed into aiChat components (`ConversationSidebar.vue`, `ConversationSessionSidebar.vue`, `KnowledgeChatPanel.vue`, `LlamaIndexPanel.vue`, etc.) rather than a separate aicr page tree.
 
 ## Guidance
 

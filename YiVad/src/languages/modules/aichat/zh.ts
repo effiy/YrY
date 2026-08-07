@@ -1,0 +1,31 @@
+export default {
+  aiChat: {
+    title: "AI 对话",
+    newConversation: "新建对话",
+    newConversationPrompt: "输入标题（可选）",
+    newConversationDefault: "新对话",
+    create: "创建",
+    rename: "重命名对话",
+    renamePrompt: "输入新标题",
+    save: "保存",
+    delete: "删除",
+    deleteConfirm: "确定删除对话「{name}」吗？",
+    confirm: "确认删除",
+    cancel: "取消",
+    placeholder: "输入问题（Enter 发送，Shift+Enter 换行）",
+    placeholderStreaming: "生成中…",
+    send: "发送",
+    stop: "停止",
+    copy: "复制",
+    copied: "已复制",
+    like: "赞",
+    dislike: "踩",
+    loading: "加载中…",
+    loadFailed: "加载失败",
+    selectOrCreate: "选择或创建对话",
+    searchPlaceholder: "搜索对话…",
+    noConversations: "暂无对话",
+    generateFailed: "生成失败",
+    suggestTitle: "建议标题："
+  }
+};

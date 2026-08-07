@@ -20,6 +20,13 @@ from domain.rag.engine import (
     rag_chat_stream,
     rag_file_query,
     rag_file_chat_stream,
+    rag_decompose,
+)
+from domain.rag.history import record_query, list_history, clear_history
+from domain.rag.chat_history import (
+    record_chat_turn,
+    list_chat_history,
+    clear_chat_history,
 )
 from domain.rag.paths import resolve_safe, base_dir
 from domain.rag.settings import ensure_settings_configured
@@ -39,7 +46,14 @@ __all__ = [
     "rag_chat_stream",
     "rag_file_query",
     "rag_file_chat_stream",
+    "rag_decompose",
     "resolve_safe",
     "base_dir",
     "ensure_settings_configured",
+    "record_query",
+    "list_history",
+    "clear_history",
+    "record_chat_turn",
+    "list_chat_history",
+    "clear_chat_history",
 ]

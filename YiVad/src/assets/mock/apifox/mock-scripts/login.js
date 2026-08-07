@@ -1,48 +1,29 @@
 // Migrated from Easy-Mock: /geeker/login
 // password is MD5 of "123456": e10adc3949ba59abbe56e057f20f883e
 let MockJs = require('mockjs');
-
-// Apifox Mock: prefers getParam (reads from body/query/path)
-let username = $$.mockRequest.getParam('username');
-let password = $$.mockRequest.getParam('password');
-
-// Fallback: parse from body in some environments
-if (username == null || password == null) {
-  let body = {};
-  try {
-    body = $$.mockRequest.body.toJSON() || {};
-  } catch (e) {
-    try {
-      body = JSON.parse($$.mockRequest.body.toString() || '{}');
-    } catch (e2) {
-      body = {};
-    }
-  }
-  if (username == null) username = body.username;
-  if (password == null) password = body.password;
-}
-
-let PWD = 'e10adc3949ba59abbe56e057f20f883e';
-let okAdmin = username === 'admin' && password === PWD;
-let okUser = username === 'user' && password === PWD;
+let body = $$.mockRequest.body.toJSON() || {};
+let username = body.username;
+let password = body.password;
+let okAdmin = username === 'admin' && password === 'e10adc3949ba59abbe56e057f20f883e';
+let okUser = username === 'user' && password === 'e10adc3949ba59abbe56e057f20f883e';
 
 if (okAdmin) {
   $$.mockResponse.setBody({
     code: 200,
-    data: { access_token: 'bqddxxwqmfncffacvbpkuxvwvqrhln' },
-    msg: 'Success'
+    data: MockJs.mock({ access_token: 'bqddxxwqmfncffacvbpkuxvwvqrhln' }),
+    msg: 'success'
   });
 } else if (okUser) {
   $$.mockResponse.setBody({
     code: 200,
-    data: { access_token: 'unufvdotdqxuzfbdygovfmsbftlvbn' },
-    msg: 'Success'
+    data: MockJs.mock({ access_token: 'unufvdotdqxuzfbdygovfmsbftlvbn' }),
+    msg: 'success'
   });
 } else {
   $$.mockResponse.setBody({
     code: 500,
     data: null,
-    msg: 'Invalid username or password'
+    msg: 'invalid username or password'
   });
 }
 $$.mockResponse.setCode(200);

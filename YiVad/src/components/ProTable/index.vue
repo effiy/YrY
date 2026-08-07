@@ -18,17 +18,25 @@
       <div class="header-button-lf">
         <slot name="tableHeader" :selected-list="selectedList" :selected-list-ids="selectedListIds" :is-selected="isSelected" />
       </div>
-      <div v-if="toolButton" class="header-button-ri">
-        <slot name="toolButton">
-          <el-button v-if="showToolButton('refresh')" :icon="Refresh" circle @click="getTableList" />
-          <el-button v-if="showToolButton('setting') && columns.length" :icon="Operation" circle @click="openColSetting" />
-          <el-button
-            v-if="showToolButton('search') && searchColumns?.length"
-            :icon="Search"
-            circle
-            @click="isShowSearch = !isShowSearch"
-          />
-        </slot>
+      <div v-if="toolButton || headerPagination" class="header-button-ri">
+        <Pagination
+          v-if="headerPagination"
+          :pageable="pageable"
+          :handle-size-change="handleSizeChange"
+          :handle-current-change="handleCurrentChange"
+        />
+        <template v-if="toolButton">
+          <slot name="toolButton">
+            <el-button v-if="showToolButton('refresh')" :icon="Refresh" circle @click="getTableList" />
+            <el-button v-if="showToolButton('setting') && columns.length" :icon="Operation" circle @click="openColSetting" />
+            <el-button
+              v-if="showToolButton('search') && searchColumns?.length"
+              :icon="Search"
+              circle
+              @click="isShowSearch = !isShowSearch"
+            />
+          </slot>
+        </template>
       </div>
     </div>
     <!-- Table Body -->
@@ -91,7 +99,7 @@
     <!-- Pagination Component -->
     <slot name="pagination">
       <Pagination
-        v-if="pagination"
+        v-if="pagination && !headerPagination"
         :pageable="pageable"
         :handle-size-change="handleSizeChange"
         :handle-current-change="handleCurrentChange"
@@ -105,11 +113,11 @@
 <script setup lang="ts" name="ProTable">
 import { ref, watch, provide, onMounted, unref, computed, reactive } from "vue";
 import { ElTable } from "element-plus";
+import { Refresh, Operation, Search } from "@element-plus/icons-vue";
 import { useTable } from "@/hooks/useTable";
 import { useSelection } from "@/hooks/useSelection";
 import { BreakPoint } from "@/components/Grid/interface";
 import { ColumnProps, TypeProps } from "@/components/ProTable/interface";
-import { Refresh, Operation, Search } from "@element-plus/icons-vue";
 import { generateUUID, handleProp } from "@/utils";
 import SearchForm from "@/components/SearchForm/index.vue";
 import Pagination from "./components/Pagination.vue";
@@ -126,6 +134,7 @@ export interface ProTableProps {
   dataCallback?: (data: any) => any; // Callback to process returned data ==> optional
   title?: string; // Table title ==> optional
   pagination?: boolean; // Whether to show pagination component ==> optional (default true)
+  headerPagination?: boolean; // Render pagination inside the header row (right side) instead of below the table ==> optional (default false)
   initParam?: any; // Initial request params ==> optional (default {})
   border?: boolean; // Whether to show vertical borders ==> optional (default true)
   toolButton?: ("refresh" | "setting" | "search")[] | boolean; // Whether to show table tool buttons ==> optional (default true)
@@ -138,6 +147,7 @@ const props = withDefaults(defineProps<ProTableProps>(), {
   columns: () => [],
   requestAuto: true,
   pagination: true,
+  headerPagination: false,
   initParam: {},
   border: true,
   toolButton: true,

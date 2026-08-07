@@ -1,9 +1,12 @@
 /**
- * Claude Skills service — read/write .claude/skills/ files via YiAi file I/O.
+ * Claude Skills service — read/write .claude/skills/ files via YiAi
+ * project-file I/O endpoints.
  *
- * Each skill lives at `.claude/skills/<name>/SKILL.md` on the server filesystem.
- * This module wraps the YiAi /read-file, /write-file, /delete-folder, and
- * /rename-folder endpoints to provide CRUD operations over the skill registry.
+ * Each skill lives at `.claude/skills/<name>/SKILL.md` under the
+ * projects_root (YrY/), NOT under YiAi/static/. All four operations
+ * (read/write/delete-folder/rename-folder) use the project-aware YiAi
+ * endpoints that resolve against `projects_root` and auto-detect
+ * `.claude` as the first path segment.
  */
 import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiweb";
 
@@ -120,6 +123,11 @@ function parseFrontmatter(raw: string): { frontmatter: Record<string, any>; body
   return { frontmatter: {}, body: raw };
 }
 
+/** Project parameter for /read-project-file. The function auto-detects the
+ * actual project from the first path segment (`.claude`), so this value is
+ * only a placeholder to satisfy the non-empty validation. */
+const SKILL_PROJECT = ".";
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /** List all skills: read each SKILL.md, parse frontmatter, return metadata. */
@@ -127,7 +135,8 @@ export async function listClaudeSkills(): Promise<ClaudeSkillMeta[]> {
   const results = await Promise.allSettled(
     KNOWN_SKILLS.map(async (name) => {
       try {
-        const data = await postJson<{ content?: string; data?: { content?: string } }>("/read-file", {
+        const data = await postJson<{ content?: string; data?: { content?: string } }>("/read-project-file", {
+          project: SKILL_PROJECT,
           target_file: skillFilePath(name)
         });
         const raw = data?.data?.content ?? data?.content ?? "";
@@ -159,7 +168,8 @@ export async function listClaudeSkills(): Promise<ClaudeSkillMeta[]> {
 
 /** Read a single skill's full SKILL.md content. */
 export async function readClaudeSkill(name: string): Promise<ClaudeSkillMeta> {
-  const data = await postJson<{ content?: string; data?: { content?: string } }>("/read-file", {
+  const data = await postJson<{ content?: string; data?: { content?: string } }>("/read-project-file", {
+    project: SKILL_PROJECT,
     target_file: skillFilePath(name)
   });
   const raw = data?.data?.content ?? data?.content ?? "";
@@ -178,7 +188,8 @@ export async function readClaudeSkill(name: string): Promise<ClaudeSkillMeta> {
 
 /** Write (create or update) a skill's SKILL.md. */
 export async function writeClaudeSkill(name: string, content: string): Promise<void> {
-  await postJson("/write-file", {
+  await postJson("/write-project-file", {
+    project: SKILL_PROJECT,
     target_file: skillFilePath(name),
     content
   });
@@ -186,14 +197,16 @@ export async function writeClaudeSkill(name: string, content: string): Promise<v
 
 /** Delete a skill directory entirely. */
 export async function deleteClaudeSkill(name: string): Promise<void> {
-  await postJson("/delete-folder", {
+  await postJson("/delete-project-folder", {
+    project: SKILL_PROJECT,
     target_dir: `.claude/skills/${name}`
   });
 }
 
 /** Rename a skill directory. */
 export async function renameClaudeSkill(oldName: string, newName: string): Promise<void> {
-  await postJson("/rename-folder", {
+  await postJson("/rename-project-folder", {
+    project: SKILL_PROJECT,
     old_dir: `.claude/skills/${oldName}`,
     new_dir: `.claude/skills/${newName}`
   });

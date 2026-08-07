@@ -34,6 +34,8 @@ export interface TopicEntryDocument {
 export interface TopicListParams {
   title?: string;
   tags?: string;
+  /** Cross-domain join key — matches `meta.project` (substring, case-insensitive). */
+  project?: string;
   pageNum?: number;
   pageSize?: number;
 }
@@ -65,6 +67,7 @@ export async function getTopicList<T extends TopicEntryDocument = TopicEntryDocu
   const filter: Record<string, any> = {};
   if (params.title) filter.title = { $regex: params.title, $options: "i" };
   if (params.tags) filter.tags = { $regex: params.tags, $options: "i" };
+  if (params.project) filter["meta.project"] = { $regex: params.project, $options: "i" };
 
   const pageNum = params.pageNum ?? 1;
   const pageSize = params.pageSize ?? 10;
@@ -156,12 +159,22 @@ export async function updateTopicEntry(
   patch: Partial<{ title: string; content: string; tags: string[]; meta: Record<string, any> }>
 ): Promise<YiAiEnvelope> {
   const isBrd = tree === "brd";
-  if (isBrd && patch.content !== undefined) {
+  if (isBrd && (patch.content !== undefined || patch.meta !== undefined)) {
     const cpath = contentPathFor(tree, topic, key);
+    // If only meta changed, preserve existing content from the knowledge file
+    let content = patch.content;
+    if (content === undefined) {
+      try {
+        const existing = await readKnowledgeFile(cpath);
+        content = existing.content ?? "";
+      } catch {
+        content = "";
+      }
+    }
     await callService("services.knowledge.knowledge_service", "write_entry_markdown", {
       rel_path: cpath,
-      content: patch.content,
-      meta: { title: patch.title, key, tags: patch.tags ?? [] }
+      content,
+      meta: { title: patch.title, key, tags: patch.tags ?? [], ...(patch.meta ?? {}) }
     });
   }
 

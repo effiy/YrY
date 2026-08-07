@@ -10,13 +10,16 @@ from fastapi import APIRouter
 from domain.files import (
     delete_file,
     delete_folder,
+    delete_project_folder,
     read_file,
     read_project_file,
     rename_file,
     rename_folder,
+    rename_project_folder,
     upload_file,
     upload_image,
     write_file,
+    write_project_file,
 )
 from models.schemas import (
     FileDeleteRequest,
@@ -28,6 +31,9 @@ from models.schemas import (
     FolderRenameRequest,
     ImageUploadToOssRequest,
     ProjectFileReadRequest,
+    ProjectFileWriteRequest,
+    ProjectFolderDeleteRequest,
+    ProjectFolderRenameRequest,
 )
 from shared.response import success
 
@@ -57,6 +63,33 @@ async def read_project_file_route(request: ProjectFileReadRequest):
     sees what's in the project right now, not a stale snapshot.
     """
     data = await read_project_file(request.project, request.target_file)
+    return success(data=data)
+
+
+@router.post("/write-project-file", operation_id="write_project_file")
+async def write_project_file_route(request: ProjectFileWriteRequest):
+    """Write a file directly into a project's source tree on disk.
+
+    Disk-only (no MongoDB dual-write); symmetric with ``/read-project-file``.
+    Creates parent directories as needed.
+    """
+    data = await write_project_file(
+        request.project, request.target_file, request.content, request.is_base64
+    )
+    return success(data=data)
+
+
+@router.post("/delete-project-folder", operation_id="delete_project_folder")
+async def delete_project_folder_route(request: ProjectFolderDeleteRequest):
+    """Delete a directory from a project's source tree on disk (recursive)."""
+    data = await delete_project_folder(request.project, request.target_dir)
+    return success(data=data)
+
+
+@router.post("/rename-project-folder", operation_id="rename_project_folder")
+async def rename_project_folder_route(request: ProjectFolderRenameRequest):
+    """Rename (move) a directory within a project's source tree on disk."""
+    data = await rename_project_folder(request.project, request.old_dir, request.new_dir)
     return success(data=data)
 
 

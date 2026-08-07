@@ -1,18 +1,33 @@
 /**
  * Bug management — metadata in MongoDB (bugs collection), long-form body in
- * a markdown file under ~/YiKnowledge/lessons/failures/bugs/<key>.md.
+ * a markdown file under ~/YiKnowledge/engineer/lessons/failures/bugs/<key>.md.
  *
  * Split mirrors the RSS pattern (see YiAi's domain/rss/feed.py + domain/
  * knowledge/writer.py): the DB doc stays lean for cheap queries, while the
  * description / steps / expected / actual live on disk as structured markdown
  * so they're searchable by YiKnowledge's scanner and editable as files.
+ *
+ * Legacy bugs written pre-2026-08-05 have contentPath = "lessons/failures/bugs/..."
+ * (no engineer/ prefix); normalizeBugContentPath() transparently rewrites those
+ * on read/write/delete so no one-time data migration is needed.
  */
 import { callService, queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import { readKnowledgeFile } from "./knowledgeService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
 const CNAME = "bugs";
-const CONTENT_CATEGORY = "lessons/failures/bugs";
+const CONTENT_CATEGORY = "engineer/lessons/failures/bugs";
+
+// Pre-2026-08-05 bugs were written under lessons/failures/bugs/ at the
+// YiKnowledge root. After the 14-category → 20-role-dir migration, that
+// path moved under engineer/lessons/failures/bugs/. Normalize any legacy
+// contentPath stored in MongoDB so reads/writes/deletes all hit the new
+// location without a one-time data migration.
+function normalizeBugContentPath(p: string): string {
+  if (!p) return p;
+  if (p.startsWith("lessons/")) return `engineer/${p}`;
+  return p;
+}
 
 // ── Types ──
 
@@ -64,7 +79,9 @@ export interface BugDocument {
   // Metadata
   tags: string[];
   dueDate: number | null;
-  /** Relative path under ~/YiKnowledge, e.g. "lessons/failures/bugs/bug_x.md". */
+  /** Loaded from markdown content at display time. */
+  description?: string;
+  /** Relative path under ~/YiKnowledge, e.g. "engineer/lessons/failures/bugs/bug_x.md". */
   contentPath: string;
   // Lifecycle timestamps
   createdAt: number;
@@ -237,7 +254,7 @@ async function writeBugContent(key: string, bug: BugDocument, content: BugConten
 /** Read the markdown body and parse it back into structured content. */
 export async function readBugContent(contentPath: string): Promise<BugContent> {
   try {
-    const file = await readKnowledgeFile(contentPath);
+    const file = await readKnowledgeFile(normalizeBugContentPath(contentPath));
     return parseMarkdownBody(file.content || "");
   } catch {
     // File missing / unreadable — return empty content rather than throwing
@@ -251,7 +268,7 @@ async function deleteBugContent(contentPath: string): Promise<void> {
   if (!contentPath) return;
   try {
     await callService("services.knowledge.knowledge_service", "delete_entry_markdown", {
-      rel_path: contentPath
+      rel_path: normalizeBugContentPath(contentPath)
     });
   } catch {
     // best-effort — metadata delete should still succeed
@@ -356,12 +373,14 @@ export async function updateBug(
     (payload as any).resolvedAt = null;
     (payload as any).closedAt = null;
   }
-  // Rewrite the markdown body only when content is provided
-  if (content) {
+  // Rewrite the markdown to keep the YAML frontmatter in sync with MongoDB.
+  // When only meta changed (no content), read the existing markdown body.
+  {
     const current = await getBug(key);
     if (current) {
       const merged = { ...current, ...meta, updatedAt: now } as BugDocument;
-      await writeBugContent(key, merged, content);
+      const body = content ?? await readBugContent(current.contentPath || contentPathFor(key));
+      await writeBugContent(key, merged, body);
       payload.contentPath = current.contentPath || contentPathFor(key);
     }
   }

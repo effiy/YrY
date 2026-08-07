@@ -4,50 +4,50 @@ description: Extracts reusable Vue 3 components, composables, and directives fro
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-# component-extractor — YiVad 组件/Composable 抽取
+# component-extractor — YiVad component/composable extraction
 
-从现有代码中抽取可复用的组件、Composable 和指令，放入正确的目录。
+Extract reusable components, composables, and directives from existing code and place them in the correct directories.
 
-## 目标目录
+## Target directories
 
 ```
-src/components/               # 跨页面复用的 UI 组件
-├── ProTable/                 # 表格组件（canonical table pattern）
-├── SearchForm/               # 搜索表单
-├── SelectFilter/             # 下拉筛选
-├── TreeFilter/               # 树形筛选
-├── Upload/                   # 文件上传（Img.vue, Imgs.vue）
-├── WangEditor/               # 富文本编辑器
-├── SvgIcon/                  # SVG 图标
-├── ErrorMessage/             # 错误页（403, 404, 500）
-└── ImportExcel/              # Excel 导入
+src/components/               # Cross-page reusable UI components
+├── ProTable/                 # Table component (canonical table pattern)
+├── SearchForm/               # Search form
+├── SelectFilter/             # Dropdown filter
+├── TreeFilter/               # Tree filter
+├── Upload/                   # File upload (Img.vue, Imgs.vue)
+├── WangEditor/               # Rich text editor
+├── SvgIcon/                  # SVG icon
+├── ErrorMessage/             # Error pages (403, 404, 500)
+└── ImportExcel/              # Excel import
 
-src/hooks/                    # Composable 函数（useXxx）
-├── useTable.ts               # 表格逻辑
-├── useTheme.ts               # 主题切换
-├── useSelection.ts            # 多选逻辑
+src/hooks/                    # Composable functions (useXxx)
+├── useTable.ts               # Table logic
+├── useTheme.ts               # Theme switching
+├── useSelection.ts            # Multi-select logic
 └── ...
 
-src/directives/modules/       # 自定义指令
-├── auth.ts                   # v-auth — 权限控制
-├── copy.ts                   # v-copy — 一键复制
-├── debounce.ts               # v-debounce — 防抖
-├── draggable.ts              # v-draggable — 拖拽
+src/directives/modules/       # Custom directives
+├── auth.ts                   # v-auth — permission control
+├── copy.ts                   # v-copy — one-click copy
+├── debounce.ts               # v-debounce — debounce
+├── draggable.ts              # v-draggable — drag
 └── ...
 ```
 
-## 抽取检查清单
+## Extraction checklist
 
-当发现重复代码时，按以下优先级抽取：
+When you spot duplicated code, extract in this priority order:
 
-1. **Composable** — 纯逻辑重复 → `src/hooks/useXxx.ts`
-2. **Directive** — DOM 行为重复 → `src/directives/modules/<name>.ts`
-3. **Component** — UI 模板重复 → `src/components/<Name>/index.vue`
+1. **Composable** — pure logic duplication → `src/hooks/useXxx.ts`
+2. **Directive** — DOM behavior duplication → `src/directives/modules/<name>.ts`
+3. **Component** — UI template duplication → `src/components/<Name>/index.vue`
 
-## 规则
+## Rules
 
-- Component 使用 `defineProps<{...}>()` 和 `defineEmits<{...}>()` 定义接口
-- Composable 返回包含 `ref`/`reactive`/`computed`/方法的对象
-- Directive 在 `src/directives/index.ts` 中注册
-- 只抽取有 2+ 使用点的代码 — 单次使用的抽象层反而增加复杂度
-- 抽取后更新所有调用点，确保类型检查通过
+- Components define their interface with `defineProps<{...}>()` and `defineEmits<{...}>()`
+- Composables return an object containing `ref`/`reactive`/`computed`/methods
+- Directives are registered in `src/directives/index.ts`
+- Only extract code with 2+ use sites — a single-use abstraction adds complexity
+- After extraction, update all call sites and ensure type checks pass

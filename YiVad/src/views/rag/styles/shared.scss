@@ -127,6 +127,12 @@
   margin-bottom: 20px;
 }
 
+// ── Clickable table — rows are interactive (open detail drawer/rerun query) ─
+
+.rag-clickable-table {
+  cursor: pointer;
+}
+
 // ── Utility ─────────────────────────────────────────────────────────────────
 
 .rag-text-muted {

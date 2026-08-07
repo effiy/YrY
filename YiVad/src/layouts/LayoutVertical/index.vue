@@ -2,7 +2,7 @@
 <template>
   <el-container class="layout">
     <el-aside>
-      <div class="aside-box" :style="{ width: isCollapse ? '65px' : '210px', height: '100vh' }">
+      <div class="aside-box" :style="{ width: isCollapse ? '65px' : '210px' }">
         <div class="logo flx-center">
           <img class="logo-img" src="@/assets/images/logo.svg" alt="logo" />
           <span v-show="!isCollapse" class="logo-text">{{ title }}</span>

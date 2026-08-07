@@ -2,12 +2,15 @@
  * YiPet Chat — ChatInput (rewritten)
  * Composition: ChatToolbar + DraftImageList + QuickButtons + TextArea + char count.
  */
+
+import { FileSearchOutlined, PartitionOutlined } from '@ant-design/icons';
 import { Input, Typography } from 'antd';
 import type { KeyboardEvent } from 'react';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { ChatController } from '@/chat/controller';
 import { ChatToolbar } from '../ChatToolbar/ChatToolbar';
 import { DraftImageList } from '../DraftImageList/DraftImageList';
+import { FileMentionDropdown } from '../FileMentionDropdown/FileMentionDropdown';
 import { QuickButtons } from '../QuickButtons/QuickButtons';
 
 const { TextArea } = Input;
@@ -56,6 +59,39 @@ export function ChatInput(props: ChatInputProps) {
   const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
   const voiceBaseTextRef = useRef('');
   const lastTemplateRef = useRef('');
+  const historyIdxRef = useRef(-1);
+  const preHistoryInputRef = useRef('');
+
+  // ── @-mention file detection ──
+  // Visible when the user has typed `@` at start-of-word, with no spaces
+  // between the `@` and the cursor. `query` is whatever follows `@`.
+  const { mentionVisible, mentionQuery, mentionAtIdx } = useMemo(() => {
+    const text = inputValue;
+    const ta = taRef.current;
+    const caret = ta?.selectionStart ?? text.length;
+    const lastAt = text.lastIndexOf('@', Math.min(caret, text.length));
+    if (lastAt < 0) return { mentionVisible: false, mentionQuery: '', mentionAtIdx: -1 };
+    // @ must be at start or preceded by whitespace
+    if (lastAt > 0 && !/\s/.test(text[lastAt - 1])) {
+      return { mentionVisible: false, mentionQuery: '', mentionAtIdx: -1 };
+    }
+    const after = text.slice(lastAt + 1, caret);
+    // No spaces allowed inside the @query (one word)
+    if (after.includes(' ')) {
+      return { mentionVisible: false, mentionQuery: '', mentionAtIdx: -1 };
+    }
+    return { mentionVisible: true, mentionQuery: after, mentionAtIdx: lastAt };
+  }, [inputValue]);
+
+  const onMentionSelect = (path: string) => {
+    if (mentionAtIdx < 0) return;
+    const before = inputValue.slice(0, mentionAtIdx);
+    const after = inputValue.slice(mentionAtIdx + 1 + mentionQuery.length);
+    const next = (before + after).trim();
+    setInputValue(next);
+    ctrl.setRagScopeFromNode(path, true);
+    if (!ctrl.state.knowledgeGrounded) ctrl.toggleKnowledgeGrounded();
+  };
 
   // Sync template pushed from QuickButtons → input
   if (s.inputTemplate && s.inputTemplate !== lastTemplateRef.current) {
@@ -72,21 +108,85 @@ export function ChatInput(props: ChatInputProps) {
     ctrl.sendMessage(text, imgs);
     setInputValue('');
     lastTemplateRef.current = '';
+    historyIdxRef.current = -1;
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Mention dropdown is open — let it own navigation keys.
+    if (mentionVisible) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        // Strip the @query so the dropdown stays closed next time.
+        if (mentionAtIdx >= 0) {
+          const before = inputValue.slice(0, mentionAtIdx);
+          const after = inputValue.slice(mentionAtIdx + 1 + mentionQuery.length);
+          setInputValue((before + after).trim());
+        }
+        return;
+      }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        // If matches exist, pick the first one instead of sending.
+        const matches = ctrl.knowledgeFileMatches(mentionQuery, 1);
+        if (matches.length > 0) {
+          e.preventDefault();
+          onMentionSelect(matches[0].path);
+          return;
+        }
+        // No matches → fall through to send
+      }
+      // When mention is open, swallow ArrowUp/Down so they don't trigger
+      // prompt history recall. (A future iteration could walk the dropdown.)
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        return;
+      }
+    }
     if (e.key === 'Escape') {
       e.preventDefault();
       setInputValue('');
+      historyIdxRef.current = -1;
       return;
     }
-    if (e.key !== 'Enter') return;
-    if (e.nativeEvent.isComposing || isComposing) return;
-    if (compositionEndTime > 0 && Date.now() - compositionEndTime < 100) return;
-    if (e.shiftKey) return;
-    e.preventDefault();
-    if (s.isProcessing) return;
-    send();
+    if (e.key === 'Enter') {
+      if (e.nativeEvent.isComposing || isComposing) return;
+      if (compositionEndTime > 0 && Date.now() - compositionEndTime < 100) return;
+      if (e.shiftKey) return;
+      e.preventDefault();
+      if (s.isProcessing) return;
+      send();
+      return;
+    }
+    // Prompt history navigation (Pi-inspired shell recall).
+    // ArrowUp at caret 0 / empty input → recall older prompt.
+    // ArrowDown at caret end while navigating → recall newer (or clear).
+    if (!e.metaKey && !e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      const ta = taRef.current;
+      const caret = ta?.selectionStart ?? inputValue.length;
+      const atStart = caret === 0;
+      const atEnd = caret === inputValue.length;
+      if (e.key === 'ArrowUp' && (atStart || !inputValue)) {
+        if (historyIdxRef.current === -1) preHistoryInputRef.current = inputValue;
+        const rec = ctrl.recallPromptHistory(-1, historyIdxRef.current);
+        if (rec) {
+          e.preventDefault();
+          historyIdxRef.current = rec.idx;
+          setInputValue(rec.text);
+        }
+        return;
+      }
+      if (e.key === 'ArrowDown' && atEnd && historyIdxRef.current !== -1) {
+        const rec = ctrl.recallPromptHistory(1, historyIdxRef.current);
+        e.preventDefault();
+        if (rec && rec.idx === -1) {
+          historyIdxRef.current = -1;
+          setInputValue(preHistoryInputRef.current);
+        } else if (rec) {
+          historyIdxRef.current = rec.idx;
+          setInputValue(rec.text);
+        }
+        return;
+      }
+    }
   };
 
   const onPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -207,7 +307,21 @@ export function ChatInput(props: ChatInputProps) {
 
       <QuickButtons controller={ctrl} />
 
-      <div className="yipet-chat-input-row">
+      <div className="yipet-chat-input-row" style={{ position: 'relative' }}>
+        <FileMentionDropdown
+          controller={ctrl}
+          query={mentionQuery}
+          visible={mentionVisible}
+          onClose={() => {
+            // Strip the @ to dismiss the dropdown.
+            if (mentionAtIdx >= 0) {
+              const before = inputValue.slice(0, mentionAtIdx);
+              const after = inputValue.slice(mentionAtIdx + 1 + mentionQuery.length);
+              setInputValue((before + after).trim());
+            }
+          }}
+          onSelect={onMentionSelect}
+        />
         <TextArea
           ref={taRef as never}
           value={inputValue}
@@ -233,6 +347,40 @@ export function ChatInput(props: ChatInputProps) {
           aria-label="Conversation input"
         />
         <div className="yipet-chat-input-meta">
+          {s.knowledgeGrounded && (
+            <>
+              <button
+                type="button"
+                className="yipet-chat-preview-btn"
+                onClick={() => ctrl.previewRagSources(inputValue)}
+                disabled={
+                  s.isProcessing ||
+                  s.ragPreviewLoading ||
+                  s.ragDecomposeLoading ||
+                  !inputValue.trim()
+                }
+                title="Preview RAG sources (no LLM call)"
+                aria-label="Preview RAG sources"
+              >
+                <FileSearchOutlined /> Preview sources
+              </button>
+              <button
+                type="button"
+                className="yipet-chat-preview-btn"
+                onClick={() => ctrl.decomposeRagQuestion(inputValue)}
+                disabled={
+                  s.isProcessing ||
+                  s.ragPreviewLoading ||
+                  s.ragDecomposeLoading ||
+                  !inputValue.trim()
+                }
+                title="Decompose into sub-questions (synchronous, may take a while)"
+                aria-label="Decompose into sub-questions"
+              >
+                <PartitionOutlined /> Decompose
+              </button>
+            </>
+          )}
           <Typography.Text type="secondary" style={{ fontSize: 11 }}>
             {inputValue.length} chars
           </Typography.Text>

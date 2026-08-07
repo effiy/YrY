@@ -150,7 +150,7 @@ const getScale = (width = 1920, height = 1080) => {
 };
 
 // Get current time
-let timer: NodeJS.Timer | null = null;
+let timer: ReturnType<typeof setInterval> | null = null;
 let time = ref<string>(dayjs().format("YYYY-MM-DD HH:mm:ss"));
 timer = setInterval(() => {
   time.value = dayjs().format("YYYY-MM-DD HH:mm:ss");

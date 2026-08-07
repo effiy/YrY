@@ -36,7 +36,7 @@ provide("refresh", refreshCurrentPage);
 
 // Fix keep-alive issue for detail pages
 const wrapperMap = new Map();
-function createComponentWrapper(component, route) {
+function createComponentWrapper(component: any, route: { fullPath: string; path: string; name: string | symbol | undefined | null }) {
   if (!component) return;
   const wrapperName = route.fullPath;
   let wrapper = wrapperMap.get(wrapperName);

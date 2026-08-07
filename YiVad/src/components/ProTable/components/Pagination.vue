@@ -7,7 +7,7 @@
     :page-sizes="[10, 25, 50, 100]"
     :total="pageable.total"
     :size="globalStore?.assemblySize ?? 'default'"
-    layout="total, sizes, prev, pager, next, jumper"
+    layout="sizes, prev, pager, next, total"
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   ></el-pagination>

@@ -27,7 +27,7 @@ const LayoutComponents: Record<LayoutType, Component> = {
 const globalStore = useGlobalStore();
 
 const isDark = computed(() => globalStore.isDark);
-const layout = computed(() => globalStore.layout);
+const layout = computed<LayoutType>(() => globalStore.layout);
 const watermark = computed(() => globalStore.watermark);
 
 const font = reactive({ color: "rgba(0, 0, 0, .15)" });

@@ -40,7 +40,7 @@ export const PRIORITY_COLORS: Record<ScenarioPriority, string> = {
   p0: "danger",
   p1: "warning",
   p2: "info",
-  p3: ""
+  p3: "info"
 };
 
 // ── Milestone status ────────────────────────────────────────────────────────
@@ -52,14 +52,14 @@ export const MILESTONE_STATUS_OPTIONS: { label: string; value: MilestoneStatus }
   { label: "Done", value: "done" }
 ];
 
-export function milestoneStatusType(s: MilestoneStatus): string {
-  const m: Record<string, string> = {
+export function milestoneStatusType(s: MilestoneStatus): "success" | "warning" | "info" | "primary" | "danger" {
+  const m: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = {
     pending_review: "warning",
     not_started: "info",
     in_progress: "primary",
     done: "success"
   };
-  return m[s] || "";
+  return m[s] || "info";
 }
 
 // ── Frequency ───────────────────────────────────────────────────────────────
@@ -67,9 +67,9 @@ export function milestoneStatusType(s: MilestoneStatus): string {
 export const FREQUENCY_OPTIONS = ["daily", "weekly", "monthly", "on_demand"] as const;
 export type UsageFrequency = (typeof FREQUENCY_OPTIONS)[number];
 
-export function frequencyTagType(freq: string): string {
-  const m: Record<string, string> = { daily: "", weekly: "info", monthly: "warning", on_demand: "success" };
-  return m[freq] || "";
+export function frequencyTagType(freq: string): "success" | "warning" | "info" | "primary" | "danger" {
+  const m: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = { daily: "info", weekly: "info", monthly: "warning", on_demand: "success" };
+  return m[freq] || "info";
 }
 
 export function frequencyLabel(freq: string): string {
@@ -82,9 +82,9 @@ export function frequencyLabel(freq: string): string {
 export const RULE_PRIORITY_OPTIONS = ["must", "should", "could"] as const;
 export type RulePriority = (typeof RULE_PRIORITY_OPTIONS)[number];
 
-export function rulePriorityType(p: string): string {
-  const m: Record<string, string> = { must: "danger", should: "warning", could: "info" };
-  return m[p] || "";
+export function rulePriorityType(p: string): "success" | "warning" | "info" | "primary" | "danger" {
+  const m: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = { must: "danger", should: "warning", could: "info" };
+  return m[p] || "info";
 }
 
 export function rulePriorityLabel(p: string): string {
@@ -99,7 +99,7 @@ export const APPROVAL_RESULT_OPTIONS = [
   { label: "Rejected", value: "rejected" }
 ] as const;
 
-export function approvalResultType(r: string): string {
+export function approvalResultType(r: string): "success" | "danger" {
   return r === "approved" ? "success" : "danger";
 }
 

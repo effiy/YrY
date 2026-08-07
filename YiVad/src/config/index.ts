@@ -18,5 +18,13 @@ export const AMAP_MAP_KEY: string = "";
 // Baidu Map key
 export const BAIDU_MAP_KEY: string = "";
 
-// Project dictionary
-export const PROJECTS: string[] = ["YiAi", "YiPet", "YiVad"];
+// Project dictionary (values match BRD meta-schemas project enum — lowercase)
+export const PROJECTS: string[] = ["yiai", "yipet", "yivad", "yiknowledge"];
+
+// Display labels for project values
+export const PROJECT_LABELS: Record<string, string> = {
+  yiai: "YiAi",
+  yipet: "YiPet",
+  yivad: "YiVad",
+  yiknowledge: "YiKnowledge"
+};

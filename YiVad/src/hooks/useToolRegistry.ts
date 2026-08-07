@@ -56,14 +56,23 @@ export interface ToolEvent {
   timestamp: number;
   error?: string;
   details?: Record<string, unknown>;
+  /** Arguments passed to the tool (Pi-inspired: per-call visibility).
+   *  Set on `start` events so the UI can show what's being invoked. */
+  args?: Record<string, unknown>;
+  /** Result content (truncated for display). Set on `end` events. */
+  content?: string;
+  /** Duration in ms. Set on `end` events. */
+  durationMs?: number;
 }
 
 export function useToolRegistry() {
   const tools = ref<Map<string, ToolDefinition>>(new Map());
 
-  // Reactive event log — consumed by UI to show tool execution status
+  // Reactive event log — consumed by UI to show tool execution status.
+  // Cap at 100 so per-tool stats (avg/median/p90/max) retain enough samples
+  // for p90 to separate from max meaningfully (n>=11 required).
   const toolEvents = ref<ToolEvent[]>([]);
-  const MAX_EVENTS = 50;
+  const MAX_EVENTS = 100;
 
   function emitToolEvent(event: ToolEvent): void {
     toolEvents.value = [...toolEvents.value.slice(-(MAX_EVENTS - 1)), event];
@@ -156,7 +165,10 @@ export function useToolRegistry() {
     const tool = tools.value.get(name);
     if (!tool || tool.enabled === false) return null;
 
-    const startEvent: ToolEvent = { name, label: tool.label, phase: "start", timestamp: Date.now() };
+    const startEvent: ToolEvent = {
+      name, label: tool.label, phase: "start", timestamp: Date.now(),
+      args,
+    };
     emitToolEvent(startEvent);
 
     try {
@@ -166,12 +178,18 @@ export function useToolRegistry() {
         timestamp: Date.now(),
         error: result.error,
         details: result.details,
+        content: (result.content ?? "").slice(0, 500),
+        durationMs: Date.now() - startEvent.timestamp,
       };
       emitToolEvent(endEvent);
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      const endEvent: ToolEvent = { name, label: tool.label, phase: "end", timestamp: Date.now(), error: msg };
+      const endEvent: ToolEvent = {
+        name, label: tool.label, phase: "end", timestamp: Date.now(),
+        error: msg,
+        durationMs: Date.now() - startEvent.timestamp,
+      };
       emitToolEvent(endEvent);
       return { content: "", error: msg };
     }

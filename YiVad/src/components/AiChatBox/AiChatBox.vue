@@ -1,15 +1,16 @@
 <script setup lang="ts" name="AiChatBox">
-import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, inject, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
+import { ElMessage } from "element-plus";
+import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useKnowledgeTreeStore } from "@/stores/modules/knowledgeTree";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
+import QuickButtons from "@/views/aiChat/components/QuickButtons.vue";
 import SessionStatusBar from "@/views/aiChat/components/SessionStatusBar.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
-import ContextFilesPanel from "@/views/aiChat/components/ContextFilesPanel.vue";
 import LlamaIndexPanel from "@/views/aiChat/components/LlamaIndexPanel.vue";
 
 const props = withDefaults(
@@ -90,11 +91,15 @@ function toggleCollapse() {
 }
 loadCollapsed();
 
-const router = useRouter();
+const openKnowledgePreview = inject<(path: string) => void>("openKnowledgePreview");
 
 function onOpenKnowledgeFile(filePath: string) {
   if (!filePath) return;
-  router.push({ path: "/knowledge/detail", query: { path: filePath } });
+  if (openKnowledgePreview) {
+    openKnowledgePreview(filePath);
+  } else {
+    ElMessage.warning("Knowledge preview is not available here.");
+  }
 }
 
 // ── RAG panel context: extract ctx:-prefixed tags from the active conversation ──
@@ -151,7 +156,7 @@ const {
   width: sessionSidebarW,
   isResizing: isSessionResizing,
   startResize: startSessionResize
-} = useResizable(240, 180, 480, "aiChat.sessionSidebarW");
+} = useResizable(180, 180, 480, "aiChat.sessionSidebarW");
 
 const sessionSidebarCollapsed = ref(false);
 function toggleSessionSidebar() {
@@ -161,19 +166,6 @@ provide("aiChatSessionSidebar", {
   collapsed: sessionSidebarCollapsed,
   toggle: toggleSessionSidebar
 });
-
-// ── Context files panel (between session sidebar and chat area) ──
-
-const {
-  width: contextPanelW,
-  isResizing: isContextResizing,
-  startResize: startContextResize
-} = useResizable(240, 180, 480, "aiChat.contextPanelW");
-
-const contextPanelCollapsed = ref(false);
-function toggleContextPanel() {
-  contextPanelCollapsed.value = !contextPanelCollapsed.value;
-}
 
 // ── Drop zone: drag a knowledge file from the left sidebar to create a session ──
 
@@ -284,17 +276,6 @@ async function onDrop(e: DragEvent) {
       <!-- Fill mode: context files panel + session sidebar + chat area -->
       <template v-if="isFill">
         <div class="ai-chat-box__body">
-          <!-- Context files panel (between knowledge files and chat sessions) -->
-          <div v-if="!contextPanelCollapsed" class="ai-chat-box__context-panel" :style="{ width: contextPanelW + 'px' }">
-            <ContextFilesPanel />
-          </div>
-          <!-- Context panel resizer -->
-          <div
-            v-if="!contextPanelCollapsed"
-            class="ai-chat-box__context-resizer"
-            :class="{ 'is-active': isContextResizing }"
-            @pointerdown="startContextResize"
-          />
           <!-- Session sidebar -->
           <div v-if="!sessionSidebarCollapsed" class="ai-chat-box__session-sidebar" :style="{ width: sessionSidebarW + 'px' }">
             <ConversationSessionSidebar />
@@ -319,6 +300,7 @@ async function onDrop(e: DragEvent) {
               <span class="ai-chat-box__title">{{ title }}</span>
             </div>
             <MessageList />
+            <QuickButtons />
             <SessionStatusBar />
             <ChatInput />
             <LlamaIndexPanel
@@ -345,6 +327,7 @@ async function onDrop(e: DragEvent) {
           <span class="ai-chat-box__title">{{ title }}</span>
         </div>
         <MessageList />
+        <QuickButtons />
         <ChatInput />
         <LlamaIndexPanel
           v-if="store.llamaIndexVisible"
@@ -409,24 +392,6 @@ async function onDrop(e: DragEvent) {
 }
 .ai-chat-box__session-resizer:hover,
 .ai-chat-box__session-resizer.is-active {
-  background: var(--el-color-primary-light-7);
-}
-
-.ai-chat-box__context-panel {
-  flex-shrink: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-.ai-chat-box__context-resizer {
-  width: 4px;
-  flex-shrink: 0;
-  cursor: col-resize;
-  background: var(--el-border-color-lighter);
-  transition: background 0.15s;
-}
-.ai-chat-box__context-resizer:hover,
-.ai-chat-box__context-resizer.is-active {
   background: var(--el-color-primary-light-7);
 }
 

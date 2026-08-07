@@ -33,7 +33,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeObjective($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addObjective()">+ {{ $t("brd.addObjective") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addObjective()">+ {{ $t("brd.addObjective") }}</el-button>
   </div>
 
   <!-- Core Users -->
@@ -48,7 +48,7 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.frequency')" width="130">
         <template #default="{ row }">
-          <el-select v-model="row.frequency" size="small" style="width: 100%">
+          <el-select v-model="row.frequency" size="small">
             <el-option :label="$t('brd.freqDaily')" value="daily" />
             <el-option :label="$t('brd.freqWeekly')" value="weekly" />
             <el-option :label="$t('brd.freqMonthly')" value="monthly" />
@@ -60,7 +60,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeCoreUser($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addCoreUser()">+ {{ $t("brd.addUser") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addCoreUser()">+ {{ $t("brd.addUser") }}</el-button>
   </div>
 
   <!-- Involved Countries -->
@@ -75,7 +75,7 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.scope')" width="110">
         <template #default="{ row }">
-          <el-select v-model="row.scope" size="small" style="width: 100%">
+          <el-select v-model="row.scope" size="small">
             <el-option :label="$t('brd.scopeAll')" value="all" />
             <el-option :label="$t('brd.scopePartial')" value="partial" />
           </el-select>
@@ -85,7 +85,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeCountry($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addCountry()">+ {{ $t("brd.addCountry") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addCountry()">+ {{ $t("brd.addCountry") }}</el-button>
   </div>
 
   <!-- Involved Modules -->
@@ -102,7 +102,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeModule($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addModule()">+ {{ $t("brd.addModule") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addModule()">+ {{ $t("brd.addModule") }}</el-button>
   </div>
 
   <!-- Business Rules -->
@@ -117,7 +117,7 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.rulePriority')" width="110">
         <template #default="{ row }">
-          <el-select v-model="row.priority" size="small" style="width: 100%">
+          <el-select v-model="row.priority" size="small">
             <el-option :label="$t('brd.priMust')" value="must" />
             <el-option :label="$t('brd.priShould')" value="should" />
             <el-option :label="$t('brd.priCould')" value="could" />
@@ -128,7 +128,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeBusinessRule($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addBusinessRule()">+ {{ $t("brd.addRule") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addBusinessRule()">+ {{ $t("brd.addRule") }}</el-button>
   </div>
 
   <!-- Constraints -->
@@ -165,12 +165,12 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.expectedDate')" width="160">
         <template #default="{ row }">
-          <el-date-picker v-model="row.expectedDate" type="date" :placeholder="$t('story.start')" size="small" style="width: 100%" value-format="x" />
+          <el-date-picker v-model="row.expectedDate" type="date" :placeholder="$t('story.start')" size="small" value-format="x" />
         </template>
       </el-table-column>
       <el-table-column :label="$t('brd.milestoneStatus')" width="140">
         <template #default="{ row }">
-          <el-select v-model="row.status" size="small" style="width: 100%">
+          <el-select v-model="row.status" size="small">
             <el-option :label="$t('brd.msPending')" value="pending_review" />
             <el-option :label="$t('brd.msNotStarted')" value="not_started" />
             <el-option :label="$t('brd.msInProgress')" value="in_progress" />
@@ -182,13 +182,13 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeMilestone($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addMilestone()">+ {{ $t("brd.addMilestone") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addMilestone()">+ {{ $t("brd.addMilestone") }}</el-button>
   </div>
 
   <!-- Urgency -->
   <el-divider content-position="left">{{ $t("brd.urgency") }}</el-divider>
   <el-form-item :label="$t('story.priority')">
-    <el-select v-model="store.form.urgency" style="width: 200px">
+    <el-select v-model="store.form.urgency" class="brd-urgency-select">
       <el-option v-for="opt in PRIORITY_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
     </el-select>
   </el-form-item>
@@ -196,7 +196,7 @@ const store = useStoryStore();
   <!-- Acceptance Criteria -->
   <el-divider content-position="left">{{ $t("brd.acceptance") }}</el-divider>
 
-  <h5 style="margin: 0 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.functional") }}</h5>
+  <h5 class="brd-subhead">{{ $t("brd.functional") }}</h5>
   <div class="brd-section">
     <el-table :data="store.form.acceptanceCriteria.functional" border size="small">
       <el-table-column :label="$t('brd.acId')" width="100">
@@ -207,7 +207,7 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.acPri')" width="110">
         <template #default="{ row }">
-          <el-select v-model="row.priority" size="small" style="width: 100%">
+          <el-select v-model="row.priority" size="small">
             <el-option :label="$t('brd.priMust')" value="must" />
             <el-option :label="$t('brd.priShould')" value="should" />
           </el-select>
@@ -217,13 +217,13 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeAcceptance($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addAcceptance()">+ {{ $t("brd.addAc") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addAcceptance()">+ {{ $t("brd.addAc") }}</el-button>
   </div>
 
-  <h5 style="margin: 12px 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.data") }}</h5>
+  <h5 class="brd-subhead brd-subhead--spaced">{{ $t("brd.data") }}</h5>
   <el-input v-model="store.acceptanceDataText" type="textarea" :rows="3" :placeholder="$t('brd.constraintsHint')" />
 
-  <h5 style="margin: 12px 0 8px; font-size: 13px; font-weight: 600;">{{ $t("brd.objectiveVerification") }}</h5>
+  <h5 class="brd-subhead brd-subhead--spaced">{{ $t("brd.objectiveVerification") }}</h5>
   <div class="brd-section">
     <el-table :data="store.form.acceptanceCriteria.objectiveVerification" border size="small">
       <el-table-column :label="$t('brd.verificationObjective')" min-width="140">
@@ -239,7 +239,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeObjectiveVerification($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addObjectiveVerification()">+ {{ $t("brd.addVerification") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addObjectiveVerification()">+ {{ $t("brd.addVerification") }}</el-button>
   </div>
 
   <!-- Attachments -->
@@ -256,7 +256,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeAttachment($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addAttachment()">+ {{ $t("brd.addAttachment") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addAttachment()">+ {{ $t("brd.addAttachment") }}</el-button>
   </div>
 
   <!-- Approval Records -->
@@ -265,7 +265,7 @@ const store = useStoryStore();
     <el-table :data="store.form.approvalRecords" border size="small">
       <el-table-column :label="$t('brd.apprRole')" width="150">
         <template #default="{ row }">
-          <el-select v-model="row.role" size="small" style="width: 100%">
+          <el-select v-model="row.role" size="small">
             <el-option :label="$t('brd.roleBusinessOwner')" value="business_owner" />
             <el-option :label="$t('brd.roleEuHubItbp')" value="eu_hub_itbp" />
             <el-option :label="$t('brd.roleRscBusiness')" value="rsc_business" />
@@ -278,12 +278,12 @@ const store = useStoryStore();
       </el-table-column>
       <el-table-column :label="$t('brd.apprDate')" width="150">
         <template #default="{ row }">
-          <el-date-picker v-model="row.date" type="date" :placeholder="$t('story.start')" size="small" style="width: 100%" value-format="x" />
+          <el-date-picker v-model="row.date" type="date" :placeholder="$t('story.start')" size="small" value-format="x" />
         </template>
       </el-table-column>
       <el-table-column :label="$t('brd.apprResult')" width="110">
         <template #default="{ row }">
-          <el-select v-model="row.result" size="small" style="width: 100%">
+          <el-select v-model="row.result" size="small">
             <el-option :label="$t('brd.resultApproved')" value="approved" />
             <el-option :label="$t('brd.resultRejected')" value="rejected" />
           </el-select>
@@ -296,7 +296,7 @@ const store = useStoryStore();
         <template #default="{ $index }"><el-button text type="danger" size="small" @click="store.removeApproval($index)">×</el-button></template>
       </el-table-column>
     </el-table>
-    <el-button text type="primary" size="small" style="margin-top: 6px" @click="store.addApproval()">+ {{ $t("brd.addApproval") }}</el-button>
+    <el-button text type="primary" size="small" class="brd-add-btn" @click="store.addApproval()">+ {{ $t("brd.addApproval") }}</el-button>
   </div>
 </template>
 
@@ -313,5 +313,27 @@ const store = useStoryStore();
     margin-bottom: 4px;
     display: block;
   }
+}
+.brd-subhead {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  &--spaced {
+    margin-top: 12px;
+  }
+}
+.brd-add-btn {
+  margin-top: 6px;
+}
+
+.brd-urgency-select {
+  width: 200px;
+}
+
+// Force el-select and el-date-picker inside table cells to fill the column width.
+:deep(.el-table .el-select),
+:deep(.el-table .el-date-editor) {
+  width: 100%;
 }
 </style>

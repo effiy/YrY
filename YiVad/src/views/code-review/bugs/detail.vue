@@ -11,8 +11,23 @@
         </nav>
       </div>
       <div class="bug-detail__header-right">
+        <div class="bug-detail__nav" v-if="currentIndex >= 0">
+          <el-button :icon="ArrowLeft" :disabled="!prevBug" @click="goToBug(prevBug)" :title="prevBug ? `Prev: ${prevBug.title}` : 'No newer bug'">
+            {{ prevBug ? `#${currentIndex}` : "Prev" }}
+          </el-button>
+          <span class="bug-detail__nav-pos">{{ currentIndex + 1 }} / {{ store.bugs.length }}</span>
+          <el-button :disabled="!nextBug" @click="goToBug(nextBug)" :title="nextBug ? `Next: ${nextBug.title}` : 'No older bug'">
+            {{ nextBug ? `#${currentIndex + 2}` : "Next" }}<el-icon class="el-icon--right"><ArrowRight /></el-icon>
+          </el-button>
+        </div>
+        <el-button v-if="bug" :icon="ChatDotRound" type="primary" @click="discussBugInAiChat">Discuss in AI Chat</el-button>
+        <el-button v-if="bug" link @click="viewRelatedAiChatSessions">Related AI Chat sessions</el-button>
         <el-button v-if="bug" :icon="EditPen" @click="openDrawer('Edit', bug)">Edit</el-button>
         <el-button v-if="bug" :icon="Refresh" @click="reload">Reload</el-button>
+        <el-button v-if="bug" :icon="QuestionFilled" link @click="showShortcuts = true">Shortcuts</el-button>
+        <span class="bug-detail__kbd-hint" v-if="bug">
+          <kbd>E</kbd> edit · <kbd>R</kbd> reload · <kbd>J</kbd>/<kbd>K</kbd> next/prev · <kbd>Esc</kbd> back · <kbd>?</kbd> help
+        </span>
       </div>
     </header>
 
@@ -35,7 +50,7 @@
               {{ summary(content.description) }}
             </p>
             <dl class="bug-detail__hero-meta">
-              <div><dt>Project</dt><dd>{{ bug.project || "—" }}</dd></div>
+              <div><dt>Project</dt><dd>{{ projectLabel(bug.project) }}</dd></div>
               <div><dt>Module</dt><dd>{{ bug.module || "—" }}</dd></div>
               <div><dt>Assignee</dt><dd>{{ bug.assignee || "Unassigned" }}</dd></div>
               <div><dt>Reporter</dt><dd>{{ bug.reporter || "—" }}</dd></div>
@@ -106,6 +121,11 @@
             >
               <h4 class="bug-detail__timeline-title">{{ evt.label }}</h4>
               <p v-if="evt.note" class="bug-detail__timeline-note">{{ evt.note }}</p>
+              <p
+                class="bug-detail__timeline-relative bug-detail__copyable"
+                :title="`${formatTime(evt.ts)} · click to copy ISO`"
+                @click="copyTimestamp(evt.ts)"
+              >{{ formatRelativeTime(evt.ts) }}</p>
             </el-timeline-item>
           </el-timeline>
           <el-empty v-else description="No lifecycle events" :image-size="60" />
@@ -113,7 +133,12 @@
 
         <!-- Environment -->
         <el-card shadow="never" class="bug-detail__card">
-          <template #header><h3>Environment &amp; Versions</h3></template>
+          <template #header>
+            <div class="bug-detail__card-header">
+              <h3>Environment &amp; Versions</h3>
+              <el-button size="small" text type="primary" @click="openDrawer('Edit', bug)">Edit</el-button>
+            </div>
+          </template>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="Environment" :span="2">{{ bug.environment || "—" }}</el-descriptions-item>
             <el-descriptions-item label="Affected Version">{{ bug.affectedVersion || "—" }}</el-descriptions-item>
@@ -123,11 +148,20 @@
 
         <!-- Reproduction -->
         <el-card shadow="never" class="bug-detail__card">
-          <template #header><h3>Reproduction</h3></template>
+          <template #header>
+            <div class="bug-detail__card-header">
+              <h3>Reproduction</h3>
+              <el-button size="small" text type="primary" @click="openDrawer('Edit', bug)">Edit</el-button>
+            </div>
+          </template>
           <section class="bug-detail__content-section">
             <h4>Description</h4>
             <div v-if="content?.description" class="bug-detail__markdown prose" v-html="renderMarkdown(content.description)"></div>
-            <el-empty v-else description="No description" :image-size="60" />
+            <el-empty v-else description="No description" :image-size="60">
+              <template #extra>
+                <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add description</el-button>
+              </template>
+            </el-empty>
           </section>
           <el-divider />
           <section class="bug-detail__content-section">
@@ -138,21 +172,33 @@
                 <span class="bug-detail__step-text">{{ step }}</span>
               </li>
             </ol>
-            <el-empty v-else description="No steps recorded" :image-size="60" />
+            <el-empty v-else description="No steps recorded" :image-size="60">
+              <template #extra>
+                <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add steps</el-button>
+              </template>
+            </el-empty>
           </section>
           <el-row :gutter="16" class="bug-detail__row">
             <el-col :span="12">
               <section class="bug-detail__content-section">
                 <h4>Expected Result</h4>
                 <div v-if="content?.expectedResult" class="bug-detail__markdown bug-detail__markdown--expected prose" v-html="renderMarkdown(content.expectedResult)"></div>
-                <el-empty v-else description="Not specified" :image-size="60" />
+                <el-empty v-else description="Not specified" :image-size="60">
+                  <template #extra>
+                    <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add expected</el-button>
+                  </template>
+                </el-empty>
               </section>
             </el-col>
             <el-col :span="12">
               <section class="bug-detail__content-section">
                 <h4>Actual Result</h4>
                 <div v-if="content?.actualResult" class="bug-detail__markdown bug-detail__markdown--actual prose" v-html="renderMarkdown(content.actualResult)"></div>
-                <el-empty v-else description="Not specified" :image-size="60" />
+                <el-empty v-else description="Not specified" :image-size="60">
+                  <template #extra>
+                    <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add actual</el-button>
+                  </template>
+                </el-empty>
               </section>
             </el-col>
           </el-row>
@@ -163,19 +209,30 @@
           <template #header>
             <div class="bug-detail__card-header">
               <h3>Resolution</h3>
-              <el-tag v-if="bug.resolvedAt" type="success" size="small">Resolved {{ formatTime(bug.resolvedAt) }}</el-tag>
+              <div class="bug-detail__card-header-acts">
+                <el-tag v-if="bug.resolvedAt" type="success" size="small">Resolved {{ formatTime(bug.resolvedAt) }}</el-tag>
+                <el-button size="small" text type="primary" @click="openDrawer('Edit', bug)">Edit</el-button>
+              </div>
             </div>
           </template>
           <section class="bug-detail__content-section">
             <h4>Root Cause</h4>
             <div v-if="content?.causeProblem" class="bug-detail__markdown prose" v-html="renderMarkdown(content.causeProblem)"></div>
-            <el-empty v-else description="Root cause not yet recorded" :image-size="60" />
+            <el-empty v-else description="Root cause not yet recorded" :image-size="60">
+              <template #extra>
+                <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add root cause</el-button>
+              </template>
+            </el-empty>
           </section>
           <el-divider />
           <section class="bug-detail__content-section">
             <h4>Solution</h4>
             <div v-if="content?.solution" class="bug-detail__markdown prose" v-html="renderMarkdown(content.solution)"></div>
-            <el-empty v-else description="Solution not yet recorded" :image-size="60" />
+            <el-empty v-else description="Solution not yet recorded" :image-size="60">
+              <template #extra>
+                <el-button size="small" type="primary" plain @click="openDrawer('Edit', bug)">Add solution</el-button>
+              </template>
+            </el-empty>
           </section>
         </el-card>
 
@@ -184,16 +241,37 @@
           <template #header>
             <div class="bug-detail__card-header">
               <h3>Related Files</h3>
-              <el-tag type="info" size="small">{{ relatedFiles.length }} detected</el-tag>
+              <div class="bug-detail__card-header-acts">
+                <el-tag type="info" size="small">{{ relatedFiles.length }} detected</el-tag>
+                <el-button
+                  v-if="relatedFiles.length > 1"
+                  size="small"
+                  text
+                  type="primary"
+                  :icon="CopyDocument"
+                  @click="copyAllPaths()"
+                >
+                  Copy all
+                </el-button>
+              </div>
             </div>
           </template>
           <p v-if="relatedFiles.length" class="bug-detail__related-hint">
             File paths auto-extracted from the description, root cause, and solution.
           </p>
           <ul v-if="relatedFiles.length" class="bug-detail__files">
-            <li v-for="f in relatedFiles" :key="f">
+            <li v-for="f in relatedFiles" :key="f" class="bug-detail__file-li" :title="'Click to copy'" @click="copyToClipboard(f, 'Path copied')">
               <el-icon class="bug-detail__file-icon"><Document /></el-icon>
               <code class="bug-detail__file-path">{{ f }}</code>
+              <el-button
+                class="bug-detail__file-discuss"
+                size="small"
+                text
+                :icon="ChatDotRound"
+                title="Discuss this file in AI Chat"
+                @click.stop="discussBugFileInAiChat(f)"
+              />
+              <el-icon class="bug-detail__file-copy"><CopyDocument /></el-icon>
             </li>
           </ul>
           <el-empty v-else description="No file paths detected in this bug's content" :image-size="60" />
@@ -203,10 +281,24 @@
         <el-card shadow="never" class="bug-detail__card bug-detail__card--retro">
           <template #header>
             <div class="bug-detail__card-header">
-              <h3>Retrospective</h3>
-              <el-tag type="warning" size="small" effect="plain">auto-synthesised</el-tag>
+              <div class="bug-detail__retro-toggle" @click="retroCollapsed = !retroCollapsed">
+                <el-icon class="bug-detail__retro-chevron" :class="{ 'is-reversed': retroCollapsed }"><ArrowDown /></el-icon>
+                <h3>Retrospective</h3>
+                <el-tag type="warning" size="small" effect="plain">auto-synthesised</el-tag>
+              </div>
+              <el-button
+                v-if="retro.prevention.length"
+                size="small"
+                text
+                type="primary"
+                :icon="CopyDocument"
+                @click="copyPrevention"
+              >
+                Copy Prevention
+              </el-button>
             </div>
           </template>
+          <div v-show="!retroCollapsed">
           <p class="bug-detail__retro-intro">
             Synthesised from metadata, content body, and {{ relatedFiles.length }} related file path{{ relatedFiles.length === 1 ? "" : "s" }}.
             Not a substitute for human review — use as a starting point for the postmortem discussion.
@@ -252,8 +344,20 @@
           <el-divider />
           <section class="bug-detail__content-section">
             <h4>One-line Summary</h4>
-            <p class="bug-detail__retro-body bug-detail__retro-body--lead">{{ retro.oneLiner }}</p>
+            <div class="bug-detail__retro-summary-row">
+              <p class="bug-detail__retro-body bug-detail__retro-body--lead">{{ retro.oneLiner }}</p>
+              <el-button
+                size="small"
+                text
+                type="primary"
+                :icon="CopyDocument"
+                @click="copyOneLiner"
+              >
+                Copy
+              </el-button>
+            </div>
           </section>
+          </div>
         </el-card>
 
         <!-- Tags -->
@@ -270,9 +374,20 @@
           <el-descriptions :column="1" border>
             <el-descriptions-item label="Path">
               <code class="bug-detail__content-path" @click="copyToClipboard(bug.contentPath, 'Path copied')">{{ bug.contentPath || "—" }}</code>
-              <el-button size="small" text :icon="CopyDocument" @click="copyToClipboard(bug.contentPath, 'Path copied')" />
+              <el-icon class="bug-detail__content-copy"><CopyDocument /></el-icon>
             </el-descriptions-item>
           </el-descriptions>
+        </el-card>
+
+        <!-- Cross-domain links — BRD + Tech-Leadership + Story Board, all by shared project -->
+        <el-card v-if="bug.project" shadow="never" class="bug-detail__card bug-detail__related">
+          <template #header><h3>Cross-Domain Links</h3></template>
+          <RelatedByProjectPanel
+            :project="bug.project"
+            current-tree="bug"
+            current-topic="bugs"
+            :current-key="bug.key"
+          />
         </el-card>
       </template>
 
@@ -280,38 +395,77 @@
     </div>
 
     <BugDrawer ref="drawerRef" />
+
+    <el-dialog
+      v-model="showShortcuts"
+      title="Keyboard shortcuts"
+      width="420px"
+      append-to-body
+      class="bug-detail__shortcuts"
+    >
+      <ul class="bug-detail__shortcut-list">
+        <li><kbd>E</kbd><span>Edit current bug</span></li>
+        <li><kbd>R</kbd><span>Reload from server</span></li>
+        <li><kbd>J</kbd><span>Next (older) bug in list</span></li>
+        <li><kbd>K</kbd><span>Previous (newer) bug in list</span></li>
+        <li><kbd>/</kbd><span>Focus search on list page</span></li>
+        <li><kbd>N</kbd><span>New bug (on list page)</span></li>
+        <li><kbd>Esc</kbd><span>Back to list (or close this dialog)</span></li>
+        <li><kbd>?</kbd><span>Show this help</span></li>
+      </ul>
+      <template #footer>
+        <el-button type="primary" @click="showShortcuts = false">Got it</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts" name="crBugsDetail">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowDown,
+  ChatDotRound,
   CircleCheck,
   Clock,
   CopyDocument,
   Document,
   EditPen,
   Loading,
+  QuestionFilled,
   Refresh,
   Timer,
   Warning
 } from "@element-plus/icons-vue";
+import { PROJECT_LABELS } from "@/config";
 import { useBugStore } from "@/stores/modules/bug";
 import { useMarkdown } from "@/hooks/useMarkdown";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
+import { buildRelatedEntriesSection } from "@/hooks/useRelatedByProject";
+import { formatRelativeTime } from "@/utils/datetime";
 import { updateBug, readBugContent, type BugDocument, type BugContent, type BugSeverity, type BugPriority, type BugStatus, type BugType, type BugFrequency } from "@/api/modules/bug";
 import BugDrawer from "./components/BugDrawer.vue";
+import RelatedByProjectPanel from "@/views/brd/components/RelatedByProjectPanel.vue";
 
 const route = useRoute();
 const router = useRouter();
 const store = useBugStore();
 const { render: renderMarkdown } = useMarkdown();
+const { openInAiChat, linkToAiChatByTag } = useAiChatBridge();
+
+function projectLabel(value?: string): string {
+  if (!value) return "—";
+  return PROJECT_LABELS[value] ?? value;
+}
 
 const bug = computed(() => store.selectedBug);
 const content = computed(() => store.selectedBugContent);
+
+const retroCollapsed = ref(false);
+const showShortcuts = ref(false);
 
 type TagType = "danger" | "warning" | "info" | "primary" | "success" | "";
 
@@ -364,6 +518,52 @@ async function copyToClipboard(text: string | undefined, toast = "Copied"): Prom
   }
 }
 
+async function copyAllPaths(): Promise<void> {
+  if (!relatedFiles.value.length) return;
+  const blob = relatedFiles.value.join("\n");
+  try {
+    await navigator.clipboard.writeText(blob);
+    ElMessage.success({ message: `Copied ${relatedFiles.value.length} file path${relatedFiles.value.length === 1 ? "" : "s"}`, duration: 1500 });
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function copyPrevention(): Promise<void> {
+  const items = retro.value.prevention;
+  if (!items.length) return;
+  const header = `Prevention & Follow-up — ${bug.value?.key ?? "bug"}\n${bug.value?.title ?? ""}\n`;
+  const blob = header + items.map((it, i) => `${i + 1}. ${it}`).join("\n");
+  try {
+    await navigator.clipboard.writeText(blob);
+    ElMessage.success({ message: `Copied ${items.length} prevention item${items.length === 1 ? "" : "s"}`, duration: 1500 });
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function copyOneLiner(): Promise<void> {
+  const text = retro.value.oneLiner;
+  if (!text || text === "—") return;
+  try {
+    await navigator.clipboard.writeText(text);
+    ElMessage.success({ message: "Copied summary", duration: 1500 });
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function copyTimestamp(ts: number | string | null | undefined): Promise<void> {
+  if (!ts) return;
+  const iso = new Date(ts).toISOString();
+  try {
+    await navigator.clipboard.writeText(iso);
+    ElMessage.success({ message: "Timestamp copied", duration: 1200 });
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
 // SLA indicator — breached if dueDate passed and not resolved/closed
 const slaTag = computed(() => {
   if (!bug.value?.dueDate) return null;
@@ -407,7 +607,7 @@ const lifecycleEvents = computed<LifecycleEvent[]>(() => {
 
 // Auto-extract file paths from the bug content for code-review hand-off.
 // Matches common repo-relative paths with known source extensions.
-const FILE_PATH_RE = /\b((?:[A-Za-z0-9_-]+(?:\/|\\))+[A-Za-z0-9_.\-]+\.(?:py|ts|tsx|js|jsx|vue|json|md|yaml|yml|sh|css|scss))\b/g;
+const FILE_PATH_RE = /\b((?:[A-Za-z0-9_-]+(?:\/|\\))+[A-Za-z0-9_.-]+\.(?:py|ts|tsx|js|jsx|vue|json|md|yaml|yml|sh|css|scss))\b/g;
 
 const relatedFiles = computed<string[]>(() => {
   const blob = [
@@ -420,8 +620,8 @@ const relatedFiles = computed<string[]>(() => {
   ].join("\n");
   const seen = new Set<string>();
   let m: RegExpExecArray | null;
-  FILE_PATH_RE.lastIndex = 0;
-  while ((m = FILE_PATH_RE.exec(blob)) !== null) {
+  const re = new RegExp(FILE_PATH_RE.source, "g");
+  while ((m = re.exec(blob)) !== null) {
     const p = m[1].replace(/\\/g, "/");
     if (!seen.has(p)) seen.add(p);
   }
@@ -563,6 +763,92 @@ function back() {
   router.push("/code-review/bugs");
 }
 
+async function discussBugInAiChat() {
+  const b = bug.value;
+  if (!b) return;
+  const c = content.value;
+  const steps = c?.stepsToReproduce?.length ? c.stepsToReproduce.map((s, i) => `${i + 1}. ${s}`).join("\n") : "";
+  const baseContent = [
+    `# ${b.title}`,
+    "",
+    `**Key:** ${b.key}`,
+    `**Project:** ${projectLabel(b.project) || "—"}`,
+    `**Module:** ${b.module || "—"}`,
+    `**Severity:** ${severityLabel(b.severity)}`,
+    `**Priority:** ${priorityLabel(b.priority)}`,
+    `**Status:** ${statusLabel(b.status)}`,
+    `**Type:** ${typeLabel(b.type)}`,
+    `**Frequency:** ${frequencyLabel(b.frequency)}`,
+    ...(b.assignee ? [`**Assignee:** ${b.assignee}`] : []),
+    ...(b.reporter ? [`**Reporter:** ${b.reporter}`] : []),
+    ...(b.environment ? [`**Environment:** ${b.environment}`] : []),
+    ...(b.affectedVersion ? [`**Affected Version:** ${b.affectedVersion}`] : []),
+    ...(b.fixedVersion ? [`**Fixed Version:** ${b.fixedVersion}`] : []),
+    ...(b.tags?.length ? [`**Tags:** ${b.tags.join(", ")}`] : []),
+    "",
+    "## Description",
+    "",
+    c?.description || "_(no description)_",
+    ...(steps ? ["", "## Steps to Reproduce", "", steps] : []),
+    ...(c?.expectedResult ? ["", "## Expected Result", "", c.expectedResult] : []),
+    ...(c?.actualResult ? ["", "## Actual Result", "", c.actualResult] : []),
+    ...(c?.causeProblem ? ["", "## Root Cause", "", c.causeProblem] : []),
+    ...(c?.solution ? ["", "## Solution", "", c.solution] : []),
+    ...(relatedFiles.value.length ? ["", "## Related Files", "", relatedFiles.value.map(f => `- \`${f}\``).join("\n")] : [])
+  ].join("\n");
+  let pageContent = baseContent;
+  if (b.project) {
+    const section = await buildRelatedEntriesSection(b.project, b.key, "bugs");
+    if (section) pageContent = `${pageContent}\n${section}`;
+  }
+  const tags = [`ctx:code-review/bugs/${b.key}`, "code-review", "bug", `bug:${b.key}`];
+  if (b.project) tags.push(`project:${b.project}`);
+  if (b.severity) tags.push(`severity:${b.severity}`);
+  if (b.status) tags.push(`status:${b.status}`);
+  await openInAiChat({
+    title: `Bug: ${b.title}`,
+    pageContent,
+    tags,
+    sourceUrl: `/code-review/bugs/detail/${b.key}?mode=view`
+  });
+}
+
+function viewRelatedAiChatSessions() {
+  const b = bug.value;
+  if (!b?.key) return;
+  router.push(linkToAiChatByTag(`bug:${b.key}`));
+}
+
+async function discussBugFileInAiChat(filePath: string) {
+  const b = bug.value;
+  if (!b || !filePath) return;
+  const tags = [`ctx:code-review/bugs/${b.key}`, "code-review", "bug", `bug:${b.key}`, `file:${filePath}`];
+  if (b.project) tags.push(`project:${b.project}`);
+  const pageContent = [
+    `# \`${filePath}\``,
+    "",
+    `**Bug:** ${b.title}`,
+    `**Key:** ${b.key}`,
+    `**Project:** ${projectLabel(b.project) || "—"}`,
+    `**Module:** ${b.module || "—"}`,
+    `**Severity:** ${severityLabel(b.severity)}`,
+    `**Status:** ${statusLabel(b.status)}`,
+    `**File:** \`${filePath}\``,
+    "",
+    "## Description",
+    "",
+    content.value?.description || "_(no description)_",
+    ...(content.value?.causeProblem ? ["", "## Root Cause", "", content.value.causeProblem] : []),
+    ...(content.value?.solution ? ["", "## Solution", "", content.value.solution] : [])
+  ].join("\n");
+  await openInAiChat({
+    title: `${filePath} — bug ${b.key}`,
+    pageContent,
+    tags,
+    sourceUrl: `/code-review/bugs/detail/${b.key}?mode=view`
+  });
+}
+
 function reload() {
   const id = route.params.id as string;
   if (id) store.loadDetail(id);
@@ -645,18 +931,100 @@ async function openDrawer(title: string, row: Partial<BugDocument> = {}) {
 onMounted(() => {
   const id = route.params.id as string;
   if (id) store.loadDetail(id);
+  if (!store.bugs.length) store.fetchBugs();
+  window.addEventListener("keydown", onKeydown);
 });
+onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
+
+const currentIndex = computed(() => {
+  if (!bug.value) return -1;
+  return store.bugs.findIndex(b => b.key === bug.value?.key);
+});
+
+const prevBug = computed(() => {
+  const idx = currentIndex.value;
+  return idx > 0 ? store.bugs[idx - 1] : null;
+});
+
+const nextBug = computed(() => {
+  const idx = currentIndex.value;
+  return idx >= 0 && idx < store.bugs.length - 1 ? store.bugs[idx + 1] : null;
+});
+
+function goToBug(target: { key: string } | null) {
+  if (!target?.key) return;
+  router.push(`/code-review/bugs/detail/${target.key}`);
+}
+
+function onKeydown(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName;
+  const inInput = tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true;
+  if (inInput) return;
+  // skip when an overlay (dialog/drawer/select dropdown) is open — except for Esc, which closes the dialog
+  const inOverlay = !!document.querySelector(".el-dialog:not(.is-hidden), .el-drawer:not(.is-hide), .el-select-dropdown:not([style*='display: none'])");
+  if (e.key === "Escape") {
+    if (showShortcuts.value) { e.preventDefault(); showShortcuts.value = false; return; }
+    if (!inOverlay) { e.preventDefault(); back(); }
+    return;
+  }
+  if (inOverlay) return;
+  if (e.key === "?") { e.preventDefault(); showShortcuts.value = true; return; }
+  if (!bug.value) return;
+  const k = e.key.toLowerCase();
+  if (k === "r") { e.preventDefault(); reload(); }
+  else if (k === "e") { e.preventDefault(); openDrawer("Edit", bug.value); }
+  else if (k === "j") { e.preventDefault(); if (nextBug.value) goToBug(nextBug.value); }
+  else if (k === "k") { e.preventDefault(); if (prevBug.value) goToBug(prevBug.value); }
+}
 </script>
 
 <style scoped lang="scss">
 .bug-detail {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
   padding: 16px;
+  overflow: hidden;
   &__header {
     display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
     margin-bottom: 16px;
   }
   &__header-left { display: flex; gap: 8px; align-items: center; }
-  &__header-right { display: flex; gap: 8px; }
+  &__header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    background: var(--el-fill-color-light);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  &__nav-pos {
+    font-variant-numeric: tabular-nums;
+    color: var(--el-text-color-secondary);
+    min-width: 50px;
+    text-align: center;
+  }
+  &__kbd-hint {
+    margin-left: 4px;
+    font-size: 11px;
+    color: var(--el-text-color-placeholder);
+    kbd {
+      display: inline-block;
+      min-width: 16px;
+      padding: 1px 5px;
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 11px;
+      color: var(--el-text-color-secondary);
+      background: var(--el-fill-color);
+      border: 1px solid var(--el-border-color-lighter);
+      border-radius: 3px;
+    }
+  }
   &__breadcrumb {
     display: flex; gap: 6px; align-items: center; font-size: 13px;
     color: var(--el-text-color-secondary);
@@ -664,7 +1032,7 @@ onMounted(() => {
   }
   &__breadcrumb-root, &__breadcrumb-current { font-family: ui-monospace, monospace; }
   &__breadcrumb-current { color: var(--el-text-color-primary); }
-  &__body { display: flex; flex-direction: column; gap: 16px; min-height: 200px; }
+  &__body { display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0; overflow-y: auto; }
   &__hero {
     display: flex;
     flex-wrap: wrap; gap: 24px; padding: 24px;
@@ -724,6 +1092,18 @@ onMounted(() => {
   }
   &__timeline-title { margin: 0; font-size: 14px; font-weight: 600; }
   &__timeline-note { margin: 4px 0 0; font-size: 12px; color: var(--el-text-color-secondary); }
+  &__timeline-relative {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: var(--el-text-color-placeholder);
+    font-variant-numeric: tabular-nums;
+  }
+  &__copyable {
+    cursor: pointer;
+    &:hover {
+      color: var(--el-color-primary);
+    }
+  }
   &__card {
     border-radius: 8px;
     :deep(.el-card__header) { padding: 12px 16px; }
@@ -731,6 +1111,7 @@ onMounted(() => {
     &--resolved { border-left: 3px solid var(--el-color-success); }
   }
   &__card-header { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+  &__card-header-acts { display: flex; gap: 8px; align-items: center; }
   &__content-section { padding: 4px 0; }
   &__content-section h4 {
     margin: 0 0 8px; font-size: 13px; font-weight: 600;
@@ -772,6 +1153,28 @@ onMounted(() => {
       &:hover { background: var(--el-fill-color-light); }
     }
   }
+  &__file-li {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    margin: 0 -8px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    &:hover {
+      background: var(--el-fill-color-light);
+    }
+  }
+  &__file-copy {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--el-text-color-placeholder);
+    opacity: 0.55;
+    transition: opacity 0.15s, color 0.15s;
+  }
+  &__file-li:hover &__file-copy,
+  &__file-li:focus-visible &__file-copy { opacity: 1; color: var(--el-color-primary); }
   &__file-icon { font-size: 14px; color: var(--el-color-primary); }
   &__file-path {
     font-family: ui-monospace, monospace; font-size: 13px;
@@ -788,6 +1191,19 @@ onMounted(() => {
     font-style: italic; color: var(--el-text-color-secondary);
   }
   &__retro-grid { margin-bottom: 0; }
+  &__retro-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    &:hover h3 { color: var(--el-color-primary); }
+  }
+  &__retro-chevron {
+    transition: transform 0.2s;
+    color: var(--el-text-color-secondary);
+    &.is-reversed { transform: rotate(-90deg); }
+  }
   &__retro-body {
     margin: 0; font-size: 14px; line-height: 1.6; color: var(--el-text-color-primary);
     &--lead { font-size: 15px; font-weight: 500; }
@@ -814,13 +1230,56 @@ onMounted(() => {
     margin: 0;
     li { margin-bottom: 6px; font-size: 14px; line-height: 1.6; }
   }
+  &__retro-summary-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    align-items: center;
+  }
   &__tags { display: flex; flex-wrap: wrap; gap: 6px; }
   &__content-path { padding: 2px 6px;
     font-family: ui-monospace, monospace; font-size: 13px; word-break: break-all;
     cursor: pointer; user-select: all;
     background: var(--el-fill-color-light); border-radius: 3px;
+    &:hover { background: var(--el-fill-color); }
+  }
+  &__content-copy {
+    font-size: 14px;
+    color: var(--el-text-color-placeholder);
+    vertical-align: middle;
+    margin-left: 4px;
   }
   &__empty { color: var(--el-text-color-secondary); }
+}
+.bug-detail__shortcut-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--el-border-color-lighter);
+    &:last-child { border-bottom: none; }
+    span { font-size: 14px; color: var(--el-text-color-regular); }
+  }
+  kbd {
+    display: inline-block;
+    min-width: 28px;
+    padding: 2px 8px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 12px;
+    text-align: center;
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 var(--el-border-color-light);
+  }
 }
 .prose {
   font-size: 14px; line-height: 1.6; color: var(--el-text-color-primary);

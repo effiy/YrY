@@ -44,12 +44,12 @@ export function useTopicList(options: UseTopicListOptions) {
   }
 
   async function handleDelete(row: TopicEntryDocument) {
-    await useHandleData(
+    const ok = await useHandleData(
       () => deleteTopicEntry(tree, topic, row.key),
       {},
       `Delete "${row.title}"`
     );
-    proTableRef.value?.getTableList();
+    if (ok) proTableRef.value?.getTableList();
   }
 
   function formatTime(ts: number): string {

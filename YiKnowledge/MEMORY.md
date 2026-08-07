@@ -1,141 +1,251 @@
-# 知识分类目录
-
-知识管理体系位于 `~/YiKnowledge`。全库导航见 [INDEX.md](./INDEX.md)，一级分类概览见 [README.md](./README.md)。
-
-目录结构如下：
-
-```
-├── INDEX.md           # 全库人类可读 TOC
-├── README.md          # 一级分类导航
-├── MEMORY.md          # 本文件：归档规则与命名规范
-├── projects/          # 项目业务 + 工程文档
-│   └── {project}/
-│       ├── stories/       # Story/Scene 业务内容（BRD 驱动）
-│       └── engineering/   # CLAUDE/README/CHANGELOG 镜像
-├── industry/          # 行业知识
-│   ├── competitors/   # 竞争对手信息
-│   ├── market-trends/ # 市场趋势
-│   ├── reports/       # 行业报告
-│   └── use-cases/     # 使用案例
-├── lessons/           # 经验教训
-│   ├── failures/      # 失败案例
-│   ├── gotchas/       # 陷阱/注意事项
-│   └── wins/          # 成功案例
-├── methodology/       # 方法论
-│   ├── ai-specific/   # AI 相关方法论
-│   ├── pm-frameworks/ # 产品管理框架
-│   └── thinking/      # 思维模型
-├── people/            # 人脉/人员
-│   ├── experts/       # 专家
-│   ├── stakeholders/  # 利益相关者
-│   └── team/          # 团队成员
-├── product/           # 产品知识
-│   ├── metrics/       # 产品指标
-│   ├── prd/           # 产品需求文档
-│   ├── strategy/      # 产品战略
-│   └── ux/            # 用户体验
-├── resources/         # 资源
-│   ├── prompts/       # 提示词
-│   ├── reading-list/  # 阅读清单
-│   └── templates/     # 模板
-├── tech/              # 技术知识
-│   ├── ai-foundations/# AI 基础
-│   ├── ai-platform/   # AI 平台
-│   ├── data/          # 数据
-│   └── infra/         # 基础设施
-└── work/              # 工作相关
-    ├── collaboration/ # 协作
-    ├── meetings/      # 会议
-    ├── processes/     # 流程
-    └── tools/         # 工具
-```
-
-## projects/ 结构说明
-
-每个项目下并存两类内容：
-
-- **`stories/`**：业务需求内容（Story/Scene + BRD 章节），元数据由数据库管理，富文本内容由文件存。详见 [projects/README.md](./projects/README.md)。
-- **`engineering/`**：项目根目录 `CLAUDE.md` / `README.md` / `CHANGELOG.md` 的镜像拷贝，便于在 YiKnowledge 内集中查阅。修改原项目根文件后需手动 `cp` 同步到本目录。
-
-## 命名规范
-
-- **路径**：所有文件名采用 ASCII 英文 kebab-case（`lower-case-with-dashes.md`）
-- **中文语义**：保留在 frontmatter `title:` 字段，不进入文件名
-- **原文文件**：`{topic}-original.md`
-- **摘要文件**：`{topic}-summary.md`
-- **模板文件**：`{topic}-template.md`
-- **提示词文件**：`{topic}-prompt.md`
-
-## 归档规则
-
-### 双份归档原则
-
-后续收到主人发送的知识内容时，应**一式两份**归档：
-
-1. **原文**：保存原始内容（网页用 web_fetch 抓取 markdown，文件直接复制），存于对应分类目录下
-2. **摘要**：提炼核心观点、关键信息、行动建议，存于同一目录下
-   - 摘要开头必须注明**原内容出处**（链接或文件路径）
-   - 摘要应包含：核心观点、关键信息、标签/分类、归档日期
-
-### 归档流程
-
-1. 判断内容主题，确定目标分类目录
-2. 保存原文 → `YiKnowledge/{category}/{topic}-original.md`
-3. 编写摘要 → `YiKnowledge/{category}/{topic}-summary.md`
-4. 摘要中留存出处链接/路径
-
-### 命名规范
-
-- 路径：ASCII 英文 kebab-case（详见上文「命名规范」）
-- 原文文件：`{topic}-original.md` 或 `{topic}.md`（保持原标题）
-- 摘要文件：`{topic}-summary.md`
-- 或单文件结构：`{topic}.md`（内含原文 + 摘要两个章节）
-
-### YAML 元数据规范
-
-**所有摘要文件必须在开头添加 YAML Frontmatter**：
-
-```yaml
 ---
-title: 文件标题（可含中文）
-tags: [标签 1, 标签 2, 标签 3]
-category: 分类路径（如 tech/ai-platform）
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-source: 原文链接或文件路径
+title: YiKnowledge rulebook and naming conventions
+tags: [knowledge-base, rules, naming, frontmatter]
+category: root
+created: 2026-01-01
+updated: 2026-08-07
+source: internal
 type: summary
-status: draft | stable | deprecated      # 可选，默认 stable
-author: 作者标识                          # 可选
-last_verified: YYYY-MM-DD                 # 可选，外部内容最近核实日期
+status: stable
+lifecycle: active
+review_cycle: quarterly
+last_verified: 2026-08-07
+related:
+  - ./README.md
+  - ./INDEX.md
+  - ./knowledge-curator/templates/knowledge-leaf.md
+  - ./knowledge-curator/governance/governance.md
+---
+
+# YiKnowledge Rulebook
+
+The knowledge management system lives at `~/YiKnowledge`. For full-library navigation see [INDEX.md](./INDEX.md); for the top-level category overview see [README.md](./README.md).
+
+## Directory structure
+
+```
+YiKnowledge/
+├── INDEX.md                     # Full-library TOC (10 roles × problem domains)
+├── README.md                    # Top-level overview + design principles
+├── MEMORY.md                    # This file: rulebook, naming conventions, frontmatter spec
+│
+├── engineer/                    # Code, architecture, quality, security, deployment, data, tools
+│   ├── architecture-design/     # API design, system design, design patterns
+│   ├── engineering/             # AI/ML + dev tools (merged ai-ml + tools-devx)
+│   ├── quality-security/        # Testing, security, a11y, perf (merged quality-testing + security-supply-chain)
+│   ├── infrastructure/          # CI/CD, releases, DB, data (merged deployment-operations + data-persistence)
+│   ├── process/                 # Team workflows, meetings, journeys (merged collaboration-process + journeys)
+│   ├── lessons/                 # Wins, failures, gotchas from real projects
+│   ├── projects/                # Per-project engineering docs (YiAi, YiVad, YiPet)
+│   ├── SECURITY.md              # Cross-role domain index: security, supply-chain, risk
+│   └── ENGINEERING.md           # Cross-role domain index: architecture, quality, deployment
+│
+├── tech-lead/                   # Architecture decisions, ADRs, capacity, risk, roadmap
+│   ├── architecture/            # Tech selection, maturity models, DORA metrics
+│   ├── decisions/               # ADRs grouped by project (yiai/, yivad/, yipet/, fde/)
+│   ├── capacity/                # Cost tracking, dependency audits, capacity planning
+│   ├── risk/                    # Risk register, postmortems, outage communication
+│   └── roadmap/                 # Roadmap planning, tech debt, PoC, SLO, deprecation
+│
+├── product-manager/             # Frameworks, discovery, delivery, strategy, projects
+│   ├── frameworks/              # JTBD, Kano, RICE, HEART, dual-track agile
+│   ├── discovery/               # User research, PRD, UX patterns, product metrics
+│   ├── delivery/                # Sprint, meetings, retros, reports, reviews
+│   ├── strategy/                # Industry cases, competitive analysis
+│   └── projects/                # Per-project PM docs (YiAi, YiVad, YiPet)
+│
+├── ai-engineer/                 # AI foundations, methodology, platform, data
+│   ├── AI-AND-DATA.md           # Cross-role domain index: AI/ML, data engineering
+│   ├── foundations/             # Transformers, attention, RAG architectures
+│   ├── methodology/             # Prompt engineering, eval, agent patterns
+│   ├── platform/                # Inference engines, vector DBs, deployment
+│   └── data/                    # Datasets, embeddings, data pipelines
+│
+├── oncall-sre/                  # Incident response, observability, release
+│   ├── incident-response/       # Procedures, postmortems, oncall handovers
+│   ├── observability/           # Monitoring, alerting, SLO, dashboards
+│   └── release/                 # Release coordination, hotfix, rollback
+│
+├── executive/                   # Strategy, industry, roadmap, reading
+│   ├── strategy/                # Business strategy, competitive positioning
+│   ├── industry/                # Reports, competitors, market trends
+│   ├── roadmap/                 # Org-level strategic planning
+│   └── reading-list/            # Executive learning resources
+│
+├── knowledge-curator/           # KB governance, diagrams, templates, archive
+│   ├── COLLABORATION.md         # Cross-role domain index: teamwork, process, meetings
+│   ├── governance/              # Lifecycle, inbox, triage, readiness checklist
+│   ├── diagrams/                # 4 diagrams: knowledge-map, user-journey, etc.
+│   ├── templates/               # Knowledge leaf template, thinking models
+│   ├── archive/                 # Deprecated files + strategies-legacy (2041 files)
+│   ├── people/                  # Experts, stakeholders, team directory
+│   └── notes/                   # Curator working notes
+│
+├── new-hire/                    # Onboarding and handoff
+│   └── onboarding/              # Per-project Day-1 checklists (yiai/, yivad/, yipet/)
+│
+├── skill-author/                # Claude Code skill design, yry-* family
+│   └── patterns/                # Skill patterns and conventions
+│
+├── brd/                         # BRD database export area (8 roles + 10 categories)
+│   ├── README.md                # Index: DB SSOT + sync process + conventions
+│   └── */                       # 18 subdirectories: 8 roles + 10 categories
+```
+
+## Merged roles (2026-08-06 restructure)
+
+11 former fine-grained roles were merged into engineer/ and tech-lead/ problem domains:
+
+| Former role | Merged into |
+|---|---|
+| accessibility-engineer, code-reviewer, performance-engineer, qa-engineer | engineer/quality-security/ |
+| api-designer, designer | engineer/architecture-design/ |
+| data-engineer | engineer/infrastructure/ |
+| devops | engineer/infrastructure/ |
+| security-engineer | engineer/quality-security/ |
+| technical-writer | engineer/engineering/ |
+| release-manager | tech-lead/decisions/ |
+
+## projects/ depth exception
+
+`engineer/projects/` may exceed the 3-level max for project-specific story hierarchies (e.g. `engineer/projects/yiai/stories/<feature>/<story>/`). This is intentional — stories are structured by feature area and the depth comes from the domain, not from knowledge-base layering. The 3-level rule applies to all other role directories.
+
+## Mnemonic: Build → Ship → Run → Learn
+
+The 7 subdirectories under `engineer/` follow a software lifecycle. Use this 4-word mnemonic to remember them:
+
+| Phase | Subdirectories | Memory hook |
+|---|---|---|
+| BUILD | architecture-design, engineering | Design and build the system |
+| SHIP | quality-security, infrastructure | Verify, secure, and ship |
+| RUN | process | Work together |
+| LEARN | lessons, projects | Learn from experience |
+
+## Naming conventions
+
+### Filenames
+
+- **Path**: All-English ASCII kebab-case (`lower-case-with-dashes.md`)
+- **Chinese semantics**: preserved in the frontmatter `title:` field and `aliases:`; never enter the filename
+- **Hard constraint**: underscores `_` and digits are forbidden; hyphens only
+
+### File-type suffixes
+
+| type | Filename suffix | Purpose |
+|---|---|---|
+| `summary` | `{topic}-summary.md` | Distilled digest, structured via the 7-section template |
+| `original` | `{topic}-original.md` | Raw source backup, untouched |
+| `template` | `{topic}-template.md` | Reusable template |
+| `prompt` | `{topic}-prompt.md` | Prompt |
+
+## Archival rules
+
+### Dual-copy archival principle
+
+When external knowledge content is received, archive **two copies**:
+
+1. **Original** — `web_fetch`-pulled markdown or direct file copy, stored at `YiKnowledge/{role}/{topic}-original.md`
+2. **Summary** — rewritten per the 7-section template, stored at `YiKnowledge/{role}/{topic}-summary.md`
+   - The summary's frontmatter `source:` must point to the original URL or `*-original.md` path
+   - 7 body sections: Summary / Core ideas / Key info / Action recommendations / Anti-patterns / Related (see [knowledge-leaf.md](./knowledge-curator/templates/knowledge-leaf.md))
+
+A single-file structure (a `{topic}.md` containing both an "Original" and a "Summary" section) is only used when the original is < 200 lines.
+
+### Archival flow
+
+1. Decide the topic and target role directory
+2. Save original → `{role}/{topic}-original.md`
+3. Write summary → `{role}/{topic}-summary.md` (per the 7-section template)
+4. Summary frontmatter `source:` retains the original link/path
+5. If classification is uncertain, place in [inbox.md](./knowledge-curator/governance/inbox.md) first
+
+## YAML frontmatter spec
+
+```yaml
+---
+title: File title (may contain Chinese)       # required
+aliases: [English alias, alias 2]      # recommended
+tags: [tag1, tag2, tag3]             # required, 3-5 entries
+category: root | <role>/<subdir>            # required
+created: YYYY-MM-DD                     # required
+updated: YYYY-MM-DD                     # required
+source: original link or file path               # required
+type: summary | original | template | prompt  # required
+status: draft | stable | deprecated    # recommended, default stable
+lifecycle: inbox | triage | active | reference | archive  # recommended, default active
+review_cycle: weekly | monthly | quarterly | yearly       # required for external content
+last_verified: YYYY-MM-DD              # required for external content
+author: author identifier                        # optional
+tacit: false                           # mark true for tacit knowledge; AI prioritises recall
+roles: [engineer, tech-lead]                # recommended, multi-role recall signal
+benefit: "short description"                         # recommended
+acceptance_criteria:                       # recommended
+  - "verifiable clause"
+related:                               # recommended, cross-file links
+  - relative/path/to/file.md
 ---
 ```
 
-**必填字段**：`title`, `tags`, `category`, `created`, `source`, `type`
-**推荐字段**：`updated`, `status`, `last_verified`（外部内容必填）
+**Required fields**: `title` / `tags` / `category` / `created` / `updated` / `source` / `type`
+**Recommended fields**: `aliases` / `status` / `lifecycle` / `related` / `roles` / `benefit` / `acceptance_criteria`
+**Required for external content**: `review_cycle` / `last_verified`
+**Required for tacit knowledge**: `tacit: true`
 
-### 渐进式读取策略
+## Progressive-read strategy
 
-检索知识库时采用**渐进式读取**，避免不必要的全文读取：
+Use **progressive reading** when retrieving from the knowledge base to avoid unnecessary full-text reads:
 
-1. **第一步：读元数据** — 用 `read limit=15` 只读前 15 行（获取完整 Frontmatter）
-2. **第二步：判断相关性** — 根据 `tags`, `category`, `title` 判断是否相关
-3. **第三步：获取全文** — 仅当确认相关时才读取完整文件
+1. **Read metadata** — `head -15 file.md` reads only frontmatter
+2. **Judge relevance** — Use `tags` / `category` / `title` / `lifecycle` to decide whether relevant
+3. **Look at TOC** — `grep "^## " file.md` shows the 7-section body structure
+4. **Full read** — Only when confirmed relevant
 
-**示例命令**：
 ```bash
-# 只读前 15 行获取元数据
-head -15 file.md
+# Read frontmatter only
+head -15 path/to/file.md
 
-# 用 grep 快速筛选
-rg "^tags:.*关键词" ~/YiKnowledge -l
-rg "^category: tech/ai" ~/YiKnowledge -l
+# Filter by tag across the library
+rg "^tags:.*keyword" YiKnowledge -l
+
+# Filter by role (frontmatter roles array)
+rg "^roles:.*engineer" YiKnowledge -l
+
+# Only view active content (skip inbox/triage/archive)
+rg "^lifecycle: active" YiKnowledge -l
 ```
 
-**OpenClaw 工具用法**：
-```yaml
-# 第一步：只读元数据
-read path="~/YiKnowledge/tech/ai-platform/xxx.md" limit=15
+## Periodic review
 
-# 第二步：确认相关后读全文
-read path="~/YiKnowledge/tech/ai-platform/xxx.md"
-```
+See [knowledge-review.md](engineer/process/knowledge-review.md) and [governance.md](./knowledge-curator/governance/governance.md).
+
+| Cadence | Owner | Duration | Action |
+|---|---|---|---|
+| Weekly | Ops | 1h | Clear [inbox.md](./knowledge-curator/governance/inbox.md); scan 7-day-new file frontmatter completeness |
+| Monthly | Ops | 4h | Sweep `lifecycle: triage` to push summaries; clear `last_verified` overdue external content |
+| Quarterly | Knowledge steward rotation | — | Verify external-content updates; architecture adjustments; update [knowledge-map.md](./knowledge-curator/diagrams/knowledge-map.md) and [tacit-knowledge-backlog.md](./knowledge-curator/governance/tacit-knowledge-backlog.md) |
+| Yearly | Owner | — | Sweep [archive.md](./knowledge-curator/archive/archive.md) for physical cleanup; pick annual high-value distillations |
+
+File review log at [review-log.md](./knowledge-curator/governance/review-log.md).
+
+## Operating mechanism (4 roles + 3 cadences)
+
+| Role | Responsibility | Time investment |
+|---|---|---|
+| **Owner** | Strategic direction, cross-category coordination | 1h/week |
+| **Ops** | Content review, frontmatter maintenance, reachability analysis | 4h/week |
+| **Knowledge steward** | Accuracy and freshness of this leaf | 2h/month |
+| **Knowledge contributor** | Write docs, give feedback | Anytime |
+
+Detailed charter: [knowledge-contributor-charter.md](engineer/process/knowledge-contributor-charter.md).
+
+Core idea: **Don't rely on everyone's self-discipline** — replace "everyone is conscientious" with "knowledge steward + periodic review"; replace "add content by feel" with "search/link data-driven content additions".
+
+## Tacit-knowledge capture
+
+**70% of the value is tacit knowledge** — it lives in senior engineers' heads, group chats, and "everyone knows but no one wrote it down" processes.
+
+- Current tacit-knowledge gaps: [tacit-knowledge-backlog.md](./knowledge-curator/governance/tacit-knowledge-backlog.md)
+- Knowledge map (explicit + tacit inventory): [knowledge-map.md](./knowledge-curator/diagrams/knowledge-map.md)
+- When submitting tacit knowledge, add `tacit: true` to frontmatter so AI prioritises recall
+
+Capture methods: 1-on-1 interviews, workshops, code-comment extraction, process decomposition, customer interviews.

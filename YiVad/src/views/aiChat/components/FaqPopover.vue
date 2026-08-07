@@ -1,10 +1,12 @@
 <script setup lang="ts" name="aiChatFaqPopover">
 import { computed, ref, watch } from "vue";
-import { Search, Refresh, Close } from "@element-plus/icons-vue";
+import { Search, Refresh, Close, ChatDotRound } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import type { FaqDocument } from "@/api/interface/yiweb";
 
 const store = useAiChatStore();
+const { openInAiChat } = useAiChatBridge();
 
 const visible = computed<boolean>({
   get: () => store.faqVisible,
@@ -50,6 +52,19 @@ function sendNow(item: FaqDocument) {
 function copyPrompt(item: FaqDocument) {
   if (!item.prompt) return;
   navigator.clipboard.writeText(item.prompt).catch(() => {});
+}
+
+async function discussInNewSession(item: FaqDocument) {
+  if (!item.prompt) return;
+  const tags = ["faq"];
+  if (item.tags?.length) tags.push(...item.tags.map(t => `faq:${t}`));
+  await openInAiChat({
+    title: item.title || "FAQ session",
+    pageContent: `# ${item.title || "FAQ"}\n\n${item.prompt}`,
+    tags
+  });
+  store.sendMessage(item.prompt);
+  store.closeFaq();
 }
 
 function onTableKeydown(e: Event | KeyboardEvent) {
@@ -117,11 +132,18 @@ function rowClasses({ rowIndex }: { row: FaqDocument; rowIndex: number }) {
           <div class="fp-prompt">{{ row.prompt }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="220" align="right">
+      <el-table-column label="Actions" width="260" align="right">
         <template #default="{ row, $index }">
           <el-button size="small" text @click="copyPrompt(row as FaqDocument)">Copy</el-button>
           <el-button size="small" text type="primary" @click="pick(row as FaqDocument)">Apply</el-button>
           <el-button size="small" text type="success" @click="sendNow(row as FaqDocument)">Send now</el-button>
+          <el-button
+            size="small"
+            text
+            :icon="ChatDotRound"
+            title="Start a new AI Chat session seeded with this FAQ"
+            @click="discussInNewSession(row as FaqDocument)"
+          />
           <el-button v-show="isActive($index)" size="small" text :icon="Close" class="fp-row-close" @click="store.closeFaq()" />
         </template>
       </el-table-column>

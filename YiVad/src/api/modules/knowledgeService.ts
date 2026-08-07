@@ -11,6 +11,7 @@ import type {
   KnowledgeReadResponse,
   KnowledgeScanResponse,
   KnowledgeStoriesResponse,
+  KnowledgeFilesResponse,
   YiAiEnvelope
 } from "@/api/interface/yiweb";
 
@@ -31,6 +32,12 @@ async function postJson<T>(path: string, body: Record<string, unknown>): Promise
   return data.data;
 }
 
+/** Read metadata from the DB mirror (no disk scan). Much faster than scanKnowledge
+ *  when the watcher has populated the knowledge_files collection. */
+export function listKnowledgeFiles(category?: string): Promise<KnowledgeFilesResponse> {
+  return postJson<KnowledgeFilesResponse>("/knowledge-files", { category });
+}
+
 /** Scan the full knowledge tree, or one top-level category if `category` is set. */
 export function scanKnowledge(category?: string): Promise<KnowledgeScanResponse> {
   return postJson<KnowledgeScanResponse>("/knowledge-scan", { category });
@@ -41,7 +48,7 @@ export function readKnowledgeFile(targetFile: string): Promise<KnowledgeReadResp
   return postJson<KnowledgeReadResponse>("/knowledge-read", { target_file: targetFile });
 }
 
-/** List story.md entries under projects/{project}/ — pass project to filter. */
+/** List story.md entries under engineer/projects/{project}/ — pass project to filter. */
 export function listKnowledgeStories(project?: string): Promise<KnowledgeStoriesResponse> {
   return postJson<KnowledgeStoriesResponse>("/knowledge-stories", { project });
 }

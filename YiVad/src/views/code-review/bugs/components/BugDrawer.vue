@@ -14,6 +14,8 @@
       :disabled="drawerProps.isView"
       :model="drawerProps.row"
       :hide-required-asterisk="drawerProps.isView"
+      @keydown.meta.s.prevent="handleSubmit"
+      @keydown.ctrl.s.prevent="handleSubmit"
     >
       <!-- Identification -->
       <el-divider content-position="left">Identification</el-divider>
@@ -22,7 +24,7 @@
       </el-form-item>
       <el-form-item label="Project" prop="project">
         <el-select v-model="drawerProps.row.project" placeholder="Owning project" clearable filterable>
-          <el-option v-for="p in projects" :key="p" :label="p" :value="p" />
+          <el-option v-for="p in projects" :key="p.value" :label="p.label" :value="p.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="Module" prop="module">
@@ -167,8 +169,11 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="drawerVisible = false">Cancel</el-button>
-      <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit">Confirm</el-button>
+      <span v-if="!drawerProps.isView" class="bd-kbd-hint"><kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> save</span>
+      <div>
+        <el-button @click="drawerVisible = false">Cancel</el-button>
+        <el-button v-show="!drawerProps.isView" type="primary" @click="handleSubmit">Confirm</el-button>
+      </div>
     </template>
   </el-drawer>
 </template>
@@ -176,10 +181,10 @@
 <script setup lang="ts" name="BugDrawer">
 import { ref, reactive, nextTick } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
-import { PROJECTS } from "@/config";
+import { PROJECTS, PROJECT_LABELS } from "@/config";
 import type { BugDocument, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency } from "@/api/modules/bug";
 
-const projects = PROJECTS;
+const projects = PROJECTS.map(p => ({ label: PROJECT_LABELS[p] ?? p, value: p }));
 
 const severityOptions: { label: string; value: BugSeverity }[] = [
   { label: "Critical — blocks production", value: "critical" },
@@ -310,5 +315,26 @@ defineExpose({ acceptParams });
 }
 :deep(.el-divider__text) {
   font-weight: 600;
+}
+:deep(.el-drawer__footer) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bd-kbd-hint {
+  margin-right: auto;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  kbd {
+    display: inline-block;
+    min-width: 16px;
+    padding: 1px 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
+  }
 }
 </style>

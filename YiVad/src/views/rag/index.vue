@@ -29,15 +29,20 @@
     <section class="rag-section">
       <el-card shadow="hover">
         <template #header>
-          <span><el-icon><Timer /></el-icon> Recent Queries</span>
+          <div class="rag-card-header">
+            <span class="rag-card-header__title"><el-icon><Timer /></el-icon> Recent Queries</span>
+            <el-button v-if="queryHistory.length" text type="primary" size="small" @click="$router.push('/rag/history')">
+              View All ({{ queryHistory.length }}) <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </div>
         </template>
         <el-table
           v-if="queryHistory.length"
           :data="queryHistory.slice(0, 5)"
           stripe
           size="small"
-          @row-click="(row: any) => $router.push('/rag/history')"
-          style="cursor: pointer"
+          @row-click="(row: any) => rerunQuery(row._index)"
+          class="rag-clickable-table"
         >
           <el-table-column prop="question" label="Question" min-width="200" show-overflow-tooltip />
           <el-table-column prop="scope" label="Scope" width="140">
@@ -62,10 +67,27 @@
             </template>
           </el-table-column>
           <el-table-column label="Time" width="160" align="center">
-            <template #default="{ row }">{{ formatTimestamp(row.timestamp) }}</template>
+            <template #default="{ row }">
+              <el-tooltip :content="formatTimestamp(row.timestamp)" placement="top" :show-after="300">
+                <span class="rag-time-relative">{{ formatRelativeTime(row.timestamp) }}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column label="Action" width="110" align="center" fixed="right">
+            <template #default="{ row }">
+              <el-button text type="primary" size="small" @click.stop="rerunQuery(row._index)">
+                <el-icon><RefreshRight /></el-icon> Rerun
+              </el-button>
+            </template>
           </el-table-column>
         </el-table>
-        <el-empty v-else description="No queries yet. Start exploring in the Retrieval Explorer." :image-size="60" />
+        <el-empty v-else description="No queries yet. Start exploring in the Retrieval Explorer." :image-size="60">
+          <template #extra>
+            <el-button type="primary" size="small" @click="$router.push('/rag/retrieval')">
+              <el-icon><Search /></el-icon> Open Retrieval Explorer
+            </el-button>
+          </template>
+        </el-empty>
       </el-card>
     </section>
 
@@ -76,14 +98,14 @@
           <span><el-icon><Document /></el-icon> RAG Methodology &amp; Reference</span>
         </template>
         <div class="doc-links">
-          <a href="/knowledge/detail?path=methodology/ai-specific/rag-design-patterns-summary.md" class="doc-link">
+          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('ai-engineer/methodology/rag-design-patterns.md')">
             <el-icon><Reading /></el-icon>
             <div>
               <strong>RAG Design Patterns</strong>
               <p>Chunking, hybrid search, reranking, and evaluation methodology.</p>
             </div>
           </a>
-          <a href="/knowledge/detail?path=resources/prompts/rag-system-prompt.md" class="doc-link">
+          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('ai-engineer/methodology/prompts/rag-system.md')">
             <el-icon><Notebook /></el-icon>
             <div>
               <strong>RAG System Prompt Engineering</strong>
@@ -93,31 +115,43 @@
         </div>
       </el-card>
     </section>
+
+    <KnowledgePreviewDialog ref="knowledgeDialogRef" />
   </div>
 </template>
 
 <script setup lang="ts" name="ragDashboard">
 import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { RefreshRight, Timer, Document, Reading, Notebook } from "@element-plus/icons-vue";
+import { RefreshRight, Timer, Document, Reading, Notebook, ArrowRight, Search } from "@element-plus/icons-vue";
 import { ragStatus } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
 import {
-  bestScore as scoreBest, formatTimestamp, INDEX_INFO_DEFAULTS
+  bestScore as scoreBest, formatTimestamp, formatRelativeTime, INDEX_INFO_DEFAULTS
 } from "@/views/rag/constants";
 import ScoreBar from "./components/ScoreBar.vue";
 import IndexStatusCard from "./components/IndexStatusCard.vue";
 import QuickQueryCard from "./components/QuickQueryCard.vue";
 import RetrievalConfigCard from "./components/RetrievalConfigCard.vue";
+import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import type { RagStatusResponse } from "@/api/interface/rag";
 
 const ragStore = useRagStore();
+const router = useRouter();
 
 const status = reactive<RagStatusResponse>({ built: false, num_docs: 0 });
 const building = ref(false);
 const indexInfo = reactive({ ...INDEX_INFO_DEFAULTS });
 
 const queryHistory = ragStore.queryHistory;
+
+const knowledgeDialogRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+
+function rerunQuery(index: number) {
+  ragStore.rerunQuery(index);
+  router.push("/rag/retrieval");
+}
 
 onMounted(async () => {
   try {
@@ -144,6 +178,28 @@ async function rebuildIndex() {
 
 <style scoped lang="scss">
 @use "./styles/shared.scss";
+
+.rag-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+
+  &__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.rag-time-relative {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  cursor: default;
+}
 
 .doc-links {
   display: flex;

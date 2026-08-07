@@ -214,3 +214,190 @@ export interface WeWorkSendMessageParams {
 export interface WeWorkSendMessageResult {
   message?: string;
 }
+
+// ── Knowledge base (YiKnowledge markdown tree) ─────────────────────────
+
+/** A node in the scanned knowledge tree (file or folder). */
+export interface KnowledgeTreeNode {
+  path: string;
+  name: string;
+  type: 'file' | 'folder';
+  children?: KnowledgeTreeNode[];
+  size?: number;
+  updated_at?: string;
+}
+
+export interface KnowledgeScanResponse {
+  tree: KnowledgeTreeNode[];
+  total_files: number;
+  category?: string;
+}
+
+/** Parsed YAML frontmatter from a knowledge markdown file. */
+export interface KnowledgeFrontmatter {
+  [key: string]: unknown;
+}
+
+export interface KnowledgeReadResponse {
+  path: string;
+  content: string;
+  frontmatter?: KnowledgeFrontmatter;
+  category?: string;
+}
+
+export interface KnowledgeStory {
+  project: string;
+  name: string;
+  path: string;
+  title?: string;
+}
+
+export interface KnowledgeStoriesResponse {
+  stories: KnowledgeStory[];
+  total: number;
+}
+
+export interface KnowledgeSyncResponse {
+  synced: number;
+  deleted: number;
+  rag?: { status?: string; error?: string; [key: string]: unknown };
+}
+
+export interface KnowledgeWriteResponse {
+  path: string;
+}
+
+// ── RAG (llama_index over YiKnowledge) ─────────────────────────────────
+
+export interface RagSource {
+  path: string;
+  score?: number;
+  snippet?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RagQueryResponse {
+  sources: RagSource[];
+  question?: string;
+}
+
+export interface RagStatusResponse {
+  built: boolean;
+  num_docs?: number;
+  last_built_at?: string;
+  [key: string]: unknown;
+}
+
+export interface RagBuildResponse {
+  started: boolean;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface RagCategory {
+  name: string;
+  file_count: number;
+}
+
+export interface RagCategoriesResponse {
+  categories: RagCategory[];
+  tags: Record<string, number>;
+  total_files: number;
+}
+
+export interface RagChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface RagChatPayload {
+  messages: RagChatMessage[];
+  scope?: string;
+  top_k?: number;
+  hybrid?: boolean;
+  rerank?: boolean;
+  citations?: boolean;
+  num_queries?: number;
+  chat_mode?: string;
+  category?: string;
+  tags?: string[];
+}
+
+export interface RagFileChatPayload {
+  target_file: string;
+  question: string;
+}
+
+export interface RagFileQueryResponse {
+  sources: RagSource[];
+  answer?: string;
+}
+
+/** A sub-question + its synthesized answer + sources (from rag.decompose). */
+export interface RagSubQuestion {
+  sub_q: string;
+  answer: string;
+  sources: RagSource[];
+}
+
+/** Response shape of POST /rag-decompose — SubQuestionQueryEngine output. */
+export interface RagDecomposeResponse {
+  original: string;
+  synthesis: string;
+  sub_questions: RagSubQuestion[];
+  error?: string;
+}
+
+// ── Bug tracking (YiVad /bug page backend) ────────────────────────────
+
+export type BugSeverity = 'critical' | 'major' | 'minor' | 'trivial';
+export type BugPriority = 'p0' | 'p1' | 'p2' | 'p3';
+export type BugStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'rejected' | 'reopened';
+export type BugType =
+  | 'functional'
+  | 'performance'
+  | 'ui'
+  | 'security'
+  | 'compatibility'
+  | 'regression'
+  | 'data'
+  | 'other';
+export type BugFrequency = 'always' | 'sometimes' | 'rarely' | 'once' | 'unable';
+
+/** Bug metadata — persisted in MongoDB `bugs` collection. Long-form fields
+ *  live in the markdown body at `contentPath`. Mirrors YiVad's BugDocument. */
+export interface BugDocument {
+  key: string;
+  title: string;
+  project: string;
+  module: string;
+  iteration?: string;
+  defectUrl?: string;
+  severity: BugSeverity;
+  priority: BugPriority;
+  status: BugStatus;
+  type: BugType;
+  frequency: BugFrequency;
+  assignee: string;
+  reporter: string;
+  environment: string;
+  affectedVersion: string;
+  fixedVersion: string;
+  tags: string[];
+  dueDate: number | null;
+  contentPath: string;
+  createdAt: number;
+  updatedAt: number;
+  resolvedAt: number | null;
+  closedAt: number | null;
+}
+
+/** Bug long-form body — persisted as markdown, parsed back by section. */
+export interface BugContent {
+  description: string;
+  stepsToReproduce: string[];
+  expectedResult: string;
+  actualResult: string;
+  causeProblem?: string;
+  solution?: string;
+}

@@ -1,19 +1,29 @@
 <script setup lang="ts" name="aiChatKnowledgePreviewDialog">
-import { ref, computed, watch } from "vue";
-import { ChatDotRound } from "@element-plus/icons-vue";
+import { ref, computed, watch, nextTick } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { ArrowLeft, ChatDotRound, Loading, FolderOpened } from "@element-plus/icons-vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useResizable } from "@/hooks/useResizable";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
+import { streamChat } from "@/api/modules/chatService";
+import type { KnowledgeMeta } from "@/api/interface/yiweb";
 import KnowledgeChatPanel from "./KnowledgeChatPanel.vue";
+import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip.vue";
 
 const { render } = useMarkdown();
+const { openInAiChat } = useAiChatBridge();
+const router = useRouter();
 
 const visible = ref(false);
 const title = ref("");
 const loading = ref(false);
 const saving = ref(false);
 const currentPath = ref("");
+
+/** Parsed frontmatter for the current file — surfaced as badges + related links. */
+const meta = ref<KnowledgeMeta>({});
 
 /** Saved content from the server — shown in "preview" mode. */
 const rawContent = ref("");
@@ -26,6 +36,23 @@ const mode = ref<"preview" | "edit" | "split">("preview");
 /** Chat panel toggle — when on, the body splits left (preview/edit) + right (chat). */
 const showChat = ref(false);
 
+/** Navigation history for internal-link clicks inside the preview. */
+const navHistory = ref<string[]>([]);
+
+/** Translation state */
+const translating = ref(false);
+const translationAbort = ref<(() => void) | null>(null);
+/** Backup of the original content before translation — used to restore via "Show Original". */
+const originalContent = ref("");
+
+const displayHtml = computed(() => render(rawContent.value));
+
+/** Ref to the standard-mode preview pane — used for TOC scroll + ID injection. */
+const previewRef = ref<HTMLElement | null>(null);
+
+/** TOC entries parsed from the rendered markdown — populated after render. */
+const toc = ref<{ level: number; text: string; id: string }[]>([]);
+
 /** System prompt fed to the embedded chat — the knowledge file content. */
 const chatSystemPrompt = computed(() => {
   if (!showChat.value || !rawContent.value) return "";
@@ -35,26 +62,85 @@ const chatSystemPrompt = computed(() => {
 const previewHtml = computed(() => render(editContent.value));
 const savedPreviewHtml = computed(() => render(rawContent.value));
 
+const hasMeta = computed(() => {
+  const m = meta.value;
+  return Boolean(
+    m.status ||
+      m.lifecycle ||
+      m.review_cycle ||
+      m.type ||
+      m.roles?.length ||
+      m.tags?.length ||
+      m.related?.length ||
+      (m as KnowledgeMeta).benefit ||
+      (m as KnowledgeMeta).acceptance_criteria?.length
+  );
+});
+
+const showToc = computed(() => mode.value === "preview" && !showChat.value && toc.value.length >= 3);
+
+/** Classification path derived from the file path: category → module → sub_module. */
+const classificationPath = computed(() => {
+  const p = currentPath.value;
+  if (!p) return [] as { label: string; value: string }[];
+  const parts = p.split("/");
+  const result: { label: string; value: string }[] = [];
+  if (parts.length > 0) result.push({ label: parts[0], value: parts[0] });
+  if (parts.length > 1 && !parts[1].endsWith(".md")) {
+    result.push({ label: parts[1], value: `${parts[0]}/${parts[1]}` });
+  }
+  if (parts.length > 2 && !parts[2].endsWith(".md")) {
+    result.push({ label: parts[2], value: `${parts[0]}/${parts[1]}/${parts[2]}` });
+  }
+  return result;
+});
+
+function slugify(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "-")
+      .replace(/^-+|-+$/g, "") || "section"
+  );
+}
+
+function scrollToHeading(id: string) {
+  if (!previewRef.value || !id) return;
+  const el = previewRef.value.querySelector(`[id="${CSS.escape(id)}"]`) as HTMLElement | null;
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function navigateToRelated(path: string) {
+  if (!path || path === currentPath.value) return;
+  if (mode.value !== "preview" && editContent.value !== rawContent.value) return;
+  navigateTo(path);
+}
+
 // ── Chat panel width (draggable) ──
 
 const {
   width: chatWidth,
   isResizing: isChatResizing,
   startResize: startChatResize
-} = useResizable(480, 320, 900, "aiChat.knowledgeChatW", true);
+} = useResizable(600, 320, 900, "aiChat.knowledgeChatW", true);
 
-function open(path: string) {
-  visible.value = true;
+function loadDoc(path: string) {
   currentPath.value = path;
-  title.value = path.split("/").pop() || path;
+  title.value = (path.split("/").pop() || path).replace(/\.md$/, "");
   mode.value = "preview";
   showChat.value = false;
+  translationAbort.value?.();
+  translationAbort.value = null;
+  originalContent.value = "";
   loading.value = true;
   rawContent.value = "";
   editContent.value = "";
+  meta.value = {};
+  toc.value = [];
   readKnowledgeFile(path)
     .then(res => {
       rawContent.value = res.content || "";
+      meta.value = res.meta || {};
     })
     .catch(() => {
       rawContent.value = "*Failed to load content.*";
@@ -64,10 +150,132 @@ function open(path: string) {
     });
 }
 
+function open(path: string) {
+  visible.value = true;
+  navHistory.value = [];
+  loadDoc(path);
+}
+
 function close() {
   visible.value = false;
   mode.value = "preview";
   showChat.value = false;
+  translationAbort.value?.();
+  translationAbort.value = null;
+  originalContent.value = "";
+}
+
+async function discussInAiChat() {
+  if (!currentPath.value) return;
+  const tags = [`ctx:${currentPath.value}`, `file:${currentPath.value}`, "knowledge"];
+  const metaEntries = meta.value ? Object.entries(meta.value) : [];
+  const frontmatter = metaEntries.length
+    ? ["", "## Frontmatter", "", ...metaEntries.map(([k, v]) => `- **${k}:** ${String(v)}`)].join("\n")
+    : "";
+  await openInAiChat({
+    title: title.value || currentPath.value.split("/").pop() || "Knowledge file",
+    pageContent: `# ${title.value || currentPath.value}\n\nPath: \`${currentPath.value}\`${frontmatter}\n\n${rawContent.value}`,
+    tags,
+    sourceUrl: undefined
+  });
+  close();
+}
+
+/**
+ * Resolve a YiKnowledge path to its source-domain detail route, when the path
+ * matches a known pattern (brd/<role>/<key>.md, code-review/<topic>/<key>.md,
+ * tech-leadership/<topic>/<key>.md, stories/<project>/<key>/..., rss/<...>).
+ * Returns null for paths outside these patterns (e.g. notes/…).
+ */
+function resolveSourceRoute(path: string): { path: string; query?: Record<string, string> } | null {
+  if (!path) return null;
+  const clean = path.replace(/\.md$/, "");
+  const parts = clean.split("/").filter(Boolean);
+  if (parts.length < 2) return null;
+
+  // brd/<role>/<key>
+  if (parts[0] === "brd" && parts.length >= 3) {
+    return { path: `/brd/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
+  }
+  // code-review/<topic>/<key>
+  if (parts[0] === "code-review" && parts.length >= 3) {
+    return { path: `/code-review/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
+  }
+  // tech-leadership/<topic>/<key>
+  if (parts[0] === "tech-leadership" && parts.length >= 3) {
+    return { path: `/tech-leadership/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
+  }
+  // stories/<project>/<key>(/<file>)
+  if (parts[0] === "stories" && parts.length >= 3) {
+    return { path: "/story", query: { project: parts[1] ?? "", story: parts[2] ?? "" } };
+  }
+  // rss/<...>
+  if (parts[0] === "rss") {
+    return { path: "/rss" };
+  }
+  return null;
+}
+
+const sourceRoute = computed(() => resolveSourceRoute(currentPath.value));
+
+function openInSourcePage() {
+  const r = sourceRoute.value;
+  if (!r) return;
+  close();
+  router.push(r);
+}
+
+/** Resolve a relative href from the rendered markdown against the current path. */
+function resolvePath(href: string): string | null {
+  if (!href) return null;
+  // Skip external links, anchors, and non-http schemes
+  if (/^(https?:|mailto:|tel:|#|data:)/i.test(href)) return null;
+  // Strip query/hash
+  const clean = href.split("#")[0].split("?")[0];
+  if (!clean) return null;
+  const base = currentPath.value.includes("/")
+    ? currentPath.value.replace(/\/[^/]*$/, "")
+    : "";
+  const segments = (base + "/" + clean).split("/");
+  const resolved: string[] = [];
+  for (const seg of segments) {
+    if (seg === "" || seg === ".") continue;
+    if (seg === "..") {
+      resolved.pop();
+      continue;
+    }
+    resolved.push(seg);
+  }
+  let out = resolved.join("/");
+  // Directory link (trailing slash, no .md) → resolve to README.md inside it.
+  if (href.endsWith("/") && !out.endsWith(".md")) {
+    out = out ? `${out}/README.md` : "README.md";
+  }
+  return out;
+}
+
+function navigateTo(path: string) {
+  if (!path || path === currentPath.value) return;
+  navHistory.value.push(currentPath.value);
+  loadDoc(path);
+}
+
+function goBack() {
+  const prev = navHistory.value.pop();
+  if (prev) loadDoc(prev);
+}
+
+function handlePreviewClick(e: MouseEvent) {
+  const target = e.target as HTMLElement | null;
+  const anchor = target?.closest?.("a") as HTMLAnchorElement | null;
+  if (!anchor) return;
+  const href = anchor.getAttribute("href") || "";
+  const resolved = resolvePath(href);
+  if (!resolved) return; // external or anchor link → default behavior
+  e.preventDefault();
+  // If in an unsaved edit, switching docs would discard edits silently.
+  if (mode.value !== "preview" && editContent.value !== rawContent.value) return;
+  navigateTo(resolved);
 }
 
 // Seed the editor from saved content when switching away from preview
@@ -77,11 +285,36 @@ watch(mode, (_new, old) => {
   }
 });
 
+// After preview HTML renders, inject heading IDs + populate TOC.
+// Scoped to preview-only mode (split/chat modes skip TOC for layout simplicity).
+watch(savedPreviewHtml, () => {
+  if (mode.value !== "preview" || showChat.value) {
+    toc.value = [];
+    return;
+  }
+  nextTick(() => {
+    if (!previewRef.value) {
+      toc.value = [];
+      return;
+    }
+    const nodes = previewRef.value.querySelectorAll("h2, h3");
+    const items: { level: number; text: string; id: string }[] = [];
+    nodes.forEach((node, i) => {
+      const text = (node.textContent || "").trim();
+      if (!text) return;
+      const id = `toc-h-${i}-${slugify(text)}`;
+      node.id = id;
+      items.push({ level: node.tagName === "H2" ? 2 : 3, text, id });
+    });
+    toc.value = items.length >= 3 ? items : [];
+  });
+});
+
 async function save() {
   if (saving.value || !currentPath.value) return;
   saving.value = true;
   try {
-    await writeKnowledgeFile(currentPath.value, editContent.value);
+    await writeKnowledgeFile(currentPath.value, editContent.value, meta.value);
     rawContent.value = editContent.value;
     mode.value = "preview";
     ElMessage.success("Saved");
@@ -104,6 +337,51 @@ function toggleChat() {
   }
 }
 
+async function translateTo(targetLang: "zh" | "en", bilingual = false) {
+  if (translating.value || !rawContent.value) return;
+
+  const langName = targetLang === "zh" ? "Simplified Chinese" : "English";
+  const source = rawContent.value;
+  translating.value = true;
+  let buffer = "";
+
+  const { abort } = streamChat(
+    {
+      model: "qwen3.5:4b",
+      messages: [{ type: "user", message: source, timestamp: Date.now() }],
+      system: `You are a professional translator. Translate the following markdown content to ${langName}. Preserve all markdown formatting, code blocks, links, and structure exactly. Only output the translated content, nothing else.`
+    },
+    (chunk) => {
+      buffer += chunk;
+      rawContent.value = bilingual ? source + "\n\n---\n\n" + buffer : buffer;
+    },
+    () => {
+      originalContent.value = source;
+      rawContent.value = bilingual ? source + "\n\n---\n\n" + buffer : buffer;
+      translating.value = false;
+      translationAbort.value = null;
+    },
+    (err) => {
+      rawContent.value = source;
+      translating.value = false;
+      translationAbort.value = null;
+      originalContent.value = "";
+      ElMessage.error(err?.message || "Translation failed");
+    }
+  );
+
+  translationAbort.value = abort;
+}
+
+function resetTranslation() {
+  translationAbort.value?.();
+  translationAbort.value = null;
+  if (originalContent.value) {
+    rawContent.value = originalContent.value;
+    originalContent.value = "";
+  }
+}
+
 defineExpose({ open });
 </script>
 
@@ -115,16 +393,43 @@ defineExpose({ open });
     top="4vh"
     :close-on-click-modal="true"
     append-to-body
+    class="kpd-dialog"
     @close="close"
   >
     <!-- Toolbar: mode switch + actions -->
     <div class="kpd-toolbar">
+      <div class="kpd-nav">
+        <el-button
+          v-if="navHistory.length && mode === 'preview' && !showChat"
+          size="small"
+          text
+          :title="`Back to ${navHistory[navHistory.length - 1]}`"
+          @click="goBack"
+        >
+          <el-icon><ArrowLeft /></el-icon>
+        </el-button>
+        <span class="kpd-path" :title="currentPath">{{ currentPath }}</span>
+      </div>
       <el-radio-group v-model="mode" size="small" :disabled="showChat">
         <el-radio-button value="edit">Edit</el-radio-button>
         <el-radio-button value="split">Split</el-radio-button>
         <el-radio-button value="preview">Preview</el-radio-button>
       </el-radio-group>
       <div class="kpd-actions">
+        <template v-if="mode === 'preview' && !loading && rawContent">
+          <span v-if="translating" class="kpd-translating">Translating...</span>
+          <template v-if="!translating && !originalContent">
+            <el-button size="small" text @click="translateTo('zh')">译中</el-button>
+            <el-button size="small" text @click="translateTo('en')">译英</el-button>
+            <el-button size="small" text @click="translateTo('zh', true)">中英双语</el-button>
+          </template>
+          <el-button
+            v-if="!translating && originalContent"
+            size="small"
+            text
+            @click="resetTranslation"
+          >Show Original</el-button>
+        </template>
         <el-button
           v-if="mode === 'edit' || mode === 'split'"
           size="small"
@@ -139,6 +444,14 @@ defineExpose({ open });
           @click="save"
         >Save</el-button>
         <el-button
+          v-if="sourceRoute"
+          size="small"
+          text
+          :icon="FolderOpened"
+          title="Open in source page"
+          @click="openInSourcePage"
+        />
+        <el-button
           :type="showChat ? 'primary' : 'default'"
           :icon="ChatDotRound"
           size="small"
@@ -147,6 +460,23 @@ defineExpose({ open });
           @click="toggleChat"
         />
       </div>
+    </div>
+
+    <!-- Frontmatter strip — shown only in preview mode when meta has badges/related -->
+    <div v-if="mode === 'preview' && !loading && hasMeta" class="kpd-meta">
+      <KnowledgeMetaStrip :meta="meta" :current-path="currentPath" @navigate-related="navigateToRelated" />
+    </div>
+
+    <!-- Classification breadcrumbs -->
+    <div class="kpd-classification" v-if="classificationPath.length > 0">
+      <span class="kpd-cl-label">Classification:</span>
+      <span
+        v-for="(seg, i) in classificationPath" :key="seg.value"
+        class="kpd-cl-seg"
+      >
+        <span v-if="i > 0" class="kpd-cl-sep">/</span>
+        <span class="kpd-cl-chip">{{ seg.label }}</span>
+      </span>
     </div>
 
     <!-- Loading -->
@@ -160,7 +490,7 @@ defineExpose({ open });
       <!-- Chat mode: left panel (preview) + resizer + chat panel -->
       <div v-if="showChat" class="kpd-body kpd-body--chat" :class="{ 'is-resizing': isChatResizing }">
         <div class="kpd-left">
-          <div class="kpd-preview" v-html="savedPreviewHtml" />
+          <div class="kpd-preview" v-html="displayHtml" @click="handlePreviewClick" />
         </div>
         <div
           class="kpd-resizer"
@@ -176,8 +506,21 @@ defineExpose({ open });
         </div>
       </div>
 
-      <!-- Standard mode: no chat panel -->
+      <!-- Standard mode: optional TOC sidebar + (editor / preview) -->
       <div v-else class="kpd-body" :class="`kpd-body--${mode}`">
+        <!-- TOC sidebar (preview mode only, ≥3 headings) -->
+        <aside v-if="showToc" class="kpd-toc">
+          <div class="kpd-toc-title">Contents</div>
+          <ul class="kpd-toc-list">
+            <li
+              v-for="item in toc"
+              :key="item.id"
+              :class="`kpd-toc-item--h${item.level}`"
+            >
+              <a href="#" @click.prevent="scrollToHeading(item.id)">{{ item.text }}</a>
+            </li>
+          </ul>
+        </aside>
         <!-- Editor pane (edit + split modes) -->
         <el-input
           v-if="mode === 'edit' || mode === 'split'"
@@ -189,8 +532,10 @@ defineExpose({ open });
         <!-- Preview pane (split + preview modes) -->
         <div
           v-if="mode === 'split' || mode === 'preview'"
+          ref="previewRef"
           class="kpd-preview"
-          v-html="mode === 'preview' ? savedPreviewHtml : previewHtml"
+          v-html="mode === 'preview' ? displayHtml : previewHtml"
+          @click="handlePreviewClick"
         />
       </div>
     </template>
@@ -204,10 +549,86 @@ defineExpose({ open });
   justify-content: space-between;
   margin-bottom: 8px;
 }
+
+.kpd-meta {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  background: var(--el-fill-color-light);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+}
+.kpd-classification {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.kpd-cl-label {
+  color: #909399;
+  font-weight: 600;
+  margin-right: 4px;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.kpd-cl-seg {
+  display: flex;
+  align-items: center;
+}
+.kpd-cl-sep {
+  color: #dcdfe6;
+  margin: 0 2px;
+}
+.kpd-cl-chip {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+}
+.kpd-nav {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+.kpd-path {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 30vw;
+}
 .kpd-actions {
   display: flex;
   gap: 4px;
   align-items: center;
+}
+
+.kpd-translating {
+  font-size: 12px;
+  color: var(--el-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--el-color-primary-light-5);
+    border-top-color: var(--el-color-primary);
+    border-radius: 50%;
+    animation: kpd-spin 0.6s linear infinite;
+  }
+}
+
+@keyframes kpd-spin {
+  to { transform: rotate(360deg); }
 }
 
 .kpd-loading {
@@ -223,7 +644,7 @@ defineExpose({ open });
 .kpd-body {
   display: flex;
   gap: 8px;
-  height: calc(100vh - 140px - 8vh);
+  flex: 1;
   min-height: 0;
 
   // Hide editor in preview-only mode
@@ -232,6 +653,10 @@ defineExpose({ open });
   }
   // Hide preview in edit-only mode
   &--edit .kpd-preview {
+    display: none;
+  }
+  // Edit mode: hide TOC (TOC only useful in preview)
+  &--edit .kpd-toc {
     display: none;
   }
 }
@@ -256,6 +681,8 @@ defineExpose({ open });
 
 .kpd-right {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -280,6 +707,52 @@ defineExpose({ open });
     height: 100% !important;
     resize: none;
   }
+}
+
+.kpd-toc {
+  flex-shrink: 0;
+  width: 200px;
+  overflow-y: auto;
+  padding: 8px 12px 8px 0;
+  border-right: 1px solid var(--el-border-color-lighter);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.kpd-toc-title {
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.kpd-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.kpd-toc-list li {
+  margin: 0;
+}
+.kpd-toc-list a {
+  display: block;
+  padding: 2px 4px;
+  color: var(--el-text-color-regular);
+  text-decoration: none;
+  border-radius: 3px;
+  transition: background 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    background: var(--el-fill-color-light);
+    color: var(--el-color-primary);
+  }
+}
+.kpd-toc-item--h3 a {
+  padding-left: 12px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
 }
 
 .kpd-preview {
@@ -325,6 +798,25 @@ defineExpose({ open });
   :deep(th), :deep(td) {
     padding: 6px 12px;
     border: 1px solid var(--el-border-color-lighter);
+  }
+}
+</style>
+
+<style lang="scss">
+// Dialog sizing — non-scoped because el-dialog uses append-to-body,
+// which teleports the dialog outside the component DOM tree.
+.kpd-dialog {
+  height: 88vh;
+  display: flex;
+  flex-direction: column;
+
+  .el-dialog__body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 16px;
   }
 }
 </style>

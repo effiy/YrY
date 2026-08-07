@@ -103,7 +103,7 @@ def _to_rel_file_path(doc: Any) -> str:
     SimpleDirectoryReader stamps absolute ``file_path`` into metadata by
     default. We want relative paths so the UI can pass them to
     ``/knowledge-read`` and so ``MetadataFilter(file_path CONTAINS scope)``
-    works with ``projects/YiVad/`` style scopes.
+    works with ``engineer/projects/yivad/`` style scopes.
     """
     base = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
     fp = doc.metadata.get("file_path") or doc.metadata.get("filename") or ""

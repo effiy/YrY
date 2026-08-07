@@ -5,14 +5,18 @@
  */
 
 import {
+  BranchesOutlined,
   CopyOutlined,
   DeleteOutlined,
   DislikeFilled,
   DislikeOutlined,
   EditOutlined,
+  ExportOutlined,
+  FileSearchOutlined,
   LikeFilled,
   LikeOutlined,
   ReloadOutlined,
+  SaveOutlined,
   SendOutlined,
 } from '@ant-design/icons';
 import { Button, Modal, Tooltip, Typography } from 'antd';
@@ -40,6 +44,10 @@ export function MessageBubble(props: MessageBubbleProps) {
   const copyState = s.copyFeedback[String(msg.timestamp)] || '';
   const rating = s.feedback[msg.timestamp] || null;
   const showRetryLabel = !!(msg.error || msg.aborted);
+  // Sources are tied to the latest grounded turn — render only under the
+  // last pet message when ragSources is non-empty.
+  const isLastPet =
+    !isUser && index === props.totalMessages - 1 && s.ragSources.length > 0 && s.knowledgeGrounded;
 
   // local edit modal state
   const [editOpen, setEditOpen] = useState(false);
@@ -101,6 +109,25 @@ export function MessageBubble(props: MessageBubbleProps) {
         )}
         {msg.error && <div className="mb-tag mb-tag--error">Generation failed</div>}
         {msg.aborted && !msg.error && <div className="mb-tag mb-tag--aborted">Stopped</div>}
+        {isLastPet && (
+          <div className="mb-sources" role="list" aria-label="RAG sources">
+            <div className="mb-sources__title">
+              <FileSearchOutlined /> Sources
+            </div>
+            <ul className="mb-sources__list">
+              {s.ragSources.map((src, i) => (
+                <li key={`src-${i}-${src.path}`} className="mb-sources__item">
+                  <span className="mb-sources__path" title={src.path}>
+                    {src.path}
+                  </span>
+                  {typeof src.score === 'number' && (
+                    <span className="mb-sources__score">{src.score.toFixed(3)}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
       <div className="mb-meta">
         <div className="mb-actions">
@@ -154,6 +181,36 @@ export function MessageBubble(props: MessageBubbleProps) {
                   onClick={() => ctrl.submitFeedback(msg.timestamp, 'dislike')}
                 />
               </Tooltip>
+              <Tooltip title="Save to YiKnowledge">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<SaveOutlined />}
+                  disabled={s.isProcessing || !hasContent}
+                  onClick={() => ctrl.openSaveToKnowledge(msg.timestamp)}
+                  aria-label="Save to YiKnowledge"
+                />
+              </Tooltip>
+              <Tooltip title="Open in YiVad aiChat">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<ExportOutlined />}
+                  disabled={s.isProcessing || !hasContent}
+                  onClick={() => ctrl.openMessageInYiVad(msg.timestamp)}
+                  aria-label="Open in YiVad aiChat"
+                />
+              </Tooltip>
+              <Tooltip title="Branch from here — new session with messages up to this point">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<BranchesOutlined />}
+                  disabled={s.isProcessing}
+                  onClick={() => ctrl.branchFromMessage(msg.timestamp)}
+                  aria-label="Branch from here"
+                />
+              </Tooltip>
             </>
           ) : (
             <>
@@ -164,6 +221,16 @@ export function MessageBubble(props: MessageBubbleProps) {
                   icon={<EditOutlined />}
                   disabled={s.isProcessing}
                   onClick={() => setEditOpen(true)}
+                />
+              </Tooltip>
+              <Tooltip title="Branch from here — new session with messages up to this point">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<BranchesOutlined />}
+                  disabled={s.isProcessing}
+                  onClick={() => ctrl.branchFromMessage(msg.timestamp)}
+                  aria-label="Branch from here"
                 />
               </Tooltip>
               <Tooltip title="Resend">
@@ -190,6 +257,16 @@ export function MessageBubble(props: MessageBubbleProps) {
         <time className="mb-time" dateTime={new Date(msg.timestamp).toISOString()}>
           {formatTime(msg.timestamp)}
         </time>
+        <Tooltip
+          title={`${isUser ? 'Input' : 'Output'} · ~${Math.ceil(
+            (msg.content || '').length / 4,
+          )} tok · ${(msg.content || '').length} chars (coarse chars/4 estimate)`}
+          placement="left"
+        >
+          <span className={`mb-token-chip mb-token-chip--${isUser ? 'in' : 'out'}`}>
+            ~{Math.ceil((msg.content || '').length / 4)}t
+          </span>
+        </Tooltip>
       </div>
 
       <Modal

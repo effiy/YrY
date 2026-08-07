@@ -88,6 +88,36 @@ export const CODE_REVIEW_TOPICS: TopicConfig[] = [
     label: "Observability gap",
     category: "Health",
     content: "Observability gap: what logs/metrics/traces this file should emit vs currently does"
+  },
+  {
+    value: "concurrency",
+    label: "Concurrency review",
+    category: "Review",
+    content: "Concurrency review: data races, deadlocks, TOCTOU, async ordering, goroutine/promise leaks, stale reads"
+  },
+  {
+    value: "error_handling",
+    label: "Error handling review",
+    category: "Review",
+    content: "Error handling review: silent swallows, generic catches, unpropagated errors, retry storms, lost stack, user-facing leaks"
+  },
+  {
+    value: "dead_code",
+    label: "Dead code review",
+    category: "Health",
+    content: "Dead code review: unused exports, functions, files, imports, CSS classes — with confidence + removal plan"
+  },
+  {
+    value: "backward_compat",
+    label: "Backward compat review",
+    category: "Review",
+    content: "Backward compat review: API / DB schema / config / event / file / behavior changes — breaking risk, migration path, rollback"
+  },
+  {
+    value: "i18n_a11y",
+    label: "i18n / a11y review",
+    category: "Review",
+    content: "i18n / a11y review: hardcoded strings, untranslated keys, missing aria, keyboard traps, contrast, focus order, screen-reader verification"
   }
 ];
 

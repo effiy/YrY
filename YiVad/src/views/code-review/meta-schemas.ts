@@ -60,11 +60,13 @@ function riskTag(v: string): ReturnType<NonNullable<MetaColumn["tagTypeFn"]>> {
 export const crMetaSchemas: Record<string, TopicMetaSchema> = {
   summary: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       { key: "language", label: "Language", width: 100 }
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/components/Foo.vue" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       { key: "language", label: "Language", type: "input", placeholder: "e.g. TypeScript, Python, Go" }
     ],
     templateContent: `# File Summary
@@ -93,6 +95,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   explain: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       { key: "language", label: "Language", width: 100 },
       {
@@ -108,6 +111,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/components/Foo.vue" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       { key: "language", label: "Language", type: "input", placeholder: "e.g. TypeScript" },
       {
         key: "complexity",
@@ -154,6 +158,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   security: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       {
         key: "severity",
@@ -180,6 +185,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/api/users.py" },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "severity",
         label: "Severity",
@@ -249,6 +255,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   "dependency-risk": {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "package_name", label: "Package", minWidth: 170 },
       { key: "current_ver", label: "Current", width: 100 },
       { key: "latest_ver", label: "Latest", width: 100 },
@@ -262,6 +269,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "package_name", label: "Package", type: "input", placeholder: "e.g. axios, lodash", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       { key: "current_ver", label: "Current Version", type: "input", placeholder: "e.g. 1.7.2" },
       { key: "latest_ver", label: "Latest Version", type: "input", placeholder: "e.g. 2.1.0" },
       {
@@ -311,6 +319,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   "access-review": {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "code_path", label: "Code Path", minWidth: 200 },
       {
         key: "risk_level",
@@ -322,6 +331,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "code_path", label: "Code Path", type: "input", placeholder: "e.g. POST /api/admin/users", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       { key: "privilege_boundary", label: "Privilege Boundary", type: "input", placeholder: "e.g. user → admin" },
       { key: "caller_roles", label: "Caller Roles", type: "input", placeholder: "e.g. admin, auditor" },
       { key: "data_accessed", label: "Data Accessed", type: "input", placeholder: "e.g. PII, payment" },
@@ -372,6 +382,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   refactor: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       {
         key: "effort",
@@ -388,6 +399,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/utils/helpers.ts", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "effort",
         label: "Effort",
@@ -442,6 +454,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   perf: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       {
         key: "bottleneck_type",
@@ -459,6 +472,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/api/search.py", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "bottleneck_type",
         label: "Bottleneck Type",
@@ -518,6 +532,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
 
   tests: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "target_func", label: "Target Function", minWidth: 200 },
       {
         key: "test_type",
@@ -533,6 +548,7 @@ export const crMetaSchemas: Record<string, TopicMetaSchema> = {
     ],
     metaFields: [
       { key: "target_func", label: "Target Function", type: "input", placeholder: "e.g. parseMarkdownBody()", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "test_type",
         label: "Test Type",
@@ -593,6 +609,7 @@ describe("[target_func]", () => {
 
   style: {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File Path", minWidth: 200 },
       {
         key: "issue_type",
@@ -608,6 +625,7 @@ describe("[target_func]", () => {
     ],
     metaFields: [
       { key: "file_path", label: "File Path", type: "input", placeholder: "e.g. src/hooks/useTable.ts", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "issue_type",
         label: "Issue Type",
@@ -665,6 +683,7 @@ describe("[target_func]", () => {
 
   "api-contract": {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "endpoint", label: "Endpoint", minWidth: 200 },
       { key: "method", label: "Method", width: 90 },
       {
@@ -680,6 +699,7 @@ describe("[target_func]", () => {
     ],
     metaFields: [
       { key: "endpoint", label: "Endpoint", type: "input", placeholder: "e.g. /api/v1/users", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "method",
         label: "HTTP Method",
@@ -764,6 +784,7 @@ describe("[target_func]", () => {
 
   "observability-gap": {
     metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
       { key: "file_path", label: "File / Component", minWidth: 200 },
       {
         key: "gap_type",
@@ -780,6 +801,7 @@ describe("[target_func]", () => {
     ],
     metaFields: [
       { key: "file_path", label: "File / Component", type: "input", placeholder: "e.g. src/services/payment.ts", required: true },
+      { key: "project", label: "Project", type: "input", colSpan: 12, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
       {
         key: "gap_type",
         label: "Gap Type",
@@ -845,5 +867,370 @@ describe("[target_func]", () => {
 - **YiAi**: No structured logging framework (print statements), no metrics/monitoring, no alerting, apscheduler watcher has no health check, SSE connections not tracked, MongoDB connection pool not monitored, Ollama latency not measured
 - **YiVad**: Frontend errors caught by browser console only, no error reporting service (Sentry), no performance monitoring (Web Vitals), no user analytics, ProTable errors silently swallowed
 - **YiPet**: Chrome extension has no crash reporting, service worker termination not logged, chat streaming errors not instrumented, CDN load failures silent, chrome.storage quota exceeded not surfaced`
+  },
+
+  "concurrency": {
+    metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "file_path", label: "File", minWidth: 220 },
+      { key: "concern_type", label: "Concern", width: 160, enum: [
+        { label: "Data race", value: "data-race" },
+        { label: "Deadlock", value: "deadlock" },
+        { label: "Livelock / starvation", value: "livelock" },
+        { label: "Race condition (TOCTOU)", value: "toctou" },
+        { label: "Async ordering", value: "async-ordering" },
+        { label: "Goroutine / promise leak", value: "leak" },
+        { label: "Cache coherence / stale read", value: "stale-read" }
+      ] },
+      { key: "severity", label: "Severity", width: 100, enum: SEVERITY_OPTIONS, tagTypeFn: severityTag },
+      { key: "status", label: "Status", width: 130, enum: [
+        { label: "Open", value: "open" },
+        { label: "Triaged", value: "triaged" },
+        { label: "In progress", value: "in-progress" },
+        { label: "Fixed", value: "fixed" },
+        { label: "Won't fix", value: "wont-fix" }
+      ] },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "file_path", label: "File Path", type: "input", required: true, colSpan: 16, placeholder: "e.g. src/stores/aicr/chat.ts" },
+      { key: "project", label: "Project", type: "input", colSpan: 8, placeholder: "Cross-domain join key" },
+      { key: "line_range", label: "Line Range", type: "input", colSpan: 8, placeholder: "e.g. 120-160" },
+      { key: "concern_type", label: "Concern Type", type: "select", required: true, colSpan: 8, options: [
+        { label: "Data race — concurrent write to shared state", value: "data-race" },
+        { label: "Deadlock — circular wait on locks", value: "deadlock" },
+        { label: "Livelock / starvation", value: "livelock" },
+        { label: "TOCTOU — time-of-check vs time-of-use", value: "toctou" },
+        { label: "Async ordering — un-awaited promise / wrong .then chain", value: "async-ordering" },
+        { label: "Goroutine / promise / subscription leak", value: "leak" },
+        { label: "Stale read — cache + DB divergence", value: "stale-read" }
+      ] },
+      { key: "severity", label: "Severity", type: "select", options: SEVERITY_OPTIONS, required: true, colSpan: 8 },
+      { key: "status", label: "Status", type: "select", colSpan: 8, options: [
+        { label: "Open", value: "open" },
+        { label: "Triaged", value: "triaged" },
+        { label: "In progress", value: "in-progress" },
+        { label: "Fixed", value: "fixed" },
+        { label: "Won't fix", value: "wont-fix" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", colSpan: 12 },
+      { key: "reproducer", label: "Reproducer / Trigger", type: "textarea", colSpan: 24, placeholder: "Steps or load pattern that surfaces the bug" },
+      { key: "root_cause", label: "Root Cause", type: "textarea", colSpan: 24, placeholder: "Why the ordering / synchronization is broken" },
+      { key: "fix", label: "Fix", type: "textarea", colSpan: 24, placeholder: "Mutex / channel / atomic / AbortController / queue / serialization" },
+      { key: "test_added", label: "Test Added", type: "input", colSpan: 12, placeholder: "Link to race-detector / stress test" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — heisenbugs, flaky tests, race detector false-negatives." }
+    ],
+    templateContent: `# Concurrency Review — [file_path]
+
+## Concern
+- Type: [concern_type]
+- Line range: [line_range]
+- Severity: [severity] · Status: [status]
+
+## Reproducer
+[reproducer]
+
+## Root Cause
+[root_cause]
+
+## Fix
+[fix]
+
+## Test
+[test_added]
+
+## Ownership
+- Owner: [owner]
+
+## Notes
+[notes]`
+  },
+
+  "error-handling": {
+    metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "file_path", label: "File", minWidth: 220 },
+      { key: "concern_type", label: "Concern", width: 160, enum: [
+        { label: "Silent swallow", value: "silent-swallow" },
+        { label: "Generic catch", value: "generic-catch" },
+        { label: "Unpropagated error", value: "unpropagated" },
+        { label: "Retry storm", value: "retry-storm" },
+        { label: "Lost stack", value: "lost-stack" },
+        { label: "User-facing leak", value: "leak" }
+      ] },
+      { key: "severity", label: "Severity", width: 100, enum: SEVERITY_OPTIONS, tagTypeFn: severityTag },
+      { key: "status", label: "Status", width: 130 },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "file_path", label: "File Path", type: "input", required: true, colSpan: 16 },
+      { key: "project", label: "Project", type: "input", colSpan: 8, placeholder: "Cross-domain join key" },
+      { key: "line_range", label: "Line Range", type: "input", colSpan: 8 },
+      { key: "concern_type", label: "Concern Type", type: "select", required: true, colSpan: 8, options: [
+        { label: "Silent swallow — error caught but not logged or surfaced", value: "silent-swallow" },
+        { label: "Generic catch — catch (e) { /* one-size-fits-all */ }", value: "generic-catch" },
+        { label: "Unpropagated error — return value loses the failure", value: "unpropagated" },
+        { label: "Retry storm — loop / exponent without backoff or circuit-break", value: "retry-storm" },
+        { label: "Lost stack — new Error() replaces cause; no .cause chain", value: "lost-stack" },
+        { label: "User-facing leak — raw stack / PII shown to user", value: "leak" }
+      ] },
+      { key: "severity", label: "Severity", type: "select", options: SEVERITY_OPTIONS, required: true, colSpan: 8 },
+      { key: "status", label: "Status", type: "select", colSpan: 8, options: [
+        { label: "Open", value: "open" },
+        { label: "Triaged", value: "triaged" },
+        { label: "In progress", value: "in-progress" },
+        { label: "Fixed", value: "fixed" },
+        { label: "Won't fix", value: "wont-fix" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", colSpan: 12 },
+      { key: "current", label: "Current Handling (snippet)", type: "textarea", colSpan: 24, placeholder: "Paste the catch / try block as-is" },
+      { key: "problem", label: "Problem", type: "textarea", colSpan: 24, placeholder: "What failure mode this causes" },
+      { key: "fix", label: "Fix", type: "textarea", colSpan: 24, placeholder: "Typed error / .cause chain / logging / user-safe message / retry policy" },
+      { key: "test_added", label: "Test Added", type: "input", colSpan: 12 },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — error-boundary swallowing, abort vs error, partial-failure telemetry." }
+    ],
+    templateContent: `# Error Handling Review — [file_path]
+
+## Concern
+- Type: [concern_type] · Line range: [line_range]
+- Severity: [severity] · Status: [status]
+
+## Current
+[current]
+
+## Problem
+[problem]
+
+## Fix
+[fix]
+
+## Test
+[test_added]
+
+## Ownership
+- Owner: [owner]
+
+## Notes
+[notes]`
+  },
+
+  "dead-code": {
+    metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "symbol", label: "Symbol", minWidth: 200 },
+      { key: "symbol_kind", label: "Kind", width: 130, enum: [
+        { label: "Function", value: "function" },
+        { label: "Method", value: "method" },
+        { label: "Class / type", value: "class" },
+        { label: "Constant / var", value: "var" },
+        { label: "Import", value: "import" },
+        { label: "File / module", value: "file" },
+        { label: "CSS class", value: "css" }
+      ] },
+      { key: "file_path", label: "File", width: 220 },
+      { key: "confidence", label: "Confidence", width: 120, enum: [
+        { label: "High", value: "high" },
+        { label: "Medium", value: "medium" },
+        { label: "Low", value: "low" }
+      ] },
+      { key: "status", label: "Status", width: 130 },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "symbol", label: "Symbol", type: "input", required: true, colSpan: 16, placeholder: "Function / file / class name" },
+      { key: "project", label: "Project", type: "input", colSpan: 8, placeholder: "Cross-domain join key" },
+      { key: "symbol_kind", label: "Kind", type: "select", required: true, colSpan: 8, options: [
+        { label: "Function", value: "function" },
+        { label: "Method", value: "method" },
+        { label: "Class / type", value: "class" },
+        { label: "Constant / var", value: "var" },
+        { label: "Import", value: "import" },
+        { label: "File / module", value: "file" },
+        { label: "CSS class", value: "css" }
+      ] },
+      { key: "file_path", label: "File Path", type: "input", required: true, colSpan: 16 },
+      { key: "confidence", label: "Confidence", type: "select", required: true, colSpan: 8, options: [
+        { label: "High — no static refs", value: "high" },
+        { label: "Medium — refs look dynamic", value: "medium" },
+        { label: "Low — usage unconfirmed", value: "low" }
+      ] },
+      { key: "status", label: "Status", type: "select", colSpan: 8, options: [
+        { label: "Identified", value: "identified" },
+        { label: "Verified unused", value: "verified" },
+        { label: "Marked for removal", value: "marked" },
+        { label: "Removed", value: "removed" },
+        { label: "Kept (still in use)", value: "kept" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", colSpan: 8 },
+      { key: "detection_method", label: "Detection Method", type: "input", colSpan: 12, placeholder: "e.g. ts-prune, knip, eslint no-unused-vars, grep" },
+      { key: "dynamic_refs", label: "Dynamic / Runtime Refs", type: "textarea", colSpan: 24, placeholder: "Anything that defeats static analysis — eval, dynamic import, runtime register" },
+      { key: "removal_plan", label: "Removal Plan", type: "textarea", colSpan: 24, placeholder: "PR strategy — single PR or sweep + i18n / route checks" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — feature-flagged code, public SDK, fake dead code." }
+    ],
+    templateContent: `# Dead Code — [symbol]
+
+## Symbol
+- Kind: [symbol_kind] · File: [file_path]
+- Confidence: [confidence] · Status: [status]
+
+## Detection
+- Method: [detection_method]
+- Dynamic refs: [dynamic_refs]
+
+## Removal Plan
+[removal_plan]
+
+## Ownership
+- Owner: [owner]
+
+## Notes
+[notes]`
+  },
+
+  "backward-compat": {
+    metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "change", label: "Change", minWidth: 220 },
+      { key: "surface", label: "Surface", width: 160, enum: [
+        { label: "Public API", value: "api" },
+        { label: "DB schema", value: "db-schema" },
+        { label: "Config / env var", value: "config" },
+        { label: "Event / payload", value: "event" },
+        { label: "File / path", value: "file" },
+        { label: "Behavior / contract", value: "behavior" }
+      ] },
+      { key: "breaking", label: "Breaking?", width: 110, enum: [
+        { label: "Yes", value: "yes" },
+        { label: "No", value: "no" },
+        { label: "Conditional", value: "conditional" }
+      ] },
+      { key: "risk", label: "Risk", width: 100, enum: RISK_OPTIONS, tagTypeFn: riskTag },
+      { key: "status", label: "Status", width: 130 },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "change", label: "Change", type: "input", required: true, colSpan: 16, placeholder: "e.g. Rename session_id → session_key" },
+      { key: "project", label: "Project", type: "input", colSpan: 8, placeholder: "Cross-domain join key — links to BRD / TL / bugs with the same project" },
+      { key: "surface", label: "Surface", type: "select", required: true, colSpan: 8, options: [
+        { label: "Public API — endpoint / handler signature", value: "api" },
+        { label: "DB schema — collection / column / index", value: "db-schema" },
+        { label: "Config / env var", value: "config" },
+        { label: "Event / payload — SSE, webhook, message", value: "event" },
+        { label: "File / path — read/write target", value: "file" },
+        { label: "Behavior / contract — ordering, side effects", value: "behavior" }
+      ] },
+      { key: "breaking", label: "Breaking?", type: "select", required: true, colSpan: 8, options: [
+        { label: "Yes — hard breaking", value: "yes" },
+        { label: "No — fully backward compatible", value: "no" },
+        { label: "Conditional — depends on consumer", value: "conditional" }
+      ] },
+      { key: "risk", label: "Risk", type: "select", options: RISK_OPTIONS, required: true, colSpan: 8 },
+      { key: "status", label: "Status", type: "select", colSpan: 8, options: [
+        { label: "Proposed", value: "proposed" },
+        { label: "Reviewed", value: "reviewed" },
+        { label: "Implementing", value: "implementing" },
+        { label: "Shipped", value: "shipped" },
+        { label: "Reverted", value: "reverted" },
+        { label: "Won't ship", value: "wont-ship" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", colSpan: 8 },
+      { key: "current_contract", label: "Current Contract", type: "textarea", colSpan: 24, placeholder: "Shape / type / behavior before the change" },
+      { key: "new_contract", label: "New Contract", type: "textarea", colSpan: 24, placeholder: "Shape / type / behavior after the change" },
+      { key: "affected_consumers", label: "Affected Consumers", type: "textarea", colSpan: 24, placeholder: "Internal + external callers, by name" },
+      { key: "migration", label: "Migration Path", type: "textarea", colSpan: 24, placeholder: "How consumers migrate — dual-write, shim, version bump, deprecation window" },
+      { key: "rollback", label: "Rollback Plan", type: "textarea", colSpan: 24, placeholder: "How to revert if breakage exceeds tolerance" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — undocumented consumers, mobile client lag, silent field rename." }
+    ],
+    templateContent: `# Backward Compat Review — [change]
+
+## Surface
+- Surface: [surface] · Breaking: [breaking] · Risk: [risk]
+- Status: [status] · Owner: [owner]
+
+## Contracts
+- Current: [current_contract]
+- New: [new_contract]
+
+## Affected Consumers
+[affected_consumers]
+
+## Migration
+[migration]
+
+## Rollback
+[rollback]
+
+## Notes
+[notes]`
+  },
+
+  "i18n-a11y": {
+    metaColumns: [
+      { key: "project", label: "Project", width: 100, clickable: true },
+      { key: "file_path", label: "File / Component", minWidth: 220 },
+      { key: "concern_type", label: "Concern", width: 160, enum: [
+        { label: "Hardcoded string", value: "hardcoded" },
+        { label: "Untranslated key", value: "untranslated" },
+        { label: "Missing aria", value: "missing-aria" },
+        { label: "Keyboard trap", value: "keyboard-trap" },
+        { label: "Color contrast", value: "contrast" },
+        { label: "Focus order", value: "focus-order" },
+        { label: "Screen-reader test", value: "sr-test" }
+      ] },
+      { key: "severity", label: "Severity", width: 100, enum: SEVERITY_OPTIONS, tagTypeFn: severityTag },
+      { key: "status", label: "Status", width: 130 },
+      { key: "owner", label: "Owner", width: 120 }
+    ],
+    metaFields: [
+      { key: "file_path", label: "File / Component", type: "input", required: true, colSpan: 16, placeholder: "e.g. src/views/aiChat/components/MessageBubble.vue" },
+      { key: "project", label: "Project", type: "input", colSpan: 8, placeholder: "Cross-domain join key" },
+      { key: "line_range", label: "Line Range", type: "input", colSpan: 8 },
+      { key: "concern_type", label: "Concern Type", type: "select", required: true, colSpan: 8, options: [
+        { label: "Hardcoded string — no i18n key", value: "hardcoded" },
+        { label: "Untranslated key — key exists but no zh/en value", value: "untranslated" },
+        { label: "Missing aria — aria-label / role / aria-live absent", value: "missing-aria" },
+        { label: "Keyboard trap — focus can't escape", value: "keyboard-trap" },
+        { label: "Color contrast — below WCAG AA", value: "contrast" },
+        { label: "Focus order — illogical tab sequence", value: "focus-order" },
+        { label: "Screen-reader test — not verified with NVDA/VoiceOver", value: "sr-test" }
+      ] },
+      { key: "severity", label: "Severity", type: "select", options: SEVERITY_OPTIONS, required: true, colSpan: 8 },
+      { key: "status", label: "Status", type: "select", colSpan: 8, options: [
+        { label: "Open", value: "open" },
+        { label: "Triaged", value: "triaged" },
+        { label: "In progress", value: "in-progress" },
+        { label: "Fixed", value: "fixed" },
+        { label: "Won't fix", value: "wont-fix" }
+      ] },
+      { key: "owner", label: "Owner", type: "input", colSpan: 8 },
+      { key: "current", label: "Current Code", type: "textarea", colSpan: 24, placeholder: "Paste the offending markup / string" },
+      { key: "problem", label: "Problem", type: "textarea", colSpan: 24, placeholder: "Who is excluded and how" },
+      { key: "fix", label: "Fix", type: "textarea", colSpan: 24, placeholder: "i18n key, aria attrs, role, focus mgmt, contrast tokens" },
+      { key: "test_added", label: "Test Added", type: "input", colSpan: 12, placeholder: "axe / jest-axe / manual SR test notes" },
+      { key: "notes", label: "Notes", type: "textarea", colSpan: 24, placeholder: "Quirks — RTL languages, dynamic content, ARIA live regions for streaming." }
+    ],
+    templateContent: `# i18n / a11y Review — [file_path]
+
+## Concern
+- Type: [concern_type] · Line range: [line_range]
+- Severity: [severity] · Status: [status]
+
+## Current
+[current]
+
+## Problem
+[problem]
+
+## Fix
+[fix]
+
+## Test
+[test_added]
+
+## Ownership
+- Owner: [owner]
+
+## Notes
+[notes]`
   }
 };

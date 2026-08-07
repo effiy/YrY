@@ -1,4 +1,5 @@
-import { Form, Input, Modal } from 'antd';
+import { ThunderboltOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal } from 'antd';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 import type { ChatController } from '../../controller';
@@ -13,6 +14,7 @@ export const SessionEditDialog: FC<SessionEditDialogProps> = ({ controller }) =>
   const [title, setTitle] = useState('');
   const [pageTitle, setPageTitle] = useState('');
   const [pageDescription, setPageDescription] = useState('');
+  const [titleLoading, setTitleLoading] = useState(false);
 
   useEffect(() => {
     if (state.sessionEditVisible) {
@@ -31,6 +33,21 @@ export const SessionEditDialog: FC<SessionEditDialogProps> = ({ controller }) =>
     });
   };
 
+  const onAutoGenerate = async () => {
+    setTitleLoading(true);
+    try {
+      const generated = await controller.autoGenerateSessionTitle({
+        apply: false,
+        onResult: (t) => setTitle(t),
+      });
+      if (!generated) {
+        // controller already notified
+      }
+    } finally {
+      setTitleLoading(false);
+    }
+  };
+
   return (
     <Modal
       title="Edit session info"
@@ -47,6 +64,16 @@ export const SessionEditDialog: FC<SessionEditDialogProps> = ({ controller }) =>
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Conversation title"
+            addonAfter={
+              <Button
+                type="text"
+                size="small"
+                icon={<ThunderboltOutlined />}
+                loading={titleLoading}
+                onClick={onAutoGenerate}
+                title="Auto-generate from messages"
+              />
+            }
           />
         </Form.Item>
         <Form.Item label="Page title">

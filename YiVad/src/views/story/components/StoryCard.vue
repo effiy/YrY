@@ -1,6 +1,10 @@
 <script setup lang="ts" name="storyCard">
 import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { ChatDotRound, ChatLineRound } from "@element-plus/icons-vue";
+import { PROJECT_LABELS } from "@/config";
 import type { StoryDocument } from "@/api/modules/story";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import StoryStatusBadge from "./StoryStatusBadge.vue";
 
 const props = defineProps<{
@@ -13,11 +17,36 @@ const emit = defineEmits<{
   (e: "delete", story: StoryDocument): void;
 }>();
 
+const router = useRouter();
+const { openInAiChat, linkToAiChatByTag } = useAiChatBridge();
+
+async function discussInAiChat() {
+  const s = props.story;
+  const ctxPath = `stories/${s.project || "unsorted"}/${s.key}`;
+  const tags = [`ctx:${ctxPath}`, `story:${s.key}`];
+  if (s.project) tags.push(`project:${s.project}`);
+  if (s.status) tags.push(`status:${s.status}`);
+  await openInAiChat({
+    title: `${s.name || s.key} — Story Board`,
+    pageContent: s.description || "",
+    tags,
+    sourceUrl: `/story?project=${encodeURIComponent(s.project || "")}`
+  });
+}
+
+function viewRelatedAiChatSessions() {
+  router.push(linkToAiChatByTag(`story:${props.story.key}`));
+}
+
+function projectLabel(value: string): string {
+  return PROJECT_LABELS[value] ?? value;
+}
+
 const priorityColors: Record<string, string> = {
   p0: "danger",
   p1: "warning",
   p2: "info",
-  p3: ""
+  p3: "info"
 };
 
 const scenarioCount = computed(() => props.story.scenarios?.length ?? 0);
@@ -28,6 +57,18 @@ const scenarioProgress = computed(() => {
   return Math.round((scenarioDone.value / total) * 100);
 });
 const fileCount = computed(() => props.story.files?.length ?? 0);
+const isOverdue = computed(() => {
+  if (!props.story.dueDate) return false;
+  const isClosed = props.story.status === "operations" || props.story.status === "archived";
+  return !isClosed && props.story.dueDate < Date.now();
+});
+
+function fmtDue(ts: number | null): string {
+  if (!ts) return "";
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 </script>
 
 <template>
@@ -49,7 +90,7 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
     </div>
     <div class="sc-meta">
       <el-tag v-if="story.project" size="small" type="info">
-        {{ story.project }}
+        {{ projectLabel(story.project) }}
       </el-tag>
     </div>
     <p class="sc-desc">{{ story.description || $t("story.noDescription") }}</p>
@@ -62,9 +103,20 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
     <!-- Counts row -->
     <div class="sc-counts">
       <span v-if="fileCount > 0" class="sc-count-item"> 📎 {{ fileCount }} file{{ fileCount > 1 ? "s" : "" }} </span>
+      <span v-if="story.assignee" class="sc-count-item"> 👤 {{ story.assignee }} </span>
+      <span
+        v-if="story.dueDate"
+        class="sc-count-item sc-count-item--due"
+        :class="{ 'sc-count-item--overdue': isOverdue }"
+        :title="isOverdue ? $t('story.overdue') : $t('story.dueDate')"
+      >
+        📅 {{ fmtDue(story.dueDate) }}
+      </span>
     </div>
     <!-- Actions -->
     <div class="sc-acts" @click.stop>
+      <el-button size="small" text :icon="ChatDotRound" :title="$t('story.discussInAiChat')" @click="discussInAiChat" />
+      <el-button size="small" text :icon="ChatLineRound" :title="$t('common.relatedAiChatSessions')" @click="viewRelatedAiChatSessions" />
       <el-button size="small" text @click="emit('edit', story)">
         {{ $t("story.edit") }}
       </el-button>
@@ -168,6 +220,14 @@ const fileCount = computed(() => props.story.files?.length ?? 0);
 .sc-count-item {
   font-size: 11px;
   color: var(--el-text-color-secondary);
+
+  &--due {
+    font-variant-numeric: tabular-nums;
+  }
+  &--overdue {
+    color: var(--el-color-danger);
+    font-weight: 600;
+  }
 }
 
 .sc-acts {

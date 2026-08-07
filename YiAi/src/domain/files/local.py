@@ -122,13 +122,9 @@ async def _read_from_database(target_file: str, db_key: str) -> dict:
 # project disk read
 # ---------------------------------------------------------------------------
 
-async def read_project_file(project: str, target_file: str) -> dict:
-    """Read a file directly from a project's source tree on disk.
-
-    Resolves ``<projects_root>/<project>/<target_file>`` with path-traversal
-    protection. Returns ``{content, type, source}`` like :func:`read_file` but
-    does NOT fall back to MongoDB — the on-disk content is the source of
-    truth, so callers see the live project state, not a stale snapshot.
+def _resolve_project_path(project: str, target_file: str) -> tuple[str, str]:
+    """Resolve ``<projects_root>/<project>/<target_file>`` with path-traversal
+    protection, returning ``(abs_path, project_name)``.
 
     Path forms accepted (story cards are inconsistent about prefixing, so we
     tolerate all three):
@@ -137,14 +133,16 @@ async def read_project_file(project: str, target_file: str) -> dict:
        ``<projects_root>/<project>/``.
     2. ``YiAi/src/foo.vue`` (project-prefixed) → leading ``<project>/`` is
        stripped, then resolved under ``<projects_root>/<project>/``.
-    3. ``YiKnowledge/projects/YiAi/.../scene.md`` (knowledge-prefixed) →
+    3. ``YiKnowledge/engineer/projects/YiAi/.../scene.md`` (knowledge-prefixed) →
        resolved under ``<knowledge_base_dir>`` (YiKnowledge lives as a
        sibling of the projects, not inside any one project).
 
-    Used by the YiVad story sidebar preview: story/scenario cards reference
-    paths that may belong to a specific project's source tree or to the
-    shared YiKnowledge tree, and the preview must reflect what's on that
-    disk right now.
+    When the first segment of ``target_file`` matches a directory directly
+    under ``projects_root`` (e.g. ``.claude``), the actual project is
+    auto-detected from that segment and the caller-supplied ``project`` is
+    overridden. This lets skill paths like ``.claude/skills/<name>/SKILL.md``
+    resolve against ``<projects_root>/.claude/`` regardless of the project
+    the caller passed in.
     """
     project_name = (project or "").strip()
     if not project_name or "/" in project_name or ".." in project_name:
@@ -174,41 +172,59 @@ async def read_project_file(project: str, target_file: str) -> dict:
             raise BusinessException(
                 ErrorCode.INVALID_PARAMS, message="Invalid path"
             )
-    else:
-        # Project source file. Story cards store paths with the project
-        # prefix already prepended ("YiAi/src/foo.py" or "YiVad/src/bar.vue");
-        # the project on the story may be "YiAi" but the file may live in a
-        # sibling project. Detect the actual project from the path's first
-        # segment when it matches a directory under projects_root; otherwise
-        # fall back to the caller-supplied project name.
-        root_abs = os.path.realpath(os.path.abspath(settings.projects_root))
-        segments = raw.split("/")
-        first = segments[0] if segments else ""
-        first_abs = os.path.realpath(os.path.join(root_abs, first)) if first else None
-        if first and first_abs != root_abs and first_abs.startswith(root_abs + os.sep) and os.path.isdir(first_abs):
-            project_name = first
-            rel = raw[len(first) + 1:]
-        else:
-            project_prefix = f"{project_name}/"
-            if raw.startswith(project_prefix):
-                rel = raw[len(project_prefix):]
-            else:
-                rel = raw
-        if not rel or rel.startswith("/") or ".." in rel.split("/"):
-            raise BusinessException(
-                ErrorCode.INVALID_PARAMS, message=f"Invalid path: {target_file}"
-            )
+        return abs_path, project_name
 
-        project_abs = os.path.realpath(os.path.join(root_abs, project_name))
-        if project_abs != root_abs and not project_abs.startswith(root_abs + os.sep):
-            raise BusinessException(
-                ErrorCode.INVALID_PARAMS, message=f"Invalid project: {project}"
-            )
-        abs_path = os.path.realpath(os.path.join(project_abs, os.path.normpath(rel)))
-        if abs_path != project_abs and not abs_path.startswith(project_abs + os.sep):
-            raise BusinessException(
-                ErrorCode.INVALID_PARAMS, message="Invalid path"
-            )
+    # Project source file. Story cards store paths with the project prefix
+    # already prepended ("YiAi/src/foo.py" or "YiVad/src/bar.vue"); the
+    # project on the story may be "YiAi" but the file may live in a sibling
+    # project. Detect the actual project from the path's first segment when
+    # it matches a directory under projects_root; otherwise fall back to the
+    # caller-supplied project name.
+    root_abs = os.path.realpath(os.path.abspath(settings.projects_root))
+    segments = raw.split("/")
+    first = segments[0] if segments else ""
+    first_abs = os.path.realpath(os.path.join(root_abs, first)) if first else None
+    if first and first_abs != root_abs and first_abs.startswith(root_abs + os.sep) and os.path.isdir(first_abs):
+        project_name = first
+        rel = raw[len(first) + 1:]
+    else:
+        project_prefix = f"{project_name}/"
+        if raw.startswith(project_prefix):
+            rel = raw[len(project_prefix):]
+        else:
+            rel = raw
+    if not rel or rel.startswith("/") or ".." in rel.split("/"):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS, message=f"Invalid path: {target_file}"
+        )
+
+    project_abs = os.path.realpath(os.path.join(root_abs, project_name))
+    if project_abs != root_abs and not project_abs.startswith(root_abs + os.sep):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS, message=f"Invalid project: {project}"
+        )
+    abs_path = os.path.realpath(os.path.join(project_abs, os.path.normpath(rel)))
+    if abs_path != project_abs and not abs_path.startswith(project_abs + os.sep):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS, message="Invalid path"
+        )
+    return abs_path, project_name
+
+
+async def read_project_file(project: str, target_file: str) -> dict:
+    """Read a file directly from a project's source tree on disk.
+
+    Resolves ``<projects_root>/<project>/<target_file>`` with path-traversal
+    protection. Returns ``{content, type, source}`` like :func:`read_file` but
+    does NOT fall back to MongoDB — the on-disk content is the source of
+    truth, so callers see the live project state, not a stale snapshot.
+
+    Used by the YiVad story sidebar preview: story/scenario cards reference
+    paths that may belong to a specific project's source tree or to the
+    shared YiKnowledge tree, and the preview must reflect what's on that
+    disk right now.
+    """
+    abs_path, _ = _resolve_project_path(project, target_file)
 
     if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
         raise BusinessException(
@@ -229,6 +245,122 @@ async def read_project_file(project: str, target_file: str) -> dict:
         raise BusinessException(
             ErrorCode.INTERNAL_ERROR, message=f"Failed to read file: {str(e)}"
         ) from e
+
+
+# ---------------------------------------------------------------------------
+# project disk write / delete / rename
+# ---------------------------------------------------------------------------
+
+async def write_project_file(project: str, target_file: str, content: str, is_base64: bool) -> dict:
+    """Write a file directly into a project's source tree on disk.
+
+    Symmetric with :func:`read_project_file`: resolves against
+    ``<projects_root>`` (NOT ``static_base_dir``), creates parent dirs as
+    needed, and writes only to disk — no MongoDB dual-write. The on-disk
+    file is the source of truth for project source files.
+    """
+    abs_path, project_name = _resolve_project_path(project, target_file)
+
+    try:
+        os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+        if is_base64:
+            content_bytes = base64.b64decode(content)
+            with open(abs_path, "wb") as f:
+                f.write(content_bytes)
+        else:
+            content_bytes = content.encode("utf-8")
+            with open(abs_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+        if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+            raise BusinessException(
+                ErrorCode.DATA_STORE_FAIL,
+                message=f"File write verification failed: {project_name}/{target_file}",
+            )
+
+        logger.info(f"Wrote project file: {abs_path} ({len(content_bytes)} bytes)")
+        return {"message": "Write successful", "path": target_file}
+    except BusinessException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to write project file: {str(e)}", exc_info=True)
+        raise BusinessException(
+            ErrorCode.DATA_STORE_FAIL, message=f"Failed to write file: {str(e)}"
+        ) from e
+
+
+async def delete_project_folder(project: str, target_dir: str) -> dict:
+    """Delete a directory from a project's source tree on disk.
+
+    Resolves against ``<projects_root>`` (NOT ``static_base_dir``). Uses
+    ``shutil.rmtree``. No MongoDB cleanup — project files are not mirrored
+    there. Returns success even if the directory was missing? No: raises
+    ``DATA_NOT_FOUND`` if absent, matching :func:`delete_folder`.
+    """
+    abs_path, project_name = _resolve_project_path(project, target_dir)
+
+    if not os.path.exists(abs_path):
+        raise BusinessException(
+            ErrorCode.DATA_NOT_FOUND,
+            message=f"Directory does not exist: {project_name}/{target_dir}",
+        )
+    if not os.path.isdir(abs_path):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS,
+            message=f"Path is not a directory: {project_name}/{target_dir}",
+        )
+
+    try:
+        shutil.rmtree(abs_path)
+        logger.info(f"Deleted project directory: {abs_path}")
+    except Exception as e:
+        logger.error(f"Failed to delete project directory: {str(e)}", exc_info=True)
+        raise BusinessException(
+            ErrorCode.DATA_DESTROY_FAIL, message=f"Failed to delete directory: {str(e)}"
+        ) from e
+
+    return {"message": "Delete successful", "path": target_dir}
+
+
+async def rename_project_folder(project: str, old_dir: str, new_dir: str) -> dict:
+    """Rename (move) a directory within a project's source tree on disk.
+
+    Both ``old_dir`` and ``new_dir`` are resolved against the same
+    ``<projects_root>``; cross-project moves are allowed as long as both
+    paths stay under the root. No MongoDB cleanup — project folders are not
+    mirrored there.
+    """
+    old_abs, _ = _resolve_project_path(project, old_dir)
+    # new_dir may name a different project's folder (or a sibling dir at the
+    # root); resolve it independently against the same projects_root.
+    new_abs, _ = _resolve_project_path(project, new_dir)
+
+    if not os.path.exists(old_abs):
+        raise BusinessException(
+            ErrorCode.DATA_NOT_FOUND,
+            message=f"Directory does not exist: {old_project}/{old_dir}",
+        )
+    if not os.path.isdir(old_abs):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS,
+            message=f"Path is not a directory: {old_project}/{old_dir}",
+        )
+
+    try:
+        os.makedirs(os.path.dirname(new_abs), exist_ok=True)
+        os.rename(old_abs, new_abs)
+        logger.info(f"Renamed project directory: {old_abs} -> {new_abs}")
+    except Exception as e:
+        logger.error(f"Failed to rename project directory: {str(e)}", exc_info=True)
+        raise BusinessException(
+            ErrorCode.DATA_UPDATE_FAIL, message=f"Failed to rename directory: {str(e)}"
+        ) from e
+
+    return {
+        "message": "Rename successful",
+        "old_path": old_dir,
+        "new_path": new_dir,
+    }
 
 
 # ---------------------------------------------------------------------------

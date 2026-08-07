@@ -6,9 +6,33 @@
  * reads `controller.state` snapshot and re-renders on emit.
  */
 
-import type { ChatService, SessionService, WeWorkService } from '@/api/services';
-import type { ChatMessage, WeWorkBot } from '@/api/types';
 import type { TreeDataNode } from 'antd';
+import type {
+  BugService,
+  ChatService,
+  KnowledgeService,
+  RagService,
+  SessionService,
+  WeWorkService,
+} from '@/api/services';
+import { detectPageTypeFromUrl, detectProjectFromUrl, makeBugKey } from '@/api/services/bug';
+import type {
+  BugFrequency,
+  BugPriority,
+  BugSeverity,
+  BugStatus,
+  BugType,
+  ChatMessage,
+  KnowledgeReadResponse,
+  KnowledgeStory,
+  KnowledgeTreeNode,
+  RagCategoriesResponse,
+  RagChatMessage,
+  RagDecomposeResponse,
+  RagSource,
+  RagStatusResponse,
+  WeWorkBot,
+} from '@/api/types';
 import { DEFAULT_MODEL } from './constants';
 import type { ChatState, Message, SessionItem } from './types';
 
@@ -35,6 +59,9 @@ export class ChatController {
   private _chat: ChatService;
   private _sessions: SessionService;
   private _wework: WeWorkService;
+  private _knowledge: KnowledgeService;
+  private _rag: RagService;
+  private _bug: BugService;
   private _abortController: AbortController | null = null;
   private _searchTimer: ReturnType<typeof setTimeout> | null = null;
   private _scrollTimer: ReturnType<typeof setTimeout> | null = null;
@@ -46,7 +73,7 @@ export class ChatController {
   // Drag state (non-reactive)
   private _dragStart = { x: 0, y: 0, wx: 0, wy: 0 };
   private _resizeDir = '';
-  private _resizeStart = { x: 0, y: 0, wx: 0, w: 0, h: 0 };
+  private _resizeStart = { x: 0, y: 0, wx: 0, wy: 0, w: 0, h: 0 };
 
   // Sidebar resize state
   private _sidebarResizeStart = { x: 0, startWidth: 0 };
@@ -55,12 +82,18 @@ export class ChatController {
     chat: ChatService,
     sessions: SessionService,
     wework: WeWorkService,
+    knowledge: KnowledgeService,
+    rag: RagService,
+    bug: BugService,
     colorIndex: number,
     systemPrompt: string,
   ) {
     this._chat = chat;
     this._sessions = sessions;
     this._wework = wework;
+    this._knowledge = knowledge;
+    this._rag = rag;
+    this._bug = bug;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -76,6 +109,8 @@ export class ChatController {
       currentSessionId: null,
       searchInputValue: '',
       searchQuery: '',
+      sessionSiteFilter: '',
+      sessionProjectFilter: '',
       sessionLoading: false,
       sidebarCollapsed: false,
       sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
@@ -83,6 +118,73 @@ export class ChatController {
       selectedSessionIds: [],
       draftImages: [],
       contextEnabled: true,
+      knowledgeGrounded: false,
+      ragScope: '',
+      ragScopeIsFile: false,
+      ragSources: [],
+      ragStatus: null,
+      ragStatusLoading: false,
+      sidebarView: 'sessions',
+      recentBugs: [],
+      recentBugsLoading: false,
+      recentBugsError: '',
+      knowledgeTree: [],
+      knowledgeLoading: false,
+      knowledgeError: '',
+      knowledgeStories: [],
+      knowledgeStoriesLoading: false,
+      knowledgeStoriesError: '',
+      knowledgePreviewVisible: false,
+      knowledgePreviewPath: '',
+      knowledgePreviewData: null,
+      knowledgePreviewLoading: false,
+      saveToKnowledgeVisible: false,
+      saveToKnowledgeDraftPath: '',
+      saveToKnowledgeDraftMetadata: {
+        title: '',
+        category: '',
+        tags: '',
+        type: '',
+      },
+      saveToKnowledgeLoading: false,
+      saveToKnowledgeTimestamp: null,
+      ragPreviewSources: [],
+      ragPreviewLoading: false,
+      ragPreviewVisible: false,
+      ragPreviewQuestion: '',
+      ragCategories: null,
+      ragCategoriesLoading: false,
+      knowledgeCategoryFilter: '',
+      ragDecomposeVisible: false,
+      ragDecomposeLoading: false,
+      ragDecomposeData: null,
+      ragDecomposeQuestion: '',
+      sessionSummaryVisible: false,
+      sessionSummaryLoading: false,
+      sessionSummaryText: '',
+      sessionSummaryError: '',
+      bugReportVisible: false,
+      bugReportLoading: false,
+      bugReportDraft: {
+        title: '',
+        project: '',
+        module: '',
+        severity: 'minor',
+        priority: 'p2',
+        status: 'open',
+        type: 'functional',
+        frequency: 'always',
+        assignee: '',
+        reporter: '',
+        environment: '',
+        affectedVersion: '',
+        fixedVersion: '',
+        tags: '',
+        description: '',
+        stepsToReproduce: '',
+        expectedResult: '',
+        actualResult: '',
+      },
       weChatRobots: [],
       weChatRobotsDraft: [],
       weChatSettingsVisible: false,
@@ -90,6 +192,7 @@ export class ChatController {
       systemPrompt: systemPrompt || '',
       streamingTargetTimestamp: null,
       streamingType: '',
+      streamingPhase: '',
       scrollTick: 0,
       copyFeedback: {},
       feedback: {},
@@ -101,6 +204,8 @@ export class ChatController {
       contextEditorDraft: '',
       tagManagerVisible: false,
       inputTemplate: '',
+      promptHistory: [],
+      promptHistoryVisible: false,
       ws: {
         x: Math.max(0, vw - DEFAULT_WIDTH),
         y: 60,
@@ -224,7 +329,16 @@ export class ChatController {
 
       const result = await new Promise<Record<string, unknown>>((resolve) => {
         chrome.storage.local.get(
-          ['sidebarWidth', 'sidebarCollapsed', 'contextEnabled', 'weChatRobots'],
+          [
+            'sidebarWidth',
+            'sidebarCollapsed',
+            'contextEnabled',
+            'weChatRobots',
+            'knowledgeGrounded',
+            'ragScope',
+            'ragScopeIsFile',
+            'promptHistory',
+          ],
           (items) => resolve(items || {}),
         );
       });
@@ -241,10 +355,24 @@ export class ChatController {
       if (typeof result.contextEnabled === 'boolean') {
         this.state.contextEnabled = result.contextEnabled;
       }
+      if (typeof result.knowledgeGrounded === 'boolean') {
+        this.state.knowledgeGrounded = result.knowledgeGrounded;
+      }
+      if (typeof result.ragScope === 'string') {
+        this.state.ragScope = result.ragScope;
+      }
+      if (typeof result.ragScopeIsFile === 'boolean') {
+        this.state.ragScopeIsFile = result.ragScopeIsFile;
+      }
       if (Array.isArray(result.weChatRobots)) {
         this.state.weChatRobots = (result.weChatRobots as WeWorkBot[]).filter(
           (r) => r && typeof r === 'object' && typeof r.webhook === 'string',
         );
+      }
+      if (Array.isArray(result.promptHistory)) {
+        this.state.promptHistory = (result.promptHistory as unknown[])
+          .filter((s): s is string => typeof s === 'string')
+          .slice(-100);
       }
     } catch {
       /* ignore */
@@ -378,7 +506,7 @@ export class ChatController {
           updatedAt: record.updatedAt || now,
           messageCount: 0,
           isFavorite: false,
-          tags: []
+          tags: [],
         });
         this.state.currentSessionId = record.key;
       }
@@ -545,12 +673,52 @@ export class ChatController {
     this.setState({ searchInputValue: '', searchQuery: '' });
   };
 
+  /** Normalize a URL to its "site key": hostname + pathname + hash-path
+   *  (no query string, no hash query). Two URLs with the same site key refer
+   *  to the same logical page — so sessions created from either can be
+   *  surfaced together when filtering by current page. */
+  static siteKeyFromUrl(url: string): string {
+    if (!url) return '';
+    try {
+      const u = new URL(url, window.location.origin);
+      let key = u.hostname + u.pathname;
+      if (u.hash) {
+        const hashPath = u.hash.split('?')[0];
+        if (hashPath) key += hashPath;
+      }
+      return key.toLowerCase();
+    } catch {
+      return '';
+    }
+  }
+
+  /** Filter the session list to only those whose URL matches the current
+   *  page's site key. Toggle: if already filtered to this page, clears. */
+  filterSessionsByCurrentPage = () => {
+    const current = ChatController.siteKeyFromUrl(this.state.pageInfo?.url || window.location.href);
+    if (!current) {
+      this._notify('Cannot identify current page', 'warning');
+      return;
+    }
+    this.state.sessionSiteFilter = this.state.sessionSiteFilter === current ? '' : current;
+    this._emit();
+  };
+
+  clearSessionSiteFilter = () => {
+    if (!this.state.sessionSiteFilter) return;
+    this.state.sessionSiteFilter = '';
+    this._emit();
+  };
+
   get filteredSessions(): SessionItem[] {
     const q = this.state.searchQuery;
-    if (!q) return this.state.sessions;
-    return this.state.sessions.filter(
-      (s) => s.title.toLowerCase().includes(q) || s.url.toLowerCase().includes(q),
-    );
+    const site = this.state.sessionSiteFilter;
+    let list = this.state.sessions;
+    if (site) {
+      list = list.filter((s) => ChatController.siteKeyFromUrl(s.url) === site);
+    }
+    if (!q) return list;
+    return list.filter((s) => s.title.toLowerCase().includes(q) || s.url.toLowerCase().includes(q));
   }
 
   // ── Batch Mode ─────────────────────────────────────────────────────
@@ -629,6 +797,7 @@ export class ChatController {
     const imageList = images || this.state.draftImages || [];
     if (!text.trim() && imageList.length === 0) return;
     if (this.state.isProcessing) return;
+    if (text.trim()) this.pushPromptHistory(text);
     if (!this.state.currentSessionId) {
       await this._loadSessions();
       await this._findOrCreateSession();
@@ -682,38 +851,93 @@ export class ChatController {
     this.state.streamingTargetTimestamp = petTimestamp;
     this.state.streamingType = type;
     this.state.isProcessing = true;
+    this.state.streamingPhase = this.state.knowledgeGrounded ? 'retrieving' : 'thinking';
+    // Clear sources from previous turn — only show sources for the in-flight one.
+    this.state.ragSources = [];
     this._abortController = new AbortController();
     let streamed = '';
     let lastScrollAt = 0;
+    let phaseFlipped = false;
     const SCROLL_THROTTLE_MS = 120;
 
     const findPetIdx = () => this.state.messages.findIndex((m) => m.timestamp === petTimestamp);
 
+    const onToken = (token: string) => {
+      streamed += token;
+      if (!phaseFlipped) {
+        phaseFlipped = true;
+        this.state.streamingPhase = 'streaming';
+      }
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        this.state.messages[idx].content = streamed;
+        this.state.messages[idx].error = false;
+        this.state.messages[idx].aborted = false;
+      }
+      const now2 = Date.now();
+      if (now2 - lastScrollAt > SCROLL_THROTTLE_MS) {
+        lastScrollAt = now2;
+        this.state.scrollTick++;
+      }
+      this._emit();
+    };
+
     try {
-      streamed = await this._chat.streamWithCallback(
-        {
-          system: this.state.systemPrompt,
-          user: userContent,
-          model: DEFAULT_MODEL,
-          images: images.length > 0 ? images : undefined,
-        },
-        (token) => {
-          streamed += token;
-          const idx = findPetIdx();
-          if (idx >= 0) {
-            this.state.messages[idx].content = streamed;
-            this.state.messages[idx].error = false;
-            this.state.messages[idx].aborted = false;
+      if (this.state.knowledgeGrounded) {
+        const useFileChat = this.state.ragScopeIsFile && !!this.state.ragScope;
+        const groundedQuestion = this.state.systemPrompt
+          ? `${this.state.systemPrompt}\n\n${userContent}`
+          : userContent;
+        if (useFileChat) {
+          // Per-file endpoint takes {target_file, question} — single-turn.
+          streamed = await this._rag.streamFileChat(
+            {
+              target_file: this.state.ragScope,
+              question: groundedQuestion,
+            },
+            {
+              onChunk: onToken,
+              onSources: (sources: RagSource[]) => {
+                this.state.ragSources = sources;
+                this._emit();
+              },
+            },
+            this._abortController.signal,
+          );
+        } else {
+          const messages: RagChatMessage[] = [];
+          if (this.state.systemPrompt) {
+            messages.push({ role: 'system', content: this.state.systemPrompt });
           }
-          const now2 = Date.now();
-          if (now2 - lastScrollAt > SCROLL_THROTTLE_MS) {
-            lastScrollAt = now2;
-            this.state.scrollTick++;
-          }
-          this._emit();
-        },
-        this._abortController.signal,
-      );
+          messages.push({ role: 'user', content: userContent });
+          streamed = await this._rag.streamChat(
+            {
+              messages,
+              scope: this.state.ragScope || undefined,
+              category: this.state.knowledgeCategoryFilter || undefined,
+            },
+            {
+              onChunk: onToken,
+              onSources: (sources: RagSource[]) => {
+                this.state.ragSources = sources;
+                this._emit();
+              },
+            },
+            this._abortController.signal,
+          );
+        }
+      } else {
+        streamed = await this._chat.streamWithCallback(
+          {
+            system: this.state.systemPrompt,
+            user: userContent,
+            model: DEFAULT_MODEL,
+            images: images.length > 0 ? images : undefined,
+          },
+          onToken,
+          this._abortController.signal,
+        );
+      }
 
       const idx = findPetIdx();
       if (idx >= 0) {
@@ -745,6 +969,7 @@ export class ChatController {
       this.state.isProcessing = false;
       this.state.streamingTargetTimestamp = null;
       this.state.streamingType = '';
+      this.state.streamingPhase = '';
       this._abortController = null;
       setTimeout(() => this.scrollToBottom(true), 50);
       this._emit();
@@ -758,6 +983,7 @@ export class ChatController {
     this.state.isProcessing = false;
     this.state.streamingTargetTimestamp = null;
     this.state.streamingType = '';
+    this.state.streamingPhase = '';
     if (targetTs !== null) {
       const idx = this.state.messages.findIndex((m) => m.timestamp === targetTs);
       if (idx >= 0) {
@@ -976,6 +1202,669 @@ export class ChatController {
     this._emit();
   };
 
+  // ── Knowledge-grounded (RAG) ───────────────────────────────────────
+
+  toggleKnowledgeGrounded = () => {
+    const value = !this.state.knowledgeGrounded;
+    this.state.knowledgeGrounded = value;
+    this._persistSetting('knowledgeGrounded', value);
+    this._emit();
+    // Refresh index status when the user turns grounding on so the toolbar
+    // can surface "index not built" before they ask and get an empty answer.
+    if (value && !this.state.ragStatus) this.loadRagStatus();
+  };
+
+  setRagScope = (scope: string) => {
+    const next = String(scope || '');
+    if (next === this.state.ragScope) return;
+    this.state.ragScope = next;
+    this._persistSetting('ragScope', next);
+    this._emit();
+  };
+
+  clearRagSources = () => {
+    if (this.state.ragSources.length === 0) return;
+    this.state.ragSources = [];
+    this._emit();
+  };
+
+  // ── Sidebar view switch ────────────────────────────────────────────
+
+  setSidebarView = (view: 'sessions' | 'knowledge' | 'stories' | 'bugs') => {
+    if (this.state.sidebarView === view) return;
+    this.state.sidebarView = view;
+    this._emit();
+    if (view === 'knowledge') {
+      if (this.state.knowledgeTree.length === 0) this.loadKnowledgeTree();
+      if (!this.state.ragCategories) this.loadRagCategories();
+    } else if (view === 'stories') {
+      if (this.state.knowledgeStories.length === 0) this.loadKnowledgeStories();
+    } else if (view === 'bugs') {
+      if (this.state.recentBugs.length === 0) this.loadRecentBugs();
+    }
+  };
+
+  /** Pull the most recent bugs from MongoDB `bugs`. */
+  loadRecentBugs = async (params?: { project?: string; search?: string }) => {
+    if (this.state.recentBugsLoading) return;
+    this.state.recentBugsLoading = true;
+    this.state.recentBugsError = '';
+    this._emit();
+    try {
+      const res = await this._bug.listBugs({
+        project: params?.project,
+        search: params?.search,
+        pageSize: 30,
+      });
+      if (res.ok && res.data) {
+        this.state.recentBugs = res.data.list || [];
+      } else {
+        this.state.recentBugsError = res.error || 'Failed to load bugs';
+      }
+    } catch (err) {
+      this.state.recentBugsError = (err as Error)?.message || 'Failed to load bugs';
+    }
+    this.state.recentBugsLoading = false;
+    this._emit();
+  };
+
+  /** Open the bug detail page in YiVad (`/code-review/bugs/detail/<key>`). */
+  openBugInYiVad = (key: string) => {
+    if (!key) return;
+    const url = `http://localhost:8848/#/code-review/bugs/detail/${encodeURIComponent(key)}?mode=view`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  /** Seed the chat input with the bug's title + key so the user can ask
+   *  about it. Optionally turn on knowledge grounding over the bug's
+   *  content file so the answer draws on the bug's markdown body. */
+  discussBugInChat = (bug: { key: string; title: string; contentPath?: string }) => {
+    if (!bug) return;
+    const prompt = `Bug ${bug.key} — ${bug.title}\n\nHelp me understand this bug: root cause, impact, and a fix plan.`;
+    this.state.searchInputValue = prompt;
+    this._emit();
+    // Best-effort: scope RAG to the bug's content file if known.
+    if (bug.contentPath) {
+      this.setRagScopeFromNode(bug.contentPath, true);
+      if (!this.state.knowledgeGrounded) this.toggleKnowledgeGrounded();
+    }
+  };
+
+  /** Fetch the list of project story.md entries. */
+  loadKnowledgeStories = async (project?: string) => {
+    if (this.state.knowledgeStoriesLoading) return;
+    this.state.knowledgeStoriesLoading = true;
+    this.state.knowledgeStoriesError = '';
+    this._emit();
+    try {
+      const stories = await this._knowledge.listStoriesAsItems(project);
+      this.state.knowledgeStories = stories;
+    } catch (err) {
+      this.state.knowledgeStoriesError = (err as Error)?.message || 'Failed to load stories';
+      this.state.knowledgeStories = [];
+    }
+    this.state.knowledgeStoriesLoading = false;
+    this._emit();
+  };
+
+  /** Open the preview modal for a project's story.md. */
+  openKnowledgeStory = (project: string, storyName: string) => {
+    return this._knowledge
+      .readStory(project, storyName)
+      .then((res) => {
+        if (res.ok && res.data) {
+          this.state.knowledgePreviewData = res.data;
+          this.state.knowledgePreviewPath = res.data.path || `${project}/${storyName}`;
+          this.state.knowledgePreviewVisible = true;
+          this.state.knowledgePreviewLoading = false;
+          this._emit();
+        } else {
+          this._notify(res.error || 'Failed to load story', 'error');
+        }
+      })
+      .catch((err: unknown) => {
+        this._notify((err as Error)?.message || 'Failed to load story', 'error');
+      });
+  };
+
+  /** Scan YiKnowledge tree. Idempotent if a scan is in flight.
+   *  Pass `category` to scope to one top-level category — when the user
+   *  picks a category from the dropdown, the visible tree should narrow. */
+  loadKnowledgeTree = async (category?: string) => {
+    // If the user passed an explicit "" (reset), we still want to scan all.
+    const cat = category || this.state.knowledgeCategoryFilter || undefined;
+    if (this.state.knowledgeLoading) return;
+    this.state.knowledgeLoading = true;
+    this.state.knowledgeError = '';
+    this._emit();
+    try {
+      const res = await this._knowledge.scan(cat);
+      if (res.ok && res.data) {
+        this.state.knowledgeTree = res.data.tree || [];
+      } else {
+        this.state.knowledgeError = res.error || 'Failed to scan knowledge tree';
+        this.state.knowledgeTree = [];
+      }
+    } catch (err) {
+      this.state.knowledgeError = (err as Error)?.message || 'Failed to scan knowledge tree';
+      this.state.knowledgeTree = [];
+    }
+    this.state.knowledgeLoading = false;
+    this._emit();
+  };
+
+  /** Fetch RAG categories + tag counts — for the filter dropdown. */
+  loadRagCategories = async () => {
+    if (this.state.ragCategoriesLoading) return;
+    this.state.ragCategoriesLoading = true;
+    this._emit();
+    try {
+      const res = await this._rag.categories();
+      if (res.ok) {
+        this.state.ragCategories = res.data || null;
+      } else {
+        this._notify(res.error || 'Failed to load categories', 'warning');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to load categories', 'warning');
+    }
+    this.state.ragCategoriesLoading = false;
+    this._emit();
+  };
+
+  /** Set the active category filter. Reloads the visible tree (scoped) and
+   *  is passed as `category` to subsequent rag.query / rag.chat calls. */
+  setKnowledgeCategoryFilter = (category: string) => {
+    const next = (category || '').trim();
+    if (next === this.state.knowledgeCategoryFilter) return;
+    this.state.knowledgeCategoryFilter = next;
+    this._emit();
+    // Reload tree scoped — loadKnowledgeTree reads the filter from state.
+    this.loadKnowledgeTree();
+  };
+
+  /** Set ragScope from a knowledge-tree node path. Pass isFile=true when
+   *  the node is a leaf — routes the next grounded stream to /rag-file-chat
+   *  (per-file index) instead of /rag-chat with substring scope. */
+  setRagScopeFromNode = (path: string, isFile = false) => {
+    const trimmed = (path || '').trim();
+    if (!trimmed) return;
+    this.state.ragScope = trimmed;
+    this.state.ragScopeIsFile = isFile;
+    this._persistSetting('ragScope', trimmed);
+    this._persistSetting('ragScopeIsFile', isFile);
+    this._notify(isFile ? `RAG scoped to file: ${trimmed}` : `RAG scoped to: ${trimmed}`, 'info');
+    this._emit();
+  };
+
+  /** Clear RAG scope + clear sources display. */
+  clearRagScope = () => {
+    if (!this.state.ragScope && this.state.ragSources.length === 0) return;
+    this.state.ragScope = '';
+    this.state.ragScopeIsFile = false;
+    this.state.ragSources = [];
+    this._persistSetting('ragScope', '');
+    this._persistSetting('ragScopeIsFile', false);
+    this._emit();
+  };
+
+  /** Fetch RAG index status — built / num_docs / last_built_at. */
+  loadRagStatus = async () => {
+    if (this.state.ragStatusLoading) return;
+    this.state.ragStatusLoading = true;
+    this._emit();
+    try {
+      const res = await this._rag.status();
+      if (res.ok) {
+        this.state.ragStatus = res.data || null;
+      } else {
+        this._notify(res.error || 'Failed to load RAG status', 'warning');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to load RAG status', 'warning');
+    }
+    this.state.ragStatusLoading = false;
+    this._emit();
+  };
+
+  /** Trigger a rebuild of the RAG index. */
+  rebuildRagIndex = async () => {
+    try {
+      const res = await this._rag.build();
+      if (res.ok && res.data) {
+        this._notify('RAG index rebuild started', 'success');
+        // Poll status once after a short delay — the build runs in a thread.
+        setTimeout(() => this.loadRagStatus(), 2000);
+      } else {
+        this._notify(res.error || 'Failed to rebuild RAG index', 'error');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to rebuild RAG index', 'error');
+    }
+  };
+
+  /** Convert the flat knowledgeTree to antd TreeDataNode shape. */
+  knowledgeTreeData(): TreeDataNode[] {
+    const walk = (nodes: KnowledgeTreeNode[]): TreeDataNode[] =>
+      (nodes || []).map((n) => ({
+        key: n.path,
+        title: n.name,
+        children: n.children ? walk(n.children) : undefined,
+        isLeaf: n.type !== 'folder',
+      }));
+    return walk(this.state.knowledgeTree);
+  }
+
+  /** Find the raw KnowledgeTreeNode by path. Returns undefined if not found. */
+  knowledgeNodeByPath(path: string): KnowledgeTreeNode | undefined {
+    const target = (path || '').trim();
+    if (!target) return undefined;
+    const walk = (nodes: KnowledgeTreeNode[]): KnowledgeTreeNode | undefined => {
+      for (const n of nodes || []) {
+        if (n.path === target) return n;
+        if (n.children) {
+          const found = walk(n.children);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    };
+    return walk(this.state.knowledgeTree);
+  }
+
+  /** Flatten `state.knowledgeTree` to file nodes whose path contains `query`
+   *  (case-insensitive). Caps at `limit` (default 8) for dropdown rendering.
+   *  Used by the @-mention dropdown in ChatInput. */
+  knowledgeFileMatches(query: string, limit = 8): KnowledgeTreeNode[] {
+    const q = (query || '').toLowerCase().trim();
+    const out: KnowledgeTreeNode[] = [];
+    const walk = (nodes: KnowledgeTreeNode[]) => {
+      for (const n of nodes || []) {
+        if (out.length >= limit) return;
+        if (n.type === 'file') {
+          if (!q || n.path.toLowerCase().includes(q) || (n.name || '').toLowerCase().includes(q)) {
+            out.push(n);
+          }
+        }
+        if (n.children) walk(n.children);
+      }
+    };
+    walk(this.state.knowledgeTree);
+    return out;
+  }
+
+  /** Open the preview modal for a knowledge file. Triggers a read. */
+  openKnowledgePreview = async (path: string) => {
+    const trimmed = (path || '').trim();
+    if (!trimmed) return;
+    this.state.knowledgePreviewVisible = true;
+    this.state.knowledgePreviewPath = trimmed;
+    this.state.knowledgePreviewData = null;
+    this.state.knowledgePreviewLoading = true;
+    this._emit();
+    try {
+      const res = await this._knowledge.read(trimmed);
+      if (res.ok && res.data) {
+        this.state.knowledgePreviewData = res.data;
+      } else {
+        this._notify(res.error || 'Failed to read knowledge file', 'error');
+        this.state.knowledgePreviewVisible = false;
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to read knowledge file', 'error');
+      this.state.knowledgePreviewVisible = false;
+    }
+    this.state.knowledgePreviewLoading = false;
+    this._emit();
+  };
+
+  closeKnowledgePreview = () => {
+    this.state.knowledgePreviewVisible = false;
+    this.state.knowledgePreviewPath = '';
+    this.state.knowledgePreviewData = null;
+    this.state.knowledgePreviewLoading = false;
+    this._emit();
+  };
+
+  // ── Drag-and-drop knowledge file → session ───────────────────────
+  // Mirrors YiVad AiChatBox.vue:225-259 onDrop pattern. Each knowledge
+  // file becomes its own persistent session keyed by a synthetic URL
+  // `yipet://knowledge/<path>` so re-dropping reopens the same thread
+  // instead of stacking duplicates.
+
+  createSessionFromKnowledgeFile = async (path: string) => {
+    const trimmed = (path || '').trim();
+    if (!trimmed) return;
+    // Abort any in-flight stream — mirrors createSession / selectSession.
+    if (this.state.isProcessing) this.stopSending();
+
+    const name = trimmed.split('/').filter(Boolean).pop() || trimmed;
+    const title = name.endsWith('.md') ? name : `${name}.md`;
+    const syntheticUrl = `yipet://knowledge/${trimmed}`;
+
+    // Read the file body so the session's pageContent carries the full
+    // markdown — the LLM can answer "summarize this" without an extra
+    // retrieval round-trip.
+    let body = '';
+    try {
+      const res = await this._knowledge.read(trimmed);
+      if (res.ok && res.data) body = res.data.content || '';
+    } catch {
+      /* leave body empty — the file's RAG index still grounds the answer */
+    }
+
+    const now = Date.now();
+    const existing = this.state.sessions.find((s) => s.url === syntheticUrl);
+    let sessionId: string | null = null;
+    if (existing) {
+      // Re-select the existing thread — refresh its pageContent in case
+      // the file changed since the last open.
+      sessionId = existing.id;
+      existing.pageContent = body;
+      existing.updatedAt = now;
+      try {
+        await this._sessions.update(existing.id, {
+          pageContent: body,
+          updatedAt: now,
+        });
+      } catch {
+        /* non-fatal — local state is already correct */
+      }
+    } else {
+      try {
+        const createResult = await this._sessions.create({
+          url: syntheticUrl,
+          title,
+          pageDescription: '',
+          pageContent: body,
+          createdAt: now,
+          updatedAt: now,
+          lastAccessTime: now,
+          messages: [],
+          tags: ['source:YiKnowledge', `from:${window.location.href}`],
+        });
+        const record = createResult.ok ? createResult.data : null;
+        if (record?.key) {
+          sessionId = record.key;
+          this.state.sessions.unshift({
+            id: record.key,
+            title: record.title || title,
+            url: record.url || syntheticUrl,
+            createdAt: record.createdAt || now,
+            updatedAt: record.updatedAt || now,
+            messageCount: 0,
+            isFavorite: false,
+            tags: record.tags || ['source:YiKnowledge', `from:${window.location.href}`],
+            pageContent: body,
+          });
+        }
+      } catch {
+        /* ignore — sessionId stays null, fall through to notify */
+      }
+    }
+
+    if (!sessionId) {
+      this._notify('Failed to start session from knowledge file', 'error');
+      this._emit();
+      return;
+    }
+
+    // Load the session — mirrors selectSession(id) but inlined to avoid
+    // a second lookup.
+    this.state.currentSessionId = sessionId;
+    this.state.title = title;
+    try {
+      const getResult = await this._sessions.get(sessionId);
+      const record = getResult.ok ? getResult.data : null;
+      const msgs = record?.messages || [];
+      this.state.messages = this._mapMessages(msgs);
+      this.state.viewState = msgs.length > 0 ? 'messages' : 'empty';
+      if (record && 'pageContent' in record) {
+        const cur = this.state.sessions.find((s) => s.id === sessionId);
+        if (cur) cur.pageContent = (record as { pageContent?: string }).pageContent || body;
+      }
+    } catch {
+      this.state.messages = [];
+      this.state.viewState = 'empty';
+    }
+
+    // Scope RAG to the dropped file + auto-enable grounding so the next
+    // send draws on this file's index without an extra click.
+    this.setRagScopeFromNode(trimmed, true);
+    if (!this.state.knowledgeGrounded) this.toggleKnowledgeGrounded();
+
+    this._emit();
+  };
+
+  // ── Save pet message to YiKnowledge ────────────────────────────────
+
+  /** Open the "save to YiKnowledge" modal pre-populated from a pet message. */
+  openSaveToKnowledge = (timestamp: number) => {
+    const msg = this.state.messages.find((m) => m.timestamp === timestamp);
+    if (!msg || msg.type !== 'pet') {
+      this._notify('Select a pet message to save', 'warning');
+      return;
+    }
+    if (!msg.content?.trim()) {
+      this._notify('Cannot save an empty message', 'warning');
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const slug = (
+      msg.content
+        .slice(0, 40)
+        .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'note'
+    ).toLowerCase();
+    this.state.saveToKnowledgeTimestamp = timestamp;
+    this.state.saveToKnowledgeDraftPath = `notes/${today}/${slug}.md`;
+    this.state.saveToKnowledgeDraftMetadata = {
+      title: slug,
+      category: 'notes',
+      tags: '',
+      type: 'note',
+    };
+    this.state.saveToKnowledgeVisible = true;
+    this._emit();
+  };
+
+  closeSaveToKnowledge = () => {
+    this.state.saveToKnowledgeVisible = false;
+    this.state.saveToKnowledgeLoading = false;
+    this.state.saveToKnowledgeTimestamp = null;
+    this._emit();
+  };
+
+  setSaveToKnowledgeDraft = (
+    patch: Partial<{
+      path: string;
+      title: string;
+      category: string;
+      tags: string;
+      type: string;
+    }>,
+  ) => {
+    if (patch.path !== undefined) this.state.saveToKnowledgeDraftPath = patch.path;
+    if (patch.title !== undefined) {
+      this.state.saveToKnowledgeDraftMetadata = {
+        ...this.state.saveToKnowledgeDraftMetadata,
+        title: patch.title,
+      };
+    }
+    if (patch.category !== undefined) {
+      this.state.saveToKnowledgeDraftMetadata = {
+        ...this.state.saveToKnowledgeDraftMetadata,
+        category: patch.category,
+      };
+    }
+    if (patch.tags !== undefined) {
+      this.state.saveToKnowledgeDraftMetadata = {
+        ...this.state.saveToKnowledgeDraftMetadata,
+        tags: patch.tags,
+      };
+    }
+    if (patch.type !== undefined) {
+      this.state.saveToKnowledgeDraftMetadata = {
+        ...this.state.saveToKnowledgeDraftMetadata,
+        type: patch.type,
+      };
+    }
+    this._emit();
+  };
+
+  confirmSaveToKnowledge = async () => {
+    const ts = this.state.saveToKnowledgeTimestamp;
+    if (ts == null) return;
+    const msg = this.state.messages.find((m) => m.timestamp === ts);
+    if (!msg) {
+      this._notify('Original message not found', 'error');
+      this.closeSaveToKnowledge();
+      return;
+    }
+    const targetFile = this.state.saveToKnowledgeDraftPath.trim();
+    if (!targetFile) {
+      this._notify('Target path is required', 'warning');
+      return;
+    }
+    const tags = this.state.saveToKnowledgeDraftMetadata.tags
+      .split(/[,，\s]+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const metadata: Record<string, unknown> = {};
+    const meta = this.state.saveToKnowledgeDraftMetadata;
+    if (meta.title.trim()) metadata.title = meta.title.trim();
+    if (meta.category.trim()) metadata.category = meta.category.trim();
+    if (meta.type.trim()) metadata.type = meta.type.trim();
+    if (tags.length > 0) metadata.tags = tags;
+    metadata.created = new Date().toISOString();
+    if (this.state.ragScope) metadata.source_scope = this.state.ragScope;
+
+    this.state.saveToKnowledgeLoading = true;
+    this._emit();
+    try {
+      const res = await this._knowledge.write(targetFile, msg.content || '', metadata);
+      if (res.ok) {
+        this._notify(`Saved to YiKnowledge: ${targetFile}`, 'success');
+        this.closeSaveToKnowledge();
+        // Refresh the tree so the new file appears without manual reload.
+        this.loadKnowledgeTree();
+      } else {
+        this._notify(res.error || 'Failed to save', 'error');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to save', 'error');
+    }
+    this.state.saveToKnowledgeLoading = false;
+    this._emit();
+  };
+
+  // ── Pre-flight RAG source preview ──────────────────────────────────
+
+  /** Run a one-shot retrieval (no LLM) to preview the sources RAG would use
+   *  for the given question. Surfaces results in state.ragPreviewSources. */
+  previewRagSources = async (question: string) => {
+    const q = (question || '').trim();
+    if (!q) {
+      this._notify('Enter a question first', 'warning');
+      return;
+    }
+    if (!this.state.knowledgeGrounded) {
+      this._notify('Turn on knowledge grounding to preview sources', 'warning');
+      return;
+    }
+    this.state.ragPreviewLoading = true;
+    this.state.ragPreviewVisible = true;
+    this.state.ragPreviewQuestion = q;
+    this.state.ragPreviewSources = [];
+    this._emit();
+    try {
+      const useFile = this.state.ragScopeIsFile && !!this.state.ragScope;
+      if (useFile) {
+        // Per-file variant — grounded in a single file's index.
+        const res = await this._rag.fileQuery({
+          target_file: this.state.ragScope,
+          question: q,
+        });
+        if (res.ok && res.data) {
+          this.state.ragPreviewSources = res.data.sources || [];
+        } else {
+          this._notify(res.error || 'Pre-flight query failed', 'error');
+        }
+      } else {
+        const res = await this._rag.query({
+          question: q,
+          scope: this.state.ragScope || undefined,
+          category: this.state.knowledgeCategoryFilter || undefined,
+        });
+        if (res.ok && res.data) {
+          this.state.ragPreviewSources = res.data.sources || [];
+        } else {
+          this._notify(res.error || 'Pre-flight query failed', 'error');
+        }
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Pre-flight query failed', 'error');
+    }
+    this.state.ragPreviewLoading = false;
+    this._emit();
+  };
+
+  closeRagPreview = () => {
+    this.state.ragPreviewVisible = false;
+    this.state.ragPreviewSources = [];
+    this.state.ragPreviewQuestion = '';
+    this.state.ragPreviewLoading = false;
+    this._emit();
+  };
+
+  // ── Sub-question decomposition (rag.decompose) ─────────────────────
+
+  /** Run rag.decompose on the current question. Synchronous on the backend
+   *  (multiple LLM calls composed internally) — can take a while. */
+  decomposeRagQuestion = async (question: string) => {
+    const q = (question || '').trim();
+    if (!q) {
+      this._notify('Enter a question first', 'warning');
+      return;
+    }
+    if (!this.state.knowledgeGrounded) {
+      this._notify('Turn on knowledge grounding to decompose', 'warning');
+      return;
+    }
+    this.state.ragDecomposeLoading = true;
+    this.state.ragDecomposeVisible = true;
+    this.state.ragDecomposeQuestion = q;
+    this.state.ragDecomposeData = null;
+    this._emit();
+    try {
+      const res = await this._rag.decompose({
+        question: q,
+        scope: this.state.ragScope || undefined,
+        category: this.state.knowledgeCategoryFilter || undefined,
+      });
+      if (res.ok && res.data) {
+        this.state.ragDecomposeData = res.data;
+        if (res.data.error) {
+          this._notify(`Decompose partial error: ${res.data.error}`, 'warning');
+        }
+      } else {
+        this._notify(res.error || 'Decompose failed', 'error');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Decompose failed', 'error');
+    }
+    this.state.ragDecomposeLoading = false;
+    this._emit();
+  };
+
+  closeRagDecompose = () => {
+    this.state.ragDecomposeVisible = false;
+    this.state.ragDecomposeData = null;
+    this.state.ragDecomposeQuestion = '';
+    this.state.ragDecomposeLoading = false;
+    this._emit();
+  };
+
   // ── Toolbar Actions ─────────────────────────────────────────────────
 
   openContextEditor = () => {
@@ -1107,6 +1996,141 @@ export class ChatController {
     this._emit();
   };
 
+  /** Push a prompt to history. Dedupes consecutive duplicates (shell
+   *  behavior) and caps at 100 entries. Persists to chrome.storage.local. */
+  pushPromptHistory = (text: string) => {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
+    const hist = this.state.promptHistory;
+    if (hist[hist.length - 1] === trimmed) return;
+    const next = [...hist, trimmed].slice(-100);
+    this.state.promptHistory = next;
+    this._persistSetting('promptHistory', next);
+    this._emit();
+  };
+
+  /** Walk the prompt history. `currentIdx` is -1 when not navigating.
+   *  Returns `{ idx, text }` or `null` when there's nothing to recall.
+   *  delta -1 = older (ArrowUp), delta +1 = newer (ArrowDown). */
+  recallPromptHistory = (
+    delta: number,
+    currentIdx: number,
+  ): { idx: number; text: string } | null => {
+    const hist = this.state.promptHistory;
+    if (hist.length === 0) return null;
+    let nextIdx: number;
+    if (currentIdx === -1) {
+      if (delta < 0) nextIdx = hist.length - 1;
+      else return null;
+    } else {
+      nextIdx = Math.max(-1, Math.min(hist.length - 1, currentIdx + delta));
+      if (nextIdx === -1) return { idx: -1, text: '' };
+    }
+    return { idx: nextIdx, text: hist[nextIdx] };
+  };
+
+  clearPromptHistory = () => {
+    if (this.state.promptHistory.length === 0) return;
+    this.state.promptHistory = [];
+    this._persistSetting('promptHistory', []);
+    this._emit();
+  };
+
+  openPromptHistory = () => {
+    this.state.promptHistoryVisible = true;
+    this._emit();
+  };
+
+  closePromptHistory = () => {
+    if (!this.state.promptHistoryVisible) return;
+    this.state.promptHistoryVisible = false;
+    this._emit();
+  };
+
+  /** Re-invoke a history prompt by index — pushes it into the input template
+   *  (does NOT auto-send, so the user can edit before sending). */
+  invokePromptHistory = (idx: number) => {
+    const item = this.state.promptHistory[idx];
+    if (!item) return;
+    if (!this.state.visible) this.open();
+    this.setInputTemplate(item);
+    this.closePromptHistory();
+  };
+
+  removePromptHistoryAt = (idx: number) => {
+    const hist = this.state.promptHistory;
+    if (idx < 0 || idx >= hist.length) return;
+    const next = [...hist];
+    next.splice(idx, 1);
+    this.state.promptHistory = next;
+    this._persistSetting('promptHistory', next);
+    this._emit();
+  };
+
+  /** Read the user's current text selection on the host page and push it
+   *  into the chat input as a template. Cross-project: works on any page
+   *  in any project (YiAi / YiVad / YiKnowledge / external sites) — the
+   *  user selects text, opens YiPet (or clicks the toolbar button), and
+   *  the selection lands in the input ready to send. */
+  insertSelectionAsInput = () => {
+    const sel = typeof window !== 'undefined' ? window.getSelection?.() : null;
+    const text = (sel?.toString() || '').trim();
+    if (!text) {
+      this._notify('Select some text on the page first', 'warning');
+      return;
+    }
+    if (!this.state.visible) this.open();
+    this.setInputTemplate(text);
+  };
+
+  /** Page-aware context chip: when YiPet detects it's running on a known
+   *  YiVad detail page (bug / BRD / story), returns a `{ label, prompt,
+   *  bugKey? }` describing a one-click prompt action. Returns `null` when
+   *  the current page isn't a known YiVad detail view. */
+  get pageContextChip(): { label: string; prompt: string; bugKey?: string } | null {
+    const url = this.state.pageInfo?.url || window.location.href;
+    const detected = detectPageTypeFromUrl(url);
+    if (detected.kind === 'yivad-bug-detail' && detected.key) {
+      const k = detected.key;
+      return {
+        label: `Discuss bug ${k.slice(0, 12)}${k.length > 12 ? '…' : ''}`,
+        prompt: `Bug ${k} — help me understand this bug: root cause, impact, and a concrete fix plan.`,
+        bugKey: k,
+      };
+    }
+    if (detected.kind === 'yivad-brd-detail' && detected.key) {
+      const k = detected.key;
+      return {
+        label: `Summarize BRD ${k.slice(0, 12)}${k.length > 12 ? '…' : ''}`,
+        prompt: `Summarize this BRD entry (${k}): motivation, decision, impact, and rollback plan.`,
+      };
+    }
+    if (detected.kind === 'yivad-story-detail' && detected.key) {
+      const k = detected.key;
+      return {
+        label: `Walk me through ${k.slice(0, 12)}${k.length > 12 ? '…' : ''}`,
+        prompt: `Walk me through this onboarding story (${k}): what it covers, who it's for, and how to apply it.`,
+      };
+    }
+    return null;
+  }
+
+  /** One-click: push the page-aware context chip's prompt into the input
+   *  template. For bug-detail chips, also try to scope RAG to the bug's
+   *  content file (`lessons/failures/bugs/<key>.md`) so the answer draws
+   *  on the bug's long-form markdown body. */
+  applyPageContextChip = () => {
+    const chip = this.pageContextChip;
+    if (!chip) return;
+    if (!this.state.visible) this.open();
+    this.setInputTemplate(chip.prompt);
+    if (chip.bugKey) {
+      const contentPath = `lessons/failures/bugs/${chip.bugKey}.md`;
+      this.setRagScopeFromNode(contentPath, true);
+      if (!this.state.knowledgeGrounded) this.toggleKnowledgeGrounded();
+    }
+  };
+
   sendQuickButton = (content: string) => {
     if (this.state.isProcessing) return;
     this.sendMessage(content);
@@ -1144,7 +2168,7 @@ export class ChatController {
         if (!current[seg]) {
           current[seg] = {
             key,
-            name: isLast ? (c.title || '(Untitled)') : seg,
+            name: isLast ? c.title || '(Untitled)' : seg,
             type: isLast ? 'file' : 'folder',
             children: isLast ? undefined : {},
             session: isLast ? c : undefined,
@@ -1400,6 +2424,472 @@ export class ChatController {
     this._emit();
   };
 
+  // ── Cross-project bridge to YiVad aiChat ──────────────────────────
+
+  /** Capture the current page context and seed a fresh aiChat conversation
+   *  in YiVad. Creates a `sessions` doc with the page URL/title/content +
+   *  a first user message + `from:<url>` tag, then deep-links to
+   *  `http://localhost:8848/#/aiChat?session=<key>`. YiVad's aiChat
+   *  onMounted picks up `?session=<key>` and selects the seeded session. */
+  discussInYiVadAiChat = async () => {
+    const url = this.state.pageInfo?.url || window.location.href;
+    const title = this.state.pageInfo?.title || document.title || 'Current page';
+    const pageContent =
+      (this.state.contextEditorDraft || '').trim() ||
+      (document.body?.innerText || '').slice(0, 8000);
+    const now = Date.now();
+    const sessionTitle = `YiPet → ${title}`.slice(0, 80);
+    const seedMessage = `Page: ${title}\nURL: ${url}\n\n${pageContent || '_no page content captured_'}`;
+    try {
+      const createResult = await this._sessions.create({
+        url,
+        title: sessionTitle,
+        createdAt: now,
+        updatedAt: now,
+        lastAccessTime: now,
+        messages: [{ role: 'user', content: seedMessage, timestamp: now }],
+        tags: [`from:${url}`, 'source:YiPet', `project:${detectProjectFromUrl(url)}`],
+      });
+      if (!createResult.ok || !createResult.data?.key) {
+        this._notify(createResult.error || 'Failed to seed YiVad session', 'error');
+        return;
+      }
+      const key = createResult.data.key;
+      const target = `http://localhost:8848/#/aiChat?session=${encodeURIComponent(key)}`;
+      window.open(target, '_blank', 'noopener,noreferrer');
+      this._notify(`Opened in YiVad aiChat: ${sessionTitle}`, 'success');
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to bridge to YiVad', 'error');
+    }
+  };
+
+  // ── Cross-project bug reporting ───────────────────────────────────
+
+  /**
+   * Branch a new session from a specific message — copies all messages up to
+   * and including the one at `timestamp` into a fresh session, then switches
+   * to it. Useful when a thread diverged and the user wants to fork from a
+   * specific point without losing the original.
+   */
+  branchFromMessage = async (timestamp: number) => {
+    const idx = this.state.messages.findIndex((m) => m.timestamp === timestamp);
+    if (idx < 0) {
+      this._notify('Message not found', 'error');
+      return;
+    }
+    const branch = this.state.messages.slice(0, idx + 1).map((m) => ({
+      ...m,
+      streaming: false,
+    }));
+    const orig = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    const origTitle = orig?.title || this.state.title || 'conversation';
+    const url = orig?.url || this.state.pageInfo?.url || window.location.href;
+    const now = Date.now();
+    const title = `Branch · ${origTitle}`.slice(0, 80);
+    try {
+      const createResult = await this._sessions.create({
+        url,
+        title,
+        pageDescription: '',
+        pageContent: orig?.pageContent || '',
+        createdAt: now,
+        updatedAt: now,
+        lastAccessTime: now,
+        messages: branch.map((m) => ({
+          role: m.type === 'user' ? 'user' : 'assistant',
+          content: m.content || '',
+          timestamp: m.timestamp,
+        })),
+        tags: [
+          `branch-of:${orig?.id || 'unknown'}`,
+          `from:${url}`,
+          'source:YiPet',
+          `project:${detectProjectFromUrl(url)}`,
+        ],
+      });
+      if (!createResult.ok || !createResult.data?.key) {
+        this._notify(createResult.error || 'Failed to branch session', 'error');
+        return;
+      }
+      const record = createResult.data;
+      this.state.sessions.unshift({
+        id: record.key,
+        title: record.title || title,
+        url: record.url || url,
+        createdAt: record.createdAt || now,
+        updatedAt: record.updatedAt || now,
+        messageCount: branch.length,
+        isFavorite: false,
+        tags: record.tags || [],
+        pageContent: orig?.pageContent || '',
+      });
+      this.state.currentSessionId = record.key;
+      this.state.title = title;
+      this.state.messages = branch;
+      this.state.viewState = branch.length > 0 ? 'messages' : 'empty';
+      this._notify(`Branched ${branch.length} messages into new session`, 'success');
+      this._emit();
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to branch session', 'error');
+    }
+  };
+
+  /**
+   * Summarize the current session — one-shot LLM call with all messages
+   * concatenated as context. Surfaced in a modal (SessionSummaryDialog).
+   * The summary stays in the modal — does NOT pollute the conversation thread.
+   */
+  summarizeCurrentSession = async () => {
+    const msgs = this.state.messages;
+    if (msgs.length === 0) {
+      this._notify('Nothing to summarize — session is empty', 'info');
+      return;
+    }
+    this.state.sessionSummaryVisible = true;
+    this.state.sessionSummaryLoading = true;
+    this.state.sessionSummaryText = '';
+    this.state.sessionSummaryError = '';
+    this._emit();
+    // Build a transcript: alternating User/Pet lines, capped to keep payload sane.
+    const MAX_PER_MSG = 800;
+    const transcript = msgs
+      .map((m) => {
+        const role = m.type === 'user' ? 'User' : 'Pet';
+        const body = (m.content || '').slice(0, MAX_PER_MSG);
+        return `${role}: ${body}`;
+      })
+      .join('\n\n');
+    const summaryPrompt = `Summarize the conversation below in 5-8 bullet points. Focus on what was asked, what was decided, and any open questions. Use plain markdown bullets.\n\nConversation:\n\n${transcript}`;
+    try {
+      const result = await this._chat.streamWithCallback(
+        {
+          system: 'You are a concise summarizer. Output only markdown bullet points.',
+          user: summaryPrompt,
+          model: DEFAULT_MODEL,
+        },
+        (token) => {
+          this.state.sessionSummaryText += token;
+          this._emit();
+        },
+      );
+      this.state.sessionSummaryText =
+        (this.state.sessionSummaryText || result || '').trim() || '(empty summary)';
+    } catch (err) {
+      this.state.sessionSummaryError = (err as Error)?.message || 'Failed to summarize';
+    } finally {
+      this.state.sessionSummaryLoading = false;
+      this._emit();
+    }
+  };
+
+  closeSessionSummary = () => {
+    this.state.sessionSummaryVisible = false;
+    this.state.sessionSummaryText = '';
+    this.state.sessionSummaryError = '';
+    this._emit();
+  };
+
+  /**
+   * Auto-generate a short title for the current session — LLM call with
+   * the first few user messages, returns a 4-6 word title. Optionally
+   * saves the title back to the session (default) or surfaces it via
+   * a callback (used by SessionEditDialog to populate the title field).
+   */
+  autoGenerateSessionTitle = async (
+    opts: { apply?: boolean; onResult?: (title: string) => void } = {},
+  ): Promise<string | null> => {
+    const msgs = this.state.messages;
+    const userMsgs = msgs.filter((m) => m.type === 'user').slice(0, 4);
+    if (userMsgs.length === 0) {
+      this._notify('No user messages to base a title on', 'info');
+      return null;
+    }
+    const transcript = userMsgs
+      .map((m, i) => `Q${i + 1}: ${(m.content || '').slice(0, 300)}`)
+      .join('\n');
+    const prompt = `Generate a concise 4-6 word title summarizing what the user is asking about. Output only the title text, no quotes, no punctuation at the end.\n\n${transcript}`;
+    const apply = opts.apply !== false;
+    const wasProcessing = this.state.isProcessing;
+    if (apply) this.state.isProcessing = true;
+    this._emit();
+    try {
+      const result = await this._chat.streamWithCallback(
+        {
+          system:
+            'You are a title generator. Output only the raw title, no quotes, no markdown, no trailing punctuation.',
+          user: prompt,
+          model: DEFAULT_MODEL,
+        },
+        () => {},
+      );
+      let title = (result || '')
+        .trim()
+        .replace(/^["'`]+|["'`.!?]+$/g, '')
+        .trim();
+      if (!title) {
+        this._notify('Empty title generated', 'error');
+        return null;
+      }
+      if (title.length > 80) title = `${title.slice(0, 79).trimEnd()}`;
+      if (opts.onResult) opts.onResult(title);
+      if (apply) {
+        const sid = this.state.currentSessionId;
+        if (sid) {
+          try {
+            await this._sessions.update(sid, { title, updatedAt: Date.now() });
+            const session = this.state.sessions.find((s) => s.id === sid);
+            if (session) {
+              session.title = title;
+              session.updatedAt = Date.now();
+            }
+            if (this.state.title === this.state.sessions.find((s) => s.id === sid)?.title || true) {
+              this.state.title = title;
+            }
+            this._notify(`Title set: ${title}`, 'success');
+          } catch (err) {
+            this._notify((err as Error)?.message || 'Failed to save title', 'error');
+          }
+        }
+      }
+      return title;
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to generate title', 'error');
+      return null;
+    } finally {
+      if (apply && !wasProcessing) this.state.isProcessing = false;
+      this._emit();
+    }
+  };
+
+  copySessionSummary = async () => {
+    const text = this.state.sessionSummaryText;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      this._notify('Summary copied', 'success');
+    } catch {
+      this._notify('Failed to copy summary', 'error');
+    }
+  };
+
+  /**
+   * Export the current session's messages as a Markdown file — useful for
+   * pasting into YiKnowledge / YiVad docs / external notes. Triggered from
+   * the toolbar.
+   */
+  exportCurrentSessionMarkdown = () => {
+    const msgs = this.state.messages;
+    if (msgs.length === 0) {
+      this._notify('Nothing to export — session is empty', 'info');
+      return;
+    }
+    const session = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+    const title = session?.title || this.state.title || 'YiPet conversation';
+    const url = session?.url || this.state.pageInfo?.url || '';
+    const created = session?.createdAt || Date.now();
+    const lines: string[] = [];
+    lines.push(`# ${title}`);
+    lines.push('');
+    lines.push(`> Exported from YiPet · ${new Date().toISOString()}`);
+    if (url) lines.push(`> Source URL: ${url}`);
+    if (session?.tags?.length) lines.push(`> Tags: ${session.tags.join(', ')}`);
+    lines.push(`> Created: ${new Date(created).toISOString()}`);
+    lines.push('');
+    lines.push('---');
+    lines.push('');
+    for (const m of msgs) {
+      const role = m.type === 'user' ? '🧑 User' : '🐾 Pet';
+      const ts = new Date(m.timestamp).toISOString();
+      lines.push(`## ${role} · ${ts}`);
+      lines.push('');
+      lines.push(String(m.content || ''));
+      if (m.error) lines.push('\n_⚠️ Generation failed_');
+      if (m.aborted) lines.push('\n_⏹️ Stopped_');
+      lines.push('');
+    }
+    const md = lines.join('\n');
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    const slug =
+      (session?.title || 'yipet-session')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 50) || 'yipet-session';
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `${slug}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
+    this._notify(`Exported ${msgs.length} messages as markdown`, 'success');
+  };
+
+  /**
+   * Open a specific message in YiVad aiChat — seed a session with the
+   * message (and its preceding user question if it's a pet response) so
+   * the user can continue the conversation in YiVad's richer UI.
+   */
+  openMessageInYiVad = async (timestamp: number) => {
+    const idx = this.state.messages.findIndex((m) => m.timestamp === timestamp);
+    if (idx < 0) {
+      this._notify('Message not found', 'error');
+      return;
+    }
+    const msg = this.state.messages[idx];
+    const now = Date.now();
+    const url = this.state.pageInfo?.url || window.location.href;
+    const title = this.state.pageInfo?.title || document.title || 'YiPet';
+    const sessionTitle = `YiPet → ${String(msg.content || '').slice(0, 60) || title}`.slice(0, 80);
+    const seedMessages: { role: 'user'; content: string; timestamp: number }[] = [];
+    if (msg.type === 'user') {
+      seedMessages.push({ role: 'user', content: String(msg.content || ''), timestamp: now });
+    } else {
+      // Pet response — include the preceding user question for context.
+      const prevUser = this.state.messages
+        .slice(0, idx)
+        .reverse()
+        .find((m) => m.type === 'user');
+      if (prevUser) {
+        seedMessages.push({
+          role: 'user',
+          content: String(prevUser.content || ''),
+          timestamp: now,
+        });
+      }
+      seedMessages.push({
+        role: 'user',
+        content: `Continue from this assistant response:\n\n${String(msg.content || '')}`,
+        timestamp: now + 1,
+      });
+    }
+    try {
+      const createResult = await this._sessions.create({
+        url,
+        title: sessionTitle,
+        createdAt: now,
+        updatedAt: now,
+        lastAccessTime: now,
+        messages: seedMessages,
+        tags: [
+          `from:${url}`,
+          'source:YiPet',
+          `project:${detectProjectFromUrl(url)}`,
+          'via:per-message-bridge',
+        ],
+      });
+      if (!createResult.ok || !createResult.data?.key) {
+        this._notify(createResult.error || 'Failed to seed YiVad session', 'error');
+        return;
+      }
+      const key = createResult.data.key;
+      const target = `http://localhost:8848/#/aiChat?session=${encodeURIComponent(key)}`;
+      window.open(target, '_blank', 'noopener,noreferrer');
+      this._notify(`Opened in YiVad aiChat`, 'success');
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to bridge to YiVad', 'error');
+    }
+  };
+
+  /** Open the bug-report modal pre-populated from the current page context. */
+  openBugReport = () => {
+    const url = this.state.pageInfo?.url || '';
+    const project = detectProjectFromUrl(url);
+    this.state.bugReportDraft = {
+      title: '',
+      project,
+      module: '',
+      severity: 'minor',
+      priority: 'p2',
+      status: 'open',
+      type: 'functional',
+      frequency: 'always',
+      assignee: '',
+      reporter: '',
+      environment: url,
+      affectedVersion: '',
+      fixedVersion: '',
+      tags: '',
+      description: '',
+      stepsToReproduce: '',
+      expectedResult: '',
+      actualResult: '',
+    };
+    this.state.bugReportVisible = true;
+    this._emit();
+  };
+
+  closeBugReport = () => {
+    this.state.bugReportVisible = false;
+    this.state.bugReportLoading = false;
+    this._emit();
+  };
+
+  setBugReportDraft = (patch: Partial<ChatState['bugReportDraft']>) => {
+    this.state.bugReportDraft = { ...this.state.bugReportDraft, ...patch };
+    this._emit();
+  };
+
+  confirmBugReport = async () => {
+    const d = this.state.bugReportDraft;
+    if (!d.title.trim()) {
+      this._notify('Title is required', 'warning');
+      return;
+    }
+    if (!d.project) {
+      this._notify('Project is required', 'warning');
+      return;
+    }
+    const key = makeBugKey(d.title);
+    const tags = d.tags
+      .split(/[,，\s]+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const stepsToReproduce = d.stepsToReproduce
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const content = {
+      description: d.description.trim(),
+      stepsToReproduce,
+      expectedResult: d.expectedResult.trim(),
+      actualResult: d.actualResult.trim(),
+    };
+    const meta = {
+      key,
+      title: d.title.trim(),
+      project: d.project,
+      module: d.module.trim(),
+      severity: d.severity as BugSeverity,
+      priority: d.priority as BugPriority,
+      status: d.status as BugStatus,
+      type: d.type as BugType,
+      frequency: d.frequency as BugFrequency,
+      assignee: d.assignee.trim(),
+      reporter: d.reporter.trim(),
+      environment: d.environment.trim(),
+      affectedVersion: d.affectedVersion.trim(),
+      fixedVersion: d.fixedVersion.trim(),
+      tags,
+    };
+    this.state.bugReportLoading = true;
+    this._emit();
+    try {
+      const res = await this._bug.createBug(meta, content);
+      if (res.envelope.ok) {
+        this._notify(`Bug logged: ${key}`, 'success');
+        this.closeBugReport();
+      } else {
+        this._notify(res.envelope.error || 'Failed to log bug', 'error');
+      }
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to log bug', 'error');
+    }
+    this.state.bugReportLoading = false;
+    this._emit();
+  };
+
   // ── Resize ───────────────────────────────────────────────────────
 
   onResizeMouseDown = (dir: string, e: MouseEvent) => {
@@ -1410,6 +2900,7 @@ export class ChatController {
       x: e.clientX,
       y: e.clientY,
       wx: this.state.ws.x,
+      wy: this.state.ws.y,
       w: this.state.ws.width,
       h: this.state.ws.height,
     };
@@ -1431,6 +2922,13 @@ export class ChatController {
       if (newWidth >= MIN_WIDTH) {
         ws.width = newWidth;
         ws.x = Math.max(0, this._resizeStart.wx + dx);
+      }
+    }
+    if (this._resizeDir.includes('n')) {
+      const newHeight = this._resizeStart.h - dy;
+      if (newHeight >= MIN_HEIGHT) {
+        ws.height = newHeight;
+        ws.y = Math.max(0, this._resizeStart.wy + dy);
       }
     }
     this._emit();

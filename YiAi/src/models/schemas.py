@@ -27,6 +27,32 @@ class ExecuteRequest(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
+class AgentChatRequest(BaseModel):
+    """Agent chat request — Pi-inspired multi-turn agent with tool calling.
+
+    The agent loop emits structured SSE events for high observability.
+    """
+    messages: List[Dict[str, Any]] = Field(
+        default_factory=list,
+        description="Conversation history in [{role, content}] format"
+    )
+    model: Optional[str] = Field(default="qwen3.5", description="Model name")
+    system_prompt: Optional[str] = Field(default="", description="System prompt")
+    max_turns: Optional[int] = Field(default=10, description="Max tool-calling turns")
+    images: Optional[List[str]] = Field(
+        default=None,
+        description="Base64-encoded data URLs for the last user message"
+    )
+    session_id: Optional[str] = Field(
+        default="",
+        description="Session ID for steering message queue",
+    )
+    model_rotation: Optional[List[str]] = Field(
+        default=None,
+        description="Optional list of model names to rotate between turns (Pi: prepareNextTurn)",
+    )
+
 class FileUploadRequest(BaseModel):
     """
     File upload request model (JSON mode)
@@ -70,6 +96,30 @@ class ProjectFileReadRequest(BaseModel):
     project: str = Field(..., description="Project name (e.g. YiVad, YiPet, YiAi)")
     target_file: str = Field(..., description="Relative path within the project")
 
+class ProjectFileWriteRequest(BaseModel):
+    """Write a file directly into a project's source tree on disk.
+
+    Symmetric with :class:`ProjectFileReadRequest`. Disk-only — no MongoDB
+    dual-write, since project source files are not mirrored to the static
+    collection. Used by the BRD skill editor (writes
+    ``.claude/skills/<name>/SKILL.md`` at the projects_root).
+    """
+    project: str = Field(..., description="Project name (or '.' for projects_root-relative)")
+    target_file: str = Field(..., description="Relative path within the project")
+    content: str = Field(..., description="File content (text or Base64 string)")
+    is_base64: bool = Field(default=False, description="Whether the content is Base64 encoded")
+
+class ProjectFolderDeleteRequest(BaseModel):
+    """Delete a directory from a project's source tree on disk."""
+    project: str = Field(..., description="Project name (or '.' for projects_root-relative)")
+    target_dir: str = Field(..., description="Directory path to delete")
+
+class ProjectFolderRenameRequest(BaseModel):
+    """Rename (move) a directory within a project's source tree on disk."""
+    project: str = Field(..., description="Project name (or '.' for projects_root-relative)")
+    old_dir: str = Field(..., description="Old directory path")
+    new_dir: str = Field(..., description="New directory path")
+
 class FileWriteRequest(BaseModel):
     """
     File write request model
@@ -95,14 +145,14 @@ class FolderRenameRequest(BaseModel):
 # --- Knowledge Base Schemas ---
 class KnowledgeScanRequest(BaseModel):
     """Scan the ~/YiKnowledge markdown tree for a sidebar view."""
-    category: Optional[str] = Field(default=None, description="Limit to one top-level category (industry/lessons/...). Empty = all.")
+    category: Optional[str] = Field(default=None, description="Limit to one top-level role directory (engineer/ai-engineer/designer/...). Empty = all.")
 
 class KnowledgeReadRequest(BaseModel):
     """Read a single knowledge markdown file with parsed frontmatter."""
     target_file: str = Field(..., description="Relative path under the knowledge base dir")
 
 class KnowledgeStoriesRequest(BaseModel):
-    """List story.md entries under projects/{project}/."""
+    """List story.md entries under engineer/projects/{project}/."""
     project: Optional[str] = Field(default=None, description="Limit to one project (YiAi/YiPet/YiVad/...). Empty = all.")
 
 class KnowledgeStoryReadRequest(BaseModel):
@@ -112,7 +162,7 @@ class KnowledgeStoryReadRequest(BaseModel):
 
 class KnowledgeFilesRequest(BaseModel):
     """Read metadata from the DB mirror (no disk scan)."""
-    category: Optional[str] = Field(default=None, description="Filter by category (industry/lessons/.../static/__root__).")
+    category: Optional[str] = Field(default=None, description="Filter by top-level role directory (engineer/ai-engineer/.../brd/static/__root__).")
 
 class KnowledgeWriteRequest(BaseModel):
     """Write a markdown file with YAML frontmatter to the knowledge base."""
@@ -120,17 +170,37 @@ class KnowledgeWriteRequest(BaseModel):
     content: str = Field(..., description="Markdown body (will be written after auto-generated frontmatter)")
     metadata: Optional[dict] = Field(default=None, description="Optional YAML frontmatter key-value pairs (title, tags, category, etc.)")
 
+class KnowledgeSearchRequest(BaseModel):
+    """Search content within knowledge base markdown files."""
+    query: str = Field(..., description="Search query string")
+    category: Optional[str] = Field(default=None, description="Optional category filter")
+    max_results: int = Field(default=50, description="Max results to return")
+
 # --- RAG Schemas (llama_index) ---
 class RagQueryRequest(BaseModel):
     """One-shot retrieval over the YiKnowledge VectorStoreIndex."""
     question: str = Field(..., description="Query string")
     top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
-    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'projects/YiVad/')")
+    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'engineer/projects/yivad/')")
+    hybrid: Optional[bool] = Field(default=None, description="Override settings.rag_hybrid_retrieval_enabled (vector + BM25 fusion)")
+    rerank: Optional[bool] = Field(default=None, description="Override settings.rag_rerank_enabled (LLMRerank postprocessor)")
+    citations: Optional[bool] = Field(default=None, description="Override settings.rag_inline_citations_enabled ([Source N] prefix)")
+    num_queries: Optional[int] = Field(default=None, description="QueryFusionRetriever LLM query-variant count (1 = no expansion). Only honored when hybrid active + no metadata filter.")
+    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
 
 class RagChatRequest(BaseModel):
     """SSE-streaming RAG chat over the knowledge index."""
     messages: List[Dict[str, Any]] = Field(..., description="[{role:'user'|'assistant'|'system', content}] — last must be user")
     scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
+    top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
+    hybrid: Optional[bool] = Field(default=None, description="Override hybrid retrieval for this turn only")
+    rerank: Optional[bool] = Field(default=None, description="Override LLMRerank for this turn only")
+    citations: Optional[bool] = Field(default=None, description="Override inline [Source N] prefix for this turn only")
+    num_queries: Optional[int] = Field(default=None, description="Override QueryFusionRetriever LLM query-variant count for this turn only")
+    chat_mode: Optional[str] = Field(default=None, description="llama_index chat engine: condense_plus_context (default) | condense_question | context | simple")
+    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
 
 class RagFileChatRequest(BaseModel):
     """SSE-streaming RAG chat grounded in a single file."""
@@ -142,6 +212,21 @@ class RagFileQueryRequest(BaseModel):
     target_file: str = Field(..., description="Relative path under knowledge base dir")
     question: str = Field(..., description="Query string")
     top_k: Optional[int] = Field(default=None)
+
+class RagDecomposeRequest(BaseModel):
+    """Sub-question decomposition over the knowledge index.
+
+    Backed by llama_index's ``SubQuestionQueryEngine`` — splits a complex
+    question into sub-questions, runs each through the retriever, and
+    returns each sub-answer with its own sources. Surfaces a flagship
+    llama_index capability to the aiChat UI.
+    """
+    question: str = Field(..., description="Complex question to decompose")
+    scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
+    sub_q_top_k: Optional[int] = Field(default=None, description="Per-sub-question retrieval depth")
+    citations: Optional[bool] = Field(default=None, description="Override settings.rag_inline_citations_enabled for decompose path")
+    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
 
 # --- RSS Schemas ---
 class ParseRssRequest(BaseModel):

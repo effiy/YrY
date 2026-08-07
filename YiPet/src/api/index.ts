@@ -24,8 +24,11 @@ export {
 export * as endpoints from './endpoints';
 export type {
   AuthService,
+  BugService,
   ChatService,
   DatabaseService,
+  KnowledgeService,
+  RagService,
   SessionService,
   WeWorkService,
 } from './services';

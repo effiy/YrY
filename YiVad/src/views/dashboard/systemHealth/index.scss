@@ -1,0 +1,131 @@
+.system-health-box {
+  .top-box {
+    box-sizing: border-box;
+    padding: 25px 40px 0;
+    margin-bottom: 10px;
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .top-title {
+      font-family: DIN;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .health-score-badge { padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+      .score-ok { background: #f0f9eb; color: #67c23a; border: 1px solid #e1f3d8; }
+      .score-warn { background: #fdf6ec; color: #e6a23c; border: 1px solid #faecd8; }
+      .score-err { background: #fef0f0; color: #f56c6c; border: 1px solid #fde2e2; }
+      .last-updated {
+        font-size: 12px;
+        color: #909399;
+      }
+    }
+    .top-content {
+      margin-top: 10px;
+    }
+  }
+  .bottom-box {
+    padding: 25px 40px;
+    .bottom-title {
+      margin-bottom: 20px;
+      font-family: DIN;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  }
+  .status-card {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 20px 24px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 12px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    &.status-ok { border-left: 3px solid #67c23a; }
+    &.status-fail { border-left: 3px solid #f56c6c; background: #fef0f0; }
+    &.status-warn { border-left: 3px solid #e6a23c; }
+    &.status-summary { border-left: 3px solid #5470c6; background: #f5f7fa; }
+    .status-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        margin-right: 8px;
+        border-radius: 50%;
+      }
+      .dot-green { background-color: #67c23a; }
+      .dot-red { background-color: #f56c6c; }
+      .dot-yellow { background-color: #e6a23c; }
+      .status-name {
+        font-family: DIN;
+        font-size: 16px;
+        font-weight: bold;
+        flex: 1;
+      }
+      .status-tag { flex-shrink: 0; }
+    }
+    .status-body {
+      .status-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 13px;
+        .status-label {
+          color: #909399;
+        }
+        .status-value {
+          color: #303133;
+          font-weight: 500;
+        }
+        .health-count-ok { color: #67c23a; font-weight: 600; }
+        .health-count-err { color: #f56c6c; font-weight: 600; }
+      }
+    }
+  }
+  .observer-card {
+    box-sizing: border-box;
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    .observer-name {
+      font-family: DIN;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .observer-status {
+      font-size: 14px;
+    }
+  }
+  .observer-on {
+    background-color: #f0f9eb;
+    border: 1px solid #e1f3d8;
+    .observer-name {
+      color: #67c23a;
+    }
+    .observer-status {
+      color: #67c23a;
+    }
+  }
+  .observer-off {
+    background-color: #fef0f0;
+    border: 1px solid #fde2e2;
+    .observer-name {
+      color: #909399;
+    }
+    .observer-status {
+      color: #f56c6c;
+    }
+  }
+  .mb20 {
+    margin-bottom: 20px;
+  }
+}

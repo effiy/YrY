@@ -1,5 +1,5 @@
 import * as echarts from "echarts/core";
-import { BarChart, LineChart, LinesChart, PieChart, ScatterChart, RadarChart, GaugeChart } from "echarts/charts";
+import { BarChart, LineChart, LinesChart, PieChart, ScatterChart, RadarChart, GaugeChart, TreemapChart, HeatmapChart } from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
@@ -21,7 +21,9 @@ import type {
   PieSeriesOption,
   ScatterSeriesOption,
   RadarSeriesOption,
-  GaugeSeriesOption
+  GaugeSeriesOption,
+  TreemapSeriesOption,
+  HeatmapSeriesOption,
 } from "echarts/charts";
 import type {
   TitleComponentOption,
@@ -39,6 +41,8 @@ export type ECOption = ComposeOption<
   | PieSeriesOption
   | RadarSeriesOption
   | GaugeSeriesOption
+  | TreemapSeriesOption
+  | HeatmapSeriesOption
   | TitleComponentOption
   | TooltipComponentOption
   | GridComponentOption
@@ -64,6 +68,8 @@ echarts.use([
   ScatterChart,
   RadarChart,
   GaugeChart,
+  TreemapChart,
+  HeatmapChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer

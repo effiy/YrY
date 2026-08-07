@@ -3,11 +3,11 @@
     <div class="home__hero">
       <img class="home-bg" src="@/assets/images/welcome.png" alt="welcome" />
     </div>
-    <router-link to="/knowledge" class="home-entry">
+    <router-link to="/aiChat" class="home-entry">
       <div class="home-entry__icon">Y</div>
       <div class="home-entry__text">
         <div class="home-entry__title">YiKnowledge</div>
-        <div class="home-entry__sub">Industry / Lessons / Methodology / Network / Products / Resources / Technology / Work</div>
+        <div class="home-entry__sub">Knowledge tree + AI Chat — preview files, run RAG, ask questions</div>
       </div>
     </router-link>
   </div>

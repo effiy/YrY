@@ -1,5 +1,6 @@
 <script setup lang="ts" name="aiChat">
-import { onMounted, provide, ref } from "vue";
+import { onMounted, provide, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useResizable } from "@/hooks/useResizable";
 import AiChatBox from "@/components/AiChatBox/AiChatBox.vue";
@@ -11,8 +12,9 @@ import WeChatSettingsDialog from "./components/WeChatSettingsDialog.vue";
 import KnowledgePreviewDialog from "./components/KnowledgePreviewDialog.vue";
 
 const store = useAiChatStore();
+const route = useRoute();
 
-const { width: sidebarW, startResize } = useResizable(280, 200, 600, "aiChat.sidebarW");
+const { width: sidebarW, startResize } = useResizable(220, 200, 600, "aiChat.sidebarW");
 
 // ── Shared knowledge file preview dialog ──
 
@@ -25,8 +27,24 @@ function openKnowledgePreview(path: string) {
 provide("openKnowledgePreview", openKnowledgePreview);
 
 onMounted(() => {
-  store.loadConversations();
+  store.loadConversations().then(() => {
+    const sessionKey = route.query.session;
+    if (typeof sessionKey === "string" && sessionKey) {
+      store.selectConversation(sessionKey).catch(() => {});
+    }
+  });
 });
+
+watch(
+  () => route.query.session,
+  (key) => {
+    if (typeof key === "string" && key) {
+      if (store.activeConversation?.key !== key) {
+        store.selectConversation(key).catch(() => {});
+      }
+    }
+  }
+);
 </script>
 
 <template>

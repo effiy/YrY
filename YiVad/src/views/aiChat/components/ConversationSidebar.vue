@@ -223,9 +223,15 @@ function onDragStart(e: DragEvent, data: TreeNode) {
 
     <el-scrollbar class="cs-list">
       <div v-if="knowledgeStore.loading && !treeData.length" class="cs-empty">Loading knowledge...</div>
-      <div v-else-if="knowledgeStore.error" class="cs-empty kt-error">{{ knowledgeStore.error }}</div>
+      <div v-else-if="knowledgeStore.error" class="cs-empty kt-error">
+        <p>{{ knowledgeStore.error }}</p>
+        <el-button size="small" type="primary" @click="knowledgeStore.loadAll()">Retry</el-button>
+      </div>
       <div v-else-if="!treeData.length" class="cs-empty">
-        {{ knowledgeStore.searchQuery ? "No matching knowledge" : "No knowledge files" }}
+        <p>{{ knowledgeStore.searchQuery ? "No matching knowledge" : "No knowledge files" }}</p>
+        <el-button v-if="!knowledgeStore.searchQuery" size="small" type="primary" :loading="syncing" @click="handleSync">
+          Sync now
+        </el-button>
       </div>
       <el-tree
         v-else
@@ -296,10 +302,17 @@ function onDragStart(e: DragEvent, data: TreeNode) {
   padding: 4px 0;
 }
 .cs-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
   padding: 16px;
   font-size: 13px;
   color: var(--el-text-color-placeholder);
   text-align: center;
+}
+.cs-empty p {
+  margin: 0;
 }
 .kt-error {
   color: var(--el-color-danger);

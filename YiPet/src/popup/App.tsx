@@ -78,24 +78,27 @@ export function PopupApp() {
       if (opts.optimistic) {
         setState((s) => ({ ...s, ...opts.optimistic }));
       }
-      chrome.sendMessage(opts.msg).then((response: unknown) => {
-        const r = response as Record<string, unknown> | null;
-        if (!r || r.success === false) {
+      chrome.sendMessage(opts.msg).then(
+        (response: unknown) => {
+          const r = response as Record<string, unknown> | null;
+          if (!r || r.success === false) {
+            message.error(t('errorOperationFailed'));
+            return;
+          }
+          if (opts.onOk) {
+            const patch = opts.onOk(r as Record<string, unknown>);
+            setState((s) => ({ ...s, ...patch }));
+          }
+          chrome.saveState(stateRef.current as unknown as Record<string, unknown>);
+          message.success(opts.okMsg);
+        },
+        (err: unknown) => {
+          // Rejection: extension context invalidated, content script port closed, etc.
+          const errMessage = err instanceof Error ? err.message : String(err);
+          console.error('[YiPet Popup] sendMessage rejected:', errMessage);
           message.error(t('errorOperationFailed'));
-          return;
-        }
-        if (opts.onOk) {
-          const patch = opts.onOk(r as Record<string, unknown>);
-          setState((s) => ({ ...s, ...patch }));
-        }
-        chrome.saveState(stateRef.current as unknown as Record<string, unknown>);
-        message.success(opts.okMsg);
-      }, (err: unknown) => {
-        // Rejection: extension context invalidated, content script port closed, etc.
-        const errMessage = err instanceof Error ? err.message : String(err);
-        console.error('[YiPet Popup] sendMessage rejected:', errMessage);
-        message.error(t('errorOperationFailed'));
-      });
+        },
+      );
     },
     [message],
   );

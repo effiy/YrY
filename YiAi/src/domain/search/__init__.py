@@ -11,7 +11,7 @@ import logging
 import time
 from typing import List, Dict, Any
 
-from ddgs import DDGS
+from duckduckgo_search import DDGS
 
 logger = logging.getLogger(__name__)
 

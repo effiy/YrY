@@ -3,6 +3,11 @@ import { HOME_URL, LOGIN_URL } from "@/config";
 
 /**
  * staticRouter (static routes)
+ *
+ * Static routes are the skeleton: login, layout, aiChat, RAG pages,
+ * knowledge sub-routes, and all detail sub-routes (code-review/BRD/tech-leadership).
+ * Everything else (BRD, Code Review, Tech Leadership, RSS Feeds, Story Board,
+ * FDE Resume, Knowledge Base index) comes from the dynamic menu tree.
  */
 export const staticRouter: RouteRecordRaw[] = [
   {
@@ -24,6 +29,7 @@ export const staticRouter: RouteRecordRaw[] = [
     // component: () => import("@/layouts/indexAsync.vue"),
     redirect: HOME_URL,
     children: [
+      // ── aiChat (static — not in the dynamic menu) ──────────────────
       {
         path: "/aiChat",
         name: "aiChat",
@@ -32,7 +38,8 @@ export const staticRouter: RouteRecordRaw[] = [
           title: "AI Chat"
         }
       },
-{
+      // ── RAG System (static — not in the dynamic menu) ──────────────
+      {
         path: "/rag",
         name: "rag",
         component: () => import("@/views/rag/index.vue"),
@@ -81,8 +88,20 @@ export const staticRouter: RouteRecordRaw[] = [
           activeMenu: "/rag"
         }
       },
-      // Tech-leadership + Code-review: list routes come from authMenuList.json;
-      // detail routes are hidden children in the menu and registered dynamically.
+      // ── Knowledge Base sub-routes (static — category/detail not in menu) ──
+      {
+        path: "/knowledge/:category",
+        name: "knowledgeCategory",
+        component: () => import("@/views/knowledge/category.vue"),
+        meta: { title: "Knowledge Category", activeMenu: "/knowledge", isKeepAlive: true }
+      },
+      {
+        path: "/knowledge/:category/detail/:file",
+        name: "knowledgeDetail",
+        component: () => import("@/views/knowledge/detail.vue"),
+        meta: { title: "Knowledge Detail", isHide: true, isKeepAlive: true }
+      },
+      // ── Code Review detail routes (static hidden — list routes from menu) ──
       {
         path: "/code-review/summary/detail/:id?",
         name: "crSummaryDetail",
@@ -155,64 +174,86 @@ export const staticRouter: RouteRecordRaw[] = [
         component: () => import("@/views/code-review/observability-gap/detail.vue"),
         meta: { title: "Observability gap", isHide: true, isKeepAlive: true }
       },
-      // BRD: list routes come from authMenuList.json;
-      // detail routes are hidden children and registered statically.
       {
-        path: "/brd/brd-documents/detail/:id?",
-        name: "brdDocumentsDetail",
-        component: () => import("@/views/brd/brd-documents/detail.vue"),
-        meta: { title: "BRD Document detail", isHide: true, isKeepAlive: true }
+        path: "/code-review/concurrency/detail/:id?",
+        name: "crConcurrencyDetail",
+        component: () => import("@/views/code-review/concurrency/detail.vue"),
+        meta: { title: "Concurrency review", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-rules/detail/:id?",
-        name: "brdRulesDetail",
-        component: () => import("@/views/brd/brd-rules/detail.vue"),
-        meta: { title: "Business Rule detail", isHide: true, isKeepAlive: true }
+        path: "/code-review/error-handling/detail/:id?",
+        name: "crErrorHandlingDetail",
+        component: () => import("@/views/code-review/error-handling/detail.vue"),
+        meta: { title: "Error handling review", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-milestones/detail/:id?",
-        name: "brdMilestonesDetail",
-        component: () => import("@/views/brd/brd-milestones/detail.vue"),
-        meta: { title: "Milestone detail", isHide: true, isKeepAlive: true }
+        path: "/code-review/dead-code/detail/:id?",
+        name: "crDeadCodeDetail",
+        component: () => import("@/views/code-review/dead-code/detail.vue"),
+        meta: { title: "Dead code review", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-approvals/detail/:id?",
-        name: "brdApprovalsDetail",
-        component: () => import("@/views/brd/brd-approvals/detail.vue"),
-        meta: { title: "Approval Record detail", isHide: true, isKeepAlive: true }
+        path: "/code-review/backward-compat/detail/:id?",
+        name: "crBackwardCompatDetail",
+        component: () => import("@/views/code-review/backward-compat/detail.vue"),
+        meta: { title: "Backward compat review", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-stakeholders/detail/:id?",
-        name: "brdStakeholdersDetail",
-        component: () => import("@/views/brd/brd-stakeholders/detail.vue"),
-        meta: { title: "Stakeholder detail", isHide: true, isKeepAlive: true }
+        path: "/code-review/i18n-a11y/detail/:id?",
+        name: "crI18nA11yDetail",
+        component: () => import("@/views/code-review/i18n-a11y/detail.vue"),
+        meta: { title: "i18n / a11y review", isHide: true, isKeepAlive: true }
+      },
+      // ── BRD detail routes (static hidden — list routes from menu) ──
+      {
+        path: "/brd/engineer/detail/:id?",
+        name: "brdEngineerDetail",
+        component: () => import("@/views/brd/engineer/detail.vue"),
+        meta: { title: "As an Engineer — detail", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-objectives/detail/:id?",
-        name: "brdObjectivesDetail",
-        component: () => import("@/views/brd/brd-objectives/detail.vue"),
-        meta: { title: "Business Objective detail", isHide: true, isKeepAlive: true }
+        path: "/brd/tech-lead/detail/:id?",
+        name: "brdTechLeadDetail",
+        component: () => import("@/views/brd/tech-lead/detail.vue"),
+        meta: { title: "As a Tech Lead — detail", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-risks/detail/:id?",
-        name: "brdRisksDetail",
-        component: () => import("@/views/brd/brd-risks/detail.vue"),
-        meta: { title: "Risk Assessment detail", isHide: true, isKeepAlive: true }
+        path: "/brd/product-manager/detail/:id?",
+        name: "brdProductManagerDetail",
+        component: () => import("@/views/brd/product-manager/detail.vue"),
+        meta: { title: "As a Product Manager — detail", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/brd-acceptance/detail/:id?",
-        name: "brdAcceptanceDetail",
-        component: () => import("@/views/brd/brd-acceptance/detail.vue"),
-        meta: { title: "Acceptance Criteria detail", isHide: true, isKeepAlive: true }
+        path: "/brd/ai-engineer/detail/:id?",
+        name: "brdAiEngineerDetail",
+        component: () => import("@/views/brd/ai-engineer/detail.vue"),
+        meta: { title: "As an AI Engineer — detail", isHide: true, isKeepAlive: true }
       },
       {
-        path: "/brd/claude/detail/:name?",
-        name: "claudeSkillsDetail",
-        component: () => import("@/views/brd/claude/detail.vue"),
-        meta: { title: "Claude Skill detail", isHide: true, isKeepAlive: true }
+        path: "/brd/new-hire/detail/:id?",
+        name: "brdNewHireDetail",
+        component: () => import("@/views/brd/new-hire/detail.vue"),
+        meta: { title: "As a New Hire — detail", isHide: true, isKeepAlive: true }
       },
-      // Tech-leadership: list routes come from authMenuList.json;
-      // detail routes are hidden children and registered statically.
+      {
+        path: "/brd/knowledge-curator/detail/:id?",
+        name: "brdKnowledgeCuratorDetail",
+        component: () => import("@/views/brd/knowledge-curator/detail.vue"),
+        meta: { title: "As a Knowledge Curator — detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/executive/detail/:id?",
+        name: "brdExecutiveDetail",
+        component: () => import("@/views/brd/executive/detail.vue"),
+        meta: { title: "As an Executive — detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/brd/oncall-sre/detail/:id?",
+        name: "brdOncallSreDetail",
+        component: () => import("@/views/brd/oncall-sre/detail.vue"),
+        meta: { title: "As an Oncall SRE — detail", isHide: true, isKeepAlive: true }
+      },
+      // ── Tech Leadership detail routes (static hidden — list routes from menu) ──
       {
         path: "/tech-leadership/adr-review/detail/:id?",
         name: "tlrAdrReviewDetail",
@@ -290,6 +331,36 @@ export const staticRouter: RouteRecordRaw[] = [
         name: "tlrDoraMetricsDetail",
         component: () => import("@/views/tech-leadership/dora-metrics/detail.vue"),
         meta: { title: "DORA Metrics detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/mentorship-growth/detail/:id?",
+        name: "tlrMentorshipGrowthDetail",
+        component: () => import("@/views/tech-leadership/mentorship-growth/detail.vue"),
+        meta: { title: "Mentorship & Growth detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/project-handoffs/detail/:id?",
+        name: "tlrProjectHandoffsDetail",
+        component: () => import("@/views/tech-leadership/project-handoffs/detail.vue"),
+        meta: { title: "Project Handoff detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/dependency-adoption/detail/:id?",
+        name: "tlrDependencyAdoptionDetail",
+        component: () => import("@/views/tech-leadership/dependency-adoption/detail.vue"),
+        meta: { title: "Dependency Adoption detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/project-bootstrap/detail/:id?",
+        name: "tlrProjectBootstrapDetail",
+        component: () => import("@/views/tech-leadership/project-bootstrap/detail.vue"),
+        meta: { title: "Project Bootstrap detail", isHide: true, isKeepAlive: true }
+      },
+      {
+        path: "/tech-leadership/knowledge-evolution/detail/:id?",
+        name: "tlrKnowledgeEvolutionDetail",
+        component: () => import("@/views/tech-leadership/knowledge-evolution/detail.vue"),
+        meta: { title: "Knowledge Evolution detail", isHide: true, isKeepAlive: true }
       }
     ]
   }

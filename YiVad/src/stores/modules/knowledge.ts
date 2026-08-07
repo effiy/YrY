@@ -10,14 +10,15 @@ import { scanKnowledge, readKnowledgeFile } from "@/api/modules/knowledgeService
 import type { KnowledgeFileEntry, KnowledgeReadResponse } from "@/api/interface/yiweb";
 
 export const KNOWLEDGE_CATEGORIES = [
-  { key: "industry", label: "Industry", desc: "Competitors, market trends, industry reports, use cases" },
-  { key: "lessons", label: "Lessons", desc: "Lessons learned: successes, failures, pitfalls" },
-  { key: "methodology", label: "Methodology", desc: "AI specializations, PM frameworks, thinking methods" },
-  { key: "people", label: "People", desc: "Team, stakeholders, experts" },
-  { key: "product", label: "Product", desc: "Product strategy, PRD, UX, metrics" },
-  { key: "resources", label: "Resources", desc: "Prompts, templates, reading lists" },
-  { key: "tech", label: "Tech", desc: "AI foundations, AI platforms, data, infrastructure" },
-  { key: "work", label: "Work", desc: "Processes, collaboration, meetings, tools" }
+  { key: "engineer", label: "Engineer", desc: "Architecture, quality, security, deployment, data, collaboration, tools, AI/ML, lessons, journeys" },
+  { key: "tech-lead", label: "Tech Lead", desc: "Architecture decisions, ADRs, capacity planning, risk management, roadmap" },
+  { key: "product-manager", label: "Product Manager", desc: "Frameworks, discovery, delivery, strategy, product specs" },
+  { key: "ai-engineer", label: "AI Engineer", desc: "AI/ML foundations, methodology, platform, data pipelines" },
+  { key: "oncall-sre", label: "Oncall SRE", desc: "Incident response, observability, release management" },
+  { key: "executive", label: "Executive", desc: "Strategy, industry intelligence, competitive analysis" },
+  { key: "knowledge-curator", label: "Knowledge Curator", desc: "KB governance, diagrams, templates, archive" },
+  { key: "new-hire", label: "New Hire", desc: "Onboarding, project handoffs, role ramp-up" },
+  { key: "skill-author", label: "Skill Author", desc: "Claude Code skill design, yry-* family, lifecycle conventions" }
 ] as const;
 
 export type KnowledgeCategoryKey = (typeof KNOWLEDGE_CATEGORIES)[number]["key"];

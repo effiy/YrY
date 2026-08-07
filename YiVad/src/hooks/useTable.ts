@@ -46,7 +46,7 @@ export const useTable = (
       };
     },
     set: (newVal: any) => {
-      console.log("Page update value", newVal);
+      // noop — pagination setter is intentionally empty
     }
   });
 

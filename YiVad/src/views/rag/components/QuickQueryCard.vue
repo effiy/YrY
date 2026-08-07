@@ -38,7 +38,7 @@ async function run() {
         :loading="querying"
         @click="run"
         :disabled="disabled || !question.trim()"
-        style="margin-top: 12px; width: 100%"
+        class="qqc-run-btn"
       >
         {{ querying ? "Retrieving..." : "Search Knowledge Base" }}
       </el-button>
@@ -63,6 +63,10 @@ async function run() {
 .qqc-body {
   display: flex;
   flex-direction: column;
+}
+.qqc-run-btn {
+  margin-top: 12px;
+  width: 100%;
 }
 .qqc-results {
   margin-top: 12px;

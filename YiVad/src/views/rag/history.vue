@@ -7,13 +7,16 @@
       </div>
       <div class="rag-page-header__actions">
         <el-input
+          ref="searchInputRef"
           v-model="searchText"
           placeholder="Search questions…"
           clearable
           :prefix-icon="Search"
           size="small"
-          style="width: 240px"
+          class="rag-history-search"
+          @keyup.esc="searchText = ''"
         />
+        <span class="rag-history-hint"><kbd>/</kbd> focus · <kbd>Esc</kbd> clear</span>
         <el-button text type="danger" size="small" @click="clearAll" :disabled="!history.length">
           <el-icon><Delete /></el-icon> Clear All
         </el-button>
@@ -48,11 +51,13 @@
         highlight-current-row
         size="small"
         @row-click="showQueryDetail"
-        style="cursor: pointer"
+        class="rag-clickable-table"
       >
         <el-table-column label="Time" width="170" align="center" sortable prop="timestamp">
           <template #default="{ row }">
-            <span style="font-size: 12px; font-variant-numeric: tabular-nums">{{ formatTimestamp(row.timestamp) }}</span>
+            <el-tooltip :content="formatTimestamp(row.timestamp)" placement="top" :show-after="300">
+              <span class="rag-time-relative">{{ formatRelativeTime(row.timestamp) }}</span>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column prop="question" label="Question" min-width="220" show-overflow-tooltip sortable />
@@ -88,13 +93,16 @@
             {{ scoreLabel(getAvgScore(row)) }}
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="140" align="center" fixed="right">
+        <el-table-column label="Actions" width="220" align="center" fixed="right">
           <template #default="{ row, $index }">
             <el-button text type="primary" size="small" @click.stop="rerunQuery($index)">
               <el-icon><RefreshRight /></el-icon> Rerun
             </el-button>
             <el-button text type="primary" size="small" @click.stop="showQueryDetail(row)">
               Detail
+            </el-button>
+            <el-button text type="primary" size="small" @click.stop="continueInAiChat(row)">
+              <el-icon><ChatDotRound /></el-icon> Continue
             </el-button>
           </template>
         </el-table-column>
@@ -118,12 +126,12 @@
     <!-- Query Detail Drawer -->
     <el-drawer v-model="detailVisible" title="Query Detail" size="560px" direction="rtl">
       <template v-if="detailQuery">
-        <div style="margin-bottom: 20px">
-          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Question</h4>
-          <p style="margin: 0; font-size: 14px; line-height: 1.7">{{ detailQuery.question }}</p>
+        <div class="rag-detail-block">
+          <h4 class="rag-detail-heading">Question</h4>
+          <p class="rag-detail-question">{{ detailQuery.question }}</p>
         </div>
-        <div style="margin-bottom: 20px">
-          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Query Parameters</h4>
+        <div class="rag-detail-block">
+          <h4 class="rag-detail-heading">Query Parameters</h4>
           <el-descriptions :column="2" border size="small">
             <el-descriptions-item label="Top-K">{{ detailQuery.topK }}</el-descriptions-item>
             <el-descriptions-item label="Scope">{{ detailQuery.scope || "Full KB" }}</el-descriptions-item>
@@ -133,20 +141,23 @@
             <el-descriptions-item label="Avg Score">{{ scoreLabel(getAvgScore(detailQuery)) }}</el-descriptions-item>
           </el-descriptions>
         </div>
-        <div v-if="detailQuery.sources?.length" style="margin-bottom: 20px">
-          <h4 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: 0.5px">Retrieved Sources ({{ detailQuery.sources.length }})</h4>
-          <div v-for="(s, si) in detailQuery.sources" :key="si" style="margin-bottom: 12px">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px">
-              <span style="font-size: 11px; font-weight: 700; color: var(--el-color-primary)">#{{ si + 1 }}</span>
-              <span style="font-size: 12px; font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ s.file_path }}</span>
+        <div v-if="detailQuery.sources?.length" class="rag-detail-block">
+          <h4 class="rag-detail-heading">Retrieved Sources ({{ detailQuery.sources.length }})</h4>
+          <div v-for="(s, si) in detailQuery.sources" :key="si" class="rag-source">
+            <div class="rag-source-head">
+              <span class="rag-source-rank">#{{ si + 1 }}</span>
+              <span class="rag-source-path" :title="s.file_path">{{ s.file_path }}</span>
               <ScoreBar :score="s.score" :bar-width="45" :stroke-width="6" />
             </div>
-            <p style="margin: 0; font-size: 12px; color: var(--el-text-color-secondary); line-height: 1.5">{{ truncateText(s.text, 200) }}</p>
+            <p class="rag-source-text">{{ truncateText(s.text, 200) }}</p>
           </div>
         </div>
-        <div style="padding-top: 12px; border-top: 1px solid var(--el-border-color-lighter)">
+        <div class="rag-detail-footer">
           <el-button type="primary" size="small" @click="rerunQuery(detailQuery._index); detailVisible = false">
             <el-icon><RefreshRight /></el-icon> Rerun This Query
+          </el-button>
+          <el-button size="small" @click="continueInAiChat(detailQuery); detailVisible = false">
+            <el-icon><ChatDotRound /></el-icon> Continue in AI Chat
           </el-button>
         </div>
       </template>
@@ -155,12 +166,15 @@
 </template>
 
 <script setup lang="ts" name="ragQueryHistory">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
-import { Search, Delete, RefreshRight } from "@element-plus/icons-vue";
+import { Search, Delete, RefreshRight, ChatDotRound } from "@element-plus/icons-vue";
+import type { InputInstance } from "element-plus";
 import { useRagStore } from "@/stores/modules/rag";
+import { useAiChatStore } from "@/stores/modules/aiChat";
+import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import {
-  scoreLabel, bestScore, avgScore, truncateText, formatTimestamp
+  scoreLabel, bestScore, avgScore, truncateText, formatTimestamp, formatRelativeTime
 } from "@/views/rag/constants";
 import ScoreBar from "./components/ScoreBar.vue";
 import type { RagSource } from "@/api/interface/rag";
@@ -169,6 +183,18 @@ const router = useRouter();
 const ragStore = useRagStore();
 
 const searchText = ref("");
+const searchInputRef = ref<InputInstance>();
+
+function slashKeyHandler(e: KeyboardEvent) {
+  if (e.key !== "/") return;
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
+  e.preventDefault();
+  searchInputRef.value?.focus?.();
+}
+onMounted(() => window.addEventListener("keydown", slashKeyHandler));
+onBeforeUnmount(() => window.removeEventListener("keydown", slashKeyHandler));
 
 interface HistoryEntry {
   question: string;
@@ -236,6 +262,25 @@ function rerunQuery(index?: number) {
   router.push("/rag/retrieval");
 }
 
+const aiChatStore = useAiChatStore();
+const { openInAiChat } = useAiChatBridge();
+
+async function continueInAiChat(row: HistoryEntry) {
+  const sources = (row.sources ?? []).slice(0, 3);
+  const ctxSections = sources.map((s, i) =>
+    `## ${i + 1}. ${s.file_path}\n\n${truncateText(s.text, 400)}`
+  ).join("\n\n---\n\n");
+  const tags: string[] = ["rag"];
+  if (row.scope) tags.push(`ctx:${row.scope}`);
+  await openInAiChat({
+    title: `RAG: ${truncateText(row.question, 60)}`,
+    pageContent: ctxSections,
+    tags,
+    sourceUrl: `/rag/history`
+  });
+  aiChatStore.input = row.question;
+}
+
 function clearAll() {
   ragStore.clearQueryHistory();
 }
@@ -243,4 +288,89 @@ function clearAll() {
 
 <style scoped lang="scss">
 @use "./styles/shared.scss";
+
+.rag-history-hint {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+
+  kbd {
+    display: inline-block;
+    min-width: 16px;
+    padding: 1px 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 3px;
+  }
+}
+
+.rag-time-relative {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  cursor: default;
+}
+
+.rag-history-search {
+  width: 240px;
+}
+
+.rag-detail-block {
+  margin-bottom: 20px;
+}
+
+.rag-detail-heading {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rag-detail-question {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.rag-source {
+  margin-bottom: 12px;
+}
+
+.rag-source-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.rag-source-rank {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+}
+
+.rag-source-path {
+  flex: 1;
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rag-source-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.5;
+}
+
+.rag-detail-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
 </style>

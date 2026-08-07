@@ -2,25 +2,25 @@
 
   "code": 200,
   "data": [{
-      label: "全部",
+      label: "All",
       value: ""
     },
     {
-      label: "超级管理员",
+      label: "Super Admin",
       value: "1"
     },
     {
-      label: "公司CEO",
+      label: "CEO",
       value: "2"
     },
     {
-      label: "部门主管",
+      label: "Department Manager",
       value: "3"
     },
     {
-      label: "人事经理",
+      label: "HR Manager",
       value: "4"
     }
   ],
-  "msg": '成功'
+  "msg": 'success'
 }

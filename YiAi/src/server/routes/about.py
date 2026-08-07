@@ -36,7 +36,7 @@ async def about_index():
         features=[
             "Ollama-powered LLM chat with streaming SSE responses",
             "File management with dual-write persistence (disk + MongoDB)",
-            "WeCom (企业微信) bot messaging integration",
+            "WeCom bot messaging integration",
             "RSS feed aggregation and management",
             "Generic module-execution engine for extensible workflows",
             "State-store for arbitrary key-value records",

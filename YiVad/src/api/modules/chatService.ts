@@ -14,6 +14,8 @@ import { callService } from "./dataService";
 import type { ChatPayload, OllamaModel, OllamaModelListResponse } from "@/api/interface/yiweb";
 
 const CHAT_SERVICE = "services.ai.chat_service";
+/** Default timeout for streaming fetch requests (10 minutes). */
+const STREAM_TIMEOUT_MS = 600_000;
 
 /**
  * Map YiVad's ChatMessage shape ({type:"user"|"pet", message}) to Ollama's
@@ -52,6 +54,11 @@ export function streamChat(
   onError: (err: Error) => void
 ): { abort: () => void } {
   const controller = new AbortController();
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, STREAM_TIMEOUT_MS);
 
   const body: Record<string, any> = {
     module_name: CHAT_SERVICE,
@@ -74,6 +81,7 @@ export function streamChat(
     signal: controller.signal
   })
     .then(async response => {
+      clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -144,21 +152,30 @@ export function streamChat(
       onDone();
     })
     .catch(err => {
+      clearTimeout(timeoutId);
       if (err.name === "AbortError") {
-        onDone();
+        if (timedOut) {
+          onError(new Error(`Request timed out after ${STREAM_TIMEOUT_MS / 1000}s. The AI model may be processing a large request — try with shorter text or retry.`));
+        } else {
+          onDone();
+        }
       } else {
         onError(err instanceof Error ? err : new Error(String(err)));
       }
     });
 
   return {
-    abort: () => controller.abort()
+    abort: () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    }
   };
 }
 
 /**
  * Non-streaming chat completion.
  * Sends messages to the AI and returns the full response.
+ * Uses a 120s timeout — AI inference can be slow for large payloads.
  */
 export async function chat(payload: ChatPayload): Promise<string> {
   const res = await callService<any>(CHAT_SERVICE, "chat", {
@@ -167,7 +184,7 @@ export async function chat(payload: ChatPayload): Promise<string> {
     stream: false,
     ...(payload.system ? { system: payload.system } : {}),
     ...(payload.images?.length ? { images: payload.images } : {})
-  });
+  }, 120_000);
 
   if (res.code !== 0) {
     throw new Error(res.message || "Chat request failed");

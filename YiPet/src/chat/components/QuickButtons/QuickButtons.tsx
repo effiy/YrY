@@ -11,6 +11,7 @@ export interface QuickButtonsProps {
 
 export const QuickButtons: FC<QuickButtonsProps> = ({ controller }) => {
   const state = controller.getSnapshot();
+  const chip = controller.pageContextChip;
 
   const onClick = (b: QuickButton) => {
     if (state.isProcessing) return;
@@ -23,6 +24,15 @@ export const QuickButtons: FC<QuickButtonsProps> = ({ controller }) => {
 
   return (
     <div className="qb-row">
+      {chip && (
+        <Tag
+          className="qb-chip qb-chip--context"
+          color={state.isProcessing ? undefined : 'success'}
+          onClick={() => !state.isProcessing && controller.applyPageContextChip()}
+        >
+          {chip.label}
+        </Tag>
+      )}
       {QUICK_BUTTONS.map((b) => (
         <Tag
           key={b.value}

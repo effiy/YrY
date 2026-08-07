@@ -19,13 +19,19 @@ import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiweb";
 import type {
   RagBuildResponse,
   RagChatPayload,
+  RagChatTurnRecord,
+  RagDecomposeResponse,
   RagFileChatPayload,
+  RagQueryRecord,
   RagQueryResponse,
   RagSource,
   RagStatusResponse,
   RagStreamHandlers
 } from "@/api/interface/rag";
 import type { YiAiEnvelope } from "@/api/interface/yiweb";
+
+/** Default timeout for streaming RAG requests (10 minutes). */
+const STREAM_TIMEOUT_MS = 600_000;
 
 async function postJson<T>(path: string, body: Record<string, unknown>): Promise<T> {
   const url = buildYiAiUrl(path);
@@ -45,7 +51,17 @@ async function postJson<T>(path: string, body: Record<string, unknown>): Promise
 }
 
 /** One-shot retrieval — returns ranked source dicts, no LLM call. */
-export function ragQuery(params: { question: string; top_k?: number; scope?: string }): Promise<RagQueryResponse> {
+export function ragQuery(params: {
+  question: string;
+  top_k?: number;
+  scope?: string;
+  hybrid?: boolean;
+  rerank?: boolean;
+  citations?: boolean;
+  num_queries?: number;
+  category?: string;
+  tags?: string[];
+}): Promise<RagQueryResponse> {
   return postJson<RagQueryResponse>("/rag-query", params as Record<string, unknown>);
 }
 
@@ -70,6 +86,38 @@ export function ragCategories(): Promise<RagCategories> {
   return postJson<RagCategories>("/rag-categories", {});
 }
 
+/** In-memory recent retrieval history — newest-first, max 20 entries. */
+export function ragHistory(): Promise<{ records: RagQueryRecord[]; max: number }> {
+  return postJson<{ records: RagQueryRecord[]; max: number }>("/rag-history", {});
+}
+
+export function ragHistoryClear(): Promise<{ records: never[]; max: number }> {
+  return postJson<{ records: never[]; max: number }>("/rag-history-clear", {});
+}
+
+/** In-memory recent RAG chat turns — newest-first, max 20. Mirrors ragHistory
+ *  but for streamed chat (vs one-shot retrieval). */
+export function ragChatHistory(): Promise<{ records: RagChatTurnRecord[]; max: number }> {
+  return postJson<{ records: RagChatTurnRecord[]; max: number }>("/rag-chat-history", {});
+}
+
+export function ragChatHistoryClear(): Promise<{ records: never[]; max: number }> {
+  return postJson<{ records: never[]; max: number }>("/rag-chat-history-clear", {});
+}
+
+/** Sub-question decomposition — llama_index SubQuestionQueryEngine.
+ *  Synchronous (non-streaming) since the engine composes multiple LLM
+ *  calls internally. */
+export function ragDecompose(params: {
+  question: string;
+  scope?: string;
+  sub_q_top_k?: number;
+  category?: string;
+  tags?: string[];
+}): Promise<RagDecomposeResponse> {
+  return postJson<RagDecomposeResponse>("/rag-decompose", params as Record<string, unknown>);
+}
+
 function extractDelta(parsed: any): string {
   if (!parsed || typeof parsed !== "object") return "";
   return parsed?.data?.message ?? parsed?.message?.content ?? parsed?.choices?.[0]?.delta?.content ?? parsed?.content ?? "";
@@ -81,12 +129,23 @@ function extractSources(parsed: any): RagSource[] | null {
   return Array.isArray(sources) && sources.length ? (sources as RagSource[]) : null;
 }
 
+function extractPhase(parsed: any): string | null {
+  if (!parsed || typeof parsed !== "object") return null;
+  const phase = parsed?.data?.phase ?? parsed?.phase;
+  return typeof phase === "string" ? phase : null;
+}
+
 function runStream(
   url: string,
   body: Record<string, unknown>,
   handlers: RagStreamHandlers
 ): { abort: () => void } {
   const controller = new AbortController();
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, STREAM_TIMEOUT_MS);
 
   fetch(url, {
     method: "POST",
@@ -95,6 +154,7 @@ function runStream(
     signal: controller.signal
   })
     .then(async response => {
+      clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -137,6 +197,11 @@ function runStream(
               handlers.onSources(sources);
               continue;
             }
+            const phase = extractPhase(parsed);
+            if (phase && handlers.onPhase) {
+              handlers.onPhase(phase);
+              continue;
+            }
             const content = extractDelta(parsed);
             if (content) handlers.onChunk(content);
           } catch {
@@ -158,6 +223,8 @@ function runStream(
             if (parsed?.done !== true) {
               const sources = extractSources(parsed);
               if (sources && !sourcesSent) handlers.onSources(sources);
+              const phase = extractPhase(parsed);
+              if (phase && handlers.onPhase) handlers.onPhase(phase);
               const content = extractDelta(parsed);
               if (content) handlers.onChunk(content);
             }
@@ -169,8 +236,13 @@ function runStream(
       onDoneSafe();
     })
     .catch(err => {
+      clearTimeout(timeoutId);
       if (err.name === "AbortError") {
-        handlers.onDone();
+        if (timedOut) {
+          handlers.onError(new Error(`RAG request timed out after ${STREAM_TIMEOUT_MS / 1000}s. The AI model may be processing a large request — try with shorter text or retry.`));
+        } else {
+          handlers.onDone();
+        }
       } else {
         handlers.onError(err instanceof Error ? err : new Error(String(err)));
       }
@@ -184,7 +256,10 @@ function runStream(
   }
 
   return {
-    abort: () => controller.abort()
+    abort: () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    }
   };
 }
 
@@ -194,7 +269,15 @@ export function streamRagChat(payload: RagChatPayload, handlers: RagStreamHandle
   const body: Record<string, unknown> = {
     messages: payload.messages,
     stream: true,
-    ...(payload.scope ? { scope: payload.scope } : {})
+    ...(payload.scope ? { scope: payload.scope } : {}),
+    ...(payload.top_k != null ? { top_k: payload.top_k } : {}),
+    ...(payload.hybrid != null ? { hybrid: payload.hybrid } : {}),
+    ...(payload.rerank != null ? { rerank: payload.rerank } : {}),
+    ...(payload.citations != null ? { citations: payload.citations } : {}),
+    ...(payload.num_queries != null ? { num_queries: payload.num_queries } : {}),
+    ...(payload.chat_mode ? { chat_mode: payload.chat_mode } : {}),
+    ...(payload.category ? { category: payload.category } : {}),
+    ...(payload.tags?.length ? { tags: payload.tags } : {})
   };
   return runStream(url, body, handlers);
 }

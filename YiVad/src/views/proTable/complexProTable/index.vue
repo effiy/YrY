@@ -146,7 +146,6 @@ const tableRowClassName = ({ rowIndex }: { row: User.ResUserList; rowIndex: numb
 // Row click
 const rowClick = (row: User.ResUserList, column: TableColumnCtx<User.ResUserList>) => {
   if (column.property == "radio" || column.property == "operation") return;
-  console.log(row);
   ElMessage.success("Current row was clicked!");
 };
 

@@ -1,24 +1,37 @@
 // Migrated from Easy-Mock: /geeker/auth/buttons
-function getToken() {
-  let token = $$.mockRequest.headers.get('x-access-token');
-  if (!token) token = $$.mockRequest.headers.get('X-Access-Token');
-  if (!token) token = $$.mockRequest.getParam('x-access-token');
-  return token;
-}
-
-let token = getToken();
+let token = $$.mockRequest.headers.get('x-access-token');
 let data;
 if (token === 'bqddxxwqmfncffacvbpkuxvwvqrhln') {
   data = {
-    useProTable: ['add', 'batchAdd', 'export', 'batchDelete', 'status'],
-    authButton: ['add', 'edit', 'delete', 'import', 'export']
-  };
+  "useProTable": [
+    "add",
+    "batchAdd",
+    "export",
+    "batchDelete",
+    "status"
+  ],
+  "authButton": [
+    "add",
+    "edit",
+    "delete",
+    "import",
+    "export"
+  ]
+};
 } else if (token === 'unufvdotdqxuzfbdygovfmsbftlvbn') {
   data = {
-    useProTable: ['add', 'batchDelete'],
-    authButton: ['add', 'edit', 'delete', 'import', 'export']
-  };
+  "useProTable": [
+    "add",
+    "batchDelete"
+  ],
+  "authButton": [
+    "add",
+    "edit",
+    "delete",
+    "import",
+    "export"
+  ]
+};
 }
-
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'Success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
 $$.mockResponse.setCode(200);

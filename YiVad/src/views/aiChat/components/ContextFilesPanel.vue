@@ -5,13 +5,26 @@
 -->
 <script setup lang="ts" name="aiChatContextFilesPanel">
 import { ref, computed, watch, inject } from "vue";
-import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus, FolderChecked } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { Delete, DataAnalysis, Search, FolderOpened, Folder, Document, Plus, FolderChecked, Link } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 
 const store = useAiChatStore();
+const router = useRouter();
 const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
+
+const FROM_PREFIX = "from:";
+const sourceUrl = computed(() => {
+  const tags = store.activeConversation?.tags ?? [];
+  const from = tags.find(t => typeof t === "string" && t.startsWith(FROM_PREFIX));
+  return from ? from.slice(FROM_PREFIX.length) : "";
+});
+function backToSource() {
+  if (!sourceUrl.value) return;
+  router.push(sourceUrl.value);
+}
 
 // ── Search / filter ──
 const contextSearch = ref("");
@@ -507,6 +520,15 @@ async function onSave() {
       </span>
       <div class="cfp-header-right">
         <el-button
+          v-if="mode === 'view' && sourceUrl"
+          size="small"
+          text
+          type="primary"
+          :icon="Link"
+          :title="`Open source page: ${sourceUrl}`"
+          @click="backToSource"
+        >View source</el-button>
+        <el-button
           v-if="mode === 'view' && ctxCount > 0"
           size="small"
           :type="store.ragActive ? 'primary' : ''"
@@ -628,7 +650,6 @@ async function onSave() {
   height: 100%;
   overflow: hidden;
   background: var(--el-bg-color);
-  border-right: 1px solid var(--el-border-color-lighter);
 }
 .cfp-header {
   display: flex;

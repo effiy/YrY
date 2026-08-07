@@ -1,18 +1,16 @@
 import { createI18n } from "vue-i18n";
 import { getBrowserLang } from "@/utils";
+import { messages } from "./modules";
 
-import zh from "./modules/zh";
-import en from "./modules/en";
+const isDev = process.env.NODE_ENV !== "production";
 
 const i18n = createI18n({
-  // Use Composition API, Set to false
-  allowComposition: true,
   legacy: false,
   locale: getBrowserLang(),
-  messages: {
-    zh,
-    en
-  }
+  fallbackLocale: "en",
+  missingWarn: isDev,
+  fallbackWarn: isDev,
+  messages
 });
 
 export default i18n;

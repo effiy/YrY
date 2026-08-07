@@ -23,7 +23,7 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search
+from server.routes import about, agent, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search, mcp, dashboard
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
@@ -181,10 +181,13 @@ def create_app(
     app.include_router(wework.router, tags=["WeWork"])
     app.include_router(maintenance.router, tags=["Maintenance"])
     app.include_router(state.router, tags=["State"])
+    app.include_router(agent.router, tags=["Agent"])
     app.include_router(health.router, tags=["Observer"])
     app.include_router(knowledge.router, tags=["Knowledge"])
     app.include_router(rag.router, tags=["RAG"])
     app.include_router(search.router, tags=["Search"])
+    app.include_router(mcp.router, tags=["MCP"])
+    app.include_router(dashboard.router, tags=["Dashboard"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(
@@ -210,6 +213,8 @@ def create_app(
 
     # Mount static files
     static_dir = settings.static_base_dir
+    if not os.path.isabs(static_dir):
+        static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", static_dir))
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
     return app

@@ -31,5 +31,5 @@ pip-wheel-metadata/
 *.log
 logs/
 
-# Claude - 只忽略敏感和自动生成的内容
+# Claude - only ignore sensitive and auto-generated content
 .claude

@@ -100,14 +100,13 @@ props.editorConfig.MENU_CONF!["uploadImage"] = {
       const { data } = await uploadImg(formData);
       insertFn(data.fileUrl);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 };
 
 // Validate before image upload
 const uploadImgValidate = (file: File): boolean => {
-  console.log(file);
   return true;
 };
 
@@ -126,14 +125,13 @@ props.editorConfig.MENU_CONF!["uploadVideo"] = {
       const { data } = await uploadVideo(formData);
       insertFn(data.fileUrl);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 };
 
 // Validate before video upload
 const uploadVideoValidate = (file: File): boolean => {
-  console.log(file);
   return true;
 };
 

@@ -28,9 +28,9 @@
   }) {
     let body = _req.body;
     if ((body.username === 'admin' && body.password === 'e10adc3949ba59abbe56e057f20f883e') || (body.username === 'user' && body.password === 'e10adc3949ba59abbe56e057f20f883e')) {
-      return '成功'
+      return 'success'
     } else {
-      return '用户名或密码错误';
+      return 'invalid username or password';
     }
   },
 }

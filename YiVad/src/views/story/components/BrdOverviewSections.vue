@@ -39,7 +39,7 @@ function hasAcceptanceCriteria(ac: StoryDocument["acceptanceCriteria"]): boolean
   return !!(ac.functional?.length || ac.data?.length || ac.objectiveVerification?.length);
 }
 
-const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "" };
+const priorityColors: Record<string, string> = { p0: "danger", p1: "warning", p2: "info", p3: "info" };
 
 function approvalRoleLabel(role: string): string {
   const m: Record<string, string> = {
@@ -165,7 +165,7 @@ function milestoneStatusLabel(s: string): string {
         :percentage="milestoneProgress"
         :stroke-width="8"
         :color="milestoneProgress === 100 ? '#67c23a' : '#409eff'"
-        style="margin-bottom: 10px"
+        class="sd-milestone-progress"
       />
       <el-table :data="story.milestones" border size="small" class="sd-brd-table">
         <el-table-column :label="$t('brd.milestoneName')" prop="name" min-width="140" show-overflow-tooltip />
@@ -268,6 +268,9 @@ function milestoneStatusLabel(s: string): string {
 }
 .sd-brd-table {
   margin-bottom: 4px;
+}
+.sd-milestone-progress {
+  margin-bottom: 10px;
 }
 .sd-tags {
   display: flex;
