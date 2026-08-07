@@ -24,7 +24,6 @@ declare module 'vue' {
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
-    ElCol: typeof import('element-plus/es')['ElCol']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -42,12 +41,9 @@ declare module 'vue' {
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElOption: typeof import('element-plus/es')['ElOption']
-    ElPagination: typeof import('element-plus/es')['ElPagination']
     ElPopover: typeof import('element-plus/es')['ElPopover']
-    ElProgress: typeof import('element-plus/es')['ElProgress']
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
-    ElRow: typeof import('element-plus/es')['ElRow']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
@@ -83,8 +79,5 @@ declare module 'vue' {
     TopicListPage: typeof import('./../components/TopicListPage/index.vue')['default']
     TreeFilter: typeof import('./../components/TreeFilter/index.vue')['default']
     WangEditor: typeof import('./../components/WangEditor/index.vue')['default']
-  }
-  export interface GlobalDirectives {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
