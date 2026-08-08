@@ -49,30 +49,10 @@
         </el-col>
       </el-row>
     </div>
-
-    <div class="card">
-      <h4 class="title">Build Info</h4>
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="Current Project" label-align="left">
-          <el-tag type="primary">YiVad</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Version" label-align="left">
-          <el-tag>{{ version }}</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Last Build" label-align="left">
-          <el-tag>{{ lastBuildTime }}</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Tech Stack" label-align="left">
-          Vue 3 + TypeScript + Rsbuild 1 + Pinia + Element Plus
-        </el-descriptions-item>
-      </el-descriptions>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts" name="about">
-const { pkg, lastBuildTime } = __APP_INFO__;
-const { version } = pkg;
 
 const members = [
   {

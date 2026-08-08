@@ -1,15 +1,15 @@
 {
   "code": 200,
   "data": [{
-      userLabel: "Active",
+      userLabel: "启用",
       userStatus: 1,
       tagType: "success"
     },
     {
-      userLabel: "Disabled",
+      userLabel: "禁用",
       userStatus: 0,
       tagType: "danger"
     }
   ],
-  "msg": "success"
+  "msg": "成功"
 }

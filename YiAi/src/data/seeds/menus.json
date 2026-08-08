@@ -18,538 +18,13 @@
     "order": 0
   },
   {
-    "key": "menu_dataScreen",
-    "path": "/dataScreen",
-    "name": "dataScreen",
-    "component": "/dataScreen/index",
+    "key": "menu_knowledgeHub",
+    "path": "/knowledge",
+    "name": "knowledgeHub",
+    "component": "/knowledge/index",
     "redirect": "",
     "meta": {
-      "icon": "Histogram",
-      "title": "Data Screen",
-      "isLink": "",
-      "isHide": false,
-      "isFull": true,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 1
-  },
-  {
-    "key": "menu_proTable",
-    "path": "/proTable",
-    "name": "proTable",
-    "component": "",
-    "redirect": "/proTable/useProTable",
-    "meta": {
-      "icon": "MessageBox",
-      "title": "ProTable",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 2
-  },
-  {
-    "key": "menu_useProTable",
-    "path": "/proTable/useProTable",
-    "name": "useProTable",
-    "component": "/proTable/useProTable/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Using ProTable",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 0
-  },
-  {
-    "key": "menu_useProTableDetail",
-    "path": "/proTable/useProTable/detail/:id",
-    "name": "useProTableDetail",
-    "component": "/proTable/useProTable/detail",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "ProTable Detail",
-      "activeMenu": "/proTable/useProTable",
-      "isLink": "",
-      "isHide": true,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable/useProTable",
-    "order": 0
-  },
-  {
-    "key": "menu_useTreeFilter",
-    "path": "/proTable/useTreeFilter",
-    "name": "useTreeFilter",
-    "component": "/proTable/useTreeFilter/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Using TreeFilter",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 1
-  },
-  {
-    "key": "menu_useTreeFilterDetail",
-    "path": "/proTable/useTreeFilter/detail/:id",
-    "name": "useTreeFilterDetail",
-    "component": "/proTable/useTreeFilter/detail",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "TreeFilter Detail",
-      "activeMenu": "/proTable/useTreeFilter",
-      "isLink": "",
-      "isHide": true,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 2
-  },
-  {
-    "key": "menu_useSelectFilter",
-    "path": "/proTable/useSelectFilter",
-    "name": "useSelectFilter",
-    "component": "/proTable/useSelectFilter/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Using SelectFilter",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 3
-  },
-  {
-    "key": "menu_treeProTable",
-    "path": "/proTable/treeProTable",
-    "name": "treeProTable",
-    "component": "/proTable/treeProTable/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tree ProTable",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 4
-  },
-  {
-    "key": "menu_complexProTable",
-    "path": "/proTable/complexProTable",
-    "name": "complexProTable",
-    "component": "/proTable/complexProTable/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Complex ProTable",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/proTable",
-    "order": 5
-  },
-  {
-    "key": "menu_auth",
-    "path": "/auth",
-    "name": "auth",
-    "component": "",
-    "redirect": "/auth/menu",
-    "meta": {
-      "icon": "Lock",
-      "title": "Permission Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 3
-  },
-  {
-    "key": "menu_authMenu",
-    "path": "/auth/menu",
-    "name": "authMenu",
-    "component": "/auth/menu/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu Permission",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/auth",
-    "order": 0
-  },
-  {
-    "key": "menu_authButton",
-    "path": "/auth/button",
-    "name": "authButton",
-    "component": "/auth/button/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Button Permission",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/auth",
-    "order": 1
-  },
-  {
-    "key": "menu_assembly",
-    "path": "/assembly",
-    "name": "assembly",
-    "component": "",
-    "redirect": "/assembly/guide",
-    "meta": {
-      "icon": "Briefcase",
-      "title": "Common Components",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 4
-  },
-  {
-    "key": "menu_guide",
-    "path": "/assembly/guide",
-    "name": "guide",
-    "component": "/assembly/guide/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Guide",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 0
-  },
-  {
-    "key": "menu_tabs",
-    "path": "/assembly/tabs",
-    "name": "tabs",
-    "component": "/assembly/tabs/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tab Operations",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 1
-  },
-  {
-    "key": "menu_tabsDetail",
-    "path": "/assembly/tabs/detail/:id",
-    "name": "tabsDetail",
-    "component": "/assembly/tabs/detail",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tab Detail",
-      "activeMenu": "/assembly/tabs",
-      "isLink": "",
-      "isHide": true,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly/tabs",
-    "order": 0
-  },
-  {
-    "key": "menu_selectIcon",
-    "path": "/assembly/selectIcon",
-    "name": "selectIcon",
-    "component": "/assembly/selectIcon/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Icon Selector",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 2
-  },
-  {
-    "key": "menu_selectFilter",
-    "path": "/assembly/selectFilter",
-    "name": "selectFilter",
-    "component": "/assembly/selectFilter/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Category Filter",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 3
-  },
-  {
-    "key": "menu_treeFilter",
-    "path": "/assembly/treeFilter",
-    "name": "treeFilter",
-    "component": "/assembly/treeFilter/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tree Filter",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 4
-  },
-  {
-    "key": "menu_svgIcon",
-    "path": "/assembly/svgIcon",
-    "name": "svgIcon",
-    "component": "/assembly/svgIcon/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "SVG Icons",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 5
-  },
-  {
-    "key": "menu_uploadFile",
-    "path": "/assembly/uploadFile",
-    "name": "uploadFile",
-    "component": "/assembly/uploadFile/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "File Upload",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 6
-  },
-  {
-    "key": "menu_batchImport",
-    "path": "/assembly/batchImport",
-    "name": "batchImport",
-    "component": "/assembly/batchImport/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Batch Import",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 7
-  },
-  {
-    "key": "menu_wangEditor",
-    "path": "/assembly/wangEditor",
-    "name": "wangEditor",
-    "component": "/assembly/wangEditor/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Rich Text Editor",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 8
-  },
-  {
-    "key": "menu_draggable",
-    "path": "/assembly/draggable",
-    "name": "draggable",
-    "component": "/assembly/draggable/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Drag Component",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/assembly",
-    "order": 9
-  },
-  {
-    "key": "menu_dashboard",
-    "path": "/dashboard",
-    "name": "dashboard",
-    "component": "",
-    "redirect": "/dashboard/dataVisualize",
-    "meta": {
-      "icon": "Odometer",
-      "title": "Dashboard",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 5
-  },
-  {
-    "key": "menu_dataVisualize",
-    "path": "/dashboard/dataVisualize",
-    "name": "dataVisualize",
-    "component": "/dashboard/dataVisualize/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Data Visualization",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 0
-  },
-  {
-    "key": "menu_systemHealth",
-    "path": "/dashboard/systemHealth",
-    "name": "systemHealth",
-    "component": "/dashboard/systemHealth/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Monitor",
-      "title": "System Health",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 1
-  },
-  {
-    "key": "menu_engineeringMaturity",
-    "path": "/dashboard/engineeringMaturity",
-    "name": "engineeringMaturity",
-    "component": "/dashboard/engineeringMaturity/index",
-    "redirect": "",
-    "meta": {
-      "icon": "TrendCharts",
-      "title": "Engineering Maturity",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 2
-  },
-  {
-    "key": "menu_rssContent",
-    "path": "/dashboard/rssContent",
-    "name": "rssContent",
-    "component": "/dashboard/rssContent/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Reading",
-      "title": "RSS Content",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 3
-  },
-  {
-    "key": "menu_knowledgeBase",
-    "path": "/dashboard/knowledgeBase",
-    "name": "knowledgeBase",
-    "component": "/dashboard/knowledgeBase/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Document",
+      "icon": "Collection",
       "title": "Knowledge Base",
       "isLink": "",
       "isHide": false,
@@ -557,872 +32,8 @@
       "isAffix": false,
       "isKeepAlive": true
     },
-    "parent": "/dashboard",
-    "order": 4
-  },
-  {
-    "key": "menu_rssSources",
-    "path": "/dashboard/rssSources",
-    "name": "rssSources",
-    "component": "/dashboard/rssSources/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Connection",
-      "title": "RSS Sources",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 5
-  },
-  {
-    "key": "menu_organization",
-    "path": "/dashboard/organization",
-    "name": "organization",
-    "component": "/dashboard/organization/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Avatar",
-      "title": "Organization",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 6
-  },
-  {
-    "key": "menu_aiAnalytics",
-    "path": "/dashboard/aiAnalytics",
-    "name": "aiAnalytics",
-    "component": "/dashboard/aiAnalytics/index",
-    "redirect": "",
-    "meta": {
-      "icon": "ChatDotRound",
-      "title": "AI Analytics",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 7
-  },
-  {
-    "key": "menu_ragAnalytics",
-    "path": "/dashboard/ragAnalytics",
-    "name": "ragAnalytics",
-    "component": "/dashboard/ragAnalytics/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Search",
-      "title": "RAG Analytics",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 8
-  },
-  {
-    "key": "menu_performance",
-    "path": "/dashboard/performance",
-    "name": "performance",
-    "component": "/dashboard/performance/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Monitor",
-      "title": "Performance",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 9
-  },
-  {
-    "key": "menu_servicePerformance",
-    "path": "/dashboard/servicePerformance",
-    "name": "servicePerformance",
-    "component": "/dashboard/servicePerformance/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Connection",
-      "title": "Service Performance",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 10
-  },
-  {
-    "key": "menu_form",
-    "path": "/form",
-    "name": "form",
-    "component": "",
-    "redirect": "/form/proForm",
-    "meta": {
-      "icon": "Tickets",
-      "title": "Form",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
     "parent": null,
-    "order": 6
-  },
-  {
-    "key": "menu_proForm",
-    "path": "/form/proForm",
-    "name": "proForm",
-    "component": "/form/proForm/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Super Form",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/form",
-    "order": 0
-  },
-  {
-    "key": "menu_basicForm",
-    "path": "/form/basicForm",
-    "name": "basicForm",
-    "component": "/form/basicForm/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Basic Form",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/form",
     "order": 1
-  },
-  {
-    "key": "menu_validateForm",
-    "path": "/form/validateForm",
-    "name": "validateForm",
-    "component": "/form/validateForm/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Validate Form",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/form",
-    "order": 2
-  },
-  {
-    "key": "menu_dynamicForm",
-    "path": "/form/dynamicForm",
-    "name": "dynamicForm",
-    "component": "/form/dynamicForm/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dynamic Form",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/form",
-    "order": 3
-  },
-  {
-    "key": "menu_echarts",
-    "path": "/echarts",
-    "name": "echarts",
-    "component": "",
-    "redirect": "/echarts/waterChart",
-    "meta": {
-      "icon": "TrendCharts",
-      "title": "ECharts",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 7
-  },
-  {
-    "key": "menu_waterChart",
-    "path": "/echarts/waterChart",
-    "name": "waterChart",
-    "component": "/echarts/waterChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Water Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 0
-  },
-  {
-    "key": "menu_columnChart",
-    "path": "/echarts/columnChart",
-    "name": "columnChart",
-    "component": "/echarts/columnChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Column Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 1
-  },
-  {
-    "key": "menu_lineChart",
-    "path": "/echarts/lineChart",
-    "name": "lineChart",
-    "component": "/echarts/lineChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Line Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 2
-  },
-  {
-    "key": "menu_pieChart",
-    "path": "/echarts/pieChart",
-    "name": "pieChart",
-    "component": "/echarts/pieChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Pie Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 3
-  },
-  {
-    "key": "menu_radarChart",
-    "path": "/echarts/radarChart",
-    "name": "radarChart",
-    "component": "/echarts/radarChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Radar Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 4
-  },
-  {
-    "key": "menu_nestedChart",
-    "path": "/echarts/nestedChart",
-    "name": "nestedChart",
-    "component": "/echarts/nestedChart/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Nested Ring Chart",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/echarts",
-    "order": 5
-  },
-  {
-    "key": "menu_directives",
-    "path": "/directives",
-    "name": "directives",
-    "component": "",
-    "redirect": "/directives/copyDirect",
-    "meta": {
-      "icon": "Stamp",
-      "title": "Custom Directives",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 8
-  },
-  {
-    "key": "menu_copyDirect",
-    "path": "/directives/copyDirect",
-    "name": "copyDirect",
-    "component": "/directives/copyDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Copy Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 0
-  },
-  {
-    "key": "menu_watermarkDirect",
-    "path": "/directives/watermarkDirect",
-    "name": "watermarkDirect",
-    "component": "/directives/watermarkDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Watermark Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 1
-  },
-  {
-    "key": "menu_dragDirect",
-    "path": "/directives/dragDirect",
-    "name": "dragDirect",
-    "component": "/directives/dragDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Drag Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 2
-  },
-  {
-    "key": "menu_debounceDirect",
-    "path": "/directives/debounceDirect",
-    "name": "debounceDirect",
-    "component": "/directives/debounceDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Debounce Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 3
-  },
-  {
-    "key": "menu_throttleDirect",
-    "path": "/directives/throttleDirect",
-    "name": "throttleDirect",
-    "component": "/directives/throttleDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Throttle Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 4
-  },
-  {
-    "key": "menu_longpressDirect",
-    "path": "/directives/longpressDirect",
-    "name": "longpressDirect",
-    "component": "/directives/longpressDirect/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Long Press Directive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/directives",
-    "order": 5
-  },
-  {
-    "key": "menu_menu",
-    "path": "/menu",
-    "name": "menu",
-    "component": "",
-    "redirect": "/menu/menu1",
-    "meta": {
-      "icon": "List",
-      "title": "Nested Menu",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 9
-  },
-  {
-    "key": "menu_menu1",
-    "path": "/menu/menu1",
-    "name": "menu1",
-    "component": "/menu/menu1/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 1",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu",
-    "order": 0
-  },
-  {
-    "key": "menu_menu2",
-    "path": "/menu/menu2",
-    "name": "menu2",
-    "component": "",
-    "redirect": "/menu/menu2/menu21",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu",
-    "order": 1
-  },
-  {
-    "key": "menu_menu21",
-    "path": "/menu/menu2/menu21",
-    "name": "menu21",
-    "component": "/menu/menu2/menu21/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2-1",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu/menu2",
-    "order": 0
-  },
-  {
-    "key": "menu_menu22",
-    "path": "/menu/menu2/menu22",
-    "name": "menu22",
-    "component": "",
-    "redirect": "/menu/menu2/menu22/menu221",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2-2",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu/menu2",
-    "order": 1
-  },
-  {
-    "key": "menu_menu221",
-    "path": "/menu/menu2/menu22/menu221",
-    "name": "menu221",
-    "component": "/menu/menu2/menu22/menu221/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2-2-1",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu/menu2/menu22",
-    "order": 0
-  },
-  {
-    "key": "menu_menu222",
-    "path": "/menu/menu2/menu22/menu222",
-    "name": "menu222",
-    "component": "/menu/menu2/menu22/menu222/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2-2-2",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu/menu2/menu22",
-    "order": 1
-  },
-  {
-    "key": "menu_menu23",
-    "path": "/menu/menu2/menu23",
-    "name": "menu23",
-    "component": "/menu/menu2/menu23/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 2-3",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu/menu2",
-    "order": 2
-  },
-  {
-    "key": "menu_menu3",
-    "path": "/menu/menu3",
-    "name": "menu3",
-    "component": "/menu/menu3/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu 3",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/menu",
-    "order": 2
-  },
-  {
-    "key": "menu_system",
-    "path": "/system",
-    "name": "system",
-    "component": "",
-    "redirect": "/system/accountManage",
-    "meta": {
-      "icon": "Tools",
-      "title": "System Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 10
-  },
-  {
-    "key": "menu_accountManage",
-    "path": "/system/accountManage",
-    "name": "accountManage",
-    "component": "/system/accountManage/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Account Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 0
-  },
-  {
-    "key": "menu_roleManage",
-    "path": "/system/roleManage",
-    "name": "roleManage",
-    "component": "/system/roleManage/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Role Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 1
-  },
-  {
-    "key": "menu_menuMange",
-    "path": "/system/menuMange",
-    "name": "menuMange",
-    "component": "/system/menuMange/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Menu Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 2
-  },
-  {
-    "key": "menu_departmentManage",
-    "path": "/system/departmentManage",
-    "name": "departmentManage",
-    "component": "/system/departmentManage/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Department Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 3
-  },
-  {
-    "key": "menu_dictManage",
-    "path": "/system/dictManage",
-    "name": "dictManage",
-    "component": "/system/dictManage/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dictionary Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 4
-  },
-  {
-    "key": "menu_timingTask",
-    "path": "/system/timingTask",
-    "name": "timingTask",
-    "component": "/system/timingTask/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Scheduled Tasks",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 5
-  },
-  {
-    "key": "menu_systemLog",
-    "path": "/system/systemLog",
-    "name": "systemLog",
-    "component": "/system/systemLog/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "System Logs",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/system",
-    "order": 6
-  },
-  {
-    "key": "menu_link",
-    "path": "/link",
-    "name": "link",
-    "component": "",
-    "redirect": "/link/bing",
-    "meta": {
-      "icon": "Paperclip",
-      "title": "External Links",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 11
-  },
-  {
-    "key": "menu_bing",
-    "path": "/link/bing",
-    "name": "bing",
-    "component": "/link/bing/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Claude Docs",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/link",
-    "order": 0
-  },
-  {
-    "key": "menu_about",
-    "path": "/about",
-    "name": "about",
-    "component": "",
-    "redirect": "/about/yivad",
-    "meta": {
-      "icon": "InfoFilled",
-      "title": "About",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 12
-  },
-  {
-    "key": "menu_aboutYivad",
-    "path": "/about/yivad",
-    "name": "aboutYivad",
-    "component": "/about/yivad/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "YiVad",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/about",
-    "order": 0
-  },
-  {
-    "key": "menu_aboutYiAi",
-    "path": "/about/yiai",
-    "name": "aboutYiAi",
-    "component": "/about/yiai/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "YiAi",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/about",
-    "order": 1
-  },
-  {
-    "key": "menu_aboutYiPet",
-    "path": "/about/yipet",
-    "name": "aboutYiPet",
-    "component": "/about/yipet/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "YiPet",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/about",
-    "order": 2
   },
   {
     "key": "menu_brd",
@@ -1440,7 +51,7 @@
       "isKeepAlive": true
     },
     "parent": null,
-    "order": 13
+    "order": 2
   },
   {
     "key": "menu_brdReviewHub",
@@ -1458,35 +69,17 @@
       "isKeepAlive": true
     },
     "parent": "/brd",
-    "order": -1
-  },
-  {
-    "key": "menu_brdDocuments",
-    "path": "/brd/brd-documents",
-    "name": "brdDocuments",
-    "component": "/brd/brd-documents/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "BRD Documents",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
     "order": 0
   },
   {
-    "key": "menu_brdObjectives",
-    "path": "/brd/brd-objectives",
-    "name": "brdObjectives",
-    "component": "/brd/brd-objectives/index",
+    "key": "menu_brdEngineer",
+    "path": "/brd/engineer",
+    "name": "brdEngineer",
+    "component": "/brd/engineer/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Business Objectives",
+      "title": "Engineer",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1497,14 +90,14 @@
     "order": 1
   },
   {
-    "key": "menu_brdStakeholders",
-    "path": "/brd/brd-stakeholders",
-    "name": "brdStakeholders",
-    "component": "/brd/brd-stakeholders/index",
+    "key": "menu_brdTechLead",
+    "path": "/brd/tech-lead",
+    "name": "brdTechLead",
+    "component": "/brd/tech-lead/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Stakeholders",
+      "title": "Tech Lead",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1515,14 +108,14 @@
     "order": 2
   },
   {
-    "key": "menu_brdRules",
-    "path": "/brd/brd-rules",
-    "name": "brdRules",
-    "component": "/brd/brd-rules/index",
+    "key": "menu_brdProductManager",
+    "path": "/brd/product-manager",
+    "name": "brdProductManager",
+    "component": "/brd/product-manager/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Business Rules",
+      "title": "Product Manager",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1533,14 +126,14 @@
     "order": 3
   },
   {
-    "key": "menu_brdAcceptance",
-    "path": "/brd/brd-acceptance",
-    "name": "brdAcceptance",
-    "component": "/brd/brd-acceptance/index",
+    "key": "menu_brdAiEngineer",
+    "path": "/brd/ai-engineer",
+    "name": "brdAiEngineer",
+    "component": "/brd/ai-engineer/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Acceptance Criteria",
+      "title": "AI Engineer",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1551,14 +144,14 @@
     "order": 4
   },
   {
-    "key": "menu_brdMilestones",
-    "path": "/brd/brd-milestones",
-    "name": "brdMilestones",
-    "component": "/brd/brd-milestones/index",
+    "key": "menu_brdNewHire",
+    "path": "/brd/new-hire",
+    "name": "brdNewHire",
+    "component": "/brd/new-hire/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Milestones",
+      "title": "New Hire",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1569,14 +162,14 @@
     "order": 5
   },
   {
-    "key": "menu_brdApprovals",
-    "path": "/brd/brd-approvals",
-    "name": "brdApprovals",
-    "component": "/brd/brd-approvals/index",
+    "key": "menu_brdKnowledgeCurator",
+    "path": "/brd/knowledge-curator",
+    "name": "brdKnowledgeCurator",
+    "component": "/brd/knowledge-curator/index",
     "redirect": "",
     "meta": {
       "icon": "Menu",
-      "title": "Approval Records",
+      "title": "Knowledge Curator",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1587,13 +180,769 @@
     "order": 6
   },
   {
+    "key": "menu_brdExecutive",
+    "path": "/brd/executive",
+    "name": "brdExecutive",
+    "component": "/brd/executive/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Executive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 7
+  },
+  {
+    "key": "menu_brdOncallSre",
+    "path": "/brd/oncall-sre",
+    "name": "brdOncallSre",
+    "component": "/brd/oncall-sre/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Oncall SRE",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/brd",
+    "order": 8
+  },
+  {
+    "key": "menu_codeReview",
+    "path": "/code-review",
+    "name": "codeReview",
+    "component": "",
+    "redirect": "/code-review/index",
+    "meta": {
+      "icon": "DocumentChecked",
+      "title": "Code Review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 3
+  },
+  {
+    "key": "menu_crReviewHub",
+    "path": "/code-review/index",
+    "name": "crReviewHub",
+    "component": "/code-review/index/index",
+    "redirect": "",
+    "meta": {
+      "icon": "DataAnalysis",
+      "title": "Review Hub",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 0
+  },
+  {
+    "key": "menu_crSummary",
+    "path": "/code-review/summary",
+    "name": "crSummary",
+    "component": "/code-review/summary/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Summarize this file",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 1
+  },
+  {
+    "key": "menu_crBugs",
+    "path": "/code-review/bugs",
+    "name": "crBugs",
+    "component": "/code-review/bugs/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Find potential bugs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 2
+  },
+  {
+    "key": "menu_crExplain",
+    "path": "/code-review/explain",
+    "name": "crExplain",
+    "component": "/code-review/explain/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Explain the logic",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 3
+  },
+  {
+    "key": "menu_crSecurity",
+    "path": "/code-review/security",
+    "name": "crSecurity",
+    "component": "/code-review/security/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Security review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 4
+  },
+  {
+    "key": "menu_crDependencyRisk",
+    "path": "/code-review/dependency-risk",
+    "name": "crDependencyRisk",
+    "component": "/code-review/dependency-risk/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dependency risk",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 5
+  },
+  {
+    "key": "menu_crAccessReview",
+    "path": "/code-review/access-review",
+    "name": "crAccessReview",
+    "component": "/code-review/access-review/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Access review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 6
+  },
+  {
+    "key": "menu_crRefactor",
+    "path": "/code-review/refactor",
+    "name": "crRefactor",
+    "component": "/code-review/refactor/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Refactor suggestions",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 7
+  },
+  {
+    "key": "menu_crPerf",
+    "path": "/code-review/perf",
+    "name": "crPerf",
+    "component": "/code-review/perf/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Performance analysis",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 8
+  },
+  {
+    "key": "menu_crTests",
+    "path": "/code-review/tests",
+    "name": "crTests",
+    "component": "/code-review/tests/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Generate tests",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 9
+  },
+  {
+    "key": "menu_crStyle",
+    "path": "/code-review/style",
+    "name": "crStyle",
+    "component": "/code-review/style/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Naming & style",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 10
+  },
+  {
+    "key": "menu_crApiContract",
+    "path": "/code-review/api-contract",
+    "name": "crApiContract",
+    "component": "/code-review/api-contract/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "API contract check",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 11
+  },
+  {
+    "key": "menu_crObservabilityGap",
+    "path": "/code-review/observability-gap",
+    "name": "crObservabilityGap",
+    "component": "/code-review/observability-gap/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Observability gap",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 12
+  },
+  {
+    "key": "menu_crConcurrency",
+    "path": "/code-review/concurrency",
+    "name": "crConcurrency",
+    "component": "/code-review/concurrency/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Concurrency review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 13
+  },
+  {
+    "key": "menu_crErrorHandling",
+    "path": "/code-review/error-handling",
+    "name": "crErrorHandling",
+    "component": "/code-review/error-handling/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Error handling review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 14
+  },
+  {
+    "key": "menu_crDeadCode",
+    "path": "/code-review/dead-code",
+    "name": "crDeadCode",
+    "component": "/code-review/dead-code/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dead code review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 15
+  },
+  {
+    "key": "menu_crBackwardCompat",
+    "path": "/code-review/backward-compat",
+    "name": "crBackwardCompat",
+    "component": "/code-review/backward-compat/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Backward compat review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 16
+  },
+  {
+    "key": "menu_crI18nA11y",
+    "path": "/code-review/i18n-a11y",
+    "name": "crI18nA11y",
+    "component": "/code-review/i18n-a11y/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "i18n / a11y review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/code-review",
+    "order": 17
+  },
+  {
+    "key": "menu_techLeadership",
+    "path": "/tech-leadership",
+    "name": "techLeadership",
+    "component": "",
+    "redirect": "/tech-leadership/index",
+    "meta": {
+      "icon": "Monitor",
+      "title": "Tech Leadership",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 4
+  },
+  {
+    "key": "menu_tlrReviewHub",
+    "path": "/tech-leadership/index",
+    "name": "tlrReviewHub",
+    "component": "/tech-leadership/index/index",
+    "redirect": "",
+    "meta": {
+      "icon": "DataAnalysis",
+      "title": "Review Hub",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 0
+  },
+  {
+    "key": "menu_tlrAdrReview",
+    "path": "/tech-leadership/adr-review",
+    "name": "tlrAdrReview",
+    "component": "/tech-leadership/adr-review/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Architecture Decision Records",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 1
+  },
+  {
+    "key": "menu_tlrTechSelection",
+    "path": "/tech-leadership/tech-selection",
+    "name": "tlrTechSelection",
+    "component": "/tech-leadership/tech-selection/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tech Selection Evaluation",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 2
+  },
+  {
+    "key": "menu_tlrTechDebt",
+    "path": "/tech-leadership/tech-debt",
+    "name": "tlrTechDebt",
+    "component": "/tech-leadership/tech-debt/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Tech Debt Inventory",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 3
+  },
+  {
+    "key": "menu_tlrRiskRegister",
+    "path": "/tech-leadership/risk-register",
+    "name": "tlrRiskRegister",
+    "component": "/tech-leadership/risk-register/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Risk Register",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 4
+  },
+  {
+    "key": "menu_tlrPostmortem",
+    "path": "/tech-leadership/postmortem",
+    "name": "tlrPostmortem",
+    "component": "/tech-leadership/postmortem/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Postmortems",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 5
+  },
+  {
+    "key": "menu_tlrOncallHandover",
+    "path": "/tech-leadership/oncall-handover",
+    "name": "tlrOncallHandover",
+    "component": "/tech-leadership/oncall-handover/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Oncall Handover",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 6
+  },
+  {
+    "key": "menu_tlrOrgDiagnose",
+    "path": "/tech-leadership/org-diagnose",
+    "name": "tlrOrgDiagnose",
+    "component": "/tech-leadership/org-diagnose/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Org Diagnose",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 7
+  },
+  {
+    "key": "menu_tlrDependencyAudit",
+    "path": "/tech-leadership/dependency-audit",
+    "name": "tlrDependencyAudit",
+    "component": "/tech-leadership/dependency-audit/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dependency Audit",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 8
+  },
+  {
+    "key": "menu_tlrRoadmapReview",
+    "path": "/tech-leadership/roadmap-review",
+    "name": "tlrRoadmapReview",
+    "component": "/tech-leadership/roadmap-review/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Roadmap Review",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 9
+  },
+  {
+    "key": "menu_tlrCapacityPlan",
+    "path": "/tech-leadership/capacity-plan",
+    "name": "tlrCapacityPlan",
+    "component": "/tech-leadership/capacity-plan/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Capacity Plan",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 10
+  },
+  {
+    "key": "menu_tlrCapacityCost",
+    "path": "/tech-leadership/capacity-cost",
+    "name": "tlrCapacityCost",
+    "component": "/tech-leadership/capacity-cost/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Capacity & Cost (FinOps)",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 11
+  },
+  {
+    "key": "menu_tlrMaturityModel",
+    "path": "/tech-leadership/maturity-model",
+    "name": "tlrMaturityModel",
+    "component": "/tech-leadership/maturity-model/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Maturity Model",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 12
+  },
+  {
+    "key": "menu_tlrDoraMetrics",
+    "path": "/tech-leadership/dora-metrics",
+    "name": "tlrDoraMetrics",
+    "component": "/tech-leadership/dora-metrics/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "DORA Metrics",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 13
+  },
+  {
+    "key": "menu_tlrMentorshipGrowth",
+    "path": "/tech-leadership/mentorship-growth",
+    "name": "tlrMentorshipGrowth",
+    "component": "/tech-leadership/mentorship-growth/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Mentorship & Growth",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 14
+  },
+  {
+    "key": "menu_tlrProjectHandoffs",
+    "path": "/tech-leadership/project-handoffs",
+    "name": "tlrProjectHandoffs",
+    "component": "/tech-leadership/project-handoffs/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Project Handoffs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 15
+  },
+  {
+    "key": "menu_tlrDependencyAdoption",
+    "path": "/tech-leadership/dependency-adoption",
+    "name": "tlrDependencyAdoption",
+    "component": "/tech-leadership/dependency-adoption/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dependency Adoption",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 16
+  },
+  {
+    "key": "menu_tlrProjectBootstrap",
+    "path": "/tech-leadership/project-bootstrap",
+    "name": "tlrProjectBootstrap",
+    "component": "/tech-leadership/project-bootstrap/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Project Bootstrap",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 17
+  },
+  {
+    "key": "menu_tlrKnowledgeEvolution",
+    "path": "/tech-leadership/knowledge-evolution",
+    "name": "tlrKnowledgeEvolution",
+    "component": "/tech-leadership/knowledge-evolution/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Knowledge Evolution",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/tech-leadership",
+    "order": 18
+  },
+  {
+    "key": "menu_resume",
+    "path": "/resume",
+    "name": "resume",
+    "component": "/resume/index",
+    "redirect": "",
+    "meta": {
+      "icon": "UserFilled",
+      "title": "FDE Resume",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 5
+  },
+  {
     "key": "menu_storyBoard",
     "path": "/story",
     "name": "storyBoard",
     "component": "/story/index",
     "redirect": "",
     "meta": {
-      "icon": "Document",
+      "icon": "Tickets",
       "title": "Story Board",
       "isLink": "",
       "isHide": false,
@@ -1602,17 +951,17 @@
       "isKeepAlive": true
     },
     "parent": null,
-    "order": 98
+    "order": 6
   },
   {
-    "key": "menu_ragPlayground",
-    "path": "/rag",
-    "name": "ragPlayground",
-    "component": "/rag/index",
-    "redirect": "",
+    "key": "menu_rssFeeds",
+    "path": "/rss",
+    "name": "rssFeeds",
+    "component": "",
+    "redirect": "/rss/all",
     "meta": {
-      "icon": "MagicStick",
-      "title": "RAG Playground",
+      "icon": "Link",
+      "title": "RSS Feeds",
       "isLink": "",
       "isHide": false,
       "isFull": false,
@@ -1620,6 +969,222 @@
       "isKeepAlive": true
     },
     "parent": null,
-    "order": 99
+    "order": 7
+  },
+  {
+    "key": "menu_rssAll",
+    "path": "/rss/all",
+    "name": "rssAll",
+    "component": "/rss/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "All Items",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rss",
+    "order": 0
+  },
+  {
+    "key": "menu_rssStarred",
+    "path": "/rss/starred",
+    "name": "rssStarred",
+    "component": "/rss/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Star",
+      "title": "Starred",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rss",
+    "order": 1
+  },
+  {
+    "key": "menu_rssUnread",
+    "path": "/rss/unread",
+    "name": "rssUnread",
+    "component": "/rss/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Reading",
+      "title": "Unread",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rss",
+    "order": 2
+  },
+  {
+    "key": "menu_rssScheduler",
+    "path": "/rss/scheduler",
+    "name": "rssScheduler",
+    "component": "/rss/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Setting",
+      "title": "Scheduler & Seeds",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rss",
+    "order": 3
+  },
+  {
+    "key": "menu_system",
+    "path": "/system",
+    "name": "system",
+    "component": "",
+    "redirect": "/system/menuMange",
+    "meta": {
+      "icon": "Tools",
+      "title": "System Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 8
+  },
+  {
+    "key": "menu_systemMenuMange",
+    "path": "/system/menuMange",
+    "name": "systemMenuMange",
+    "component": "/system/menuMange/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 0
+  },
+  {
+    "key": "menu_systemAccountManage",
+    "path": "/system/accountManage",
+    "name": "systemAccountManage",
+    "component": "/system/accountManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Account Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 1
+  },
+  {
+    "key": "menu_systemRoleManage",
+    "path": "/system/roleManage",
+    "name": "systemRoleManage",
+    "component": "/system/roleManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Role Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 2
+  },
+  {
+    "key": "menu_systemDepartmentManage",
+    "path": "/system/departmentManage",
+    "name": "systemDepartmentManage",
+    "component": "/system/departmentManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Department Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 3
+  },
+  {
+    "key": "menu_systemDictManage",
+    "path": "/system/dictManage",
+    "name": "systemDictManage",
+    "component": "/system/dictManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dictionary Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 4
+  },
+  {
+    "key": "menu_systemSystemLog",
+    "path": "/system/systemLog",
+    "name": "systemSystemLog",
+    "component": "/system/systemLog/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "System Logs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 5
+  },
+  {
+    "key": "menu_systemTimingTask",
+    "path": "/system/timingTask",
+    "name": "systemTimingTask",
+    "component": "/system/timingTask/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Scheduled Tasks",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 6
   }
 ]

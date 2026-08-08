@@ -100,19 +100,19 @@ if (okAdmin) {
   $$.mockResponse.setBody({
     code: 200,
     data: MockJs.mock({ access_token: '${ADMIN_TOKEN}' }),
-    msg: 'success'
+    msg: '成功'
   });
 } else if (okUser) {
   $$.mockResponse.setBody({
     code: 200,
     data: MockJs.mock({ access_token: '${USER_TOKEN}' }),
-    msg: 'success'
+    msg: '成功'
   });
 } else {
   $$.mockResponse.setBody({
     code: 500,
     data: null,
-    msg: 'invalid username or password'
+    msg: '用户名或密码错误'
   });
 }
 $$.mockResponse.setCode(200);
@@ -126,7 +126,7 @@ if (token === '${ADMIN_TOKEN}') {
 } else if (token === '${USER_TOKEN}') {
   data = ${JSON.stringify(buttonsUser, null, 2)};
 }
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
 $$.mockResponse.setCode(200);
 `;
 
@@ -138,7 +138,7 @@ if (token === '${ADMIN_TOKEN}') {
 } else if (token === '${USER_TOKEN}') {
   data = ${JSON.stringify(menuUser)};
 }
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
 $$.mockResponse.setCode(200);
 `;
 
@@ -149,7 +149,7 @@ $$.mockResponse.setBody({
   data: MockJs.mock({
     'fileUrl|1': ${JSON.stringify(AVATARS)}
   }),
-  msg: 'success'
+  msg: '成功'
 });
 $$.mockResponse.setCode(200);
 `;
@@ -225,7 +225,7 @@ if (query.username || query.gender || query.age || query.idCard || query.email |
     "total": 2000
   });
 }
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
 $$.mockResponse.setCode(200);
 `;
 
@@ -270,7 +270,7 @@ if (query.username || query.gender || query.age || query.idCard || query.email |
     "total": 2000
   });
 }
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
 $$.mockResponse.setCode(200);
 `;
 
@@ -304,7 +304,7 @@ if (query.pageSize > 10) {
     "total": 18
   });
 }
-$$.mockResponse.setBody({ code: 200, data: data, msg: 'success' });
+$$.mockResponse.setBody({ code: 200, data: data, msg: '成功' });
 $$.mockResponse.setCode(200);
 `;
 
@@ -321,7 +321,7 @@ const ResultSchema = {
   properties: {
     code: { type: 'integer', example: 200 },
     data: {},
-    msg: { type: 'string', example: 'success' },
+    msg: { type: 'string', example: '成功' },
   },
 };
 
@@ -334,7 +334,7 @@ function op({ summary, folder, method, requestBody, responses, scriptKey, descri
     'x-apifox-status': 'released',
     responses: responses || {
       '200': {
-        description: 'success',
+        description: '成功',
         content: {
           'application/json': {
             schema: ResultSchema,
@@ -347,8 +347,8 @@ function op({ summary, folder, method, requestBody, responses, scriptKey, descri
   if (scriptKey && scripts[scriptKey]) {
     o.description =
       (o.description ? o.description + '\n\n' : '') +
-      `> Apifox advanced mock script at \`mock-scripts/${scriptKey}.js\` (paste into Advanced Mock → Script and toggle on after import)`;
-    // Apifox custom extension: recognized by some versions; harmless if unsupported
+      `> Apifox 高级 Mock 脚本见 \`mock-scripts/${scriptKey}.js\`（导入后粘贴到「高级 Mock → 脚本」并开启）`;
+    // Apifox 自定义扩展：部分版本可识别，无法识别时不影响导入
     o['x-apifox'] = {
       mockScript: {
         enable: true,
@@ -381,9 +381,9 @@ function jsonResp(example, examples) {
   else if (example !== undefined) content['application/json'].example = example;
   return {
     '200': {
-      description: 'success',
+      description: '成功',
       content,
-      'x-apifox-name': 'success',
+      'x-apifox-name': '成功',
     },
   };
 }
@@ -391,8 +391,8 @@ function jsonResp(example, examples) {
 const paths = {
   '/geeker/login': {
     post: op({
-      summary: 'User login',
-      folder: 'Auth',
+      summary: '用户登录',
+      folder: '认证',
       scriptKey: 'login',
       requestBody: jsonBody(
         { username: 'admin', password: PWD_MD5 },
@@ -401,73 +401,73 @@ const paths = {
           required: ['username', 'password'],
           properties: {
             username: { type: 'string' },
-            password: { type: 'string', description: 'MD5(plaintext password); demo password is 123456' },
+            password: { type: 'string', description: 'MD5(明文密码)，演示密码 123456 的 MD5' },
           },
         }
       ),
       responses: jsonResp(undefined, {
         adminSuccess: {
-          summary: 'admin login success',
-          value: { code: 200, data: { access_token: ADMIN_TOKEN }, msg: 'success' },
+          summary: 'admin 登录成功',
+          value: { code: 200, data: { access_token: ADMIN_TOKEN }, msg: '成功' },
         },
         userSuccess: {
-          summary: 'user login success',
-          value: { code: 200, data: { access_token: USER_TOKEN }, msg: 'success' },
+          summary: 'user 登录成功',
+          value: { code: 200, data: { access_token: USER_TOKEN }, msg: '成功' },
         },
         fail: {
-          summary: 'invalid username or password',
-          value: { code: 500, data: null, msg: 'invalid username or password' },
+          summary: '用户名或密码错误',
+          value: { code: 500, data: null, msg: '用户名或密码错误' },
         },
       }),
     }),
   },
   '/geeker/logout': {
     post: op({
-      summary: 'Logout',
-      folder: 'Auth',
+      summary: '退出登录',
+      folder: '认证',
       responses: jsonResp(staticResponses.logout),
     }),
   },
   '/geeker/menu/list': {
     get: op({
-      summary: 'Get menu list',
-      folder: 'Auth',
+      summary: '获取菜单列表',
+      folder: '认证',
       scriptKey: 'menu-list',
-      description: 'Returns different menus based on the x-access-token header (admin / user)',
+      description: '根据请求头 x-access-token 返回不同菜单（admin / user）',
       responses: jsonResp(undefined, {
         admin: {
-          summary: 'admin menu',
-          value: { code: 200, data: menuAdmin, msg: 'success' },
+          summary: 'admin 菜单',
+          value: { code: 200, data: menuAdmin, msg: '成功' },
         },
         user: {
-          summary: 'user menu',
-          value: { code: 200, data: menuUser, msg: 'success' },
+          summary: 'user 菜单',
+          value: { code: 200, data: menuUser, msg: '成功' },
         },
       }),
     }),
   },
   '/geeker/auth/buttons': {
     get: op({
-      summary: 'Get button permissions',
-      folder: 'Auth',
+      summary: '获取按钮权限',
+      folder: '认证',
       scriptKey: 'auth-buttons',
-      description: 'Returns different button permissions based on the x-access-token header',
+      description: '根据请求头 x-access-token 返回不同按钮权限',
       responses: jsonResp(undefined, {
         admin: {
-          summary: 'admin button permissions',
-          value: { code: 200, data: buttonsAdmin, msg: 'success' },
+          summary: 'admin 按钮权限',
+          value: { code: 200, data: buttonsAdmin, msg: '成功' },
         },
         user: {
-          summary: 'user button permissions',
-          value: { code: 200, data: buttonsUser, msg: 'success' },
+          summary: 'user 按钮权限',
+          value: { code: 200, data: buttonsUser, msg: '成功' },
         },
       }),
     }),
   },
   '/geeker/user/list': {
     post: op({
-      summary: 'Get user list',
-      folder: 'User Management',
+      summary: '获取用户列表',
+      folder: '用户管理',
       scriptKey: 'user-list',
       requestBody: jsonBody({
         pageNum: 1,
@@ -481,59 +481,59 @@ const paths = {
       responses: jsonResp({
         code: 200,
         data: { list: [], pageNum: 1, pageSize: 10, total: 2000 },
-        msg: 'success',
+        msg: '成功',
       }),
     }),
   },
   '/geeker/user/tree/list': {
     post: op({
-      summary: 'Get tree-shaped user list',
-      folder: 'User Management',
+      summary: '获取树形用户列表',
+      folder: '用户管理',
       scriptKey: 'user-tree-list',
       requestBody: jsonBody({ pageNum: 1, pageSize: 10 }),
       responses: jsonResp({
         code: 200,
         data: { list: [], pageNum: 1, pageSize: 10, total: 2000 },
-        msg: 'success',
+        msg: '成功',
       }),
     }),
   },
   '/geeker/user/add': {
     post: op({
-      summary: 'Add user',
-      folder: 'User Management',
+      summary: '新增用户',
+      folder: '用户管理',
       requestBody: jsonBody({ id: '1' }),
       responses: jsonResp(staticResponses.user_add),
     }),
   },
   '/geeker/user/edit': {
     post: op({
-      summary: 'Edit user',
-      folder: 'User Management',
+      summary: '编辑用户',
+      folder: '用户管理',
       requestBody: jsonBody({}),
       responses: jsonResp(staticResponses.user_edit),
     }),
   },
   '/geeker/user/delete': {
     post: op({
-      summary: 'Delete user',
-      folder: 'User Management',
+      summary: '删除用户',
+      folder: '用户管理',
       requestBody: jsonBody({}),
       responses: jsonResp(staticResponses.user_delete),
     }),
   },
   '/geeker/user/change': {
     post: op({
-      summary: 'Toggle user status',
-      folder: 'User Management',
+      summary: '切换用户状态',
+      folder: '用户管理',
       requestBody: jsonBody({}),
       responses: jsonResp(staticResponses.user_change),
     }),
   },
   '/geeker/user/import': {
     post: op({
-      summary: 'Import users',
-      folder: 'User Management',
+      summary: '导入用户',
+      folder: '用户管理',
       requestBody: {
         required: true,
         content: {
@@ -547,65 +547,65 @@ const paths = {
   },
   '/geeker/user/export': {
     post: op({
-      summary: 'Export users',
-      folder: 'User Management',
+      summary: '导出用户',
+      folder: '用户管理',
       requestBody: jsonBody({}),
       responses: jsonResp(staticResponses.user_export),
     }),
   },
   '/geeker/user/rest_password': {
     post: op({
-      summary: 'Reset password',
-      folder: 'User Management',
+      summary: '重置密码',
+      folder: '用户管理',
       requestBody: jsonBody({}),
       responses: jsonResp(staticResponses.user_rest_password),
     }),
   },
   '/geeker/user/status': {
     get: op({
-      summary: 'User status dictionary',
-      folder: 'User Management',
+      summary: '用户状态字典',
+      folder: '用户管理',
       responses: jsonResp(staticResponses.user_status),
     }),
   },
   '/geeker/user/gender': {
     get: op({
-      summary: 'User gender dictionary',
-      folder: 'User Management',
+      summary: '用户性别字典',
+      folder: '用户管理',
       responses: jsonResp(staticResponses.user_gender),
     }),
   },
   '/geeker/user/department': {
     get: op({
-      summary: 'Department tree',
-      folder: 'User Management',
+      summary: '部门树',
+      folder: '用户管理',
       responses: jsonResp(staticResponses.user_department),
     }),
   },
   '/geeker/user/role': {
     get: op({
-      summary: 'Role list',
-      folder: 'User Management',
+      summary: '角色列表',
+      folder: '用户管理',
       responses: jsonResp(staticResponses.user_role),
     }),
   },
   '/geeker/account/list': {
     post: op({
-      summary: 'Account list',
-      folder: 'Account Management',
+      summary: '账号列表',
+      folder: '账号管理',
       scriptKey: 'account-list',
       requestBody: jsonBody({ pageNum: 1, pageSize: 10 }),
       responses: jsonResp({
         code: 200,
         data: { datalist: [], pageNum: 1, pageSize: 10, total: 18 },
-        msg: 'success',
+        msg: '成功',
       }),
     }),
   },
   '/geeker/file/upload/img': {
     post: op({
-      summary: 'Upload image',
-      folder: 'File Upload',
+      summary: '上传图片',
+      folder: '文件上传',
       scriptKey: 'file-upload-img',
       requestBody: {
         required: true,
@@ -618,14 +618,14 @@ const paths = {
       responses: jsonResp({
         code: 200,
         data: { fileUrl: AVATARS[0] },
-        msg: 'success',
+        msg: '成功',
       }),
     }),
   },
   '/geeker/file/upload/video': {
     post: op({
-      summary: 'Upload video',
-      folder: 'File Upload',
+      summary: '上传视频',
+      folder: '文件上传',
       requestBody: {
         required: true,
         content: {
@@ -658,40 +658,40 @@ const openapi = {
   info: {
     title: 'Geeker-Admin Mock API',
     description: [
-      'Migrated from Easy-Mock (geeker) to Apifox.',
+      '从 Easy-Mock（geeker）迁移到 Apifox。',
       '',
-      '## Import guide',
-      '1. Apifox → Project Settings → Import Data → OpenAPI/Swagger → select `geeker.openapi.json`',
-      '2. Recommended options: import Servers as environments; conflict handling — overwrite existing endpoints (first import) or smart merge',
-      '3. For dynamic-logic endpoints: open "Advanced Mock → Script", paste the content of `mock-scripts/*.js`, and toggle on',
+      '## 导入说明',
+      '1. Apifox → 项目设置 → 导入数据 → OpenAPI/Swagger → 选择本文件 `geeker.openapi.json`',
+      '2. 建议开启：导入 Servers 为环境；冲突处理选「覆盖已有接口」或「智能合并」',
+      '3. 有动态逻辑的接口：打开「高级 Mock → 脚本」，粘贴同目录 `mock-scripts/*.js` 内容并开启开关',
       '',
-      '## Accounts',
-      `- admin / 123456 (body.password is MD5: ${PWD_MD5}) → token: ${ADMIN_TOKEN}`,
-      `- user / 123456 (same as above) → token: ${USER_TOKEN}`,
+      '## 账号',
+      `- admin / 123456（body.password 为 MD5: ${PWD_MD5}）→ token: ${ADMIN_TOKEN}`,
+      `- user / 123456（同上）→ token: ${USER_TOKEN}`,
       '',
-      '## Proxy',
-      'Original Easy-Mock base URL: `https://mock.mengxuegu.com/mock/629d727e6163854a32e8307e`',
-      'After import, change `VITE_PROXY` in `.env.development` to the Apifox Mock URL.',
+      '## 代理',
+      '原 Easy-Mock 基址：`https://mock.mengxuegu.com/mock/629d727e6163854a32e8307e`',
+      '导入后把 `.env.development` 的 `VITE_PROXY` 改为 Apifox Mock 地址即可。',
     ].join('\n'),
     version: '1.0.0',
   },
   servers: [
     {
       url: 'https://mock.apifox.cn/m1/{projectId}',
-      description: 'Apifox cloud Mock (replace projectId after import)',
+      description: 'Apifox 云端 Mock（导入后替换 projectId）',
       variables: { projectId: { default: 'YOUR_PROJECT_ID' } },
     },
     {
       url: 'http://127.0.0.1:4523/m1/{projectId}',
-      description: 'Apifox local Mock',
+      description: 'Apifox 本地 Mock',
       variables: { projectId: { default: 'YOUR_PROJECT_ID' } },
     },
   ],
   tags: [
-    { name: 'Auth' },
-    { name: 'User Management' },
-    { name: 'Account Management' },
-    { name: 'File Upload' },
+    { name: '认证' },
+    { name: '用户管理' },
+    { name: '账号管理' },
+    { name: '文件上传' },
   ],
   paths,
   components: {
@@ -700,7 +700,7 @@ const openapi = {
         type: 'apiKey',
         in: 'header',
         name: 'x-access-token',
-        description: 'access_token returned by the login endpoint',
+        description: '登录接口返回的 access_token',
       },
     },
     schemas: {
@@ -715,52 +715,52 @@ fs.writeFileSync(openapiPath, JSON.stringify(openapi, null, 2));
 // Also write a expectations helper JSON for login/menu/buttons (optional manual create)
 const expectations = {
   _comment:
-    'Optional: create manually in Apifox under "Advanced Mock → Expectations" by condition. For dynamic list endpoints, prefer mock-scripts.',
+    '可选：在 Apifox「高级 Mock → 期望」中按条件创建。动态列表类接口请优先使用 mock-scripts。',
   login: [
     {
-      name: 'admin success',
+      name: 'admin 成功',
       conditions: [
         { type: 'body', paramName: 'username', comparator: 'eq', value: 'admin' },
         { type: 'body', paramName: 'password', comparator: 'eq', value: PWD_MD5 },
       ],
-      body: { code: 200, data: { access_token: ADMIN_TOKEN }, msg: 'success' },
+      body: { code: 200, data: { access_token: ADMIN_TOKEN }, msg: '成功' },
     },
     {
-      name: 'user success',
+      name: 'user 成功',
       conditions: [
         { type: 'body', paramName: 'username', comparator: 'eq', value: 'user' },
         { type: 'body', paramName: 'password', comparator: 'eq', value: PWD_MD5 },
       ],
-      body: { code: 200, data: { access_token: USER_TOKEN }, msg: 'success' },
+      body: { code: 200, data: { access_token: USER_TOKEN }, msg: '成功' },
     },
     {
-      name: 'failure',
+      name: '失败',
       conditions: [],
-      body: { code: 500, data: null, msg: 'invalid username or password' },
+      body: { code: 500, data: null, msg: '用户名或密码错误' },
     },
   ],
   'menu/list': [
     {
-      name: 'admin menu',
+      name: 'admin 菜单',
       conditions: [{ type: 'header', paramName: 'x-access-token', comparator: 'eq', value: ADMIN_TOKEN }],
-      body: { code: 200, data: menuAdmin, msg: 'success' },
+      body: { code: 200, data: menuAdmin, msg: '成功' },
     },
     {
-      name: 'user menu',
+      name: 'user 菜单',
       conditions: [{ type: 'header', paramName: 'x-access-token', comparator: 'eq', value: USER_TOKEN }],
-      body: { code: 200, data: menuUser, msg: 'success' },
+      body: { code: 200, data: menuUser, msg: '成功' },
     },
   ],
   'auth/buttons': [
     {
-      name: 'admin buttons',
+      name: 'admin 按钮',
       conditions: [{ type: 'header', paramName: 'x-access-token', comparator: 'eq', value: ADMIN_TOKEN }],
-      body: { code: 200, data: buttonsAdmin, msg: 'success' },
+      body: { code: 200, data: buttonsAdmin, msg: '成功' },
     },
     {
-      name: 'user buttons',
+      name: 'user 按钮',
       conditions: [{ type: 'header', paramName: 'x-access-token', comparator: 'eq', value: USER_TOKEN }],
-      body: { code: 200, data: buttonsUser, msg: 'success' },
+      body: { code: 200, data: buttonsUser, msg: '成功' },
     },
   ],
 };

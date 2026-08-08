@@ -2,6 +2,22 @@
   "code": 200,
   "data": [
     {
+      "path": "/home/index",
+      "name": "home",
+      "component": "/home/index",
+      "redirect": "",
+      "meta": {
+        "icon": "HomeFilled",
+        "title": "Home",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": true,
+        "isKeepAlive": true
+      },
+      "children": []
+    },
+    {
       "path": "/knowledge",
       "name": "knowledgeHub",
       "component": "/knowledge/index",
@@ -907,6 +923,135 @@
           "meta": {
             "icon": "Setting",
             "title": "Scheduler & Seeds",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "path": "/system",
+      "name": "system",
+      "component": "",
+      "redirect": "/system/menuMange",
+      "meta": {
+        "icon": "Tools",
+        "title": "System Management",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/system/menuMange",
+          "name": "systemMenuMange",
+          "component": "/system/menuMange/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Menu Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/accountManage",
+          "name": "systemAccountManage",
+          "component": "/system/accountManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Account Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/roleManage",
+          "name": "systemRoleManage",
+          "component": "/system/roleManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Role Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/departmentManage",
+          "name": "systemDepartmentManage",
+          "component": "/system/departmentManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Department Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/dictManage",
+          "name": "systemDictManage",
+          "component": "/system/dictManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Dictionary Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/systemLog",
+          "name": "systemSystemLog",
+          "component": "/system/systemLog/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "System Logs",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/system/timingTask",
+          "name": "systemTimingTask",
+          "component": "/system/timingTask/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Scheduled Tasks",
             "isLink": "",
             "isHide": false,
             "isFull": false,

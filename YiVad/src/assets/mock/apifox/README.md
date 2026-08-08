@@ -1,26 +1,26 @@
-# Geeker Easy-Mock → Apifox migration package
+# Geeker Easy-Mock → Apifox 迁移包
 
-Converted from `src/assets/mock/geeker/` (original Easy-Mock). **Endpoint paths / methods / response logic are preserved.**
+从 `src/assets/mock/geeker/`（原 Easy-Mock）转换而来，**接口路径 / 方法 / 响应逻辑保持一致**。
 
-## Files
+## 文件说明
 
-| File | Purpose |
+| 文件 | 用途 |
 | --- | --- |
-| `geeker.openapi.json` | **Main import file** (OpenAPI 3.0, Apifox-import compatible) |
-| `mock-scripts/*.js` | "Advanced Mock → Script" for dynamic endpoints (preserves original Easy-Mock branch logic) |
-| `geeker.mock-expectations.json` | Optional reference: expectation conditions for login / menu / button |
-| `generate.mjs` | Regeneration script (re-run after editing geeker source files) |
+| `geeker.openapi.json` | **主导入文件**（OpenAPI 3.0，符合 Apifox 导入规范） |
+| `mock-scripts/*.js` | 动态接口的「高级 Mock → 脚本」（保留原 Easy-Mock 分支逻辑） |
+| `geeker.mock-expectations.json` | 可选参考：登录 / 菜单 / 按钮的期望条件说明 |
+| `generate.mjs` | 重新生成脚本（改了 geeker 源文件后可再跑一遍） |
 
-## Import steps (Apifox)
+## 导入步骤（Apifox）
 
-1. Open Apifox project → **Project Settings → Import Data → OpenAPI / Swagger**
-2. Select `geeker.openapi.json` from this directory
-3. Recommended options:
-   - Import Servers as environments: enabled
-   - Endpoint conflict: overwrite existing (first import) or smart merge
-4. After import, open **Advanced Mock → Script** for the dynamic endpoints below, paste the corresponding `.js` content, and **toggle the switch on**:
+1. 打开 Apifox 项目 → **项目设置 → 导入数据 → OpenAPI / Swagger**
+2. 选择本目录下的 `geeker.openapi.json`
+3. 建议选项：
+   - 导入 Servers 为环境：开启
+   - 接口冲突：覆盖已有接口（首次导入）或智能合并
+4. 导入完成后，对下列动态接口打开 **高级 Mock → 脚本**，粘贴对应 `.js` 内容并**打开开关**：
 
-| Endpoint | Script file |
+| 接口 | 脚本文件 |
 | --- | --- |
 | `POST /geeker/login` | `mock-scripts/login.js` |
 | `GET /geeker/menu/list` | `mock-scripts/menu-list.js` |
@@ -30,34 +30,34 @@ Converted from `src/assets/mock/geeker/` (original Easy-Mock). **Endpoint paths 
 | `POST /geeker/account/list` | `mock-scripts/account-list.js` |
 | `POST /geeker/file/upload/img` | `mock-scripts/file-upload-img.js` |
 
-The remaining static endpoints (logout, CRUD, dictionaries, video upload, etc.) work directly from the imported **response examples** — no script needed.
+其余静态接口（logout、增删改、字典、上传视频等）导入后的**响应示例**即可直接作为 Mock 返回，无需脚本。
 
-> Note: The OpenAPI standard does not carry Mock scripts; the `x-apifox.mockScript` extension is written into the openapi file. If your Apifox version does not auto-recognize it, paste scripts manually per the table above — logic matches the source files.
+> 说明：OpenAPI 标准不携带 Mock 脚本；`x-apifox.mockScript` 扩展已写入 openapi，若你的 Apifox 版本未自动识别，按上表手动粘贴即可，逻辑与源文件一致。
 
-## Wiring the frontend proxy
+## 对接前端代理
 
-Copy the Apifox Mock base URL (cloud or local), then edit `.env.development`:
+复制 Apifox 的 Mock 基址（云端或本地），改 `.env.development`：
 
 ```bash
-# Example: replace the original Easy-Mock URL with the Apifox Mock URL
-VITE_PROXY = [["/api","https://mock.apifox.cn/m1/your-project-id"]]
+# 示例：把原 Easy-Mock 地址换成 Apifox Mock
+VITE_PROXY = [["/api","https://mock.apifox.cn/m1/你的项目ID"]]
 ```
 
-Frontend requests remain `/api` + `/geeker/...`, identical to before.
+前端请求仍是 `/api` + `/geeker/...`，与原来一致。
 
-## Demo accounts (same as original Easy-Mock)
+## 演示账号（与原 Easy-Mock 相同）
 
-| Username | Plaintext password | body.password (MD5) | access_token |
+| 用户名 | 密码明文 | body.password（MD5） | access_token |
 | --- | --- | --- | --- |
 | `admin` | `123456` | `e10adc3949ba59abbe56e057f20f883e` | `bqddxxwqmfncffacvbpkuxvwvqrhln` |
-| `user` | `123456` | same as above | `unufvdotdqxuzfbdygovfmsbftlvbn` |
+| `user` | `123456` | 同上 | `unufvdotdqxuzfbdygovfmsbftlvbn` |
 
-Menu / button permissions still differentiate admin / user via the `x-access-token` request header.
+菜单 / 按钮权限仍按请求头 `x-access-token` 区分 admin / user。
 
-## Regeneration
+## 重新生成
 
 ```bash
 node src/assets/mock/apifox/generate.mjs
 ```
 
-Re-reads Easy-Mock source files from `../geeker/` and overwrites the artifacts in this directory.
+会从 `../geeker/` 重新读取 Easy-Mock 源文件并覆盖本目录产物。
