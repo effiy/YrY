@@ -81,6 +81,9 @@ function rejectConfirmation() {
           <button class="ml-confirmation-btn approve" @click="approveConfirmation">✓ Approve</button>
           <button class="ml-confirmation-btn reject" @click="rejectConfirmation">✕ Reject</button>
         </div>
+        <div class="ml-confirmation-hint">
+          或直接在输入框回复 — 可以/好/yes 批准，不要/取消/no 拒绝
+        </div>
       </div>
     </div>
     <div v-if="store.loading" class="ml-center">
@@ -212,6 +215,12 @@ function rejectConfirmation() {
   display: flex;
   gap: 8px;
   margin-top: 2px;
+}
+
+.ml-confirmation-hint {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
 
 .ml-confirmation-btn {

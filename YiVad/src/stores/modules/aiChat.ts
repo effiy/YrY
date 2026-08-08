@@ -30,6 +30,7 @@ import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 
 import { loadBool, saveBool, loadNum, saveNum, loadStr, saveStr, loadJson, saveJson } from "@/utils/storage";
 import { newKey, readFileAsDataUrl, normalizeSession } from "@/utils/chatNormalizers";
+import { confirmationAnswerFor } from "@/utils/confirmationAnswer";
 
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
 const STORAGE_RAG_KEY = "aiChat.ragEnabled";
@@ -857,6 +858,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     if (!content && !hasImages && !sending.value) return;
 
+    // ── Chat confirmation answer (Pi: natural-language permission) ───
+    // The agent loop pauses up to 120s waiting for a confirmation. Instead of
+    // reaching for the banner button, a plain chat message can answer it: an
+    // affirmative word approves, a rejection rejects. A reject with extra text
+    // beyond the bare keyword carries a correction, so it ALSO steers into the
+    // running loop — the model hears "不要删除，改成 X" instead of only the
+    // rejection. Falls through to the auto-steer below when not an answer.
+    const confirmAnswer = pendingConfirmation.value ? confirmationAnswerFor(content) : null;
+
     // ── Agent auto-steer (Pi: Agent.steer) ───────────────────────────
     // While the agent loop is running, a plain message redirects the loop — it
     // is NOT a new request. The old guard silently dropped it, so a user
@@ -866,6 +876,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (sending.value && agentMode.value && content && !hasImages && !content.startsWith("/")) {
       const convKey = activeConversation.value?.key;
       input.value = "";
+      if (convKey && confirmAnswer) {
+        setActiveMessages(msgs => [...msgs, {
+          type: "user",
+          message: content,
+          timestamp: Date.now(),
+        }]);
+        if (confirmAnswer.action === "approve") {
+          await approvePendingConfirmation();
+          ElMessage.success("已批准该操作");
+        } else {
+          await rejectPendingConfirmation();
+          // Extra text beyond a bare "no" is a correction — let the model hear it.
+          if (!confirmAnswer.bare) {
+            const { steerAgent } = await import("@/api/modules/agentService");
+            await steerAgent(convKey, content);
+          }
+          ElMessage.warning("已拒绝该操作");
+        }
+        return;
+      }
       if (convKey) {
         setActiveMessages(msgs => [...msgs, {
           type: "user",
