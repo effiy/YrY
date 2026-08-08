@@ -1597,6 +1597,42 @@ async def run_agent_loop(
             agent_messages.append(nudge)
             continue
 
+        # Escalate when the no-write nudge was ignored: the run already injected a
+        # "[TASK] … never invoked the write tool" reminder, yet this turn STILL
+        # ends without a mutating tool (observed with a weak model doing read-only
+        # recon — db_schema/db_list — then narrating to completion). A second
+        # identical nudge rarely helps; swap to the fallback "doer" model instead
+        # (Pi-inspired escalation, mirroring the narrate-and-stop path) so the task
+        # can actually complete. Bounded by the same one-per-run `_model_escalated`
+        # flag; a rejected write never re-arms; a user steer wins.
+        if (
+            _task_nudged
+            and not _steering_consumed
+            and not _write_executed
+            and not _write_rejected
+            and not _model_escalated
+            and cfg.model_fallback
+            and _is_write_request(effective_task)
+        ):
+            _model_escalated = True
+            old_model = cfg.model
+            cfg.model = cfg.model_fallback.pop(0)
+            yield await _emit(AgentEvent(
+                type=AgentEventType.MODEL_SWITCH,
+                message={"from": old_model, "to": cfg.model},
+            ), on_event)
+            takeover = (
+                f"[MODEL SWITCH] Your predecessor model {old_model} was asked to "
+                "create/update/delete data but only performed read-only "
+                "reconnaissance (e.g. db_schema/db_list) and never invoked the "
+                "write tool, even after a reminder. You are now "
+                f"{cfg.model} with the same tools and full conversation context. "
+                "Complete the user's data task now — call the write tool "
+                "(db_create/db_update/db_delete); do not stop at reads."
+            )
+            agent_messages.append(AgentMessage(role="user", content=takeover))
+            continue
+
         # Completeness checkpoint: the run *did* execute mutating tool(s) and is
         # about to end, but the task may be only partially done — observed:
         # create+update completed, then the model stopped without the delete step
