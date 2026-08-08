@@ -1,7 +1,7 @@
 /**
  * System management module — backed by the YiAi data-service RPC.
  * Each domain lives in its own MongoDB collection:
- *   menus, departments, roles, dicts, scheduler_status
+ *   menus, dict_department, dict_role, dict_status, dict_gender, scheduler_status
  *
  * `getSchedulerStatus` reads the latest snapshot document from the
  * `scheduler_status` collection (updated by the backend scheduler).
@@ -53,65 +53,29 @@ export function deleteMenu(key: string): Promise<YiAiEnvelope> {
 }
 
 // ── Departments ──
+// Org departments live in the nested `dict_department` collection (the single
+// source of truth). The old flat `departments` collection and its CRUD writers
+// were removed; the read is repointed here.
 
 export async function getDepartmentList(): Promise<YiAiEnvelope<DepartmentDocument[]>> {
   const res = await queryDocuments<DepartmentDocument>({
-    cname: "departments",
-    limit: 1000,
-    orderBy: "createdAt",
-    orderType: "asc"
+    cname: "dict_department",
+    limit: 1000
   });
   return { ...res, data: (res.data?.list ?? []) as DepartmentDocument[] };
 }
 
-export function createDepartment(params: Record<string, any>): Promise<YiAiEnvelope> {
-  const now = Date.now();
-  return createDocument("departments", {
-    ...params,
-    key: params.key || newKey("dept"),
-    id: params.id || params.key || newKey("dept"),
-    createdAt: now,
-    updatedAt: now
-  });
-}
-
-export function updateDepartment(key: string, params: Record<string, any>): Promise<YiAiEnvelope> {
-  return updateDocument("departments", key, { ...params, key, updatedAt: Date.now() });
-}
-
-export function deleteDepartment(key: string): Promise<YiAiEnvelope> {
-  return deleteDocument("departments", key);
-}
-
 // ── Roles ──
+// Org roles live in the nested `dict_role` collection (the single source of
+// truth). The old flat `roles` collection and its CRUD writers were removed;
+// the read is repointed here.
 
 export async function getRoleList(): Promise<YiAiEnvelope<RoleDocument[]>> {
   const res = await queryDocuments<RoleDocument>({
-    cname: "roles",
-    limit: 1000,
-    orderBy: "createdAt",
-    orderType: "asc"
+    cname: "dict_role",
+    limit: 1000
   });
   return { ...res, data: (res.data?.list ?? []) as RoleDocument[] };
-}
-
-export function createRole(params: Record<string, any>): Promise<YiAiEnvelope> {
-  const now = Date.now();
-  return createDocument("roles", {
-    ...params,
-    key: params.key || newKey("role"),
-    id: params.id || params.key || newKey("role"),
-    createdAt: now,
-    updatedAt: now
-  });
-}
-
-export function updateRole(key: string, params: Record<string, any>): Promise<YiAiEnvelope> {
-  return updateDocument("roles", key, { ...params, key, updatedAt: Date.now() });
-}
-
-export function deleteRole(key: string): Promise<YiAiEnvelope> {
-  return deleteDocument("roles", key);
 }
 
 // ── Dictionaries ──

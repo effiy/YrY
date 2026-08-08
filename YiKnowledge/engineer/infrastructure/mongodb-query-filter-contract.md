@@ -101,12 +101,11 @@ AI_CODING_HISTORY = "ai_coding_history"
 - `collection.knowledge_files: "knowledge_files"`
 - `collection.static_files: "static_files"`
 - `collection.bugs: "bugs"` (bug page memory, in `project_bug_loop_protocol.md`)
-- `brd_<topic>` (dynamic, per role, created by `scripts/seed_brd_topics.py`)
 
 **naming rules**:
 1. `<domain>_<entity>` — `static_files` / `knowledge_files` / `chat_records` / `state_records` / `oss_file_tags`
 2. single-entity collection without prefix — `sessions` / `rss` / `seeds` / `bugs`
-3. `brd_<topic>` — dynamically created by role (`brd_engineer` / `brd_qa-engineer` / `brd_tech-lead`)
+3. BRD data has **no Mongo collection**: it lives as markdown under `YiKnowledge/brd/<topic>/`, watched into `knowledge_files` + the RAG index by the knowledge watcher. (The old `brd_<topic>` collections and their seed script were removed — the knowledge base is the source of truth.)
 
 ### Index strategy (`data/database.py` `_ensure_indexes`)
 

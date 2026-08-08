@@ -143,8 +143,8 @@ async def tree_users(body: UserQuery):
 
     users = await db.db[_COLLECTION].find(filters, {"_id": 0, "password": 0}).to_list(length=None)
 
-    # Fetch all departments
-    deps = await db.db["departments"].find({}, {"_id": 0}).to_list(length=None)
+    # Fetch all departments (canonical source: dict_department nested tree)
+    deps = await db.db["dict_department"].find({}, {"_id": 0}).to_list(length=None)
 
     def _build_user_tree(dep_nodes: list[dict]) -> list[dict]:
         result: list[dict] = []
@@ -301,24 +301,24 @@ async def _dict_list(collection_name: str) -> list[dict]:
 
 @router.get("/dict/status", operation_id="users_dict_status")
 async def dict_status():
-    docs = await _dict_list("status_dict")
+    docs = await _dict_list("dict_status")
     return success(data=docs)
 
 
 @router.get("/dict/gender", operation_id="users_dict_gender")
 async def dict_gender():
-    docs = await _dict_list("gender_dict")
+    docs = await _dict_list("dict_gender")
     return success(data=docs)
 
 
 @router.get("/dict/department", operation_id="users_dict_department")
 async def dict_department():
-    docs = await _dict_list("departments")
+    docs = await _dict_list("dict_department")
     tree = _build_tree(docs, "id", "name")
     return success(data={"list": tree, "total": len(tree)})
 
 
 @router.get("/dict/role", operation_id="users_dict_role")
 async def dict_role():
-    docs = await _dict_list("roles")
+    docs = await _dict_list("dict_role")
     return success(data=_build_tree(docs, "id", "name"))

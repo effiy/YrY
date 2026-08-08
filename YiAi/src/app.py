@@ -42,10 +42,6 @@ _SEED_SPECS: list[tuple[str, str, str]] = [
     ("dict_gender", "dict_gender.json", "key"),
     ("dict_department", "dict_department.json", "key"),
     ("dict_role", "dict_role.json", "key"),
-    ("departments", "departments.json", "key"),
-    ("roles", "roles.json", "key"),
-    ("status_dict", "status_dict.json", "key"),
-    ("gender_dict", "gender_dict.json", "key"),
 ]
 
 

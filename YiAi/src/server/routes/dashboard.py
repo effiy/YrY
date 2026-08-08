@@ -150,7 +150,7 @@ async def _get_collection_counts() -> CollectionCounts:
 
         await db.initialize()
         counts = {}
-        for name in ["menus", "users", "roles", "departments", "sessions", "knowledge_files"]:
+        for name in ["menus", "users", "dict_role", "dict_department", "sessions", "knowledge_files"]:
             try:
                 counts[name] = await db.db[name].count_documents({})
             except Exception:
@@ -165,8 +165,8 @@ async def _get_collection_counts() -> CollectionCounts:
         return CollectionCounts(
             menus=counts.get("menus", 0),
             users=counts.get("users", 0),
-            roles=counts.get("roles", 0),
-            departments=counts.get("departments", 0),
+            roles=counts.get("dict_role", 0),
+            departments=counts.get("dict_department", 0),
             sessions=counts.get("sessions", 0),
             knowledge_files=counts.get("knowledge_files", 0),
             rss_sources=rss_count,
@@ -859,22 +859,28 @@ async def organization():
             dept_id = u.get("departmentId", "unknown")
             dept_counter[dept_id] += 1
 
-        # Departments
-        depts_coll = db.db["departments"]
-        depts_cursor = depts_coll.find({}, {"_id": 0})
-        depts = await depts_cursor.to_list(length=None)
+        # Departments — canonical source is the nested `dict_department` tree;
+        # flatten it back to a flat list for the org table.
+        def _flatten_tree(nodes: list[dict], parent: str = "") -> list[dict]:
+            flat: list[dict] = []
+            for node in nodes or []:
+                flat.append({"id": node.get("id", ""), "name": node.get("name", ""), "parent": parent})
+                flat.extend(_flatten_tree(node.get("children") or [], node.get("id", "")))
+            return flat
+
+        depts_coll = db.db["dict_department"]
+        depts = await depts_coll.find({}, {"_id": 0}).to_list(length=None)
         dept_info = [
-            OrgDepartmentInfo(name=d.get("name", d.get("id", "")), id=d.get("id", ""), user_count=dept_counter.get(d.get("id", ""), 0))
-            for d in depts
+            OrgDepartmentInfo(name=d["name"] or d["id"], id=d["id"], user_count=dept_counter.get(d["id"], 0))
+            for d in _flatten_tree(depts)
         ]
 
-        # Roles
-        roles_coll = db.db["roles"]
-        roles_cursor = roles_coll.find({}, {"_id": 0})
-        roles = await roles_cursor.to_list(length=None)
+        # Roles — same canonical nested source, flattened with parent ids.
+        roles_coll = db.db["dict_role"]
+        roles = await roles_coll.find({}, {"_id": 0}).to_list(length=None)
         role_info = [
-            OrgRoleInfo(name=r.get("name", r.get("id", "")), id=r.get("id", ""), parent=r.get("parent", "") or "")
-            for r in roles
+            OrgRoleInfo(name=r["name"] or r["id"], id=r["id"], parent=r["parent"])
+            for r in _flatten_tree(roles)
         ]
 
         return success(data=OrgStatsResponse(

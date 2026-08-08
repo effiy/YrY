@@ -1,7 +1,0 @@
-[
-  { "key": "status_dict_1", "label": "Active", "value": "1", "tag_type": "success" },
-  { "key": "status_dict_2", "label": "Pending Training", "value": "2", "tag_type": "warning" },
-  { "key": "status_dict_3", "label": "Pending Onboarding", "value": "3", "tag_type": "info" },
-  { "key": "status_dict_4", "label": "Resigned", "value": "4", "tag_type": "danger" },
-  { "key": "status_dict_5", "label": "Retired", "value": "5", "tag_type": "" }
-]
