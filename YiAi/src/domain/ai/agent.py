@@ -596,6 +596,32 @@ async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio
     return "timeout"
 
 
+def _budget_warning(
+    turn_index: int,
+    max_turns: int,
+    warn_leftover: int = 3,
+) -> Optional[str]:
+    """One-shot budget note injected near the turn limit.
+
+    The model never sees ``max_turns`` (it only appears in SSE events), so it
+    over-plans and gets cut off mid-task. Fires once when at most
+    ``warn_leftover`` turns remain after the current one, telling the model the
+    exact budget so it compresses the plan or surfaces what's left for a
+    「继续」 resume. The ``[BUDGET]`` prefix keeps it out of ``_last_user_text``
+    (the ``[``-skip convention), so it can never shadow the user's real task for
+    the completion checkpoints. Returns None until near the limit.
+    """
+    remaining = max_turns - turn_index
+    if remaining < 0 or remaining > warn_leftover:
+        return None
+    return (
+        f"[BUDGET] 本次运行最多 {max_turns} 轮，当前是第 {turn_index} 轮，"
+        f"还剩 {remaining} 轮。请据此调整计划：优先完成必要步骤，压缩或省略"
+        f"非必要步骤。若剩余轮数不足以完成全部任务，请明确指出还差哪些工作，"
+        f"方便用户回复「继续」接着完成。"
+    )
+
+
 def _turn_observation_signature(tool_results: List[ToolResult]) -> str:
     """Signature of a turn's executed tool observations (name + effective result).
 
@@ -841,6 +867,7 @@ async def run_agent_loop(
     _obs_prev: Optional[str] = None
     _obs_run = 0
     _spin_nudged = False  # one spin nudge per run
+    _budget_injected = False  # one turn-budget warning per run (near the limit)
 
     # Carry forward completed writes from the restored trajectory (resume): the
     # run's per-tool tracking starts from what the previous run already did, so
@@ -903,6 +930,21 @@ async def run_agent_loop(
             ), on_event)
 
         turn_index += 1
+
+        # Pi: budget awareness — the model never sees max_turns, so it over-plans
+        # and gets cut off mid-task. One shot, near the limit: tell it the exact
+        # remaining turns so it compresses the plan or surfaces what's left for a
+        # 「继续」 resume. The [BUDGET] prefix keeps it out of _last_user_text.
+        if not _budget_injected:
+            _budget_note = _budget_warning(turn_index, cfg.max_turns)
+            if _budget_note:
+                _budget_injected = True
+                agent_messages.append(AgentMessage(role="user", content=_budget_note))
+                logger.info(
+                    f"Agent budget warning injected (session={session_id!r}): "
+                    f"turn {turn_index}/{cfg.max_turns}, "
+                    f"{cfg.max_turns - turn_index} left"
+                )
 
         yield await _emit(AgentEvent(
             type=AgentEventType.TURN_START,
