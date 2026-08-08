@@ -187,12 +187,43 @@ Defined in `src/api/modules/system.ts`, `src/api/modules/login.ts`, and the gene
 
 ### Current menu tree (served by `GET /auth/menu/list`; seed + fallback match)
 
-> 括号内依次为 Element Plus 图标名和主页 `index.vue` 的相对路径（基路径 `src/views/`），用逗号分隔。Sidebar 渲染顺序按标题字母序，非下方展示顺序。
+> Parentheses contain, in order: Element Plus icon name and the relative path to the main page `index.vue` (base path `src/views/`), separated by commas. Sidebar render order is alphabetical by title, not the display order below.
+>
+> **Legend:** `[dynamic]` = in the dynamic menu tree (MongoDB); `[static]` = hard-coded in `staticRouter.ts`; `[template]` = template boilerplate / demo page (not wired to any route).
 
 ```
 Home (HomeFilled, src/views/home/index.vue)
 
 Knowledge Base (Collection, src/views/knowledge/index.vue)
+
+AI Chat (ChatDotRound, src/views/aiChat/index.vue)  [static]
+
+RAG System (DataBoard, src/views/rag/index.vue)  [static]
+├── Retrieval (Search, src/views/rag/retrieval.vue)
+├── Chat (ChatLineSquare, src/views/rag/chat.vue)
+├── Compare (Switch, src/views/rag/compare.vue)
+└── History (Clock, src/views/rag/history.vue)
+
+About (InfoFilled, src/views/about/index.vue)  [template]
+├── YiAi (Menu, src/views/about/yiai/index.vue)
+├── YiPet (Menu, src/views/about/yipet/index.vue)
+└── YiVad (Menu, src/views/about/yivad/index.vue)
+
+Assembly Components (SetUp)  [template]
+├── Batch Import (Menu, src/views/assembly/batchImport/index.vue)
+├── Draggable (Menu, src/views/assembly/draggable/index.vue)
+├── Guide (Menu, src/views/assembly/guide/index.vue)
+├── Select Filter (Menu, src/views/assembly/selectFilter/index.vue)
+├── Select Icon (Menu, src/views/assembly/selectIcon/index.vue)
+├── Svg Icon (Menu, src/views/assembly/svgIcon/index.vue)
+├── Tabs (Menu, src/views/assembly/tabs/index.vue)
+├── Tree Filter (Menu, src/views/assembly/treeFilter/index.vue)
+├── Upload File (Menu, src/views/assembly/uploadFile/index.vue)
+└── Wang Editor (Menu, src/views/assembly/wangEditor/index.vue)
+
+Auth Demo (Lock)  [template]
+├── Button (Menu, src/views/auth/button/index.vue)
+└── Menu (Menu, src/views/auth/menu/index.vue)
 
 BRD Management (DocumentChecked)
 ├── Review Hub (DataAnalysis, src/views/brd/index/index.vue)
@@ -225,6 +256,85 @@ Code Review (DocumentChecked)
 ├── Backward compat review (Menu, src/views/code-review/backward-compat/index.vue)
 └── i18n / a11y review (Menu, src/views/code-review/i18n-a11y/index.vue)
 
+Dashboard (Odometer)  [template]
+├── AI Analytics (TrendCharts, src/views/dashboard/aiAnalytics/index.vue)
+├── Data Visualize (PieChart, src/views/dashboard/dataVisualize/index.vue)
+├── Engineering Maturity (DataAnalysis, src/views/dashboard/engineeringMaturity/index.vue)
+├── Knowledge Base (Reading, src/views/dashboard/knowledgeBase/index.vue)
+├── Organization (OfficeBuilding, src/views/dashboard/organization/index.vue)
+├── Performance (DataLine, src/views/dashboard/performance/index.vue)
+├── RAG Analytics (Histogram, src/views/dashboard/ragAnalytics/index.vue)
+├── RSS Content (Notebook, src/views/dashboard/rssContent/index.vue)
+├── RSS Sources (Connection, src/views/dashboard/rssSources/index.vue)
+├── Service Performance (Monitor, src/views/dashboard/servicePerformance/index.vue)
+└── System Health (CircleCheck, src/views/dashboard/systemHealth/index.vue)
+
+Data Screen (Monitor, src/views/dataScreen/index.vue)  [template]
+
+Directives Demo (Aim)  [template]
+├── Copy Directive (Menu, src/views/directives/copyDirect/index.vue)
+├── Debounce Directive (Menu, src/views/directives/debounceDirect/index.vue)
+├── Drag Directive (Menu, src/views/directives/dragDirect/index.vue)
+├── Long Press Directive (Menu, src/views/directives/longpressDirect/index.vue)
+├── Throttle Directive (Menu, src/views/directives/throttleDirect/index.vue)
+└── Watermark Directive (Menu, src/views/directives/watermarkDirect/index.vue)
+
+ECharts Demo (Histogram)  [template]
+├── Column Chart (Menu, src/views/echarts/columnChart/index.vue)
+├── Line Chart (Menu, src/views/echarts/lineChart/index.vue)
+├── Nested Chart (Menu, src/views/echarts/nestedChart/index.vue)
+├── Pie Chart (Menu, src/views/echarts/pieChart/index.vue)
+├── Radar Chart (Menu, src/views/echarts/radarChart/index.vue)
+└── Water Chart (Menu, src/views/echarts/waterChart/index.vue)
+
+Form Demo (EditPen)  [template]
+├── Basic Form (Menu, src/views/form/basicForm/index.vue)
+├── Dynamic Form (Menu, src/views/form/dynamicForm/index.vue)
+├── Pro Form (Menu, src/views/form/proForm/index.vue)
+└── Validate Form (Menu, src/views/form/validateForm/index.vue)
+
+FDE Resume (UserFilled, src/views/resume/index.vue)
+
+Link (Link)  [template]
+└── Claude (Menu, src/views/link/claude/index.vue)
+
+Login (User, src/views/login/index.vue)  [static]
+
+Menu Demo (Menu)  [template]
+├── Menu 1 (Menu, src/views/menu/menu1/index.vue)
+├── Menu 2 (Menu)
+│   ├── Menu 2-1 (Menu, src/views/menu/menu2/menu21/index.vue)
+│   ├── Menu 2-2 (Menu)
+│   │   ├── Menu 2-2-1 (Menu, src/views/menu/menu2/menu22/menu221/index.vue)
+│   │   └── Menu 2-2-2 (Menu, src/views/menu/menu2/menu22/menu222/index.vue)
+│   └── Menu 2-3 (Menu, src/views/menu/menu2/menu23/index.vue)
+└── Menu 3 (Menu, src/views/menu/menu3/index.vue)
+
+ProTable Demo (Grid)  [template]
+├── Complex ProTable (Menu, src/views/proTable/complexProTable/index.vue)
+├── Document (Menu, src/views/proTable/document/index.vue)
+├── Tree ProTable (Menu, src/views/proTable/treeProTable/index.vue)
+├── Use ProTable (Menu, src/views/proTable/useProTable/index.vue)
+├── Use Select Filter (Menu, src/views/proTable/useSelectFilter/index.vue)
+└── Use Tree Filter (Menu, src/views/proTable/useTreeFilter/index.vue)
+
+RSS Feeds (Link)
+├── All Items (Menu, src/views/rss/index.vue)
+├── Starred (Star, src/views/rss/index.vue)
+├── Unread (Reading, src/views/rss/index.vue)
+└── Scheduler & Seeds (Setting, src/views/rss/index.vue)
+
+Story Board (Tickets, src/views/story/index.vue)
+
+System Management (Tools)
+├── Menu Management (Menu, src/views/system/menuMange/index.vue)
+├── Account Management (Menu, src/views/system/accountManage/index.vue)
+├── Role Management (Menu, src/views/system/roleManage/index.vue)
+├── Department Management (Menu, src/views/system/departmentManage/index.vue)
+├── Dictionary Management (Menu, src/views/system/dictManage/index.vue)
+├── System Logs (Menu, src/views/system/systemLog/index.vue)
+└── Scheduled Tasks (Menu, src/views/system/timingTask/index.vue)
+
 Tech Leadership (Monitor)
 ├── Review Hub (DataAnalysis, src/views/tech-leadership/index/index.vue)
 ├── Architecture Decision Records (Menu, src/views/tech-leadership/adr-review/index.vue)
@@ -245,30 +355,9 @@ Tech Leadership (Monitor)
 ├── Dependency Adoption (Menu, src/views/tech-leadership/dependency-adoption/index.vue)
 ├── Project Bootstrap (Menu, src/views/tech-leadership/project-bootstrap/index.vue)
 └── Knowledge Evolution (Menu, src/views/tech-leadership/knowledge-evolution/index.vue)
-
-FDE Resume (UserFilled, src/views/resume/index.vue)
-Story Board (Tickets, src/views/story/index.vue)
-RSS Feeds (Link)
-├── All Items (Menu, src/views/rss/index.vue)
-├── Starred (Star, src/views/rss/index.vue)
-├── Unread (Reading, src/views/rss/index.vue)
-└── Scheduler & Seeds (Setting, src/views/rss/index.vue)
-
-System Management (Tools)
-├── Menu Management (Menu, src/views/system/menuMange/index.vue)
-├── Account Management (Menu, src/views/system/accountManage/index.vue)
-├── Role Management (Menu, src/views/system/roleManage/index.vue)
-├── Department Management (Menu, src/views/system/departmentManage/index.vue)
-├── Dictionary Management (Menu, src/views/system/dictManage/index.vue)
-├── System Logs (Menu, src/views/system/systemLog/index.vue)
-└── Scheduled Tasks (Menu, src/views/system/timingTask/index.vue)
 ```
 
-Static routes (not in the dynamic menu, but always available):
-- `/aiChat` — AI Chat
-- `/rag`, `/rag/retrieval`, `/rag/chat`, `/rag/compare`, `/rag/history` — RAG System
-- `/knowledge/:category` and `/knowledge/:category/detail/:file` — Knowledge Base drill-down
-- All code-review / BRD / tech-leadership `detail/:id?` routes
+> **Note:** Entries marked `[dynamic]` (no tag) are the 66 documents in the MongoDB `menus` collection and are the runtime source of truth for sidebar + routes. Entries marked `[static]` are hard-coded in `staticRouter.ts`. Entries marked `[template]` are boilerplate/demo pages from the admin template — they have view files but no route wiring. Detail pages (`detail.vue`) under `brd/`, `code-review/`, and `tech-leadership/` are static hidden routes not listed above.
 
 ## Action recommendations
 
