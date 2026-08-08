@@ -244,7 +244,7 @@ function cycleRagNumQueries() {
           v-model="store.input"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 6 }"
-          :placeholder="store.input.startsWith('/') ? '/compact /clear /retry /stop /model /steer /followup /export /template — type a command' : store.streamingPhase === 'fetching' ? 'Fetching URL content...' : store.streamingPhase === 'retrieving' ? 'Retrieving knowledge base...' : store.streamingPhase === 'thinking' ? 'AI thinking...' : store.streamingPhase === 'streaming' ? 'AI responding...' : store.webSearching ? 'Searching web...' : store.agentMode && store.sending ? 'Type /steer <msg> or /followup <msg> to guide the agent...' : 'Ask anything, type @ to add files (Enter send, Shift+Enter newline)'"
+          :placeholder="store.input.startsWith('/') ? '/compact /clear /retry /stop /model /steer /followup /export /template — type a command' : store.streamingPhase === 'fetching' ? 'Fetching URL content...' : store.streamingPhase === 'retrieving' ? 'Retrieving knowledge base...' : store.streamingPhase === 'thinking' ? 'AI thinking...' : store.streamingPhase === 'streaming' ? 'AI responding...' : store.webSearching ? 'Searching web...' : store.agentMode && store.sending ? 'Agent is running — type to redirect it, or /followup <msg> to queue after it finishes' : 'Ask anything, type @ to add files (Enter send, Shift+Enter newline)'"
           :disabled="store.sending && !store.agentMode"
           resize="none"
           @compositionstart="onCompositionStart"

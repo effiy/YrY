@@ -224,6 +224,12 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — Auto-steer plain messages into a running agent (pi Agent.steer)
+
+- **`src/stores/modules/aiChat.ts`** `sendMessage`: while the agent loop is running (`sending && agentMode`), a **plain chat message is no longer silently dropped** — it now steers the running loop via `POST /agent/steer` (the old guard at `if (sending.value) return;` discarded every mid-run message, so a user correcting a task ("actually use X instead") lost their words). The steered message is reflected as a user bubble in the conversation (so the correction is visible) and confirmed with a toast. Slash commands still fall through to the drop guard unchanged (`/steer`, `/followup`, `/stop`, …). Images mid-run keep the old drop behavior (steer is text-only).
+- **`src/views/aiChat/components/ChatInput.vue`**: agent-mode placeholder now reads "Agent is running — type to redirect it, or /followup <msg> to queue after it finishes" instead of hiding the capability behind `/steer <msg>` syntax.
+- Complements the backend change (immediate steering drain + checkpoint deferral — see `YiAi/CLAUDE.md`). Type-check: 0 new errors (18 pre-existing, all in unrelated files).
+
 ### 2026-08-08 — Live agent turn-progress indicator (user sees the budget)
 
 - **`src/stores/modules/aiChat.ts`**: new `agentTurnProgress` computed — `{ current, max, active, nearLimit }` — derived from the reactive `agentTurnSummaries` (last `turnIndex`), `agentMaxTurns` (user-configurable), and `streamingPhase`. `active` = the agent is mid-run (`thinking`/`streaming`/`retrieving`); `nearLimit` = within 2 turns of `max_turns`. Exposed in the store return.

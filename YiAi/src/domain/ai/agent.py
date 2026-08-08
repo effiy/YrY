@@ -911,6 +911,12 @@ async def run_agent_loop(
     _obs_run = 0
     _spin_nudged = False  # one spin nudge per run
     _budget_injected = False  # one turn-budget warning per run (near the limit)
+    # Steering consumed this run. Steering (Pi: Agent.steer) changes the task
+    # mid-run, so the end-of-loop completion checkpoints — which verify the
+    # ORIGINAL task text against executed tools — are invalid: they could re-arm
+    # a write the user steered away from ("不要删除 Z" then re-nudge db_delete).
+    # A steered run is user-in-the-loop; the human's latest direction wins.
+    _steering_consumed = False
 
     # Carry forward completed writes from the restored trajectory (resume): the
     # run's per-tool tracking starts from what the previous run already did, so
@@ -940,17 +946,26 @@ async def run_agent_loop(
         if drained_steering:
             for sm in drained_steering:
                 agent_messages.append(sm)
+            _steering_consumed = True
 
         # ── Drain external steering store (Pi: Agent.steer) ────────────
+        # Appended DIRECTLY to agent_messages, not via the turn-delayed
+        # steering_queue: a steer that lands before this turn's LLM call must be
+        # visible immediately (the queue added a one-turn lag, so a mid-run
+        # correction like "don't delete Z" reached the model only after it had
+        # already acted on the original plan). `[STEERING]` starts with `[` so it
+        # stays out of `_last_user_text` (does not shadow the user's task).
         if session_id:
             try:
                 from server.routes.agent import get_steering_messages
                 external_steers = get_steering_messages(session_id)
-                for es in external_steers:
-                    steering_queue.append(AgentMessage(
-                        role="user",
-                        content=str(es.get("content", "")),
-                    ))
+                if external_steers:
+                    for es in external_steers:
+                        agent_messages.append(AgentMessage(
+                            role="user",
+                            content=str(es.get("content", "")),
+                        ))
+                    _steering_consumed = True
             except Exception:
                 pass  # steering is best-effort
 
@@ -1536,6 +1551,7 @@ async def run_agent_loop(
             effective_task = ""
         if (
             not _task_nudged
+            and not _steering_consumed  # user steered mid-run: their direction wins
             and not _write_executed
             and not _write_rejected
             and _is_write_request(effective_task)
@@ -1582,6 +1598,7 @@ async def run_agent_loop(
         ]
         if (
             not _task_nudged
+            and not _steering_consumed  # user steered mid-run: their direction wins
             and _write_executed
             and not _write_rejected
             and unexecuted_writes
@@ -1612,7 +1629,7 @@ async def run_agent_loop(
         # non-empty) — yet the task is only half done. Gate on count ≥ 2 and a
         # real gap so a fully-completed multi-item run pays no extra turn.
         count_gaps: list = []
-        if not _task_nudged and _write_executed and not _write_rejected:
+        if not _task_nudged and not _steering_consumed and _write_executed and not _write_rejected:
             for tool_name, need in _parse_task_item_counts(effective_task):
                 have = _write_counts.get(tool_name, 0)
                 if need >= 2 and have < need:

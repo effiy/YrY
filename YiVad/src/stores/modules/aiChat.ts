@@ -856,6 +856,33 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
 
     if (!content && !hasImages && !sending.value) return;
+
+    // ── Agent auto-steer (Pi: Agent.steer) ───────────────────────────
+    // While the agent loop is running, a plain message redirects the loop — it
+    // is NOT a new request. The old guard silently dropped it, so a user
+    // correcting a mid-task run ("actually use X instead") lost the message.
+    // Steer it into the running agent and reflect it as a chat bubble. Slash
+    // commands still pass through to the drop guard unchanged.
+    if (sending.value && agentMode.value && content && !hasImages && !content.startsWith("/")) {
+      const convKey = activeConversation.value?.key;
+      input.value = "";
+      if (convKey) {
+        setActiveMessages(msgs => [...msgs, {
+          type: "user",
+          message: content,
+          timestamp: Date.now(),
+        }]);
+        const { steerAgent } = await import("@/api/modules/agentService");
+        const ok = await steerAgent(convKey, content);
+        if (ok) {
+          ElMessage.success("已转向运行中的 agent");
+        } else {
+          ElMessage.warning("转向失败 — agent 可能已停止");
+        }
+      }
+      return;
+    }
+
     if (sending.value) return;
 
     // ── Check for slash commands ────────────────────────────────────
