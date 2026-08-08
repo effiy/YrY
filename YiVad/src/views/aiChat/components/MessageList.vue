@@ -31,19 +31,25 @@ watch(() => store.agentCompaction, (compaction) => {
   }
 });
 
-// Auto-dismiss confirmation banner after 15 seconds
+// Auto-reject the confirmation after 120s (matches the backend wait timeout so
+// the agent loop doesn't hang after a missed decision).
+const CONFIRMATION_TIMEOUT_MS = 120_000;
 watch(() => store.pendingConfirmation, (conf) => {
   if (conf) {
     setTimeout(() => {
       if (store.pendingConfirmation?.timestamp === conf.timestamp) {
-        store.pendingConfirmation = null;
+        store.rejectPendingConfirmation();
       }
-    }, 15000);
+    }, CONFIRMATION_TIMEOUT_MS);
   }
 });
 
-function dismissConfirmation() {
-  store.pendingConfirmation = null;
+function approveConfirmation() {
+  store.approvePendingConfirmation();
+}
+
+function rejectConfirmation() {
+  store.rejectPendingConfirmation();
 }
 </script>
 
@@ -63,14 +69,19 @@ function dismissConfirmation() {
     <!-- Tool confirmation banner (Pi-inspired: tool requires user approval) -->
     <div v-if="store.pendingConfirmation" class="ml-confirmation">
       <span class="ml-confirmation-icon">🛡️</span>
-      <span class="ml-confirmation-text">
-        Tool <code>{{ store.pendingConfirmation.toolName }}</code> requires confirmation
-        <span v-if="Object.keys(store.pendingConfirmation.toolArgs).length">
-          with args: {{ JSON.stringify(store.pendingConfirmation.toolArgs) }}
-        </span>
-        — skipped for safety.
-      </span>
-      <button class="ml-confirmation-dismiss" @click="dismissConfirmation">✕</button>
+      <div class="ml-confirmation-body">
+        <div class="ml-confirmation-text">
+          Tool <code>{{ store.pendingConfirmation.toolName }}</code> requires confirmation
+          — approve to let the agent run it, or reject to skip.
+        </div>
+        <div v-if="Object.keys(store.pendingConfirmation.toolArgs).length" class="ml-confirmation-args">
+          <code>{{ JSON.stringify(store.pendingConfirmation.toolArgs) }}</code>
+        </div>
+        <div class="ml-confirmation-actions">
+          <button class="ml-confirmation-btn approve" @click="approveConfirmation">✓ Approve</button>
+          <button class="ml-confirmation-btn reject" @click="rejectConfirmation">✕ Reject</button>
+        </div>
+      </div>
     </div>
     <div v-if="store.loading" class="ml-center">
       <el-icon class="is-loading" :size="24"><Loading /></el-icon>
@@ -148,9 +159,9 @@ function dismissConfirmation() {
 
 .ml-confirmation {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   margin-bottom: 8px;
   font-size: 12px;
   color: var(--el-color-warning);
@@ -162,10 +173,19 @@ function dismissConfirmation() {
 
 .ml-confirmation-icon {
   font-size: 14px;
+  line-height: 1.5;
+}
+
+.ml-confirmation-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .ml-confirmation-text {
-  flex: 1;
+  line-height: 1.5;
 
   code {
     font-family: monospace;
@@ -176,23 +196,46 @@ function dismissConfirmation() {
   }
 }
 
-.ml-confirmation-dismiss {
+.ml-confirmation-args {
+  max-height: 72px;
+  padding: 4px 6px;
+  overflow: auto;
+  font-family: monospace;
+  font-size: 11px;
+  word-break: break-all;
+  color: var(--el-text-color-regular);
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+
+.ml-confirmation-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  padding: 0;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ml-confirmation-btn {
+  padding: 2px 12px;
+  font-size: 12px;
+  line-height: 1.6;
   border: none;
-  border-radius: 50%;
-  font-size: 10px;
-  color: var(--el-color-warning);
-  background: var(--el-color-warning-light-7);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: opacity 0.15s;
 
   &:hover {
-    background: var(--el-color-warning-light-5);
+    opacity: 0.85;
+  }
+
+  &.approve {
+    color: #fff;
+    background: var(--el-color-success);
+  }
+
+  &.reject {
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-9);
+    border: 1px solid var(--el-color-danger-light-5);
   }
 }
 </style>

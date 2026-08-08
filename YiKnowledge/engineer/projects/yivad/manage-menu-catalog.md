@@ -172,6 +172,33 @@ Net effect: `order` has **no visible effect** on the sidebar or the management p
 
 Save/delete call `createMenu`/`updateMenu`/`deleteMenu` → `data_service` RPC → then `authStore.getAuthMenuList()` to refresh the sidebar. A full page reload is recommended to re-register routes.
 
+### Agent chat data tools (aiChat)
+
+The aiChat agent (Pi-inspired agent loop) can operate on the menu catalog directly from chat. When **agent mode** is enabled on the **AI Chat** page, the agent gets a **generic data-tool surface** rather than menu-specific code (`YiAi/src/domain/ai/data_tools.py`, lazily wired into `domain/ai/tools.py:get_tool_registry`). The agent *reasons* over the `menus` collection: `db_schema` returns the documented document shape as context, and the generic read/write tools act on whatever collection the model chooses:
+
+| Tool | Purpose | Confirmation |
+|---|---|---|
+| `db_schema` | Return the registered schema of a collection (e.g. `menus`) so the agent builds correct documents. Call before writing. | — |
+| `db_list` | Query documents from any collection (Mongo filter, limit, fields, orderBy). Read-only. Use to find keys / check for path clashes. | — |
+| `db_create` | Insert a document into a **writable** collection (`data` + `cname`). | ✅ |
+| `db_update` | Update an existing document by `key` in a writable collection (`data` of changed fields). | ✅ |
+| `db_delete` | Delete a document by `key` from a writable collection. | ✅ |
+
+**Writable scope.** Reads are open (non-destructive). Writes are restricted to `_WRITABLE_COLLECTIONS` in `data_tools.py` (currently `{"menus"}`) — a **safety policy, not business logic**; extend it as other collections become safe to edit from chat (e.g. `knowledge_files`, `rss_sources`). The menus schema entry documents the nested `meta` shape (title/icon/isLink/isHide/isFull/isAffix/isKeepAlive) so the model emits valid documents.
+
+**Confirmation gate.** `db_create`/`db_update`/`db_delete` set `requires_confirmation=True`. When the agent requests one, the loop emits a `confirmation_required` SSE event and **pauses** (up to 120s). The aiChat UI renders an Approve/Reject banner in the message list; either choice calls `POST /agent/confirm {session_id, confirmation_id, approve}` (`YiAi/src/server/routes/agent.py`, store in `src/server/routes/agent.py:_confirmation_store`). Approve executes the tool, Reject (or timeout) skips it with a "Rejected by user" / "timed out" result the agent relays back. The frontend wiring lives in `YiVad/src/api/modules/agentService.ts` (`confirmAgentTool`), `src/stores/modules/aiChat.ts` (`pendingConfirmation` + approve/reject actions), and `src/views/aiChat/components/MessageList.vue` (the banner + 120s auto-reject). The confirmation UI is generic — no tool names are hard-coded.
+
+**Tool calling.** The agent uses **native Ollama tool calling** — `OllamaRuntime.stream_chat` forwards the registry's OpenAI-style `tools` to the model and returns structured `tool_calls` (see `YiAi/src/services/ai/model_runtime.py` and the conversion in `agent.py:_stream_llm_response`). The `<tool_call>` XML text parser remains as a fallback for models without native tool-calling support.
+
+**Example chat prompts** (agent mode on the AI Chat page):
+
+- "List the menus under /system and tell me their keys" → `db_list`
+- "Add a top-level menu for my feature: path /my-feature, name MyFeature, icon Setting" → `db_schema` → `db_list` (conflict check) → `db_create` (confirm)
+- "Rename the menu with key menu_abc123 to 'New Title'" → `db_list` (find key) → `db_update` (confirm)
+- "Delete the menu entry /my-feature" → `db_list` (find key) → `db_delete` (confirm)
+
+> Same constraints as the management page apply: a missing `component` view file means the sidebar entry is a dead link (dynamic router skips it), and a full page reload is needed to re-register a new route.
+
 ### API layer
 
 | Operation | Function | Target |

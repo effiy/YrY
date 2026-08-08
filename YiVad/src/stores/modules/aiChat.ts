@@ -95,8 +95,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Last compaction event (surfaced in the UI as a transient notification).
   const agentCompaction = ref<{ beforeCount: number; afterCount: number; savedTokens: number; timestamp: number } | null>(null);
   // Pending tool confirmation (Pi-inspired: tool requires user approval).
-  // Surfaced as a banner in MessageList; auto-dismissed after 15s.
-  const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, any>; timestamp: number } | null>(null);
+  // Surfaced as a banner in MessageList with Approve/Reject. confirmationId
+  // maps to the backend tool-call id for POST /agent/confirm.
+  const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, any>; confirmationId: string; timestamp: number } | null>(null);
   const scrollTick = ref(0);
   const copyFeedback = ref<Record<string, string>>({});
   const feedback = ref<Record<number, AiChatFeedbackRating>>({});
@@ -647,6 +648,27 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     saveBool(STORAGE_AGENT_KEY, agentMode.value);
   }
 
+  // ── Tool confirmation (Pi-inspired: approve/reject destructive tools) ──
+  /** Approve the pending tool call — the agent loop proceeds to execute it. */
+  async function approvePendingConfirmation() {
+    const conf = pendingConfirmation.value;
+    if (!conf) return;
+    pendingConfirmation.value = null;
+    if (!conf.confirmationId || !activeConversation.value?.key) return;
+    const { confirmAgentTool } = await import("@/api/modules/agentService");
+    await confirmAgentTool(activeConversation.value.key, conf.confirmationId, true);
+  }
+
+  /** Reject the pending tool call — the agent loop skips it with a notice. */
+  async function rejectPendingConfirmation() {
+    const conf = pendingConfirmation.value;
+    if (!conf) return;
+    pendingConfirmation.value = null;
+    if (!conf.confirmationId || !activeConversation.value?.key) return;
+    const { confirmAgentTool } = await import("@/api/modules/agentService");
+    await confirmAgentTool(activeConversation.value.key, conf.confirmationId, false);
+  }
+
   /** Fetch available models from YiAi server. */
   async function fetchModels() {
     if (modelsLoading.value) return;
@@ -1158,7 +1180,10 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         {
           messages: agentMessages,
           model: selectedModel.value,
-          system_prompt: [agentSystemPrompt.value, systemPrompt.value, contextChangeSystemPrompt.value, getToolsForSystemPrompt()]
+          // In agent mode the backend appends its own <tool_call> tool prompt;
+          // the frontend registry block ("tools run automatically, you do NOT
+          // call them directly") would contradict the agent loop, so omit it.
+          system_prompt: [agentSystemPrompt.value, systemPrompt.value, contextChangeSystemPrompt.value]
             .map(s => s.trim())
             .filter(Boolean)
             .join("\n\n"),
@@ -1299,17 +1324,51 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 };
                 break;
               case "confirmation_required":
-                // Tool requires user confirmation — surfaced in MessageList as a banner.
+                // Tool requires user confirmation — the agent loop is paused.
+                // MessageList renders Approve/Reject which call
+                // approvePendingConfirmation / rejectPendingConfirmation.
                 pendingConfirmation.value = {
                   toolName: (event.tool_name as string) || "unknown",
                   toolArgs: (event.tool_args as Record<string, any>) || {},
+                  confirmationId: (event.confirmation_id as string) || "",
                   timestamp: event.timestamp,
                 };
-                console.warn(
-                  `[aiChat] Tool "${event.tool_name}" requires confirmation. ` +
-                  `Args: ${JSON.stringify(event.tool_args)}. Skipped for safety.`
-                );
                 break;
+              case "tool_execution_start": {
+                // Pi: live tool lifecycle — show a "(running)" entry immediately so
+                // the timeline reflects the tool while it executes (AgentTimeline
+                // renders a Loading spinner for content === "(running)").
+                const summaries = [...agentTurnSummaries.value];
+                const last = summaries[summaries.length - 1];
+                if (last && event.tool?.name) {
+                  last.toolCalls = [
+                    ...last.toolCalls,
+                    {
+                      name: event.tool.name,
+                      label: event.tool.label || event.tool.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+                      content: "(running)",
+                    },
+                  ];
+                  agentTurnSummaries.value = summaries;
+                }
+                break;
+              }
+              case "tool_execution_end": {
+                // Pi: mark the running tool finished with its final content/error.
+                const summaries = [...agentTurnSummaries.value];
+                const last = summaries[summaries.length - 1];
+                if (last && event.tool?.name) {
+                  const call = last.toolCalls.find((tc: any) => tc.name === event.tool!.name);
+                  if (call) {
+                    if (event.tool.content) call.content = event.tool.content;
+                    else if (call.content === "(running)") call.content = "";
+                    call.error = event.tool.error;
+                    call.durationMs = event.tool.duration_ms;
+                  }
+                  agentTurnSummaries.value = summaries;
+                }
+                break;
+              }
               case "tool_execution_update": {
                 // Pi: partial progress during long-running tool execution.
                 // Update the current turn's tool call with the partial result.
@@ -2028,6 +2087,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     agentUsage,
     agentCompaction,
     pendingConfirmation,
+    approvePendingConfirmation,
+    rejectPendingConfirmation,
     agentSystemPrompt,
     selectedModel,
     availableModels,

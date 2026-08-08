@@ -104,6 +104,7 @@ class OllamaRuntime(ModelRuntime):
         model: str | None = None,
         system: str | None = None,
         images: List[bytes] | None = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
     ) -> AsyncIterator[Dict[str, Any]]:
         model_name = model or self.model_name()
 
@@ -121,19 +122,39 @@ class OllamaRuntime(ModelRuntime):
             try:
                 client = self._get_client()
                 for item in client.chat(
-                    model=model_name, messages=ollama_messages, stream=True
+                    model=model_name, messages=ollama_messages, stream=True,
+                    tools=tools,
                 ):
                     try:
                         delta = ""
+                        tool_calls = None
+                        done_reason = None
                         if isinstance(item, dict):
                             msg = item.get("message") or {}
                             delta = msg.get("content") or msg.get("thinking") or ""
+                            tool_calls = msg.get("tool_calls") or None
+                            done_reason = item.get("done_reason")
                         else:
                             msg = getattr(item, "message", {}) or {}
                             delta = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
+                            tool_calls = getattr(msg, "tool_calls", None) or None
+                            done_reason = getattr(item, "done_reason", None)
+                        # Forward native tool calls so the agent loop can execute
+                        # them (Pi: structured tool calling instead of XML parsing).
+                        if tool_calls:
+                            asyncio.run_coroutine_threadsafe(
+                                queue.put({"tool_calls": tool_calls}), loop
+                            )
                         if delta:
                             asyncio.run_coroutine_threadsafe(
                                 queue.put(str(delta)), loop
+                            )
+                        # Forward the final done_reason (Pi: failToolCallsFromTruncatedMessage).
+                        # "length" means the model hit its output token limit, so any
+                        # tool calls in this response may carry truncated arguments.
+                        if done_reason:
+                            asyncio.run_coroutine_threadsafe(
+                                queue.put({"done_reason": done_reason}), loop
                             )
                     except Exception:
                         continue
@@ -165,6 +186,10 @@ class OllamaRuntime(ModelRuntime):
             if item is None:
                 break
             if isinstance(item, dict) and "error" in item:
+                yield item
+            elif isinstance(item, dict) and "tool_calls" in item:
+                yield item
+            elif isinstance(item, dict) and "done_reason" in item:
                 yield item
             else:
                 yield {"data": {"message": item}}

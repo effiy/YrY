@@ -46,6 +46,8 @@ logger = logging.getLogger(__name__)
 _CHARS_PER_TOKEN = 4
 _COMPACTION_THRESHOLD = 0.8  # 80% of context window
 _DEFAULT_CONTEXT_WINDOW = 8192
+_CONFIRMATION_TIMEOUT_S = 120  # how long the loop waits for a user approve/reject
+_CONFIRMATION_POLL_S = 1.5  # poll interval for the user's decision
 
 
 # ── Agent event types (Pi parity) ─────────────────────────────────────────
@@ -90,6 +92,7 @@ class AgentEvent:
     # confirmation event
     tool_name: Optional[str] = None
     tool_args: Optional[Dict[str, Any]] = None
+    confirmation_id: Optional[str] = None  # call id the user approves/rejects via /agent/confirm
     # tool_execution_update event (Pi: partial progress)
     tool_call_id: Optional[str] = None
     partial_result: Optional[Dict[str, Any]] = None
@@ -128,6 +131,8 @@ class AgentEvent:
             payload["tool_name"] = self.tool_name
         if self.tool_args is not None:
             payload["tool_args"] = self.tool_args
+        if self.confirmation_id is not None:
+            payload["confirmation_id"] = self.confirmation_id
         if self.tool_call_id is not None:
             payload["tool_call_id"] = self.tool_call_id
         if self.partial_result is not None:
@@ -194,6 +199,8 @@ class AgentConfig:
     compaction_keep_last: int = 4
     steering_mode: str = "all"  # Pi QueueMode: "all" | "one-at-a-time"
     follow_up_mode: str = "one-at-a-time"  # Pi QueueMode for follow-up messages
+    llm_max_retries: int = 2  # Pi: retry transient LLM failures (connection reset, model still loading)
+    llm_retry_backoff_base: float = 0.5  # exponential backoff: base * 2^(attempt-1) seconds
 
     # ── Lifecycle hooks (Pi: beforeToolCall / afterToolCall) ──────────
 
@@ -273,6 +280,32 @@ def _strip_tool_calls_from_text(text: str) -> str:
     text = re.sub(r"<tool_call>.*?</tool_call>", "", text, flags=re.DOTALL)
     text = re.sub(r"```(?:json)?\s*\{.*?\"name\".*?\}\s*```", "", text, flags=re.DOTALL)
     return text.strip()
+
+
+async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio.Event) -> str:
+    """Wait for the user's approve/reject decision on a tool call.
+
+    The decision is recorded via ``POST /agent/confirm`` and read from an
+    in-memory store in ``server/routes/agent.py`` (same pattern as steering).
+    Returns ``"approved" | "rejected" | "timeout"``.
+    """
+    import time as _time
+    if not session_id:
+        return "rejected"
+    try:
+        from server.routes.agent import get_confirmation_decision, mark_confirmation_seen
+    except Exception:
+        return "rejected"
+    deadline = _time.monotonic() + _CONFIRMATION_TIMEOUT_S
+    while _time.monotonic() < deadline:
+        if abort.is_set():
+            return "rejected"
+        decision = get_confirmation_decision(session_id, call.id)
+        if decision is not None:
+            mark_confirmation_seen(session_id, call.id)
+            return decision
+        await asyncio.sleep(_CONFIRMATION_POLL_S)
+    return "timeout"
 
 
 # ── Token estimation ──────────────────────────────────────────────────────
@@ -460,6 +493,7 @@ async def run_agent_loop(
         streaming_content = ""
         tool_calls: List[ToolCall] = []
         turn_tokens = 0
+        stop_reason: Optional[str] = None  # Pi: length → truncated tool-call args
 
         # Pi: transformContext — allow pre-LLM context transformation
         if cfg.transform_context:
@@ -473,6 +507,27 @@ async def run_agent_loop(
                 if abort.is_set():
                     break
                 if isinstance(chunk, dict):
+                    if chunk.get("error"):
+                        # Pi: surface LLM failures instead of silently dropping them.
+                        # With retries exhausted (or content already streamed), the
+                        # run cannot continue meaningfully — end it with a clear error.
+                        error_msg = chunk["error"]
+                        logger.error(f"Agent LLM stream failed: {error_msg}")
+                        yield await _emit(AgentEvent(
+                            type=AgentEventType.ERROR,
+                            error=error_msg,
+                        ), on_event)
+                        yield await _emit(AgentEvent(
+                            type=AgentEventType.AGENT_END,
+                            stop_reason="error",
+                            usage={"total_tokens": total_tokens + turn_tokens, "turns": turn_index},
+                            messages=[{"role": m.role, "content": m.content} for m in agent_messages],
+                        ), on_event)
+                        yield {"error": error_msg}
+                        yield {"done": True}
+                        return
+                    if chunk.get("done_reason"):
+                        stop_reason = chunk["done_reason"]
                     delta = chunk.get("delta", "")
                     if delta:
                         streaming_content += delta
@@ -534,6 +589,49 @@ async def run_agent_loop(
         if tool_calls:
             tool_results: List[ToolResult] = []
 
+            # Pi: failToolCallsFromTruncatedMessage — if the model hit its output
+            # token limit, the streamed tool-call arguments may be truncated and
+            # incomplete. None are safe to execute; fail each so the model re-issues.
+            if stop_reason == "length":
+                for _call in tool_calls:
+                    _err = (
+                        f"Tool call \"{_call.name}\" was not executed: the response hit "
+                        "the output token limit, so its arguments may be truncated. "
+                        "Re-issue the tool call with complete arguments."
+                    )
+                    yield await _emit(AgentEvent(
+                        type=AgentEventType.TOOL_EXECUTION_START,
+                        tool={"name": _call.name, "label": _call.name.replace("_", " ").title()},
+                    ), on_event)
+                    yield await _emit(AgentEvent(
+                        type=AgentEventType.TOOL_EXECUTION_END,
+                        tool={"name": _call.name, "label": _call.name.replace("_", " ").title(),
+                              "content": "", "error": _err},
+                    ), on_event)
+                    tool_results.append(ToolResult(
+                        call_id=_call.id, name=_call.name, content="", error=_err,
+                    ))
+                for result in tool_results:
+                    agent_messages.append(AgentMessage(
+                        role="tool_result",
+                        content=f"Error: {result.error}",
+                        tool_call_id=result.call_id,
+                        name=result.name,
+                        metadata={"error": result.error},
+                    ))
+                total_tokens += turn_tokens
+                yield await _emit(AgentEvent(
+                    type=AgentEventType.TURN_END,
+                    turn_index=turn_index,
+                    tool_results=[
+                        {"name": r.name, "content": "", "error": r.error,
+                         "duration_ms": r.duration_ms, "terminate": False}
+                        for r in tool_results
+                    ],
+                    usage={"turn_tokens": turn_tokens, "total_tokens": total_tokens},
+                ), on_event)
+                continue
+
             # Pi: preflight phase — validate, check confirmation, run beforeToolCall hooks
             _preflight: List[tuple[ToolCall, Optional[ToolResult]]] = []
             for call in tool_calls:
@@ -542,16 +640,28 @@ async def run_agent_loop(
 
                 tool_def = registry.get(call.name)
                 if tool_def and tool_def.requires_confirmation:
+                    # Pi: pause the loop and ask the user before executing a
+                    # destructive tool. The frontend renders Approve/Reject and
+                    # calls POST /agent/confirm; we poll for the decision.
                     yield await _emit(AgentEvent(
                         type=AgentEventType.CONFIRMATION_REQUIRED,
                         tool_name=call.name,
                         tool_args=call.arguments,
+                        confirmation_id=call.id,
                         message={"role": "tool", "content": f"Tool '{call.name}' requires user confirmation"},
                     ), on_event)
-                    _preflight.append((call, ToolResult(
-                        call_id=call.id, name=call.name, content="",
-                        error=f"Tool '{call.name}' requires user confirmation. Skipped for safety.",
-                    )))
+                    decision = await _wait_for_confirmation(session_id, call, abort)
+                    if decision != "approved":
+                        reason = (
+                            "Rejected by user" if decision == "rejected"
+                            else "Confirmation timed out — tool skipped"
+                        )
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content="",
+                            error=reason,
+                        )))
+                        continue
+                    _preflight.append((call, None))  # approved → execute
                     continue
 
                 if cfg.before_tool_call:
@@ -580,8 +690,22 @@ async def run_agent_loop(
                             tool={"name": call.name, "label": call.name.replace("_", " ").title()},
                         ))
 
+                    # Pi: tool_execution_start / tool_execution_end lifecycle
+                    async def _on_tool_event(te: ToolEvent) -> None:
+                        if te.phase == "start":
+                            _progress_events.append(AgentEvent(
+                                type=AgentEventType.TOOL_EXECUTION_START,
+                                tool={"name": te.name, "label": te.label},
+                            ))
+                        elif te.phase == "end":
+                            _progress_events.append(AgentEvent(
+                                type=AgentEventType.TOOL_EXECUTION_END,
+                                tool={"name": te.name, "label": te.label, "content": te.content, "error": te.error},
+                            ))
+
                     result = await registry.execute(
                         call, signal=abort,
+                        on_event=_on_tool_event,
                         on_progress=_on_tool_progress if cfg.stream else None,
                     )
                     return call, result, _progress_events
@@ -624,8 +748,22 @@ async def run_agent_loop(
                             tool={"name": call.name, "label": call.name.replace("_", " ").title()},
                         ))
 
+                    # Pi: tool_execution_start / tool_execution_end lifecycle
+                    async def _on_tool_event_seq(te: ToolEvent) -> None:
+                        if te.phase == "start":
+                            _progress_events.append(AgentEvent(
+                                type=AgentEventType.TOOL_EXECUTION_START,
+                                tool={"name": te.name, "label": te.label},
+                            ))
+                        elif te.phase == "end":
+                            _progress_events.append(AgentEvent(
+                                type=AgentEventType.TOOL_EXECUTION_END,
+                                tool={"name": te.name, "label": te.label, "content": te.content, "error": te.error},
+                            ))
+
                     result = await registry.execute(
                         call, signal=abort,
+                        on_event=_on_tool_event_seq,
                         on_progress=_on_tool_progress_seq if cfg.stream else None,
                     )
 
@@ -758,6 +896,7 @@ async def _stream_llm_response(
 ) -> AsyncIterator[Dict[str, Any]]:
     """Stream an LLM response via Ollama, yielding deltas and tool calls."""
     from services.ai.model_runtime import OllamaRuntime
+    from domain.ai.tools import ToolCall
 
     tool_defs = registry.get_function_definitions()
     tool_prompt = _build_tool_system_prompt(tool_defs)
@@ -782,21 +921,79 @@ async def _stream_llm_response(
         ollama_messages.insert(0, {"role": "system", "content": full_system})
 
     runtime = OllamaRuntime()
-    async for chunk in runtime.stream_chat(
-        messages=ollama_messages,
-        model=config.model,
-        images=images,
-    ):
-        if abort.is_set():
-            break
-        if isinstance(chunk, dict):
-            if "error" in chunk:
-                yield {"error": chunk["error"]}
-                return
-            data = chunk.get("data", {})
-            delta = data.get("message", "") if isinstance(data, dict) else str(data)
-            if delta:
-                yield {"delta": str(delta)}
+    max_attempts = max(1, config.llm_max_retries + 1)
+
+    # Pi: retry transient LLM failures (connection reset, model still loading into
+    # VRAM, 5xx) with exponential backoff instead of killing the whole agent run.
+    # We only retry when nothing has been streamed yet this attempt — retrying
+    # after content was already yielded would duplicate text the user has seen.
+    attempt = 0
+    while True:
+        attempt += 1
+        yielded_content = False
+        restart = False
+        try:
+            async for chunk in runtime.stream_chat(
+                messages=ollama_messages,
+                model=config.model,
+                images=images,
+                tools=tool_defs or None,
+            ):
+                if abort.is_set():
+                    return
+                if isinstance(chunk, dict):
+                    if "error" in chunk:
+                        if attempt < max_attempts and not yielded_content:
+                            logger.warning(
+                                f"Agent LLM call failed (attempt {attempt}/{max_attempts}), "
+                                f"retrying: {chunk['error']}"
+                            )
+                            restart = True
+                            break
+                        yield {"error": chunk["error"]}
+                        return
+                    # Pi: failToolCallsFromTruncatedMessage — the final Ollama chunk carries
+                    # done_reason; "length" means the output token limit was hit, so any
+                    # tool calls yielded so far may have truncated arguments.
+                    if chunk.get("done_reason"):
+                        yield {"done_reason": chunk["done_reason"]}
+                        return
+                    # Native tool call from Ollama — convert SDK objects to app ToolCall
+                    # (Pi: structured tool calling preferred over XML text parsing).
+                    if chunk.get("tool_calls"):
+                        raw_calls = chunk["tool_calls"]
+                        converted: List[ToolCall] = []
+                        for i, raw in enumerate(raw_calls):
+                            fn = raw.function if hasattr(raw, "function") else (raw.get("function") if isinstance(raw, dict) else None)
+                            if fn is None:
+                                continue
+                            name = fn.name if hasattr(fn, "name") else fn.get("name", "")
+                            args = fn.arguments if hasattr(fn, "arguments") else fn.get("arguments", {})
+                            converted.append(ToolCall(
+                                id=f"tool_{i}", name=name, arguments=dict(args or {}),
+                            ))
+                        if converted:
+                            yield {"tool_calls": converted}
+                        continue
+                    data = chunk.get("data", {})
+                    delta = data.get("message", "") if isinstance(data, dict) else str(data)
+                    if delta:
+                        yielded_content = True
+                        yield {"delta": str(delta)}
+        except Exception as e:
+            if attempt < max_attempts and not yielded_content:
+                logger.warning(
+                    f"Agent LLM call raised (attempt {attempt}/{max_attempts}), retrying: {e}"
+                )
+                await asyncio.sleep(min(config.llm_retry_backoff_base * (2 ** (attempt - 1)), 8.0))
+                continue
+            yield {"error": f"LLM call failed: {e}"}
+            return
+
+        if restart:
+            await asyncio.sleep(min(config.llm_retry_backoff_base * (2 ** (attempt - 1)), 8.0))
+            continue
+        return
 
 
 def _build_tool_system_prompt(tool_defs: List[Dict[str, Any]]) -> str:

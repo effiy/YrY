@@ -10,7 +10,7 @@ import json
 import logging
 import time
 from collections import defaultdict
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Request
 from fastapi.responses import StreamingResponse
@@ -30,6 +30,13 @@ _steering_last_access: Dict[str, float] = {}
 _follow_up_store: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
 _follow_up_last_access: Dict[str, float] = {}
 
+# ── Confirmation store (Pi-inspired: tool requires user approval) ─────────
+# Keyed by (session_id, confirmation_id = tool call id). The agent loop polls
+# get_confirmation_decision while waiting; POST /agent/confirm writes here.
+# Decisions are consumed once by mark_confirmation_seen after the loop reads them.
+_confirmation_store: Dict[tuple, str] = {}
+_confirmation_last_access: Dict[tuple, float] = {}
+
 def _cleanup_steering_store() -> None:
     """Remove entries older than 5 minutes."""
     now = time.time()
@@ -41,6 +48,28 @@ def _cleanup_steering_store() -> None:
     for k in stale_fu:
         _follow_up_store.pop(k, None)
         _follow_up_last_access.pop(k, None)
+    stale_conf = [k for k, t in _confirmation_last_access.items() if now - t > 300]
+    for k in stale_conf:
+        _confirmation_store.pop(k, None)
+        _confirmation_last_access.pop(k, None)
+
+
+def set_confirmation_decision(session_id: str, confirmation_id: str, approve: bool) -> None:
+    """Record the user's approve/reject decision for a pending tool call."""
+    key = (session_id, confirmation_id)
+    _confirmation_last_access[key] = time.time()
+    _confirmation_store[key] = "approved" if approve else "rejected"
+
+
+def get_confirmation_decision(session_id: str, confirmation_id: str) -> Optional[str]:
+    """Return the recorded decision (\"approved\"/\"rejected\") or None if pending."""
+    return _confirmation_store.get((session_id, confirmation_id))
+
+
+def mark_confirmation_seen(session_id: str, confirmation_id: str) -> None:
+    """Consume a decision once the agent loop has read it."""
+    _confirmation_store.pop((session_id, confirmation_id), None)
+    _confirmation_last_access.pop((session_id, confirmation_id), None)
 
 
 def get_steering_messages(session_id: str) -> List[Dict[str, Any]]:
@@ -93,7 +122,7 @@ def _format_sse(data: Any) -> bytes:
 
 
 @router.post("/agent/chat", operation_id="agent_chat")
-async def agent_chat_route(request: AgentChatRequest):
+async def agent_chat_route(request: AgentChatRequest, http_request: Request):
     """Stream an agent chat response with tool calling.
 
     The agent loop emits structured events for high observability:
@@ -108,11 +137,36 @@ async def agent_chat_route(request: AgentChatRequest):
     abort = asyncio.Event()
     session_id = request.session_id or ""
 
-    async def _check_disconnect() -> None:
-        """Poll for client disconnect so we can abort the agent loop."""
-        pass  # FastAPI handles this via request.is_disconnected()
+    async def _watch_disconnect() -> None:
+        """Poll for client disconnect and set `abort` so the agent loop stops
+        (Pi: cancellation on client disconnect). Without this, a user closing
+        the chat mid-turn leaves the loop running — waiting out the 120s
+        confirmation timeout or finishing long tool calls server-side.
+
+        Polls the raw ASGI ``receive`` channel with a timeout instead of
+        ``Request.is_disconnected()``: starlette's version is a non-blocking
+        check that only returns True when uvicorn has *already* queued an
+        ``http.disconnect`` message, which uvicorn 0.40 does not do reliably
+        for a client that closes mid-stream. Awaiting ``http_request._receive``
+        directly returns ``http.disconnect`` the moment uvicorn notices the
+        transport close."""
+        try:
+            raw_receive = http_request._receive
+            while not abort.is_set():
+                try:
+                    message = await asyncio.wait_for(raw_receive(), timeout=1.0)
+                except asyncio.TimeoutError:
+                    continue  # no message yet — still connected
+                if message.get("type") == "http.disconnect":
+                    logger.info(f"Agent client disconnected, aborting run (session={session_id!r})")
+                    abort.set()
+                    return
+        except Exception:
+            # Connection checks are best-effort; never let them crash the stream.
+            pass
 
     async def _event_generator():
+        watcher = asyncio.create_task(_watch_disconnect())
         try:
             async for frame in agent_chat_stream(
                 messages=request.messages,
@@ -128,6 +182,12 @@ async def agent_chat_route(request: AgentChatRequest):
         except Exception as e:
             logger.exception("Agent chat stream failed")
             yield _format_sse({"error": str(e), "done": True})
+        finally:
+            watcher.cancel()
+            try:
+                await watcher
+            except (asyncio.CancelledError, Exception):
+                pass
 
     return StreamingResponse(
         _event_generator(),
@@ -172,6 +232,26 @@ async def agent_follow_up_route(
     push_follow_up_message(session_id, message.strip())
     logger.info(f"Follow-up message queued for session {session_id}: {message[:80]}")
     return {"code": 0, "message": "ok", "data": {"queued": True}}
+
+
+@router.post("/agent/confirm", operation_id="agent_confirm")
+async def agent_confirm_route(
+    session_id: str = Body(..., embed=True),
+    confirmation_id: str = Body(..., embed=True),
+    approve: bool = Body(..., embed=True),
+):
+    """Approve or reject a tool call that requires user confirmation.
+
+    The agent loop pauses after emitting ``confirmation_required`` and polls this
+    decision (see ``domain/ai/agent.py:_wait_for_confirmation``). Approving lets
+    the destructive tool execute; rejecting skips it with a "Rejected by user"
+    result that the agent relays back.
+    """
+    if not session_id or not confirmation_id:
+        return {"code": 1, "message": "session_id and confirmation_id are required"}
+    set_confirmation_decision(session_id, confirmation_id, approve)
+    logger.info(f"Agent confirmation {confirmation_id} for session {session_id}: {'approved' if approve else 'rejected'}")
+    return {"code": 0, "message": "ok", "data": {"decision": "approved" if approve else "rejected"}}
 
 
 @router.post("/agent/tools", operation_id="agent_tools")

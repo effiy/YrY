@@ -83,6 +83,38 @@ class ToolEvent:
     is_error: bool = False
 
 
+def _validate_arguments(name: str, arguments: Any, schema: Dict[str, Any]) -> Optional[str]:
+    """Validate tool-call arguments against the tool's JSON Schema (Pi: validateToolArguments).
+
+    Returns an error string if invalid, or ``None`` if valid. Lightweight check for
+    required fields + declared property types, kept intentionally small so the error
+    message is short and model-readable — the LLM can re-issue the call correctly.
+    """
+    if arguments is None:
+        arguments = {}
+    if not isinstance(arguments, dict):
+        return f"Arguments for '{name}' must be a JSON object, got {type(arguments).__name__}"
+    props = schema.get("properties") or {}
+    for field in schema.get("required") or []:
+        if field not in arguments:
+            return f"Tool '{name}' is missing required argument '{field}'"
+    for field, value in arguments.items():
+        ptype = (props.get(field) or {}).get("type")
+        if ptype == "string" and not isinstance(value, str):
+            return f"Tool '{name}' argument '{field}' must be a string, got {type(value).__name__}"
+        if ptype == "object" and not isinstance(value, dict):
+            return f"Tool '{name}' argument '{field}' must be an object, got {type(value).__name__}"
+        if ptype == "array" and not isinstance(value, list):
+            return f"Tool '{name}' argument '{field}' must be an array, got {type(value).__name__}"
+        if ptype == "boolean" and not isinstance(value, bool):
+            return f"Tool '{name}' argument '{field}' must be a boolean, got {type(value).__name__}"
+        if ptype == "integer" and not isinstance(value, int):
+            return f"Tool '{name}' argument '{field}' must be an integer, got {type(value).__name__}"
+        if ptype == "number" and not isinstance(value, (int, float)):
+            return f"Tool '{name}' argument '{field}' must be a number, got {type(value).__name__}"
+    return None
+
+
 class ToolRegistry:
     """Registry of available tools for the agent loop.
 
@@ -168,6 +200,27 @@ class ToolRegistry:
             )
 
         label = tool.name.replace("_", " ").title()
+
+        # Pi: validateToolArguments — fail fast on malformed calls instead of
+        # executing them. A truncated/incomplete arg (e.g. a db_create missing
+        # 'data') would otherwise hit the DB as a broken write.
+        if tool.parameters:
+            validate_error = _validate_arguments(call.name, call.arguments, tool.parameters)
+            if validate_error:
+                start_ts = time.time()
+                if on_event:
+                    await on_event(ToolEvent(
+                        phase="start", name=call.name, label=label,
+                        args=call.arguments, timestamp=start_ts,
+                    ))
+                    await on_event(ToolEvent(
+                        phase="end", name=call.name, label=label,
+                        content="", error=validate_error, timestamp=time.time(),
+                    ))
+                return ToolResult(
+                    call_id=call.id, name=call.name, content="", error=validate_error,
+                )
+
         start = time.monotonic()
         start_ts = time.time()
 
@@ -215,6 +268,9 @@ class ToolRegistry:
             result = await asyncio.wait_for(_run_with_abort(), timeout=timeout)
             duration_ms = (time.monotonic() - start) * 1000
             content = result.get("content", "") if isinstance(result, dict) else str(result)
+            # Propagate tool-reported errors (result dicts carry {"error": ...});
+            # previously they were silently dropped from ToolResult.error.
+            error = result.get("error") if isinstance(result, dict) else None
 
             if on_event:
                 await on_event(ToolEvent(
@@ -222,6 +278,7 @@ class ToolRegistry:
                     name=call.name,
                     label=label,
                     content=content[:500] if content else "",
+                    error=error,
                     duration_ms=duration_ms,
                     timestamp=time.time(),
                 ))
@@ -230,6 +287,7 @@ class ToolRegistry:
                 call_id=call.id,
                 name=call.name,
                 content=content,
+                error=error,
                 duration_ms=duration_ms,
                 details=result.get("details") if isinstance(result, dict) else None,
             )
@@ -323,6 +381,14 @@ def get_tool_registry() -> ToolRegistry:
     if _registry is None:
         _registry = ToolRegistry()
         _register_builtin_tools(_registry)
+        # Generic data tools (db_list/db_schema/db_create/db_update/db_delete) —
+        # the agent reasons over collections via db_schema instead of hard-coded
+        # per-domain tools. Lazy import avoids a circular dependency.
+        try:
+            from domain.ai.data_tools import register_data_tools
+            register_data_tools(_registry)
+        except Exception as e:  # pragma: no cover
+            logger.warning(f"Data tools not registered: {e}")
     return _registry
 
 

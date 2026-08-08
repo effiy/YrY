@@ -47,6 +47,7 @@ export interface AgentStreamEvent {
   // Confirmation event fields
   tool_name?: string;
   tool_args?: Record<string, unknown>;
+  confirmation_id?: string;
   // Tool execution update fields (Pi: partial progress)
   tool_call_id?: string;
   partial_result?: Record<string, unknown>;
@@ -207,6 +208,34 @@ export function streamAgentChat(
       controller.abort();
     }
   };
+}
+
+/**
+ * Approve or reject a tool call that requires user confirmation.
+ * The agent loop pauses after emitting `confirmation_required` and waits
+ * for this decision before executing a destructive tool (e.g. menu CRUD).
+ */
+export async function confirmAgentTool(
+  sessionId: string,
+  confirmationId: string,
+  approve: boolean
+): Promise<boolean> {
+  const url = buildYiAiUrl("/agent/confirm");
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...yiAiAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ session_id: sessionId, confirmation_id: confirmationId, approve }),
+    });
+    const data = await res.json();
+    return data?.code === 0;
+  } catch {
+    return false;
+  }
 }
 
 /**

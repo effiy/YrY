@@ -224,6 +224,14 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — aiChat agent tool confirmation UI
+
+- **`src/views/aiChat/components/MessageList.vue`**: Tool confirmation banner with **Approve / Reject** buttons (replaces the old "skipped for safety" dead end). Renders the pending tool name + args; auto-rejects after 120s to match the backend wait timeout.
+- **`src/stores/modules/aiChat.ts`**: `pendingConfirmation` now carries `confirmationId`; added `approvePendingConfirmation()` / `rejectPendingConfirmation()` actions that call `confirmAgentTool` with the active conversation key; the `confirmation_required` handler captures `event.confirmation_id`. Agent-mode `system_prompt` omits the frontend `getToolsForSystemPrompt()` block (it contradicted the backend `<tool_call>` loop). Added `tool_execution_start` / `tool_execution_end` handlers: start pushes a `(running)` entry into the current turn's toolCalls (AgentTimeline renders a Loading spinner), end fills in the final content/error — completing Pi's live tool lifecycle so the timeline shows tools as they execute instead of only at `turn_end` (this also unblocks the pre-existing `tool_execution_update` partial-progress handler, which previously could never match a call because toolCalls was empty until turn end).
+- **`src/api/modules/agentService.ts`**: Added `confirmAgentTool(sessionId, confirmationId, approve)` → `POST /agent/confirm`; `AgentStreamEvent` gains `confirmation_id`/`tool_name`/`tool_args`.
+
+Backed by `YiAi`'s generic data tools (`db_list`/`db_schema`/`db_create`/`db_update`/`db_delete` — the agent reasons over the `menus` collection via `db_schema` instead of menu-specific code) + native Ollama tool calling — see `YiAi/CLAUDE.md` and `YiKnowledge/engineer/projects/yivad/manage-menu-catalog.md` → "Agent chat data tools (aiChat)".
+
 ### 2026-08-05 — KnowledgeMetaStrip UX improvements
 
 - **`src/components/KnowledgeMetaStrip.vue`**: Two UX fixes on the frontmatter strip surfaced in `KnowledgePreviewDialog` and Story Board drawer:

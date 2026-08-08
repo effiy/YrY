@@ -62,6 +62,10 @@ export interface AgentStreamEvent {
   before_count?: number;
   after_count?: number;
   saved_tokens?: number;
+  // Confirmation event fields (tool requires user approval)
+  tool_name?: string;
+  tool_args?: Record<string, unknown>;
+  confirmation_id?: string;
 }
 
 /** Per-turn summary for the agent timeline UI. */
