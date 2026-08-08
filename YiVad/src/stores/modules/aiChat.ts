@@ -31,6 +31,7 @@ import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 import { loadBool, saveBool, loadNum, saveNum, loadStr, saveStr, loadJson, saveJson } from "@/utils/storage";
 import { newKey, readFileAsDataUrl, normalizeSession } from "@/utils/chatNormalizers";
 import { confirmationAnswerFor } from "@/utils/confirmationAnswer";
+import { isContinuationMessage } from "@/utils/continuation";
 
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
 const STORAGE_RAG_KEY = "aiChat.ragEnabled";
@@ -1236,15 +1237,21 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       // (incl. tool_result messages), so the model sees the real completed
       // calls and continues — a text-only re-send makes it guess state from
       // narration and redo completed writes (observed on the menu lifecycle).
-      const resumeRun = lastAgentInterrupt.value?.sessionKey === (activeConversation.value?.key ?? "");
+      // Resume is gated on a GENUINE continuation (继续): a NEW task sent after
+      // max_turns must not resume — the backend's `[RESUME]` merge injects a
+      // "db_* 请勿重复执行" handoff note meant for 继续, which would tell the
+      // model to skip the writes the new task needs. A new task goes as a fresh
+      // run (resume: false, full history) — the known-good path.
+      const interruptedThisSession = lastAgentInterrupt.value?.sessionKey === (activeConversation.value?.key ?? "");
+      const resumeRun = interruptedThisSession && isContinuationMessage(lastUserMsg?.message ?? "");
       let resumeMessages = agentMessages;
       if (resumeRun) {
         // Only the user's continuation travels in the request — the server
         // restores the persisted trajectory for this session.
         const lastUser = [...aiMessages].reverse().find(m => m.type === "user");
         resumeMessages = lastUser ? [{ role: "user", content: lastUser.message ?? "" }] : agentMessages;
-        lastAgentInterrupt.value = null; // one-shot
       }
+      if (interruptedThisSession) lastAgentInterrupt.value = null; // one-shot
 
       // Clear per-turn state for this new send
       agentTurnSummaries.value = [];
