@@ -224,6 +224,11 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — Live agent turn-progress indicator (user sees the budget)
+
+- **`src/stores/modules/aiChat.ts`**: new `agentTurnProgress` computed — `{ current, max, active, nearLimit }` — derived from the reactive `agentTurnSummaries` (last `turnIndex`), `agentMaxTurns` (user-configurable), and `streamingPhase`. `active` = the agent is mid-run (`thinking`/`streaming`/`retrieving`); `nearLimit` = within 2 turns of `max_turns`. Exposed in the store return.
+- **`src/views/aiChat/components/MessageBubble.vue`**: while the agent runs, a compact line above the per-turn timelines shows `Agent 运行中 · 第 X / N 轮` with an `el-progress` bar; it turns warning-colored when `nearLimit`, so the user sees the agent approaching the turn wall and can reply 继续 (or steer) instead of waiting for a `max_turns_reached` stop. Complements the backend budget awareness (the model knows its budget; now the user sees it live). Type-check: 0 new errors (18 pre-existing, all in unrelated files).
+
 ### 2026-08-08 — Resume-by-session for 继续 (pi persistent loop)
 
 - **`src/stores/modules/aiChat.ts`**: after `agent_end` with `stop_reason=max_turns_reached`, the next send in the same session no longer re-sends the full history — it sends **only** the user's continuation with `resume: true`. The backend restores the persisted faithful trajectory (incl. `tool_result` messages), so the model sees the real completed calls and continues instead of redoing them. Previously the resume re-sent text-only narration and the model re-ran completed writes (measured 3/3 resumed runs re-created a menu `db_create` had already made; now 8/8 resumed runs complete the full lifecycle with zero duplicates). `lastAgentInterrupt` (set at `max_turns_reached` agent_end) marks the session; `resumeMessages` = the trailing user message only, one-shot cleared.

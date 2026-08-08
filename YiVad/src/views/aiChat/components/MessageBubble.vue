@@ -536,6 +536,24 @@ async function onEdit() {
       <!-- Per-message tool calls (Pi-inspired: tool timeline) -->
       <!-- Agent mode: per-turn timelines with thinking/reasoning separation -->
       <template v-if="toolCount && !isUser && store.agentMode && store.agentTurnSummaries.length">
+        <!-- Live turn budget (Pi: the user sees how close the agent is to
+             max_turns, so they can reply 继续 or steer before the wall). -->
+        <div
+          v-if="store.agentTurnProgress.active && store.agentTurnProgress.max > 0"
+          class="mb-agent-progress"
+          :class="{ 'mb-agent-progress--near': store.agentTurnProgress.nearLimit }"
+          :title="store.agentTurnProgress.nearLimit ? '即将达到最大轮次，任务可能未完成时可回复「继续」接着完成' : ''"
+        >
+          <span class="mb-agent-progress-label">
+            Agent 运行中 · 第 {{ store.agentTurnProgress.current }} / {{ store.agentTurnProgress.max }} 轮
+          </span>
+          <el-progress
+            :percentage="Math.min(100, Math.round((store.agentTurnProgress.current / store.agentTurnProgress.max) * 100))"
+            :stroke-width="4"
+            :show-text="false"
+            :color="store.agentTurnProgress.nearLimit ? 'var(--el-color-warning)' : 'var(--el-color-primary)'"
+          />
+        </div>
         <div class="mb-agent-turns">
           <AgentTimeline
             v-for="(turn, ti) in store.agentTurnSummaries"
@@ -1152,5 +1170,36 @@ async function onEdit() {
   flex-direction: column;
   gap: 4px;
   margin-top: 8px;
+}
+
+.mb-agent-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  background: var(--el-fill-color-light);
+
+  :deep(.el-progress) {
+    flex: 1;
+  }
+
+  &--near {
+    border-color: var(--el-color-warning-light-7);
+    background: var(--el-color-warning-light-9);
+  }
+}
+
+.mb-agent-progress-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+
+  .mb-agent-progress--near & {
+    color: var(--el-color-warning);
+  }
 }
 </style>

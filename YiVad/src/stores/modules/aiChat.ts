@@ -2017,7 +2017,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     createConversation, executeTool, maybeCompact, stopSending, retryLastMessage, renameConversation, exportConversation, exportConversationHtml, conversations, selectConversation, promptTemplates, addTemplate, removeTemplate, applyTemplate,
   });
 
+  // Live agent turn progress for the UI: how many turns the agent has used
+  // against its max_turns budget. Complements the backend budget awareness —
+  // the model knows its budget, the user sees it in real time, so they can
+  // reply 继续 (when nearLimit) or steer instead of waiting on an agent that
+  // is about to hit the wall.
+  const agentTurnProgress = computed(() => {
+    const summaries = agentTurnSummaries.value;
+    const current = summaries.length ? summaries[summaries.length - 1].turnIndex : 0;
+    const max = agentMaxTurns.value;
+    const active = ["thinking", "streaming", "retrieving"].includes(streamingPhase.value);
+    return {
+      current,
+      max,
+      active,
+      nearLimit: active && max > 0 && current >= max - 2,
+    };
+  });
+
   return {
+    agentTurnProgress,
     conversations,
     activeConversation,
     loading,
