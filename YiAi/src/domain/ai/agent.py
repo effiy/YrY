@@ -596,6 +596,48 @@ async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio
     return "timeout"
 
 
+def _turn_observation_signature(tool_results: List[ToolResult]) -> str:
+    """Signature of a turn's executed tool observations (name + effective result).
+
+    Two turns count as "the same observation" iff this signature is identical —
+    the model called the same tool(s) and got the same data back, i.e. no
+    progress. A narration-only turn has no results → ``""``.
+    """
+    if not tool_results:
+        return ""
+    parts = []
+    for r in tool_results:
+        content = r.content if not r.error else f"Error: {r.error}"
+        parts.append(f"{r.name}|{content}")
+    return "||".join(parts)
+
+
+def _advance_spin_state(
+    prev_obs: Optional[str],
+    run: int,
+    obs: str,
+    threshold: int = 3,
+) -> tuple[Optional[str], int, bool]:
+    """Pure spin-detector state transition. Returns (new_prev_obs, new_run, fired).
+
+    A narration turn (``obs == ""``) resets the chain — the model tried something
+    different (even just re-planning), so it is never counted as a spin. Two
+    consecutive turns with the same non-empty observation increment the run; a
+    different observation restarts it. Reaching ``threshold`` fires once and
+    resets the run so the same spin doesn't re-fire every turn.
+    """
+    if not obs:
+        return None, 0, False
+    if obs == prev_obs:
+        run += 1
+    else:
+        prev_obs = obs
+        run = 1
+    if run >= threshold:
+        return prev_obs, 0, True
+    return prev_obs, run, False
+
+
 def _bound_tool_result(
     name: str,
     content: str,
@@ -792,6 +834,13 @@ async def run_agent_loop(
     _write_counts: dict = {}  # per-tool count of successful confirmed writes (count-aware checkpoint)
     _write_rejected = False  # the user rejected (or timed out) a write confirmation this run
     _natural_stop = False  # the loop ended with a natural completion (break), not max_turns exhaustion
+    # Repeated-observation spin guard: track consecutive turns whose tool
+    # observations (name + result) are identical, so a model stuck re-issuing the
+    # same call (unchanged read query; re-attempting a just-rejected write) is
+    # nudged out instead of burning max_turns on spinning.
+    _obs_prev: Optional[str] = None
+    _obs_run = 0
+    _spin_nudged = False  # one spin nudge per run
 
     # Carry forward completed writes from the restored trajectory (resume): the
     # run's per-tool tracking starts from what the previous run already did, so
@@ -1222,6 +1271,33 @@ async def run_agent_loop(
             # shouldStopAfterTurn (Pi: early termination hint)
             if cfg.should_stop_after_turn and await cfg.should_stop_after_turn(assistant_msg, tool_results):
                 break
+
+            # Pi: repeated-observation spin guard — a model can get stuck re-issuing
+            # the same tool call and observing the same result every turn (a read
+            # loop on an unchanged query; re-attempting a just-rejected write). Real
+            # progress changes the observation: a write alters the data a later read
+            # sees, and a different query returns different rows. When the SAME
+            # observation repeats 3 turns in a row, inject one nudge to break the
+            # loop out instead of wasting turns on spinning.
+            _obs_now = _turn_observation_signature(tool_results)
+            _obs_prev, _obs_run, _obs_fired = _advance_spin_state(
+                _obs_prev, _obs_run, _obs_now, threshold=3
+            )
+            if _obs_fired and not _spin_nudged:
+                _spin_nudged = True
+                logger.info(
+                    f"Agent spin guard fired (session={session_id!r}): same tool "
+                    f"observation repeated 3 turns with no progress"
+                )
+                agent_messages.append(AgentMessage(
+                    role="user",
+                    content=(
+                        "[TASK] 你连续多轮调用相同的工具并得到完全相同的结果，没有任何进展。"
+                        "停止重复这一步。重新阅读用户的任务并执行下一步；如果任务已完成或无法继续，"
+                        "直接给出结论。如果某个操作被用户拒绝，不要再次尝试它。"
+                    ),
+                ))
+                continue
 
             continue
 
