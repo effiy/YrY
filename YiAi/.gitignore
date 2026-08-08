@@ -33,3 +33,6 @@ logs/
 
 # Claude - only ignore sensitive and auto-generated content
 .claude
+
+# RAG runtime persisted index (regenerated on demand)
+data/rag_store/
