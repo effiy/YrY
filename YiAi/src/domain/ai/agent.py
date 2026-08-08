@@ -561,6 +561,49 @@ def _strip_tool_calls_from_text(text: str) -> str:
     return text.strip()
 
 
+# Rejection memory: session → list of canonical signatures (tool name + args
+# JSON with keys sorted) the user explicitly rejected. A model can re-attempt a
+# just-rejected write with identical args, popping a *new* confirmation each
+# time (previously an accepted edge). Remembering the rejection lets the gate
+# auto-block the identical re-issue instead of re-prompting — data stays
+# user-gated, but the user isn't asked the same question twice in one session.
+_session_rejections: Dict[str, List[str]] = {}
+_MAX_SESSION_REJECTIONS = 20  # bound per session; drop oldest
+
+
+def _call_signature(call: ToolCall) -> str:
+    """Canonical identity of a call: tool name + args (keys sorted, stable JSON).
+
+    Two calls are "the same" iff they target the same tool with the same args,
+    regardless of the provider's (often reused) call id.
+    """
+    try:
+        args_json = json.dumps(call.arguments, sort_keys=True, ensure_ascii=False)
+    except Exception:
+        args_json = str(call.arguments)
+    return f"{call.name}|{args_json}"
+
+
+def _remember_rejection(session_id: str, call: ToolCall) -> None:
+    """Record an explicit user rejection for this session (bounded per-session list)."""
+    if not session_id:
+        return
+    sig = _call_signature(call)
+    lst = _session_rejections.setdefault(session_id, [])
+    if sig in lst:
+        return
+    lst.append(sig)
+    if len(lst) > _MAX_SESSION_REJECTIONS:
+        del lst[: len(lst) - _MAX_SESSION_REJECTIONS]
+
+
+def _is_rejected_call(session_id: str, call: ToolCall) -> bool:
+    """True if an identical call was explicitly rejected earlier in this session."""
+    if not session_id:
+        return False
+    return _call_signature(call) in _session_rejections.get(session_id, ())
+
+
 async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio.Event,
                                  confirmation_id: str | None = None) -> str:
     """Wait for the user's approve/reject decision on a tool call.
@@ -1107,6 +1150,23 @@ async def run_agent_loop(
                     # calls POST /agent/confirm; we poll for the decision.
                     # confirmation_id is prefixed with the turn index so it is
                     # unique per request (Ollama reuses tool_0 every turn).
+                    #
+                    # Rejection memory: if the user already rejected this exact
+                    # call (same tool + same args) earlier in this session, do
+                    # NOT re-prompt — auto-block it so the model cannot nag the
+                    # user with the same question repeatedly. The ToolResult
+                    # error tells the model to stop retrying and adapt.
+                    if _is_rejected_call(session_id, call):
+                        _write_rejected = True
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content="",
+                            error=(
+                                "Blocked: identical call was previously rejected "
+                                "by the user in this session. Do NOT retry it — "
+                                "change your approach or ask the user how to proceed."
+                            ),
+                        )))
+                        continue
                     confirm_id = f"t{turn_index}:{call.id}"
                     yield await _emit(AgentEvent(
                         type=AgentEventType.CONFIRMATION_REQUIRED,
@@ -1116,18 +1176,34 @@ async def run_agent_loop(
                         message={"role": "tool", "content": f"Tool '{call.name}' requires user confirmation"},
                     ), on_event)
                     decision = await _wait_for_confirmation(session_id, call, abort, confirm_id)
-                    if decision != "approved":
+                    if decision == "rejected":
+                        # Only an explicit "rejected" (not a timeout) is
+                        # remembered; a timeout is ambiguous and may warrant a
+                        # later re-attempt after a resume.
+                        _remember_rejection(session_id, call)
                         _write_rejected = True
-                        reason = (
-                            "Rejected by user" if decision == "rejected"
-                            else "Confirmation timed out — tool skipped"
-                        )
                         _preflight.append((call, ToolResult(
                             call_id=call.id, name=call.name, content="",
-                            error=reason,
+                            error="Rejected by user",
                         )))
                         continue
-                    _preflight.append((call, None))  # approved → execute
+                    if decision == "timeout":
+                        _write_rejected = True
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content="",
+                            error="Confirmation timed out — tool skipped",
+                        )))
+                        continue
+                    if decision == "approved":
+                        _preflight.append((call, None))  # approved → execute
+                        continue
+                    # Defensive: an unexpected decision must NEVER execute the
+                    # call. Treat it like a rejection (but don't remember it).
+                    _write_rejected = True
+                    _preflight.append((call, ToolResult(
+                        call_id=call.id, name=call.name, content="",
+                        error="Confirmation decision invalid — tool skipped",
+                    )))
                     continue
 
                 if cfg.before_tool_call:
