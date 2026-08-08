@@ -24,6 +24,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -49,41 +50,220 @@ _DEFAULT_CONTEXT_WINDOW = 8192
 _CONFIRMATION_TIMEOUT_S = 120  # how long the loop waits for a user approve/reject
 _CONFIRMATION_POLL_S = 1.5  # poll interval for the user's decision
 
-# Substrings that mark a user message as a *concrete task* (do something to data)
-# rather than pure Q&A. Used by the no-tool task-completion nudge below: a run that
-# ends with zero tools executed on a task-like request is likely incomplete, even
-# when the model never *named* a tool (so the named-tool guard stays quiet).
-_TASK_MARKERS_ZH = (
+# Substrings that mark a user message as a *write task* (mutate data) rather than
+# pure Q&A or a read-only query. Used by the task-completion nudge below: a run that
+# ends with no mutating tool executed on a write request is likely incomplete, even
+# when the model never *named* the write tool (so the named-tool guard stays quiet).
+# Read verbs (列出/查询/统计/list/query/count) are deliberately excluded — a read-only
+# query is "done" once answered, and nudging it would be noise.
+_WRITE_MARKERS_ZH = (
     "创建", "新增", "添加", "插入", "删除", "移除", "更新", "修改", "改名为", "重命名",
-    "改名", "列出", "查询", "统计", "汇总", "数一数", "导出", "生成", "保存", "写入",
-    "读取", "清理", "禁用", "启用", "移动", "复制", "完成", "执行", "帮我", "补充",
+    "改名", "导出", "生成", "保存", "写入", "清理", "禁用", "启用", "移动", "复制", "补充",
 )
-_TASK_MARKERS_EN = (
+_WRITE_MARKERS_EN = (
     "create", "add", "insert", "delete", "remove", "update", "rename",
-    "list", "query", "count", "export", "generate", "save", "write", "read",
-    "clean", "disable", "enable", "move", "copy", "complete", "execute", "do it",
+    "export", "generate", "save", "write", "clean", "disable", "enable", "move", "copy",
 )
 
+# Negation tokens: when a write marker is *preceded* (within a short window) by one
+# of these, it is not a write intent — a read-only query that says "只读，不要创建/
+# 更新/删除任何菜单" must not read as a write task. Compound tokens only (a bare "别"
+# appears inside unrelated words like "特别"), and the EN tokens need a trailing
+# space/boundary so "note"/"notebook"/"cannot" edge cases behave sanely.
+_NEGATION_TOKENS_ZH = ("不要", "禁止", "勿", "不能", "不得", "不可", "请勿", "切勿", "不需要", "不该")
+_NEGATION_TOKENS_EN = ("do not", "don't", "never", "no ", "not ")
+_NEGATION_MAX_DISTANCE = 40  # max chars to scan back (a clause rarely exceeds this)
 
-def _is_task_request(text: str) -> bool:
-    """Heuristic: does this user message ask for a concrete action on data?
+# Clause boundaries: when a negation token and a verb are separated by one of these,
+# they belong to different clauses and the token does not negate the verb. The fixed
+# pre-window approach failed on "不要调用 db_create/db_update/db_delete" — the second
+# and third tool names put the negation more than one fixed window away. Scanning back
+# to the previous boundary (or 40 chars) makes "不要调用 db_create/db_update/db_delete"
+# read as fully negated while "不要创建菜单，但把 X 的标题更新为 Y" keeps 更新 un-negated.
+_BOUNDARY_CHARS = "，。！？；：、（）()!?;:.,\n"
 
-    Looks for task-verb substrings (zh + en) on the lowercased text. Pure Q&A
-    ("what is X", "why...") rarely contains these verbs, so this stays quiet
-    there while catching "create a menu", "delete the row", "count the menus".
+
+def _clause_before(text: str, idx: int) -> str:
+    """Text since the previous clause boundary, capped at _NEGATION_MAX_DISTANCE."""
+    start = idx
+    scanned = 0
+    while start > 0 and scanned < _NEGATION_MAX_DISTANCE:
+        start -= 1
+        scanned += 1
+        if text[start] in _BOUNDARY_CHARS:
+            start += 1
+            break
+    return text[start:idx]
+
+
+def _is_negated(text: str, lowered: str, idx: int) -> bool:
+    """Is a marker occurrence at ``idx`` negated by a token in the preceding clause?"""
+    zh = _clause_before(text, idx)
+    en = _clause_before(lowered, idx)
+    return any(t in zh for t in _NEGATION_TOKENS_ZH) or any(
+        t in en for t in _NEGATION_TOKENS_EN
+    )
+
+
+def _write_marker_count(text: str) -> int:
+    """Count *distinct* non-negated write markers in a user message.
+
+    Used both by :func:`_is_write_request` (any marker ⇒ write task) and by the
+    completeness checkpoint (≥2 markers ⇒ plausibly a multi-step task whose trailing
+    steps a model might drop). Overlapping markers ("改名为" ⊃ "改名") are deduped so
+    one rename intent counts once, and negated occurrences ("不要删除") are skipped.
     """
     if not text:
-        return False
+        return 0
     lowered = text.lower()
-    return any(m in text for m in _TASK_MARKERS_ZH) or any(m in lowered for m in _TASK_MARKERS_EN)
+    found = set()
+    covered: List[tuple] = []  # (start, end) of already-counted non-negated occurrences
+    all_markers = sorted(
+        [(m, "zh") for m in _WRITE_MARKERS_ZH] + [(m, "en") for m in _WRITE_MARKERS_EN],
+        key=lambda t: len(t[0]),
+        reverse=True,
+    )
+    for m, lang in all_markers:
+        hay = text if lang == "zh" else lowered
+        idx = 0
+        while True:
+            i = hay.find(m, idx)
+            if i < 0:
+                break
+            start, end = i, i + len(m)
+            if any(cs <= start < ce or cs < end <= ce for cs, ce in covered):
+                idx = i + 1
+                continue  # already counted as part of a longer overlapping marker
+            if _is_negated(text, lowered, i):
+                idx = i + len(m)
+                continue
+            found.add(m)
+            covered.append((start, end))
+            idx = i + len(m)
+    return len(found)
+
+
+def _is_write_request(text: str) -> bool:
+    """Heuristic: does this user message ask for a write/mutation on data?
+
+    Looks for write-verb substrings (zh + en) on the lowercased text, skipping
+    negated occurrences ("不要创建") so read-only queries that *mention* write verbs
+    to forbid them are not mistaken for write tasks. Pure Q&A ("what is X") and
+    read-only queries ("how many menus") rarely contain a non-negated marker, so the
+    nudge stays quiet there while catching "create a menu", "delete the row",
+    "rename menu X".
+    """
+    return _write_marker_count(text) > 0
 
 
 def _last_user_text(messages: List["AgentMessage"]) -> str:
-    """Return the content of the most recent user-role message, or empty."""
+    """Return the content of the most recent *user-authored* message, or empty.
+
+    Skips the loop's injected `[CONTINUE]` / `[MODEL SWITCH]` / `[TASK]` messages
+    (role="user", content starts with `[`): those are system nudges whose wording
+    must not be mistaken for the user's real request (e.g. a nudge has no write
+    verb, so the task-completion nudge would fail to fire on a recon-then-stop).
+    """
     for m in reversed(messages):
-        if m.role == "user":
+        if m.role == "user" and not (m.content or "").lstrip().startswith("["):
             return m.content or ""
     return ""
+
+
+_MISSION_PREFIX = "[TASK] The user's concrete task"
+
+
+def _inject_mission_if_needed(
+    msgs: List["AgentMessage"],
+    mission: str,
+    mission_note: str,
+) -> List["AgentMessage"]:
+    """Re-inject the user's task verbatim when compaction pruned it from context.
+
+    Compaction folds old messages into a summary and keeps only the last K
+    verbatim, so a long multi-step task can lose its exact requirements (menu
+    names, paths, item counts) mid-run. This restores the task before an LLM
+    call, but only when it is no longer in context — a no-op while the mission
+    was already injected, or while the task is still verbatim among the user
+    messages (short runs that never compact). Safe fallback: return ``msgs``.
+    """
+    for m in msgs:
+        if m.role == "system" and m.content.startswith(_MISSION_PREFIX):
+            return msgs
+    if any(m.role == "user" and m.content == mission for m in msgs):
+        return msgs
+    return [AgentMessage(role="system", content=mission_note)] + list(msgs)
+
+
+# ── Count-aware partial-completion detection ─────────────────────────────
+
+
+# Write verb → the confirmation-gated tool it maps to, longest-first so 改名为
+# wins over 改名 and 新增/添加 are not swallowed by 新.
+_WRITE_VERB_TOOL = (
+    ("创建", "db_create"), ("新增", "db_create"), ("添加", "db_create"), ("插入", "db_create"),
+    ("生成", "db_create"), ("写入", "db_create"), ("保存", "db_create"), ("导出", "db_create"),
+    ("复制", "db_create"),
+    ("删除", "db_delete"), ("移除", "db_delete"), ("清理", "db_delete"),
+    ("更新", "db_update"), ("修改", "db_update"), ("重命名", "db_update"),
+    ("改名为", "db_update"), ("改名", "db_update"),
+    ("create", "db_create"), ("add", "db_create"), ("insert", "db_create"),
+    ("delete", "db_delete"), ("remove", "db_delete"),
+    ("update", "db_update"), ("rename", "db_update"),
+)
+# Item nouns that make a number read as an item count ("2 个菜单" / "create 2
+# menus"). The generic measure words (个/项/条) are allowed BEFORE the noun but
+# are NOT themselves item nouns — "2 个字段" / "2 小时后" must not count.
+_COUNT_NOUN = r"(?:菜单项|菜单|记录|数据|menus|menu|items|item|entries|entry)"
+_CHINESE_NUMERALS = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4,
+                     "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+# A measure word (个/项/条) counts as an item count only when followed by an
+# item noun OR a clause boundary — "2 个菜单" ✓, "更新 3 个" ✓, but "2 个字段" ✗.
+_COUNT_RE = re.compile(
+    r"(\d{1,3}|[一二两三四五六七八九])\s*(?:"
+    r"(?:个|项|条)\s*(?:" + _COUNT_NOUN + r"|(?=$|[，。；！？、\s]))"
+    r"|" + _COUNT_NOUN +
+    r")"
+)
+
+
+def _clause_after(text: str, idx: int) -> str:
+    """Return the slice from idx (inclusive) up to the next clause boundary."""
+    end = len(text)
+    for i in range(idx, len(text)):
+        if text[i] in _BOUNDARY_CHARS:
+            end = i
+            break
+    return text[idx:end]
+
+
+def _parse_task_item_counts(text: str) -> list:
+    """Return ``[(tool_name, count)]`` for explicit item counts in task text.
+
+    Associates each count with the nearest preceding write verb in the same
+    clause, skipping negated verbs (不要创建 2 个 → ignored). Only counts ≥ 2
+    are reported. Example: "创建 2 个菜单，删除 1 个" → [(db_create, 2)].
+    """
+    lowered = text.lower()
+    out: list = []
+    seen: set = set()
+    for verb, tool in _WRITE_VERB_TOOL:
+        start = 0
+        while True:
+            idx = text.find(verb, start)
+            if idx < 0:
+                break
+            start = idx + len(verb)
+            if _is_negated(text, lowered, idx):
+                continue
+            m = _COUNT_RE.search(_clause_after(text, idx))
+            if m:
+                raw = m.group(1)
+                count = _CHINESE_NUMERALS.get(raw, 0) if not raw.isdigit() else int(raw)
+                if count >= 2 and (tool, count) not in seen:
+                    seen.add((tool, count))
+                    out.append((tool, count))
+    return out
 
 
 # ── Agent event types (Pi parity) ─────────────────────────────────────────
@@ -486,7 +666,11 @@ async def run_agent_loop(
     _nudges = 0
     _MAX_NUDGES = 2
     _model_escalated = False  # one escalation per run; a second stall ends it
-    _task_nudged = False  # one no-tool task-completion nudge per run
+    _task_nudged = False  # one no-write task-completion nudge per run
+    _write_executed: set[str] = set()  # mutating tools (requires_confirmation) that SUCCEEDED
+    _write_counts: dict = {}  # per-tool count of successful confirmed writes (count-aware checkpoint)
+    _write_rejected = False  # the user rejected (or timed out) a write confirmation this run
+    _natural_stop = False  # the loop ended with a natural completion (break), not max_turns exhaustion
 
     # Outer loop: process user turns + queued messages
     while turn_index < cfg.max_turns:
@@ -710,6 +894,7 @@ async def run_agent_loop(
                     ), on_event)
                     decision = await _wait_for_confirmation(session_id, call, abort, confirm_id)
                     if decision != "approved":
+                        _write_rejected = True
                         reason = (
                             "Rejected by user" if decision == "rejected"
                             else "Confirmation timed out — tool skipped"
@@ -840,6 +1025,10 @@ async def run_agent_loop(
 
             for result in tool_results:
                 _executed_tool_names.add(result.name)
+                _td = registry.get(result.name)
+                if _td and _td.requires_confirmation and not result.error:
+                    _write_executed.add(result.name)
+                    _write_counts[result.name] = _write_counts.get(result.name, 0) + 1
                 tr_msg = AgentMessage(
                     role="tool_result",
                     content=result.content if not result.error else f"Error: {result.error}",
@@ -977,50 +1166,158 @@ async def run_agent_loop(
                     type=AgentEventType.MODEL_SWITCH,
                     message={"from": old_model, "to": cfg.model},
                 ), on_event)
-                agent_messages.append(AgentMessage(
-                    role="user",
-                    content=(
-                        f"[MODEL SWITCH] Your predecessor model {old_model} described "
-                        f"calling tool(s) {', '.join(mentioned_unexecuted)} but never "
-                        f"actually invoked them. You are now {cfg.model} with the same "
-                        "tools and the full conversation context. Complete the user's "
-                        "original task now — call the tools, do not just describe them."
-                    ),
-                ))
+                takeover = (
+                    f"[MODEL SWITCH] Your predecessor model {old_model} described "
+                    f"calling tool(s) {', '.join(mentioned_unexecuted)} but never "
+                    f"actually invoked them. You are now {cfg.model} with the same "
+                    "tools and the full conversation context. Complete the user's "
+                    "original task now — call the tools, do not just describe them."
+                )
+                if _write_rejected:
+                    takeover += (
+                        " IMPORTANT: a write confirmation was REJECTED by the user "
+                        "earlier in this run — do NOT re-attempt that specific write. "
+                        "Respect the rejection: if the task is blocked by it, say so "
+                        "and ask how to proceed."
+                    )
+                agent_messages.append(AgentMessage(role="user", content=takeover))
                 continue
 
-        # No-tool task-completion nudge: the run is about to end "completed", but if
-        # the user asked for a *concrete task* and we never executed a single tool
-        # (and the model named no tool either — the named-tool guard above stays
-        # quiet on a vague ramble), the task likely ended incomplete. Give the model
-        # one explicit chance to finish it by calling a tool, then end regardless.
-        # Bounded to one per run; pure Q&A rarely contains task markers, so it stays
-        # quiet there (a genuine "how many menus?" question still gets its chance).
+        # No-write task-completion nudge: the run is about to end "completed", but
+        # if the user asked for a *write* on data and we never executed a mutating
+        # tool (requires_confirmation), the task likely ended incomplete. This is
+        # broader than "no tool at all": a model can do the read-only recon
+        # (db_schema, db_list) and then stop without ever writing — observed when a
+        # multi-create task ended after recon with db_create never invoked, and the
+        # named-tool guard stayed quiet because the model named no tool. Give the
+        # model one explicit chance to finish the write, then end regardless.
+        # Bounded to one per run; read-only queries ("how many menus") and pure Q&A
+        # are excluded by _is_write_request, so they are never nudged. A run where the
+        # user *rejected* a write confirmation is also excluded — the nudge must not
+        # re-arm a write the user explicitly declined.
         if (
             not _task_nudged
-            and not _executed_tool_names
-            and _is_task_request(_last_user_text(agent_messages))
+            and not _write_executed
+            and not _write_rejected
+            and _is_write_request(_last_user_text(agent_messages))
         ):
             _task_nudged = True
+            logger.info(
+                f"Agent task-completion nudge fired (session={session_id!r}): "
+                "run ended with no mutating tool executed on a write request"
+            )
             nudge = AgentMessage(
                 role="user",
                 content=(
-                    "[TASK] You were asked to complete a concrete task, but this run "
-                    "has not invoked any tool yet. If the task requires data access "
-                    "or a write, call the appropriate tool now to actually do it — do "
-                    "not end with a description alone. If no tool is genuinely needed, "
-                    "state that clearly and finish."
+                    "[TASK] You were asked to create/update/delete data, but this run "
+                    "never actually invoked the write tool (e.g. db_create/db_update/"
+                    "db_delete) — reconnaissance alone does not complete the task. "
+                    "Call the appropriate write tool now to finish it. If the write "
+                    "genuinely cannot proceed, state why and finish."
                 ),
             )
             agent_messages.append(nudge)
             continue
 
+        # Completeness checkpoint: the run *did* execute mutating tool(s) and is
+        # about to end, but the task may be only partially done — observed:
+        # create+update completed, then the model stopped without the delete step
+        # it planned (e2e cycle ~2/5 before the checkpoint). The no-write nudge
+        # above cannot fire (_write_executed non-empty) and the narrate-guard cannot
+        # either (the model *forgets* the tool rather than narrating it). The
+        # strongest verifiable signal: the task text NAMES a write tool (db_create/
+        # db_update/db_delete) that was never executed. Tell the model the concrete
+        # missing tool instead of asking it to self-assess — a generic "any remaining
+        # steps?" is declined when the model confidently believes it is done.
+        # Gating on named-but-unexecuted tools also means a fully-complete multi-step
+        # run pays no extra turn, and a single-create task (names only db_create,
+        # which did run) is never checkpointed. Runs where the user *rejected* a
+        # write confirmation are excluded — re-nudging after a rejection would
+        # override the user's decision.
+        last_user = _last_user_text(agent_messages)
+        unexecuted_writes = [
+            td.name
+            for td in registry.get_enabled()
+            if td.requires_confirmation
+            and td.name in last_user
+            and td.name not in _executed_tool_names
+        ]
+        if (
+            not _task_nudged
+            and _write_executed
+            and not _write_rejected
+            and unexecuted_writes
+        ):
+            _task_nudged = True
+            logger.info(
+                f"Agent completeness checkpoint fired (session={session_id!r}): "
+                f"task named tool(s) {', '.join(unexecuted_writes)} that never executed"
+            )
+            nudge = AgentMessage(
+                role="user",
+                content=(
+                    "[TASK] You executed write operation(s) for the user's data task, "
+                    "but the task explicitly named tool(s) "
+                    f"{', '.join(unexecuted_writes)} that were never actually "
+                    "invoked. Call the missing tool(s) now to complete every requested "
+                    "step. If a step genuinely cannot proceed, state why. Do NOT invent "
+                    "new work beyond what the user asked."
+                ),
+            )
+            agent_messages.append(nudge)
+            continue
+
+        # Count-aware partial-completion check: the task asked for an explicit
+        # number of items (创建 2 个菜单) but fewer successful executions of the
+        # mapped tool happened. The named-tool checkpoint above cannot fire (the
+        # tool DID run), and the no-write nudge cannot either (_write_executed is
+        # non-empty) — yet the task is only half done. Gate on count ≥ 2 and a
+        # real gap so a fully-completed multi-item run pays no extra turn.
+        count_gaps: list = []
+        if not _task_nudged and _write_executed and not _write_rejected:
+            for tool_name, need in _parse_task_item_counts(last_user):
+                have = _write_counts.get(tool_name, 0)
+                if need >= 2 and have < need:
+                    count_gaps.append((tool_name, need, have))
+        if count_gaps:
+            _task_nudged = True
+            gap_desc = ", ".join(
+                f"{tn} 需要 {need} 次但只成功执行了 {have} 次" for tn, need, have in count_gaps
+            )
+            logger.info(
+                f"Agent count-aware checkpoint fired (session={session_id!r}): {gap_desc}"
+            )
+            nudge = AgentMessage(
+                role="user",
+                content=(
+                    "[TASK] The task requested a specific number of items that "
+                    f"was not fully completed. Gap: {gap_desc}. Execute the missing "
+                    "write(s) now. First verify what already exists (db_list) and "
+                    "do NOT create duplicates. If all requested items already "
+                    "exist, say so and stop — do NOT invent new work."
+                ),
+            )
+            agent_messages.append(nudge)
+            continue
+
+        _natural_stop = True
         break
 
     # ── Agent end ──────────────────────────────────────────────────────
+    # Distinguish a natural completion from exhausting max_turns mid-task:
+    # the loop previously reported stop_reason="completed" in both cases, so a
+    # run that ran out of turns with steps still pending looked finished to the
+    # frontend. The user must know the task may be incomplete so they can reply
+    # "继续" and the loop resumes from the accumulated history.
+    final_stop_reason = "completed" if _natural_stop else "max_turns_reached"
+    if not _natural_stop:
+        logger.info(
+            f"Agent reached max_turns={cfg.max_turns} without a natural stop "
+            f"(session={session_id!r}, {turn_index} turns) — task may be incomplete"
+        )
     yield await _emit(AgentEvent(
         type=AgentEventType.AGENT_END,
-        stop_reason="completed",
+        stop_reason=final_stop_reason,
         usage={"total_tokens": total_tokens, "turns": turn_index},
         messages=[{"role": m.role, "content": m.content} for m in agent_messages],
     ), on_event)
@@ -1264,6 +1561,34 @@ async def agent_chat_stream(
             return AgentLoopTurnUpdate(model=next_model)
 
         config.prepare_next_turn = _rotate_model
+
+    # Pi: transformContext — re-inject the user's concrete task after compaction.
+    # Compaction folds old messages into a summary and keeps only the last K
+    # verbatim, so a long multi-step task can lose its exact requirements (menu
+    # names, paths, item counts) mid-run. This hook restores the task verbatim
+    # before every LLM call, but only when it is no longer in context — short
+    # runs (task still the last user message) are untouched, so there is zero
+    # behavior change for tasks that never hit compaction.
+    _mission = ""
+    for _m in messages:
+        if _m.get("role") == "user" and isinstance(_m.get("content"), str) and _m["content"].strip():
+            _mission = _m["content"].strip()
+            break
+
+    if _mission:
+        _mission_note = (
+            f"{_MISSION_PREFIX} — it is the goal of this run. "
+            "Complete it; do NOT repeat work already shown as done in the history.\n"
+            f"{_mission}"
+        )
+
+        async def _re_inject_mission(msgs: List[AgentMessage]) -> List[AgentMessage]:
+            injected = _inject_mission_if_needed(msgs, _mission, _mission_note)
+            if len(injected) > len(msgs):
+                logger.info(f"Agent mission re-injected after context loss (session={session_id!r})")
+            return injected
+
+        config.transform_context = _re_inject_mission
 
     # Decode base64 data URLs to bytes for the model runtime
     image_bytes: Optional[List[bytes]] = None

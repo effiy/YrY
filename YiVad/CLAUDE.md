@@ -224,6 +224,15 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — Incomplete-task surfacing (max_turns_reached)
+
+- **`src/stores/modules/aiChat.ts`** + **`src/views/aiChat/components/KnowledgeChatPanel.vue`**: the backend now distinguishes `agent_end` `stop_reason="max_turns_reached"` (loop ran out of turns mid-task) from `"completed"` — previously both were "completed", so an unfinished task looked done. Both chat surfaces append `> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。` so the user knows to reply 继续 and the loop resumes from the accumulated history.
+
+### 2026-08-08 — aiChat agent model_switch surfacing (main panel)
+
+- **`src/stores/modules/aiChat.ts`**: Added the missing `model_switch` case to the agent `onEvent` switch (parity with `KnowledgeChatPanel`). When the backend escalates mid-task (stalled model → stronger fallback), the main chat panel now appends `> ⚙️ 模型自动切换：from → to` to the streamed pet message instead of staying silent about the handoff. Escalation is how the loop recovers to finish concrete tasks; now the recovery is visible in the primary chat surface.
+- **`src/views/aiChat/components/AgentEventsPanel.vue`**: Widened the `events` prop's `message` field to `{ role, content } | { from, to }` — fixes a pre-existing TS error from the earlier `AgentStreamEvent.message` widening (`model_switch`'s `{from,to}` payload didn't fit the panel's local type). Verified `pnpm type:check` — zero errors in agent-related files (18 pre-existing errors remain only in unrelated dashboard/proTable/rag views).
+
 ### 2026-08-08 — aiChat agent tool confirmation UI
 
 - **`src/views/aiChat/components/MessageList.vue`**: Tool confirmation banner with **Approve / Reject** buttons (replaces the old "skipped for safety" dead end). Renders the pending tool name + args; auto-rejects after 120s to match the backend wait timeout.

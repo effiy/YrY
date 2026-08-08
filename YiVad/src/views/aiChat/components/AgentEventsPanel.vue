@@ -15,7 +15,7 @@ const props = defineProps<{
     type: string;
     timestamp: number;
     turn_index?: number;
-    message?: { role: string; content: string };
+    message?: { role: string; content: string } | { from: string; to: string };
     tool_results?: Array<{ name: string; content: string; error?: string; duration_ms: number }>;
     phase?: string;
     delta?: string;

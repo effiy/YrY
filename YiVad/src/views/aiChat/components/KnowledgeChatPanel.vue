@@ -485,6 +485,15 @@ async function send() {
             }
             break;
           }
+          case "agent_end":
+            // The loop reports max_turns_reached when it ran out of turns mid-task
+            // (previously hardcoded "completed"). Tell the user the task may be
+            // unfinished so they can reply 继续 to resume from the accumulated history.
+            if (event.stop_reason === "max_turns_reached") {
+              streamingText.value += "\n\n> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。\n\n";
+              messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
+            }
+            break;
           case "error":
             handleSendError(petIdx, new Error(event.error ?? "Agent error"));
             break;

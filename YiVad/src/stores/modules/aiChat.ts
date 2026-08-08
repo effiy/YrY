@@ -1307,6 +1307,21 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
               }
               case "agent_end":
                 streamingPhase.value = "done";
+                // Pi parity: the loop now reports max_turns_reached when it ran
+                // out of turns mid-task (previously hardcoded "completed"). Tell
+                // the user the task may be unfinished so they can reply 继续 and
+                // the loop resumes from the accumulated history.
+                if (event.stop_reason === "max_turns_reached") {
+                  const notice = "\n\n> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。\n\n";
+                  streamed += notice;
+                  setActiveMessages(msgs => {
+                    const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+                    if (idx < 0) return msgs;
+                    const next = [...msgs];
+                    next[idx] = { ...next[idx], message: streamed };
+                    return next;
+                  });
+                }
                 if (event.usage) {
                   agentUsage.value = {
                     turnTokens: 0,
@@ -1334,6 +1349,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                   timestamp: event.timestamp,
                 };
                 break;
+              case "model_switch": {
+                // Pi-inspired escalation: the active model stalled (narrated
+                // tool calls without executing them) so the loop handed off to
+                // a stronger model. Surface the handoff so the stall — and the
+                // recovery — isn't invisible in the main chat panel (parity
+                // with KnowledgeChatPanel's model_switch handling).
+                const m = (event.message ?? {}) as { from?: string; to?: string };
+                if (m.from && m.to) {
+                  const notice = `\n\n> ⚙️ 模型自动切换：${m.from} → ${m.to}\n\n`;
+                  streamed += notice;
+                  setActiveMessages(msgs => {
+                    const idx = msgs.findIndex(x => x.timestamp === petTimestamp);
+                    if (idx < 0) return msgs;
+                    const next = [...msgs];
+                    next[idx] = { ...next[idx], message: streamed, error: false, aborted: false };
+                    return next;
+                  });
+                }
+                break;
+              }
               case "tool_execution_start": {
                 // Pi: live tool lifecycle — show a "(running)" entry immediately so
                 // the timeline reflects the tool while it executes (AgentTimeline
