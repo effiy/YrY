@@ -1,10 +1,11 @@
 .knowledge-base-box {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 
-  .top-box {
+  .top-box,
+  .charts-box {
     box-sizing: border-box;
     padding: 6px 20px 0;
     flex-shrink: 0;
@@ -43,45 +44,6 @@
   .stat-modules .stat-icon { background: linear-gradient(135deg, #5ab1ef, #3a90d0); }
   .stat-total-size .stat-icon { background: linear-gradient(135deg, #73c0de, #5ab1ef); }
 
-  // ── Category Quick-Selector ──
-  .category-bar {
-    flex-shrink: 0; padding: 0 20px;
-    .category-tabs {
-      display: flex; gap: 4px; padding: 2px 0;
-      .cat-tab {
-        display: inline-block; padding: 2px 8px; border-radius: 10px;
-        font-size: 10px; color: #606266; cursor: pointer; white-space: nowrap;
-        background: var(--el-fill-color-light); transition: all .15s;
-        &:hover { background: var(--el-color-primary-light-9); color: var(--el-color-primary); }
-        &.active { background: var(--el-color-primary); color: #fff; }
-        &.missing-tab { border: 1px dashed var(--el-color-warning); }
-        &.missing-tab.active { background: var(--el-color-warning); border-color: var(--el-color-warning); }
-      }
-    }
-    .time-chips {
-      display: flex; gap: 4px; padding: 0;
-      .time-chip {
-        display: inline-block; padding: 1px 6px; border-radius: 8px;
-        font-size: 9px; color: #909399; cursor: pointer;
-        border: 1px solid var(--el-border-color); transition: all .15s;
-        &:hover { border-color: var(--el-color-primary); color: var(--el-color-primary); }
-        &.active { background: var(--el-color-primary-light-9); border-color: var(--el-color-primary); color: var(--el-color-primary); }
-      }
-    }
-  }
-
-  // ── Filter Row ──
-  .filter-row {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 4px;
-    padding: 0 20px; flex-shrink: 0;
-    .filter-chips { display: flex; align-items: center; gap: 4px; }
-    .filter-label { font-size: 11px; color: #909399; }
-    .filter-count { font-size: 11px; color: #909399; margin-left: auto; }
-    .subcat-stats { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-    .subcat-label { font-size: 11px; color: #909399; }
-    .subcat-tag { cursor: pointer; }
-  }
-
   // ── Category Summary (inline) ──
   .cat-summary {
     flex-shrink: 0; padding: 0 20px;
@@ -101,20 +63,6 @@
   // ── Main Row ──
   .main-row {
     flex: 1; min-height: 0; overflow: auto; padding: 0 20px;
-  }
-
-  .main-left-col {
-    height: 100%;
-  }
-
-  .main-right-col {
-    height: 100%;
-    > .el-row {
-      height: 100%;
-      .el-col {
-        height: calc(33.333% - 12px);
-      }
-    }
   }
 
   // ── Drill-Down ──
@@ -358,100 +306,14 @@
     .chart-title {
       padding: 3px 10px; font-family: DIN; font-size: 11px; font-weight: bold;
       border-bottom: 1px solid var(--el-border-color); flex-shrink: 0;
+      .chart-title-hint { font-size: 10px; color: #909399; font-weight: normal; }
     }
     .chart-body { flex: 1; min-height: 0; width: 100%; }
   }
+  .chart-hint { font-size: 10px; color: #909399; }
 
   .mb12 { margin-bottom: 6px; }
   .text-muted { color: #c0c4cc; }
-
-  // ── Module Drill-Down Table ──
-  .module-drilldown {
-    flex: 1; overflow-y: auto; display: flex; flex-direction: column;
-    .mdd-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 4px 0 6px; flex-shrink: 0; flex-wrap: wrap; gap: 4px;
-      border-bottom: 1px solid var(--el-border-color-lighter); margin-bottom: 4px;
-      .mdd-title { font-family: DIN; font-size: 12px; font-weight: bold; }
-    }
-    .mdd-table-wrap { flex: 1; overflow-y: auto; }
-    .mdd-module-row {
-      display: flex; align-items: center; gap: 6px;
-      padding: 5px 8px; cursor: pointer; transition: background .1s;
-      border-radius: 4px; margin: 1px 0;
-      &:hover { background: var(--el-fill-color-light); }
-    }
-    .mdd-toggle {
-      display: inline-block; width: 14px; text-align: center;
-      font-size: 10px; color: #909399; transition: transform .15s; flex-shrink: 0;
-      &.expanded { transform: rotate(90deg); }
-    }
-    .mdd-module-name { font-size: 12px; font-weight: 600; color: #303133; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .mdd-module-cat { font-size: 10px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
-    .mdd-module-count { font-size: 10px; color: #909399; white-space: nowrap; flex-shrink: 0; }
-    .mdd-mini-bars { display: flex; gap: 1px; height: 7px; flex: 1; min-width: 40px; border-radius: 3px; overflow: hidden; }
-    .mdd-mini-bar { height: 100%; min-width: 2px; }
-    .mdd-chips { display: flex; gap: 2px; flex-shrink: 0; }
-    .mdd-indicators { display: flex; gap: 6px; font-size: 9px; color: #909399; flex-shrink: 0; }
-    .mdd-ind-warn { color: #e6a23c; }
-    .mdd-stale { color: #e6a23c; font-weight: 600; }
-    .mdd-tacit { color: #9a60b4; font-weight: 600; }
-    .mdd-arrow { font-size: 10px; color: #c0c4cc; flex-shrink: 0; }
-    .mdd-file-row {
-      display: flex; align-items: center; gap: 5px;
-      padding: 3px 8px 3px 28px; font-size: 11px; transition: background .1s;
-      border-radius: 3px; margin: 1px 0;
-      &:hover { background: var(--el-color-primary-light-9); }
-    }
-    .mdd-class-summary {
-      display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px;
-      padding: 4px 8px 4px 28px; margin: 2px 0;
-      background: var(--el-fill-color-lighter); border-radius: 4px;
-      .mdd-cs-label { font-size: 9px; color: #909399; font-weight: 600; flex-shrink: 0; padding-top: 1px; }
-      .mdd-cs-row { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
-      .mdd-cs-dim { font-size: 8px; color: #c0c4cc; margin-right: 2px; flex-shrink: 0; }
-      .mdd-cs-chip {
-        display: inline-block; padding: 0 4px; border-radius: 3px;
-        font-size: 9px; line-height: 16px; cursor: pointer; white-space: nowrap;
-        transition: transform .12s;
-        &:hover { transform: scale(1.08); }
-      }
-    }
-    .mdd-file-name { color: #303133; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; &:hover { color: var(--el-color-primary); } }
-    .mdd-file-sub { font-size: 9px; color: #909399; white-space: nowrap; }
-    .mdd-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; cursor: pointer; }
-    .mdd-lifecycle { cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-    .mdd-review { font-size: 9px; color: #909399; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-    .mdd-file-tacit { color: #9a60b4; font-size: 9px; font-weight: 600; flex-shrink: 0; }
-    .mdd-file-stale { color: #e6a23c; font-size: 9px; font-weight: 600; flex-shrink: 0; }
-    .mdd-file-roles { display: flex; gap: 1px; flex-shrink: 0; }
-    .mdd-file-updated { font-size: 9px; color: #c0c4cc; white-space: nowrap; margin-left: auto; flex-shrink: 0; }
-    .mdd-show-more {
-      padding: 4px 8px 4px 28px; font-size: 10px; color: var(--el-color-primary);
-      cursor: pointer; transition: background .1s;
-      &:hover { background: var(--el-color-primary-light-9); }
-    }
-  }
-  .treemap-box {
-    padding: 4px 10px; flex-shrink: 0; margin: 0 20px 8px;
-    .chart-title { font-family: DIN; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-    .treemap-body { width: 100%; height: 200px; }
-  }
-
-  // ── Tag Cloud ──
-  .tag-cloud-box {
-    padding: 4px 10px; flex-shrink: 0; margin: 0 20px 8px;
-    .chart-title { font-family: DIN; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-    .tag-cloud-body {
-      display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center;
-      padding: 4px 0; max-height: 100px; overflow-y: auto;
-      .tag-cloud-item {
-        cursor: pointer; color: #5470c6; line-height: 1.5;
-        transition: color .12s, transform .12s;
-        &:hover { color: var(--el-color-primary); transform: scale(1.15); }
-      }
-    }
-  }
 
   // ── Type Badge ──
   .type-badge {
@@ -646,38 +508,6 @@
     }
   }
 
-  // ── File Classification Summary ──
-  .file-classification-summary {
-    display: flex; align-items: flex-start; gap: 8px; flex-shrink: 0;
-    padding: 3px 0; flex-wrap: wrap;
-    border-bottom: 1px solid var(--el-border-color-lighter); margin-bottom: 2px;
-    .fcs-label { font-size: 10px; color: #909399; flex-shrink: 0; padding-top: 1px; font-weight: 600; }
-    .fcs-stat { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
-    .fcs-stat-label { font-size: 9px; color: #c0c4cc; margin-right: 2px; }
-    .fcs-chip {
-      display: inline-block; padding: 0 5px; border-radius: 3px;
-      font-size: 9px; line-height: 16px; cursor: pointer; transition: transform .12s;
-      &:hover { transform: scale(1.1); }
-    }
-    .fcs-type-chip { color: #fff; }
-  }
-
-  // ── Classification Overview ──
-  .classification-overview {
-    flex-shrink: 0; padding: 0;
-    .class-overview-body {
-      display: flex; flex-direction: column; gap: 3px;
-    }
-    .co-row { display: flex; align-items: flex-start; gap: 4px; }
-    .co-label { font-size: 9px; color: #909399; font-weight: 600; min-width: 48px; padding-top: 2px; flex-shrink: 0; }
-    .co-chips { display: flex; flex-wrap: wrap; gap: 2px; }
-    .co-chip {
-      display: inline-block; padding: 0 5px; border-radius: 3px;
-      font-size: 9px; line-height: 16px; cursor: pointer; transition: transform .12s;
-      &:hover { transform: scale(1.08); }
-    }
-  }
-
   // ── Module Classification View (file-centric grouped by module) ──
   .module-classification-view {
     flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;
@@ -691,7 +521,6 @@
     .mcv-expand-summary {
       display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 8px;
       background: var(--el-fill-color-lighter); border-radius: 4px; margin-bottom: 6px;
-      .mcv-expand-label { font-size: 10px; color: #909399; font-weight: 600; margin-right: 2px; }
       .mcv-expand-dim { font-size: 9px; color: #c0c4cc; margin-left: 4px; }
     }
     .mcv-chip {
@@ -732,7 +561,6 @@
 
   // Dynamic chips: background set via --bg custom property
   .mcv-chip-dynamic { display: inline-block; padding: 0 5px; border-radius: 3px; font-size: 9px; line-height: 16px; cursor: pointer; color: #fff; background: var(--bg); transition: transform .12s; white-space: nowrap; &:hover { transform: scale(1.1); } }
-  .mcv-chip-review { background: #909399; color: #fff; }
   .role-badges-row { display: flex; gap: 2px; flex-wrap: wrap; }
   .health-row-stats { display: flex; align-items: center; gap: 6px; font-size: 11px; }
   .health-coverage { color: var(--coverage-color); font-weight: 600; }

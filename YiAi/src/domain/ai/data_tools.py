@@ -52,7 +52,7 @@ _COLLECTION_SCHEMAS: Dict[str, Dict[str, Any]] = {
             "A menu whose 'component' path does not resolve to a file under src/views/ is a DEAD LINK: the dynamic router silently skips it, so the sidebar entry does nothing. Create the view file first, or use component:'' for a pure group node.",
             "Deleting a menu that has children does NOT cascade: children are orphaned and become top-level. Delete the children first; db_delete refuses while children reference the menu unless you pass 'force': true.",
             "Never delete the 'home' menu: the app boots into /home/index and lands on the 404 page without it.",
-            "aiChat and RAG are already static routes — do NOT create menu entries for them (duplicate routes + dead sidebar entries).",
+            "RAG is already a static route — do NOT create a menu entry for it (duplicate route + dead sidebar entry). aiChat IS a menu entry (/aiChat, key menu_aiChat); do not re-register a static /aiChat route.",
             "The sidebar sorts alphabetically by meta.title; the 'order' field has no visible effect. Rename meta.title to reorder.",
             "The 'name' field is the KeepAlive cache key and the v-auth permission prefix — renaming it breaks page caches and all v-auth directives that reference the old name.",
         ],

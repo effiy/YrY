@@ -44,13 +44,13 @@ There are **three copies** of the menu tree, all of which must stay in sync:
 | 2 | `YiAi/src/data/seeds/menus.json` | **Backend seed.** Upserted into `menus` on boot *only when the collection is empty* (fresh deploy). | Seed file in the repo |
 | 3 | `YiVad/src/assets/json/authMenuList.json` | **Frontend fallback.** Loaded *only when* the `/auth/menu/list` request throws (YiAi unreachable, e.g. offline dev). | Repo file |
 
-All three currently contain the same canonical tree (66 flat documents / 9 top-level groups). Editing the seed or the fallback does **not** affect a running system whose `menus` collection is already populated — use the Menu Management page for live changes.
+All three currently contain the same canonical tree (135 flat documents / 21 top-level groups). Editing the seed or the fallback does **not** affect a running system whose `menus` collection is already populated — use the Menu Management page for live changes.
 
 ## Core viewpoints
 
 - **Menu = route = sidebar entry** — one menu node produces one sidebar item and one Vue Router route. The `component` field maps to a `.vue` file under `src/views/`.
 - **The `home` entry is load-bearing** — `HOME_URL` is `/home/index`, and `/` redirects there. That route is added *dynamically* from the menu tree; if the `home` menu entry is missing, the app boots into a 404.
-- **Static routes are the skeleton** — login, layout, **aiChat**, **RAG system** (dashboard + 4 sub-pages), Knowledge Base `:category`/`detail` sub-routes, and all code-review/BRD/tech-leadership `detail/:id?` pages are hard-coded in `staticRouter.ts`. **aiChat and RAG are intentionally NOT menu entries.** Everything else comes from the menu tree.
+- **Static routes are the skeleton** — login, layout, **RAG system** (dashboard + 4 sub-pages), Knowledge Base `:category`/`detail` sub-routes, and all code-review/BRD/tech-leadership `detail/:id?` pages are hard-coded in `staticRouter.ts`. **RAG is intentionally NOT a menu entry.** Everything else comes from the menu tree. (aiChat was promoted from static to a dynamic menu entry on 2026-08-08.)
 - **Management page is self-service** — `src/views/system/menuMange/index.vue` is a ProTable tree editor; create/edit/delete menus without touching the database directly.
 - **Fallback ensures offline dev** — when the YiAi backend is unreachable, the frontend loads `src/assets/json/authMenuList.json` so the app is still navigable.
 - **Sidebar order is alphabetical, not by `order`** — see [Sorting behavior](#sorting-behavior) below.
@@ -107,11 +107,11 @@ There is also a parallel REST surface `GET|POST|PUT|DELETE /system/menus` in `Yi
 
 | Layer | File | What it contains |
 |---|---|---|
-| Static | `src/routers/modules/staticRouter.ts` | Login, layout shell, **aiChat**, **RAG** (index + retrieval/chat/compare/history), Knowledge Base `:category` + `:category/detail/:file` sub-routes, all code-review/BRD/tech-leadership `detail/:id?` routes, 403/404/500 + catch-all |
+| Static | `src/routers/modules/staticRouter.ts` | Login, layout shell, **RAG** (index + retrieval/chat/compare/history), Knowledge Base `:category` + `:category/detail/:file` sub-routes, all code-review/BRD/tech-leadership `detail/:id?` routes, 403/404/500 + catch-all |
 | Dynamic | `src/routers/modules/dynamicRouter.ts` | `GET /auth/menu/list` (or fallback) → `getFlatMenuList` → `router.addRoute("layout", item)` per node; entries whose component doesn't resolve via `viewsGlob` are skipped |
-| Fallback | `src/assets/json/authMenuList.json` | Same tree as the seed, nested — Home, Knowledge Base, BRD (9), Code Review (18), Tech Leadership (19), FDE Resume, Story Board, RSS (4), System Management (7) |
+| Fallback | `src/assets/json/authMenuList.json` | Same tree as the seed, nested — Home, Knowledge Base, AI Chat, BRD (9), Code Review (18), Tech Leadership (19), FDE Resume, Story Board, RSS (4), System Management (7), Dashboard (11), About (3), Assembly (10), Auth Demo (2), Data Screen, Directives (6), ECharts (6), Form (4), Link, Menu Demo (8), ProTable (6) |
 
-**Key rule**: detail pages (list-item detail views) are registered as **static hidden routes** with `isHide: true` — they appear in the router but not in the sidebar. List pages come from the dynamic menu tree. **aiChat and RAG are static too** — do not recreate them as menu entries.
+**Key rule**: detail pages (list-item detail views) are registered as **static hidden routes** with `isHide: true` — they appear in the router but not in the sidebar. List pages come from the dynamic menu tree. **RAG is static too** — do not recreate it as a menu entry.
 
 ### Route initialization flow
 
@@ -186,7 +186,7 @@ The aiChat agent (Pi-inspired agent loop) can operate on the menu catalog direct
 
 **Writable scope.** Reads are open (non-destructive). Writes are restricted to `_WRITABLE_COLLECTIONS` in `data_tools.py` (currently `{"menus"}`) — a **safety policy, not business logic**; extend it as other collections become safe to edit from chat (e.g. `knowledge_files`, `rss_sources`). The menus schema entry documents the nested `meta` shape (title/icon/isLink/isHide/isFull/isAffix/isKeepAlive) so the model emits valid documents.
 
-**Schema rules (declarative domain guardrails).** The `menus` schema entry carries a `rules` block — the pitfalls below distilled into model-readable constraints returned by `db_schema` (dead-link components, no cascade delete, never delete `home`, aiChat/RAG are static, sidebar sorts by `meta.title`, `name` is a cache/permission key). The agent reads these before writing instead of the code encoding menu logic. The schema also declares `parent_ref_field: "parent"`, which `db_delete` uses **generically**: it refuses to delete a document that has children (deleting would orphan them to top-level, since there is no cascade) and reports the child count + an example key, suggesting the model delete children first or re-run with `force: true`. The guard is data-driven — any collection with a `parent_ref_field` gets the same protection with no per-collection code.
+**Schema rules (declarative domain guardrails).** The `menus` schema entry carries a `rules` block — the pitfalls below distilled into model-readable constraints returned by `db_schema` (dead-link components, no cascade delete, never delete `home`, RAG is static, sidebar sorts by `meta.title`, `name` is a cache/permission key). The agent reads these before writing instead of the code encoding menu logic. The schema also declares `parent_ref_field: "parent"`, which `db_delete` uses **generically**: it refuses to delete a document that has children (deleting would orphan them to top-level, since there is no cascade) and reports the child count + an example key, suggesting the model delete children first or re-run with `force: true`. The guard is data-driven — any collection with a `parent_ref_field` gets the same protection with no per-collection code.
 
 **Confirmation gate.** `db_create`/`db_update`/`db_delete` set `requires_confirmation=True`. When the agent requests one, the loop emits a `confirmation_required` SSE event and **pauses** (up to 120s). The aiChat UI renders an Approve/Reject banner in the message list; either choice calls `POST /agent/confirm {session_id, confirmation_id, approve}` (`YiAi/src/server/routes/agent.py`, store in `src/server/routes/agent.py:_confirmation_store`). Approve executes the tool, Reject (or timeout) skips it with a "Rejected by user" / "timed out" result the agent relays back. The frontend wiring lives in `YiVad/src/api/modules/agentService.ts` (`confirmAgentTool`), `src/stores/modules/aiChat.ts` (`pendingConfirmation` + approve/reject actions), and `src/views/aiChat/components/MessageList.vue` (the banner + 120s auto-reject). The confirmation UI is generic — no tool names are hard-coded.
 
@@ -425,14 +425,14 @@ Defined across `YiVad/src/api/modules/system.ts`, `YiVad/src/api/modules/login.t
 
 > Parentheses contain, in order: Element Plus icon name and the relative path to the main page `index.vue` (base path `src/views/`), separated by commas. Sidebar render order is alphabetical by title, not the display order below.
 >
-> **Legend:** `[dynamic]` = in the dynamic menu tree (MongoDB); `[static]` = hard-coded in `staticRouter.ts`; `[template]` = template boilerplate / demo page (not wired to any route).
+> **Legend:** `[dynamic]` = in the dynamic menu tree (MongoDB); `[static]` = hard-coded in `staticRouter.ts`; `[template]` = template boilerplate / demo page (not wired to any route). (No `[template]` entries remain — the former demo/demo pages About, Assembly, Auth Demo, Data Screen, Directives, ECharts, Form, Link, Menu Demo, and ProTable were promoted into the dynamic tree on 2026-08-08.)
 
 ```
 Home (HomeFilled, src/views/home/index.vue)
 
 Knowledge Base (Collection, src/views/knowledge/index.vue)
 
-AI Chat (ChatDotRound, src/views/aiChat/index.vue)  [static]
+AI Chat (ChatDotRound, src/views/aiChat/index.vue)
 
 RAG System (DataBoard, src/views/rag/index.vue)  [static]
 ├── Retrieval (Search, src/views/rag/retrieval.vue)
@@ -440,12 +440,12 @@ RAG System (DataBoard, src/views/rag/index.vue)  [static]
 ├── Compare (Switch, src/views/rag/compare.vue)
 └── History (Clock, src/views/rag/history.vue)
 
-About (InfoFilled, src/views/about/index.vue)  [template]
+About (InfoFilled, src/views/about/index.vue)
 ├── YiAi (Menu, src/views/about/yiai/index.vue)
 ├── YiPet (Menu, src/views/about/yipet/index.vue)
 └── YiVad (Menu, src/views/about/yivad/index.vue)
 
-Assembly Components (SetUp)  [template]
+Assembly Components (SetUp)
 ├── Batch Import (Menu, src/views/assembly/batchImport/index.vue)
 ├── Draggable (Menu, src/views/assembly/draggable/index.vue)
 ├── Guide (Menu, src/views/assembly/guide/index.vue)
@@ -457,7 +457,7 @@ Assembly Components (SetUp)  [template]
 ├── Upload File (Menu, src/views/assembly/uploadFile/index.vue)
 └── Wang Editor (Menu, src/views/assembly/wangEditor/index.vue)
 
-Auth Demo (Lock)  [template]
+Auth Demo (Lock)
 ├── Button (Menu, src/views/auth/button/index.vue)
 └── Menu (Menu, src/views/auth/menu/index.vue)
 
@@ -492,7 +492,7 @@ Code Review (DocumentChecked)
 ├── Backward compat review (Menu, src/views/code-review/backward-compat/index.vue)
 └── i18n / a11y review (Menu, src/views/code-review/i18n-a11y/index.vue)
 
-Dashboard (Odometer)  [template]
+Dashboard (Odometer)
 ├── AI Analytics (TrendCharts, src/views/dashboard/aiAnalytics/index.vue)
 ├── Data Visualize (PieChart, src/views/dashboard/dataVisualize/index.vue)
 ├── Engineering Maturity (DataAnalysis, src/views/dashboard/engineeringMaturity/index.vue)
@@ -505,9 +505,9 @@ Dashboard (Odometer)  [template]
 ├── Service Performance (Monitor, src/views/dashboard/servicePerformance/index.vue)
 └── System Health (CircleCheck, src/views/dashboard/systemHealth/index.vue)
 
-Data Screen (Monitor, src/views/dataScreen/index.vue)  [template]
+Data Screen (Monitor, src/views/dataScreen/index.vue)
 
-Directives Demo (Aim)  [template]
+Directives Demo (Aim)
 ├── Copy Directive (Menu, src/views/directives/copyDirect/index.vue)
 ├── Debounce Directive (Menu, src/views/directives/debounceDirect/index.vue)
 ├── Drag Directive (Menu, src/views/directives/dragDirect/index.vue)
@@ -515,7 +515,7 @@ Directives Demo (Aim)  [template]
 ├── Throttle Directive (Menu, src/views/directives/throttleDirect/index.vue)
 └── Watermark Directive (Menu, src/views/directives/watermarkDirect/index.vue)
 
-ECharts Demo (Histogram)  [template]
+ECharts Demo (Histogram)
 ├── Column Chart (Menu, src/views/echarts/columnChart/index.vue)
 ├── Line Chart (Menu, src/views/echarts/lineChart/index.vue)
 ├── Nested Chart (Menu, src/views/echarts/nestedChart/index.vue)
@@ -523,7 +523,7 @@ ECharts Demo (Histogram)  [template]
 ├── Radar Chart (Menu, src/views/echarts/radarChart/index.vue)
 └── Water Chart (Menu, src/views/echarts/waterChart/index.vue)
 
-Form Demo (EditPen)  [template]
+Form Demo (EditPen)
 ├── Basic Form (Menu, src/views/form/basicForm/index.vue)
 ├── Dynamic Form (Menu, src/views/form/dynamicForm/index.vue)
 ├── Pro Form (Menu, src/views/form/proForm/index.vue)
@@ -531,12 +531,12 @@ Form Demo (EditPen)  [template]
 
 FDE Resume (UserFilled, src/views/resume/index.vue)
 
-Link (Link)  [template]
+Link (Link)
 └── Claude (Menu, src/views/link/claude/index.vue)
 
 Login (User, src/views/login/index.vue)  [static]
 
-Menu Demo (Menu)  [template]
+Menu Demo (Menu)
 ├── Menu 1 (Menu, src/views/menu/menu1/index.vue)
 ├── Menu 2 (Menu)
 │   ├── Menu 2-1 (Menu, src/views/menu/menu2/menu21/index.vue)
@@ -546,7 +546,7 @@ Menu Demo (Menu)  [template]
 │   └── Menu 2-3 (Menu, src/views/menu/menu2/menu23/index.vue)
 └── Menu 3 (Menu, src/views/menu/menu3/index.vue)
 
-ProTable Demo (Grid)  [template]
+ProTable Demo (Grid)
 ├── Complex ProTable (Menu, src/views/proTable/complexProTable/index.vue)
 ├── Document (Menu, src/views/proTable/document/index.vue)
 ├── Tree ProTable (Menu, src/views/proTable/treeProTable/index.vue)
@@ -593,7 +593,7 @@ Tech Leadership (Monitor)
 └── Knowledge Evolution (Menu, src/views/tech-leadership/knowledge-evolution/index.vue)
 ```
 
-> **Note:** Entries marked `[dynamic]` (no tag) are the 66 documents in the MongoDB `menus` collection and are the runtime source of truth for sidebar + routes. Entries marked `[static]` are hard-coded in `staticRouter.ts`. Entries marked `[template]` are boilerplate/demo pages from the admin template — they have view files but no route wiring. Detail pages (`detail.vue`) under `brd/`, `code-review/`, and `tech-leadership/` are static hidden routes not listed above.
+> **Note:** Entries marked `[dynamic]` (no tag) are the 135 documents in the MongoDB `menus` collection and are the runtime source of truth for sidebar + routes. Entries marked `[static]` are hard-coded in `staticRouter.ts`. Detail pages (`detail.vue`) under `brd/`, `code-review/`, and `tech-leadership/` are static hidden routes not listed above.
 
 ## Action recommendations
 
@@ -611,7 +611,7 @@ Tech Leadership (Monitor)
 - **Adding a menu without a corresponding view file** — the dynamic router silently skips entries whose component path doesn't resolve via `viewsGlob`. The menu appears in the sidebar but clicking it does nothing.
 - **Editing the fallback JSON or seed expecting a live change** — `authMenuList.json` is only a fallback and `menus.json` only seeds an empty collection. Neither affects an already-seeded running system. Use the Menu Management page.
 - **Putting detail routes in the menu tree** — detail pages (`/xxx/detail/:id?`) should be static hidden routes in `staticRouter.ts`, not menu entries.
-- **Re-adding aiChat or RAG as menu entries** — both are already static routes. Duplicating them in the tree creates redundant routes and dead sidebar entries (the stale DB once had `/aiChat` and `/rag` menu nodes; the canonical tree omits them).
+- **Re-adding RAG as a menu entry** — RAG is already a static route. Duplicating it in the tree creates a redundant route and dead sidebar entry (the stale DB once had `/aiChat` and `/rag` menu nodes; the canonical tree omits them). (aiChat was promoted into the dynamic menu on 2026-08-08 — do not re-add a static `/aiChat` route.)
 - **Deleting the `home` menu entry** — `HOME_URL` is `/home/index` and `/` redirects there. Without the dynamic `home` route the app lands on the 404 catch-all after login.
 - **Deleting a parent menu expecting cascade** — children are orphaned to top-level, not deleted. Delete children first if you want them gone.
 - **Expecting `order` to reorder the sidebar** — the sidebar sorts alphabetically by title. `order` is effectively vestigial; `getMenuList()` even queries it under the wrong name (`sort`).
@@ -621,7 +621,7 @@ Tech Leadership (Monitor)
 
 - **Editing `authMenuList.json` as if it were the production menu source.** The fallback JSON is only loaded when the YiAi backend is unreachable. Changes to this file are invisible to all users in normal operation, creating a false sense that the menu was updated. Always use the Menu Management page or the `data_service` API to modify the live menu tree in MongoDB.
 - **Using the menu tree to register detail/dynamic-parameter routes.** Routes like `/code-review/detail/:id` belong in `staticRouter.ts` as hidden routes, not in the menu tree. Putting them in the menu tree creates a sidebar entry for a page that cannot render without a parameter, and clutters navigation with dead-end links.
-- **Adding aiChat / RAG as menu nodes.** They are static routes and already reachable; menu-tree duplicates are dead weight and confuse future editors.
+- **Adding RAG as a menu node.** RAG is a static route and already reachable; a menu-tree duplicate is dead weight and confuses future editors. (aiChat is now a dynamic menu entry — do not re-register it as a static route either.)
 - **Deleting the `home` menu node.** The app boots into `/home/index`; removing the dynamic route strands every user on the 404 page.
 - **Deleting a parent menu node and assuming children are cascade-deleted.** The menu management page orphans children to the top level on parent deletion (the backend `_build_menu_tree` promotes orphaned `parent` paths to roots). Delete children first, then the parent.
 - **Creating a menu entry with a component path that does not yet exist on disk.** The dynamic router silently skips entries whose `component` field does not resolve via `viewsGlob`. The menu appears in the sidebar but clicking it navigates to a blank page with no error. Always create the `.vue` file under `src/views/` before or immediately after adding the menu record.

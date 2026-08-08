@@ -89,23 +89,65 @@
       </el-row>
     </div>
 
-    <!-- Category Summary Bar (when a category is selected) -->
-    <div class="cat-summary" v-if="activeFilter.category && !activeSubCategory">
-      <span class="sum-label">{{ activeFilter.category }}</span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">{{ subCategories.length }} modules</span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">{{ subCategories.reduce((s, m) => s + m.count, 0) }} files</span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">Coverage: <span :class="{ 'text-warn': categoryReviewCoverage < 50 }">{{ categoryReviewCoverage }}%</span></span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">Stale: <span :class="{ 'text-warn': categoryStaleCount > 0 }">{{ categoryStaleCount }}</span></span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">Tacit: {{ categoryTacitCount }}</span>
-      <span class="sum-sep">|</span>
-      <span class="sum-item">Top: <span class="sum-chip" v-for="m in subCategories.slice(0, 4)" :key="m.name" @click="activeSubCategory = m.name; drillPage = 1">{{ m.name === '__root__' ? 'root' : m.name }} ({{ m.count }})</span></span>
+    <!-- Row 1.5: Analytics Charts -->
+    <div class="card charts-box">
+      <div class="top-header">
+        <span class="top-title">Knowledge Analytics</span>
+        <div class="top-actions">
+          <span class="chart-hint">点击图表下钻到对应文件</span>
+        </div>
+      </div>
+      <el-row :gutter="12">
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Review Cycle</div>
+            <div class="chart-body"><ECharts :option="reviewCycleDonutOption" height="220" @chart-click="onChartClick('review_cycle', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Status</div>
+            <div class="chart-body"><ECharts :option="statusBarOption" height="220" @chart-click="onChartClick('status', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Type</div>
+            <div class="chart-body"><ECharts :option="typeBarOption" height="220" @chart-click="onChartClick('type', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Lifecycle</div>
+            <div class="chart-body"><ECharts :option="lifecycleBarOption" height="220" @chart-click="onChartClick('lifecycle', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Top Modules</div>
+            <div class="chart-body"><ECharts :option="moduleBarOption" height="220" @chart-click="onChartClick('module', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Roles</div>
+            <div class="chart-body"><ECharts :option="rolesBarOption" height="220" @chart-click="onChartClick('role', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">File Size</div>
+            <div class="chart-body"><ECharts :option="sizeDistOption" height="220" @chart-click="onChartClick('size', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">File Age</div>
+            <div class="chart-body"><ECharts :option="fileAgeOption" height="220" @chart-click="onChartClick('age', $event)" /></div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
-
     <!-- Main Row: Full-width drill-down tree + file preview -->
     <el-row :gutter="12" class="main-row">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="main-col-full">
@@ -113,60 +155,13 @@
           <!-- Panel Header -->
           <div class="panel-header">
             <span class="panel-title">
-              <template v-if="activeFilter.category">
-                <span class="bread-link" @click="clearAllFilters">All</span>
-                <span class="bread-sep">/</span>
-                <span class="bread-link" @click="backToCategory">{{ activeFilter.category }}</span>
-                <template v-if="activeSubCategory">
-                  <span class="bread-sep">/</span>
-                  <span class="bread-link" @click="activeSubCategory = ''; drillPage = 1">{{ activeSubCategory === '__root__' ? 'Root files' : activeSubCategory }}</span>
-                </template>
-                <template v-if="activeFilter.sub_module">
-                  <span class="bread-sep">/</span>
-                  <span class="bread-link" @click="delete activeFilter.sub_module; drillPage = 1">{{ activeFilter.sub_module === '__root__' ? 'root' : activeFilter.sub_module }}</span>
-                </template>
-              </template>
-              <template v-else-if="!hasActiveFilter && !browseAllFiles && drillView === 'all' && viewMode === 'modules'">Module Classification</template>
-              <template v-else-if="!hasActiveFilter && !browseAllFiles && drillView === 'all' && viewMode === 'files'">
-                File Classification
-                <span class="panel-count">({{ knowledgeData?.total ?? 0 }} files)</span>
-              </template>
-              <template v-else-if="browseAllFiles && !hasActiveFilter && !activeTimeFilter && drillView === 'all'">
-                <span class="bread-link" @click="browseAllFiles = false">&larr; Back</span>
-                <span class="bread-sep">/</span>
-                <span>All Files</span>
-                <span class="panel-count">({{ knowledgeData?.total ?? 0 }})</span>
-              </template>
-              <template v-else-if="browseAllFiles && !hasActiveFilter && !activeTimeFilter">
-                <span class="bread-link" @click="browseAllFiles = false">&larr; Back</span>
-                <span class="bread-sep">/</span>
-                <span class="bread-link" @click="drillView = 'all'; drillPage = 1">All Files</span>
-                <span class="bread-sep">/</span>
-                <span>{{ drillView === 'recent' ? 'Recent' : 'Stale' }}</span>
-                <span class="panel-count">({{ drillTableData.length }})</span>
-              </template>
-              <template v-else-if="browseAllFiles && (activeTimeFilter || searchText) && !hasActiveFilter">
-                <span class="bread-link" @click="browseAllFiles = false">&larr; Back</span>
-                <span class="bread-sep">/</span>
-                <span class="bread-link" @click="activeTimeFilter = ''; searchText = ''; drillPage = 1">All Files</span>
-                <span class="bread-sep">/</span>
-                <span v-if="activeTimeFilter">{{ activeTimeFilter === 'today' ? 'Today' : activeTimeFilter === 'week' ? 'This Week' : 'This Month' }}</span>
-                <span v-else>Search: "{{ searchText }}"</span>
-                <span class="panel-count">({{ drillTableData.length }})</span>
-              </template>
-              <template v-else>
-                <span v-if="hasActiveFilter || activeTimeFilter">Filtered Files</span>
-                <span v-else>All Files</span>
-                <span class="panel-count" v-if="hasActiveFilter || activeTimeFilter">({{ filteredFiles.length }})</span>
-                <span class="panel-subtitle" v-if="activeTimeFilter && !hasActiveFilter"> &mdash; {{ activeTimeFilter === 'today' ? 'updated today' : activeTimeFilter === 'week' ? 'updated this week' : 'updated this month' }}</span>
-              </template>
+              File Classification
+              <span class="panel-count">({{ knowledgeData?.total ?? 0 }} files)</span>
             </span>
             <div class="panel-actions">
-              <template v-if="dialogFilePath && dialogFileIndex >= 0">
-                <span class="panel-nav-info">{{ dialogFileIndex + 1 }}/{{ sortedDrillTableData.length }}</span>
-                <el-button size="small" text :disabled="!prevDialogFile" @click="navigateDialogFile('prev')" title="Previous file"><el-icon><ArrowLeft /></el-icon></el-button>
-                <el-button size="small" text :disabled="!nextDialogFile" @click="navigateDialogFile('next')" title="Next file"><el-icon><ArrowRight /></el-icon></el-button>
-              </template>
+              <span class="panel-nav-info">{{ dialogFileIndex + 1 }}/{{ sortedDrillTableData.length }}</span>
+              <el-button size="small" text :disabled="!prevDialogFile" @click="navigateDialogFile('prev')" title="Previous file"><el-icon><ArrowLeft /></el-icon></el-button>
+              <el-button size="small" text :disabled="!nextDialogFile" @click="navigateDialogFile('next')" title="Next file"><el-icon><ArrowRight /></el-icon></el-button>
               <div class="search-wrapper">
                 <el-input
                   v-model="searchText" :placeholder="searchMode === 'content' ? 'Search content...' : 'Ctrl+K search...'"
@@ -191,47 +186,21 @@
                 <el-radio-button value="title">Title</el-radio-button>
                 <el-radio-button value="content">Content</el-radio-button>
               </el-radio-group>
-              <el-radio-group v-model="drillView" size="small">
-                <el-radio-button value="all">All</el-radio-button>
-                <el-radio-button value="recent">Recent</el-radio-button>
-                <el-radio-button value="stale" v-if="staleFiles.length > 0">Stale</el-radio-button>
+              <el-radio-group v-model="activeTimeFilter" size="small" @change="onTimeFilterChange">
+                <el-radio-button value="">All</el-radio-button>
+                <el-radio-button value="today">Today</el-radio-button>
+                <el-radio-button value="week">Week</el-radio-button>
+                <el-radio-button value="month">Month</el-radio-button>
               </el-radio-group>
-              <el-radio-group v-model="viewMode" size="small" v-if="!hasActiveFilter && !searchText && !activeTimeFilter && !browseAllFiles">
+              <el-radio-group v-model="viewMode" size="small">
                 <el-radio-button value="files">Files</el-radio-button>
                 <el-radio-button value="modules">Modules</el-radio-button>
               </el-radio-group>
-              <el-button size="small" text @click="fileViewMode = fileViewMode === 'table' ? 'gallery' : 'table'" :title="fileViewMode === 'table' ? 'Switch to gallery view' : 'Switch to table view'" v-if="drillTableData.length > 0 && !isShowingTreeView">
-                <el-icon :size="14"><Grid /></el-icon>
-              </el-button>
-              <el-button size="small" text @click="exportCSV" :disabled="drillTableData.length === 0" title="Export CSV">CSV</el-button>
-              <el-button size="small" text @click="showBenefitCol = !showBenefitCol" :type="showBenefitCol ? 'primary' : undefined" title="Toggle Benefit column">
-                <el-icon :size="14"><Coin /></el-icon>
-              </el-button>
             </div>
           </div>
 
-          <!-- Recently Viewed Chips -->
-          <div class="recently-viewed-row" v-if="recentlyViewed.length > 0 && !isShowingTreeView">
-            <span class="rv-label">Recent:</span>
-            <span
-              v-for="rv in recentlyViewed.slice(0, 8)" :key="rv.path"
-              class="rv-chip" :title="rv.path" @click="openFileInDialog(rv)"
-            >
-              {{ rv.title || rv.path.split('/').pop() }}
-            </span>
-            <el-button v-if="recentlyViewed.length > 8" size="small" text @click="clearRecentlyViewed" title="Clear all">✕</el-button>
-          </div>
-
-          <!-- Summary Stats Bar (when viewing filtered files or sub-modules) -->
-          <div class="drill-summary" v-if="drillSummary && !isShowingTreeView && drillView === 'all'">
-            <span class="ds-total">{{ drillSummary.total }} files</span>
-            <span class="ds-sep">|</span>
-            <span class="ds-label">Modules:</span>
-            <span v-for="m in drillSummary.topModules" :key="m[0]" class="ds-chip" @click="drillToModule(m[0])">{{ m[0] }} <em>{{ m[1] }}</em></span>
-          </div>
-
           <!-- Module Classification Table -->
-          <div class="module-classification-view" v-if="!hasActiveFilter && !searchText && !activeTimeFilter && !browseAllFiles && drillView === 'all' && searchMode === 'title' && viewMode === 'modules'">
+          <div class="module-classification-view" v-if="viewMode === 'modules' && searchMode === 'title' && !searchText">
             <div class="mcv-header">
               <span class="mcv-title">Module Classification ({{ totalModules }} modules, {{ knowledgeData?.total ?? 0 }} files)</span>
               <div class="mcv-header-actions">
@@ -327,7 +296,7 @@
               </el-table-column>
               <el-table-column prop="name" label="Module" min-width="160" sortable="custom">
                 <template #default="{ row }">
-                  <span class="mcv-module-link">{{ row.name }}</span>
+                  <span class="mcv-module-link">{{ row.name === '__root__' ? 'Root' : row.name }}</span>
                 </template>
               </el-table-column>
               <el-table-column prop="category" label="Category" width="130" sortable="custom">
@@ -359,7 +328,7 @@
           </div>
 
           <!-- Sub-Module Grid -->
-          <div class="submodule-grid" v-else-if="showSubModuleGrid">
+          <div class="submodule-grid" v-if="showSubModuleGrid">
             <div
               v-for="sc in subCategories" :key="sc.name"
               class="submodule-card" :class="{ 'sm-root': sc.name === '__root__' }"
@@ -411,7 +380,7 @@
           </div>
 
           <!-- Module Detail Card -->
-          <div class="module-detail-card" v-if="moduleDetail && drillView === 'all'">
+          <div class="module-detail-card" v-if="moduleDetail">
             <div class="mdc-header">
               <div class="mdc-title-row">
                 <span class="mdc-module-name">{{ activeSubCategory === '__root__' ? 'Root files' : activeSubCategory }}</span>
@@ -471,7 +440,7 @@
           </div>
 
           <!-- Top Files in Module -->
-          <div class="top-files-row" v-if="topModuleFiles.length > 0 && drillView === 'all' && !searchText">
+          <div class="top-files-row" v-if="topModuleFiles.length > 0">
             <span class="tf-label">Files:</span>
             <div class="tf-scroll">
               <span
@@ -490,7 +459,7 @@
           </div>
 
           <!-- Content Search Results -->
-          <div v-if="searchMode === 'content' && contentSearchResults.length > 0" v-loading="contentSearchLoading" class="content-search-results">
+          <div v-loading="contentSearchLoading" class="content-search-results" v-if="searchMode === 'content' && searchText">
             <div class="csr-header">
               Found {{ contentSearchResults.length }} files matching "{{ searchText }}"
             </div>
@@ -517,7 +486,7 @@
             </div>
           </div>
           <!-- File Table / Gallery -->
-          <template v-if="drillTableData.length > 0 && searchMode === 'title'">
+          <template v-if="viewMode === 'files' && !(searchMode === 'content' && searchText)">
             <!-- Gallery View -->
             <div class="file-gallery" v-if="fileViewMode === 'gallery'">
               <div
@@ -566,7 +535,7 @@
                   </el-button>
                 </template>
               </el-table-column>
-              <el-table-column prop="title" label="File" min-width="170" sortable="custom">
+              <el-table-column prop="title" label="File" min-width="320" sortable="custom">
                 <template #default="{ row }">
                   <el-popover placement="right" :width="320" trigger="hover" :show-after="400" :hide-after="100">
                     <template #reference>
@@ -665,7 +634,7 @@
                   <span v-else class="text-muted">--</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="tags" label="Tags" width="105" show-overflow-tooltip sortable="custom">
+              <el-table-column prop="tags" label="Tags" width="160" show-overflow-tooltip sortable="custom">
                 <template #default="{ row }">
                   <span v-if="(row.tags || []).length > 0" class="role-badges">
                     <span v-for="t in (row.tags || []).slice(0, 2)" :key="t" class="tag-badge" @click.stop="setFilter('tag', t)">{{ t }}</span>
@@ -674,7 +643,7 @@
                   <span v-else class="text-muted">--</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="roles" label="Roles" width="105" show-overflow-tooltip sortable="custom">
+              <el-table-column prop="roles" label="Roles" width="180" show-overflow-tooltip sortable="custom">
                 <template #default="{ row }">
                   <span v-if="(row.roles || []).length > 0" class="role-badges">
                     <span v-for="r in (row.roles || []).slice(0, 2)" :key="r" class="role-badge" @click.stop="setFilter('role', r)">{{ r }}</span>
@@ -746,7 +715,7 @@
           </template>
 
           <!-- Selected File Detail Panel -->
-          <div class="file-detail-panel" v-if="selectedFile && drillTableData.length > 0" @keydown="onDetailKeydown" tabindex="0" ref="detailPanelRef">
+          <div v-if="selectedFile" class="file-detail-panel" @keydown="onDetailKeydown" tabindex="0" ref="detailPanelRef">
             <div class="fd-header">
               <div class="fd-header-left">
                 <el-button size="small" text :disabled="!prevFile" @click="navigateToFile(prevFile!)" title="Previous file"><el-icon><ArrowLeft /></el-icon></el-button>
@@ -863,13 +832,13 @@
           </div>
 
           <!-- Empty / No-results state -->
-          <div class="empty-hint" v-if="drillTableData.length === 0 && searchMode === 'title'">
+          <div class="empty-hint" v-if="(drillTableData.length === 0 && !contentSearchLoading) || (searchMode === 'title' && searchText && searchSuggestions.length === 0 && drillTableData.length === 0)">
             <el-icon><InfoFilled /></el-icon>
             <span v-if="searchText">No files match "{{ searchText }}"</span>
             <span v-else-if="hasActiveFilter">No files match the current filters</span>
             <span v-else>Select a category above or click a chart segment to drill down into files</span>
           </div>
-          <div class="empty-hint" v-if="searchMode === 'content' && !contentSearchLoading && searchText && contentSearchResults.length === 0">
+          <div class="empty-hint" v-if="searchMode === 'content' && searchText && !contentSearchLoading && contentSearchResults.length === 0">
             <el-icon><InfoFilled /></el-icon>
             <span>No content matches "{{ searchText }}"</span>
           </div>
@@ -888,6 +857,7 @@ import {
   Search, InfoFilled, User, Cpu, ArrowLeft, ArrowRight, Coin, Close, View,
 } from "@element-plus/icons-vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import ECharts from "@/components/ECharts/index.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useKnowledgeBase } from "./composables/useKnowledgeBase";
 
@@ -914,7 +884,7 @@ function navigateDialogFile(direction: "prev" | "next") {
 const {
   knowledgeData, loading, lastUpdated,
   activeFilter, activeSubCategory, drillView, viewMode, drillPage, drillPageSize,
-  searchText, sortField, sortOrder, activeTimeFilter, browseAllFiles,
+  searchText, activeTimeFilter, browseAllFiles,
   searchMode, contentSearchResults, contentSearchLoading,
   selectedFile, showBenefitCol, fileViewMode,
   showSearchSuggestions, moduleDrillSearch, expandedModuleKeys, moduleTableRef,
@@ -922,27 +892,30 @@ const {
   recentlyViewed, drillDownRef, detailPanelRef,
   hasActiveFilter, showSubModuleGrid, isShowingTreeView,
   topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
-  moduleDrillData, filteredModuleDrillData,
+  filteredModuleDrillData,
   subCategories, categoryReviewCoverage, categoryStaleCount, categoryTacitCount,
   moduleDetail, subdirectoryBreakdown, topModuleFiles,
   filteredFiles, drillTableData, sortedDrillTableData, paginatedDrillFiles,
-  staleFiles, todayFiles, weekFiles, monthFiles,
+  staleFiles,
   selectedFileIndex, prevFile, nextFile, resolvedRelatedFiles,
   sameModuleCount, sameSubModuleCount,
   dialogFileIndex, prevDialogFile, nextDialogFile, dialogFilePath,
-  drillSummary, fileClassificationStats,
+  drillSummary,
   enrichedSearchResults, searchSuggestions,
+  reviewCycleDonutOption, typeBarOption, statusBarOption,
+  sizeDistOption, fileAgeOption, lifecycleBarOption,
+  moduleBarOption, rolesBarOption,
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, getModuleClassSummary,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
-  setFilter, toggleNoReviewFilter, backToCategory, removeFilter, clearAllFilters,
+  setFilter, toggleNoReviewFilter, backToCategory, clearAllFilters,
   drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
   navigateToModule, crossFilterSubModule,
-  toggleTimeFilter, onTableSortChange, scrollToDrillDown,
-  openFilePreview, addRecentlyViewed, clearRecentlyViewed,
+  onTimeFilterChange, onTableSortChange, scrollToDrillDown,
+  openFilePreview, clearRecentlyViewed,
   navigateToFile, resolveRelatedNames, getModuleStats,
   discussInAiChat, discussSearchResult,
-  exportCSV, onSearchInput, onDetailKeydown, fetchData,
+  exportCSV, onSearchInput, onChartClick, onDetailKeydown, fetchData,
 } = kb;
 </script>
 

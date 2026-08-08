@@ -4,7 +4,7 @@ import { HOME_URL, LOGIN_URL } from "@/config";
 /**
  * staticRouter (static routes)
  *
- * Static routes are the skeleton: login, layout, aiChat, RAG pages,
+ * Static routes are the skeleton: login, layout, RAG pages,
  * knowledge sub-routes, and all detail sub-routes (code-review/BRD/tech-leadership).
  * Everything else (BRD, Code Review, Tech Leadership, RSS Feeds, Story Board,
  * FDE Resume, Knowledge Base index) comes from the dynamic menu tree.
@@ -29,15 +29,6 @@ export const staticRouter: RouteRecordRaw[] = [
     // component: () => import("@/layouts/indexAsync.vue"),
     redirect: HOME_URL,
     children: [
-      // ── aiChat (static — not in the dynamic menu) ──────────────────
-      {
-        path: "/aiChat",
-        name: "aiChat",
-        component: () => import("@/views/aiChat/index.vue"),
-        meta: {
-          title: "AI Chat"
-        }
-      },
       // ── RAG System (static — not in the dynamic menu) ──────────────
       {
         path: "/rag",

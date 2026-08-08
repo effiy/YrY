@@ -10,8 +10,7 @@ import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import {
   buildReviewCycleDonut, buildTypeBar, buildStatusBar, buildSizeDist,
-  buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar,
-  buildClassificationHeatmap, CHART_PALETTE,
+  buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar, CHART_PALETTE,
 } from "../charts";
 import {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
@@ -20,6 +19,34 @@ import {
 } from "../utils";
 
 const { openInAiChat } = useAiChatBridge();
+
+// ── Chart click drill bucket maps (must mirror charts/index.ts) ──
+const SIZE_BUCKETS: Record<string, [number, number]> = {
+  "<1KB": [0, 1024],
+  "1-5KB": [1024, 5120],
+  "5-20KB": [5120, 20480],
+  "20-50KB": [20480, 51200],
+  "50-100KB": [51200, 102400],
+  ">100KB": [102400, Infinity],
+};
+
+const AGE_BUCKETS: Record<string, [number, number]> = {
+  "<7d": [0, 7],
+  "7-30d": [7, 30],
+  "1-3mo": [30, 90],
+  "3-6mo": [90, 180],
+  "6-12mo": [180, 365],
+  ">1y": [365, Infinity],
+};
+
+function daysSinceUpdated(dateStr: string | undefined): number | null {
+  if (!dateStr) return null;
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
+    return (Date.now() - d.getTime()) / 86400000;
+  } catch { return null; }
+}
 
 export function useKnowledgeBase() {
   // ── Core State ──
@@ -98,7 +125,7 @@ export function useKnowledgeBase() {
 
   const totalModules = computed(() => {
     const modules = knowledgeData.value?.modules ?? [];
-    return new Set(modules.filter(m => m.name !== "__root__").map(m => `${m.category}/${m.name}`)).size;
+    return modules.length;
   });
 
   const totalSizeFormatted = computed(() => {
@@ -120,7 +147,6 @@ export function useKnowledgeBase() {
       fileLookup.get(key)!.push(f);
     }
     return modules
-      .filter(m => m.name !== "__root__")
       .sort((a, b) => b.count - a.count)
       .map(m => ({
         key: `${m.category}/${m.name}`,
@@ -373,26 +399,6 @@ export function useKnowledgeBase() {
     };
   });
 
-  // ── Computed: File Classification Stats ──
-  const fileClassificationStats = computed(() => {
-    const files = drillTableData.value;
-    const countBy = (field: string) => {
-      const m = new Map<string, number>();
-      for (const f of files) {
-        const v = (f as any)[field] || "unknown";
-        if (v === "__root__") continue;
-        m.set(v, (m.get(v) || 0) + 1);
-      }
-      return Array.from(m.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 6);
-    };
-    return {
-      statuses: countBy("status"),
-      types: countBy("type"),
-      lifecycles: countBy("lifecycle"),
-      reviewCycles: countBy("review_cycle"),
-    };
-  });
-
   // ── Computed: Search ──
   const enrichedSearchResults = computed(() => {
     const fileMap = new Map<string, KnowledgeFileSummary>();
@@ -484,11 +490,6 @@ export function useKnowledgeBase() {
     return buildRolesBar(data, CHART_PALETTE);
   });
 
-  const classificationHeatmapOption = computed<ECOption>(() => {
-    const modules = knowledgeData.value?.modules ?? [];
-    return buildClassificationHeatmap(modules, activeFilter.value.category);
-  });
-
   // ── Filter Methods ──
   function applyFiltersToList(files: KnowledgeFileSummary[]): KnowledgeFileSummary[] {
     const filters = activeFilter.value;
@@ -500,13 +501,23 @@ export function useKnowledgeBase() {
           else if (key === "tacit") { if (!f.tacit) return false; }
           else if (key === "module") { if (f.module !== val) return false; }
           else if (key === "sub_module") { if (f.sub_module !== val) return false; }
+          else if (key === "size_min") { if ((f.size ?? 0) < Number(val)) return false; }
+          else if (key === "size_max") { if ((f.size ?? 0) >= Number(val)) return false; }
+          else if (key === "age_min_days") {
+            const d = daysSinceUpdated(f.updated);
+            if (d === null || d < Number(val)) return false;
+          }
+          else if (key === "age_max_days") {
+            const d = daysSinceUpdated(f.updated);
+            if (d === null || d >= Number(val)) return false;
+          }
           else if (key === "role") { if (!f.roles?.includes(val)) return false; }
           else if (key === "tag") { if (!f.tags?.includes(val)) return false; }
           else if (key === "review_cycle") {
             if (val === "__missing__") { if (f.review_cycle) return false; }
             else if (!val) { if (!f.review_cycle) return false; }
             else { if (f.review_cycle !== val) return false; }
-          } else if (key === "status" || key === "type" || key === "tags" || key === "roles") {
+          } else if (key === "status" || key === "type" || key === "lifecycle" || key === "tags" || key === "roles") {
             if (val === "__missing__") {
               const v = (f as any)[key];
               if (Array.isArray(v) ? v.length > 0 : !!v) return false;
@@ -528,8 +539,11 @@ export function useKnowledgeBase() {
   }
 
   function setFilter(key: string, val: string) {
-    if (activeFilter.value[key] === val && val !== "") delete activeFilter.value[key];
-    else activeFilter.value[key] = val;
+    console.log("[KB] setFilter called, key:", key, "val:", val, "currentFilter:", JSON.stringify(activeFilter.value));
+    const next = { ...activeFilter.value };
+    if (next[key] === val && val !== "") { console.log("[KB] setFilter: toggling off"); delete next[key]; }
+    else { console.log("[KB] setFilter: setting filter"); next[key] = val; }
+    activeFilter.value = next;
     activeSubCategory.value = "";
     drillView.value = "all";
     drillPage.value = 1;
@@ -540,8 +554,12 @@ export function useKnowledgeBase() {
   }
 
   function toggleNoReviewFilter() {
-    if (activeFilter.value.review_cycle === "__missing__") delete activeFilter.value.review_cycle;
-    else activeFilter.value.review_cycle = "__missing__";
+    if (activeFilter.value.review_cycle === "__missing__") {
+      const { review_cycle: _, ...rest } = activeFilter.value;
+      activeFilter.value = rest;
+    } else {
+      activeFilter.value = { ...activeFilter.value, review_cycle: "__missing__" };
+    }
     activeSubCategory.value = "";
     drillView.value = "all";
     drillPage.value = 1;
@@ -554,12 +572,6 @@ export function useKnowledgeBase() {
   function backToCategory() {
     const cat = activeFilter.value.category;
     activeFilter.value = cat ? { category: cat } : {};
-    activeSubCategory.value = "";
-    drillPage.value = 1;
-  }
-
-  function removeFilter(key: string) {
-    delete activeFilter.value[key];
     activeSubCategory.value = "";
     drillPage.value = 1;
   }
@@ -592,16 +604,16 @@ export function useKnowledgeBase() {
 
   function drillToSubdir(subdir: string) {
     if (subdir === "__root__") {
-      delete activeFilter.value.sub_module;
+      const { sub_module: _, ...rest } = activeFilter.value;
+      activeFilter.value = rest;
     } else {
-      activeFilter.value.sub_module = subdir;
+      activeFilter.value = { ...activeFilter.value, sub_module: subdir };
     }
     drillPage.value = 1;
   }
 
   function drillFromModule(cat: string, mod: string, subdir: string) {
-    activeFilter.value = { category: cat, module: mod };
-    if (subdir !== "__root__") activeFilter.value.sub_module = subdir;
+    activeFilter.value = { category: cat, module: mod, ...(subdir !== "__root__" ? { sub_module: subdir } : {}) };
     drillPage.value = 1;
   }
 
@@ -625,8 +637,7 @@ export function useKnowledgeBase() {
   function crossFilterSubModule(moduleName: string, dim: string, val: string) {
     const cat = activeFilter.value.category;
     activeSubCategory.value = moduleName;
-    activeFilter.value = { [dim]: val };
-    if (cat) activeFilter.value.category = cat;
+    activeFilter.value = { [dim]: val, ...(cat ? { category: cat } : {}) };
     drillView.value = "all";
     drillPage.value = 1;
     searchText.value = "";
@@ -634,13 +645,13 @@ export function useKnowledgeBase() {
     browseAllFiles.value = false;
   }
 
-  function toggleTimeFilter(period: string) {
-    activeTimeFilter.value = activeTimeFilter.value === period ? "" : period;
+  function onTimeFilterChange(period: string | number | boolean | undefined) {
+    activeTimeFilter.value = typeof period === "string" ? period : "";
     activeSubCategory.value = "";
     drillView.value = "all";
     drillPage.value = 1;
     browseAllFiles.value = false;
-    setTimeout(() => scrollToDrillDown(), 100);
+    selectedFile.value = null;
   }
 
   function onTableSortChange({ prop, order }: { prop: string | null; order: string | null; column?: any }) {
@@ -772,26 +783,85 @@ export function useKnowledgeBase() {
     }
   }
 
-  // ── Heatmap Click ──
-  function onHeatmapClick(event: any) {
-    const d = event.data;
-    if (!d || d.length < 3) return;
-    const modules = knowledgeData.value?.modules ?? [];
-    const cat = activeFilter.value.category;
-    let filtered = modules.filter(m => m.name !== "__root__");
-    if (cat) filtered = filtered.filter(m => m.category === cat);
-    const topMods = filtered.sort((a, b) => b.count - a.count).slice(0, 12);
-    const modName = topMods[d[0]]?.name;
-    const statusSet = new Set<string>();
-    for (const m of topMods) {
-      for (const s of (m.statuses || [])) statusSet.add(s.name);
+  // Chart drill-down always lands on the file table view (not module
+  // classification / gallery / content search), so the filtered rows are visible.
+  function forceFileTableView() {
+    viewMode.value = "files";
+    fileViewMode.value = "table";
+    searchMode.value = "title";
+    contentSearchResults.value = [];
+    activeTimeFilter.value = "";
+  }
+
+  // Reset navigation state after a chart drill and scroll to the drill-down panel.
+  function resetChartDrill() {
+    activeSubCategory.value = "";
+    drillView.value = "all";
+    drillPage.value = 1;
+    searchText.value = "";
+    browseAllFiles.value = false;
+    selectedFile.value = null;
+    forceFileTableView();
+    setTimeout(() => scrollToDrillDown(), 100);
+  }
+
+  // ── Chart Click Drill ──
+  function onChartClick(dimension: string, event: any) {
+    console.log("[KB] onChartClick dimension:", dimension, "event:", event);
+    const name = typeof event?.name === "string" && event.name ? event.name : event?.data?.name;
+    console.log("[KB] onChartClick resolved name:", name);
+    if (typeof name !== "string" || !name) { console.log("[KB] onChartClick bail: name not a string"); return; }
+
+    // Top Modules: replace filter with { category, module } so the breadcrumb path is coherent
+    if (dimension === "module") {
+      const modules = knowledgeData.value?.modules ?? [];
+      let candidates = modules.filter(m => m.name !== "__root__");
+      const cat = activeFilter.value.category;
+      if (cat) candidates = candidates.filter(m => m.category === cat);
+      const mod = candidates.find(m => m.name === name);
+      if (!mod) return;
+      activeFilter.value = { category: mod.category, module: mod.name };
+      resetChartDrill();
+      return;
     }
-    const statuses = Array.from(statusSet).sort();
-    const statusName = statuses[d[1]];
-    if (modName && statusName) {
-      navigateToModule(cat || topMods[d[0]]?.category || "", modName);
-      setFilter("status", statusName);
+
+    // File Size: click a bucket → size_min / size_max filter
+    if (dimension === "size") {
+      const range = SIZE_BUCKETS[name];
+      if (!range) return;
+      const [min, max] = range;
+      const next: Record<string, string> = {};
+      for (const [k, v] of Object.entries(activeFilter.value)) {
+        if (k !== "size_min" && k !== "size_max") next[k] = v;
+      }
+      if (min > 0) next.size_min = String(min);
+      if (max !== Infinity) next.size_max = String(max);
+      activeFilter.value = next;
+      resetChartDrill();
+      return;
     }
+
+    // File Age: click a bucket → age_min_days / age_max_days filter
+    if (dimension === "age") {
+      const range = AGE_BUCKETS[name];
+      if (!range) return;
+      const [min, max] = range;
+      const next: Record<string, string> = {};
+      for (const [k, v] of Object.entries(activeFilter.value)) {
+        if (k !== "age_min_days" && k !== "age_max_days") next[k] = v;
+      }
+      if (min > 0) next.age_min_days = String(min);
+      if (max !== Infinity) next.age_max_days = String(max);
+      activeFilter.value = next;
+      resetChartDrill();
+      return;
+    }
+
+    // Field-based charts: status / type / lifecycle / role / review_cycle.
+    // Review cycle's "__missing__" segment filters files without a review_cycle.
+    setFilter(dimension, name);
+    forceFileTableView();
+    console.log("[KB] filter applied:", JSON.stringify(activeFilter.value), "drillTableData:", drillTableData.value.length, "filteredFiles:", filteredFiles.value.length);
   }
 
   // ── Keyboard ──
@@ -871,22 +941,22 @@ export function useKnowledgeBase() {
     selectedFileIndex, prevFile, nextFile, resolvedRelatedFiles,
     sameModuleCount, sameSubModuleCount,
     dialogFileIndex, prevDialogFile, nextDialogFile,
-    drillSummary, fileClassificationStats,
+    drillSummary,
     enrichedSearchResults, searchSuggestions,
     // Chart options
     reviewCycleDonutOption, typeBarOption, statusBarOption,
     sizeDistOption, fileAgeOption, lifecycleBarOption,
-    moduleBarOption, rolesBarOption, classificationHeatmapOption,
+    moduleBarOption, rolesBarOption,
     // Methods
-    setFilter, toggleNoReviewFilter, backToCategory, removeFilter, clearAllFilters,
+    setFilter, toggleNoReviewFilter, backToCategory, clearAllFilters,
     drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
     navigateToModule, crossFilterSubModule,
-    toggleTimeFilter, onTableSortChange, scrollToDrillDown,
+    onTimeFilterChange, onTableSortChange, scrollToDrillDown,
     openFilePreview, addRecentlyViewed, clearRecentlyViewed,
     openFileInDialog, navigateDialogFile, navigateToFile,
     resolveRelatedNames, getModuleStats,
     discussInAiChat, discussSearchResult,
-    exportCSV, doContentSearch, onSearchInput, onHeatmapClick,
+    exportCSV, onSearchInput, onChartClick,
     onDetailKeydown, fetchData,
     // Re-exported utils (used in template)
     formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,

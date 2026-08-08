@@ -17,13 +17,16 @@ interface Props {
   theme?: Object | string;
   width?: number | string;
   height?: number | string;
-  onClick?: (event: ECElementEvent) => any;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   renderer: "canvas",
   resize: true
 });
+
+const emit = defineEmits<{
+  chartClick: [event: ECElementEvent];
+}>();
 
 const echartsStyle = computed(() => {
   return props.width || props.height
@@ -44,7 +47,10 @@ watch(props, () => {
   draw();
 });
 
-const handleClick = (event: ECElementEvent) => props.onClick && props.onClick(event);
+const handleClick = (event: ECElementEvent) => {
+  console.log("[ECharts] chart clicked, name:", (event as any)?.name, "componentType:", (event as any)?.componentType);
+  emit("chartClick", event);
+};
 
 const init = () => {
   if (!chartRef.value) return;
@@ -56,9 +62,12 @@ const init = () => {
         renderer: props.renderer
       })
     );
-    chartInstance.value.on("click", handleClick);
     draw();
   }
+  // Always (re-)bind click handler — getInstanceByDom may return a
+  // surviving instance (HMR / keep-alive) without our listener.
+  chartInstance.value.off("click");
+  chartInstance.value.on("click", handleClick);
 };
 
 const resize = () => {
