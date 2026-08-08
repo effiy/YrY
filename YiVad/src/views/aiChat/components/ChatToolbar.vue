@@ -2398,9 +2398,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
       <el-tooltip content="Upload image" placement="bottom">
         <el-button circle size="default" :icon="Picture" :disabled="sending" @click="emit('pick-image')" />
       </el-tooltip>
-      <el-tooltip content="Manage tags" placement="bottom">
-        <el-button circle size="default" :icon="PriceTag" @click="emit('manage-tags')" />
-      </el-tooltip>
       <el-tooltip content="WeCom bot settings" placement="bottom">
         <el-button circle size="default" :icon="ChatDotRound" @click="emit('open-wechat')" />
       </el-tooltip>
@@ -2468,22 +2465,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           <span class="ct-pill-label">Agent</span>
           <el-switch :model-value="props.agentMode" size="small" @click.stop @update:model-value="emit('toggle-agent')" />
         </div>
-        <!-- Model selection (Pi: model selector) -->
-        <el-select
-          :model-value="props.selectedModel"
-          size="small"
-          :disabled="(props.availableModels ?? []).length === 0"
-          style="width: 120px"
-          @update:model-value="emit('update-selected-model', $event as string)"
-          @visible-change="v => { if (v && !(props.availableModels ?? []).length) store.fetchModels(); }"
-        >
-          <el-option
-            v-for="m in (props.availableModels?.length ? props.availableModels : [props.selectedModel])"
-            :key="m"
-            :label="m"
-            :value="m"
-          />
-        </el-select>
         <div v-if="props.agentMode" class="ct-pill ct-pill--max-turns" title="Max tool-calling turns per message">
           <span class="ct-pill-label">Turns</span>
           <el-input-number
@@ -2670,17 +2651,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
         <el-icon :size="14" class="ct-spin"><Loading /></el-icon>
         <span class="ct-pill-label">{{ tool.label }}</span>
       </div>
-      <el-tooltip content="Export conversation" placement="bottom">
-        <el-dropdown trigger="click" :disabled="!store.activeConversation" @command="(fmt: string) => fmt === 'html' ? store.exportConversationHtml() : store.exportConversation()">
-          <el-button circle size="default" :icon="Download" :disabled="!store.activeConversation" />
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="md">Markdown (.md)</el-dropdown-item>
-              <el-dropdown-item command="html">HTML (.html)</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </el-tooltip>
       <RequestStatusButton :sending="sending" :streaming-type="streamingType" @stop="emit('stop')" />
     </div>
   </div>
