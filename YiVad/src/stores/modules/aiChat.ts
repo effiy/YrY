@@ -1495,6 +1495,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                   }
                   agentTurnSummaries.value = summaries;
                 }
+                // Pi: a confirmation is resolved once the backend surfaces the
+                // tool's end (executed OR skipped — reject/timeout/blocked calls
+                // now carry a start+end pair with the error). Clear the pending
+                // banner immediately instead of waiting out the 120s frontend
+                // timer, so a timed-out confirmation doesn't linger as actionable.
+                if (event.tool?.name && pendingConfirmation.value?.toolName === event.tool.name) {
+                  pendingConfirmation.value = null;
+                }
                 break;
               }
               case "tool_execution_update": {

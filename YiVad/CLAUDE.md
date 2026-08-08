@@ -224,6 +224,10 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — Skipped tool calls surface in the agent timeline (reject/timeout/blocked)
+
+- **`src/stores/modules/aiChat.ts`** `tool_execution_end` handler: when the ending tool matches the pending confirmation's tool, clear `pendingConfirmation` immediately. A confirmation is resolved the moment the backend surfaces the tool's end — whether it executed OR was skipped (rejected / timed out / auto-blocked). Before, a timed-out confirmation's banner lingered up to the 120s frontend auto-reject timer, and clicking it was a no-op against an already-resolved id. Complements the backend change (see `YiAi/CLAUDE.md`) where skipped confirmation-gated calls now emit a `tool_execution_start`+`tool_execution_end` pair with the error — so the user sees WHY a write never ran in the per-turn tool timeline (matching the existing length-stop behavior). Type-check: 0 new errors (18 pre-existing, all unrelated).
+
 ### 2026-08-08 — Resume only for genuine continuations (pi persistent loop)
 
 - **`src/utils/continuation.ts`** (new, pure/dependency-free): `isContinuationMessage(text)` decides whether a chat message continues the previous run (`继续`/`继续完成`/`接着来`/`continue`/`go on`/`keep going`/`接着`… plus `继续`/`接着`/`continue` prefixes) or starts a NEW task. Mirrors `YiAi/src/domain/ai/agent.py::_is_continuation` exactly so the frontend and the backend classify a post-`max_turns` message identically (parity is load-bearing). Unit-tested 21/21 (13 continuation-true + 8 new-task-false + 1 hedged-parity case) by `tsc`-compiling and asserting in node.

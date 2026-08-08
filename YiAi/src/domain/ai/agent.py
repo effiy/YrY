@@ -1232,6 +1232,25 @@ async def run_agent_loop(
 
                 _preflight.append((call, None))  # None = needs execution
 
+            # Pi: a blocked call (rejected / timed-out / pre-blocked confirmation)
+            # is skipped WITHOUT executing, but the user should still see it in the
+            # live tool timeline with the reason — otherwise the write vanishes with
+            # no record of why it never ran. Emit start+end with the error, matching
+            # the length-stop path which does the same for truncated calls.
+            def _blocked_events(call: ToolCall, blocked: ToolResult) -> List[AgentEvent]:
+                label = call.name.replace("_", " ").title()
+                return [
+                    AgentEvent(
+                        type=AgentEventType.TOOL_EXECUTION_START,
+                        tool={"name": call.name, "label": label},
+                    ),
+                    AgentEvent(
+                        type=AgentEventType.TOOL_EXECUTION_END,
+                        tool={"name": call.name, "label": label,
+                              "content": blocked.content or "", "error": blocked.error},
+                    ),
+                ]
+
             # Pi: execution phase — sequential or parallel
             if cfg.tool_execution == "parallel" and len(_preflight) > 1:
                 # Parallel: execute all allowed tools concurrently
@@ -1270,6 +1289,8 @@ async def run_agent_loop(
                 _tasks = []
                 for call, blocked in _preflight:
                     if blocked is not None:
+                        for _be in _blocked_events(call, blocked):
+                            yield await _emit(_be, on_event)
                         tool_results.append(blocked)
                     else:
                         _tasks.append(_execute_one(call))
@@ -1291,6 +1312,8 @@ async def run_agent_loop(
                 # Sequential: execute one at a time (original behavior)
                 for call, blocked in _preflight:
                     if blocked is not None:
+                        for _be in _blocked_events(call, blocked):
+                            yield await _emit(_be, on_event)
                         tool_results.append(blocked)
                         continue
 
