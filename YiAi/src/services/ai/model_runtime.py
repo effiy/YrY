@@ -121,9 +121,17 @@ class OllamaRuntime(ModelRuntime):
         def _worker() -> None:
             try:
                 client = self._get_client()
+                # Ollama's default num_ctx is 2048 unless set — raise it so long
+                # agent/chat contexts aren't silently truncated mid-generation,
+                # and give reasoning models room to think + call tools + answer.
+                options: Dict[str, Any] = {}
+                if getattr(settings, "ollama_num_ctx", None):
+                    options["num_ctx"] = int(settings.ollama_num_ctx)
+                if getattr(settings, "ollama_num_predict", None):
+                    options["num_predict"] = int(settings.ollama_num_predict)
                 for item in client.chat(
                     model=model_name, messages=ollama_messages, stream=True,
-                    tools=tools,
+                    tools=tools, options=options or None,
                 ):
                     try:
                         delta = ""

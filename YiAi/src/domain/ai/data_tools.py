@@ -45,6 +45,20 @@ _COLLECTION_SCHEMAS: Dict[str, Dict[str, Any]] = {
             "entry; the tree is rebuilt from `parent` (a path) on every request."
         ),
         "writable": True,
+        # Domain invariants distilled from YiKnowledge manage-menu-catalog.md. The
+        # agent reads these via db_schema before writing, so it builds safe menus
+        # instead of violating the routing/KeepAlive constraints.
+        "rules": [
+            "A menu whose 'component' path does not resolve to a file under src/views/ is a DEAD LINK: the dynamic router silently skips it, so the sidebar entry does nothing. Create the view file first, or use component:'' for a pure group node.",
+            "Deleting a menu that has children does NOT cascade: children are orphaned and become top-level. Delete the children first; db_delete refuses while children reference the menu unless you pass 'force': true.",
+            "Never delete the 'home' menu: the app boots into /home/index and lands on the 404 page without it.",
+            "aiChat and RAG are already static routes — do NOT create menu entries for them (duplicate routes + dead sidebar entries).",
+            "The sidebar sorts alphabetically by meta.title; the 'order' field has no visible effect. Rename meta.title to reorder.",
+            "The 'name' field is the KeepAlive cache key and the v-auth permission prefix — renaming it breaks page caches and all v-auth directives that reference the old name.",
+        ],
+        # Documents reference a parent node by this field, which holds the parent's
+        # `path`. db_delete uses this (generically) to refuse orphaning children.
+        "parent_ref_field": "parent",
         "fields": {
             "key": "unique string id, e.g. 'menu_myfeature'. Omit to auto-generate.",
             "path": "route path, e.g. '/my-feature'. Children reference this path as their parent.",
@@ -97,6 +111,11 @@ def _format_schema(cname: str, entry: Dict[str, Any]) -> str:
         lines.append("Writable by the agent: yes (requires confirmation).")
     else:
         lines.append("Writable by the agent: no (read-only).")
+    rules = entry.get("rules") or []
+    if rules:
+        lines.append("Rules (MUST follow when writing):")
+        for r in rules:
+            lines.append(f"- {r}")
     lines.append("Document fields:")
     for field, desc in (entry.get("fields") or {}).items():
         if isinstance(desc, dict):
@@ -206,7 +225,7 @@ async def _update(args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def _delete(args: Dict[str, Any]) -> Dict[str, Any]:
-    from services.database.data_service import delete_document
+    from services.database.data_service import delete_document, query_documents
 
     try:
         cname = _require_cname(args)
@@ -214,12 +233,58 @@ async def _delete(args: Dict[str, Any]) -> Dict[str, Any]:
         key = str(args.get("key", "")).strip()
         if not key:
             return {"content": "", "error": "db_delete requires 'key'"}
+        force = bool(args.get("force"))
+
+        # Generic schema-driven orphan guard: if the collection's schema declares
+        # parent_ref_field, a document whose children reference it must not be
+        # deleted silently (the tree rebuild would orphan them to top-level).
+        # This is data, not per-collection code — any collection with a parent
+        # reference field gets the same protection.
+        entry = _COLLECTION_SCHEMAS.get(cname) or {}
+        ref_field = entry.get("parent_ref_field")
+        if ref_field and not force:
+            target = (await query_documents({
+                "cname": cname, "filter": {"key": key}, "limit": 1,
+            })).get("list") or []
+            if target:
+                ref_value = target[0].get("path") or target[0].get("key")
+                if ref_value is not None:
+                    # Exact parent match: "$eq" bypasses the repository's substring
+                    # fuzzy search so /system/settings is not counted as a child of /system.
+                    children = (await query_documents({
+                        "cname": cname, "filter": {ref_field: {"$eq": ref_value}}, "limit": 1,
+                    })).get("list") or []
+                    if children:
+                        n = await _count_children(cname, ref_field, ref_value)
+                        return {
+                            "content": "",
+                            "error": (
+                                f"Refusing to delete: {n} document(s) reference this one via "
+                                f"'{ref_field}' == {ref_value!r} (e.g. key={children[0].get('key', '')}). "
+                                f"Deleting would orphan them to top-level (no cascade). Delete the "
+                                f"children first, or re-run db_delete with 'force': true to delete anyway."
+                            ),
+                        }
+
         await delete_document({"cname": cname, "key": key})
         return {"content": f"Deleted document from '{cname}': key={key}",
                 "details": {"cname": cname, "key": key}}
     except Exception as e:
         logger.warning(f"db_delete failed: {e}")
         return {"content": "", "error": f"db_delete failed: {e}"}
+
+
+async def _count_children(cname: str, ref_field: str, ref_value: Any) -> int:
+    """Count documents whose ref_field equals ref_value (for the orphan guard)."""
+    from services.database.data_service import query_documents
+
+    try:
+        result = await query_documents({
+            "cname": cname, "filter": {ref_field: {"$eq": ref_value}}, "limit": 1,
+        })
+        return int(result.get("total") or 0)
+    except Exception:
+        return 1  # count unknown — still report the refusal
 
 
 def json_dumps_safe(d: Dict[str, Any]) -> str:
@@ -316,13 +381,16 @@ def register_data_tools(registry) -> None:
         name="db_delete",
         description=(
             "Delete a document from a writable collection by 'key'. Requires 'cname' and 'key' (from db_list). "
-            "Writable collections: menus. The write requires user confirmation."
+            "Writable collections: menus. Refuses when other documents reference this one via the collection's "
+            "parent_ref_field (e.g. a menu's children) — delete those first, or pass 'force': true to override. "
+            "The write requires user confirmation."
         ),
         parameters={
             "type": "object",
             "properties": {
                 "cname": {"type": "string", "description": "Writable collection name (e.g. 'menus')"},
                 "key": {"type": "string", "description": "Document key to delete"},
+                "force": {"type": "boolean", "description": "Override the orphan check and delete even if children reference this document (default false)."},
             },
             "required": ["cname", "key"],
         },

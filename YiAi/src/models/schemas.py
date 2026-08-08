@@ -52,6 +52,10 @@ class AgentChatRequest(BaseModel):
         default=None,
         description="Optional list of model names to rotate between turns (Pi: prepareNextTurn)",
     )
+    model_fallback: Optional[List[str]] = Field(
+        default=None,
+        description="Optional ordered list of model names to escalate to when the active model stalls (narrates a tool call without executing it, resisting nudges). The next model takes over mid-run with the full context. Defaults to the server's agent_model_fallback.",
+    )
 
 class FileUploadRequest(BaseModel):
     """

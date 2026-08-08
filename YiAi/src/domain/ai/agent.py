@@ -49,6 +49,42 @@ _DEFAULT_CONTEXT_WINDOW = 8192
 _CONFIRMATION_TIMEOUT_S = 120  # how long the loop waits for a user approve/reject
 _CONFIRMATION_POLL_S = 1.5  # poll interval for the user's decision
 
+# Substrings that mark a user message as a *concrete task* (do something to data)
+# rather than pure Q&A. Used by the no-tool task-completion nudge below: a run that
+# ends with zero tools executed on a task-like request is likely incomplete, even
+# when the model never *named* a tool (so the named-tool guard stays quiet).
+_TASK_MARKERS_ZH = (
+    "创建", "新增", "添加", "插入", "删除", "移除", "更新", "修改", "改名为", "重命名",
+    "改名", "列出", "查询", "统计", "汇总", "数一数", "导出", "生成", "保存", "写入",
+    "读取", "清理", "禁用", "启用", "移动", "复制", "完成", "执行", "帮我", "补充",
+)
+_TASK_MARKERS_EN = (
+    "create", "add", "insert", "delete", "remove", "update", "rename",
+    "list", "query", "count", "export", "generate", "save", "write", "read",
+    "clean", "disable", "enable", "move", "copy", "complete", "execute", "do it",
+)
+
+
+def _is_task_request(text: str) -> bool:
+    """Heuristic: does this user message ask for a concrete action on data?
+
+    Looks for task-verb substrings (zh + en) on the lowercased text. Pure Q&A
+    ("what is X", "why...") rarely contains these verbs, so this stays quiet
+    there while catching "create a menu", "delete the row", "count the menus".
+    """
+    if not text:
+        return False
+    lowered = text.lower()
+    return any(m in text for m in _TASK_MARKERS_ZH) or any(m in lowered for m in _TASK_MARKERS_EN)
+
+
+def _last_user_text(messages: List["AgentMessage"]) -> str:
+    """Return the content of the most recent user-role message, or empty."""
+    for m in reversed(messages):
+        if m.role == "user":
+            return m.content or ""
+    return ""
+
 
 # ── Agent event types (Pi parity) ─────────────────────────────────────────
 
@@ -66,6 +102,7 @@ class AgentEventType(str, Enum):
     TOOL_EXECUTION_END = "tool_execution_end"
     COMPACTION = "compaction"
     CONFIRMATION_REQUIRED = "confirmation_required"
+    MODEL_SWITCH = "model_switch"
     ERROR = "error"
 
 
@@ -201,6 +238,7 @@ class AgentConfig:
     follow_up_mode: str = "one-at-a-time"  # Pi QueueMode for follow-up messages
     llm_max_retries: int = 2  # Pi: retry transient LLM failures (connection reset, model still loading)
     llm_retry_backoff_base: float = 0.5  # exponential backoff: base * 2^(attempt-1) seconds
+    model_fallback: List[str] = field(default_factory=list)  # escalate to these on stall, in order
 
     # ── Lifecycle hooks (Pi: beforeToolCall / afterToolCall) ──────────
 
@@ -282,27 +320,36 @@ def _strip_tool_calls_from_text(text: str) -> str:
     return text.strip()
 
 
-async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio.Event) -> str:
+async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio.Event,
+                                 confirmation_id: str | None = None) -> str:
     """Wait for the user's approve/reject decision on a tool call.
 
     The decision is recorded via ``POST /agent/confirm`` and read from an
     in-memory store in ``server/routes/agent.py`` (same pattern as steering).
     Returns ``"approved" | "rejected" | "timeout"``.
+
+    ``confirmation_id`` must be unique per confirmation *request*: Ollama
+    resets native tool-call ids to ``tool_0``/``tool_1`` on every generation,
+    so ``call.id`` alone collides across turns. A stale decision from an
+    earlier turn could otherwise auto-approve a later, different tool call.
+    The caller prefixes ``call.id`` with the turn index; ``call.id`` itself
+    is still used for the tool_result message protocol (it must match the
+    provider's call id verbatim).
     """
-    import time as _time
     if not session_id:
         return "rejected"
+    key = confirmation_id or call.id
     try:
         from server.routes.agent import get_confirmation_decision, mark_confirmation_seen
     except Exception:
         return "rejected"
-    deadline = _time.monotonic() + _CONFIRMATION_TIMEOUT_S
-    while _time.monotonic() < deadline:
+    deadline = time.monotonic() + _CONFIRMATION_TIMEOUT_S
+    while time.monotonic() < deadline:
         if abort.is_set():
             return "rejected"
-        decision = get_confirmation_decision(session_id, call.id)
+        decision = get_confirmation_decision(session_id, key)
         if decision is not None:
-            mark_confirmation_seen(session_id, call.id)
+            mark_confirmation_seen(session_id, key)
             return decision
         await asyncio.sleep(_CONFIRMATION_POLL_S)
     return "timeout"
@@ -432,6 +479,14 @@ async def run_agent_loop(
         return [first]
 
     yield await _emit(AgentEvent(type=AgentEventType.AGENT_START), on_event)
+
+    # Track tools actually executed + narrate-and-stop nudges (qwen3.5 sometimes
+    # *describes* the next tool call without emitting it — see no-tool branch).
+    _executed_tool_names: set[str] = set()
+    _nudges = 0
+    _MAX_NUDGES = 2
+    _model_escalated = False  # one escalation per run; a second stall ends it
+    _task_nudged = False  # one no-tool task-completion nudge per run
 
     # Outer loop: process user turns + queued messages
     while turn_index < cfg.max_turns:
@@ -643,14 +698,17 @@ async def run_agent_loop(
                     # Pi: pause the loop and ask the user before executing a
                     # destructive tool. The frontend renders Approve/Reject and
                     # calls POST /agent/confirm; we poll for the decision.
+                    # confirmation_id is prefixed with the turn index so it is
+                    # unique per request (Ollama reuses tool_0 every turn).
+                    confirm_id = f"t{turn_index}:{call.id}"
                     yield await _emit(AgentEvent(
                         type=AgentEventType.CONFIRMATION_REQUIRED,
                         tool_name=call.name,
                         tool_args=call.arguments,
-                        confirmation_id=call.id,
+                        confirmation_id=confirm_id,
                         message={"role": "tool", "content": f"Tool '{call.name}' requires user confirmation"},
                     ), on_event)
-                    decision = await _wait_for_confirmation(session_id, call, abort)
+                    decision = await _wait_for_confirmation(session_id, call, abort, confirm_id)
                     if decision != "approved":
                         reason = (
                             "Rejected by user" if decision == "rejected"
@@ -781,6 +839,7 @@ async def run_agent_loop(
                     tool_results.append(result)
 
             for result in tool_results:
+                _executed_tool_names.add(result.name)
                 tr_msg = AgentMessage(
                     role="tool_result",
                     content=result.content if not result.error else f"Error: {result.error}",
@@ -850,7 +909,10 @@ async def run_agent_loop(
         yield await _emit(AgentEvent(
             type=AgentEventType.TURN_END,
             turn_index=turn_index,
-            stop_reason="completed",
+            # Report the real LLM stop reason ("length" → output budget exhausted
+            # mid-generation, which can leave the task incomplete), not a masked
+            # "completed" — observability for truncated no-tool turns.
+            stop_reason=stop_reason or "completed",
             usage={"turn_tokens": turn_tokens, "total_tokens": total_tokens},
         ), on_event)
 
@@ -874,6 +936,84 @@ async def run_agent_loop(
             for fm in drained_follow_up:
                 agent_messages.append(fm)
             continue  # keep looping with follow-up messages
+
+        # Narrate-and-stop guard: qwen3.5 (a reasoning model) sometimes streams its
+        # *plan* as content and stops without emitting the tool_call — the task is
+        # left incomplete. If the assistant's text names a registered tool we have
+        # not actually executed, nudge it to call it instead of silently ending.
+        # Bounded by max_turns and a per-run nudge cap so a stubborn model cannot
+        # loop forever. (A pure-Q&A turn rarely names tools, so this stays quiet
+        # there; a narration of past tool calls names only already-executed tools.)
+        mentioned_unexecuted = [
+            td.name for td in registry.get_enabled()
+            if td.name not in _executed_tool_names and td.name in clean_content
+        ]
+        if mentioned_unexecuted:
+            if _nudges < _MAX_NUDGES:
+                _nudges += 1
+                nudge = AgentMessage(
+                    role="user",
+                    content=(
+                        "[CONTINUE] You described calling tool(s) "
+                        f"{', '.join(mentioned_unexecuted)} but did not actually "
+                        "invoke them. Call them now to complete the task — do not "
+                        "just describe the call. If the task is genuinely finished, "
+                        "give the final summary."
+                    ),
+                )
+                agent_messages.append(nudge)
+                continue
+
+            # Nudges exhausted but the model still narrates tool calls without
+            # executing them — the task will end incomplete. Escalate to a
+            # stronger model (Pi-inspired resilience: swap the stalling "thinker"
+            # for a capable "doer") with the full context so it can finish the
+            # job. Bounded to one escalation per run.
+            if cfg.model_fallback and not _model_escalated:
+                _model_escalated = True
+                old_model = cfg.model
+                cfg.model = cfg.model_fallback.pop(0)
+                yield await _emit(AgentEvent(
+                    type=AgentEventType.MODEL_SWITCH,
+                    message={"from": old_model, "to": cfg.model},
+                ), on_event)
+                agent_messages.append(AgentMessage(
+                    role="user",
+                    content=(
+                        f"[MODEL SWITCH] Your predecessor model {old_model} described "
+                        f"calling tool(s) {', '.join(mentioned_unexecuted)} but never "
+                        f"actually invoked them. You are now {cfg.model} with the same "
+                        "tools and the full conversation context. Complete the user's "
+                        "original task now — call the tools, do not just describe them."
+                    ),
+                ))
+                continue
+
+        # No-tool task-completion nudge: the run is about to end "completed", but if
+        # the user asked for a *concrete task* and we never executed a single tool
+        # (and the model named no tool either — the named-tool guard above stays
+        # quiet on a vague ramble), the task likely ended incomplete. Give the model
+        # one explicit chance to finish it by calling a tool, then end regardless.
+        # Bounded to one per run; pure Q&A rarely contains task markers, so it stays
+        # quiet there (a genuine "how many menus?" question still gets its chance).
+        if (
+            not _task_nudged
+            and not _executed_tool_names
+            and _is_task_request(_last_user_text(agent_messages))
+        ):
+            _task_nudged = True
+            nudge = AgentMessage(
+                role="user",
+                content=(
+                    "[TASK] You were asked to complete a concrete task, but this run "
+                    "has not invoked any tool yet. If the task requires data access "
+                    "or a write, call the appropriate tool now to actually do it — do "
+                    "not end with a description alone. If no tool is genuinely needed, "
+                    "state that clearly and finish."
+                ),
+            )
+            agent_messages.append(nudge)
+            continue
 
         break
 
@@ -943,11 +1083,31 @@ async def _stream_llm_response(
                     return
                 if isinstance(chunk, dict):
                     if "error" in chunk:
-                        if attempt < max_attempts and not yielded_content:
-                            logger.warning(
-                                f"Agent LLM call failed (attempt {attempt}/{max_attempts}), "
-                                f"retrying: {chunk['error']}"
-                            )
+                        # A tool-call XML parse error means the model emitted a
+                        # malformed tool frame. Retrying with the same `tools` def
+                        # is futile — the same broken frame tends to reappear. Drop
+                        # `tools` for the retry so the model answers in plain text;
+                        # the agent loop's _parse_tool_calls_from_text fallback then
+                        # extracts any <tool_call> XML from the text stream.
+                        is_tool_xml_err = "XML syntax error" in chunk["error"]
+                        # XML errors retry even after content was streamed: the frame
+                        # is malformed and the generation is dead regardless — the
+                        # model often streams its *plan* before botching the frame
+                        # (reasoning models), so `not yielded_content` alone would
+                        # leave the run stranded at `stop=error`. Non-XML errors still
+                        # only retry before content, to avoid duplicating user-visible text.
+                        if attempt < max_attempts and (not yielded_content or is_tool_xml_err):
+                            if is_tool_xml_err:
+                                logger.warning(
+                                    f"Agent tool-call XML parse error (attempt {attempt}/"
+                                    f"{max_attempts}), retrying WITHOUT tools: {chunk['error']}"
+                                )
+                                tool_defs = None
+                            else:
+                                logger.warning(
+                                    f"Agent LLM call failed (attempt {attempt}/{max_attempts}), "
+                                    f"retrying: {chunk['error']}"
+                                )
                             restart = True
                             break
                         yield {"error": chunk["error"]}
@@ -1001,15 +1161,14 @@ def _build_tool_system_prompt(tool_defs: List[Dict[str, Any]]) -> str:
         return ""
 
     lines = [
-        "You have access to the following tools. To use a tool, output it in this format:",
+        "You are an agent that completes tasks by calling tools. Call tools directly —",
+        "do NOT describe an action and stop: narrating what you would do does not",
+        "complete the task. Each tool you invoke runs, and its result is delivered in",
+        "the next message; keep calling tools until the user's task is fully done,",
+        "then write a short final summary.",
         "",
-        "<tool_call>",
-        '{"name": "<tool_name>", "arguments": {<args>}}',
-        "</tool_call>",
-        "",
-        "The tool result will be provided in the next message. You can call multiple",
-        "tools in sequence. After receiving tool results, decide whether to call more",
-        "tools or provide a final response to the user.",
+        "You may call multiple tools in sequence, one step at a time. If a step failed",
+        "or returned an unexpected result, adapt and retry rather than giving up.",
         "",
         "Available tools:",
     ]
@@ -1058,6 +1217,7 @@ async def agent_chat_stream(
     images: Optional[List[str]] = None,
     session_id: str = "",
     model_rotation: Optional[List[str]] = None,
+    model_fallback: Optional[List[str]] = None,
 ) -> AsyncIterator[Dict[str, Any] | AgentEvent]:
     """High-level entry point: stream agent chat with tool calling.
 
@@ -1069,7 +1229,19 @@ async def agent_chat_stream(
     model_rotation: optional list of model names to rotate between turns.
     When provided, prepare_next_turn switches to the next model in the list
     after each turn, enabling "think model" → "tool model" → "think model" cycles.
+
+    model_fallback: optional ordered list of model names to escalate to when the
+    active model stalls on a tool-calling task — it narrates a tool call without
+    executing it and resists the nudge guard. The next model in the list takes
+    over mid-run with the full conversation context (see the narrate-and-stop
+    escalation in the loop). Defaults to the server's `agent_model_fallback`.
     """
+    if model_fallback is None:
+        try:
+            from shared.config import settings
+            model_fallback = list(settings.agent_model_fallback or [])
+        except Exception:
+            model_fallback = []
     config = AgentConfig(
         model=model,
         system_prompt=system_prompt or "You are a helpful AI assistant with access to tools. Use tools when they would help answer the user's question more accurately.",
@@ -1077,6 +1249,7 @@ async def agent_chat_stream(
         stream=True,
         auto_compact=True,
         compaction_keep_last=4,
+        model_fallback=model_fallback or [],
     )
 
     # Pi: prepareNextTurn — model rotation between turns

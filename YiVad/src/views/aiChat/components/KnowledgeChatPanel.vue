@@ -10,6 +10,7 @@ import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
+import { streamAgentChat, confirmAgentTool, type AgentStreamEvent } from "@/api/modules/agentService";
 import { webSearch, formatSearchResults } from "@/api/modules/searchService";
 import { getFaqs } from "@/api/modules/faqService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
@@ -41,6 +42,14 @@ const STORAGE_MODEL_PREFIX = "kchat:model:";
 const DEFAULT_MODEL = "qwen3.5";
 const MAX_IMAGES = 4;
 
+interface AgentToolCall {
+  name: string;
+  label: string;
+  content?: string;
+  error?: string;
+  durationMs?: number;
+}
+
 interface LocalMessage {
   type: "user" | "pet";
   message: string;
@@ -50,6 +59,8 @@ interface LocalMessage {
   aborted?: boolean;
   sources?: RagSource[];
   searchContext?: string;
+  /** Tool calls the agent ran while producing this message (agent mode). */
+  toolCalls?: AgentToolCall[];
 }
 
 // ── Core state ────────────────────────────────────────────────────────────
@@ -85,6 +96,17 @@ const webSearchEnabled = ref(false);
 const webSearching = ref(false);
 const ragAvailable = ref(true);
 
+// ── Agent mode (Pi-inspired agent loop) ─────────────────────────────────────
+
+const agentMode = ref(false);
+const agentMaxTurns = ref(10);
+const agentSystemPrompt = ref("");
+const agentModelRotation = ref<string[]>([]);
+/** Tool awaiting user approval — the backend agent loop is paused until decided. */
+const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, unknown>; confirmationId: string } | null>(null);
+/** Stable per-file session key so /agent/confirm routes the decision to the right loop. */
+const sessionId = computed(() => `kchat:${props.filePath}`);
+
 // ── Model selection ─────────────────────────────────────────────────────────
 
 const selectedModel = ref(DEFAULT_MODEL);
@@ -101,7 +123,14 @@ function saveModel() {
 }
 watch(selectedModel, () => saveModel());
 
-interface PanelSettings { ragEnabled: boolean; webSearchEnabled: boolean; }
+interface PanelSettings {
+  ragEnabled: boolean;
+  webSearchEnabled: boolean;
+  agentMode: boolean;
+  agentMaxTurns: number;
+  agentSystemPrompt: string;
+  agentModelRotation: string[];
+}
 const settingsKey = computed(() => `${STORAGE_SETTINGS_PREFIX}${props.filePath}`);
 
 function loadSettings() {
@@ -111,6 +140,10 @@ function loadSettings() {
       const s: PanelSettings = JSON.parse(raw);
       ragEnabled.value = s.ragEnabled ?? false;
       webSearchEnabled.value = s.webSearchEnabled ?? false;
+      agentMode.value = s.agentMode ?? false;
+      agentMaxTurns.value = s.agentMaxTurns ?? 10;
+      agentSystemPrompt.value = s.agentSystemPrompt ?? "";
+      agentModelRotation.value = s.agentModelRotation ?? [];
     }
   } catch { /* ignore */ }
 }
@@ -118,11 +151,15 @@ function saveSettings() {
   try {
     localStorage.setItem(settingsKey.value, JSON.stringify({
       ragEnabled: ragEnabled.value,
-      webSearchEnabled: webSearchEnabled.value
+      webSearchEnabled: webSearchEnabled.value,
+      agentMode: agentMode.value,
+      agentMaxTurns: agentMaxTurns.value,
+      agentSystemPrompt: agentSystemPrompt.value,
+      agentModelRotation: agentModelRotation.value
     }));
   } catch { /* ignore */ }
 }
-watch([ragEnabled, webSearchEnabled], () => saveSettings(), { deep: true });
+watch([ragEnabled, webSearchEnabled, agentMode, agentMaxTurns, agentSystemPrompt, agentModelRotation], () => saveSettings(), { deep: true });
 
 // ── Tags / context ────────────────────────────────────────────────────────
 
@@ -318,6 +355,7 @@ async function send() {
 
   sending.value = true;
   streamingText.value = "";
+  pendingConfirmation.value = null;
 
   const images = [...draftImages.value];
   const userMsg: LocalMessage = {
@@ -350,7 +388,112 @@ async function send() {
     ? `${props.systemPrompt}\n\n[Web search results]:\n${searchContext}`
     : props.systemPrompt;
 
-  if (ragEnabled.value && ragAvailable.value) {
+  if (agentMode.value) {
+    // ── Agent streaming (Pi-inspired agent loop with tool calling) ──
+    // Agent mode takes precedence over RAG — the backend appends its own
+    // <tool_call> prompt and runs the db_* generic data tools over MongoDB
+    // (menus CRUD etc.), pausing for confirmation on destructive writes.
+    const history = messages.value.slice(0, -1).map(m => ({
+      role: m.type === "user" ? "user" as const : "assistant" as const,
+      content: m.message
+    }));
+    const agentSystem = [agentSystemPrompt.value, props.systemPrompt]
+      .concat(searchContext ? [`[Web search results]:\n${searchContext}`] : [])
+      .map(s => s.trim()).filter(Boolean).join("\n\n");
+
+    let currentTurn = 0;
+
+    abortRef.value = streamAgentChat({
+      messages: history,
+      model: selectedModel.value,
+      system_prompt: agentSystem,
+      max_turns: agentMaxTurns.value,
+      ...(agentModelRotation.value.length > 1 ? { model_rotation: agentModelRotation.value } : {}),
+      ...(images.length ? { images } : {}),
+      session_id: sessionId.value,
+    }, {
+      onDelta: (chunk: string) => {
+        streamingText.value += chunk;
+        messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
+        scrollTick.value++;
+      },
+      onEvent: (event: AgentStreamEvent) => {
+        switch (event.type) {
+          case "turn_start":
+            currentTurn = event.turn_index ?? currentTurn + 1;
+            // Separator between turns so multi-turn reasoning reads cleanly.
+            if (currentTurn > 1) {
+              streamingText.value += "\n\n---\n\n";
+              messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
+            }
+            break;
+          case "turn_end": {
+            const toolCalls: AgentToolCall[] = (event.tool_results ?? []).map(tr => ({
+              name: tr.name,
+              label: tr.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+              content: tr.content,
+              error: tr.error,
+              durationMs: tr.duration_ms,
+            }));
+            if (toolCalls.length) {
+              const existing = messages.value[petIdx].toolCalls ?? [];
+              messages.value[petIdx] = { ...messages.value[petIdx], toolCalls: [...existing, ...toolCalls] };
+            }
+            break;
+          }
+          case "tool_execution_start":
+            if (event.tool?.name) {
+              const existing = messages.value[petIdx].toolCalls ?? [];
+              messages.value[petIdx] = {
+                ...messages.value[petIdx],
+                toolCalls: [...existing, {
+                  name: event.tool.name,
+                  label: event.tool.label || event.tool.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+                  content: "(running)",
+                }],
+              };
+            }
+            break;
+          case "tool_execution_end":
+            if (event.tool?.name) {
+              const calls = [...(messages.value[petIdx].toolCalls ?? [])];
+              const call = calls.find(tc => tc.name === event.tool!.name);
+              if (call) {
+                if (event.tool.content) call.content = event.tool.content;
+                else if (call.content === "(running)") call.content = "";
+                call.error = event.tool.error;
+                call.durationMs = event.tool.duration_ms;
+              }
+              messages.value[petIdx] = { ...messages.value[petIdx], toolCalls: calls };
+            }
+            break;
+          case "confirmation_required":
+            pendingConfirmation.value = {
+              toolName: (event.tool_name as string) || "unknown",
+              toolArgs: (event.tool_args as Record<string, unknown>) || {},
+              confirmationId: (event.confirmation_id as string) || "",
+            };
+            break;
+          case "model_switch": {
+            // Pi-inspired escalation: the active model stalled (narrated tool
+            // calls without executing them) so the loop handed off to a stronger
+            // model. Surface the handoff so the stall isn't invisible.
+            const m = (event.message ?? {}) as { from?: string; to?: string };
+            if (m.from && m.to) {
+              streamingText.value += `\n\n> ⚙️ 模型自动切换：${m.from} → ${m.to}\n\n`;
+              messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
+            }
+            break;
+          }
+          case "error":
+            handleSendError(petIdx, new Error(event.error ?? "Agent error"));
+            break;
+        }
+      },
+      onDone: () => finishSend(petIdx),
+      onError: (err: Error) => handleSendError(petIdx, err),
+    });
+  } else if (ragEnabled.value && ragAvailable.value) {
     // ── RAG streaming ──
     const ragPayload = {
       messages: messages.value.slice(0, -1).map(m => ({
@@ -418,6 +561,7 @@ function handleSendError(petIdx: number, err: Error) {
 
 function stopSending() {
   abortRef.value?.abort();
+  pendingConfirmation.value = null;
   if (messages.value.length) {
     const last = messages.value[messages.value.length - 1];
     if (last.type === "pet") {
@@ -427,6 +571,22 @@ function stopSending() {
   sending.value = false;
   abortRef.value = null;
   saveMessages();
+}
+
+// ── Tool confirmation (Pi: before_tool_call gate) ──────────────────────────
+
+async function approveTool() {
+  const conf = pendingConfirmation.value;
+  if (!conf) return;
+  pendingConfirmation.value = null;
+  await confirmAgentTool(sessionId.value, conf.confirmationId, true);
+}
+
+async function rejectTool() {
+  const conf = pendingConfirmation.value;
+  if (!conf) return;
+  pendingConfirmation.value = null;
+  await confirmAgentTool(sessionId.value, conf.confirmationId, false);
 }
 
 function clearInput() {
@@ -628,6 +788,23 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
           v-html="render(msg.message || '')"
         />
         <div v-else class="kcp-msg-body kcp-msg-body--plain">{{ msg.message }}</div>
+        <!-- Tool calls the agent ran (agent mode) -->
+        <div v-if="msg.type === 'pet' && msg.toolCalls?.length" class="kcp-tools">
+          <div
+            v-for="(tc, ti) in msg.toolCalls"
+            :key="ti"
+            class="kcp-tool"
+            :class="{ 'kcp-tool--err': tc.error, 'kcp-tool--running': tc.content === '(running)' }"
+          >
+            <span class="kcp-tool-name">{{ tc.error ? '✕' : tc.content === '(running)' ? '⏳' : '✓' }} {{ tc.label }}</span>
+            <span v-if="tc.durationMs != null" class="kcp-tool-time">{{ tc.durationMs }}ms</span>
+            <span v-if="tc.error" class="kcp-tool-err">failed</span>
+            <details v-if="tc.content && tc.content !== '(running)'" class="kcp-tool-detail">
+              <summary>result</summary>
+              <pre>{{ tc.content }}</pre>
+            </details>
+          </div>
+        </div>
         <div v-if="msg.error" class="kcp-msg-error-tag">Generation failed</div>
         <div v-else-if="msg.aborted" class="kcp-msg-aborted-tag">Stopped</div>
         <RagSources v-if="msg.sources?.length" :sources="dedupSources(msg.sources)" />
@@ -671,6 +848,18 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
 
     <!-- ── Input area (toolbar + input — matches ChatInput layout) ── -->
     <div class="kcp-input-area">
+      <!-- Tool confirmation banner (agent mode — the loop is paused until decided) -->
+      <div v-if="pendingConfirmation" class="kcp-confirm">
+        <div class="kcp-confirm-head">
+          <span class="kcp-confirm-title">Approve tool call</span>
+          <code class="kcp-confirm-tool">{{ pendingConfirmation.toolName }}</code>
+        </div>
+        <pre class="kcp-confirm-args">{{ JSON.stringify(pendingConfirmation.toolArgs, null, 2) }}</pre>
+        <div class="kcp-confirm-actions">
+          <el-button size="small" type="primary" @click="approveTool">Approve</el-button>
+          <el-button size="small" @click="rejectTool">Reject</el-button>
+        </div>
+      </div>
       <ChatToolbar
         :faq-active="faqVisible"
         :sending="sending"
@@ -679,6 +868,10 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
         :rag-available="ragAvailable"
         :web-search-toggle="webSearchEnabled"
         :context-files="contextFiles"
+        :agent-mode="agentMode"
+        :agent-max-turns="agentMaxTurns"
+        :agent-system-prompt="agentSystemPrompt"
+        :agent-model-rotation="agentModelRotation"
         :selected-model="selectedModel"
         :available-models="store.availableModels"
         @toggle-faq="toggleFaq"
@@ -687,6 +880,10 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
         @open-wechat="openWechat"
         @toggle-rag="ragEnabled = !ragEnabled"
         @toggle-web-search="webSearchEnabled = !webSearchEnabled"
+        @toggle-agent="agentMode = !agentMode"
+        @update-agent-max-turns="agentMaxTurns = $event"
+        @update-agent-system-prompt="agentSystemPrompt = $event"
+        @update-agent-model-rotation="agentModelRotation = $event"
         @update-selected-model="selectedModel = $event"
         @stop="stopSending"
         @remove-context-file="removeTag('ctx:' + $event)"
@@ -989,6 +1186,81 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
   font-size: 11px;
   color: var(--el-text-color-placeholder);
   white-space: nowrap;
+}
+
+// ── Tool calls (agent mode) ──
+
+.kcp-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+.kcp-tool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--el-fill-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+
+  &--running { opacity: 0.75; }
+  &--err { border-color: var(--el-color-danger); }
+}
+.kcp-tool-name { font-weight: 600; color: var(--el-text-color-primary); }
+.kcp-tool-time { color: var(--el-text-color-secondary); }
+.kcp-tool-err { color: var(--el-color-danger); }
+.kcp-tool-detail {
+  width: 100%;
+
+  summary { cursor: pointer; font-size: 11px; color: var(--el-color-primary); }
+  pre {
+    margin: 4px 0 0;
+    padding: 6px;
+    overflow-x: auto;
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--el-fill-color-light);
+    border-radius: 6px;
+  }
+}
+
+// ── Confirmation banner (agent mode) ──
+
+.kcp-confirm {
+  margin: 0 12px;
+  padding: 8px 10px;
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning);
+  border-radius: 8px;
+}
+.kcp-confirm-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.kcp-confirm-title { font-size: 13px; font-weight: 600; color: var(--el-text-color-primary); }
+.kcp-confirm-tool { font-size: 12px; }
+.kcp-confirm-args {
+  margin: 6px 0 0;
+  max-height: 120px;
+  padding: 6px;
+  overflow: auto;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--el-bg-color);
+  border-radius: 6px;
+}
+.kcp-confirm-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 6px;
 }
 
 // ── Input area (matches ChatInput styles) ──

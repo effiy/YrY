@@ -186,9 +186,16 @@ The aiChat agent (Pi-inspired agent loop) can operate on the menu catalog direct
 
 **Writable scope.** Reads are open (non-destructive). Writes are restricted to `_WRITABLE_COLLECTIONS` in `data_tools.py` (currently `{"menus"}`) — a **safety policy, not business logic**; extend it as other collections become safe to edit from chat (e.g. `knowledge_files`, `rss_sources`). The menus schema entry documents the nested `meta` shape (title/icon/isLink/isHide/isFull/isAffix/isKeepAlive) so the model emits valid documents.
 
+**Schema rules (declarative domain guardrails).** The `menus` schema entry carries a `rules` block — the pitfalls below distilled into model-readable constraints returned by `db_schema` (dead-link components, no cascade delete, never delete `home`, aiChat/RAG are static, sidebar sorts by `meta.title`, `name` is a cache/permission key). The agent reads these before writing instead of the code encoding menu logic. The schema also declares `parent_ref_field: "parent"`, which `db_delete` uses **generically**: it refuses to delete a document that has children (deleting would orphan them to top-level, since there is no cascade) and reports the child count + an example key, suggesting the model delete children first or re-run with `force: true`. The guard is data-driven — any collection with a `parent_ref_field` gets the same protection with no per-collection code.
+
 **Confirmation gate.** `db_create`/`db_update`/`db_delete` set `requires_confirmation=True`. When the agent requests one, the loop emits a `confirmation_required` SSE event and **pauses** (up to 120s). The aiChat UI renders an Approve/Reject banner in the message list; either choice calls `POST /agent/confirm {session_id, confirmation_id, approve}` (`YiAi/src/server/routes/agent.py`, store in `src/server/routes/agent.py:_confirmation_store`). Approve executes the tool, Reject (or timeout) skips it with a "Rejected by user" / "timed out" result the agent relays back. The frontend wiring lives in `YiVad/src/api/modules/agentService.ts` (`confirmAgentTool`), `src/stores/modules/aiChat.ts` (`pendingConfirmation` + approve/reject actions), and `src/views/aiChat/components/MessageList.vue` (the banner + 120s auto-reject). The confirmation UI is generic — no tool names are hard-coded.
 
 **Tool calling.** The agent uses **native Ollama tool calling** — `OllamaRuntime.stream_chat` forwards the registry's OpenAI-style `tools` to the model and returns structured `tool_calls` (see `YiAi/src/services/ai/model_runtime.py` and the conversion in `agent.py:_stream_llm_response`). The `<tool_call>` XML text parser remains as a fallback for models without native tool-calling support.
+
+**Reliability behaviors** (why a chat task usually completes even with a weak default model like qwen3.5, all in `YiAi/src/domain/ai/agent.py`):
+- *Narrate-and-stop guard* — a reasoning model sometimes streams its *plan* (naming `db_create`) without emitting the `tool_call`. The loop injects up to 2 `[CONTINUE]` nudges telling it to actually invoke the named tools.
+- *Tool-call XML fallback* — on an intermittent malformed tool-call XML frame, the LLM call is retried **without** `tools`, so the model answers in plain text and `_parse_tool_calls_from_text` extracts the call.
+- *Failure-based model escalation* — if nudges are exhausted and the model still narrates without executing, the loop switches to a stronger model (`agent_model_fallback`, default `["qwen3-coder"]`), emits a `model_switch` SSE event (the aiChat panel shows "⚙️ 模型自动切换"), and lets it finish with the full context. Measured on the menu task (2026-08-08, auto-approve, unique per-run path): qwen3.5 alone 2/6, with escalation **6/6 = 100%** (4/6 needed escalation, all recovered), qwen3-coder alone 3/3. A single session can also chain **create → update → delete** on one menu key — 3/3 SUCCESS (self-cleaning; the final delete removes the probe doc).
 
 **Example chat prompts** (agent mode on the AI Chat page):
 
@@ -197,20 +204,220 @@ The aiChat agent (Pi-inspired agent loop) can operate on the menu catalog direct
 - "Rename the menu with key menu_abc123 to 'New Title'" → `db_list` (find key) → `db_update` (confirm)
 - "Delete the menu entry /my-feature" → `db_list` (find key) → `db_delete` (confirm)
 
+> Verified (2026-08-08, e2e harnesses): read-only queries answer from `db_list` without mutating (`mutated=False`); rejecting a `db_create` confirmation leaves the run `stop=completed` with no doc created; a single session chains create→update→delete on one key. Rejecting destructive writes is honored — the agent re-plans and ends gracefully instead of forcing the write.
+
 > Same constraints as the management page apply: a missing `component` view file means the sidebar entry is a dead link (dynamic router skips it), and a full page reload is needed to re-register a new route.
 
-### API layer
+### API Reference
 
-| Operation | Function | Target |
-|---|---|---|
-| List menus | `getMenuList()` | `data_service.query_documents({cname: "menus", limit: 1000, orderBy: "sort", orderType: "asc"})` |
-| Create menu | `createMenu(params)` | `data_service.create_document("menus", { ...params, key, createdAt, updatedAt })` |
-| Update menu | `updateMenu(key, params)` | `data_service.update_document("menus", key, { ...params, key, updatedAt })` |
-| Delete menu | `deleteMenu(key)` | `data_service.delete_document("menus", key)` |
-| Load for routing | `getAuthMenuListApi()` | `GET /auth/menu/list` (falls back to local JSON) |
-| Button permissions | `getAuthButtonListApi()` | `GET /auth/buttons` (falls back to `authButtonList.json`) |
+The menu management system exposes three API surfaces, serving different consumers:
 
-Defined in `src/api/modules/system.ts`, `src/api/modules/login.ts`, and the generic wrapper `src/api/modules/dataService.ts`.
+| Surface | Protocol | Consumer | File |
+|---|---|---|---|
+| **REST — runtime menu tree** | `GET /auth/menu/list` | Frontend dynamic router (every page load) | `YiAi/src/server/routes/auth.py` |
+| **REST — system CRUD** | `GET\|POST\|PUT\|DELETE /system/menus` | External/admin tools (defined but **not used by menuMange page**) | `YiAi/src/server/routes/system.py` |
+| **RPC `data_service`** | `POST /` JSON-RPC style | menuMange page (the actual management UI) | `YiVad/src/api/modules/system.ts` → `dataService.ts` → `YiAi/src/data/repository.py` |
+| **Agent data tools** | Tool-calling (Ollama native) | aiChat Agent mode (chat-driven menu ops) | `YiAi/src/domain/ai/data_tools.py` |
+
+---
+
+#### 1. Runtime menu tree — `GET /auth/menu/list`
+
+> **Source**: `YiAi/src/server/routes/auth.py:73-97` (`auth_menu_list`)  
+> **Auth**: none (no JWT dependency on this endpoint)
+
+The frontend calls this on every app boot to populate the dynamic router and sidebar. It reads all documents from the `menus` MongoDB collection, builds a tree via `_build_menu_tree`, and returns nested JSON. If the collection is empty, it falls back to `_scan_views_dir()` (dev-only file-system scan).
+
+**Request**: no parameters.
+
+**Response** `200 OK`:
+
+```json
+[
+  {
+    "path": "/home/index",
+    "name": "home",
+    "component": "/home/index",
+    "redirect": "",
+    "meta": {
+      "icon": "HomeFilled",
+      "title": "Home",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": true,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 0,
+    "children": []
+  }
+]
+```
+
+**Frontend call chain**:
+1. `YiVad/src/api/modules/login.ts:19-27` — `getAuthMenuListApi()` → `http.get("/auth/menu/list")`, falls back to `authMenuList.json` on error
+2. `YiVad/src/stores/modules/auth.ts:34-36` — `authStore.getAuthMenuList()` wraps the API call
+3. `YiVad/src/routers/modules/dynamicRouter.ts:16-58` — `initDynamicRouter()` calls authStore, then `router.addRoute("layout", item)` per node
+
+**Tree-building logic** (`_build_menu_tree`):
+- Group by `parent`: `null` → top-level; non-null → attached under the doc whose `path` matches `parent`
+- Orphans (parent path not present in the collection) are promoted to top-level
+- Each level sorted by `(order, path)`
+- Empty collection → `_scan_views_dir()` scans `YiVad/src/views` for `BUSINESS_DIRS` (dev-only, not the canonical business tree)
+
+---
+
+#### 2. System REST CRUD — `/system/menus`
+
+> **Source**: `YiAi/src/server/routes/system.py:74-108`  
+> **Auth**: none (no JWT dependency)  
+> **Note**: These endpoints exist but the **menuMange page does NOT use them**. They are available for external tools or direct HTTP access. The menuMange page uses the `data_service` RPC instead.
+
+**Request model** (`MenuItem`, system.py:24-31):
+
+```python
+class MenuItem(BaseModel):
+    path: str
+    name: str
+    component: str = ""
+    redirect: str = ""
+    meta: dict = {}
+    parent: Optional[str] = None
+    order: int = 0
+```
+
+| Operation | Method | Path | Function | Request Body |
+|---|---|---|---|---|
+| List all | `GET` | `/system/menus` | `list_menus()` | — |
+| Create | `POST` | `/system/menus` | `create_menu(body)` | `MenuItem` |
+| Update | `PUT` | `/system/menus/{key}` | `update_menu(key, body)` | `MenuItem` (partial) |
+| Delete | `DELETE` | `/system/menus/{key}` | `delete_menu(key)` | — |
+
+**`GET /system/menus`** — returns flat array of all menu documents (no tree structure):
+
+```json
+[
+  {
+    "_id": "...",
+    "key": "menu_home",
+    "path": "/home/index",
+    "name": "home",
+    "component": "/home/index",
+    "meta": { "icon": "HomeFilled", "title": "Home", ... },
+    "parent": null,
+    "order": 0
+  }
+]
+```
+
+**`POST /system/menus`** — create a menu document. Required: `path`, `name`. Returns the created document.
+
+**`PUT /system/menus/{key}`** — update by `key` field (not `_id`). Returns the updated document.
+
+**`DELETE /system/menus/{key}`** — delete by `key`. Returns `{"message": "deleted"}`.
+
+---
+
+#### 3. RPC `data_service` — menuMange page operations
+
+> **Source (frontend)**: `YiVad/src/api/modules/system.ts:27-53`  
+> **Source (backend)**: `YiAi/src/data/repository.py`  
+> **Transport**: `POST /` with `{ module_name: "services.database.data_service", method_name: "...", parameters: {...} }`
+
+This is the API surface the **Menu Management page actually uses**. All four CRUD operations go through the generic `data_service` RPC, which provides automatic `key` generation, timestamp management, and `order` field handling.
+
+**`getMenuList()` — query all menus**
+
+```
+→ data_service.query_documents({
+    cname: "menus",
+    limit: 1000,
+    orderBy: "sort",
+    orderType: "asc"
+  })
+← { data: MenuDocument[] }
+```
+
+> **Note**: `orderBy: "sort"` is a mismatch — the field is `order`, not `sort`, making the sort a silent no-op. The frontend re-sorts alphabetically anyway.
+
+**`createMenu(params)` — create a menu**
+
+```
+→ data_service.create_document("menus", {
+    ...params,          // title, path, name, component, icon, parent, order, meta fields
+    key,                // auto-generated if not provided
+    createdAt: now,
+    updatedAt: now
+  })
+← { data: { key: "menu_xxx", ... } }
+```
+
+The backend (`repository.py`) auto-generates `key` as `menu_<uuid>` if the caller doesn't supply one, and auto-sets `order` to `max(order) + 1`.
+
+**`updateMenu(key, params)` — update a menu**
+
+```
+→ data_service.update_document("menus", key, {
+    ...params,
+    key,                // re-included for idempotency
+    updatedAt: now
+  })
+← { data: { key: "menu_xxx", ... } }
+```
+
+**`deleteMenu(key)` — delete a menu**
+
+```
+→ data_service.delete_document("menus", key)
+← { message: "deleted" }
+```
+
+**Post-operation refresh**: After any mutation, the menuMange page calls `authStore.getAuthMenuList()` to re-fetch the tree and update the sidebar. A full page reload is recommended to re-register routes.
+
+---
+
+#### 4. Agent data tools — aiChat-driven menu operations
+
+> **Source**: `YiAi/src/domain/ai/data_tools.py` (399 lines)  
+> **Writable scope**: `frozenset({"menus"})` — safety whitelist
+
+When **agent mode** is enabled on the AI Chat page, the agent gets generic data tools that can operate on the `menus` collection. See [Agent chat data tools (aiChat)](#agent-chat-data-tools-aichat) above for tool descriptions, confirmation flow, and schema guardrails.
+
+| Tool | Purpose | Writes? | Confirmation |
+|---|---|---|---|
+| `db_schema` | Return the `menus` schema + rules (field docs, constraints, pitfalls) | No | — |
+| `db_list` | Query menus (Mongo filter, limit, fields, orderBy) | No | — |
+| `db_create` | Insert a menu document | Yes | Required |
+| `db_update` | Update a menu by `key` | Yes | Required |
+| `db_delete` | Delete a menu by `key` (with orphan protection) | Yes | Required |
+
+**Confirmation flow**: Write tools set `requires_confirmation=True`. The agent loop pauses (120s timeout), emitting an SSE `confirmation_required` event. The aiChat UI renders an Approve/Reject banner; user choice is sent via `POST /agent/confirm {session_id, confirmation_id, approve}` (`YiAi/src/server/routes/agent.py`).
+
+---
+
+#### 5. Button permissions — `GET /auth/buttons`
+
+> **Source**: `YiAi/src/server/routes/auth.py` (button_permissions)  
+> **Frontend**: `YiVad/src/api/modules/login.ts` — `getAuthButtonListApi()`, falls back to `authButtonList.json`
+
+Returns the `button_permissions` collection as a flat list. Used by `v-auth` directives for per-button access control. Same pattern as menu list but for a different collection.
+
+---
+
+#### Summary table
+
+| Operation | menuMange page | System REST | Agent tools |
+|---|---|---|---|
+| **List** | `data_service.query_documents` | `GET /system/menus` | `db_list` |
+| **Create** | `data_service.create_document` | `POST /system/menus` | `db_create` |
+| **Update** | `data_service.update_document` | `PUT /system/menus/{key}` | `db_update` |
+| **Delete** | `data_service.delete_document` | `DELETE /system/menus/{key}` | `db_delete` |
+| **Tree for routing** | — | `GET /auth/menu/list` | — |
+| **Schema/rules** | — | — | `db_schema` |
+| **Confirmation** | No (direct UI) | No | Yes (Approve/Reject) |
+
+Defined across `YiVad/src/api/modules/system.ts`, `YiVad/src/api/modules/login.ts`, `YiVad/src/api/modules/dataService.ts`, `YiAi/src/server/routes/auth.py`, `YiAi/src/server/routes/system.py`, `YiAi/src/data/repository.py`, and `YiAi/src/domain/ai/data_tools.py`.
 
 ### Current menu tree (served by `GET /auth/menu/list`; seed + fallback match)
 

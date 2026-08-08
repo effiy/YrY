@@ -17,7 +17,9 @@ const STREAM_TIMEOUT_MS = 600_000;
 export interface AgentStreamEvent {
   type: string;
   timestamp: number;
-  message?: { role: string; content: string };
+  message?:
+    | { role: string; content: string }
+    | { from: string; to: string };
   turn_index?: number;
   tool_results?: Array<{
     name: string;
@@ -66,6 +68,8 @@ export interface AgentChatPayload {
   images?: string[];
   session_id?: string;
   model_rotation?: string[];
+  /** Ordered fallback models to escalate to when the active model stalls (narrates a tool call without executing it). Omit => server default; [] => disabled. */
+  model_fallback?: string[];
 }
 
 export interface AgentStreamHandlers {

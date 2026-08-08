@@ -177,6 +177,7 @@ async def agent_chat_route(request: AgentChatRequest, http_request: Request):
                 images=request.images,
                 session_id=session_id,
                 model_rotation=request.model_rotation,
+                model_fallback=request.model_fallback,
             ):
                 yield _format_sse(frame)
         except Exception as e:

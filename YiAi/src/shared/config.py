@@ -154,6 +154,19 @@ class Settings(BaseSettings):
     ollama_url: str = Field("http://localhost:11434", validation_alias="ollama_url")
     ollama_auth: str = Field("", validation_alias="ollama_auth")
     ollama_chat_timeout: int = Field(600, validation_alias="ollama_chat_timeout")
+    # Ollama defaults to num_ctx=2048 unless specified — far too small for a
+    # 256k-context model and the agent loop (which plans around an 8192-token
+    # context window). Raise the effective window + give reasoning models room
+    # to think, call tools, and answer without hitting "length".
+    ollama_num_ctx: int = Field(16384, validation_alias="ollama_num_ctx")
+    ollama_num_predict: int = Field(8192, validation_alias="ollama_num_predict")
+
+    # Agent: models to escalate to when the active model stalls on a
+    # tool-calling task (narrates a tool call without executing it, resisting
+    # the nudge guard). Popped in order; a stronger model takes over with the
+    # full conversation context and completes the task. Default targets a
+    # capable local coder model over the lightweight qwen3.5 default.
+    agent_model_fallback: List[str] = Field(["qwen3-coder"], validation_alias="agent_model_fallback")
 
     # OpenAI
     openai_api_key: str = Field("", validation_alias="openai_api_key")
