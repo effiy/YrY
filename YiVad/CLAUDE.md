@@ -224,6 +224,11 @@ View → fileService.writeFile(path, content)
 
 ## Recent Changes
 
+### 2026-08-08 — Resume-by-session for 继续 (pi persistent loop)
+
+- **`src/stores/modules/aiChat.ts`**: after `agent_end` with `stop_reason=max_turns_reached`, the next send in the same session no longer re-sends the full history — it sends **only** the user's continuation with `resume: true`. The backend restores the persisted faithful trajectory (incl. `tool_result` messages), so the model sees the real completed calls and continues instead of redoing them. Previously the resume re-sent text-only narration and the model re-ran completed writes (measured 3/3 resumed runs re-created a menu `db_create` had already made; now 8/8 resumed runs complete the full lifecycle with zero duplicates). `lastAgentInterrupt` (set at `max_turns_reached` agent_end) marks the session; `resumeMessages` = the trailing user message only, one-shot cleared.
+- **`src/api/modules/agentService.ts`**: `AgentChatPayload.resume?: boolean` → forwarded as `resume: true` on the `/agent/chat` body.
+
 ### 2026-08-08 — Incomplete-task surfacing (max_turns_reached)
 
 - **`src/stores/modules/aiChat.ts`** + **`src/views/aiChat/components/KnowledgeChatPanel.vue`**: the backend now distinguishes `agent_end` `stop_reason="max_turns_reached"` (loop ran out of turns mid-task) from `"completed"` — previously both were "completed", so an unfinished task looked done. Both chat surfaces append `> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。` so the user knows to reply 继续 and the loop resumes from the accumulated history.

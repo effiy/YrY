@@ -77,6 +77,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Per-turn summaries for the current streaming message — cleared on each
   // new send, populated by agent events.
   const agentTurnSummaries = ref<AgentTurnSummary[]>([]);
+  // Marks the session as "interrupted by max_turns" for the next send. That
+  // send then uses resume-by-session (pi persistent loop): it sends only the
+  // user's continuation with `resume: true`, and the server restores the
+  // persisted tool trajectory so the model continues instead of redoing
+  // completed writes (observed: a resumed run re-created a menu db_create had
+  // already made when history was text-only).
+  const lastAgentInterrupt = ref<null | { sessionKey: string }>(null);
   // Raw agent events for the current turn (for detailed inspection).
   const agentEvents = ref<AgentStreamEvent[]>([]);
   // Max turns for the agent loop (user-configurable).
@@ -1166,6 +1173,22 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         .filter(m => (m.message ?? "").trim().length > 0)
         .map(m => ({ role: m.type === "user" ? "user" : "assistant", content: m.message }));
 
+      // Pi parity — resume by session after max_turns: when the previous run in
+      // this session was cut short, send only the user's continuation with
+      // `resume: true`. The server restores the persisted tool trajectory
+      // (incl. tool_result messages), so the model sees the real completed
+      // calls and continues — a text-only re-send makes it guess state from
+      // narration and redo completed writes (observed on the menu lifecycle).
+      const resumeRun = lastAgentInterrupt.value?.sessionKey === (activeConversation.value?.key ?? "");
+      let resumeMessages = agentMessages;
+      if (resumeRun) {
+        // Only the user's continuation travels in the request — the server
+        // restores the persisted trajectory for this session.
+        const lastUser = [...aiMessages].reverse().find(m => m.type === "user");
+        resumeMessages = lastUser ? [{ role: "user", content: lastUser.message ?? "" }] : agentMessages;
+        lastAgentInterrupt.value = null; // one-shot
+      }
+
       // Clear per-turn state for this new send
       agentTurnSummaries.value = [];
       agentEvents.value = [];
@@ -1178,7 +1201,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
       abort = streamAgentChat(
         {
-          messages: agentMessages,
+          messages: resumeMessages,
+          ...(resumeRun ? { resume: true } : {}),
           model: selectedModel.value,
           // In agent mode the backend appends its own <tool_call> tool prompt;
           // the frontend registry block ("tools run automatically, you do NOT
@@ -1321,6 +1345,11 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                     next[idx] = { ...next[idx], message: streamed };
                     return next;
                   });
+                  // Mark the session interrupted so the next send resumes by
+                  // session: the server restores the persisted tool trajectory.
+                  lastAgentInterrupt.value = {
+                    sessionKey: activeConversation.value?.key ?? "",
+                  };
                 }
                 if (event.usage) {
                   agentUsage.value = {

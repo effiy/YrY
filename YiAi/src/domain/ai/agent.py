@@ -170,7 +170,60 @@ def _last_user_text(messages: List["AgentMessage"]) -> str:
     return ""
 
 
+def _is_continuation(text: str) -> bool:
+    """True when the message is a bare "continue" directive, not a new task.
+
+    Used to keep the end-of-loop completion checks alive across a resume: after
+    max_turns the user replies 继续, so the last user message is no longer a
+    write request — but the ORIGINAL task still is, and it must still be checked.
+    """
+    t = (text or "").strip().lower()
+    if not t:
+        return False
+    return (
+        t in ("继续", "继续完成", "继续吧", "continue", "go on", "keep going", "接着来", "接着")
+        or t.startswith("继续")
+        or t.startswith("接着")
+        or t.startswith("continue")
+    )
+
+
 _MISSION_PREFIX = "[TASK] The user's concrete task"
+
+# ── Session history persistence (Pi: persistent loop) ───────────────────────
+# The frontend resends history text-only on each /agent/chat, so a "继续"
+# resume after max_turns loses the faithful tool trajectory and the model can
+# redo completed writes (observed: a resumed run re-created a menu db_create
+# had already made). Persist each run's full agent_messages — including
+# tool_result messages (rendered to the model as "[Tool result: <name>] …") —
+# per session, and let a resume call restore them and append only the user's
+# continuation. In-memory + TTL, matching the existing steer/follow-up stores.
+_session_history: Dict[str, List[Dict[str, Any]]] = {}
+_session_history_ts: Dict[str, float] = {}
+_SESSION_HISTORY_TTL = 3600.0  # seconds
+
+
+def save_session_history(session_id: str, messages: List["AgentMessage"]) -> None:
+    """Persist a finished run's trajectory for later resume (no-op without session_id)."""
+    if not session_id:
+        return
+    _session_history[session_id] = [
+        {"role": m.role, "content": m.content, "name": m.name}
+        for m in messages
+    ]
+    _session_history_ts[session_id] = time.time()
+
+
+def load_session_history(session_id: str) -> Optional[List[Dict[str, Any]]]:
+    """Return the persisted trajectory if present and not expired, else None."""
+    if not session_id:
+        return None
+    ts = _session_history_ts.get(session_id)
+    if ts is None or time.time() - ts > _SESSION_HISTORY_TTL:
+        _session_history.pop(session_id, None)
+        _session_history_ts.pop(session_id, None)
+        return None
+    return _session_history.get(session_id)
 
 
 def _inject_mission_if_needed(
@@ -618,8 +671,16 @@ async def run_agent_loop(
     on_event: Optional[Callable[[AgentEvent], Awaitable[None]]] = None,
     images: Optional[List[bytes]] = None,
     session_id: str = "",
+    task_text: str = "",
 ) -> AsyncIterator[Dict[str, Any] | AgentEvent]:
-    """Run the agent loop and yield SSE-ready dicts and AgentEvents."""
+    """Run the agent loop and yield SSE-ready dicts and AgentEvents.
+
+    task_text: the concrete task under execution (the run's mission). Used by
+    the end-of-loop completion checks. On a resume it is the ORIGINAL task
+    (restored from the persisted trajectory) so "继续" runs still verify the
+    real task's write steps instead of skipping them because the last user
+    message is just a continuation directive.
+    """
     cfg = config or AgentConfig()
     registry = tool_registry or get_tool_registry()
     abort = signal or asyncio.Event()
@@ -627,9 +688,27 @@ async def run_agent_loop(
     turn_index = 0
     total_tokens = 0
     agent_messages: List[AgentMessage] = [
-        AgentMessage(role=m.get("role", "user"), content=str(m.get("content", "")))
+        AgentMessage(
+            role=m.get("role", "user"),
+            content=str(m.get("content", "")),
+            # Preserve name so a restored tool_result still renders
+            # "[Tool result: <name>]" on resume (the tool trajectory is the
+            # faithful state that stops the model redoing completed writes).
+            name=m.get("name"),
+            tool_call_id=m.get("tool_call_id"),
+        )
         for m in messages
     ]
+
+    # Tool names already completed by a prior run (from the restored trajectory's
+    # tool_result messages). Seeded into the per-run tracking below so the
+    # completion checkpoints compare against the full task without demanding
+    # re-runs of writes the previous run already finished.
+    _resume_names: set[str] = {
+        _m.get("name")
+        for _m in messages
+        if _m.get("role") == "tool_result" and _m.get("name")
+    }
 
     # ── Steering / follow-up queues (Pi: Agent.steer / Agent.followUp) ──
     steering_queue: List[AgentMessage] = []
@@ -671,6 +750,17 @@ async def run_agent_loop(
     _write_counts: dict = {}  # per-tool count of successful confirmed writes (count-aware checkpoint)
     _write_rejected = False  # the user rejected (or timed out) a write confirmation this run
     _natural_stop = False  # the loop ended with a natural completion (break), not max_turns exhaustion
+
+    # Carry forward completed writes from the restored trajectory (resume): the
+    # run's per-tool tracking starts from what the previous run already did, so
+    # the end-of-loop checkpoints see the full task (create+update+delete) while
+    # knowing create/update are already done.
+    _executed_tool_names |= _resume_names
+    for _n in _resume_names:
+        _td = registry.get(_n)
+        if _td and _td.requires_confirmation:
+            _write_executed.add(_n)
+            _write_counts[_n] = _write_counts.get(_n, 0) + 1
 
     # Outer loop: process user turns + queued messages
     while turn_index < cfg.max_turns:
@@ -1195,11 +1285,24 @@ async def run_agent_loop(
         # are excluded by _is_write_request, so they are never nudged. A run where the
         # user *rejected* a write confirmation is also excluded — the nudge must not
         # re-arm a write the user explicitly declined.
+        # Effective task for the completion checks below. Normally the last user
+        # message; on a resume (user replied 继续 after max_turns) it is the
+        # ORIGINAL task restored from the persisted trajectory, so the checks
+        # still verify the real write steps instead of skipping them because the
+        # last user message is just a continuation directive. A read-only query
+        # yields "" (no write task) — never nudged.
+        last_user = _last_user_text(agent_messages)
+        if _is_write_request(last_user):
+            effective_task = last_user
+        elif task_text and _is_continuation(last_user) and _is_write_request(task_text):
+            effective_task = task_text
+        else:
+            effective_task = ""
         if (
             not _task_nudged
             and not _write_executed
             and not _write_rejected
-            and _is_write_request(_last_user_text(agent_messages))
+            and _is_write_request(effective_task)
         ):
             _task_nudged = True
             logger.info(
@@ -1234,12 +1337,11 @@ async def run_agent_loop(
         # which did run) is never checkpointed. Runs where the user *rejected* a
         # write confirmation are excluded — re-nudging after a rejection would
         # override the user's decision.
-        last_user = _last_user_text(agent_messages)
         unexecuted_writes = [
             td.name
             for td in registry.get_enabled()
             if td.requires_confirmation
-            and td.name in last_user
+            and td.name in effective_task
             and td.name not in _executed_tool_names
         ]
         if (
@@ -1275,7 +1377,7 @@ async def run_agent_loop(
         # real gap so a fully-completed multi-item run pays no extra turn.
         count_gaps: list = []
         if not _task_nudged and _write_executed and not _write_rejected:
-            for tool_name, need in _parse_task_item_counts(last_user):
+            for tool_name, need in _parse_task_item_counts(effective_task):
                 have = _write_counts.get(tool_name, 0)
                 if need >= 2 and have < need:
                     count_gaps.append((tool_name, need, have))
@@ -1315,6 +1417,9 @@ async def run_agent_loop(
             f"Agent reached max_turns={cfg.max_turns} without a natural stop "
             f"(session={session_id!r}, {turn_index} turns) — task may be incomplete"
         )
+    # Persist the faithful trajectory (incl. tool_result names) so a later
+    # "继续" resume in this session restores it instead of a text-only re-send.
+    save_session_history(session_id, agent_messages)
     yield await _emit(AgentEvent(
         type=AgentEventType.AGENT_END,
         stop_reason=final_stop_reason,
@@ -1515,6 +1620,7 @@ async def agent_chat_stream(
     session_id: str = "",
     model_rotation: Optional[List[str]] = None,
     model_fallback: Optional[List[str]] = None,
+    resume: bool = False,
 ) -> AsyncIterator[Dict[str, Any] | AgentEvent]:
     """High-level entry point: stream agent chat with tool calling.
 
@@ -1522,6 +1628,11 @@ async def agent_chat_stream(
     observability events. The frontend can distinguish them by checking
     for ``type`` (agent event) vs ``data.message`` (content delta) vs
     ``done`` (stream end).
+
+    resume: when True, restore the session's persisted agent trajectory
+    (incl. tool_result messages) and append only ``messages`` — the user's
+    continuation. The model then sees the real completed tool calls instead
+    of a text-only re-send, so it continues rather than redoing work.
 
     model_rotation: optional list of model names to rotate between turns.
     When provided, prepare_next_turn switches to the next model in the list
@@ -1561,6 +1672,36 @@ async def agent_chat_stream(
             return AgentLoopTurnUpdate(model=next_model)
 
         config.prepare_next_turn = _rotate_model
+
+    # Pi: persistent loop — restore the session's faithful trajectory on a
+    # resume (user replied 继续 after max_turns). The stored history already
+    # contains the original task + tool_call/tool_result messages, so only the
+    # user's continuation message(s) come from this request. If no stored
+    # history exists (server restarted / TTL), fall back to the request as-is.
+    if resume and session_id:
+        stored = load_session_history(session_id)
+        if stored:
+            base = list(stored)
+            done = sorted({m["name"] for m in stored if m.get("role") == "tool_result" and m.get("name")})
+            if done:
+                # Explicit handoff so even a weaker model doesn't redo completed
+                # writes: the restored [Tool result: …] trajectory is faithfully
+                # presented, but a weak model (qwen3.5) can misread it as a new
+                # instruction. Name the already-executed tools up front.
+                base.append({
+                    "role": "system",
+                    "content": (
+                        "[RESUME] 上一轮任务因达到最大轮次被中断，你现在继续它。"
+                        "以下工具调用已在此前成功执行：" + "、".join(done) +
+                        "。其中的写操作（db_create/db_update/db_delete）请勿重复执行，"
+                        "只继续完成尚未完成的步骤。"
+                    ),
+                })
+            messages = base + list(messages)
+            logger.info(
+                f"Agent resumed session {session_id!r}: restored "
+                f"{len(stored)} history messages + {len(messages) - len(stored)} new"
+            )
 
     # Pi: transformContext — re-inject the user's concrete task after compaction.
     # Compaction folds old messages into a summary and keeps only the last K
@@ -1605,6 +1746,11 @@ async def agent_chat_stream(
                 pass
 
     async for frame in run_agent_loop(
-        messages=messages, config=config, signal=signal, images=image_bytes, session_id=session_id
+        messages=messages,
+        config=config,
+        signal=signal,
+        images=image_bytes,
+        session_id=session_id,
+        task_text=_mission,
     ):
         yield frame

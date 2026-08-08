@@ -70,6 +70,10 @@ export interface AgentChatPayload {
   model_rotation?: string[];
   /** Ordered fallback models to escalate to when the active model stalls (narrates a tool call without executing it). Omit => server default; [] => disabled. */
   model_fallback?: string[];
+  /** Continue a session interrupted by max_turns: the server restores the
+   *  persisted tool trajectory and appends only `messages` (the 继续 reply),
+   *  so the model continues instead of redoing completed writes. */
+  resume?: boolean;
 }
 
 export interface AgentStreamHandlers {
@@ -110,6 +114,7 @@ export function streamAgentChat(
       ...(payload.images?.length ? { images: payload.images } : {}),
       ...(payload.session_id ? { session_id: payload.session_id } : {}),
       ...(payload.model_rotation?.length ? { model_rotation: payload.model_rotation } : {}),
+      ...(payload.resume ? { resume: true } : {}),
     }),
     signal: controller.signal,
   })

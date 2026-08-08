@@ -56,6 +56,10 @@ class AgentChatRequest(BaseModel):
         default=None,
         description="Optional ordered list of model names to escalate to when the active model stalls (narrates a tool call without executing it, resisting nudges). The next model takes over mid-run with the full context. Defaults to the server's agent_model_fallback.",
     )
+    resume: Optional[bool] = Field(
+        default=False,
+        description="When true, restore this session's persisted agent history (incl. tool results) and append only the request's messages, so a 继续 continuation keeps the faithful tool trajectory instead of a text-only re-send.",
+    )
 
 class FileUploadRequest(BaseModel):
     """
