@@ -47,6 +47,13 @@ logger = logging.getLogger(__name__)
 _CHARS_PER_TOKEN = 4
 _COMPACTION_THRESHOLD = 0.8  # 80% of context window
 _DEFAULT_CONTEXT_WINDOW = 8192
+# Bound for a single tool result rendered into the LLM context. A db_list can
+# return up to 1000 documents (~75K tokens), which blows past the context window
+# (Ollama num_ctx 16384) and degrades task completion: compaction only fires
+# AFTER the turn and summarizes away the exact data the model needs. Keep the
+# full content in persistence/UI, but feed the model a bounded head+tail plus an
+# explicit note telling it how to re-query the omitted items.
+_DEFAULT_MAX_TOOL_RESULT_CHARS = 6000
 _CONFIRMATION_TIMEOUT_S = 120  # how long the loop waits for a user approve/reject
 _CONFIRMATION_POLL_S = 1.5  # poll interval for the user's decision
 
@@ -467,6 +474,7 @@ class AgentConfig:
     context_window: int = _DEFAULT_CONTEXT_WINDOW
     auto_compact: bool = True
     compaction_keep_last: int = 4
+    max_tool_result_chars: int = _DEFAULT_MAX_TOOL_RESULT_CHARS  # bound per tool result in LLM context
     steering_mode: str = "all"  # Pi QueueMode: "all" | "one-at-a-time"
     follow_up_mode: str = "one-at-a-time"  # Pi QueueMode for follow-up messages
     llm_max_retries: int = 2  # Pi: retry transient LLM failures (connection reset, model still loading)
@@ -586,6 +594,40 @@ async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio
             return decision
         await asyncio.sleep(_CONFIRMATION_POLL_S)
     return "timeout"
+
+
+def _bound_tool_result(
+    name: str,
+    content: str,
+    max_chars: int = _DEFAULT_MAX_TOOL_RESULT_CHARS,
+) -> str:
+    """Bound a large tool result for the LLM context while preserving recoverability.
+
+    db_list can return up to 1000 docs (~75K tokens) — far past the context
+    window. Rather than letting it overflow (Ollama mid-truncates, losing data),
+    keep a bounded head + tail and append an explicit note stating how much was
+    omitted and how to re-query for it (filter/fields/key). The model keeps the
+    most relevant recent items and knows the rest exists.
+
+    The full content is left untouched in persistence and the UI — this only
+    bounds the text that is rendered into the model's context.
+    """
+    if not content or len(content) <= max_chars:
+        return content
+
+    total = len(content)
+    head_end = int(max_chars * 0.70)
+    tail_start = max(head_end, total - int(max_chars * 0.22))
+    head = content[:head_end]
+    tail = content[tail_start:]
+    omitted_chars = total - len(head) - len(tail)
+    omitted_lines = content.count("\n", head_end, tail_start)
+    note = (
+        f"\n... [result truncated for context: {total:,} chars, "
+        f"~{omitted_lines:,} lines omitted in the middle. "
+        f"Re-query with filter/fields/key to fetch the specific items you need.]"
+    )
+    return f"{head}{note}{tail}"
 
 
 # ── Token estimation ──────────────────────────────────────────────────────
@@ -1456,7 +1498,8 @@ async def _stream_llm_response(
         elif m.role == "assistant":
             ollama_messages.append({"role": "assistant", "content": m.content})
         elif m.role == "tool_result":
-            label = f"[Tool result: {m.name}]\n{m.content}"
+            bounded = _bound_tool_result(m.name or "", m.content, config.max_tool_result_chars)
+            label = f"[Tool result: {m.name}]\n{bounded}"
             ollama_messages.append({"role": "user", "content": label})
 
     if full_system:
