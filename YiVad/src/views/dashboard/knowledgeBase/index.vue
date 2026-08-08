@@ -528,13 +528,6 @@
               highlight-current-row @row-click="openFileInDialog"
               @sort-change="onTableSortChange"
             >
-              <el-table-column width="42" fixed="left">
-                <template #default="{ row }">
-                  <el-button size="small" text @click.stop="openFilePreview(row)" title="Inline preview">
-                    <el-icon :size="15"><View /></el-icon>
-                  </el-button>
-                </template>
-              </el-table-column>
               <el-table-column prop="title" label="File" min-width="320" sortable="custom">
                 <template #default="{ row }">
                   <el-popover placement="right" :width="320" trigger="hover" :show-after="400" :hide-after="100">
