@@ -423,7 +423,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     lines.push("## Conversation");
     lines.push("");
     for (const m of s.messages ?? []) {
-      const role = m.type === "user" ? "**User**" : "**AI**";
+      const role = m.type === "user" ? "**User**" : m.type === "followup" ? "**Follow-up (queued)**" : "**AI**";
       const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
       lines.push(`### ${role} ${time ? `(${time})` : ""}`);
       lines.push("");
@@ -503,9 +503,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     parts.push(`<h2>Conversation</h2>`);
     for (const m of s.messages ?? []) {
-      const role = m.type === "user" ? "User" : "AI";
+      const role = m.type === "user" ? "User" : m.type === "followup" ? "Follow-up (queued)" : "AI";
       const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
-      parts.push(`<div class="msg msg--${m.type === "user" ? "user" : "ai"}">`);
+      parts.push(`<div class="msg msg--${m.type === "user" || m.type === "followup" ? "user" : "ai"}">`);
       parts.push(`<div class="msg__role">${role} <span class="msg__time">${time}</span></div>`);
       parts.push(`<div class="msg__content">${escapeHtml(m.message || "(empty)")}</div>`);
       if (m.toolCalls?.length) {
@@ -842,12 +842,22 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
 
     // ── Agent follow-up (Pi-inspired: queue message after agent stops) ──
+    // The queued message is reflected as a "followup" bubble so the user's
+    // deferred intent stays visible in the transcript (like the steer bubble
+    // below). It uses a dedicated type so the request-history filter at
+    // runStream excludes it — the loop already consumed it once it's drained,
+    // so re-sending it on a later run would re-execute a done task.
     if (content.startsWith("/followup") && sending.value && agentMode.value) {
       const followUpMsg = content.slice(10).trim();
       if (followUpMsg && activeConversation.value) {
         const { followUpAgent } = await import("@/api/modules/agentService");
         const ok = await followUpAgent(activeConversation.value.key, followUpMsg);
         if (ok) {
+          setActiveMessages(msgs => [...msgs, {
+            type: "followup",
+            message: followUpMsg,
+            timestamp: Date.now(),
+          }]);
           ElMessage.success(`Follow-up queued: "${followUpMsg.slice(0, 40)}${followUpMsg.length > 40 ? "..." : ""}"`);
         } else {
           ElMessage.warning("Follow-up failed — agent may not be running");

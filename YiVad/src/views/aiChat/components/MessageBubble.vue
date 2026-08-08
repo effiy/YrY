@@ -1,7 +1,7 @@
 <script setup lang="ts" name="aiChatMessageBubble">
 import { computed, ref } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked, Tools, ArrowDown, Check, Close, ChatDotRound } from "@element-plus/icons-vue";
+import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked, Tools, ArrowDown, Check, Close, ChatDotRound, Clock } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useSlowThreshold } from "@/hooks/useSlowThreshold";
@@ -34,7 +34,7 @@ async function branchToNewSession() {
     .filter(m => (m.message ?? "").trim());
   if (!msgs.length) return;
   const transcript = msgs
-    .map(m => `**${m.type === "user" ? "User" : "Assistant"}:** ${m.message ?? ""}`)
+    .map(m => `**${m.type === "user" ? "User" : m.type === "followup" ? "Follow-up (queued)" : "Assistant"}:** ${m.message ?? ""}`)
     .join("\n\n");
   const ctxTags = (conv.tags ?? []).filter(t => typeof t === "string" && t.startsWith("ctx:"));
   const tags = ["branch", ...ctxTags];
@@ -62,7 +62,10 @@ function formatLatency(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-const isUser = computed(() => props.message.type === "user");
+// A queued agent follow-up (/followup) renders on the user side but with its
+// own tag — it is the user's deferred instruction, not an executed turn.
+const isUser = computed(() => props.message.type === "user" || props.message.type === "followup");
+const isFollowUp = computed(() => props.message.type === "followup");
 const html = computed(() => render(props.message.message ?? ""));
 const time = computed(() => (props.message.timestamp ? dayjs(props.message.timestamp).format("MM/DD HH:mm:ss") : ""));
 // Pi-inspired per-message token estimate. Coarse ~4 chars/token heuristic
@@ -448,6 +451,11 @@ async function onEdit() {
     <div class="mb-content">
       <div v-if="props.message.imageDataUrls?.length" class="mb-images">
         <img v-for="(src, i) in props.message.imageDataUrls" :key="i" :src="src" class="mb-img" alt="" />
+      </div>
+      <!-- Queued agent follow-up tag — user deferred this for after the loop stops -->
+      <div v-if="isFollowUp" class="mb-followup-tag">
+        <el-icon :size="12"><Clock /></el-icon>
+        <span>Follow-up queued — runs when the agent finishes</span>
       </div>
       <!-- Context change proposals (pet messages only) -->
       <TransitionGroup v-if="hasContextChanges && !showTyping" name="ccc-list" tag="div" class="mb-changes">
@@ -855,6 +863,18 @@ async function onEdit() {
   margin-top: 4px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+// ── Queued follow-up tag (agent /followup) — user-side, deferred intent ──
+.mb-followup-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin: 2px 0 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--el-color-info);
+  background: var(--el-color-info-light-9);
+  border: 1px solid var(--el-color-info-light-7);
+  border-radius: 999px;
 }
 // ── RAG provenance badge — surfaces the llama_index config per answer ──
 .mb-rag-meta {

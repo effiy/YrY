@@ -86,7 +86,7 @@ export interface ChatStreamChunk {
 }
 
 export interface ChatMessage {
-  type: "user" | "pet";
+  type: "user" | "pet" | "followup";
   message: string;
   content?: string;
   timestamp: number;
