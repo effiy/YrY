@@ -21,6 +21,7 @@ from domain.knowledge import (
     sync_knowledge_full,
     list_knowledge_files,
     write_entry_markdown,
+    delete_entry_markdown,
 )
 from models.schemas import (
     KnowledgeReadRequest,
@@ -29,6 +30,7 @@ from models.schemas import (
     KnowledgeStoriesRequest,
     KnowledgeFilesRequest,
     KnowledgeWriteRequest,
+    KnowledgeDeleteRequest,
     KnowledgeSearchRequest,
 )
 from shared.response import success
@@ -106,6 +108,22 @@ async def knowledge_write_route(request: KnowledgeWriteRequest):
     except Exception:
         pass
     return success(data={"path": written_path})
+
+@router.post("/knowledge-delete", operation_id="knowledge_delete")
+async def knowledge_delete_route(request: KnowledgeDeleteRequest):
+    """Delete a knowledge markdown file from disk.
+
+    Delegates to ``delete_entry_markdown`` which removes the file and
+    returns True if it existed, False otherwise. A best-effort sync to
+    MongoDB follows so the mirror stays in sync.
+    """
+    deleted = delete_entry_markdown(rel_path=request.target_file)
+    # Best-effort: sync to MongoDB so the deletion is reflected in scans/RAG
+    try:
+        await sync_knowledge_full()
+    except Exception:
+        pass
+    return success(data={"deleted": deleted})
 
 @router.post("/knowledge-search", operation_id="knowledge_search")
 async def knowledge_search_route(request: KnowledgeSearchRequest):

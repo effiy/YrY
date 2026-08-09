@@ -178,6 +178,10 @@ class KnowledgeWriteRequest(BaseModel):
     content: str = Field(..., description="Markdown body (will be written after auto-generated frontmatter)")
     metadata: Optional[dict] = Field(default=None, description="Optional YAML frontmatter key-value pairs (title, tags, category, etc.)")
 
+class KnowledgeDeleteRequest(BaseModel):
+    """Delete a knowledge markdown file from disk. No-op if the file does not exist."""
+    target_file: str = Field(..., description="Relative path under the knowledge base dir")
+
 class KnowledgeSearchRequest(BaseModel):
     """Search content within knowledge base markdown files."""
     query: str = Field(..., description="Search query string")

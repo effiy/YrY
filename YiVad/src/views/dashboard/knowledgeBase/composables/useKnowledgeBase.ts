@@ -7,7 +7,7 @@ import { getKnowledgeStats, searchKnowledge } from "@/api/modules/dashboard";
 import type { KnowledgeStatsData, KnowledgeFileSummary, KnowledgeModuleStats } from "@/api/interface/yiweb";
 import type { ECOption } from "@/components/ECharts/config";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
-import { readKnowledgeFile } from "@/api/modules/knowledgeService";
+import { readKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
 import {
   buildReviewCycleDonut, buildTypeBar, buildStatusBar, buildSizeDist,
   buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar,
@@ -1410,6 +1410,37 @@ export function useKnowledgeBase() {
     setTimeout(() => detailPanelRef.value?.focus(), 50);
   });
 
+  // ── Delete ──
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function deleteFile(file: any) {
+    const { ElMessageBox, ElMessage } = await import("element-plus");
+    try {
+      await ElMessageBox.confirm(
+        `Delete "${file.title || file.path.split("/").pop()}"? This action cannot be undone.`,
+        "Delete knowledge file",
+        { confirmButtonText: "Delete", cancelButtonText: "Cancel", type: "warning" }
+      );
+    } catch {
+      return; // user cancelled
+    }
+    try {
+      const res = await deleteKnowledgeFile(file.path);
+      if (res.deleted) {
+        ElMessage.success(`Deleted: ${file.path}`);
+      } else {
+        ElMessage.info(`File not found (may already be removed): ${file.path}`);
+      }
+      // If the deleted file is the current selection, clear it
+      if (selectedFile.value?.path === file.path) {
+        selectedFile.value = null;
+      }
+      // Refresh the full dataset
+      await fetchData();
+    } catch (e: any) {
+      ElMessage.error(e?.message || "Delete failed");
+    }
+  }
+
   // ── Lifecycle ──
   onMounted(async () => {
     await fetchData();
@@ -1476,6 +1507,7 @@ export function useKnowledgeBase() {
     openFileInDialog, navigateDialogFile, navigateToFile,
     resolveRelatedNames, getModuleStats,
     discussInAiChat, discussSearchResult,
+    deleteFile,
     exportCSV, onSearchInput, onChartClick,
     onDetailKeydown, fetchData,
     // Re-exported utils (used in template)

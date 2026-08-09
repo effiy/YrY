@@ -93,3 +93,13 @@ export function writeKnowledgeFile(
     metadata
   });
 }
+
+export interface KnowledgeDeleteResponse {
+  deleted: boolean;
+}
+
+/** Delete a knowledge markdown file from disk. Returns { deleted: true } if the
+ *  file existed and was removed, { deleted: false } if it didn't exist. */
+export function deleteKnowledgeFile(targetFile: string): Promise<KnowledgeDeleteResponse> {
+  return postJson<KnowledgeDeleteResponse>("/knowledge-delete", { target_file: targetFile });
+}

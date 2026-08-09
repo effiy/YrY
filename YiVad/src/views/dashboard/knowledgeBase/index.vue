@@ -163,18 +163,6 @@
             <div class="chart-body"><ECharts :option="tagsBarOption" height="220" @chart-click="onChartClick('tag', $event)" /></div>
           </div>
         </el-col>
-        <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Metadata Completeness</div>
-            <div class="chart-body"><ECharts :option="metadataCompletenessOption" height="220" /></div>
-          </div>
-        </el-col>
-        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('tacit') }">
-            <div class="chart-title">Tacit Knowledge <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
-            <div class="chart-body"><ECharts :option="tacitDonutOption" height="220" @chart-click="onChartClick('tacit', $event)" /></div>
-          </div>
-        </el-col>
       </el-row>
     </div>
 
@@ -531,9 +519,10 @@
                           <span v-if="isStaleFile(f)" class="popover-stale mcv-flag-stale" title="stale">S</span>
                         </template>
                       </el-table-column>
-                      <el-table-column label="Preview" width="80" fixed="right">
+                      <el-table-column label="Actions" width="110" fixed="right">
                         <template #default="{ row: f }">
                           <el-button size="small" type="primary" text @click="openFileInDialog(f)">Preview</el-button>
+                          <el-button size="small" text type="danger" @click.stop="deleteFile(f)"><el-icon><Delete /></el-icon></el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -767,6 +756,7 @@
                   <span class="fg-footer-size">{{ formatFileSize(f.size) }}</span>
                   <span class="fg-footer-time">{{ f.updated ? formatRelativeTime(f.updated) : '--' }}</span>
                   <el-button size="small" text type="primary" @click.stop="openFileInDialog(f)" class="fg-footer-preview">Preview</el-button>
+                  <el-button size="small" text type="danger" @click.stop="deleteFile(f)" class="fg-footer-delete"><el-icon><Delete /></el-icon></el-button>
                 </div>
               </div>
             </div>
@@ -949,6 +939,11 @@
                   <span v-else class="text-muted">--</span>
                 </template>
               </el-table-column>
+              <el-table-column label="Actions" width="90" align="center" fixed="right">
+                <template #default="{ row }">
+                  <el-button size="small" text type="danger" @click.stop="deleteFile(row)"><el-icon><Delete /></el-icon></el-button>
+                </template>
+              </el-table-column>
             </el-table>
             <div class="table-footer" v-if="drillTableData.length > drillPageSize">
               <span class="table-footer-info">Page {{ drillPage }} of {{ Math.ceil(drillTableData.length / drillPageSize) }} ({{ drillTableData.length }} files)</span>
@@ -971,6 +966,7 @@
               </div>
               <div class="fd-header-right">
                 <el-button size="small" text type="primary" @click="openFileDialog(selectedFile.path)" title="Full preview"><el-icon :size="14"><View /></el-icon></el-button>
+                <el-button size="small" text type="danger" @click="deleteFile(selectedFile)" title="Delete"><el-icon :size="14"><Delete /></el-icon></el-button>
                 <el-button size="small" text @click="selectedFile = null"><el-icon><Close /></el-icon></el-button>
               </div>
             </div>
@@ -1192,7 +1188,7 @@ const {
   onTimeFilterChange, onTableSortChange, scrollToDrillDown,
   openFilePreview, clearRecentlyViewed,
   navigateToFile, resolveRelatedNames, getModuleStats,
-  discussInAiChat, discussSearchResult,
+  discussInAiChat, discussSearchResult, deleteFile,
   exportCSV, onSearchInput, onChartClick, onDetailKeydown, fetchData,
 } = kb;
 </script>
