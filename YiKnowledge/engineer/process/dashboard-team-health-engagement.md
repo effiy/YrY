@@ -37,8 +37,7 @@ related:
 - ./dashboard-team-velocity.md
 - ./dashboard-code-review-health.md
 - ../../tech-lead/capacity/dashboard-talent-retention.md
-- ../../tech-lead/capacity/dashboard-engineering-capacity.md
-- ../../skill-author/patterns/dashboard-learning-development.md
+  - ../../tech-lead/capacity/dashboard-engineering-capacity.md
 tacit: false
 ---
 
@@ -322,5 +321,4 @@ tacit: false
 - Same class: [dashboard-code-review-health](dashboard-code-review-health.md) — code review health
 - Same class: [dashboard-talent-retention](../../tech-lead/capacity/dashboard-talent-retention.md) — talent retention
 - Same class: [dashboard-engineering-capacity](../../tech-lead/capacity/dashboard-engineering-capacity.md) — engineering capacity
-- Same class: [dashboard-learning-development](../../skill-author/patterns/dashboard-learning-development.md) — learning and development
 - References: Google — *Project Aristotle (Psychological Safety)*; Amy Edmondson — *The Fearless Organization*; Gallup — *Q12 Employee Engagement*; Christina Maslach — *Burnout Assessment Tool (BAT)*; Microsoft — *Work Trend Index (Meeting Health)*; Deloitte — *Human Capital Trends*

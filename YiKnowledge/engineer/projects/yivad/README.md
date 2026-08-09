@@ -1,5 +1,14 @@
 ---
 title: Readme
+tags: [project, yivad, vue, readme]
+category: engineer/projects
+created: 2026-01-01
+updated: 2026-08-09
+source: internal
+type: leaf-readme
+status: stable
+lifecycle: active
+roles: [engineer]
 ---
 
 # YiVad

@@ -19,7 +19,6 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../../INDEX.md
-  - ../../skill-author/
 ---
 
 # Tools & Developer Experience
@@ -58,6 +57,5 @@ related:
 
 ## Cross-references
 
-- [../../skill-author/](../../skill-author/) — Claude Code skill design
 - [../process/](../process/) — Team collaboration patterns
 - [../infrastructure/set-up-ci-cd.md](../infrastructure/set-up-ci-cd.md) — CI/CD setup

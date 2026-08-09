@@ -79,7 +79,6 @@ During quarterly planning, new business initiatives, overseas expansion, or benc
 | `../../product-manager/industry-cases` (to be added)  | ai-customer-service-cases.md · ai-after-sales-cases.md |
 | `../../executive/strategy` | [porter-five-forces-summary.md](../../executive/strategy/porter-five-forces.md) · [blue-ocean-strategy-summary.md](../../executive/strategy/blue-ocean.md) · [business-model-canvas-summary.md](../../executive/strategy/business-model-canvas.md) · [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [second-curve-summary.md](../../executive/strategy/second-curve.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) |
 | `../../product-manager/discovery/ux` | [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) |
-| `../brd/reference/` | [regulations.md](./../../brd/README.md) · [countries.md](./../../brd/README.md) |
 
 ## Action recommendations
 
@@ -87,7 +86,7 @@ During quarterly planning, new business initiatives, overseas expansion, or benc
 2. Use `competitor-analysis-template.md` to write a horizontal and vertical comparison of target competitors
 3. Cross-check trend judgments with the latest annual report under `industry/reports--`
 4. Pick 1-2 strategy frameworks (Porter's Five Forces / BMC / Blue Ocean) and apply them to your own business canvas
-5. For overseas business, must-check `brd/reference/regulations.md` + `cross-cultural-ux-summary.md`
+5. For overseas business, must-check `cross-cultural-ux-summary.md`
 6. Monthly review of external content where `last_verified` is over half a year; update or move to `archive/`
 
 ## Anti-patterns

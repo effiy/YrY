@@ -7,7 +7,7 @@ created: 2026-08-05
 updated: 2026-08-05
 last_verified: 2026-08-07
 source: internal
-type: plan
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
@@ -37,7 +37,7 @@ On 2026-08-05 the migration from 14 categories to 19 bare-role directories was c
 
 | Old category (14) | New role directory (19) | Notes |
 |---|---|---|
-| engineer | engineer / accessibility-engineer / api-designer / code-reviewer / data-engineer / devops / performance-engineer / qa-engineer / release-manager / security-engineer / skill-author / technical-writer | Split into 12 sub-roles |
+| engineer | engineer / accessibility-engineer / api-designer / code-reviewer / data-engineer / devops / performance-engineer / qa-engineer / release-manager / security-engineer / technical-writer | Split into 11 sub-roles |
 | tech-lead | tech-lead | Unchanged |
 | product-manager | product-manager | Unchanged |
 | ai-engineer | ai-engineer | Unchanged |
@@ -52,7 +52,7 @@ On 2026-08-05 the migration from 14 categories to 19 bare-role directories was c
 | _patterns_ | `patterns/` subdirectory under each role | Pushed down to role level |
 | _resources/templates_ | `templates/` under each role or keep `knowledge-curator/templates/` SSOT | Templates centralized under knowledge-curator |
 
-The 10 new sub-roles (accessibility-engineer / api-designer / code-reviewer / data-engineer / devops / performance-engineer / qa-engineer / release-manager / security-engineer / technical-writer / skill-author) each get only 1 leaf + README; they will be filled in progressively.
+The 9 new sub-roles (accessibility-engineer / api-designer / code-reviewer / data-engineer / devops / performance-engineer / qa-engineer / release-manager / security-engineer / technical-writer) each get only 1 leaf + README; they will be filled in progressively.
 
 ## Three design goals that did not land
 

@@ -1,12 +1,15 @@
 ---
 key: sc_multilingual_brd
 name: multilingual BRD generated
-status: planning
+status: draft
 priority: p1
 createdAt: 1753920000000
 updatedAt: 1753920000000
 title: multilingual BRD generated (Scene)
 category: engineer/projects/yiai/stories/overseas-after-sales-ai-brd-agent/multilingual-brd
+tags: []
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

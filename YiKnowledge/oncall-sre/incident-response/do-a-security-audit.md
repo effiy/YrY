@@ -81,7 +81,6 @@ When doing a security audit / threat modeling / dependency scanning / pentest / 
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md) · [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) |
 | `lessons/wins/` | [yiai-supply-chain-hardening-win.md](../../engineer/lessons/win-yiai-supply-chain-hardening.md) · [yiai-llm-phase-{two,three,four,five}-win.md](../../engineer/lessons) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [bugs/](../../engineer/lessons) |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border compliance |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) |
 | `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — security disclosure |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) — quarterly audit |
@@ -96,7 +95,7 @@ When doing a security audit / threat modeling / dependency scanning / pentest / 
 5. **Dependency scanning**: SCA / SAST / DAST / IAST / container scan / secret scan; weekly; see [dependency-upgrade-process.md](../../engineer/engineering/dependency-upgrade.md).
 6. **CVE handling**: must run [i-want-to-handle-a-dependency-cve.md](../../engineer/quality-security/handle-a-dependency-cve.md); if cannot fix immediately, use mitigation (WAF / network isolation / virtual patch).
 7. **Pentest**: internal + external; must write test scope + read writeup + re-test fixes; do not just read the report.
-8. **Compliance**: follow [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [regulations.md](./../../brd/README.md); cross-border data follow [countries.md](./../../brd/README.md).
+8. **Compliance**: follow [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md); cross-border data should follow local regulations.
 9. **AI security**: must scan [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) + [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md).
 10. **Credential management**: follow [i-want-to-handle-secrets-and-config.md](../../engineer/quality-security/handle-secrets-and-config.md) + quarterly rotation.
 11. **Second-order effects**: fixing one CVE may introduce breaking changes; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) to evaluate.

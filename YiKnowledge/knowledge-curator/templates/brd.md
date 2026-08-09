@@ -1,8 +1,13 @@
 ---
 lifecycle: active
+title: BRD Template
 status: stable
 type: template
 category: knowledge-curator/templates
+tags: []
+created: 2026-08-07
+updated: 2026-08-07
+source: internal
 roles:
 - knowledge-curator
 - engineer

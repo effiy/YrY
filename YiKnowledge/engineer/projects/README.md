@@ -71,7 +71,7 @@ projects/
 ---
 key: story_1700000000000
 name: {name}
-status: planning
+status: draft
 priority: p2
 assignee: Zhang San
 startDate: 2025-01-01
@@ -110,7 +110,7 @@ updatedAt: 1700000000000
 ---
 key: sc_1700000000000_abc123
 name: {name}
-status: planning
+status: draft
 priority: p2
 createdAt: 1700000000000
 updatedAt: 1700000000000

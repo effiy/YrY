@@ -105,7 +105,7 @@ AI_CODING_HISTORY = "ai_coding_history"
 **naming rules**:
 1. `<domain>_<entity>` — `static_files` / `knowledge_files` / `chat_records` / `state_records` / `oss_file_tags`
 2. single-entity collection without prefix — `sessions` / `rss` / `seeds` / `bugs`
-3. BRD data has **no Mongo collection**: it lives as markdown under `YiKnowledge/brd/<topic>/`, watched into `knowledge_files` + the RAG index by the knowledge watcher. (The old `brd_<topic>` collections and their seed script were removed — the knowledge base is the source of truth.)
+3. BRD data has **no Mongo collection**: it was previously stored as markdown and watched into `knowledge_files` + the RAG index by the knowledge watcher. (The old `brd_<topic>` collections and their seed script were removed — the knowledge base is the source of truth.)
 
 ### Index strategy (`data/database.py` `_ensure_indexes`)
 

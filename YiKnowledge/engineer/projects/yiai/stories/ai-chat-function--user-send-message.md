@@ -1,12 +1,15 @@
 ---
 key: sc_user_send_message
 name: user sends message
-status: planning
+status: draft
 priority: p1
 createdAt: 1700000000000
 updatedAt: 1700000000000
 title: user sends message (Scene)
 category: engineer/projects/yiai/stories/ai-chat-function/user-send-message
+tags: []
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

@@ -94,7 +94,6 @@ When doing data migration / schema evolution / table-structure changes / ETL mig
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) — migration failure archive |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `brd/` | [brd-documents](../../brd/) · [brd-risks](../../brd/) · [scenarios](../../brd/) — business impact |
 | `projects/` | each project `architecture-summary.md` §data + `adr-*` §migration |
 | `journeys/` | [../strategies/prepare-a-deployment-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-deployment-strategy.md) · [../../tech-lead/roadmap/deprecate-a-feature.md](../../tech-lead/roadmap/deprecate-a-feature.md) · [../../executive/strategy/do-a-data-retention-review.md](../../executive/strategy/do-a-data-retention-review.md) · [../strategies/decompose-a-monolith.md](../architecture-design/decompose-a-monolith.md) |
 

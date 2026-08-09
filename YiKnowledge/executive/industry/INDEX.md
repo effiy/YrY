@@ -61,7 +61,6 @@ related:
 - [../../engineer/process/understand-competitors.md](../../engineer/process/understand-competitors.md) — scenario entry
 - [../../engineer/engineering/find-ai-deployment-cases.md](../../engineer/engineering/find-ai-deployment-cases.md) — use-cases related
 - [../strategy](../strategy) — strategy framework
-- [../brd/reference/](../../brd/) — overseas business reference
 
 ## Note
 

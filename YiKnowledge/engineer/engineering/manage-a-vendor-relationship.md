@@ -89,7 +89,6 @@ When managing vendor relationships / selection evaluation / contract negotiation
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) |
 | `resources/templates/` | [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border vendor compliance |
 | `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — vendor cadence |
 | `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external expert opinions |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [contract-negotiation-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-contract-strategy.md) — vendor RACI |
@@ -111,7 +110,7 @@ When managing vendor relationships / selection evaluation / contract negotiation
 11. **Quarterly evaluation**: follow [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md); scan whether vendor is still optimal + SLA met + compliance changed. 
 12. **Renewal**: start evaluation 90 days ahead; must run competitor comparison + negotiation; do not passively renew. 
 13. **Exit plan**: must land exit steps + data migration + traffic cutover + rollback; see [shared-client-vendor-rollout-process.md](./shared-client-vendor-rollout.md). 
-14. **Compliance**: cross-border follow [countries.md](./../../brd/README.md) + [regulations.md](./../../brd/README.md) + [data-compliance-process.md](../infrastructure/data-compliance.md). 
+14. **Compliance**: cross-border follow [data-compliance-process.md](../infrastructure/data-compliance.md). 
 15. **RACI**: vendor engagement must run [raci-matrix-summary.md](../process/raci-matrix.md); do not have multiple people engaged without an owner. 
 16. **Notification**: when vendor fails must run [i-want-to-handle-outage-communication.md](../process/handle-outage-communication.md). 
 17. **Retrospective**: after renewal / exit / incident follow [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) retrospective + archive into [lessons/](../../engineer/lessons). 

@@ -92,7 +92,6 @@ When decommissioning a service / sunset / end-of-life / retiring microservices /
 | `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — owner |
 | `work/collaboration/` | [raci-matrix-summary.md](../../engineer/process/raci-matrix.md) · [async-collaboration-principles-summary.md](../../engineer/process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md) |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [archive.md](../../knowledge-curator/archive/archive.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border data migration |
 | `journeys/` | [./deprecate-a-feature.md](./deprecate-a-feature.md) · [../../engineer/infrastructure/roll-out-a-migration.md](../../engineer/infrastructure/roll-out-a-migration.md) · [../../engineer/process/handle-customer-feedback.md](../../engineer/process/handle-customer-feedback.md) · [../../engineer/infrastructure/migrate-data.md](../../engineer/infrastructure/migrate-data.md) |
 | `projects/` | each project's `architecture-summary.md` §decommission + `adr-*.md` |
 
@@ -110,7 +109,7 @@ When decommissioning a service / sunset / end-of-life / retiring microservices /
 10. **Rollback**: must be able to rollback in seconds (keep old instance N days); use [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md).
 11. **Monitoring**: during decommission use [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md); must monitor traffic-to-zero + error rate + whether callers still have requests.
 12. **Freeze window**: during big promos use [release-freeze-process.md](../../oncall-sre/release/release-freeze.md), do not decommission.
-13. **Data retention**: must use [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [regulations.md](./../../brd/README.md); GDPR deletion + backup cleanup.
+13. **Data retention**: must use [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md); GDPR deletion + backup cleanup.
 14. **Resource cleanup**: instances + databases + caches + LB + DNS + certificates + domains; must check each item.
 15. **Cost**: must use [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md) to compute decommission savings + exit cost.
 16. **Document archive**: use [knowledge-deprecation-policy.md](../../engineer/process/knowledge-deprecation-policy.md) + [archive.md](../../knowledge-curator/archive/archive.md); ADR + architecture diagrams + runbook all archived.

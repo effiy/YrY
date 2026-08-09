@@ -1,6 +1,11 @@
 ---
 lifecycle: active
+title: brd-2026-059-progressive-delivery: risks
+created: 2026-08-07
+tags: [yipet, brd]
+updated: 2026-08-09
 category: engineer/projects/yipet/brd/brd-2026-059-progressive-delivery
+source: internal
 roles:
 - engineer
 benefit: project context preserved

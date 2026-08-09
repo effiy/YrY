@@ -73,4 +73,3 @@ All file names use kebab-case English.
 - [../market-trends/](../market-trends/) — market trends
 - [../../strategy](../../strategy) — strategy tools
 - [../../../engineer/process/understand-competitors.md](../../../engineer/process/understand-competitors.md) — scenario entry
-- `../../brd/reference/` — overseas business reference

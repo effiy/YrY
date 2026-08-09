@@ -39,9 +39,9 @@ tacit: false
 
 > **As a** knowledge curator, **I want to** maintain a single index of all dashboard pages, **so that** any role can find the right dashboard within 1 hop.
 
-> This index maps all 117 dashboard pages across the YiKnowledge library. Each dashboard provides a single-pane view of a specific domain with defined metrics, thresholds, and action recommendations.
+> This index maps all 112 dashboard pages across the YiKnowledge library. Each dashboard provides a single-pane view of a specific domain with defined metrics, thresholds, and action recommendations.
 
-## Dashboard map (117 dashboards)
+## Dashboard map (112 dashboards)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -571,17 +571,12 @@ tacit: false
 | 99 | Team Topology & Org Design | [tech-lead/capacity/dashboard-team-topology-health.md](../../tech-lead/capacity/dashboard-team-topology-health.md) | Tech Lead, Exec, Engineer | Team structure, cognitive load, interaction modes, Conway alignment, autonomy, org evolution |
 | 100 | Stakeholder Communication | [tech-lead/capacity/dashboard-stakeholder-communication.md](../../tech-lead/capacity/dashboard-stakeholder-communication.md) | Tech Lead, Executive, PM | Stakeholder satisfaction, decision velocity, alignment health, communication effectiveness, escalation health, meeting quality |
 
-### People & Skills (7)
+### People & Skills (2)
 
 | # | Dashboard | File | Role | Key metrics |
 |---|---|---|---|---|---|---|---|
 | 101 | Onboarding Progress | [new-hire/onboarding/dashboard-onboarding-progress.md](../../new-hire/onboarding/dashboard-onboarding-progress.md) | New Hire, TL | 4 phases, time-to-productivity, buddy, 30/60/90 |
-| 102 | Skill Ecosystem | [skill-author/patterns/dashboard-skill-ecosystem.md](../../skill-author/patterns/dashboard-skill-ecosystem.md) | Skill Author | Skill inventory, quality, adoption, family coherence |
-| 103 | Learning & Development | [skill-author/patterns/dashboard-learning-development.md](../../skill-author/patterns/dashboard-learning-development.md) | Tech Lead, Exec, Skill Author | Training completion, skill acquisition, certifications, mentorship, learning culture |
-| 104 | Career Development | [skill-author/patterns/dashboard-career-development.md](../../skill-author/patterns/dashboard-career-development.md) | TL, Exec, Engineer | Career ladder, promotion velocity, mentorship, internal mobility, growth equity |
 | 105 | People & Expertise | [knowledge-curator/people/dashboard-people-expertise.md](../../knowledge-curator/people/dashboard-people-expertise.md) | Curator, TL | (see Executive section above) |
-| 106 | Hiring & Recruitment | [skill-author/patterns/dashboard-hiring-recruitment.md](../../skill-author/patterns/dashboard-hiring-recruitment.md) | TL, Executive, Skill Author | Pipeline health, time-to-hire, interview quality, offer acceptance, source effectiveness, candidate experience |
-| 107 | Diversity, Equity & Inclusion | [skill-author/patterns/dashboard-diversity-equity-inclusion.md](../../skill-author/patterns/dashboard-diversity-equity-inclusion.md) | Executive, Tech Lead, Skill Author | Representation, pay equity, hiring diversity, inclusion survey, retention equity, belonging, ERG participation |
 
 ### Security (10)
 
@@ -602,7 +597,7 @@ tacit: false
 
 | # | Dashboard | File | Role | Key metrics |
 |---|---|---|---|---|---|
-| — | Dashboard Index | [knowledge-curator/diagrams/dashboard-index.md](../../knowledge-curator/diagrams/dashboard-index.md) | All roles | This file — master index of all 117 dashboards |
+| — | Dashboard Index | [knowledge-curator/diagrams/dashboard-index.md](../../knowledge-curator/diagrams/dashboard-index.md) | All roles | This file — master index of all 112 dashboards |
 
 ## Retrieval by role
 
@@ -617,9 +612,8 @@ tacit: false
 | **Security Engineer** | Security Posture, Vulnerability Management, API Security, Identity & Access Mgmt, Cloud Security Posture, Dependency Management, Threat Detection & Response |
 | **Data Engineer** | Data Pipeline, Data Governance, Data Quality, Feature Store Health, Database Performance, ML Operations, Vector Database Health |
 | **Design/UX** | UX Health, Design System Health, Information Architecture, Content Design & UX Writing, User Research Ops, Feature Adoption, Customer Journey |
-| **Knowledge Curator** | Knowledge Health, People & Expertise, Dashboard Index, Skill Ecosystem, Learning & Development, Career Development, Data Governance |
-| **New Hire** | Onboarding Progress, Career Development, Learning & Development, Team Velocity, Developer Experience, CI/CD Pipeline Health, People & Expertise |
-| **Skill Author** | Skill Ecosystem, Learning & Development, Career Development, Developer Experience, Knowledge Health, Architecture Decisions, Lessons Learned |
+| **Knowledge Curator** | Knowledge Health, People & Expertise, Dashboard Index, Developer Experience, Documentation Health, Data Governance |
+| **New Hire** | Onboarding Progress, Team Velocity, Developer Experience, CI/CD Pipeline Health, People & Expertise |
 
 ## Retrieval by question
 
@@ -630,7 +624,6 @@ tacit: false
 | Are our code reviews healthy? | Code Review Health |
 | Is our CI/CD pipeline healthy? | CI/CD Pipeline Health |
 | Is our team healthy and engaged? | Team Health & Engagement |
-| Are engineers growing in their careers? | Career Development |
 | Are we secure? | Security Posture |
 | Are our APIs secure? | API Security |
 | Is our API design consistent? | API Design Quality |
@@ -699,8 +692,6 @@ tacit: false
 | Is our knowledge base healthy? | Knowledge Health |
 | Who knows what? | People & Expertise |
 | Are new hires ramping well? | Onboarding Progress |
-| Are our skills healthy? | Skill Ecosystem |
-| Are engineers learning and growing? | Learning & Development |
 | Are our APIs well-managed? | API Portfolio |
 | Are our data assets governed? | Data Governance |
 | Are we experimenting effectively? | Experimentation |
@@ -727,10 +718,8 @@ tacit: false
 | How fast are we growing? | Market Growth & Expansion |
 | Are we validating ideas before building? | Product Discovery & Validation |
 | Are our model training pipelines healthy? | Model Training & Experiments |
-| Is our hiring pipeline healthy? | Hiring & Recruitment |
 | Are our backups working? Can we recover? | Backup & Recovery |
 | Are we testing usability with real users? | Usability Testing & Research |
-| Is our organization diverse, equitable, and inclusive? | Diversity, Equity & Inclusion |
 | Are stakeholders aligned and informed? | Stakeholder Communication |
 | How fast are we making decisions? | Stakeholder Communication |
 | Is our sales pipeline healthy? | Sales & GTM Motion |

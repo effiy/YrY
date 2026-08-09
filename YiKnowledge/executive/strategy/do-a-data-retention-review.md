@@ -48,7 +48,7 @@ tacit: false
 - Process: [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md) + [data-migration-process.md](../../engineer/infrastructure/data-migration.md)
 - Thinking: [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Data: [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) + [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md)
-- Compliance: [countries.md](./../../brd/README.md) + [regulations.md](./../../brd/README.md)
+- Compliance: data compliance process + quarterly security audit
 
 ## Core viewpoints
 
@@ -75,8 +75,6 @@ When doing data retention audit / data lifecycle / deletion strategy / GDPR righ
 | `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — data necessity · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse-think leaks · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) · [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) |
 | `methodology/ai-specific/` | [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) · [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) — AI data retention |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border compliance |
-| `brd/domains/` | [data.md](./../../brd/README.md) · [legal.md](./../../brd/README.md) · [security.md](./../../brd/README.md) — data domain BRD |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [vector-db-comparison-summary.md](../../ai-engineer/platform/vector-db-comparison.md) · [embedding-model-selection-summary.md](../../ai-engineer/platform/embedding-model-selection.md) — AI data retention |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) — data storage cost |
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md) · [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) |
@@ -98,8 +96,8 @@ When doing data retention audit / data lifecycle / deletion strategy / GDPR righ
 5. **Data inventory**: must list data assets (DB / files / backups / caches / logs / lakehouse / third party) + dictionary + PII tags; no audit without inventory.
 6. **Classification**: must classify PII / sensitive / business / logs / monitoring / backup; each class has a different retention period.
 7. **Retention period**: must set retention period by regulation + business need; delete on expiry; don't "store forever".
-8. **GDPR**: must support right to be forgotten + data portability + deletion tracking; see [regulations.md](./../../brd/README.md).
-9. **Cross-border**: must use [countries.md](./../../brd/README.md) + data localization; cross-border must desensitize / encrypt / DPA.
+8. **GDPR**: must support right to be forgotten + data portability + deletion tracking.
+9. **Cross-border**: must use data localization; cross-border must desensitize / encrypt / DPA.
 10. **PII**: must do desensitization + encryption + access audit + least privilege; don't store plaintext.
 11. **Backups**: must include deletion strategy for backups + copies + logs + caches; don't miss backups.
 12. **Deletion process**: must be executable + auditable + verifiable + rollback-able; see [i-want-to-write-a-runbook.md](../../engineer/infrastructure/write-a-runbook.md).

@@ -95,7 +95,6 @@ When applying domain-driven design / DDD / subdomain / bounded context / aggrega
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — architecture wreck archive |
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `brd/` | [brd-documents](../../brd/) · [domains](../../brd/) · [terminology](../../brd/) — business terminology |
 | `projects/` | each project `architecture-summary.md` §DDD + `adr-*` §architecture |
 | `journeys/` | [../strategies/decompose-a-monolith.md](decompose-a-monolith.md) · [../../tech-lead/roadmap/prepare-an-event-driven-architecture-strategy.md](../../knowledge-curator/archive/strategies-legacy/tech-lead/prepare-an-event-driven-architecture-strategy.md) · [../strategies/prepare-an-api-contract.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-api-contract.md) · [../../tech-lead/roadmap/prepare-a-frontend-architecture-strategy.md](../../knowledge-curator/archive/strategies-legacy/tech-lead/prepare-a-frontend-architecture-strategy.md) |
 

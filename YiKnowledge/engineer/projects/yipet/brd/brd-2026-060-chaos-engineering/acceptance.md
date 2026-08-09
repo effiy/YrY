@@ -1,6 +1,11 @@
 ---
 lifecycle: active
+title: brd-2026-060-chaos-engineering: acceptance
+created: 2026-08-07
+tags: [yipet, brd]
+updated: 2026-08-09
 category: engineer/projects/yipet/brd/brd-2026-060-chaos-engineering
+source: internal
 roles:
 - engineer
 benefit: project context preserved

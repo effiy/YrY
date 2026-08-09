@@ -24,11 +24,11 @@ related:
 
 # YiKnowledge Index
 
-> **As a** knowledge-curator, **I want to** give the library a TOC organised by 10 role directories × problem domains, **so that** new readers locate content by role, reaching a leaf within 2 hops.
+> **As a** knowledge-curator, **I want to** give the library a TOC organised by 8 role directories × problem domains, **so that** new readers locate content by role, reaching a leaf within 2 hops.
 
-> **Flattened** (2026-08-09): All 10 role directories flattened to max 3 levels. Removed 2041 archived prepare-* legacy templates, 3 stale role directories (data-engineer, devops, technical-writer), 11 empty directories, and 4 placeholder/duplicate files. Flattened sub-sub-directories across all roles (stories, decisions, discovery, industry, people, onboarding, methodology, templates). 1011 active files, 73 directories, max depth 5 (within YiKnowledge: 3 except engineer/projects).
+> **Flattened** (2026-08-09): All 8 role directories flattened to max 3 levels. Removed 2041 archived prepare-* legacy templates, 3 stale role directories (data-engineer, devops, technical-writer), 11 empty directories, and 4 placeholder/duplicate files. Flattened sub-sub-directories across all roles (stories, decisions, discovery, industry, people, onboarding, methodology, templates). Also removed brd/ (~96 files) and skill-author/ (~15 files) as separate-system directories.
 
-## Role tree (10 roles)
+## Role tree (8 roles)
 
 | Role | Problem domains | Files | Detail index |
 |---|---|---|---|
@@ -40,8 +40,7 @@ related:
 | [executive/](./executive/) | strategy, industry, roadmap, reading-list | ~59 | [INDEX](./executive/INDEX.md) |
 | [knowledge-curator/](./knowledge-curator/) | governance, diagrams, archive, templates, people, notes | ~60 active | [INDEX](./knowledge-curator/INDEX.md) |
 | [new-hire/](./new-hire/) | onboarding | ~19 | [INDEX](./new-hire/INDEX.md) |
-| [skill-author/](./skill-author/) | patterns | ~15 | [INDEX](./skill-author/INDEX.md) |
-| [brd/](./brd/) | DB export area (8 role categories) | ~96 | [README](./brd/README.md) |
+
 
 ## 4 cross-cutting domain indexes
 

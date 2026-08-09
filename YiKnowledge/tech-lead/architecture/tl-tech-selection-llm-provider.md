@@ -15,6 +15,9 @@ conclusion: Phase 1 Alibaba Tongyi fallback; Phase 2 evaluate vLLM self-hosted
 adr_ref: ADR-LLM-Multi-Provider-Rollout
 type: dashboard
 category: tech-lead/architecture
+created: 2026-08-07
+updated: 2026-08-09
+source: internal
 roles:
 - tech-lead
 - engineer
@@ -22,7 +25,8 @@ benefit: Tech leads can evaluate architectural choices with structured criteria,
 acceptance_criteria:
   - "data source and refresh cadence are documented"
   - "key metrics are defined with thresholds or targets"
-  - "visualization choices are explained and accessible"review_cycle: quarterly
+  - "visualization choices are explained and accessible"
+review_cycle: quarterly
 tacit: false
 related:
   - ./dashboard-architecture-review.md

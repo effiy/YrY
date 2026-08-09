@@ -100,7 +100,6 @@ tacit: false
 | executive/ | ~57 | 60 | 95% | 1 domain missing | Green |
 | knowledge-curator/ | ~54 | 55 | 98% | Complete | Green |
 | new-hire/ | ~9 | 12 | 75% | 3 projects light | Yellow |
-| skill-author/ | ~2 | 5 | 40% | Severely under-covered | Red |
 | brd/ | ~241 | — | — | Seed data, not curated | Yellow |
 | **Total** | **~1,047** | | | | |
 
@@ -108,7 +107,6 @@ tacit: false
 
 | Gap | Role | Domain | Priority | Action |
 |---|---|---|---|---|
-| skill-author patterns | skill-author | patterns | High | Add 3+ pattern files |
 | new-hire: YiPet onboarding | new-hire | onboarding | High | Complete YiPet onboarding guide |
 | new-hire: YiVad onboarding | new-hire | onboarding | Medium | Add YiVad-specific onboarding |
 | new-hire: YiAi onboarding | new-hire | onboarding | Medium | Add YiAi-specific onboarding |
@@ -129,7 +127,6 @@ tacit: false
 | executive/ | 68% | 22% | 8% | 2% | 2 |
 | knowledge-curator/ | 70% | 20% | 8% | 2% | 1 |
 | new-hire/ | 65% | 25% | 8% | 2% | 0 |
-| skill-author/ | 50% | 50% | 0% | 0% | 0 |
 | **Overall** | **72%** | **18%** | **7%** | **3%** | **42** |
 
 ### Content quality metrics
@@ -179,7 +176,6 @@ tacit: false
 | executive/ | 20 | 37 | 35% | Medium |
 | knowledge-curator/ | 15 | 39 | 28% | Low |
 | new-hire/ | 3 | 6 | 33% | Medium |
-| skill-author/ | 1 | 1 | 50% | High |
 
 ### Retrieval effectiveness
 
@@ -208,10 +204,9 @@ tacit: false
 2. **Review 42 overdue files**: files past their review_cycle date; assign to role owners for review
 3. **Reduce tacitness in tech-lead and product-manager**: 45% and 40% tacitness is dangerously high; conduct expert interviews
 4. **Improve retrieval**: 68% first-try retrieval rate is too low; improve INDEX.md files, add cross-references
-5. **Address skill-author gap**: only 2 files (40% coverage); add 3+ pattern files for skill authors
-6. **Complete new-hire onboarding**: 3 projects with incomplete onboarding; YiPet, YiVad, YiAi each need complete guides
-7. **Reduce draft ratio**: 84 draft files (8%); either promote to stable or archive
-8. **Monthly knowledge review**: review this dashboard monthly; assign action items to role owners
+5. **Complete new-hire onboarding**: 3 projects with incomplete onboarding; YiPet, YiVad, YiAi each need complete guides
+6. **Reduce draft ratio**: 84 draft files (8%); either promote to stable or archive
+7. **Monthly knowledge review**: review this dashboard monthly; assign action items to role owners
 
 
 

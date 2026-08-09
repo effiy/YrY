@@ -92,7 +92,6 @@ When integrating third-party APIs / vendor APIs / OAuth / webhooks / SLA negotia
 | `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [contract-negotiation-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-contract-strategy.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../process/cross-timezone-collaboration.md) |
 | `industry/competitors--` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md) · [competitor-analysis-template.md](../../executive/industry/competitors--competitor-analysis.md) |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) |
 | `projects/YiAi/` | `adr-multi-provider-llm-routing.md` · `adr-llm-multi-provider-rollout.md` · `adr-rag-evaluation-infra.md` · `adr-brd-agent-launch.md` |
 | `journeys/` | [./implement-an-api.md](../architecture-design/implement-an-api.md) · [../processes/manage-a-vendor-relationship.md](manage-a-vendor-relationship.md) · [./evaluate-a-vendor-saas.md](../engineering/evaluate-a-vendor-saas.md) · [./harden-supply-chain.md](../process/harden-supply-chain.md) |
@@ -114,7 +113,7 @@ When integrating third-party APIs / vendor APIs / OAuth / webhooks / SLA negotia
 13. **Contract test**: must build [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) + must run periodically + must run before vendor upgrades.
 14. **Dual world**: switching providers must run [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + dual run + diff; see [i-want-to-handle-a-model-drift.md](../../ai-engineer/foundations/handle-a-model-drift.md).
 15. **Webhook**: must verify signatures + must be idempotent + must have replay protection + must have timeouts + must queue.
-16. **Data leaving the country**: must run [data-compliance-process.md](../infrastructure/data-compliance.md) + [countries.md](./../../brd/README.md) + [regulations.md](./../../brd/README.md) + DPA + desensitization.
+16. **Data leaving the country**: must run [data-compliance-process.md](../infrastructure/data-compliance.md) + DPA + desensitization.
 17. **SLA**: must run [contract-negotiation-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-contract-strategy.md) + must align with business + must monitor actual values.
 18. **Rollback**: must be able to switch back to the old provider / fallback in seconds; see [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md).
 19. **Freeze period**: during big promos follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md); do not switch providers.

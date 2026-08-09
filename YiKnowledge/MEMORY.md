@@ -25,7 +25,7 @@ The knowledge management system lives at `~/YiKnowledge`. For full-library navig
 
 ```
 YiKnowledge/
-├── INDEX.md                     # Full-library TOC (10 roles × problem domains)
+├── INDEX.md                     # Full-library TOC (8 roles × problem domains)
 ├── README.md                    # Top-level overview + design principles
 ├── MEMORY.md                    # This file: rulebook, naming conventions, frontmatter spec
 │
@@ -84,12 +84,7 @@ YiKnowledge/
 ├── new-hire/                    # Onboarding and handoff
 │   └── onboarding/              # Onboarding checklists (flat: yiai--, yipet--, yivad-- prefixes)
 │
-├── skill-author/                # Claude Code skill design, yry-* family
-│   └── patterns/                # Skill patterns and conventions
-│
-├── brd/                         # BRD database export area (8 role categories)
-│   ├── README.md                # Index: DB SSOT + sync process + conventions
-│   └── */                       # 18 subdirectories: 8 roles + 10 categories
+
 ```
 
 ## Merged roles (2026-08-06 restructure)

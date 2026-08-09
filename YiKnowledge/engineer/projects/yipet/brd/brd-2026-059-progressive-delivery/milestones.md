@@ -1,6 +1,8 @@
 ---
 title: BRD-2026-059 Progressive delivery platform and experiment governance
 lifecycle: active
+created: 2026-08-07
+updated: 2026-08-09
 key: brd_brd-engineer_msfe6wne5ccp3v
 tags:
 - engineer
@@ -14,7 +16,7 @@ project: yipet
 domain: Progressive Delivery
 quarter: 2026 Q3
 priority: p1
-status: in_progress
+status: draft
 owner: Release Platform Team
 tech_stack: OpenFeature, Unleash, Canary, Kill Switch, Experiment Platform, Approval
   Flow
@@ -41,8 +43,10 @@ review_cycle: quarterly
 tacit: false
 related: []
 type: brd
+category: engineer/projects/yipet/brd/brd-2026-059-progressive-delivery
+source: internal
 ---
-
+source: internal
 # BRD-2026-059 Progressive delivery platform and experiment governance
 
 **BRD ID**: BRD-2026-059  |  **Project**: yipet  |  **Domain**: Progressive Delivery  |  **Quarter**: 2026 Q3

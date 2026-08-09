@@ -1,12 +1,15 @@
 ---
 key: sc_brd_draft_generation
 name: BRD Draft Generation
-status: planning
+status: draft
 priority: p0
 createdAt: 1753920000000
 updatedAt: 1753920000000
 title: BRD Draft Generation (Scene)
 category: engineer/projects/yiai/stories/overseas-after-sales-ai-brd-agent/brd-draft-generation
+tags: []
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

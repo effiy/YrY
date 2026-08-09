@@ -90,8 +90,6 @@ When collecting customer feedback / tickets / NPS / customer service records / s
 | `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — customer tiering |
 | `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external expert feedback |
 | `industry/use-cases/` | [ai-after-sales-cases.md](../../product-manager/strategy/ai-after-sales-cases.md) · [ai-customer-service-cases.md](../../product-manager/strategy/ai-customer-service-cases.md) · [case-study-template.md](../../product-manager/strategy/case-study.md) |
-| `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — feedback ticket scenario |
-| `brd/{domains,terminology}/` | [after-sales.md](./../../brd/README.md) · [sales.md](./../../brd/README.md) · [automotive.md](./../../brd/README.md) — feedback classification |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) — feedback missing Incident |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) — BRD Agent feedback closed loop · [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) |
 | `projects/` | each project `project-management-summary.md` §customer feedback + §iteration cadence |

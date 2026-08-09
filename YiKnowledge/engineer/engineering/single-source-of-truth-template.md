@@ -75,7 +75,7 @@ tacit: false
 
 | template type | original three-way drift sources | consolidation goal |
 |---|---|---|
-| BRD | YiVad meta-schemas `templateContent` / YiKnowledge brd.md / YiDoc templates/brd | `YiDoc/templates/brd/` SSOT; YiVad `templateContent` references fields; YiKnowledge brd.md references structure |
+| BRD | YiVad meta-schemas `templateContent` / YiDoc templates/brd | `YiDoc/templates/brd/` SSOT; YiVad `templateContent` references fields |
 | ADR | YiKnowledge adr.md + adr-template.md / YiDoc templates/adr | `YiDoc/templates/adr/` SSOT; YiKnowledge adr.md + adr-template.md consolidated (avoid dual-copy drift) |
 | PRD | YiKnowledge prd.md / YiDoc templates/prd | `YiDoc/templates/prd/` SSOT |
 | meeting-notes / retrospective / tech-design | YiKnowledge same-name template / YiDoc templates | `YiDoc/templates/<leaf>/` SSOT |

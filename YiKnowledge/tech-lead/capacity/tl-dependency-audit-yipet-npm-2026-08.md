@@ -16,6 +16,9 @@ vulnerable: 0
 unmaintained: 1
 type: dashboard
 category: tech-lead/capacity
+created: 2026-08-07
+updated: 2026-08-07
+source: internal
 roles:
 - tech-lead
 - engineer
@@ -23,7 +26,8 @@ benefit: Tech leads can track capacity and cost trends to prevent resource exhau
 acceptance_criteria:
   - "data source and refresh cadence are documented"
   - "key metrics are defined with thresholds or targets"
-  - "visualization choices are explained and accessible"review_cycle: quarterly
+  - "visualization choices are explained and accessible"
+review_cycle: quarterly
 tacit: false
 related:
   - ./dashboard-engineering-capacity.md

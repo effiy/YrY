@@ -23,13 +23,15 @@ related:
 
 # YiKnowledge — Personal Knowledge Base
 
-A searchable knowledge base organised by **role tree × problem domain** (10 role directories + brd/ database export area), overlaid with PARA / lifecycle layers. See [INDEX.md](./INDEX.md) for full-library navigation, and [user-story-migration-plan.md](./knowledge-curator/governance/user-story-migration-plan.md) for the migration history.
+A searchable knowledge base organised by **role tree × problem domain** (8 role directories), overlaid with PARA / lifecycle layers. See [INDEX.md](./INDEX.md) for full-library navigation, and [user-story-migration-plan.md](./knowledge-curator/governance/user-story-migration-plan.md) for the migration history.
 
-> **Cleaned 2026-08-07**: Deleted 3 stale role directories (data-engineer, devops, technical-writer — 24 files confirmed duplicates of engineer/infrastructure/ and engineer/engineering/). Removed empty static/ directory. Fixed 182 broken YAML frontmatter files. 10 role directories, 0 broken links, 0 empty directories, 0 stale duplicates.
+> **Cleaned 2026-08-07**: Deleted 3 stale role directories (data-engineer, devops, technical-writer — 24 files confirmed duplicates of engineer/infrastructure/ and engineer/engineering/). Removed empty static/ directory. Fixed 182 broken YAML frontmatter files. 8 role directories, 0 broken links, 0 empty directories, 0 stale duplicates.
 >
-> **Restructured 2026-08-06**: 19 roles → 10 (merged 11 skeletal roles into engineer/tech-lead). Content-type subdirs (patterns/processes/lessons/strategies) → problem-domain subdirs. 2041 AI-generated prepare-* templates archived. Max 3 directory levels. Engineer subdirs merged 11→7. brd/ 139→18. Root domain indexes moved into role dirs. Underscores in filenames eliminated (brd/ excepted).
+> **Restructured 2026-08-06**: 19 roles → 10 (merged 11 skeletal roles into engineer/tech-lead). Content-type subdirs (patterns/processes/lessons/strategies) → problem-domain subdirs. 2041 AI-generated prepare-* templates archived. Max 3 directory levels. Engineer subdirs merged 11→7. Root domain indexes moved into role dirs. Underscores in filenames eliminated.
+>
+> **Pruned 2026-08-09**: Removed brd/ (BRD database export, ~96 files) and skill-author/ (Claude Code skills workspace, ~15 files) as they belong to separate systems.
 
-## Top-level tree (10 role directories + brd/ data area)
+## Top-level tree (8 role directories)
 
 | Role | Coverage | Key subdirs |
 |---|---|---|
@@ -41,8 +43,7 @@ A searchable knowledge base organised by **role tree × problem domain** (10 rol
 | [executive/](./executive/) | strategy, industry, roadmap, reading-list | strategy / industry / roadmap / reading-list |
 | [knowledge-curator/](./knowledge-curator/) | KB governance, diagrams, archive, templates, people, notes | governance / diagrams / archive / templates / people / notes |
 | [new-hire/](./new-hire/) | onboarding, handoff | onboarding |
-| [skill-author/](./skill-author/) | Claude Code skills design, yry-* family | patterns |
-| [brd/](./brd/) | BRD database export area (8 roles + 10 categories) | role + category subdirectories |
+
 
 ### Merged & deleted roles (2026-08-06 merged, 2026-08-07 deleted)
 
@@ -70,7 +71,7 @@ These 11 former role directories were merged into engineer/ or tech-lead/ on 202
 
 ## 4 cross-cutting domain indexes
 
-Beyond the 10 role directories, 4 domain indexes aggregate content across roles:
+Beyond the 8 role directories, 4 domain indexes aggregate content across roles:
 
 | Domain index | Aggregates |
 |---|---|
@@ -81,12 +82,12 @@ Beyond the 10 role directories, 4 domain indexes aggregate content across roles:
 
 ## Mental model
 
-### The 10-4-3 rule
+### The 8-4-3 rule
 
 ```
-10 roles × 4 domains × 3 levels max  =  YiKnowledge
+8 roles × 4 domains × 3 levels max  =  YiKnowledge
 
-  10 roles (who)          4 domains (cross-cutting)      3 levels (depth)
+  8 roles (who)           4 domains (cross-cutting)      3 levels (depth)
   ─────────────           ─────────────────────────      ────────────────
   engineer                SECURITY       protect         role/
   tech-lead               AI-AND-DATA    build smart       problem-domain/
@@ -96,8 +97,6 @@ Beyond the 10 role directories, 4 domain indexes aggregate content across roles:
   executive              Domain indexes live in their
   knowledge-curator      primary role directory.
   new-hire
-  skill-author
-  brd/
 ```
 
 ### Engineer/ subdirectories: Build → Ship → Run → Learn
@@ -146,7 +145,6 @@ oncall-sre         ✓         —        —      ✓
 executive          ✓         —        ✓      —
 knowledge-curator  —         —        ✓      —
 new-hire           —         —        ✓      —
-skill-author       —         —        —      ✓
 ```
 
 ## 4 diagrams
@@ -166,6 +164,6 @@ Run the [readiness-checklist.md](./knowledge-curator/governance/readiness-checkl
 
 YiKnowledge serves both humans and the YiAi BRD Agent (RAG perspective):
 
-- **Human view** — 10 role directories × problem-domain subdirectories help readers reach content within 2 hops
+- **Human view** — 8 role directories × problem-domain subdirectories help readers reach content within 2 hops
 - **AI view** — Frontmatter `roles` / `benefit` / `acceptance_criteria` / `lifecycle` / `related` / `tacit` / `tags` / `category` are RAG recall signals
 - **The knowledge map never goes out of date** — AI consumes structured knowledge; garbage in, garbage out

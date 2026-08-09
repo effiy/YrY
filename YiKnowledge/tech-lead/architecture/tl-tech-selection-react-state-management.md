@@ -16,6 +16,9 @@ conclusion: Zustand 5 — concise + persist + cross-world fit
 adr_ref: ADR-YiPet-AICR-Port-Rollout
 type: dashboard
 category: tech-lead/architecture
+created: 2026-08-07
+updated: 2026-08-07
+source: internal
 roles:
 - tech-lead
 - engineer
@@ -23,7 +26,8 @@ benefit: Tech leads can evaluate architectural choices with structured criteria,
 acceptance_criteria:
   - "data source and refresh cadence are documented"
   - "key metrics are defined with thresholds or targets"
-  - "visualization choices are explained and accessible"review_cycle: quarterly
+  - "visualization choices are explained and accessible"
+review_cycle: quarterly
 tacit: false
 related:
   - ./dashboard-architecture-review.md

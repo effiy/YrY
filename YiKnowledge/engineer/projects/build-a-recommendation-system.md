@@ -95,7 +95,6 @@ Build a recommendation system / recsys / personalized recommendation / recall + 
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — recommendation incident archive |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `brd/` | [brd-documents](../../brd/) · [brd-objectives](../../brd/) · [scenarios](../../brd/) — business scenario |
 | `projects/` | each project `architecture-summary.md` §recommendation + `adr-*` §recommendation |
 | `journeys/` | [./build-a-rag-pipeline.md](./build-a-rag-pipeline.md) · [./build-an-eval-harness.md](./build-an-eval-harness.md) · [../processes/run-an-a-b-test.md](../quality-security/run-an-a-b-test.md) · [../../ai-engineer/methodology/finetune-a-model.md](../../ai-engineer/methodology/finetune-a-model.md) |
 

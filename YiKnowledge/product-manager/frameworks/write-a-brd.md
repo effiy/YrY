@@ -45,11 +45,6 @@ tacit: false
 ## Summary
 
 - Template follows [brd.md](../../knowledge-curator/templates/brd.md) + [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md)
-- Business domains follow `brd/domains/`: after-sales / data / finance / hr / infra / legal / marketing / sales / security / supply-chain
-- Scenario library follows [brd/scenarios/scn-unified-ticketing.md](./../../brd/README.md)
-- Targets and risks follow `brd/brd-objectives/` + `brd/brd-risks/`: align OKRs + risk register
-- Terminology and references follow `brd/terminology/` + `brd/reference/`: cross-domain terminology + countries / regulations / systems
-- Instances follow `brd/examples/` + `brd/brd-documents/`: 20+ already-generated BRD case studies
 
 ## Core viewpoints
 
@@ -70,7 +65,7 @@ tacit: false
 - **BRD risk register template (5 categories)**: (1) Technical risk — "the third-party API has 99.5% SLA = 3.6 hours downtime/month, mitigation: cached fallback"; (2) Market risk — "competitor X launched a similar product in Q2, mitigation: differentiate on Y feature"; (3) Resource risk — "key engineer Z is on leave in Q3, mitigation: cross-train engineer W"; (4) Adoption risk — "target users are resistant to new tools, mitigation: phased rollout with champion users"; (5) Compliance risk — "data handling must comply with PIPL, mitigation: legal review by date X." Each risk must have: specific description, likelihood (high/medium/low), impact (high/medium/low), mitigation, and contingency (what if mitigation fails). The most common BRD failure: generic risks ("technical risk: the technology may not work") without specific mitigations.
 - **BRD review and approval workflow**: (1) Author drafts BRD using YiAi BRD Agent (AI generates scaffold, PM fills in evidence); (2) Peer review — another PM reviews for clarity, completeness, and business case strength; (3) Domain expert review — domain experts (finance, legal, etc.) validate domain-specific assumptions; (4) Engineering review — tech lead reviews technical feasibility, resource estimates, and risk mitigations; (5) Executive review — decision-maker reviews for strategic alignment and resource allocation; (6) Approval — go/no-go decision with conditions. The review cycle should take 1-2 weeks; a BRD that takes >4 weeks to approve has too many stakeholders or unclear decision authority.
 - **BRD → PRD transition**: The BRD answers "should we build this?" The PRD answers "how do we build this?" The transition from BRD to PRD should happen within 2 weeks of BRD approval. The BRD's scenarios become the PRD's user stories; the BRD's success metrics become the PRD's acceptance criteria; the BRD's risk register becomes the PRD's technical constraints. A BRD that is approved but never converted to a PRD is a BRD that was written for the approval, not for the build.
-- **Yi-family BRD practices**: YiAi BRD Agent — generates BRD scaffold from user requirements, uses domain knowledge from YiKnowledge, produces 10-section BRD in minutes. Current BRD library: 20+ generated BRDs across 9 business domains. BRD generation prompt: role + domain knowledge + 3 few-shot examples + user requirements. The BRD Agent is the primary BRD creation tool; all BRDs are stored in `brd/brd-documents/` for reference and reuse.
+- **Yi-family BRD practices**: YiAi BRD Agent — generates BRD scaffold from user requirements, uses domain knowledge from YiKnowledge, produces 10-section BRD in minutes. BRD generation prompt: role + domain knowledge + 3 few-shot examples + user requirements. The BRD Agent is the primary BRD creation tool.
 
 ## Scenario description
 
@@ -82,14 +77,6 @@ When writing a BRD (business requirements document) / reviewing / converting to 
 |---|---|
 | `resources/templates/` | [brd.md](../../knowledge-curator/templates/brd.md) — BRD Template · [prd.md](../../knowledge-curator/templates/prd.md) — PRD conversion handoff · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) — BRD to tech design |
 | `resources/prompts/` | [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) — YiAi BRD Agent generation prompt |
-| `brd/domains/` | [after-sales.md](./../../brd/README.md) · [data.md](./../../brd/README.md) · [finance.md](./../../brd/README.md) · [hr.md](./../../brd/README.md) · [infra.md](./../../brd/README.md) · [legal.md](./../../brd/README.md) · [marketing.md](./../../brd/README.md) · [sales.md](./../../brd/README.md) · [security.md](./../../brd/README.md) · [supply-chain.md](./../../brd/README.md) — 10 business domains |
-| `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — cross-domain unified ticketing scenario · [README.md](../../executive/industry/README.md) |
-| `brd/brd-objectives/` | [brd_brd-objectives_yiai_rag_recall.md](./../../brd/README.md) · [brd_brd-objectives_yipet_aicr_parity.md](./../../brd/README.md) — measurable business targets |
-| `brd/brd-risks/` | [brd_brd-risks_yiai_llm_cost_overrun.md](./../../brd/README.md) · [brd_brd-risks_yipet_mv3_csp.md](./../../brd/README.md) — risk register |
-| `brd/terminology/` | [automotive.md](./../../brd/README.md) · [general.md](./../../brd/README.md) — cross-domain unified terminology |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) · [systems.md](./../../brd/README.md) — country / regulation / system references |
-| `brd/examples/` | [example-after-sales-ticketing.md](./../../brd/README.md) — after-sales ticketing example |
-| `brd/brd-documents/` | [brd_brd-documents_yiai_rag_hybrid.md](./../../brd/README.md) · [brd_brd-documents_yipet_aicr_extension.md](./../../brd/README.md) — 20+ already-generated BRD case study library (claude002 / msa5* / yiai/yipet) |
 | `methodology/pm-frameworks/` | [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) |
 | `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — business constraint thinking |
 | `product/{strategy,metrics,ux}` | [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [north-star-metric-summary.md](../discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../discovery/metrics--ai-product-metrics.md) — business target alignment |
@@ -100,13 +87,13 @@ When writing a BRD (business requirements document) / reviewing / converting to 
 ## Action recommendations
 
 1. **Structure**: background → business domain → scenario → targets → risks → terminology → references → interface → acceptance; write by template, do not drift.
-2. **Business domain**: must be classified into one of the 10 domains; cross-domain must be explicitly declared (e.g., after-sales + data); see `brd/domains/`.
-3. **Scenario-ize**: must give concrete scenarios (users + trigger + steps + result); do not write abstract functions; see [scn-unified-ticketing.md](./../../brd/README.md).
-4. **Measurable targets**: every target must carry a number (recall / hours saved / conversion rate); see `brd/brd-objectives/` + [okr-design-summary.md](../../product-manager/frameworks/okr-design.md).
-5. **Risk register**: technical / compliance / data / cost / launch risks must be registered + mitigation measures + owner; see `brd/brd-risks/`.
-6. **Unified terminology**: cross-domain terminology must be checked against `brd/terminology/` to prevent conflicts; automotive / general terminology already exists.
-7. **References**: countries / regulations / systems must be looked up in `brd/reference/`; cross-border business must fill in.
-8. **Instance alignment**: before writing, first scan `brd/brd-documents/` 20+ already-generated BRDs to find similar cases.
+2. **Business domain**: must be classified into one of the 10 domains; cross-domain must be explicitly declared (e.g., after-sales + data).
+3. **Scenario-ize**: must give concrete scenarios (users + trigger + steps + result); do not write abstract functions.
+4. **Measurable targets**: every target must carry a number (recall / hours saved / conversion rate); see [okr-design-summary.md](../../product-manager/frameworks/okr-design.md).
+5. **Risk register**: technical / compliance / data / cost / launch risks must be registered + mitigation measures + owner.
+6. **Unified terminology**: cross-domain terminology must be standardized to prevent conflicts.
+7. **References**: cross-border business must ensure compliance documentation is complete.
+8. **Instance alignment**: before writing, first review existing BRDs to find similar cases.
 9. **Generation prompt**: use [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) to invoke the YiAi BRD Agent to generate a draft, then manually refine; see [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md).
 10. **Review**: follow [requirement-review-process.md](../delivery/requirement-review.md); stakeholders include business owners + legal + security + engineering + design.
 11. **Convert to PRD**: after BRD passes, convert to PRD on the engineering side; see [prd.md](../../knowledge-curator/templates/prd.md).

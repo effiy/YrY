@@ -88,8 +88,6 @@ When handling a customer escalation / VIP customer complaint / key customer inci
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) · [bugs/](../../engineer/lessons) — escalation archive |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) · [yiai-rag-hybrid-retrieval-win.md](../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md) |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) |
-| `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — ticketing scenario |
-| `brd/domains/` | [after-sales.md](./../../brd/README.md) · [sales.md](./../../brd/README.md) · [customer-service.md](./../../brd/README.md) |
 | `industry/use-cases/` | [ai-after-sales-use-cases.md](../../product-manager/strategy) · [ai-customer-service-use-cases.md](../../product-manager/strategy) |
 | `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) — AI-assisted notification |
 | `lifecycle/` | [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |

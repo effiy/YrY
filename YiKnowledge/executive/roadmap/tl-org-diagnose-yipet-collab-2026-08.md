@@ -24,6 +24,7 @@ acceptance_criteria:
 review_cycle: quarterly
 created: 2026-08-01
 updated: 2026-08-07
+source: internal
 last_verified: 2026-08-07
 tacit: false
 related:

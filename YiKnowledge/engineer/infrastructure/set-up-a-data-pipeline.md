@@ -88,8 +88,6 @@ When building a data pipeline / ETL / ELT / CDC / real-time stream / lakehouse /
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) |
-| `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border data compliance |
-| `brd/domains/` | [data.md](./../../brd/README.md) — data domain BRD |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) |
 | `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — data stakeholders |
 | `projects/` | each project `adr-*.md` — data pipeline ADR; `architecture-summary.md` §data |
@@ -108,7 +106,7 @@ When building a data pipeline / ETL / ELT / CDC / real-time stream / lakehouse /
 10. **Data quality**: must monitor completeness / uniqueness / timeliness / consistency / accuracy; SLA violation alerts.
 11. **Monitoring**: follow [monitoring-governance-process.md](../process/monitoring-governance.md); must monitor latency / throughput / error rate / cost / quality.
 12. **Cost**: must run [capacity-planning-process.md](capacity-planning.md) + [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md); scan duplicate pipelines / cold data / excessive replicas.
-13. **Compliance**: follow [data-compliance-process.md](data-compliance.md) + [regulations.md](./../../brd/README.md); cross-border via [countries.md](./../../brd/README.md).
+13. **Compliance**: follow [data-compliance-process.md](data-compliance.md).
 14. **Replay**: pipeline must be replayable (idempotent + versioned + checkpoint); non-replayable use dual-write + validation.
 15. **Dual world**: new and old pipelines parallel + dual-write + sample compare then cut; see [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md).
 16. **ADR**: pipeline architecture must land in an ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).

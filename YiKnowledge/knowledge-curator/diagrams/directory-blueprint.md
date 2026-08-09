@@ -25,7 +25,7 @@ acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
   - "usage guidance explains when to use this template and common mistakes"
-  - "10 role directories present: engineer / tech-lead / product-manager / ai-engineer / new-hire / knowledge-curator / executive / oncall-sre / skill-author / brd"
+  - "9 role directories present: engineer / tech-lead / product-manager / ai-engineer / new-hire / knowledge-curator / executive / oncall-sre / brd"
   - directory depth does not exceed 3 (BRD story subtree is the exception)
 related:
 - ./knowledge-map.md
@@ -46,7 +46,7 @@ tacit: false
 ## Summary
 
 - Three rules of directories: no more than 3 levels deep / directory names are role + problem domain / a fallback directory exists.
-- 10 top-level directories: 9 active roles (`engineer/` `tech-lead/` `product-manager/` `ai-engineer/` `new-hire/` `knowledge-curator/` `executive/` `oncall-sre/` `skill-author/`) + 1 data zone (`brd/`).
+- 9 top-level directories: 8 active roles (`engineer/` `tech-lead/` `product-manager/` `ai-engineer/` `new-hire/` `knowledge-curator/` `executive/` `oncall-sre/`) + 1 data zone (`brd/`).
 - 10 former skeletal roles (accessibility-engineer, api-designer, code-reviewer, data-engineer, designer, devops, performance-engineer, qa-engineer, release-manager, security-engineer, technical-writer) merged into parent roles.
 - Filenames = descriptive verb-phrase (`set-up-ci-cd.md`); hyphens only; underscores `_` and digits are forbidden.
 - Multi-role is expressed via the frontmatter `roles:` array; a filename is not bound to a single role.
@@ -119,10 +119,8 @@ YiKnowledge/
 │   ├── incident-response/       # postmortem + oncall-handover (23 files)
 │   ├── observability/           # monitoring, alerting, observability patterns
 │   └── release/                 # release + rollback procedures
-├── skill-author/                # skill/plugin authoring patterns
-│   └── patterns/                # skill authoring patterns
 ├── brd/                         # BRD data zone (DB export, 8 roles + 10 categories)
-├── INDEX.md                     # repository-wide TOC (10 role directories)
+├── INDEX.md                     # repository-wide TOC (9 role directories)
 ├── README.md                    # top-level navigation
 └── MEMORY.md                    # rules manual
 ```
@@ -139,7 +137,6 @@ YiKnowledge/
 | `knowledge-curator` | KB governance / 4 diagrams / PARA / deprecation process / tacit knowledge / content review |
 | `executive` | strategy / competitors / industry reports / market trends / compliance |
 | `oncall-sre` | incident response / hotfix / rollback drills / monitoring / SLO / oncall handover |
-| `skill-author` | skill/plugin authoring patterns and best practices |
 | `brd` | BRD data zone — DB export, auto-generated content, naming convention exempt |
 
 ### Merged roles (2026-08-05 consolidation)

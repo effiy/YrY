@@ -1,7 +1,7 @@
 ---
 key: 49bf4d76-58c2-4db0-b5cd-86847c75b8ef
 name: AI-BRD Agent
-status: planning
+status: draft
 priority: p1
 assignee: ''
 startDate: null
@@ -17,6 +17,8 @@ createdAt: 1753920000000
 updatedAt: 1753920000000
 title: AI-BRD Agent (Story)
 category: engineer/projects/yiai/stories/overseas-after-sales-ai-brd-agent
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

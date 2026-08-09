@@ -1,9 +1,13 @@
 ---
 status: stable
-lifecycle: active
+title: Knowledge Base Dashboard — Data Flowlifecycle: active
 type: summary
-review_cycle: quarterly
-tacit: >
+category: engineer/projects/yivadcreated: 2026-08-07
+updated: 2026-08-07review_cycle: quarterly
+source: internal
+lifecycle: active
+created: 2026-08-07
+updated: 2026-08-09tacit: >
   Knowledge Base Dashboard 是 YiVad 中数据流最复杂的纯前端分析页面。
   理解其联动关系的关键是：后端一次返回全量数据（非分页），所有筛选、排序、聚合均在前端 computed 中完成。
 roles:

@@ -1,8 +1,13 @@
 ---
+title: YiVad Engineering — Changelog
+lifecycle: active
+status: stable
 type: summary
 category: engineer/projects/yivad/engineering
+tags: []
 created: 2026-08-03
 updated: 2026-08-07
+source: internal
 last_verified: 2026-08-07
 roles: [engineer]
 benefit: "Engineers track YiVad changelog entries for release notes and version history"
@@ -10,9 +15,8 @@ acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified"
-status: stable
-lifecycle: stable
 ---
+
 
 # Changelog — YiVad
 

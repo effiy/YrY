@@ -43,7 +43,7 @@ tacit: false
 
 ## Summary
 
-- Compliance: [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md) + [regulations.md](./../../brd/README.md) + [countries.md](./../../brd/README.md)
+- Compliance: [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md)
 - Thinking: [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Data: [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) + [data-retention-policy.md](../../knowledge-curator/archive/strategies-legacy/executive/prepare-a-data-retention-strategy.md)
 - Communication: [i-want-to-handle-outage-communication.md](../../engineer/process/handle-outage-communication.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md)
@@ -68,8 +68,6 @@ When handling regulatory change / new GDPR interpretation / new cross-border dat
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `brd/reference/` | [regulations.md](./../../brd/README.md) · [countries.md](./../../brd/README.md) — regulations + cross-border list |
-| `brd/domains/` | [legal.md](./../../brd/README.md) · [security.md](./../../brd/README.md) · [data.md](./../../brd/README.md) — legal BRD |
 | `work/processes/` | [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) · [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md) · [data-migration-process.md](../../engineer/infrastructure/data-migration.md) · [release-process.md](../../oncall-sre/release/release.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [incident-response-process.md](../../engineer/process/incident-response.md) · [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) |
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) · [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) |
 | `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — regulatory intent · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse-think violation consequences · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — change cascades · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
@@ -94,12 +92,12 @@ When handling regulatory change / new GDPR interpretation / new cross-border dat
 3. **Second-order effects**: changing one field → cascades to schema / interfaces / reports / third parties / monitoring; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
 4. **Occam**: the simplest change that satisfies compliance wins; do not stack tools; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **Impact assessment**: first list affected business / data / interfaces / users / cross-border / third parties; follow [data-governance-summary.md](../../ai-engineer/data/data-governance.md).
-6. **Regulation mapping**: must follow [regulations.md](./../../brd/README.md) + [countries.md](./../../brd/README.md); by region / industry.
+6. **Regulation mapping**: by region / industry.
 7. **Legal collaboration**: must bring in [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) external experts; do not have engineering interpret alone.
 8. **Change list**: code + schema + process + data migration + docs + monitoring + training; each item with owner + due date.
 9. **Dual world**: must follow [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) + [staged-port-methodology-pattern.md](../../engineer/architecture-design/staged-port-methodology.md); run old + new in parallel and cut traffic.
 10. **Data retention**: must follow [i-want-to-do-a-data-retention-review.md](./do-a-data-retention-review.md) + [data-retention-policy.md](../../knowledge-curator/archive/strategies-legacy/executive/prepare-a-data-retention-strategy.md).
-11. **Cross-border**: must follow [countries.md](./../../brd/README.md) + data localization + DPA + masking.
+11. **Cross-border**: must follow data localization + DPA + masking.
 12. **PII**: must mask + encrypt + access audit + least privilege + user consent.
 13. **AI data**: training data + conversation history + embeddings; must follow [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) + deletion cascade.
 14. **User notice**: must follow [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) + popup + email + announcement; do not silently change.

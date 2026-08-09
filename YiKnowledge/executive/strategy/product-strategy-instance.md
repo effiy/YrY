@@ -14,7 +14,7 @@ category: executive/strategy
 created: 2026-08-07
 updated: 2026-08-07
 source: internal
-type: strategy-instance
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly

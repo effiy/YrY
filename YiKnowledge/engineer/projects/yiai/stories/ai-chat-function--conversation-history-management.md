@@ -1,12 +1,15 @@
 ---
 key: sc_conversation_history
 name: Conversation history management
-status: planning
+status: draft
 priority: p2
 createdAt: 1700000000000
 updatedAt: 1700000000000
 title: Conversation history management (Scene)
 category: engineer/projects/yiai/stories/ai-chat-function/conversation-history-management
+tags: []
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

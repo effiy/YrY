@@ -82,7 +82,6 @@ related:
 - [../../../process/handoff-project.md](../../../new-hire/onboarding/handoff-project.md) — handoff must-read
 - [../team/](../team/) — internal team
 - [../../../engineer/process/raci-matrix.md](../../../engineer/process/raci-matrix.md) — RACI
-- [../../brd/reference/systems.md](./../../../brd/README.md) — system reference
 - [../../../engineer/process/project-handover.md](../../../engineer/process/project-handover.md) — handoff process
 
 ## Privacy and compliance

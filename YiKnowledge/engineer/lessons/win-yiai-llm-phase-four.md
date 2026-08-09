@@ -8,7 +8,7 @@ updated: 2026-08-07
 last_verified: 2026-08-07
 source: internal
 type: design
-status: planned
+status: draft
 lifecycle: reference
 review_cycle: quarterly
 tacit: true

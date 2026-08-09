@@ -1,7 +1,7 @@
 ---
 key: story_1700000000000
 name: AI chat feature
-status: planning
+status: draft
 priority: p1
 assignee: ''
 startDate: null
@@ -17,6 +17,8 @@ createdAt: 1700000000000
 updatedAt: 1700000000000
 title: AI chat feature (Story)
 category: engineer/projects/yiai/stories/ai-chat-function
+created: 2026-08-07
+updated: 2026-08-09source: internal
 source: internal
 type: original
 lifecycle: active

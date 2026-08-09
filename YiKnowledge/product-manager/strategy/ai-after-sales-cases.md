@@ -54,7 +54,6 @@ related:
 
 - Multilingual (related to [multilingual-translation-prompt](../../ai-engineer/methodology/prompts--multilingual-translation.md))
 - Cross-timezone (related to [cross-timezone-collaboration](../../engineer/process/cross-timezone-collaboration.md))
-- Regional compliance (related to [brd/reference/regulations](./../../brd/README.md))
 
 ### Case study list
 
@@ -85,7 +84,7 @@ Ticket Creation → Multilingual Processing → Fault Diagnosis → Knowledge Ba
 
 6. **Human Review** — The generated repair plan enters a review queue. For low-complexity, high-confidence cases (e.g., known fault code with standard fix), auto-approval is configured. For high-risk or low-confidence cases, a senior technician or domain expert reviews and approves before advancing. The reviewer can edit, annotate, or reject with feedback that feeds back into the model improvement loop.
 
-7. **Dispatch** — Approved repair plan is dispatched to the appropriate field engineer or service center, along with parts ordering automatically triggered in the ERP system. SLA tracking starts, and the ticket is linked to the unified ticketing system (see `brd/scenarios/scn-unified-ticketing`).
+7. **Dispatch** — Approved repair plan is dispatched to the appropriate field engineer or service center, along with parts ordering automatically triggered in the ERP system. SLA tracking starts, and the ticket is linked to the unified ticketing system.
 
 This architecture is validated by the YiAi BRD Agent for the multilingual + structured output layers, and the BMW/Samsung/Siemens cases demonstrate the RAG + diagnosis + dispatch pipeline in production.
 
@@ -93,7 +92,7 @@ This architecture is validated by the YiAi BRD Agent for the multilingual + stru
 
 - BRD section generation (reference [brd-generation-prompt](../../ai-engineer/methodology/prompts--brd-generation.md))
 - Multilingual translation
-- Ticket onboarding (related to [brd/scenarios/scn-unified-ticketing](./../../brd/README.md))
+- Ticket onboarding
 
 ### Reusable insights
 
@@ -127,7 +126,7 @@ The feedback loop operates on a **weekly batch** for model fine-tuning and a **m
 1. Reference YiAi BRD Agent multilingual + structured output capabilities, extrapolate to after-sales ticket generation scenarios.
 2. Design multilingual glossary strategy (terminology consistency, brand words not translated) based on the three-tier classification model described in Reusable Insights.
 3. Implement BRD approval stream and user feedback loop mechanism following the tiered review and batch fine-tuning cadence described above.
-4. Related to `brd/scenarios/scn-unified-ticketing`, bring after-sales ticket onboarding into the main process.
+4. Bring after-sales ticket onboarding into the main process.
 5. Monitor field engineer feedback loop signals (per-ticket ratings, correction annotations, glossary drift) as leading indicators of model quality degradation.
 
 ## Anti-patterns
@@ -149,5 +148,4 @@ The feedback loop operates on a **weekly batch** for model fine-tuning and a **m
 - Same category: [./case-study.md](./case-study.md) — case study research template
 - Upstream: [./README.md](./) — use-cases leaf entry
 - Downstream: [../../engineer/projects/yiai](../../engineer/projects/yiai) — YiAi BRD Agent
-- Downstream: [../../brd/scenarios/scn-unified-ticketing.md](./../../brd/README.md) — unified ticket scenario
 - Scenario entry: [../../engineer/engineering/find-ai-deployment-cases.md](../../engineer/engineering/find-ai-deployment-cases.md)

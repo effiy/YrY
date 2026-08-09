@@ -94,7 +94,6 @@ When orchestrating microservices / saga / workflow engines / business-process or
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) |
 | `lifecycle/` | [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [governance.md](../../knowledge-curator/governance/governance.md) |
 | `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) |
-| `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — business scenarios |
 | `projects/` | each project's `architecture-summary.md` §service orchestration + `adr-*` |
 | `journeys/` | [../strategies/decompose-a-monolith.md](decompose-a-monolith.md) · [../strategies/implement-an-api.md](implement-an-api.md) · [../../tech-lead/architecture/design-architecture-decision.md](../../tech-lead/architecture/design-architecture-decision.md) · [../projects/build-an-agent-system.md](../projects/build-an-agent-system.md) |
 

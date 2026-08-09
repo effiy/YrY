@@ -7,7 +7,7 @@ created: 2026-08-03
 updated: 2026-08-07
 source: internal
 type: adr
-status: planned
+status: draft
 lifecycle: active
 review_cycle: quarterly
 last_verified: 2026-08-07

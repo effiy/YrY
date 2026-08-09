@@ -96,7 +96,6 @@ When running chaos engineering experiments / chaos engineering / fault injection
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [bugs/](../../engineer/lessons) — chaos failure archive |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `brd/` | [brd-documents](../../brd/) · [brd-risks](../../brd/) · [scenarios](../../brd/) — business impact |
 | `projects/` | Each project `architecture-summary.md` § chaos + `adr-*` § chaos |
 | `journeys/` | [./run-a-game-day.md](./run-a-game-day.md) · [./prepare-a-disaster-recovery-plan.md](../../knowledge-curator/archive/strategies-legacy/oncall-sre/prepare-a-disaster-recovery-plan.md) · [../../tech-lead/roadmap/define-an-slo.md](../../tech-lead/roadmap/define-an-slo.md) · [./prepare-an-incident-response-plan.md](../../knowledge-curator/archive/strategies-legacy/oncall-sre/prepare-an-incident-response-plan.md) |
 

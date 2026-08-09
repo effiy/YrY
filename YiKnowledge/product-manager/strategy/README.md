@@ -70,4 +70,3 @@ related:
 - [../../engineer/projects/yiai](../../engineer/projects/yiai) — YiAi implementation
 - [../../engineer/engineering/find-ai-deployment-cases.md](../../engineer/engineering/find-ai-deployment-cases.md) — scenario entry
 - [../../knowledge-curator/governance/tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) — customer insight T001/T008
-- `../../brd/brd-product-manager/` — BRD product manager exports
