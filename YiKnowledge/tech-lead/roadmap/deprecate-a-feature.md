@@ -27,9 +27,9 @@ related:
   - ../../engineer/process/run-a-retrospective.md
   - ../../knowledge-curator/governance/evolve-the-knowledge-base.md
   - ../../engineer/process/knowledge-deprecation-policy.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
 tacit: Deprecation is not deletion; it is phased notification + gradual rollout + rollback safety net + data migration + user communication; the final step is true deletion
 ---
 
@@ -63,9 +63,9 @@ Feature no longer used, technical debt too heavy, compliance requirements, produ
 | 2 hops | incident communication | [../../engineer/process/handle-outage-communication.md](../../engineer/process/handle-outage-communication.md) |
 | 2 hops | retrospective | [../../engineer/process/run-a-retrospective.md](../../engineer/process/run-a-retrospective.md) |
 | 2 hops | deprecation policy | [../../engineer/process/knowledge-deprecation-policy.md](../../engineer/process/knowledge-deprecation-policy.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -94,4 +94,4 @@ Feature no longer used, technical debt too heavy, compliance requirements, produ
 - incident communication: [../../engineer/process/handle-outage-communication.md](../../engineer/process/handle-outage-communication.md) — user notification
 - retrospective: [../../engineer/process/run-a-retrospective.md](../../engineer/process/run-a-retrospective.md) — deprecation retrospective
 - deprecation policy: [../../engineer/process/knowledge-deprecation-policy.md](../../engineer/process/knowledge-deprecation-policy.md) — deprecation process
-- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking/first-principles.md)
+- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking--first-principles.md)

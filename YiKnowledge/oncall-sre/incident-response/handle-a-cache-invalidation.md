@@ -24,10 +24,10 @@ related:
   - ../observability/set-up-observability.md
   - ./respond-to-an-incident.md
   - ../../engineer/architecture-design/implement-an-api.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
 tacit: Cache invalidation is one of the two hard problems in computer science; write-through / write-back / invalidation-broadcast three tiers; TTL as a fallback; data consistency is the bottom line
 ---
 
@@ -61,10 +61,10 @@ Cache invalidation is one of the two hard problems in computer science (naming +
 | 2 hop | Observability | [../observability/set-up-observability.md](../observability/set-up-observability.md) |
 | 2 hop | Incident response | [./respond-to-an-incident.md](./respond-to-an-incident.md) |
 | 2 hop | Implement an API | [../../engineer/architecture-design/implement-an-api.md](../../engineer/architecture-design/implement-an-api.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hop | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hop | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
 
 ## Action recommendations
 
@@ -94,4 +94,4 @@ Cache invalidation is one of the two hard problems in computer science (naming +
 - Observability: [../observability/set-up-observability.md](../observability/set-up-observability.md) — hit rate monitoring
 - Incident response: [./respond-to-an-incident.md](./respond-to-an-incident.md) — avalanche/breakdown emergency
 - Implement an API: [../../engineer/architecture-design/implement-an-api.md](../../engineer/architecture-design/implement-an-api.md) — API cache strategy
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md)

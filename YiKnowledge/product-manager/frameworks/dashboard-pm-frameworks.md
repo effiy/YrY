@@ -31,7 +31,7 @@ acceptance_criteria:
   - "key metrics are defined with thresholds or targets"
   - "visualization choices are explained and accessible"
 related:
-- ../discovery/metrics/dashboard-product-portfolio.md
+- ../discovery/metrics--dashboard-product-portfolio.md
 - ../delivery/dashboard-product-delivery.md
 - ../strategy/dashboard-product-strategy.md
 - ../../tech-lead/decisions/dashboard-architecture-decisions.md
@@ -217,7 +217,7 @@ tacit: false
 
 ## Related
 
-- Same class: [dashboard-product-portfolio](../discovery/metrics/dashboard-product-portfolio.md) — product metrics
+- Same class: [dashboard-product-portfolio](../discovery/metrics--dashboard-product-portfolio.md) — product metrics
 - Same class: [dashboard-product-delivery](../delivery/dashboard-product-delivery.md) — delivery execution
 - Same class: [dashboard-product-strategy](../strategy/dashboard-product-strategy.md) — product strategy
 - Downstream: [write-a-brd](write-a-brd.md), [write-a-spec-or-prd](write-a-spec-or-prd.md), [jobs-to-be-done](jobs-to-be-done.md), [rice-ice-prioritization](rice-ice-prioritization.md), [kano-model](kano-model.md), [dual-track-agile](dual-track-agile.md), [okr-design](okr-design.md)

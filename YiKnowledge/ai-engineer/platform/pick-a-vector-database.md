@@ -87,9 +87,9 @@ When building RAG / selecting a vector database / switching vector databases / c
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md) — hybrid retrieval landing · [yiai-llm-phase-two-win.md](../../engineer/lessons/win-yiai-llm-phase-two.md) · [yiai-llm-phase-three-win.md](../../engineer/lessons/win-yiai-llm-phase-three.md) |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) — knowledge base watcher drops events impacting incremental index |
-| `projects/YiAi/` | [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) — RAG ADR |
+| `projects/YiAi/` | [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) — RAG ADR |
 | `resources/templates/` | [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) · [tech-selection-evaluation-summary.md](../../knowledge-curator/templates/tech-selection-evaluation.md) — selection evaluation template |
-| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) — RAG system prompt |
+| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) — RAG system prompt |
 
 ## Action recommendations
 
@@ -99,7 +99,7 @@ When building RAG / selecting a vector database / switching vector databases / c
 4. **Index strategy**: HNSW (high recall + high memory) / IVF (medium) / PQ (compression) / Flat (exact small scale); pick by scale + latency.
 5. **Metadata filtering**: must support pre-filter or post-filter; pre-filter performs better; see [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md).
 6. **Data modeling**: vector + metadata + reference ID + timestamp; see [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md).
-7. **Incremental index**: knowledge updates must run incremental upsert; watcher / ETL pipeline; see [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) + [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md).
+7. **Incremental index**: knowledge updates must run incremental upsert; watcher / ETL pipeline; see [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) + [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md).
 8. **Evaluation**: build an eval set covering recall / faithfulness / reference accuracy; see [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) + [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md).
 9. **Cost**: memory + storage + compute separated vs integrated, pick by scale; see [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md).
 10. **Switch plan**: abstract layer + standard interface, easy to swap DB; see [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md).

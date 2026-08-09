@@ -23,10 +23,10 @@ related:
   - ../engineering/scale-a-service.md
   - ../quality-security/do-a-load-test.md
   - ../projects/build-a-rag-pipeline.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 ---
 
 # Backpressure Pattern
@@ -271,4 +271,4 @@ batch producer → consumer
 - Saga: [./saga.md](../architecture-design/saga.md) — backpressure between long-transaction steps
 - Outbox: [./outbox.md](./outbox.md) — outbox publisher backpressure
 - Journeys: [set-up-a-data-pipeline](set-up-a-data-pipeline.md) + [scale-a-service](../engineering/scale-a-service.md) + [do-a-load-test](../quality-security/do-a-load-test.md) + [build-a-rag-pipeline](../projects/build-a-rag-pipeline.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (production-consumption imbalance essence) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (inversion = feed back to producer) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) (backpressure second-order prevents avalanche) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) (sync sufficient, do not introduce backpressure)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (production-consumption imbalance essence) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (inversion = feed back to producer) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) (backpressure second-order prevents avalanche) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) (sync sufficient, do not introduce backpressure)

@@ -46,7 +46,7 @@ last_verified: 2026-08-07
 ## Summary
 
 - Process follows [code-review.md](../quality-security/do-a-code-review.md) + [requirement-review.md](../../product-manager/delivery/requirement-review.md) + [release-freeze-process.md](../../oncall-sre/release/release-freeze.md)
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md)
 - Platform follows [ssot-view-layer-pattern.md](ssot-view-layer.md) + [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md)
 - Case study follows [yivad-leaf-view-leaves-ssot-win.md](../lessons/win-yivad-leaf-view-leaves-ssot.md) + [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md)
 
@@ -79,14 +79,14 @@ When adopting docs-as-code / documentation in repo / templating / lint / CI publ
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](ssot-view-layer.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) · [eval-driven](../engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — documentation essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — inversion of drift · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — documentation essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — inversion of drift · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `resources/templates/` | [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) |
 | `work/processes/` | [code-review.md](../quality-security/do-a-code-review.md) · [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [design-review.md](../../product-manager/delivery/design-review.md) · [tech-review.md](../../product-manager/delivery/tech-review.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../process/cross-timezone-collaboration.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — documentation audience |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — documentation owners |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — documentation audience |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — documentation owners |
 | `lessons/wins/` | [yivad-leaf-view-leaves-ssot-win.md](../lessons/win-yivad-leaf-view-leaves-ssot.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — documentation drift archive |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
@@ -96,10 +96,10 @@ When adopting docs-as-code / documentation in repo / templating / lint / CI publ
 
 ## Action recommendations
 
-1. **first principles**: first ask "what documentation solves / what happens if not done / ROI / user impact"; do not document for its own sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **inversion**: first imagine "how documentation can drift (scattered / outdated / wrong / missing / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **second-order effects**: documentation changes → code changes → another sync; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: the simplest documentation that satisfies the business wins; do not pile up templates; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **first principles**: first ask "what documentation solves / what happens if not done / ROI / user impact"; do not document for its own sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **inversion**: first imagine "how documentation can drift (scattered / outdated / wrong / missing / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **second-order effects**: documentation changes → code changes → another sync; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: the simplest documentation that satisfies the business wins; do not pile up templates; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **SSOT**: must run SSOT + frontend/backend shared + code as documentation; follow [ssot-view-layer-pattern.md](ssot-view-layer.md).
 6. **repo**: must run repo-based + markdown first + git history + owners.
 7. **template**: must run [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) + frontmatter + aliases / tags / related.
@@ -107,15 +107,15 @@ When adopting docs-as-code / documentation in repo / templating / lint / CI publ
 9. **CI**: must run CI gate + PR review + owner approval + automated publish.
 10. **publish**: must run static site (mkdocs / docusaurus / vitepress) + search + navigation + dark mode.
 11. **contract**: documentation example code must run [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) + executable + CI gate.
-12. **AI recall**: must run high-density MOC + chunk + embedding; follow [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md).
+12. **AI recall**: must run high-density MOC + chunk + embedding; follow [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md).
 13. **RACI**: must run [raci-matrix-summary.md](../process/raci-matrix.md); owners / contributors / sponsor.
 14. **freeze period**: during promotions follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md), do not change documentation schema.
-15. **reporting**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) to report audience + change log.
+15. **reporting**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) to report audience + change log.
 16. **monitoring**: must run [monitoring-governance-process.md](../process/monitoring-governance.md) for views / links / search / feedback.
 17. **retrospective**: after documentation incident must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) retrospective + archive to [bugs/](../lessons).
 18. **quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to scan whether documentation is still accurate + whether links are still live.
 19. **ADR**: documentation decisions must land in ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-20. **flywheel**: documentation good → recall good → trust up → more contributions; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+20. **flywheel**: documentation good → recall good → trust up → more contributions; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

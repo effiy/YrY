@@ -21,10 +21,10 @@ related:
   - ../process/operate-as-a-forward-deployed-engineer.md
   - ../architecture-design/design-a-minimum-viable-architecture.md
   - ../../ai-engineer/foundations/handle-a-model-drift.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Day 2 is not a wrap-up; it is the foundation of project survival. FDE exit goal = make yourself redundant; handover + monitoring + retraining + oncall + runbook + KT six-piece set; no internal owner = project dies
 ---
 
@@ -55,7 +55,7 @@ Day 2 is not a wrap-up; it is the foundation of project survival. This entry giv
 | 1 hop | handover | [./project-handover.md](../process/project-handover.md) |
 | 1 hop | runbook | [./write-a-runbook.md](../infrastructure/write-a-runbook.md) |
 | 2 hops | fde-role | [../strategies/operate-as-a-forward-deployed-engineer.md](../process/operate-as-a-forward-deployed-engineer.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -103,4 +103,4 @@ Day 2 is not a wrap-up; it is the foundation of project survival. This entry giv
 - mva: [../strategies/design-a-minimum-viable-architecture.md](../architecture-design/design-a-minimum-viable-architecture.md) — minimum viable architecture co-built
 - model-drift: [../../ai-engineer/foundations/handle-a-model-drift.md](../../ai-engineer/foundations/handle-a-model-drift.md) — model drift co-built
 - model-governance: [../../ai-engineer/foundations/prepare-a-model-governance-strategy.md](../../knowledge-curator/archive/strategies-legacy/ai-engineer/prepare-a-model-governance-strategy.md) — model governance co-built
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

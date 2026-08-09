@@ -34,10 +34,10 @@ related:
 - ../meetings/run-a-sprint.md
 - ../../tech-lead/roadmap/manage-tech-debt.md
 - ../../knowledge-curator/templates/prd.md
-- ../../knowledge-curator/templates/thinking/first-principles.md
-- ../../knowledge-curator/templates/thinking/inversion.md
-- ../../knowledge-curator/templates/thinking/second-order-thinking.md
-- ../../knowledge-curator/templates/thinking/ockhams-razor.md
+- ../../knowledge-curator/templates/thinking--first-principles.md
+- ../../knowledge-curator/templates/thinking--inversion.md
+- ../../knowledge-curator/templates/thinking--second-order-thinking.md
+- ../../knowledge-curator/templates/thinking--ockhams-razor.md
 - ../../product-manager/frameworks/kano-model.md
 - ../../product-manager/frameworks/rice-ice-prioritization.md
 - ../../product-manager/frameworks/jobs-to-be-done.md
@@ -72,9 +72,9 @@ Iteration is approaching, PM needs to converge backlog into a sprint plan; items
 | 2 hop | Kano | [../../product-manager/frameworks/kano-model.md](../../product-manager/frameworks/kano-model.md) |
 | 2 hop | North-star + OKR | [../methodology/product/okr-north-star.md](./okr-design.md) |
 | 2 hop | JTBD | [../../product-manager/frameworks/jobs-to-be-done.md](../../product-manager/frameworks/jobs-to-be-done.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 | 2 hop | iteration PM handbook | [../../engineer/process/iteration-pm-handbook.md](../../engineer/process/iteration-pm-handbook.md) |
 | 2 hop | Measurement | [../../engineer/process/measure-product-metrics.md](../../engineer/process/measure-product-metrics.md) |
 | 2 hop | tech debt | [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) |
@@ -101,5 +101,5 @@ Iteration is approaching, PM needs to converge backlog into a sprint plan; items
 - iteration meeting: [../../engineer/process/run-iteration-meetings.md](../../engineer/process/run-iteration-meetings.md) — scheduling meeting process
 - sprint execution: [../meetings/run-a-sprint.md](../delivery/run-a-sprint.md) — execution after scheduling
 - tech debt: [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) — debt also participates in sort
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - product methodology: [okr-north-star](./okr-design.md) + [kano](../../product-manager/frameworks/kano-model.md) + [rice-ice](../../product-manager/frameworks/rice-ice-prioritization.md) + [jtbd](../../product-manager/frameworks/jobs-to-be-done.md)

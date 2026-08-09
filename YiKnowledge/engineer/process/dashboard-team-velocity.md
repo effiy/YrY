@@ -32,7 +32,7 @@ acceptance_criteria:
   - "visualization choices are explained and accessible"
 related:
 - ../infrastructure/dashboard-dora-metrics.md
-- ../../product-manager/discovery/metrics/dashboard-product-portfolio.md
+- ../../product-manager/discovery/metrics--dashboard-product-portfolio.md
 - ../../tech-lead/capacity/dashboard-engineering-capacity.md
 - daily-standup.md
 - retrospective-cadence.md

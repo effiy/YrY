@@ -23,10 +23,10 @@ related:
   - ./cqrs.md
   - ./event-sourcing.md
   - ./graceful-degradation.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Saga compensation is not just rollback; it is a contract. Forward + compensation + idempotency + state machine + observability — five dimensions; business-value driven; not one-shot; measurable
 ---
 
@@ -185,4 +185,4 @@ class SagaWithCompensation:
 - [idempotency-pattern.md](../infrastructure/idempotency.md) — forward + compensate idempotency
 - [distributed-tracing-pattern.md](../engineering/distributed-tracing.md) — trace_id throughout
 - [graceful-degradation-pattern.md](./graceful-degradation.md) — compensation is a form of degradation
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

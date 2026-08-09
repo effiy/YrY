@@ -31,7 +31,7 @@ related:
 - ../../oncall-sre/incident-response/respond-to-an-incident.md
 - ./collaborate-across-teams.md
 - ../processes/run-a-retrospective.md
-- ../../knowledge-curator/people/stakeholders/README.md
+- ../../knowledge-curator/people/stakeholders--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -44,7 +44,7 @@ tacit: false
 
 ## Summary
 
-- Stakeholders follow [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md)
+- Stakeholders follow [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md)
 - Incident response follows [incident-response-process.md](../process/incident-response.md) + [oncall-rotation-process.md](../process/oncall-rotation.md)
 - Collaboration follows [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) + [raci-matrix-summary.md](../process/raci-matrix.md)
 - Retrospective follows [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) + [review-meeting-template.md](../../product-manager/delivery/review-meeting.md)
@@ -79,19 +79,19 @@ During an online incident / P0 outage / data leak / cross-region downtime / regu
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) |
-| `people/experts/` | [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md) — external PR / legal experts |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) |
+| `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external PR / legal experts |
 | `work/collaboration/` | [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../process/cross-timezone-collaboration.md) · [raci-matrix-summary.md](../process/raci-matrix.md) |
 | `work/processes/` | [incident-response-process.md](../process/incident-response.md) · [oncall-rotation-process.md](../process/oncall-rotation.md) · [hotfix-release-process.md](../../oncall-sre/release/hotfix-release.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [data-compliance-process.md](../infrastructure/data-compliance.md) · [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
-| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert the communication failure · [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
-| `product/ux/` | [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md) — cross-cultural announcements · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux/nielsen-heuristics.md) |
+| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert the communication failure · [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
+| `product/ux/` | [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) — cross-cultural announcements · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux--nielsen-heuristics.md) |
 | `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border notification + regulations |
 | `resources/templates/` | [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) — incident weekly report generation |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) — incident weekly report generation |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) — when the incident involves capacity |
 
 ## Action recommendations
@@ -104,10 +104,10 @@ During an online incident / P0 outage / data leak / cross-region downtime / regu
 6. **RACI**: spokesperson (Accountable) / information collection (Responsible) / stakeholder notification (Consulted) / all-hands notification (Informed); see [raci-matrix-summary.md](../process/raci-matrix.md).
 7. **Customer reassurance**: customer success / customer service team gets talking points + FAQ + escalation process; do not let customer service find answers ad-hoc.
 8. **Regulatory reporting**: compliance / data leak follows [data-compliance-process.md](../infrastructure/data-compliance.md) + [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md); report to regulators within 24-72h (by regional regulation).
-9. **Cross-border**: for cross-region incidents, follow [countries.md](./../../brd/README.md) + [regulations.md](./../../brd/README.md) for each region's reporting; see [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md).
+9. **Cross-border**: for cross-region incidents, follow [countries.md](./../../brd/README.md) + [regulations.md](./../../brd/README.md) for each region's reporting; see [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md).
 10. **Retrospective communication**: hold a retrospective meeting within 24h; communicate the retrospective conclusions + improvements + timeline externally; see [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md).
-11. **Principles**: focus on the issue not the person / no blame-shifting / no covering up / no exaggeration / no impossible promises; see [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md).
-12. **Second-order effects**: incidents can trigger user churn / public opinion / regulatory fines / team morale hits; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
+11. **Principles**: focus on the issue not the person / no blame-shifting / no covering up / no exaggeration / no impossible promises; see [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md).
+12. **Second-order effects**: incidents can trigger user churn / public opinion / regulatory fines / team morale hits; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
 13. **Archive**: archive the retrospective under [lessons/failures/bugs/](../lessons) + archive the communication log; queryable at the next audit.
 14. **Drill**: quarterly [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) + communication drill, so the first time is not in production.
 
@@ -129,4 +129,4 @@ During an online incident / P0 outage / data leak / cross-region downtime / regu
 - Same-category journey: [./collaborate-across-teams.md](./collaborate-across-teams.md) — cross-team collaboration
 - Same-category journey: [../processes/run-a-retrospective.md](./run-a-retrospective.md) — retrospective
 - Same-category journey: [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md) — compliance communication
-- Upstream: [../../knowledge-curator/people/stakeholders/README.md](../../knowledge-curator/people/stakeholders/README.md) — stakeholders leaf entry
+- Upstream: [../../knowledge-curator/people/stakeholders--README.md](../../knowledge-curator/people/stakeholders--README.md) — stakeholders leaf entry

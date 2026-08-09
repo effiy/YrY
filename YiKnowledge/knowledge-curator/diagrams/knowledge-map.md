@@ -76,11 +76,11 @@ tacit: false
 | Customer preferences (e.g. security architecture preferences) | Tacit | Senior sales | Pre-sales, product | Continuous | Not sunked | TBD `tacit-knowledge-backlog` |
 | Cross-timezone collaboration conventions | Semi-tacit | Each owner | All staff | Semi-annual | Partially sunked | `engineer/process/` |
 | Implementation delivery SOP | Explicit | Implementation team | New hires | Quarterly | Sunked | `oncall-sre/release/` + `engineer/process/` |
-| Competitor analysis | Semi-tacit | Market/product | Sales, product | Monthly | Scattered across many people | `executive/industry/competitors/` TBD |
+| Competitor analysis | Semi-tacit | Market/product | Sales, product | Monthly | Scattered across many people | `executive/industry/competitors--` TBD |
 | Tech debt inventory | Semi-tacit | Architects | All engineering | Quarterly | Partially sunked | `tech-lead/architecture/` + `tech-lead/risk/` |
 | Capacity and cost | Explicit | SRE | Management | Monthly | Partially sunked | `tech-lead/capacity/` + `oncall-sre/observability/` |
-| Team topology and roles | Tacit | Each owner | New hires, cross-team collaboration | Semi-annual | Not sunked | `knowledge-curator/people/team/` TBD |
-| External expert network | Tacit | Each owner | Decision makers | Continuous | Not sunked | `knowledge-curator/people/experts/` TBD |
+| Team topology and roles | Tacit | Each owner | New hires, cross-team collaboration | Semi-annual | Not sunked | `knowledge-curator/people/team--` TBD |
+| External expert network | Tacit | Each owner | Decision makers | Continuous | Not sunked | `knowledge-curator/people/experts--` TBD |
 | UI/UX patterns and cross-end parity | Semi-tacit | Designers | Front-end, PM | Monthly | Partially sunked | `designer/patterns/` |
 
 ### Tacit knowledge gaps (re-examine)

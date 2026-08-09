@@ -22,7 +22,7 @@ related:
 - ./staged-port-methodology.md
   - ../lessons/win-yipet-stack-migration.md
   - ../lessons/gotcha-react-jsxdev-mismatch.md
-  - ../../tech-lead/decisions/yipet/biome-lint-format.md
+  - ../../tech-lead/decisions/yipet--biome-lint-format.md
 ---
 
 # 1-to-1 Mapping Migration Pattern

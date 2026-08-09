@@ -22,7 +22,7 @@ related:
   - ./route-llm-traffic-across-providers.md
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/dev-standards.md
-  - ../../../product-manager/projects/yiai/project-management.md
+  - ../../../product-manager/projects/yiai--project-management.md
   - ../../../engineer/engineering/shared-client-design.md
   - ../../../engineer/quality-security/harden-supply-chain.md
   - ../../../engineer/engineering/evaluation-driven-development.md

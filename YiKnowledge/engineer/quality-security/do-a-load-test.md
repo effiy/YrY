@@ -46,7 +46,7 @@ tacit: false
 ## Summary
 
 - Process walk [capacity-planning-process.md](../infrastructure/capacity-planning.md) + [chaos-engineering-process.md](chaos-engineering.md) + [monitoring-governance-process.md](../process/monitoring-governance.md)
-- Thinking walk [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking walk [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Pattern walk [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) + [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md)
 - Monitoring walk [i-want-to-set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) + [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md)
 
@@ -79,7 +79,7 @@ When doing load test / stress test / capacity validation / pre-promo load test /
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/processes/` | [capacity-planning-process.md](../infrastructure/capacity-planning.md) · [chaos-engineering-process.md](chaos-engineering.md) · [disaster-recovery-drill-process.md](../infrastructure/disaster-recovery-drill.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [incident-response-process.md](../process/incident-response.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [oncall-rotation-process.md](../process/oncall-rotation.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — load test target · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — inversion imagining incident · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — load test target · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — inversion imagining incident · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [sse-streaming-pattern.md](../architecture-design/sse-streaming.md) · [rpc-envelope-pattern.md](../architecture-design/rpc-envelope.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) — LLM load test |
@@ -88,7 +88,7 @@ When doing load test / stress test / capacity validation / pre-promo load test /
 | `lessons/gotchas/` | [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — load test communication |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — load test communication |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) |
 | `lifecycle/` | [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) — load test plan archive |
 | `journeys/` | [../../tech-lead/roadmap/do-a-capacity-plan.md](../../tech-lead/roadmap/do-a-capacity-plan.md) · [./do-a-performance-audit.md](./do-a-performance-audit.md) · [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) · [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) |
@@ -96,10 +96,10 @@ When doing load test / stress test / capacity validation / pre-promo load test /
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does load test need to validate (QPS / latency / elasticity / stability / disaster recovery) / what happens if not loaded"; do not load test for loading's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: first imagine "how load test could blow up (production data pollution / traffic hitting real users / cost explosion / false-trigger alerts) " then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Second-order effects**: one-shot load test → exposes bottleneck → rework → load again; loop; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md). 
-4. **Occam**: the simplest script that satisfies validation target wins; do not pile up tools; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
+1. **First principles**: first ask "what does load test need to validate (QPS / latency / elasticity / stability / disaster recovery) / what happens if not loaded"; do not load test for loading's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: first imagine "how load test could blow up (production data pollution / traffic hitting real users / cost explosion / false-trigger alerts) " then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Second-order effects**: one-shot load test → exposes bottleneck → rework → load again; loop; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md). 
+4. **Occam**: the simplest script that satisfies validation target wins; do not pile up tools; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
 5. **Scenario**: must first list load test scenarios (normal / peak / promo / burst / disaster recovery / elasticity) ; each scenario independent. 
 6. **Traffic model**: must be based on real traffic curves (diurnal / promo / burst) ; do not load at uniform rate. 
 7. **Load test environment**: production load test (shadow traffic + marker + isolation)  / pre-prod load test (independent but real)  / QA environment (baseline) ; choose by risk. 
@@ -114,9 +114,9 @@ When doing load test / stress test / capacity validation / pre-promo load test /
 16. **Isolation**: load test traffic must be isolated from real traffic (header / tenant / marker) ; walk [i-want-to-handle-multi-tenancy.md](../architecture-design/handle-multi-tenancy.md). 
 17. **Freeze period**: pre-promo must load; during promo walk [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) do not load again. 
 18. **Rollback**: must be able to stop load in seconds + rollback; walk [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md). 
-19. **Communication**: pre-load must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) communicate. 
+19. **Communication**: pre-load must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) communicate. 
 20. **Retrospective**: post-load walk [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) Retrospective bottleneck + improvement items + Archive [review-log.md](../../knowledge-curator/governance/review-log.md). 
-21. **Flywheel**: load test → improve → trust → more confident expansion; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+21. **Flywheel**: load test → improve → trust → more confident expansion; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

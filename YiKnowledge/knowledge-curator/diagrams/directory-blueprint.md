@@ -173,7 +173,7 @@ YiKnowledge/
 | `engineer/architecture-design/{file}.md` | 2 | yes | flat problem domain leaf |
 | `engineer/engineering/{file}.md` | 2 | yes | merged ai-ml + tools-devx |
 | `engineer/lessons/{file}.md` | 2 | yes | flattened lessons (no sub-subdirs) |
-| `tech-lead/decisions/yiai/{file}.md` | 3 | yes | project ADR subdirectories |
+| `tech-lead/decisions/yiai--{file}.md` | 3 | yes | project ADR subdirectories |
 | `product-manager/projects/yiai/{file}.md` | 3 | yes | per-project PM docs |
 | `engineer/projects/yiai/stories/{story}/{scene}/scene.md` | 5 | exception | BRD story subtree is data-driven |
 | `knowledge-curator/diagrams/{file}.md` | 2 | yes | standard leaf |

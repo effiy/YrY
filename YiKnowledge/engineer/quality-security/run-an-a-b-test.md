@@ -33,7 +33,7 @@ related:
 - ../tools/set-up-a-tracking-plan.md
 - ./measure-product-metrics.md
 - ./run-an-experiment.md
-- ../../product-manager/discovery/metrics/ai-product-metrics.md
+- ../../product-manager/discovery/metrics--ai-product-metrics.md
 review_cycle: quarterly
 last_verified: 2026-08-07
 tacit: false
@@ -48,8 +48,8 @@ tacit: false
 ## Summary
 
 - Process follows [requirement-review.md](../../product-manager/delivery/requirement-review.md) + [design-review.md](../../product-manager/delivery/design-review.md) + [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md)
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
-- Data follows [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) + [data-governance-summary.md](../../ai-engineer/data/data-governance.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
+- Data follows [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) + [data-governance-summary.md](../../ai-engineer/data/data-governance.md)
 - Cases follow [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) + [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md)
 
 ## Core viewpoints
@@ -82,19 +82,19 @@ When running A/B tests / split tests / hypothesis testing / growth experiments /
 | Hop 1 (category/leaf)  | Hop 2 (specific file)  |
 |---|---|
 | `work/processes/` | [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [design-review.md](../../product-manager/delivery/design-review.md) · [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [iteration-pm-handbook-process.md](../process/iteration-pm-handbook.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — essence of experiments · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — reverse-think misjudgments · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — essence of experiments · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse-think misjudgments · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [product-discovery-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-discovery-strategy.md) · [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [eval-driven](../engineering/evaluation-driven-development.md) · [contract-test-baseline-pattern.md](contract-test-baseline.md) · [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) |
 | `methodology/ai-specific/` | [llm-evaluation-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) |
 | `product/strategy/` | [product-strategy-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-strategy.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) · [second-curve-summary.md](../../executive/strategy/second-curve.md) |
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [sql-generation-prompt.md](../../ai-engineer/methodology/prompts/sql-generation.md) |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [sql-generation-prompt.md](../../ai-engineer/methodology/prompts--sql-generation.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — experiment reporting |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — experiment reporting |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — experiment-failure archive |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) |
@@ -103,12 +103,12 @@ When running A/B tests / split tests / hypothesis testing / growth experiments /
 
 ## Action recommendations
 
-1. **First principles**: First ask "what question should this experiment answer / what happens if not done / ROI / user impact"; don't experiment for the sake of experimenting; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: First think "how could this experiment misjudge (biased samples / uneven splits / noisy metrics / multiple comparisons / short-term fluctuation / network effects)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Second-order effects**: Experiment launches → user behavior changes → long-term retention changes → another experiment; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md). 
-4. **Occam**: The simplest experiment design that satisfies the hypothesis wins; don't pile up metrics; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
-5. **Hypothesis**: Must run a falsifiable hypothesis + write "if X then Y" + pre-estimate effect size + pre-estimate direction; follow [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-6. **Metrics**: Must have 1 north star + 2-3 guardrails (anti-bias) + 2-3 secondary; follow [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md). 
+1. **First principles**: First ask "what question should this experiment answer / what happens if not done / ROI / user impact"; don't experiment for the sake of experimenting; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: First think "how could this experiment misjudge (biased samples / uneven splits / noisy metrics / multiple comparisons / short-term fluctuation / network effects)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Second-order effects**: Experiment launches → user behavior changes → long-term retention changes → another experiment; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md). 
+4. **Occam**: The simplest experiment design that satisfies the hypothesis wins; don't pile up metrics; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
+5. **Hypothesis**: Must run a falsifiable hypothesis + write "if X then Y" + pre-estimate effect size + pre-estimate direction; follow [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+6. **Metrics**: Must have 1 north star + 2-3 guardrails (anti-bias) + 2-3 secondary; follow [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md). 
 7. **Sample size**: Must compute MDE + significance + power + estimate experiment cadence; if sample is insufficient, extend the runtime. 
 8. **Splits**: Must use random splits + user-level hashing + mutually exclusive experiments + orthogonal layers; follow [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md). 
 9. **SRM**: Must scan for SRM (sample ratio mismatch) + run χ² test; follow [data-governance-summary.md](../../ai-engineer/data/data-governance.md). 
@@ -118,13 +118,13 @@ When running A/B tests / split tests / hypothesis testing / growth experiments /
 13. **Pre-experiment**: Must run A/A tests + verify platform correctness + verify splits + verify metric variance. 
 14. **Gradual rollout**: Must follow [roll-out-feature-flags.md](../infrastructure/roll-out-feature-flags.md) for gradual rollout + monitor guardrails. 
 15. **Freeze period**: During major promotions follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) — don't touch experiments. 
-16. **Decision**: Must follow [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) with clear stances + post-hoc retrospective. 
-17. **Reporting**: Must follow [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) to report to sponsor + business. 
+16. **Decision**: Must follow [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) with clear stances + post-hoc retrospective. 
+17. **Reporting**: Must follow [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) to report to sponsor + business. 
 18. **RACI**: Must follow [raci-matrix-summary.md](../process/raci-matrix.md); PM / data / engineering / sponsor owners. 
 19. **Retrospective**: After the experiment must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) retrospective + archive in [review-log.md](../../knowledge-curator/governance/review-log.md). 
 20. **Quarterly audit**: Follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to scan whether the experiment platform is still accurate + whether metrics are still reasonable. 
 21. **ADR**: Experiment decisions must be captured in an ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md). 
-22. **Flywheel**: Good experiments → fast learning → faster product → business growth; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+22. **Flywheel**: Good experiments → fast learning → faster product → business growth; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 
@@ -144,4 +144,4 @@ When running A/B tests / split tests / hypothesis testing / growth experiments /
 - Same-category journey: [./measure-product-metrics.md](../process/measure-product-metrics.md) — product metrics
 - Same-category journey: [./run-an-experiment.md](./run-an-experiment.md) — experiment
 - Same-category journey: [./roll-out-feature-flags.md](../infrastructure/roll-out-feature-flags.md) — gradual rollout
-- Upstream: [../../product-manager/discovery/metrics/README.md](../../product-manager/discovery/metrics/README.md) — metrics leaf entry
+- Upstream: [../../product-manager/discovery/metrics--README.md](../../product-manager/discovery/metrics--README.md) — metrics leaf entry

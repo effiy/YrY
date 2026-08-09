@@ -131,7 +131,7 @@ The Chinese customer service software market is growing faster (20%+ CAGR) but w
 - Same category: [./gartner-ai-hype-cycle.md](./gartner-ai-hype-cycle.md) -- Gartner AI Hype Cycle
 - Upstream: [../competitors/competitor-analysis.md](../competitors/competitor-analysis.md) -- competitor analysis framework
 - Upstream: [../competitors/ai-brd-competitors.md](../competitors/ai-brd-competitors.md) -- AI BRD competitor analysis
-- Downstream: [../../../product-manager/discovery/ux/cross-cultural-ux.md](../../../product-manager/discovery/ux/cross-cultural-ux.md) -- cross-cultural UX
+- Downstream: [../../../product-manager/discovery/ux--cross-cultural-ux.md](../../../product-manager/discovery/ux--cross-cultural-ux.md) -- cross-cultural UX
 
 ## References
 

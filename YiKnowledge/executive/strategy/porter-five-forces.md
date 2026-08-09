@@ -31,7 +31,7 @@ related:
 - ./business-model-canvas.md
 - ./blue-ocean.md
 - ./product-strategy-framework.md
-- ../industry/competitors/README.md
+- ../industry/competitors--README.md
 tacit: false
 ---
 
@@ -131,5 +131,5 @@ Conclusion: industry profit margin is squeezed; strategically, differentiation i
 - Peer: [blue-ocean-strategy-summary.md](./blue-ocean.md) — redefine market boundaries (anti-Five-Forces)
 - Peer: [product-strategy-framework-summary.md](./product-strategy-framework.md) — strategy layers
 - Downstream: [now-next-later-roadmap-summary.md](./now-next-later-roadmap.md) — strategy landing
-- Downstream: [../industry/competitors/README.md](../industry/competitors/README.md) — competitor benchmarking
+- Downstream: [../industry/competitors--README.md](../industry/competitors--README.md) — competitor benchmarking
 - References: Michael Porter — *How Competitive Forces Shape Strategy* (HBR, 1979); *Competitive Strategy* (1980)

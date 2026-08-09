@@ -34,8 +34,8 @@ acceptance_criteria:
 related:
 - ./product-strategy-framework.md
 - ./now-next-later-roadmap.md
-- ../../product-manager/discovery/metrics/dashboard-product-portfolio.md
-- ../../product-manager/discovery/metrics/north-star-metric.md
+- ../../product-manager/discovery/metrics--dashboard-product-portfolio.md
+- ../../product-manager/discovery/metrics--north-star-metric.md
 tacit: false
 ---
 
@@ -177,7 +177,7 @@ tacit: false
 
 ## Related
 
-- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics/dashboard-product-portfolio.md) — product-level metrics
+- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics--dashboard-product-portfolio.md) — product-level metrics
 - Same class: [dashboard-dora-metrics](../../engineer/infrastructure/dashboard-dora-metrics.md) — engineering delivery metrics
 - Downstream: [product-strategy-framework](product-strategy-framework.md) — strategy framework
 - Downstream: [now-next-later-roadmap](now-next-later-roadmap.md) — roadmap planning

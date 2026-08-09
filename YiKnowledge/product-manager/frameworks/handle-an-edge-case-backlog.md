@@ -47,7 +47,7 @@ tacit: false
 ## Summary
 
 - Process go [quarterly-tech-debt-process.md](../../engineer/quality-security/quarterly-tech-debt.md) + [sprint-retrospective-process.md](../delivery/retrospective.md) + [code-review.md](../../engineer/quality-security/do-a-code-review.md)
-- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Platform go [contract-test-baseline-pattern.md](../../engineer/quality-security/contract-test-baseline.md) + [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) + [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md)
 - Case study go [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) + [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md)
 
@@ -82,10 +82,10 @@ handle long-tail Case study / edge case backlog / corner case / long-tail bug / 
 |---|---|
 | `work/processes/` | [quarterly-tech-debt-process.md](../../engineer/quality-security/quarterly-tech-debt.md) · [sprint-retrospective-process.md](../delivery/retrospective.md) · [code-review.md](../../engineer/quality-security/do-a-code-review.md) · [tech-review.md](../delivery/tech-review.md) · [requirement-review.md](../delivery/requirement-review.md) |
 | `methodology/engineering-patterns/` | [contract-test-baseline-pattern.md](../../engineer/quality-security/contract-test-baseline.md) · [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [graceful-degradation-pattern.md](../../engineer/architecture-design/graceful-degradation.md) · [observability-pattern.md](../../engineer/engineering/observability.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — long-tail essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — Inversion imagine missing · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — long-tail essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — Inversion imagine missing · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [runbook](../../engineer/infrastructure/write-a-runbook.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../../engineer/process/raci-matrix.md) · [async-collaboration-principles-summary.md](../../engineer/process/async-collaboration-principles.md) |
 | `work/meetings/` | [review-meeting-template.md](../delivery/review-meeting.md) · [retrospective-sample.md](../delivery/retrospective.md) · [weekly-meeting-template.md](../delivery/weekly-meeting.md) |
 | `tech/infra/` | [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) · [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) |
@@ -94,17 +94,17 @@ handle long-tail Case study / edge case backlog / corner case / long-tail bug / 
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) · [bugs/](../../engineer/lessons) — long-tail Archive |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md) |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../discovery/metrics/ai-product-metrics.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../discovery/metrics--ai-product-metrics.md) |
 | `brd/` | [brd-documents](../../brd/) · [brd-risks](../../brd/) · [scenarios](../../brd/) — business long-tail |
 | `projects/` | each project `architecture-summary.md` §long-tail + `adr-*` §boundary |
 | `journeys/` | [./i-want-to-prepare-a-bug-bash.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-bug-bash.md) · [../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-qa-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-qa-strategy.md) · [./i-want-to-prepare-a-prioritization-framework.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-prioritization-framework.md) · [../../engineer/process/run-a-bug-bash.md](../../engineer/process/run-a-bug-bash.md) |
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does long-tail solve / what happens if unclear / ROI / user impact"; do not clean for cleaning's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how long-tail can fail (missed / sporadic / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: clearing one item → exposes another item → another round of clearing; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam's razor**: the simplest category that satisfies business wins; do not pile up tags; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "what does long-tail solve / what happens if unclear / ROI / user impact"; do not clean for cleaning's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how long-tail can fail (missed / sporadic / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: clearing one item → exposes another item → another round of clearing; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam's razor**: the simplest category that satisfies business wins; do not pile up tags; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **discover**: must run multi-channel (user feedback / Monitoring / QA / bug bash / chaos) + must Archive.
 6. **category**: must run category (function / boundary / data / device / language / tenant) + must tag.
 7. **priority**: must run [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) + must by impact / frequency / severity.
@@ -115,12 +115,12 @@ handle long-tail Case study / edge case backlog / corner case / long-tail bug / 
 12. **data**: must run [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + must data long-tail + must schema evolution.
 13. **RACI**: must run [raci-matrix-summary.md](../../engineer/process/raci-matrix.md); QA / TL / sponsor owner.
 14. **Freeze period**: during big-promo follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) do not clean long-tail.
-15. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) communicate sponsor + business.
+15. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) communicate sponsor + business.
 16. **Monitoring**: must run [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) long-tail metric + threshold + alert.
 17. **Retrospective**: after long-tail Incident, must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) Retrospective + Archive [bugs/](../../engineer/lessons).
 18. **Quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) scan long-tail whether still accurate + whether new additions.
 19. **ADR**: long-tail Decision must land ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-20. **Flywheel**: long-tail cleaning → quality rises → trust rises → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+20. **Flywheel**: long-tail cleaning → quality rises → trust rises → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

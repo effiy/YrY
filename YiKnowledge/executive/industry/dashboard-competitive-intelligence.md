@@ -34,7 +34,7 @@ related:
 - ./competitors/
 - ../strategy/dashboard-executive-kpi.md
 - ../strategy/product-strategy-framework.md
-- ../../product-manager/discovery/metrics/dashboard-product-portfolio.md
+- ../../product-manager/discovery/metrics--dashboard-product-portfolio.md
 tacit: false
 ---
 
@@ -229,6 +229,6 @@ tacit: false
 ## Related
 
 - Same class: [dashboard-executive-kpi](../strategy/dashboard-executive-kpi.md) — executive KPIs
-- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics/dashboard-product-portfolio.md) — product metrics
+- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics--dashboard-product-portfolio.md) — product metrics
 - Downstream: [product-strategy-framework](../strategy/product-strategy-framework.md) — strategy framework
 - References: Michael Porter — *Competitive Strategy*; April Dunford — *Obviously Awesome: Product Positioning*; Steven Haines — *The Product Manager's Desk Reference*

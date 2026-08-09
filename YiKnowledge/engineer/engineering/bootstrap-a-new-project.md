@@ -26,9 +26,9 @@ related:
   - ../../knowledge-curator/templates/write-documentation.md
   - ../../engineer/architecture-design/ssot-view-layer.md
   - ../../engineer/engineering/evaluation-driven-development.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
 tacit: A new project is 80% determined in the first week; stack selection + scaffolding + CI/observability/hardening + onboarding documentation start simultaneously; don't write business first then fill foundation
 ---
 
@@ -63,9 +63,9 @@ New project bootstrap, engineer builds from scratch; the most common mistake is 
 | 2 hops | documentation writing | [../../knowledge-curator/templates/write-documentation.md](../../knowledge-curator/templates/write-documentation.md) |
 | 2 hops | SSOT view layer | [../../engineer/architecture-design/ssot-view-layer.md](../architecture-design/ssot-view-layer.md) |
 | 2 hops | evaluation-driven | [../../engineer/engineering/evaluation-driven-development.md](../engineering/evaluation-driven-development.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 
 ## Action recommendations
 
@@ -95,4 +95,4 @@ New project bootstrap, engineer builds from scratch; the most common mistake is 
 - ADR: [../../tech-lead/architecture/design-architecture-decision.md](../../tech-lead/architecture/design-architecture-decision.md) — decision record
 - documentation: [../../knowledge-curator/templates/write-documentation.md](../../knowledge-curator/templates/write-documentation.md) — onboarding documentation
 - Pattern: [ssot-view-layer](../architecture-design/ssot-view-layer.md) + [eval-driven](../engineering/evaluation-driven-development.md) + [staged-port](../architecture-design/staged-port-methodology.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md)

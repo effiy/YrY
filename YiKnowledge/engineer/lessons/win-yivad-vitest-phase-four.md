@@ -24,8 +24,8 @@ related:
  - ./yivad-vitest-phase-two.md
  - ./yivad-vitest-phase-one.md
  - ./yivad-aicr-phase-port.md
- - ../../../tech-lead/decisions/yivad/vitest-rollout.md
- - ../../../tech-lead/decisions/yivad/vitest-introduction.md
+ - ../../../tech-lead/decisions/yivad--vitest-rollout.md
+ - ../../../tech-lead/decisions/yivad--vitest-introduction.md
  - ../../patterns/sse-streaming.md
  - ../../patterns/evaluation-driven-development.md
  - ../../patterns/staged-port-methodology.md
@@ -119,5 +119,5 @@ related:
 - [./win-yivad-vitest-phase-three.md](./win-yivad-vitest-phase-three.md) — Phase 3 component tests, preceding stage in the 4-phase Vitest rollout
 - [./win-yivad-vitest-phase-two.md](./win-yivad-vitest-phase-two.md) — Phase 2 store tests, preceding stage
 - [./win-yivad-vitest-phase-one.md](./win-yivad-vitest-phase-one.md) — Phase 1 composable tests, first stage
-- [../../tech-lead/decisions/yivad/vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) — ADR for Vitest introduction
+- [../../tech-lead/decisions/yivad--vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) — ADR for Vitest introduction
 - [./win-yivad-shared-client-vendor.md](./win-yivad-shared-client-vendor.md) — Shared client vendor with SSE parser reused across projects

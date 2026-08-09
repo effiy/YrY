@@ -95,8 +95,8 @@ YiPet original React 15 + Bootstrap + ESLint + Prettier; pain points:
 
 ### Follow-up evolution
 
-- Vitest introduction: same rhythm as [ADR Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md) (YiPet version ADR to be added)
-- MV3 dual-world boundary enforcement: see [ADR MV3 dual world](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md)
+- Vitest introduction: same rhythm as [ADR Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md) (YiPet version ADR to be added)
+- MV3 dual-world boundary enforcement: see [ADR MV3 dual world](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md)
 - React 19 tracking: quarterly scan React release notes; do not chase minor versions
 - Ant Design 5.22+ tracking: run Vitest regression before minor upgrade
 
@@ -135,7 +135,7 @@ YiPet original React 15 + Bootstrap + ESLint + Prettier; pain points:
 - Same category: [./yiai-brd-agent-launch.md](win-yiai-brd-agent-launch.md) — YiAi BRD agent launch
 - Upstream: [YiPet architecture overview](../projects/yivad/architecture.md) — post-switch stack
 - Upstream: [YiPet dev standards](../projects/yivad/dev-standards.md) — §Biome / §TSX / §Vitest
-- ADR: [YiPet ADR Biome lint](../../tech-lead/decisions/yipet/biome-lint-format.md)
+- ADR: [YiPet ADR Biome lint](../../tech-lead/decisions/yipet--biome-lint-format.md)
 - gotcha: [react-jsxdev-mismatch](gotcha-react-jsxdev-mismatch.md) — chat bundle special handling basis
 - gotcha: [macos-fsevents-silent-drop](gotcha-macos-fsevents-silent-drop.md) — FSEvents fallback during dev
 - scenario entry: [../../processes/review-lessons.md](../process/review-lessons.md)

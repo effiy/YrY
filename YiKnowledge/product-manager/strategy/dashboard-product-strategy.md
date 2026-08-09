@@ -30,7 +30,7 @@ acceptance_criteria:
   - "key metrics are defined with thresholds or targets"
   - "visualization choices are explained and accessible"
 related:
-- ../discovery/metrics/dashboard-product-portfolio.md
+- ../discovery/metrics--dashboard-product-portfolio.md
 - ../../executive/strategy/dashboard-executive-kpi.md
 - ../../executive/industry/dashboard-competitive-intelligence.md
 - ../../tech-lead/roadmap/dashboard-roadmap-progress.md
@@ -188,7 +188,7 @@ tacit: false
 
 ## Related
 
-- Same class: [dashboard-product-portfolio](../discovery/metrics/dashboard-product-portfolio.md) — product metrics
+- Same class: [dashboard-product-portfolio](../discovery/metrics--dashboard-product-portfolio.md) — product metrics
 - Same class: [dashboard-executive-kpi](../../executive/strategy/dashboard-executive-kpi.md) — executive KPIs
 - Same class: [dashboard-competitive-intelligence](../../executive/industry/dashboard-competitive-intelligence.md) — competitive landscape
 - Downstream: [product-strategy-framework](../../executive/strategy/product-strategy-framework.md) — strategy framework

@@ -20,14 +20,14 @@ related:
   - ./architecture.md
   - ./functional-modules.md
   - ./dev-standards.md
-  - ../../../product-manager/projects/yiai/project-management.md
-  - ../../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
-  - ../../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md
-  - ../../../tech-lead/decisions/yiai/pytest-introduction.md
-  - ../../../tech-lead/decisions/yiai/rag-evaluation-infra.md
-  - ../../../tech-lead/decisions/yiai/brd-agent-launch.md
-  - ../../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md
-  - ../../../new-hire/onboarding/yiai/onboarding.md
+  - ../../../product-manager/projects/yiai--project-management.md
+  - ../../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
+  - ../../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md
+  - ../../../tech-lead/decisions/yiai--pytest-introduction.md
+  - ../../../tech-lead/decisions/yiai--rag-evaluation-infra.md
+  - ../../../tech-lead/decisions/yiai--brd-agent-launch.md
+  - ../../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md
+  - ../../../new-hire/onboarding/yiai--onboarding.md
   - ./engineering/claude.md
   - ./engineering/readme.md
   - ../INDEX.md
@@ -57,7 +57,7 @@ related:
 |---|---|
 | positioning | business AI assistant + BRD automation agent |
 | main tech stack | see [architecture-summary.md](./architecture.md) / `engineering/claude.md` |
-| current primary owner | see [project-management-summary.md](../../../product-manager/projects/yiai/project-management.md) section current primary owner |
+| current primary owner | see [project-management-summary.md](../../../product-manager/projects/yiai--project-management.md) section current primary owner |
 | business domain | overseas service domain, after-sales business, BRD approval flow |
 
 ## subdirectory
@@ -65,14 +65,14 @@ related:
 - [architecture-summary.md](./architecture.md) — architecture overview (tech stack / module boundary / data flow / degradation / anti-pattern)
 - [functional-modules-summary.md](./functional-modules.md) — functional modules list (10 domains / 7 services / 13 routings / data / shared / models)
 - [dev-standards-summary.md](./dev-standards.md) — development standards (naming / layered / RPC field contract / SSE / config / commit / lint gap)
-- [project-management-summary.md](../../../product-manager/projects/yiai/project-management.md) — project management (iteration cadence / deliverables / onboarding / handoff / weekly report daily report retrospective / cross-project links)
-- [adr-multi-provider-llm-routing.md](../../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) — ADR: multi-provider LLM routing chooses `llama_index.llms.*`, does not introduce `pi-ai`
-- [adr-llm-multi-provider-rollout.md](../../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) — ADR (implementation): multi-provider 5-stage gradual rollout (supply-chain hardening prerequisite + router + config gradual rollout + RAG generation side + endpoint / frontend model selector)
-- [adr-pytest-introduction.md](../../../tech-lead/decisions/yiai/pytest-introduction.md) — ADR: introduce pytest + httpx + pytest-asyncio + coverage, directory `tests/{unit,integration,eval}`
-- [adr-rag-evaluation-infra.md](../../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — ADR: RAG evaluation infrastructure built on llama-datasets + ragas 4 metrics + 50 documentation bilingual eval set + CI recall rollback > 5% block
-- [adr-brd-agent-launch.md](../../../tech-lead/decisions/yiai/brd-agent-launch.md) — ADR: BRD agent 5-stage launch methodology (structure contract first + RAG > long prompt + streaming + editable stream back + gradual rollout + feedback closed loop)
-- [adr-knowledge-watcher-deployment.md](../../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) — ADR (implementation): Knowledge Watcher implementation (apscheduler polling + incremental index + debounce + failure retry + monitoring; bypass macOS FSEvents event loss)
-- [onboarding.md](../../../new-hire/onboarding/yiai/onboarding.md) — new-hire onboarding
+- [project-management-summary.md](../../../product-manager/projects/yiai--project-management.md) — project management (iteration cadence / deliverables / onboarding / handoff / weekly report daily report retrospective / cross-project links)
+- [adr-multi-provider-llm-routing.md](../../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) — ADR: multi-provider LLM routing chooses `llama_index.llms.*`, does not introduce `pi-ai`
+- [adr-llm-multi-provider-rollout.md](../../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) — ADR (implementation): multi-provider 5-stage gradual rollout (supply-chain hardening prerequisite + router + config gradual rollout + RAG generation side + endpoint / frontend model selector)
+- [adr-pytest-introduction.md](../../../tech-lead/decisions/yiai--pytest-introduction.md) — ADR: introduce pytest + httpx + pytest-asyncio + coverage, directory `tests/{unit,integration,eval}`
+- [adr-rag-evaluation-infra.md](../../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — ADR: RAG evaluation infrastructure built on llama-datasets + ragas 4 metrics + 50 documentation bilingual eval set + CI recall rollback > 5% block
+- [adr-brd-agent-launch.md](../../../tech-lead/decisions/yiai--brd-agent-launch.md) — ADR: BRD agent 5-stage launch methodology (structure contract first + RAG > long prompt + streaming + editable stream back + gradual rollout + feedback closed loop)
+- [adr-knowledge-watcher-deployment.md](../../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) — ADR (implementation): Knowledge Watcher implementation (apscheduler polling + incremental index + debounce + failure retry + monitoring; bypass macOS FSEvents event loss)
+- [onboarding.md](../../../new-hire/onboarding/yiai--onboarding.md) — new-hire onboarding
 - [stories/](./stories/) — business requirement content (Story/Scene + BRD section)
   - [ai-chat-function/](./stories/ai-chat-function/) — AI chat function
     - [user-send-message/](./stories/ai-chat-function/user-send-message/) — user sends a message

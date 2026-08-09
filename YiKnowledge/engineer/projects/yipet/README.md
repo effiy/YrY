@@ -20,11 +20,11 @@ related:
   - ./architecture.md
   - ./functional-modules.md
   - ./dev-standards.md
-  - ../../../product-manager/projects/yipet/project-management.md
-  - ../../../tech-lead/decisions/yipet/biome-lint-format.md
-  - ../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
-  - ../../../tech-lead/decisions/yipet/aicr-port-rollout.md
-  - ../../../new-hire/onboarding/yipet/onboarding.md
+  - ../../../product-manager/projects/yipet--project-management.md
+  - ../../../tech-lead/decisions/yipet--biome-lint-format.md
+  - ../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
+  - ../../../tech-lead/decisions/yipet--aicr-port-rollout.md
+  - ../../../new-hire/onboarding/yipet--onboarding.md
   - ./engineering/claude.md
   - ./engineering/readme.md
   - ../INDEX.md
@@ -54,7 +54,7 @@ related:
 |---|---|
 | Positioning | Browser extension (YiPett shortcut + chat box) + desktop application |
 | Main tech stack | See [architecture-summary.md](./architecture.md) / `engineering/claude.md` |
-| Current main owner | See [project-management-summary.md](../../../product-manager/projects/yipet/project-management.md) §Current main owner |
+| Current main owner | See [project-management-summary.md](../../../product-manager/projects/yipet--project-management.md) §Current main owner |
 | Business domain | Personal productivity tool |
 
 ## Subdirectories
@@ -62,10 +62,10 @@ related:
 - [architecture-summary.md](./architecture.md) — architecture overview (tech stack / API four tiers / dual world boundary / data flow / degradation / anti-patterns)
 - [functional-modules-summary.md](./functional-modules.md) — functional module inventory (10 top-level directories / 6 services / 4 popup components / 19 chat components / content / shared / background / config)
 - [dev-standards-summary.md](./dev-standards.md) — development standards (naming / TSX structure / API four tiers / MV3 dual world / style co-location / i18n / time / CSP / Biome / Vitest)
-- [project-management-summary.md](../../../product-manager/projects/yipet/project-management.md) — project management (iteration cadence / deliverables / onboarding / handoff / weekly daily retrospective / cross-project linkage)
-- [adr-biome-lint-format.md](../../../tech-lead/decisions/yipet/biome-lint-format.md) — ADR: Biome 2.5 unified lint + format, removed ESLint + Prettier
-- [adr-chrome-manifest-dual-world-boundary.md](../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) — ADR: MV3 dual world boundary enforcement (TS type branding + typed message envelope)
-- [adr-aicr-port-rollout.md](../../../tech-lead/decisions/yipet/aicr-port-rollout.md) — ADR (implementation): aicr port 5 phases (MV3 skeleton + shared client vendor + ChatPanel/CodeViewer React rewrite + store/modal migration + parity test + grayscale)
+- [project-management-summary.md](../../../product-manager/projects/yipet--project-management.md) — project management (iteration cadence / deliverables / onboarding / handoff / weekly daily retrospective / cross-project linkage)
+- [adr-biome-lint-format.md](../../../tech-lead/decisions/yipet--biome-lint-format.md) — ADR: Biome 2.5 unified lint + format, removed ESLint + Prettier
+- [adr-chrome-manifest-dual-world-boundary.md](../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) — ADR: MV3 dual world boundary enforcement (TS type branding + typed message envelope)
+- [adr-aicr-port-rollout.md](../../../tech-lead/decisions/yipet--aicr-port-rollout.md) — ADR (implementation): aicr port 5 phases (MV3 skeleton + shared client vendor + ChatPanel/CodeViewer React rewrite + store/modal migration + parity test + grayscale)
 - [engineering/](./engineering/) — project engineering documentation mirror
   - `claude.md` — project CLAUDE.md mirror
   - `readme.md` — project README.md mirror

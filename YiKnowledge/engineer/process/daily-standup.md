@@ -171,4 +171,4 @@ class DailyStandup:
 - Sample: [../../product-manager/delivery/daily-report.md](../../product-manager/delivery/daily-report.md) — instance
 - Incident response: [./incident-response.md](./incident-response.md) — daily standup during incident
 - Hotfix: [../../oncall-sre/release/hotfix-release.md](../../oncall-sre/release/hotfix-release.md) — daily standup during hotfix
-- Thinking frameworks: [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md)

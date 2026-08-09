@@ -63,8 +63,8 @@ tacit: false
 | T003 | CTO dislikes PPTs over 3 pages in weekly reports | PM lead | All PMs | Team-meeting confirmation | work/processes/ | pending | |
 | T004 | Pre-launch checklist (senior PM has 20 in head, only 8 documented) | Senior PM | All PMs | Workshop extraction | work/processes/release-process.md | pending | |
 | T005 | Regional compliance differences overseas (EU GDPR / Middle East / Southeast Asia) | Legal + overseas PM | Pre-sales, product | Legal interview | brd/reference/regulations.md | pending | |
-| T006 | Team topology and role RACI | Each owner | New hires, cross-team collaboration | Quarterly workshop | people/team/ | pending | |
-| T007 | External expert network (lawyers / translators / industry consultants) | Each owner | Decision makers | Owner 1-on-1 | people/experts/ | pending | |
+| T006 | Team topology and role RACI | Each owner | New hires, cross-team collaboration | Quarterly workshop | people/team-- | pending | |
+| T007 | External expert network (lawyers / translators / industry consultants) | Each owner | Decision makers | Owner 1-on-1 | people/experts-- | pending | |
 | T008 | Customer industry insight (each key customer's business model) | Senior sales | All sales, PM | Customer interview | industry/use-cases/ | pending | |
 | T009 | Cross-timezone collaboration conventions (working hours per region, handoff windows) | Each region owner | Everyone | Workshop | work/collaboration/ | partial | |
 | T010 | YiAi BRD Agent generate → approve → ingest tacit rules | PM + engineering | YiAi users | Process breakdown | work/processes/ + projects/YiAi/ | pending | |

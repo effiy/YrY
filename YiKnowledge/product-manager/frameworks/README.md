@@ -19,8 +19,8 @@ acceptance_criteria:
 related:
   - ../../engineer/lessons/learn-pm-frameworks.md
   - ../../executive/strategy/README.md
-  - ../discovery/metrics/README.md
-  - ../discovery/ux/README.md
+  - ../discovery/metrics--README.md
+  - ../discovery/ux--README.md
 ---
 
 # Product Management Frameworks / PM Frameworks

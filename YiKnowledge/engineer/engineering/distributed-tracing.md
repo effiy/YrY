@@ -20,7 +20,7 @@ acceptance_criteria:
 related:
 - ./observability.md
   - ./rate-limiting.md
-  - ../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+  - ../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 tacit: Tracing is not logging; it is the chain. Trace context propagates across services + span parent-child + sampling + linked logs/metrics; end-to-end visibility
 ---
 

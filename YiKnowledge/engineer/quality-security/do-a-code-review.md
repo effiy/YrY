@@ -29,7 +29,7 @@ acceptance_criteria:
 related:
 - ../strategies/check-engineering-gotchas.md
 - ../strategies/harden-supply-chain.md
-- ../../ai-engineer/methodology/prompts/README.md
+- ../../ai-engineer/methodology/prompts--README.md
 - ../../README.md
 review_cycle: quarterly
 last_verified: 2026-08-07
@@ -44,7 +44,7 @@ tacit: false
 
 ## Summary
 
-- Go to [resources/prompts/code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) — review prompt + checklist
+- Go to [resources/prompts/code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) — review prompt + checklist
 - Security review goes to [../strategies/harden-supply-chain.md](../process/harden-supply-chain.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Pitfall reference goes to [lessons/gotchas](../lessons) — predecessor pitfalls
 - Engineering pattern reference goes to [methodology/engineering-patterns](../architecture-design) — 9 patterns overview
@@ -77,23 +77,23 @@ PR review / code review / security review / quarterly review — when engineers 
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) — review prompts |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) — review prompts |
 | `lessons/gotchas/` | [README.md](../lessons/README.md) — gotchas overview + common pitfall root cause reference |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — historical bugs to avoid repeating |
 | `methodology/engineering-patterns/` | [rpc-envelope-pattern.md](../architecture-design/rpc-envelope.md) · [sse-streaming-pattern.md](../architecture-design/sse-streaming.md) · [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [inline-citation-rag-pattern.md](../engineering/inline-citation-rag.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) · [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md) · [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [staged-port-methodology-pattern.md](../architecture-design/staged-port-methodology.md) — 9 patterns reference |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — review thinking frameworks |
-| `work/processes/` | [code-review-process.md](../../ai-engineer/methodology/prompts/code-review.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [design-review-process.md](../../product-manager/delivery/design-review.md) · [tech-review-process.md](../../product-manager/delivery/tech-review.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — review thinking frameworks |
+| `work/processes/` | [code-review-process.md](../../ai-engineer/methodology/prompts--code-review.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [design-review-process.md](../../product-manager/delivery/design-review.md) · [tech-review-process.md](../../product-manager/delivery/tech-review.md) |
 | `work/tools/` | [claude-code-tips-summary.md](../engineering/claude-code-tips.md) — AI-assisted review |
 | `projects/` | each project's `dev-standards-summary.md` — project-level review standards |
 
 ## Action recommendations
 
-1. **Run checklist first**: run the [code-review-prompt](../../ai-engineer/methodology/prompts/code-review.md) checklist (function correctness / test coverage / readability / security / performance / naming / boundary).
+1. **Run checklist first**: run the [code-review-prompt](../../ai-engineer/methodology/prompts--code-review.md) checklist (function correctness / test coverage / readability / security / performance / naming / boundary).
 2. **Pitfall reference**: scan [lessons/gotchas](../lessons) to avoid predecessor pitfalls (SSE guards / macOS FSEvents / no lockfile / React jsxDEV etc.).
 3. **Engineering pattern reference**: scan [9 engineering-patterns](../architecture-design) to follow conventions (RPC envelope / SSE streaming / SSOT / inline citation / dual-world / supply chain / 1:1 / eval-driven / staged-port).
 4. **Security review**: run the [supply-chain-hardening-pattern](../process/harden-supply-chain.md) four-piece set (lockfile + audit + min-release-age + allowlist) + [../strategies/harden-supply-chain.md](../process/harden-supply-chain.md).
 5. **Test coverage**: run the [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) coverage gate + rollback threshold.
-6. **Thinking frameworks**: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (function essence) + [second-order-thinking](../../knowledge-curator/templates/thinking/second-order-thinking.md) (second-order effects of PR merge) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (how to make a PR bad).
+6. **Thinking frameworks**: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (function essence) + [second-order-thinking](../../knowledge-curator/templates/thinking--second-order-thinking.md) (second-order effects of PR merge) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (how to make a PR bad).
 7. **AI-assisted review**: use [claude-code-tips](../engineering/claude-code-tips.md) to accelerate review, but humans must make the final decision.
 8. **Project dev-standards reference**: scan each project's `dev-standards-summary.md` to follow project-level conventions (field name hard constraints / lint rules / naming constraints).
 9. **Distinguish PR size**: small PRs go through fast review; large PRs split into staged ports (see [staged-port-methodology-pattern](../architecture-design/staged-port-methodology.md)).

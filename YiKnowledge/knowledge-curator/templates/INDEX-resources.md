@@ -49,13 +49,13 @@ tacit: false
 
 | File | Type | One-liner |
 |---|---|---|
-| [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) | prompt | BRD single-section generator |
-| [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) | prompt | Answer based on retrieved context, force references |
-| [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) | prompt | Agent decision loop + tool invocation |
-| [sql-generation-prompt.md](../../ai-engineer/methodology/prompts/sql-generation.md) | prompt | Natural language to read-only SQL |
-| [multilingual-translation-prompt.md](../../ai-engineer/methodology/prompts/multilingual-translation.md) | prompt | Glossary-locked multilingual translation |
-| [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) | prompt | Weekly report / retrospective generation |
-| [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) | summary | Code review (multilingual variants) |
+| [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) | prompt | BRD single-section generator |
+| [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) | prompt | Answer based on retrieved context, force references |
+| [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) | prompt | Agent decision loop + tool invocation |
+| [sql-generation-prompt.md](../../ai-engineer/methodology/prompts--sql-generation.md) | prompt | Natural language to read-only SQL |
+| [multilingual-translation-prompt.md](../../ai-engineer/methodology/prompts--multilingual-translation.md) | prompt | Glossary-locked multilingual translation |
+| [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) | prompt | Weekly report / retrospective generation |
+| [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) | summary | Code review (multilingual variants) |
 
 ## templates/
 

@@ -32,7 +32,7 @@ related:
 
 - **Complete**: `uv.lock` committed + `uv sync --frozen` strictly installs per lockfile + `pip-audit --strict` CI blocks + `min-release-age 7d` prevents premature pulls + lifecycle allowlist rejects pre-release / deprecated / unmaintained
 - **Quantified effect**: CI blocks high-severity CVEs 0; new dependencies published < 7d rejected; pre-release / deprecated auto-rejected; transitive versions pinned = same tree installed across machines
-- **Value**: Provides the "harden prerequisites before introducing new dependencies" hard prerequisite for [LLM multi-provider switch](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md); avoids expanding attack surface as multi-provider SDKs are introduced
+- **Value**: Provides the "harden prerequisites before introducing new dependencies" hard prerequisite for [LLM multi-provider switch](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md); avoids expanding attack surface as multi-provider SDKs are introduced
 
 ## Core viewpoints
 
@@ -59,7 +59,7 @@ related:
 
 - YiAi `requirements.txt` had no lockfile (see [no-lockfile gotcha](gotcha-no-lockfile-supply-chain-risk.md)) = transitive version drift + non-reproducible + large attack surface. 
 - Multi-provider switch will bring OpenAI / Anthropic / Gemini SDK transitive dependencies = attack surface expands = hardening is urgent. 
-- Decision ADR lists supply-chain hardening as Phase 1 hard prerequisite (see [LLM rollout Phase 1](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md)) . 
+- Decision ADR lists supply-chain hardening as Phase 1 hard prerequisite (see [LLM rollout Phase 1](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md)) . 
 
 ### Landing checklist
 
@@ -118,8 +118,8 @@ related:
 
 ## Related
 
-- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) Phase 1 (implementation ADR landed by this win) 
-- Decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) §supply chain hardening
+- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) Phase 1 (implementation ADR landed by this win) 
+- Decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) §supply chain hardening
 - Gotcha: [no-lockfile-supply-chain-risk gotcha](gotcha-no-lockfile-supply-chain-risk.md) — attack surface without lockfile
 - Methodology: [supply-chain-hardening-pattern](../process/harden-supply-chain.md) — generic four-piece suite pattern
 - Companion: [one-to-one-mapping-migration-pattern](../architecture-design/one-to-one-mapping-migration.md) — stack upgrade via hardening process

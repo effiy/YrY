@@ -102,8 +102,8 @@ Sunday 02:00 full rebuild (periodic fallback)
 ### knowledge source sync
 
 - RAG pipeline: incremental index → vector store (Milvus / pgvector) + BM25 index
-- BRD agent: knowledge source synced to the BRD authoring agent ([adr-brd-agent-launch](../../tech-lead/decisions/yiai/brd-agent-launch.md))
-- Co-built evaluation set: 50 bilingual documentation evaluation set ([adr-rag-evaluation-infra](../../tech-lead/decisions/yiai/rag-evaluation-infra.md)) — knowledge source changes trigger evaluation set baseline rerun
+- BRD agent: knowledge source synced to the BRD authoring agent ([adr-brd-agent-launch](../../tech-lead/decisions/yiai--brd-agent-launch.md))
+- Co-built evaluation set: 50 bilingual documentation evaluation set ([adr-rag-evaluation-infra](../../tech-lead/decisions/yiai--rag-evaluation-infra.md)) — knowledge source changes trigger evaluation set baseline rerun
 
 ## Action recommendations
 
@@ -127,10 +127,10 @@ Sunday 02:00 full rebuild (periodic fallback)
 
 ## Related
 
-- Implementation ADR: [../../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) — 4-stage plan
-- Evaluation ADR: [../../../tech-lead/decisions/yiai/rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — 50 bilingual documents co-built
-- Multi-provider ADR: [../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) — generation side uses router, retrieval side watcher guards freshness
-- BRD agent ADR: [../../../tech-lead/decisions/yiai/brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) — BRD knowledge source sync
+- Implementation ADR: [../../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) — 4-stage plan
+- Evaluation ADR: [../../../tech-lead/decisions/yiai--rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — 50 bilingual documents co-built
+- Multi-provider ADR: [../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) — generation side uses router, retrieval side watcher guards freshness
+- BRD agent ADR: [../../../tech-lead/decisions/yiai--brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) — BRD knowledge source sync
 - Gotcha co-built: [macos-fsevents-silent-drop](gotcha-macos-fsevents-silent-drop.md) — decided on polling over watchfiles
 - Pattern co-built: [inline-citation-rag-pattern](../engineering/inline-citation-rag.md) + [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Upstream win: [yiai-supply-chain-hardening-win](win-yiai-supply-chain-hardening.md) — supply-chain hardening prerequisite

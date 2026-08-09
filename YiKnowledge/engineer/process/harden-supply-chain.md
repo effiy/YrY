@@ -49,7 +49,7 @@ tacit: false
 - Four-piece set follows [supply-chain-hardening-pattern](harden-supply-chain.md): full-tree lockfile + audit CI block + min-release-age 7d + lifecycle allowlist (pre-release / deprecated / unmaintained rejected) 
 - Pitfall reference follows [no-lockfile-supply-chain-risk gotcha](../lessons/gotcha-no-lockfile-supply-chain-risk.md): no-lockfile attack surface + transitive drift
 - Implementation reference follows [yiai-supply-chain-hardening-win](../lessons/win-yiai-supply-chain-hardening.md): Phase 1 done (uv.lock + pip-audit + 7d + allowlist + dependabot weekly + per-project vendor) 
-- Hardening is required before introducing a new dependency ([LLM rollout Phase 1](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md)) 
+- Hardening is required before introducing a new dependency ([LLM rollout Phase 1](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md)) 
 
 ## Core viewpoints
 
@@ -83,9 +83,9 @@ Before introducing a new dependency / periodic upgrade / supply-chain poisoning 
 | `methodology/engineering-patterns/` | [supply-chain-hardening-pattern.md](harden-supply-chain.md) · [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md) (stack upgrade hardening)  · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) (MV3 boundary + hardening co-build)  |
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) · [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) (dev/prod pattern)  |
 | `lessons/wins/` | [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) · [yry-vite-to-rsbuild-migration-win.md](../lessons/win-yry-vite-to-rsbuild-migration.md) |
-| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [dev-standards-summary.md](../../engineer/projects/yiai/dev-standards.md) |
-| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet/biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) · [dev-standards-summary.md](../../engineer/projects/yipet/dev-standards.md) |
-| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) · [dev-standards-summary.md](../../engineer/projects/yivad/dev-standards.md) |
+| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [dev-standards-summary.md](../../engineer/projects/yiai/dev-standards.md) |
+| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet--biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) · [dev-standards-summary.md](../../engineer/projects/yipet/dev-standards.md) |
+| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) · [dev-standards-summary.md](../../engineer/projects/yivad/dev-standards.md) |
 | `work/processes/` | [shared-client-design-summary.md](../engineering/shared-client-design.md) (§no monorepo + per-project vendor)  · [shared-client-vendor-rollout.md](../engineering/shared-client-vendor-rollout.md) (three-project hardening status table)  · [dependency-upgrade-process.md](../engineering/dependency-upgrade.md) · [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md) |
 | `work/tools/` | [pi-agent-harness-evolution-summary.md](../engineering/pi-agent-harness-evolution.md) (npm hardening list reference)  · [vllm-ollama-deployment-summary.md](../engineering/vllm-ollama-deployment.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) |

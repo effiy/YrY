@@ -54,23 +54,23 @@ related:
 |---|---|---|
 | `architecture/` | Architecture principles / architecture evolution / dual-world boundary | — |
 | `capacity/` | FinOps / cost ceiling / SLO / capacity assessment | — |
-| `decisions/` | ADR collection (organized by `<project>/` subtree) | `decisions/yiai/route-llm-traffic-across-providers.md` |
+| `decisions/` | ADR collection (organized by `<project>/` subtree) | `decisions/yiai--route-llm-traffic-across-providers.md` |
 | `roadmap/` | Roadmap / quarterly planning / priority / thinking-model | — |
 | `risk/` | Risk registry / postmortem / retro template | `risk/write-a-postmortem.md` |
 
 ### Key ADR index
 
-- [decisions/yiai/route-llm-traffic-across-providers.md](./decisions/yiai/route-llm-traffic-across-providers.md) — YiAi multi-provider LLM traffic routing
-- [decisions/yipet/chrome-manifest-dual-world-boundary.md](./decisions/yipet/chrome-manifest-dual-world-boundary.md) — YiPet MV3 dual-world boundary
-- [decisions/yipet/biome-lint-format.md](./decisions/yipet/biome-lint-format.md) — YiPet ESLint → Biome 2.5
-- [decisions/yivad/vitest-introduction.md](./decisions/yivad/vitest-introduction.md) — YiVad Vitest adoption
+- [decisions/yiai--route-llm-traffic-across-providers.md](./decisions/yiai--route-llm-traffic-across-providers.md) — YiAi multi-provider LLM traffic routing
+- [decisions/yipet--chrome-manifest-dual-world-boundary.md](./decisions/yipet--chrome-manifest-dual-world-boundary.md) — YiPet MV3 dual-world boundary
+- [decisions/yipet--biome-lint-format.md](./decisions/yipet--biome-lint-format.md) — YiPet ESLint → Biome 2.5
+- [decisions/yivad--vitest-introduction.md](./decisions/yivad--vitest-introduction.md) — YiVad Vitest adoption
 
 ### FDE Practice ADR (cross-client reuse)
 
-- [decisions/fde/delta-as-a-contract.md](./decisions/fde/delta-as-a-contract.md) — The Delta as a contract, not a feature
-- [decisions/fde/air-gap-first-for-regulated-clients.md](./decisions/fde/air-gap-first-for-regulated-clients.md) — compliance-driven default to air-gap-first
-- [decisions/fde/two-loop-eval-as-production-gate.md](./decisions/fde/two-loop-eval-as-production-gate.md) — double-loop eval as production release gate
-- [decisions/fde/enterprise-rag-hybrid-search-mandatory.md](./decisions/fde/enterprise-rag-hybrid-search-mandatory.md) — enterprise RAG mandates hybrid search
+- [decisions/fde--delta-as-a-contract.md](./decisions/fde--delta-as-a-contract.md) — The Delta as a contract, not a feature
+- [decisions/fde--air-gap-first-for-regulated-clients.md](./decisions/fde--air-gap-first-for-regulated-clients.md) — compliance-driven default to air-gap-first
+- [decisions/fde--two-loop-eval-as-production-gate.md](./decisions/fde--two-loop-eval-as-production-gate.md) — double-loop eval as production release gate
+- [decisions/fde--enterprise-rag-hybrid-search-mandatory.md](./decisions/fde--enterprise-rag-hybrid-search-mandatory.md) — enterprise RAG mandates hybrid search
 
 ## Action recommendations
 

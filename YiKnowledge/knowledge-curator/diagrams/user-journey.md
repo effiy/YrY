@@ -57,7 +57,7 @@ tacit: false
 
 ### Role 1: PM looking for methodology / writing PRD
 
-**Acquire**: Enter INDEX.md "Scenario entries" section `i-want-to-learn-pm-frameworks` → jump to `product-manager/frameworks/` + `product-manager/discovery/prd/`
+**Acquire**: Enter INDEX.md "Scenario entries" section `i-want-to-learn-pm-frameworks` → jump to `product-manager/frameworks/` + `product-manager/discovery/prd--`
 - Breakpoint: ⚠️ Current PRD template `knowledge-curator/templates/prd.md` whether up-to-date? Need verify
 
 **Use**: After finding template use directly, or need secondary processing

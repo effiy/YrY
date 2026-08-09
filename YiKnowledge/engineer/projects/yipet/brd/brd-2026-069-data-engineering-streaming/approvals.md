@@ -26,7 +26,7 @@ type: brd
 - Product manager: requirement iteration cadence alignment
 
 ## 2. Technical approval
-- Architecture committee: ADR approved ([chrome-manifest-dual-world-boundary ADR](../../../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md))
+- Architecture committee: ADR approved ([chrome-manifest-dual-world-boundary ADR](../../../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md))
 - Security compliance: CSP + supply chain hardening pre-passes
 - YiAi lead owner: RPC contract co-build aligned
 

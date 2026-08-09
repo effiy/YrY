@@ -181,7 +181,7 @@ location /chat-stream {
 | 4 | Frontend: base layer `finally reader.releaseLock()` must be filled | frontend shared | follow #3 |
 | 5 | Frontend: caller `AbortController` differentiates user cancel vs exception interrupt | frontend caller | follow #3 |
 | 6 | nginx: `proxy_buffering off` + `proxy_read_timeout 1h` | reverse proxy | one-shot |
-| 7 | CI: integration tests include SSE streaming assertions ([ADR pytest #4](../../tech-lead/decisions/yiai/pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad/vitest-introduction.md))  | CI | follow #3 |
+| 7 | CI: integration tests include SSE streaming assertions ([ADR pytest #4](../../tech-lead/decisions/yiai--pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad--vitest-introduction.md))  | CI | follow #3 |
 | 8 | Monitoring: SSE exception termination rate (complete without `done` frame) > 0.5% alert | Monitoring | one-shot |
 
 ## Action recommendations

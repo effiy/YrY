@@ -70,4 +70,4 @@ related:
 
 - Same class: [../knowledge-curator/templates/brd.md](../knowledge-curator/templates/brd.md) — BRD template
 - Upstream: [../README.md](../README.md) — YiKnowledge overview
-- Downstream: [../ai-engineer/methodology/prompts/brd-generation.md](../ai-engineer/methodology/prompts/brd-generation.md) — BRD generation prompt
+- Downstream: [../ai-engineer/methodology/prompts--brd-generation.md](../ai-engineer/methodology/prompts--brd-generation.md) — BRD generation prompt

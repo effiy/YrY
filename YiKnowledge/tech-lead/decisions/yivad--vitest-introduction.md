@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
   - ../../../engineer/projects/yivad/architecture.md
   - ../../../engineer/projects/yivad/dev-standards.md
-  - ../../../product-manager/projects/yivad/project-management.md
+  - ../../../product-manager/projects/yivad--project-management.md
   - ../yiai/pytest-introduction.md
   - ../../../product-manager/delivery/retrospective.md
   - ../../../product-manager/delivery/weekly-report.md
@@ -33,7 +33,7 @@ related:
 
 > **As a** tech lead, **I want to** vitest introduction, **so that** decision documented and reversible. 
 
-> Decision: YiVad introduce Vitest 2 + `@vue/test-utils` + `happy-dom` + `@vitest/coverage-v8`; priority composables → stores → components. Land the [retrospective Try item](../../../product-manager/delivery/retrospective.md)"Vitest introduction (composable + store priority) "and [YiVad project management §block](../../../product-manager/projects/yivad/project-management.md)"no Vitest → high regression risk"as a settled decision. 
+> Decision: YiVad introduce Vitest 2 + `@vue/test-utils` + `happy-dom` + `@vitest/coverage-v8`; priority composables → stores → components. Land the [retrospective Try item](../../../product-manager/delivery/retrospective.md)"Vitest introduction (composable + store priority) "and [YiVad project management §block](../../../product-manager/projects/yivad--project-management.md)"no Vitest → high regression risk"as a settled decision. 
 
 ## 1. Basic information
 

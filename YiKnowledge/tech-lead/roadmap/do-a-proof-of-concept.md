@@ -45,7 +45,7 @@ tacit: false
 
 ## Summary
 
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Evaluation follows [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) + [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md)
 - Dual-world follows [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md)
 - Review follows [design-review-process.md](../../product-manager/delivery/design-review.md) + [tech-review-process.md](../../product-manager/delivery/tech-review.md)
@@ -80,7 +80,7 @@ When validating technical feasibility / validating LLM feasibility / validating 
 
 | Hop 1 (category/leaf)  | Hop 2 (specific file)  |
 |---|---|
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [staged-port-methodology-pattern.md](../../engineer/architecture-design/staged-port-methodology.md) · [one-to-one-mapping-migration-pattern.md](../../engineer/architecture-design/one-to-one-mapping-migration.md) · [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) · [inline-citation-rag-pattern.md](../../engineer/engineering/inline-citation-rag.md) |
 | `methodology/ai-specific/` | [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) · [agent-architecture-patterns-summary.md](../../ai-engineer/methodology/agent-architecture-patterns.md) · [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) |
 | `work/processes/` | [design-review-process.md](../../product-manager/delivery/design-review.md) · [tech-review-process.md](../../product-manager/delivery/tech-review.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [canary-release-process.md](../../oncall-sre/release/canary-release.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) · [data-migration-process.md](../../engineer/infrastructure/data-migration.md) |
@@ -93,13 +93,13 @@ When validating technical feasibility / validating LLM feasibility / validating 
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) — PoC failure lessons |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [react-jsxdev-mismatch.md](../../engineer/lessons/gotcha-react-jsxdev-mismatch.md) · [vite-to-rsbuild-migration.md](../../engineer/lessons/gotcha-vite-to-rsbuild-migration.md) — PoC wrecks |
 | `projects/` | Each project's `adr-*.md` — ADR landed after PoC passes |
-| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) — prompts during PoC |
+| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) — prompts during PoC |
 
 ## Action recommendations
 
-1. **First principles**: first ask "what question must the PoC answer / what is the risk / what are the pass conditions"; do not jump into action; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: first think "how will the PoC fail / how might it produce false conclusions / how might it be politicized" then design safeguards; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Occam**: the smaller and simpler the PoC the better; the smallest scope that meets the validation need wins; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
+1. **First principles**: first ask "what question must the PoC answer / what is the risk / what are the pass conditions"; do not jump into action; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: first think "how will the PoC fail / how might it produce false conclusions / how might it be politicized" then design safeguards; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Occam**: the smaller and simpler the PoC the better; the smallest scope that meets the validation need wins; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
 4. **Pass conditions**: write the thresholds for pass / fail / improve outcomes upfront; do not change thresholds after the fact. 
 5. **Evaluation set**: must build an evaluation set (100-500 items) covering core scenarios + hard cases + edge cases; see [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md). 
 6. **Dual-world**: PoC code is physically isolated from production code + an abstraction layer; do not directly reuse PoC code in production; see [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md). 
@@ -107,7 +107,7 @@ When validating technical feasibility / validating LLM feasibility / validating 
 8. **Real data**: use real / de-identified data, do not fully mock; mocks make conclusions unreliable. 
 9. **Canary**: after PoC passes follow [canary-release-process.md](../../oncall-sre/release/canary-release.md) for canary; do not go full rollout just because PoC passed. 
 10. **Review**: after PoC completes follow [tech-review-process.md](../../product-manager/delivery/tech-review.md), with conclusions + data + decision + follow-up ADR; do not skip review after PoC. 
-11. **Second-order**: how will PoC passing change the architecture / team / cost structure? see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md). 
+11. **Second-order**: how will PoC passing change the architecture / team / cost structure? see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md). 
 12. **Archive**: conclusions must be archived into [lessons/wins/](../../engineer/lessons) or [lessons/failures/](../../engineer/lessons), including data + decision rationale + follow-up actions. 
 
 ## Anti-patterns

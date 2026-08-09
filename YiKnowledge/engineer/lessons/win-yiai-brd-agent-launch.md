@@ -20,7 +20,7 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified"
 related:
  - ./yivad-aicr-phase-port.md
- - ../../../ai-engineer/methodology/prompts/brd-generation.md
+ - ../../../ai-engineer/methodology/prompts--brd-generation.md
  - ../../../knowledge-curator/templates/brd.md
  - ../../processes/review-lessons.md
 ---
@@ -122,7 +122,7 @@ YiAi needs to automatically generate BRD (Business Requirements Document) from P
 ## Related
 
 - [./win-yiai-rag-hybrid-retrieval.md](./win-yiai-rag-hybrid-retrieval.md) — RAG hybrid retrieval that powers the BRD agent knowledge base recall
-- [../../ai-engineer/methodology/prompts/brd-generation.md](../../ai-engineer/methodology/prompts/brd-generation.md) — BRD generation prompt design
+- [../../ai-engineer/methodology/prompts--brd-generation.md](../../ai-engineer/methodology/prompts--brd-generation.md) — BRD generation prompt design
 - [../../knowledge-curator/templates/brd.md](../../knowledge-curator/templates/brd.md) — BRD template used for structured output
-- [../../tech-lead/decisions/yiai/rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure used in BRD agent
+- [../../tech-lead/decisions/yiai--rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure used in BRD agent
 - [./win-yiai-llm-phase-five.md](./win-yiai-llm-phase-five.md) — LLM endpoint + frontend model selector consumed by BRD agent streaming

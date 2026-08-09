@@ -28,7 +28,7 @@ related:
 - ../../engineer/lessons/wins/README.md
 - ../../engineer/lessons/failures/README.md
 - ../../product-manager/delivery/README.md
-- ../../executive/industry/reports/README.md
+- ../../executive/industry/reports--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -67,7 +67,7 @@ tacit: false
 
 ## Scenario
 
-At iteration end, quarterly review, new project kickoff, or 24h retrospective of a major incident, you need to quickly pull up historical experience. This entry aggregates retrospective-related files from `lessons/wins/`, `lessons/failures/`, `lessons/gotchas/`, `../../product-manager/delivery/`, `resources/templates/`, and `industry/reports/` into a 2-hop path.
+At iteration end, quarterly review, new project kickoff, or 24h retrospective of a major incident, you need to quickly pull up historical experience. This entry aggregates retrospective-related files from `lessons/wins/`, `lessons/failures/`, `lessons/gotchas/`, `../../product-manager/delivery/`, `resources/templates/`, and `industry/reports--` into a 2-hop path.
 
 ## 2-hop reachability paths
 
@@ -78,7 +78,7 @@ At iteration end, quarterly review, new project kickoff, or 24h retrospective of
 | `../../engineer/lessons/gotchas` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [vite-to-rsbuild-migration.md](../lessons/gotcha-vite-to-rsbuild-migration.md) · [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) |
 | `../../product-manager/meetings` | [retrospective-meeting-template.md](../../product-manager/delivery/retrospective-meeting.md) · [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) |
 | `../../knowledge-curator/templates` | [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
-| `../../executive/industry/reports` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) |
+| `../../executive/industry/reports` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) |
 
 ## Action recommendations
 
@@ -86,7 +86,7 @@ At iteration end, quarterly review, new project kickoff, or 24h retrospective of
 2. Within 24h of a major incident, write a retrospective using `incident-postmortem-template.md` and archive under `lessons/failures/bugs/`
 3. At the end of each iteration, run a sprint retrospective using `../../product-manager/delivery/retrospective-meeting.md`
 4. Monthly retrospective meetings aggregate gotcha and bug trends for the month
-5. Quarterly reviews calibrate against industry via `industry/reports/`
+5. Quarterly reviews calibrate against industry via `industry/reports--`
 6. Feed new lessons back into the corresponding leaf; update frontmatter `updated` and `last_verified`
 
 ## Anti-patterns

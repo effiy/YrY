@@ -16,7 +16,7 @@ team_size: 5
 status: in_progress
 owner: YiAi lead owner
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yiai/llm-multi-provider-rollout.md
+kb_path: tech-lead/decisions/yiai--llm-multi-provider-rollout.md
 context: "Decision ADR is settled: choose `llama_index.llms.*`, do not introduce `pi-ai`. This ADR tracks implementation: 5-phase gradual rollout + per-phase gate (eval set + supply chain + endpoint contract). Blocks downstream YiVad/YiPet model selector UI."
 decision: "5-phase split: Phase 1 supply-chain hardening prerequisite (uv.lock + pip-audit + min-release-age 7d + allowlist); Phase 2 router + provider registry; Phase 3 config + env + gradual rollout; Phase 4 RAG generation-side switch + eval-set gate; Phase 5 endpoint + frontend model selector."
 alternatives: B. One-shot switch — no gate, everyone affected when it breaks; C. Dual-track parallel — doubled maintenance cost. A is selected.
@@ -32,7 +32,7 @@ type: reference
 
 **ADR ID**: ADR-LLM-Multi-Provider-Rollout  |  **Project**: yiai  |  **Domain**: LLM Multi-Provider
 **Decision Type**: architectural  |  **Team Size**: 5  |  **Status**: in_progress  |  **Owner**: YiAi lead owner
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai/llm-multi-provider-rollout.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai--llm-multi-provider-rollout.md
 
 ## Context
 Decision ADR is settled: choose `llama_index.llms.*`, do not introduce `pi-ai`. This ADR tracks implementation: 5-phase gradual rollout + per-phase gate (eval set + supply chain + endpoint contract). Blocks downstream YiVad/YiPet model selector UI.
@@ -53,4 +53,4 @@ Independent rollback per phase: Phase 1 failure deletes lockfile; Phase 2 delete
 YiAi lead owner (decision); CTO (approval); YiVad/YiPet lead owners (downstream consumption); architecture team (supply-chain review)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/llm-multi-provider-rollout.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--llm-multi-provider-rollout.md`

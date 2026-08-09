@@ -26,9 +26,9 @@ related:
   - ../observability/set-up-observability.md
   - ../../engineer/process/run-a-retrospective.md
   - ../../executive/strategy/handle-data-compliance.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
 tacit: Data breach is a trio of compliance + trust + technology; do not secretly fix; must run notification + forensics + retrospective + regulatory reporting
 ---
 
@@ -62,9 +62,9 @@ When a data breach is discovered (database leak / token leak / log accidentally 
 | 2 hops | Observability | [../observability/set-up-observability.md](../observability/set-up-observability.md) |
 | 2 hops | Retrospective | [../../engineer/process/run-a-retrospective.md](../../engineer/process/run-a-retrospective.md) |
 | 2 hops | Data compliance | [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md) |
-| 2 hops | Inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | Second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | First-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | Inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | Second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | First-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -95,4 +95,4 @@ When a data breach is discovered (database leak / token leak / log accidentally 
 - Observability: [../observability/set-up-observability.md](../observability/set-up-observability.md) — exception alerts
 - Retrospective: [../../engineer/process/run-a-retrospective.md](../../engineer/process/run-a-retrospective.md) — postmortem
 - Data compliance: [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md) — regulatory reporting
-- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking/first-principles.md)
+- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking--first-principles.md)

@@ -12,7 +12,7 @@ review_cycle: quarterly
 tacit_explicit: explicit
 status: stable
 owner: Knowledge Curator
-kb_path: knowledge-curator/people/team/roster.md
+kb_path: knowledge-curator/people/team--roster.md
 audience: all roles
 lifecycle_stage: reference
 summary: "team Roster: 8 role directory owners + project owners + Champion list + contact info + responsibilities."
@@ -27,7 +27,7 @@ type: reference
 
 **Doc Type**: stakeholder  |  **Source**: explicit_document  |  **Review**: quarterly  |  **T/E**: explicit
 **Status**: stable  |  **Curator**: Knowledge Curator  |  **Lifecycle**: reference
-**KB Source**: knowledge-curator/people/team/roster.md
+**KB Source**: knowledge-curator/people/team--roster.md
 
 ## Audience
 all roles
@@ -42,4 +42,4 @@ team Roster: 8 role directory owners + project owners + Champion list + contact 
 Quarterly review of team changes
 
 ## References
-- **KB Source**: `YiKnowledge/knowledge-curator/people/team/roster.md`
+- **KB Source**: `YiKnowledge/knowledge-curator/people/team--roster.md`

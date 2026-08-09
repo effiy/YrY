@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** discovery three whys skipped, **so that** same mistake avoided. 
 
-> FDE skipping Three Whys (System of Record + Cost of Inaction + Day 2) during a discovery call -> misjudging Delta -> writing wrong glue code -> customer renewal deadlock. This gotcha is the basis for [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §risk #1, referencing [consulting frameworks](../process/apply-consulting-frameworks.md) §Three Whys. 
+> FDE skipping Three Whys (System of Record + Cost of Inaction + Day 2) during a discovery call -> misjudging Delta -> writing wrong glue code -> customer renewal deadlock. This gotcha is the basis for [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §risk #1, referencing [consulting frameworks](../process/apply-consulting-frameworks.md) §Three Whys. 
 
 ## Summary
 
@@ -104,7 +104,7 @@ related:
 
 ## Action recommendations
 
-1. **Discovery SOP enforces Three Whys**: every Delta candidate must answer three questions + metric + exit ([ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §decision #3) 
+1. **Discovery SOP enforces Three Whys**: every Delta candidate must answer three questions + metric + exit ([ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §decision #3) 
 2. **FDE Practice Lead quarterly samples 20% recordings**: Three Whys missed = SOW not signed
 3. **SOW template Delta attachment section 4 fields required**: proposal glue + business metric + exit criteria + owner
 4. **Discovery Five Whys training**: mandatory for FDE onboarding; retrospective every 3 months
@@ -134,7 +134,7 @@ related:
 ## Related
 
 - Same category: [./no-lockfile-supply-chain-risk.md](gotcha-no-lockfile-supply-chain-risk.md) — skipped process pitfall
-- Design basis: [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §decision #3 + §risk #1
+- Design basis: [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §decision #3 + §risk #1
 - Contract source: [consulting frameworks](../process/apply-consulting-frameworks.md) §Three Whys
 - Landing: [Site Survey](../engineering/run-a-site-survey.md) §Delta + [Discovery Call](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-discovery-call-strategy.md)
 - upstream: [journeys/i-want-to-check-engineering-gotchas](../process/check-engineering-gotchas.md) — scenario entry

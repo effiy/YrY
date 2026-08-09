@@ -28,10 +28,10 @@ related:
  - ./graceful-degradation.md
  - ../../product-manager/frameworks/prepare-a-product-strategy.md
  - ../strategies/prepare-a-zero-trust-strategy.md
- - ../../knowledge-curator/templates/thinking/first-principles.md
- - ../../knowledge-curator/templates/thinking/inversion.md
- - ../../knowledge-curator/templates/thinking/second-order-thinking.md
- - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+ - ../../knowledge-curator/templates/thinking--first-principles.md
+ - ../../knowledge-curator/templates/thinking--inversion.md
+ - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+ - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Multi-tenant is not just sharing; it is a contract. Isolation + data + resource + quota + upgrade five dimensions; business-value driven; not one-shot; measurable
 ---
 
@@ -235,4 +235,4 @@ Landing checklist:
 - feature-flag: [./feature-flag.md](../infrastructure/feature-flag.md) — gradual rollout
 - graceful-degradation: [./graceful-degradation.md](./graceful-degradation.md) — bulkhead
 - connection-pooling: [./connection-pooling.md](../infrastructure/connection-pooling.md) — pool isolation
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

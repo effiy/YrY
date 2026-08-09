@@ -14,7 +14,7 @@ priority: p0
 status: adopted
 country: ALL
 owner: YiAi PM
-kb_path: product-manager/projects/yiai/project-management.md
+kb_path: product-manager/projects/yiai--project-management.md
 business_objective: Manage the iteration cadence of YiAi (FastAPI backend + BRD agent + Chat + RAG), ensuring the BRD agent's 5-stage launch proceeds on schedule
   + that the evaluation-set gate is not bypassed. 
 user_segment: BRD business stakeholders / engineer / CTO / QA
@@ -33,7 +33,7 @@ type: reference
 
 **PRD ID**: PRD-2026-PM-002  |  **Project**: yiai  |  **Domain**: AI Product Management
 **Priority**: p0  |  **Status**: adopted  |  **Country**: ALL  |  **Owner**: YiAi PM
-**KB Source**: product-manager/projects/yiai/project-management.md
+**KB Source**: product-manager/projects/yiai--project-management.md
 
 ## Business Objective
 Manage the iteration cadence of YiAi (FastAPI backend + BRD agent + Chat + RAG), ensuring the BRD agent's 5-stage launch proceeds on schedule + that the evaluation-set gate is not bypassed. 
@@ -51,4 +51,4 @@ BRD writing time 2h → 25min (-79%); structural completeness 90%+; user-edit-to
 YiAi PM (decision); YiAi main owner (execution); BRD business stakeholders (consumption); CTO (approval); QA; architecture team
 
 ## References
-- **KB Source**: `YiKnowledge/product-manager/projects/yiai/project-management.md`
+- **KB Source**: `YiKnowledge/product-manager/projects/yiai--project-management.md`

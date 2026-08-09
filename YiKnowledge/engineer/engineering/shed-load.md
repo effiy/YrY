@@ -19,7 +19,7 @@ acceptance_criteria:
   - "at least one concrete example or code snippet is provided
 related:
   - ./rate-limiting.md
-  - ../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+  - ../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 tacit: Shed load is not failure; it is actively protecting life. Priority + threshold + degradation + rejection; keep key path, drop non-key; observable
 ---
 

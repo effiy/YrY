@@ -23,10 +23,10 @@ related:
   - ../../engineer/infrastructure/write-a-runbook.md
   - ./run-a-war-room.md
   - ./run-a-game-day.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: oncall is not just scheduling; it is a contract. Primary + backup + escalation + timezone + fairness + health; sustainable; not relying on heroes
 ---
 
@@ -63,10 +63,10 @@ oncall rotation is a contract; not just scheduling. This entry provides the onca
 | 2 hops | runbook | [../../engineer/infrastructure/write-a-runbook.md](../../engineer/infrastructure/write-a-runbook.md) |
 | 2 hops | war room | [./run-a-war-room.md](./run-a-war-room.md) |
 | 2 hops | game day | [./run-a-game-day.md](./run-a-game-day.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -101,4 +101,4 @@ oncall rotation is a contract; not just scheduling. This entry provides the onca
 - runbook: [../../engineer/infrastructure/write-a-runbook.md](../../engineer/infrastructure/write-a-runbook.md) — alert must have
 - war room: [./run-a-war-room.md](./run-a-war-room.md) — P0 escalation
 - game day: [./run-a-game-day.md](./run-a-game-day.md) — drill validation
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

@@ -134,5 +134,5 @@ This week's iteration had high-density landings: YiAi dual domains (RAG + Knowle
 
 - [retrospective meeting template](./retrospective-meeting.md) · [retrospective template](../../knowledge-curator/templates/retrospective.md)
 - [weekly report instance](./weekly-report.md) (this week's report)
-- [YiAi project management](../projects/yiai/project-management.md) · [YiVad project management](../projects/yivad/project-management.md) · [YiPet project management](../projects/yipet/project-management.md)
+- [YiAi project management](../projects/yiai--project-management.md) · [YiVad project management](../projects/yivad--project-management.md) · [YiPet project management](../projects/yipet--project-management.md)
 - [lessons/wins/](../../engineer/lessons) · [lessons/failures/](../../engineer/lessons) · [lessons/gotchas/](../../engineer/lessons)

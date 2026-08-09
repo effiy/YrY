@@ -47,7 +47,7 @@ tacit: false
 - Process via `work/processes/`: [incident-response-process.md](../process/incident-response.md) · [hotfix-release-process.md](../../oncall-sre/release/hotfix-release.md) · [oncall-rotation-process.md](../process/oncall-rotation.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md)
 - Retrospective via [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) + [sprint-retrospective-template.md](../process/sprint-retrospective.md)
 - Documentation template via [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) + [tech-design-template.md](../../knowledge-curator/templates/tech-design.md)
-- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md)
 
 ## Core viewpoints
 
@@ -82,10 +82,10 @@ When writing operations runbook / SOP / incident handling manual / daily operati
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) — historical incident archive |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) · [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) · [vite-to-rsbuild-migration.md](../lessons/gotcha-vite-to-rsbuild-migration.md) — common incident root causes |
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) — operations landing experience |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) — keep steps simple · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert misoperations · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain of operations |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — keep steps simple · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert misoperations · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain of operations |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) |
 | `resources/templates/` | [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) |
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) — runbook AI proofread |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) — runbook AI proofread |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) — AI app operations monitoring |
 | `lifecycle/` | [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [governance.md](../../knowledge-curator/governance/governance.md) — runbook quarterly audit |
@@ -95,9 +95,9 @@ When writing operations runbook / SOP / incident handling manual / daily operati
 ## Action recommendations
 
 1. **Structure**: Trigger conditions + impact scope + steps (commands + expected output + exception handling) + validation + rollback + upgrade path; don't write prose. 
-2. **First principles**: First ask "who uses this runbook / when / what state after use"; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-3. **Occam**: The fewer steps the better; the minimal version that meets needs wins; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
-4. **Inversion**: First imagine "operating this runbook, how could misoperation happen / how could it blow up" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
+2. **First principles**: First ask "who uses this runbook / when / what state after use"; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+3. **Occam**: The fewer steps the better; the minimal version that meets needs wins; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
+4. **Inversion**: First imagine "operating this runbook, how could misoperation happen / how could it blow up" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
 5. **Executable**: Every step must be copy-paste executable; don't write "please refer to some doc". 
 6. **Expected output**: Every step must have expected output (success / failure), for oncall judgment; don't only write commands. 
 7. **Rollback**: Every write operation must have rollback steps; see [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md). 
@@ -106,7 +106,7 @@ When writing operations runbook / SOP / incident handling manual / daily operati
 10. **Drill**: Quarterly run [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) + [disaster-recovery-drill-process.md](disaster-recovery-drill.md) + [chaos-engineering-process.md](../quality-security/chaos-engineering.md) to validate runbook still executable. 
 11. **Retrospective update**: After each incident follow [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) retrospective + update runbook + archive [lessons/failures/bugs/](../lessons). 
 12. **Quarterly audit**: Scan runbooks once whether still executable (commands / paths / interfaces / permissions may change); see [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md). 
-13. **AI assist**: Use [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) pattern to let AI proofread runbook steps for completeness + executability. 
+13. **AI assist**: Use [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) pattern to let AI proofread runbook steps for completeness + executability. 
 14. **2-hop reachability**: Runbook must be reachable from journeys entry or oncall docs; don't be siloed. 
 
 ## Anti-patterns

@@ -291,5 +291,5 @@ export function createApiServices(config: Config) {
 - [YiVad development standards](../yivad/dev-standards.md) — frontend standards comparison
 - [Biome / ESLint / Prettier comparison](../../engineering/biome-eslint-prettier.md)
 - [Claude Code tips](../../engineering/claude-code-tips.md)
-- [Code review prompt](../../../ai-engineer/methodology/prompts/code-review.md)
+- [Code review prompt](../../../ai-engineer/methodology/prompts--code-review.md)
 - [Pi Agent Harness evolution tracking](../../engineering/pi-agent-harness-evolution.md) — TS multi-provider candidate

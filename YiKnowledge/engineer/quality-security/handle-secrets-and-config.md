@@ -49,7 +49,7 @@ tacit: false
 - Layering follows env (public config) + secret (sensitive credential) + vault (dynamic secrets) 
 - Rotation follows [work/processes/secret-rotation-process](../process/README.md) + quarterly audit
 - Compliance follows [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md)
-- Least privilege follows [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Least privilege follows [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 
 ## Core viewpoints
 
@@ -80,7 +80,7 @@ When kicking off a new project / credential leak / secret rotation / environment
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/processes/` | [secret-rotation-process.md](./../../oncall-sre/incident-response/do-a-security-audit.md) · [security-audit-process.md](./../../oncall-sre/incident-response/do-a-security-audit.md) · [dependency-upgrade-process.md](../engineering/dependency-upgrade.md) · [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 | `methodology/engineering-patterns/` | [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) |
 | `methodology/ai-specific/` | [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) — prompt injection leak risk |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) — credential leak incident reference |
@@ -92,14 +92,14 @@ When kicking off a new project / credential leak / secret rotation / environment
 
 1. **Three-layer layering**: env (public config: URL / port / log level) + secret (sensitive credential: API key / DB password / token) + vault (dynamic secrets: short-term STS / dynamic DB credential) . 
 2. **No secrets in env**: env variables only hold public config; secrets go through secret manager / vault; env does not enter git. 
-3. **Least privilege**: each service only takes the secrets it needs; do not share admin credentials; follow [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (essence of permission: what it can do) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md) (do not add permission without need) . 
+3. **Least privilege**: each service only takes the secrets it needs; do not share admin credentials; follow [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (essence of permission: what it can do) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md) (do not add permission without need) . 
 4. **Rotation process**: follow [secret-rotation-process](./../../oncall-sre/incident-response/do-a-security-audit.md) quarterly rotation + forced rotation after incident; automated rotation + dual-key parallel switch (no service interruption) . 
 5. **Audit**: follow [security-audit-process](./../../oncall-sre/incident-response/do-a-security-audit.md) + [quarterly-security-audit-process](../quality-security/quarterly-security-audit.md); full audit of secret access logs. 
 6. **Prompt injection defense**: LLM application prompt injection can leak secrets — follow [prompt-injection-defense-summary](../../ai-engineer/methodology/prompt-injection-defense.md) + restrict LLM access to secrets. 
 7. **MV3 dual-world secret isolation**: extension secrets only in isolated world ([dual-world-boundary-pattern](../engineering/dual-world-boundary.md)) — main world does not touch secrets. 
 8. **Supply chain hardening**: new dependencies introduced must run [supply-chain-hardening-pattern](../process/harden-supply-chain.md); prevent supply chain poisoning and secret theft. 
 9. **Monitoring alerts**: alert on secret access exceptions (frequency / source / time) — follow [monitoring-governance-process](../process/monitoring-governance.md). 
-10. **Thinking frameworks**: [inversion](../../knowledge-curator/templates/thinking/inversion.md) "how to make secrets leak" reverse-engineer improvements + [second-order-thinking](../../knowledge-curator/templates/thinking/second-order-thinking.md) (rotation second-order effect: service interruption risk) . 
+10. **Thinking frameworks**: [inversion](../../knowledge-curator/templates/thinking--inversion.md) "how to make secrets leak" reverse-engineer improvements + [second-order-thinking](../../knowledge-curator/templates/thinking--second-order-thinking.md) (rotation second-order effect: service interruption risk) . 
 
 ## Anti-patterns
 

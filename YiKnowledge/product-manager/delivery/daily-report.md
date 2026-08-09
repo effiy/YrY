@@ -21,9 +21,9 @@ acceptance_criteria:
 related:
   - ./weekly-report.md
   - ./retrospective.md
-  - ../projects/yiai/project-management.md
-  - ../projects/yivad/project-management.md
-  - ../projects/yipet/project-management.md
+  - ../projects/yiai--project-management.md
+  - ../projects/yivad--project-management.md
+  - ../projects/yipet--project-management.md
 ---
 
 > **Status (2026-08-07)**: This file is a historical daily report instance (2026-08-01). Several claims in this report do not match the actual codebase state as of 2026-08-07: the 28 leaf views, aicr KnowledgeTree, story page, and bug page were never landed on YiVad master. The aiChat components, sidebar parity, YiPet stack migration, YiPett chat box, and RSS offload are real and shipped. Treat this report as a historical snapshot, not a verified completion record.
@@ -173,4 +173,4 @@ Friday rhythm: YiAi RAG + Knowledge dual domains landed Monday-Thursday, today d
 ## Related
 
 - [Weekly report instance](./weekly-report.md) · [Retrospective instance](./retrospective.md)
-- [YiAi project management](../projects/yiai/project-management.md) · [YiVad project management](../projects/yivad/project-management.md) · [YiPet project management](../projects/yipet/project-management.md)
+- [YiAi project management](../projects/yiai--project-management.md) · [YiVad project management](../projects/yivad--project-management.md) · [YiPet project management](../projects/yipet--project-management.md)

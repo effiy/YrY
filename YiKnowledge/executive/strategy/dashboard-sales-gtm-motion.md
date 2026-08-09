@@ -39,7 +39,7 @@ related:
 - ./dashboard-market-growth.md
 - ../industry/dashboard-competitive-intelligence.md
 - ../../product-manager/strategy/dashboard-pricing-packaging.md
-- ../../product-manager/discovery/metrics/dashboard-customer-health.md
+- ../../product-manager/discovery/metrics--dashboard-customer-health.md
 tacit: false
 ---
 
@@ -201,5 +201,5 @@ tacit: false
 - Same class: [dashboard-market-growth](dashboard-market-growth.md) — market growth and expansion
 - Same class: [dashboard-competitive-intelligence](../industry/dashboard-competitive-intelligence.md) — competitive intelligence
 - Same class: [dashboard-pricing-packaging](../../product-manager/strategy/dashboard-pricing-packaging.md) — pricing and packaging
-- Same class: [dashboard-customer-health](../../product-manager/discovery/metrics/dashboard-customer-health.md) — customer health
+- Same class: [dashboard-customer-health](../../product-manager/discovery/metrics--dashboard-customer-health.md) — customer health
 - References: Jason Lemkin — *SaaStr Metrics*; David Skok — *For Entrepreneurs: SaaS Metrics 2.0*; Winning by Design — *Bowtie Funnel Model*; MEDDIC — *Qualification Framework*; Bain & Company — *B2B Sales Benchmarking*; Insight Partners — *SaaS GTM Playbook*; Pavilion — *GTM Benchmark Report*

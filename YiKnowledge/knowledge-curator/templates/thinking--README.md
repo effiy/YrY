@@ -87,4 +87,4 @@ related:
 - [../../../product-manager/frameworks](../../../product-manager/frameworks) — PM frameworks (applied thinking models)
 - [../../../ai-engineer/methodology](../../../ai-engineer/methodology) — AI methodology
 - [../../../executive/strategy](../../../executive/strategy) — strategic decisions
-- [../../people/experts/](../../people/experts/) — academic authorities
+- [../../people/experts--](../../people/experts--) — academic authorities

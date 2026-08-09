@@ -86,6 +86,6 @@ After 2 years: dual-world boundary violations 0; API four-tier cross-level 0; RP
 ## References
 - **KB Source**: `YiKnowledge/engineer/projects/yipet/brd/brd-2026-069-data-engineering-streaming`
 - **Architecture overview**: `YiKnowledge/engineer/projects/yipet/architecture.md`
-- **MV3 dual-world ADR**: `YiKnowledge/tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md`
-- **Biome lint ADR**: `YiKnowledge/tech-lead/decisions/yipet/biome-lint-format.md`
+- **MV3 dual-world ADR**: `YiKnowledge/tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md`
+- **Biome lint ADR**: `YiKnowledge/tech-lead/decisions/yipet--biome-lint-format.md`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

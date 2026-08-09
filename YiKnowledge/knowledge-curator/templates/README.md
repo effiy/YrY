@@ -30,7 +30,7 @@ related:
   - ./prd.md
   - ./brd.md
   - ../../engineer/engineering/find-templates-and-prompts.md
-  - ../../ai-engineer/methodology/prompts/README.md
+  - ../../ai-engineer/methodology/prompts--README.md
 ---
 
 # template / Templates

@@ -31,7 +31,7 @@ acceptance_criteria:
   - "key metrics are defined with thresholds or targets"
   - "visualization choices are explained and accessible"
 related:
-- ../discovery/metrics/dashboard-product-portfolio.md
+- ../discovery/metrics--dashboard-product-portfolio.md
 - ../strategy/dashboard-product-strategy.md
 - ../../engineer/process/dashboard-team-velocity.md
 - ../../tech-lead/roadmap/dashboard-roadmap-progress.md
@@ -222,7 +222,7 @@ tacit: false
 
 ## Related
 
-- Same class: [dashboard-product-portfolio](../discovery/metrics/dashboard-product-portfolio.md) — product metrics
+- Same class: [dashboard-product-portfolio](../discovery/metrics--dashboard-product-portfolio.md) — product metrics
 - Same class: [dashboard-product-strategy](../strategy/dashboard-product-strategy.md) — product strategy
 - Same class: [dashboard-team-velocity](../../engineer/process/dashboard-team-velocity.md) — team velocity
 - Same class: [dashboard-roadmap-progress](../../tech-lead/roadmap/dashboard-roadmap-progress.md) — roadmap progress

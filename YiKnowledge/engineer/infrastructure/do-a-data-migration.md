@@ -48,7 +48,7 @@ tacit: false
 ## Summary
 
 - Process follows [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) + [monitoring-governance-process.md](../process/monitoring-governance.md) + [incident-response-process.md](../process/incident-response.md)
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Platform follows [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) + [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md)
 - Case study follows [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) + [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md)
 
@@ -82,14 +82,14 @@ When doing data migration / schema evolution / table-structure changes / ETL mig
 |---|---|
 | `work/processes/` | [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [incident-response-process.md](../process/incident-response.md) · [data-governance-process.md](../../ai-engineer/data/data-governance.md) · [code-review.md](../quality-security/do-a-code-review.md) · [capacity-planning-process.md](capacity-planning.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) · [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [graceful-degradation-pattern.md](../architecture-design/graceful-degradation.md) · [observability-pattern.md](../engineering/observability.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — migration essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert dirty data · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — migration essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert dirty data · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [runbook](../infrastructure/write-a-runbook.md) · [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [sql-generation-prompt.md](../../ai-engineer/methodology/prompts/sql-generation.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) |
+| `resources/prompts/` | [sql-generation-prompt.md](../../ai-engineer/methodology/prompts--sql-generation.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) |
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) · [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../process/cross-timezone-collaboration.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — migration communication |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — migration team |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — migration communication |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — migration team |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) — migration failure archive |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
@@ -100,10 +100,10 @@ When doing data migration / schema evolution / table-structure changes / ETL mig
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does migration solve / what if not migrated / ROI / user impact"; do not migrate for the sake of migrating; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: first imagine "how migration could go out of control (dirty data / data loss / wrong cut / slow rollback / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Second-order effects**: one migration → capacity changes → another expansion; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md). 
-4. **Occam**: the simplest migration that satisfies business wins; do not pile up tools; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
+1. **First principles**: first ask "what does migration solve / what if not migrated / ROI / user impact"; do not migrate for the sake of migrating; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: first imagine "how migration could go out of control (dirty data / data loss / wrong cut / slow rollback / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Second-order effects**: one migration → capacity changes → another expansion; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md). 
+4. **Occam**: the simplest migration that satisfies business wins; do not pile up tools; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
 5. **Assessment**: must run schema diff + capacity + dependencies + rollback feasibility; see [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md). 
 6. **Mapping**: must run field mapping + type mapping + default values + validation. 
 7. **Dual-run**: must run [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + dual-write + diff + reconciliation. 
@@ -115,12 +115,12 @@ When doing data migration / schema evolution / table-structure changes / ETL mig
 13. **Data governance**: must run [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + masking + audit. 
 14. **RACI**: must run [raci-matrix-summary.md](../process/raci-matrix.md); DBA / data / TL / sponsor owners. 
 15. **Freeze period**: during big promos follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) leaving data migration untouched. 
-16. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) communicating inside and outside. 
+16. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) communicating inside and outside. 
 17. **Monitoring**: must run [monitoring-governance-process.md](../process/monitoring-governance.md) data metrics + thresholds + alerts. 
 18. **Retrospective**: after migration failure must run [incident-postmortem-template.md](../lessons/failure-incident-postmortem.md) retrospective + archive in [bugs/](../lessons). 
 19. **Quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) scan whether migration is still accurate + whether schema is still reasonable. 
 20. **ADR**: migration decision must land in ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md). 
-21. **Flywheel**: migration done well → data grows → speed grows → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md). 
+21. **Flywheel**: migration done well → data grows → speed grows → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md). 
 
 ## Anti-patterns
 

@@ -14,7 +14,7 @@ priority: p1
 status: adopted
 country: ALL
 owner: YiPet PM
-kb_path: product-manager/projects/yipet/project-management.md
+kb_path: product-manager/projects/yipet--project-management.md
 business_objective: Manage the iteration cadence of YiPet (Chrome MV3 extension + AI Companion),
   ensuring the aicr port + stack migration (React 18 + Ant Design 5.21 + Biome 2.5) proceeds on plan.
 user_segment: engineer / CTO / browser extension users
@@ -33,7 +33,7 @@ type: reference
 
 **PRD ID**: PRD-2026-PM-003  |  **Project**: yipet  |  **Domain**: Chrome Extension PM
 **Priority**: p1  |  **Status**: adopted  |  **Country**: ALL  |  **Owner**: YiPet PM
-**KB Source**: product-manager/projects/yipet/project-management.md
+**KB Source**: product-manager/projects/yipet--project-management.md
 
 ## Business Objective
 Manage the iteration cadence of YiPet (Chrome MV3 extension + AI Companion), ensuring the aicr port + stack migration (React 18 + Ant Design 5.21 + Biome 2.5) proceeds on plan.
@@ -51,4 +51,4 @@ aicr parity vs YiVad diff < 0.5%; stack migration complete (React 18 + Ant Desig
 YiPet PM (decision); YiPet lead owner (execution); CTO (approval); frontend lead; security (review)
 
 ## References
-- **KB Source**: `YiKnowledge/product-manager/projects/yipet/project-management.md`
+- **KB Source**: `YiKnowledge/product-manager/projects/yipet--project-management.md`

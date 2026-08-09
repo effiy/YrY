@@ -21,10 +21,10 @@ related:
   - ../process/operate-as-a-forward-deployed-engineer.md
   - ../process/apply-consulting-frameworks.md
   - ../architecture-design/design-a-minimum-viable-architecture.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "A SOW is a contract not a plan. Boundary clear: in-scope + out-of-scope + phased + acceptance + anti-creep; MSA / SOW / CoI three-layer division; not in SOW = scope creep"
 ---
 
@@ -56,7 +56,7 @@ A SOW is a contract not a plan. This entry provides the SOW full path, covering 
 | 1 hop | site-survey | [./run-a-site-survey.md](../engineering/run-a-site-survey.md) |
 | 1 hop | handover | [./project-handover.md](../process/project-handover.md) |
 | 2 hops | fde-role | [../strategies/operate-as-a-forward-deployed-engineer.md](../process/operate-as-a-forward-deployed-engineer.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -97,4 +97,4 @@ A SOW is a contract not a plan. This entry provides the SOW full path, covering 
 - mva: [../strategies/design-a-minimum-viable-architecture.md](../architecture-design/design-a-minimum-viable-architecture.md) — minimum viable architecture co-build
 - discovery-call: [../strategies/prepare-a-discovery-call-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-discovery-call-strategy.md) — discovery call co-build
 - mutual-action-plan: [../strategies/prepare-a-mutual-action-plan-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-mutual-action-plan-strategy.md) — MAP complement
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

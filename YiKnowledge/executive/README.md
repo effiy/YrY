@@ -40,9 +40,9 @@ related:
 | I want to... | Go to |
 |---|---|
 | Define product strategy | [strategy/product-strategy-framework.md](./strategy/product-strategy-framework.md) |
-| Analyze competitors | [industry/competitors/](./industry/competitors/) |
-| Understand market trends | [industry/market-trends/](./industry/market-trends/) |
-| Read industry reports | [industry/reports/](./industry/reports/) |
+| Analyze competitors | [industry/competitors--](./industry/competitors--) |
+| Understand market trends | [industry/market-trends--](./industry/market-trends--) |
+| Read industry reports | [industry/reports--](./industry/reports--) |
 | Plan strategic roadmap | [roadmap/](./roadmap/) |
 
 ## Cross-references

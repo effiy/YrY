@@ -22,10 +22,10 @@ related:
   - ../process/operate-as-a-forward-deployed-engineer.md
   - ../process/apply-consulting-frameworks.md
   - ../architecture-design/design-a-minimum-viable-architecture.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "Site Survey is not meeting minutes; it is landing documentation. 4 fixed sections: Data Landscape + Technical/Security Constraints + Delta + Quick Win; written in Week 1; not one-shot; versioned"
 ---
 
@@ -57,7 +57,7 @@ Site Survey is not meeting minutes; it is landing documentation. This entry prov
 | 1 hop | stakeholder-mapping | [./do-a-stakeholder-mapping.md](../process/do-a-stakeholder-mapping.md) |
 | 1 hop | tech-stack-inventory | [./do-a-tech-stack-inventory.md](./do-a-tech-stack-inventory.md) |
 | 2 hops | fde-role | [../strategies/operate-as-a-forward-deployed-engineer.md](../process/operate-as-a-forward-deployed-engineer.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -103,4 +103,4 @@ Site Survey is not meeting minutes; it is landing documentation. This entry prov
 - mva: [../strategies/design-a-minimum-viable-architecture.md](../architecture-design/design-a-minimum-viable-architecture.md) — minimum viable architecture co-built
 - sow: [./write-a-statement-of-work.md](../infrastructure/write-a-statement-of-work.md) — statement of work co-built
 - discovery-call: [../strategies/prepare-a-discovery-call-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-discovery-call-strategy.md) — discovery call complementary
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

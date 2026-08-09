@@ -31,7 +31,7 @@ related:
 - ../../engineer/lessons/learn-pm-frameworks.md
 - ../../engineer/process/measure-product-metrics.md
 - ../frameworks/launch-an-ai-product.md
-- ../../product-manager/discovery/prd/README.md
+- ../../product-manager/discovery/prd--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -83,11 +83,11 @@ When writing a PRD / reviewing a PRD / aligning with design, algorithm, engineer
 | `product/metrics/` | [north-star-metric-summary.md](metrics/north-star-metric.md) · [ai-product-metrics-summary.md](metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](metrics/retention-and-churn.md) |
 | `product/ux/` | [ai-product-ux-patterns-summary.md](ux/ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](ux/nielsen-heuristics.md) · [cross-cultural-ux-summary.md](ux/cross-cultural-ux.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) · [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `work/processes/` | [requirement-review-process.md](../delivery/requirement-review.md) · [design-review-process.md](../delivery/design-review.md) · [iteration-pm-handbook-summary.md](../../engineer/process/iteration-pm-handbook.md) |
 | `brd/` | [../../executive/industry/README.md](../../executive/industry/README.md) — PRD → BRD (business requirement document) handoff point |
 | `industry/use-cases/` | [ai-after-sales-cases.md](../strategy/ai-after-sales-cases.md) · [ai-customer-service-cases.md](../strategy/ai-customer-service-cases.md) · [case-study-template.md](../strategy/case-study.md) — industry cases as PRD reference |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — PRD review stakeholders |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — PRD review stakeholders |
 
 ## Action recommendations
 
@@ -120,4 +120,4 @@ When writing a PRD / reviewing a PRD / aligning with design, algorithm, engineer
 - Same-class journey: [../../engineer/process/measure-product-metrics.md](../../engineer/process/measure-product-metrics.md) — measurement deep dive
 - Same-class journey: [../frameworks/launch-an-ai-product.md](../frameworks/launch-an-ai-product.md) — AI product landing
 - Same-class journey: [../../engineer/engineering/find-templates-and-prompts.md](../../engineer/engineering/find-templates-and-prompts.md) — template entry
-- Upstream: [../../product-manager/discovery/prd/README.md](prd/README.md) — prd leaf entry
+- Upstream: [../../product-manager/discovery/prd--README.md](prd/README.md) — prd leaf entry

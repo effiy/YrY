@@ -72,7 +72,7 @@ When knowledge base content bloats / naming drifts / tacit knowledge breaks / pr
 | `_lifecycle/` stream transition | [0-inbox.md](./inbox.md) · [1-triage.md](./triage.md) · [9-archive.md](./../archive/archive.md) — PARA lifecycle |
 | `journeys/` | [README.md](./) — 18 scenario entries |
 | Root | [INDEX.md](../../INDEX.md) · [MEMORY.md](../../MEMORY.md) · [README.md](../README.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) — governance decision thinking frameworks |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — governance decision thinking frameworks |
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) — SSOT maintenance pattern |
 
 ## Action recommendations
@@ -85,7 +85,7 @@ When knowledge base content bloats / naming drifts / tacit knowledge breaks / pr
 6. **PARA stream transition**: New content first enters [0-inbox](./inbox.md) → [1-triage](./triage.md) decides (keep / merge / rewrite) → active / reference / archive.
 7. **Navigation chain maintenance**: Project README → projects/INDEX → root INDEX → leaf README; new files must add entries at each layer.
 8. **Pre-launch self-check**: Follow [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md), avoiding "knowledge base content bloat out of control".
-9. **Thinking frameworks**: Governance decisions follow [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (erect the skeleton first) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md) (do not multiply entities without necessity).
+9. **Thinking frameworks**: Governance decisions follow [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (erect the skeleton first) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md) (do not multiply entities without necessity).
 
 ## Anti-patterns
 

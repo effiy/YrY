@@ -12,7 +12,7 @@ day_count: 1
 mentor: backend-lead@company.com
 buddy: mid-engineer@company.com
 status: adopted
-kb_path: new-hire/onboarding/yiai/onboarding.md
+kb_path: new-hire/onboarding/yiai--onboarding.md
 first_week_tasks: '1. Day 1: Install Python 3.11+ + uv + start YiAi (framework Python binary)
   + get /health/observer working + get one RPC working
 
@@ -37,7 +37,7 @@ type: reference
 
 **Role Track**: backend  |  **Project**: yiai  |  **Day #**: 1  |  **Status**: adopted
 **Mentor**: backend-lead@company.com  |  **Buddy**: mid-engineer@company.com
-**KB Source**: new-hire/onboarding/yiai/onboarding.md
+**KB Source**: new-hire/onboarding/yiai--onboarding.md
 
 ## First Week Tasks
 1. Day 1: Install Python 3.11+ + uv + start YiAi (framework Python binary) + get /health/observer working + get one RPC working
@@ -57,4 +57,4 @@ Day 30: land 1 service improvement; Day 60: lead BRD agent iteration; Day 90: ca
 1. land 3 service PRs 2. understand RAG eval set 3. BRD agent iteration 4. can mentor new hires
 
 ## References
-- **KB Source**: `YiKnowledge/new-hire/onboarding/yiai/onboarding.md`
+- **KB Source**: `YiKnowledge/new-hire/onboarding/yiai--onboarding.md`

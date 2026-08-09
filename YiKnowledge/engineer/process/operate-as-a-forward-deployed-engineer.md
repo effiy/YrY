@@ -20,10 +20,10 @@ acceptance_criteria:
 related:
   - ../infrastructure/write-a-statement-of-work.md
   - ./deploy-to-an-air-gapped-environment.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: FDE does not write feature code; writes glue code. The Delta = the gap between product capability and the customer's mission; the goal is to make yourself redundant at the customer site; 50% integration + 50% strategy; not an SWE
 ---
 
@@ -59,7 +59,7 @@ FDE does not write feature code; writes glue code. This entry provides the FDE r
 | 1 hop | mva | [./design-a-minimum-viable-architecture.md](../architecture-design/design-a-minimum-viable-architecture.md) |
 | 2 hops | site-survey | [../processes/run-a-site-survey.md](../engineering/run-a-site-survey.md) |
 | 2 hops | sow | [../processes/write-a-statement-of-work.md](../infrastructure/write-a-statement-of-work.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -97,4 +97,4 @@ FDE does not write feature code; writes glue code. This entry provides the FDE r
 - day-two: [../processes/plan-day-two-operations.md](../engineering/plan-day-two-operations.md) — Day 2 operations co-build
 - air-gap: [./deploy-to-an-air-gapped-environment.md](./deploy-to-an-air-gapped-environment.md) — Offline deployment co-build
 - discovery-call: [./prepare-a-discovery-call-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-discovery-call-strategy.md) — Discovery call co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

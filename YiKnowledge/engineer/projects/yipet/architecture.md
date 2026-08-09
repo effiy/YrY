@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
 - ./engineering/claude.md
   - ./engineering/readme.md
-  - ../../../new-hire/onboarding/yipet/onboarding.md
+  - ../../../new-hire/onboarding/yipet--onboarding.md
   - ../yiai/architecture.md
 ---
 
@@ -144,7 +144,7 @@ src/
 ## Related
 
 - Mirror: [engineering/claude.md](./engineering/claude.md) · [engineering/readme.md](./engineering/readme.md)
-- Getting started: [onboarding.md](../../../new-hire/onboarding/yipet/onboarding.md)
+- Getting started: [onboarding.md](../../../new-hire/onboarding/yipet--onboarding.md)
 - Same family: [../yiai/architecture.md](../yiai/architecture.md) · [../yivad/architecture.md](../yivad/architecture.md)
 - Cross-project protocol: [../yiai/engineering/claude.md](../yiai/engineering/claude.md#cross-project-protocol)
 - jsxDEV gotcha: [../../lessons/gotchas/react-jsxdev-mismatch.md](../../lessons/gotcha-react-jsxdev-mismatch.md)

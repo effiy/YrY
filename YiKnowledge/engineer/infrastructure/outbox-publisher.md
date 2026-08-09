@@ -20,10 +20,10 @@ acceptance_criteria:
 related:
 - ./outbox.md
   - ./idempotency.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Outbox publishing is not just delivery; it is a contract. transaction + persistence + delivery + idempotency + retry five dimensions; Business-value driven; not one-shot; measurable
 ---
 
@@ -192,4 +192,4 @@ class OutboxPublisher:
 - [saga-pattern.md](../architecture-design/saga.md) — saga forward through outbox
 - [saga-with-compensation-pattern.md](../architecture-design/saga-with-compensation.md) — saga compensation events
 - [graceful-degradation-pattern.md](../architecture-design/graceful-degradation.md) — outbox failure degradation
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

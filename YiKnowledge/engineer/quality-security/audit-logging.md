@@ -21,10 +21,10 @@ related:
   - ./zero-trust.md
   - ../../oncall-sre/incident-response/do-a-security-audit.md
   - ../../executive/strategy/handle-data-compliance.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Audit log is not just log; it is a contract. Subject + action + object + time + tamper-proof five dimensions; compliance-value driven; not one-shot; measurable
 ---
 
@@ -253,4 +253,4 @@ Implementation checklist:
 - event-sourcing: [./event-sourcing.md](../architecture-design/event-sourcing.md) — event as state
 - cdc: [./cdc.md](../engineering/cdc.md) — async delivery
 - multi-tenancy: [./multi-tenancy.md](../architecture-design/multi-tenancy.md) — tenant_id required
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

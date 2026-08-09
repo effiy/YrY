@@ -16,7 +16,7 @@ team_size: 3
 status: accepted
 owner: YiPet main owner + architecture team
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
+kb_path: tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
 context: "In the YiPet MV3 extension the ISOLATED and MAIN world boundary is easy to break: CSP / DOM injection should go through MAIN, business logic + LLM calls should go through ISOLATED. Need type-enforced enforcement."
 decision: Use TS type branding + cross-world messaging contract to enforce the MV3 `ISOLATED` vs `MAIN` world boundary. CSP / DOM injection only goes through `MAIN`; business logic + LLM calls only go through `ISOLATED`; the two worlds communicate via `chrome.runtime.sendMessage` + typed message envelope. 
 alternatives: B. String convention — easy to bypass with `as any`; C. Runtime validation — performance loss + cannot statically detect. A selected (type branding + Biome lint). 
@@ -32,7 +32,7 @@ type: reference
 
 **ADR ID**: ADR-Mv3-Dual-World-Boundary  |  **Project**: yipet  |  **Domain**: MV3 Security Boundary
 **Decision Type**: architectural  |  **Team Size**: 3  |  **Status**: accepted  |  **Owner**: YiPet main owner + architecture team
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
 
 ## Context
 In the YiPet MV3 extension the ISOLATED and MAIN world boundary is easy to break: CSP / DOM injection should go through MAIN, business logic + LLM calls should go through ISOLATED. Need type-enforced enforcement. 
@@ -53,4 +53,4 @@ Boundary broken -> revert to string convention + fix + re-enable type branding (
 YiPet main owner + architecture team (decision); CTO (approval); security (review)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md`

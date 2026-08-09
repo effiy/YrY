@@ -26,9 +26,9 @@ related:
 
 | Project | Onboarding | Description |
 |---|---|---|
-| [YiAi](./onboarding/yiai/onboarding.md) | AI + BRD agent (FastAPI backend) | Python, FastAPI, MongoDB, LLM integration |
-| [YiVad](./onboarding/yivad/onboarding.md) | Main Web app (Vue 3.5) | Vue 3, TypeScript, Rsbuild, Element Plus |
-| [YiPet](./onboarding/yipet/onboarding.md) | Browser extension + desktop app | React 18, Chrome MV3, Ant Design |
+| [YiAi](./onboarding/yiai--onboarding.md) | AI + BRD agent (FastAPI backend) | Python, FastAPI, MongoDB, LLM integration |
+| [YiVad](./onboarding/yivad--onboarding.md) | Main Web app (Vue 3.5) | Vue 3, TypeScript, Rsbuild, Element Plus |
+| [YiPet](./onboarding/yipet--onboarding.md) | Browser extension + desktop app | React 18, Chrome MV3, Ant Design |
 
 ## Key files
 

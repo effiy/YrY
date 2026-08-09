@@ -70,6 +70,6 @@ Cross-role aggregation of all AI/ML, data engineering, and analytics content.
 
 ## Cross-cutting references
 
-- [tech-lead/decisions/yiai/](./tech-lead/decisions/yiai/) — AI-related ADRs (multi-provider, RAG eval, BRD agent, knowledge watcher)
-- [tech-lead/decisions/fde/](./tech-lead/decisions/fde/) — FDE AI decisions (delta contract, eval gate, air-gap, hybrid search)
+- [tech-lead/decisions/yiai--](./tech-lead/decisions/yiai--) — AI-related ADRs (multi-provider, RAG eval, BRD agent, knowledge watcher)
+- [tech-lead/decisions/fde--](./tech-lead/decisions/fde--) — FDE AI decisions (delta contract, eval gate, air-gap, hybrid search)
 - [product-manager/frameworks/](./product-manager/frameworks/) — AI product launch methodology

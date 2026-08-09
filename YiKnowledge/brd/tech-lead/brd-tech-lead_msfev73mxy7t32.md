@@ -16,7 +16,7 @@ team_size: 5
 status: accepted
 owner: YiVad lead owner + architecture team
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yivad/aicr-phase-port.md
+kb_path: tech-lead/decisions/yivad--aicr-phase-port.md
 context: YiVad ports the aicr (AI Code Review) page from YiWeb. Involves 9 Pinia stores + 8 modals + cards/graph views
   + CodeViewer + ChatPanel. Methodology guidance is needed for slicing. 
 decision: Adopt 7-phase slicing + baseline alignment + parity test + store/modal decoupling + /loop automated regression. Each phase is independently launchable
@@ -36,7 +36,7 @@ type: reference
 
 **ADR ID**: ADR-Aicr-7-Phase-Port  |  **Project**: yivad  |  **Domain**: AICR Port Methodology
 **Decision Type**: architectural  |  **Team Size**: 5  |  **Status**: accepted  |  **Owner**: YiVad lead owner + architecture team
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad/aicr-phase-port.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad--aicr-phase-port.md
 
 ## Context
 YiVad ports the aicr (AI Code Review) page from YiWeb. Involves 9 Pinia stores + 8 modals + cards/graph views + CodeViewer + ChatPanel. Methodology guidance is needed for slicing. 
@@ -57,4 +57,4 @@ Phase failure → switch back to previous phase + fix + retry (1 business day).
 YiVad lead owner + architecture team (decision); CTO (approval); frontend lead; YiWeb maintainers (baseline)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad/aicr-phase-port.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad--aicr-phase-port.md`

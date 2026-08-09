@@ -34,7 +34,7 @@ acceptance_criteria: '1. APScheduler polling 100% covers YiKnowledge root direct
   7. CI enforces lint + frontmatter validation'
 stakeholders: YiAi Tech Lead (decision); YiAi Platform Team 3 FTE (execution); AI Engineer Team (consumption);
   SRE/DevOps (operations); architecture committee (technical review); 5 business teams (consumption)
-kb_path: tech-lead/decisions/yiai/knowledge-watcher-deployment
+kb_path: tech-lead/decisions/yiai--knowledge-watcher-deployment
 notes: Since macOS FSEvents silently misses events on this machine (both watchfiles / watchdog fail),
   use APScheduler scheduled polling + file hash comparison + MongoDB index sync, targeting L3 platformization
   maturity, evolving to cross-platform unified watching within 3 years (L4 100%).
@@ -48,7 +48,7 @@ type: reference
 
 **BRD ID**: BRD-2026-077  |  **Project**: yiai  |  **Domain**: Knowledge Base File Watcher  |  **Quarter**: 2026 Q3
 **Priority**: P1  |  **Status**: In Progress  |  **Owner**: YiAi Platform Team
-**KB Source**: tech-lead/decisions/yiai/knowledge-watcher-deployment
+**KB Source**: tech-lead/decisions/yiai--knowledge-watcher-deployment
 
 ## Context
 Since macOS FSEvents silently misses events on this machine (both watchfiles / watchdog fail), use APScheduler scheduled polling + file hash comparison + MongoDB index sync, targeting L3 platformization maturity, evolving to cross-platform unified watching within 3 years (L4 100%).
@@ -82,5 +82,5 @@ M1 (2026 Q3, 2 weeks): APScheduler polling + hash comparison + 5 directory onboa
 After 3 years sync delay 10 seconds, missed events 0, cross-platform 100%; after 5 years cross-platform unified watching GA, L4 100%.
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/knowledge-watcher-deployment`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--knowledge-watcher-deployment`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

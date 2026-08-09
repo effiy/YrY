@@ -83,8 +83,8 @@ When learning LLM foundations / choosing an inference engine / choosing a vector
 | `tech/ai-platform/` | [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) · [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md) · [vector-db-comparison-summary.md](../../ai-engineer/platform/vector-db-comparison.md) · [embedding-model-selection-summary.md](../../ai-engineer/platform/embedding-model-selection.md) · [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [ai-workbench-user-guide-summary.md](../../ai-engineer/platform/ai-workbench-user-guide.md) · [llama-index-evolution-summary.md](../../ai-engineer/platform/llama-index-evolution.md) |
 | `methodology/ai-specific/` | [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) · [agent-architecture-patterns-summary.md](../../ai-engineer/methodology/agent-architecture-patterns.md) · [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) · [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) · [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md) |
 | `work/tools/` | [vllm-ollama-deployment-summary.md](vllm-ollama-deployment.md) · [claude-code-tips-summary.md](claude-code-tips.md) · [pi-agent-harness-evolution-summary.md](pi-agent-harness-evolution.md) |
-| `industry/competitors/` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors/llm-vendor-landscape.md) — vendor competitive landscape |
-| `industry/reports/` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) — industry trends |
+| `industry/competitors--` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md) — vendor competitive landscape |
+| `industry/reports--` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) — industry trends |
 | `resources/reading-list/` | reading list (papers / blogs / books) |
 
 ## Action recommendations
@@ -95,7 +95,7 @@ When learning LLM foundations / choosing an inference engine / choosing a vector
 4. Embedding choice: choose bge-m3 / OpenAI text-embedding-3 / Cohere / self-hosted by language + cost + privacy.
 5. Evaluation method: HELM / MT-Bench / self-consistency / human annotation; landing must build an eval set (see [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md)).
 6. Fine-tuning decision: choose Full FT / LoRA / QLoRA / Prefix by data volume + cost + performance needs (see [model-finetuning-decision-tree-summary](../../ai-engineer/methodology/model-finetuning-decision-tree.md)).
-7. Deployment: vLLM production + Ollama local + closed-source API gradual rollout (see [LLM rollout](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md)).
+7. Deployment: vLLM production + Ollama local + closed-source API gradual rollout (see [LLM rollout](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md)).
 8. Observability: monitor recall / faithfulness / error rate / latency (see [llm-observability-comparison-summary](../../ai-engineer/platform/llm-observability-comparison.md)).
 
 ## Anti-patterns

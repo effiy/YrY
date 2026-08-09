@@ -46,7 +46,7 @@ last_verified: 2026-08-07
 ## Summary
 
 - Process through [design-review.md](../../product-manager/delivery/design-review.md) + [tech-review.md](../../product-manager/delivery/tech-review.md) + [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md)
-- Thinking through [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking through [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Platform through [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) + [ssot-view-layer-pattern.md](ssot-view-layer.md)
 - Case study through [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) + [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md)
 
@@ -80,16 +80,16 @@ When applying domain-driven design / DDD / subdomain / bounded context / aggrega
 |---|---|
 | `work/processes/` | [design-review.md](../../product-manager/delivery/design-review.md) · [tech-review.md](../../product-manager/delivery/tech-review.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) · [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [code-review.md](../quality-security/do-a-code-review.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) · [ssot-view-layer-pattern.md](ssot-view-layer.md) · [strangler-fig-pattern.md](strangler-fig.md) · [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — DDD essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert to think about coupling · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — DDD essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert to think about coupling · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [product-discovery-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-discovery-strategy.md) · [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) |
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) |
 | `tech/data/` | [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [data-governance-summary.md](../../ai-engineer/data/data-governance.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../process/cross-timezone-collaboration.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — reporting |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — team matrix |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — reporting |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — team matrix |
 | `product/strategy/` | [product-strategy-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-strategy.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) |
 | `lessons/wins/` | [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — architecture wreck archive |
@@ -101,10 +101,10 @@ When applying domain-driven design / DDD / subdomain / bounded context / aggrega
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does DDD solve / what happens if not done / ROI / business impact"; do not do DDD for DDD's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first think "DDD could go out of control (boundary chaos / aggregate wrong / language scattered / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: one split → business changes → another split; go through [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: the simplest context that satisfies business wins; do not pile up aggregates; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "what does DDD solve / what happens if not done / ROI / business impact"; do not do DDD for DDD's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first think "DDD could go out of control (boundary chaos / aggregate wrong / language scattered / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: one split → business changes → another split; go through [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: the simplest context that satisfies business wins; do not pile up aggregates; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **Ubiquitous language**: must run ubiquitous language + must align business/engineering + avoid hardcoding.
 6. **Event storming**: must run event storming + must have domain events + avoid closed-door work.
 7. **Subdomain**: must run core / supporting / generic + must tier + avoid flat-equal.
@@ -119,11 +119,11 @@ When applying domain-driven design / DDD / subdomain / bounded context / aggrega
 16. **AI domain**: LLM must run [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) + must isolate prompts + must have domain tools.
 17. **RACI**: must run [raci-matrix-summary.md](../process/raci-matrix.md); architect / platform / TL / sponsor owner.
 18. **Freeze period**: during big promotions go through [release-freeze-process.md](../../oncall-sre/release/release-freeze.md); do not touch bounded context.
-19. **Reporting**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) to report internally and externally.
+19. **Reporting**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) to report internally and externally.
 20. **Retrospective**: after architecture wreck must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) retrospective + archive [bugs/](../lessons).
 21. **Quarterly audit**: go through [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to scan boundary whether still accurate + aggregate whether still reasonable.
 22. **ADR**: DDD decisions must land in ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-23. **Flywheel**: DDD good → decoupling strong → speed up → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+23. **Flywheel**: DDD good → decoupling strong → speed up → more business; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

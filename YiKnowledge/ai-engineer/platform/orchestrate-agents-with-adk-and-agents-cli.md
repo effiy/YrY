@@ -24,10 +24,10 @@ related:
   - ./llm-observability-comparison.md
   - ./pick-an-llm-provider.md
   - ../../engineer/process/operate-as-a-forward-deployed-engineer.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "ADK is not just another framework; it is a software-engineered Agent stack. scaffold → eval → deploy → publish → observe five-stage lifecycle; Agents CLI 7 skills turn any coding agent into an ADK expert; distinct from multi-agent-strategy: the latter focuses on architecture principles, this file focuses on the GCP tool stack"
 ---
 
@@ -82,7 +82,7 @@ ADK is not just another framework; it is a software-engineered Agent stack. This
 | 1 hop | multi-agent-strategy | [../foundations/prepare-a-multi-agent-strategy.md](../../knowledge-curator/archive/strategies-legacy/ai-engineer/prepare-a-multi-agent-strategy.md) |
 | 1 hop | two-loop-eval | [../methodology/run-a-two-loop-llm-evaluation.md](../methodology/run-a-two-loop-llm-evaluation.md) |
 | 2 hops | fde-role | [../../engineer/process/operate-as-a-forward-deployed-engineer.md](../../engineer/process/operate-as-a-forward-deployed-engineer.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -141,4 +141,4 @@ ADK is not just another framework; it is a software-engineered Agent stack. This
 - llm-observability: [./llm-observability-comparison.md](./llm-observability-comparison.md) — observability co-built
 - llm-provider: [./pick-an-llm-provider.md](./pick-an-llm-provider.md) — provider selection co-built
 - fde-role: [../../engineer/process/operate-as-a-forward-deployed-engineer.md](../../engineer/process/operate-as-a-forward-deployed-engineer.md) — FDE co-built
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

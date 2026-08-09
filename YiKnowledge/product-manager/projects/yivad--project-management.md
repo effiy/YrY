@@ -22,7 +22,7 @@ related:
  - ../../../engineer/projects/yivad/architecture.md
  - ../../../engineer/projects/yivad/functional-modules.md
  - ../../../engineer/projects/yivad/dev-standards.md
- - ../../../new-hire/onboarding/yivad/onboarding.md
+ - ../../../new-hire/onboarding/yivad--onboarding.md
  - ../../../engineer/projects/yivad/rag-system-pages-reference.md
  - ../../../engineer/projects/yivad/engineering/claude.md
  - ../../../engineer/process/iteration-pm-handbook.md
@@ -31,7 +31,7 @@ related:
  - ../../meetings/retrospective-meeting.md
  - ../../meetings/weekly-report.md
  - ../../meetings/retrospective.md
- - ../../../ai-engineer/methodology/prompts/weekly-report.md
+ - ../../../ai-engineer/methodology/prompts--weekly-report.md
  - ../../../knowledge-curator/templates/retrospective.md
 ---
 
@@ -107,7 +107,7 @@ Every Friday 16:00 submit this week's weekly report, follow `../../delivery/week
 - Blockers and help needed
 - Cross-project links (YiAi contract feedback, YiPet shared client thinking)
 
-Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts/weekly-report.md) to let AI draft + owner review then send.
+Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts--weekly-report.md) to let AI draft + owner review then send.
 
 ### Daily report cadence
 
@@ -193,12 +193,12 @@ YiVad is a YiAi contract consumer. Each month do a cross-project contract alignm
 - [YiVad architecture overview](../../../engineer/projects/yivad/architecture.md) — layers / data flow / degradation
 - [YiVad functional module checklist](../../../engineer/projects/yivad/functional-modules.md) — views / api modules / stores map
 - [YiVad dev standards](../../../engineer/projects/yivad/dev-standards.md) — SFC / ProTable / v-auth / SSE / env / lint
-- [YiVad new-hire guide](../../../new-hire/onboarding/yivad/onboarding.md) — Day-1 setup + workflow + pitfalls
+- [YiVad new-hire guide](../../../new-hire/onboarding/yivad--onboarding.md) — Day-1 setup + workflow + pitfalls
 - [rag-system-pages-reference.md](../../../engineer/projects/yivad/rag-system-pages-reference.md) — RAG five-page menu
 - [iteration PM handbook](../../../engineer/process/iteration-pm-handbook.md)
 - [project handoff process](../../../engineer/process/project-handover.md)
 - [weekly meeting template](../../delivery/weekly-meeting.md) · [retrospective meeting template](../../delivery/retrospective-meeting.md) · [review meeting template](../../delivery/review-meeting.md)
 - [weekly report instance](../../delivery/weekly-report.md) · [retrospective instance](../../delivery/retrospective.md)
-- [weekly report prompt](../../../ai-engineer/methodology/prompts/weekly-report.md) · [retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)
+- [weekly report prompt](../../../ai-engineer/methodology/prompts--weekly-report.md) · [retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)
 - [YiAi project management](../yiai/project-management.md) — contract provider
 - [YiPet project management](../yipet/project-management.md) — same family extension

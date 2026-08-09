@@ -43,10 +43,10 @@ tacit: false
 
 ## Summary
 
-- Backend (Python) via [pytest ADR](../../tech-lead/decisions/yiai/pytest-introduction.md): pytest + httpx + pytest-asyncio + coverage, directory `tests/{unit,integration,eval}`
-- Frontend (TS) via [Vitest ADR](../../tech-lead/decisions/yivad/vitest-introduction.md): Vitest 2 + @vue/test-utils + happy-dom + coverage-v8, priority composables → stores → components
+- Backend (Python) via [pytest ADR](../../tech-lead/decisions/yiai--pytest-introduction.md): pytest + httpx + pytest-asyncio + coverage, directory `tests/{unit,integration,eval}`
+- Frontend (TS) via [Vitest ADR](../../tech-lead/decisions/yivad--vitest-introduction.md): Vitest 2 + @vue/test-utils + happy-dom + coverage-v8, priority composables → stores → components
 - Eval set gate via [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md): ≥ 50 bilingual samples + ragas 4 metrics + baseline + fallback > 5% block
-- Rollout cadence via [Vitest rollout ADR](../../tech-lead/decisions/yivad/vitest-rollout.md): 4 stages (composables → stores → components → SSE parser parity)
+- Rollout cadence via [Vitest rollout ADR](../../tech-lead/decisions/yivad--vitest-rollout.md): 4 stages (composables → stores → components → SSE parser parity)
 
 ## Core viewpoints
 
@@ -79,9 +79,9 @@ When new projects or old projects need QA infrastructure, the main owner must de
 |---|---|
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [sse-streaming-pattern.md](../architecture-design/sse-streaming.md) (§SSE parser testing) · [staged-port-methodology-pattern.md](../architecture-design/staged-port-methodology.md) (parity QA baseline) |
 | `methodology/ai-specific/` | [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) |
-| `projects/YiAi/` | [adr-pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) · [dev-standards-summary.md](../../engineer/projects/yiai/dev-standards.md) |
-| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) · [adr-vitest-rollout.md](../../tech-lead/decisions/yivad/vitest-rollout.md) · [adr-aicr-phase-port.md](../../tech-lead/decisions/yivad/aicr-phase-port.md) (parity QA) · [dev-standards-summary.md](../../engineer/projects/yivad/dev-standards.md) |
-| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet/biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) (dual-world message testing) · [adr-aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) |
+| `projects/YiAi/` | [adr-pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) · [dev-standards-summary.md](../../engineer/projects/yiai/dev-standards.md) |
+| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) · [adr-vitest-rollout.md](../../tech-lead/decisions/yivad--vitest-rollout.md) · [adr-aicr-phase-port.md](../../tech-lead/decisions/yivad--aicr-phase-port.md) (parity QA) · [dev-standards-summary.md](../../engineer/projects/yivad/dev-standards.md) |
+| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet--biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) (dual-world message testing) · [adr-aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) |
 | `lessons/wins/` | [yivad-vitest-phase-one-win.md](../lessons/win-yivad-vitest-phase-one.md) · [yivad-vitest-phase-two-win.md](../lessons/win-yivad-vitest-phase-two.md) · [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) (parity QA baseline) |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) (§SSE parser testing) · [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) (dev/prod pattern) |
 | `work/processes/` | [shared-client-vendor-rollout.md](shared-client-vendor-rollout.md) (contract QA matrix) · [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md) |

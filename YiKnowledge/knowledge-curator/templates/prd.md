@@ -203,5 +203,5 @@ related:
 
 - [./README-templates.md](./README-templates.md) — Templates directory overview with usage guidelines
 - [./brd.md](./brd.md) — BRD template, the upstream document that feeds into PRD
-- [../../product-manager/discovery/prd/](../../product-manager/discovery/prd/) — PRD examples and case studies
+- [../../product-manager/discovery/prd--](../../product-manager/discovery/prd--) — PRD examples and case studies
 - [../../product-manager/frameworks/](../../product-manager/frameworks/) — Product management frameworks for prioritization and scoping

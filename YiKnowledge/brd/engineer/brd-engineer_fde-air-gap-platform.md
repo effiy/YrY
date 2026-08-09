@@ -100,6 +100,6 @@ M5(2027 Q4): L3 maturity — air-gap template cross-customer reuse rate ≥ 70%
 - **KB Source**: `YiKnowledge/engineer/strategies/deploy-to-an-air-gapped-environment.md`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents
 - **Related leaves**: [navigate-compliance-accreditation](../../engineer/processes/navigate-compliance-accreditation.md) / [harden-supply-chain](../../engineer/strategies/harden-supply-chain.md) / [operate-as-a-forward-deployed-engineer](../../engineer/strategies/operate-as-a-forward-deployed-engineer.md)
-- **Related ADR**: [ADR Air-gap-first for regulated clients](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md)
+- **Related ADR**: [ADR Air-gap-first for regulated clients](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md)
 - **Related failures**: [air-gapped pipeline broke without sneakernet](../../engineer/lessons/failures/air-gapped-pipeline-broke-without-sneakernet.md) / [air-gap first-boot surprise](../../engineer/lessons/gotchas/air-gap-first-boot-surprise.md)
 - **External**: [Awesome-FDE-Roadmap](https://github.com/pierpaolo28/Awesome-FDE-Roadmap) / [DoD Platform One](https://p1.dso.mil/) / [NIST SP 800-171](https://csrc.nist.gov/pubs/sp/800/171/r2/final)

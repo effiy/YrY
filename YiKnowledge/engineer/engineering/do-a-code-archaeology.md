@@ -46,7 +46,7 @@ tacit: false
 ## Summary
 
 - Patterns via [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) + [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + [staged-port-methodology-pattern.md](../architecture-design/staged-port-methodology.md)
-- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Cases via [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) + [yry-vite-to-rsbuild-migration-win.md](../lessons/win-yry-vite-to-rsbuild-migration.md) + [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md)
 - Templates via [adr-template.md](../../knowledge-curator/templates/adr.md) + [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) + [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md)
 
@@ -80,11 +80,11 @@ When taking over legacy / cross-handoff / unfamiliar module / large unknown code
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [staged-port-methodology-pattern.md](../architecture-design/staged-port-methodology.md) · [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md) · [eval-driven](../engineering/evaluation-driven-development.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — what this block solves · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert blind changes · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — refactor chain reaction · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) — minimal modification wins |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — what this block solves · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert blind changes · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — refactor chain reaction · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — minimal modification wins |
 | `methodology/ai-specific/` | [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [llm-evaluation-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) — AI-assisted archaeology |
-| `work/processes/` | [code-review-process.md](../../ai-engineer/methodology/prompts/code-review.md) · [tech-review.md](../../product-manager/delivery/tech-review.md) · [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [knowledge-transfer-process.md](../process/knowledge-transfer.md) · [project-handover-process.md](../process/project-handover.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) |
+| `work/processes/` | [code-review-process.md](../../ai-engineer/methodology/prompts--code-review.md) · [tech-review.md](../../product-manager/delivery/tech-review.md) · [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [knowledge-transfer-process.md](../process/knowledge-transfer.md) · [project-handover-process.md](../process/project-handover.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) |
 | `resources/templates/` | [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) — AI-assisted archaeology · [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) — AI-assisted archaeology · [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) |
 | `lessons/wins/` | [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) · [yry-vite-to-rsbuild-migration-win.md](../lessons/win-yry-vite-to-rsbuild-migration.md) · [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) · [yivad-leaf-view-leaves-ssot-win.md](../lessons/win-yivad-leaf-view-leaves-ssot.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) |
 | `lessons/gotchas/` | [react-jsxdev-mismatch.md](../lessons/gotcha-react-jsxdev-mismatch.md) · [vite-to-rsbuild-migration.md](../lessons/gotcha-vite-to-rsbuild-migration.md) · [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) — missed-change archive |
@@ -97,10 +97,10 @@ When taking over legacy / cross-handoff / unfamiliar module / large unknown code
 
 ## Action recommendations
 
-1. **first principles**: first ask "what problem this code originally solved / is it still alive / ROI"; do not do archaeology for its own sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **inversion**: first think "what blind changes could do (break implicit constraints / introduce regressions / erase ADR / erase predecessors' patches)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **second-order effects**: change one spot → cascade through schema / interface / test / documentation; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: smallest modification that satisfies the fix wins; do not opportunistically refactor; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **first principles**: first ask "what problem this code originally solved / is it still alive / ROI"; do not do archaeology for its own sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **inversion**: first think "what blind changes could do (break implicit constraints / introduce regressions / erase ADR / erase predecessors' patches)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **second-order effects**: change one spot → cascade through schema / interface / test / documentation; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: smallest modification that satisfies the fix wins; do not opportunistically refactor; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **read history**: `git log` + `git blame` + `git log -S` + PR history + commit messages; see intent first.
 6. **read ADR**: must scan `projects/*/adr-*` + `resources/templates/adr-template.md`; find that year's decisions.
 7. **read documentation**: first `architecture-summary` + `dev-standards` + `knowledge-leaf` + `README`; do not dive straight into source.
@@ -108,7 +108,7 @@ When taking over legacy / cross-handoff / unfamiliar module / large unknown code
 9. **read comments**: comments often carry constraints / workarounds / bug numbers; do not ignore `// XXX` `// FIXME` `// HACK`.
 10. **read issues / bugs**: `lessons/failures/bugs/` + `lessons/gotchas/` for predecessors' traps.
 11. **find predecessors**: must run [knowledge-transfer-process.md](../process/knowledge-transfer.md) + [project-handover-process.md](../process/project-handover.md); 30min talk beats 3h reading code.
-12. **AI assistance**: use [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) + [claude-code-tips.md](claude-code-tips.md) to have AI summarize module + find entries + find risks.
+12. **AI assistance**: use [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) + [claude-code-tips.md](claude-code-tips.md) to have AI summarize module + find entries + find risks.
 13. **draw diagrams**: must draw dependency graph / call graph / data flow; via [tech-design-template.md](../../knowledge-curator/templates/tech-design.md).
 14. **scope**: archaeology ≠ change; read-only + record + assess; changes must follow [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md).
 15. **test safety net**: before changes, must add [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) as safety net; no tests, no action.
@@ -118,7 +118,7 @@ When taking over legacy / cross-handoff / unfamiliar module / large unknown code
 19. **retrospective**: after archaeology, write a [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) and archive; do not do archaeology once and discard once.
 20. **quarterly scan**: via [review-log.md](../../knowledge-curator/governance/review-log.md) scan whether legacy modules are still alive / can be retired.
 21. **ADR**: archaeology conclusions must land in ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-22. **flywheel**: archaeology → documentation grows → handover faster → refactor bolder; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+22. **flywheel**: archaeology → documentation grows → handover faster → refactor bolder; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

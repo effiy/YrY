@@ -23,10 +23,10 @@ related:
   - ../infrastructure/ship-a-release.md
   - ../../executive/strategy/handle-data-compliance.md
   - ../../oncall-sre/incident-response/respond-to-an-incident.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
 tacit: Staging is not a shadow of prod; it is a contract baseline + data masking + pre-canary gate; prod-like but does not replace prod
 ---
 
@@ -60,10 +60,10 @@ A pre-publish environment is needed to validate before prod launch; common pitfa
 | 2 hop | test infrastructure | [./set-up-testing-infrastructure.md](../engineering/set-up-testing-infrastructure.md) |
 | 2 hop | data compliance | [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md) |
 | 2 hop | incident response | [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hop | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hop | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 
 ## Action recommendations
 
@@ -92,4 +92,4 @@ A pre-publish environment is needed to validate before prod launch; common pitfa
 - test: [./set-up-testing-infrastructure.md](../engineering/set-up-testing-infrastructure.md) — contract baseline
 - data compliance: [../../executive/strategy/handle-data-compliance.md](../../executive/strategy/handle-data-compliance.md) — masking compliance
 - incident response: [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) — staging incidents
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md)

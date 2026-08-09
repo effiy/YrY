@@ -31,7 +31,7 @@ related:
 - ../product/write-a-prd.md
 - ../../engineer/lessons/learn-pm-frameworks.md
 - ../../engineer/quality-security/run-an-experiment.md
-- ../../product-manager/discovery/ux/README.md
+- ../../product-manager/discovery/ux--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -45,9 +45,9 @@ tacit: false
 ## Summary
 
 - Interviews follow [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md) + [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md)
-- Usability follows [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) + [nielsen-heuristics-summary.md](../discovery/ux/nielsen-heuristics.md)
+- Usability follows [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) + [nielsen-heuristics-summary.md](../discovery/ux--nielsen-heuristics.md)
 - Needs stratification follows [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) + [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md)
-- AI product UX follows [ai-product-ux-patterns-summary.md](../discovery/ux/ai-product-ux-patterns.md) + [cross-cultural-ux-summary.md](../discovery/ux/cross-cultural-ux.md)
+- AI product UX follows [ai-product-ux-patterns-summary.md](../discovery/ux--ai-product-ux-patterns.md) + [cross-cultural-ux-summary.md](../discovery/ux--cross-cultural-ux.md)
 - Industry cases follow [ai-after-sales-cases.md](../strategy/ai-after-sales-cases.md) + [ai-customer-service-cases.md](../strategy/ai-customer-service-cases.md)
 
 ## Core viewpoints
@@ -81,15 +81,15 @@ When designing interviews / running usability tests / stratifying user needs / e
 |---|---|
 | `resources/templates/` | [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md) · [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) · [prd.md](../../knowledge-curator/templates/prd.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) · [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) |
-| `product/ux/` | [ai-product-ux-patterns-summary.md](../discovery/ux/ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../discovery/ux/nielsen-heuristics.md) · [cross-cultural-ux-summary.md](../discovery/ux/cross-cultural-ux.md) · [spritesheet-summary.md](../discovery/ux/spritesheet.md) · [after-sales-pad-visual-review-summary.md](../discovery/ux/after-sales-pad-visual-review.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics/north-star-metric.md) · [retention-and-churn-summary.md](../discovery/metrics/retention-and-churn.md) — retention reflects user value |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) — assumption generation |
+| `product/ux/` | [ai-product-ux-patterns-summary.md](../discovery/ux--ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../discovery/ux--nielsen-heuristics.md) · [cross-cultural-ux-summary.md](../discovery/ux--cross-cultural-ux.md) · [spritesheet-summary.md](../discovery/ux--spritesheet.md) · [after-sales-pad-visual-review-summary.md](../discovery/ux--after-sales-pad-visual-review.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics--north-star-metric.md) · [retention-and-churn-summary.md](../discovery/metrics--retention-and-churn.md) — retention reflects user value |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) — assumption generation |
 | `product/strategy/` | [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [blue-ocean-strategy-summary.md](../../executive/strategy/blue-ocean.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) — strategy alignment |
 | `industry/use-cases/` | [ai-after-sales-cases.md](../strategy/ai-after-sales-cases.md) · [ai-customer-service-cases.md](../strategy/ai-customer-service-cases.md) · [case-study-template.md](../strategy/case-study.md) |
 | `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — scenario-based samples |
 | `brd/terminology/` | [automotive.md](./../../brd/README.md) · [general.md](./../../brd/README.md) — cross-domain terminology |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — stakeholder research |
-| `people/experts/` | [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md) — external expert interviews |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — stakeholder research |
+| `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external expert interviews |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) — user-research gaps causing failures |
 | `work/meetings/` | [review-meeting-template.md](../delivery/review-meeting.md) · [retrospective-sample.md](../delivery/retrospective.md) |
 
@@ -99,14 +99,14 @@ When designing interviews / running usability tests / stratifying user needs / e
 2. **Interview outline**: opening (background) / main questions (task stream) / probing (pain points) / closing (expectations); use [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md). 
 3. **5-user rule**: usability testing with 5-8 people covers 80% of usability issues; do not draw conclusions from a single user. 
 4. **Kano stratification**: basic (must-have) / performance (more is better) / excitement (delight); MVP only covers basic + core performance; see [kano-model-summary.md](../../product-manager/frameworks/kano-model.md). 
-5. **Nielsen heuristics**: 10 usability heuristics; combine walkthrough + heuristics + user testing; see [nielsen-heuristics-summary.md](../discovery/ux/nielsen-heuristics.md). 
-6. **AI product UX**: streaming / reference / feedback / cancel / retry / degrade; do not copy traditional UX; see [ai-product-ux-patterns-summary.md](../discovery/ux/ai-product-ux-patterns.md). 
-7. **Cross-cultural**: copy / privacy / color / metaphor / gesture adapted by region; see [cross-cultural-ux-summary.md](../discovery/ux/cross-cultural-ux.md). 
+5. **Nielsen heuristics**: 10 usability heuristics; combine walkthrough + heuristics + user testing; see [nielsen-heuristics-summary.md](../discovery/ux--nielsen-heuristics.md). 
+6. **AI product UX**: streaming / reference / feedback / cancel / retry / degrade; do not copy traditional UX; see [ai-product-ux-patterns-summary.md](../discovery/ux--ai-product-ux-patterns.md). 
+7. **Cross-cultural**: copy / privacy / color / metaphor / gesture adapted by region; see [cross-cultural-ux-summary.md](../discovery/ux--cross-cultural-ux.md). 
 8. **Quantitative + qualitative**: qualitative digs into causes + quantitative measures distribution; do not do only one side. 
-9. **Visual testing**: use [after-sales-pad-visual-review-summary.md](../discovery/ux/after-sales-pad-visual-review.md) as a visual review template. 
+9. **Visual testing**: use [after-sales-pad-visual-review-summary.md](../discovery/ux--after-sales-pad-visual-review.md) as a visual review template. 
 10. **Conclusions**: must produce user personas + pain-point lists + opportunity points + priorities (RICE); archive into PRD; see [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) + [prd.md](../../knowledge-curator/templates/prd.md). 
-11. **Stakeholders**: high-impact high-attention users must be interviewed in depth; see [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md). 
-12. **External experts**: pull in external experts when industry / technical depth is insufficient; see [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md). 
+11. **Stakeholders**: high-impact high-attention users must be interviewed in depth; see [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md). 
+12. **External experts**: pull in external experts when industry / technical depth is insufficient; see [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md). 
 
 ## Anti-patterns
 
@@ -126,4 +126,4 @@ When designing interviews / running usability tests / stratifying user needs / e
 - Same-class journey: [../../engineer/lessons/learn-pm-frameworks.md](../../engineer/lessons/learn-pm-frameworks.md) — PM framework comparison
 - Same-class journey: [../../engineer/quality-security/run-an-experiment.md](../../engineer/quality-security/run-an-experiment.md) — assumption validation
 - Same-class journey: [../../engineer/process/measure-product-metrics.md](../../engineer/process/measure-product-metrics.md) — quantification
-- Upstream: [../../product-manager/discovery/ux/README.md](../discovery/ux/README.md) — ux leaf entry
+- Upstream: [../../product-manager/discovery/ux--README.md](../discovery/ux--README.md) — ux leaf entry

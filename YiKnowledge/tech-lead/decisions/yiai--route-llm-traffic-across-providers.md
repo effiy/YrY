@@ -23,7 +23,7 @@ acceptance_criteria:
 related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/dev-standards.md
-  - ../../../product-manager/projects/yiai/project-management.md
+  - ../../../product-manager/projects/yiai--project-management.md
   - ../../../ai-engineer/platform/llama-index-evolution.md
   - ../../../engineer/engineering/pi-agent-harness-evolution.md
   - ../../../knowledge-curator/templates/adr.md
@@ -61,7 +61,7 @@ related:
 - **Status quo**: YiAi `services/ai/chat_service.py` only calls LLM via Ollama self-hosted; `domain/rag/` uses `llama_index` for retrieval, but the generation side has not connected `llama_index.llms.*`.
 - **Pain points**:
   - BRD Agent multilingual scenarios need cloud models like GPT-4o / Claude / Gemini; Ollama path coverage incomplete.
-  - YiVad / YiPet chat UI needs a model selector; YiAi backend has no multi-provider API, frontend UI blocked (see [YiVad project management §block](../../../product-manager/projects/yivad/project-management.md) + [YiPet project management §block](../../../product-manager/projects/yipet/project-management.md)).
+  - YiVad / YiPet chat UI needs a model selector; YiAi backend has no multi-provider API, frontend UI blocked (see [YiVad project management §block](../../../product-manager/projects/yivad--project-management.md) + [YiPet project management §block](../../../product-manager/projects/yipet--project-management.md)).
   - YiAi `requirements.txt` has no lockfile (see [dev-standards-summary.md](../../../engineer/projects/yiai/dev-standards.md) §supply-chain hardening gap); introducing multi-provider increases the dependency surface, hardening is urgent.
 - **trigger event**: Retrospective Try item + weekly report next-week plan YiAi item 1.
 - **External constraints**:
@@ -111,7 +111,7 @@ Implementation list:
 | `llama_index.llms.*` breaking API change | medium | medium | quarterly review + run evaluation before `llama-index-core` minor upgrade |
 | multi-provider switch causes generated quality drift | high | high | run eval set before switch; recall rate / generated quality rollback > 5% blocks launch |
 | API key leak | medium | high | key not in repo; env injection + `config.yaml` only placeholder; CI secret scan |
-| YiVad / YiPet model selector UI block unresolved | medium | medium | UI skeleton first, joint debug after endpoint launch (align with [YiPet project management §block](../../../product-manager/projects/yipet/project-management.md)) |
+| YiVad / YiPet model selector UI block unresolved | medium | medium | UI skeleton first, joint debug after endpoint launch (align with [YiPet project management §block](../../../product-manager/projects/yipet--project-management.md)) |
 | YiAi no lockfile introduces supply chain attack surface | high | high | #6 supply-chain hardening upfront, same PR as #1 |
 | llama_index upgrade cadence misaligned with business cadence | low | medium | ADR review trigger conditions include `llama_index.llms.*` breaking change |
 

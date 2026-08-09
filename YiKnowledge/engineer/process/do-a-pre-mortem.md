@@ -25,10 +25,10 @@ related:
  - ../strategies/prepare-a-decision-log.md
  - ./run-a-retrospective.md
  - ../../oncall-sre/incident-response/do-a-rollback-drill.md
- - ../../knowledge-curator/templates/thinking/inversion.md
- - ../../knowledge-curator/templates/thinking/second-order-thinking.md
- - ../../knowledge-curator/templates/thinking/first-principles.md
- - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+ - ../../knowledge-curator/templates/thinking--inversion.md
+ - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+ - ../../knowledge-curator/templates/thinking--first-principles.md
+ - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: A pre-mortem is not pessimism; it is foresight before hindsight. Hypothesize that the project has already failed and reverse-engineer the reasons; don't cover up risk; team co-creation, not blame; patch before the battle, not after.
 ---
 
@@ -66,10 +66,10 @@ A pre-mortem is a rehearsal that must be done before launch; not pessimism but f
 | 2 hops | Decision log | [../strategies/prepare-a-decision-log.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-decision-log.md) |
 | 2 hops | Retrospective | [./run-a-retrospective.md](./run-a-retrospective.md) |
 | 2 hops | rollback drill | [../../oncall-sre/incident-response/do-a-rollback-drill.md](../../oncall-sre/incident-response/do-a-rollback-drill.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -100,4 +100,4 @@ A pre-mortem is a rehearsal that must be done before launch; not pessimism but f
 - Decision log: [../strategies/prepare-a-decision-log.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-decision-log.md) — decision + risk
 - Retrospective: [./run-a-retrospective.md](./run-a-retrospective.md) — risk retrospective
 - rollback drill: [../../oncall-sre/incident-response/do-a-rollback-drill.md](../../oncall-sre/incident-response/do-a-rollback-drill.md) — risk mitigation
-- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

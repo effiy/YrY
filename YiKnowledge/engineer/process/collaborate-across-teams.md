@@ -46,7 +46,7 @@ tacit: false
 - Collaboration principles: go [async-collaboration-principles-summary.md](async-collaboration-principles.md): async first / documentation first / decision traceable
 - Cross-timezone: go [cross-timezone-collaboration-summary.md](cross-timezone-collaboration.md): overlap window / timezone rotation / documentation handoff
 - Responsibility allocation: go [raci-matrix-summary.md](raci-matrix.md): R/A/C/I four roles
-- Stakeholders: go [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md)
+- Stakeholders: go [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md)
 
 ## Core viewpoints
 
@@ -78,11 +78,11 @@ When cross-team projects / multi-end collaboration / cross-timezone teams / stak
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/collaboration/` | [async-collaboration-principles-summary.md](async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](cross-timezone-collaboration.md) · [raci-matrix-summary.md](raci-matrix.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) |
 | `work/processes/` | [cross-team-collaboration-process.md](cross-team-collaboration.md) · [design-review-process.md](../../product-manager/delivery/design-review.md) · [tech-review-process.md](../../product-manager/delivery/tech-review.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [project-handover-process.md](project-handover.md) · [knowledge-transfer-process.md](knowledge-transfer.md) |
 | `work/meetings/` | [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) |
-| `methodology/thinking/` | [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — cross-team decision |
+| `methodology/thinking/` | [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — cross-team decision |
 | `resources/templates/` | [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) |
 | `methodology/pm-frameworks/` | [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) · [agile-product-management-summary.md](../../product-manager/frameworks/agile-product-management.md) — cross-team cadence |
 
@@ -91,8 +91,8 @@ When cross-team projects / multi-end collaboration / cross-timezone teams / stak
 1. **async first**: decisions go through documentation + comments rather than meetings; meetings only for discussing what cannot be resolved async; see [async-collaboration-principles-summary.md](async-collaboration-principles.md).
 2. **RACI**: each task must clearly define R (Responsible) / A (Accountable, unique) / C (Consulted) / I (Informed); see [raci-matrix-summary.md](raci-matrix.md).
 3. **cross-timezone**: find a 2-3h overlap window for sync meetings; non-overlap zones use documentation handoff + async comments; see [cross-timezone-collaboration-summary.md](cross-timezone-collaboration.md).
-4. **stakeholder map**: first draw [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) by impact x interest; high-impact high-interest communicate heavily, high-impact low-interest keep baseline reporting.
-5. **reporting cadence**: per [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) set: daily standup / weekly report / biweekly review / monthly alignment / quarterly planning.
+4. **stakeholder map**: first draw [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) by impact x interest; high-impact high-interest communicate heavily, high-impact low-interest keep baseline reporting.
+5. **reporting cadence**: per [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) set: daily standup / weekly report / biweekly review / monthly alignment / quarterly planning.
 6. **decision recording**: cross-team decisions must go through ADR or RFC, do not decide verbally; see [design-review-process.md](../../product-manager/delivery/design-review.md).
 7. **handover**: project delivery goes through [project-handover-process.md](project-handover.md) + [knowledge-transfer-process.md](knowledge-transfer.md), documentation + screen recording + Q&A.
 8. **conflict**: technical conflicts go to tech-review; priority conflicts go to [cross-team-collaboration-process.md](cross-team-collaboration.md); values conflicts escalate to sponsor.

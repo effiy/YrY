@@ -46,7 +46,7 @@ tacit: false
 ## Summary
 
 - Process go [capacity-planning-process.md](../infrastructure/capacity-planning.md) + [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) + [monitoring-governance-process.md](../process/monitoring-governance.md)
-- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md)
+- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md)
 - Pattern go [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) + [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) + [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md)
 - Case study go [yivad-leaf-view-leaves-ssot-win.md](../lessons/win-yivad-leaf-view-leaves-ssot.md) + [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md)
 
@@ -78,7 +78,7 @@ Build an internal self-service portal / IDP / developer portal / self-service to
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) · [eval-driven](../engineering/evaluation-driven-development.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — portal intent · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — inversion imagining failure · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — portal intent · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — inversion imagining failure · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [product-discovery-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-discovery-strategy.md) |
 | `work/processes/` | [capacity-planning-process.md](../infrastructure/capacity-planning.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) · [incident-response-process.md](../process/incident-response.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) · [contract-negotiation-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-contract-strategy.md) |
@@ -86,10 +86,10 @@ Build an internal self-service portal / IDP / developer portal / self-service to
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) |
 | `tech/ai-platform/` | [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) · [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — portal audience |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — portal team |
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) — portal metrics |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — portal audience |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — portal team |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) — portal metrics |
 | `lessons/wins/` | [yivad-leaf-view-leaves-ssot-win.md](../lessons/win-yivad-leaf-view-leaves-ssot.md) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) · [yry-vite-to-rsbuild-migration-win.md](../lessons/win-yry-vite-to-rsbuild-migration.md) |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
@@ -99,9 +99,9 @@ Build an internal self-service portal / IDP / developer portal / self-service to
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does the portal solve / what happens if not built / ROI / who is the user"; do not build portal for portal's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: first imagine "how the portal could fail (mismatch / abuse / privilege escalation / data leak / cost explosion / user rejects) " then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Occam's razor**: the simplest orchestration that satisfies JTBD wins; do not pile up functions; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
+1. **First principles**: first ask "what does the portal solve / what happens if not built / ROI / who is the user"; do not build portal for portal's sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: first imagine "how the portal could fail (mismatch / abuse / privilege escalation / data leak / cost explosion / user rejects) " then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Occam's razor**: the simplest orchestration that satisfies JTBD wins; do not pile up functions; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
 4. **JTBD**: must run [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) to understand real needs; do not pile up functions. 
 5. **SSOT**: backend atomic capability SSOT + frontend view layer; follow [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md). 
 6. **Dual-world**: self-service operations must run [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) dual-run + diff + dry-run. 
@@ -113,7 +113,7 @@ Build an internal self-service portal / IDP / developer portal / self-service to
 12. **Orchestration**: must do saga / state machine + compensation + idempotency; follow [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md). 
 13. **AI orchestration**: complex applications must do LLM-assisted + evaluation + fallback; follow [llm-evaluation-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md). 
 14. **Data**: export / report must run [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + data masking + row-level permission. 
-15. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) to communicate with audience + Launch + change. 
+15. **Communication**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) to communicate with audience + Launch + change. 
 16. **RACI**: must run [raci-matrix-summary.md](../process/raci-matrix.md); Platform / user / sponsor / security owner. 
 17. **Monitoring**: must run [monitoring-governance-process.md](../process/monitoring-governance.md) dashboard + SLI + threshold + alert. 
 18. **Freeze period**: during big-promo follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) do not move Portal Template. 
@@ -121,7 +121,7 @@ Build an internal self-service portal / IDP / developer portal / self-service to
 20. **Retrospective**: portal incidents must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) Retrospective + Archive [bugs/](../lessons). 
 21. **Quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) scan Template still accurate + quota still reasonable.
 22. **ADR**: Portal Decision must land ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md). 
-23. **Flywheel**: Portal used more → efficiency rises → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md). 
+23. **Flywheel**: Portal used more → efficiency rises → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md). 
 
 ## Anti-patterns
 

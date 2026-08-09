@@ -33,7 +33,7 @@ related:
   - kano-model.md
   - prioritize-a-backlog.md
   - agile-product-management.md
-  - ../discovery/metrics/README.md
+  - ../discovery/metrics--README.md
 tacit: false
 ---
 
@@ -139,5 +139,5 @@ Developed by Dai Clegg at Oracle in 1994 as part of the DSDM (Dynamic Systems De
 - Same class: [kano-model.md](./kano-model.md) -- Kano categorizes by user satisfaction curve, MoSCoW categorizes by delivery commitment
 - Same class: [prioritize-a-backlog.md](./prioritize-a-backlog.md) -- backlog prioritization workflow that incorporates MoSCoW
 - Same class: [agile-product-management.md](./agile-product-management.md) -- iteration planning context
-- Upstream: [../discovery/metrics/README.md](../discovery/metrics/README.md) -- metrics to validate MoSCoW decisions
+- Upstream: [../discovery/metrics--README.md](../discovery/metrics--README.md) -- metrics to validate MoSCoW decisions
 - References: DSDM Consortium -- *MoSCoW Prioritization*; Dai Clegg (1994) -- *MoSCoW method for time-boxed delivery*

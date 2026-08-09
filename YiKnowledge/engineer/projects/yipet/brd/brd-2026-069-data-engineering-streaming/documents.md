@@ -26,8 +26,8 @@ YiPet is the Yi family browser extension (Chrome MV3 + React 18.3 + Ant Design 5
 - Architecture overview: [architecture.md](../../architecture.md) (tech stack / API four tiers / dual-world boundary / data flow / graceful degradation / anti-patterns) 
 - Functional modules: [functional-modules.md](../../functional-modules.md) (10 top-level catalogs / 6 services / 4 popup / 19 chat / content / shared / background / config) 
 - Development standards: [dev-standards.md](../../dev-standards.md) (naming / TSX / API four tiers / MV3 dual-world / style co-location / i18n / time / CSP / Biome / Vitest) 
-- MV3 dual-world ADR: [chrome-manifest-dual-world-boundary.md](../../../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) (type branding + envelope) 
-- Biome lint ADR: [biome-lint-format.md](../../../../../tech-lead/decisions/yipet/biome-lint-format.md) (Biome 2.5 replaces ESLint + Prettier) 
+- MV3 dual-world ADR: [chrome-manifest-dual-world-boundary.md](../../../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) (type branding + envelope) 
+- Biome lint ADR: [biome-lint-format.md](../../../../../tech-lead/decisions/yipet--biome-lint-format.md) (Biome 2.5 replaces ESLint + Prettier) 
 
 ## 3. Related documentation
 - BRD-2026-061 zero-trust (CSP + supply-chain hardening) 

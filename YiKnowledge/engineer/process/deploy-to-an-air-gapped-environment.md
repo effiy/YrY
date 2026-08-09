@@ -25,10 +25,10 @@ related:
  - ./prepare-an-edge-compute-strategy.md
  - ./prepare-an-edge-ai-strategy.md
  - ./handle-secrets-and-config.md
- - ../../knowledge-curator/templates/thinking/first-principles.md
- - ../../knowledge-curator/templates/thinking/inversion.md
- - ../../knowledge-curator/templates/thinking/second-order-thinking.md
- - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+ - ../../knowledge-curator/templates/thinking--first-principles.md
+ - ../../knowledge-curator/templates/thinking--inversion.md
+ - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+ - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "Offline is not a subset of cloud; it is a separate stack. Pre-position everything: weights + package mirror + hardened registry + PKI + secrets + NTP; data flows one-way; store-and-forward; Day 1 no internet is always the first hypothesis"
 ---
 
@@ -61,7 +61,7 @@ Offline is not a subset of cloud; it is a separate stack. This entry provides th
 | 1 hop | fde-role | [./operate-as-a-forward-deployed-engineer.md](./operate-as-a-forward-deployed-engineer.md) |
 | 1 hop | compliance | [../processes/navigate-compliance-accreditation.md](../engineering/navigate-compliance-accreditation.md) |
 | 2 hops | supply-chain | [./harden-supply-chain.md](./harden-supply-chain.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -110,4 +110,4 @@ Offline is not a subset of cloud; it is a separate stack. This entry provides th
 - edge-compute: [./prepare-an-edge-compute-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-edge-compute-strategy.md) — edge compute complement
 - edge-ai: [./prepare-an-edge-ai-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-edge-ai-strategy.md) — edge AI complement
 - secrets: [./handle-secrets-and-config.md](../quality-security/handle-secrets-and-config.md) — secrets management co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

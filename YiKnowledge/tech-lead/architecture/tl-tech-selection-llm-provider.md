@@ -83,4 +83,4 @@ Phase 1 PoC: integrate one OpenAI-compatible provider (self-hosted vLLM or Aliba
 - Single-provider failure rate > 1% → add Anthropic as the second fallback.
 
 ---
-> References: YiKnowledge → projects/YiAi/adr-llm-multi-provider-rollout.md | tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+> References: YiKnowledge → projects/YiAi/adr-llm-multi-provider-rollout.md | tech-lead/decisions/yiai--route-llm-traffic-across-providers.md

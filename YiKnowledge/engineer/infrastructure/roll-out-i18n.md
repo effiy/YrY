@@ -24,10 +24,10 @@ related:
   - ../process/collaborate-across-teams.md
   - ../../product-manager/discovery/write-a-prd.md
   - ../../product-manager/frameworks/do-user-research.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
 tacit: "i18n is not just string translation; it is a full set covering culture / time zone / currency / date / names / typography / regulation; i18n + l10n in two phases"
 ---
 
@@ -60,10 +60,10 @@ Business goes overseas, cross-region operations, multilingual users; internation
 | 2 hop | Cross-team collaboration | [../strategies/collaborate-across-teams.md](../process/collaborate-across-teams.md) |
 | 2 hop | PRD | [../../product-manager/discovery/write-a-prd.md](../../product-manager/discovery/write-a-prd.md) |
 | 2 hop | User research | [../../product-manager/frameworks/do-user-research.md](../../product-manager/frameworks/do-user-research.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hop | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hop | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
 
 ## Action recommendations
 
@@ -93,4 +93,4 @@ Business goes overseas, cross-region operations, multilingual users; internation
 - Cross-team collaboration: [../strategies/collaborate-across-teams.md](../process/collaborate-across-teams.md) — translation team collaboration
 - PRD: [../../product-manager/discovery/write-a-prd.md](../../product-manager/discovery/write-a-prd.md) — multilingual requirements
 - User research: [../../product-manager/frameworks/do-user-research.md](../../product-manager/frameworks/do-user-research.md) — cross-cultural research
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md)

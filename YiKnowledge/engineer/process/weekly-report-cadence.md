@@ -23,7 +23,7 @@ related:
   - ./iteration-pm-handbook.md
   - ../../product-manager/delivery/weekly-report.md
   - ../../product-manager/delivery/weekly-meeting.md
-  - ../../ai-engineer/methodology/prompts/weekly-report.md
+  - ../../ai-engineer/methodology/prompts--weekly-report.md
   - ../../knowledge-curator/templates/retrospective.md
 tacit: Weekly report is not just status reporting; it is a contract. Goal + progress + risk + decision + next week three dimensions; business-value driven; not one-shot; measurable
 ---
@@ -216,5 +216,5 @@ class WeeklyReport:
 - Iteration PM handbook: [./iteration-pm-handbook.md](./iteration-pm-handbook.md) — PM weekly cadence
 - Sample: [../../product-manager/delivery/weekly-report.md](../../product-manager/delivery/weekly-report.md) — instance
 - Template: [../../product-manager/delivery/weekly-meeting.md](../../product-manager/delivery/weekly-meeting.md) — weekly meeting template
-- Prompt: [../../ai-engineer/methodology/prompts/weekly-report.md](../../ai-engineer/methodology/prompts/weekly-report.md) — AI-assisted generation
-- Thinking frameworks: [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Prompt: [../../ai-engineer/methodology/prompts--weekly-report.md](../../ai-engineer/methodology/prompts--weekly-report.md) — AI-assisted generation
+- Thinking frameworks: [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md)

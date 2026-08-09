@@ -18,9 +18,9 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified
 related:
   - ./INDEX.md
-  - ../../new-hire/onboarding/yiai/onboarding.md
-  - ../../new-hire/onboarding/yipet/onboarding.md
-  - ../../new-hire/onboarding/yivad/onboarding.md
+  - ../../new-hire/onboarding/yiai--onboarding.md
+  - ../../new-hire/onboarding/yipet--onboarding.md
+  - ../../new-hire/onboarding/yivad--onboarding.md
   - ../../new-hire/onboarding/handoff-project.md
 ---
 

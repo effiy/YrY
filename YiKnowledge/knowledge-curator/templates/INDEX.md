@@ -19,7 +19,7 @@ acceptance_criteria:
   - "one-liner descriptions are specific enough to disambiguate
 related:
   - ./README.md
-  - ../../ai-engineer/methodology/prompts/README.md
+  - ../../ai-engineer/methodology/prompts--README.md
   - ./README.md
   - ../../executive/reading-list/README.md
   - ../../engineer/engineering/find-templates-and-prompts.md
@@ -43,13 +43,13 @@ related:
 
 | File | Type | One-line summary |
 |---|---|---|
-| [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) | prompt | BRD single-section generator |
-| [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) | prompt | Answer from retrieved context, references enforced |
-| [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) | prompt | Agent decision loop + tool calling |
-| [sql-generation-prompt.md](../../ai-engineer/methodology/prompts/sql-generation.md) | prompt | Natural language to read-only SQL |
-| [multilingual-translation-prompt.md](../../ai-engineer/methodology/prompts/multilingual-translation.md) | prompt | Multilingual translation locked by glossary |
-| [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) | prompt | Weekly report / retrospective generation |
-| [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) | summary | Code review (multilingual variant)  |
+| [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) | prompt | BRD single-section generator |
+| [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) | prompt | Answer from retrieved context, references enforced |
+| [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) | prompt | Agent decision loop + tool calling |
+| [sql-generation-prompt.md](../../ai-engineer/methodology/prompts--sql-generation.md) | prompt | Natural language to read-only SQL |
+| [multilingual-translation-prompt.md](../../ai-engineer/methodology/prompts--multilingual-translation.md) | prompt | Multilingual translation locked by glossary |
+| [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) | prompt | Weekly report / retrospective generation |
+| [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) | summary | Code review (multilingual variant)  |
 
 ## templates/
 

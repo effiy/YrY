@@ -35,7 +35,7 @@ related:
 - ./porter-five-forces.md
 - ./blue-ocean.md
 - ./second-curve.md
-- ../../product-manager/discovery/metrics/north-star-metric.md
+- ../../product-manager/discovery/metrics--north-star-metric.md
 tacit: false
 ---
 
@@ -144,6 +144,6 @@ tacit: false
 - Similar: [porter-five-forces-summary.md](./porter-five-forces.md) — five forces analysis
 - Similar: [blue-ocean-strategy-summary.md](./blue-ocean.md) — blue ocean strategy
 - Similar: [second-curve-summary.md](./second-curve.md) — second curve
-- Downstream: [../../product-manager/discovery/metrics/north-star-metric.md](../../product-manager/discovery/metrics/north-star-metric.md) — north-star metric
-- Downstream: [../../product-manager/discovery/metrics/ai-product-metrics.md](../../product-manager/discovery/metrics/ai-product-metrics.md) — AI metrics
-- Downstream: [../../product-manager/discovery/metrics/retention-and-churn.md](../../product-manager/discovery/metrics/retention-and-churn.md) — retention metrics
+- Downstream: [../../product-manager/discovery/metrics--north-star-metric.md](../../product-manager/discovery/metrics--north-star-metric.md) — north-star metric
+- Downstream: [../../product-manager/discovery/metrics--ai-product-metrics.md](../../product-manager/discovery/metrics--ai-product-metrics.md) — AI metrics
+- Downstream: [../../product-manager/discovery/metrics--retention-and-churn.md](../../product-manager/discovery/metrics--retention-and-churn.md) — retention metrics

@@ -26,10 +26,10 @@ related:
   - ../platform/embedding-model-selection.md
   - ../platform/orchestrate-agents-with-adk-and-agents-cli.md
   - ../../engineer/process/operate-as-a-forward-deployed-engineer.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "An enterprise RAG blueprint is not a RAG pattern; it is an end-to-end stack. Four fixed segments: Ingestion (LlamaParse) + Grounding (Agent Search) + Vector Storage (Vector Search) + Hybrid Search (BM25); each segment ties into compliance + measurement; distinguished from rag-design-patterns: the latter is about internal patterns, this file is about enterprise deployment blueprint"
 ---
 
@@ -82,7 +82,7 @@ An enterprise RAG blueprint is not a RAG pattern; it is an end-to-end stack. Thi
 | 1 hop | rag-design-patterns | [./rag-design-patterns.md](./rag-design-patterns.md) |
 | 1 hop | two-loop-eval | [./run-a-two-loop-llm-evaluation.md](./run-a-two-loop-llm-evaluation.md) |
 | 2 hops | adk | [../platform/orchestrate-agents-with-adk-and-agents-cli.md](../platform/orchestrate-agents-with-adk-and-agents-cli.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -144,4 +144,4 @@ An enterprise RAG blueprint is not a RAG pattern; it is an end-to-end stack. Thi
 - adk: [../platform/orchestrate-agents-with-adk-and-agents-cli.md](../platform/orchestrate-agents-with-adk-and-agents-cli.md) — ADK toolchain co-build
 - rag-deployment: [../foundations/prepare-a-rag-deployment-strategy.md](../../knowledge-curator/archive/strategies-legacy/ai-engineer/prepare-a-rag-deployment-strategy.md) — RAG deployment strategy co-build
 - fde-role: [../../engineer/process/operate-as-a-forward-deployed-engineer.md](../../engineer/process/operate-as-a-forward-deployed-engineer.md) — FDE co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

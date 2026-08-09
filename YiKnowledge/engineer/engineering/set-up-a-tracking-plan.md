@@ -46,7 +46,7 @@ tacit: false
 ## Summary
 
 - Process follows [data-governance-process.md](../../ai-engineer/data/data-governance.md) + [monitoring-governance-process.md](../process/monitoring-governance.md) + [requirement-review.md](../../product-manager/delivery/requirement-review.md)
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Data follows [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) + [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md)
 - Case study follows [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) + [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md)
 
@@ -81,15 +81,15 @@ When building tracking solutions / tracking plans / event schemas / data diction
 |---|---|
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) · [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) |
 | `work/processes/` | [data-governance-process.md](../../ai-engineer/data/data-governance.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — essence of tracking · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — reverse-think dirty data · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — essence of tracking · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse-think dirty data · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [eval-driven](../engineering/evaluation-driven-development.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [product-discovery-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-discovery-strategy.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) — event source |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) — event source |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [sql-generation-prompt.md](../../ai-engineer/methodology/prompts/sql-generation.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) |
+| `resources/prompts/` | [sql-generation-prompt.md](../../ai-engineer/methodology/prompts--sql-generation.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../process/raci-matrix.md) · [async-collaboration-principles-summary.md](../process/async-collaboration-principles.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — instrumentation communication |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — instrumentation communication |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [bugs/](../lessons) — instrumentation incident archive |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) |
@@ -99,15 +99,15 @@ When building tracking solutions / tracking plans / event schemas / data diction
 
 ## Action recommendations
 
-1. **First principles**: First ask "what business does the tracking serve / what happens if not built / ROI / user impact"; don't instrument for the sake of instrumenting; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md). 
-2. **Inversion**: First think "how could instrumentation go out of control (event drift / missing properties / PII leakage / volume explosion / double-firing / missing fires)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md). 
-3. **Second-order effects**: One piece of dirty data → cascades downstream / reports / models / decisions; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md). 
-4. **Occam**: The simplest event set that satisfies the business wins; don't pile up events; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md). 
+1. **First principles**: First ask "what business does the tracking serve / what happens if not built / ROI / user impact"; don't instrument for the sake of instrumenting; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md). 
+2. **Inversion**: First think "how could instrumentation go out of control (event drift / missing properties / PII leakage / volume explosion / double-firing / missing fires)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md). 
+3. **Second-order effects**: One piece of dirty data → cascades downstream / reports / models / decisions; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md). 
+4. **Occam**: The simplest event set that satisfies the business wins; don't pile up events; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md). 
 5. **SSOT**: Event schema must use SSOT + be shared across front/backend + be versioned; follow [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md). 
 6. **Naming**: Must use naming spec (snake_case / verb_noun_object) + prefix (app_/web_/server_) + property prefix (user_/page_/session_). 
 7. **Properties**: Must define required + optional + type + enum + example; follow [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md). 
 8. **JTBD**: Must follow [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) to understand user journeys + must instrument by funnel. 
-9. **Metric**: Must follow [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) + reverse-derive events + must have guardrails. 
+9. **Metric**: Must follow [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) + reverse-derive events + must have guardrails. 
 10. **Validation**: Must run SDK validation + schema validation + instrumentation QA + event regression; follow [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md). 
 11. **Integration**: Must use SDK + event gateway + dual-write (real-time + warehouse) + idempotency; follow [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md). 
 12. **PII**: Must follow [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + masking + minimize + access audit. 
@@ -116,11 +116,11 @@ When building tracking solutions / tracking plans / event schemas / data diction
 15. **RACI**: Must follow [raci-matrix-summary.md](../process/raci-matrix.md); PM / data / engineering / sponsor owners. 
 16. **Freeze period**: During promotions use [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) — don't change the instrumentation schema. 
 17. **Monitoring**: Must follow [monitoring-governance-process.md](../process/monitoring-governance.md) dashboards + thresholds + alerts (event volume / missing fires / double fires / validation failures). 
-18. **Communication**: Must follow [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) to communicate to sponsor + business. 
+18. **Communication**: Must follow [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) to communicate to sponsor + business. 
 19. **Retrospective**: After instrumentation incidents must run [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) retrospective + archive in [bugs/](../lessons). 
 20. **Quarterly audit**: Follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to scan whether the schema is still accurate + whether events are still used. 
 21. **ADR**: Instrumentation decisions must be captured in an ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md). 
-22. **Flywheel**: Good instrumentation → accurate data → good decisions → business growth; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md). 
+22. **Flywheel**: Good instrumentation → accurate data → good decisions → business growth; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md). 
 
 ## Anti-patterns
 

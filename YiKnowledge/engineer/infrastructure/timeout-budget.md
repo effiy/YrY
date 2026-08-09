@@ -24,10 +24,10 @@ related:
   - ../../oncall-sre/incident-response/respond-to-an-incident.md
   - ../engineering/scale-a-service.md
   - ../../oncall-sre/incident-response/do-a-rollback-drill.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 ---
 
 # Timeout Budget Pattern
@@ -255,4 +255,4 @@ metrics.histogram("request.duration", actual_duration, tags={
 - Observability: [./observability.md](../engineering/observability.md) — P99 / budget remainder
 - Rate limiting: [./rate-limiting.md](../engineering/rate-limiting.md) — queueing in budget
 - Journeys: [define-an-slo](../../tech-lead/roadmap/define-an-slo.md) + [respond-to-an-incident](../../oncall-sre/incident-response/respond-to-an-incident.md) + [scale-a-service](../engineering/scale-a-service.md) + [do-a-rollback-drill](../../oncall-sre/incident-response/do-a-rollback-drill.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (reverse-derive budget) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) (second-order consequences of timeout) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) (per-layer budget the simpler the better)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (reverse-derive budget) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) (second-order consequences of timeout) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) (per-layer budget the simpler the better)

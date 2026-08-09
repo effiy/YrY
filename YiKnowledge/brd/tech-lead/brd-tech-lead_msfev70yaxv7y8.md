@@ -16,7 +16,7 @@ team_size: 4
 status: proposed
 owner: YiPet primary owner
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yipet/aicr-port-rollout.md
+kb_path: tech-lead/decisions/yipet--aicr-port-rollout.md
 context: YiVad aicr has completed the 7-phase port with 9 stores + 8 modals + parity 100%. The YiPet browser extension must also support aicr (right-click on any web page to trigger AI code review). MV3 dual-world boundary + content-script injection + short-lived service-worker cadence means a large architectural gap. 
 decision: "5 phases: Phase 1 MV3 skeleton + dual-world boundary; Phase 2 shared client base layer vendor; Phase 3 ChatPanel + CodeViewer React rewrite; Phase 4 9 stores + 8 modal migration; Phase 5 cards/chart views + parity test + gradual rollout."
 alternatives: B. iframe embedding of YiVad — CSP limits + poor UX; C. wait for YiVad to extract a React package — uncontrollable cadence. A chosen. 
@@ -32,7 +32,7 @@ type: reference
 
 **ADR ID**: ADR-YiPet-AICR-Port-Rollout  |  **Project**: yipet  |  **Domain**: AICR Port
 **Decision Type**: architectural  |  **Team Size**: 4  |  **Status**: proposed  |  **Owner**: YiPet primary owner
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yipet/aicr-port-rollout.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yipet--aicr-port-rollout.md
 
 ## Context
 YiVad aicr has completed the 7-phase port with 9 stores + 8 modals + parity 100%. The YiPet browser extension must also support aicr (right-click on any web page to trigger AI code review). MV3 dual-world boundary + content-script injection + short-lived service-worker cadence means a large architectural gap. 
@@ -53,4 +53,4 @@ Each phase has independent rollback: Phase 1 remove skeleton; Phase 2 remove cli
 YiPet primary owner (decision); CTO (approval); YiVad primary owner (baseline reference); architecture group (review)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yipet/aicr-port-rollout.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yipet--aicr-port-rollout.md`

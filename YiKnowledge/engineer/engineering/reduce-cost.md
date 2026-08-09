@@ -46,10 +46,10 @@ tacit: false
 ## Summary
 
 - Capacity cost via [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) + [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md)
-- LLM routing via [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) + [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md)
+- LLM routing via [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) + [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md)
 - Fine-tuning decision via [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md)
 - Inference engine via [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md) — vLLM self-hosted vs closed-source API
-- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md)
+- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md)
 
 ## Core viewpoints
 
@@ -85,20 +85,20 @@ When reducing LLM cost / reducing infrastructure cost / cutting third-party depe
 | `tech/data/` | [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) — storage cost |
 | `methodology/ai-specific/` | [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md) · [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [staged-port-methodology-pattern.md](../architecture-design/staged-port-methodology.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `work/processes/` | [capacity-planning-process.md](../infrastructure/capacity-planning.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) · [dependency-upgrade-process.md](dependency-upgrade.md) · [tech-roadmap-review-summary.md](../process/tech-roadmap-review.md) · [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md) · [org-productivity-diagnosis-summary.md](../process/org-productivity-diagnosis.md) |
 | `work/tools/` | [vllm-ollama-deployment-summary.md](vllm-ollama-deployment.md) · [claude-code-tips-summary.md](claude-code-tips.md) · [pi-agent-harness-evolution-summary.md](pi-agent-harness-evolution.md) |
 | `lessons/wins/` | [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) · [yiai-llm-phase-{two,three,four,five}-win.md](../lessons) · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) · [yry-vite-to-rsbuild-migration-win.md](../lessons/win-yry-vite-to-rsbuild-migration.md) · [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) |
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) · [vite-to-rsbuild-migration.md](../lessons/gotcha-vite-to-rsbuild-migration.md) |
-| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) |
-| `product/metrics/` | [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) — revenue per user - cost per user |
-| `industry/reports/` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) — industry cost benchmark |
+| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) |
+| `product/metrics/` | [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) — revenue per user - cost per user |
+| `industry/reports--` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) — industry cost benchmark |
 
 ## Action recommendations
 
-1. **First principles**: First decompose cost structure (LLM / inference / storage / bandwidth / third-party / people / ops) then define cost-reduction goals; do not just look at the total bill; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: First imagine "cost reduction could hurt experience / how it could fail" then set guardrail metrics; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **LLM multi-provider routing**: simple tasks to cheap models / hard tasks to flagship / fallback to closed-source; see [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md).
+1. **First principles**: First decompose cost structure (LLM / inference / storage / bandwidth / third-party / people / ops) then define cost-reduction goals; do not just look at the total bill; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: First imagine "cost reduction could hurt experience / how it could fail" then set guardrail metrics; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **LLM multi-provider routing**: simple tasks to cheap models / hard tasks to flagship / fallback to closed-source; see [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md).
 4. **Prompt cache**: fixed system + fixed context via cache; high-frequency variable input not cached; monitor cache hit rate.
 5. **Fine-tuning**: high-frequency scenarios + sufficient data → LoRA / QLoRA; low-frequency → no fine-tuning, use closed-source; see [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md).
 6. **Self-hosting**: large scale + data-sensitive → vLLM self-hosting; see [vllm-ollama-deployment-summary.md](vllm-ollama-deployment.md) + [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md).
@@ -107,8 +107,8 @@ When reducing LLM cost / reducing infrastructure cost / cutting third-party depe
 9. **Third-party dependencies**: audit SaaS licenses + utilization + alternatives; see [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md) + [dependency-upgrade-process.md](dependency-upgrade.md).
 10. **Tech debt**: pay off high-ROI debt first (saves future work hours + reduces incidents); see [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) + [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md).
 11. **People efficiency**: automation + toolchain + documentation + AI assistance; see [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md) + [claude-code-tips-summary.md](claude-code-tips.md).
-12. **Flywheel**: money saved from cost reduction is reinvested in automation / eval sets / documentation → further cost reduction; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
-13. **Second-order**: cost reduction may make architecture more brittle / increase team cognitive load; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
+12. **Flywheel**: money saved from cost reduction is reinvested in automation / eval sets / documentation → further cost reduction; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
+13. **Second-order**: cost reduction may make architecture more brittle / increase team cognitive load; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
 14. **Retrospective**: quarterly retrospective on cost-reduction results + guardrail metrics + next-quarter goals; see [tech-roadmap-review-summary.md](../process/tech-roadmap-review.md).
 
 ## Anti-patterns

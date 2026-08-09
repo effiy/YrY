@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** agents cli alpha instability, **so that** same mistake avoided.
 
-> Google Agents CLI was released in Alpha on 2026-04-22; Alpha-stage breaking changes are frequent (command renames / output format changes / skill package structure changes / default behavior changes); FDE customer-production pipelines pin the version + review quarterly + upgrade via pairwise comparison. This gotcha is the basis for [ADR Two-loop eval gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) §Risk #3; see [ADK + Agents CLI](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md) §Alpha instability.
+> Google Agents CLI was released in Alpha on 2026-04-22; Alpha-stage breaking changes are frequent (command renames / output format changes / skill package structure changes / default behavior changes); FDE customer-production pipelines pin the version + review quarterly + upgrade via pairwise comparison. This gotcha is the basis for [ADR Two-loop eval gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) §Risk #3; see [ADK + Agents CLI](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md) §Alpha instability.
 
 ## Summary
 
@@ -99,7 +99,7 @@ related:
 
 ## Action recommendations
 
-1. **Pin the version in production pipelines**: `uvx google-agents-cli@<version>`; do not pull latest ([ADR Two-loop eval gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) §Decision #7).
+1. **Pin the version in production pipelines**: `uvx google-agents-cli@<version>`; do not pull latest ([ADR Two-loop eval gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) §Decision #7).
 2. **Pin the version in CI**: CI must pin `@<version>`; do not `setup` and pull latest.
 3. **Pairwise upgrade**: upgrades must run pairwise (new × old eval run); quantify drift.
 4. **Quarterly review of release notes**: assess breaking changes; FDE Practice Lead reviews quarterly.
@@ -125,7 +125,7 @@ related:
 ## Related
 
 - [../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md) — ADK + Agents CLI overview and Alpha instability context
-- [../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) — ADR two-loop eval gate that references this gotcha as Risk #3
+- [../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) — ADR two-loop eval gate that references this gotcha as Risk #3
 - [./gotcha-air-gap-first-boot-surprise.md](./gotcha-air-gap-first-boot-surprise.md) — Another FDE customer-facing gotcha in air-gapped environments
 - [./gotcha-no-lockfile-supply-chain-risk.md](./gotcha-no-lockfile-supply-chain-risk.md) — Supply chain risk gotcha with similar version-pinning lessons
-- [../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) — ADR for air-gap regulated clients in FDE context
+- [../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) — ADR for air-gap regulated clients in FDE context

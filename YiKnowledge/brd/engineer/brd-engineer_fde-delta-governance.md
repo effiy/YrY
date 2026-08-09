@@ -94,6 +94,6 @@ M5(2027 Q4): L3 maturity — Delta governance template cross-customer reuse rate
 - **KB Source**: `YiKnowledge/engineer/strategies/operate-as-a-forward-deployed-engineer.md`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents
 - **Related leaves**: [apply-consulting-frameworks](../../engineer/strategies/apply-consulting-frameworks.md) / [write-a-statement-of-work](../../engineer/processes/write-a-statement-of-work.md) / [run-a-site-survey](../../engineer/processes/run-a-site-survey.md) / [plan-day-two-operations](../../engineer/processes/plan-day-two-operations.md)
-- **Related ADR**: [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md)
+- **Related ADR**: [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md)
 - **Related failures**: [FDE Day 2 without internal owner](../../engineer/lessons/failures/fde-day-two-without-internal-owner.md) / [Discovery Three Whys skipped](../../engineer/lessons/gotchas/discovery-three-whys-skipped.md)
 - **External**: [Awesome-FDE-Roadmap](https://github.com/pierpaolo28/Awesome-FDE-Roadmap)

@@ -105,7 +105,7 @@ related:
 
 ## Related
 
-- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad/vitest-rollout.md) Phase 3 (the implementation ADR for this win landing)
+- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad--vitest-rollout.md) Phase 3 (the implementation ADR for this win landing)
 - Prerequisite: [yivad-vitest-phase-two-win](win-yivad-vitest-phase-two.md) Phase 2 stores
 - Prerequisite: [yivad-vitest-phase-one-win](win-yivad-vitest-phase-one.md) Phase 1 composables
 - Companion: [yivad-aicr-phase-port](win-yivad-aicr-phase-port.md) — 8 modal parity 100%

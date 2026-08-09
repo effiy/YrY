@@ -189,7 +189,7 @@ OKR and KPI are not mutually exclusive: OKR drives innovation and expansion, KPI
 
 ## Related
 - Same category: [heart-aarrr-metrics-summary.md](./heart-aarrr-metrics.md) (OKR sets direction, HEART/AARRR measures progress) ; [rice-ice-prioritization-summary.md](./rice-ice-prioritization.md) (OKR sets direction, RICE prioritizes requirements) ; [agile-product-management-summary.md](./agile-product-management.md) (OKR works with iteration cadence) 
-- Upstream: [../product/metrics/README.md](../discovery/metrics/README.md)
+- Upstream: [../product/metrics/README.md](../discovery/metrics--README.md)
 - Downstream: Team OKR documentation, quarterly retrospective
 
 ## References

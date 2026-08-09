@@ -42,8 +42,8 @@ related:
 |---|---|
 | Prioritize features | [frameworks/rice-ice-prioritization.md](./frameworks/rice-ice-prioritization.md) |
 | Understand user needs | [frameworks/jobs-to-be-done.md](./frameworks/jobs-to-be-done.md) |
-| Write a PRD | [discovery/prd/](./discovery/prd/) |
-| Define a north-star metric | [discovery/metrics/north-star-metric.md](./discovery/metrics/north-star-metric.md) |
+| Write a PRD | [discovery/prd--](./discovery/prd--) |
+| Define a north-star metric | [discovery/metrics--north-star-metric.md](./discovery/metrics--north-star-metric.md) |
 | Run a sprint retro | [delivery/retrospective.md](./delivery/retrospective.md) |
 | Analyze competitors | [strategy/competitive-analysis.md](./strategy/competitive-analysis.md) |
 

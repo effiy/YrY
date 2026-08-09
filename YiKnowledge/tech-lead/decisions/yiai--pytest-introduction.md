@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/dev-standards.md
   - ./route-llm-traffic-across-providers.md
-  - ../../../product-manager/projects/yiai/project-management.md
+  - ../../../product-manager/projects/yiai--project-management.md
   - ../../../product-manager/delivery/retrospective.md
   - ../../../product-manager/delivery/weekly-report.md
   - ../../../knowledge-curator/templates/adr.md

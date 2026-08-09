@@ -24,9 +24,9 @@ related:
   - ../roadmap/define-an-slo.md
   - ./handle-an-outage-communication.md
   - ../../engineer/process/collaborate-across-teams.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
   - ../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-five-whys-strategy.md
 tacit: postmortem does not assign blame; blameless; first draft within 72h; public; minute-level timeline; actions tracked to closure
 ---
@@ -61,9 +61,9 @@ After an incident, a postmortem must be written; not writing means the same clas
 | 2 hops | SLO definition | [../roadmap/define-an-slo.md](../roadmap/define-an-slo.md) |
 | 2 hops | outage communication | [./i-want-to-handle-an-outage-communication.md](./handle-an-outage-communication.md) |
 | 2 hops | cross-team collaboration | [../../engineer/process/collaborate-across-teams.md](../../engineer/process/collaborate-across-teams.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 | 2 hops | 5 whys | [../methodology/thinking-frameworks/five-whys.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-five-whys-strategy.md) |
 
 ## Action recommendations
@@ -95,4 +95,4 @@ After an incident, a postmortem must be written; not writing means the same clas
 - SLO: [../roadmap/define-an-slo.md](../roadmap/define-an-slo.md) — error budget burn
 - outage communication: [./i-want-to-handle-an-outage-communication.md](./handle-an-outage-communication.md) — customer comms
 - cross-team: [../../engineer/process/collaborate-across-teams.md](../../engineer/process/collaborate-across-teams.md) — cross-team impact
-- thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [5 whys](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-five-whys-strategy.md)
+- thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [5 whys](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-five-whys-strategy.md)

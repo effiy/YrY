@@ -36,7 +36,7 @@ acceptance_criteria: '1. llama-datasets + ragas 4 metrics 100% integrated
   7. oncall runbook 100% covered'
 stakeholders: CTO Office (decision); YiAi Platform Team 4 FTE (execution); AI Engineer Team (eval set);
   5 business teams (consumption); SRE/DevOps (CI ops); architecture committee (tech review)
-kb_path: tech-lead/decisions/yiai/rag-evaluation-infra
+kb_path: tech-lead/decisions/yiai--rag-evaluation-infra
 notes: Through llama-datasets bilingual eval set + ragas 4 metrics + CI recall regression >5% block, change RAG quality
   from manual spot-check to CI automation, with L3 platform maturity as the goal, evolving to online A/B evaluation (L4 100%)
   within 3 years. 
@@ -50,7 +50,7 @@ type: reference
 
 **BRD ID**: BRD-2026-075  |  **Project**: yiai  |  **Domain**: RAG Evaluation Infrastructure  |  **Quarter**: 2026 Q3
 **Priority**: P0  |  **Status**: In Progress  |  **Owner**: YiAi Platform Team + AI Eng
-**KB Source**: tech-lead/decisions/yiai/rag-evaluation-infra
+**KB Source**: tech-lead/decisions/yiai--rag-evaluation-infra
 
 ## Context
 Through llama-datasets bilingual eval set + ragas 4 metrics + CI recall regression >5% block, change RAG quality from manual spot-check to CI automation, with L3 platform maturity as the goal, evolving to online A/B evaluation (L4 100%) within 3 years. 
@@ -84,5 +84,5 @@ M1 (2026 Q3, 3 weeks): 50 documentation bilingual eval set + ragas integration; 
 3 years later: recall regression 100% detection, evaluation 5 minutes/PR, online A/B 100%; 5 years later: online A/B engine GA, L4 100%. 
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/rag-evaluation-infra`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--rag-evaluation-infra`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

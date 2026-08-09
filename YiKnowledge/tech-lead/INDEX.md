@@ -38,16 +38,16 @@ related:
 
 | ADR | Project | Decision |
 |---|---|---|
-| [route-llm-traffic-across-providers.md](./decisions/yiai/route-llm-traffic-across-providers.md) | YiAi | Multi-provider LLM traffic routing strategy |
-| [llm-multi-provider-rollout.md](./decisions/yiai/llm-multi-provider-rollout.md) | YiAi | LLM multi-provider phased rollout |
-| [rag-evaluation-infra.md](./decisions/yiai/rag-evaluation-infra.md) | YiAi | RAG evaluation infrastructure |
-| [brd-agent-launch.md](./decisions/yiai/brd-agent-launch.md) | YiAi | BRD agent launch decision |
-| [vitest-introduction.md](./decisions/yivad/vitest-introduction.md) | YiVad | Vitest test framework adoption |
-| [aicr-phase-port.md](./decisions/yivad/aicr-phase-port.md) | YiVad | AiCR port phases |
-| [biome-lint-format.md](./decisions/yipet/biome-lint-format.md) | YiPet | Biome lint/format migration |
-| [chrome-manifest-dual-world-boundary.md](./decisions/yipet/chrome-manifest-dual-world-boundary.md) | YiPet | MV3 dual-world boundary design |
-| [air-gap-first-for-regulated-clients.md](./decisions/fde/air-gap-first-for-regulated-clients.md) | FDE | Air-gap deployment for regulated clients |
-| [two-loop-eval-as-production-gate.md](./decisions/fde/two-loop-eval-as-production-gate.md) | FDE | Dual-loop evaluation as production gate |
+| [route-llm-traffic-across-providers.md](./decisions/yiai--route-llm-traffic-across-providers.md) | YiAi | Multi-provider LLM traffic routing strategy |
+| [llm-multi-provider-rollout.md](./decisions/yiai--llm-multi-provider-rollout.md) | YiAi | LLM multi-provider phased rollout |
+| [rag-evaluation-infra.md](./decisions/yiai--rag-evaluation-infra.md) | YiAi | RAG evaluation infrastructure |
+| [brd-agent-launch.md](./decisions/yiai--brd-agent-launch.md) | YiAi | BRD agent launch decision |
+| [vitest-introduction.md](./decisions/yivad--vitest-introduction.md) | YiVad | Vitest test framework adoption |
+| [aicr-phase-port.md](./decisions/yivad--aicr-phase-port.md) | YiVad | AiCR port phases |
+| [biome-lint-format.md](./decisions/yipet--biome-lint-format.md) | YiPet | Biome lint/format migration |
+| [chrome-manifest-dual-world-boundary.md](./decisions/yipet--chrome-manifest-dual-world-boundary.md) | YiPet | MV3 dual-world boundary design |
+| [air-gap-first-for-regulated-clients.md](./decisions/fde--air-gap-first-for-regulated-clients.md) | FDE | Air-gap deployment for regulated clients |
+| [two-loop-eval-as-production-gate.md](./decisions/fde--two-loop-eval-as-production-gate.md) | FDE | Dual-loop evaluation as production gate |
 
 ## Key architecture evaluations
 

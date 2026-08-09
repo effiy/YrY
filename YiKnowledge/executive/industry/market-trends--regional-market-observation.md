@@ -168,7 +168,7 @@ Action: [What should we do about it?]
 - Same category: [./half-year-retrospective.md](./half-year-retrospective.md) -- 2026 H1 retrospective
 - Same category: [./ai-market-trend-first-half.md](./ai-market-trend-first-half.md) -- 2026 H1 market trends
 - Upstream: [../reports/caict-ai-whitepaper.md](../reports/caict-ai-whitepaper.md) -- CAICT AI whitepaper
-- Downstream: [../../../product-manager/discovery/ux/cross-cultural-ux.md](../../../product-manager/discovery/ux/cross-cultural-ux.md) -- cross-cultural UX
+- Downstream: [../../../product-manager/discovery/ux--cross-cultural-ux.md](../../../product-manager/discovery/ux--cross-cultural-ux.md) -- cross-cultural UX
 
 ## References
 

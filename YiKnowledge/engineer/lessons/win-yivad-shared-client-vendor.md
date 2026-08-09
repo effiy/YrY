@@ -40,7 +40,7 @@ related:
 - ../../patterns/sse-streaming.md
 - ./yivad-vitest-phase-four.md
 - ./yivad-aicr-phase-port.md
-- ../../../tech-lead/decisions/yivad/vitest-rollout.md
+- ../../../tech-lead/decisions/yivad--vitest-rollout.md
 ---
 
 > **Status (2026-08-07)**: This file documents a planned methodology/design. The implementation described here has NOT been completed in the actual codebase. Treat as reference architecture, not as a completion report.
@@ -135,6 +135,6 @@ related:
 - Pattern co-build: [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) + [sse-streaming-pattern](../architecture-design/sse-streaming.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Test co-build: [./yivad-vitest-phase-four.md](win-yivad-vitest-phase-four.md) — SSE parser test reuse
 - aicr co-build: [./yivad-aicr-phase-port.md](win-yivad-aicr-phase-port.md) — aicr page calls vendor
-- Implementation ADR: [../../../tech-lead/decisions/yivad/vitest-rollout.md](../../tech-lead/decisions/yivad/vitest-rollout.md) — Phase 4 SSE parser co-build
-- YiAi endpoint: [../../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) — Phase 5 endpoint contract
+- Implementation ADR: [../../../tech-lead/decisions/yivad--vitest-rollout.md](../../tech-lead/decisions/yivad--vitest-rollout.md) — Phase 4 SSE parser co-build
+- YiAi endpoint: [../../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) — Phase 5 endpoint contract
 - Related win: [./yipet-aicr-phase-one.md](win-yipet-aicr-phase-one.md) — YiPet skeleton done awaiting Phase 2 vendor

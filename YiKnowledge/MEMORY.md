@@ -42,22 +42,22 @@ YiKnowledge/
 │
 ├── tech-lead/                   # Architecture decisions, ADRs, capacity, risk, roadmap
 │   ├── architecture/            # Tech selection, maturity models, DORA metrics
-│   ├── decisions/               # ADRs grouped by project (yiai/, yivad/, yipet/, fde/)
+│   ├── decisions/               # ADRs flat with project prefixes (yiai--, yivad--, yipet--, fde--)
 │   ├── capacity/                # Cost tracking, dependency audits, capacity planning
 │   ├── risk/                    # Risk register, postmortems, outage communication
 │   └── roadmap/                 # Roadmap planning, tech debt, PoC, SLO, deprecation
 │
 ├── product-manager/             # Frameworks, discovery, delivery, strategy, projects
 │   ├── frameworks/              # JTBD, Kano, RICE, HEART, dual-track agile
-│   ├── discovery/               # User research, PRD, UX patterns, product metrics
+│   ├── discovery/               # User research, PRD, UX, metrics (flat: metrics--, prd--, ux-- prefixes)
 │   ├── delivery/                # Sprint, meetings, retros, reports, reviews
 │   ├── strategy/                # Industry cases, competitive analysis
-│   └── projects/                # Per-project PM docs (YiAi, YiVad, YiPet)
+│   └── projects/                # Per-project PM docs (flat: yiai--, yipet--, yivad-- prefixes)
 │
 ├── ai-engineer/                 # AI foundations, methodology, platform, data
 │   ├── AI-AND-DATA.md           # Cross-role domain index: AI/ML, data engineering
 │   ├── foundations/             # Transformers, attention, RAG architectures
-│   ├── methodology/             # Prompt engineering, eval, agent patterns
+│   ├── methodology/             # Prompt engineering, eval, agent patterns (prompts merged in)
 │   ├── platform/                # Inference engines, vector DBs, deployment
 │   └── data/                    # Datasets, embeddings, data pipelines
 │
@@ -68,7 +68,7 @@ YiKnowledge/
 │
 ├── executive/                   # Strategy, industry, roadmap, reading
 │   ├── strategy/                # Business strategy, competitive positioning
-│   ├── industry/                # Reports, competitors, market trends
+│   ├── industry/                # Reports, competitors, market trends (flat: competitors--, market-trends--, reports--)
 │   ├── roadmap/                 # Org-level strategic planning
 │   └── reading-list/            # Executive learning resources
 │
@@ -76,18 +76,18 @@ YiKnowledge/
 │   ├── COLLABORATION.md         # Cross-role domain index: teamwork, process, meetings
 │   ├── governance/              # Lifecycle, inbox, triage, readiness checklist
 │   ├── diagrams/                # 4 diagrams: knowledge-map, user-journey, etc.
-│   ├── templates/               # Knowledge leaf template, thinking models
-│   ├── archive/                 # Deprecated files + strategies-legacy (2041 files)
-│   ├── people/                  # Experts, stakeholders, team directory
+│   ├── templates/               # Knowledge leaf template, thinking models (flat: thinking-- prefixes)
+│   ├── archive/                 # Archive index (strategies-legacy removed, 2041 files cleaned)
+│   ├── people/                  # Experts, stakeholders, team (flat: experts--, stakeholders--, team--)
 │   └── notes/                   # Curator working notes
 │
 ├── new-hire/                    # Onboarding and handoff
-│   └── onboarding/              # Per-project Day-1 checklists (yiai/, yivad/, yipet/)
+│   └── onboarding/              # Onboarding checklists (flat: yiai--, yipet--, yivad-- prefixes)
 │
 ├── skill-author/                # Claude Code skill design, yry-* family
 │   └── patterns/                # Skill patterns and conventions
 │
-├── brd/                         # BRD database export area (8 roles + 10 categories)
+├── brd/                         # BRD database export area (8 role categories)
 │   ├── README.md                # Index: DB SSOT + sync process + conventions
 │   └── */                       # 18 subdirectories: 8 roles + 10 categories
 ```
@@ -108,7 +108,7 @@ YiKnowledge/
 
 ## projects/ depth exception
 
-`engineer/projects/` may exceed the 3-level max for project-specific story hierarchies (e.g. `engineer/projects/yiai/stories/<feature>/<story>/`). This is intentional — stories are structured by feature area and the depth comes from the domain, not from knowledge-base layering. The 3-level rule applies to all other role directories.
+`engineer/projects/` uses flat story filenames with `--` separators (e.g. `engineer/projects/yiai/stories/ai-chat-function--user-send-message.md`). The yipet/brd/ sub-tree preserves its structured DB-export layout. Max depth is now 3 within YiKnowledge for all role directories except projects/.
 
 ## Mnemonic: Build → Ship → Run → Learn
 

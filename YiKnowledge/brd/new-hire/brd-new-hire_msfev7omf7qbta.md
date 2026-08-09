@@ -12,7 +12,7 @@ day_count: 1
 mentor: extension-lead@company.com
 buddy: mid-engineer@company.com
 status: adopted
-kb_path: new-hire/onboarding/yipet/onboarding.md
+kb_path: new-hire/onboarding/yipet--onboarding.md
 first_week_tasks: '1. Day 1: pnpm install + pnpm dev + load extension + get popup working + get background
   service worker working
 
@@ -35,7 +35,7 @@ type: reference
 
 **Role Track**: frontend  |  **Project**: yipet  |  **Day #**: 1  |  **Status**: adopted
 **Mentor**: extension-lead@company.com  |  **Buddy**: mid-engineer@company.com
-**KB Source**: new-hire/onboarding/yipet/onboarding.md
+**KB Source**: new-hire/onboarding/yipet--onboarding.md
 
 ## First Week Tasks
 1. Day 1: pnpm install + pnpm dev + load extension + get popup working + get background service worker working
@@ -55,4 +55,4 @@ Day 30: implement 1 popup feature; Day 60: lead aicr migration stage; Day 90: ca
 1. implement 3 popup PR items 2. understand MV3 dual-world 3. aicr migration stage 4. can mentor new hires
 
 ## References
-- **KB Source**: `YiKnowledge/new-hire/onboarding/yipet/onboarding.md`
+- **KB Source**: `YiKnowledge/new-hire/onboarding/yipet--onboarding.md`

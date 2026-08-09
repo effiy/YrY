@@ -124,7 +124,7 @@ related:
 - Upstream Phase 2: [./yipet-aicr-phase-two.md](win-yipet-aicr-phase-two.md) — shared client vendor landing
 - Upstream Phase 1: [./yipet-aicr-phase-one.md](win-yipet-aicr-phase-one.md) — MV3 skeleton
 - YiVad baseline: [./yivad-aicr-phase-port.md](win-yivad-aicr-phase-port.md) — 7-phase methodology reference
-- Implementation ADR: [../../../tech-lead/decisions/yipet/aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) — 5-phase progression
+- Implementation ADR: [../../../tech-lead/decisions/yipet--aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) — 5-phase progression
 - Pattern sharing: [one-to-one-mapping-migration-pattern](../architecture-design/one-to-one-mapping-migration.md) + [staged-port-methodology-pattern](../architecture-design/staged-port-methodology.md) + [sse-streaming-pattern](../architecture-design/sse-streaming.md) + [dual-world-boundary-pattern](../engineering/dual-world-boundary.md)
 - Gotcha sharing: [react-jsxdev-mismatch](gotcha-react-jsxdev-mismatch.md) — dev mode pitfall
 - Stack migration: [./yipet-stack-migration.md](win-yipet-stack-migration.md) — React 18.3 + AntD 5.21 + Biome 2.5

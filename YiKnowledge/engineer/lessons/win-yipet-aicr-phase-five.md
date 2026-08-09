@@ -25,7 +25,7 @@ related:
  - ./yipet-aicr-phase-two.md
  - ./yipet-aicr-phase-one.md
  - ./yivad-aicr-phase-port.md
- - ../../../tech-lead/decisions/yipet/aicr-port-rollout.md
+ - ../../../tech-lead/decisions/yipet--aicr-port-rollout.md
  - ../../patterns/staged-port-methodology.md
  - ../../patterns/one-to-one-mapping-migration.md
  - ../../patterns/dual-world-boundary.md
@@ -151,5 +151,5 @@ related:
 - [./win-yipet-aicr-phase-four.md](./win-yipet-aicr-phase-four.md) — Phase 4 store/modal migration, preceding stage
 - [./win-yipet-aicr-phase-one.md](./win-yipet-aicr-phase-one.md) — Phase 1 MV3 skeleton, first stage of the 5-stage closure
 - [./win-yivad-aicr-phase-port.md](./win-yivad-aicr-phase-port.md) — YiVad aicr baseline that Phase 5 cards/graph views align with
-- [../../tech-lead/decisions/yipet/aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) — ADR for aicr port 5-stage rollout + grayscale methodology
+- [../../tech-lead/decisions/yipet--aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) — ADR for aicr port 5-stage rollout + grayscale methodology
 - [../../architecture-design/ssot-view-layer.md](../architecture-design/ssot-view-layer.md) — SSOT view layer pattern used by cards/graph views consuming Zustand stores

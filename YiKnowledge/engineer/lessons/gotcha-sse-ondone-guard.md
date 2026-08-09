@@ -165,7 +165,7 @@ Key points:
 1. Backend SSE generator must send the `done: true` frame on all three paths: try / except / finally (landed in YiAi).
 2. Frontend SSE parser must wait for the `done: true` frame before returning; throw `YiAiError` on early stream end (guarded in the [shared client base layer](../engineering/shared-client-design.md)).
 3. `AbortController` distinguishes user cancel from exception interruption; UX does not mix.
-4. CI integration tests must include SSE streaming assertions ([ADR pytest #4](../../tech-lead/decisions/yiai/pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad/vitest-introduction.md)).
+4. CI integration tests must include SSE streaming assertions ([ADR pytest #4](../../tech-lead/decisions/yiai--pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad--vitest-introduction.md)).
 5. Reverse proxy (nginx) config `proxy_buffering off` + `proxy_read_timeout 1h` dedicated for SSE.
 6. Monitoring alert: SSE stream exception termination rate (completions without `done` frame) > 0.5% triggers alert.
 7. Cross-project shared SSE parser unit tests ([shared client design §action recommendations #5](../engineering/shared-client-design.md)): 8 cases (done frame normal / done frame missing / interruption / multi-data merge / heartbeat empty line / error field / abort / network jitter).
@@ -194,5 +194,5 @@ Key points:
 - Contract source: [YiAi dev standards](../projects/yivad/dev-standards.md) §SSE guard contract
 - Consumer side: [YiVad dev standards](../projects/yivad/dev-standards.md) §SSE onDone guard / [YiPet dev standards](../projects/yivad/dev-standards.md) §MV3 dual world
 - Design basis: [cross-project shared client design](../engineering/shared-client-design.md) §base layer API
-- Test infrastructure: [ADR pytest #4](../../tech-lead/decisions/yiai/pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad/vitest-introduction.md)
+- Test infrastructure: [ADR pytest #4](../../tech-lead/decisions/yiai--pytest-introduction.md) + [ADR Vitest #6](../../tech-lead/decisions/yivad--vitest-introduction.md)
 - Upstream: [journeys/i-want-to-check-engineering-gotchas](../process/check-engineering-gotchas.md) — scenario entry

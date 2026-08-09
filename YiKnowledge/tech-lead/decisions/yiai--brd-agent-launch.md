@@ -25,7 +25,7 @@ related:
   - ./route-llm-traffic-across-providers.md
   - ./pytest-introduction.md
   - ./rag-evaluation-infra.md
-  - ../../../product-manager/projects/yiai/project-management.md
+  - ../../../product-manager/projects/yiai--project-management.md
   - ../../../engineer/lessons/win-yiai-brd-agent-launch.md
   - ../../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md
   - ../../../knowledge-curator/templates/adr.md
@@ -171,7 +171,7 @@ Landing checklist:
 - **[yiai-brd-agent-launch win](../../../engineer/lessons/win-yiai-brd-agent-launch.md)**: this ADR's landing case.
 - **[yiai-rag-hybrid-retrieval win](../../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md)**: stage 2 RAG integration basis.
 - **[sse-ondone-guard gotcha](../../../engineer/lessons/gotcha-sse-ondone-guard.md)**: stage 3 streaming + interruptible basis.
-- **[BRD generation prompt](../../../ai-engineer/methodology/prompts/brd-generation.md)**: stage 1 prompt design reference.
+- **[BRD generation prompt](../../../ai-engineer/methodology/prompts--brd-generation.md)**: stage 1 prompt design reference.
 - **[YiDoc BRD template](../../../knowledge-curator/templates/brd.md)**: stage 1 output structure contract reference.
 
 ## 12. References

@@ -25,7 +25,7 @@ related:
 
 > A Chrome MV3 browser extension that injects an interactive companion into any web page, with multi-role AI chat, a React 18 + Ant Design 5 popup, on-demand CDN resource injection, full i18n (en + zh_CN), and timezone-aware display. Powered by a local YiAi FastAPI backend. Built with **Rsbuild + TypeScript**.
 
-> **New-hire onboarding** -> `YiKnowledge/new-hire/onboarding/yipet/onboarding.md` (8 sections: setup / workflow / pitfall quick-lookup / Day-1 tasks)
+> **New-hire onboarding** -> `YiKnowledge/new-hire/onboarding/yipet--onboarding.md` (8 sections: setup / workflow / pitfall quick-lookup / Day-1 tasks)
 
 ## Summary
 

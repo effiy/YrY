@@ -111,5 +111,5 @@ related:
 - [./win-yipet-aicr-phase-one.md](./win-yipet-aicr-phase-one.md) — Phase 1 MV3 skeleton establishing dual-world boundary
 - [./win-yipet-aicr-phase-three.md](./win-yipet-aicr-phase-three.md) — Phase 3 ChatPanel/CodeViewer that consumes the migrated stores
 - [./win-yipet-aicr-phase-five.md](./win-yipet-aicr-phase-five.md) — Phase 5 cards/graph views consuming the 9 Zustand store SSOT
-- [../../tech-lead/decisions/yipet/aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) — ADR for aicr port 5-stage rollout
+- [../../tech-lead/decisions/yipet--aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) — ADR for aicr port 5-stage rollout
 - [../../architecture-design/one-to-one-mapping-migration.md](../architecture-design/one-to-one-mapping-migration.md) — 1:1 mapping migration pattern used in Pinia to Zustand paradigm migration

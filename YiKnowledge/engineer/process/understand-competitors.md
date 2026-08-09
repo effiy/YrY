@@ -25,9 +25,9 @@ acceptance_criteria:
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified"
 related:
-- ../../executive/industry/competitors/README.md
-- ../../executive/industry/reports/README.md
-- ../../executive/industry/market-trends/README.md
+- ../../executive/industry/competitors--README.md
+- ../../executive/industry/reports--README.md
+- ../../executive/industry/market-trends--README.md
 - ../../executive/strategy/README.md
 review_cycle: quarterly
 tacit: false
@@ -73,19 +73,19 @@ During quarterly planning, new business initiatives, overseas expansion, or benc
 
 | Hop 1 (category/leaf)  | Hop 2 (specific file)  |
 |---|---|
-| `../../executive/industry/competitors` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors/llm-vendor-landscape.md) · [competitor-analysis-template.md](../../executive/industry/competitors/competitor-analysis.md) |
-| `../../executive/industry/reports` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) |
+| `../../executive/industry/competitors` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md) · [competitor-analysis-template.md](../../executive/industry/competitors--competitor-analysis.md) |
+| `../../executive/industry/reports` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) |
 | `../../executive/industry/market-trends` (to be added)  | ai-market-trend-first-half.md · regional-market-observation.md |
 | `../../product-manager/industry-cases` (to be added)  | ai-customer-service-cases.md · ai-after-sales-cases.md |
 | `../../executive/strategy` | [porter-five-forces-summary.md](../../executive/strategy/porter-five-forces.md) · [blue-ocean-strategy-summary.md](../../executive/strategy/blue-ocean.md) · [business-model-canvas-summary.md](../../executive/strategy/business-model-canvas.md) · [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [second-curve-summary.md](../../executive/strategy/second-curve.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) |
-| `../../product-manager/discovery/ux` | [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md) |
+| `../../product-manager/discovery/ux` | [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) |
 | `../brd/reference/` | [regulations.md](./../../brd/README.md) · [countries.md](./../../brd/README.md) |
 
 ## Action recommendations
 
-1. First read `industry/competitors/llm-vendor-landscape-summary.md` to understand the large-model vendor landscape
+1. First read `industry/competitors--llm-vendor-landscape-summary.md` to understand the large-model vendor landscape
 2. Use `competitor-analysis-template.md` to write a horizontal and vertical comparison of target competitors
-3. Cross-check trend judgments with the latest annual report under `industry/reports/`
+3. Cross-check trend judgments with the latest annual report under `industry/reports--`
 4. Pick 1-2 strategy frameworks (Porter's Five Forces / BMC / Blue Ocean) and apply them to your own business canvas
 5. For overseas business, must-check `brd/reference/regulations.md` + `cross-cultural-ux-summary.md`
 6. Monthly review of external content where `last_verified` is over half a year; update or move to `archive/`

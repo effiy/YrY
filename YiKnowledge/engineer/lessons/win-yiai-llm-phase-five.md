@@ -103,6 +103,6 @@ Latency P95 240ms (Phase 4 290ms → Phase 5 240ms, -18%): provider routing hits
 
 - [./win-yiai-llm-phase-four.md](./win-yiai-llm-phase-four.md) — Phase 4 generation-side switch, prerequisite for Phase 5 endpoint layer
 - [./win-yiai-llm-phase-three.md](./win-yiai-llm-phase-three.md) — Phase 3 streaming rollout, prerequisite for the SSE endpoint contract
-- [../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) — ADR for multi-provider 5-stage rollout methodology
-- [../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) — ADR for traffic routing across providers
+- [../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) — ADR for multi-provider 5-stage rollout methodology
+- [../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) — ADR for traffic routing across providers
 - [./win-yiai-rag-hybrid-retrieval.md](./win-yiai-rag-hybrid-retrieval.md) — RAG hybrid retrieval consumed by the LLM endpoint

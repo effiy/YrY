@@ -32,7 +32,7 @@ related:
 - ../../engineer/projects/build-a-rag-pipeline.md
 - ../../tech-lead/architecture/design-architecture-decision.md
 - ../../engineer/infrastructure/roll-out-a-migration.md
-- ../../tech-lead/decisions/yiai/brd-agent-launch.md
+- ../../tech-lead/decisions/yiai--brd-agent-launch.md
 - ../../engineer/lessons/failures/ai-product-launch-lessons.md
 - ../../ai-engineer/methodology/agent-architecture-patterns.md
 review_cycle: quarterly
@@ -47,7 +47,7 @@ tacit: false
 
 ## Summary
 
-- launch methodology via [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) + [yiai-brd-agent-launch win](../../engineer/lessons/win-yiai-brd-agent-launch.md): 5 phases (structure contract first → RAG > long prompt → streaming → editable stream-back → grayscale + feedback loop) 
+- launch methodology via [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) + [yiai-brd-agent-launch win](../../engineer/lessons/win-yiai-brd-agent-launch.md): 5 phases (structure contract first → RAG > long prompt → streaming → editable stream-back → grayscale + feedback loop) 
 - RAG pipeline via [i-want-to-build-a-rag-pipeline](../../engineer/projects/build-a-rag-pipeline.md) + [inline-citation-rag-pattern](../../engineer/engineering/inline-citation-rag.md)
 - Agent architecture via [agent-architecture-patterns-summary](../../ai-engineer/methodology/agent-architecture-patterns.md)
 - risk reference via [ai-product-launch-lessons-summary](../../engineer/lessons/failure-ai-product-launch-lessons.md) + [incident-postmortem-summary](../../engineer/lessons/failure-incident-postmortem.md)
@@ -80,7 +80,7 @@ New AI product / feature (BRD agent / Copilot / conversational query / auto-gene
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `projects/YiAi/` | [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) |
+| `projects/YiAi/` | [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) |
 | `methodology/ai-specific/` | [agent-architecture-patterns-summary.md](../../ai-engineer/methodology/agent-architecture-patterns.md) · [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) · [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) · [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) |
 | `methodology/engineering-patterns/` | [inline-citation-rag-pattern.md](../../engineer/engineering/inline-citation-rag.md) · [sse-streaming-pattern.md](../../engineer/architecture-design/sse-streaming.md) · [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [staged-port-methodology-pattern.md](../../engineer/architecture-design/staged-port-methodology.md) |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) · [yiai-rag-hybrid-retrieval-win.md](../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-llm-phase-five-win.md](../../engineer/lessons/win-yiai-llm-phase-five.md) |
@@ -94,7 +94,7 @@ New AI product / feature (BRD agent / Copilot / conversational query / auto-gene
 1. **Structure contract first**: define input / output / intermediate state schema; contract first avoids "tune then change contract" rework. 
 2. **RAG > long prompt**: knowledge source via RAG ([inline-citation-rag-pattern](../../engineer/engineering/inline-citation-rag.md)) over long prompt stacking context; easier incremental update + evaluation. 
 3. **streaming**: must run [sse-streaming-pattern](../../engineer/architecture-design/sse-streaming.md), done frame guard + finally releaseLock. 
-4. **editable stream-back**: user-edited content stream back to knowledge base ([knowledge-watcher ADR](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md)) — forming feedback loop. 
+4. **editable stream-back**: user-edited content stream back to knowledge base ([knowledge-watcher ADR](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md)) — forming feedback loop. 
 5. **grayscale**: 1% → 10% → 50% → 100%; each tier evaluation set gate + monitoring triad ([yiai-llm-phase-three-win](../../engineer/lessons/win-yiai-llm-phase-three.md)) . 
 6. **feedback loop**: user feedback → classify (recall / latency / safety) → improve → next grayscale round; closed-loop or not decides product life/death. 
 7. **safety**: via [prompt-injection-defense-summary](../../ai-engineer/methodology/prompt-injection-defense.md) + [hallucination-mitigation-summary](../../ai-engineer/methodology/hallucination-mitigation.md). 

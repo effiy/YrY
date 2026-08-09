@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** no lockfile supply chain risk, **so that** same mistake avoided.
 
-> YiAi `requirements.txt` has no version pinning, no lockfile, no `pip-audit`, no `min-release-age` equivalent strategy — the supply chain attack surface is huge. This gotcha is the basis for [ADR multi-provider LLM route §risk #5](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) and [ADR pytest §risk](../../tech-lead/decisions/yiai/pytest-introduction.md), referencing [Pi Agent Harness Evolution](../engineering/pi-agent-harness-evolution.md) §supply chain hardening checklist.
+> YiAi `requirements.txt` has no version pinning, no lockfile, no `pip-audit`, no `min-release-age` equivalent strategy — the supply chain attack surface is huge. This gotcha is the basis for [ADR multi-provider LLM route §risk #5](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) and [ADR pytest §risk](../../tech-lead/decisions/yiai--pytest-introduction.md), referencing [Pi Agent Harness Evolution](../engineering/pi-agent-harness-evolution.md) §supply chain hardening checklist.
 
 ## Summary
 
@@ -51,7 +51,7 @@ related:
 - **lockfile is ground truth, not `requirements.txt`** — `uv` / `pip-tools` generate lockfile; CI installs lockfile, not `requirements.txt`.
 - **`pip-audit` is passive inspection, not active defense** — must pair with `min-release-age` equivalent strategy to block same-day dependencies.
 - **lifecycle script in Python is setup.py / pyproject.toml `[build-system]`** — pip executes it at install time; equivalent to npm `preinstall`, must have allowlist.
-- **Hardening is basic hygiene, not optional** — YiAi's current gap is marked "high / high" in [ADR multi-provider §risk #5](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md).
+- **Hardening is basic hygiene, not optional** — YiAi's current gap is marked "high / high" in [ADR multi-provider §risk #5](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md).
 
 ## Key information
 
@@ -199,7 +199,7 @@ Key points:
 
 ## Action recommendations
 
-1. Immediately introduce `uv` lockfile (Phase 1), landing in the same PR as [ADR multi-provider #6](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md).
+1. Immediately introduce `uv` lockfile (Phase 1), landing in the same PR as [ADR multi-provider #6](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md).
 2. CI adds `pip-audit` gate (Phase 2), CVE blocks PR.
 3. Implement `check_min_release_age.py` (Phase 3), blocks same-day dependencies.
 4. `audit_build_scripts.py` (Phase 4) scans `[build-system]`, lists non-standard hooks for re-review.
@@ -231,6 +231,6 @@ Key points:
 - Same category: [./README.md](./) — gotchas leaf entry
 - Same category: [./sse-ondone-guard.md](gotcha-sse-ondone-guard.md) — cross-project contract category pitfall
 - Gap source: [YiAi development standards](../projects/yivad/dev-standards.md) §supply chain hardening gap
-- Triggering ADR: [ADR multi-provider LLM route §risk #5](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) + [ADR pytest §risk](../../tech-lead/decisions/yiai/pytest-introduction.md)
+- Triggering ADR: [ADR multi-provider LLM route §risk #5](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) + [ADR pytest §risk](../../tech-lead/decisions/yiai--pytest-introduction.md)
 - Borrowed checklist: [Pi Agent Harness Evolution](../engineering/pi-agent-harness-evolution.md) §supply chain hardening checklist
 - upstream: [journeys/i-want-to-check-engineering-gotchas](../process/check-engineering-gotchas.md) — scenario entry

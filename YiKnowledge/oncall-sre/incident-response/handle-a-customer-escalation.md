@@ -31,7 +31,7 @@ related:
 - ../../engineer/process/handle-customer-feedback.md
 - ./respond-to-an-incident.md
 - ../../engineer/process/handle-outage-communication.md
-- ../../knowledge-curator/people/stakeholders/stakeholder-map.md
+- ../../knowledge-curator/people/stakeholders--stakeholder-map.md
 review_cycle: quarterly
 tacit: false
 last_verified: 2026-08-07
@@ -47,8 +47,8 @@ last_verified: 2026-08-07
 
 - Process: [incident-response-process.md](../../engineer/process/incident-response.md) + [hotfix-release-process.md](../../oncall-sre/release/hotfix-release.md) + [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md)
 - Template: [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) + [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) + [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md)
-- Thinking: [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md)
-- Notification: [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) + [i-want-to-handle-outage-communication.md](../../engineer/process/handle-outage-communication.md)
+- Thinking: [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md)
+- Notification: [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) + [i-want-to-handle-outage-communication.md](../../engineer/process/handle-outage-communication.md)
 
 ## Core viewpoints
 
@@ -73,17 +73,17 @@ When handling a customer escalation / VIP customer complaint / key customer inci
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/processes/` | [incident-response-process.md](../../engineer/process/incident-response.md) · [hotfix-release-process.md](../../oncall-sre/release/hotfix-release.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) · [oncall-rotation-process.md](../../engineer/process/oncall-rotation.md) · [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [project-handover-process.md](../../engineer/process/project-handover.md) · [cross-team-collaboration-process.md](../../engineer/process/cross-team-collaboration.md) · [knowledge-transfer-process.md](../../engineer/process/knowledge-transfer.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — escalation path |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — escalation owner |
-| `people/experts/` | [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md) — external experts |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — customer loss · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — reverse stream of loss · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) — communication style · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) — customer trust flywheel |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — escalation path |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — escalation owner |
+| `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external experts |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — customer loss · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse stream of loss · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) — communication style · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) — customer trust flywheel |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) — customer JTBD · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) — must-be / performance / delight · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) |
 | `resources/templates/` | [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) · [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../../engineer/process/raci-matrix.md) · [async-collaboration-principles-summary.md](../../engineer/process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) — customer health |
-| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux/ai-product-ux-patterns.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux/nielsen-heuristics.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) — customer health |
+| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux--ai-product-ux-patterns.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux--nielsen-heuristics.md) |
 | `product/strategy/` | [product-strategy-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-product-strategy.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) · [bugs/](../../engineer/lessons) — escalation archive |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) · [yiai-rag-hybrid-retrieval-win.md](../../engineer/lessons/win-yiai-rag-hybrid-retrieval.md) |
@@ -91,18 +91,18 @@ When handling a customer escalation / VIP customer complaint / key customer inci
 | `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — ticketing scenario |
 | `brd/domains/` | [after-sales.md](./../../brd/README.md) · [sales.md](./../../brd/README.md) · [customer-service.md](./../../brd/README.md) |
 | `industry/use-cases/` | [ai-after-sales-use-cases.md](../../product-manager/strategy) · [ai-customer-service-use-cases.md](../../product-manager/strategy) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) — AI-assisted notification |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) — AI-assisted notification |
 | `lifecycle/` | [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) · [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) |
 | `journeys/` | [../../engineer/process/handle-customer-feedback.md](../../engineer/process/handle-customer-feedback.md) · [./respond-to-an-incident.md](./respond-to-an-incident.md) · [../../engineer/process/handle-outage-communication.md](../../engineer/process/handle-outage-communication.md) · [../../tech-lead/risk/write-a-postmortem.md](../../tech-lead/risk/write-a-postmortem.md) |
 
 ## Action recommendations
 
-1. **First principles**: first ask "what is the customer loss / business impact / what happens if unsolved / ROI"; do not escalate for the sake of escalating; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "escalation handling could go out of control (lag / misjudgment / mis-notification / customer stream loss / team pressure)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Strong opinions loosely held**: communicating with customer must follow [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md); neither servile nor arrogant.
-4. **Second-order effects**: one escalation → customer trust fluctuation → renewal impact; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
+1. **First principles**: first ask "what is the customer loss / business impact / what happens if unsolved / ROI"; do not escalate for the sake of escalating; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "escalation handling could go out of control (lag / misjudgment / mis-notification / customer stream loss / team pressure)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Strong opinions loosely held**: communicating with customer must follow [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md); neither servile nor arrogant.
+4. **Second-order effects**: one escalation → customer trust fluctuation → renewal impact; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
 5. **Triage**: must use P0 / P1 / P2; tier by customer level + impact scope + SLA.
-6. **Escalation path**: must use [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md); sponsor / TL / CFO tiered trigger.
+6. **Escalation path**: must use [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md); sponsor / TL / CFO tiered trigger.
 7. **Notification**: must follow [i-want-to-handle-outage-communication.md](../../engineer/process/handle-outage-communication.md); 30min first notification + 4h progress + 24h closure.
 8. **Customer communication**: must use [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) + [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md); sync progress regularly.
 9. **Response**: must follow [i-want-to-respond-to-an-incident.md](./respond-to-an-incident.md) + [incident-response-process.md](../../engineer/process/incident-response.md); stabilization first, root cause second.
@@ -117,7 +117,7 @@ When handling a customer escalation / VIP customer complaint / key customer inci
 18. **Retrospective**: must follow [i-want-to-write-a-postmortem.md](../../tech-lead/risk/write-a-postmortem.md) + [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md); archive under [lessons/failures/bugs/](../../engineer/lessons).
 19. **Process improvement**: after retrospective, must land process improvement + runbook update + quarterly scan of same class.
 20. **ADR**: key fix decisions must land in ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-21. **Flywheel**: escalation handled well → trust rises → renewal; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+21. **Flywheel**: escalation handled well → trust rises → renewal; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 
@@ -137,4 +137,4 @@ When handling a customer escalation / VIP customer complaint / key customer inci
 - similar journey: [./respond-to-an-incident.md](./respond-to-an-incident.md) — incident response
 - similar journey: [../../engineer/process/handle-outage-communication.md](../../engineer/process/handle-outage-communication.md) — notification
 - similar journey: [../../tech-lead/risk/write-a-postmortem.md](../../tech-lead/risk/write-a-postmortem.md) — retrospective
-- upstream: [../../knowledge-curator/people/stakeholders/README.md](../../knowledge-curator/people/stakeholders/README.md) — stakeholders leaf entry
+- upstream: [../../knowledge-curator/people/stakeholders--README.md](../../knowledge-curator/people/stakeholders--README.md) — stakeholders leaf entry

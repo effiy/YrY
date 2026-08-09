@@ -36,7 +36,7 @@ related:
 - ../../oncall-sre/release/release.md
 - ../../oncall-sre/release/canary-release.md
 - ../../tech-lead/roadmap/plan-tech-roadmap.md
-- ../../product-manager/discovery/metrics/north-star-metric.md
+- ../../product-manager/discovery/metrics--north-star-metric.md
 tacit: false
 ---
 

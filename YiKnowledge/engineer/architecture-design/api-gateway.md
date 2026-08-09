@@ -39,7 +39,7 @@ related:
 - ./graceful-degradation.md
 - ./bulkhead.md
 - ../../ai-engineer/foundations/prepare-an-llm-observability-strategy.md
-- ../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+- ../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 tacit: A gateway is not just a reverse proxy; it is a contract. Routing + auth + rate limiting + circuit breaking + observability + protocol conversion; single entry; composable
 ---
 

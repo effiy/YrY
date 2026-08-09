@@ -106,8 +106,8 @@ related:
 
 ## Related
 
-- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad/vitest-rollout.md) Phase 2 (the implementation ADR landed by this win)
-- Decision: [ADR-Vitest-Introduction](../../tech-lead/decisions/yivad/vitest-introduction.md)
+- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad--vitest-rollout.md) Phase 2 (the implementation ADR landed by this win)
+- Decision: [ADR-Vitest-Introduction](../../tech-lead/decisions/yivad--vitest-introduction.md)
 - Prerequisite: [yivad-vitest-phase-one-win](win-yivad-vitest-phase-one.md) Phase 1 composables
 - Companion: [yivad-aicr-phase-port win](win-yivad-aicr-phase-port.md) § decoupled rollout
 - Methodology: [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [staged-port-methodology-pattern](../architecture-design/staged-port-methodology.md)

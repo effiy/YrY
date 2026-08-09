@@ -202,7 +202,7 @@ Dave McClure emphasizes: **don't spread effort evenly, find the weakest link to 
 
 ## Related
 - Same class: [okr-design-summary.md](./okr-design.md) (OKR sets direction, HEART/AARRR measures progress); [rice-ice-prioritization-summary.md](./rice-ice-prioritization.md) (metric-driven prioritization); [agile-product-management-summary.md](./agile-product-management.md) (iteration cadence + metric regression)
-- Upstream: [../product/metrics/README.md](../discovery/metrics/README.md)
+- Upstream: [../product/metrics/README.md](../discovery/metrics--README.md)
 - Downstream: YiVad (Engagement + Task Success), YiAi BRD (Activation + Retention)
 
 ## References

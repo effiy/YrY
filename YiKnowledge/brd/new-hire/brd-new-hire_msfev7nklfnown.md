@@ -12,7 +12,7 @@ day_count: 1
 mentor: frontend-lead@company.com
 buddy: mid-engineer@company.com
 status: adopted
-kb_path: new-hire/onboarding/yivad/onboarding.md
+kb_path: new-hire/onboarding/yivad--onboarding.md
 first_week_tasks: '1. Day 1 (30 min): pnpm install + pnpm dev + open http://localhost:8848
   in the browser + verify /login works + verify one ProTable list works + one v-auth test
 
@@ -35,7 +35,7 @@ type: reference
 
 **Role Track**: frontend  |  **Project**: yivad  |  **Day #**: 1  |  **Status**: adopted
 **Mentor**: frontend-lead@company.com  |  **Buddy**: mid-engineer@company.com
-**KB Source**: new-hire/onboarding/yivad/onboarding.md
+**KB Source**: new-hire/onboarding/yivad--onboarding.md
 
 ## First Week Tasks
 1. Day 1 (30 min): pnpm install + pnpm dev + open http://localhost:8848 in the browser + verify /login works + verify one ProTable list works + one v-auth test
@@ -55,4 +55,4 @@ Day 30: land 1 view domain; Day 60: lead an iteration; Day 90: can mentor new hi
 1. land 3 view domains 2. understand cross-project RPC contracts 3. master ProTable conventions 4. lead 1 iteration
 
 ## References
-- **KB Source**: `YiKnowledge/new-hire/onboarding/yivad/onboarding.md`
+- **KB Source**: `YiKnowledge/new-hire/onboarding/yivad--onboarding.md`

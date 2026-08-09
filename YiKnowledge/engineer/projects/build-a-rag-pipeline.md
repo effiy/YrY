@@ -46,9 +46,9 @@ tacit: false
 ## Summary
 
 - Retrieval + rerank + citation go [inline-citation-rag-pattern](../engineering/inline-citation-rag.md) (QueryFusionRetriever vector+BM25 + LLMRerank + `_NumberSourcesPostprocessor` numbering + same-frame source + scope filter) 
-- Evaluation goes [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) (50 docs bilingual + ragas 4 metrics + CI gate fallback > 5% block) 
-- Knowledge sync goes [knowledge watcher ADR](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) (apscheduler polling + incremental index + debounce + fail retry; bypass macOS FSEvents) 
-- Generation side multi provider goes [LLM rollout ADR](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) (`llama_index.llms.*` abstraction + 5 stage grayscale) 
+- Evaluation goes [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) (50 docs bilingual + ragas 4 metrics + CI gate fallback > 5% block) 
+- Knowledge sync goes [knowledge watcher ADR](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) (apscheduler polling + incremental index + debounce + fail retry; bypass macOS FSEvents) 
+- Generation side multi provider goes [LLM rollout ADR](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) (`llama_index.llms.*` abstraction + 5 stage grayscale) 
 - Streaming output goes [sse-streaming-pattern](../architecture-design/sse-streaming.md) (three-way done frame + releaseLock + abort section) 
 
 ## Core viewpoints
@@ -79,11 +79,11 @@ When building RAG knowledge base Q&A (like YiAi BRD Agent / after-sales knowledg
 |---|---|
 | `methodology/engineering-patterns/` | [inline-citation-rag-pattern.md](../engineering/inline-citation-rag.md) · [sse-streaming-pattern.md](../architecture-design/sse-streaming.md) · [rpc-envelope-pattern.md](../architecture-design/rpc-envelope.md) · [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) |
 | `methodology/ai-specific/` | [rag-design-patterns-summary.md](../../ai-engineer/methodology/rag-design-patterns.md) · [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [agent-architecture-patterns-summary.md](../../ai-engineer/methodology/agent-architecture-patterns.md) · [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) |
-| `projects/YiAi/` | [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [architecture-summary.md](../../engineer/projects/yiai/architecture.md) · [functional-modules-summary.md](../../engineer/projects/yiai/functional-modules.md) |
+| `projects/YiAi/` | [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [architecture-summary.md](../../engineer/projects/yiai/architecture.md) · [functional-modules-summary.md](../../engineer/projects/yiai/functional-modules.md) |
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) · [yiai-llm-phase-two-win.md](../lessons/win-yiai-llm-phase-two.md) · [yiai-llm-phase-three-win.md](../lessons/win-yiai-llm-phase-three.md) |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../lessons/gotcha-macos-fsevents-silent-drop.md) |
 | `tech/ai-platform/` | [vector-db-comparison-summary.md](../../ai-engineer/platform/vector-db-comparison.md) · [embedding-model-selection-summary.md](../../ai-engineer/platform/embedding-model-selection.md) · [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) · [llama-index-evolution-summary.md](../../ai-engineer/platform/llama-index-evolution.md) |
-| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts/agent-tool-use.md) |
+| `resources/prompts/` | [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) · [agent-tool-use-prompt.md](../../ai-engineer/methodology/prompts--agent-tool-use.md) |
 
 ## Action recommendations
 

@@ -25,10 +25,10 @@ related:
   - ../architecture-design/decompose-a-monolith.md
   - ../architecture-design/implement-an-api.md
   - ../projects/build-a-rag-pipeline.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 ---
 
 # CQRS Read-Write Separation Pattern / CQRS Pattern
@@ -246,4 +246,4 @@ read: semantic retrieval via vector DB + key fields via DB
 - Observable: [./observability.md](../engineering/observability.md) — lag monitoring
 - Graceful degradation: [./graceful-degradation.md](./graceful-degradation.md) — read model failure degradation
 - Journeys: [decompose-a-monolith](decompose-a-monolith.md) + [implement-an-api](implement-an-api.md) + [build-a-rag-pipeline](../projects/build-a-rag-pipeline.md) + [set-up-a-data-pipeline](../infrastructure/set-up-a-data-pipeline.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (read-write asymmetry essence) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (inversion = do not force) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) (lag second-order) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) (CRUD suffices, do not introduce)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (read-write asymmetry essence) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (inversion = do not force) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) (lag second-order) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) (CRUD suffices, do not introduce)

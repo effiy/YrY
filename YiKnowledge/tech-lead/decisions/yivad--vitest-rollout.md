@@ -22,7 +22,7 @@ related:
   - ./vitest-introduction.md
   - ../../../engineer/projects/yivad/architecture.md
   - ../../../engineer/projects/yivad/dev-standards.md
-  - ../../../product-manager/projects/yivad/project-management.md
+  - ../../../product-manager/projects/yivad--project-management.md
   - ../../../engineer/architecture-design/sse-streaming.md
   - ../../../engineer/architecture-design/ssot-view-layer.md
   - ../../../engineer/engineering/evaluation-driven-development.md

@@ -111,8 +111,8 @@ related:
 
 ## Related
 
-- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad/vitest-rollout.md) Phase 1 (the implementation ADR this win landing)
-- Decision: [ADR-Vitest-Introduction](../../tech-lead/decisions/yivad/vitest-introduction.md)
+- Upstream: [ADR-Vitest-Rollout](../../tech-lead/decisions/yivad--vitest-rollout.md) Phase 1 (the implementation ADR this win landing)
+- Decision: [ADR-Vitest-Introduction](../../tech-lead/decisions/yivad--vitest-introduction.md)
 - Methodology: [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) — coverage gate + regression threshold
 - Companion: [sse-streaming-pattern](../architecture-design/sse-streaming.md) — Phase 4 SSE parser parity co-build
 - Same class: [./README.md](./) — wins leaf entry

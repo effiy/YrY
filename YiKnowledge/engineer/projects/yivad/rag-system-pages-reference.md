@@ -23,7 +23,7 @@ acceptance_criteria:
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified"
 related:
-- ../../../new-hire/onboarding/yivad/onboarding.md
+- ../../../new-hire/onboarding/yivad--onboarding.md
 - ./engineering/claude.md
 - ../INDEX.md
 tacit: false

@@ -100,7 +100,7 @@ The YiVad knowledge base leaf view layer needs to cover 28 leaf items (subdirect
 - Knowledge graph: `llama_index.graph` + `KnowledgeGraphIndex`; add "entity relation graph" to leaf view layer (aligned with [llama_index evolution](../../ai-engineer/platform/llama-index-evolution.md) §YiVad)
 - "Ask RAG about this leaf" button: call `/rag` with `scope=category/leaf/` (aligned with [yiai-rag-hybrid-retrieval win](win-yiai-rag-hybrid-retrieval.md) §scope filter)
 - Leaf metadata visualization: YiVad adds "leaf metadata dashboard" showing current SSOT status
-- Vitest tests SSOT-routing consistency: co-build with [ADR Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md); CI runs consistency tests
+- Vitest tests SSOT-routing consistency: co-build with [ADR Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md); CI runs consistency tests
 
 ## Action recommendations
 
@@ -108,7 +108,7 @@ The YiVad knowledge base leaf view layer needs to cover 28 leaf items (subdirect
 2. Derive routing from SSOT, do not hand-write; CI validates SSOT-routing consistency.
 3. Single-line wrapper = thinnest connecting layer; only passes props to generic component; do not write business logic.
 4. Add / delete / modify leaf metadata only in SSOT; wrapper + routing + generic component all unchanged.
-5. CI runs SSOT-routing consistency tests (co-build with [ADR Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md)).
+5. CI runs SSOT-routing consistency tests (co-build with [ADR Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md)).
 6. Stabilize generic component for 1 quarter before extracting to npm private package; do not extract too early.
 7. When adding "ask RAG about this leaf" button, call `/rag` with `scope=category/leaf/` (aligned with [yiai-rag-hybrid-retrieval win](win-yiai-rag-hybrid-retrieval.md)).
 
@@ -130,4 +130,4 @@ The YiVad knowledge base leaf view layer needs to cover 28 leaf items (subdirect
 - [./win-yry-vite-to-rsbuild-migration.md](./win-yry-vite-to-rsbuild-migration.md) — YiVad Rsbuild migration that enabled the leaf view build pipeline
 - [./win-yiai-rag-hybrid-retrieval.md](./win-yiai-rag-hybrid-retrieval.md) — RAG scope filter enabling per-leaf Q&A referenced in follow-up evolution
 - [../../architecture-design/ssot-view-layer.md](../architecture-design/ssot-view-layer.md) — SSOT view layer pattern
-- [../../tech-lead/decisions/yivad/vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) — ADR for Vitest CI testing of SSOT-routing consistency
+- [../../tech-lead/decisions/yivad--vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) — ADR for Vitest CI testing of SSOT-routing consistency

@@ -31,7 +31,7 @@ acceptance_criteria:
 related:
 - ./ai-product-ux-patterns.md
 - ./nielsen-heuristics.md
-- ../../../ai-engineer/methodology/prompts/multilingual-translation.md
+- ../../../ai-engineer/methodology/prompts--multilingual-translation.md
 tacit: false
 ---
 
@@ -149,5 +149,5 @@ i18n is the foundation, L10n is the surface, cultural adaptation is the deep lay
 
 - Same category: [ai-product-ux-patterns-summary.md](./ai-product-ux-patterns.md) — AI product UX patterns (cross-cultural part)
 - Same category: [nielsen-heuristics-summary.md](./nielsen-heuristics.md) — general usability
-- Upstream: [../../../ai-engineer/methodology/prompts/multilingual-translation.md](../../../ai-engineer/methodology/prompts/multilingual-translation.md) — multilingual translation prompt
+- Upstream: [../../../ai-engineer/methodology/prompts--multilingual-translation.md](../../../ai-engineer/methodology/prompts--multilingual-translation.md) — multilingual translation prompt
 - References: Geert Hofstede — *Cultural Dimensions Theory*; Nielsen Norman Group — *International UX*; W3C — *Internationalization Best Practices*

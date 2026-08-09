@@ -32,7 +32,7 @@ related:
 - ./porter-five-forces.md
 - ./blue-ocean.md
 - ./now-next-later-roadmap.md
-- ../../product-manager/discovery/metrics/north-star-metric.md
+- ../../product-manager/discovery/metrics--north-star-metric.md
 tacit: false
 ---
 
@@ -136,5 +136,5 @@ tacit: false
 - Same class: [porter-five-forces-summary.md](./porter-five-forces.md) — industry structure analysis
 - Same class: [blue-ocean-strategy-summary.md](./blue-ocean.md) — redefining market boundaries
 - Downstream: [now-next-later-roadmap-summary.md](./now-next-later-roadmap.md) — strategy landing as roadmap
-- Downstream: [../../product-manager/discovery/metrics/north-star-metric.md](../../product-manager/discovery/metrics/north-star-metric.md) — quantifying business value
+- Downstream: [../../product-manager/discovery/metrics--north-star-metric.md](../../product-manager/discovery/metrics--north-star-metric.md) — quantifying business value
 - Reference: Osterwalder & Pigneur — *Business Model Generation* (2010) ; Strategyzer — https://www.strategyzer.com/canvas

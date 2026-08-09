@@ -30,7 +30,7 @@ related:
 - ../../product-manager/frameworks/do-user-research.md
 - ./run-iteration-meetings.md
 - ../processes/measure-product-metrics.md
-- ../../product-manager/discovery/metrics/README.md
+- ../../product-manager/discovery/metrics--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -43,10 +43,10 @@ tacit: false
 
 ## Summary
 
-- Measurement: see [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) + [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md)
+- Measurement: see [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) + [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md)
 - Research: see [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md) + [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) + [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md)
 - Iteration: see [iteration-pm-handbook-summary.md](iteration-pm-handbook.md) + [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) + [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md)
-- Stakeholders: see [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md)
+- Stakeholders: see [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) + [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md)
 - Industry cases: see [ai-after-sales-cases.md](../../product-manager/strategy/ai-after-sales-cases.md) + [ai-customer-service-cases.md](../../product-manager/strategy/ai-customer-service-cases.md)
 
 ## Core viewpoints
@@ -78,17 +78,17 @@ When collecting customer feedback / tickets / NPS / customer service records / s
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `product/metrics/` | [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) · [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) |
+| `product/metrics/` | [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) · [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) |
 | `methodology/pm-frameworks/` | [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
-| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux/ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux/nielsen-heuristics.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md) · [spritesheet-summary.md](../../product-manager/discovery/ux/spritesheet.md) · [after-sales-pad-visual-review-summary.md](../../product-manager/discovery/ux/after-sales-pad-visual-review.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
+| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux--ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux--nielsen-heuristics.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) · [spritesheet-summary.md](../../product-manager/discovery/ux--spritesheet.md) · [after-sales-pad-visual-review-summary.md](../../product-manager/discovery/ux--after-sales-pad-visual-review.md) |
 | `product/strategy/` | [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) — feedback-driven planning |
 | `resources/templates/` | [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md) · [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) · [prd.md](../../knowledge-curator/templates/prd.md) |
 | `work/processes/` | [iteration-pm-handbook-summary.md](iteration-pm-handbook.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [design-review-process.md](../../product-manager/delivery/design-review.md) · [knowledge-transfer-process.md](knowledge-transfer.md) · [project-handover-process.md](project-handover.md) |
 | `work/meetings/` | [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) |
 | `work/collaboration/` | [async-collaboration-principles-summary.md](async-collaboration-principles.md) · [raci-matrix-summary.md](raci-matrix.md) — feedback handling RACI |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — customer tiering |
-| `people/experts/` | [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md) — external expert feedback |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — customer tiering |
+| `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — external expert feedback |
 | `industry/use-cases/` | [ai-after-sales-cases.md](../../product-manager/strategy/ai-after-sales-cases.md) · [ai-customer-service-cases.md](../../product-manager/strategy/ai-customer-service-cases.md) · [case-study-template.md](../../product-manager/strategy/case-study.md) |
 | `brd/scenarios/` | [scn-unified-ticketing.md](./../../brd/README.md) — feedback ticket scenario |
 | `brd/{domains,terminology}/` | [after-sales.md](./../../brd/README.md) · [sales.md](./../../brd/README.md) · [automotive.md](./../../brd/README.md) — feedback classification |
@@ -103,14 +103,14 @@ When collecting customer feedback / tickets / NPS / customer service records / s
 3. **Kano layering**: basic / expectation / delight; MVP feedback priority basic > expectation > delight; see [kano-model-summary.md](../../product-manager/frameworks/kano-model.md).
 4. **RICE priority**: Reach × Impact × Confidence / Effort; don't rank by noise volume; see [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md).
 5. **quantify + qualitative**: NPS / churn quantify + interviews qualitative to dig reasons; don't only look at one side.
-6. **churn attribution**: churned users must be followed up + attributed (product / experience / price / season / alternative); see [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md).
+6. **churn attribution**: churned users must be followed up + attributed (product / experience / price / season / alternative); see [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md).
 7. **enter iteration**: feedback must enter iteration planning + stakeholder review + owner + due date; see [iteration-pm-handbook-summary.md](iteration-pm-handbook.md) + [requirement-review-process.md](../../product-manager/delivery/requirement-review.md).
 8. **follow-up closed loop**: every feedback item must give the submitter feedback (adopted / not adopted / scheduled / already launched); don't let it sink without trace.
-9. **stakeholder tiering**: strategic / key customer feedback priority higher; see [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md).
-10. **Inversion**: first imagine "what happens if this feedback is ignored" then prioritize; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-11. **Second-order**: satisfying this feedback could trigger dissatisfaction in other users? see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-12. **Flywheel**: feedback → improve → experience rises → more feedback → Flywheel; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
-13. **AI auxiliary**: use [brd-generation-prompt.md](../../ai-engineer/methodology/prompts/brd-generation.md) to convert feedback to BRD drafts; use [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) to assist analysis.
+9. **stakeholder tiering**: strategic / key customer feedback priority higher; see [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md).
+10. **Inversion**: first imagine "what happens if this feedback is ignored" then prioritize; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+11. **Second-order**: satisfying this feedback could trigger dissatisfaction in other users? see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+12. **Flywheel**: feedback → improve → experience rises → more feedback → Flywheel; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
+13. **AI auxiliary**: use [brd-generation-prompt.md](../../ai-engineer/methodology/prompts--brd-generation.md) to convert feedback to BRD drafts; use [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) to assist analysis.
 14. **Retrospective**: end-of-iteration retro must review feedback closed-loop rate + post-launch effect; see [retrospective-sample.md](../../product-manager/delivery/retrospective.md).
 
 ## Anti-patterns
@@ -131,4 +131,4 @@ When collecting customer feedback / tickets / NPS / customer service records / s
 - Related journey: [./run-iteration-meetings.md](./run-iteration-meetings.md) — iteration meeting
 - Related journey: [../processes/measure-product-metrics.md](measure-product-metrics.md) — Measurement system
 - Related journey: [../../product-manager/discovery/write-a-prd.md](../../product-manager/discovery/write-a-prd.md) — feedback to PRD
-- Upstream: [../../product-manager/discovery/metrics/README.md](../../product-manager/discovery/metrics/README.md) — metrics leaf entry
+- Upstream: [../../product-manager/discovery/metrics--README.md](../../product-manager/discovery/metrics--README.md) — metrics leaf entry

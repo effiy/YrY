@@ -32,7 +32,7 @@ acceptance_criteria:
 related:
 - ./meeting-notes.md
 - ./one-on-one.md
-- ../../ai-engineer/methodology/prompts/weekly-report.md
+- ../../ai-engineer/methodology/prompts--weekly-report.md
 - ../../engineer/lessons/failures/incident-postmortem.md
 - ../../product-manager/delivery/README.md
 tacit: false
@@ -50,7 +50,7 @@ tacit: false
 - Mandates writing "what went poorly" + 5-Why root cause to avoid praise-meeting style retrospectives
 - Improvement actions must include owner, due date, and verification method
 - At the start of the next iteration, must review completion of the previous iteration's improvements
-- Companion prompt: [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) retrospective variant
+- Companion prompt: [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) retrospective variant
 
 ## Template body
 
@@ -152,7 +152,7 @@ For each "what went poorly" item, do 5-Why:
 
 ## Related
 
-- Companion prompt: [../../ai-engineer/methodology/prompts/weekly-report.md](../../ai-engineer/methodology/prompts/weekly-report.md) (retrospective variant) 
+- Companion prompt: [../../ai-engineer/methodology/prompts--weekly-report.md](../../ai-engineer/methodology/prompts--weekly-report.md) (retrospective variant) 
 - Meeting notes: [meeting-notes-template.md](./meeting-notes.md)
 - 1on1 follow-up: [one-on-one-template.md](./one-on-one.md)
 - Incident retrospective: [../../engineer/lessons/failures/incident-postmortem.md](../../engineer/lessons/failure-incident-postmortem.md)

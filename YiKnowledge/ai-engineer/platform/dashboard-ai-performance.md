@@ -37,7 +37,7 @@ related:
 - ./llm-observability-comparison.md
 - ../methodology/run-a-two-loop-llm-evaluation.md
 - ../methodology/tune-prompts.md
-- ../../product-manager/discovery/metrics/ai-product-metrics.md
+- ../../product-manager/discovery/metrics--ai-product-metrics.md
 tacit: false
 ---
 

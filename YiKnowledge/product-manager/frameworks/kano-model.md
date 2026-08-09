@@ -173,7 +173,7 @@ Kano focuses on "what type", RICE focuses on "which first"; they can be used tog
 
 ## Related
 - Same category: [rice-ice-prioritization-summary.md](./rice-ice-prioritization.md) (Kano categorization + RICE ranking) ; [jobs-to-be-done-summary.md](./jobs-to-be-done.md) (JTBD identifies Job, Kano categorizes requirement) ; [heart-aarrr-metrics-summary.md](./heart-aarrr-metrics.md) (Kano focuses on experience, HEART measures experience) 
-- Upstream: [../product/ux/README.md](../discovery/ux/README.md)
+- Upstream: [../product/ux/README.md](../discovery/ux--README.md)
 - Downstream: feature planning, version scope control
 
 ## Reference material

@@ -37,7 +37,7 @@ related:
 - ./dashboard-vulnerability-management.md
 - ./dashboard-identity-access-management.md
 - ../../oncall-sre/observability/dashboard-network-health.md
-- ../../product-manager/discovery/prd/dashboard-api-portfolio.md
+- ../../product-manager/discovery/prd--dashboard-api-portfolio.md
 tacit: false
 ---
 
@@ -302,5 +302,5 @@ tacit: false
 - Same class: [dashboard-vulnerability-management](dashboard-vulnerability-management.md) — vulnerability management
 - Same class: [dashboard-identity-access-management](dashboard-identity-access-management.md) — identity and access management
 - Same class: [dashboard-network-health](../../oncall-sre/observability/dashboard-network-health.md) — network health
-- Same class: [dashboard-api-portfolio](../../product-manager/discovery/prd/dashboard-api-portfolio.md) — API portfolio management
+- Same class: [dashboard-api-portfolio](../../product-manager/discovery/prd--dashboard-api-portfolio.md) — API portfolio management
 - References: OWASP — *API Security Top 10 (2023)*; OWASP — *API Security Cheat Sheet*; NIST — *SP 800-204 (API Security)*; Cloudflare — *API Security Best Practices*; Salt Security — *State of API Security Report*; OAuth 2.0 — *RFC 6749 + Security BCP*

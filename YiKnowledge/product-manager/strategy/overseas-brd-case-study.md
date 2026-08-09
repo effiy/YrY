@@ -37,7 +37,7 @@ related:
   - ./ai-customer-service-cases.md
   - ../frameworks/write-a-brd.md
   - ../../engineer/projects/yiai/README.md
-  - ../../executive/industry/reports/caict-ai-whitepaper.md
+  - ../../executive/industry/reports--caict-ai-whitepaper.md
 tacit: false
 ---
 
@@ -163,5 +163,5 @@ AI agent development without evaluation is guesswork. The BRD agent team establi
 - Same category: [./ai-customer-service-cases.md](./ai-customer-service-cases.md) -- AI customer service case studies
 - Upstream: [../frameworks/write-a-brd.md](../frameworks/write-a-brd.md) -- BRD writing framework
 - Upstream: [../../engineer/projects/yiai/README.md](../../engineer/projects/yiai/README.md) -- YiAi project overview
-- Cross-reference: [../../executive/industry/reports/caict-ai-whitepaper.md](../../executive/industry/reports/caict-ai-whitepaper.md) -- China AI regulatory landscape affecting overseas deployments
+- Cross-reference: [../../executive/industry/reports--caict-ai-whitepaper.md](../../executive/industry/reports--caict-ai-whitepaper.md) -- China AI regulatory landscape affecting overseas deployments
 - References: Internal YiAi BRD agent project documentation; Anthropic -- *Prompt Caching Guide*; LangChain -- *RAG Evaluation*; TruLens -- *RAG Evaluation Framework*

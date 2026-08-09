@@ -21,10 +21,10 @@ related:
   - ../process/collaborate-across-teams.md
   - ../../product-manager/frameworks/write-a-spec-or-prd.md
   - ../../oncall-sre/incident-response/handle-a-customer-escalation.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Stakeholder mapping is not just listing names; it is classifying + impact + concerns + communication strategy; power/interest matrix; regular update
 ---
 
@@ -58,10 +58,10 @@ Stakeholder mapping is the cornerstone of project success; without mapping, key 
 | 2 hops | GTM | [../../product-manager/frameworks/prepare-a-go-to-market.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-go-to-market.md) |
 | 2 hops | RFC | [../strategies/prepare-an-rfc.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-rfc.md) |
 | 2 hops | customer escalation | [../../oncall-sre/incident-response/handle-a-customer-escalation.md](../../oncall-sre/incident-response/handle-a-customer-escalation.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -91,4 +91,4 @@ Stakeholder mapping is the cornerstone of project success; without mapping, key 
 - GTM: [../../product-manager/frameworks/prepare-a-go-to-market.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-go-to-market.md) — release stakeholders
 - RFC: [../strategies/prepare-an-rfc.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-rfc.md) — decision stakeholders
 - customer escalation: [../../oncall-sre/incident-response/handle-a-customer-escalation.md](../../oncall-sre/incident-response/handle-a-customer-escalation.md) — customer stakeholders
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

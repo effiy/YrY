@@ -20,7 +20,7 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified
 related:
   - ../lessons/win-yiai-rag-hybrid-retrieval.md
-  - ../../tech-lead/decisions/yiai/rag-evaluation-infra.md
+  - ../../tech-lead/decisions/yiai--rag-evaluation-infra.md
   - ../projects/yiai/dev-standards.md
 ---
 
@@ -210,12 +210,12 @@ for await (const chunk of sseStream(...)) {
 - **Scope not controllable**: full-library retrieval = cross-domain interference; must MetadataFilters.
 - **Source without path**: only snippet, cannot jump; must include `file_path`.
 - **Non-streaming return source**: user waits 30s without feedback; must SSE same frame with source (see [sse-streaming-pattern](../architecture-design/sse-streaming.md)).
-- **No eval set run**: recall rate drift by eye; must CI baseline + rollback threshold (see [adr-rag-evaluation-infra](../../tech-lead/decisions/yiai/rag-evaluation-infra.md)).
+- **No eval set run**: recall rate drift by eye; must CI baseline + rollback threshold (see [adr-rag-evaluation-infra](../../tech-lead/decisions/yiai--rag-evaluation-infra.md)).
 
 ## Related
 
 - Implementation: [yiai rag hybrid retrieval win](../lessons/win-yiai-rag-hybrid-retrieval.md) — recall rate and traceability both win
-- Implementation: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — eval set + CI gate
+- Implementation: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — eval set + CI gate
 - Implementation: [YiAi development standards §RAG pipeline](../projects/yiai/dev-standards.md)
 - Companion: [sse-streaming-pattern](../architecture-design/sse-streaming.md) — same-frame source streaming foundation
 - Companion: [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) — source list via same envelope

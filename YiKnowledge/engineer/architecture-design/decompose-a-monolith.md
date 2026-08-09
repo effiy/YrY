@@ -27,9 +27,9 @@ related:
   - ../../engineer/architecture-design/one-to-one-mapping-migration.md
   - ../../engineer/architecture-design/staged-port-methodology.md
   - ../../engineer/engineering/evaluation-driven-development.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
 tacit: "Decomposing a monolith is not slicing a cake in one cut; it is the strangler-fig pattern bypassing step by step — first build the boundary, then split services; each step is reversible"
 ---
 
@@ -73,9 +73,9 @@ As the business expands, the monolithic system becomes hard to deliver in parall
 | 2 hops | 1:1 mapping | [../../engineer/architecture-design/one-to-one-mapping-migration.md](one-to-one-mapping-migration.md) |
 | 2 hops | staged rollout | [../../engineer/architecture-design/staged-port-methodology.md](staged-port-methodology.md) |
 | 2 hops | evaluation-driven | [../../engineer/engineering/evaluation-driven-development.md](../engineering/evaluation-driven-development.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
 | 2 hops | observability | [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) |
 | 2 hops | tech debt | [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) |
 | 2 hops | PoC | [../../tech-lead/roadmap/do-a-proof-of-concept.md](../../tech-lead/roadmap/do-a-proof-of-concept.md) |
@@ -116,6 +116,6 @@ As the business expands, the monolithic system becomes hard to deliver in parall
 - database migration: [../processes/migrate-a-database.md](../infrastructure/migrate-a-database.md) — schema dual-write dual-read
 - PoC: [../../tech-lead/roadmap/do-a-proof-of-concept.md](../../tech-lead/roadmap/do-a-proof-of-concept.md) — boundary verification
 - Pattern co-built: [1:1 mapping migration](one-to-one-mapping-migration.md) + [staged-port](staged-port-methodology.md) + [evaluation-driven](../engineering/evaluation-driven-development.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md)
 - observability: [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) — traffic-cut monitoring
 - tech debt: [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) — the monolith is the biggest tech debt

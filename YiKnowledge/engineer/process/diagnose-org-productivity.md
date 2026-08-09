@@ -31,7 +31,7 @@ related:
 - ./run-iteration-meetings.md
 - ../../tech-lead/roadmap/plan-tech-roadmap.md
 - ../../README.md
-- ../../knowledge-curator/templates/thinking/second-order-thinking.md
+- ../../knowledge-curator/templates/thinking--second-order-thinking.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -47,7 +47,7 @@ tacit: false
 - Productivity metrics: go [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md): DORA four pieces (deploy frequency / change lead time / change failure rate / service recovery time) + SPACE framework
 - Diagnosis: go [org-productivity-diagnosis-summary.md](../process/org-productivity-diagnosis.md): bottleneck location (requirement / R&D / QA / release / feedback) + 5 whys root cause
 - Iteration cadence: go [iteration-pm-handbook-summary.md](../process/iteration-pm-handbook.md): weekly / review / retrospective meetings + Keep/Drop/Try
-- Thinking frameworks: go [second-order-thinking](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [ockhams-razor](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: go [second-order-thinking](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [ockhams-razor](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 
 ## Core viewpoints
 
@@ -79,10 +79,10 @@ When team productivity drops / requirements pile up / launch slows / quality sli
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/processes/` | [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md) · [org-productivity-diagnosis-summary.md](../process/org-productivity-diagnosis.md) · [iteration-pm-handbook-summary.md](../process/iteration-pm-handbook.md) · [tech-roadmap-review-summary.md](../process/tech-roadmap-review.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) · [capacity-planning-process.md](../infrastructure/capacity-planning.md) · [shared-client-vendor-rollout.md](../engineering/shared-client-vendor-rollout.md) |
-| `methodology/thinking/` | [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/pm-frameworks/` | [agile-pm-summary.md](./../../product-manager/frameworks/agile-product-management.md) · [scrum-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-scrum-strategy.md) · [okr-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-okr-strategy.md) |
 | `work/meetings/` | [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) · [daily-report-sample.md](../../product-manager/delivery/daily-report.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) |
-| `product/metrics/` | [product-metrics-summary.md](../../product-manager/discovery/metrics/README.md) · [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) — product metrics and engineering metrics co-build |
+| `product/metrics/` | [product-metrics-summary.md](../../product-manager/discovery/metrics--README.md) · [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) — product metrics and engineering metrics co-build |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) — capacity / tech debt impact on productivity |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) — productivity drop causing incident reference |
 | `projects/` | each project `project-management-summary.md` §iteration cadence + §risk |
@@ -92,8 +92,8 @@ When team productivity drops / requirements pile up / launch slows / quality sli
 1. **quantify first**: DORA four pieces (deploy frequency / change lead time / change failure rate / service recovery time) + SPACE framework (Satisfaction / Performance / Activity / Communication / Efficiency) — no improvement without quantification.
 2. **bottleneck location**: go [org-productivity-diagnosis-summary](../process/org-productivity-diagnosis.md), locate bottlenecks by requirement / R&D / QA / release / feedback segments.
 3. **5 whys root cause**: do not grab symptoms ("requirements piling up") — chase root cause ("review meeting does not converge / PR review slow / QA infrastructure missing").
-4. **Second-order thinking**: before changing process ask "second-order effect" (shorten review meeting -> whether it causes insufficient decisions -> launch incidents?) — see [second-order-thinking](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-5. **Inversion**: use [inversion](../../knowledge-curator/templates/thinking/inversion.md) "how to make team productivity worse" to reverse-derive improvement items.
+4. **Second-order thinking**: before changing process ask "second-order effect" (shorten review meeting -> whether it causes insufficient decisions -> launch incidents?) — see [second-order-thinking](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+5. **Inversion**: use [inversion](../../knowledge-curator/templates/thinking--inversion.md) "how to make team productivity worse" to reverse-derive improvement items.
 6. **iteration cadence**: go [iteration-pm-handbook](../process/iteration-pm-handbook.md), weekly / review / retrospective trio + Keep/Drop/Try continuous improvement.
 7. **Quarterly audit**: scan [tech-roadmap-review-summary](../process/tech-roadmap-review.md) + [quarterly-tech-debt](../quality-security/quarterly-tech-debt.md) for quarterly high-interest debt.
 8. **capacity / tech debt alignment**: productivity drops often stem from insufficient capacity / accumulated tech debt — go [capacity-and-cost](../../oncall-sre/observability/capacity-and-cost.md) + [tech-debt-inventory](../../oncall-sre/observability/tech-debt-inventory.md).

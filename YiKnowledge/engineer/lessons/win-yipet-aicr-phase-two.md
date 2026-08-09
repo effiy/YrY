@@ -37,8 +37,8 @@ acceptance_criteria:
 related:
 - ./yipet-aicr-phase-one.md
 - ./yivad-shared-client-vendor.md
-- ../../../tech-lead/decisions/yipet/aicr-port-rollout.md
-- ../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
+- ../../../tech-lead/decisions/yipet--aicr-port-rollout.md
+- ../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
 - ../../patterns/dual-world-boundary.md
 - ../../patterns/rpc-envelope.md
 - ../../patterns/sse-streaming.md
@@ -142,9 +142,9 @@ related:
 
 - upstream Phase 1: [./yipet-aicr-phase-one.md](win-yipet-aicr-phase-one.md) — MV3 skeleton established
 - YiVad vendor baseline: [./yivad-shared-client-vendor.md](win-yivad-shared-client-vendor.md) — three-layer architecture reference
-- Implementation ADR: [../../../tech-lead/decisions/yipet/aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) — 5-stage push
-- Dual-world ADR: [../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) — type branding co-built
+- Implementation ADR: [../../../tech-lead/decisions/yipet--aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) — 5-stage push
+- Dual-world ADR: [../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) — type branding co-built
 - Pattern co-built: [dual-world-boundary-pattern](../engineering/dual-world-boundary.md) + [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) + [sse-streaming-pattern](../architecture-design/sse-streaming.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Tracking leaf: [../../processes/shared-client-vendor-rollout.md](../engineering/shared-client-vendor-rollout.md) — three projects in parallel
-- YiVad Vitest co-built: [../../../tech-lead/decisions/yivad/vitest-rollout.md](../../tech-lead/decisions/yivad/vitest-rollout.md) — Phase 4 SSE parser test reuse
-- YiAi endpoint: [../../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) — Phase 5 endpoint contract
+- YiVad Vitest co-built: [../../../tech-lead/decisions/yivad--vitest-rollout.md](../../tech-lead/decisions/yivad--vitest-rollout.md) — Phase 4 SSE parser test reuse
+- YiAi endpoint: [../../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) — Phase 5 endpoint contract

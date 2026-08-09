@@ -47,7 +47,7 @@ tacit: false
 
 - Process follows [capacity-planning-process.md](../../engineer/infrastructure/capacity-planning.md) + [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) + [incident-response-process.md](../../engineer/process/incident-response.md)
 - Template follows [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md) + [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md)
-- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md)
+- Thinking follows [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md)
 - Case study follows [lessons/wins/](../../engineer/lessons) + [lessons/failures/](../../engineer/lessons)
 
 ## Core viewpoints
@@ -81,7 +81,7 @@ When doing capacity planning / QPS estimation / elastic scaling / cost budgeting
 |---|---|
 | `work/processes/` | [capacity-planning-process.md](../../engineer/infrastructure/capacity-planning.md) · [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) · [incident-response-process.md](../../engineer/process/incident-response.md) · [chaos-engineering-process.md](../../engineer/quality-security/chaos-engineering.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [oncall-rotation-process.md](../../engineer/process/oncall-rotation.md) · [tech-roadmap-review-summary.md](../../engineer/process/tech-roadmap-review.md) · [quarterly-tech-debt-process.md](../../engineer/quality-security/quarterly-tech-debt.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) · [tech-debt-inventory-template.md](../../oncall-sre/observability/tech-debt-inventory.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) — LLM capacity |
 | `tech/data/` | [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) · [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) — data layer capacity |
@@ -89,17 +89,17 @@ When doing capacity planning / QPS estimation / elastic scaling / cost budgeting
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) · [bugs/](../../engineer/lessons) |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — capacity stakeholders |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — capacity stakeholders |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) — quarterly audit |
-| `industry/reports/` | [ai-industry-report.md](../../executive/industry/reports/ai-industry-report.md) — industry capacity baseline |
+| `industry/reports--` | [ai-industry-report.md](../../executive/industry/reports--ai-industry-report.md) — industry capacity baseline |
 | `projects/` | each project `architecture-summary.md` §capacity + `dev-standards-summary.md` §scale-up commands |
 
 ## Action recommendations
 
-1. **First principles**: first ask "what to protect / QPS ceiling / latency SLA / data volume / cost ceiling / elasticity window"; do not jump to numbers; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how capacity can blow up (big promos / sudden traffic / single point / cascade / cost explosion)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: scale up → cost doubles → DB bottleneck → cache mismatch; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: the simplest stack that meets SLA wins; do not pile up machines; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "what to protect / QPS ceiling / latency SLA / data volume / cost ceiling / elasticity window"; do not jump to numbers; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how capacity can blow up (big promos / sudden traffic / single point / cascade / cost explosion)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: scale up → cost doubles → DB bottleneck → cache mismatch; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: the simplest stack that meets SLA wins; do not pile up machines; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **Demand side**: must pull history + forecast from business side (DAU / peak / big-promo / growth curve); do not only look at monitoring.
 6. **QPS breakdown**: business QPS → service QPS → dependency QPS (DB / cache / LLM / third party); leave buffer at each layer.
 7. **Resource side**: CPU / memory / disk / network / GPU / token / call count; set scale threshold by bottleneck resource.
@@ -112,7 +112,7 @@ When doing capacity planning / QPS estimation / elastic scaling / cost budgeting
 14. **Drill**: quarterly run [chaos-engineering-process.md](../../engineer/quality-security/chaos-engineering.md) + [i-want-to-prepare-a-disaster-recovery-plan.md](../../knowledge-curator/archive/strategies-legacy/oncall-sre/prepare-a-disaster-recovery-plan.md) to verify the scale-up playbook.
 15. **Freeze period**: during big-promo follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md); pre-scale in place + no releases.
 16. **Retrospective**: each quarter run [capacity-planning-process.md](../../engineer/infrastructure/capacity-planning.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to retrospect forecast accuracy + elasticity strategy + cost structure.
-17. **Flywheel**: capacity forecast accurate → cost controlled → trust → bolder scaling; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+17. **Flywheel**: capacity forecast accurate → cost controlled → trust → bolder scaling; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 18. **ADR**: key scale-up decisions must land ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
 
 ## Anti-patterns

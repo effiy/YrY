@@ -33,7 +33,7 @@ related:
 - ../strategies/prepare-a-1-on-1.md
 - ./mentor-and-grow-engineers.md
 - ../strategies/prepare-a-succession-plan.md
-- ../../knowledge-curator/people/team/team-overview.md
+- ../../knowledge-curator/people/team--team-overview.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -47,7 +47,7 @@ tacit: false
 ## Summary
 
 - Process go [requirement-review.md](../../product-manager/delivery/requirement-review.md) + [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md) + [monitoring-governance-process.md](monitoring-governance.md)
-- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking go [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Template go [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) + [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) + [retrospective-template.md](../../knowledge-curator/templates/retrospective.md)
 - Case study go [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) + [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md)
 
@@ -82,15 +82,15 @@ Handling low performance / PIP / performance improvement / not meeting bar / dra
 |---|---|
 | `work/processes/` | [requirement-review.md](../../product-manager/delivery/requirement-review.md) · [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md) · [iteration-pm-handbook-process.md](iteration-pm-handbook.md) · [monitoring-governance-process.md](monitoring-governance.md) · [quarterly-tech-debt-process.md](../quality-security/quarterly-tech-debt.md) |
 | `resources/templates/` | [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — low performance essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — Inversion imagine Incident · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — low performance essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — Inversion imagine Incident · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
 | `methodology/pm-frameworks/` | [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](raci-matrix.md) · [async-collaboration-principles-summary.md](async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](cross-timezone-collaboration.md) · [contract-negotiation-summary.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-contract-strategy.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [weekly-meeting-template.md](../../product-manager/delivery/weekly-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — performance matrix |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — Communication |
-| `people/experts/` | [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md) — HR consultant |
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — performance matrix |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — Communication |
+| `people/experts--` | [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md) — HR consultant |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) |
 | `methodology/engineering-patterns/` | [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) · [eval-driven](../engineering/evaluation-driven-development.md) · [contract-test-baseline-pattern.md](../quality-security/contract-test-baseline.md) |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) · [incident-postmortem-summary.md](../lessons/failure-incident-postmortem.md) · [bugs/](../lessons) — performance Incident Archive |
 | `lessons/wins/` | [yivad-aicr-phase-port.md](../lessons/win-yivad-aicr-phase-port.md) · [yiai-brd-agent-launch.md](../lessons/win-yiai-brd-agent-launch.md) |
@@ -101,10 +101,10 @@ Handling low performance / PIP / performance improvement / not meeting bar / dra
 
 ## Action recommendations
 
-1. **First principles**: first ask "does low performance really exist / is data sufficient / ROI / user impact / what happens if not handled"; do not fire and fire; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how handling can fail (false accusation / trust collapse / key person leaves / arbitration / legal Risk)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: fire one person → team atmosphere changes → backup matrix changes → another adjustment; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam's razor**: simplest handling satisfying requirement wins; do not pile up Process; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "does low performance really exist / is data sufficient / ROI / user impact / what happens if not handled"; do not fire and fire; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how handling can fail (false accusation / trust collapse / key person leaves / arbitration / legal Risk)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: fire one person → team atmosphere changes → backup matrix changes → another adjustment; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam's razor**: simplest handling satisfying requirement wins; do not pile up Process; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **data**: must do objective data (speed / quality / Collaboration / oncall / feedback) + must cross 2-3 sprints + must multi-person feedback; follow [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md).
 6. **root cause**: must do 5 whys; common root causes: skill mismatch / unclear expects / people issues / Process issues / tool issues / team atmosphere.
 7. **1:1**: must do [one-on-one-template.md](../../knowledge-curator/templates/one-on-one.md); listen before judge + must biweekly 1:1 + must monthly sponsor 1:1.
@@ -113,16 +113,16 @@ Handling low performance / PIP / performance improvement / not meeting bar / dra
 10. **mentor**: must do [i-want-to-mentor-and-grow-engineers.md](./mentor-and-grow-engineers.md); must pair mentor + must land growth plan.
 11. **OKR**: must do [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) + must align + must quarterly check.
 12. **RACI**: must do [raci-matrix-summary.md](raci-matrix.md); TL / sponsor / HR / mentor owner.
-13. **strong opinions loosely held**: must do [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) when communicating with employee; clear stance + leave dialogue room.
+13. **strong opinions loosely held**: must do [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) when communicating with employee; clear stance + leave dialogue room.
 14. **cross timezone**: must do [cross-timezone-collaboration-summary.md](cross-timezone-collaboration.md); remote handling needs double audit trail.
-15. **HR**: must do HR pre-review + must external legal counsel review; follow [external-experts-roster.md](../../knowledge-curator/people/experts/external-experts-roster.md).
-16. **Communication**: must do [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) Communication sponsor + HR + team (no smear).
+15. **HR**: must do HR pre-review + must external legal counsel review; follow [external-experts-roster.md](../../knowledge-curator/people/experts--external-experts-roster.md).
+16. **Communication**: must do [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) Communication sponsor + HR + team (no smear).
 17. **monitoring**: must do [monitoring-governance-process.md](monitoring-governance.md) Monitoring team health + turnover + atmosphere.
 18. **Freeze period**: during big-promo follow [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) do not move personnel.
 19. **Retrospective**: after handling, must do [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) Retrospective + Archive [bugs/](../lessons).
 20. **Quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) scan performance matrix whether still accurate + whether still has low performance unhandled.
 21. **ADR**: performance Decision must land ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-22. **Flywheel**: handle smooth → team align → business up → trust rises; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+22. **Flywheel**: handle smooth → team align → business up → trust rises; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 
@@ -142,4 +142,4 @@ Handling low performance / PIP / performance improvement / not meeting bar / dra
 - Related journey: [./mentor-and-grow-engineers.md](./mentor-and-grow-engineers.md) — mentor
 - Related journey: [../strategies/prepare-a-succession-plan.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-succession-plan.md) — successor
 - Related journey: [../../oncall-sre/incident-response/handle-a-team-conflict.md](../../oncall-sre/incident-response/handle-a-team-conflict.md) — team conflict
-- Upstream: [../../knowledge-curator/people/team/README.md](../../knowledge-curator/people/team/README.md) — team leaf entry
+- Upstream: [../../knowledge-curator/people/team--README.md](../../knowledge-curator/people/team--README.md) — team leaf entry

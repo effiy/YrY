@@ -4,8 +4,8 @@ aliases: [yi-knowledge-index, kb-toc, full-library-toc]
 tags: [index, navigation, toc, role-tree]
 category: root
 created: 2026-01-01
-updated: 2026-08-07
-last_verified: 2026-08-07
+updated: 2026-08-09
+last_verified: 2026-08-09
 source: internal
 type: summary
 status: stable
@@ -26,7 +26,7 @@ related:
 
 > **As a** knowledge-curator, **I want to** give the library a TOC organised by 10 role directories × problem domains, **so that** new readers locate content by role, reaching a leaf within 2 hops.
 
-> **Optimized** (2026-08-07): All 10 role directories fully optimized. 450 active summary files (excl archive): 450/450 real summary files have Core viewpoints (100%), Anti-patterns (100%), Action recommendations (100%), and Related sections (100%). 450/450 last_verified (100%). 3 stale role directories (data-engineer, devops, technical-writer) confirmed duplicates and deleted. 3 new files added to sparse directories (tech-lead/risk, ai-engineer/methodology/prompts, executive/reading-list). 14 orphaned RSS files cross-referenced. 8 old→new directory mappings applied. 0 broken YAML, 0 empty directories, 0 stale duplicates, 0 broken links.
+> **Flattened** (2026-08-09): All 10 role directories flattened to max 3 levels. Removed 2041 archived prepare-* legacy templates, 3 stale role directories (data-engineer, devops, technical-writer), 11 empty directories, and 4 placeholder/duplicate files. Flattened sub-sub-directories across all roles (stories, decisions, discovery, industry, people, onboarding, methodology, templates). 1011 active files, 73 directories, max depth 5 (within YiKnowledge: 3 except engineer/projects).
 
 ## Role tree (10 roles)
 
@@ -38,10 +38,10 @@ related:
 | [ai-engineer/](./ai-engineer/) | foundations, methodology, platform, data | ~108 | [INDEX](./ai-engineer/INDEX.md) |
 | [oncall-sre/](./oncall-sre/) | incident-response, observability, release | ~64 | [INDEX](./oncall-sre/INDEX.md) |
 | [executive/](./executive/) | strategy, industry, roadmap, reading-list | ~59 | [INDEX](./executive/INDEX.md) |
-| [knowledge-curator/](./knowledge-curator/) | governance, diagrams, archive, templates, people, notes | ~62 active (+2041 archive) | [INDEX](./knowledge-curator/INDEX.md) |
+| [knowledge-curator/](./knowledge-curator/) | governance, diagrams, archive, templates, people, notes | ~60 active | [INDEX](./knowledge-curator/INDEX.md) |
 | [new-hire/](./new-hire/) | onboarding | ~19 | [INDEX](./new-hire/INDEX.md) |
 | [skill-author/](./skill-author/) | patterns | ~15 | [INDEX](./skill-author/INDEX.md) |
-| [brd/](./brd/) | DB export area (8 roles + 10 categories) | ~235 | [README](./brd/README.md) |
+| [brd/](./brd/) | DB export area (8 role categories) | ~96 | [README](./brd/README.md) |
 
 ## 4 cross-cutting domain indexes
 

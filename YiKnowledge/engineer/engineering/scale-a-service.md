@@ -26,10 +26,10 @@ related:
   - ../architecture-design/decompose-a-monolith.md
   - ../../tech-lead/roadmap/do-a-tech-selection.md
   - ../../engineer/engineering/evaluation-driven-development.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
 tacit: Scaling is the last resort; first profile to find bottleneck; first single-machine optimization; first cache / async / read replica; last horizontal scaling
 ---
 
@@ -65,10 +65,10 @@ Service can't hold traffic, latency rises, error rate trends up; scaling is comm
 | 2 hop | tech-selection | [../../tech-lead/roadmap/do-a-tech-selection.md](../../tech-lead/roadmap/do-a-tech-selection.md) |
 | 2 hop | CI/CD | [./set-up-ci-cd.md](../infrastructure/set-up-ci-cd.md) |
 | 2 hop | evaluation-driven | [../../engineer/engineering/evaluation-driven-development.md](../engineering/evaluation-driven-development.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hop | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hop | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
 
 ## Action recommendations
 
@@ -100,4 +100,4 @@ Service can't hold traffic, latency rises, error rate trends up; scaling is comm
 - tech-selection: [../../tech-lead/roadmap/do-a-tech-selection.md](../../tech-lead/roadmap/do-a-tech-selection.md) — selection
 - CI/CD: [./set-up-ci-cd.md](../infrastructure/set-up-ci-cd.md) — scaling gate
 - Pattern: [eval-driven](../engineering/evaluation-driven-development.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md)

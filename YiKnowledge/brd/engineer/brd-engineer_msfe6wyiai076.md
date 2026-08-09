@@ -36,7 +36,7 @@ acceptance_criteria: '1. 5 phases 100% complete (structure contract → RAG → 
   8. Oncall handbook 100% covered'
 stakeholders: CTO Office (decision + budget); YiAi BRD Agent Team 5 FTE (execution); 5 business teams (consumption); product manager (requirements owner);
   SRE/DevOps (operations); security compliance (data compliance); architecture committee (tech review); finance (budget)
-kb_path: tech-lead/decisions/yiai/brd-agent-launch
+kb_path: tech-lead/decisions/yiai--brd-agent-launch
 notes: Through the 5-phase methodology of structure-contract-first + RAG > long prompt + streaming + editable re-stream + canary + feedback loop,
   transform BRD drafts from 3-day manual work to 30-minute agent generation, targeting L3 platform maturity, evolving to end-to-end BRD automation (L4 100%) within 3 years.
 review_cycle: quarterly
@@ -49,7 +49,7 @@ type: reference
 
 **BRD ID**: BRD-2026-076  |  **Project**: yiai  |  **Domain**: BRD Agent Launch (5 Phases)  |  **Quarter**: 2026 Q3
 **Priority**: P0  |  **Status**: In Progress  |  **Owner**: YiAi BRD Agent Team
-**KB Source**: tech-lead/decisions/yiai/brd-agent-launch
+**KB Source**: tech-lead/decisions/yiai--brd-agent-launch
 
 ## Context
 Through the 5-phase methodology of structure-contract-first + RAG > long prompt + streaming + editable re-stream + canary + feedback loop, transform BRD drafts from 3-day manual work to 30-minute agent generation, targeting L3 platform maturity, evolving to end-to-end BRD automation (L4 100%) within 3 years.
@@ -84,5 +84,5 @@ M1 (2026 Q3, 3 weeks): structure contract + RAG integration + recall 80%; M2 (20
 In 3 years: draft generation 10 minutes, adoption 85%, recall 95%, end-to-end 80%; in 5 years: end-to-end BRD automation GA, L4 100%.
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/brd-agent-launch`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--brd-agent-launch`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

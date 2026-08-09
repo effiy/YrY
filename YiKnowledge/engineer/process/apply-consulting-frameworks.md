@@ -39,10 +39,10 @@ related:
 - ../processes/write-a-statement-of-work.md
 - ./prepare-a-discovery-call-strategy.md
 - ./prepare-a-consultative-selling-strategy.md
-- ../../knowledge-curator/templates/thinking/first-principles.md
-- ../../knowledge-curator/templates/thinking/inversion.md
-- ../../knowledge-curator/templates/thinking/second-order-thinking.md
-- ../../knowledge-curator/templates/thinking/ockhams-razor.md
+- ../../knowledge-curator/templates/thinking--first-principles.md
+- ../../knowledge-curator/templates/thinking--inversion.md
+- ../../knowledge-curator/templates/thinking--second-order-thinking.md
+- ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: "Consulting frameworks are not rhetoric; they are structured thinking. Pyramid BLUF: bottom-line up front, conclusions before support; MECE: mutually exclusive, collectively exhaustive; Trusted Advisor formula: the lower the Self-Orientation the higher the trust; Three Whys: find the root cause; CoI: quantify the cost of inaction"
 ---
 
@@ -75,7 +75,7 @@ Consulting frameworks are not rhetoric; they are structured thinking. This entry
 | 1 hop | fde-role | [./operate-as-a-forward-deployed-engineer.md](../process/operate-as-a-forward-deployed-engineer.md) |
 | 1 hop | mva | [./design-a-minimum-viable-architecture.md](../architecture-design/design-a-minimum-viable-architecture.md) |
 | 2 hops | site-survey | [../processes/run-a-site-survey.md](../engineering/run-a-site-survey.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -115,4 +115,4 @@ Consulting frameworks are not rhetoric; they are structured thinking. This entry
 - discovery-call: [./prepare-a-discovery-call-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-discovery-call-strategy.md) — discovery call co-build
 - consultative-selling: [./prepare-a-consultative-selling-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-consultative-selling-strategy.md) — sales complement
 - stakeholder-mapping: [./prepare-a-stakeholder-mapping-strategy.md](do-a-stakeholder-mapping.md) — stakeholder map co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

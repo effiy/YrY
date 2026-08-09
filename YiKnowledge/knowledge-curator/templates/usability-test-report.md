@@ -32,7 +32,7 @@ acceptance_criteria:
 related:
 - ./user-research-interview.md
 - ./prd.md
-- ../../product-manager/discovery/ux/README.md
+- ../../product-manager/discovery/ux--README.md
 tacit: false
 ---
 
@@ -176,5 +176,5 @@ tacit: false
 ## Related
 
 - Interview outline: [user-research-interview-template.md](./user-research-interview.md)
-- Heuristic evaluation: [../../product-manager/discovery/ux/nielsen-heuristics.md](../../product-manager/discovery/ux/nielsen-heuristics.md)
+- Heuristic evaluation: [../../product-manager/discovery/ux--nielsen-heuristics.md](../../product-manager/discovery/ux--nielsen-heuristics.md)
 - PRD template: [prd.md](./prd.md)

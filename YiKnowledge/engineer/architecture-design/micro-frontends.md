@@ -24,10 +24,10 @@ related:
   - ./ssot-view-layer.md
   - ./graceful-degradation.md
   - ./strangler-fig.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Micro-frontends is not just splitting the shell; it is a contract. Shell + remote + isolation + composition + routing + governance five dimensions; business-value driven; not one-shot; measurable
 ---
 
@@ -199,4 +199,4 @@ class EventBus:
 - [canary-deployment-pattern.md](../infrastructure/canary-deployment.md) — remote independent canary
 - [strangler-fig-pattern.md](./strangler-fig.md) — legacy frontend strangle replacement
 - [graceful-degradation.md](./graceful-degradation.md) — remote load failure degradation
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

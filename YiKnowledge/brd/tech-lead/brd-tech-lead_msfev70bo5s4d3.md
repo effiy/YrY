@@ -16,7 +16,7 @@ team_size: 5
 status: accepted
 owner: YiAi lead owner + architecture team
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+kb_path: tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 context: The frontend model selector was blocked by the backend; cost and availability must be bounded; the multi-provider abstraction needs a unified convergence point. pi-ai vs `llama_index.llms.*`
   choose one of two. 
 decision: Adopt the `llama_index.llms.*` abstraction, do not introduce `pi-ai`. The YiPet shared client implements a thin TS layer itself, aligning with the YiAi endpoint
@@ -37,7 +37,7 @@ type: reference
 
 **ADR ID**: ADR-Multi-Provider-LLM-Routing  |  **Project**: yiai  |  **Domain**: LLM Provider Routing
 **Decision Type**: architectural  |  **Team Size**: 5  |  **Status**: accepted  |  **Owner**: YiAi lead owner + architecture team
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 
 ## Context
 The frontend model selector was blocked by the backend; cost and availability must be bounded; the multi-provider abstraction needs a unified convergence point. pi-ai vs `llama_index.llms.*` choose one of two. 
@@ -58,4 +58,4 @@ routing exception -> switch back to single Ollama provider + fix + gradual retry
 YiAi lead owner + architecture team (decision); CTO (approval); YiVad/YiPet lead owner (downstream consumption); QA
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/route-llm-traffic-across-providers.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--route-llm-traffic-across-providers.md`

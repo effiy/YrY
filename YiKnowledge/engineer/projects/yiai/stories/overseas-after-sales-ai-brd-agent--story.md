@@ -32,7 +32,7 @@ related:
 - ./brd-draft-generation/scene.md
 - ./multilingual-brd/scene.md
 - ./brd-approval-flow/scene.md
-- ../../../../../new-hire/onboarding/yiai/onboarding.md
+- ../../../../../new-hire/onboarding/yiai--onboarding.md
 tacit: false
 ---
 

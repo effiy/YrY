@@ -33,7 +33,7 @@ related:
   - product-discovery-framework.md
   - dual-track-agile.md
   - agile-product-management.md
-  - ../discovery/metrics/README.md
+  - ../discovery/metrics--README.md
   - ../strategy/case-study.md
 tacit: false
 ---
@@ -132,7 +132,7 @@ Large companies adopting Lean Startup face unique challenges:
 4. Run the experiment to completion. Do not change the success criteria mid-experiment. Do not pivot before the data is in.
 5. Hold a formal pivot/persevere meeting. Present the data, the hypothesis, and the recommendation. Record the decision.
 6. If persevering, identify the next riskiest assumption and repeat. If pivoting, return to the Build step with a new hypothesis.
-7. Establish innovation accounting: track actionable metrics per cohort, not aggregate vanity metrics. See [../discovery/metrics/README.md](../discovery/metrics/README.md).
+7. Establish innovation accounting: track actionable metrics per cohort, not aggregate vanity metrics. See [../discovery/metrics--README.md](../discovery/metrics--README.md).
 
 ## Anti-patterns
 
@@ -147,6 +147,6 @@ Large companies adopting Lean Startup face unique challenges:
 - Same class: [product-discovery-framework.md](./product-discovery-framework.md) -- discovery framework that incorporates Lean Startup principles
 - Same class: [dual-track-agile.md](./dual-track-agile.md) -- discovery track (Lean Startup) + delivery track (Agile) running in parallel
 - Same class: [agile-product-management.md](./agile-product-management.md) -- delivery methodology after product-market fit is found
-- Downstream: [../discovery/metrics/README.md](../discovery/metrics/README.md) -- actionable metrics and innovation accounting
+- Downstream: [../discovery/metrics--README.md](../discovery/metrics--README.md) -- actionable metrics and innovation accounting
 - Downstream: [../strategy/case-study.md](../strategy/case-study.md) -- case study template for documenting validated learning
 - References: Eric Ries -- *The Lean Startup* (2011); Steve Blank -- *The Four Steps to the Epiphany* (2005); Ash Maurya -- *Running Lean* (2012)

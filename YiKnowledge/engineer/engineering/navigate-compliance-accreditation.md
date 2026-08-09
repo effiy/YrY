@@ -20,10 +20,10 @@ acceptance_criteria:
 related:
   - ../process/deploy-to-an-air-gapped-environment.md
   - ../process/harden-supply-chain.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Compliance accreditation is not a checklist; it is an architecture choice. ATO / FedRAMP / STIG / CMMC / ITAR / DoD IL determine where cloud / network / image / model weights can go; raise it in the discovery call; do not discover in Week 12
 ---
 
@@ -56,7 +56,7 @@ Compliance accreditation is not a checklist; it is an architecture choice. This 
 | 1 hop | data-compliance | [./data-compliance.md](../infrastructure/data-compliance.md) |
 | 1 hop | threat-modeling | [./do-a-threat-modeling.md](../quality-security/do-a-threat-modeling.md) |
 | 2 hops | compliance-framework | [../strategies/prepare-a-compliance-framework.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-compliance-framework.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -103,4 +103,4 @@ Compliance accreditation is not a checklist; it is an architecture choice. This 
 - ai-compliance: [../strategies/prepare-an-ai-compliance-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-ai-compliance-strategy.md) — AI compliance co-build
 - air-gap: [../strategies/deploy-to-an-air-gapped-environment.md](../process/deploy-to-an-air-gapped-environment.md) — offline deploy co-build
 - supply-chain: [../strategies/harden-supply-chain.md](../process/harden-supply-chain.md) — supply chain hardening co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

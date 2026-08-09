@@ -32,7 +32,7 @@ related:
 - ./business-model-canvas.md
 - ./blue-ocean.md
 - ../product-manager/frameworks/jobs-to-be-done.md
-- ../product-manager/discovery/ux/README.md
+- ../product-manager/discovery/ux--README.md
 tacit: false
 ---
 

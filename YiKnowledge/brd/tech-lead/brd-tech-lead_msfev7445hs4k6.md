@@ -15,7 +15,7 @@ team_size: 4
 status: accepted
 owner: YiVad primary owner + architecture team
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yivad/vitest-introduction.md
+kb_path: tech-lead/decisions/yivad--vitest-introduction.md
 context: YiVad project management §blocker "no Vitest, high regression risk". retrospective Try item "Vitest introduction (composable + store priority)" pending. Vue
   3 + Composition API ecosystem recommends Vitest. 
 decision: introduce Vitest 2 + `@vue/test-utils` + `happy-dom` + `@vitest/coverage-v8`; priority
@@ -34,7 +34,7 @@ type: reference
 
 **ADR ID**: ADR-Vitest-Introduction  |  **Project**: yivad  |  **Domain**: Frontend Testing
 **Decision Type**: process  |  **Team Size**: 4  |  **Status**: accepted  |  **Owner**: YiVad primary owner + architecture team
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad/vitest-introduction.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad--vitest-introduction.md
 
 ## Context
 YiVad project management §blocker "no Vitest, high regression risk". retrospective Try item "Vitest introduction (composable + store priority)" pending. Vue 3 + Composition API ecosystem recommends Vitest. 
@@ -55,4 +55,4 @@ Vitest exception → keep manual test + fix + re-enable (1 workday).
 YiVad primary owner + architecture team (decision); CTO (approval); QA; frontend lead
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad/vitest-introduction.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad--vitest-introduction.md`

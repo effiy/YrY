@@ -109,6 +109,6 @@ M5 (2027 Q4): L3 maturity — two-loop template cross-customer reuse rate >= 70%
 - **KB Source**: `YiKnowledge/ai-engineer/methodology/run-a-two-loop-llm-evaluation.md`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents
 - **Related leaves**: [orchestrate-agents-with-adk-and-agents-cli](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md) / [prepare-an-agent-evaluation-strategy](../../ai-engineer/foundations/prepare-an-agent-evaluation-strategy.md) / [evaluate-an-llm-app](../../ai-engineer/platform/evaluate-an-llm-app.md)
-- **Related ADR**: [ADR Two-loop eval as production gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md)
+- **Related ADR**: [ADR Two-loop eval as production gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md)
 - **Related gotchas**: [ADK eval drift between local and runtime](../../engineer/lessons/gotchas/adk-eval-drift-between-local-and-runtime.md) / [Agents CLI Alpha instability](../../engineer/lessons/gotchas/agents-cli-alpha-instability.md)
 - **External**: [Awesome-FDE-Roadmap](https://github.com/pierpaolo28/Awesome-FDE-Roadmap) / [Anthropic — Demystifying AI Agent Evals](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) / [Google ADK](https://github.com/google/adk-python) / [Agents CLI](https://google.github.io/agents-cli/guide/getting-started/)

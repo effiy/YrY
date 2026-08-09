@@ -12,7 +12,7 @@ review_cycle: quarterly
 tacit_explicit: tacit
 status: stable
 owner: Knowledge Curator
-kb_path: knowledge-curator/people/experts/external-experts-roster.md
+kb_path: knowledge-curator/people/experts--external-experts-roster.md
 audience: executive / tech-lead / pm
 lifecycle_stage: reference
 summary: "External expert roster: industry experts + academic collaborations + consultants + training organizations + contact details + collaboration history."
@@ -27,7 +27,7 @@ type: reference
 
 **Doc Type**: expert  |  **Source**: tacit_interview  |  **Review**: quarterly  |  **T/E**: tacit
 **Status**: stable  |  **Curator**: Knowledge Curator  |  **Lifecycle**: reference
-**KB Source**: knowledge-curator/people/experts/external-experts-roster.md
+**KB Source**: knowledge-curator/people/experts--external-experts-roster.md
 
 ## Audience
 executive / tech-lead / pm
@@ -42,4 +42,4 @@ External expert roster: industry experts + academic collaborations + consultants
 Quarterly review of external expert collaboration status
 
 ## References
-- **KB Source**: `YiKnowledge/knowledge-curator/people/experts/external-experts-roster.md`
+- **KB Source**: `YiKnowledge/knowledge-curator/people/experts--external-experts-roster.md`

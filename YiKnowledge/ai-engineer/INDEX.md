@@ -44,5 +44,5 @@ related:
 ## Cross-role references
 
 - [../engineer/engineering/](../engineer/engineering/) — AI/ML engineering patterns (observability, rate limiting, RAG)
-- [../tech-lead/decisions/yiai/](../tech-lead/decisions/yiai/) — YiAi ADRs
+- [../tech-lead/decisions/yiai--](../tech-lead/decisions/yiai--) — YiAi ADRs
 - [./AI-AND-DATA.md](./AI-AND-DATA.md) — AI & data domain index

@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yipet/architecture.md
   - ../../../engineer/projects/yipet/dev-standards.md
   - ./biome-lint-format.md
-  - ../../../product-manager/projects/yipet/project-management.md
+  - ../../../product-manager/projects/yipet--project-management.md
   - ../../../ai-engineer/methodology/prompt-injection-defense.md
   - ../../../knowledge-curator/templates/adr.md
 ---

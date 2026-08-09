@@ -36,7 +36,7 @@ acceptance_criteria: '1. 5-stage gradual rollout 100% complete (supply chain har
   8. 8 new businesses 100% follow the process'
 stakeholders: CTO Office (decision + budget); YiAi Platform Team 6 FTE (execution); 5 business teams (consumption);
   SRE/DevOps (operations); security & compliance (supply chain approval); finance (budget); architecture committee (technical review)
-kb_path: tech-lead/decisions/yiai/llm-multi-provider-rollout
+kb_path: tech-lead/decisions/yiai--llm-multi-provider-rollout
 notes: Via the llama_index.llms.* abstraction layer + 5-stage gradual rollout, change single-Provider lock-in
   to multi-Provider routing + supply chain hardening + endpoint selector, with L3 platform maturity as the goal, evolving to an intelligent routing engine (L4 100%) within 3 years.
 review_cycle: quarterly
@@ -49,7 +49,7 @@ type: reference
 
 **BRD ID**: BRD-2026-074  |  **Project**: yiai  |  **Domain**: Multi-Provider LLM Routing  |  **Quarter**: 2026 Q3
 **Priority**: P0  |  **Status**: In Progress  |  **Owner**: YiAi Platform Team
-**KB Source**: tech-lead/decisions/yiai/llm-multi-provider-rollout
+**KB Source**: tech-lead/decisions/yiai--llm-multi-provider-rollout
 
 ## Context
 Via the llama_index.llms.* abstraction layer + 5-stage gradual rollout, change single-Provider lock-in to multi-Provider routing + supply chain hardening + endpoint selector, with L3 platform maturity as the goal, evolving to an intelligent routing engine (L4 100%) within 3 years.
@@ -84,5 +84,5 @@ M1 (2026 Q3, 3 weeks): supply chain hardening prework + SBOM + SLSA; M2 (2026 Q3
 In 3 years: Provider lock-in 0%, failure rate 0.1%, switch 1 minute, cost reduction 50%, intelligent routing 100%; in 5 years: intelligent routing engine GA, L4 100%.
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/llm-multi-provider-rollout`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--llm-multi-provider-rollout`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

@@ -21,10 +21,10 @@ acceptance_criteria:
 related:
   - ./weekly-meeting.md
   - ./retrospective.md
-  - ../../ai-engineer/methodology/prompts/weekly-report.md
-  - ../projects/yiai/project-management.md
-  - ../projects/yivad/project-management.md
-  - ../projects/yipet/project-management.md
+  - ../../ai-engineer/methodology/prompts--weekly-report.md
+  - ../projects/yiai--project-management.md
+  - ../projects/yivad--project-management.md
+  - ../projects/yipet--project-management.md
 ---
 
 > **Status (2026-08-07)**: This file is a historical weekly report instance (W31 2026). Several claims in this report do not match the actual codebase state as of 2026-08-07: aicr page (`src/views/aicr/`), knowledge 28 leaf views (`src/views/knowledge/`), bug page (`src/views/bug/`), and story page (`src/views/story/`) do not exist on the YiVad master branch. The aiChat port, sidebar parity, and RSS offload are real and shipped. Treat this report as a historical snapshot, not a verified completion record.
@@ -33,7 +33,7 @@ related:
 
 > **As a** product manager, **I want to** weekly report, **so that** meeting effective.
 
-> This file is a filled-in weekly report sample, serving as a run instance of [weekly-meeting-template.md](./weekly-meeting.md) and [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md). Each Friday by 16:00, project owners draft their sections; the PM aggregates and posts this file. A new report next week supersedes it.
+> This file is a filled-in weekly report sample, serving as a run instance of [weekly-meeting-template.md](./weekly-meeting.md) and [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md). Each Friday by 16:00, project owners draft their sections; the PM aggregates and posts this file. A new report next week supersedes it.
 
 ## Summary
 
@@ -153,8 +153,8 @@ This week (2026-07-27 ~ 2026-08-02) all three Yi family projects advanced on ite
 
 ## Related
 
-- [Weekly meeting template](./weekly-meeting.md) · [Weekly report Prompt](../../ai-engineer/methodology/prompts/weekly-report.md)
+- [Weekly meeting template](./weekly-meeting.md) · [Weekly report Prompt](../../ai-engineer/methodology/prompts--weekly-report.md)
 - [Retrospective instance](./retrospective.md) (this iteration's retrospective)
-- [YiAi project management](../projects/yiai/project-management.md) · [YiVad project management](../projects/yivad/project-management.md) · [YiPet project management](../projects/yipet/project-management.md)
+- [YiAi project management](../projects/yiai--project-management.md) · [YiVad project management](../projects/yivad--project-management.md) · [YiPet project management](../projects/yipet--project-management.md)
 - [YiAi architecture overview](../../engineer/projects/yiai/architecture.md) · [YiVad architecture overview](../../engineer/projects/yivad/architecture.md) · [YiPet architecture overview](../../engineer/projects/yipet/architecture.md)
 - [YiAi CLAUDE.md Recent Changes](../../engineer/projects/yiai/engineering/claude.md#recent-changes) · [YiVad CLAUDE.md Recent Changes](../../engineer/projects/yivad/engineering/claude.md#recent-changes) · [YiPet CLAUDE.md Recent Changes](../../engineer/projects/yipet/engineering/claude.md#recent-changes)

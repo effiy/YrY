@@ -30,7 +30,7 @@ acceptance_criteria:
 related:
 - ./business-model-canvas.md
 - ./product-strategy-framework.md
-- ../../product-manager/discovery/metrics/north-star-metric.md
+- ../../product-manager/discovery/metrics--north-star-metric.md
 tacit: false
 ---
 
@@ -118,5 +118,5 @@ tacit: false
 
 - Peer: [business-model-canvas-summary.md](./business-model-canvas.md) — strategy description
 - Peer: [product-strategy-framework-summary.md](./product-strategy-framework.md) — strategy layers
-- Downstream: [../../product-manager/discovery/metrics/north-star-metric.md](../../product-manager/discovery/metrics/north-star-metric.md) — roadmap corresponds to the north-star metric
+- Downstream: [../../product-manager/discovery/metrics--north-star-metric.md](../../product-manager/discovery/metrics--north-star-metric.md) — roadmap corresponds to the north-star metric
 - References: Janna Bastow — *The Now-Next-Later Roadmap*; Bruce McCarthy — *Roadmaps Relaunched*; ProductPlan — https://www.productplan.com

@@ -39,8 +39,8 @@ related:
 - ./dashboard-dora-metrics.md
 - ./dashboard-cicd-pipeline-health.md
 - ../engineering/dashboard-developer-experience.md
-- ../../product-manager/discovery/ux/dashboard-ux-health.md
-- ../../product-manager/discovery/ux/dashboard-accessibility-compliance.md
+- ../../product-manager/discovery/ux--dashboard-ux-health.md
+- ../../product-manager/discovery/ux--dashboard-accessibility-compliance.md
 tacit: false
 ---
 
@@ -204,6 +204,6 @@ tacit: false
 - Same class: [dashboard-dora-metrics](dashboard-dora-metrics.md) — DORA metrics
 - Same class: [dashboard-cicd-pipeline-health](dashboard-cicd-pipeline-health.md) — CI/CD pipeline health
 - Same class: [dashboard-developer-experience](../engineering/dashboard-developer-experience.md) — developer experience
-- Same class: [dashboard-ux-health](../../product-manager/discovery/ux/dashboard-ux-health.md) — UX health
-- Same class: [dashboard-accessibility-compliance](../../product-manager/discovery/ux/dashboard-accessibility-compliance.md) — accessibility compliance
+- Same class: [dashboard-ux-health](../../product-manager/discovery/ux--dashboard-ux-health.md) — UX health
+- Same class: [dashboard-accessibility-compliance](../../product-manager/discovery/ux--dashboard-accessibility-compliance.md) — accessibility compliance
 - References: Google — *Web Vitals*; Addy Osmani — *Image Optimization*; Philip Walton — *Web Performance Recipes*; WebPageTest — *Performance Testing*; Lighthouse — *CI Integration*; SpeedCurve — *Performance Monitoring*; Alex Russell — *Performance Culture*

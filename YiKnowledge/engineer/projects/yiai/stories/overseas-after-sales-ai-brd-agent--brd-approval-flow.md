@@ -20,7 +20,7 @@ acceptance_criteria:
   - "retrieval date is recorded in last_verified"
 related:
 - ../story.md
-- ../../../../../../new-hire/onboarding/yiai/onboarding.md
+- ../../../../../../new-hire/onboarding/yiai--onboarding.md
 tacit: false
 ---
 

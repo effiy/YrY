@@ -49,7 +49,7 @@ tacit: false
 
 ## Summary
 
-- Selection assessment via [resources/templates/tech-selection-evaluation](../../knowledge-curator/templates) + [first-principles](../../knowledge-curator/templates/thinking/first-principles.md)
+- Selection assessment via [resources/templates/tech-selection-evaluation](../../knowledge-curator/templates) + [first-principles](../../knowledge-curator/templates/thinking--first-principles.md)
 - Decision via ADR 12 sections: [../../tech-lead/architecture/design-architecture-decision.md](../../tech-lead/architecture/design-architecture-decision.md) + [resources/templates/adr](../../knowledge-curator/templates)
 - Introduction + hardening via [../strategies/harden-supply-chain.md](../process/harden-supply-chain.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Assessment dimensions: maintenance activity / security history / compatibility / performance / package size / license / replacement solution
@@ -84,7 +84,7 @@ When new requirements introduce a new dependency / replace an old dependency / c
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `engineer/process/` | [supply-chain-hardening-pattern.md](../process/harden-supply-chain.md) · [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md) — hardening + replacement pattern |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) — selection thinking frameworks |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — selection thinking frameworks |
 | `resources/templates/` | [tech-selection-evaluation-template](../../knowledge-curator/templates) · [adr-template.md](../../knowledge-curator/templates/adr.md) — selection assessment + ADR template |
 | `lessons/gotchas/` | [no-lockfile-supply-chain-risk.md](../lessons/gotcha-no-lockfile-supply-chain-risk.md) — no lockfile attack surface |
 | `lessons/wins/` | [yiai-supply-chain-hardening-win.md](../lessons/win-yiai-supply-chain-hardening.md) — hardening implementation reference · [yipet-stack-migration-win.md](../lessons/win-yipet-stack-migration.md) — replacement reference |

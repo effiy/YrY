@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** pure semantic rag failure, **so that** failure does not repeat.
 
-> Enterprise RAG started with pure semantic vector search -> industry terms (product codes / regulation numbers / abbreviations / unit identifiers) recall < 50% -> customer loses trust -> renewal deadlock. This retrospective is the basis for [ADR Hybrid search mandatory](../../tech-lead/decisions/fde/enterprise-rag-hybrid-search-mandatory.md). 
+> Enterprise RAG started with pure semantic vector search -> industry terms (product codes / regulation numbers / abbreviations / unit identifiers) recall < 50% -> customer loses trust -> renewal deadlock. This retrospective is the basis for [ADR Hybrid search mandatory](../../tech-lead/decisions/fde--enterprise-rag-hybrid-search-mandatory.md). 
 
 ## Summary
 
@@ -66,7 +66,7 @@ related:
 | Date | 2026-08-05 (retrospective)  |
 | Reporter | FDE Practice Lead |
 | Related project | FDE Playbook (multi-customer retrospective)  |
-| Related ADR | [ADR Hybrid search mandatory](../../tech-lead/decisions/fde/enterprise-rag-hybrid-search-mandatory.md) |
+| Related ADR | [ADR Hybrid search mandatory](../../tech-lead/decisions/fde--enterprise-rag-hybrid-search-mandatory.md) |
 
 ## 2. Impact scope
 
@@ -146,7 +146,7 @@ related:
 - Notification audience: CTO, customer business-side, customer CISO
 - Notification date: 2026-08-10
 - Archive path: `lessons/failures/enterprise-rag-pure-semantic-fails-on-nomenclature.md`
-- Related ADR / TD: [ADR Hybrid search mandatory](../../tech-lead/decisions/fde/enterprise-rag-hybrid-search-mandatory.md)
+- Related ADR / TD: [ADR Hybrid search mandatory](../../tech-lead/decisions/fde--enterprise-rag-hybrid-search-mandatory.md)
 
 ## 10. Retrospective meeting meta
 
@@ -186,5 +186,5 @@ related:
 
 - Same class: [./fde-day-two-without-internal-owner.md](failure-fde-day-two-without-internal-owner.md) — FDE retrospective class
 - Upstream: [Enterprise RAG Blueprint](../../ai-engineer/methodology/blueprint-an-enterprise-rag.md) §hybrid search
-- Design basis: [ADR Hybrid search mandatory](../../tech-lead/decisions/fde/enterprise-rag-hybrid-search-mandatory.md)
+- Design basis: [ADR Hybrid search mandatory](../../tech-lead/decisions/fde--enterprise-rag-hybrid-search-mandatory.md)
 - Trigger trap: [Discovery skipped Three Whys](gotcha-discovery-three-whys-skipped.md)

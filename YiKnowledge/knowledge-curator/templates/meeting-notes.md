@@ -32,7 +32,7 @@ acceptance_criteria:
 related:
 - ./retrospective.md
 - ./one-on-one.md
-- ../../ai-engineer/methodology/prompts/weekly-report.md
+- ../../ai-engineer/methodology/prompts--weekly-report.md
 - ../../product-manager/delivery/README.md
 tacit: false
 ---
@@ -144,5 +144,5 @@ tacit: false
 
 - Retrospective meeting template: [retrospective-template.md](./retrospective.md)
 - 1on1 template: [one-on-one-template.md](./one-on-one.md)
-- Companion prompt: [../../ai-engineer/methodology/prompts/weekly-report.md](../../ai-engineer/methodology/prompts/weekly-report.md)
+- Companion prompt: [../../ai-engineer/methodology/prompts--weekly-report.md](../../ai-engineer/methodology/prompts--weekly-report.md)
 - Instance archive: [../../product-manager/meetings](../../product-manager/delivery)

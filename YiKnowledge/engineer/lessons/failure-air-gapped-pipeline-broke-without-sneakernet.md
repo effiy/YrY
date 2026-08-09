@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** no sneakernet failure, **so that** failure does not repeat.
 
-> On Day 1 at a regulated customer site, FDE did not design a signed sneakernet ISO → weights / package mirror / cert / PKI key — one missing → customer approval takes 4-8 weeks to re-send → project delayed / scrapped. This retrospective is the basis for [ADR Air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) §decision #5 + §risk #5-#7.
+> On Day 1 at a regulated customer site, FDE did not design a signed sneakernet ISO → weights / package mirror / cert / PKI key — one missing → customer approval takes 4-8 weeks to re-send → project delayed / scrapped. This retrospective is the basis for [ADR Air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) §decision #5 + §risk #5-#7.
 
 ## Summary
 
@@ -54,7 +54,7 @@ related:
 - **Sneakernet ISO mandatory artifact checklist (7 items, each with SHA-256 hash)**: (1) Model weights — full model artifact bundle (weights + tokenizer + config + inference code) as versioned bundle; (2) Package mirrors — complete pip/npm/cargo mirrors for the target environment; (3) PKI certificates — all certificates needed for internal service communication; (4) NTP server configs — time synchronization configuration for the air-gapped network; (5) Secrets — API keys, signing keys, encryption keys; (6) Inference code — specific version of the inference library used to train the model; (7) Runbook and documentation — first-boot runbook with 4-class trap injection and remediation steps. Clean-room build: ISO must be built on a clean VM/Docker container with no internet, then tested by booting an air-gapped VM with only the ISO mounted.
 - **Day -7 rehearsal with 4-class trap injection protocol**: The rehearsal must run on an actual air-gapped machine with the full sneakernet ISO. The "trap injection" phase deliberately removes one artifact at a time (remove PKI key → verify runbook detects it, remove weights → verify runbook detects it, remove NTP config → verify runbook detects it, remove cert → verify runbook detects it) to verify the first-boot runbook actually works. A rehearsal that only tests the happy path is a ceremony, not a verification. Schedule as non-negotiable milestone in every air-gapped project plan.
 - **Customer re-approval cycle as schedule risk**: Security approvals are per-artifact, not per-project. Any change to the ISO after customer security approval triggers a new 4-8 week approval cycle. The initial ISO must be treated as immutable after approval — any update is a schedule risk, not a minor update. Project plan must include buffer for the re-approval cycle.
-- **Yi-family air-gapped deployment relevance (2026-08)**: No Yi-family project currently deploys to air-gapped environments. The FDE Practice retrospective is documented for when regulated customer deployments begin. Related ADR: [ADR Air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) §decision #5 + §risk #5-#7. The "cleared engineer" training manual and first-boot runbook templates are in development (due 2026-10-15).
+- **Yi-family air-gapped deployment relevance (2026-08)**: No Yi-family project currently deploys to air-gapped environments. The FDE Practice retrospective is documented for when regulated customer deployments begin. Related ADR: [ADR Air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) §decision #5 + §risk #5-#7. The "cleared engineer" training manual and first-boot runbook templates are in development (due 2026-10-15).
 
 ## 1. Basic info
 
@@ -66,7 +66,7 @@ related:
 | Date | 2026-08-05 (retrospective)  |
 | Reporter | FDE Practice Lead |
 | Related project | FDE Playbook (regulated customer retrospective)  |
-| Related ADR | [ADR Air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) |
+| Related ADR | [ADR Air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) |
 
 ## 2. Impact scope
 
@@ -146,7 +146,7 @@ related:
 - Notification recipients: CTO, customer CISO, legal, PMO
 - Notification date: 2026-08-10
 - Archive path: `lessons/failures/air-gapped-pipeline-broke-without-sneakernet.md`
-- Related ADR / TD: [ADR Air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md)
+- Related ADR / TD: [ADR Air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md)
 
 ## 10. Retrospective meeting metadata
 
@@ -187,4 +187,4 @@ related:
 - Same class: [./fde-day-two-without-internal-owner.md](failure-fde-day-two-without-internal-owner.md) — FDE retrospective class
 - Triggering trap: [Air-gapped first-boot 4-class traps](gotcha-air-gap-first-boot-surprise.md)
 - Upstream: [Air-gapped deployment](../process/deploy-to-an-air-gapped-environment.md) §first-boot
-- Design basis: [ADR Air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) §decision #5
+- Design basis: [ADR Air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) §decision #5

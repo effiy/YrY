@@ -23,10 +23,10 @@ related:
   - ../infrastructure/set-up-ci-cd.md
   - ../../oncall-sre/observability/set-up-observability.md
   - ../../engineer/quality-security/harden-supply-chain.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: CVE response is not direct upgrade; it is first assessing impact surface + real reachability + patch stability, then gradual rollout; do not rush patches for unreachable CVEs
 ---
 
@@ -62,10 +62,10 @@ Dependency hits a CVE; security team / regulator / customer inquiry; improper CV
 | 2 hops | Secrets and config | [../strategies/handle-secrets-and-config.md](handle-secrets-and-config.md) |
 | 2 hops | Migration | [./roll-out-a-migration.md](../infrastructure/roll-out-a-migration.md) |
 | 2 hops | Supply-chain pattern | [../../engineer/quality-security/harden-supply-chain.md](../process/harden-supply-chain.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -96,4 +96,4 @@ Dependency hits a CVE; security team / regulator / customer inquiry; improper CV
 - Secrets: [../strategies/handle-secrets-and-config.md](handle-secrets-and-config.md) — secret leak CVE
 - Migration: [./roll-out-a-migration.md](../infrastructure/roll-out-a-migration.md) — general migration methodology
 - Pattern: [supply-chain-hardening](../process/harden-supply-chain.md)
-- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

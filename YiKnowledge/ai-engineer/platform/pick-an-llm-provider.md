@@ -47,10 +47,10 @@ tacit: false
 
 ## Summary
 
-- Vendor comparison follows [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) + [llm-vendor-landscape-summary.md](../../executive/industry/competitors/llm-vendor-landscape.md)
+- Vendor comparison follows [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) + [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md)
 - Inference engine follows [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md): vLLM / Ollama / closed-source API
 - Evaluation follows [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) + [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md)
-- Multi-provider routing follows [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) + [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md)
+- Multi-provider routing follows [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) + [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md)
 - Capacity and cost follow [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md)
 
 ## Core viewpoints
@@ -83,13 +83,13 @@ When selecting an LLM vendor / evaluating models / multi-provider routing / swit
 |---|---|
 | `tech/ai-platform/` | [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) · [inference-engine-comparison-summary.md](../../ai-engineer/platform/inference-engine-comparison.md) · [embedding-model-selection-summary.md](../../ai-engineer/platform/embedding-model-selection.md) · [vector-db-comparison-summary.md](../../ai-engineer/platform/vector-db-comparison.md) · [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [ai-workbench-user-guide-summary.md](../../ai-engineer/platform/ai-workbench-user-guide.md) · [llama-index-evolution-summary.md](../../ai-engineer/platform/llama-index-evolution.md) |
 | `tech/ai-foundations/` | [transformer-architecture-summary.md](../../ai-engineer/foundations/transformer-architecture.md) · [kv-cache-inference-optimization-summary.md](../../ai-engineer/foundations/kv-cache-inference-optimization.md) · [long-context-techniques-summary.md](../../ai-engineer/foundations/long-context-techniques.md) · [moe-architecture-summary.md](../../ai-engineer/foundations/moe-architecture.md) · [multimodal-fusion-summary.md](../../ai-engineer/foundations/multimodal-fusion.md) · [rlhf-dpo-alignment-summary.md](../../ai-engineer/foundations/rlhf-dpo-alignment.md) |
-| `industry/competitors/` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors/llm-vendor-landscape.md) — vendor competitive landscape · [competitor-analysis-template.md](../../executive/industry/competitors/competitor-analysis.md) |
-| `industry/{reports,market-trends}/` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) · [ai-market-trend-first-half.md](../../executive/industry/market-trends/ai-market-trend-first-half.md) · [regional-market-observation.md](../../executive/industry/market-trends/regional-market-observation.md) |
+| `industry/competitors--` | [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md) — vendor competitive landscape · [competitor-analysis-template.md](../../executive/industry/competitors--competitor-analysis.md) |
+| `industry/{reports,market-trends}/` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) · [ai-market-trend-first-half.md](../../executive/industry/market-trends--ai-market-trend-first-half.md) · [regional-market-observation.md](../../executive/industry/market-trends--regional-market-observation.md) |
 | `methodology/ai-specific/` | [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) · [prompt-engineering-guide-summary.md](../../ai-engineer/methodology/prompt-engineering-guide.md) · [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) · [agent-architecture-patterns-summary.md](../../ai-engineer/methodology/agent-architecture-patterns.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [rpc-envelope-pattern.md](../../engineer/architecture-design/rpc-envelope.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) — per-user cost / capacity ceiling |
 | `lessons/wins/` | [yiai-llm-phase-two-win.md](../../engineer/lessons/win-yiai-llm-phase-two.md) · [yiai-llm-phase-three-win.md](../../engineer/lessons/win-yiai-llm-phase-three.md) · [yiai-llm-phase-four-win.md](../../engineer/lessons/win-yiai-llm-phase-four.md) · [yiai-llm-phase-five-win.md](../../engineer/lessons/win-yiai-llm-phase-five.md) — multi-provider landing phases |
-| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) — multi-provider ADRs |
+| `projects/YiAi/` | [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) — multi-provider ADRs |
 | `work/tools/` | [vllm-ollama-deployment-summary.md](../../engineer/engineering/vllm-ollama-deployment.md) — self-hosted deployment |
 
 ## Action recommendations
@@ -97,13 +97,13 @@ When selecting an LLM vendor / evaluating models / multi-provider routing / swit
 1. **Classify requirements**: General chat / long context / multimodal / tool calling / embedding / rerank — define the scenario first, then select. 
 2. **Evaluation set**: Build a 100-500 item labeled set covering core scenarios + hard cases + edge cases; see [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md). 
 3. **Dimensions**: Correctness + fluency + P95 latency + per-call cost + long-context recall + multimodal accuracy + safety. 
-4. **Multi-provider routing**: Don't lock into a single provider; route by scenario (cheap models for low-cost tasks / flagship for hard tasks / closed-source for fallback); see [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md). 
-5. **Domestic vs closed-source**: Compliance / data sovereignty / Chinese-language scenarios favor domestic (Tongyi / DeepSeek / Kimi / Zhipu); general + overseas consider GPT / Claude / Gemini; see [llm-vendor-landscape-summary.md](../../executive/industry/competitors/llm-vendor-landscape.md). 
+4. **Multi-provider routing**: Don't lock into a single provider; route by scenario (cheap models for low-cost tasks / flagship for hard tasks / closed-source for fallback); see [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md). 
+5. **Domestic vs closed-source**: Compliance / data sovereignty / Chinese-language scenarios favor domestic (Tongyi / DeepSeek / Kimi / Zhipu); general + overseas consider GPT / Claude / Gemini; see [llm-vendor-landscape-summary.md](../../executive/industry/competitors--llm-vendor-landscape.md). 
 6. **Self-hosting**: For data-sensitive / large-scale / cost-controlled scenarios consider vLLM self-hosting; during development use local Ollama; see [vllm-ollama-deployment-summary.md](../../engineer/engineering/vllm-ollama-deployment.md). 
 7. **Fine-tuning decision**: Full FT / LoRA / QLoRA / Prefix chosen by data volume + cost + performance needs; see [model-finetuning-decision-tree-summary.md](../../ai-engineer/methodology/model-finetuning-decision-tree.md). 
 8. **Cost**: Per-user cost = (input_tokens × input_price + output_tokens × output_price) × call frequency; follow [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md). 
 9. **Observability**: At launch must monitor call success rate / latency / cost / error distribution; see [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md). 
-10. **Switching plan**: Model deprecation / price hikes / service outages must be switchable; use multi-provider + fallback strategy; see [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md). 
+10. **Switching plan**: Model deprecation / price hikes / service outages must be switchable; use multi-provider + fallback strategy; see [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md). 
 
 ## Anti-patterns
 

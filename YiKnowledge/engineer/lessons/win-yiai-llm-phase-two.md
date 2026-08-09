@@ -116,10 +116,10 @@ related:
 
 ## Related
 
-- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) Phase 2 (implementation ADR landed by this win)
-- decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md)
+- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) Phase 2 (implementation ADR landed by this win)
+- decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md)
 - Prerequisite: [yiai-supply-chain-hardening-win](win-yiai-supply-chain-hardening.md) Phase 1
 - Methodology: [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md) + [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md)
-- Co-build: [ADR-RAG-Evaluation-Infra](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) (evaluation set co-build) + [ADR-Pytest-Introduction](../../tech-lead/decisions/yiai/pytest-introduction.md) (`tests/eval/` co-build)
+- Co-build: [ADR-RAG-Evaluation-Infra](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) (evaluation set co-build) + [ADR-Pytest-Introduction](../../tech-lead/decisions/yiai--pytest-introduction.md) (`tests/eval/` co-build)
 - Same type: [./README.md](./) — wins leaf entry
 - Scenario: [i-want-to-review-lessons](../process/review-lessons.md)

@@ -14,7 +14,7 @@ priority: p1
 status: adopted
 country: ALL
 owner: YiVad PM
-kb_path: product-manager/projects/yivad/project-management.md
+kb_path: product-manager/projects/yivad--project-management.md
 business_objective: "With 'page-domain-driven + ProTable paradigm + cross-project contract consumption' as the main axis, each iteration cadence = one view domain landing + supporting api module + store + route registration."
 user_segment: "operations / development / newcomers / handover recipients"
 target_metric: "Stable iteration cadence (weekly meeting once + async daily report + end-of-iteration retrospective); newcomers run SPA on Day-1; handover trio complete (onboarding + engineering mirror + current iteration view domain list)"
@@ -30,7 +30,7 @@ type: reference
 
 **PRD ID**: PRD-2026-PM-001  |  **Project**: yivad  |  **Domain**: Project Management
 **Priority**: p1  |  **Status**: adopted  |  **Country**: ALL  |  **Owner**: YiVad PM
-**KB Source**: product-manager/projects/yivad/project-management.md
+**KB Source**: product-manager/projects/yivad--project-management.md
 
 ## Business Objective
 With "page-domain-driven + ProTable paradigm + cross-project contract consumption" as the main axis, each iteration cadence = one view domain landing + supporting api module + store + route registration.
@@ -48,4 +48,4 @@ Stable iteration cadence (weekly meeting once + async daily report + end-of-iter
 YiVad PM (decision); YiVad main owner (execution); CTO (approval); frontend lead; QA; newcomer (consumption)
 
 ## References
-- **KB Source**: `YiKnowledge/product-manager/projects/yivad/project-management.md`
+- **KB Source**: `YiKnowledge/product-manager/projects/yivad--project-management.md`

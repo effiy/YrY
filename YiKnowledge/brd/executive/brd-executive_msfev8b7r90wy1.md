@@ -14,7 +14,7 @@ okr: 'O1 / KR3: multi-provider routes >= 4'
 status: stable
 owner: AI Engineer + CTO
 investment_size: $0
-kb_path: executive/industry/competitors/llm-vendor-landscape.md
+kb_path: executive/industry/competitors--llm-vendor-landscape.md
 context: "LLM vendor landscape: OpenAI / Anthropic / Google / Meta / DeepSeek / Mistral"
   / Cohere. Guides YiAi multi-provider route selection.
 decision: "YiAi multi-provider routes >= 4 vendors: Ollama (self-hosted) + OpenAI"
@@ -32,7 +32,7 @@ type: reference
 
 **Decision Type**: vendor  |  **Scope**: company  |  **Horizon**: quarterly  |  **Status**: stable
 **Strategic Theme**: AI Native  |  **OKR**: O1 / KR3: multi-provider routes >= 4  |  **Owner**: AI Engineer + CTO  |  **Investment**: $0
-**KB Source**: executive/industry/competitors/llm-vendor-landscape.md
+**KB Source**: executive/industry/competitors--llm-vendor-landscape.md
 
 ## Context
 LLM vendor landscape: OpenAI / Anthropic / Google / Meta / DeepSeek / Mistral / Cohere. Guides YiAi multi-provider route selection.
@@ -50,4 +50,4 @@ Multi-provider >= 4 vendors; quarterly review; switchover strategy documented; c
 AI Engineer + CTO (decision); YiAi main owner (execution); CFO (budget)
 
 ## References
-- **KB Source**: `YiKnowledge/executive/industry/competitors/llm-vendor-landscape.md`
+- **KB Source**: `YiKnowledge/executive/industry/competitors--llm-vendor-landscape.md`

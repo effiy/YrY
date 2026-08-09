@@ -39,7 +39,7 @@ related:
 - ./dashboard-executive-kpi.md
 - ./dashboard-sales-gtm-motion.md
 - ./dashboard-market-growth.md
-- ../../product-manager/discovery/metrics/dashboard-customer-journey.md
+- ../../product-manager/discovery/metrics--dashboard-customer-journey.md
 - ../../product-manager/strategy/dashboard-pricing-packaging.md
 tacit: false
 ---
@@ -219,6 +219,6 @@ tacit: false
 - Same class: [dashboard-executive-kpi](dashboard-executive-kpi.md) — executive KPI
 - Same class: [dashboard-sales-gtm-motion](dashboard-sales-gtm-motion.md) — sales and GTM motion
 - Same class: [dashboard-market-growth](dashboard-market-growth.md) — market growth and expansion
-- Same class: [dashboard-customer-journey](../../product-manager/discovery/metrics/dashboard-customer-journey.md) — customer journey
+- Same class: [dashboard-customer-journey](../../product-manager/discovery/metrics--dashboard-customer-journey.md) — customer journey
 - Same class: [dashboard-pricing-packaging](../../product-manager/strategy/dashboard-pricing-packaging.md) — pricing and packaging
 - References: HubSpot — *State of Marketing Report*; Gartner — *CMO Spend Survey*; SiriusDecisions — *Demand Waterfall*; Google — *Zero Moment of Truth*; Content Marketing Institute — *B2B Content Marketing Benchmarks*; LinkedIn — *B2B Marketing Effectiveness*; ProfitWell — *SaaS Marketing Metrics*

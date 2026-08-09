@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/functional-modules.md
   - ../../../engineer/projects/yiai/dev-standards.md
-  - ../../../product-manager/projects/yiai/project-management.md
+  - ../../../product-manager/projects/yiai--project-management.md
   - ./route-llm-traffic-across-providers.md
   - ../../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md
   - ../../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md

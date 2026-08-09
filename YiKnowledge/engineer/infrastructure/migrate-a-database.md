@@ -28,9 +28,9 @@ related:
   - ../../engineer/architecture-design/one-to-one-mapping-migration.md
   - ../../engineer/architecture-design/staged-port-methodology.md
   - ../../engineer/engineering/evaluation-driven-development.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
 tacit: Database migration is not just running ALTER and being done; it is schema dual-write + dual-read + cut-over + rollback fallback, with forward and backward compatibility maintained in parallel
 ---
 
@@ -66,9 +66,9 @@ As the business develops, the schema evolves, the database engine is replaced, o
 | 2 hop | Incident response | [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) |
 | 2 hop | Release | [./ship-a-release.md](./ship-a-release.md) |
 | 2 hop | CI/CD | [../tools/set-up-ci-cd.md](set-up-ci-cd.md) |
-| 2 hop | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hop | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hop | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
+| 2 hop | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hop | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hop | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
 
 ## Action recommendations
 
@@ -95,7 +95,7 @@ As the business develops, the schema evolves, the database engine is replaced, o
 - Monolith decomposition: [../strategies/decompose-a-monolith.md](../architecture-design/decompose-a-monolith.md) — splitting services with splitting databases
 - ADR: [../../tech-lead/architecture/design-architecture-decision.md](../../tech-lead/architecture/design-architecture-decision.md) — migration decision
 - Pattern co-build: [1:1 mapping migration](../architecture-design/one-to-one-mapping-migration.md) + [staged-port](../architecture-design/staged-port-methodology.md) + [evaluation driven](../engineering/evaluation-driven-development.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md)
 - Observability: [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) — traffic cut-over monitoring
 - Incident response: [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) — read-cut stage incidents
 - Release: [./ship-a-release.md](./ship-a-release.md) — data migration gate

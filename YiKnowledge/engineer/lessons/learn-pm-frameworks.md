@@ -27,9 +27,9 @@ acceptance_criteria:
 related:
 - ../../product-manager/frameworks/README.md
 - ../../executive/strategy/README.md
-- ../../product-manager/discovery/metrics/README.md
-- ../../product-manager/discovery/ux/README.md
-- ../../product-manager/discovery/prd/README.md
+- ../../product-manager/discovery/metrics--README.md
+- ../../product-manager/discovery/ux--README.md
+- ../../product-manager/discovery/prd--README.md
 - ../../README.md
 review_cycle: quarterly
 tacit: false
@@ -55,10 +55,10 @@ When a new PM onboards, runs requirement reviews, does quarterly planning, or la
 |---|---|
 | `../../product-manager/frameworks` | [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) · [agile-product-management-summary.md](../../product-manager/frameworks/agile-product-management.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) |
 | `../../executive/strategy` | [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [business-model-canvas-summary.md](../../executive/strategy/business-model-canvas.md) · [porter-five-forces-summary.md](../../executive/strategy/porter-five-forces.md) · [blue-ocean-strategy-summary.md](../../executive/strategy/blue-ocean.md) · [second-curve-summary.md](../../executive/strategy/second-curve.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) |
-| `../../product-manager/discovery/metrics` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) |
-| `../../product-manager/discovery/ux` | [nielsen-heuristics-summary.md](../../product-manager/discovery/ux/nielsen-heuristics.md) · [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux/ai-product-ux-patterns.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux/cross-cultural-ux.md) |
+| `../../product-manager/discovery/metrics` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) |
+| `../../product-manager/discovery/ux` | [nielsen-heuristics-summary.md](../../product-manager/discovery/ux--nielsen-heuristics.md) · [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux--ai-product-ux-patterns.md) · [cross-cultural-ux-summary.md](../../product-manager/discovery/ux--cross-cultural-ux.md) |
 | `../../product-manager/discovery/prd` + `../../knowledge-curator/templates/prd.md` | [prd.md](../../knowledge-curator/templates/prd.md) |
-| `../../knowledge-curator/templates/thinking` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `../../knowledge-curator/templates/thinking` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `../../engineer/collaboration-process` | [iteration-pm-handbook-summary.md](../process/iteration-pm-handbook.md) · [requirement-review-process.md](../../product-manager/delivery/requirement-review.md) · [design-review-process.md](../../product-manager/delivery/design-review.md) · [sprint-retrospective-template.md](../process/sprint-retrospective.md) |
 
 ## Core viewpoints

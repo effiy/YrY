@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yipet/architecture.md
   - ../../../engineer/projects/yipet/functional-modules.md
   - ../../../engineer/projects/yipet/dev-standards.md
-  - ../../../product-manager/projects/yipet/project-management.md
+  - ../../../product-manager/projects/yipet--project-management.md
   - ./chrome-manifest-dual-world-boundary.md
   - ./biome-lint-format.md
   - ../yivad/aicr-phase-port.md

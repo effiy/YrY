@@ -30,10 +30,10 @@ related:
  - ../strategies/decompose-a-monolith.md
  - ../projects/build-a-rag-pipeline.md
  - ../../product-manager/frameworks/launch-an-ai-product.md
- - ../../knowledge-curator/templates/thinking/first-principles.md
- - ../../knowledge-curator/templates/thinking/inversion.md
- - ../../knowledge-curator/templates/thinking/second-order-thinking.md
- - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+ - ../../knowledge-curator/templates/thinking--first-principles.md
+ - ../../knowledge-curator/templates/thinking--inversion.md
+ - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+ - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 ---
 
 # Saga long transaction Pattern / Saga Pattern
@@ -283,4 +283,4 @@ LLM saga:
 - graceful degradation: [./graceful-degradation.md](./graceful-degradation.md) — saga fail degradation
 - observable: [./observability.md](../engineering/observability.md) — saga trace
 - journeys: [migrate-data](../infrastructure/migrate-data.md) + [decompose-a-monolith](decompose-a-monolith.md) + [build-a-rag-pipeline](../projects/build-a-rag-pipeline.md) + [launch-an-ai-product](../../product-manager/frameworks/launch-an-ai-product.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (cross-service transaction essence)  + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (compensation = reverse operation)  + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) (saga second-order consistency property)  + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) (saga the simpler the better) 
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (cross-service transaction essence)  + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (compensation = reverse operation)  + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) (saga second-order consistency property)  + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) (saga the simpler the better) 

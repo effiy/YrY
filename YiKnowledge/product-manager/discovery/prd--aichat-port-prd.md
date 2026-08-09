@@ -32,7 +32,7 @@ acceptance_criteria:
 related:
   - ./brd-agent-prd.md
   - ../../frameworks/write-a-spec-or-prd.md
-  - ../../discovery/ux/ai-product-ux-patterns.md
+  - ../../discovery/ux--ai-product-ux-patterns.md
   - ../../../knowledge-curator/templates/prd.md
   - ../../../engineer/lessons/win-yivad-aichat-port.md
 ---
@@ -248,7 +248,7 @@ src/stores/modules/aiChat/
 
 - Same class: [./brd-agent-prd.md](./brd-agent-prd.md) -- another PRD instance in the same directory
 - Upstream: [../../frameworks/write-a-spec-or-prd.md](../../frameworks/write-a-spec-or-prd.md) -- PRD writing framework
-- Upstream: [../../discovery/ux/ai-product-ux-patterns.md](../../discovery/ux/ai-product-ux-patterns.md) -- AI product UX patterns (streaming, thinking display)
+- Upstream: [../../discovery/ux--ai-product-ux-patterns.md](../../discovery/ux--ai-product-ux-patterns.md) -- AI product UX patterns (streaming, thinking display)
 - Reference: [../../../knowledge-curator/templates/prd.md](../../../knowledge-curator/templates/prd.md) -- PRD template
 - Reference: [../../../engineer/lessons/win-yivad-aichat-port.md](../../../engineer/lessons/win-yivad-aichat-port.md) -- YiVad aiChat port win document
 - References: Internal YiVad aiChat project; porting YiWeb sessionChat to YiVad

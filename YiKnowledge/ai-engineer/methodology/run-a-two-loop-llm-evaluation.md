@@ -25,10 +25,10 @@ related:
   - ../platform/llm-observability-comparison.md
   - ../platform/evaluate-an-llm-app.md
   - ../../engineer/process/operate-as-a-forward-deployed-engineer.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Two-loop is not double work; it tests differently in dev vs prod. Inner = ADK dev-time + golden dataset + interaction debug; Outer = Agent Platform prod + Pairwise + RAG triad + drift monitoring; no vibes-test; do not skip either loop
 ---
 
@@ -82,7 +82,7 @@ Two-loop is not double work; it tests differently in dev vs prod. This entry pro
 | 1 hop | llm-eval-methods | [./llm-evaluation-methods.md](./llm-evaluation-methods.md) |
 | 1 hop | agent-eval-strategy | [../foundations/prepare-an-agent-evaluation-strategy.md](../../knowledge-curator/archive/strategies-legacy/ai-engineer/prepare-an-agent-evaluation-strategy.md) |
 | 2 hops | adk | [../platform/orchestrate-agents-with-adk-and-agents-cli.md](../platform/orchestrate-agents-with-adk-and-agents-cli.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -145,4 +145,4 @@ Two-loop is not double work; it tests differently in dev vs prod. This entry pro
 - llm-observability: [../platform/llm-observability-comparison.md](../platform/llm-observability-comparison.md) — observability co-build
 - llm-eval: [../platform/evaluate-an-llm-app.md](../platform/evaluate-an-llm-app.md) — LLM app eval co-build
 - fde-role: [../../engineer/process/operate-as-a-forward-deployed-engineer.md](../../engineer/process/operate-as-a-forward-deployed-engineer.md) — FDE co-build
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

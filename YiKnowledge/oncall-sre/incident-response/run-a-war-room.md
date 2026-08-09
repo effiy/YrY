@@ -47,7 +47,7 @@ last_verified: 2026-08-07
 ## Summary
 
 - Process via [incident-response-process.md](../../engineer/process/incident-response.md) + [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) + [release-freeze-process.md](../../oncall-sre/release/release-freeze.md)
-- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking via [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Template via [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) + [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) + [runbook.md](../../engineer/infrastructure/write-a-runbook.md)
 - Case study via [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) + [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md)
 
@@ -74,16 +74,16 @@ When opening a war room / major incident war / P0/P1 incident / sev1/sev2 assess
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `work/processes/` | [incident-response-process.md](../../engineer/process/incident-response.md) · [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md) · [cross-team-collaboration-process.md](../../engineer/process/cross-team-collaboration.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — incident essence · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — reverse thinking on failure · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — incident essence · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse thinking on failure · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [contract-test-baseline-pattern.md](../../engineer/quality-security/contract-test-baseline.md) · [ssot-view-layer-pattern.md](../../engineer/architecture-design/ssot-view-layer.md) · [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) |
 | `resources/templates/` | [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts/rag-system.md) |
+| `resources/prompts/` | [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) · [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [rag-system-prompt.md](../../ai-engineer/methodology/prompts--rag-system.md) |
 | `tech/ai-platform/` | [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) · [llm-comparison-summary.md](../../ai-engineer/platform/llm-comparison.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../../engineer/process/raci-matrix.md) · [async-collaboration-principles-summary.md](../../engineer/process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) · [weekly-report-sample.md](../../product-manager/delivery/weekly-report.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — communication |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — oncall matrix |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — communication |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — oncall matrix |
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [ai-product-launch-lessons-summary.md](../../engineer/lessons/failure-ai-product-launch-lessons.md) · [bugs/](../../engineer/lessons) — incident archive |
 | `lessons/wins/` | [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) · [yivad-aicr-phase-port.md](../../engineer/lessons/win-yivad-aicr-phase-port.md) |
 | `lessons/gotchas/` | [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) · [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [no-lockfile-supply-chain-risk.md](../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md) |
@@ -93,14 +93,14 @@ When opening a war room / major incident war / P0/P1 incident / sev1/sev2 assess
 
 ## Action recommendations
 
-1. **First principles**: first ask "what does the war room solve / what happens without a meeting / ROI / user impact"; do not open a war room for the sake of opening one; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how the war room can fail (IC missing / communication chaos / triage chaos / rollback misjudgment / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: triage → introduces new bug → another war room; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam's razor**: the simplest action that satisfies triage wins; do not pile up people; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "what does the war room solve / what happens without a meeting / ROI / user impact"; do not open a war room for the sake of opening one; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how the war room can fail (IC missing / communication chaos / triage chaos / rollback misjudgment / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: triage → introduces new bug → another war room; follow [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam's razor**: the simplest action that satisfies triage wins; do not pile up people; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **SEV**: must do sev classification (P0/P1/P2) + must have communication threshold + must have escalation path; follow [incident-response-process.md](../../engineer/process/incident-response.md).
 6. **IC**: must have single IC + must have deputy + must have chief of staff + must have scribe; follow [raci-matrix-summary.md](../../engineer/process/raci-matrix.md).
-7. **first responder**: must have oncall matrix + must have 24h rotation + must have escalation path; follow [team-overview.md](../../knowledge-curator/people/team/team-overview.md).
-8. **Communication**: must do [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) + must have 15min sync + must classify internal/external.
+7. **first responder**: must have oncall matrix + must have 24h rotation + must have escalation path; follow [team-overview.md](../../knowledge-curator/people/team--team-overview.md).
+8. **Communication**: must do [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) + must have 15min sync + must classify internal/external.
 9. **Cross-timezone**: must do [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md); multi-timezone rotation.
 10. **Monitoring**: must do [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) dashboard live + threshold + alert.
 11. **Triage**: must do "stabilize before fixing" + must prioritize rollback + must cut feature flag + must rate-limit fallback; follow [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md).
@@ -111,7 +111,7 @@ When opening a war room / major incident war / P0/P1 incident / sev1/sev2 assess
 16. **Retrospective**: after triage, must do [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) retrospective + archive under [bugs/](../../engineer/lessons).
 17. **Knowledge implementation**: after retrospective must land [tacit-knowledge-backlog.md](../../knowledge-curator/governance/tacit-knowledge-backlog.md) + must add runbook + must add ADR.
 18. **Quarterly audit**: follow [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) scan whether IC rotation is still accurate + whether monitoring still covers.
-19. **Flywheel**: war room smooth → triage fast → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+19. **Flywheel**: war room smooth → triage fast → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

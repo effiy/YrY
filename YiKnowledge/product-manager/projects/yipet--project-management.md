@@ -22,7 +22,7 @@ related:
  - ../../../engineer/projects/yipet/architecture.md
  - ../../../engineer/projects/yipet/functional-modules.md
  - ../../../engineer/projects/yipet/dev-standards.md
- - ../../../new-hire/onboarding/yipet/onboarding.md
+ - ../../../new-hire/onboarding/yipet--onboarding.md
  - ../../../engineer/projects/yipet/engineering/claude.md
  - ../../../engineer/process/iteration-pm-handbook.md
  - ../../../engineer/process/project-handover.md
@@ -30,7 +30,7 @@ related:
  - ../../meetings/retrospective-meeting.md
  - ../../meetings/weekly-report.md
  - ../../meetings/retrospective.md
- - ../../../ai-engineer/methodology/prompts/weekly-report.md
+ - ../../../ai-engineer/methodology/prompts--weekly-report.md
  - ../../../knowledge-curator/templates/retrospective.md
 ---
 
@@ -106,7 +106,7 @@ Every Friday before 16:00 submit this week's weekly report, following `../../del
 - Blockers and help
 - Cross-project links (YiAi contract change feedback, YiVad shared client approach)
 
-Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts/weekly-report.md) to let AI draft + main owner verify then send.
+Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts--weekly-report.md) to let AI draft + main owner verify then send.
 
 ### Daily report cadence
 
@@ -195,12 +195,12 @@ YiPet is a YiAi contract consumer (same as YiVad). Every month run a cross-proje
 - [YiPet Architecture overview](../../../engineer/projects/yipet/architecture.md) — dual-world boundary / API four-tier / data flow / downgrade
 - [YiPet functional module checklist](../../../engineer/projects/yipet/functional-modules.md) — module map
 - [YiPet development spec](../../../engineer/projects/yipet/dev-standards.md) — TSX structure / API four-tier / MV3 / i18n / time / CSP
-- [YiPet new hire guide](../../../new-hire/onboarding/yipet/onboarding.md) — Day-1 setup + workflow + pitfall quick reference
+- [YiPet new hire guide](../../../new-hire/onboarding/yipet--onboarding.md) — Day-1 setup + workflow + pitfall quick reference
 - [Iteration PM handbook](../../../engineer/process/iteration-pm-handbook.md)
 - [Project handover process](../../../engineer/process/project-handover.md)
 - [Weekly meeting template](../../delivery/weekly-meeting.md) · [Retrospective meeting template](../../delivery/retrospective-meeting.md) · [Review meeting template](../../delivery/review-meeting.md)
 - [Weekly report instance](../../delivery/weekly-report.md) · [Retrospective instance](../../delivery/retrospective.md)
-- [Weekly report prompt](../../../ai-engineer/methodology/prompts/weekly-report.md) · [Retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)
+- [Weekly report prompt](../../../ai-engineer/methodology/prompts--weekly-report.md) · [Retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)
 - [Pi Agent Harness evolution tracking](../../../engineer/engineering/pi-agent-harness-evolution.md) — TS multi-provider + supply chain hardening reference template
 - [YiAi project management](../yiai/project-management.md) — contract provider
 - [YiVad project management](../yivad/project-management.md) — same-family front-end reference

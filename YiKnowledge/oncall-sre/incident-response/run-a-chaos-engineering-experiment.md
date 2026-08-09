@@ -47,7 +47,7 @@ last_verified: 2026-08-07
 ## Summary
 
 - Process goes through [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) + [incident-response-process.md](../../engineer/process/incident-response.md) + [release-freeze-process.md](../../oncall-sre/release/release-freeze.md)
-- Thinking goes through [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking goes through [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Platform goes through [graceful-degradation-pattern.md](../../engineer/architecture-design/graceful-degradation.md) + [circuit-breaker-pattern.md](../../engineer/architecture-design/circuit-breaker.md) + [observability-pattern.md](../../engineer/engineering/observability.md)
 - Case studies go through [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) + [yivad-aicr-phase-port.md](../../engineer/lessons/win-yivad-aicr-phase-port.md)
 
@@ -84,14 +84,14 @@ When running chaos engineering experiments / chaos engineering / fault injection
 |---|---|
 | `work/processes/` | [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) · [incident-response-process.md](../../engineer/process/incident-response.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [sprint-retrospective-process.md](../../product-manager/delivery/retrospective.md) · [code-review.md](../../engineer/quality-security/do-a-code-review.md) |
 | `methodology/engineering-patterns/` | [graceful-degradation-pattern.md](../../engineer/architecture-design/graceful-degradation.md) · [circuit-breaker-pattern.md](../../engineer/architecture-design/circuit-breaker.md) · [observability-pattern.md](../../engineer/engineering/observability.md) · [rate-limiting-pattern.md](../../engineer/engineering/rate-limiting.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) — essence of chaos · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert the out-of-control · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) — essence of chaos · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert the out-of-control · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — chain · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `resources/templates/` | [runbook](../../engineer/infrastructure/write-a-runbook.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [retrospective-template.md](../../knowledge-curator/templates/retrospective.md) · [knowledge-leaf-template.md](../../knowledge-curator/templates/knowledge-leaf.md) |
-| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts/code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts/weekly-report.md) |
+| `resources/prompts/` | [code-review-prompt.md](../../ai-engineer/methodology/prompts--code-review.md) · [weekly-report-prompt.md](../../ai-engineer/methodology/prompts--weekly-report.md) |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
 | `work/collaboration/` | [raci-matrix-summary.md](../../engineer/process/raci-matrix.md) · [async-collaboration-principles-summary.md](../../engineer/process/async-collaboration-principles.md) · [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md) |
 | `work/meetings/` | [review-meeting-template.md](../../product-manager/delivery/review-meeting.md) · [retrospective-sample.md](../../product-manager/delivery/retrospective.md) |
-| `people/team/` | [team-overview.md](../../knowledge-curator/people/team/team-overview.md) · [roster.md](../../knowledge-curator/people/team/roster.md) — SRE matrix |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — chaos comms |
+| `people/team--` | [team-overview.md](../../knowledge-curator/people/team--team-overview.md) · [roster.md](../../knowledge-curator/people/team--roster.md) — SRE matrix |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — chaos comms |
 | `lessons/wins/` | [yivad-aicr-phase-port.md](../../engineer/lessons/win-yivad-aicr-phase-port.md) · [yiai-brd-agent-launch.md](../../engineer/lessons/win-yiai-brd-agent-launch.md) |
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [bugs/](../../engineer/lessons) — chaos failure archive |
 | `lessons/gotchas/` | [sse-ondone-guard.md](../../engineer/lessons/gotcha-sse-ondone-guard.md) · [macos-fsevents-silent-drop.md](../../engineer/lessons/gotcha-macos-fsevents-silent-drop.md) |
@@ -102,10 +102,10 @@ When running chaos engineering experiments / chaos engineering / fault injection
 
 ## Action recommendations
 
-1. **First principles**: first ask "what chaos to solve / what happens if not done / ROI / user impact"; do not do chaos for chaos' sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "chaos could go out of control (blast radius / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: one injection → behavior changes → another injection; go through [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: the simplest injection that satisfies the assumption wins; do not pile up faults; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "what chaos to solve / what happens if not done / ROI / user impact"; do not do chaos for chaos' sake; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "chaos could go out of control (blast radius / trust collapse)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: one injection → behavior changes → another injection; go through [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: the simplest injection that satisfies the assumption wins; do not pile up faults; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **Assumption**: must run steady-state assumption + must have SLO + must be observable + never without a goal.
 6. **Faults**: must run a fault library + must cover CPU / memory / network / disk / process + must be tiered.
 7. **Injection**: must run control + must have blast radius + must be stoppable in seconds + never full-volume.
@@ -116,12 +116,12 @@ When running chaos engineering experiments / chaos engineering / fault injection
 12. **RACI**: must run [raci-matrix-summary.md](../../engineer/process/raci-matrix.md); SRE / TL / sponsor owner.
 13. **Cross-timezone**: must run [cross-timezone-collaboration-summary.md](../../engineer/process/cross-timezone-collaboration.md); multi-timezone windows.
 14. **Freeze period**: during big promos go through [release-freeze-process.md](../../oncall-sre/release/release-freeze.md); do not run chaos.
-15. **Comms**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) inside and outside + must pre-announce.
+15. **Comms**: must run [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) inside and outside + must pre-announce.
 16. **Drill**: must run [i-want-to-run-a-game-day.md](./run-a-game-day.md) + must rehearse + never directly in production.
 17. **Retrospective**: after a chaos failure must run [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) retrospective + archive in [bugs/](../../engineer/lessons).
 18. **Quarterly audit**: go through [governance.md](../../knowledge-curator/governance/governance.md) + [review-log.md](../../knowledge-curator/governance/review-log.md) to scan whether assumptions are still accurate + whether the fault library is still reasonable.
 19. **ADR**: chaos decisions must land in an ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).
-20. **Flywheel**: chaos done well → resilience rises → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md).
+20. **Flywheel**: chaos done well → resilience rises → trust rises → more investment; see [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md).
 
 ## Anti-patterns
 

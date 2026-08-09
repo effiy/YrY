@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yipet/architecture.md
   - ../../../engineer/projects/yipet/dev-standards.md
   - ./chrome-manifest-dual-world-boundary.md
-  - ../../../product-manager/projects/yipet/project-management.md
+  - ../../../product-manager/projects/yipet--project-management.md
   - ../yivad/vitest-introduction.md
   - ../../../engineer/engineering/biome-eslint-prettier.md
   - ../../../engineer/engineering/pi-agent-harness-evolution.md

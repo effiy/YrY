@@ -23,7 +23,7 @@ related:
   - ./engineering/readme.md
   - ./engineering/changelog.md
   - ./rag-system-pages-reference.md
-  - ../../../new-hire/onboarding/yivad/onboarding.md
+  - ../../../new-hire/onboarding/yivad--onboarding.md
   - ../yiai/architecture.md
   - ../../../ai-engineer/methodology/rag-design-patterns.md
 ---

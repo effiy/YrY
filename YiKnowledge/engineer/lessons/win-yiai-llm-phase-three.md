@@ -110,11 +110,11 @@ related:
 
 ## Related
 
-- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) Phase 3 (the implementation ADR landed by this win)
-- Decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md)
+- Upstream: [ADR-LLM-Multi-Provider-Rollout](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) Phase 3 (the implementation ADR landed by this win)
+- Decision: [ADR-Multi-Provider-LLM-Routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md)
 - Prerequisite: [yiai-llm-phase-two-win](win-yiai-llm-phase-two.md) Phase 2 router + registry
 - Prerequisite: [yiai-supply-chain-hardening-win](win-yiai-supply-chain-hardening.md) Phase 1 hardening
 - Methodology: [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md) + [one-to-one-mapping-migration-pattern](../architecture-design/one-to-one-mapping-migration.md) (single-tool replacement + grayscale)
-- Co-build: [ADR-RAG-Evaluation-Infra](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) (eval-set gate)
+- Co-build: [ADR-RAG-Evaluation-Infra](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) (eval-set gate)
 - Same kind: [./README.md](./) — wins leaf entry
 - Scenario: [i-want-to-review-lessons](../process/review-lessons.md)

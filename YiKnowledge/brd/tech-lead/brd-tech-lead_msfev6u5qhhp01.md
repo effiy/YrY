@@ -15,7 +15,7 @@ team_size: 3
 status: proposed
 owner: YiAi lead owner
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yiai/knowledge-watcher-deployment.md
+kb_path: tech-lead/decisions/yiai--knowledge-watcher-deployment.md
 context: YiKnowledge content changes need to be auto-synced to the YiAi vector DB to support real-time RAG retrieval. macOS FSEvents silently drops events, so apscheduler polling must be used
   instead.
 decision: Use apscheduler polling (not FSEvents) + incremental indexing + debounce + failure retry + monitoring. Polling interval 5 minutes, debounce window 30 seconds, failure exponential
@@ -35,7 +35,7 @@ type: reference
 
 **ADR ID**: ADR-Knowledge-Watcher-Deployment  |  **Project**: yiai  |  **Domain**: Knowledge Sync
 **Decision Type**: process  |  **Team Size**: 3  |  **Status**: proposed  |  **Owner**: YiAi lead owner
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai/knowledge-watcher-deployment.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai--knowledge-watcher-deployment.md
 
 ## Context
 YiKnowledge content changes need to be auto-synced to the YiAi vector DB to support real-time RAG retrieval. macOS FSEvents silently drops events, so apscheduler polling must be used instead.
@@ -56,4 +56,4 @@ Watcher exception → switch back to manual rebuild mode + fix + redeploy (1 bus
 YiAi lead owner (decision); YiVad lead owner (knowledge source collaboration); CTO (approval)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/knowledge-watcher-deployment.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--knowledge-watcher-deployment.md`

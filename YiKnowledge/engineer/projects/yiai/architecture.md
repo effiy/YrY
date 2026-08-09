@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
 - ./engineering/claude.md
   - ./engineering/readme.md
-  - ../../../new-hire/onboarding/yiai/onboarding.md
+  - ../../../new-hire/onboarding/yiai--onboarding.md
   - ../../../ai-engineer/platform/inference-engine-comparison.md
   - ../../../ai-engineer/methodology/rag-design-patterns.md
 ---
@@ -128,7 +128,7 @@ src/
 ## Related
 
 - Mirror: [engineering/claude.md](./engineering/claude.md) · [engineering/readme.md](./engineering/readme.md)
-- Onboarding: [onboarding.md](../../../new-hire/onboarding/yiai/onboarding.md)
+- Onboarding: [onboarding.md](../../../new-hire/onboarding/yiai--onboarding.md)
 - Sibling projects: [../yivad/architecture.md](../yivad/architecture.md) · [../yipet/architecture.md](../yipet/architecture.md)
 - Cross-project protocol: [../yivad/engineering/claude.md](../yivad/engineering/claude.md#cross-project-protocol-yivad-yiai) · [../yipet/engineering/claude.md](../yipet/engineering/claude.md#cross-project-protocol-contract)
 - Related gotcha: [../../lessons/gotchas/macos-fsevents-silent-drop.md](../../lessons/gotcha-macos-fsevents-silent-drop.md)

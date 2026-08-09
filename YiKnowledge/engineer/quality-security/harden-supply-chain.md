@@ -22,7 +22,7 @@ acceptance_criteria:
   - "Any check failure = block merge"
 related:
   - ../lessons/gotcha-no-lockfile-supply-chain-risk.md
-  - ../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+  - ../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
   - ../engineering/pi-agent-harness-evolution.md
   - ../../knowledge-curator/governance/user-story-migration-plan.md
 ---
@@ -195,7 +195,7 @@ Any failure = block merge.
 ## Related
 
 - Landing: [no-lockfile supply chain risk gotcha](../lessons/gotcha-no-lockfile-supply-chain-risk.md) — YiAi no-lockfile attack surface
-- Landing: [YiAi multi-provider ADR §supply chain hardening](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md)
+- Landing: [YiAi multi-provider ADR §supply chain hardening](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md)
 - Reference: [Pi Agent Harness evolution](../engineering/pi-agent-harness-evolution.md) — npm hardening checklist
 - Reference: [Shared client design](../engineering/shared-client-design.md) — vendor per project
 - Design basis: [user-story migration plan](../../knowledge-curator/governance/user-story-migration-plan.md) — this file naming + multi-role annotation

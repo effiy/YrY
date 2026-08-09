@@ -30,7 +30,7 @@ acceptance_criteria:
 related:
 - ../lessons/learn-pm-frameworks.md
 - ../../tech-lead/roadmap/plan-tech-roadmap.md
-- ../../product-manager/discovery/metrics/README.md
+- ../../product-manager/discovery/metrics--README.md
 review_cycle: quarterly
 tacit: false
 ---
@@ -43,10 +43,10 @@ tacit: false
 
 ## Summary
 
-- North Star: [north-star-metrics-summary.md](../../product-manager/discovery/metrics/north-star-metric.md): a single core metric + 3 supporting metrics
+- North Star: [north-star-metrics-summary.md](../../product-manager/discovery/metrics--north-star-metric.md): a single core metric + 3 supporting metrics
 - Framework: [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md): HEART / AARRR / GQM
-- Retention: [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md): D1/D7/D30 + churn attribution
-- AI metrics: [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md): recall / faithfulness / latency / cost
+- Retention: [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md): D1/D7/D30 + churn attribution
+- AI metrics: [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md): recall / faithfulness / latency / cost
 - Capacity cost: [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md): ROI / cost per user
 
 ## Core viewpoints
@@ -78,18 +78,18 @@ When setting the North Star / reviewing retention / designing A/B / evaluating A
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) |
 | `methodology/pm-frameworks/` | [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — reverse-think which metrics must not break |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — reverse-think which metrics must not break |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) — cost per user / capacity ceiling · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) — metrics debt |
 | `work/processes/` | [engineering-productivity-metrics-summary.md](engineering-productivity-metrics.md) · [engineering-productivity-metrics-template.md](engineering-productivity-metrics.md) · [org-productivity-diagnosis-summary.md](org-productivity-diagnosis.md) — team effectiveness metrics |
 | `product/strategy/` | [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) · [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) — strategy-aligned metrics |
-| `industry/reports/` | [ai-industry-report-summary.md](../../executive/industry/reports/ai-industry-report.md) — industry benchmark |
+| `industry/reports--` | [ai-industry-report-summary.md](../../executive/industry/reports--ai-industry-report.md) — industry benchmark |
 | `lessons/wins/` | [yiai-llm-phase-five-win.md](../lessons/win-yiai-llm-phase-five.md) · [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) — metrics-driven landing cases |
 
 ## Action recommendations
 
-1. **Set the North Star**: a single metric reflecting user value (not revenue / DAU); 3 supporting metrics covering breadth / depth / retention; see [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md). 
+1. **Set the North Star**: a single metric reflecting user value (not revenue / DAU); 3 supporting metrics covering breadth / depth / retention; see [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md). 
 2. **Choose a framework**: HEART (experience) / AARRR (growth) / GQM (Goal-Question-Metric) by scenario; do not mix. 
 3. **Tiered retention**: D1 (first value perception) / D7 (habit formation) / D30 (long-term value); churn must be attributed (product / experience / price / season). 
 4. **AI metrics**: recall / faithfulness / P95 latency / per-call cost / user reuse rate; do not only look at accuracy; must look at user behavior metrics. 
@@ -115,4 +115,4 @@ When setting the North Star / reviewing retention / designing A/B / evaluating A
 - similar journey: [../lessons/learn-pm-frameworks.md](../lessons/learn-pm-frameworks.md) — PM framework comparison
 - similar journey: [../../tech-lead/roadmap/plan-tech-roadmap.md](../../tech-lead/roadmap/plan-tech-roadmap.md) — metrics-driven planning
 - similar journey: [../../ai-engineer/platform/evaluate-an-llm-app.md](../../ai-engineer/platform/evaluate-an-llm-app.md) — AI metrics in depth
-- upstream: [../../product-manager/discovery/metrics/README.md](../../product-manager/discovery/metrics/README.md) — metrics leaf entry
+- upstream: [../../product-manager/discovery/metrics--README.md](../../product-manager/discovery/metrics--README.md) — metrics leaf entry

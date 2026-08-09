@@ -165,7 +165,7 @@ tests/eval/
 - Co-build: [./yiai-llm-phase-five.md](win-yiai-llm-phase-five.md) — LLM endpoint contract
 - Co-build: [./yiai-brd-agent-launch.md](win-yiai-brd-agent-launch.md) — BRD agent 5-stage
 - Co-build: [./yiai-knowledge-watcher.md](win-yiai-knowledge-watcher.md) — watcher freshness
-- Implementation ADR: [../../../tech-lead/decisions/yiai/pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md) + [../../../tech-lead/decisions/yiai/rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md)
+- Implementation ADR: [../../../tech-lead/decisions/yiai--pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md) + [../../../tech-lead/decisions/yiai--rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md)
 - Pattern co-build: [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md)
 - Methodology: [llm-evaluation-methods](../../ai-engineer/methodology/llm-evaluation-methods.md) + [hallucination-mitigation](../../ai-engineer/methodology/hallucination-mitigation.md)
 - Gotcha co-build: [macos-fsevents-silent-drop](gotcha-macos-fsevents-silent-drop.md) + [no-lockfile-supply-chain-risk](gotcha-no-lockfile-supply-chain-risk.md)

@@ -19,7 +19,7 @@ acceptance_criteria:
   - "at least one concrete example or code snippet is provided
 related:
   - ../../ai-engineer/methodology/prompt-injection-defense.md
-  - ../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+  - ../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
 tacit: Zero trust is not just a slogan; it is a contract. Never trust + always verify + least privilege + explicit authorization + continuous verification; not one-shot; defense in depth
 ---
 

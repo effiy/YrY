@@ -24,9 +24,9 @@ acceptance_criteria:
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified"
 related:
-- ../../new-hire/onboarding/yiai/onboarding.md
-- ../../new-hire/onboarding/yipet/onboarding.md
-- ../../new-hire/onboarding/yivad/onboarding.md
+- ../../new-hire/onboarding/yiai--onboarding.md
+- ../../new-hire/onboarding/yipet--onboarding.md
+- ../../new-hire/onboarding/yivad--onboarding.md
 - ../../new-hire/onboarding/template.md
 - ../../new-hire/onboarding/onboarding-checklist.md
 - ../../engineer/process/project-handover.md
@@ -63,7 +63,7 @@ When a new member joins, a project changes owner, or someone is borrowed across 
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `../../engineer/projects{YiAi,YiPet,YiVad}/onboarding.md` | [YiAi/onboarding.md](../../new-hire/onboarding/yiai/onboarding.md) · [YiPet/onboarding.md](../../new-hire/onboarding/yipet/onboarding.md) · [YiVad/onboarding.md](../../new-hire/onboarding/yivad/onboarding.md) |
+| `../../engineer/projects{YiAi,YiPet,YiVad}/onboarding.md` | [YiAi/onboarding.md](../../new-hire/onboarding/yiai--onboarding.md) · [YiPet/onboarding.md](../../new-hire/onboarding/yipet--onboarding.md) · [YiVad/onboarding.md](../../new-hire/onboarding/yivad--onboarding.md) |
 | `../../engineer/projects{proj}/engineering/` | [YiAi/engineering/](../../engineer/projects/yiai/engineering) · [YiPet/engineering/](../../engineer/projects/yipet/engineering) · [YiVad/engineering/](../../engineer/projects/yivad/engineering) |
 | `../../new-hire/onboarding` | [template.md](../../new-hire/onboarding/template.md) · [onboarding-checklist.md](../../new-hire/onboarding/onboarding-checklist.md) |
 | `../../engineer/processes` | [project-handover-process.md](../../engineer/process/project-handover.md) · [knowledge-transfer-process.md](../../engineer/process/knowledge-transfer.md) |

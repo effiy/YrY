@@ -27,9 +27,9 @@ related:
   - ../../tech-lead/roadmap/deprecate-a-feature.md
   - ../../engineer/architecture-design/rpc-envelope.md
   - ../../engineer/architecture-design/sse-streaming.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
 tacit: An API is a contract not a function; contract first, then implementation; contract has versions, has deprecation, has monitoring; contract stability outweighs implementation simplicity
 ---
 
@@ -66,9 +66,9 @@ New business need, new feature, new data; need to expose an API to frontend or t
 | 2 hops | supply chain hardening | [./harden-supply-chain.md](../process/harden-supply-chain.md) |
 | 2 hops | RPC envelope pattern | [../../engineer/architecture-design/rpc-envelope.md](rpc-envelope.md) |
 | 2 hops | SSE streaming pattern | [../../engineer/architecture-design/sse-streaming.md](sse-streaming.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
 
 ## Action recommendations
 
@@ -100,4 +100,4 @@ New business need, new feature, new data; need to expose an API to frontend or t
 - feature deprecation: [../../tech-lead/roadmap/deprecate-a-feature.md](../../tech-lead/roadmap/deprecate-a-feature.md) — version deprecation
 - supply chain hardening: [./harden-supply-chain.md](../process/harden-supply-chain.md) — dependency hardening
 - Pattern: [rpc-envelope](rpc-envelope.md) + [sse-streaming](sse-streaming.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md)

@@ -22,7 +22,7 @@ related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/functional-modules.md
   - ../../../engineer/projects/yiai/dev-standards.md
-  - ../../../new-hire/onboarding/yiai/onboarding.md
+  - ../../../new-hire/onboarding/yiai--onboarding.md
   - ../../../engineer/projects/yiai/engineering/claude.md
   - ../../../engineer/process/iteration-pm-handbook.md
   - ../../../engineer/process/project-handover.md
@@ -30,7 +30,7 @@ related:
   - ../../delivery/retrospective-meeting.md
   - ../../delivery/weekly-report.md
   - ../../delivery/retrospective.md
-  - ../../../ai-engineer/methodology/prompts/weekly-report.md
+  - ../../../ai-engineer/methodology/prompts--weekly-report.md
   - ../../../knowledge-curator/templates/retrospective.md
 ---
 
@@ -104,7 +104,7 @@ Submit this week's weekly report by Friday 16:00, per `../../delivery/weekly-rep
 - Blockers and help requests
 - Cross-project link (YiVad / YiPet caller feedback)
 
-Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts/weekly-report.md) to have AI auto-draft; primary owner corrects and sends.
+Use [weekly-report-prompt.md](../../../ai-engineer/methodology/prompts--weekly-report.md) to have AI auto-draft; primary owner corrects and sends.
 
 ### Daily report cadence
 
@@ -183,9 +183,9 @@ YiAi is the contract provider, YiVad / YiPet are consumers. Monthly cross-projec
 - [YiAi architecture overview](../../../engineer/projects/yiai/architecture.md) — layered / data stream / degradation
 - [YiAi functional modules list](../../../engineer/projects/yiai/functional-modules.md) — domain / service / route mapping
 - [YiAi development standards](../../../engineer/projects/yiai/dev-standards.md) — naming / layered / RPC field contract
-- [YiAi new hire onboarding](../../../new-hire/onboarding/yiai/onboarding.md) — Day-1 setup + workflow + pitfall quick-lookup
+- [YiAi new hire onboarding](../../../new-hire/onboarding/yiai--onboarding.md) — Day-1 setup + workflow + pitfall quick-lookup
 - [Iteration PM handbook](../../../engineer/process/iteration-pm-handbook.md)
 - [Project handoff process](../../../engineer/process/project-handover.md)
 - [Weekly meeting template](../../delivery/weekly-meeting.md) · [Retrospective meeting template](../../delivery/retrospective-meeting.md) · [Review meeting template](../../delivery/review-meeting.md)
 - [Weekly report instance](../../delivery/weekly-report.md) · [Retrospective instance](../../delivery/retrospective.md)
-- [Weekly report prompt](../../../ai-engineer/methodology/prompts/weekly-report.md) · [Retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)
+- [Weekly report prompt](../../../ai-engineer/methodology/prompts--weekly-report.md) · [Retrospective template](../../../knowledge-curator/templates/retrospective.md) · [1on1 template](../../../knowledge-curator/templates/one-on-one.md)

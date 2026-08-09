@@ -178,7 +178,7 @@ async def client():
 
 ## Related
 
-- Implementation ADR: [../../../tech-lead/decisions/yiai/pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md) — pytest framework selection
+- Implementation ADR: [../../../tech-lead/decisions/yiai--pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md) — pytest framework selection
 - upstream Phase 0: [./yiai-supply-chain-hardening.md](win-yiai-supply-chain-hardening.md) — hardening prerequisite
 - co-built win: [./yiai-rag-hybrid-retrieval.md](win-yiai-rag-hybrid-retrieval.md) — RAG pipeline full picture
 - Comparison: [./yivad-vitest-phase-one.md](win-yivad-vitest-phase-one.md) — YiVad Vitest Phase 1 composables test

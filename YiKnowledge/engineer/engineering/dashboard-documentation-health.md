@@ -39,8 +39,8 @@ related:
 - ./dashboard-developer-experience.md
 - ./dashboard-platform-engineering.md
 - ../infrastructure/dashboard-dora-metrics.md
-- ../../product-manager/discovery/ux/dashboard-content-design.md
-- ../../product-manager/discovery/ux/dashboard-information-architecture.md
+- ../../product-manager/discovery/ux--dashboard-content-design.md
+- ../../product-manager/discovery/ux--dashboard-information-architecture.md
 - ../../knowledge-curator/governance/dashboard-knowledge-health.md
 tacit: false
 ---
@@ -211,7 +211,7 @@ tacit: false
 - Same class: [dashboard-developer-experience](dashboard-developer-experience.md) — developer experience
 - Same class: [dashboard-platform-engineering](dashboard-platform-engineering.md) — platform engineering
 - Same class: [dashboard-dora-metrics](../infrastructure/dashboard-dora-metrics.md) — DORA metrics
-- Same class: [dashboard-content-design](../../product-manager/discovery/ux/dashboard-content-design.md) — content design and UX writing
-- Same class: [dashboard-information-architecture](../../product-manager/discovery/ux/dashboard-information-architecture.md) — information architecture
+- Same class: [dashboard-content-design](../../product-manager/discovery/ux--dashboard-content-design.md) — content design and UX writing
+- Same class: [dashboard-information-architecture](../../product-manager/discovery/ux--dashboard-information-architecture.md) — information architecture
 - Same class: [dashboard-knowledge-health](../../knowledge-curator/governance/dashboard-knowledge-health.md) — knowledge base health
 - References: Write the Docs — *Documentation Handbook*; Google — *Technical Writing Courses*; Stripe — *API Documentation Standards*; Divio — *Documentation System*; Diátaxis — *Documentation Framework*; Tom Johnson — *I'd Rather Be Writing*; Kubernetes — *Documentation Style Guide*

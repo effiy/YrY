@@ -24,7 +24,7 @@ title: Readme
 |---|---|
 | Positioning | Main control web application, integrating aiChat / aicr / Knowledge and other modules |
 | Main tech stack | Rsbuild 1 (migrated from Vite); see [architecture-summary.md](./architecture.md) / `engineering/claude.md` |
-| Current main owner | See [project-management-summary.md](../../../product-manager/projects/yivad/project-management.md) §Current main owner |
+| Current main owner | See [project-management-summary.md](../../../product-manager/projects/yivad--project-management.md) §Current main owner |
 | Business domain | Main control panel, AI chat, AI code review |
 
 ## Subdirectories
@@ -32,10 +32,10 @@ title: Readme
 - [architecture-summary.md](./architecture.md) — architecture overview (tech stack / layered boundary / data flow / coding standards / graceful degradation / anti-patterns)
 - [functional-modules-summary.md](./functional-modules.md) — functional module list (20 views / 18 api modules / 11 stores / common components / composables / directives / routes / layout)
 - [dev-standards-summary.md](./dev-standards.md) — development standards (naming / SFC structure / ProTable / v-auth / SSE / env / commitlint / lint)
-- [project-management-summary.md](../../../product-manager/projects/yivad/project-management.md) — project management (iteration cadence / deliverables / onboarding / handover / weekly & daily reports & retrospective / cross-project linkage)
-- [adr-vitest-introduction.md](../../../tech-lead/decisions/yivad/vitest-introduction.md) — ADR: introduce Vitest 2 + @vue/test-utils + happy-dom + coverage-v8, priority composables → stores → components
-- [adr-vitest-rollout.md](../../../tech-lead/decisions/yivad/vitest-rollout.md) — ADR (implementation): Vitest 4-phase rollout (composables → stores → components → SSE parser parity) + coverage gate + aicr parity co-build
-- [adr-aicr-phase-port.md](../../../tech-lead/decisions/yivad/aicr-phase-port.md) — ADR: aicr 7-phase port methodology (baseline alignment + parity test + store/modal decoupling + /loop auto-regression)
+- [project-management-summary.md](../../../product-manager/projects/yivad--project-management.md) — project management (iteration cadence / deliverables / onboarding / handover / weekly & daily reports & retrospective / cross-project linkage)
+- [adr-vitest-introduction.md](../../../tech-lead/decisions/yivad--vitest-introduction.md) — ADR: introduce Vitest 2 + @vue/test-utils + happy-dom + coverage-v8, priority composables → stores → components
+- [adr-vitest-rollout.md](../../../tech-lead/decisions/yivad--vitest-rollout.md) — ADR (implementation): Vitest 4-phase rollout (composables → stores → components → SSE parser parity) + coverage gate + aicr parity co-build
+- [adr-aicr-phase-port.md](../../../tech-lead/decisions/yivad--aicr-phase-port.md) — ADR: aicr 7-phase port methodology (baseline alignment + parity test + store/modal decoupling + /loop auto-regression)
 - [rag-system-pages-reference.md](./rag-system-pages-reference.md) — RAG five-page menu + UI quick reference
 - [manage-menu-catalog.md](./manage-menu-catalog.md) — menu catalog management: data model, management UI, CRUD operations, static vs dynamic routes
 - [knowledge-preview-local-chat.md](./knowledge-preview-local-chat.md) — knowledge preview dialog local LLM chat model selector feature

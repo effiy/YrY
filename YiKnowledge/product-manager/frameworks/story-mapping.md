@@ -34,7 +34,7 @@ related:
   - agile-product-management.md
   - prioritize-a-backlog.md
   - product-discovery-framework.md
-  - ../discovery/ux/README.md
+  - ../discovery/ux--README.md
 tacit: false
 ---
 
@@ -136,5 +136,5 @@ The MVP test: "Can the user achieve the outcome end-to-end, even if the experien
 - Same class: [agile-product-management.md](./agile-product-management.md) -- iteration planning using story map slices
 - Same class: [prioritize-a-backlog.md](./prioritize-a-backlog.md) -- within each slice, use RICE or MoSCoW to prioritize
 - Same class: [product-discovery-framework.md](./product-discovery-framework.md) -- story mapping as a discovery technique
-- Downstream: [../discovery/ux/README.md](../discovery/ux/README.md) -- UX design builds on the journey backbone
+- Downstream: [../discovery/ux--README.md](../discovery/ux--README.md) -- UX design builds on the journey backbone
 - References: Jeff Patton -- *User Story Mapping* (O'Reilly, 2014); https://www.jpattonassociates.com/story-mapping/

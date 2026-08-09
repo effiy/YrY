@@ -36,9 +36,9 @@ related:
 - ../../tech-lead/roadmap/manage-tech-debt.md
 - ../../oncall-sre/observability/set-up-observability.md
 - ../../engineer/process/iteration-pm-handbook.md
-- ../../knowledge-curator/templates/thinking/first-principles.md
-- ../../knowledge-curator/templates/thinking/second-order-thinking.md
-- ../../knowledge-curator/templates/thinking/ockhams-razor.md
+- ../../knowledge-curator/templates/thinking--first-principles.md
+- ../../knowledge-curator/templates/thinking--second-order-thinking.md
+- ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: A sprint is not about finishing the work; it is about letting the team advance measurably toward a shared goal within a fixed time window, aligning daily, hiding no landmines
 ---
 
@@ -71,9 +71,9 @@ Iteration just started, PM needs to turn the schedule into an executable sprint;
 | 2 hops | incident response | [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) |
 | 2 hops | observable | [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) |
 | 2 hops | tech debt | [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -99,4 +99,4 @@ Iteration just started, PM needs to turn the schedule into an executable sprint;
 - Incident response: [../../oncall-sre/incident-response/respond-to-an-incident.md](../../oncall-sre/incident-response/respond-to-an-incident.md) — sudden interruption
 - Observable: [../../oncall-sre/observability/set-up-observability.md](../../oncall-sre/observability/set-up-observability.md) — demo prerequisite
 - Tech debt: [../../tech-lead/roadmap/manage-tech-debt.md](../../tech-lead/roadmap/manage-tech-debt.md) — debt also scheduled
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

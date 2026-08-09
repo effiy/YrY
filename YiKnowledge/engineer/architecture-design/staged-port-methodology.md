@@ -20,7 +20,7 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified
 related:
 - ./one-to-one-mapping-migration.md
-  - ../../tech-lead/decisions/yivad/aicr-phase-port.md
+  - ../../tech-lead/decisions/yivad--aicr-phase-port.md
   - ../lessons/win-yivad-aicr-phase-port.md
   - ../lessons/win-yivad-leaf-view-leaves-ssot.md
 ---
@@ -37,7 +37,7 @@ related:
 
 - **Pattern**: N-phase split (skeleton first, details later, each phase independently launchable) + baseline alignment (reference implementation side-by-side) + parity test (compare gaps each phase) + large-module decoupling (store / modal / view don't block each other) + per-phase build verification + /loop automated regression
 - **Cross-project applicability**: YiVad aicr 7-phase port (YiWeb → YiVad), reusable for any large port
-- **Landing**: [YiVad aicr phase port ADR](../../tech-lead/decisions/yivad/aicr-phase-port.md) + [yivad-aicr-phase-port win](../lessons/win-yivad-aicr-phase-port.md)
+- **Landing**: [YiVad aicr phase port ADR](../../tech-lead/decisions/yivad--aicr-phase-port.md) + [yivad-aicr-phase-port win](../lessons/win-yivad-aicr-phase-port.md)
 - **Alternative**: big-bang one-shot (not applicable; reason in §Not applicable)
 
 ## Core viewpoints
@@ -207,7 +207,7 @@ Changed during port = auto-regression catches it = prevent regression.
 
 ## Related
 
-- landing: [YiVad aicr phase port ADR](../../tech-lead/decisions/yivad/aicr-phase-port.md) — 7-phase methodology
+- landing: [YiVad aicr phase port ADR](../../tech-lead/decisions/yivad--aicr-phase-port.md) — 7-phase methodology
 - landing: [yivad-aicr-phase-port win](../lessons/win-yivad-aicr-phase-port.md) — 9 stores + 8 modals + parity 100%
 - landing: [yivad-leaf-view-leaves-ssot-win](../lessons/win-yivad-leaf-view-leaves-ssot.md) — 28 leaves SSOT tips
 - companion: [one-to-one-mapping-migration-pattern](./one-to-one-mapping-migration.md) — stack version alignment (complementary to staging)

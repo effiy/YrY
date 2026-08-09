@@ -31,7 +31,7 @@ acceptance_criteria:
 related:
 - ../../engineer/lessons/learn-pm-frameworks.md
 - ./launch-an-ai-product.md
-- ../../product-manager/discovery/prd/README.md
+- ../../product-manager/discovery/prd--README.md
 - ../../knowledge-curator/templates/README.md
 review_cycle: quarterly
 tacit: false
@@ -69,7 +69,7 @@ tacit: false
 - **PRD review stage gates (3 stages with decision outcomes)**: (1) Requirement Review — PM presents PRD to stakeholders (business, legal, compliance); outcome: approved, revise, or kill; gate criteria: business case is sound, user need is validated, success metrics are defined; (2) Design Review — Designer presents UX flows to PM and engineering; outcome: approved, revise, or kill; gate criteria: user flows are complete, edge cases are handled, accessibility is considered; (3) Tech Review — Tech lead presents technical approach to engineering team; outcome: approved, revise, or kill; gate criteria: architecture is feasible, effort is estimated, risks are identified, non-goals are clear. Each stage can result in "kill" — the PRD is not a foregone conclusion. The Yi-family review process follows this 3-stage model.
 - **Acceptance criteria format (Given-When-Then template)**: Given [precondition], When [action], Then [expected outcome]. Example: "Given a user is logged in and has 3 items in their cart, When they click 'Checkout', Then they are redirected to the payment page and the cart is locked for 15 minutes." Each acceptance criterion must be independently testable. The number of acceptance criteria per user story: 3-8 for a typical story, 1-2 for a simple story, 8-15 for a complex story. Acceptance criteria that exceed 15 per story indicate the story is too large and should be split. The Yi-family PRDs use Given-When-Then format for all acceptance criteria.
 - **PRD versioning and change management**: The PRD is versioned (v1.0, v1.1, v2.0) with a changelog. v1.0 is frozen at the start of development. Minor changes (clarifications, typo fixes) increment the patch version (v1.1) and do not require re-review. Major changes (new requirements, scope changes, removed features) increment the major version (v2.0) and require a formal change review with scope trade-off. The change review asks: "what drops from the current scope to accommodate this addition?" without a trade-off, the change is rejected. The Yi-family standard: PRD changes during development require a documented scope trade-off.
-- **Yi-family PRD practices (2026-08)**: The YiAi BRD Agent generates PRD scaffolds from approved BRDs, using the BRD→PRD transition (BRD scenarios → PRD user stories, BRD success metrics → PRD acceptance criteria, BRD risk register → PRD technical constraints). Current PRD library: 3 PRDs in `product-manager/discovery/prd/` (brd-agent-prd, aichat-port-prd, aicr-file-tree-prd). The BRD Agent is the primary PRD creation tool; the PM's role is to validate the AI-generated scaffold against user research and business context. The gap: no project has conducted formal user research to validate PRD assumptions before development.
+- **Yi-family PRD practices (2026-08)**: The YiAi BRD Agent generates PRD scaffolds from approved BRDs, using the BRD→PRD transition (BRD scenarios → PRD user stories, BRD success metrics → PRD acceptance criteria, BRD risk register → PRD technical constraints). Current PRD library: 3 PRDs in `product-manager/discovery/prd--` (brd-agent-prd, aichat-port-prd, aicr-file-tree-prd). The BRD Agent is the primary PRD creation tool; the PM's role is to validate the AI-generated scaffold against user research and business context. The gap: no project has conducted formal user research to validate PRD assumptions before development.
 
 ## Scenario description
 
@@ -79,12 +79,12 @@ When launching a new feature / changing requirements / writing a PRD / reviewing
 
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
-| `product/prd/` | [README.md](../discovery/prd/README.md) — PRD leaf entry + template + review process |
+| `product/prd/` | [README.md](../discovery/prd--README.md) — PRD leaf entry + template + review process |
 | `product/strategy/` | [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) · [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) |
-| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../discovery/metrics/ai-product-metrics.md) — metric-driven PRD |
+| `product/metrics/` | [north-star-metric-summary.md](../discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../discovery/metrics--ai-product-metrics.md) — metric-driven PRD |
 | `product/ux/` | UX research entry — user story + UX research co-build |
 | `methodology/pm-frameworks/` | [jtbd-summary.md](./jobs-to-be-done.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [okr-summary.md](../../knowledge-curator/archive/strategies-legacy/product-manager/prepare-a-okr-strategy.md) · [heart-aarrr-summary.md](./heart-aarrr-metrics.md) · [dual-track-agile-summary.md](../../product-manager/frameworks/dual-track-agile.md) · [agile-product-management-summary.md](../../product-manager/frameworks/agile-product-management.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — priority thinking framework |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — priority thinking framework |
 | `resources/templates/` | [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) — review meeting + tech design + ADR |
 | `work/processes/` | [requirement-review-process.md](../delivery/requirement-review.md) · [design-review-process.md](../delivery/design-review.md) · [tech-review-process.md](../delivery/tech-review.md) |
 | `work/meetings/` | [weekly-report-sample.md](../delivery/weekly-report.md) · [review-meeting-template.md](../delivery/review-meeting.md) — review meeting |
@@ -93,15 +93,15 @@ When launching a new feature / changing requirements / writing a PRD / reviewing
 ## Action recommendations
 
 1. **JTBD breakdown**: first write "what task the user wants to complete" (Job to be Done), not "feature list" — see [jtbd-summary](./jobs-to-be-done.md).
-2. **North-star metric alignment**: PRD must align with [north-star-metric](../discovery/metrics/north-star-metric.md); no metric-less PRD.
+2. **North-star metric alignment**: PRD must align with [north-star-metric](../discovery/metrics--north-star-metric.md); no metric-less PRD.
 3. **Priority ranking**: use [RICE/ICE](../../product-manager/frameworks/rice-ice-prioritization.md) to quantify (Reach × Impact × Confidence / Effort); not by feel.
 4. **Kano classification**: basic / expectation / excitement — see [kano-model](../../product-manager/frameworks/kano-model.md); different types, different acceptance criteria.
-5. **Second-order thinking**: before PRD changes, ask second-order effects (see [second-order-thinking](../../knowledge-curator/templates/thinking/second-order-thinking.md)) — does it trigger new problems.
-6. **Inversion**: use [inversion](../../knowledge-curator/templates/thinking/inversion.md) "how to make a PRD bad" to derive improvements.
+5. **Second-order thinking**: before PRD changes, ask second-order effects (see [second-order-thinking](../../knowledge-curator/templates/thinking--second-order-thinking.md)) — does it trigger new problems.
+6. **Inversion**: use [inversion](../../knowledge-curator/templates/thinking--inversion.md) "how to make a PRD bad" to derive improvements.
 7. **dual-track agile**: discovery + delivery dual tracks in parallel — see [dual-track-agile](../../product-manager/frameworks/dual-track-agile.md); PRD is not a one-shot waterfall.
 8. **Review process**: requirement-review → design-review → tech-review three stages; each must converge (not stream-water ledger).
 9. **Industry reference**: scan [use-cases](../strategy) + [market-trends](../../executive/industry/market-trends) to avoid reinventing.
-10. **AI product specifics**: must use [yiai-brd-agent-launch](../../tech-lead/decisions/yiai/brd-agent-launch.md) 5-stage methodology + eval-set gate.
+10. **AI product specifics**: must use [yiai-brd-agent-launch](../../tech-lead/decisions/yiai--brd-agent-launch.md) 5-stage methodology + eval-set gate.
 
 ## Anti-patterns
 

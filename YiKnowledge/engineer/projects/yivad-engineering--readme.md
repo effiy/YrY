@@ -26,7 +26,7 @@ related:
 
 > Open-source admin management framework built with Vue 3.5, TypeScript 6, Rsbuild 1, Pinia 4, and Element Plus 2.14. Provides a powerful ProTable component for declarative table configuration, plus dynamic routing, button-level permission control, four layout modes, and a full hooks / directives / composables library.
 
-> **New hire onboarding** → `YiKnowledge/new-hire/onboarding/yivad/onboarding.md` (8 sections: setup / workflow / gotchas quick-reference / Day-1 tasks) 
+> **New hire onboarding** → `YiKnowledge/new-hire/onboarding/yivad--onboarding.md` (8 sections: setup / workflow / gotchas quick-reference / Day-1 tasks) 
 
 ## Summary
 

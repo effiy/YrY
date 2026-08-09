@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** avoid the no-internal-owner failure, **so that** failure does not repeat.
 
-> After the FDE exits, the customer has no internal owner → the system collapses within 4-12 weeks → the customer churns and renewal is deadlocked. This retrospective is the basis for [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §risk #5 and [Day 2 operations](../engineering/plan-day-two-operations.md) §"no internal owner = project death".
+> After the FDE exits, the customer has no internal owner → the system collapses within 4-12 weeks → the customer churns and renewal is deadlocked. This retrospective is the basis for [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §risk #5 and [Day 2 operations](../engineering/plan-day-two-operations.md) §"no internal owner = project death".
 
 ## Summary
 
@@ -66,7 +66,7 @@ related:
 | Date | 2026-08-05 (retrospective) |
 | Reporter | FDE Practice Lead |
 | Related project | FDE Playbook (multi-customer retrospective) |
-| Related ADR | [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §risk #5 |
+| Related ADR | [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §risk #5 |
 
 ## 2. Impact scope
 
@@ -148,7 +148,7 @@ related:
 - Communicated to: CTO, customer CISO, PMO, Legal
 - Communication date: 2026-08-10
 - Archive path: `lessons/failures/fde-day-two-without-internal-owner.md`
-- Related ADR / TD: [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md)
+- Related ADR / TD: [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md)
 
 ## 10. Retrospective meeting metadata
 
@@ -188,5 +188,5 @@ related:
 
 - Same class: [./incident-postmortem.md](failure-incident-postmortem.md) — retrospective template
 - Upstream: [Day 2 operations](../engineering/plan-day-two-operations.md) — "no internal owner = project death"
-- Design basis: [ADR Delta-as-contract](../../tech-lead/decisions/fde/delta-as-a-contract.md) §risk #5
+- Design basis: [ADR Delta-as-contract](../../tech-lead/decisions/fde--delta-as-a-contract.md) §risk #5
 - Trigger trap: [Discovery skips Three Whys](gotcha-discovery-three-whys-skipped.md)

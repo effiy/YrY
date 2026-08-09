@@ -32,7 +32,7 @@ acceptance_criteria:
   - "visualization choices are explained and accessible"
 related:
 - ./dashboard-team-velocity.md
-- ../../product-manager/discovery/metrics/dashboard-product-portfolio.md
+- ../../product-manager/discovery/metrics--dashboard-product-portfolio.md
 - ../../product-manager/delivery/dashboard-product-delivery.md
 - ../../engineer/infrastructure/dashboard-dora-metrics.md
 tacit: false
@@ -220,7 +220,7 @@ tacit: false
 ## Related
 
 - Same class: [dashboard-team-velocity](dashboard-team-velocity.md) — team velocity and collaboration
-- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics/dashboard-product-portfolio.md) — product metrics
+- Same class: [dashboard-product-portfolio](../../product-manager/discovery/metrics--dashboard-product-portfolio.md) — product metrics
 - Same class: [dashboard-product-delivery](../../product-manager/delivery/dashboard-product-delivery.md) — delivery execution
 - Same class: [dashboard-dora-metrics](../../engineer/infrastructure/dashboard-dora-metrics.md) — DORA metrics
 - References: Ron Kohavi — *Trustworthy Online Controlled Experiments*; Stefan Thomke — *Experimentation Works*; Microsoft — *Experimentation Platform*; Optimizely — *Statistical Significance in A/B Testing*; LaunchDarkly — *Feature Flag Best Practices*

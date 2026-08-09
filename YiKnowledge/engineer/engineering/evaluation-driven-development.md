@@ -20,8 +20,8 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified
 related:
   - ./inline-citation-rag.md
-  - ../../tech-lead/decisions/yiai/rag-evaluation-infra.md
-  - ../../tech-lead/decisions/yiai/pytest-introduction.md
+  - ../../tech-lead/decisions/yiai--rag-evaluation-infra.md
+  - ../../tech-lead/decisions/yiai--pytest-introduction.md
 ---
 
 # Evaluation-set driven development pattern
@@ -34,7 +34,7 @@ related:
 
 - **Pattern**: Build an evaluation set (>= 50 samples, bilingual / multi-scenario / boundary cases) -> run baseline metrics (recall / precision / ragas 4 metrics / self-consistency / human labeling) -> CI gate runs evaluation + regression > threshold blocks merge -> gradual rollout + feedback into the evaluation set -> evaluation set keeps growing
 - **Cross-project applicability**: YiAi RAG / YiAi BRD Agent / any LLM long-answer scenario
-- **Landing**: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) + [pytest ADR §eval](../../tech-lead/decisions/yiai/pytest-introduction.md)
+- **Landing**: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) + [pytest ADR §eval](../../tech-lead/decisions/yiai--pytest-introduction.md)
 - **Alternative**: eyeball / intuition judgment (not applicable, reason in §not applicable)
 
 ## Core viewpoints
@@ -206,8 +206,8 @@ Regression > threshold = block merge.
 
 ## Related
 
-- Landing: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — llama-datasets + ragas 4 metrics + 50 bilingual docs + CI gate
-- Landing: [YiAi pytest ADR §eval](../../tech-lead/decisions/yiai/pytest-introduction.md) — `tests/{unit,integration,eval}` three catalogs
+- Landing: [YiAi RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — llama-datasets + ragas 4 metrics + 50 bilingual docs + CI gate
+- Landing: [YiAi pytest ADR §eval](../../tech-lead/decisions/yiai--pytest-introduction.md) — `tests/{unit,integration,eval}` three catalogs
 - Companion: [inline-citation-rag-pattern](./inline-citation-rag.md) — RAG pipeline + evaluation set co-built
 - Reference: [llm-evaluation-methods-summary](../../ai-engineer/methodology/llm-evaluation-methods.md) — evaluation methodology
 - Upstream: [./README.md](./) — engineering-patterns leaf entry

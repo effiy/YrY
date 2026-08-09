@@ -47,7 +47,7 @@ last_verified: 2026-08-07
 
 - Process follows [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md) + [dependency-upgrade-process.md](../../engineer/engineering/dependency-upgrade.md) + [incident-response-process.md](../../engineer/process/incident-response.md)
 - Patterns follow [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) + [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md)
-- Thinking follows [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md)
+- Thinking follows [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md)
 - Cases follow [no-lockfile-supply-chain-risk.md](../../engineer/lessons/gotcha-no-lockfile-supply-chain-risk.md) + [yiai-supply-chain-hardening-win.md](../../engineer/lessons/win-yiai-supply-chain-hardening.md)
 
 ## Core viewpoints
@@ -74,7 +74,7 @@ When doing a security audit / threat modeling / dependency scanning / pentest / 
 |---|---|
 | `work/processes/` | [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md) · [dependency-upgrade-process.md](../../engineer/engineering/dependency-upgrade.md) · [incident-response-process.md](../../engineer/process/incident-response.md) · [hotfix-release-process.md](../../oncall-sre/release/hotfix-release.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) · [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) · [monitoring-governance-process.md](../../engineer/process/monitoring-governance.md) · [release-freeze-process.md](../../oncall-sre/release/release-freeze.md) · [secret-rotation-process.md](./do-a-security-audit.md) |
 | `methodology/engineering-patterns/` | [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) · [dual-world-boundary-pattern.md](../../engineer/engineering/dual-world-boundary.md) · [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [one-to-one-mapping-migration-pattern.md](../../engineer/architecture-design/one-to-one-mapping-migration.md) |
-| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — invert to attacker perspective · [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — invert to attacker perspective · [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 | `methodology/ai-specific/` | [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) — AI security |
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) — data security · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) |
 | `tech/infra/` | [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) · [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) |
@@ -83,14 +83,14 @@ When doing a security audit / threat modeling / dependency scanning / pentest / 
 | `lessons/failures/` | [incident-postmortem-summary.md](../../engineer/lessons/failure-incident-postmortem.md) · [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) · [bugs/](../../engineer/lessons) |
 | `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border compliance |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — security disclosure |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — security disclosure |
 | `lifecycle/` | [governance.md](../../knowledge-curator/governance/governance.md) · [review-log.md](../../knowledge-curator/governance/review-log.md) · [readiness-checklist.md](../../knowledge-curator/governance/readiness-checklist.md) — quarterly audit |
 | `projects/` | each project `adr-*.md` — security-related ADR; `dev-standards-summary.md` §security |
 
 ## Action recommendations
 
-1. **First principles**: first ask "what is the audit protecting / asset inventory / threat model / compliance requirements / risk tolerance"; do not start scanning immediately; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how an attacker would strike (injection / privilege escalation / supply chain / social engineering / credential leak)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
+1. **First principles**: first ask "what is the audit protecting / asset inventory / threat model / compliance requirements / risk tolerance"; do not start scanning immediately; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how an attacker would strike (injection / privilege escalation / supply chain / social engineering / credential leak)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
 3. **Asset inventory**: must list assets first (data / services / credentials / interfaces / third parties) + data flow diagram + trust boundaries; no inventory, no audit.
 4. **Threat modeling**: STRIDE / PASTA / attack tree; item by item against assets; do not skip.
 5. **Dependency scanning**: SCA / SAST / DAST / IAST / container scan / secret scan; weekly; see [dependency-upgrade-process.md](../../engineer/engineering/dependency-upgrade.md).
@@ -99,8 +99,8 @@ When doing a security audit / threat modeling / dependency scanning / pentest / 
 8. **Compliance**: follow [data-compliance-process.md](../../engineer/infrastructure/data-compliance.md) + [regulations.md](./../../brd/README.md); cross-border data follow [countries.md](./../../brd/README.md).
 9. **AI security**: must scan [prompt-injection-defense-summary.md](../../ai-engineer/methodology/prompt-injection-defense.md) + [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md).
 10. **Credential management**: follow [i-want-to-handle-secrets-and-config.md](../../engineer/quality-security/handle-secrets-and-config.md) + quarterly rotation.
-11. **Second-order effects**: fixing one CVE may introduce breaking changes; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) to evaluate.
-12. **Occam**: the simplest mitigation that satisfies risk wins; do not pile up tools for compliance; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+11. **Second-order effects**: fixing one CVE may introduce breaking changes; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) to evaluate.
+12. **Occam**: the simplest mitigation that satisfies risk wins; do not pile up tools for compliance; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 13. **Quarterly audit**: follow [quarterly-security-audit-process.md](../../engineer/quality-security/quarterly-security-audit.md); scan whether threat model / assets / dependencies / credentials are still accurate.
 14. **Retrospective**: after audit / pentest / CVE incident, run [incident-postmortem-template.md](../../engineer/lessons/failure-incident-postmortem.md) retrospective + archive under [lessons/failures/bugs/](../../engineer/lessons).
 15. **ADR**: security decisions must be captured in an ADR; see [adr-template.md](../../knowledge-curator/templates/adr.md).

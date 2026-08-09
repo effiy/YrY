@@ -20,7 +20,7 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified"
 related:
  - ../../governance/tacit-knowledge-backlog.md
- - ../../../ai-engineer/methodology/prompts/multilingual-translation.md
+ - ../../../ai-engineer/methodology/prompts--multilingual-translation.md
 ---
 
 # External Experts Roster
@@ -58,7 +58,7 @@ related:
 ### Concept breakdown: type enumeration
 
 - `lawyer`: compliance, contracts, intellectual property
-- `translator`: multilingual content (related to [multilingual-translation-prompt.md](../../../ai-engineer/methodology/prompts/multilingual-translation.md))
+- `translator`: multilingual content (related to [multilingual-translation-prompt.md](../../../ai-engineer/methodology/prompts--multilingual-translation.md))
 - `industry-consultant`: specific industry insights
 - `tech-expert`: technology selection endorsement
 - `academic`: papers, research
@@ -101,4 +101,4 @@ related:
 - Upstream: [../../governance/tacit-knowledge-backlog.md](../../governance/tacit-knowledge-backlog.md) — tacit knowledge backlog T007
 - Same type: [../../../executive/industry/competitors](../../../executive/industry/competitors) — vendor experts for reference
 - Same type: [../../templates/thinking](../../templates/thinking) — academic authorities
-- Downstream: [../../../ai-engineer/methodology/prompts/multilingual-translation.md](../../../ai-engineer/methodology/prompts/multilingual-translation.md) — translator-related translation prompt
+- Downstream: [../../../ai-engineer/methodology/prompts--multilingual-translation.md](../../../ai-engineer/methodology/prompts--multilingual-translation.md) — translator-related translation prompt

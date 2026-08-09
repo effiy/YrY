@@ -102,7 +102,7 @@ YiVad was originally Vite 8 + Vue 3.5; pain points:
 - Rsbuild 2 tracking: quarterly scan Rspack release notes; do not chase minor versions
 - `force_polling` fallback TBD: can be turned off after FSEvents fix; re-evaluate quarterly
 - Self-written plugins can be contributed back to Rsbuild ecosystem: assess PR after stabilization
-- 28 leaves × 2 wrappers full compilation can consider lazy routes: same cadence as [ADR Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md)
+- 28 leaves × 2 wrappers full compilation can consider lazy routes: same cadence as [ADR Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md)
 
 ## Action recommendations
 
@@ -133,4 +133,4 @@ YiVad was originally Vite 8 + Vue 3.5; pain points:
 - [./gotcha-macos-fsevents-silent-drop.md](./gotcha-macos-fsevents-silent-drop.md) — macOS FSEvents limitation impacting HMR failure rate
 - [./win-yipet-stack-migration.md](./win-yipet-stack-migration.md) — Another stack migration success case (YiPet React 15 to React 18)
 - [../../architecture-design/one-to-one-mapping-migration.md](../architecture-design/one-to-one-mapping-migration.md) — 1:1 mapping migration pattern used in the 5-stage approach
-- [../../tech-lead/decisions/yivad/vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) — ADR for Vitest used in migration validation
+- [../../tech-lead/decisions/yivad--vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) — ADR for Vitest used in migration validation

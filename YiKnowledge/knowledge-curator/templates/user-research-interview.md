@@ -32,7 +32,7 @@ acceptance_criteria:
 related:
 - ./usability-test-report.md
 - ./prd.md
-- ../../product-manager/discovery/ux/README.md
+- ../../product-manager/discovery/ux--README.md
 tacit: false
 ---
 

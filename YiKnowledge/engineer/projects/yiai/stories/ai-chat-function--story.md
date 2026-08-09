@@ -31,7 +31,7 @@ acceptance_criteria:
 related:
 - ./user-send-message/scene.md
 - ./conversation-history-management/scene.md
-- ../../../../../new-hire/onboarding/yiai/onboarding.md
+- ../../../../../new-hire/onboarding/yiai--onboarding.md
 tacit: false
 ---
 

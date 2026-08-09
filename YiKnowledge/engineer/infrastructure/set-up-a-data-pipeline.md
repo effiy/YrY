@@ -47,7 +47,7 @@ tacit: false
 
 - Data stack goes via [data-governance-summary.md](../../ai-engineer/data/data-governance.md) + [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) + [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) + [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md)
 - Process goes via [data-migration-process.md](data-migration.md) + [data-compliance-process.md](data-compliance.md) + [monitoring-governance-process.md](../process/monitoring-governance.md)
-- Thinking goes via [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking goes via [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 
 ## Core viewpoints
 
@@ -80,7 +80,7 @@ When building a data pipeline / ETL / ELT / CDC / real-time stream / lakehouse /
 |---|---|
 | `tech/data/` | [data-governance-summary.md](../../ai-engineer/data/data-governance.md) · [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md) · [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md) · [data-modeling-summary.md](../../ai-engineer/data/data-modeling.md) · [mongodb-indexing-summary.md](../../ai-engineer/data/mongodb-indexing.md) |
 | `work/processes/` | [data-migration-process.md](data-migration.md) · [data-compliance-process.md](data-compliance.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [incident-response-process.md](../process/incident-response.md) · [capacity-planning-process.md](capacity-planning.md) · [quarterly-security-audit-process.md](../quality-security/quarterly-security-audit.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking/flywheel-effect.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [flywheel-effect-summary.md](../../knowledge-curator/templates/thinking--flywheel-effect.md) |
 | `methodology/engineering-patterns/` | [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) · [one-to-one-mapping-migration-pattern.md](../architecture-design/one-to-one-mapping-migration.md) · [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [ssot-view-layer-pattern.md](../architecture-design/ssot-view-layer.md) |
 | `tech/ai-platform/` | [vector-db-comparison-summary.md](../../ai-engineer/platform/vector-db-comparison.md) · [embedding-model-selection-summary.md](../../ai-engineer/platform/embedding-model-selection.md) · [llm-observability-comparison-summary.md](../../ai-engineer/platform/llm-observability-comparison.md) — AI data pipeline |
 | `tech/infra/` | [capacity-and-cost-summary.md](../../oncall-sre/observability/capacity-and-cost.md) · [capacity-and-cost-template.md](../../oncall-sre/observability/capacity-and-cost.md) · [tech-debt-inventory-summary.md](../../oncall-sre/observability/tech-debt-inventory.md) |
@@ -91,15 +91,15 @@ When building a data pipeline / ETL / ELT / CDC / real-time stream / lakehouse /
 | `brd/reference/` | [countries.md](./../../brd/README.md) · [regulations.md](./../../brd/README.md) — cross-border data compliance |
 | `brd/domains/` | [data.md](./../../brd/README.md) — data domain BRD |
 | `resources/templates/` | [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-selection-evaluation-template.md](../../knowledge-curator/templates/tech-selection-evaluation.md) |
-| `people/stakeholders/` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders/stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders/communication-cadence.md) — data stakeholders |
+| `people/stakeholders--` | [stakeholder-map.md](../../knowledge-curator/people/stakeholders--stakeholder-map.md) · [communication-cadence.md](../../knowledge-curator/people/stakeholders--communication-cadence.md) — data stakeholders |
 | `projects/` | each project `adr-*.md` — data pipeline ADR; `architecture-summary.md` §data |
 
 ## Action recommendations
 
-1. **First principles**: first ask "who is the data consumer / SLA / scale / frequency / latency requirement / consistency / cost"; do not directly pick tools; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: first imagine "how pipeline can blow up (schema drift / data loss / replay / latency pile-up / cost explosion / compliance fines)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
-3. **Second-order effects**: pipeline multiplies → lineage complex → rebuild hard → team knowledge gap; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
-4. **Occam**: the simplest stack meeting SLA wins; do not over-engineer for "future"; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md).
+1. **First principles**: first ask "who is the data consumer / SLA / scale / frequency / latency requirement / consistency / cost"; do not directly pick tools; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: first imagine "how pipeline can blow up (schema drift / data loss / replay / latency pile-up / cost explosion / compliance fines)" then set guardrails; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
+3. **Second-order effects**: pipeline multiplies → lineage complex → rebuild hard → team knowledge gap; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
+4. **Occam**: the simplest stack meeting SLA wins; do not over-engineer for "future"; see [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md).
 5. **ETL vs ELT**: ETL (transform-then-load, traditional) / ELT (load-then-transform, lakehouse preferred); pick by scenario; see [etl-elt-patterns-summary.md](../../ai-engineer/data/etl-elt-patterns.md).
 6. **Lakehouse**: underlying object storage + tabular (Iceberg / Delta / Hudi) + metadata; see [lakehouse-architecture-summary.md](../../ai-engineer/data/lakehouse-architecture.md).
 7. **CDC**: change data capture (Debezium / incremental log); better than full batch; suitable for high-frequency sync.

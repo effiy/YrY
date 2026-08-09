@@ -16,7 +16,7 @@ team_size: 4
 status: in_progress
 owner: YiVad lead owner
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yivad/vitest-rollout.md
+kb_path: tech-lead/decisions/yivad--vitest-rollout.md
 context: "Track the Vitest decision ADR landing progress. 4-phase rollout: composables → stores → components → SSE parser. Coverage threshold + CI gate + parity test co-build."
 decision: "4-phase rollout: Phase 1 composables baseline (useTable / useTheme etc.); Phase 2 stores (global / user / auth / tabs); Phase 3 components (ProTable / SearchForm); Phase 4 SSE parser contract test. Each phase has an 80% coverage gate + CI blocking."
 alternatives: B. One-shot full rollout — blocks PRs; C. Per-file granularity — high coordination cost. A selected (4 phases).
@@ -32,7 +32,7 @@ type: reference
 
 **ADR ID**: ADR-Vitest-Rollout  |  **Project**: yivad  |  **Domain**: Vitest Rollout
 **Decision Type**: process  |  **Team Size**: 4  |  **Status**: in_progress  |  **Owner**: YiVad lead owner
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad/vitest-rollout.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yivad--vitest-rollout.md
 
 ## Context
 Track the Vitest decision ADR landing progress. 4-phase rollout: composables → stores → components → SSE parser. Coverage threshold + CI gate + parity test co-build.
@@ -53,4 +53,4 @@ Phase failure → revert to previous phase + fix + retry (1 business day).
 YiVad lead owner (decision); CTO (approval); YiAi lead owner (contract co-build); QA
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad/vitest-rollout.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad--vitest-rollout.md`

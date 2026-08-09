@@ -37,7 +37,7 @@ acceptance_criteria: '1. 7 stages 100% complete (baseline align → parity test 
   8. aicr commit count steady growth'
 stakeholders: YiVad Tech Lead (Decision); YiVad Frontend Platform Team 5 FTE (execution); YiWeb Team (source side);
   5 business frontend teams (consumption); SRE/DevOps (ops); Architecture committee (technology review); finance (budget)
-kb_path: tech-lead/decisions/yivad/aicr-phase-port
+kb_path: tech-lead/decisions/yivad--aicr-phase-port
 notes: Through 7-stage methodology (baseline align + parity test + store/modal decoupling + /loop auto-regression) the YiWeb aicr
   is fully ported to YiVad, with L3 Platform maturity as the target, evolving to a unified code review lookup component library (L4 100%) within 3 years. Note: prior stale memory claimed completion; Phase
   0 audit confirms src/views/aicr + src/stores/modules/aicr do not exist, 0 aicr commits, requires re-implementation.
@@ -51,7 +51,7 @@ type: reference
 
 **BRD ID**: BRD-2026-080  |  **Project**: yivad  |  **Domain**: aicr 7-Phase Port & Parity  |  **Quarter**: 2026 Q4
 **Priority**: P0  |  **Status**: In Progress  |  **Owner**: YiVad Frontend Platform Team
-**KB Source**: tech-lead/decisions/yivad/aicr-phase-port
+**KB Source**: tech-lead/decisions/yivad--aicr-phase-port
 
 ## Context
 Through 7-stage methodology (baseline align + parity test + store/modal decoupling + /loop auto-regression) the YiWeb aicr is fully ported to YiVad, with L3 Platform maturity as the target, evolving to a unified code review lookup component library (L4 100%) within 3 years. Note: prior stale memory claimed completion; Phase 0 audit confirms src/views/aicr + src/stores/modules/aicr do not exist, 0 aicr commits, requires re-implementation.
@@ -86,5 +86,5 @@ M1 (2026 Q4, 2 weeks): Phase 0 audit + baseline align + parity test framework; M
 After 3 years: aicr 100% parity, /loop 100% auto-regression, unified component library 50%; after 5 years: unified code review lookup component library GA, L4 100%.
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad/aicr-phase-port`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yivad--aicr-phase-port`
 - **Sub-files**: objectives / acceptance / milestones / risks / rules / stakeholders / approvals / documents

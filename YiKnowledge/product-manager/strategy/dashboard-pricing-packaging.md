@@ -34,9 +34,9 @@ acceptance_criteria:
 related:
 - ./dashboard-product-strategy.md
 - ./dashboard-innovation-portfolio.md
-- ../discovery/metrics/dashboard-product-portfolio.md
-- ../discovery/metrics/dashboard-customer-health.md
-- ../discovery/metrics/dashboard-feature-adoption.md
+- ../discovery/metrics--dashboard-product-portfolio.md
+- ../discovery/metrics--dashboard-customer-health.md
+- ../discovery/metrics--dashboard-feature-adoption.md
 tacit: false
 ---
 
@@ -266,7 +266,7 @@ tacit: false
 
 - Same class: [dashboard-product-strategy](dashboard-product-strategy.md) — product strategy
 - Same class: [dashboard-innovation-portfolio](dashboard-innovation-portfolio.md) — innovation portfolio
-- Same class: [dashboard-product-portfolio](../discovery/metrics/dashboard-product-portfolio.md) — product portfolio
-- Same class: [dashboard-customer-health](../discovery/metrics/dashboard-customer-health.md) — customer health
-- Same class: [dashboard-feature-adoption](../discovery/metrics/dashboard-feature-adoption.md) — feature adoption
+- Same class: [dashboard-product-portfolio](../discovery/metrics--dashboard-product-portfolio.md) — product portfolio
+- Same class: [dashboard-customer-health](../discovery/metrics--dashboard-customer-health.md) — customer health
+- Same class: [dashboard-feature-adoption](../discovery/metrics--dashboard-feature-adoption.md) — feature adoption
 - References: Madhavan Ramanujam — *Monetizing Innovation*; Patrick Campbell — *ProfitWell Pricing Strategy*; Van Westendorp — *Price Sensitivity Meter*; Simon-Kucher — *Pricing Strategy Framework*; OpenView — *Product-Led Growth Pricing*; McKinsey — *The Power of Pricing*

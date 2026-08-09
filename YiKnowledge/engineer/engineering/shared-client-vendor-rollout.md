@@ -47,7 +47,7 @@ related:
 ## Summary
 
 - **Architecture**: base layer (`rpcCall<T>` + `sseStream` + `YiAiError` + error normalization) written once, each project vendors a copy + per-project layer wraps project differences + feature module calls base layer
-- **Three-project parallel vendor status**: YiVad frontend (in progress) + YiPet frontend (pending start, waiting for [aicr port rollout Phase 2](../../tech-lead/decisions/yipet/aicr-port-rollout.md)) + YiAi backend (Python stack, base layer is Python `services/ai/`, does not vendor TS base layer) 
+- **Three-project parallel vendor status**: YiVad frontend (in progress) + YiPet frontend (pending start, waiting for [aicr port rollout Phase 2](../../tech-lead/decisions/yipet--aicr-port-rollout.md)) + YiAi backend (Python stack, base layer is Python `services/ai/`, does not vendor TS base layer) 
 - **Contract test co-build**: rpcCall + sseStream contract test co-built across three ends, prevents drift
 - **Hardening**: each project vendors independent lockfile + audit + min-release-age + lifecycle allowlist (no monorepo) 
 
@@ -107,7 +107,7 @@ Three-layer architecture (see [shared-client-design-summary](./shared-client-des
 
 | phase | content | status |
 |---|---|---|
-| Phase 1 | MV3 skeleton + dual-world boundary (see [aicr port rollout Phase 1](../../tech-lead/decisions/yipet/aicr-port-rollout.md))  | ⏳ waiting for aicr port rollout to start |
+| Phase 1 | MV3 skeleton + dual-world boundary (see [aicr port rollout Phase 1](../../tech-lead/decisions/yipet--aicr-port-rollout.md))  | ⏳ waiting for aicr port rollout to start |
 | Phase 2 | base layer vendor: `src/shared/api/{rpc,sse,error}.ts` (1:1 with YiVad)  | ⏳ |
 | Phase 3 | per-project layer: `src/api/config.ts` (baseUrl = `chrome.runtime.getURL`)  | ⏳ |
 | Phase 4 | feature module: aicr-related api modules call base layer | ⏳ |
@@ -119,8 +119,8 @@ Three-layer architecture (see [shared-client-design-summary](./shared-client-des
 |---|---|---|
 | Landed | RPC envelope endpoint `POST /` + `{module_name, method_name, parameters}` → `{code, message, data}` | ✅ |
 | Landed | SSE streaming endpoint `chat_stream` + `done: true` guard | ✅ |
-| In progress | Multi-provider switching + `/llm-providers` endpoint (see [LLM rollout Phase 5](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md))  | 🔄 Phase 5 |
-| Pending start | Knowledge Watcher `POST /knowledge-rebuild` endpoint (see [knowledge watcher ADR](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md))  | ⏳ |
+| In progress | Multi-provider switching + `/llm-providers` endpoint (see [LLM rollout Phase 5](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md))  | 🔄 Phase 5 |
+| Pending start | Knowledge Watcher `POST /knowledge-rebuild` endpoint (see [knowledge watcher ADR](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md))  | ⏳ |
 
 ## Contract test co-build
 
@@ -217,9 +217,9 @@ Three-layer architecture (see [shared-client-design-summary](./shared-client-des
 
 - Upstream design: [shared-client-design-summary](./shared-client-design.md) — three-layer architecture design draft
 - Rollout tracking: this file — three-project parallel vendor progress
-- YiAi endpoints: [YiAi dev-standards §field name contract](../projects/yiai/dev-standards.md) + [LLM rollout Phase 5](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) + [knowledge watcher ADR](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md)
-- YiVad base layer: [YiVad dev-standards §SSE guard](../projects/yivad/dev-standards.md) + [Vitest rollout Phase 4](../../tech-lead/decisions/yivad/vitest-rollout.md) (SSE parser contract test) 
-- YiPet base layer: [YiPet dev-standards §MV3 dual world](../projects/yipet/dev-standards.md) + [aicr port rollout Phase 2](../../tech-lead/decisions/yipet/aicr-port-rollout.md)
+- YiAi endpoints: [YiAi dev-standards §field name contract](../projects/yiai/dev-standards.md) + [LLM rollout Phase 5](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) + [knowledge watcher ADR](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md)
+- YiVad base layer: [YiVad dev-standards §SSE guard](../projects/yivad/dev-standards.md) + [Vitest rollout Phase 4](../../tech-lead/decisions/yivad--vitest-rollout.md) (SSE parser contract test) 
+- YiPet base layer: [YiPet dev-standards §MV3 dual world](../projects/yipet/dev-standards.md) + [aicr port rollout Phase 2](../../tech-lead/decisions/yipet--aicr-port-rollout.md)
 - Methodology: [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) + [sse-streaming-pattern](../architecture-design/sse-streaming.md) + [supply-chain-hardening-pattern](../process/harden-supply-chain.md)
 - Gotchas: [sse-ondone-guard gotcha](../lessons/gotcha-sse-ondone-guard.md) + [no-lockfile gotcha](../lessons/gotcha-no-lockfile-supply-chain-risk.md)
 - Upstream leaf: [README.md](./) — processes leaf entry

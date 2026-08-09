@@ -13,7 +13,7 @@ dataset: YiDoc BRD template
 eval_metric: structural completeness / drafting time / edit-back-stream rate
 status: accepted
 owner: AI Engineer
-kb_path: ai-engineer/methodology/prompts/brd-generation.md
+kb_path: ai-engineer/methodology/prompts--brd-generation.md
 context: "BRD agent phase 1 prompt design: multi-step reasoning (market -> user -> solution -> risk -> metrics) + structured"
   output (YiDoc BRD template JSON
   schema). 
@@ -34,7 +34,7 @@ type: reference
 
 **Model**: Claude Opus 4.7  |  **Task Type**: code_gen  |  **Framework**: Anthropic Prompt + JSON Schema
 **Dataset**: YiDoc BRD template  |  **Eval Metric**: structural completeness / drafting time / edit-back-stream rate  |  **Status**: accepted  |  **Owner**: AI Engineer
-**KB Source**: ai-engineer/methodology/prompts/brd-generation.md
+**KB Source**: ai-engineer/methodology/prompts--brd-generation.md
 
 ## Context
 BRD agent phase 1 prompt design: multi-step reasoning (market -> user -> solution -> risk -> metrics) + structured output (YiDoc BRD template JSON schema). 
@@ -50,4 +50,4 @@ BRD agent phase 1 prompt design: multi-step reasoning (market -> user -> solutio
 1. prompt drift — eval set baseline; 2. RAG recall skew — multi-route recall + top-k; 3. generation hallucination — key number tracing; 4. structural contract drift — schema validation
 
 ## References
-- **KB Source**: `YiKnowledge/ai-engineer/methodology/prompts/brd-generation.md`
+- **KB Source**: `YiKnowledge/ai-engineer/methodology/prompts--brd-generation.md`

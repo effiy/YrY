@@ -38,7 +38,7 @@ related:
 - ../quality-security/dashboard-api-security.md
 - ../quality-security/dashboard-code-quality.md
 - ../process/dashboard-code-review-health.md
-- ../../product-manager/discovery/prd/dashboard-api-portfolio.md
+- ../../product-manager/discovery/prd--dashboard-api-portfolio.md
 tacit: false
 ---
 
@@ -228,5 +228,5 @@ tacit: false
 - Same class: [dashboard-api-security](../quality-security/dashboard-api-security.md) — API security
 - Same class: [dashboard-code-quality](../quality-security/dashboard-code-quality.md) — code quality
 - Same class: [dashboard-code-review-health](../process/dashboard-code-review-health.md) — code review health
-- Same class: [dashboard-api-portfolio](../../product-manager/discovery/prd/dashboard-api-portfolio.md) — API portfolio
+- Same class: [dashboard-api-portfolio](../../product-manager/discovery/prd--dashboard-api-portfolio.md) — API portfolio
 - References: Google — *API Design Guide*; Microsoft — *REST API Guidelines*; Stripe — *API Design Standards*; Zalando — *RESTful API Guidelines*; JSON:API — *Specification*; OpenAPI — *3.1 Specification*; Phil Sturgeon — *Build APIs You Won't Hate*

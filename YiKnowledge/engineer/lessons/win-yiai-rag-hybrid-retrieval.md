@@ -21,8 +21,8 @@ acceptance_criteria:
 related:
  - ./yiai-brd-agent-launch.md
  - ../../projects/yiai/architecture.md
- - ../../../tech-lead/decisions/yiai/rag-evaluation-infra.md
- - ../../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md
+ - ../../../tech-lead/decisions/yiai--rag-evaluation-infra.md
+ - ../../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md
  - ../../../ai-engineer/platform/llama-index-evolution.md
  - ../../../ai-engineer/methodology/rag-design-patterns.md
  - ../../processes/review-lessons.md
@@ -38,12 +38,12 @@ related:
 
 - **4 stages**: retrieval base setup (`QueryFusionRetriever`) → citation post-process (inline numbering) → scope filter (per-file / per-category) → optional re-ranking (`LLMRerank`)
 - **Key success factors**: llama_index abstraction + BM25 and vector fusion + inline citation post-process + scope filter + optional re-ranking
-- **Quantified effect**: BRD citation rate 90%+ (manual sampling); multi-route recall vs single-route recall rate ~30% higher (pending [RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) quantification)
+- **Quantified effect**: BRD citation rate 90%+ (manual sampling); multi-route recall vs single-route recall rate ~30% higher (pending [RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) quantification)
 - **Reusable experience**: RAG = hybrid retrieval > single-route; citation > no citation; scope filter for per-leaf Q&A before retrieval; re-ranking is optional not default
 
 ## Core viewpoints
 
-- **Hybrid retrieval (vector + BM25) > single-route** — vector recall captures similar semantics; BM25 recall captures keyword hits; fusion ~30% higher than single-route (pending [RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) quantification).
+- **Hybrid retrieval (vector + BM25) > single-route** — vector recall captures similar semantics; BM25 recall captures keyword hits; fusion ~30% higher than single-route (pending [RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) quantification).
 - **Citation is the floor of RAG answer trustworthiness** — users must be able to click citation to jump to source file; `_NumberSourcesPostprocessor` labels answer with `[1] [2]` numbering + source path list.
 - **Scope filter is a prerequisite for per-leaf Q&A** — `filter={"file_path": "...leaf..."}` lets users ask "what are the gotchas in this leaf"; YiVad 28 leaves × 2 wrappers go through this slicing ([YiVad functional modules](../projects/yivad/functional-modules.md)).
 - **Re-ranking is optional, not default** — `LLMRerank` uses LLM two-pass scoring of recalled chunks, quality higher but cost high; `config.yaml rag.rerank` switch defaults off, only enabled for key scenarios.
@@ -84,7 +84,7 @@ YiAi BRD Agent + chat need to recall knowledge from YiKnowledge to support gener
 
 | Metric | Before launch | After launch | Note |
 |---|---|---|---|
-| Recall rate (multi-route vs single-route)  | single-route | multi-route ~+30% | pending [RAG evaluation ADR](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) quantification |
+| Recall rate (multi-route vs single-route)  | single-route | multi-route ~+30% | pending [RAG evaluation ADR](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) quantification |
 | BRD citation rate | 0% | 90%+ | manual sampling |
 | Users click citation to jump to source file | ❌ | ✅ | YiVad already landed |
 | Scope filter support | ❌ | per-file / per-category | YiVad 28 leaves go through per-leaf Q&A |
@@ -102,8 +102,8 @@ YiAi BRD Agent + chat need to recall knowledge from YiKnowledge to support gener
 
 ### Follow-up evolution
 
-- RAG evaluation infrastructure: see [ADR RAG evaluation](../../tech-lead/decisions/yiai/rag-evaluation-infra.md); 50 docs bilingual evaluation set + ragas 4 metrics
-- Multi-provider LLM routing: see [ADR multi-provider](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md); run evaluation baseline before switching
+- RAG evaluation infrastructure: see [ADR RAG evaluation](../../tech-lead/decisions/yiai--rag-evaluation-infra.md); 50 docs bilingual evaluation set + ragas 4 metrics
+- Multi-provider LLM routing: see [ADR multi-provider](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md); run evaluation baseline before switching
 - Knowledge graph: `llama_index.graph` + `KnowledgeGraphIndex`; BRD Agent based on entity relationship recall ([llama_index evolution §YiAi](../../ai-engineer/platform/llama-index-evolution.md))
 - Docs ingestion expansion: `llama_index.readers.*` supports PDF / docx / confluence; LlamaParse cloud-side handles 130+ formats
 - Workflows: hand-written SSE → `Workflow` event-driven steps
@@ -116,8 +116,8 @@ YiAi BRD Agent + chat need to recall knowledge from YiKnowledge to support gener
 4. Re-ranking defaults off; only enable `rag.rerank` for key scenarios (BRD / legal); cost control.
 5. SSE streaming + source same frame; front-end incremental render instead of two requests.
 6. BRD Agent + chat dual-consume unified endpoints: `/rag-query` + `/rag-chat-stream`.
-7. Build evaluation set baseline first ([ADR RAG evaluation](../../tech-lead/decisions/yiai/rag-evaluation-infra.md)); must run before multi-provider switch.
-8. Run baseline before multi-provider switch + recall rate fallback > 5% block (aligned with [ADR multi-provider §risk #2](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md)).
+7. Build evaluation set baseline first ([ADR RAG evaluation](../../tech-lead/decisions/yiai--rag-evaluation-infra.md)); must run before multi-provider switch.
+8. Run baseline before multi-provider switch + recall rate fallback > 5% block (aligned with [ADR multi-provider §risk #2](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md)).
 
 ## Anti-patterns
 
@@ -135,6 +135,6 @@ YiAi BRD Agent + chat need to recall knowledge from YiKnowledge to support gener
 
 - [./win-yiai-brd-agent-launch.md](./win-yiai-brd-agent-launch.md) — BRD agent that consumes RAG hybrid retrieval for knowledge base recall
 - [./win-yiai-llm-phase-four.md](./win-yiai-llm-phase-four.md) — LLM Phase 4 generation-side switch using RAG with inline citation retention
-- [../../tech-lead/decisions/yiai/rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure with ragas metrics
+- [../../tech-lead/decisions/yiai--rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure with ragas metrics
 - [../../ai-engineer/platform/llama-index-evolution.md](../../ai-engineer/platform/llama-index-evolution.md) — llama_index evolution tracking QueryFusionRetriever and LLMRerank
 - [../../ai-engineer/methodology/rag-design-patterns.md](../../ai-engineer/methodology/rag-design-patterns.md) — RAG design patterns reference

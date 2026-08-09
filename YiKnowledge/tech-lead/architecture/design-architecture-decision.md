@@ -29,7 +29,7 @@ acceptance_criteria:
 related:
 - ../../engineer/projects/INDEX.md
 - ../../README.md
-- ../../knowledge-curator/templates/thinking/README.md
+- ../../knowledge-curator/templates/thinking--README.md
 - ../../knowledge-curator/templates/adr.md
 review_cycle: quarterly
 tacit: false
@@ -45,7 +45,7 @@ tacit: false
 
 - Before deciding, first check `methodology/thinking/` (inversion / second-order / Occam's razor / SOLH) + `methodology/engineering-patterns/` (9 already-landed patterns)
 - Write ADR following `resources/templates/adr-summary.md` 12-section structure (basic info / background / Decision / alternatives / assessment / risk / rollback / implementation plan / metrics / reusable properties / coupling / references)
-- Land the decision by establishing an instance implementation ADR track rollout (like [LLM rollout](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) / [Vitest rollout](../../tech-lead/decisions/yivad/vitest-rollout.md) / [aicr port rollout](../../tech-lead/decisions/yipet/aicr-port-rollout.md))
+- Land the decision by establishing an instance implementation ADR track rollout (like [LLM rollout](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) / [Vitest rollout](../../tech-lead/decisions/yivad--vitest-rollout.md) / [aicr port rollout](../../tech-lead/decisions/yipet--aicr-port-rollout.md))
 - Cross-project decisions follow [shared-client-design](../../engineer/engineering/shared-client-design.md) + [vendor rollout](../../engineer/engineering/shared-client-vendor-rollout.md)
 
 ## Core viewpoints
@@ -77,11 +77,11 @@ When new requirements arrive / tech selection / refactor direction / introducing
 | Hop 1 (category/leaf) | Hop 2 (specific file) |
 |---|---|
 | `resources/templates/` | [adr-summary.md](../../knowledge-curator/templates/adr.md) · [adr-template.md](../../knowledge-curator/templates/adr.md) · [tech-selection-evaluation-summary.md](../../knowledge-curator/templates/tech-selection-evaluation.md) · [tech-design-template.md](../../knowledge-curator/templates/tech-design.md) |
-| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
+| `methodology/thinking/` | [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
 | `methodology/engineering-patterns/` | [rpc-envelope-pattern.md](../../engineer/architecture-design/rpc-envelope.md) · [sse-streaming-pattern.md](../../engineer/architecture-design/sse-streaming.md) · [supply-chain-hardening-pattern.md](../../engineer/process/harden-supply-chain.md) · [evaluation-driven-development-pattern.md](../../engineer/engineering/evaluation-driven-development.md) · [one-to-one-mapping-migration-pattern.md](../../engineer/architecture-design/one-to-one-mapping-migration.md) · [staged-port-methodology-pattern.md](../../engineer/architecture-design/staged-port-methodology.md) |
-| `projects/YiAi/` | [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) · [adr-pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai/brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md) |
-| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad/vitest-introduction.md) · [adr-vitest-rollout.md](../../tech-lead/decisions/yivad/vitest-rollout.md) · [adr-aicr-phase-port.md](../../tech-lead/decisions/yivad/aicr-phase-port.md) |
-| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet/biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) · [adr-aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) |
+| `projects/YiAi/` | [adr-multi-provider-llm-routing.md](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) · [adr-llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) · [adr-pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md) · [adr-rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) · [adr-brd-agent-launch.md](../../tech-lead/decisions/yiai--brd-agent-launch.md) · [adr-knowledge-watcher-deployment.md](../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md) |
+| `projects/YiVad/` | [adr-vitest-introduction.md](../../tech-lead/decisions/yivad--vitest-introduction.md) · [adr-vitest-rollout.md](../../tech-lead/decisions/yivad--vitest-rollout.md) · [adr-aicr-phase-port.md](../../tech-lead/decisions/yivad--aicr-phase-port.md) |
+| `projects/YiPet/` | [adr-biome-lint-format.md](../../tech-lead/decisions/yipet--biome-lint-format.md) · [adr-chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) · [adr-aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) |
 | `work/processes/` | [shared-client-design-summary.md](../../engineer/engineering/shared-client-design.md) · [shared-client-vendor-rollout.md](../../engineer/engineering/shared-client-vendor-rollout.md) |
 | `projects/INDEX.md` | [INDEX.md](../../engineer/projects/INDEX.md) — all ADR overview + coupling relationships |
 

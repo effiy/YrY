@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** air gap first boot surprise, **so that** same mistake avoided. 
 
-> Offline environment first boot (Day 1) must step on 4 classes of pitfalls: TLS certificate self-signed without PKI / NTP unreachable causing Kerberos and TLS cert time mismatch / Cloud KMS unreachable causing secrets undecryptable / sneakernet ISO missing weights must be re-sent. This gotcha is the basis of [ADR air-gap-first for regulated clients](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) §Risk #5 + #6 + #7, reference [offline isolation deployment](../process/deploy-to-an-air-gapped-environment.md) §First boot four classes of pitfalls. 
+> Offline environment first boot (Day 1) must step on 4 classes of pitfalls: TLS certificate self-signed without PKI / NTP unreachable causing Kerberos and TLS cert time mismatch / Cloud KMS unreachable causing secrets undecryptable / sneakernet ISO missing weights must be re-sent. This gotcha is the basis of [ADR air-gap-first for regulated clients](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) §Risk #5 + #6 + #7, reference [offline isolation deployment](../process/deploy-to-an-air-gapped-environment.md) §First boot four classes of pitfalls. 
 
 ## Summary
 
@@ -97,7 +97,7 @@ related:
 
 ## Action recommendations
 
-1. **Day -7 drill**: in mirrored env run one first boot + 4 classes of pitfall injection; customer internal owner signs ([ADR air-gap-first](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) §Decision #5) 
+1. **Day -7 drill**: in mirrored env run one first boot + 4 classes of pitfall injection; customer internal owner signs ([ADR air-gap-first](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) §Decision #5) 
 2. **PKI must run**: Vault / step-ca / Smallstep; cert auto rotation; TLS handshake works as acceptance
 3. **NTP must run**: Chrony / PTP; system time ±50ms; cert NotBefore / NotAfter within window
 4. **Secrets must run**: Vault HA + HSM auto-unseal; or SOPS + age + GitOps; sealed=false as acceptance
@@ -122,8 +122,8 @@ related:
 
 ## Related
 
-- [../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md](../../tech-lead/decisions/fde/air-gap-first-for-regulated-clients.md) — ADR for air-gap-first approach for regulated clients
+- [../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md](../../tech-lead/decisions/fde--air-gap-first-for-regulated-clients.md) — ADR for air-gap-first approach for regulated clients
 - [./gotcha-agents-cli-alpha-instability.md](./gotcha-agents-cli-alpha-instability.md) — Another FDE customer-facing gotcha with version-pinning lessons
 - [./gotcha-no-lockfile-supply-chain-risk.md](./gotcha-no-lockfile-supply-chain-risk.md) — Supply chain risk in air-gapped environments
 - [../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md) — ADK + Agents CLI in FDE air-gapped deployment context
-- [../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) — ADR two-loop eval gate with FDE production deployment patterns
+- [../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) — ADR two-loop eval gate with FDE production deployment patterns

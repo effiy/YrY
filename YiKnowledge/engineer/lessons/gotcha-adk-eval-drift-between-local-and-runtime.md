@@ -25,7 +25,7 @@ related:
 
 > **As an** engineer, **I want to** adk eval drift between local and runtime, **so that** same mistake avoided.
 
-> ADK local `adk eval` all green -> after deploying Agent Runtime, prod eval drops sharply; local vs prod drift sources: autorater model version mismatch / golden dataset sampling bias / tool implementation differences / context window differences / temperature default differences. This gotcha is the basis of [ADR Two-loop eval as production gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) §risk #2, referring to [two-loop LLM evaluation](../../ai-engineer/methodology/run-a-two-loop-llm-evaluation.md).
+> ADK local `adk eval` all green -> after deploying Agent Runtime, prod eval drops sharply; local vs prod drift sources: autorater model version mismatch / golden dataset sampling bias / tool implementation differences / context window differences / temperature default differences. This gotcha is the basis of [ADR Two-loop eval as production gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) §risk #2, referring to [two-loop LLM evaluation](../../ai-engineer/methodology/run-a-two-loop-llm-evaluation.md).
 
 ## Summary
 
@@ -108,7 +108,7 @@ related:
 
 ## Action recommendations
 
-1. **Inner / Outer share autorater version**: must lock same autorater (e.g. Gemini 3 Pro); on upgrade run Pairwise comparison ([ADR Two-loop eval gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) §decision #7)
+1. **Inner / Outer share autorater version**: must lock same autorater (e.g. Gemini 3 Pro); on upgrade run Pairwise comparison ([ADR Two-loop eval gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) §decision #7)
 2. **Golden dataset full sync**: local no sampling; prod full set runs
 3. **Tool implementation same source**: local must run real call; or high-fidelity mock (same schema + same latency + same error rate)
 4. **Context window anchored**: local must anchor prod context (e.g. 8K); do not develop on 200K and run prod 8K
@@ -142,6 +142,6 @@ related:
 
 - Same class: [./no-lockfile-supply-chain-risk.md](gotcha-no-lockfile-supply-chain-risk.md) — version not locked class gotcha
 - Contract source: [two-loop LLM evaluation](../../ai-engineer/methodology/run-a-two-loop-llm-evaluation.md) §5 classes of drift sources
-- Design basis: [ADR Two-loop eval gate](../../tech-lead/decisions/fde/two-loop-eval-as-production-gate.md) §decision #7 + §risk #2
+- Design basis: [ADR Two-loop eval gate](../../tech-lead/decisions/fde--two-loop-eval-as-production-gate.md) §decision #7 + §risk #2
 - Toolchain: [ADK + Agents CLI](../../ai-engineer/platform/orchestrate-agents-with-adk-and-agents-cli.md)
 - Upstream: [journeys/i-want-to-check-engineering-gotchas](../process/check-engineering-gotchas.md) — scenario entry

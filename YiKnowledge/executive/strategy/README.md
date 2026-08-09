@@ -20,8 +20,8 @@ acceptance_criteria:
 related:
   - ../../engineer/lessons/learn-pm-frameworks.md
   - ../../engineer/process/understand-competitors.md
-  - ../../product-manager/discovery/metrics/README.md
-  - ../../knowledge-curator/templates/thinking/README.md
+  - ../../product-manager/discovery/metrics--README.md
+  - ../../knowledge-curator/templates/thinking--README.md
 ---
 
 # Executive Strategy Directory

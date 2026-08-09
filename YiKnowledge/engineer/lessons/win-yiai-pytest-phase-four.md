@@ -139,7 +139,7 @@ related:
 - Upstream Phase 1: [./yiai-pytest-phase-one.md](win-yiai-pytest-phase-one.md) — unit tests
 - contract baseline co-build: [./yivad-shared-client-vendor.md](win-yivad-shared-client-vendor.md) — three-project vendor landing
 - SSE parser co-build: [./yivad-vitest-phase-four.md](win-yivad-vitest-phase-four.md) — 32 test
-- Implementation ADR: [../../../tech-lead/decisions/yiai/pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md)
+- Implementation ADR: [../../../tech-lead/decisions/yiai--pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md)
 - Pattern co-build: [contract-test-baseline-pattern](../quality-security/contract-test-baseline.md) + [evaluation-driven-development-pattern](../engineering/evaluation-driven-development.md) + [rpc-envelope-pattern](../architecture-design/rpc-envelope.md) + [sse-streaming-pattern](../architecture-design/sse-streaming.md)
 - Design doc SSOT: [../../processes/shared-client-design.md](../engineering/shared-client-design.md) — contract SSOT
 - Gotcha co-build: [macos-fsevents-silent-drop](gotcha-macos-fsevents-silent-drop.md) + [no-lockfile-supply-chain-risk](gotcha-no-lockfile-supply-chain-risk.md)

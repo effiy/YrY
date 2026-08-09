@@ -52,7 +52,7 @@ related:
 
 ### Overseas After-Sales Specialties
 
-- Multilingual (related to [multilingual-translation-prompt](../../ai-engineer/methodology/prompts/multilingual-translation.md))
+- Multilingual (related to [multilingual-translation-prompt](../../ai-engineer/methodology/prompts--multilingual-translation.md))
 - Cross-timezone (related to [cross-timezone-collaboration](../../engineer/process/cross-timezone-collaboration.md))
 - Regional compliance (related to [brd/reference/regulations](./../../brd/README.md))
 
@@ -91,7 +91,7 @@ This architecture is validated by the YiAi BRD Agent for the multilingual + stru
 
 ### Key technologies
 
-- BRD section generation (reference [brd-generation-prompt](../../ai-engineer/methodology/prompts/brd-generation.md))
+- BRD section generation (reference [brd-generation-prompt](../../ai-engineer/methodology/prompts--brd-generation.md))
 - Multilingual translation
 - Ticket onboarding (related to [brd/scenarios/scn-unified-ticketing](./../../brd/README.md))
 

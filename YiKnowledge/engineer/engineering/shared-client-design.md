@@ -40,7 +40,7 @@ related:
 - **Three-layer structure**: `base` (RPC envelope + SSE parser + error normalize) → `per-project layer` (project-specific endpoint wrappers) → `feature modules` (ragService / knowledgeService / llmService, etc.).
 - **Contract aligns with YiAi**: RPC envelope `{module_name, method_name, parameters}` → `{code, message, data}`; SSE `data: {"data": {"message": "..."}}\n\n` + terminator `data: {"done": true}\n\n`. 
 - **Error normalization**: YiAi `{code, message, data}` → throw `YiAiError` with `{code, message, data}`; callers branch on `code`. 
-- **Don't introduce pi-ai**: [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) has decided YiAi backend manages multiple providers; frontend is provider-unaware, only passes through the `model` parameter. 
+- **Don't introduce pi-ai**: [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) has decided YiAi backend manages multiple providers; frontend is provider-unaware, only passes through the `model` parameter. 
 
 ## Core viewpoints
 
@@ -213,7 +213,7 @@ export const ragService = {
 
 ### Boundary with pi-ai
 
-- **Don't introduce pi-ai**: [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) has decided YiAi backend manages multiple providers; frontend only passes through the `model` parameter. 
+- **Don't introduce pi-ai**: [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) has decided YiAi backend manages multiple providers; frontend only passes through the `model` parameter. 
 - **YiPet is TS**: If YiPet later uses the `pi-ai` package for chat UI local LLM calls, base won't block it; but the YiAi HTTP endpoint contract stays unchanged. 
 - **Borrow pi-tui ideas**: [pi-agent-harness evolution](pi-agent-harness-evolution.md) §anti-patterns reminds that `pi-tui` is a terminal UI; YiVad/YiPet are web, so rendering ideas may be borrowed but APIs aren't reusable — base doesn't include pi-tui. 
 
@@ -227,8 +227,8 @@ export const ragService = {
    - 15 min: Landing cadence (each project vendors + gets 1 feature working; revisit npm private package after 2 weeks stable) 
 3. **No monorepo**: Each project owns its `src/api/base.ts` (YiVad) / `services/base.ts` (YiPet); contract guarded by openapi-generated types. 
 4. **openapi generation**: YiAi runs `python -m src.app --openapi` → `openapi.json`; frontend runs `npx openapi-typescript openapi.json -o src/api/types/api.d.ts`; CI runs a diff check to block drift. 
-5. **SSE parser unit tests**: After base lands, write 8 SSE test cases first (incl. `done: true` termination / interruption / multi-`data:` merge / heartbeat blank lines); aligned with [ADR Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md) / [YiPet dev-standards §Vitest](../projects/yipet/dev-standards.md). 
-6. **Error normalization tests**: base `YiAiError` throw logic must cover all 5 `code` ranges; aligned with [ADR pytest](../../tech-lead/decisions/yiai/pytest-introduction.md) backend 13-route integration tests. 
+5. **SSE parser unit tests**: After base lands, write 8 SSE test cases first (incl. `done: true` termination / interruption / multi-`data:` merge / heartbeat blank lines); aligned with [ADR Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md) / [YiPet dev-standards §Vitest](../projects/yipet/dev-standards.md). 
+6. **Error normalization tests**: base `YiAiError` throw logic must cover all 5 `code` ranges; aligned with [ADR pytest](../../tech-lead/decisions/yiai--pytest-introduction.md) backend 13-route integration tests. 
 7. **Re-evaluate after 2 weeks**: If vendoring causes 3-way base drift > 5%, consider extracting an npm private package; otherwise keep vendoring. 
 
 ## Anti-patterns
@@ -250,7 +250,7 @@ export const ragService = {
 - **Hand-written types**: contract drift caught by eye; must use `openapi-typescript` to generate. 
 - **Errors not normalized**: callers each do `if (json.code !== 0)` → error handling scattered; base must throw `YiAiError`. 
 - **SSE parser ignores `done: true`**: cross-project half-sent bugs recur ([lessons/gotchas/sse-ondone-guard](../lessons/gotcha-sse-ondone-guard.md)); base must terminate. 
-- **Introduce pi-ai**: conflicts with [ADR multi-provider](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md); base is provider-unaware. 
+- **Introduce pi-ai**: conflicts with [ADR multi-provider](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md); base is provider-unaware. 
 - **Base thick enough to be model-aware**: multi-provider is YiAi backend's responsibility; frontend base is unaware. 
 
 ## Related
@@ -261,7 +261,7 @@ export const ragService = {
 - [YiVad functional modules](../projects/yivad/functional-modules.md) — 18 API modules + 11 stores
 - [YiPet architecture overview](../projects/yipet/architecture.md) — API four tiers (client → endpoints → types → services) 
 - [YiPet dev-standards](../projects/yipet/dev-standards.md) — TSX + Biome + Vitest
-- [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai/route-llm-traffic-across-providers.md) — rationale for not introducing pi-ai
+- [ADR multi-provider LLM routing](../../tech-lead/decisions/yiai--route-llm-traffic-across-providers.md) — rationale for not introducing pi-ai
 - [Pi Agent Harness evolution](./pi-agent-harness-evolution.md) — pi-ai boundary
 - [Retrospective instance](../../product-manager/delivery/retrospective.md) — Try item trigger
 - [SSE onDone guard gotcha](../lessons/gotcha-sse-ondone-guard.md) — required reading for SSE parser

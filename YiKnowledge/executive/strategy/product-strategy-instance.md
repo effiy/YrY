@@ -35,8 +35,8 @@ related:
 - ./porter-five-forces.md
 - ./business-model-canvas.md
 - ./blue-ocean.md
-- ../industry/competitors/saas-top-players.md
-- ../industry/competitors/ai-brd-competitors.md
+- ../industry/competitors--saas-top-players.md
+- ../industry/competitors--ai-brd-competitors.md
 tacit: "The platform's defensibility comes from the integrated data flywheel (YiAi generates structured knowledge → YiVad surfaces it → YiPet captures feedback → data improves YiAi), not from any single product"
 ---
 
@@ -137,5 +137,5 @@ YiPet embeds AI assistance in existing workflows (ticketing systems, knowledge b
 - [VRIO Framework](./vrio-framework.md) — Capability assessment methodology
 - [Porter's Five Forces](./porter-five-forces.md) — Industry structure
 - [Blue Ocean Strategy](./blue-ocean.md) — Market creation vs. competition
-- [SaaS Top Players](../industry/competitors/saas-top-players.md) — Competitive landscape
-- [AI BRD Competitors](../industry/competitors/ai-brd-competitors.md) — Direct competitors in BRD automation
+- [SaaS Top Players](../industry/competitors--saas-top-players.md) — Competitive landscape
+- [AI BRD Competitors](../industry/competitors--ai-brd-competitors.md) — Direct competitors in BRD automation

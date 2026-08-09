@@ -25,7 +25,7 @@ related:
  - ./yiai-knowledge-watcher.md
  - ./yivad-shared-client-vendor.md
  - ./yivad-vitest-phase-four.md
- - ../../../tech-lead/decisions/yiai/pytest-introduction.md
+ - ../../../tech-lead/decisions/yiai--pytest-introduction.md
  - ../../patterns/evaluation-driven-development.md
  - ../../patterns/sse-streaming.md
  - ../../patterns/rpc-envelope.md
@@ -162,4 +162,4 @@ conftest.py
 - [./win-yiai-llm-phase-five.md](./win-yiai-llm-phase-five.md) — Phase 5 LLM endpoint testing that builds on Phase 2 integration test infrastructure
 - [./win-yiai-rag-hybrid-retrieval.md](./win-yiai-rag-hybrid-retrieval.md) — RAG hybrid retrieval tested by integration tests
 - [./gotcha-macos-fsevents-silent-drop.md](./gotcha-macos-fsevents-silent-drop.md) — macOS FSEvents limitation that CI must work around
-- [../../tech-lead/decisions/yiai/pytest-introduction.md](../../tech-lead/decisions/yiai/pytest-introduction.md) — ADR for pytest introduction
+- [../../tech-lead/decisions/yiai--pytest-introduction.md](../../tech-lead/decisions/yiai--pytest-introduction.md) — ADR for pytest introduction

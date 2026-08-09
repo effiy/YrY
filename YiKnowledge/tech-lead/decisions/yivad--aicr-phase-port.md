@@ -23,7 +23,7 @@ related:
   - ../../../engineer/projects/yivad/functional-modules.md
   - ../../../engineer/projects/yivad/dev-standards.md
   - ./vitest-introduction.md
-  - ../../../product-manager/projects/yivad/project-management.md
+  - ../../../product-manager/projects/yivad--project-management.md
   - ../../../engineer/lessons/win-yivad-aicr-phase-port.md
   - ../../../engineer/lessons/win-yivad-leaf-view-leaves-ssot.md
   - ../../../knowledge-curator/templates/adr.md

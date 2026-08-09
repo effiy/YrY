@@ -30,7 +30,7 @@ related:
 - ./measure-product-metrics.md
 - ../../product-manager/discovery/write-a-prd.md
 - ../../ai-engineer/platform/evaluate-an-llm-app.md
-- ../../product-manager/discovery/metrics/README.md
+- ../../product-manager/discovery/metrics--README.md
 review_cycle: quarterly
 last_verified: 2026-08-07
 tacit: false
@@ -44,9 +44,9 @@ tacit: false
 
 ## Summary
 
-- Measurement follows [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) + [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md)
+- Measurement follows [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) + [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) + [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md)
 - Frameworks follow [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) + [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md)
-- Thinking follows [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking follows [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) + [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md)
 - Canary follows [canary-release-process.md](../../oncall-sre/release/canary-release.md) + [feature-flag-style rollback]
 - Evaluation follows [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) + [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md)
 
@@ -79,14 +79,14 @@ When designing A/B / validating hypotheses / canary-launching new features / eva
 
 | Hop 1 (category/leaf)  | Hop 2 (specific file)  |
 |---|---|
-| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics/ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics/retention-and-churn.md) |
+| `product/metrics/` | [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md) · [ai-product-metrics-summary.md](../../product-manager/discovery/metrics--ai-product-metrics.md) · [retention-and-churn-summary.md](../../product-manager/discovery/metrics--retention-and-churn.md) |
 | `methodology/pm-frameworks/` | [heart-aarrr-metrics-summary.md](../../product-manager/frameworks/heart-aarrr-metrics.md) · [jobs-to-be-done-summary.md](../../product-manager/frameworks/jobs-to-be-done.md) · [okr-design-summary.md](../../product-manager/frameworks/okr-design.md) · [kano-model-summary.md](../../product-manager/frameworks/kano-model.md) · [rice-ice-prioritization-summary.md](../../product-manager/frameworks/rice-ice-prioritization.md) · [product-discovery-framework-summary.md](../../product-manager/frameworks/product-discovery-framework.md) |
-| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md) — think backwards about failure conditions · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) — second-order effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) — simplify hypothesis · [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking/strong-opinions-loosely-held.md) |
+| `methodology/thinking/` | [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md) — think backwards about failure conditions · [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) — second-order effects · [ockhams-razor-summary.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) — simplify hypothesis · [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md) · [strong-opinions-loosely-held-summary.md](../../knowledge-curator/templates/thinking--strong-opinions-loosely-held.md) |
 | `methodology/ai-specific/` | [llm-evaluation-methods-summary.md](../../ai-engineer/methodology/llm-evaluation-methods.md) — AI app evaluation · [hallucination-mitigation-summary.md](../../ai-engineer/methodology/hallucination-mitigation.md) |
 | `methodology/engineering-patterns/` | [evaluation-driven-development-pattern.md](../engineering/evaluation-driven-development.md) · [dual-world-boundary-pattern.md](../engineering/dual-world-boundary.md) — A/B dual world |
 | `work/processes/` | [canary-release-process.md](../../oncall-sre/release/canary-release.md) · [release-process.md](../../oncall-sre/release/release.md) · [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md) · [monitoring-governance-process.md](../process/monitoring-governance.md) · [engineering-productivity-metrics-summary.md](../process/engineering-productivity-metrics.md) |
 | `product/strategy/` | [now-next-later-roadmap-summary.md](../../executive/strategy/now-next-later-roadmap.md) · [product-strategy-framework-summary.md](../../executive/strategy/product-strategy-framework.md) — strategic alignment |
-| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux/ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux/nielsen-heuristics.md) — UX hypothesis |
+| `product/ux/` | [ai-product-ux-patterns-summary.md](../../product-manager/discovery/ux--ai-product-ux-patterns.md) · [nielsen-heuristics-summary.md](../../product-manager/discovery/ux--nielsen-heuristics.md) — UX hypothesis |
 | `lessons/wins/` | [yiai-rag-hybrid-retrieval-win.md](../lessons/win-yiai-rag-hybrid-retrieval.md) · [yiai-llm-phase-{two,three,four,five}-win.md](../lessons) — evaluation-driven landing cases |
 | `lessons/failures/` | [ai-product-launch-lessons-summary.md](../lessons/failure-ai-product-launch-lessons.md) — experiment failure lessons |
 | `resources/templates/` | [usability-test-report-template.md](../../knowledge-curator/templates/usability-test-report.md) · [user-research-interview-template.md](../../knowledge-curator/templates/user-research-interview.md) · [meeting-notes-template.md](../../knowledge-curator/templates/meeting-notes.md) |
@@ -94,14 +94,14 @@ When designing A/B / validating hypotheses / canary-launching new features / eva
 
 ## Action recommendations
 
-1. **Hypothesis first**: write the "if X, then Y" hypothesis + expected effect size + decision threshold first; don't think about the solution first; see [first-principles-summary.md](../../knowledge-curator/templates/thinking/first-principles.md).
-2. **Inversion**: how will the north star change when the experiment fails; think about failure first then design protection; see [inversion-summary.md](../../knowledge-curator/templates/thinking/inversion.md).
+1. **Hypothesis first**: write the "if X, then Y" hypothesis + expected effect size + decision threshold first; don't think about the solution first; see [first-principles-summary.md](../../knowledge-curator/templates/thinking--first-principles.md).
+2. **Inversion**: how will the north star change when the experiment fails; think about failure first then design protection; see [inversion-summary.md](../../knowledge-curator/templates/thinking--inversion.md).
 3. **Sample size**: calculate minimum sample by expected effect + significance level + power; not by gut feel; if sample is insufficient, don't run the experiment.
-4. **Metric layering**: north star (core) + guardrails (must not break) + auxiliary (diagnostic); if guardrails break, stop the experiment; see [north-star-metric-summary.md](../../product-manager/discovery/metrics/north-star-metric.md).
+4. **Metric layering**: north star (core) + guardrails (must not break) + auxiliary (diagnostic); if guardrails break, stop the experiment; see [north-star-metric-summary.md](../../product-manager/discovery/metrics--north-star-metric.md).
 5. **Stream split**: user-level hash stream split (same user always in one group); avoid pollution.
 6. **Duration**: at least 1 full cycle (7-14 days) covering weekday + weekend effects; don't draw conclusions after 1 day.
 7. **Significance**: p-value < 0.05 + effect size + confidence interval; don't only look at p-value; if significant but effect is small, don't ship either.
-8. **Second-order effects**: short-term up long-term down? A up B down? Must check second-order; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking/second-order-thinking.md).
+8. **Second-order effects**: short-term up long-term down? A up B down? Must check second-order; see [second-order-thinking-summary.md](../../knowledge-curator/templates/thinking--second-order-thinking.md).
 9. **Canary**: 1% → 5% → 25% → 100% stepwise; at each step observe core + error rate + latency; see [canary-release-process.md](../../oncall-sre/release/canary-release.md).
 10. **Rollback plan**: before the experiment confirm rollback path (feature flag / stream switch / config); see [rollback-drill-process.md](../../oncall-sre/release/rollback-drill.md).
 11. **Decision**: launch / kill / improve — three choices; don't "wait and see"; conclusions must be archived to [lessons/wins/](../lessons) or [lessons/failures/](../lessons).
@@ -125,4 +125,4 @@ When designing A/B / validating hypotheses / canary-launching new features / eva
 - Same-category journey: [../../product-manager/discovery/write-a-prd.md](../../product-manager/discovery/write-a-prd.md) — requirement hypothesis
 - Same-category journey: [../../ai-engineer/platform/evaluate-an-llm-app.md](../../ai-engineer/platform/evaluate-an-llm-app.md) — AI evaluation
 - Same-category journey: [./ship-a-release.md](../infrastructure/ship-a-release.md) — canary release
-- Upstream: [../../product-manager/discovery/metrics/README.md](../../product-manager/discovery/metrics/README.md) — metrics leaf entry
+- Upstream: [../../product-manager/discovery/metrics--README.md](../../product-manager/discovery/metrics--README.md) — metrics leaf entry

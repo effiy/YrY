@@ -19,10 +19,10 @@ acceptance_criteria:
   - "cross-references to related journeys and patterns are present
 related:
   - ../infrastructure/write-a-statement-of-work.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: MVA is not a stripped-down production; it is the simplest architecture that can be falsified in 30 days. Cloud Run + BigQuery first, not GKE; prove value first then scale; gold-plating is an anti-pattern; every component must be tied to business measurement
 ---
 
@@ -54,7 +54,7 @@ MVA is not a stripped-down production; it is the simplest architecture that can 
 | 1 hop | fde-role | [./operate-as-a-forward-deployed-engineer.md](../process/operate-as-a-forward-deployed-engineer.md) |
 | 1 hop | consulting-frameworks | [./apply-consulting-frameworks.md](../process/apply-consulting-frameworks.md) |
 | 2 hops | air-gap | [./deploy-to-an-air-gapped-environment.md](../process/deploy-to-an-air-gapped-environment.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
 
 ## Action recommendations
 
@@ -92,4 +92,4 @@ MVA is not a stripped-down production; it is the simplest architecture that can 
 - sow: [../processes/write-a-statement-of-work.md](../infrastructure/write-a-statement-of-work.md) — statement of work co-build
 - edge-compute: [./prepare-an-edge-compute-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-an-edge-compute-strategy.md) — edge compute complement
 - deployment-strategy: [./prepare-a-deployment-strategy.md](../../knowledge-curator/archive/strategies-legacy/engineer/prepare-a-deployment-strategy.md) — deployment strategy complement
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

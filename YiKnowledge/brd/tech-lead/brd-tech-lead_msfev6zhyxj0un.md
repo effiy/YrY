@@ -16,7 +16,7 @@ team_size: 4
 status: accepted
 owner: YiAi main owner
 review_cycle: quarterly
-kb_path: tech-lead/decisions/yiai/rag-evaluation-infra.md
+kb_path: tech-lead/decisions/yiai--rag-evaluation-infra.md
 context: Weekly risk radar "YiAi RAG evaluation missing, recall rate not quantifiable". Need to quantify RAG recall quality + prevent regression caused by model upgrade. 
 decision: Introduce `llama-datasets` format + ragas-style metrics (faithfulness / answer_relevancy / context_precision
   / context_recall) + 50 bilingual documentation evaluation set + CI recall regression > 5% block. Co-build `tests/eval/`
@@ -35,7 +35,7 @@ type: reference
 
 **ADR ID**: ADR-Rag-Evaluation-Infrastructure  |  **Project**: yiai  |  **Domain**: RAG Evaluation
 **Decision Type**: architectural  |  **Team Size**: 4  |  **Status**: accepted  |  **Owner**: YiAi main owner
-**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai/rag-evaluation-infra.md
+**Review Cycle**: quarterly  |  **KB Source**: tech-lead/decisions/yiai--rag-evaluation-infra.md
 
 ## Context
 Weekly risk radar "YiAi RAG evaluation missing, recall rate not quantifiable". Need to quantify RAG recall quality + prevent regression caused by model upgrade. 
@@ -56,4 +56,4 @@ Evaluation infrastructure exception → revert to previous baseline + fix + reru
 YiAi main owner (decision); architecture team (review); CTO (approval); QA; BRD business (evaluation data)
 
 ## References
-- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai/rag-evaluation-infra.md`
+- **KB Source**: `YiKnowledge/tech-lead/decisions/yiai--rag-evaluation-infra.md`

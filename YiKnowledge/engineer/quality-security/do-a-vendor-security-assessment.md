@@ -19,10 +19,10 @@ acceptance_criteria:
   - "cross-references to related journeys and patterns are present
 related:
   - ../process/harden-supply-chain.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: Vendor security assessment is not just a questionnaire; it is an admission contract. Data + access + compliance + audit + incident response; continuous monitoring; not one-shot
 ---
 
@@ -60,10 +60,10 @@ Vendor security assessment is an admission contract; not just a questionnaire. T
 | 2 hops | dependency audit | [./do-a-dependency-audit.md](../engineering/do-a-dependency-audit.md) |
 | 2 hops | license compliance | [../../executive/strategy/prepare-a-license-compliance-review.md](../../knowledge-curator/archive/strategies-legacy/executive/prepare-a-license-compliance-review.md) |
 | 2 hops | threat modeling | [./do-a-threat-modeling.md](../quality-security/do-a-threat-modeling.md) |
-| 2 hops | first-principles | [../../knowledge-curator/templates/thinking/first-principles.md](../../knowledge-curator/templates/thinking/first-principles.md) |
-| 2 hops | inversion | [../../knowledge-curator/templates/thinking/inversion.md](../../knowledge-curator/templates/thinking/inversion.md) |
-| 2 hops | second-order | [../../knowledge-curator/templates/thinking/second-order-thinking.md](../../knowledge-curator/templates/thinking/second-order-thinking.md) |
-| 2 hops | ockhams | [../../knowledge-curator/templates/thinking/ockhams-razor.md](../../knowledge-curator/templates/thinking/ockhams-razor.md) |
+| 2 hops | first-principles | [../../knowledge-curator/templates/thinking--first-principles.md](../../knowledge-curator/templates/thinking--first-principles.md) |
+| 2 hops | inversion | [../../knowledge-curator/templates/thinking--inversion.md](../../knowledge-curator/templates/thinking--inversion.md) |
+| 2 hops | second-order | [../../knowledge-curator/templates/thinking--second-order-thinking.md](../../knowledge-curator/templates/thinking--second-order-thinking.md) |
+| 2 hops | ockhams | [../../knowledge-curator/templates/thinking--ockhams-razor.md](../../knowledge-curator/templates/thinking--ockhams-razor.md) |
 
 ## Action recommendations
 
@@ -99,4 +99,4 @@ Vendor security assessment is an admission contract; not just a questionnaire. T
 - dependency audit: [./do-a-dependency-audit.md](../engineering/do-a-dependency-audit.md) — code dependencies
 - license compliance: [../../executive/strategy/prepare-a-license-compliance-review.md](../../knowledge-curator/archive/strategies-legacy/executive/prepare-a-license-compliance-review.md) — legal compliance
 - threat modeling: [./do-a-threat-modeling.md](../quality-security/do-a-threat-modeling.md) — trust boundary
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

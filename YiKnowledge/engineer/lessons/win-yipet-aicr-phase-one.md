@@ -21,9 +21,9 @@ acceptance_criteria:
   - "anti-patterns or when-not-to-use are identified"
 related:
  - ./yivad-aicr-phase-port.md
- - ../../../tech-lead/decisions/yipet/aicr-port-rollout.md
- - ../../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
- - ../../../tech-lead/decisions/yipet/biome-lint-format.md
+ - ../../../tech-lead/decisions/yipet--aicr-port-rollout.md
+ - ../../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
+ - ../../../tech-lead/decisions/yipet--biome-lint-format.md
  - ../../patterns/dual-world-boundary.md
  - ../../patterns/staged-port-methodology.md
  - ../../patterns/one-to-one-mapping-migration.md
@@ -124,5 +124,5 @@ type MessageEnvelope<T = unknown> = {
 - [./win-yipet-aicr-phase-two.md](./win-yipet-aicr-phase-two.md) — Phase 2 shared client vendor, next stage after MV3 skeleton
 - [./win-yipet-aicr-phase-three.md](./win-yipet-aicr-phase-three.md) — Phase 3 ChatPanel/CodeViewer React rewrite
 - [./win-yivad-aicr-phase-port.md](./win-yivad-aicr-phase-port.md) — YiVad aicr baseline that Phase 1 skeleton aligns with
-- [../../tech-lead/decisions/yipet/aicr-port-rollout.md](../../tech-lead/decisions/yipet/aicr-port-rollout.md) — ADR for aicr port 5-stage rollout
-- [../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) — ADR for Chrome MV3 dual-world boundary design
+- [../../tech-lead/decisions/yipet--aicr-port-rollout.md](../../tech-lead/decisions/yipet--aicr-port-rollout.md) — ADR for aicr port 5-stage rollout
+- [../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) — ADR for Chrome MV3 dual-world boundary design

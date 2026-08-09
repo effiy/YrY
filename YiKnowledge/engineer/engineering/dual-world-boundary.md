@@ -19,7 +19,7 @@ acceptance_criteria:
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified
 related:
-  - ../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md
+  - ../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
   - ../projects/yipet/dev-standards.md
   - ../projects/yipet/architecture.md
 ---
@@ -34,7 +34,7 @@ related:
 
 - **Pattern**: The two worlds each hold their own runtime (ISOLATED holds `chrome.*` API + MAIN holds DOM / page JS) → TS type branding (`__brand`) marks world ownership → typed message envelope (`{kind, world, payload}`) crosses boundary → `runtime.sendMessage` / `window.postMessage` channel isolation → Biome lint forbids `any` cross-world assignment
 - **Cross-project applicability**: YiPet (Chrome MV3 extension), reusable for any MV3 extension or dual-runtime isolation scenario
-- **Implementation**: [YiPet MV3 Dual World ADR](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md)
+- **Implementation**: [YiPet MV3 Dual World ADR](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md)
 - **Replacement solution**: Single world + try/catch fallback (not applicable to MV3, see §Not applicable)
 
 ## Core viewpoints
@@ -167,7 +167,7 @@ ISOLATED module file names carry the `isolated-` prefix, MAIN modules carry the 
 | 4 | Channel isolation: `chrome.runtime.sendMessage` (-> MAIN) + `window.postMessage` (-> ISOLATED)  | frontend cross-boundary communication | one-shot |
 | 5 | Biome lint forbids `as any` cross-world + `noExplicitAny` error | frontend lint | one-shot |
 | 6 | CI: type check + Biome lint blocks cross-boundary assignment | CI | follows #5 |
-| 7 | Tests: cross-boundary message round-trip ([Vitest](../../tech-lead/decisions/yivad/vitest-introduction.md) happy-dom simulating dual world)  | frontend tests | one-shot |
+| 7 | Tests: cross-boundary message round-trip ([Vitest](../../tech-lead/decisions/yivad--vitest-introduction.md) happy-dom simulating dual world)  | frontend tests | one-shot |
 
 ## Action recommendations
 
@@ -205,7 +205,7 @@ ISOLATED module file names carry the `isolated-` prefix, MAIN modules carry the 
 
 ## Related
 
-- Implementation: [YiPet MV3 Dual World ADR](../../tech-lead/decisions/yipet/chrome-manifest-dual-world-boundary.md) — type branding + envelope
+- Implementation: [YiPet MV3 Dual World ADR](../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md) — type branding + envelope
 - Implementation: [YiPet Development Standards §MV3 Dual World](../projects/yipet/dev-standards.md)
 - Implementation: [YiPet Architecture Overview](../projects/yipet/architecture.md) — dual world boundary / API four tiers
 - Companion: [./README.md](./) — engineering-patterns leaf entry

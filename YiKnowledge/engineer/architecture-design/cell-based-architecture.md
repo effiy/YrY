@@ -27,10 +27,10 @@ related:
  - ./zero-trust.md
  - ./aggregator.md
  - ./saga.md
- - ../../knowledge-curator/templates/thinking/first-principles.md
- - ../../knowledge-curator/templates/thinking/inversion.md
- - ../../knowledge-curator/templates/thinking/second-order-thinking.md
- - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+ - ../../knowledge-curator/templates/thinking--first-principles.md
+ - ../../knowledge-curator/templates/thinking--inversion.md
+ - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+ - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 tacit: A cell is not just a service split; it is a contract. cell + endpoint + component + autonomy + data — five dimensions; business-value driven; not one-shot; measurable
 ---
 
@@ -198,4 +198,4 @@ class CellRegistry:
 - [zero-trust-pattern.md](../quality-security/zero-trust.md) — zero trust between cells
 - [aggregator-pattern.md](./aggregator.md) — cross-cell aggregation
 - [saga-pattern.md](./saga.md) — cross-cell long transactions
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md)

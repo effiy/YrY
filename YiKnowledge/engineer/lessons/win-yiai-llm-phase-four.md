@@ -21,9 +21,9 @@ acceptance_criteria:
 related:
  - ./yiai-llm-phase-three.md
  - ./yiai-rag-hybrid-retrieval.md
- - ../../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md
- - ../../../tech-lead/decisions/yiai/rag-evaluation-infra.md
- - ../../../tech-lead/decisions/yiai/knowledge-watcher-deployment.md
+ - ../../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md
+ - ../../../tech-lead/decisions/yiai--rag-evaluation-infra.md
+ - ../../../tech-lead/decisions/yiai--knowledge-watcher-deployment.md
  - ../../patterns/inline-citation-rag.md
  - ../../patterns/evaluation-driven-development.md
  - ../../projects/build-a-rag-pipeline.md
@@ -112,5 +112,5 @@ related:
 - [./win-yiai-llm-phase-three.md](./win-yiai-llm-phase-three.md) — Phase 3 streaming rollout, prerequisite for Phase 4 generation-side switch
 - [./win-yiai-llm-phase-five.md](./win-yiai-llm-phase-five.md) — Phase 5 endpoint + frontend model selector, dependent on Phase 4 completion
 - [./win-yiai-rag-hybrid-retrieval.md](./win-yiai-rag-hybrid-retrieval.md) — RAG hybrid retrieval with inline citation retained during Phase 4 switch
-- [../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai/llm-multi-provider-rollout.md) — ADR for multi-provider 5-stage rollout methodology
-- [../../tech-lead/decisions/yiai/rag-evaluation-infra.md](../../tech-lead/decisions/yiai/rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure used for eval-set gate
+- [../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md](../../tech-lead/decisions/yiai--llm-multi-provider-rollout.md) — ADR for multi-provider 5-stage rollout methodology
+- [../../tech-lead/decisions/yiai--rag-evaluation-infra.md](../../tech-lead/decisions/yiai--rag-evaluation-infra.md) — ADR for RAG evaluation infrastructure used for eval-set gate

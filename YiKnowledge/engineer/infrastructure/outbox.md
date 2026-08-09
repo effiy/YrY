@@ -23,10 +23,10 @@ related:
   - ./retry-with-backoff.md
   - ../projects/build-a-rag-pipeline.md
   - ../architecture-design/decompose-a-monolith.md
-  - ../../knowledge-curator/templates/thinking/first-principles.md
-  - ../../knowledge-curator/templates/thinking/inversion.md
-  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
-  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
+  - ../../knowledge-curator/templates/thinking--first-principles.md
+  - ../../knowledge-curator/templates/thinking--inversion.md
+  - ../../knowledge-curator/templates/thinking--second-order-thinking.md
+  - ../../knowledge-curator/templates/thinking--ockhams-razor.md
 ---
 
 # Outbox Pattern / Outbox Pattern
@@ -282,4 +282,4 @@ metrics:
 - Graceful degradation: [./graceful-degradation.md](../architecture-design/graceful-degradation.md) — MQ unavailable degradation
 - Timeout budget: [./timeout-budget.md](./timeout-budget.md) — publisher budget
 - journeys: [set-up-a-data-pipeline](set-up-a-data-pipeline.md) + [migrate-data](migrate-data.md) + [build-a-rag-pipeline](../projects/build-a-rag-pipeline.md) + [decompose-a-monolith](../architecture-design/decompose-a-monolith.md)
-- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking/first-principles.md) (consistency problem essence) + [inversion](../../knowledge-curator/templates/thinking/inversion.md) (not direct send = reverse first enter table) + [second-order](../../knowledge-curator/templates/thinking/second-order-thinking.md) (at-least-once second-order idempotent) + [ockhams](../../knowledge-curator/templates/thinking/ockhams-razor.md) (outbox the simpler the better)
+- Thinking frameworks: [first-principles](../../knowledge-curator/templates/thinking--first-principles.md) (consistency problem essence) + [inversion](../../knowledge-curator/templates/thinking--inversion.md) (not direct send = reverse first enter table) + [second-order](../../knowledge-curator/templates/thinking--second-order-thinking.md) (at-least-once second-order idempotent) + [ockhams](../../knowledge-curator/templates/thinking--ockhams-razor.md) (outbox the simpler the better)
