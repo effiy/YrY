@@ -163,6 +163,18 @@
             <div class="chart-body"><ECharts :option="tagsBarOption" height="220" @chart-click="onChartClick('tag', $event)" /></div>
           </div>
         </el-col>
+        <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+          <div class="chart-box">
+            <div class="chart-title">Metadata Completeness</div>
+            <div class="chart-body"><ECharts :option="metadataCompletenessOption" height="220" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('tacit') }">
+            <div class="chart-title">Tacit Knowledge <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
+            <div class="chart-body"><ECharts :option="tacitDonutOption" height="220" @chart-click="onChartClick('tacit', $event)" /></div>
+          </div>
+        </el-col>
       </el-row>
     </div>
 
@@ -891,14 +903,17 @@
               </el-table-column>
               <el-table-column prop="status" label="Status" width="100" sortable="custom">
                 <template #default="{ row }">
-                  <el-tag :type="statusTagType(row.status)" size="small" @click.stop="setFilter('status', row.status)" class="table-tag-clickable">{{ row.status }}</el-tag>
+                  <el-tag v-if="isMissingField(row.status)" type="danger" size="small" @click.stop="setQualityFilter('status')" class="table-tag-clickable">Missing</el-tag>
+                  <el-tag v-else :type="statusTagType(row.status)" size="small" @click.stop="setFilter('status', row.status || 'unknown')" class="table-tag-clickable">{{ row.status || 'unknown' }}</el-tag>
                 </template>
               </el-table-column>
               <el-table-column prop="lifecycle" label="Lifecycle" width="100" sortable="custom">
                 <template #default="{ row }">
-                  <el-tag v-if="row.lifecycle && row.lifecycle !== 'unknown'" :type="lifecycleTagType(row.lifecycle)" size="small" @click.stop="setFilter('lifecycle', row.lifecycle)" class="table-tag-clickable">
+                  <el-tag v-if="isMissingField(row.lifecycle)" type="danger" size="small" @click.stop="setQualityFilter('lifecycle')" class="table-tag-clickable">Missing</el-tag>
+                  <el-tag v-else-if="row.lifecycle && row.lifecycle !== 'unknown'" :type="lifecycleTagType(row.lifecycle)" size="small" @click.stop="setFilter('lifecycle', row.lifecycle)" class="table-tag-clickable">
                     {{ row.lifecycle }}
                   </el-tag>
+                  <el-tag v-else-if="row.lifecycle === 'unknown'" type="info" size="small" @click.stop="setFilter('lifecycle', 'unknown')" class="table-tag-clickable">unknown</el-tag>
                   <span v-else class="text-muted">--</span>
                 </template>
               </el-table-column>
@@ -974,11 +989,13 @@
               <div class="fd-meta-grid">
                 <div class="fd-meta-item">
                   <span class="fd-meta-label">Status</span>
-                  <el-tag :type="statusTagType(selectedFile.status)" size="small">{{ selectedFile.status }}</el-tag>
+                  <el-tag v-if="isMissingField(selectedFile.status)" type="danger" size="small">Missing</el-tag>
+                  <el-tag v-else :type="statusTagType(selectedFile.status)" size="small">{{ selectedFile.status || 'unknown' }}</el-tag>
                 </div>
                 <div class="fd-meta-item">
                   <span class="fd-meta-label">Lifecycle</span>
-                  <el-tag v-if="selectedFile.lifecycle" :type="lifecycleTagType(selectedFile.lifecycle)" size="small">{{ selectedFile.lifecycle }}</el-tag>
+                  <el-tag v-if="isMissingField(selectedFile.lifecycle)" type="danger" size="small">Missing</el-tag>
+                  <el-tag v-else-if="selectedFile.lifecycle" :type="lifecycleTagType(selectedFile.lifecycle)" size="small">{{ selectedFile.lifecycle }}</el-tag>
                   <span v-else class="text-muted">--</span>
                 </div>
                 <div class="fd-meta-item">
@@ -1160,8 +1177,8 @@ const {
   categoryTreeData,
   reviewCycleDonutOption, typeBarOption, statusBarOption,
   sizeDistOption, fileAgeOption, lifecycleBarOption,
-  moduleBarOption, rolesBarOption,
-  categoryBarOption, tagsBarOption,
+  moduleBarOption, rolesBarOption, categoryBarOption, tagsBarOption,
+  metadataCompletenessOption, tacitDonutOption,
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, fileHealthIssues, getModuleClassSummary,
   isMissingField, isUnknownField, normalizeMetaValue, MISSING_LABEL,

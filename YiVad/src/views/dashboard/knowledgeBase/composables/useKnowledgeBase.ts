@@ -11,7 +11,7 @@ import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import {
   buildReviewCycleDonut, buildTypeBar, buildStatusBar, buildSizeDist,
   buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar,
-  buildCategoryBar, buildTagsBar, CHART_PALETTE,
+  buildCategoryBar, buildTagsBar, buildMetadataCompleteness, buildTacitDonut, CHART_PALETTE,
 } from "../charts";
 import { useCrossFilter } from "./useCrossFilter";
 import {
@@ -883,6 +883,28 @@ export function useKnowledgeBase() {
     return buildTagsBar(data, CHART_PALETTE);
   });
 
+  // ── Computed: Metadata Completeness Chart ──
+  const metadataCompletenessOption = computed<ECOption>(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return {};
+    return buildMetadataCompleteness([
+      { label: "Status", pct: Math.round(((total - dq.no_status) / total) * 100), total, missing: dq.no_status },
+      { label: "Type", pct: Math.round(((total - dq.no_type) / total) * 100), total, missing: dq.no_type },
+      { label: "Lifecycle", pct: Math.round(((total - dq.no_lifecycle) / total) * 100), total, missing: dq.no_lifecycle },
+      { label: "Review Cycle", pct: Math.round(((total - dq.no_review_cycle) / total) * 100), total, missing: dq.no_review_cycle },
+      { label: "Roles", pct: Math.round(((total - dq.no_roles) / total) * 100), total, missing: dq.no_roles },
+      { label: "Tags", pct: Math.round(((total - dq.no_tags) / total) * 100), total, missing: dq.no_tags },
+    ]);
+  });
+
+  const tacitDonutOption = computed<ECOption>(() => {
+    const ctx = chartContextFiles.value;
+    const files = ctx ?? (knowledgeData.value?.files ?? []);
+    const tacit = files.filter(f => f.tacit).length;
+    return buildTacitDonut(tacit, files.length - tacit);
+  });
+
   // ── Filter Methods ──
   function applyFiltersToList(files: KnowledgeFileSummary[]): KnowledgeFileSummary[] {
     const filters = activeFilter.value;
@@ -1329,7 +1351,15 @@ export function useKnowledgeBase() {
       return;
     }
 
-    // Field-based charts: status / type / lifecycle / role / review_cycle.
+    // Tacit knowledge donut: "Tacit" → filter tacit=true, "Explicit" → clear
+    if (dimension === "tacit") {
+      if (name === "Tacit") setFilter("tacit", "true");
+      else removeFilter("tacit");
+      forceFileTableView();
+      return;
+    }
+
+    // Field-based charts: status / type / lifecycle / role / review_cycle / category.
     // Review cycle's "__missing__" segment filters files without a review_cycle.
     setFilter(dimension, name);
     forceFileTableView();
@@ -1433,8 +1463,8 @@ export function useKnowledgeBase() {
     // Chart options
     reviewCycleDonutOption, typeBarOption, statusBarOption,
     sizeDistOption, fileAgeOption, lifecycleBarOption,
-    moduleBarOption, rolesBarOption,
-    categoryBarOption, tagsBarOption,
+    moduleBarOption, rolesBarOption, categoryBarOption, tagsBarOption,
+    metadataCompletenessOption, tacitDonutOption,
     // Methods
     setFilter, removeFilter, undoLastFilter, selectTreeNode,
     pulseCard, toggleNoReviewFilter, setQualityFilter,

@@ -215,3 +215,61 @@ export function buildTagsBar(data: { name: string; count: number }[], colors: st
     }]
   };
 }
+
+// ── Metadata Completeness Bar ──
+
+export interface MetadataCompletenessDim {
+  label: string;
+  pct: number;
+  total: number;
+  missing: number;
+}
+
+export function buildMetadataCompleteness(dims: MetadataCompletenessDim[]): ECOption {
+  const data = [...dims].reverse(); // reverse for horizontal bar (bottom-up)
+  return {
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+      formatter: (params: any) => {
+        const p = Array.isArray(params) ? params[0] : params;
+        const d = dims.find(dd => dd.label === p.name);
+        if (!d) return `${p.name}: ${p.value}%`;
+        return `<b>${d.label}</b><br/>Completeness: ${d.pct}%<br/>Missing: ${d.missing} / ${d.total} files`;
+      },
+    },
+    grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
+    xAxis: { type: "value", max: 100, axisLabel: { fontSize: 9, formatter: "{value}%" } },
+    yAxis: { type: "category", data: data.map(d => d.label), axisLabel: { fontSize: 10 } },
+    series: [{
+      type: "bar", barWidth: "60%",
+      data: data.map(d => ({
+        value: d.pct,
+        itemStyle: {
+          color: d.pct >= 80 ? "#67c23a" : d.pct >= 50 ? "#e6a23c" : "#f56c6c",
+          borderRadius: [0, 4, 4, 0],
+        },
+      })),
+      label: { show: true, position: "right", fontSize: 10, formatter: "{c}%" },
+    }],
+  };
+}
+
+// ── Tacit Knowledge Donut ──
+
+export function buildTacitDonut(tacitCount: number, explicitCount: number): ECOption {
+  const items = [
+    { name: "Tacit", value: tacitCount, itemStyle: { color: "#9a60b4" } },
+    { name: "Explicit", value: explicitCount, itemStyle: { color: "#67c23a" } },
+  ];
+  return {
+    tooltip: { trigger: "item", formatter: (p: any) => `${p.name}: ${p.value} files (${p.percent}%)` },
+    legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10 } },
+    series: [{
+      type: "pie", radius: ["50%", "75%"], center: ["58%", "50%"],
+      label: { show: true, fontSize: 10, formatter: (p: any) => `${p.name}\n${p.percent}%` },
+      emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
+      data: items,
+    }],
+  };
+}

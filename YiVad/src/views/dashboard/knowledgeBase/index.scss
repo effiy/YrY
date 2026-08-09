@@ -47,6 +47,29 @@
   .stat-warn .stat-icon { background: linear-gradient(135deg, #e6a23c, #d09020); }
   .stat-warn .stat-value { color: #e6a23c; }
 
+  // ── Needs Attention Box ──
+  .attention-box {
+    box-sizing: border-box;
+    padding: 6px 20px 0;
+    flex-shrink: 0;
+    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .top-title { font-family: DIN; font-size: 13px; font-weight: bold; color: #e6a23c; }
+    .chart-hint { font-size: 10px; color: #909399; }
+  }
+  .attention-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px;
+  }
+  .attn-item {
+    display: flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--el-border-color-lighter);
+    background: #fef0e8; transition: all .15s;
+    &:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.08); border-color: #e6a23c; }
+    .el-icon { font-size: 12px; color: #e6a23c; }
+    .attn-count { font-family: DIN; font-size: 14px; font-weight: bold; color: #e6a23c; }
+    .attn-label { font-size: 10px; color: #606266; white-space: nowrap; }
+  }
+
   // ── Data Quality Box ──
   .quality-box {
     box-sizing: border-box;
