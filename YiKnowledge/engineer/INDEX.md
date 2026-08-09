@@ -3,7 +3,7 @@ title: "Engineer role index"
 tags: [index, engineer, architecture, quality, security, infrastructure, engineering, process, lessons, projects]
 category: engineer
 created: 2026-08-06
-updated: 2026-08-06
+updated: 2026-08-09
 last_verified: 2026-08-07
 source: internal
 type: summary
@@ -34,7 +34,7 @@ related:
 | Phase | Domain | Solves | Files |
 |---|---|---|---|
 | BUILD | [architecture-design/](./architecture-design/) | How do I design this system? | 40 |
-| BUILD | [engineering/](./engineering/) | How do I build features (AI + tools)? | 56 |
+| BUILD | [engineering/](./engineering/) | How do I build features (AI + tools)? | 57 |
 | SHIP | [quality-security/](./quality-security/) | How do I test, secure, and verify? | 34 |
 | SHIP | [infrastructure/](./infrastructure/) | How do I ship, run, and manage data? | 50 |
 | RUN | [process/](./process/) | How do we work together? | 50 |
@@ -56,6 +56,7 @@ related:
 | Onboard a new engineer | [process/mentor-and-grow-engineers.md](./process/mentor-and-grow-engineers.md) |
 | Build a RAG pipeline | [engineering/inline-citation-rag.md](./engineering/inline-citation-rag.md) |
 | Check common gotchas | [lessons/](./lessons/) or [process/check-engineering-gotchas.md](./process/check-engineering-gotchas.md) |
+| Create diagrams with Mermaid | [engineering/create-diagrams-with-mermaid.md](./engineering/create-diagrams-with-mermaid.md) |
 | Bootstrap a new project | [engineering/bootstrap-a-new-project.md](./engineering/bootstrap-a-new-project.md) |
 | Learn from failures | [lessons/](./lessons/) (failure-* and bug-* prefixed files) |
 

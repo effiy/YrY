@@ -1,38 +1,288 @@
 .ai-analytics-box {
-  .top-box {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // ── Shared card & header ──
+  .top-box,
+  .charts-box {
     box-sizing: border-box;
-    padding: 25px 40px 0;
-    margin-bottom: 10px;
-    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .top-title { font-family: DIN; font-size: 18px; font-weight: bold; }
-    .top-actions { display: flex; align-items: center; gap: 12px; .last-updated { font-size: 12px; color: #909399; } }
-    .top-content { margin-top: 10px; }
+    padding: 6px 20px 0;
+    flex-shrink: 0;
+
+    .top-header,
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .top-title,
+    .chart-title {
+      font-family: DIN, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--el-text-color-primary);
+    }
+
+    .chart-title {
+      font-size: 13px;
+    }
+
+    .chart-hint {
+      font-size: 10px;
+      color: #909399;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .last-updated {
+        font-size: 10px;
+        color: #909399;
+      }
+    }
   }
+
+  // ── Filter bar ──
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 20px;
+    flex-shrink: 0;
+
+    .filter-label {
+      font-size: 11px;
+      color: #909399;
+    }
+  }
+
+  // ── Stat Cards ──
   .stat-card {
-    display: flex; align-items: center; box-sizing: border-box; height: 100%; padding: 20px 24px; border-radius: 12px;
-    .stat-icon { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin-right: 16px; font-size: 24px; border-radius: 12px; color: #fff; }
-    .stat-info { .stat-value { font-family: DIN; font-size: 28px; font-weight: bold; color: #303133; } .stat-label { font-size: 13px; color: #909399; margin-top: 2px; } .stat-sub { font-size: 11px; color: #c0c4cc; margin-top: 2px; } }
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    .stat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-right: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .stat-info {
+      min-width: 0;
+
+      .stat-value {
+        font-family: DIN, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        color: #303133;
+        line-height: 1.2;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        color: #909399;
+        margin-top: 1px;
+        white-space: nowrap;
+      }
+
+      .stat-sub {
+        font-size: 9px;
+        color: #c0c4cc;
+      }
+    }
   }
-  .stat-sessions .stat-icon { background: linear-gradient(135deg, #5470c6, #4460b0); }
-  .stat-messages .stat-icon { background: linear-gradient(135deg, #67c23a, #529b2e); }
-  .stat-avg .stat-icon { background: linear-gradient(135deg, #e6a23c, #cf9236); }
-  .stat-today .stat-icon { background: linear-gradient(135deg, #ee6666, #da5a5a); }
-  .chart-row { padding: 20px 40px; margin-bottom: 10px; }
-  .chart-box {
-    box-sizing: border-box; height: 380px; border: 1px solid var(--el-border-color); border-radius: 12px;
-    .chart-title { padding: 15px 20px; font-family: DIN; font-size: 16px; font-weight: bold; border-bottom: 1px solid var(--el-border-color); }
-    .chart-body { width: 100%; height: calc(100% - 55px); }
+
+  // Stat card color themes
+  .stat-sessions .stat-icon   { background: linear-gradient(135deg, #5470c6, #4460b0); }
+  .stat-messages .stat-icon   { background: linear-gradient(135deg, #67c23a, #529b2e); }
+  .stat-avg .stat-icon        { background: linear-gradient(135deg, #e6a23c, #cf9236); }
+  .stat-today .stat-icon      { background: linear-gradient(135deg, #ee6666, #da5a5a); }
+  .stat-active .stat-icon     { background: linear-gradient(135deg, #73c0de, #5ab1ef); }
+  .stat-models .stat-icon     { background: linear-gradient(135deg, #9a60b4, #7a40a0); }
+  .stat-trend .stat-icon      { background: linear-gradient(135deg, #3ba272, #2d8a5e); }
+  .stat-top-model .stat-icon  { background: linear-gradient(135deg, #fc8452, #e07030); }
+
+  // Pulse animation (for card click feedback)
+  .stat-pulse {
+    animation: aiStatPulse 0.6s ease-out;
   }
-  .recent-box { padding: 25px 40px; .recent-title { margin-bottom: 15px; font-family: DIN; font-size: 18px; font-weight: bold; } }
-  .table-box {
-    box-sizing: border-box; border: 1px solid var(--el-border-color); border-radius: 12px; min-height: 350px;
-    .table-title { padding: 15px 20px; font-family: DIN; font-size: 16px; font-weight: bold; border-bottom: 1px solid var(--el-border-color); }
+
+  @keyframes aiStatPulse {
+    0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(84, 112, 198, 0.4); }
+    50%  { transform: scale(1.03); box-shadow: 0 0 0 6px rgba(84, 112, 198, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(84, 112, 198, 0); }
   }
-  .weekly-summary { padding: 12px 20px; }
-  .weekly-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f5f7fa; &:last-child { border-bottom: none; } }
-  .weekly-date { font-size: 12px; color: #909399; width: 50px; flex-shrink: 0; }
-  .weekly-sessions { font-size: 13px; color: #303133; font-weight: 500; width: 80px; flex-shrink: 0; }
-  .weekly-msgs { font-size: 12px; color: #909399; width: 70px; flex-shrink: 0; }
-  .weekly-empty { padding: 20px; text-align: center; color: #909399; font-size: 13px; }
-  .mb20 { margin-bottom: 20px; }
+
+  // ── Chart panels ──
+  .chart-panel,
+  .table-panel {
+    box-sizing: border-box;
+    height: 100%;
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--el-border-color-lighter);
+      background: var(--el-fill-color-lighter);
+    }
+
+    .chart-body {
+      width: 100%;
+      height: 360px;
+    }
+
+    .chart-body-sm {
+      height: 260px;
+    }
+
+    .chart-body-md {
+      height: 320px;
+    }
+  }
+
+  // ── Weekly summary list ──
+  .weekly-list {
+    padding: 8px 16px;
+  }
+
+  .weekly-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid #f5f7fa;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .weekly-date {
+    font-size: 11px;
+    color: #909399;
+    width: 48px;
+    flex-shrink: 0;
+    font-family: DIN, monospace;
+  }
+
+  .weekly-sessions,
+  .weekly-msgs {
+    font-size: 11px;
+    color: #606266;
+    font-weight: 500;
+    width: 72px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .weekly-empty {
+    padding: 30px;
+    text-align: center;
+    color: #909399;
+    font-size: 13px;
+  }
+
+  // ── Model details table ──
+  .model-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .model-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .share-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .share-text {
+    font-size: 11px;
+    color: #909399;
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  // ── Recent sessions ──
+  .recent-box {
+    box-sizing: border-box;
+    padding: 6px 20px 0;
+    flex-shrink: 0;
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+  }
+
+  .session-title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .session-key {
+    font-size: 11px;
+    color: #909399;
+    background: var(--el-fill-color-light);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  .session-time {
+    font-size: 11px;
+    color: #909399;
+  }
+
+  // ── Spacing utilities ──
+  .mb12 {
+    margin-bottom: 8px;
+  }
+
+  .mb20 {
+    margin-bottom: 20px;
+  }
 }

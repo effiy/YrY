@@ -1,9 +1,9 @@
 <script setup lang="ts" name="aiChatKnowledgePreviewDialog">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElInput, ElMessage } from "element-plus";
 import { ArrowLeft, ChatDotRound, Loading, FolderOpened } from "@element-plus/icons-vue";
-import { useMarkdown } from "@/hooks/useMarkdown";
+import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
 import { useResizable } from "@/hooks/useResizable";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
@@ -49,6 +49,75 @@ const displayHtml = computed(() => renderWithHtml(rawContent.value));
 
 /** Ref to the standard-mode preview pane — used for TOC scroll + ID injection. */
 const previewRef = ref<HTMLElement | null>(null);
+
+/** Ref to the el-input(textarea) component — used for sync-scroll in split mode. */
+const editorRef = ref<InstanceType<typeof ElInput> | null>(null);
+
+// ── Split-mode sync scroll ──
+
+/** Guard flag to prevent recursive scroll events during sync. */
+let syncScrolling = false;
+/** Cleanup functions for imperatively-attached scroll listeners. */
+let editorScrollCleanup: (() => void) | null = null;
+let previewScrollCleanup: (() => void) | null = null;
+
+/** Get the native <textarea> from the el-input component ref. */
+function getEditorTextarea(): HTMLTextAreaElement | null {
+  return (editorRef.value?.textarea as HTMLTextAreaElement | null) ?? null;
+}
+
+/** Attach scroll listeners to editor textarea + preview pane for bidirectional sync. */
+function setupSyncScroll() {
+  const editor = getEditorTextarea();
+  const preview = previewRef.value;
+  if (!editor || !preview) return;
+
+  function onEditorScroll() {
+    if (syncScrolling) return;
+    syncScrolling = true;
+    const maxE = editor!.scrollHeight - editor!.clientHeight;
+    const maxP = preview!.scrollHeight - preview!.clientHeight;
+    if (maxE > 0 && maxP > 0) {
+      preview!.scrollTop = (editor!.scrollTop / maxE) * maxP;
+    }
+    requestAnimationFrame(() => { syncScrolling = false; });
+  }
+
+  function onPreviewScroll() {
+    if (syncScrolling) return;
+    syncScrolling = true;
+    const maxE = editor!.scrollHeight - editor!.clientHeight;
+    const maxP = preview!.scrollHeight - preview!.clientHeight;
+    if (maxP > 0 && maxE > 0) {
+      editor!.scrollTop = (preview!.scrollTop / maxP) * maxE;
+    }
+    requestAnimationFrame(() => { syncScrolling = false; });
+  }
+
+  editor.addEventListener("scroll", onEditorScroll, { passive: true });
+  preview.addEventListener("scroll", onPreviewScroll, { passive: true });
+  editorScrollCleanup = () => editor.removeEventListener("scroll", onEditorScroll);
+  previewScrollCleanup = () => preview.removeEventListener("scroll", onPreviewScroll);
+}
+
+/** Detach scroll listeners (called when leaving split mode or unmounting). */
+function teardownSyncScroll() {
+  editorScrollCleanup?.();
+  previewScrollCleanup?.();
+  editorScrollCleanup = null;
+  previewScrollCleanup = null;
+}
+
+// Attach / detach scroll sync when entering / leaving split mode.
+watch(() => mode.value, (next, prev) => {
+  if (next === "split" && prev !== "split") {
+    nextTick(() => setupSyncScroll());
+  } else if (next !== "split" && prev === "split") {
+    teardownSyncScroll();
+  }
+});
+
+onBeforeUnmount(() => teardownSyncScroll());
 
 /** TOC entries parsed from the rendered markdown — populated after render. */
 const toc = ref<{ level: number; text: string; id: string }[]>([]);
@@ -285,30 +354,64 @@ watch(mode, (_new, old) => {
   }
 });
 
+// ── Mermaid rendering ──
+// Runs AFTER Vue has patched the DOM (flush: 'post') so previewRef and the
+// v-html innerHTML are guaranteed to be in place. Watches loading so we don't
+// try to render while the preview div hasn't been created yet (it's inside
+// <template v-else>).
+//
+// We deliberately watch displayHtml AND previewHtml so mermaid re-renders
+// in split mode as the user types (mermaid.run() is idempotent on already-
+// rendered elements, so re-rendering the same diagram is a no-op).
+watch(
+  [displayHtml, previewHtml, () => previewRef.value, mode, showChat, loading],
+  async ([_dh, _ph, _ref, _mode, _chat, _loading]) => {
+    if (_loading) return; // preview div not in DOM yet (loading spinner shown)
+    // The mermaid elements live inside the preview pane. In chat mode the
+    // preview div doesn't carry a template ref — query it by class instead.
+    let container: HTMLElement | null = null;
+    if (_chat) {
+      container = document.querySelector(".kpd-body--chat .kpd-preview") as HTMLElement | null;
+    } else if (_mode === "preview" || _mode === "split") {
+      container = _ref as HTMLElement | null;
+    }
+    if (!container) return;
+    // Wait one more tick so v-html innerHTML is fully applied before mermaid
+    // queries for <pre class="mermaid"> children.
+    await nextTick();
+    await runMermaid(container);
+  },
+  { flush: "post" }
+);
+
 // After preview HTML renders, inject heading IDs + populate TOC.
 // Scoped to preview-only mode (split/chat modes skip TOC for layout simplicity).
-watch(savedPreviewHtml, () => {
-  if (mode.value !== "preview" || showChat.value) {
-    toc.value = [];
-    return;
-  }
-  nextTick(() => {
-    if (!previewRef.value) {
+watch(
+  [savedPreviewHtml, () => previewRef.value, mode, showChat, loading],
+  () => {
+    if (mode.value !== "preview" || showChat.value || loading.value) {
       toc.value = [];
       return;
     }
-    const nodes = previewRef.value.querySelectorAll("h2, h3");
-    const items: { level: number; text: string; id: string }[] = [];
-    nodes.forEach((node, i) => {
-      const text = (node.textContent || "").trim();
-      if (!text) return;
-      const id = `toc-h-${i}-${slugify(text)}`;
-      node.id = id;
-      items.push({ level: node.tagName === "H2" ? 2 : 3, text, id });
+    nextTick(() => {
+      if (!previewRef.value) {
+        toc.value = [];
+        return;
+      }
+      const nodes = previewRef.value.querySelectorAll("h2, h3");
+      const items: { level: number; text: string; id: string }[] = [];
+      nodes.forEach((node, i) => {
+        const text = (node.textContent || "").trim();
+        if (!text) return;
+        const id = `toc-h-${i}-${slugify(text)}`;
+        node.id = id;
+        items.push({ level: node.tagName === "H2" ? 2 : 3, text, id });
+      });
+      toc.value = items.length >= 3 ? items : [];
     });
-    toc.value = items.length >= 3 ? items : [];
-  });
-});
+  },
+  { flush: "post" }
+);
 
 async function save() {
   if (saving.value || !currentPath.value) return;
@@ -524,6 +627,7 @@ defineExpose({ open });
         <!-- Editor pane (edit + split modes) -->
         <el-input
           v-if="mode === 'edit' || mode === 'split'"
+          ref="editorRef"
           v-model="editContent"
           type="textarea"
           class="kpd-editor"
@@ -798,6 +902,22 @@ defineExpose({ open });
   :deep(th), :deep(td) {
     padding: 6px 12px;
     border: 1px solid var(--el-border-color-lighter);
+  }
+
+  // Mermaid diagrams — <pre class="mermaid"> rendered by mermaid.run()
+  :deep(pre.mermaid) {
+    all: unset;
+    display: block;
+    overflow-x: auto;
+    margin: 12px 0;
+
+    // After mermaid.run() renders, the element contains an SVG
+    svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
   }
 }
 </style>

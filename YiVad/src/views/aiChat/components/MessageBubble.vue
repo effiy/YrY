@@ -1,9 +1,9 @@
 <script setup lang="ts" name="aiChatMessageBubble">
-import { computed, ref } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked, Tools, ArrowDown, Check, Close, ChatDotRound, Clock } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import { useMarkdown } from "@/hooks/useMarkdown";
+import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
 import { useSlowThreshold } from "@/hooks/useSlowThreshold";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
@@ -50,6 +50,19 @@ async function branchToNewSession() {
 /** Template ref on RagSources so inline citation chips can call
  *  `focusSource(idx)` to expand + flash the matching source chip. */
 const ragSourcesRef = ref<InstanceType<typeof RagSources> | null>(null);
+
+/** Template ref on the markdown container — used by mermaid rendering. */
+const markdownRef = ref<HTMLElement | null>(null);
+
+/** Render mermaid diagrams in the markdown container after HTML updates.
+ *  flush: 'post' guarantees markdownRef and its v-html innerHTML are in
+ *  place before we query for <pre class="mermaid"> children. */
+watch(citedHtml, async () => {
+  await nextTick();
+  if (markdownRef.value) {
+    await runMermaid(markdownRef.value);
+  }
+}, { flush: "post" });
 
 function onMarkdownClick(e: MouseEvent) {
   return makeCitationClickHandler(() => ragSourcesRef.value)(e);
@@ -488,7 +501,7 @@ async function onEdit() {
         <span v-if="phaseLabel" class="mb-typing-phase">{{ phaseLabel }}</span>
         <span class="mb-typing-dots">...</span>
       </div>
-      <div v-else class="mb-markdown" @click="onMarkdownClick" v-html="citedHtml" />
+      <div v-else ref="markdownRef" class="mb-markdown" @click="onMarkdownClick" v-html="citedHtml" />
       <!-- Web search indicator for user messages that triggered a search -->
       <div v-if="hasWebSearch" class="mb-web-indicator">
         <el-icon :size="12"><Search /></el-icon>
@@ -813,6 +826,23 @@ async function onEdit() {
   font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
 }
+
+// Mermaid diagrams — <pre class="mermaid"> rendered by mermaid.run()
+.mb-markdown :deep(pre.mermaid) {
+  all: unset;
+  display: block;
+  overflow-x: auto;
+  margin: 8px 0;
+
+  // After mermaid.run() renders, the element contains an SVG
+  svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
 .mb-images {
   display: flex;
   flex-wrap: wrap;

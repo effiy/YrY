@@ -1,36 +1,36 @@
 ---
 title: YiKnowledge personal knowledge base overview
-tags: [knowledge-base, index, navigation, role-tree]
+tags:
+- knowledge-base
+- index
+- navigation
+- role-tree
 category: root
-created: 2026-01-01
-updated: 2026-08-07
-last_verified: 2026-08-07
+created: '2026-01-01'
+updated: '2026-08-07'
+last_verified: '2026-08-07'
 source: internal
 type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [knowledge-curator]
-benefit: "New readers see 10 role directories at a glance and locate content by role × problem domain"
+roles:
+- knowledge-curator
+benefit: New readers see 10 role directories at a glance and locate content by role
+  × problem domain
 acceptance_criteria:
-  - "core ideas are clearly stated and distinguishable from source material"
-  - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified"
+- core ideas are clearly stated and distinguishable from source material
+- actionable recommendations are given, not just information
+- anti-patterns or when-not-to-use are identified
 related:
-  - ./INDEX.md
-  - ./knowledge-curator/governance/user-story-migration-plan.md
-  - ./knowledge-curator/diagrams/directory-blueprint.md
+- ./INDEX.md
+- ./knowledge-curator/governance/user-story-migration-plan.md
+- ./knowledge-curator/diagrams/directory-blueprint.md
 ---
 
 # YiKnowledge — Personal Knowledge Base
 
 A searchable knowledge base organised by **role tree × problem domain** (8 role directories), overlaid with PARA / lifecycle layers. See [INDEX.md](./INDEX.md) for full-library navigation, and [user-story-migration-plan.md](./knowledge-curator/governance/user-story-migration-plan.md) for the migration history.
-
-> **Cleaned 2026-08-07**: Deleted 3 stale role directories (data-engineer, devops, technical-writer — 24 files confirmed duplicates of engineer/infrastructure/ and engineer/engineering/). Removed empty static/ directory. Fixed 182 broken YAML frontmatter files. 8 role directories, 0 broken links, 0 empty directories, 0 stale duplicates.
->
-> **Restructured 2026-08-06**: 19 roles → 10 (merged 11 skeletal roles into engineer/tech-lead). Content-type subdirs (patterns/processes/lessons/strategies) → problem-domain subdirs. 2041 AI-generated prepare-* templates archived. Max 3 directory levels. Engineer subdirs merged 11→7. Root domain indexes moved into role dirs. Underscores in filenames eliminated.
->
-> **Pruned 2026-08-09**: Removed brd/ (BRD database export, ~96 files) and skill-author/ (Claude Code skills workspace, ~15 files) as they belong to separate systems.
 
 ## Top-level tree (8 role directories)
 

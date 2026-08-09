@@ -33,7 +33,7 @@ related:
 
 | Role | Problem domains | Files | Detail index |
 |---|---|---|---|
-| [engineer/](./engineer/) | architecture-design, engineering, quality-security, infrastructure, process, lessons, projects | ~432 | [INDEX](./engineer/INDEX.md) |
+| [engineer/](./engineer/) | architecture-design, engineering, quality-security, infrastructure, process, lessons, projects | ~433 | [INDEX](./engineer/INDEX.md) |
 | [tech-lead/](./tech-lead/) | architecture, decisions, capacity, risk, roadmap | ~59 | [INDEX](./tech-lead/INDEX.md) |
 | [product-manager/](./product-manager/) | frameworks, discovery, delivery, strategy, projects | ~95 | [INDEX](./product-manager/INDEX.md) |
 | [ai-engineer/](./ai-engineer/) | foundations, methodology, platform, data | ~108 | [INDEX](./ai-engineer/INDEX.md) |

@@ -1,5 +1,6 @@
 <template>
   <div class="ai-analytics-box" v-loading="loading">
+    <!-- Row 1: Overview Header + Stat Cards -->
     <div class="card top-box">
       <div class="top-header">
         <span class="top-title">AI Chat Analytics</span>
@@ -8,115 +9,249 @@
           <el-button :icon="Refresh" size="small" @click="fetchData" :loading="loading">Refresh</el-button>
         </div>
       </div>
-      <div class="top-content">
-        <el-row :gutter="20">
-          <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <div class="stat-card stat-sessions">
-              <div class="stat-icon"><el-icon><ChatDotRound /></el-icon></div>
-              <div class="stat-info">
-                <div class="stat-value">{{ data?.total_sessions ?? 0 }}</div>
-                <div class="stat-label">Total Sessions</div>
-                <div class="stat-sub">{{ data?.active_sessions_today ?? 0 }} active today</div>
-              </div>
-            </div>
-          </el-col>
-          <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <div class="stat-card stat-messages">
-              <div class="stat-icon"><el-icon><ChatLineSquare /></el-icon></div>
-              <div class="stat-info">
-                <div class="stat-value">{{ formatNumber(data?.total_messages ?? 0) }}</div>
-                <div class="stat-label">Total Messages</div>
-                <div class="stat-sub">{{ formatNumber(data?.messages_today ?? 0) }} today</div>
-              </div>
-            </div>
-          </el-col>
-          <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <div class="stat-card stat-avg">
-              <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
-              <div class="stat-info">
-                <div class="stat-value">{{ data?.avg_messages_per_session ?? 0 }}</div>
-                <div class="stat-label">Avg Msg/Session</div>
-                <div class="stat-sub">{{ data?.model_usage?.length ?? 0 }} models used</div>
-              </div>
-            </div>
-          </el-col>
-          <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <div class="stat-card stat-today">
-              <div class="stat-icon"><el-icon><Clock /></el-icon></div>
-              <div class="stat-info">
-                <div class="stat-value">{{ data?.messages_today ?? 0 }}</div>
-                <div class="stat-label">Messages Today</div>
-                <div class="stat-sub">from {{ data?.active_sessions_today ?? 0 }} sessions</div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-
-    <div class="card chart-row">
-      <el-row :gutter="20">
-        <el-col class="mb20" :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
-          <div class="chart-box">
-            <div class="chart-title">Daily Activity (Last 30 Days)</div>
-            <div class="chart-body">
-              <ECharts :option="dailyOption" />
+      <!-- Row A: Volume metrics -->
+      <el-row :gutter="12">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-sessions" :class="{ 'stat-pulse': activeStatCard === 'sessions' }" @click="pulseCard('sessions')">
+            <div class="stat-icon"><el-icon><ChatDotRound /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ formatNumber(data?.total_sessions ?? 0) }}</div>
+              <div class="stat-label">Total Sessions</div>
+              <div class="stat-sub">{{ dailyAvgSessions }} avg / day</div>
             </div>
           </div>
         </el-col>
-        <el-col class="mb20" :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-          <div class="chart-box">
-            <div class="chart-title">Model Usage</div>
-            <div class="chart-body">
-              <ECharts :option="modelOption" />
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-messages" :class="{ 'stat-pulse': activeStatCard === 'messages' }" @click="pulseCard('messages')">
+            <div class="stat-icon"><el-icon><ChatLineSquare /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ formatNumber(data?.total_messages ?? 0) }}</div>
+              <div class="stat-label">Total Messages</div>
+              <div class="stat-sub">{{ dailyAvgMessages }} avg / day</div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-avg" :class="{ 'stat-pulse': activeStatCard === 'avg' }" @click="pulseCard('avg')">
+            <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ data?.avg_messages_per_session ?? 0 }}</div>
+              <div class="stat-label">Avg Msg / Session</div>
+              <div class="stat-sub">{{ data?.model_usage?.length ?? 0 }} models used</div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-today" :class="{ 'stat-pulse': activeStatCard === 'today' }" @click="pulseCard('today')">
+            <div class="stat-icon"><el-icon><Clock /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ formatNumber(data?.messages_today ?? 0) }}</div>
+              <div class="stat-label">Messages Today</div>
+              <div class="stat-sub">{{ data?.active_sessions_today ?? 0 }} active sessions</div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <!-- Row B: Activity metrics -->
+      <el-row :gutter="12">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-active" :class="{ 'stat-pulse': activeStatCard === 'active' }" @click="pulseCard('active')">
+            <div class="stat-icon"><el-icon><UserFilled /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ data?.active_sessions_today ?? 0 }}</div>
+              <div class="stat-label">Active Today</div>
+              <div class="stat-sub">sessions with messages</div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-models" :class="{ 'stat-pulse': activeStatCard === 'models' }" @click="pulseCard('models')">
+            <div class="stat-icon"><el-icon><Cpu /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ data?.model_usage?.length ?? 0 }}</div>
+              <div class="stat-label">Model Types</div>
+              <div class="stat-sub">{{ totalModelCalls }} total calls</div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-trend" :class="{ 'stat-pulse': activeStatCard === 'trend' }" @click="pulseCard('trend')">
+            <div class="stat-icon"><el-icon><DataLine /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ weeklySummary.length }}</div>
+              <div class="stat-label">Active Days</div>
+              <div class="stat-sub">in last 7 days</div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-top-model" :class="{ 'stat-pulse': activeStatCard === 'topModel' }" @click="pulseCard('topModel')">
+            <div class="stat-icon"><el-icon><Medal /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value" style="font-size:13px;line-height:1.3;">{{ topModelName }}</div>
+              <div class="stat-label">Top Model</div>
+              <div class="stat-sub">{{ topModelShare }}% of calls</div>
             </div>
           </div>
         </el-col>
       </el-row>
     </div>
 
-    <div class="card chart-row">
+    <!-- Model filter pills -->
+    <div class="filter-bar" v-if="modelFilter">
+      <span class="filter-label">Filtered by model:</span>
+      <el-tag
+        closable
+        type="warning"
+        size="small"
+        @close="clearModelFilter"
+        :color="modelColor(modelFilter)"
+      >
+        {{ modelFilter }}
+      </el-tag>
+    </div>
+
+    <!-- Row 2: Main Charts — Daily Activity + Model Donut -->
+    <div class="card charts-box">
+      <el-row :gutter="20">
+        <el-col class="mb20" :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
+          <div class="chart-panel">
+            <div class="chart-header">
+              <span class="chart-title">Daily Activity (Last 30 Days)</span>
+              <span class="chart-hint">click a day to highlight</span>
+            </div>
+            <div class="chart-body">
+              <ECharts :option="dailyActivityOption" @chart-click="handleDailyClick" />
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb20" :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <div class="chart-panel">
+            <div class="chart-header">
+              <span class="chart-title">Model Distribution</span>
+              <span class="chart-hint">click to filter</span>
+            </div>
+            <div class="chart-body">
+              <ECharts :option="modelDonutOption" @chart-click="handleModelClick" />
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- Row 3: Trend Charts + Tables -->
+    <div class="card charts-box">
       <el-row :gutter="20">
         <el-col class="mb20" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="table-box">
-            <div class="table-title">Model Usage Breakdown</div>
-            <el-table :data="data?.model_usage ?? []" stripe size="small" max-height="350">
-              <el-table-column prop="model" label="Model" min-width="160" show-overflow-tooltip />
-              <el-table-column prop="count" label="Calls" width="100" sortable />
-              <el-table-column label="Share" width="120">
+          <div class="chart-panel">
+            <div class="chart-header">
+              <span class="chart-title">Sessions Trend</span>
+            </div>
+            <div class="chart-body chart-body-sm">
+              <ECharts :option="sessionsTrendOption" />
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb20" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <div class="chart-panel">
+            <div class="chart-header">
+              <span class="chart-title">Messages Trend</span>
+            </div>
+            <div class="chart-body chart-body-sm">
+              <ECharts :option="messagesTrendOption" />
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- Row 4: Model Breakdown + Weekly Summary -->
+    <div class="card charts-box">
+      <el-row :gutter="20">
+        <el-col class="mb20" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <div class="chart-panel">
+            <div class="chart-header">
+              <span class="chart-title">Model Usage Breakdown</span>
+              <span class="chart-hint">click bar to filter</span>
+            </div>
+            <div class="chart-body chart-body-md">
+              <ECharts :option="modelBarOption" @chart-click="handleModelClick" />
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb20" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <div class="table-panel">
+            <div class="chart-header">
+              <span class="chart-title">Weekly Summary</span>
+            </div>
+            <div class="weekly-list">
+              <div class="weekly-row" v-for="d in weeklySummary" :key="d.date">
+                <span class="weekly-date">{{ d.date }}</span>
+                <span class="weekly-sessions">{{ d.sessions }} sessions</span>
+                <el-progress :percentage="d.sessionPercent" :stroke-width="4" :show-text="false" color="#6B9DFE" style="width: 60px; flex-shrink: 0;" />
+                <span class="weekly-msgs">{{ d.messages }} msgs</span>
+                <el-progress :percentage="d.msgPercent" :stroke-width="4" :show-text="false" color="#91cc75" style="width: 60px; flex-shrink: 0;" />
+              </div>
+              <div v-if="!weeklySummary.length" class="weekly-empty">No data available</div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- Row 5: Model Usage Table -->
+    <div class="card charts-box" v-if="(data?.model_usage?.length ?? 0) > 0">
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <div class="table-panel">
+            <div class="chart-header">
+              <span class="chart-title">Model Details</span>
+            </div>
+            <el-table :data="data?.model_usage ?? []" stripe size="small" max-height="320">
+              <el-table-column label="Model" min-width="200">
                 <template #default="{ row }">
-                  <el-progress :percentage="modelPercent(row.count)" :stroke-width="6" :show-text="true" :text-inside="false" />
+                  <div class="model-cell">
+                    <span class="model-dot" :style="{ background: modelColor(row.model) }"></span>
+                    <span>{{ row.model }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="count" label="Calls" width="120" sortable align="center" />
+              <el-table-column label="Share" width="180">
+                <template #default="{ row }">
+                  <div class="share-cell">
+                    <el-progress :percentage="modelPercent(row.count)" :stroke-width="8" :show-text="false" :color="modelColor(row.model)" style="flex:1" />
+                    <span class="share-text">{{ modelPercent(row.count) }}%</span>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
           </div>
         </el-col>
-        <el-col class="mb20" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="table-box">
-            <div class="table-title">Weekly Summary</div>
-            <div class="weekly-summary">
-              <div class="weekly-row" v-for="d in weeklySummary" :key="d.date">
-                <span class="weekly-date">{{ d.date }}</span>
-                <span class="weekly-sessions">{{ d.sessions }} sessions</span>
-                <span class="weekly-msgs">{{ d.messages }} msgs</span>
-                <el-progress :percentage="d.msgPercent" :stroke-width="4" :show-text="false" :color="'#6B9DFE'" style="width: 80px" />
-              </div>
-              <div v-if="!weeklySummary.length" class="weekly-empty">No data</div>
-            </div>
-          </div>
-        </el-col>
       </el-row>
     </div>
 
+    <!-- Row 6: Recent Sessions -->
     <div class="card recent-box">
-      <div class="recent-title">Recent Sessions</div>
-      <el-table :data="data?.recent ?? []" stripe size="small" max-height="400">
-        <el-table-column prop="title" label="Title" min-width="300" show-overflow-tooltip />
-        <el-table-column prop="message_count" label="Messages" width="100" sortable />
-        <el-table-column prop="key" label="Session Key" width="200" show-overflow-tooltip />
-        <el-table-column prop="updated" label="Updated" width="180">
+      <div class="chart-header">
+        <span class="chart-title">Recent Sessions</span>
+        <span class="chart-hint">{{ data?.recent?.length ?? 0 }} records</span>
+      </div>
+      <el-table :data="filteredRecent" stripe size="small" max-height="400" empty-text="No recent sessions">
+        <el-table-column prop="title" label="Title" min-width="280" show-overflow-tooltip>
           <template #default="{ row }">
-            {{ formatDate(row.updated) }}
+            <span class="session-title">{{ row.title || "Untitled" }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="message_count" label="Messages" width="100" sortable align="center" />
+        <el-table-column prop="key" label="Session Key" width="220" show-overflow-tooltip>
+          <template #default="{ row }">
+            <code class="session-key">{{ row.key }}</code>
+          </template>
+        </el-table-column>
+        <el-table-column prop="updated" label="Updated" width="160">
+          <template #default="{ row }">
+            <span class="session-time">{{ formatRelativeTime(row.updated) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -125,119 +260,33 @@
 </template>
 
 <script setup lang="ts" name="aiAnalytics">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { ChatDotRound, ChatLineSquare, TrendCharts, Clock, Refresh } from "@element-plus/icons-vue";
-import { getAiStats } from "@/api/modules/dashboard";
-import type { AiStatsData } from "@/api/interface/yiweb";
-import { ECOption } from "@/components/ECharts/config";
+import { computed } from "vue";
+import { ChatDotRound, ChatLineSquare, TrendCharts, Clock, Refresh, UserFilled, Cpu, DataLine, Medal } from "@element-plus/icons-vue";
 import ECharts from "@/components/ECharts/index.vue";
+import { useAiAnalytics } from "./composables/useAiAnalytics";
 
-const data = ref<AiStatsData | null>(null);
-const loading = ref(true);
-const lastUpdated = ref("");
-let refreshTimer: ReturnType<typeof setInterval> | null = null;
+const {
+  data, loading, lastUpdated, modelFilter, activeStatCard,
+  dailyAvgSessions, dailyAvgMessages, totalModelCalls,
+  weeklySummary, filteredRecent,
+  dailyActivityOption, modelDonutOption, modelBarOption,
+  sessionsTrendOption, messagesTrendOption,
+  modelPercent, handleModelClick, handleDailyClick,
+  clearModelFilter, pulseCard, fetchData,
+  formatNumber, formatRelativeTime, modelColor,
+} = useAiAnalytics();
 
-function formatNumber(n: number): string {
-  return n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(n);
-}
-
-function modelPercent(count: number): number {
-  const total = data.value?.model_usage?.reduce((s, m) => s + m.count, 0) ?? 1;
-  return Math.round((count / total) * 100);
-}
-
-const weeklySummary = computed(() => {
-  const daily = data.value?.daily ?? [];
-  const last7 = daily.slice(-7);
-  const maxMsgs = Math.max(...last7.map(d => d.messages), 1);
-  return last7.map(d => ({
-    date: d.date.slice(5),
-    sessions: d.sessions,
-    messages: d.messages,
-    msgPercent: Math.round((d.messages / maxMsgs) * 100),
-  }));
-});
-
-const dailyOption = computed<ECOption>(() => {
-  const daily = data.value?.daily ?? [];
-  return {
-    tooltip: { trigger: "axis" },
-    legend: { data: ["Sessions", "Messages"], top: 0 },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-    xAxis: { type: "category", data: daily.map(d => d.date.slice(5)), axisLabel: { rotate: 45, fontSize: 10 } },
-    yAxis: { type: "value", minInterval: 1 },
-    series: [
-      {
-        name: "Sessions",
-        type: "bar",
-        data: daily.map(d => d.sessions),
-        barWidth: "40%",
-        itemStyle: { color: "#6B9DFE", borderRadius: [4, 4, 0, 0] },
-      },
-      {
-        name: "Messages",
-        type: "line",
-        data: daily.map(d => d.messages),
-        smooth: true,
-        lineStyle: { color: "#ee6666", width: 2 },
-        itemStyle: { color: "#ee6666" },
-      },
-    ],
-  };
-});
-
-const modelOption = computed<ECOption>(() => {
+const topModelName = computed(() => {
   const models = data.value?.model_usage ?? [];
-  if (models.length === 0) {
-    return {
-      title: { text: "No data", left: "center", top: "center", textStyle: { color: "#909399", fontSize: 14 } },
-    } as ECOption;
-  }
-  return {
-    tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
-    legend: { orient: "vertical", left: "left", top: "center", type: "scroll" },
-    series: [{
-      type: "pie",
-      radius: ["45%", "75%"],
-      center: ["55%", "50%"],
-      data: models.map((m, i) => ({
-        value: m.count,
-        name: m.model,
-        itemStyle: { color: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc", "#5ab1ef"][i % 10] },
-      })),
-      label: { formatter: "{b}" },
-    }],
-  };
+  if (!models.length) return "—";
+  return [...models].sort((a, b) => b.count - a.count)[0].model;
 });
 
-function formatDate(val: string): string {
-  if (!val) return "—";
-  try {
-    const d = new Date(val);
-    return d.toLocaleString();
-  } catch {
-    return val.slice(0, 16);
-  }
-}
-
-async function fetchData() {
-  try {
-    loading.value = true;
-    const res = await getAiStats();
-    data.value = res.data;
-    lastUpdated.value = new Date().toLocaleTimeString();
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(() => {
-  fetchData();
-  refreshTimer = setInterval(fetchData, 60_000);
-});
-
-onBeforeUnmount(() => {
-  if (refreshTimer) clearInterval(refreshTimer);
+const topModelShare = computed(() => {
+  const models = data.value?.model_usage ?? [];
+  if (!models.length) return 0;
+  const top = [...models].sort((a, b) => b.count - a.count)[0];
+  return modelPercent(top.count);
 });
 </script>
 
