@@ -4,11 +4,13 @@ import { Close } from "@element-plus/icons-vue";
 defineProps<{
   pills: { key: string; val: string; label: string; display: string; color: string }[];
   hasActiveFilter: boolean;
+  canUndo?: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "remove", key: string): void;
   (e: "clearAll"): void;
+  (e: "undo"): void;
 }>();
 </script>
 
@@ -29,6 +31,7 @@ const emit = defineEmits<{
         </el-icon>
       </span>
     </TransitionGroup>
+    <el-button text size="small" @click="emit('undo')" v-if="canUndo" title="Undo last filter">Undo</el-button>
     <el-button text size="small" type="danger" @click="emit('clearAll')">Clear all</el-button>
   </div>
 </template>

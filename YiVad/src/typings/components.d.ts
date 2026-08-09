@@ -52,6 +52,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElTree: typeof import('element-plus/es')['ElTree']
     Grid: typeof import('./../components/Grid/index.vue')['default']
     GridItem: typeof import('./../components/Grid/components/GridItem.vue')['default']
     Img: typeof import('./../components/Upload/Img.vue')['default']

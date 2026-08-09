@@ -10,14 +10,18 @@ import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import {
   buildReviewCycleDonut, buildTypeBar, buildStatusBar, buildSizeDist,
-  buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar, CHART_PALETTE,
+  buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar,
+  buildCategoryBar, buildTagsBar, CHART_PALETTE,
 } from "../charts";
 import { useCrossFilter } from "./useCrossFilter";
 import {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
-  isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
+  isStaleFile, fileHealthLevel, fileHealthIssues, countByField, countByFieldWithMissing,
+  getModuleClassSummary, isMissingField, isUnknownField, normalizeMetaValue,
+  MISSING_LABEL, aggregateMissingStats,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
   dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
+  topPairs,
 } from "../utils";
 
 const { openInAiChat } = useAiChatBridge();
@@ -104,6 +108,14 @@ export function useKnowledgeBase() {
   const showCrossHeatmap = ref(false);
   const showStaleRisk = ref(false);
   const showCoverageGaps = ref(false);
+  const showTreeView = ref(false);
+  const showTagCloud = ref(false);
+  const showRoleCloud = ref(false);
+  const showReviewCompliance = ref(false);
+
+  // ── Filter history for undo ──
+  const filterHistory = ref<Record<string, string>[]>([]);
+  const MAX_HISTORY = 20;
 
   // ── Computed: Overview ──
   const hasActiveFilter = computed(() => Object.keys(activeFilter.value).length > 0);
@@ -163,6 +175,51 @@ export function useKnowledgeBase() {
     const total = knowledgeData.value?.total ?? 0;
     if (!dq) return 0;
     return total - dq.complete;
+  });
+
+  // ── Computed: Needs Attention Files ──
+  /** Files that need metadata fixes: missing or unknown status/type/lifecycle, no review cycle, stale. */
+  const needsAttentionFiles = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    return files.filter(f =>
+      isMissingField(f.status) || isUnknownField(f.status) ||
+      isMissingField(f.type) || isUnknownField(f.type) ||
+      isMissingField(f.lifecycle) || isUnknownField(f.lifecycle) ||
+      isMissingField(f.review_cycle) ||
+      isMissingField(f.roles) ||
+      isStaleFile(f)
+    );
+  });
+
+  /** Files with explicitly unknown (not missing) status. */
+  const unknownStatusFiles = computed(() => {
+    return (knowledgeData.value?.files ?? []).filter(f => isUnknownField(f.status) || isMissingField(f.status));
+  });
+
+  /** Client-side aggregated missing/unknown stats for richer display. */
+  const clientMissingStats = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    return aggregateMissingStats(files);
+  });
+
+  /** Summary of attention-needed breakdown. */
+  const attentionBreakdown = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    const total = files.length || 1;
+    const missing = aggregateMissingStats(files);
+    return {
+      missingStatus: missing.no_status,
+      unknownStatus: missing.unknown_status,
+      missingType: missing.no_type,
+      unknownType: missing.unknown_type,
+      missingLifecycle: missing.no_lifecycle,
+      unknownLifecycle: missing.unknown_lifecycle,
+      missingReview: missing.no_review_cycle,
+      missingRoles: missing.no_roles,
+      missingTags: missing.no_tags,
+      total,
+      attentionPct: Math.round((needsAttentionFiles.value.length / total) * 100),
+    };
   });
 
   const statusCompletenessPct = computed(() => {
@@ -456,9 +513,9 @@ export function useKnowledgeBase() {
     for (const f of files) {
       const mod = f.module === "__root__" ? "root" : (f.module || "root");
       modules.set(mod, (modules.get(mod) || 0) + 1);
-      statuses.set(f.status || "unknown", (statuses.get(f.status) || 0) + 1);
-      types.set(f.type || "unknown", (types.get(f.type) || 0) + 1);
-      lifecycles.set(f.lifecycle || "unknown", (lifecycles.get(f.lifecycle) || 0) + 1);
+      statuses.set(normalizeMetaValue(f.status), (statuses.get(normalizeMetaValue(f.status)) || 0) + 1);
+      types.set(normalizeMetaValue(f.type), (types.get(normalizeMetaValue(f.type)) || 0) + 1);
+      lifecycles.set(normalizeMetaValue(f.lifecycle), (lifecycles.get(normalizeMetaValue(f.lifecycle)) || 0) + 1);
     }
     const top = (m: Map<string, number>, n: number) =>
       Array.from(m.entries()).sort((a, b) => b[1] - a[1]).slice(0, n);
@@ -603,6 +660,93 @@ export function useKnowledgeBase() {
       .sort((a, b) => b.totalGaps - a.totalGaps);
   });
 
+  // ── Computed: Tag Counts (client-side) ──
+  const tagCounts = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    const m = new Map<string, number>();
+    for (const f of files) {
+      for (const t of f.tags || []) m.set(t, (m.get(t) ?? 0) + 1);
+    }
+    return Array.from(m.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  const tagPairs = computed(() => {
+    const files = activeFilter.value.category
+      ? (knowledgeData.value?.files ?? []).filter(f => f.category === activeFilter.value.category)
+      : (knowledgeData.value?.files ?? []);
+    return topPairs(files, "tags", 10);
+  });
+
+  // ── Computed: Role Counts (client-side) ──
+  const roleCounts = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    const m = new Map<string, number>();
+    for (const f of files) {
+      for (const r of f.roles || []) m.set(r, (m.get(r) ?? 0) + 1);
+    }
+    return Array.from(m.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  const rolePairs = computed(() => {
+    const files = activeFilter.value.category
+      ? (knowledgeData.value?.files ?? []).filter(f => f.category === activeFilter.value.category)
+      : (knowledgeData.value?.files ?? []);
+    return topPairs(files, "roles", 10);
+  });
+
+  // ── Computed: Review Compliance ──
+  const reviewComplianceData = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    const m = new Map<string, { total: number; overdue: number }>();
+    for (const f of files) {
+      const rc = f.review_cycle;
+      if (!rc) continue;
+      if (!m.has(rc)) m.set(rc, { total: 0, overdue: 0 });
+      const entry = m.get(rc)!;
+      entry.total++;
+      if (isStaleFile(f)) entry.overdue++;
+    }
+    return Array.from(m.entries())
+      .map(([cycle, { total, overdue }]) => ({
+        cycle,
+        total,
+        overdue,
+        onTrack: total - overdue,
+        compliance: total > 0 ? Math.round(((total - overdue) / total) * 100) : 100,
+      }))
+      .sort((a, b) => a.compliance - b.compliance);
+  });
+
+  // ── Computed: Stat Deltas (baseline vs filtered) ──
+  const statDeltas = computed(() => {
+    if (!hasActiveFilter.value) return null;
+    const allFiles = knowledgeData.value?.files ?? [];
+    const filtered = filteredFiles.value;
+    const allModules = new Set(allFiles.map(f => `${f.category}/${f.module}`)).size;
+    const filtModules = new Set(filtered.map(f => `${f.category}/${f.module}`)).size;
+    const allCats = new Set(allFiles.map(f => f.category)).size;
+    const filtCats = new Set(filtered.map(f => f.category)).size;
+    const allStale = allFiles.filter(f => isStaleFile(f)).length;
+    const filtStale = filtered.filter(f => isStaleFile(f)).length;
+    const allCov = allFiles.length > 0
+      ? Math.round((allFiles.filter(f => f.review_cycle).length / allFiles.length) * 100)
+      : 0;
+    const filtCov = filtered.length > 0
+      ? Math.round((filtered.filter(f => f.review_cycle).length / filtered.length) * 100)
+      : 0;
+    return {
+      total: { baseline: allFiles.length, filtered: filtered.length },
+      modules: { baseline: allModules, filtered: filtModules },
+      categories: { baseline: allCats, filtered: filtCats },
+      stale: { baseline: allStale, filtered: filtStale },
+      coverage: { baseline: allCov, filtered: filtCov },
+    };
+  });
+
   // ── Computed: Category Tree Data (for el-tree) ──
   const categoryTreeData = computed(() => {
     const cats = knowledgeData.value?.categories ?? [];
@@ -718,6 +862,27 @@ export function useKnowledgeBase() {
     return buildRolesBar(data, CHART_PALETTE);
   });
 
+  const categoryBarOption = computed<ECOption>(() => {
+    const ctx = chartContextFiles.value;
+    const data = ctx ? countByField(ctx, "category") : (knowledgeData.value?.categories ?? []);
+    return buildCategoryBar(data);
+  });
+
+  const tagsBarOption = computed<ECOption>(() => {
+    const ctx = chartContextFiles.value;
+    let data: { name: string; count: number }[];
+    if (ctx) {
+      const tc = new Map<string, number>();
+      for (const f of ctx) {
+        for (const t of (f.tags || [])) tc.set(t, (tc.get(t) || 0) + 1);
+      }
+      data = Array.from(tc.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    } else {
+      data = tagCounts.value;
+    }
+    return buildTagsBar(data, CHART_PALETTE);
+  });
+
   // ── Filter Methods ──
   function applyFiltersToList(files: KnowledgeFileSummary[]): KnowledgeFileSummary[] {
     const filters = activeFilter.value;
@@ -767,10 +932,14 @@ export function useKnowledgeBase() {
   }
 
   function setFilter(key: string, val: string) {
-    console.log("[KB] setFilter called, key:", key, "val:", val, "currentFilter:", JSON.stringify(activeFilter.value));
+    // Push current state to history before mutating
+    const prev = { ...activeFilter.value };
     const next = { ...activeFilter.value };
-    if (next[key] === val && val !== "") { console.log("[KB] setFilter: toggling off"); delete next[key]; }
-    else { console.log("[KB] setFilter: setting filter"); next[key] = val; }
+    if (next[key] === val && val !== "") { delete next[key]; }
+    else { next[key] = val; }
+    if (JSON.stringify(prev) !== JSON.stringify(next)) {
+      filterHistory.value = [...filterHistory.value.slice(-(MAX_HISTORY - 1)), prev];
+    }
     activeFilter.value = next;
     activeSubCategory.value = "";
     drillView.value = "all";
@@ -785,6 +954,36 @@ export function useKnowledgeBase() {
       scrollToDrillDown();
       setTimeout(() => { drillHighlight.value = false; }, 1500);
     }, 100);
+  }
+
+  /** Undo the last filter change. */
+  function undoLastFilter() {
+    const prev = filterHistory.value.pop();
+    if (prev) {
+      activeFilter.value = prev;
+      activeSubCategory.value = "";
+      drillView.value = "all";
+      drillPage.value = 1;
+      selectedFile.value = null;
+      chartPulseKey.value++;
+      setTimeout(() => scrollToDrillDown(), 100);
+    }
+  }
+
+  /** Navigate from tree node click: set category/module/sub_module filters. */
+  function selectTreeNode(category: string, module?: string, sub_module?: string) {
+    const next: Record<string, string> = { category };
+    if (module) next.module = module;
+    if (sub_module) next.sub_module = sub_module;
+    activeFilter.value = next;
+    activeSubCategory.value = "";
+    drillView.value = "all";
+    drillPage.value = 1;
+    searchText.value = "";
+    browseAllFiles.value = false;
+    selectedFile.value = null;
+    chartPulseKey.value++;
+    setTimeout(() => scrollToDrillDown(), 100);
   }
 
   /** Remove a single filter key entirely. */
@@ -823,16 +1022,16 @@ export function useKnowledgeBase() {
     setTimeout(() => scrollToDrillDown(), 100);
   }
 
-  /** Filter to files missing a specific metadata field (status/type/lifecycle → "unknown", review_cycle → "__missing__", roles/tags → empty). */
+  /** Filter to files missing a specific metadata field. For status/type/lifecycle, filters to truly missing (not literal "unknown"). */
   function setQualityFilter(field: string) {
     forceFileTableView();
     if (field === "status" || field === "type" || field === "lifecycle") {
-      setFilter(field, "unknown");
+      // Use __missing__ to catch files where the field is truly empty
+      // (the backend data_quality.no_* counts are about missing values, not literal "unknown")
+      setFilter(field, "__missing__");
     } else if (field === "review_cycle") {
       setFilter("review_cycle", "__missing__");
     } else if (field === "roles") {
-      // Filter to files with no roles: use a tag-based approach — filter where roles array is empty
-      // We use a special key that applyFiltersToList checks for empty arrays
       setFilter("roles", "__missing__");
     } else if (field === "tags") {
       setFilter("tags", "__missing__");
@@ -1205,12 +1404,15 @@ export function useKnowledgeBase() {
     drillDownRef, detailPanelRef,
     chartPulseKey, drillHighlight, pulsingCard,
     showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
+    showTreeView, showTagCloud, showRoleCloud, showReviewCompliance,
+    filterHistory,
     // Cross-filter
     ...xf,
     // Computed
     hasActiveFilter, showSubModuleGrid, isShowingTreeView,
     topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
     dataQualityScore, missingMetadataCount,
+    needsAttentionFiles, unknownStatusFiles, clientMissingStats, attentionBreakdown,
     statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
     reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
     moduleDrillData, filteredModuleDrillData,
@@ -1224,14 +1426,18 @@ export function useKnowledgeBase() {
     drillSummary,
     enrichedSearchResults, searchSuggestions,
     categoryComparisonData, crossStatusLifecycle, staleRiskBuckets, coverageGapData,
+    tagCounts, tagPairs, roleCounts, rolePairs,
+    reviewComplianceData, statDeltas,
     categoryTreeData,
     chartContextFiles,
     // Chart options
     reviewCycleDonutOption, typeBarOption, statusBarOption,
     sizeDistOption, fileAgeOption, lifecycleBarOption,
     moduleBarOption, rolesBarOption,
+    categoryBarOption, tagsBarOption,
     // Methods
-    setFilter, removeFilter, pulseCard, toggleNoReviewFilter, setQualityFilter,
+    setFilter, removeFilter, undoLastFilter, selectTreeNode,
+    pulseCard, toggleNoReviewFilter, setQualityFilter,
     backToCategory, clearAllFilters,
     drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
     navigateToModule, crossFilterSubModule,
@@ -1244,7 +1450,8 @@ export function useKnowledgeBase() {
     onDetailKeydown, fetchData,
     // Re-exported utils (used in template)
     formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
-    isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
+    isStaleFile, fileHealthLevel, fileHealthIssues, countByField, countByFieldWithMissing,
+    getModuleClassSummary, isMissingField, isUnknownField, normalizeMetaValue, MISSING_LABEL,
     catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
     dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
   };

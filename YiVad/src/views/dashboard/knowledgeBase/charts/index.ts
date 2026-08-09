@@ -5,7 +5,7 @@
 import type { KnowledgeFileSummary, KnowledgeModuleStats } from "@/api/interface/yiweb";
 import type { ECOption } from "@/components/ECharts/config";
 import { countByField } from "../utils";
-import { STATUS_COLORS, LIFECYCLE_COLORS, REVIEW_CYCLE_COLORS, TYPE_COLORS } from "../utils";
+import { STATUS_COLORS, LIFECYCLE_COLORS, REVIEW_CYCLE_COLORS, TYPE_COLORS, CATEGORY_COLORS } from "../utils";
 
 export const CHART_PALETTE = [
   "#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de",
@@ -174,6 +174,36 @@ export function buildModuleBar(
 // ── Roles Bar ──
 
 export function buildRolesBar(data: { name: string; count: number }[], colors: string[]): ECOption {
+  const top = data.slice(0, 15);
+  return {
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
+    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    series: [{ type: "bar", barWidth: "65%",
+      data: top.map((d, i) => ({ value: d.count, itemStyle: { color: colors[i % colors.length], borderRadius: [0, 4, 4, 0] } })).reverse(),
+    }]
+  };
+}
+
+// ── Category Bar (Project Classification) ──
+
+export function buildCategoryBar(data: { name: string; count: number }[]): ECOption {
+  const top = data.slice(0, 15);
+  return {
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
+    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    series: [{ type: "bar", barWidth: "65%",
+      data: top.map(d => ({ value: d.count, itemStyle: { color: CATEGORY_COLORS[d.name] || "#909399", borderRadius: [0, 4, 4, 0] } })).reverse(),
+    }]
+  };
+}
+
+// ── Tags Bar ──
+
+export function buildTagsBar(data: { name: string; count: number }[], colors: string[]): ECOption {
   const top = data.slice(0, 15);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { WarningFilled } from "@element-plus/icons-vue";
 import type { KnowledgeFileSummary } from "@/api/interface/yiweb";
 import { daysUntilDue, formatRelativeTime, isStaleFile } from "../utils";
@@ -21,13 +21,15 @@ const severityColor = { red: "#f56c6c", orange: "#e6a23c", yellow: "#fac858", bl
 const severityBg = { red: "#fef0f0", orange: "#fdf6ec", yellow: "#fef9e7", blue: "#ecf5ff" };
 const severityBorder = { red: "#fbc4c4", orange: "#f5dab1", yellow: "#faecd8", blue: "#c6e2ff" };
 
-const expanded = computed(() => {
-  const s = new Set<string>();
-  return {
-    has: (label: string) => s.has(label),
-    toggle: (label: string) => (s.has(label) ? s.delete(label) : s.add(label)),
-  };
-});
+const expandedSet = ref<Set<string>>(new Set());
+const expanded = {
+  has: (label: string) => expandedSet.value.has(label),
+  toggle: (label: string) => {
+    const s = new Set(expandedSet.value);
+    s.has(label) ? s.delete(label) : s.add(label);
+    expandedSet.value = s;
+  },
+};
 </script>
 
 <template>

@@ -12,7 +12,7 @@ import type { KnowledgeMeta } from "@/api/interface/yiweb";
 import KnowledgeChatPanel from "./KnowledgeChatPanel.vue";
 import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip.vue";
 
-const { render } = useMarkdown();
+const { renderWithHtml } = useMarkdown();
 const { openInAiChat } = useAiChatBridge();
 const router = useRouter();
 
@@ -45,7 +45,7 @@ const translationAbort = ref<(() => void) | null>(null);
 /** Backup of the original content before translation — used to restore via "Show Original". */
 const originalContent = ref("");
 
-const displayHtml = computed(() => render(rawContent.value));
+const displayHtml = computed(() => renderWithHtml(rawContent.value));
 
 /** Ref to the standard-mode preview pane — used for TOC scroll + ID injection. */
 const previewRef = ref<HTMLElement | null>(null);
@@ -59,8 +59,8 @@ const chatSystemPrompt = computed(() => {
   return `You are analyzing the following knowledge file: ${currentPath.value}\n\n---\n${rawContent.value}\n---\n\nAnswer questions about this file.`;
 });
 
-const previewHtml = computed(() => render(editContent.value));
-const savedPreviewHtml = computed(() => render(rawContent.value));
+const previewHtml = computed(() => renderWithHtml(editContent.value));
+const savedPreviewHtml = computed(() => renderWithHtml(rawContent.value));
 
 const hasMeta = computed(() => {
   const m = meta.value;

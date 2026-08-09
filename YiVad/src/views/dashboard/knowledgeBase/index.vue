@@ -15,8 +15,9 @@
           <div class="stat-card stat-total" :class="{ 'stat-pulse': pulsingCard === 'total' }" @click="pulseCard('total'); clearAllFilters()">
             <div class="stat-icon"><el-icon><Document /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ formatNumber(knowledgeData?.total ?? 0) }}</div>
+              <div class="stat-value">{{ formatNumber(statDeltas ? statDeltas.total.filtered : (knowledgeData?.total ?? 0)) }}</div>
               <div class="stat-label">Total Files</div>
+              <div class="stat-delta" v-if="statDeltas">{{ formatNumber(statDeltas.total.baseline) }} → {{ formatNumber(statDeltas.total.filtered) }}</div>
             </div>
           </div>
         </el-col>
@@ -24,8 +25,9 @@
           <div class="stat-card stat-categories" :class="{ 'stat-pulse': pulsingCard === 'categories' }" @click="pulseCard('categories'); scrollToDrillDown()">
             <div class="stat-icon"><el-icon><Folder /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.categories.length ?? 0 }}</div>
+              <div class="stat-value">{{ statDeltas ? statDeltas.categories.filtered : (knowledgeData?.categories.length ?? 0) }}</div>
               <div class="stat-label">Categories <span class="stat-sub">({{ topCategory }})</span></div>
+              <div class="stat-delta" v-if="statDeltas">{{ statDeltas.categories.baseline }} → {{ statDeltas.categories.filtered }}</div>
             </div>
           </div>
         </el-col>
@@ -33,8 +35,9 @@
           <div class="stat-card stat-modules" :class="{ 'stat-pulse': pulsingCard === 'modules' }" @click="pulseCard('modules'); scrollToDrillDown()">
             <div class="stat-icon"><el-icon><Cpu /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ totalModules }}</div>
+              <div class="stat-value">{{ statDeltas ? statDeltas.modules.filtered : totalModules }}</div>
               <div class="stat-label">Modules</div>
+              <div class="stat-delta" v-if="statDeltas">{{ statDeltas.modules.baseline }} → {{ statDeltas.modules.filtered }}</div>
             </div>
           </div>
         </el-col>
@@ -54,8 +57,9 @@
           <div class="stat-card stat-coverage" :class="{ 'stat-pulse': pulsingCard === 'coverage' }" @click="pulseCard('coverage'); toggleNoReviewFilter()">
             <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.health.review_coverage_pct ?? 0 }}%</div>
+              <div class="stat-value">{{ statDeltas ? statDeltas.coverage.filtered : (knowledgeData?.health.review_coverage_pct ?? 0) }}%</div>
               <div class="stat-label">Review Coverage <span class="stat-sub">({{ knowledgeData?.health.no_review_cycle_count ?? 0 }} missing)</span></div>
+              <div class="stat-delta" v-if="statDeltas">{{ statDeltas.coverage.baseline }}% → {{ statDeltas.coverage.filtered }}%</div>
             </div>
           </div>
         </el-col>
@@ -81,8 +85,9 @@
           <div class="stat-card" :class="{ 'stat-stale': (knowledgeData?.health.stale_count ?? 0) > 0, 'stat-healthy': (knowledgeData?.health.stale_count ?? 0) === 0, 'stat-pulse': pulsingCard === 'stale' }" @click="pulseCard('stale'); setFilter('stale', 'true')">
             <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.health.stale_count ?? 0 }}</div>
+              <div class="stat-value">{{ statDeltas ? statDeltas.stale.filtered : (knowledgeData?.health.stale_count ?? 0) }}</div>
               <div class="stat-label">Stale</div>
+              <div class="stat-delta" v-if="statDeltas">{{ statDeltas.stale.baseline }} → {{ statDeltas.stale.filtered }}</div>
             </div>
           </div>
         </el-col>
@@ -146,6 +151,18 @@
             <div class="chart-body"><ECharts :option="fileAgeOption" height="220" @chart-click="onChartClick('age', $event)" /></div>
           </div>
         </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('category') }">
+            <div class="chart-title">Category <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
+            <div class="chart-body"><ECharts :option="categoryBarOption" height="220" @chart-click="onChartClick('category', $event)" /></div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('tags') }">
+            <div class="chart-title">Tags <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
+            <div class="chart-body"><ECharts :option="tagsBarOption" height="220" @chart-click="onChartClick('tag', $event)" /></div>
+          </div>
+        </el-col>
       </el-row>
     </div>
 
@@ -160,21 +177,21 @@
           <div class="quality-mini-card" @click="setQualityFilter('status')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(statusCompletenessPct) }">{{ statusCompletenessPct }}%</div>
             <div class="qmc-label">Status</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_status ?? 0 }} unknown</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_status ?? 0 }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
           <div class="quality-mini-card" @click="setQualityFilter('type')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(typeCompletenessPct) }">{{ typeCompletenessPct }}%</div>
             <div class="qmc-label">Type</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_type ?? 0 }} unknown</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_type ?? 0 }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
           <div class="quality-mini-card" @click="setQualityFilter('lifecycle')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(lifecycleCompletenessPct) }">{{ lifecycleCompletenessPct }}%</div>
             <div class="qmc-label">Lifecycle</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_lifecycle ?? 0 }} unknown</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_lifecycle ?? 0 }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
@@ -201,12 +218,69 @@
       </el-row>
     </div>
 
+    <!-- Needs Attention Summary -->
+    <div class="card attention-box" v-if="needsAttentionFiles.length > 0 && !hasActiveFilter">
+      <div class="top-header">
+        <span class="top-title">Needs Attention</span>
+        <span class="chart-hint">{{ needsAttentionFiles.length }} files need metadata fixes — click to drill down</span>
+      </div>
+      <div class="attention-grid">
+        <div class="attn-item" v-if="clientMissingStats.no_status > 0" @click="setQualityFilter('status')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_status }}</span>
+          <span class="attn-label">Missing Status</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.unknown_status > 0" @click="setFilter('status', 'unknown')">
+          <el-icon><QuestionFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.unknown_status }}</span>
+          <span class="attn-label">Status: unknown</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.no_type > 0" @click="setQualityFilter('type')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_type }}</span>
+          <span class="attn-label">Missing Type</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.unknown_type > 0" @click="setFilter('type', 'unknown')">
+          <el-icon><QuestionFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.unknown_type }}</span>
+          <span class="attn-label">Type: unknown</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.no_lifecycle > 0" @click="setQualityFilter('lifecycle')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_lifecycle }}</span>
+          <span class="attn-label">Missing Lifecycle</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.unknown_lifecycle > 0" @click="setFilter('lifecycle', 'unknown')">
+          <el-icon><QuestionFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.unknown_lifecycle }}</span>
+          <span class="attn-label">Lifecycle: unknown</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.no_review_cycle > 0" @click="setQualityFilter('review_cycle')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_review_cycle }}</span>
+          <span class="attn-label">Missing Review</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.no_roles > 0" @click="setQualityFilter('roles')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_roles }}</span>
+          <span class="attn-label">Missing Roles</span>
+        </div>
+        <div class="attn-item" v-if="clientMissingStats.no_tags > 0" @click="setQualityFilter('tags')">
+          <el-icon><WarningFilled /></el-icon>
+          <span class="attn-count">{{ clientMissingStats.no_tags }}</span>
+          <span class="attn-label">Missing Tags</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Filter Pills Bar -->
     <FilterPills
       :pills="activeFilterPills"
       :hasActiveFilter="hasActiveFilter"
+      :canUndo="filterHistory.length > 0"
       @remove="(key: string) => removeFilter(key)"
       @clearAll="clearAllFilters"
+      @undo="undoLastFilter"
     />
 
     <!-- Collapsible Analytical Panels -->
@@ -225,6 +299,15 @@
           </el-button>
           <el-button text size="small" @click="showCoverageGaps = !showCoverageGaps" :type="showCoverageGaps ? 'primary' : ''">
             Coverage Gaps
+          </el-button>
+          <el-button text size="small" @click="showTagCloud = !showTagCloud" :type="showTagCloud ? 'primary' : ''">
+            Tag Cloud
+          </el-button>
+          <el-button text size="small" @click="showRoleCloud = !showRoleCloud" :type="showRoleCloud ? 'primary' : ''">
+            Role Cloud
+          </el-button>
+          <el-button text size="small" @click="showReviewCompliance = !showReviewCompliance" :type="showReviewCompliance ? 'primary' : ''">
+            Review Compliance
           </el-button>
         </div>
       </div>
@@ -255,6 +338,34 @@
         v-if="showCoverageGaps"
         :data="coverageGapData"
         @drillGap="(cat: string, mod: string, field: string) => { setFilter('category', cat); setFilter('module', mod); setQualityFilter(field) }"
+      />
+
+      <el-row :gutter="12" v-if="showTagCloud || showRoleCloud">
+        <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <TagCloud
+            v-if="showTagCloud"
+            title="Top Tags"
+            :tags="tagCounts"
+            :pairs="tagPairs"
+            @selectTag="(name: string) => setFilter('tag', name)"
+          />
+        </el-col>
+        <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <TagCloud
+            v-if="showRoleCloud"
+            title="Top Roles"
+            :tags="roleCounts"
+            :pairs="rolePairs"
+            :colorFn="(name: string) => '#fc8452'"
+            @selectTag="(name: string) => setFilter('role', name)"
+          />
+        </el-col>
+      </el-row>
+
+      <ReviewCompliance
+        v-if="showReviewCompliance"
+        :data="reviewComplianceData"
+        @selectCycle="(cycle: string) => setFilter('review_cycle', cycle)"
       />
     </div>
 
@@ -321,10 +432,20 @@
               <span class="mcv-title">Module Classification ({{ totalModules }} modules, {{ knowledgeData?.total ?? 0 }} files)</span>
               <div class="mcv-header-actions">
                 <el-input v-model="moduleDrillSearch" size="small" placeholder="Filter modules..." clearable class="search-input" :prefix-icon="Search" />
+                <el-button size="small" text @click="showTreeView = !showTreeView" :type="showTreeView ? 'primary' : ''">
+                  {{ showTreeView ? 'Table' : 'Tree' }}
+                </el-button>
                 <el-button size="small" text @click="viewMode = 'files'">File table view &rarr;</el-button>
               </div>
             </div>
+            <CategoryTree
+              v-if="showTreeView"
+              :data="categoryTreeData"
+              :activeCategory="activeFilter.category || ''"
+              @selectNode="(cat: string, mod?: string, sub?: string) => selectTreeNode(cat, mod, sub)"
+            />
             <el-table
+              v-if="!showTreeView"
               ref="moduleTableRef"
               :data="filteredModuleDrillData"
               row-key="key"
@@ -905,7 +1026,7 @@
                   <span class="fd-content-toggle-hint">{{ showFileContent ? 'Hide' : 'Show' }}</span>
                 </div>
                 <div class="fd-content-body" v-show="showFileContent" v-loading="fileContentLoading">
-                  <div v-if="fileContent" class="markdown-preview" v-html="render(fileContent.slice(0, 3000))"></div>
+                  <div v-if="fileContent" class="markdown-preview" v-html="renderWithHtml(fileContent.slice(0, 3000))"></div>
                   <div v-else-if="!fileContentLoading" class="text-muted fd-empty-content">File is empty or could not be loaded.</div>
                 </div>
               </div>
@@ -964,7 +1085,7 @@ import { ref } from "vue";
 import {
   Document, Folder, Grid, Refresh, TrendCharts, Star, WarningFilled,
   Search, InfoFilled, User, Cpu, ArrowLeft, ArrowRight, Coin, Close, View,
-  DataAnalysis, HomeFilled,
+  DataAnalysis, HomeFilled, QuestionFilled,
 } from "@element-plus/icons-vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
@@ -976,8 +1097,11 @@ import CategoryComparison from "./components/CategoryComparison.vue";
 import CrossHeatmap from "./components/CrossHeatmap.vue";
 import StaleRiskTimeline from "./components/StaleRiskTimeline.vue";
 import CoverageGaps from "./components/CoverageGaps.vue";
+import CategoryTree from "./components/CategoryTree.vue";
+import TagCloud from "./components/TagCloud.vue";
+import ReviewCompliance from "./components/ReviewCompliance.vue";
 
-const { render } = useMarkdown();
+const { renderWithHtml } = useMarkdown();
 const kb = useKnowledgeBase();
 const previewDialogRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -1008,6 +1132,8 @@ const {
   recentlyViewed, drillDownRef, detailPanelRef,
   chartPulseKey, drillHighlight, pulsingCard,
   showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
+  showTreeView, showTagCloud, showRoleCloud, showReviewCompliance,
+  filterHistory,
   // cross-filter
   activeFilterPills, filterBreadcrumb, filteredDimensions, isDimensionFiltered,
   chartContextFiles,
@@ -1015,6 +1141,7 @@ const {
   hasActiveFilter, showSubModuleGrid, isShowingTreeView,
   topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
   dataQualityScore, missingMetadataCount,
+  needsAttentionFiles, unknownStatusFiles, clientMissingStats, attentionBreakdown,
   statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
   reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
   filteredModuleDrillData,
@@ -1028,15 +1155,20 @@ const {
   drillSummary,
   enrichedSearchResults, searchSuggestions,
   categoryComparisonData, crossStatusLifecycle, staleRiskBuckets, coverageGapData,
+  tagCounts, tagPairs, roleCounts, rolePairs,
+  reviewComplianceData, statDeltas,
   categoryTreeData,
   reviewCycleDonutOption, typeBarOption, statusBarOption,
   sizeDistOption, fileAgeOption, lifecycleBarOption,
   moduleBarOption, rolesBarOption,
+  categoryBarOption, tagsBarOption,
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
-  isStaleFile, fileHealthLevel, getModuleClassSummary,
+  isStaleFile, fileHealthLevel, fileHealthIssues, getModuleClassSummary,
+  isMissingField, isUnknownField, normalizeMetaValue, MISSING_LABEL,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
   dataQualityColor,
-  setFilter, removeFilter, pulseCard, toggleNoReviewFilter, setQualityFilter,
+  setFilter, removeFilter, undoLastFilter, selectTreeNode,
+  pulseCard, toggleNoReviewFilter, setQualityFilter,
   backToCategory, clearAllFilters,
   drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
   navigateToModule, crossFilterSubModule,

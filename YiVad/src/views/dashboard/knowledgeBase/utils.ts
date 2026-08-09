@@ -1,5 +1,27 @@
 import type { KnowledgeFileSummary } from "@/api/interface/yiweb";
 
+// ── Constants ──
+
+/** Label used when a metadata field is truly absent (null/undefined/empty). Distinct from the literal "unknown" string. */
+export const MISSING_LABEL = "__missing__";
+
+/** Check if a field value represents genuinely missing data (not the "unknown" string). */
+export function isMissingField(val: any): boolean {
+  return val === null || val === undefined || val === "" || (Array.isArray(val) && val.length === 0);
+}
+
+/** Check if a field value is the literal "unknown" string (explicitly set, not missing). */
+export function isUnknownField(val: any): boolean {
+  return typeof val === "string" && val === "unknown";
+}
+
+/** Normalize a metadata value: return "__missing__" for truly absent, "unknown" for literal unknown, or the value itself. */
+export function normalizeMetaValue(val: any): string {
+  if (isMissingField(val)) return MISSING_LABEL;
+  if (isUnknownField(val)) return "unknown";
+  return String(val);
+}
+
 // ── Color Maps ──
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -16,11 +38,14 @@ export const STATUS_COLORS: Record<string, string> = {
   draft: "#909399", in_progress: "#e6a23c", planning: "#909399",
   proposed: "#909399", reviewed: "#409eff",
   unknown: "#c0c4cc", planned: "#b0c4de",
+  [MISSING_LABEL]: "#f56c6c",
 };
 
 export const LIFECYCLE_COLORS: Record<string, string> = {
   active: "#67c23a", triage: "#e6a23c", reference: "#409eff",
   archive: "#909399", inbox: "#73c0de",
+  unknown: "#c0c4cc",
+  [MISSING_LABEL]: "#f56c6c",
 };
 
 export const REVIEW_CYCLE_COLORS: Record<string, string> = {
@@ -37,17 +62,21 @@ export const TYPE_COLORS: Record<string, string> = {
   prd: "#e31a1c", adr: "#fdbf6f", methodology: "#cab2d6",
   brd: "#ff7f00", feature: "#33a02c", "strategy-instance": "#b15928",
   unknown: "#c0c4cc",
+  [MISSING_LABEL]: "#f56c6c",
 };
 
 export const STATUS_TAG_TYPES: Record<string, string> = {
   stable: "success", active: "success", adopted: "success", accepted: "success",
   draft: "info", in_progress: "warning", planning: "info", proposed: "info",
   reviewed: "primary", planned: "info",
+  unknown: "info",
+  [MISSING_LABEL]: "danger",
 };
 
 export const LIFECYCLE_TAG_TYPES: Record<string, string> = {
   active: "success", triage: "warning", reference: "info", archive: "danger",
   inbox: "primary", unknown: "info",
+  [MISSING_LABEL]: "danger",
 };
 
 export const REVIEW_CYCLE_TAG_TYPES: Record<string, string> = {
@@ -136,10 +165,31 @@ export function isStaleFile(f: KnowledgeFileSummary): boolean {
 }
 
 export function fileHealthLevel(f: KnowledgeFileSummary): "good" | "warn" | "poor" {
-  const missing = [!f.status, !f.lifecycle || f.lifecycle === "unknown", !f.type || f.type === "unknown", !f.review_cycle].filter(Boolean).length;
+  const missing = [
+    isMissingField(f.status),
+    isMissingField(f.lifecycle) || isUnknownField(f.lifecycle),
+    isMissingField(f.type) || isUnknownField(f.type),
+    isMissingField(f.review_cycle),
+  ].filter(Boolean).length;
   if (missing === 0 && !isStaleFile(f)) return "good";
   if (missing <= 2 && !isStaleFile(f)) return "warn";
   return "poor";
+}
+
+/** Returns a short label describing what's wrong with a file's metadata. */
+export function fileHealthIssues(f: KnowledgeFileSummary): string[] {
+  const issues: string[] = [];
+  if (isMissingField(f.status)) issues.push("Missing status");
+  else if (isUnknownField(f.status)) issues.push("Status: unknown");
+  if (isMissingField(f.lifecycle)) issues.push("Missing lifecycle");
+  else if (isUnknownField(f.lifecycle)) issues.push("Lifecycle: unknown");
+  if (isMissingField(f.type)) issues.push("Missing type");
+  else if (isUnknownField(f.type)) issues.push("Type: unknown");
+  if (isMissingField(f.review_cycle)) issues.push("Missing review cycle");
+  if (isMissingField(f.roles)) issues.push("Missing roles");
+  if (isMissingField(f.tags)) issues.push("Missing tags");
+  if (isStaleFile(f)) issues.push("Stale");
+  return issues;
 }
 
 // ── Data Helpers ──
@@ -147,10 +197,26 @@ export function fileHealthLevel(f: KnowledgeFileSummary): "good" | "warn" | "poo
 export function countByField(files: KnowledgeFileSummary[], field: string): { name: string; count: number }[] {
   const c = new Map<string, number>();
   for (const f of files) {
-    const v = (f as any)[field] || "unknown";
+    const raw = (f as any)[field];
+    const v = normalizeMetaValue(raw);
     c.set(v, (c.get(v) || 0) + 1);
   }
   return Array.from(c.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+}
+
+/** Count by field but return two separate series: known values + missing count. */
+export function countByFieldWithMissing(
+  files: KnowledgeFileSummary[],
+  field: string,
+): { items: { name: string; count: number }[]; missing: number } {
+  const items = countByField(files, field);
+  const missingIdx = items.findIndex(d => d.name === MISSING_LABEL);
+  let missing = 0;
+  if (missingIdx >= 0) {
+    missing = items[missingIdx].count;
+    items.splice(missingIdx, 1);
+  }
+  return { items, missing };
 }
 
 export interface ClassSummary {
@@ -186,6 +252,36 @@ export function dataQualityColor(pct: number): string {
   if (pct >= 80) return "#67c23a";
   if (pct >= 50) return "#e6a23c";
   return "#f56c6c";
+}
+
+/** Returns a display label for a metadata value, distinguishing missing from unknown. */
+export function metaDisplayValue(val: string | undefined | null, field: string): { label: string; isMissing: boolean; isUnknown: boolean } {
+  if (isMissingField(val)) return { label: "Missing", isMissing: true, isUnknown: false };
+  if (isUnknownField(val)) return { label: "Unknown", isMissing: false, isUnknown: true };
+  return { label: String(val || ""), isMissing: false, isUnknown: false };
+}
+
+/** Aggregate unknown + missing counts for data quality dashboards. */
+export function aggregateMissingStats(files: KnowledgeFileSummary[]): {
+  no_status: number; no_type: number; no_lifecycle: number;
+  no_review_cycle: number; no_roles: number; no_tags: number;
+  unknown_status: number; unknown_type: number; unknown_lifecycle: number;
+} {
+  let no_status = 0, no_type = 0, no_lifecycle = 0;
+  let no_review_cycle = 0, no_roles = 0, no_tags = 0;
+  let unknown_status = 0, unknown_type = 0, unknown_lifecycle = 0;
+  for (const f of files) {
+    if (isMissingField(f.status)) no_status++;
+    else if (isUnknownField(f.status)) unknown_status++;
+    if (isMissingField(f.type)) no_type++;
+    else if (isUnknownField(f.type)) unknown_type++;
+    if (isMissingField(f.lifecycle)) no_lifecycle++;
+    else if (isUnknownField(f.lifecycle)) unknown_lifecycle++;
+    if (isMissingField(f.review_cycle)) no_review_cycle++;
+    if (isMissingField(f.roles)) no_roles++;
+    if (isMissingField(f.tags)) no_tags++;
+  }
+  return { no_status, no_type, no_lifecycle, no_review_cycle, no_roles, no_tags, unknown_status, unknown_type, unknown_lifecycle };
 }
 
 // ── Filter Labels ──
@@ -224,6 +320,7 @@ export const FILTER_DIMENSION_COLORS: Record<string, string> = {
   size_max: "#909399",
   age_min_days: "#909399",
   age_max_days: "#909399",
+  [MISSING_LABEL]: "#f56c6c",
 };
 
 // ── Stale Risk & Health Scoring ──
@@ -263,9 +360,38 @@ export function filterKeyToDimension(key: string): string | null {
     review_cycle: "review_cycle",
   };
   if (key in keyDimMap) return keyDimMap[key];
-  if (key === "role" || key === "tag") return "roles";
+  if (key === "role") return "roles";
+  if (key === "tag") return "tags";
   if (key === "size_min" || key === "size_max") return "size";
   if (key === "age_min_days" || key === "age_max_days") return "age";
   if (key === "module" || key === "sub_module") return "module";
   return null;
+}
+
+/** Count co-occurring pairs of items across files (e.g. tags, roles).
+ *  Returns top N pairs sorted by co-occurrence count. */
+export function topPairs<T extends { [k: string]: any }>(
+  items: T[],
+  field: string,
+  topN: number = 10
+): { item1: string; item2: string; count: number }[] {
+  const pairCounts = new Map<string, number>();
+  for (const item of items) {
+    const values: string[] = (item as any)[field] ?? [];
+    if (!Array.isArray(values) || values.length < 2) continue;
+    for (let i = 0; i < values.length; i++) {
+      for (let j = i + 1; j < values.length; j++) {
+        const [a, b] = values[i] < values[j] ? [values[i], values[j]] : [values[j], values[i]];
+        const key = `${a}|||${b}`;
+        pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+      }
+    }
+  }
+  return Array.from(pairCounts.entries())
+    .map(([key, count]) => {
+      const [item1, item2] = key.split("|||");
+      return { item1, item2, count };
+    })
+    .sort((a, b) => b.count - a.count)
+    .slice(0, topN);
 }
