@@ -9,6 +9,12 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
+roles:
+  - knowledge-curator
+benefit: >-
+  Single source of truth for knowledge-base rules, frontmatter schema,
+  naming conventions, and lifecycle governance; enables AI recall and
+  human navigation consistency across all 8 roles and 19 directories.
 last_verified: 2026-08-07
 related:
   - ./README.md

@@ -79,19 +79,6 @@ export const staticRouter: RouteRecordRaw[] = [
           activeMenu: "/rag"
         }
       },
-      // ── Knowledge Base sub-routes (static — category/detail not in menu) ──
-      {
-        path: "/knowledge/:category",
-        name: "knowledgeCategory",
-        component: () => import("@/views/knowledge/category.vue"),
-        meta: { title: "Knowledge Category", activeMenu: "/knowledge", isKeepAlive: true }
-      },
-      {
-        path: "/knowledge/:category/detail/:file",
-        name: "knowledgeDetail",
-        component: () => import("@/views/knowledge/detail.vue"),
-        meta: { title: "Knowledge Detail", isHide: true, isKeepAlive: true }
-      },
       // ── Code Review detail routes (static hidden — list routes from menu) ──
       {
         path: "/code-review/summary/detail/:id?",
@@ -194,55 +181,6 @@ export const staticRouter: RouteRecordRaw[] = [
         name: "crI18nA11yDetail",
         component: () => import("@/views/code-review/i18n-a11y/detail.vue"),
         meta: { title: "i18n / a11y review", isHide: true, isKeepAlive: true }
-      },
-      // ── BRD detail routes (static hidden — list routes from menu) ──
-      {
-        path: "/brd/engineer/detail/:id?",
-        name: "brdEngineerDetail",
-        component: () => import("@/views/brd/engineer/detail.vue"),
-        meta: { title: "As an Engineer — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/tech-lead/detail/:id?",
-        name: "brdTechLeadDetail",
-        component: () => import("@/views/brd/tech-lead/detail.vue"),
-        meta: { title: "As a Tech Lead — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/product-manager/detail/:id?",
-        name: "brdProductManagerDetail",
-        component: () => import("@/views/brd/product-manager/detail.vue"),
-        meta: { title: "As a Product Manager — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/ai-engineer/detail/:id?",
-        name: "brdAiEngineerDetail",
-        component: () => import("@/views/brd/ai-engineer/detail.vue"),
-        meta: { title: "As an AI Engineer — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/new-hire/detail/:id?",
-        name: "brdNewHireDetail",
-        component: () => import("@/views/brd/new-hire/detail.vue"),
-        meta: { title: "As a New Hire — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/knowledge-curator/detail/:id?",
-        name: "brdKnowledgeCuratorDetail",
-        component: () => import("@/views/brd/knowledge-curator/detail.vue"),
-        meta: { title: "As a Knowledge Curator — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/executive/detail/:id?",
-        name: "brdExecutiveDetail",
-        component: () => import("@/views/brd/executive/detail.vue"),
-        meta: { title: "As an Executive — detail", isHide: true, isKeepAlive: true }
-      },
-      {
-        path: "/brd/oncall-sre/detail/:id?",
-        name: "brdOncallSreDetail",
-        component: () => import("@/views/brd/oncall-sre/detail.vue"),
-        meta: { title: "As an Oncall SRE — detail", isHide: true, isKeepAlive: true }
       },
       // ── Tech Leadership detail routes (static hidden — list routes from menu) ──
       {

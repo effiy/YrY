@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [product-manager]
 benefit: "PMs find frameworks, discovery, delivery, and strategy content in one index"
 acceptance_criteria:

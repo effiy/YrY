@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [oncall-sre]
 benefit: "SREs find incident response, observability, and release content in one index"
 acceptance_criteria:

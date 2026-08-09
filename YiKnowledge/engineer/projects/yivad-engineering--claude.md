@@ -4,7 +4,11 @@ title: YiVad Engineering — CLAUDE.md
 status: stable
 type: summary
 category: engineer/projects/yivad/engineering
-tags: []
+tags:
+  - yivad
+  - engineering
+  - claude
+  - project-meta
 created: 2026-08-03
 updated: 2026-08-07
 source: internal

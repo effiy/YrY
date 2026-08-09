@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer, tech-lead, oncall-sre, executive]
 benefit: "All security-relevant content reachable from a single index"
 acceptance_criteria:

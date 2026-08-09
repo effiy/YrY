@@ -8,7 +8,12 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer]
+benefit: >-
+  Onboarding baseline for YiVad project context, architecture decisions,
+  and development standards; prevents repeated question loops and
+  inconsistent implementation patterns across contributors.
 ---
 
 # YiVad

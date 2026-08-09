@@ -15,6 +15,10 @@ roles:
   - engineer
   - ai-engineer
   - tech-lead
+benefit: >-
+  Maps the single-API-call to multi-computed filtering architecture;
+  prevents redundant API calls and clarifies the backend-to-frontend
+  data pipeline for anyone debugging or extending the dashboard.
 tags:
   - yivad
   - dashboard

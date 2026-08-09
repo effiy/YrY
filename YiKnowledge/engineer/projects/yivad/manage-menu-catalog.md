@@ -430,8 +430,6 @@ Defined across `YiVad/src/api/modules/system.ts`, `YiVad/src/api/modules/login.t
 ```
 Home (HomeFilled, src/views/home/index.vue)
 
-Knowledge Base (Collection, src/views/knowledge/index.vue)
-
 AI Chat (ChatDotRound, src/views/aiChat/index.vue)
 
 RAG System (DataBoard, src/views/rag/index.vue)  [static]
@@ -460,17 +458,6 @@ Assembly Components (SetUp)
 Auth Demo (Lock)
 ├── Button (Menu, src/views/auth/button/index.vue)
 └── Menu (Menu, src/views/auth/menu/index.vue)
-
-BRD Management (DocumentChecked)
-├── Review Hub (DataAnalysis, src/views/brd/index/index.vue)
-├── Engineer (Menu, src/views/brd/engineer/index.vue)
-├── Tech Lead (Menu, src/views/brd/tech-lead/index.vue)
-├── Product Manager (Menu, src/views/brd/product-manager/index.vue)
-├── AI Engineer (Menu, src/views/brd/ai-engineer/index.vue)
-├── New Hire (Menu, src/views/brd/new-hire/index.vue)
-├── Knowledge Curator (Menu, src/views/brd/knowledge-curator/index.vue)
-├── Executive (Menu, src/views/brd/executive/index.vue)
-└── Oncall SRE (Menu, src/views/brd/oncall-sre/index.vue)
 
 Code Review (DocumentChecked)
 ├── Review Hub (DataAnalysis, src/views/code-review/index/index.vue)

@@ -1,7 +1,6 @@
 <script setup lang="ts" name="crErrorHandlingList">
 import { ref } from "vue";
 import TopicListPage from "@/components/TopicListPage/index.vue";
-import RelatedByProjectPanel from "@/views/brd/components/RelatedByProjectPanel.vue";
 import { crMetaSchemas } from "@/views/code-review/meta-schemas";
 import type { TopicEntryDocument } from "@/api/modules/topic";
 
@@ -27,12 +26,6 @@ function onMetaClick({ row, key, value }: { row: TopicEntryDocument; key: string
     size="520px"
     :destroy-on-close="true"
   >
-    <RelatedByProjectPanel
-      v-if="drawerProject"
-      :project="drawerProject"
-      current-tree="cr"
-      current-topic="error-handling"
-      :current-key="drawerCurrentKey"
-    />
+
   </el-drawer>
 </template>

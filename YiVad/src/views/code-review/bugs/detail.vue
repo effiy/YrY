@@ -382,12 +382,7 @@
         <!-- Cross-domain links — BRD + Tech-Leadership + Story Board, all by shared project -->
         <el-card v-if="bug.project" shadow="never" class="bug-detail__card bug-detail__related">
           <template #header><h3>Cross-Domain Links</h3></template>
-          <RelatedByProjectPanel
-            :project="bug.project"
-            current-tree="bug"
-            current-topic="bugs"
-            :current-key="bug.key"
-          />
+
         </el-card>
       </template>
 
@@ -448,7 +443,6 @@ import { buildRelatedEntriesSection } from "@/hooks/useRelatedByProject";
 import { formatRelativeTime } from "@/utils/datetime";
 import { updateBug, readBugContent, type BugDocument, type BugContent, type BugSeverity, type BugPriority, type BugStatus, type BugType, type BugFrequency } from "@/api/modules/bug";
 import BugDrawer from "./components/BugDrawer.vue";
-import RelatedByProjectPanel from "@/views/brd/components/RelatedByProjectPanel.vue";
 
 const route = useRoute();
 const router = useRouter();

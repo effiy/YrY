@@ -10,6 +10,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [knowledge-curator]
 benefit: "New readers locate content by 10 role directories, reaching a leaf within 2 hops"
 acceptance_criteria:

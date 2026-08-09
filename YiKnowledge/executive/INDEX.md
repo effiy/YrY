@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [executive]
 benefit: "Executives find strategy, industry intelligence, and roadmap content in one index"
 acceptance_criteria:

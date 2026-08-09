@@ -16,6 +16,10 @@ roles:
   - engineer
   - ai-engineer
   - tech-lead
+benefit: >-
+  Documents the 9-chart composable architecture and ProTable pattern;
+  prevents chart regression (chartContextFiles lazy computed) and ensures
+  consistent dashboard layout decisions across future iterations.
 tags:
   - yivad
   - dashboard

@@ -1,7 +1,6 @@
 <script setup lang="ts" name="tlrOrgDiagnoseList">
 import { ref } from "vue";
 import TopicListPage from "@/components/TopicListPage/index.vue";
-import RelatedByProjectPanel from "@/views/brd/components/RelatedByProjectPanel.vue";
 import { tlrMetaSchemas } from "@/views/tech-leadership/meta-schemas";
 import type { TopicEntryDocument } from "@/api/modules/topic";
 const schema = tlrMetaSchemas["org-diagnose"];
@@ -18,6 +17,5 @@ function onMetaClick({ row, key, value }: { row: TopicEntryDocument; key: string
 <template>
   <TopicListPage tree="tech-leadership" topic="org-diagnose" label="Org Diagnose" :meta-columns="schema.metaColumns" @meta-click="onMetaClick" />
   <el-drawer v-model="drawerOpen" :title="$t('brdRelated.title')" direction="rtl" size="520px" :destroy-on-close="true">
-    <RelatedByProjectPanel v-if="drawerProject" :project="drawerProject" current-tree="tl" current-topic="org-diagnose" :current-key="drawerCurrentKey" />
   </el-drawer>
 </template>

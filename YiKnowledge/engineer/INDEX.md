@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer, new-hire]
 benefit: "Engineers find content by problem domain within 2 hops"
 acceptance_criteria:

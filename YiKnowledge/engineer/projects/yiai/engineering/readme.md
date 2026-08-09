@@ -4,7 +4,11 @@ title: YiAi Engineering — README
 status: stable
 type: summary
 category: engineer/projects/yiai/engineering
-tags: []
+tags:
+  - yiai
+  - engineering
+  - readme
+  - project-meta
 created: 2026-08-03
 updated: 2026-08-07
 source: internal

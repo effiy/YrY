@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [tech-lead]
 benefit: "Tech leads find architecture decisions, capacity plans, risk register, and roadmap in one index"
 acceptance_criteria:

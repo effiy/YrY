@@ -17,7 +17,14 @@ domain: Progressive Delivery
 quarter: 2026 Q3
 priority: p1
 status: draft
+roles:
+  - engineer
+  - tech-lead
 owner: Release Platform Team
+benefit: >-
+  Tracks 5-phase progressive delivery rollout milestones with quantified
+  success metrics (80% onboarding reduction, 83% failure-rate reduction);
+  single source for go/no-go decisions at each phase gate.
 tech_stack: OpenFeature, Unleash, Canary, Kill Switch, Experiment Platform, Approval
   Flow
 key_metrics: Onboarding time 5d→1d (down 80%); change failure rate 18%→3% (down 83%); MTTR 52min→10min (down 81%); per-capita maintenance 1.6→0.1 FTE (down 94%); flag directory 0%→100%; canary 0%→100%; experiment 0%→60%

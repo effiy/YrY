@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer, tech-lead, product-manager, knowledge-curator, new-hire, executive]
 benefit: "All collaboration and process content reachable from a single index"
 acceptance_criteria:

@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [new-hire]
 benefit: "New hires find onboarding paths for each project in one index"
 acceptance_criteria:

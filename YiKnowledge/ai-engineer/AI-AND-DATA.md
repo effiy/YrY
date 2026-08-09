@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer, ai-engineer, tech-lead, product-manager]
 benefit: "All AI/ML and data engineering content reachable from a single index"
 acceptance_criteria:

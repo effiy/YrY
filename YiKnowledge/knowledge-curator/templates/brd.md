@@ -4,7 +4,11 @@ title: BRD Template
 status: stable
 type: template
 category: knowledge-curator/templates
-tags: []
+tags:
+  - template
+  - brd
+  - business-requirements
+  - knowledge-curator
 created: 2026-08-07
 updated: 2026-08-07
 source: internal

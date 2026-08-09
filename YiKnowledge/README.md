@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [knowledge-curator]
 benefit: "New readers see 10 role directories at a glance and locate content by role × problem domain"
 acceptance_criteria:

@@ -5,7 +5,7 @@
         <el-button :icon="ArrowLeft" link @click="back">{{ $t("topicDetail.backToList") }}</el-button>
         <el-divider direction="vertical" />
         <nav class="topic-detail__breadcrumb" aria-label="Breadcrumb">
-          <span class="topic-detail__breadcrumb-root">{{ label || topicLabel(topic) }}</span>
+          <span class="topic-detail__breadcrumb-root">{{ label || topic }}</span>
           <el-icon><ArrowRight /></el-icon>
           <span class="topic-detail__breadcrumb-current">{{
             isNew ? $t("topicDetail.newEntry") : entry?.title || route.params.id
@@ -264,7 +264,6 @@ import { useMarkdown } from "@/hooks/useMarkdown";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { buildRelatedEntriesSection } from "@/hooks/useRelatedByProject";
 import { callService } from "@/api/modules/dataService";
-import { topicLabel } from "@/views/brd/topicLabels";
 
 import {
   getTopicEntry,
@@ -588,7 +587,7 @@ async function saveAndContinue() {
 // Renders a VNode message so the toast carries a clickable link that jumps
 // to the just-saved entry's view URL — survives the subsequent navigation.
 function detailRouteName(): string {
-  const prefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
+  const prefix = props.tree === "tech-leadership" ? "tlr" : "cr";
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
   return `${prefix}${pascal(topicName)}Detail`;
 }
@@ -653,8 +652,8 @@ async function handleCancel() {
 }
 
 function back() {
-  const prefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
-  // BRD topics already contain the tree prefix (e.g. "brd-documents").
+  const prefix = props.tree === "tech-leadership" ? "tlr" : "cr";
+  // Topics that contain the tree prefix (e.g. "tlr-postmortem").
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
   router.push({ name: `${prefix}${pascal(topicName)}` });
 }
@@ -718,7 +717,7 @@ async function discussInAiChat() {
     if (section) pageContent = `${pageContent}\n${section}`;
   }
   await openInAiChat({
-    title: entry.value.title || `${props.label || topicLabel(props.topic)} — ${entry.value.key}`,
+    title: entry.value.title || `${props.label || props.topic} — ${entry.value.key}`,
     pageContent,
     tags,
     sourceUrl: router.currentRoute.value.fullPath

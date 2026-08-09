@@ -13,7 +13,6 @@ import { useStoryStore } from "@/stores/modules/story";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip.vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
-import RelatedByProjectPanel from "@/views/brd/components/RelatedByProjectPanel.vue";
 import { useAiPrompts } from "@/views/story/composables/useAiPrompts";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { buildRelatedEntriesSection } from "@/hooks/useRelatedByProject";
@@ -343,15 +342,7 @@ watch(
             <!-- BRD Overview Sections (extracted component) -->
             <BrdOverviewSections />
 
-            <!-- Cross-domain entries for this story's project -->
-            <RelatedByProjectPanel
-              v-if="store.selectedStory?.project"
-              :project="store.selectedStory.project"
-              current-tree="story"
-              current-topic="stories"
-              :current-key="store.selectedStory.key"
-              :show-story-link="false"
-            />
+            <!-- Story context ends -->
           </el-tab-pane>
 
           <!-- Scenarios Tab -->

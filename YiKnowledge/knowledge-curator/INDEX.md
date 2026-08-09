@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [knowledge-curator]
 benefit: "Knowledge curators find governance, diagrams, templates, and archive in one index"
 acceptance_criteria:

@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [ai-engineer]
 benefit: "AI engineers find foundations, methodology, platform, and data content in one index"
 acceptance_criteria:

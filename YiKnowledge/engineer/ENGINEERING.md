@@ -9,6 +9,7 @@ source: internal
 type: summary
 status: stable
 lifecycle: active
+review_cycle: quarterly
 roles: [engineer, tech-lead, ai-engineer, oncall-sre]
 benefit: "All engineering content reachable from a single cross-role index"
 acceptance_criteria:
