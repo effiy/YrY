@@ -54,16 +54,6 @@ const ragSourcesRef = ref<InstanceType<typeof RagSources> | null>(null);
 /** Template ref on the markdown container — used by mermaid rendering. */
 const markdownRef = ref<HTMLElement | null>(null);
 
-/** Render mermaid diagrams in the markdown container after HTML updates.
- *  flush: 'post' guarantees markdownRef and its v-html innerHTML are in
- *  place before we query for <pre class="mermaid"> children. */
-watch(citedHtml, async () => {
-  await nextTick();
-  if (markdownRef.value) {
-    await runMermaid(markdownRef.value);
-  }
-}, { flush: "post" });
-
 function onMarkdownClick(e: MouseEvent) {
   return makeCitationClickHandler(() => ragSourcesRef.value)(e);
 }
@@ -290,6 +280,17 @@ const citedHtml = computed(() => {
   const base = hasContextChanges.value ? cleanHtml.value : html.value;
   return sourceCount.value ? injectCitations(base, sourceCount.value) : base;
 });
+
+/** Render mermaid diagrams in the markdown container after HTML updates.
+ *  flush: 'post' guarantees markdownRef and its v-html innerHTML are in
+ *  place before we query for <pre class="mermaid"> children.
+ *  immediate: true ensures the first render is also enhanced. */
+watch(citedHtml, async () => {
+  await nextTick();
+  if (markdownRef.value) {
+    await runMermaid(markdownRef.value);
+  }
+}, { immediate: true, flush: "post" });
 
 /** Retrieval-quality grade based on the top score across retrieved chunks.
  *  Letter grade lets the user judge retrieval confidence at a glance,

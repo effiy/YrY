@@ -5,7 +5,7 @@ import {
   RefreshRight, Search
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useMarkdown } from "@/hooks/useMarkdown";
+import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
@@ -327,7 +327,13 @@ watch(() => props.filePath, () => {
   draftImages.value = [];
 });
 
-onMounted(() => { loadMessages(); loadTags(); loadSettings(); loadModel(); });
+onMounted(() => {
+  loadMessages(); loadTags(); loadSettings(); loadModel();
+  // Render mermaid diagrams for loaded messages
+  nextTick(() => {
+    if (containerRef.value) runMermaid(containerRef.value);
+  });
+});
 
 // ── Streaming type ────────────────────────────────────────────────────────
 
@@ -345,6 +351,14 @@ function scrollToBottom() {
 watch(() => messages.value.length, () => scrollToBottom(), { flush: "post" });
 // Auto-scroll during streaming — scrollTick is incremented by onChunk callbacks
 watch(scrollTick, () => scrollToBottom());
+
+// ── Mermaid rendering (non-streaming updates: loaded, edited, regenerated) ──
+watch(() => messages.value.length, () => {
+  if (sending.value) return; // streaming handles it in finishSend
+  nextTick(() => {
+    if (containerRef.value) runMermaid(containerRef.value);
+  });
+});
 
 // ── Send / Stop ───────────────────────────────────────────────────────────
 
@@ -554,6 +568,10 @@ function finishSend(petIdx: number) {
   // Auto-forward to WeChat
   const petText = messages.value[petIdx]?.message;
   if (petText) forwardToWechat(petText);
+  // Render mermaid diagrams in the completed message
+  nextTick(() => {
+    if (containerRef.value) runMermaid(containerRef.value);
+  });
 }
 
 function handleSendError(petIdx: number, err: Error) {
@@ -1167,8 +1185,22 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
     border-left: 3px solid var(--el-color-primary-light-5);
     color: var(--el-text-color-secondary);
   }
-}
 
+	// Mermaid — <pre class="mermaid"> rendered client-side by mermaid.run()
+	:deep(pre.mermaid) {
+		all: unset;
+		display: block;
+		overflow-x: auto;
+		margin: 8px 0;
+
+		svg {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 0 auto;
+		}
+	}
+}
 .kcp-msg-error-tag {
   margin-top: 4px;
   font-size: 12px;

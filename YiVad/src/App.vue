@@ -2,6 +2,7 @@
   <el-config-provider :locale="locale" :size="assemblySize" :button="buttonConfig">
     <router-view></router-view>
     <SparkGlowDefs />
+    <MermaidViewer />
   </el-config-provider>
 </template>
 
@@ -14,6 +15,7 @@ import { ElConfigProvider } from "element-plus";
 import { LanguageType } from "./stores/interface";
 import { useGlobalStore } from "@/stores/modules/global";
 import SparkGlowDefs from "@/components/SparkGlowDefs.vue";
+import MermaidViewer from "@/components/MermaidViewer.vue";
 import en from "element-plus/es/locale/lang/en";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 

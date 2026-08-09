@@ -1,7 +1,8 @@
 /**
  * Markdown rendering composable.
  * Wraps the `marked` npm package with Mermaid diagram support.
- * Mermaid diagrams are rendered client-side via mermaid.run().
+ * Mermaid diagrams are rendered client-side via mermaid.run() and then
+ * enhanced with a hover toolbar (fullscreen + download) automatically.
  */
 import { marked } from "marked";
 
@@ -59,6 +60,8 @@ function getMermaid(): Promise<typeof import("mermaid").default | null> | null {
  * will silently fail because the container's textContent is not valid mermaid
  * syntax. We must query the actual `<pre class="mermaid">` children first.
  */
+let renderCounter = 0;
+
 export async function runMermaid(container?: HTMLElement): Promise<void> {
   const mermaid = await getMermaid();
   if (!mermaid) return;
@@ -67,13 +70,51 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
     ? Array.from(container.querySelectorAll<HTMLElement>("pre.mermaid"))
     : undefined;
 
-  // Nothing to render — skip the mermaid call entirely
   if (elements !== undefined && elements.length === 0) return;
 
-  try {
-    await mermaid.run({ nodes: elements });
-  } catch (err) {
-    console.warn("Mermaid run failed:", err instanceof Error ? err.message : err);
+  if (elements) {
+    // Render each diagram individually using mermaid.render() — more direct
+    // than mermaid.run({nodes}), avoids DOM edge cases with single elements.
+    for (let i = 0; i < elements.length; i++) {
+      const el = elements[i];
+      try {
+        // Restore mermaid source from base64 (survives HTML parsing safely)
+        let code = el.textContent || "";
+        const b64 = el.getAttribute("data-mermaid-b64");
+        if (b64) {
+          try {
+            code = decodeURIComponent(escape(atob(b64)));
+          } catch { /* fallback to raw textContent */ }
+        }
+        if (!code.trim()) continue;
+
+        const id = `mermaid-${++renderCounter}`;
+        const { svg } = await mermaid.render(id, code);
+        el.innerHTML = svg;
+      } catch (err) {
+        const preview = (el.textContent || el.getAttribute("data-mermaid-b64") || "").substring(0, 60).replace(/\n/g, "\\n");
+        console.warn(`[runMermaid] #${i + 1}/${elements.length} render FAILED:`, preview, err instanceof Error ? err.message : err);
+      }
+    }
+  } else {
+    // No container given — render all mermaid elements on the page
+    try {
+      await mermaid.run();
+    } catch (err) {
+      console.warn("[runMermaid] Mermaid run failed:", err instanceof Error ? err.message : err);
+    }
+  }
+
+  // Lazily enhance — valid diagrams have SVGs now, failed ones don't (skipped by guard).
+  // useMermaidViewer is called lazily (not at module top-level) so it always runs
+  // in a valid Vue context (called from a component's watch/lifecycle via nextTick).
+  if (container) {
+    try {
+      const { useMermaidViewer } = await import("./useMermaidViewer");
+      useMermaidViewer().enhanceContainer(container);
+    } catch (err) {
+      console.warn("[runMermaid] enhance failed:", err instanceof Error ? err.message : err);
+    }
   }
 }
 
@@ -105,14 +146,18 @@ function wrapMermaidBlocks(html: string): string {
   return html.replace(
     /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
     (_match, code) => {
+      // Decode HTML entities back to the raw mermaid source.
+      // ORDER MATTERS: &amp; must be decoded FIRST so that double-encoded
+      // sequences (&amp;lt; → &lt;) can then be decoded by the &lt;/&gt; steps.
+      // This handles both renderWithHtml (no pre-escape) and render (pre-escapes <).
       const decoded = code
+        .replace(/&amp;/g, "&")
         .replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&")
         .replace(/&quot;/g, '"');
-      // Use <pre class="mermaid"> which mermaid.run() auto-discovers.
-      // Also keep a data attribute as backup for debugging.
-      return `<pre class="mermaid">${decoded}</pre>`;
+      // btoa can throw on non-Latin1; use the UTF-8 safe pattern
+      const b64 = btoa(unescape(encodeURIComponent(decoded)));
+      return `<pre class="mermaid" data-mermaid-b64="${b64}"></pre>`;
     }
   );
 }

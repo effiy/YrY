@@ -437,10 +437,10 @@ classDiagram
     User "1" --> "*" Order : places
     Order "1" --> "1..*" OrderItem : contains
     OrderItem "*" --> "1" Product : references
-    PaymentMethod <|.. CreditCard
-    PaymentMethod <|.. DigitalWallet
+    CreditCard ..|> PaymentMethod
+    DigitalWallet ..|> PaymentMethod
     User "1" --> "*" PaymentMethod : has
-    Order "1" --> "1" PaymentMethod : paid-with
+    Order "1" --> "1" PaymentMethod : "paid-with"
 ```
 
 ---
