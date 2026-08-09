@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # BRD-2026-061 Zero-trust platform and network security governance - milestones

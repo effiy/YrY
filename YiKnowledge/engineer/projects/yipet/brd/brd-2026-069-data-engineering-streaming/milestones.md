@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # brd-2026-069 YiPet MV3 dual-world boundary governance — Milestones

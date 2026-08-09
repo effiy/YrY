@@ -6,7 +6,7 @@ category: tech-lead/decisions/fde
 created: 2026-08-05
 updated: 2026-08-05
 source: internal
-type: adr
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly

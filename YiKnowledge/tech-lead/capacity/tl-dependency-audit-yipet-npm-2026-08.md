@@ -14,7 +14,7 @@ total_deps: 318
 outdated: 15
 vulnerable: 0
 unmaintained: 1
-type: dashboard
+type: summary
 category: tech-lead/capacity
 created: 2026-08-07
 updated: 2026-08-07

@@ -15,7 +15,7 @@ category: engineer/architecture-design
 created: 2026-08-03
 updated: 2026-08-07
 source: internal
-type: pattern
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly

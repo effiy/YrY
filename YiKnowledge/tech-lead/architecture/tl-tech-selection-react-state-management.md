@@ -14,7 +14,7 @@ evaluator: YiPet lead owner
 candidates: Zustand 5, Redux Toolkit, Jotai, Valtio
 conclusion: Zustand 5 — concise + persist + cross-world fit
 adr_ref: ADR-YiPet-AICR-Port-Rollout
-type: dashboard
+type: summary
 category: tech-lead/architecture
 created: 2026-08-07
 updated: 2026-08-07

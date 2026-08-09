@@ -17,7 +17,7 @@ created: 2026-08-07
 updated: 2026-08-07
 last_verified: 2026-08-07
 source: internal
-type: prd
+type: summary
 status: draft
 lifecycle: active
 review_cycle: quarterly

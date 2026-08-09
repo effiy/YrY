@@ -54,9 +54,9 @@ tags: [<tag1>, <tag2>, <tag3>] # required, 3-5 items, for cross-directory aggreg
 created: YYYY-MM-DD # required
 updated: YYYY-MM-DD # required
 source: <URL | internal> # required, source link or internal
-type: summary | original | template | prompt # required
-status: stable  # valid values: draft | stable | deprecated
-lifecycle: inbox | triage | active | reference | archive # recommended, defaults to active
+type: template
+status: stable
+lifecycle: active
 review_cycle: weekly | monthly | quarterly | yearly # required for external content
 last_verified: YYYY-MM-DD # required for external content
 author: <author> # optional

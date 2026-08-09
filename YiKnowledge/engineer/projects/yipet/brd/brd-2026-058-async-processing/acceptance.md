@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # BRD-2026-058 Async Processing Platform and Event Stream Governance - Acceptance Criteria

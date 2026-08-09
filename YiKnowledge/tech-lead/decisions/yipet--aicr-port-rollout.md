@@ -6,7 +6,7 @@ category: tech-lead/decisions/yipet
 created: 2026-08-03
 updated: 2026-08-07
 source: internal
-type: adr
+type: summary
 status: draft
 lifecycle: active
 review_cycle: quarterly

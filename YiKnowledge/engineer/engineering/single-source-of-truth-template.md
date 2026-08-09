@@ -130,9 +130,9 @@ category: <role>/<subdir>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 source: internal | external-<source>
-type: summary | gotcha | template | adr | brd | prd | pattern
-status: stable  # valid values: stable | draft | deprecated
-lifecycle: active | reference | archive
+type: template
+status: stable
+lifecycle: active
 review_cycle: monthly | quarterly | half_yearly | yearly
 last_verified: YYYY-MM-DD  # required for external content
 tacit: true | false  # tacit knowledge marker

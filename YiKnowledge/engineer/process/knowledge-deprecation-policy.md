@@ -12,7 +12,7 @@ created: 2026-08-03
 updated: 2026-08-03
 last_verified: 2026-08-07
 source: internal
-type: process
+type: summary
 status: stable
 lifecycle: active
 review_cycle: yearly

@@ -5,7 +5,7 @@ created: 2026-08-03
 updated: 2026-08-07
 last_verified: 2026-08-07
 source: internal
-type: dashboard
+type: summary
 key: tl_roadmap-review_2026_q4_preview
 tags:
 - roadmap

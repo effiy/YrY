@@ -13,7 +13,7 @@ category: product-manager/discovery/prd
 created: 2026-08-07
 updated: 2026-08-07
 source: internal
-type: prd
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly

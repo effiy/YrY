@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # brd-2026-068 Observability & SRE Platform — Document Set

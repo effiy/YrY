@@ -6,7 +6,7 @@ category: engineer/quality-security
 created: 2026-08-03
 updated: 2026-08-03
 source: internal
-type: pattern
+type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly

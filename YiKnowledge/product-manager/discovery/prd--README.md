@@ -6,7 +6,7 @@ created: 2026-08-03
 updated: 2026-08-07
 last_verified: 2026-08-07
 source: internal
-type: leaf-readme
+type: summary
 lifecycle: reference
 status: stable
 review_cycle: quarterly
@@ -50,7 +50,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 last_verified: 2026-08-07
 source: internal
-type: prd
+type: summary
 lifecycle: active
 review_cycle: quarterly
 related: [<related story or process>]

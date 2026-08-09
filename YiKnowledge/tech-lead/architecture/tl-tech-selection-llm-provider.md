@@ -13,7 +13,7 @@ evaluator: YiAi backend owner + CTO
 candidates: Ollama (local), Alibaba Tongyi (cloud), Anthropic, OpenAI, vLLM self-hosted
 conclusion: Phase 1 Alibaba Tongyi fallback; Phase 2 evaluate vLLM self-hosted
 adr_ref: ADR-LLM-Multi-Provider-Rollout
-type: dashboard
+type: summary
 category: tech-lead/architecture
 created: 2026-08-07
 updated: 2026-08-09

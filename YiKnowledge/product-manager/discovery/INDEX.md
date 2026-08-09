@@ -7,7 +7,7 @@ created: 2026-08-03
 updated: 2026-08-03
 last_verified: 2026-08-07
 source: internal
-type: index
+type: summary
 status: stable
 lifecycle: reference
 review_cycle: yearly

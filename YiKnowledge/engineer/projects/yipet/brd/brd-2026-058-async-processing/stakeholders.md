@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # BRD-2026-058 Async processing platform and event stream governance — Stakeholders

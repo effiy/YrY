@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # BRD-2026-063 API Gateway Platform and edge compute Governance - business rules

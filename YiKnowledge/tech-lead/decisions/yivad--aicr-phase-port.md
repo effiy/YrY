@@ -6,7 +6,7 @@ category: tech-lead/decisions/yivad
 created: 2026-08-03
 updated: 2026-08-03
 source: internal
-type: adr
+type: summary
 status: draft
 lifecycle: active
 review_cycle: quarterly

@@ -42,7 +42,7 @@ notes: Unify the flag platform (OpenFeature + Unleash self-hosted) + directory p
 review_cycle: quarterly
 tacit: false
 related: []
-type: brd
+type: summary
 category: engineer/projects/yipet/brd/brd-2026-059-progressive-delivery
 source: internal
 ---

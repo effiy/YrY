@@ -9,7 +9,7 @@ tags:
 practice_area: docs
 current_level: l3
 target_level: l4
-type: dashboard
+type: summary
 category: tech-lead/architecture
 created: 2026-08-07
 updated: 2026-08-07

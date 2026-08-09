@@ -17,7 +17,7 @@ review_cycle: quarterly
 tacit: false
 related: []
 status: stable
-type: brd
+type: summary
 ---
 
 # BRD-2026-065 Multi-region disaster recovery and DR platform buildout — governance rules and compliance requirements

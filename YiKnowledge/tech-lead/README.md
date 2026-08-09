@@ -7,7 +7,7 @@ created: 2026-08-05
 updated: 2026-08-05
 last_verified: 2026-08-07
 source: internal
-type: leaf-readme
+type: summary
 status: stable
 lifecycle: reference
 review_cycle: monthly

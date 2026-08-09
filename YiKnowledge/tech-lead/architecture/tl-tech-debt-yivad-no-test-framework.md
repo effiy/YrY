@@ -11,7 +11,7 @@ tags:
 domain: test
 severity: medium
 repayment_cost: '5'
-type: dashboard
+type: summary
 category: tech-lead/architecture
 created: 2026-08-07
 updated: 2026-08-07

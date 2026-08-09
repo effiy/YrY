@@ -5,7 +5,7 @@ category: knowledge-curator/archive
 created: 2026-08-06
 updated: 2026-08-06
 source: internal
-type: leaf-readme
+type: summary
 status: stable
 lifecycle: reference
 review_cycle: yearly

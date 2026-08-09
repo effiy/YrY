@@ -5,7 +5,7 @@ category: ai-engineer/platform
 created: 2026-08-03
 updated: 2026-08-07
 source: internal
-type: leaf-readme
+type: summary
 lifecycle: reference
 status: stable
 review_cycle: monthly

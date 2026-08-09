@@ -6,7 +6,7 @@ created: 2026-08-03
 updated: 2026-08-03
 last_verified: 2026-08-07
 source: internal
-type: dashboard
+type: summary
 key: tl_capacity-cost_2026_q4_prediction
 tags:
 - finops
