@@ -12,7 +12,7 @@
       <!-- Row A: Volume metrics -->
       <el-row :gutter="12">
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-total" @click="clearAllFilters">
+          <div class="stat-card stat-total" :class="{ 'stat-pulse': pulsingCard === 'total' }" @click="pulseCard('total'); clearAllFilters()">
             <div class="stat-icon"><el-icon><Document /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ formatNumber(knowledgeData?.total ?? 0) }}</div>
@@ -21,7 +21,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-categories" @click="scrollToDrillDown">
+          <div class="stat-card stat-categories" :class="{ 'stat-pulse': pulsingCard === 'categories' }" @click="pulseCard('categories'); scrollToDrillDown()">
             <div class="stat-icon"><el-icon><Folder /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ knowledgeData?.categories.length ?? 0 }}</div>
@@ -30,7 +30,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-modules" @click="scrollToDrillDown">
+          <div class="stat-card stat-modules" :class="{ 'stat-pulse': pulsingCard === 'modules' }" @click="pulseCard('modules'); scrollToDrillDown()">
             <div class="stat-icon"><el-icon><Cpu /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ totalModules }}</div>
@@ -39,7 +39,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-total-size" @click="scrollToDrillDown">
+          <div class="stat-card stat-total-size" :class="{ 'stat-pulse': pulsingCard === 'size' }" @click="pulseCard('size'); scrollToDrillDown">
             <div class="stat-icon"><el-icon><Coin /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ totalSizeFormatted }}</div>
@@ -51,7 +51,7 @@
       <!-- Row B: Quality metrics -->
       <el-row :gutter="12">
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-coverage" @click="toggleNoReviewFilter">
+          <div class="stat-card stat-coverage" :class="{ 'stat-pulse': pulsingCard === 'coverage' }" @click="pulseCard('coverage'); toggleNoReviewFilter()">
             <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ knowledgeData?.health.review_coverage_pct ?? 0 }}%</div>
@@ -60,7 +60,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card" :class="dataQualityScore >= 80 ? 'stat-healthy' : dataQualityScore >= 50 ? 'stat-warn' : 'stat-stale'" @click="setQualityFilter('status')">
+          <div class="stat-card" :class="{ 'stat-healthy': dataQualityScore >= 80, 'stat-warn': dataQualityScore >= 50 && dataQualityScore < 80, 'stat-stale': dataQualityScore < 50, 'stat-pulse': pulsingCard === 'quality' }" @click="pulseCard('quality'); setQualityFilter('status')">
             <div class="stat-icon"><el-icon><DataAnalysis /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value" :style="{ color: dataQualityColor(dataQualityScore) }">{{ dataQualityScore }}%</div>
@@ -69,7 +69,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-tacit" @click="setFilter('tacit', 'true')">
+          <div class="stat-card stat-tacit" :class="{ 'stat-pulse': pulsingCard === 'tacit' }" @click="pulseCard('tacit'); setFilter('tacit', 'true')">
             <div class="stat-icon"><el-icon><Star /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ knowledgeData?.health.tacit_count ?? 0 }}</div>
@@ -78,7 +78,7 @@
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card" :class="(knowledgeData?.health.stale_count ?? 0) > 0 ? 'stat-stale' : 'stat-healthy'">
+          <div class="stat-card" :class="{ 'stat-stale': (knowledgeData?.health.stale_count ?? 0) > 0, 'stat-healthy': (knowledgeData?.health.stale_count ?? 0) === 0, 'stat-pulse': pulsingCard === 'stale' }" @click="pulseCard('stale'); setFilter('stale', 'true')">
             <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ knowledgeData?.health.stale_count ?? 0 }}</div>
@@ -99,50 +99,50 @@
       </div>
       <el-row :gutter="12">
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Review Cycle</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('review_cycle') }">
+            <div class="chart-title">Review Cycle <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="reviewCycleDonutOption" height="220" @chart-click="onChartClick('review_cycle', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Status</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('status') }">
+            <div class="chart-title">Status <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="statusBarOption" height="220" @chart-click="onChartClick('status', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Type</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('type') }">
+            <div class="chart-title">Type <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="typeBarOption" height="220" @chart-click="onChartClick('type', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Lifecycle</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('lifecycle') }">
+            <div class="chart-title">Lifecycle <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="lifecycleBarOption" height="220" @chart-click="onChartClick('lifecycle', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Top Modules</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('module') }">
+            <div class="chart-title">Top Modules <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="moduleBarOption" height="220" @chart-click="onChartClick('module', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">Roles</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('roles') }">
+            <div class="chart-title">Roles <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="rolesBarOption" height="220" @chart-click="onChartClick('role', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">File Size</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('size') }">
+            <div class="chart-title">File Size <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="sizeDistOption" height="220" @chart-click="onChartClick('size', $event)" /></div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-          <div class="chart-box">
-            <div class="chart-title">File Age</div>
+          <div class="chart-box" :class="{ 'chart-highlight': isDimensionFiltered('age') }">
+            <div class="chart-title">File Age <span class="chart-count-badge" v-if="chartContextFiles">({{ chartContextFiles.length }})</span></div>
             <div class="chart-body"><ECharts :option="fileAgeOption" height="220" @chart-click="onChartClick('age', $event)" /></div>
           </div>
         </el-col>
@@ -201,10 +201,76 @@
       </el-row>
     </div>
 
+    <!-- Filter Pills Bar -->
+    <FilterPills
+      :pills="activeFilterPills"
+      :hasActiveFilter="hasActiveFilter"
+      @remove="(key: string) => removeFilter(key)"
+      @clearAll="clearAllFilters"
+    />
+
+    <!-- Collapsible Analytical Panels -->
+    <div class="card collapsible-panels">
+      <div class="top-header">
+        <span class="top-title">Advanced Analysis</span>
+        <div class="top-actions">
+          <el-button text size="small" @click="showStaleRisk = !showStaleRisk" :type="showStaleRisk ? 'primary' : ''">
+            Stale Risk
+          </el-button>
+          <el-button text size="small" @click="showCategoryComparison = !showCategoryComparison" :type="showCategoryComparison ? 'primary' : ''">
+            Compare Categories
+          </el-button>
+          <el-button text size="small" @click="showCrossHeatmap = !showCrossHeatmap" :type="showCrossHeatmap ? 'primary' : ''">
+            Status × Lifecycle
+          </el-button>
+          <el-button text size="small" @click="showCoverageGaps = !showCoverageGaps" :type="showCoverageGaps ? 'primary' : ''">
+            Coverage Gaps
+          </el-button>
+        </div>
+      </div>
+
+      <StaleRiskTimeline
+        v-if="showStaleRisk"
+        :buckets="staleRiskBuckets"
+        @filterFiles="(files: any) => { clearAllFilters(); files.forEach((f: any) => setFilter('stale', 'true')) }"
+      />
+
+      <CategoryComparison
+        v-if="showCategoryComparison"
+        :data="categoryComparisonData"
+        :activeCategory="activeFilter.category || ''"
+        @selectCategory="(name: string) => setFilter('category', name)"
+      />
+
+      <el-row :gutter="12" v-if="showCrossHeatmap">
+        <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+          <CrossHeatmap
+            :data="crossStatusLifecycle"
+            @cellClick="(status: string, lifecycle: string) => { setFilter('status', status); setFilter('lifecycle', lifecycle) }"
+          />
+        </el-col>
+      </el-row>
+
+      <CoverageGaps
+        v-if="showCoverageGaps"
+        :data="coverageGapData"
+        @drillGap="(cat: string, mod: string, field: string) => { setFilter('category', cat); setFilter('module', mod); setQualityFilter(field) }"
+      />
+    </div>
+
     <!-- Main Row: Full-width drill-down tree + file preview -->
     <el-row :gutter="12" class="main-row">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="main-col-full">
-        <div class="card drill-down-box" ref="drillDownRef">
+        <div class="card drill-down-box" ref="drillDownRef" :class="{ 'drill-highlight-flash': drillHighlight }">
+          <!-- Breadcrumb Navigation -->
+          <DrillBreadcrumb
+            :segments="filterBreadcrumb"
+            :hasActiveFilter="hasActiveFilter"
+            :activeDimensions="activeFilterPills.filter((p: any) => !['category', 'module', 'sub_module'].includes(p.key))"
+            @clearAll="clearAllFilters"
+            @backToCategory="backToCategory"
+            @removeFilter="(key: string) => removeFilter(key)"
+          />
           <!-- Panel Header -->
           <div class="panel-header">
             <span class="panel-title">
@@ -898,12 +964,18 @@ import { ref } from "vue";
 import {
   Document, Folder, Grid, Refresh, TrendCharts, Star, WarningFilled,
   Search, InfoFilled, User, Cpu, ArrowLeft, ArrowRight, Coin, Close, View,
-  DataAnalysis,
+  DataAnalysis, HomeFilled,
 } from "@element-plus/icons-vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useKnowledgeBase } from "./composables/useKnowledgeBase";
+import FilterPills from "./components/FilterPills.vue";
+import DrillBreadcrumb from "./components/DrillBreadcrumb.vue";
+import CategoryComparison from "./components/CategoryComparison.vue";
+import CrossHeatmap from "./components/CrossHeatmap.vue";
+import StaleRiskTimeline from "./components/StaleRiskTimeline.vue";
+import CoverageGaps from "./components/CoverageGaps.vue";
 
 const { render } = useMarkdown();
 const kb = useKnowledgeBase();
@@ -934,6 +1006,12 @@ const {
   showSearchSuggestions, moduleDrillSearch, expandedModuleKeys, moduleTableRef,
   fileContent, fileContentLoading, showFileContent,
   recentlyViewed, drillDownRef, detailPanelRef,
+  chartPulseKey, drillHighlight, pulsingCard,
+  showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
+  // cross-filter
+  activeFilterPills, filterBreadcrumb, filteredDimensions, isDimensionFiltered,
+  chartContextFiles,
+  // computed
   hasActiveFilter, showSubModuleGrid, isShowingTreeView,
   topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
   dataQualityScore, missingMetadataCount,
@@ -949,6 +1027,8 @@ const {
   dialogFileIndex, prevDialogFile, nextDialogFile, dialogFilePath,
   drillSummary,
   enrichedSearchResults, searchSuggestions,
+  categoryComparisonData, crossStatusLifecycle, staleRiskBuckets, coverageGapData,
+  categoryTreeData,
   reviewCycleDonutOption, typeBarOption, statusBarOption,
   sizeDistOption, fileAgeOption, lifecycleBarOption,
   moduleBarOption, rolesBarOption,
@@ -956,7 +1036,8 @@ const {
   isStaleFile, fileHealthLevel, getModuleClassSummary,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
   dataQualityColor,
-  setFilter, toggleNoReviewFilter, setQualityFilter, backToCategory, clearAllFilters,
+  setFilter, removeFilter, pulseCard, toggleNoReviewFilter, setQualityFilter,
+  backToCategory, clearAllFilters,
   drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
   navigateToModule, crossFilterSubModule,
   onTimeFilterChange, onTableSortChange, scrollToDrillDown,

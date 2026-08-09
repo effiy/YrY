@@ -187,3 +187,85 @@ export function dataQualityColor(pct: number): string {
   if (pct >= 50) return "#e6a23c";
   return "#f56c6c";
 }
+
+// ── Filter Labels ──
+
+export const FILTER_LABEL_MAP: Record<string, string> = {
+  category: "Category",
+  status: "Status",
+  type: "Type",
+  lifecycle: "Lifecycle",
+  review_cycle: "Review Cycle",
+  module: "Module",
+  sub_module: "Sub-module",
+  role: "Role",
+  tag: "Tag",
+  tacit: "Tacit",
+  stale: "Stale",
+  size_min: "Min Size",
+  size_max: "Max Size",
+  age_min_days: "Min Age",
+  age_max_days: "Max Age",
+};
+
+export const FILTER_DIMENSION_COLORS: Record<string, string> = {
+  category: "#5470c6",
+  status: "#67c23a",
+  type: "#fac858",
+  lifecycle: "#409eff",
+  review_cycle: "#ee6666",
+  module: "#5ab1ef",
+  sub_module: "#73c0de",
+  role: "#fc8452",
+  tag: "#5470c6",
+  tacit: "#9a60b4",
+  stale: "#e6a23c",
+  size_min: "#909399",
+  size_max: "#909399",
+  age_min_days: "#909399",
+  age_max_days: "#909399",
+};
+
+// ── Stale Risk & Health Scoring ──
+
+/** Compute days until a file's review is due. Negative = overdue, null = can't determine. */
+export function daysUntilDue(f: KnowledgeFileSummary): number | null {
+  if (!f.review_cycle || !f.updated) return null;
+  const cycleDays = REVIEW_CYCLE_DAYS[f.review_cycle];
+  if (!cycleDays) return null;
+  try {
+    const updated = new Date(f.updated).getTime();
+    if (isNaN(updated)) return null;
+    const daysSince = (Date.now() - updated) / 86400000;
+    return cycleDays - daysSince;
+  } catch {
+    return null;
+  }
+}
+
+/** Composite module health score 0–100: coverage (40%) + freshness (40%) + base (20%). */
+export function moduleHealthScore(m: {
+  review_coverage_pct: number;
+  stale_count: number;
+  count: number;
+}): number {
+  const staleRatio = m.count > 0 ? m.stale_count / m.count : 0;
+  return Math.round(m.review_coverage_pct * 0.4 + (1 - staleRatio) * 100 * 0.4 + 20);
+}
+
+/** Map filter keys to chart dimension names for highlighting. */
+export function filterKeyToDimension(key: string): string | null {
+  const keyDimMap: Record<string, string> = {
+    category: "category",
+    status: "status",
+    type: "type",
+    lifecycle: "lifecycle",
+    review_cycle: "review_cycle",
+  };
+  if (key in keyDimMap) return keyDimMap[key];
+  if (key === "role" || key === "tag") return "roles";
+  if (key === "size_min" || key === "size_max") return "size";
+  if (key === "age_min_days" || key === "age_max_days") return "age";
+  if (key === "module" || key === "sub_module") return "module";
+  return null;
+}

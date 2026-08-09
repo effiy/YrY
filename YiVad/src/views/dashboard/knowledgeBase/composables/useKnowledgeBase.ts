@@ -12,11 +12,12 @@ import {
   buildReviewCycleDonut, buildTypeBar, buildStatusBar, buildSizeDist,
   buildFileAge, buildLifecycleBar, buildModuleBar, buildRolesBar, CHART_PALETTE,
 } from "../charts";
+import { useCrossFilter } from "./useCrossFilter";
 import {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
-  dataQualityColor,
+  dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
 } from "../utils";
 
 const { openInAiChat } = useAiChatBridge();
@@ -91,6 +92,18 @@ export function useKnowledgeBase() {
   // ── Refs for template ──
   const drillDownRef = ref<HTMLElement | null>(null);
   const detailPanelRef = ref<HTMLElement | null>(null);
+
+  // ── Cross-Filter ──
+  const xf = useCrossFilter(activeFilter);
+  const chartPulseKey = ref(0);
+  const drillHighlight = ref(false);
+  const pulsingCard = ref("");
+
+  // ── Collapsible section toggles ──
+  const showCategoryComparison = ref(false);
+  const showCrossHeatmap = ref(false);
+  const showStaleRisk = ref(false);
+  const showCoverageGaps = ref(false);
 
   // ── Computed: Overview ──
   const hasActiveFilter = computed(() => Object.keys(activeFilter.value).length > 0);
@@ -218,6 +231,7 @@ export function useKnowledgeBase() {
         stale_count: m.stale_count,
         tacit_count: m.tacit_count,
         review_coverage_pct: m.review_coverage_pct,
+        healthScore: moduleHealthScore(m),
         files: (fileLookup.get(`${m.category}/${m.name}`) || []).sort((a, b) => (b.updated || "").localeCompare(a.updated || "")),
         filePage: 30,
       }));
@@ -457,6 +471,162 @@ export function useKnowledgeBase() {
     };
   });
 
+  // ── Computed: Category Comparison ──
+  const categoryComparisonData = computed(() => {
+    const cats = knowledgeData.value?.categories ?? [];
+    const modules = knowledgeData.value?.modules ?? [];
+    const files = knowledgeData.value?.files ?? [];
+    return cats
+      .map(cat => {
+        const catModules = modules.filter(m => m.category === cat.name);
+        const catFiles = files.filter(f => f.category === cat.name);
+        const totalFiles = catFiles.length;
+        const staleCount = catModules.reduce((s, m) => s + m.stale_count, 0);
+        const tacitCount = catModules.reduce((s, m) => s + m.tacit_count, 0);
+        const avgCoverage =
+          totalFiles > 0
+            ? Math.round(catModules.reduce((s, m) => s + m.review_coverage_pct * m.count, 0) / totalFiles)
+            : 0;
+        const completeFiles = catFiles.filter(
+          f => f.status && f.type && f.type !== "unknown" && f.lifecycle && f.lifecycle !== "unknown" && f.review_cycle
+        ).length;
+        const qualityPct = totalFiles ? Math.round((completeFiles / totalFiles) * 100) : 0;
+        const statusCounts = new Map<string, number>();
+        catFiles.forEach(f => statusCounts.set(f.status, (statusCounts.get(f.status) || 0) + 1));
+        const topStatus = [...statusCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 1)[0];
+        const topTypeEntries = countByField(catFiles, "type").slice(0, 1);
+        return {
+          name: cat.name,
+          files: totalFiles,
+          modules: catModules.length,
+          coverage: avgCoverage,
+          stale: staleCount,
+          tacit: tacitCount,
+          quality: qualityPct,
+          topStatus: topStatus?.[0] || "-",
+          topType: topTypeEntries[0]?.name || "-",
+        };
+      })
+      .sort((a, b) => b.files - a.files);
+  });
+
+  // ── Computed: Cross-Dimensional Heatmap (Status × Lifecycle) ──
+  const crossStatusLifecycle = computed(() => {
+    const files = activeFilter.value.category
+      ? (knowledgeData.value?.files ?? []).filter(f => f.category === activeFilter.value.category)
+      : (knowledgeData.value?.files ?? []);
+    const map = new Map<string, number>();
+    for (const f of files) {
+      const key = `${f.status || "unknown"}|${f.lifecycle || "unknown"}`;
+      map.set(key, (map.get(key) || 0) + 1);
+    }
+    return Array.from(map.entries()).map(([key, count]) => {
+      const [status, lifecycle] = key.split("|");
+      return { status, lifecycle, count };
+    });
+  });
+
+  // ── Computed: Stale Risk Buckets ──
+  interface StaleRiskBucket {
+    label: string;
+    severity: "red" | "orange" | "yellow" | "blue";
+    files: KnowledgeFileSummary[];
+    count: number;
+  }
+
+  const staleRiskBuckets = computed((): StaleRiskBucket[] => {
+    const allFiles = knowledgeData.value?.files ?? [];
+    const withRisk: { file: KnowledgeFileSummary; daysUntilDue: number }[] = [];
+    for (const f of allFiles) {
+      const d = daysUntilDue(f);
+      if (d !== null) withRisk.push({ file: f, daysUntilDue: d });
+    }
+    withRisk.sort((a, b) => a.daysUntilDue - b.daysUntilDue);
+    const buckets: StaleRiskBucket[] = [
+      {
+        label: "Overdue",
+        severity: "red" as const,
+        files: withRisk.filter(r => r.daysUntilDue <= 0).map(r => r.file),
+        count: 0,
+      },
+      {
+        label: "Due within 7 days",
+        severity: "orange" as const,
+        files: withRisk.filter(r => r.daysUntilDue > 0 && r.daysUntilDue <= 7).map(r => r.file),
+        count: 0,
+      },
+      {
+        label: "Due within 30 days",
+        severity: "yellow" as const,
+        files: withRisk.filter(r => r.daysUntilDue > 7 && r.daysUntilDue <= 30).map(r => r.file),
+        count: 0,
+      },
+      {
+        label: "Due within 90 days",
+        severity: "blue" as const,
+        files: withRisk.filter(r => r.daysUntilDue > 30 && r.daysUntilDue <= 90).map(r => r.file),
+        count: 0,
+      },
+    ];
+    return buckets.map(b => ({ ...b, count: b.files.length }));
+  });
+
+  // ── Computed: Coverage Gaps ──
+  const coverageGapData = computed(() => {
+    const mods = knowledgeData.value?.modules ?? [];
+    const files = knowledgeData.value?.files ?? [];
+    return mods
+      .filter(m => m.name !== "__root__")
+      .map(m => {
+        const modFiles = files.filter(f => f.category === m.category && f.module === m.name);
+        const noStatus = modFiles.filter(f => !f.status).length;
+        const noType = modFiles.filter(f => !f.type || f.type === "unknown").length;
+        const noLifecycle = modFiles.filter(f => !f.lifecycle || f.lifecycle === "unknown").length;
+        const noReview = modFiles.filter(f => !f.review_cycle).length;
+        const noRoles = modFiles.filter(f => !f.roles?.length).length;
+        const noTags = modFiles.filter(f => !f.tags?.length).length;
+        const totalGaps = noStatus + noType + noLifecycle + noReview + noRoles + noTags;
+        return {
+          module: `${m.category}/${m.name}`,
+          category: m.category,
+          name: m.name,
+          fileCount: m.count,
+          noStatus,
+          noType,
+          noLifecycle,
+          noReview,
+          noRoles,
+          noTags,
+          totalGaps,
+        };
+      })
+      .sort((a, b) => b.totalGaps - a.totalGaps);
+  });
+
+  // ── Computed: Category Tree Data (for el-tree) ──
+  const categoryTreeData = computed(() => {
+    const cats = knowledgeData.value?.categories ?? [];
+    const modules = knowledgeData.value?.modules ?? [];
+    return cats.map(cat => ({
+      id: cat.name,
+      label: `${cat.name} (${cat.count})`,
+      children: modules
+        .filter(m => m.category === cat.name && m.name !== "__root__")
+        .sort((a, b) => b.count - a.count)
+        .map(m => ({
+          id: `${cat.name}/${m.name}`,
+          label: `${m.name} (${m.count})`,
+          children: (m.sub_modules || [])
+            .filter(sm => sm.name !== "__root__")
+            .sort((a, b) => b.count - a.count)
+            .map(sm => ({
+              id: `${cat.name}/${m.name}/${sm.name}`,
+              label: `${sm.name} (${sm.count})`,
+            })),
+        })),
+    }));
+  });
+
   // ── Computed: Search ──
   const enrichedSearchResults = computed(() => {
     const fileMap = new Map<string, KnowledgeFileSummary>();
@@ -608,7 +778,33 @@ export function useKnowledgeBase() {
     searchText.value = "";
     browseAllFiles.value = false;
     selectedFile.value = null;
+    chartPulseKey.value++;
+    pulsingCard.value = "";
+    setTimeout(() => {
+      drillHighlight.value = true;
+      scrollToDrillDown();
+      setTimeout(() => { drillHighlight.value = false; }, 1500);
+    }, 100);
+  }
+
+  /** Remove a single filter key entirely. */
+  function removeFilter(key: string) {
+    const next = { ...activeFilter.value };
+    delete next[key];
+    activeFilter.value = next;
+    activeSubCategory.value = "";
+    drillView.value = "all";
+    drillPage.value = 1;
+    searchText.value = "";
+    browseAllFiles.value = false;
+    selectedFile.value = null;
+    chartPulseKey.value++;
     setTimeout(() => scrollToDrillDown(), 100);
+  }
+
+  function pulseCard(cardKey: string) {
+    pulsingCard.value = cardKey;
+    setTimeout(() => { pulsingCard.value = ""; }, 400);
   }
 
   function toggleNoReviewFilter() {
@@ -665,6 +861,9 @@ export function useKnowledgeBase() {
     dialogFilePath.value = "";
     expandedModuleKeys.value = [];
     moduleDrillSearch.value = "";
+    chartPulseKey.value++;
+    pulsingCard.value = "";
+    drillHighlight.value = false;
   }
 
   function drillToModule(moduleName: string) {
@@ -1004,6 +1203,10 @@ export function useKnowledgeBase() {
     fileContent, fileContentLoading, showFileContent,
     dialogFilePath, recentlyViewed,
     drillDownRef, detailPanelRef,
+    chartPulseKey, drillHighlight, pulsingCard,
+    showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
+    // Cross-filter
+    ...xf,
     // Computed
     hasActiveFilter, showSubModuleGrid, isShowingTreeView,
     topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
@@ -1020,12 +1223,16 @@ export function useKnowledgeBase() {
     dialogFileIndex, prevDialogFile, nextDialogFile,
     drillSummary,
     enrichedSearchResults, searchSuggestions,
+    categoryComparisonData, crossStatusLifecycle, staleRiskBuckets, coverageGapData,
+    categoryTreeData,
+    chartContextFiles,
     // Chart options
     reviewCycleDonutOption, typeBarOption, statusBarOption,
     sizeDistOption, fileAgeOption, lifecycleBarOption,
     moduleBarOption, rolesBarOption,
     // Methods
-    setFilter, toggleNoReviewFilter, setQualityFilter, backToCategory, clearAllFilters,
+    setFilter, removeFilter, pulseCard, toggleNoReviewFilter, setQualityFilter,
+    backToCategory, clearAllFilters,
     drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
     navigateToModule, crossFilterSubModule,
     onTimeFilterChange, onTableSortChange, scrollToDrillDown,
@@ -1039,6 +1246,6 @@ export function useKnowledgeBase() {
     formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
     isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
     catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
-    dataQualityColor,
+    dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
   };
 }

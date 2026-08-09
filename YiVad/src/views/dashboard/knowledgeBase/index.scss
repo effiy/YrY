@@ -67,6 +67,16 @@
     .qmc-sub { font-size: 9px; color: #909399; margin-top: 1px; }
   }
 
+  // ── Collapsible Analytical Panels ──
+  .collapsible-panels {
+    box-sizing: border-box;
+    padding: 6px 20px 6px;
+    flex-shrink: 0;
+    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .top-title { font-family: DIN; font-size: 13px; font-weight: bold; }
+    .top-actions { display: flex; align-items: center; gap: 4px; }
+  }
+
   // ── Category Summary (inline) ──
   .cat-summary {
     flex-shrink: 0; padding: 0 20px;
@@ -334,6 +344,31 @@
     .chart-body { flex: 1; min-height: 0; width: 100%; }
   }
   .chart-hint { font-size: 10px; color: #909399; }
+
+  // ── Chart Highlighting ──
+  .chart-highlight {
+    border-color: var(--el-color-primary) !important;
+    box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
+    .chart-title { color: var(--el-color-primary); font-weight: 700; }
+  }
+  .chart-count-badge {
+    font-size: 10px; color: var(--el-color-primary); font-weight: normal; margin-left: 4px;
+  }
+
+  // ── Stat Card Pulse ──
+  @keyframes statPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(84, 112, 198, 0.4); }
+    50% { transform: scale(1.03); box-shadow: 0 0 0 6px rgba(84, 112, 198, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(84, 112, 198, 0); }
+  }
+  .stat-pulse { animation: statPulse 0.4s ease-out; }
+
+  // ── Drill-Down Highlight Flash ──
+  @keyframes highlightFlash {
+    0% { box-shadow: 0 0 0 0 rgba(230, 162, 60, 0.6); border-color: #e6a23c; }
+    100% { box-shadow: 0 0 0 0 rgba(230, 162, 60, 0); border-color: transparent; }
+  }
+  .drill-highlight-flash { animation: highlightFlash 1.5s ease-out; border-radius: 8px; }
 
   .mb12 { margin-bottom: 6px; }
   .text-muted { color: #c0c4cc; }
