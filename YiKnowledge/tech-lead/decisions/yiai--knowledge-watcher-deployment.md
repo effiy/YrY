@@ -17,7 +17,7 @@ benefit: "YiAi knowledge watcher deployment decision is documented with the apsc
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/functional-modules.md

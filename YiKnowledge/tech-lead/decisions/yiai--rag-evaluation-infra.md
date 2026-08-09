@@ -17,7 +17,7 @@ benefit: "YiAi RAG evaluation infrastructure decision is documented, enabling re
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yiai/architecture.md
   - ./route-llm-traffic-across-providers.md

@@ -23,14 +23,15 @@ benefit: Operations cost is quantifiable, knowledge contribution does not rely o
 acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
-  - "usage guidance explains when to use this template and common mistakes"- 4 Role responsibilities assigned to person + time investment explicit
-- Weekly / monthly / quarterly / yearly 4 cadences + each cadence action checklist executable
+  - "usage guidance explains when to use this template and common mistakes"
+  - 4 Role responsibilities assigned to person + time investment explicit
+  - Weekly / monthly / quarterly / yearly 4 cadences + each cadence action checklist executable
 related:
-- ../diagrams/knowledge-map.md
-- ./review-log.md
-- ../README.md
-- ../../engineer/process/knowledge-review.md
-- ../../engineer/process/knowledge-contributor-charter.md
+  - ../diagrams/knowledge-map.md
+  - ./review-log.md
+  - ../README.md
+  - ../../engineer/process/knowledge-review.md
+  - ../../engineer/process/knowledge-contributor-charter.md
 tacit: false
 ---
 

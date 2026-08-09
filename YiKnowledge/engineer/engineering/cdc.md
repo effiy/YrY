@@ -17,7 +17,7 @@ benefit: "Database changes are captured and streamed in real-time, enabling even
 acceptance_criteria:
   - "pattern name, problem statement, and solution approach are all described"
   - "trade-offs and when-not-to-use-this-pattern are explicitly stated"
-  - "at least one concrete example or code snippet is provided
+  - at least one concrete example or code snippet is provided
 related:
 ---
 

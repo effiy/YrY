@@ -16,7 +16,7 @@ benefit: "README outcome clear"
 acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
-  - "usage guidance explains when to use this template and common mistakes
+  - usage guidance explains when to use this template and common mistakes
 related:
   - ./diagrams/knowledge-map.md
   - ./diagrams/directory-blueprint.md

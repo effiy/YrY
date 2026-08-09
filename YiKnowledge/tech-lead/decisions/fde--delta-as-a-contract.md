@@ -17,7 +17,7 @@ benefit: "Delta managed as a SOW attachment contract, legally traceable, evidenc
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/process/operate-as-a-forward-deployed-engineer.md
   - ../../../engineer/process/apply-consulting-frameworks.md

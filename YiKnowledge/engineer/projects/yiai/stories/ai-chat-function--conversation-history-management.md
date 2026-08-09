@@ -9,7 +9,8 @@ title: Conversation history management (Scene)
 category: engineer/projects/yiai/stories/ai-chat-function/conversation-history-management
 tags: []
 created: 2026-08-07
-updated: 2026-08-09source: internal
+updated: 2026-08-09
+source: internal
 source: internal
 type: original
 lifecycle: active

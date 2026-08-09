@@ -16,7 +16,7 @@ benefit: "SREs practice rollback procedures so that real rollbacks are fast, saf
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ./respond-to-an-incident.md
   - ../../engineer/infrastructure/ship-a-release.md

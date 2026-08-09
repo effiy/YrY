@@ -17,7 +17,7 @@ benefit: "End-to-end request latency is bounded by cascading timeout budgets, pr
 acceptance_criteria:
   - "pattern name, problem statement, and solution approach are all described"
   - "trade-offs and when-not-to-use-this-pattern are explicitly stated"
-  - "at least one concrete example or code snippet is provided
+  - at least one concrete example or code snippet is provided
 related:
   - ./retry-with-backoff.md
   - ../../tech-lead/roadmap/define-an-slo.md

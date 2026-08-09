@@ -17,7 +17,7 @@ benefit: "Team members understand the current team structure, roles, and collabo
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
   - ./roster.md
   - ../../../engineer/process/raci-matrix.md

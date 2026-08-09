@@ -16,7 +16,7 @@ benefit: "findings are actionable"
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
 - ../../tech-lead/roadmap/do-a-proof-of-concept.md
   - ../../tech-lead/roadmap/do-a-tech-selection.md

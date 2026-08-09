@@ -1,13 +1,14 @@
 ---
 status: stable
-title: Knowledge Base Dashboard — UI Designlifecycle: active
+title: Knowledge Base Dashboard — UI Design
 type: summary
-category: engineer/projects/yivadcreated: 2026-08-09
-updated: 2026-08-09review_cycle: quarterly
+category: engineer/projects/yivad
+created: 2026-08-07
+updated: 2026-08-09
+review_cycle: quarterly
 source: internal
 lifecycle: active
-created: 2026-08-07
-updated: 2026-08-09tacit: >
+tacit: >
   页面曾有一处"图表回归"：composable 里 9 个图表 computed 全部实现但模板从未渲染。
   修复时最关键的认知是——图表依赖 `chartContextFiles` 惰性 computed，
   选中分类/模块后自动收窄，无需在模板里单独维护图表筛选状态。

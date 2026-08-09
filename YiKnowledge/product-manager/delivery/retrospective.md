@@ -17,7 +17,7 @@ benefit: "Teams reflect on what worked and what didn't, turning iteration experi
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
   - ./retrospective-meeting.md
   - ./weekly-report.md

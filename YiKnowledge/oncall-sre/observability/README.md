@@ -15,7 +15,7 @@ benefit: "SREs find observability patterns, monitoring setup, and infrastructure
 acceptance_criteria:
   - "scope of the leaf directory is clearly bounded"
   - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present
+  - cross-references to related leaves and parent INDEX are present
 related:
   - ../../engineer/process/check-engineering-gotchas.md
   - ../../ai-engineer/platform/README.md

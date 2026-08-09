@@ -17,7 +17,7 @@ benefit: "YiPet Chrome MV3 dual-world boundary decision is documented, enabling 
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yipet/architecture.md
   - ../../../engineer/projects/yipet/dev-standards.md

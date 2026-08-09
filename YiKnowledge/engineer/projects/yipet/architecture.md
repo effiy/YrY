@@ -17,7 +17,7 @@ benefit: "Engineers understand YiPet system architecture, tech stack decisions, 
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ./engineering/claude.md
   - ./engineering/readme.md

@@ -15,7 +15,7 @@ benefit: "Decision-makers apply thinking frameworks (first principles, inversion
 acceptance_criteria:
   - "scope of the leaf directory is clearly bounded"
   - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present
+  - cross-references to related leaves and parent INDEX are present
 related:
   - ../../../product-manager/frameworks/README.md
   - ../../../executive/strategy/README.md

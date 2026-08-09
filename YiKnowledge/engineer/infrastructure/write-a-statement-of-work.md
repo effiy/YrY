@@ -16,7 +16,7 @@ benefit: "SOWs define clear scope, deliverables, and acceptance criteria, preven
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../process/operate-as-a-forward-deployed-engineer.md
   - ../process/apply-consulting-frameworks.md

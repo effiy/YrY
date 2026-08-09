@@ -15,7 +15,8 @@ benefit: project context preserved
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified"review_cycle: quarterly
+  - "anti-patterns or when-not-to-use are identified"
+review_cycle: quarterly
 tacit: false
 related:
   - ./claude.md

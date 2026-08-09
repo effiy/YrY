@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-062-data-governance: milestones
+title: "brd-2026-062-data-governance: milestones"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

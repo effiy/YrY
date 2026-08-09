@@ -26,10 +26,10 @@ acceptance_criteria:
   - "actionable recommendations are given, not just information"
   - "anti-patterns or when-not-to-use are identified"
 related:
--../../tech-lead/architecture/design-architecture-decision.md
--../processes/roll-out-a-migration.md
--../../engineer/projects/INDEX.md
--../../README.md
+  - ../../tech-lead/architecture/design-architecture-decision.md
+  - ../processes/roll-out-a-migration.md
+  - ../../engineer/projects/INDEX.md
+  - ../../README.md
 review_cycle: quarterly
 last_verified: 2026-08-07
 tacit: false

@@ -17,7 +17,7 @@ benefit: "YiVad Vitest adoption decision is documented with trade-offs, enabling
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yivad/architecture.md
   - ../../../engineer/projects/yivad/dev-standards.md

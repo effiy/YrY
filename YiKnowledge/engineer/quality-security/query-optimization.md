@@ -17,7 +17,7 @@ benefit: "Database queries are systematically profiled and optimized to reduce l
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ./index-optimization.md
   - ./contract-test-baseline.md

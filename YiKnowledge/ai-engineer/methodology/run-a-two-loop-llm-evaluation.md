@@ -16,7 +16,7 @@ benefit: "LLM quality is measured through inner-loop (development) and outer-loo
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
   - ./llm-evaluation-methods.md
   - ./rag-design-patterns.md

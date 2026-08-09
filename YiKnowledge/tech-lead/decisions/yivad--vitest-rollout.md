@@ -17,7 +17,7 @@ benefit: "YiVad Vitest rollout plan is documented with phases and success criter
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ./vitest-introduction.md
   - ../../../engineer/projects/yivad/architecture.md

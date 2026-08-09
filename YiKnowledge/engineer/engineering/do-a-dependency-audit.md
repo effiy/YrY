@@ -16,7 +16,7 @@ benefit: "review is structured"
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../../oncall-sre/incident-response/handle-a-major-version-upgrade.md
   - ./handle-a-dependency-conflict.md

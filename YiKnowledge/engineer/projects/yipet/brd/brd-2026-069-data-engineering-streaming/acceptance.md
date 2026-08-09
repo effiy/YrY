@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-069-data-engineering-streaming: acceptance
+title: "brd-2026-069-data-engineering-streaming: acceptance"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

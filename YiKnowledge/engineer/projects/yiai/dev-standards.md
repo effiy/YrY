@@ -5,7 +5,7 @@ tags: [yiai, dev-standards, conventions, fastapi, python, lint, testing, commit]
 category: engineer/projects/yiai
 created: 2026-08-03
 updated: 2026-08-07
-source:../../YiAi/CLAUDE.md
+source: ../../YiAi/CLAUDE.md
 type: summary
 status: stable
 lifecycle: active

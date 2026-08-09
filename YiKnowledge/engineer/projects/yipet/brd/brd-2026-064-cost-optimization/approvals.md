@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-064-cost-optimization: approvals
+title: "brd-2026-064-cost-optimization: approvals"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

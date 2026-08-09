@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-064-cost-optimization: documents
+title: "brd-2026-064-cost-optimization: documents"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

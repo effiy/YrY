@@ -16,7 +16,7 @@ benefit: "Request flows are traced across service boundaries, enabling latency d
 acceptance_criteria:
   - "pattern name, problem statement, and solution approach are all described"
   - "trade-offs and when-not-to-use-this-pattern are explicitly stated"
-  - "at least one concrete example or code snippet is provided
+  - at least one concrete example or code snippet is provided
 related:
 - ./observability.md
   - ./rate-limiting.md

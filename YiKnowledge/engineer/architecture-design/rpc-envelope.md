@@ -17,7 +17,7 @@ benefit: "RPC interfaces are versioned and validated through envelope contracts,
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ../projects/yiai/dev-standards.md
   - ../projects/yiai/functional-modules.md

@@ -17,7 +17,7 @@ benefit: "YiAi pytest adoption decision is documented with trade-offs, enabling 
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yiai/architecture.md
   - ../../../engineer/projects/yiai/dev-standards.md

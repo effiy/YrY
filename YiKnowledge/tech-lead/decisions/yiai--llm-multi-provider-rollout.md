@@ -17,7 +17,7 @@ benefit: "YiAi multi-provider LLM routing decision is documented, enabling cost-
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ./route-llm-traffic-across-providers.md
   - ../../../engineer/projects/yiai/architecture.md

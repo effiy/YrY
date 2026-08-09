@@ -17,7 +17,7 @@ benefit: "System protects itself from abuse and overload by enforcing per-client
 acceptance_criteria:
   - "pattern name, problem statement, and solution approach are all described"
   - "trade-offs and when-not-to-use-this-pattern are explicitly stated"
-  - "at least one concrete example or code snippet is provided
+  - at least one concrete example or code snippet is provided
 related:
   - ./observability.md
   - ./dual-world-boundary.md

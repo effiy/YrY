@@ -22,7 +22,8 @@ status: stable
 lifecycle: active
 review_cycle: quarterly
 last_verified: 2026-08-03
-tacit: Observability is not just logs; it is the log+metric+trace three pillars + SLO + error budget + alerts must be actionable;
+tacit: >-
+  Observability is not just logs; it is the log+metric+trace three pillars + SLO + error budget + alerts must be actionable;
   alerts come with runbooks; LLM observability supplements four items: token/latency/cost/quality
 roles:
 - engineer

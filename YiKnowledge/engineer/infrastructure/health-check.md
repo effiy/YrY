@@ -17,7 +17,7 @@ benefit: "Service health is monitored through standardized endpoints, enabling a
 acceptance_criteria:
   - "pattern name, problem statement, and solution approach are all described"
   - "trade-offs and when-not-to-use-this-pattern are explicitly stated"
-  - "at least one concrete example or code snippet is provided
+  - at least one concrete example or code snippet is provided
 related:
   - ./blue-green-deployment.md
   - ./canary-deployment.md

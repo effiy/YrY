@@ -30,7 +30,7 @@ benefit: AI safety posture and guardrail effectiveness visible at a glance
 acceptance_criteria:
   - "data source and refresh cadence are documented"
   - "key metrics are defined with thresholds or targets"
-  - "visualization choices are explained and accessible
+  - visualization choices are explained and accessible
 related:
 - ./dashboard-ai-maturity.md
 - ../platform/dashboard-ai-performance.md

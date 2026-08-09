@@ -16,7 +16,7 @@ benefit: "case lessons absorbed"
 acceptance_criteria:
   - "scope of the leaf directory is clearly bounded"
   - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present
+  - cross-references to related leaves and parent INDEX are present
 related:
   - ../../ai-engineer/methodology/README.md
   - ../../engineer/projects/yiai/README.md

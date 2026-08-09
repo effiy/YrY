@@ -22,14 +22,15 @@ benefit: knowledge flow breakpoints surfaced, improve backlog executability
 acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
-  - "usage guidance explains when to use this template and common mistakes"- every journey annotated acquire/use/contribute three stages + breakpoints + improvement measures
-- breakpoint summary table contains owner and severity
+  - "usage guidance explains when to use this template and common mistakes"
+  - every journey annotated acquire/use/contribute three stages + breakpoints + improvement measures
+  - breakpoint summary table contains owner and severity
 related:
-- ./knowledge-map.md
-- ./directory-blueprint.md
-- ../governance/governance.md
-- ../../executive/industry/README.md
-- ../README.md
+  - ./knowledge-map.md
+  - ./directory-blueprint.md
+  - ../governance/governance.md
+  - ../../executive/industry/README.md
+  - ../README.md
 tacit: false
 ---
 

@@ -17,7 +17,7 @@ benefit: "Teams learn from incidents without fear of blame, accelerating root ca
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ./distributed-tracing.md
   - ./observability.md

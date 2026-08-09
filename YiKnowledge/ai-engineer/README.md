@@ -16,7 +16,7 @@ benefit: "README outcome clear"
 acceptance_criteria:
   - "scope of the leaf directory is clearly bounded"
   - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present
+  - cross-references to related leaves and parent INDEX are present
 related:
   - ./INDEX.md
   - ../engineer/engineering/find-ai-deployment-cases.md

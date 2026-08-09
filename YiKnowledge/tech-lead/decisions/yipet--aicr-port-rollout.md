@@ -17,7 +17,7 @@ benefit: "YiPet aicr port rollout decision is documented with phased approach an
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/projects/yipet/architecture.md
   - ../../../engineer/projects/yipet/functional-modules.md

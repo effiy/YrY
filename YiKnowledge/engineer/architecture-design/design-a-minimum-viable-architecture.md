@@ -16,7 +16,7 @@ benefit: "Projects start with just enough architecture to validate assumptions, 
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../infrastructure/write-a-statement-of-work.md
   - ../../knowledge-curator/templates/thinking--first-principles.md

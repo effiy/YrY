@@ -16,7 +16,7 @@ benefit: "Systems are designed for long-term operability, not just launch-day su
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../process/operate-as-a-forward-deployed-engineer.md
   - ../architecture-design/design-a-minimum-viable-architecture.md

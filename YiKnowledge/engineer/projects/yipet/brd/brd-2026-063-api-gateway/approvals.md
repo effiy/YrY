@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-063-api-gateway: approvals
+title: "brd-2026-063-api-gateway: approvals"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

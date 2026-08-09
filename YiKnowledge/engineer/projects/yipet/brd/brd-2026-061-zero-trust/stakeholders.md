@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-061-zero-trust: stakeholders
+title: "brd-2026-061-zero-trust: stakeholders"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

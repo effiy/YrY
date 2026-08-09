@@ -16,7 +16,7 @@ benefit: "Engineers plan and execute service scaling to handle growth without de
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../quality-security/do-a-performance-audit.md
   - ../../oncall-sre/observability/set-up-observability.md

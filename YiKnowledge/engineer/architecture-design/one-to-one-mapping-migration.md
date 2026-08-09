@@ -17,7 +17,7 @@ benefit: "Large-scale migrations are executed safely by mapping old entities to 
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ./staged-port-methodology.md
   - ../lessons/win-yipet-stack-migration.md

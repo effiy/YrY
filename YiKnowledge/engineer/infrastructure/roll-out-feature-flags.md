@@ -16,7 +16,7 @@ benefit: "migration is reversible"
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ./ship-a-release.md
   - ../../tech-lead/roadmap/deprecate-a-feature.md

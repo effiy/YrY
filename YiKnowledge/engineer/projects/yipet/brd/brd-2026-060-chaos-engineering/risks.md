@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-060-chaos-engineering: risks
+title: "brd-2026-060-chaos-engineering: risks"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

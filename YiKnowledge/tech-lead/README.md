@@ -16,7 +16,7 @@ benefit: "Architecture decisions / ADR / tech selection / capacity planning / ro
 acceptance_criteria:
   - "scope of the leaf directory is clearly bounded"
   - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present
+  - cross-references to related leaves and parent INDEX are present
 related:
   - ../INDEX.md
   - ../README.md

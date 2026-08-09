@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-066-developer-experience: acceptance
+title: "brd-2026-066-developer-experience: acceptance"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

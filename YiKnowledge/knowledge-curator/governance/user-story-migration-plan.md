@@ -17,7 +17,7 @@ benefit: "New hires can find themselves in the 19 role directories at a glance; 
 acceptance_criteria:
   - "scope, milestones, and deliverables are defined"
   - "dependencies and blockers are identified"
-  - "success criteria are measurable
+  - success criteria are measurable
 related:
   - ./triage.md
   - ./tacit-knowledge-backlog.md

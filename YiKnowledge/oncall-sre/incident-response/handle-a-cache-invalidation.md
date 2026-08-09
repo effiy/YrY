@@ -16,7 +16,7 @@ benefit: "Cache invalidation is handled systematically, preventing stale data fr
 acceptance_criteria:
   - "user story header defines who, what, and why"
   - "step-by-step guide is complete with prerequisites and expected outcome"
-  - "cross-references to related journeys and patterns are present
+  - cross-references to related journeys and patterns are present
 related:
   - ../../engineer/engineering/scale-a-service.md
   - ../../engineer/quality-security/do-a-performance-audit.md

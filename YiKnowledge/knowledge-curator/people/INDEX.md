@@ -16,7 +16,7 @@ benefit: "Knowledge curators track team members, experts, and stakeholders to ro
 acceptance_criteria:
   - "all entries in the index map to existing files"
   - "entries are grouped by logical category or domain"
-  - "one-liner descriptions are specific enough to disambiguate
+  - one-liner descriptions are specific enough to disambiguate
 related:
   - ./README.md
   - ../../new-hire/onboarding/handoff-project.md

@@ -17,7 +17,7 @@ benefit: "Chrome extension content and background scripts communicate safely acr
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
   - ../../tech-lead/decisions/yipet--chrome-manifest-dual-world-boundary.md
   - ../projects/yipet/dev-standards.md

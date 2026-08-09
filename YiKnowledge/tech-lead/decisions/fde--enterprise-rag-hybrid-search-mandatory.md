@@ -17,7 +17,7 @@ benefit: "Enterprise RAG mandates hybrid search; industry terms / SKU / complian
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../ai-engineer/methodology/blueprint-an-enterprise-rag.md
   - ../../../ai-engineer/methodology/rag-design-patterns.md

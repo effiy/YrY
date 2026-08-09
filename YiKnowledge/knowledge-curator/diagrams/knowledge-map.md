@@ -23,14 +23,15 @@ benefit: Explicit/tacit knowledge dual inventory, cross-department flow breakpoi
 acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
-  - "usage guidance explains when to use this template and common mistakes"- Landing position column points to the 19 Role directories below true real paths
-- Unsinked items must have a tacit-knowledge-backlog entry
+  - "usage guidance explains when to use this template and common mistakes"
+  - Landing position column points to the 19 Role directories below true real paths
+  - Unsinked items must have a tacit-knowledge-backlog entry
 related:
-- ./user-journey.md
-- ./directory-blueprint.md
-- ../governance/governance.md
-- ../governance/tacit-knowledge-backlog.md
-- ../README.md
+  - ./user-journey.md
+  - ./directory-blueprint.md
+  - ../governance/governance.md
+  - ../governance/tacit-knowledge-backlog.md
+  - ../README.md
 tacit: false
 ---
 

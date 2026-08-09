@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-063-api-gateway: objectives
+title: "brd-2026-063-api-gateway: objectives"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

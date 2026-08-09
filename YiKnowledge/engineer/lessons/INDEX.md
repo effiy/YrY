@@ -16,7 +16,7 @@ benefit: "INDEX outcome clear"
 acceptance_criteria:
   - "all entries in the index map to existing files"
   - "entries are grouped by logical category or domain"
-  - "one-liner descriptions are specific enough to disambiguate
+  - one-liner descriptions are specific enough to disambiguate
 related:
   - ../process/check-engineering-gotchas.md
   - ../process/review-lessons.md

@@ -17,7 +17,7 @@ benefit: "Compliance-driven customers default to air-gap-first; regulated custom
 acceptance_criteria:
   - "context, decision, and rationale are clearly documented"
   - "options considered with trade-offs are enumerated"
-  - "consequences and reversal path are stated
+  - consequences and reversal path are stated
 related:
   - ../../../engineer/process/deploy-to-an-air-gapped-environment.md
   - ../../../engineer/process/operate-as-a-forward-deployed-engineer.md

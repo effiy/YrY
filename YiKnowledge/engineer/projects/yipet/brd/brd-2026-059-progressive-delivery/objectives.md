@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-059-progressive-delivery: objectives
+title: "brd-2026-059-progressive-delivery: objectives"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

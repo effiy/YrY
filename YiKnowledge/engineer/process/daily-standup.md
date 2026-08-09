@@ -16,7 +16,7 @@ benefit: "process followed predictably"
 acceptance_criteria:
   - "steps are ordered and each has a clear owner or role"
   - "prerequisites and inputs are listed before the first step"
-  - "outcome is measurable or verifiable
+  - outcome is measurable or verifiable
 related:
   - ./weekly-report-cadence.md
   - ./sprint-retrospective.md

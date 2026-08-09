@@ -16,7 +16,7 @@ benefit: "industry visible"
 acceptance_criteria:
   - "all entries in the index map to existing files"
   - "entries are grouped by logical category or domain"
-  - "one-liner descriptions are specific enough to disambiguate
+  - one-liner descriptions are specific enough to disambiguate
 related:
   - ../../engineer/process/understand-competitors.md
   - ../../engineer/engineering/find-ai-deployment-cases.md

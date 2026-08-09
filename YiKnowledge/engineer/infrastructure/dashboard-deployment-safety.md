@@ -30,7 +30,7 @@ benefit: deployment safety and risk posture visible at a glance
 acceptance_criteria:
   - "data source and refresh cadence are documented"
   - "key metrics are defined with thresholds or targets"
-  - "visualization choices are explained and accessible
+  - visualization choices are explained and accessible
 related:
 - ./dashboard-dora-metrics.md
 - ../../oncall-sre/release/dashboard-release-management.md

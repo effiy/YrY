@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-063-api-gateway: rules
+title: "brd-2026-063-api-gateway: rules"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

@@ -19,7 +19,8 @@ benefit: template reusable
 acceptance_criteria:
   - "all placeholders are annotated with expected content type"
   - "field descriptions include required-vs-optional and format constraints"
-  - "usage guidance explains when to use this template and common mistakes"review_cycle: quarterly
+  - "usage guidance explains when to use this template and common mistakes"
+review_cycle: quarterly
 tacit: false
 related:
   - ./INDEX-resources.md

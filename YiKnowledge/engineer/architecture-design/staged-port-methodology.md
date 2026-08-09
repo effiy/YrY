@@ -17,7 +17,7 @@ benefit: "Complex page ports are broken into staged phases with verified checkpo
 acceptance_criteria:
   - "core ideas are clearly stated and distinguishable from source material"
   - "actionable recommendations are given, not just information"
-  - "anti-patterns or when-not-to-use are identified
+  - anti-patterns or when-not-to-use are identified
 related:
 - ./one-to-one-mapping-migration.md
   - ../../tech-lead/decisions/yivad--aicr-phase-port.md

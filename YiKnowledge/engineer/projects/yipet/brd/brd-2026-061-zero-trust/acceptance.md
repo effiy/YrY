@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-061-zero-trust: acceptance
+title: "brd-2026-061-zero-trust: acceptance"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09

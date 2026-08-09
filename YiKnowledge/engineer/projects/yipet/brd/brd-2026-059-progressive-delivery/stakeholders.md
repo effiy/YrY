@@ -1,6 +1,6 @@
 ---
 lifecycle: active
-title: brd-2026-059-progressive-delivery: stakeholders
+title: "brd-2026-059-progressive-delivery: stakeholders"
 created: 2026-08-07
 tags: [yipet, brd]
 updated: 2026-08-09
