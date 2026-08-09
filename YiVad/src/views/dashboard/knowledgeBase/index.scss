@@ -43,6 +43,29 @@
   .stat-roles .stat-icon { background: linear-gradient(135deg, #fc8452, #e07030); }
   .stat-modules .stat-icon { background: linear-gradient(135deg, #5ab1ef, #3a90d0); }
   .stat-total-size .stat-icon { background: linear-gradient(135deg, #73c0de, #5ab1ef); }
+  .stat-warn .stat-icon { background: linear-gradient(135deg, #e6a23c, #d09020); }
+  .stat-warn .stat-value { color: #e6a23c; }
+
+  // ── Data Quality Box ──
+  .quality-box {
+    box-sizing: border-box;
+    padding: 6px 20px 0;
+    flex-shrink: 0;
+    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .top-title { font-family: DIN; font-size: 14px; font-weight: bold; }
+    .chart-hint { font-size: 10px; color: #909399; }
+  }
+
+  .quality-mini-card {
+    text-align: center; padding: 10px 8px; border-radius: 8px;
+    cursor: pointer; transition: transform .12s, box-shadow .12s;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-color-primary-light-9);
+    &:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.07); }
+    .qmc-pct { font-family: DIN; font-size: 18px; font-weight: bold; line-height: 1.2; }
+    .qmc-label { font-size: 10px; color: #606266; margin-top: 2px; }
+    .qmc-sub { font-size: 9px; color: #909399; margin-top: 1px; }
+  }
 
   // ── Category Summary (inline) ──
   .cat-summary {

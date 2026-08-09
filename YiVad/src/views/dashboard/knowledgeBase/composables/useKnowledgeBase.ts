@@ -16,6 +16,7 @@ import {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
+  dataQualityColor,
 } from "../utils";
 
 const { openInAiChat } = useAiChatBridge();
@@ -134,6 +135,63 @@ export function useKnowledgeBase() {
     if (totalBytes < 1024) return totalBytes + " B";
     if (totalBytes < 1048576) return (totalBytes / 1024).toFixed(1) + " KB";
     return (totalBytes / 1048576).toFixed(1) + " MB";
+  });
+
+  // ── Computed: Data Quality ──
+  const dataQualityScore = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round((dq.complete / total) * 100);
+  });
+
+  const missingMetadataCount = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 0;
+    if (!dq) return 0;
+    return total - dq.complete;
+  });
+
+  const statusCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_status) / total) * 100);
+  });
+
+  const typeCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_type) / total) * 100);
+  });
+
+  const lifecycleCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_lifecycle) / total) * 100);
+  });
+
+  const reviewCycleCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_review_cycle) / total) * 100);
+  });
+
+  const rolesCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_roles) / total) * 100);
+  });
+
+  const tagsCompletenessPct = computed(() => {
+    const dq = knowledgeData.value?.data_quality;
+    const total = knowledgeData.value?.total ?? 1;
+    if (!dq) return 0;
+    return Math.round(((total - dq.no_tags) / total) * 100);
   });
 
   // ── Computed: Module Drill Data ──
@@ -569,6 +627,22 @@ export function useKnowledgeBase() {
     setTimeout(() => scrollToDrillDown(), 100);
   }
 
+  /** Filter to files missing a specific metadata field (status/type/lifecycle → "unknown", review_cycle → "__missing__", roles/tags → empty). */
+  function setQualityFilter(field: string) {
+    forceFileTableView();
+    if (field === "status" || field === "type" || field === "lifecycle") {
+      setFilter(field, "unknown");
+    } else if (field === "review_cycle") {
+      setFilter("review_cycle", "__missing__");
+    } else if (field === "roles") {
+      // Filter to files with no roles: use a tag-based approach — filter where roles array is empty
+      // We use a special key that applyFiltersToList checks for empty arrays
+      setFilter("roles", "__missing__");
+    } else if (field === "tags") {
+      setFilter("tags", "__missing__");
+    }
+  }
+
   function backToCategory() {
     const cat = activeFilter.value.category;
     activeFilter.value = cat ? { category: cat } : {};
@@ -933,6 +1007,9 @@ export function useKnowledgeBase() {
     // Computed
     hasActiveFilter, showSubModuleGrid, isShowingTreeView,
     topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
+    dataQualityScore, missingMetadataCount,
+    statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
+    reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
     moduleDrillData, filteredModuleDrillData,
     subCategories, categoryReviewCoverage, categoryStaleCount, categoryTacitCount,
     moduleDetail, subdirectoryBreakdown, topModuleFiles,
@@ -948,7 +1025,7 @@ export function useKnowledgeBase() {
     sizeDistOption, fileAgeOption, lifecycleBarOption,
     moduleBarOption, rolesBarOption,
     // Methods
-    setFilter, toggleNoReviewFilter, backToCategory, clearAllFilters,
+    setFilter, toggleNoReviewFilter, setQualityFilter, backToCategory, clearAllFilters,
     drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
     navigateToModule, crossFilterSubModule,
     onTimeFilterChange, onTableSortChange, scrollToDrillDown,
@@ -962,5 +1039,6 @@ export function useKnowledgeBase() {
     formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
     isStaleFile, fileHealthLevel, countByField, getModuleClassSummary,
     catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
+    dataQualityColor,
   };
 }

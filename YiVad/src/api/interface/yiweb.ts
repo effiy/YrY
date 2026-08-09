@@ -661,6 +661,18 @@ export interface KnowledgeRoleStats {
   count: number;
 }
 
+export interface KnowledgeDataQuality {
+  no_status: number;
+  no_type: number;
+  no_lifecycle: number;
+  no_review_cycle: number;
+  no_roles: number;
+  no_tags: number;
+  no_benefit: number;
+  no_title: number;
+  complete: number;
+}
+
 export interface KnowledgeStatsData {
   total: number;
   categories: KnowledgeCategoryStats[];
@@ -670,6 +682,7 @@ export interface KnowledgeStatsData {
   review_cycles: KnowledgeReviewCycleStats[];
   roles: KnowledgeRoleStats[];
   health: KnowledgeHealthSummary;
+  data_quality: KnowledgeDataQuality;
   files: KnowledgeFileSummary[];
   recent: KnowledgeRecentFile[];
   modules: KnowledgeModuleStats[];

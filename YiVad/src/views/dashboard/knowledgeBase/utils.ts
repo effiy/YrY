@@ -7,12 +7,15 @@ export const CATEGORY_COLORS: Record<string, string> = {
   executive: "#ee6666", "tech-lead": "#73c0de", "knowledge-curator": "#3ba272",
   "skill-author": "#fc8452", "new-hire": "#9a60b4", "oncall-sre": "#ea7ccc",
   brd: "#5ab1ef", static: "#ff99cc",
+  "technical-writer": "#67c23a", "data-engineer": "#e6a23c",
+  __root__: "#909399", devops: "#f56c6c",
 };
 
 export const STATUS_COLORS: Record<string, string> = {
   stable: "#67c23a", active: "#67c23a", adopted: "#67c23a", accepted: "#67c23a",
   draft: "#909399", in_progress: "#e6a23c", planning: "#909399",
   proposed: "#909399", reviewed: "#409eff",
+  unknown: "#c0c4cc", planned: "#b0c4de",
 };
 
 export const LIFECYCLE_COLORS: Record<string, string> = {
@@ -22,7 +25,7 @@ export const LIFECYCLE_COLORS: Record<string, string> = {
 
 export const REVIEW_CYCLE_COLORS: Record<string, string> = {
   weekly: "#ee6666", monthly: "#fac858", quarterly: "#5470c6",
-  yearly: "#91cc75", "half-yearly": "#73c0de",
+  yearly: "#91cc75", "half-yearly": "#73c0de", "semi-annual": "#73c0de",
 };
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -30,17 +33,21 @@ export const TYPE_COLORS: Record<string, string> = {
   rss: "#ee6666", template: "#73c0de", "leaf-readme": "#3ba272",
   process: "#fc8452", index: "#9a60b4", pattern: "#ea7ccc",
   original: "#5ab1ef", prompt: "#ff99cc",
+  design: "#b6a2de", "domain-index": "#1f78b4",
+  prd: "#e31a1c", adr: "#fdbf6f", methodology: "#cab2d6",
+  brd: "#ff7f00", feature: "#33a02c", "strategy-instance": "#b15928",
+  unknown: "#c0c4cc",
 };
 
 export const STATUS_TAG_TYPES: Record<string, string> = {
   stable: "success", active: "success", adopted: "success", accepted: "success",
   draft: "info", in_progress: "warning", planning: "info", proposed: "info",
-  reviewed: "primary",
+  reviewed: "primary", planned: "info",
 };
 
 export const LIFECYCLE_TAG_TYPES: Record<string, string> = {
   active: "success", triage: "warning", reference: "info", archive: "danger",
-  inbox: "primary",
+  inbox: "primary", unknown: "info",
 };
 
 export const REVIEW_CYCLE_TAG_TYPES: Record<string, string> = {
@@ -172,4 +179,11 @@ export function getModuleClassSummary(files: KnowledgeFileSummary[]): ClassSumma
     reviewCycles: countBy("review_cycle"),
     roles: countBy("roles"),
   };
+}
+
+/** Returns a color for a data quality percentage: green ≥80%, orange ≥50%, red <50%. */
+export function dataQualityColor(pct: number): string {
+  if (pct >= 80) return "#67c23a";
+  if (pct >= 50) return "#e6a23c";
+  return "#f56c6c";
 }

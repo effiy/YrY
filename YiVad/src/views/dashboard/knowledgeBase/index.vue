@@ -9,8 +9,9 @@
           <el-button :icon="Refresh" size="small" @click="fetchData" :loading="loading">Refresh</el-button>
         </div>
       </div>
+      <!-- Row A: Volume metrics -->
       <el-row :gutter="12">
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
           <div class="stat-card stat-total" @click="clearAllFilters">
             <div class="stat-icon"><el-icon><Document /></el-icon></div>
             <div class="stat-info">
@@ -19,7 +20,7 @@
             </div>
           </div>
         </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
           <div class="stat-card stat-categories" @click="scrollToDrillDown">
             <div class="stat-icon"><el-icon><Folder /></el-icon></div>
             <div class="stat-info">
@@ -28,7 +29,7 @@
             </div>
           </div>
         </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
           <div class="stat-card stat-modules" @click="scrollToDrillDown">
             <div class="stat-icon"><el-icon><Cpu /></el-icon></div>
             <div class="stat-info">
@@ -37,38 +38,7 @@
             </div>
           </div>
         </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
-          <div class="stat-card stat-coverage" @click="toggleNoReviewFilter">
-            <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
-            <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.health.review_coverage_pct ?? 0 }}%</div>
-              <div class="stat-label">Review Coverage <span class="stat-sub">({{ knowledgeData?.health.no_review_cycle_count ?? 0 }} missing)</span></div>
-            </div>
-          </div>
-        </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
-          <div class="stat-card stat-tacit" @click="setFilter('tacit', 'true')">
-            <div class="stat-icon"><el-icon><Star /></el-icon></div>
-            <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.health.tacit_count ?? 0 }}</div>
-              <div class="stat-label">Tacit <span class="stat-sub">({{ tacitPct }}%)</span></div>
-            </div>
-          </div>
-        </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
-          <div
-            class="stat-card"
-            :class="(knowledgeData?.health.stale_count ?? 0) > 0 ? 'stat-stale' : 'stat-healthy'"
-            @click="setFilter('stale', 'true')"
-          >
-            <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
-            <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.health.stale_count ?? 0 }}</div>
-              <div class="stat-label">Stale</div>
-            </div>
-          </div>
-        </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
           <div class="stat-card stat-total-size" @click="scrollToDrillDown">
             <div class="stat-icon"><el-icon><Coin /></el-icon></div>
             <div class="stat-info">
@@ -77,12 +47,42 @@
             </div>
           </div>
         </el-col>
-        <el-col class="mb12" :xs="12" :sm="6" :md="6" :lg="3" :xl="3">
-          <div class="stat-card stat-roles" @click="scrollToDrillDown">
-            <div class="stat-icon"><el-icon><User /></el-icon></div>
+      </el-row>
+      <!-- Row B: Quality metrics -->
+      <el-row :gutter="12">
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-coverage" @click="toggleNoReviewFilter">
+            <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ knowledgeData?.roles.length ?? 0 }}</div>
-              <div class="stat-label">Roles <span class="stat-sub">({{ topRole }})</span></div>
+              <div class="stat-value">{{ knowledgeData?.health.review_coverage_pct ?? 0 }}%</div>
+              <div class="stat-label">Review Coverage <span class="stat-sub">({{ knowledgeData?.health.no_review_cycle_count ?? 0 }} missing)</span></div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card" :class="dataQualityScore >= 80 ? 'stat-healthy' : dataQualityScore >= 50 ? 'stat-warn' : 'stat-stale'" @click="setQualityFilter('status')">
+            <div class="stat-icon"><el-icon><DataAnalysis /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value" :style="{ color: dataQualityColor(dataQualityScore) }">{{ dataQualityScore }}%</div>
+              <div class="stat-label">Data Quality <span class="stat-sub">({{ missingMetadataCount }} incomplete)</span></div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card stat-tacit" @click="setFilter('tacit', 'true')">
+            <div class="stat-icon"><el-icon><Star /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ knowledgeData?.health.tacit_count ?? 0 }}</div>
+              <div class="stat-label">Tacit <span class="stat-sub">({{ tacitPct }}%)</span></div>
+            </div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+          <div class="stat-card" :class="(knowledgeData?.health.stale_count ?? 0) > 0 ? 'stat-stale' : 'stat-healthy'">
+            <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ knowledgeData?.health.stale_count ?? 0 }}</div>
+              <div class="stat-label">Stale</div>
             </div>
           </div>
         </el-col>
@@ -148,6 +148,59 @@
         </el-col>
       </el-row>
     </div>
+
+    <!-- Row 2.5: Data Quality -->
+    <div class="card quality-box">
+      <div class="top-header">
+        <span class="top-title">Data Quality</span>
+        <span class="chart-hint">Click any metric to drill down to affected files</span>
+      </div>
+      <el-row :gutter="12">
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('status')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(statusCompletenessPct) }">{{ statusCompletenessPct }}%</div>
+            <div class="qmc-label">Status</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_status ?? 0 }} unknown</div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('type')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(typeCompletenessPct) }">{{ typeCompletenessPct }}%</div>
+            <div class="qmc-label">Type</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_type ?? 0 }} unknown</div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('lifecycle')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(lifecycleCompletenessPct) }">{{ lifecycleCompletenessPct }}%</div>
+            <div class="qmc-label">Lifecycle</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_lifecycle ?? 0 }} unknown</div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('review_cycle')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(reviewCycleCompletenessPct) }">{{ reviewCycleCompletenessPct }}%</div>
+            <div class="qmc-label">Review Cycle</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_review_cycle ?? 0 }} missing</div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('roles')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(rolesCompletenessPct) }">{{ rolesCompletenessPct }}%</div>
+            <div class="qmc-label">Roles</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_roles ?? 0 }} missing</div>
+          </div>
+        </el-col>
+        <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
+          <div class="quality-mini-card" @click="setQualityFilter('tags')">
+            <div class="qmc-pct" :style="{ color: dataQualityColor(tagsCompletenessPct) }">{{ tagsCompletenessPct }}%</div>
+            <div class="qmc-label">Tags</div>
+            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_tags ?? 0 }} missing</div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
     <!-- Main Row: Full-width drill-down tree + file preview -->
     <el-row :gutter="12" class="main-row">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="main-col-full">
@@ -156,12 +209,9 @@
           <div class="panel-header">
             <span class="panel-title">
               File Classification
-              <span class="panel-count">({{ knowledgeData?.total ?? 0 }} files)</span>
+              <span class="panel-count">({{ sortedDrillTableData.length ?? 0 }} files)</span>
             </span>
             <div class="panel-actions">
-              <span class="panel-nav-info">{{ dialogFileIndex + 1 }}/{{ sortedDrillTableData.length }}</span>
-              <el-button size="small" text :disabled="!prevDialogFile" @click="navigateDialogFile('prev')" title="Previous file"><el-icon><ArrowLeft /></el-icon></el-button>
-              <el-button size="small" text :disabled="!nextDialogFile" @click="navigateDialogFile('next')" title="Next file"><el-icon><ArrowRight /></el-icon></el-button>
               <div class="search-wrapper">
                 <el-input
                   v-model="searchText" :placeholder="searchMode === 'content' ? 'Search content...' : 'Ctrl+K search...'"
@@ -848,6 +898,7 @@ import { ref } from "vue";
 import {
   Document, Folder, Grid, Refresh, TrendCharts, Star, WarningFilled,
   Search, InfoFilled, User, Cpu, ArrowLeft, ArrowRight, Coin, Close, View,
+  DataAnalysis,
 } from "@element-plus/icons-vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
@@ -885,6 +936,9 @@ const {
   recentlyViewed, drillDownRef, detailPanelRef,
   hasActiveFilter, showSubModuleGrid, isShowingTreeView,
   topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
+  dataQualityScore, missingMetadataCount,
+  statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
+  reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
   filteredModuleDrillData,
   subCategories, categoryReviewCoverage, categoryStaleCount, categoryTacitCount,
   moduleDetail, subdirectoryBreakdown, topModuleFiles,
@@ -901,7 +955,8 @@ const {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, getModuleClassSummary,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
-  setFilter, toggleNoReviewFilter, backToCategory, clearAllFilters,
+  dataQualityColor,
+  setFilter, toggleNoReviewFilter, setQualityFilter, backToCategory, clearAllFilters,
   drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
   navigateToModule, crossFilterSubModule,
   onTimeFilterChange, onTableSortChange, scrollToDrillDown,

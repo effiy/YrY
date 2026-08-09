@@ -348,6 +348,19 @@ class KnowledgeHealthSummary(BaseModel):
     review_coverage_pct: float = 0.0
 
 
+class KnowledgeDataQuality(BaseModel):
+    """Per-field metadata completeness counts — files missing each key field."""
+    no_status: int = 0
+    no_type: int = 0
+    no_lifecycle: int = 0
+    no_review_cycle: int = 0
+    no_roles: int = 0
+    no_tags: int = 0
+    no_benefit: int = 0
+    no_title: int = 0
+    complete: int = 0  # files with all four key fields (status/type/lifecycle/review_cycle) present
+
+
 class KnowledgeFileSummary(BaseModel):
     path: str
     title: str = ""
@@ -417,6 +430,7 @@ class KnowledgeStatsResponse(BaseModel):
     review_cycles: list[KnowledgeReviewCycleStats] = []
     roles: list[KnowledgeRoleStats] = []
     health: KnowledgeHealthSummary = KnowledgeHealthSummary()
+    data_quality: KnowledgeDataQuality = KnowledgeDataQuality()
     files: list[KnowledgeFileSummary] = []
     recent: list[KnowledgeRecentFile]
     modules: list[KnowledgeModuleStats] = []
@@ -459,6 +473,17 @@ async def knowledge_stats():
         stale_count = 0
         no_review_cycle_count = 0
 
+        # Data quality counters
+        dq_no_status = 0
+        dq_no_type = 0
+        dq_no_lifecycle = 0
+        dq_no_review_cycle = 0
+        dq_no_roles = 0
+        dq_no_tags = 0
+        dq_no_benefit = 0
+        dq_no_title = 0
+        dq_complete = 0
+
         file_summaries = []
 
         for f in files:
@@ -484,9 +509,27 @@ async def knowledge_stats():
                 roles[r] += 1
 
             if review_cycle:
-                review_cycles[review_cycle] += 1
+                # Normalize semi-annual → half-yearly
+                normalized_rc = "half-yearly" if review_cycle == "semi-annual" else review_cycle
+                review_cycles[normalized_rc] += 1
             else:
                 no_review_cycle_count += 1
+
+            # Data quality counts (fields available here)
+            if status == "unknown":
+                dq_no_status += 1
+            if ftype == "unknown":
+                dq_no_type += 1
+            if lifecycle == "unknown":
+                dq_no_lifecycle += 1
+            if not review_cycle:
+                dq_no_review_cycle += 1
+            if not file_roles:
+                dq_no_roles += 1
+            if not meta.get("benefit"):
+                dq_no_benefit += 1
+            if not meta.get("title") and not f.get("name"):
+                dq_no_title += 1
 
             # Tacit knowledge: boolean True or non-empty string
             if isinstance(tacit, str) and tacit.strip():
@@ -528,6 +571,13 @@ async def knowledge_stats():
                 file_tags = [file_tags_raw]
             else:
                 file_tags = []
+
+            if not file_tags:
+                dq_no_tags += 1
+
+            # Complete = all four key fields present (non-unknown)
+            if status != "unknown" and ftype != "unknown" and lifecycle != "unknown" and review_cycle:
+                dq_complete += 1
 
             # Build file summary for drill-down
             file_summaries.append(KnowledgeFileSummary(
@@ -692,6 +742,18 @@ async def knowledge_stats():
             review_coverage_pct=review_coverage_pct,
         )
 
+        data_quality = KnowledgeDataQuality(
+            no_status=dq_no_status,
+            no_type=dq_no_type,
+            no_lifecycle=dq_no_lifecycle,
+            no_review_cycle=dq_no_review_cycle,
+            no_roles=dq_no_roles,
+            no_tags=dq_no_tags,
+            no_benefit=dq_no_benefit,
+            no_title=dq_no_title,
+            complete=dq_complete,
+        )
+
         # Recent 10 files
         def _k_sort_key(f: dict) -> str:
             u = f.get("updatedAt", f.get("updated", 0))
@@ -719,6 +781,7 @@ async def knowledge_stats():
             review_cycles=review_cycle_stats,
             roles=role_stats,
             health=health,
+            data_quality=data_quality,
             files=file_summaries,
             recent=recent,
             modules=module_stats,
@@ -728,6 +791,7 @@ async def knowledge_stats():
         return success(data=KnowledgeStatsResponse(
             total=0, categories=[], statuses=[], lifecycles=[],
             types=[], review_cycles=[], roles=[], health=KnowledgeHealthSummary(),
+            data_quality=KnowledgeDataQuality(),
             files=[], recent=[], modules=[],
         ).model_dump())
 
