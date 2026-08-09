@@ -1,4 +1,4 @@
-export const DEFAULT_MODEL = "qwen3.5:4b";
+export const DEFAULT_MODEL = "qwen3.5";
 
 export interface QuickButton {
   label: string;

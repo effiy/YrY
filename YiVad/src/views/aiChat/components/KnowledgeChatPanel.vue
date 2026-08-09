@@ -1,11 +1,12 @@
 <script setup lang="ts" name="knowledgeChatPanel">
-import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import {
   Promotion, CircleClose, CopyDocument, Edit, Delete,
   RefreshRight, Search
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
+import { useMarkdown } from "@/hooks/useMarkdown";
+import { useMermaidRender } from "@/hooks/useMermaidRender";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
@@ -72,6 +73,16 @@ const streamingText = ref("");
 const abortRef = ref<{ abort: () => void } | null>(null);
 const containerRef = ref<HTMLDivElement>();
 const scrollTick = ref(0);
+
+// ── Mermaid rendering ────────────────────────────────────────────────────
+const messageContents = computed(() =>
+  messages.value.map(m => m.message).join("\n")
+);
+const { render: renderMermaid, dispose: disposeMermaid } = useMermaidRender({
+  html: messageContents,
+  containerRef,
+});
+onBeforeUnmount(() => disposeMermaid());
 
 // ── IME composition ────────────────────────────────────────────────────────
 
@@ -329,10 +340,7 @@ watch(() => props.filePath, () => {
 
 onMounted(() => {
   loadMessages(); loadTags(); loadSettings(); loadModel();
-  // Render mermaid diagrams for loaded messages
-  nextTick(() => {
-    if (containerRef.value) runMermaid(containerRef.value);
-  });
+  // Mermaid rendering handled by useMermaidRender composable (immediate watcher)
 });
 
 // ── Streaming type ────────────────────────────────────────────────────────
@@ -352,12 +360,10 @@ watch(() => messages.value.length, () => scrollToBottom(), { flush: "post" });
 // Auto-scroll during streaming — scrollTick is incremented by onChunk callbacks
 watch(scrollTick, () => scrollToBottom());
 
-// ── Mermaid rendering (non-streaming updates: loaded, edited, regenerated) ──
+// ── Mermaid rendering (non-streaming updates) ──────────────────────────
 watch(() => messages.value.length, () => {
-  if (sending.value) return; // streaming handles it in finishSend
-  nextTick(() => {
-    if (containerRef.value) runMermaid(containerRef.value);
-  });
+  if (sending.value) return;
+  renderMermaid();
 });
 
 // ── Send / Stop ───────────────────────────────────────────────────────────
@@ -569,9 +575,7 @@ function finishSend(petIdx: number) {
   const petText = messages.value[petIdx]?.message;
   if (petText) forwardToWechat(petText);
   // Render mermaid diagrams in the completed message
-  nextTick(() => {
-    if (containerRef.value) runMermaid(containerRef.value);
-  });
+  renderMermaid();
 }
 
 function handleSendError(petIdx: number, err: Error) {

@@ -5,10 +5,14 @@
  * (KnowledgePreviewDialog, MessageBubble, KnowledgeChatPanel) decorate each
  * rendered `<pre class="mermaid">` element with a hover toolbar.
  *
+ * Zoom + drag-to-pan are ONLY available in fullscreen mode (MermaidViewer.vue).
+ * Inline diagrams show a compact toolbar with Fullscreen + Download buttons.
+ *
  * Fullscreen state is a module-level singleton so any diagram on the page
  * can open the same overlay (mounted once in App.vue via <MermaidViewer />).
  */
 import { ref, readonly } from "vue";
+import { useGlobalStore } from "@/stores/modules/global";
 
 // ── Global fullscreen state ──────────────────────────────────────────────
 
@@ -55,6 +59,11 @@ export function useMermaidViewer() {
     fsScale.value = 1;
   }
 
+  /** Programmatic scale setter (used by cursor-centered zoom in the overlay). */
+  function setScale(s: number): void {
+    fsScale.value = Math.min(5, Math.max(0.1, +s.toFixed(3)));
+  }
+
   // -- Download --
 
   function downloadSvg(svgEl: SVGSVGElement): void {
@@ -74,63 +83,65 @@ export function useMermaidViewer() {
     URL.revokeObjectURL(url);
   }
 
-  // -- DOM enhancement (runs after each mermaid.run()) --
+  // ── DOM enhancement (runs after each mermaid.run()) ───────────────────
 
-  /** Shared inline styles for the hover toolbar — avoids external CSS dependencies. */
-  const TOOLBAR_CSS = [
-    "position:absolute",
-    "top:4px",
-    "right:4px",
-    "display:flex",
-    "gap:1px",
-    "padding:2px",
-    "opacity:0",
-    "background:rgb(255 255 255 / 92%)",
-    "border-radius:6px",
-    "box-shadow:0 2px 8px rgb(0 0 0 / 10%)",
-    "transition:opacity 0.18s",
-    "z-index:10",
-    "pointer-events:auto",
-  ].join(";");
+  function toolbarCss(isDark: boolean): string {
+    return [
+      "position:absolute",
+      "top:4px",
+      "right:4px",
+      "display:flex",
+      "gap:1px",
+      "padding:2px",
+      "opacity:0",
+      isDark ? "background:rgb(30 30 30 / 92%)" : "background:rgb(255 255 255 / 92%)",
+      "border-radius:6px",
+      "box-shadow:0 2px 8px rgb(0 0 0 / 10%)",
+      "transition:opacity 0.18s",
+      "z-index:10",
+      "pointer-events:auto",
+    ].join(";");
+  }
 
-  const BTN_CSS = [
-    "display:inline-flex",
-    "align-items:center",
-    "justify-content:center",
-    "width:26px",
-    "height:26px",
-    "padding:0",
-    "color:#909399",
-    "cursor:pointer",
-    "background:transparent",
-    "border:none",
-    "border-radius:4px",
-    "pointer-events:auto", // buttons are clickable
-  ].join(";");
+  function btnCss(isDark: boolean): string {
+    return [
+      "display:inline-flex",
+      "align-items:center",
+      "justify-content:center",
+      "width:26px",
+      "height:26px",
+      "padding:0",
+      isDark ? "color:#aaa" : "color:#909399",
+      "cursor:pointer",
+      "background:transparent",
+      "border:none",
+      "border-radius:4px",
+      "pointer-events:auto",
+    ].join(";");
+  }
 
   /**
    * For every rendered `<pre class="mermaid">` that contains an `<svg>`,
    * attach a hover toolbar with Fullscreen + Download buttons.
-   * Already-enhanced elements (data-mv="1") are skipped.
-   *
-   * Uses inline styles exclusively — no dependency on external CSS loading.
+   * Zoom and drag-to-pan are available only in the fullscreen overlay.
    */
   function enhanceContainer(container: HTMLElement): void {
     const diagrams = container.querySelectorAll<HTMLElement>("pre.mermaid");
     for (const pre of diagrams) {
-      const svg = pre.querySelector("svg");
+      const svg = pre.querySelector("svg") as SVGSVGElement | null;
       if (!svg || pre.hasAttribute("data-mv")) continue;
       pre.setAttribute("data-mv", "1");
 
-      // Anchor for absolute-positioned toolbar + clean drag-to-pan
+      // Anchor for absolute-positioned toolbar + clip overflow
       pre.style.position = "relative";
       pre.style.overflow = "hidden";
 
+      const isDark = useGlobalStore().isDark;
       const toolbar = document.createElement("div");
-      toolbar.setAttribute("style", TOOLBAR_CSS);
+      toolbar.setAttribute("style", toolbarCss(isDark));
       toolbar.innerHTML = [
-        `<button style="${BTN_CSS}" title="Fullscreen preview" data-mv-action="fullscreen">${ICON_FULLSCREEN}</button>`,
-        `<button style="${BTN_CSS}" title="Download SVG" data-mv-action="download">${ICON_DOWNLOAD}</button>`,
+        `<button style="${btnCss(isDark)}" title="Fullscreen preview" data-mv-action="fullscreen">${ICON_FULLSCREEN}</button>`,
+        `<button style="${btnCss(isDark)}" title="Download SVG" data-mv-action="download">${ICON_DOWNLOAD}</button>`,
       ].join("");
 
       // Show toolbar on hover
@@ -143,81 +154,32 @@ export function useMermaidViewer() {
         toolbar.style.pointerEvents = "none";
       });
 
+      // Delegate clicks
       toolbar.addEventListener("click", (e: Event) => {
         const btn = (e.target as HTMLElement).closest("[data-mv-action]") as HTMLElement | null;
         if (!btn) return;
         const action = btn.getAttribute("data-mv-action");
-        if (action === "fullscreen") openFullscreen(svg);
-        else if (action === "download") downloadSvg(svg);
+        if (action === "fullscreen") {
+          openFullscreen(svg);
+        } else if (action === "download") {
+          downloadSvg(svg);
+        }
       });
 
-      // Button hover effect (inline styles don't support :hover)
-      toolbar.querySelectorAll("button").forEach(btn => {
+      // Button hover effect
+      toolbar.querySelectorAll("button").forEach((btn) => {
         btn.addEventListener("mouseenter", () => {
-          btn.style.color = "#409eff";
-          btn.style.background = "#ecf5ff";
+          btn.style.color = isDark ? "#7aa2f7" : "#409eff";
+          btn.style.background = isDark ? "rgb(255 255 255 / 6%)" : "#ecf5ff";
         });
         btn.addEventListener("mouseleave", () => {
-          btn.style.color = "#909399";
+          btn.style.color = isDark ? "#aaa" : "#909399";
           btn.style.background = "transparent";
         });
       });
 
       pre.appendChild(toolbar);
-
-      // ── Drag-to-pan on the SVG ──────────────────────────────────────────
-      setupSvgDrag(svg);
     }
-  }
-
-  /** Enable click-and-drag panning on a rendered mermaid SVG. */
-  function setupSvgDrag(svg: SVGSVGElement): void {
-    let dragging = false;
-    let startX = 0;
-    let startY = 0;
-    let tx = 0;
-    let ty = 0;
-
-    svg.style.cursor = "grab";
-    svg.style.display = "block";
-
-    svg.addEventListener("mousedown", (e: MouseEvent) => {
-      if (e.button !== 0) return; // left button only
-      // Don't start drag when clicking the toolbar buttons
-      if ((e.target as HTMLElement).closest("[data-mv-action]")) return;
-      dragging = true;
-      startX = e.clientX - tx;
-      startY = e.clientY - ty;
-      svg.style.cursor = "grabbing";
-      svg.style.transition = "none";
-      e.preventDefault();
-    });
-
-    const onMove = (e: MouseEvent) => {
-      if (!dragging) return;
-      tx = e.clientX - startX;
-      ty = e.clientY - startY;
-      svg.style.transform = `translate(${tx}px, ${ty}px)`;
-    };
-
-    const onUp = () => {
-      if (!dragging) return;
-      dragging = false;
-      svg.style.cursor = "grab";
-      svg.style.transition = "";
-    };
-
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-
-    // Double-click to reset position
-    svg.addEventListener("dblclick", () => {
-      tx = 0;
-      ty = 0;
-      svg.style.transform = "";
-      svg.style.transition = "transform 0.2s ease-out";
-      setTimeout(() => { svg.style.transition = ""; }, 200);
-    });
   }
 
   return {
@@ -231,6 +193,7 @@ export function useMermaidViewer() {
     zoomIn,
     zoomOut,
     zoomFit,
+    setScale,
     downloadSvg,
     // Post-render enhancement
     enhanceContainer,

@@ -1,9 +1,10 @@
 <script setup lang="ts" name="aiChatMessageBubble">
-import { computed, ref, watch, nextTick } from "vue";
+import { computed, ref, watch, onBeforeUnmount } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked, Tools, ArrowDown, Check, Close, ChatDotRound, Clock } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
+import { useMarkdown } from "@/hooks/useMarkdown";
+import { useMermaidRender } from "@/hooks/useMermaidRender";
 import { useSlowThreshold } from "@/hooks/useSlowThreshold";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
@@ -282,15 +283,13 @@ const citedHtml = computed(() => {
 });
 
 /** Render mermaid diagrams in the markdown container after HTML updates.
- *  flush: 'post' guarantees markdownRef and its v-html innerHTML are in
- *  place before we query for <pre class="mermaid"> children.
- *  immediate: true ensures the first render is also enhanced. */
-watch(citedHtml, async () => {
-  await nextTick();
-  if (markdownRef.value) {
-    await runMermaid(markdownRef.value);
-  }
-}, { immediate: true, flush: "post" });
+ *  The composable watches citedHtml with flush:"post" + immediate:true,
+ *  skips when no mermaid blocks exist, and cleans up on unmount. */
+const { dispose: disposeMermaid } = useMermaidRender({
+  html: citedHtml,
+  containerRef: markdownRef,
+});
+onBeforeUnmount(() => disposeMermaid());
 
 /** Retrieval-quality grade based on the top score across retrieved chunks.
  *  Letter grade lets the user judge retrieval confidence at a glance,

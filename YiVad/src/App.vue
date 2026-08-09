@@ -16,6 +16,7 @@ import { LanguageType } from "./stores/interface";
 import { useGlobalStore } from "@/stores/modules/global";
 import SparkGlowDefs from "@/components/SparkGlowDefs.vue";
 import MermaidViewer from "@/components/MermaidViewer.vue";
+import { setupMermaidThemeWatcher } from "@/hooks/useMarkdown";
 import en from "element-plus/es/locale/lang/en";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 
@@ -24,6 +25,9 @@ const globalStore = useGlobalStore();
 // init theme
 const { initTheme } = useTheme();
 initTheme();
+
+// Watch dark mode and re-initialize mermaid with matching theme colours
+setupMermaidThemeWatcher();
 
 // init language
 const i18n = useI18n();

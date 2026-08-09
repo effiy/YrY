@@ -367,6 +367,8 @@ watch(
   [displayHtml, previewHtml, () => previewRef.value, mode, showChat, loading],
   async ([_dh, _ph, _ref, _mode, _chat, _loading]) => {
     if (_loading) return; // preview div not in DOM yet (loading spinner shown)
+    // Skip DOM query when no mermaid blocks exist (streaming optimization)
+    if (!savedPreviewHtml.value.includes('class="mermaid"')) return;
     // The mermaid elements live inside the preview pane. In chat mode the
     // preview div doesn't carry a template ref — query it by class instead.
     let container: HTMLElement | null = null;
@@ -450,7 +452,7 @@ async function translateTo(targetLang: "zh" | "en", bilingual = false) {
 
   const { abort } = streamChat(
     {
-      model: "qwen3.5:4b",
+      model: "qwen3.5",
       messages: [{ type: "user", message: source, timestamp: Date.now() }],
       system: `You are a professional translator. Translate the following markdown content to ${langName}. Preserve all markdown formatting, code blocks, links, and structure exactly. Only output the translated content, nothing else.`
     },
