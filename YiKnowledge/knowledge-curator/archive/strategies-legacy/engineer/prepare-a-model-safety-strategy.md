@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model Safety is not just filtering; it is a contract. strategy + input + output + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Model Safety strategy

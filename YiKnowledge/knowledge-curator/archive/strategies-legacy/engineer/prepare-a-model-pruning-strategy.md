@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model Pruning is not just pruning; it is a contract. Strategy + execution + validation + governance + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Model Pruning strategy

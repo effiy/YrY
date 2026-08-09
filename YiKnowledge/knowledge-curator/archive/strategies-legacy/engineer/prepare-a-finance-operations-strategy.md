@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Finance Operations is not just bookkeeping; it is a contract. process + control + system + governance + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Finance Operations strategy

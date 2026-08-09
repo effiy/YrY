@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "IP operations is not just filing; it is a contract. Five dimensions: ownership + protection + monetization + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an IP operations strategy

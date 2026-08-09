@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "A model cache is not just memory; it is a contract. Five dimensions: key + value + eviction + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a model-cache strategy

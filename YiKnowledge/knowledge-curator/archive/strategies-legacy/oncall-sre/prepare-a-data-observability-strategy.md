@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Data Observability is not just monitoring; it is a contract. Five dimensions: quality + lineage + metadata + alerts + governance; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Data Observability strategy

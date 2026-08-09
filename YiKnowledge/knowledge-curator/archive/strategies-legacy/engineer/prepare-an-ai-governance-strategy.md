@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: AI Governance is not just compliance; it is a contract. Principle + Process + accountability + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an AI Governance strategy

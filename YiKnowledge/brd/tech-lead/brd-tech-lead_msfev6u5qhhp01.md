@@ -28,6 +28,7 @@ rollback: Watcher exception → switch back to manual rebuild mode + fix + redep
 stakeholders: YiAi lead owner (decision); YiVad lead owner (knowledge source collaboration); CTO (approval)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi Knowledge Watcher landing

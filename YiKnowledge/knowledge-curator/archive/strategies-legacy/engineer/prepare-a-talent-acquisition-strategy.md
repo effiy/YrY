@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Talent Acquisition is not just recruiting; it is a contract. Demand + channel + experience + data + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Talent Acquisition strategy

@@ -23,6 +23,7 @@ stakeholders: PM Team (Decision); data analysts (compute); engineer (data source
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — retention and churn metric system

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model distillation is not just compression; it is a contract. Teacher + student + knowledge transfer + quantization + pruning are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a model distillation strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Contextual inquiry is not just questioning; it is a contract. Access + observation + interview + governance + measurement — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a contextual-inquiry strategy

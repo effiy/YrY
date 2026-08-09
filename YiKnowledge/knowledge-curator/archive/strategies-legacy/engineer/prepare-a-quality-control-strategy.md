@@ -32,6 +32,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Quality control is not only inspection; it is a contract. Five dimensions: specification + inspection + decision + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a quality control strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: PCI Compliance is not just payment cards; it is a contract. Scope + requirements + validation + governance + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a PCI Compliance strategy

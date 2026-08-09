@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "AI Explainability is not just SHAP; it is a contract. Five dimensions: model + explanation + verification + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an AI Explainability strategy

@@ -25,6 +25,7 @@ rollback: "each phase has independent rollback: Phase 1 remove skeleton; Phase 2
 stakeholders: YiPet primary owner (decision); CTO (approval); YiVad primary owner (baseline reference); architecture group (review)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiPet aicr port implementation

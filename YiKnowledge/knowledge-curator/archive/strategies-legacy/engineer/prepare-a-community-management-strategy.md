@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Community management is not just posting; it is a contract. Five dimensions: audience + content + cadence + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a community management strategy

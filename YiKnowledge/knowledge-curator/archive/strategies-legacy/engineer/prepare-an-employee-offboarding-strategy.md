@@ -33,6 +33,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Employee offboarding is not just a process; it is a contract. Five dimensions: handover + exit + retrospective + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare an employee offboarding strategy

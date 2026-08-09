@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Model Inference is not just prediction; it is a contract. Five dimensions: interface + scheduling + performance + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Model Inference strategy

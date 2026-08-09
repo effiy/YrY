@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Alumni are not just a departure list; they are a contract. Relationship + value + channel + measurement + iteration five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an alumni strategy

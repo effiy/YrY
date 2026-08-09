@@ -22,6 +22,7 @@ slo_impact: Missing management → recurring incidents → long-term SLO breache
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident Management Strategy — Prepare an Incident Management Strategy

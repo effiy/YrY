@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: quality assurance is not just audits; it is a contract. system + process + audit + governance + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a quality assurance strategy

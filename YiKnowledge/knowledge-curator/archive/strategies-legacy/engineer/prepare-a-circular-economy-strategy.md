@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Circular Economy is not just reclaim; it is a contract. design + circulation + closed loop + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Circular Economy strategy

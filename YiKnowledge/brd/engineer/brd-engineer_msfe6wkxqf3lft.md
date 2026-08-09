@@ -42,6 +42,7 @@ notes: Consolidate scattered message middleware into a unified Kafka cluster + S
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-058 Async Processing Platform and Event Stream Governance

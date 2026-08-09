@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: ROI is not just percentage; it is a contract. investment + revenue + time + risk + Measurement five dimensions; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an ROI strategy

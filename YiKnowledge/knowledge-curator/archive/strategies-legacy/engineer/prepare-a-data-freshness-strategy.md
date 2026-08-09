@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data freshness is not just timestamps; it is a contract. Freshness + SLA + monitoring + governance + measurement (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data freshness strategy

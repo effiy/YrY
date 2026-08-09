@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Oncall is not just being on duty; it is a contract. Rotation + alerting + runbook + escalation + retrospective are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an oncall handbook

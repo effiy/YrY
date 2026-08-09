@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "An ecosystem is not just an aggregate; it is a contract. Five dimensions: core + boundary + role + value + measurement; driven by business value; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an ecosystem strategy

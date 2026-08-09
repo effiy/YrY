@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Cell-Based Architecture is not just isolation; it is a contract. boundary + autonomy + exposure + Governance + Measurement five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Cell-Based Architecture strategy

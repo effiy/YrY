@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Wed, 17 Jun 2026 13:50:16 +0000
 author: Tito Milla
+status: stable
+lifecycle: stable
 ---
 
 <p>User authentication remains one of the most targeted touchpoints in application security. With the industrialization of fraud threats by generative AI, cybercrime costs are expected to reach <a href="https://www.sentinelone.com/cybersecurity-101/cybersecurity/cyber-security-statistics/" rel="noopener" target="_blank">$23 trillion</a> in 2027, an increase of 175 percent from 2022. <a href="https://newsroom.transunion.com/h2-2025-global-fraud-report/" rel="noopener" target="_blank">20 percent</a> of fraud is attributed to synthetic identity and authentication exploits, with account takeover (ATO) surging <a href="https://newsroom.transunion.com/h2-2025-global-fraud-report/" rel="noopener" target="_blank">141 percent</a> since 2021.</p> 

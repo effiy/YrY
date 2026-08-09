@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data Orchestration is not just scheduling; it is a contract. orchestration + scheduling + monitoring + governance + measurement as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Data Orchestration strategy

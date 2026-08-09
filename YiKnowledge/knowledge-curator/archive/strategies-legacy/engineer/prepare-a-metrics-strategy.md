@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Metrics is not just numbers; is a contract. naming + collection + aggregation + governance + measurement five dimensions; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Metrics strategy

@@ -33,6 +33,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product Pricing is not just a price tag; it is a contract. Model + pricing + closed loop + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Product Pricing strategy

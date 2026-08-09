@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Creative Operations is not just design; it is a contract. Requirements + production + assets + governance + measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Creative Operations strategy

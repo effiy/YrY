@@ -38,6 +38,7 @@ notes: BRD content managed in MongoDB database (SSOT), static .md only for RAG r
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-081 BRD business requirement document database export and RAG recall

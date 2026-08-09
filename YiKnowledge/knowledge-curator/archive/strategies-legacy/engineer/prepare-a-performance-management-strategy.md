@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Performance management is not just assessment; it is a contract. Five dimensions: goals + feedback + evaluation + development + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a performance management strategy

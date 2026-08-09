@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Animation is not just motion; it is a contract. Duration + easing + timing + governance + measurement (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an Animation strategy

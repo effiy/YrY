@@ -33,6 +33,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Release Management is not just releasing; it is a contract. Plan + process + communication + governance + measurement — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a release management strategy

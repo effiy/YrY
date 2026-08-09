@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: MEDDPICC is not just a checklist; it is a contract. Metrics + Economic + Decision + Paper + Identify + Champion + Competition + measurement dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a MEDDPICC strategy

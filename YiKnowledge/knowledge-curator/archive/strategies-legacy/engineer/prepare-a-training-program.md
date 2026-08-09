@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Training is not just classes; it is a contract. Needs + path + resources + practice + verification + retrospective; continuous; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a training program

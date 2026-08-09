@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Site Reliability not just stability; is a contract. slo + error-budget + automation + Governance + Measurement five dimensions; business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare Site Reliability strategy

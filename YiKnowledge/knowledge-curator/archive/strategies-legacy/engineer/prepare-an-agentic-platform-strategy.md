@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Agentic platforms are not just runtime; they are contracts. Orchestration + tools + memory + governance + measurement are five dimensions; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an agentic platform strategy

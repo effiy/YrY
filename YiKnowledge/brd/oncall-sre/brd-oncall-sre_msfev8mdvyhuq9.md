@@ -23,6 +23,7 @@ slo_impact: AI model not observable -> incident MTTR > 1h
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Model observability strategy — Prepare a Model Observability Strategy

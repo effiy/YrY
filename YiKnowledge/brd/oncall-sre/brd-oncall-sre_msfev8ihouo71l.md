@@ -22,6 +22,7 @@ slo_impact: Triage error → response delay → SLO breach
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident Triage Strategy — Prepare an Incident Triage Strategy

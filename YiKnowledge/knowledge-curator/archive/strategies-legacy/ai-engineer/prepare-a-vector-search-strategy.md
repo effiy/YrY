@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Vector Search is not just nearest neighbors; it is a contract. Five dimensions: vector + index + retrieval + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a Vector Search strategy

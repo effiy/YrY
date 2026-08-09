@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model Ensemble is not just combining; it is a contract. Strategy + training + inference + governance + measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Model Ensemble strategy

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Prompt engineering is not just tuning prompts; it is a contract. Design + version + assessment + optimization + governance are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a prompt engineering strategy

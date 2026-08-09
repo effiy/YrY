@@ -30,6 +30,7 @@ rollback: Gradual P0 bug → immediately disable gradual rollout + switch back t
 stakeholders: YiAi lead owner (decision); architecture team (technical review); BRD business consumer (consumption); CTO (approval); QA (test); YiVad lead owner (frontend collaboration)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi BRD Agent 5-phase launch methodology

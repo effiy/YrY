@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Content moderation is not just deleting posts; it is a contract. Identification + classification + action + appeal + retrospective; user-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a content moderation strategy

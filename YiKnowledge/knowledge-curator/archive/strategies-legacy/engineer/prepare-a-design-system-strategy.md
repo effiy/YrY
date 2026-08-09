@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Design System is not just a component library; it is a contract. Token + component + pattern + governance + measurement as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Design System strategy

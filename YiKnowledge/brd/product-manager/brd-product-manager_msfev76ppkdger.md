@@ -26,6 +26,7 @@ stakeholders: YiAi PM (decision); YiAi main owner (execution); BRD business stak
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — YiAi Project Management and BRD Agent Collaboration

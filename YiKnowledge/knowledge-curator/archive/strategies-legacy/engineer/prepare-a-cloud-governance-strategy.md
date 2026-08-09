@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Cloud Governance is not just cloud migration; is contract. account + resource + cost + governance + measurement five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Cloud Governance strategy

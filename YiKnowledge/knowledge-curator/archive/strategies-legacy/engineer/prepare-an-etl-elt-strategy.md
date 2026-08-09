@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "ETL ELT is not just a pipeline; it is a contract. Five dimensions: extract + load + transform + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare an ETL ELT strategy

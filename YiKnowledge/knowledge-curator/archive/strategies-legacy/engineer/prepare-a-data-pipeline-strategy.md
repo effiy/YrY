@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data pipeline is not just ETL; it is a contract. Batch + streaming + real-time + lambda + kappa multiple forms; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a data pipeline strategy

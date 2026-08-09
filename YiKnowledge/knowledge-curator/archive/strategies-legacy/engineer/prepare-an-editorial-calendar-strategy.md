@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: An Editorial Calendar is not just a calendar; it is a contract. Five dimensions: topics + cadence + responsibility + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an Editorial Calendar strategy

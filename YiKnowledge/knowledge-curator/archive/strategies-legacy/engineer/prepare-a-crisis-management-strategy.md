@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Crisis Management is not just emergency response; it is a contract. Identify + respond + communicate + governance + measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Crisis Management strategy

@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: data governance not just rules; is contract. Principle + role + process + measurement + audit + retrospective; business-value driven; not sloganeering; measurable
+status: deprecated
 ---
 
 # I want to build a data governance framework

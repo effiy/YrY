@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Remote work is not just working from home; it is a contract. Policy + device + collaboration + governance + measurement five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a remote-work strategy

@@ -33,6 +33,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Product Monetization is not just collecting money; it is a contract. Five dimensions: model + channel + closed loop + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Product Monetization strategy

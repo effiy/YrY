@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "AI Accountability is not just blame assignment; it is a contract spanning five dimensions: role + decision + impact + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish an AI Accountability strategy

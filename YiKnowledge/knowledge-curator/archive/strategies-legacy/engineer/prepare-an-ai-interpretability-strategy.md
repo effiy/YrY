@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "AI interpretability is not just an explanation; it is a contract. Five dimensions: methods + evaluation + documentation + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build an AI interpretability strategy

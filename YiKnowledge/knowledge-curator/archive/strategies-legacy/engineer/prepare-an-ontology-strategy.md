@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Ontology is not just modeling; is a contract. concept + relation + rule + governance + measurement five dimensions; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an ontology strategy

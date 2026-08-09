@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Voice interface is not just a voice assistant; it is a contract. Five dimensions: intent + slot + multi-turn + confirm + error recovery; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a voice interface strategy

@@ -27,6 +27,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: SRE is not just firefighting; it is a contract. SLI/SLO + error budget + toil governance + capacity planning + incident retrospective + automation; engineering methods make reliability property-based, not people-based; measurable
+status: deprecated
 ---
 
 # I want to prepare an SRE strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: An application is not just software; it is a contract. Portfolio + architecture + evolution + governance + measurement — five dimensions; business-value driven; not one-shot; measurable.
+status: deprecated
 ---
 
 # I want to build an application strategy

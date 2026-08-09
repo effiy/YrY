@@ -22,6 +22,7 @@ stakeholders: CTO (decision); executive team (execution)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Reading Notes — Quarterly Archive

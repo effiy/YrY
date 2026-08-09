@@ -33,6 +33,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product Strategy is not just a roadmap; it is a contract. Vision + roadmap + closed-loop + governance + measurement are the five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Product Strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Voice of customer is not just listening; it is a contract. source + cleansing + theme + governance + measurement five dimensions; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a voice of customer research strategy

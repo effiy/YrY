@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Mutual action plan is not just a checklist; it is a contract. Goal + accountability + cadence + risk + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a mutual action plan strategy

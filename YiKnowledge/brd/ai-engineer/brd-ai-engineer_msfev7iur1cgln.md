@@ -22,6 +22,7 @@ risks: 1. breaking changes — lockfile + quarterly eval; 2. community fragmenta
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # llama_index evolution tracking

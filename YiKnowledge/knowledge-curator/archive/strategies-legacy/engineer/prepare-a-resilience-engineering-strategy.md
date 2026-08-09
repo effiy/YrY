@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Resilience engineering is not just chaos; it is a contract. Dependency + failure + drill + retrospective + culture five dimensions; reliability driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a resilience engineering strategy

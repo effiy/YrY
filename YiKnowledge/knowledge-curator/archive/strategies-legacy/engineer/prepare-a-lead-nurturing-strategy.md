@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Lead nurturing is not just email; it is a contract. Audience + content + cadence + trigger + measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a lead nurturing strategy

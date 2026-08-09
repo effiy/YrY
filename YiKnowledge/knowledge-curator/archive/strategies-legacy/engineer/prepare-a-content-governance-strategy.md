@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Content governance is not just review; it is a contract. Five dimensions: standards + roles + process + measurement + archive; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a content governance strategy

@@ -22,6 +22,7 @@ stakeholders: CTO + Procurement (decision); CFO (budget); Engineering team (asse
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Vendor management strategy

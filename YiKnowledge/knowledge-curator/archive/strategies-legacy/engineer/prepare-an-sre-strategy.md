@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: SRE is not just on-call; it is a contract. SLI/SLO/error budget/burn rate/alerting/retrospective six dimensions; reliability driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an SRE strategy

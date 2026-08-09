@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model Drift not justdrift; iscontract. detect + locate + respond + Governance + Measurement five dimensions; by Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want toprepare Model Drift strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product Lifecycle is not just launch; it is a contract. Introduction + growth + maturity + decline + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Product Lifecycle strategy

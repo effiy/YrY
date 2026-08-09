@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Omnichannel Commerce not just channel; is a contract. Store + ecom + fulfillment + Governance + Measurement five dimensions; business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Omnichannel Commerce strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Brand identity is not just a logo; it is a contract. Five dimensions: values + visual + audio + application + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a brand identity strategy

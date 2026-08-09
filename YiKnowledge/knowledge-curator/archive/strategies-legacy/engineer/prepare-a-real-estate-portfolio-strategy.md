@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Real-estate portfolio is not just property; is a contract. portfolio + site selection + finance + governance + measurement five dimensions; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a real-estate portfolio strategy

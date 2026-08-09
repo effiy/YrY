@@ -25,6 +25,7 @@ risks: 1. Milvus ops complexity — K8s operator + monitoring; 2. Qdrant extensi
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Vector database comparison — Milvus / Qdrant / Weaviate / pgvector

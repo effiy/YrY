@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Well-being is not just welfare; it is a contract. Physical + mental + financial + social + governance + measurement six dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a well-being strategy

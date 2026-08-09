@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Policy Management is not just issuing documents; it is a contract. Five dimensions — Author + Publish + Enforce + Governance + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Policy Management strategy

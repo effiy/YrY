@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A retreat is not just team-building; it is a contract. Goals + agenda + logistics + communication + retrospective; produces outputs; not a vacation; measurable
+status: deprecated
 ---
 
 # Organize a team retreat

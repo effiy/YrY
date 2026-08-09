@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Mon, 29 Jun 2026 17:09:54 +0000
 author: Madhusudan Athinarapu
+status: stable
+lifecycle: stable
 ---
 
 <p>When your game server needs both a managed identity provider and its own session system, players face a broken experience if authentication forces a redirect or stalls gameplay. Dual-token authentication for Nakama game servers with <a href="https://aws.amazon.com/cognito/" rel="noopener" target="_blank">Amazon Cognito</a> solves this by connecting two independent session systems, each with its own token lifecycle, without interrupting the player. This post shows you how.</p> 

@@ -23,6 +23,7 @@ stakeholders: "YiVad PM (decision); YiVad main owner (execution); CTO (approval)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — YiVad Project Management Iteration Cadence

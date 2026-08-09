@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data strategy is not just storage selection; it is a contract. Collection + governance + storage + service + value; anchored to business problems; no piling on tools; measurable
+status: deprecated
 ---
 
 # I want to prepare a data strategy

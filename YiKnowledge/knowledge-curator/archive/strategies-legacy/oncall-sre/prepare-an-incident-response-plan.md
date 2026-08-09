@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: An incident response plan is not post-incident firefighting; it is a pre-incident plan. sev classification + role + process + upgrade + communication + runbook; rehearse before, not on the spot; write it down, don't rely on memory; periodic review
+status: deprecated
 ---
 
 # I want to prepare an incident response plan

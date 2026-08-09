@@ -22,6 +22,7 @@ slo_impact: communication delay -> loss of trust -> brand damage
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident Communication Strategy — Prepare an Incident Comms Strategy

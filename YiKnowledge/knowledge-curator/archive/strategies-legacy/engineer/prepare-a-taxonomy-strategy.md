@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A taxonomy is not just classification; it is a contract. Five dimensions: hierarchy + naming + relations + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a taxonomy strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Skills-based is not just roles; it is a contract. Five dimensions: identify + measurement + application + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a skills-based strategy

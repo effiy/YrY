@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A data-governance framework is not just documentation; it is a contract. Organization + process + standards + measurement + culture five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data-governance framework strategy

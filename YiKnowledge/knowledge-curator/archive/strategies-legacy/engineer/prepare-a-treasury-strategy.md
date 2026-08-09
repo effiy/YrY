@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Treasury is not just cash; it is a contract. Five dimensions: liquidity + capital + risk + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build a Treasury strategy

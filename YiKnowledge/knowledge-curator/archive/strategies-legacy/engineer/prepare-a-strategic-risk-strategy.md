@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Strategic risk is not just direction; it is a contract. Five dimensions: hypothesis + deviation + adjustment + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Strategic risk strategy

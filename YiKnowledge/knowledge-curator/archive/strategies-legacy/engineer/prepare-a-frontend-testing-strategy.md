@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Frontend Testing is not just unit testing; it is a contract. Unit + integration + end-to-end + visual + Governance five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Frontend Testing strategy

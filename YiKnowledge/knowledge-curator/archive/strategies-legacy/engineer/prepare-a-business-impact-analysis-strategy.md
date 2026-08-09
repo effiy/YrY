@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: BIA not just checklist; is contract. Process + impact + dependency + Governance + Measurement five dimensions; by Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Business Impact Analysis strategy

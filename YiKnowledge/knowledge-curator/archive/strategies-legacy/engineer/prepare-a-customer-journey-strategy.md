@@ -28,6 +28,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: customer journey is not just touchpoints; it is a contract. stage + touchpoint + emotion + opportunity + Measurement five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a customer journey strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Monthly Business Review is not just a meeting; is contract. cadence + data + decision + governance + measurement five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Monthly Business Review process

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Growth operations is not just AB testing; it is a contract. Five dimensions: hypothesis + experiment + measurement + sediment + governance; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a growth operations strategy

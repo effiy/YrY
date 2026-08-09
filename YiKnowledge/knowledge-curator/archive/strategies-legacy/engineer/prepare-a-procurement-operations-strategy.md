@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Procurement Operations is not just placing orders; it is a contract. Five dimensions: requisition + purchase + receipt + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Procurement Operations strategy

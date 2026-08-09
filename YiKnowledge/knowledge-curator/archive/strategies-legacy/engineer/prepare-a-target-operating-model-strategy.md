@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Target operating model is not just an org chart; it is a contract. Vision + structure + capability + governance + measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a target-operating-model strategy

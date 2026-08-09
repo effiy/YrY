@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product analytics is not just reports; it is a contract. Collection + processing + analysis + experimentation + action; user-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a product analytics strategy

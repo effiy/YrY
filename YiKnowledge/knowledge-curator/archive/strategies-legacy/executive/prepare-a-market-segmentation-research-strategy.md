@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Market segmentation is not just slicing a pie; it is a contract. Five dimensions: dimension + modeling + validation + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a market-segmentation-research strategy

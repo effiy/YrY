@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: CCPA is not just California; it is a contract. Consumers + data + rights + governance + measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a CCPA strategy

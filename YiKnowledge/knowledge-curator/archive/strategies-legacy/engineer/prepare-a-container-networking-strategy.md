@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Container networking is not just connectivity; it is a contract. Five dimensions: connect + route + policy + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a container networking strategy

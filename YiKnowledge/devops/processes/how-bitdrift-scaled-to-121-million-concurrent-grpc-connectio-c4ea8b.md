@@ -11,6 +11,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Wed, 15 Jul 2026 15:27:47 +0000
 author: Raghuram Gururajan
+status: stable
+lifecycle: stable
 ---
 
 <p>When 121 million mobile devices establish persistent gRPC connections to your origin infrastructure within seconds of a live broadcast, the routing policy behind your DNS records matters far more than it does at normal traffic levels. The wrong policy can concentrate all your connections onto a single origin endpoint, turning a scaling success into an outage. <a href="https://bitdrift.io/?utm_campaign=uc&amp;utm_medium=blog&amp;utm_source=aws" rel="noopener" target="_blank">bitdrift</a>, a mobile observability platform founded by former Lyft infrastructure engineers, learned this firsthand while delivering real-time telemetry for a major customer during the T20 World Cup cricket series. As matches kicked off, <a href="https://aws.amazon.com/cloudfront/" rel="noopener" target="_blank">Amazon CloudFront</a> absorbed traffic surging from near-zero to 110K+ peak requests per second.</p> 

@@ -30,6 +30,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Zero trust is not just a slogan; it is a contract. Never trust + always verify + least privilege + continuous verification; business-risk driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a zero-trust strategy

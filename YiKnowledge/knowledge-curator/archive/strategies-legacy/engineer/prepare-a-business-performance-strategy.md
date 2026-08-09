@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Business performance is not only KPIs; it is a contract. Five dimensions: goal + metrics + cadence + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a business performance strategy

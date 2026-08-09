@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A quota plan is not just numbers; it is a contract. Baseline + allocation + adjustment + governance + measurement, five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a quota plan strategy

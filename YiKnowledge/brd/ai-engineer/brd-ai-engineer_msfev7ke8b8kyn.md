@@ -23,6 +23,7 @@ risks: 1. Multi-agent coordination complexity — planning agent + execution age
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Agent architecture patterns

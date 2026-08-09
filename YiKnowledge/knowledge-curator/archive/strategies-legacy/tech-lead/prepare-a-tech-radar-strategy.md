@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Tech radar is not just a checklist; it is a contract. Adopt + trial + assess + hold four quadrants; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a tech radar strategy

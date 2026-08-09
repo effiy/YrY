@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product-Led Sales is not just a sales pattern; it is a contract. Signal + trigger + conversion + Governance + Measurement are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Product-Led Sales strategy

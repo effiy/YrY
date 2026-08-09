@@ -20,6 +20,7 @@ related_docs: ./triage.md / ./readiness-checklist.md / ./governance.md
 review_notes: weekly review of inbox processing status
 tacit: false
 related: []
+type: reference
 ---
 
 # Inbox governance

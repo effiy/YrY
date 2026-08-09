@@ -22,6 +22,7 @@ slo_impact: missing response plan → MTTR doubles
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident Response Plan — Prepare an Incident Response Plan

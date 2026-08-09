@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Employee wellbeing is not just benefits; it is a contract. Five dimensions: physical + mental + financial + Governance + Measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an employee wellbeing strategy

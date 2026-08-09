@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Contract lifecycle is not just signature; it is a contract. Five dimensions: drafting + negotiation + execution + retirement + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Contract Lifecycle Management strategy

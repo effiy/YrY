@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Privacy Program is not just notice; is contract. notice + consent + exercise + governance + measurement five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Privacy Program strategy

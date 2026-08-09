@@ -9,6 +9,8 @@ type: rss
 source_name: Martin Fowler
 source_url: https://martinfowler.com/feed.atom
 author: Martin Fowler
+status: stable
+lifecycle: stable
 ---
 
 <p>In the early 1960s, Fred Brooks managed the development of IBM's System/360

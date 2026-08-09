@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Lessons Learned is not just retrospective; it is a contract. capture + analyze + propagate + governance + measurement as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Lessons Learned strategy

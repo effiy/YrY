@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Inventory Management is not just stockpiling; it is a contract. Five dimensions: demand + inventory + turnover + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an Inventory Management strategy

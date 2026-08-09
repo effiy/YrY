@@ -28,6 +28,7 @@ related:
   - ./tl-maturity-model-arch-2026-08.md
   - ../README.md
   - ../INDEX.md
+type: reference
 ---
 
 # DORA Metrics — Yi family 2026 Q2 Baseline

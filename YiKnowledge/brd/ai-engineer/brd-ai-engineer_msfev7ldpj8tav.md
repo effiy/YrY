@@ -27,6 +27,7 @@ risks: 1. prompt drift — eval set baseline; 2. RAG recall skew — multi-route
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD Generation Prompt

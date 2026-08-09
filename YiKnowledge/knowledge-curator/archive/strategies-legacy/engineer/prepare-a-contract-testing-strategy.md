@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Contract Testing is not just integration; it is a contract. Production + consumption + verification + governance + measurement form five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Contract Testing strategy

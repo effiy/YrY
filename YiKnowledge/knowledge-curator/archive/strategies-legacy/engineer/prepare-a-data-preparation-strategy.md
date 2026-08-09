@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data preparation is not just cleaning; it is a contract. Collection + cleaning + transformation + governance + measurement form five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data preparation strategy

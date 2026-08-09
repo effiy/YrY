@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Knowledge management is not just documentation; it is a contract. Collect + organize + share + apply + evolve; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a knowledge management strategy

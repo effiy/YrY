@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Win/loss analysis is more than a retrospective; it is a contract. Five dimensions: data + interviews + patterns + actions + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a win loss analysis strategy

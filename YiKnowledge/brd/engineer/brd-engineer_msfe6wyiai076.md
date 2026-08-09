@@ -42,6 +42,7 @@ notes: Through the 5-phase methodology of structure-contract-first + RAG > long 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-076 BRD Agent 5-Phase Launch

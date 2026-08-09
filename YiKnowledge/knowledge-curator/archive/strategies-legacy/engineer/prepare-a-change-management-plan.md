@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: change management is not just approval; it is a contract. Category + assessment + approval + execution + validation + rollback; no silent changes; traceable
+status: deprecated
 ---
 
 # I want to build a change management plan

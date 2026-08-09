@@ -39,6 +39,7 @@ notes: Unified chaos platform + resilience governance, using Chaos Mesh + resili
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-060 Chaos Engineering Platform and Resilience Governance

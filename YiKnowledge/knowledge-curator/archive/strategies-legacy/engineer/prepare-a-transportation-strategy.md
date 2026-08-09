@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Transportation is not just moving goods; it is a contract. Five dimensions: pattern + carrier + route + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Transportation strategy

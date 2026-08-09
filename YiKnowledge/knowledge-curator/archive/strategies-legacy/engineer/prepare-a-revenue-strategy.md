@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Revenue is not just a bill; it is a contract. model + pricing + packaging + governance + measurement — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a revenue strategy

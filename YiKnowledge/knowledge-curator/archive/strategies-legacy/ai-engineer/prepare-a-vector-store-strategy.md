@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Vector store is not just a DB; it is a contract. Five dimensions: index + query + persistence + governance + measurement; driven by business value; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a vector store strategy

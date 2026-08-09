@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Penetration Test is not just scanning; it is a contract. scope + attack + report + governance + measurement — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Penetration Test strategy

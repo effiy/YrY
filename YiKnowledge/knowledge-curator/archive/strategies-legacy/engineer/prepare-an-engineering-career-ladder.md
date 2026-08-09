@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A career ladder is not stacked titles; it is a contract. Capability + impact + autonomy + scope + governance; publicly queryable; periodic review; not vague
+status: deprecated
 ---
 
 # I want to build an engineering career ladder

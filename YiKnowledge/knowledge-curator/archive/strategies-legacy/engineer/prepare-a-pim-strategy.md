@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: PIM is not just admin account management; it is a contract. Discover + vault + use + governance + measurement — five dimensions; business-value driven; not one-shot; measurable.
+status: deprecated
 ---
 
 # I want to build a PIM strategy

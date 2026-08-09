@@ -11,6 +11,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Tue, 07 Jul 2026 16:32:21 +0000
 author: Nishanth Charlakola
+status: stable
+lifecycle: stable
 ---
 
 <p><em>This post is co-written by Nishanth Charlakola from S&amp;P Global.</em></p> 

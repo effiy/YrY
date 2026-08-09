@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Internal communications is more than email; it is a contract. Audience + content + channel + cadence + measurement are the five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an internal communications strategy

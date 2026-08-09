@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Chaos Blameless is not just a drill; it is a contract. experiment + documentation + learning + governance + measurement are the five dimensions; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare Chaos Blameless strategy

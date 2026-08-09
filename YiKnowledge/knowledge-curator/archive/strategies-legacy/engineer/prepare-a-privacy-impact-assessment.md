@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A PIA is not just a compliance form; it is a privacy contract. Collection + purpose + sharing + retention + deletion + user rights; default to minimization; not vague
+status: deprecated
 ---
 
 # Prepare a privacy impact assessment

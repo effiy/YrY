@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A Logistics Network is not just nodes; it is a contract. Node + lane + service + governance + measurement (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Logistics Network strategy

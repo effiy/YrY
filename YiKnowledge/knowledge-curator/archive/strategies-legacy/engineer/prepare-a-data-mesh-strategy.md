@@ -39,6 +39,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data mesh is not just architecture; it is a contract. Business domain driven + data as product + autonomy + federated governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data mesh strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Recognition is not just bonuses; it is a contract. Design + channel + frequency + governance + measurement as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Recognition strategy

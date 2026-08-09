@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Product positioning is not just a slogan; it is a contract. Five dimensions: market + differentiation + value + mind + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a product positioning strategy

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: OKR is not only goal; it is a contract. Goal + key result + alignment + tracking + retrospective five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an OKR strategy

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Personalization is more than recommendation; it is a contract. Five dimensions: profiling + trigger + recall + ranking + experimentation; user-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a personalization strategy

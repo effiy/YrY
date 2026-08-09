@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Maintainability is not just "can be changed"; it is a contract. Readable + testable + changeable + Governance + Measurement five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Maintainability strategy

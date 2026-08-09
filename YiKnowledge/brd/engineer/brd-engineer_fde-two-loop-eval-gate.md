@@ -53,6 +53,7 @@ notes: References Awesome-FDE-Roadmap LLM Systems Evaluation section. Any agent 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-072 Two-loop LLM Evaluation as Production Publish Gate

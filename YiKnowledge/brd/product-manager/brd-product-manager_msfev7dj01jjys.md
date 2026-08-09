@@ -24,6 +24,7 @@ stakeholders: AI PM (Decision); AI engineer (data); BRD business stakeholder (sa
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — AI product metric system

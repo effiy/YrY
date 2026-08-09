@@ -22,6 +22,7 @@ stakeholders: PM Team (decision); CTO (review); executive Team (alignment)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Competitor Analysis

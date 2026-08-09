@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Multicloud is not just multiple providers; it is a contract. Five dimensions: selection + portability + interop + data + disaster recovery; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a multicloud strategy

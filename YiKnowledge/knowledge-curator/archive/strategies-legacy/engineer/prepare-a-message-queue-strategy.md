@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Message queue is not just a tool; it is a contract. Produce + queue + consume + order + idempotence; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a message queue strategy

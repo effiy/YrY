@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Microservices are not just splitting; it is a contract. Boundary + communication + data + governance + deployment; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a microservices strategy

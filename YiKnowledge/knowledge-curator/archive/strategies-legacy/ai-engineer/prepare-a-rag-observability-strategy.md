@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: RAG Observability is not just monitoring; it is a contract. Trace + metric + log + governance + measurement as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a RAG Observability strategy

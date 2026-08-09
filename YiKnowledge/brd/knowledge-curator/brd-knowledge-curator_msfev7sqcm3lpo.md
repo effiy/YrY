@@ -24,6 +24,7 @@ related_docs: ./knowledge-map.md / ./user-journey.md / ../governance/governance.
 review_notes: 2026-08-05 current-state snapshot; original design draft of as-a- prefix, triplet filename, journeys/ flat entry three items not yet implemented, see user-story-migration-plan.md
 tacit: false
 related: []
+type: reference
 ---
 
 # Directory structure diagram / Directory Blueprint

@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Content is not just publishing; it is a contract. Audience + goal + theme + channel + cadence + measurement; continuous; not one-shot; has goal
+status: deprecated
 ---
 
 # I want to build a content strategy

@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # BRD-2026-064 Cost Optimization and FinOps Platform Build-out — Project Charter and Scope

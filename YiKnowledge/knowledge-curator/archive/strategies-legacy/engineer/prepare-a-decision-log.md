@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/inversion.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A decision log is not meeting minutes; it's decision + rationale + alternatives + consequences + retrospective; why this decision; traceable
+status: deprecated
 ---
 
 # I want to prepare a decision log

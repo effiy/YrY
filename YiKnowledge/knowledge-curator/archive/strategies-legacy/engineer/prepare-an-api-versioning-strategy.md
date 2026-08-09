@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: API versioning is not just URL plus vN; it is contract management. Semantic versioning + backward compatibility + deprecation cadence + documentation + communication; breaking change must run deprecation process; do not silently break
+status: deprecated
 ---
 
 # I want to prepare an API versioning strategy

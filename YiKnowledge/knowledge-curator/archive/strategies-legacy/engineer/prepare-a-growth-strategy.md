@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Growth is not just acquisition; it is a contract. Acquisition + activation + retention + revenue + referral; user-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a growth strategy

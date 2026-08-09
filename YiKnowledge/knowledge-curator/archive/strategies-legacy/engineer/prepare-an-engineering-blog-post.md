@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
   - ../../knowledge-curator/templates/thinking/inversion.md
 tacit: "An engineering blog is not for showing off; it is for knowledge sediment + employer brand + recruiting + feedback; write before publishing; legal review; do not hide failures"
+status: deprecated
 ---
 
 # I want to write an engineering blog

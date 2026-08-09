@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Retrieval is more than querying; it is a contract. Five dimensions: index + recall + ranking + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a retrieval strategy

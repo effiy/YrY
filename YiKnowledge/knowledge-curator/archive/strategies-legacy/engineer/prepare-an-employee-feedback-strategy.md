@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Employee feedback is not just surveys; it is a contract. Five dimensions: collect + analysis + action + Governance + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an employee feedback strategy

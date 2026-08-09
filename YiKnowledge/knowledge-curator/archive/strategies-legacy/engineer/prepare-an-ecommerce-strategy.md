@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Ecommerce is not just a storefront; it is a contract. Five dimensions — Catalog + Experience + Fulfillment + Governance + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an Ecommerce strategy

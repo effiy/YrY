@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: succession planning is not just a list; it is a contract. key roles + persona + development + measurement + iteration five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a succession planning strategy

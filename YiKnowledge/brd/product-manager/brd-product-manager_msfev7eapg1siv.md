@@ -22,6 +22,7 @@ stakeholders: PM + designer (decision); engineer (implementation); AI user (feed
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — AI Product UX Pattern

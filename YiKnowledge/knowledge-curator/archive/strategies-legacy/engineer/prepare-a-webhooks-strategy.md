@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Webhooks are not just callbacks; they are a contract. Five dimensions: subscribe + deliver + replay + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a Webhooks strategy

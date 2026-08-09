@@ -41,6 +41,7 @@ notes: Migrate Vite 8 build to Rsbuild 1, env prefix changed to RSBUILD_ENV_*, s
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-078 Rsbuild 1 Migration and Build Unification

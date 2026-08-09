@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Localization is not just translation; it is a contract. Five dimensions: language + culture + legal + engineering + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Localization strategy

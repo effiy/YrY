@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # BRD-2026-064 cost optimization and FinOps Platform buildout — stakeholder and communication plan

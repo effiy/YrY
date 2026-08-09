@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: customer NPS is not just a score; it is a contract. Sample + segment + closed loop + Governance + Measurement five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a customer NPS strategy

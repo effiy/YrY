@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data architecture is not just diagrams; it is a contract. Collection + storage + processing + service + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a data architecture strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Inclusion-belonging is not just policy; it is a contract. Five dimensions: identify + intervene + evaluate + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build an inclusion-belonging strategy

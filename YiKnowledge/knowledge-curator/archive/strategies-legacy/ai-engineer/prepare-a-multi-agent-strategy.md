@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: many Agent is not just a single agent; it is a contract. Role + Collaboration + Communication + Supervision + Termination five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare many Agent strategy

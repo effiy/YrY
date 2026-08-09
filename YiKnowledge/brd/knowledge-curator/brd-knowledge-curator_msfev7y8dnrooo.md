@@ -20,6 +20,7 @@ related_docs: ../stakeholders/ / ../team/roster.md
 review_notes: Quarterly review of external expert collaboration status
 tacit: false
 related: []
+type: reference
 ---
 
 # External Expert Roster

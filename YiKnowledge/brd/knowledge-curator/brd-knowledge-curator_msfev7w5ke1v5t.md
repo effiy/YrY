@@ -21,6 +21,7 @@ related_docs: ./communication-cadence.md / ../team/roster.md
 review_notes: Quarterly review of stakeholder changes
 tacit: false
 related: []
+type: reference
 ---
 
 # Stakeholder Map

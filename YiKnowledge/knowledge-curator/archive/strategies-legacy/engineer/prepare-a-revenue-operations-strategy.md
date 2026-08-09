@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Revenue operations is not just merging departments; it is a contract. Alignment + process + data + tools + measurement — five dimensions; business-value driven; not one-shot; measurable.
+status: deprecated
 ---
 
 # I want to build a revenue operations strategy

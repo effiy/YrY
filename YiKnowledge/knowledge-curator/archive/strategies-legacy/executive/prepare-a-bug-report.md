@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A bug report is not just a description; it is reproduction + environment + expected/actual + logs + severity + impact; only reproducible reports have value.
+status: deprecated
 ---
 
 # I want to write a bug report

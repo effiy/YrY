@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Marketing attribution is not just last-touch; it is a contract. Touchpoints + model + integration + measurement + governance — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a marketing-attribution strategy

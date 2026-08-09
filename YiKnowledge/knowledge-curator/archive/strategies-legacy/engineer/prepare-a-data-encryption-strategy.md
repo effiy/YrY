@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data Encryption is not just cryptography; it is a contract. Five dimensions: state + algorithm + keys + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Data Encryption strategy

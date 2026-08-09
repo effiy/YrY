@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A release calendar is more than a date table; it is a contract. Cadence + freeze + coordination + communication + rollback; cross-team aligned; no ad-hoc changes; predictable
+status: deprecated
 ---
 
 # I want to build a release calendar

@@ -28,6 +28,7 @@ rollback: Evaluation infrastructure exception → revert to previous baseline + 
 stakeholders: YiAi main owner (decision); architecture team (review); CTO (approval); QA; BRD business (evaluation data)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi RAG evaluation infrastructure

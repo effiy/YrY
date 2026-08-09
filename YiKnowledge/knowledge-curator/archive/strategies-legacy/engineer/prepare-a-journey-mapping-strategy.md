@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: User journey mapping is not just a diagram; it is a contract. Persona + stages + touchpoints + emotion + opportunity five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a user journey mapping strategy

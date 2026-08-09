@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Network is not just bandwidth; it's a contract. Topology + routing + security + performance + governance; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a network strategy

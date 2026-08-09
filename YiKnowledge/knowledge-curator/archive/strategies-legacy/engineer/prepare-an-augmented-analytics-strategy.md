@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Augmented analytics is not just AI bolted onto BI; it is a contract. Five dimensions of suggest + explain + converse + Governance + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an augmented analytics strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Leadership is not just a title; it is a contract. Five dimensions: model + selection + development + measurement + iteration; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a leadership strategy

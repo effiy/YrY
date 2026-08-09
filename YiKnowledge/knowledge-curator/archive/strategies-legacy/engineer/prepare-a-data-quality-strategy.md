@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data quality is not just validation; it is a contract. Completeness + accuracy + consistency + timeliness + uniqueness; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a data quality strategy

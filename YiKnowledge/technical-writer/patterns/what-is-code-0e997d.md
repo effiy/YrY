@@ -9,6 +9,8 @@ type: rss
 source_name: Martin Fowler
 source_url: https://martinfowler.com/feed.atom
 author: Martin Fowler (martin@martinfowler.com)
+status: stable
+lifecycle: stable
 ---
 
 <p>Increasingly humans delegate writing code to agents. Will there even be

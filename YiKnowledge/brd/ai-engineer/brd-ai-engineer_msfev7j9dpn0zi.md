@@ -22,6 +22,7 @@ risks: 1. multi-route recall cost — top-k tuning; 2. reranker latency — use 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # RAG Design Patterns

@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Wed, 22 Jul 2026 14:25:09 +0000
 author: Raman Pujani
+status: stable
+lifecycle: stable
 ---
 
 <p><a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html" rel="noopener" target="_blank">AWS CloudFormation</a> is the foundational tool of infrastructure-as-code for thousands of organizations running workloads on AWS. But as teams push the boundaries of what CloudFormation can do natively, <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html" rel="noopener" target="_blank">custom resources</a> have emerged as a powerful extension mechanism that unlocks a broad range of possibilities. Yet, when it comes to building resilient, multi-Region deployments with custom resources, customers quickly discover a gap: there is no built-in multi-Region support. In this post, we will explore that challenge and go over a robust active-active architecture that solves it.</p> 

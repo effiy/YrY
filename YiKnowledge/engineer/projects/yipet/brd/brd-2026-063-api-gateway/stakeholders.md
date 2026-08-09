@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # BRD-2026-063 API Gateway Platform and Edge-Computing Governance - Stakeholders

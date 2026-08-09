@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Capacity planning strategy is not just scale-out; it is a contract. Five dimensions: baseline + forecast + threshold + scaling + drill; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a capacity planning strategy

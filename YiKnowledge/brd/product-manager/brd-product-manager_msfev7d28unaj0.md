@@ -22,6 +22,7 @@ stakeholders: PM Team + CTO (Decision); engineer (data); business stakeholders (
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — North Star Metric System

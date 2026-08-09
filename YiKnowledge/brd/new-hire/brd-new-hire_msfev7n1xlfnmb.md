@@ -29,6 +29,7 @@ goals: 1. land 3 view domain PRs 2. understand YiAi RPC contract 3. lead 1 itera
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Onboard as a New Engineer — Day 1 to 90

@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A risk register is not just a table; it is living documentation. Identify + assess + mitigate + track + close; persistently updated; not one-shot; not by memory
+status: deprecated
 ---
 
 # I want to build a risk register

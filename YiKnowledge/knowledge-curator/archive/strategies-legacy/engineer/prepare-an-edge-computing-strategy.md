@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Edge Computing is not only push-down; it is a contract. Five dimensions: node + orchestration + data + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an Edge Computing strategy

@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # BRD-2026-062 Data governance platform and privacy engineering - acceptance criteria

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Discounting is not just price cuts; it is a contract. Policy + thresholds + approval + governance + measurement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a discounting strategy

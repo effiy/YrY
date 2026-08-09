@@ -27,6 +27,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: route graph is not just a timetable; it is a contract. Vision + topic + cadence + priority + measurement; continuous; not one-shot; adjustable
+status: deprecated
 ---
 
 # I want to prepare a product route graph

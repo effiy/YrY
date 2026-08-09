@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "An AI center of excellence is not just a team; it is a contract spanning five dimensions: mission + capability + service + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish an AI center-of-excellence strategy

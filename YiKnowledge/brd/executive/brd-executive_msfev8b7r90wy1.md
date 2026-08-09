@@ -25,6 +25,7 @@ stakeholders: AI Engineer + CTO (decision); YiAi main owner (execution); CFO (bu
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # LLM vendor Landscape

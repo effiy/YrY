@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: test automation is not just assertions; it is a contract. Unit + integration + end-to-end + contract + performance five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a test automation strategy

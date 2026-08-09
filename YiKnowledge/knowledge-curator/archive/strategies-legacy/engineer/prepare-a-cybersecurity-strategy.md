@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Cybersecurity is not just firewalls; it is a contract. Identify + protect + detect + respond + recover five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a cybersecurity strategy

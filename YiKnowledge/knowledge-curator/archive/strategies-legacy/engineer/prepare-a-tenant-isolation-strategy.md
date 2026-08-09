@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Tenant isolation is not just a table field; it is a contract. isolation + data + resources + fault + security — five dimensions; risk-driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a tenant isolation strategy

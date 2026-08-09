@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: API strategy is not just endpoints; it is a contract. design + contract + version + gateway + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an API strategy

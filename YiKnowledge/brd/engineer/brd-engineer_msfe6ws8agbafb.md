@@ -39,6 +39,7 @@ notes: Unified API gateway platform + edge computing governance, via APISIX + et
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-063 API Gateway Platform and Edge Computing Governance

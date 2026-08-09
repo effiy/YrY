@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "RAG Governance is not just control; it is a contract. Five dimensions: role + strategy + audit + measurement; driven by business value; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare RAG Governance strategy

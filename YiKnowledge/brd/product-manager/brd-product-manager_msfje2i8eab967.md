@@ -37,6 +37,7 @@ notes: Strong dependency on BRD-2026-058 asynchronous handling platform event di
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — YiPet self-service event stream subscription and analytics platform

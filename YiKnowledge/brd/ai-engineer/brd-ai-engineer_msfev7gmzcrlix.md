@@ -26,6 +26,7 @@ risks: 1. bge-m3 Chinese recall drift — quarterly eval; 2. OpenAI cost — pro
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Embedding Model Selection — bge-m3 vs OpenAI

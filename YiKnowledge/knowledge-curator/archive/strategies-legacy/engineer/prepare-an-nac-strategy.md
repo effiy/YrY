@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: NAC is not just admission; it is a contract. Identification + admission + policy + governance + measurement form five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an NAC strategy

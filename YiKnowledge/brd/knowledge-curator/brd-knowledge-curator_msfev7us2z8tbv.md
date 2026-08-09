@@ -21,6 +21,7 @@ related_docs:../../ai-engineer/methodology/llm-evaluation-methods.md
 review_notes: monthly review + TBD before moving to active
 tacit: false
 related: []
+type: reference
 ---
 
 # AI response placeholder spec

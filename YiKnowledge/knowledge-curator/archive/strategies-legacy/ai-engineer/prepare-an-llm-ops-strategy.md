@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: LLMOps is not just invocation; it is a contract. prompts + model + RAG + evaluation + deploy + monitoring + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an LLMOps strategy

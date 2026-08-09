@@ -22,6 +22,7 @@ stakeholders: CTO (Decision); CEO / CFO / VP (execution)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Reading List — Executive Must-Read

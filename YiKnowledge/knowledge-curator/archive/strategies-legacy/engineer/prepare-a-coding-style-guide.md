@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Coding style is not just lint; it's a contract. Format + naming + structure + patterns + anti-patterns; automated enforcement; not human review
+status: deprecated
 ---
 
 # I want to prepare a coding style guide

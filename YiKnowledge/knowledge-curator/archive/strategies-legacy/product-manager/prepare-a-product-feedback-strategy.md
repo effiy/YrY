@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product Feedback is not just collection; it is a contract. Collection + analysis + closed loop + governance + measurement form five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Product Feedback strategy

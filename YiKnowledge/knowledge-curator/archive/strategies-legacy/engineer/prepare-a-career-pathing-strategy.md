@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: career pathing not just promotion; is a contract. explore + planning + equip + Governance + Measurement five dimensions; business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare career pathing strategy

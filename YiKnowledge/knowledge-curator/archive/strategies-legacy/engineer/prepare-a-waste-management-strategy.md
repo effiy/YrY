@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Waste Management is not just disposal; it is a contract. Five dimensions: source + processing + disposal + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Waste Management strategy

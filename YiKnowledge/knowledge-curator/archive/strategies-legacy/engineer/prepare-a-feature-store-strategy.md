@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Feature store is not just cache; it is a contract. Definition + computation + serving + monitoring + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build feature store strategy

@@ -20,6 +20,7 @@ related_docs: ./inbox.md / ./readiness-checklist.md / ./governance.md
 review_notes: weekly review of triage completion rate
 tacit: false
 related: []
+type: reference
 ---
 
 # Triage process

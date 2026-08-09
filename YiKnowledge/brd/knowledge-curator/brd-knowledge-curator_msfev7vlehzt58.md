@@ -20,6 +20,7 @@ related_docs: ./stakeholder-map.md / ../team/roster.md
 review_notes: Monthly review of communication cadence execution
 tacit: false
 related: []
+type: reference
 ---
 
 # Stakeholder Communication Cadence

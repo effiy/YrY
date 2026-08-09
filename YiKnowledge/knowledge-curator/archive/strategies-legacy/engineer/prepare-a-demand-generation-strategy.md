@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Demand generation is not just leads; it is a contract. Audience + channel + content + conversion + measurement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a demand generation strategy

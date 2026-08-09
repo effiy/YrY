@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "UGC is not just photo sharing; it is a contract spanning five dimensions: incentive + moderation + repurpose + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish a UGC strategy

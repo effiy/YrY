@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: NPS is not just a score; it is a contract. ask + classify + analyze + improve + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a net promoter strategy

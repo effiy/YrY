@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Fri, 17 Jul 2026 16:03:40 +0000
 author: Alejandro Esquivias Cañadas
+status: stable
+lifecycle: stable
 ---
 
 <p>This three-part blog series guides you through implementing <a href="https://projects.eclipse.org/projects/technology.edc" rel="noopener" target="_blank">Eclipse Dataspace Components</a> (EDC) on AWS, from foundational concept to production deployment. Part 1 establishes the theoretical foundation with IDSA standards, the Dataspace Protocol (DSP), and core EDC architecture. <a href="https://aws.amazon.com/blogs/architecture/eclipse-dataspace-components-on-aws-architecture-patterns-in-production/" rel="noopener" target="_blank">Part 2</a> provides production-ready AWS deployment patterns using services like <a href="https://aws.amazon.com/ecs/" rel="noopener" target="_blank">Amazon Elastic Container Service</a> (Amazon ECS), <a href="https://aws.amazon.com/aurora/" rel="noopener" target="_blank">Amazon Aurora</a>, and <a href="https://aws.amazon.com/api-gateway/" rel="noopener" target="_blank">Amazon API Gateway</a>. <a href="https://aws.amazon.com/blogs/architecture/eclipse-dataspace-components-on-aws-cost-optimization-strategies/" rel="noopener" target="_blank">Part 3</a> completes the journey with cost optimization strategies and practical guidance for running efficient, scalable data space infrastructure on AWS.</p> 

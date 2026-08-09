@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: multi-region is not just multi-region deploy; it is a contract. business driven + region + data + traffic + fault; SLA reverse-derived; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a multi-region strategy

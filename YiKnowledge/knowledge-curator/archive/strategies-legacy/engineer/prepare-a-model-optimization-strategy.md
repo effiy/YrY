@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Model Optimization is not just compression; it is a contract spanning five dimensions: compilation + quantization + scheduling + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish a Model Optimization strategy

@@ -22,6 +22,7 @@ stakeholders: CTO + Legal (Decision); CFO (cost); engineering Team (execution)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # data retention strategy

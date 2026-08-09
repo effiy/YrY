@@ -42,6 +42,7 @@ notes: Via the llama_index.llms.* abstraction layer + 5-stage gradual rollout, c
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-074 Multi-Provider LLM routing gradual rollout

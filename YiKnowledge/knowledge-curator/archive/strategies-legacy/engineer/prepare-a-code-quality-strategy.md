@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Code Quality is more than lint; it is a contract. Five dimensions: standards + measurement + review + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a Code Quality strategy

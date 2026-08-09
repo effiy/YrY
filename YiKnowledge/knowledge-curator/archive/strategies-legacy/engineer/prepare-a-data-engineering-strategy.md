@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: data engineering is not just ETL; it is a contract. ingest + process + schedule + quality + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data engineering strategy

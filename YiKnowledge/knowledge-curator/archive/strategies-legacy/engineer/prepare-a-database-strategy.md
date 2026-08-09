@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Database is not just selection; it's a contract. Type + model + index + backup + governance; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a database strategy

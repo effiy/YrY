@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Fri, 17 Jul 2026 16:03:47 +0000
 author: Jorge Hernández Suárez
+status: stable
+lifecycle: stable
 ---
 
 <p>When you deploy <a href="https://projects.eclipse.org/projects/technology.edc" rel="noopener" target="_blank">Eclipse Dataspace Components</a> (EDC) connectors on AWS, one of the first challenges you face is predicting and controlling the cost of the required infrastructure. Without clear benchmarks, it is difficult to make informed decisions about workload sizing, environment configuration, and long-term investment.</p> 

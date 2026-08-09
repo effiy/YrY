@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Lean Six Sigma is not just a tool; it is a contract. Define + measure + analyze + improve + control (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a lean six sigma strategy

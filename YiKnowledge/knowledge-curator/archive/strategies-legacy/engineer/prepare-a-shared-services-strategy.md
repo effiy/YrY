@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Shared services is not just centralization; is contract. scope + SLA + operations + governance + measurement five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a shared services strategy

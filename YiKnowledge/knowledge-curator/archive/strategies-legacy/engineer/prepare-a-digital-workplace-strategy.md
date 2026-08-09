@@ -34,6 +34,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Digital Workplace is not just tools; it is a contract. Tools + integration + experience + governance + measurement form five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Digital Workplace strategy

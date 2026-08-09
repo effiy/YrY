@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Backup is not just a copy; it is a contract. Strategy + verification + restore + governance + measurement — five dimensions; business-value driven; not one-shot; measurable.
+status: deprecated
 ---
 
 # I want to build a Backup strategy

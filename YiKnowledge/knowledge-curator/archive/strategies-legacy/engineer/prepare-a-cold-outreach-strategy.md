@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Cold Outreach is not just bulk sending; it is a contract. Five dimensions: audience + message + cadence + channel + measurement; driven by business value; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Cold Outreach strategy

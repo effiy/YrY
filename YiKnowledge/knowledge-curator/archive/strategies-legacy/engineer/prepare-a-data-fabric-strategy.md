@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data Fabric is not just an integration layer; it is a contract. Connect + orchestrate + governance + measurement + security — five dimensions; business-value driven; not one-shot; measurable.
+status: deprecated
 ---
 
 # I want to build a Data Fabric strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Reference program is not just a list; is contract. qualification + content + channel + governance + measurement five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a reference program strategy

@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Wed, 22 Jul 2026 13:30:26 +0000
 author: Aishwariya Khiani
+status: stable
+lifecycle: stable
 ---
 
 <p>Organizations in regulated industries like financial services, insurance, healthcare, and government ingest large volumes of data containing personally identifiable information (PII). Your applications, claims processing systems, partner data feeds, and internal workflows produce files that may include names, addresses, Social Security numbers, and domain-specific identifiers such as policy numbers, member IDs, and medical record numbers.</p> 

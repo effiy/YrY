@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Churn reduction is not just win-back; it is a contract: identify + alert + intervene + verify + retrospective; customer-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish a churn reduction strategy

@@ -34,6 +34,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "ACL is not just an adapter layer; it is a contract. Five dimensions: isolation + translation + boundary + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an Anti-Corruption Layer strategy

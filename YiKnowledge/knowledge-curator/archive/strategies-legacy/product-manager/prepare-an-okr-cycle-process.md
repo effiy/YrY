@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: OKR Cadence is not just setting targets; it is a contract. Drafting + alignment + tracking + retrospective + evolution are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build OKR Cadence Process

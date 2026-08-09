@@ -26,6 +26,7 @@ related:
  -../../knowledge-curator/templates/thinking/second-order-thinking.md
  -../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Telemarketing is not just calling; it is a contract. Audience + script + cadence + channel + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Telemarketing strategy

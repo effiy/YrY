@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "NPS is not just a score; it is a contract. Five dimensions: survey + segmentation + closed loop + action + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an NPS strategy

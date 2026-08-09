@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: iOS is not just a system; it is a contract. Five dimensions: SDK + release + device + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an iOS strategy

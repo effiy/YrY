@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Platform engineering is not just stacking tools; it is a contract. Self-service + abstraction + standardization + golden path + measurement; build the internal platform with a product mindset; no gut calls; measurable
+status: deprecated
 ---
 
 # I want to build a platform engineering strategy

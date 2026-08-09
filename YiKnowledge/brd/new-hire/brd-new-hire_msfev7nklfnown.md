@@ -28,6 +28,7 @@ goals: 1. land 3 view domains 2. understand cross-project RPC contracts 3. maste
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # YiVad New Hire Onboarding

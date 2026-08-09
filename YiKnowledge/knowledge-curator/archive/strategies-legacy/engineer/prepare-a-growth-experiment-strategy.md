@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A growth experiment is not just an experiment; it is a contract. Funnel + hypothesis + experiment + measurement + compounding — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a growth experiment strategy

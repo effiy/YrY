@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Stakeholder Management is not just a list; it is a contract. Identify + analyze + engage + governance + measurement (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Stakeholder Management strategy

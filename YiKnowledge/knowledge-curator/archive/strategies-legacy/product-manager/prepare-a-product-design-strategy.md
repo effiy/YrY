@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Product Design is not just prototypes; it is a contract. Five dimensions: requirements + design + validation + governance + measure; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Product Design strategy

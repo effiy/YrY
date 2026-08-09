@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Streaming analytics is not just streaming; it is a contract. Five dimensions: source + compute + serve + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a streaming analytics strategy

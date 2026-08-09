@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Mobile UX is more than small screens; it is a contract. Five dimensions: gestures + thumb zone + offline + notifications + performance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a mobile UX strategy

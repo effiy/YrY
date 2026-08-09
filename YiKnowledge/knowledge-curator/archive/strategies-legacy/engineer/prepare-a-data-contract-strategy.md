@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "A data contract is not just a schema; it is a contract. Five dimensions: producer + consumer + SLA + schema + compatibility; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a data contract strategy

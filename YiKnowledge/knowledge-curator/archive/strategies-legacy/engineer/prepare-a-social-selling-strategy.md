@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Social Selling is not just likes; it is a contract. Five dimensions: brand + network + content + interaction + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Social Selling strategy

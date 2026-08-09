@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: MLOps is not just deployment; it is a contract. Six dimensions: data + training + evaluation + deployment + monitoring + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare an MLOps strategy

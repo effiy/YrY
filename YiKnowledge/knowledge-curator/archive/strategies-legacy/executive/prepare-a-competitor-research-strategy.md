@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Competitor Research is not just collection; it is a contract. Five dimensions: competitors + dimensions + signals + governance + measure; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Competitor Research strategy

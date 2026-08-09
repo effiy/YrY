@@ -26,6 +26,7 @@ slo_impact: P0 all users unable to use / P1 partial users unable to use / P2 deg
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # incident response — I want to respond to an incident

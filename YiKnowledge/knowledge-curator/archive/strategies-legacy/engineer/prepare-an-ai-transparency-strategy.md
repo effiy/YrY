@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: AI transparency is not just disclosure; it is a contract. Model + data + purpose + limits + governance are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare an AI transparency strategy

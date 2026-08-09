@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Human resources is not just hiring; it is a contract. Five dimensions: attract + recruit + develop + retain + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a human resources strategy

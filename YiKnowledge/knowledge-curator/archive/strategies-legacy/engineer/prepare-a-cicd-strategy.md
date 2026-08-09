@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: CI/CD is not just a pipeline; it's a contract. Build + test + scan + deploy + verify five dimensions; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a CI/CD strategy

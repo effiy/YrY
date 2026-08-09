@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: MQL to SQL is not just scoring; it is a contract. definition + routing + follow-up + measurement + feedback as five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an MQL to SQL conversion strategy

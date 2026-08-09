@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: UTM is not just an aggregate; it is a contract. Five dimensions: integration + gateway + management + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a UTM strategy

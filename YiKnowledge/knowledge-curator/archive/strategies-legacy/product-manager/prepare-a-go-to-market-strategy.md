@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "GTM is not just launch; it is a contract. Five dimensions: audience + value + channel + cadence + measure; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Go-to-Market strategy

@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data privacy not just compliance; is contract. Collection + purpose + consent + retention + deletion + transparency; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a data privacy strategy

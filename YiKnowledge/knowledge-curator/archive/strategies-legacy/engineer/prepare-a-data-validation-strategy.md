@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Data Validation is not just validation; it is a contract. Rules + validation + reports + governance + measurement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Data Validation strategy

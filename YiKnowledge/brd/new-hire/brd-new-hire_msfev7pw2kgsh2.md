@@ -21,6 +21,7 @@ goals: "template: 3 PRs / 1 iteration / able to mentor newcomers"
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Onboarding Template

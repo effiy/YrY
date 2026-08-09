@@ -20,6 +20,7 @@ related_docs: ./diagrams/ / ./governance/ / ./archive/ / ./notes/
 review_notes: Monthly review
 tacit: false
 related: []
+type: reference
 ---
 
 # Knowledge Curator README

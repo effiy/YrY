@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Event management is not just meetings; it is a contract. Five dimensions: planning + execution + experience + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an event management strategy

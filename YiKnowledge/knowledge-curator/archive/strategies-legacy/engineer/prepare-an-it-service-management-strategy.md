@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: IT Service Management not just tickets; is a contract. incident + problem + change + Governance + Measurement five dimensions; business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build IT Service Management strategy

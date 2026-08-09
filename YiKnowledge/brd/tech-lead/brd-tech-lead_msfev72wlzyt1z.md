@@ -25,6 +25,7 @@ rollback: Boundary broken -> revert to string convention + fix + re-enable type 
 stakeholders: YiPet main owner + architecture team (decision); CTO (approval); security (review)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiPet MV3 Dual World Boundary Enforcement

@@ -21,6 +21,7 @@ goals: 1. submit 3 win/gotcha 2. lead 1 directory section 3. join quarterly revi
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Contribute to the Knowledge Base

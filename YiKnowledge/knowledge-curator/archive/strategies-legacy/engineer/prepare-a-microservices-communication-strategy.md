@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Microservices communication is more than RPC; it is a contract. Synchronous + asynchronous + streaming + service discovery + fault tolerance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a microservices communication strategy

@@ -27,6 +27,7 @@ rollback: Test infrastructure exception → keep unittest compatibility + fix + 
 stakeholders: YiAi lead owner (decision); architecture team (review); CTO (approval); QA (test collaboration)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi introduces pytest test infrastructure

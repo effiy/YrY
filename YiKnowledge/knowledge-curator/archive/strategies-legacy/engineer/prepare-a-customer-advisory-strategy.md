@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "A customer advisory board is not just meetings; it is a contract. Five dimensions: recruitment + agenda + feedback + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build a customer advisory board strategy

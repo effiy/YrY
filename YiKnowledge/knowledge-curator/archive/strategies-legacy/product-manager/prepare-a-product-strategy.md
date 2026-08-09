@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Product strategy is not just vision; it is a contract. Five dimensions: vision + market + differentiation + path + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a product strategy

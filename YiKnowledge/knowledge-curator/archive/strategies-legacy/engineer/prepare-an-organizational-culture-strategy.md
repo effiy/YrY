@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Organizational culture is not just slogans; it is a contract. Values + behavior + spread + governance + measurement (five dimensions); business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an organizational culture strategy

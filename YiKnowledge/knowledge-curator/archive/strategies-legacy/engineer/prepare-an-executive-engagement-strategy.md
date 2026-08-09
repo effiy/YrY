@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Executive engagement is not just meetings; it is a contract. Five dimensions: matching + cadence + content + escalation + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare an executive engagement strategy

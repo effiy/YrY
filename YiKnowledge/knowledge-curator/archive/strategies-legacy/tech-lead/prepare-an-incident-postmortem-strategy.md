@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Incident postmortem is not just summary; is contract. blameless + 5why + timeline + action items + tracking five dimensions; by business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an incident postmortem strategy

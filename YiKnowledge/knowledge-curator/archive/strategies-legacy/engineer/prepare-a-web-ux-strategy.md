@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Web UX is not just web pages; it is a contract. Responsive + navigation + forms + performance + accessibility five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Web UX strategy

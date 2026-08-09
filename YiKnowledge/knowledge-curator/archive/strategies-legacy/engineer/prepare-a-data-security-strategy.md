@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: data security is not just encryption; it is a contract. classification + encryption + access + audit + DLP five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data security strategy

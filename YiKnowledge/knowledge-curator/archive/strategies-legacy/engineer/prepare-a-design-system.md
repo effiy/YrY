@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: design system is not a UI library; it is a contract. token + component + pattern + guide + governance; SSOT cross-product reuse; evolvable; not one-shot; versioned
+status: deprecated
 ---
 
 # I want to build a design system

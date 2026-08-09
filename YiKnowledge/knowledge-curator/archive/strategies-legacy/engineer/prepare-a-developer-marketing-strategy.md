@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Developer marketing is not just advertising; it is a contract. SDK + documentation + example + community + measure; developer-centric; not selling; measurable
+status: deprecated
 ---
 
 # I want to prepare a developer marketing strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Cohort Analysis is not just grouping; it is a contract. Five dimensions: definition + decomposition + action + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build a Cohort Analysis strategy

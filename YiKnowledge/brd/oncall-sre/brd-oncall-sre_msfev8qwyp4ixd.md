@@ -26,6 +26,7 @@ slo_impact: no lockfile → supply chain CVE → SEV-1 security event
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # No Lockfile Supply Chain Incident Retrospective — No Lockfile Supply Chain risk

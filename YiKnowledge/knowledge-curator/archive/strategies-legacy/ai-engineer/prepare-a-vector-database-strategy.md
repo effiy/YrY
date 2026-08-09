@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A vector database is not just storage; it is a contract. Indexing + retrieval + tuning + backup + governance; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a vector database strategy

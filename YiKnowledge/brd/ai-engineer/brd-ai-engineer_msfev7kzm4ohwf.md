@@ -24,6 +24,7 @@ risks: 1. prompt drift — eval set baseline + rerun; 2. RAG recall bias — mul
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Prompt Engineering Guide

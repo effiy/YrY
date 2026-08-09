@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # BRD-2026-067 MLOps Platform and Model Lifecycle — Risk Register and Mitigation Strategy

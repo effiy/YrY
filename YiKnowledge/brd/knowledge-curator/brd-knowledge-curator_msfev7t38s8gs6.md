@@ -20,6 +20,7 @@ related_docs:./directory-blueprint.md /./user-journey.md /../governance/governan
 review_notes: quarterly review of cross-role citation network completeness property
 tacit: false
 related: []
+type: reference
 ---
 
 # knowledgelygraph / Knowledge Map

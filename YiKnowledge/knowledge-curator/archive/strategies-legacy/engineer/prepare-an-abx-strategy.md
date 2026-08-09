@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "ABX is not just marketing; it is a contract. Five dimensions: account + experience + channel + orchestration + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare an ABX strategy

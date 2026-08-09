@@ -43,6 +43,7 @@ notes: Through OpenTelemetry full-trace + Prometheus + Thanos long-term storage 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-068 Observability & SRE Platform

@@ -27,6 +27,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Responsible AI is not just slogans; it is a contract. Fairness + transparency + privacy + safety + accountability + well-being; ethics review driven; no empty slogans; measurable
+status: deprecated
 ---
 
 # I want to prepare a responsible AI policy

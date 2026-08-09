@@ -32,6 +32,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Engineering productivity is not just tooling; it is a contract. Five dimensions: measurement + process + tool + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare an engineering productivity strategy

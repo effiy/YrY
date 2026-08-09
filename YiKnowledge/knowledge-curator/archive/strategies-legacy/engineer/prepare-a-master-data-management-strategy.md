@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: master data not just tables; is contract. Identify + governance + distribution + sync + quality; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a master data management strategy

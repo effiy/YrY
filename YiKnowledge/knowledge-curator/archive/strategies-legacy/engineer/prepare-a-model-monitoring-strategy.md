@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model monitoring is not just metrics; it is a contract. Performance + drift + data + fairness + business five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a model monitoring strategy

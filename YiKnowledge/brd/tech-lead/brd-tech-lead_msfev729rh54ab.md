@@ -29,6 +29,7 @@ rollback: Biome exception → revert to ESLint + Prettier config + fix + re-migr
 stakeholders: YiPet lead owner + architecture group (decision); CTO (approval); frontend lead (execution)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiPet Biome 2.5 unified lint + format

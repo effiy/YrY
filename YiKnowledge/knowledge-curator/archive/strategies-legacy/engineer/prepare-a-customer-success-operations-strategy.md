@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Customer success operations is more than CS tools; it is a contract. Five dimensions of data + process + tools + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a customer success operations strategy

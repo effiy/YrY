@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Fri, 17 Jul 2026 16:03:44 +0000
 author: Jonas Bürkel
+status: stable
+lifecycle: stable
 ---
 
 <p>Running <a href="https://projects.eclipse.org/projects/technology.edc" rel="noopener" target="_blank">Eclipse Dataspace Components</a> (EDC) connectors in production on AWS requires deliberate architecture decisions around isolation, managed services, and security layering. In <a href="https://aws.amazon.com/blogs/architecture/eclipse-dataspace-components-on-aws-data-sharing-fundamentals/" rel="noopener" target="_blank">Part 1</a> of this series, we covered the fundamentals of data space architectures and EDC per the International Data Space Association’s (IDSA) standards. If you are new to EDC, we recommend starting there. We showed how connector functionality can be customized to support native integration with <a href="https://aws.amazon.com/" rel="noopener" target="_blank">Amazon Web Services</a> (AWS) Cloud services. Examples include <a href="https://aws.amazon.com/s3/" rel="noopener" target="_blank">Amazon Simple Storage Service</a> (Amazon S3) for data storage and <a href="https://aws.amazon.com/secrets-manager/" rel="noopener" target="_blank">AWS Secrets Manager</a> for credentials management. In this post, we dive deeper into the connector deployment architecture on AWS and present patterns and practices for production-grade deployments.</p> 

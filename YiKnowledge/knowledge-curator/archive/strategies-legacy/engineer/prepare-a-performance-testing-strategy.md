@@ -26,6 +26,7 @@ related:
  -../../knowledge-curator/templates/thinking/second-order-thinking.md
  -../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Performance Testing is not just running tests; it is a contract. Metric + scenario + tuning + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Performance Testing strategy

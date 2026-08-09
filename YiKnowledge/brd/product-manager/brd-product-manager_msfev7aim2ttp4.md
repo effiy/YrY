@@ -22,6 +22,7 @@ stakeholders: PM Team (decision); engineer (review); designer (review); QA (revi
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — Requirements review process

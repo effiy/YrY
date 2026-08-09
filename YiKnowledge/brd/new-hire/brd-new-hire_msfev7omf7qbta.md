@@ -28,6 +28,7 @@ goals: 1. implement 3 popup PR items 2. understand MV3 dual-world 3. aicr migrat
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # YiPet new hire onboarding

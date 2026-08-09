@@ -30,6 +30,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Zero downtime is not just deployment; it is a contract. Prepare + traffic cut + rollback + validation + drill; business-SLA driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a zero-downtime deployment strategy

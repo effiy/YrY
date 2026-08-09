@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: OLTP is not just CRUD lookups; it is a contract. Five dimensions: transaction + isolation + index + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an OLTP strategy

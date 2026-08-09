@@ -24,6 +24,7 @@ slo_impact: Critical 24h unpatched -> SEV-1 security incident
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Vulnerability management strategy — Prepare a Vulnerability Management Strategy

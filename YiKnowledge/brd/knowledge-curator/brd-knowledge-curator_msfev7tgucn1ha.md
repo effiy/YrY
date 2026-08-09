@@ -20,6 +20,7 @@ related_docs:./directory-blueprint.md /./knowledge-map.md /../governance/governa
 review_notes: quarterly review scenario-entry-complete property + 2-hop reachability property
 tacit: false
 related: []
+type: reference
 ---
 
 # User Journey Graph / User Journey

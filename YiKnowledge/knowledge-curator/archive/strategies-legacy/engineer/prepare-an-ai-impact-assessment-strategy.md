@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: AI impact assessment is not just a report; it is a contract. Five dimensions: risk + impact + assessment + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build an AI impact assessment strategy

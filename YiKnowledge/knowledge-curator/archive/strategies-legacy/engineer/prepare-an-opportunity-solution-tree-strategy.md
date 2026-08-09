@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Opportunity solution tree is not just a tree-shaped graph; it is a contract. Opportunity + solution + experiment + measurement + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an opportunity solution tree strategy

@@ -20,6 +20,7 @@ related_docs: ../stakeholders/ / ./team-overview.md
 review_notes: Quarterly review of team changes
 tacit: false
 related: []
+type: reference
 ---
 
 # team Roster

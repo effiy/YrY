@@ -23,6 +23,7 @@ slo_impact: AI incident → business users impacted + brand damage
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # AI incident responsestrategy — Prepare an AI Incident Response Strategy

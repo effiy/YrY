@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Cost allocation is not billing; it is accountability + transparency + optimization. Split by tenant / service / team; showback before chargeback; shared costs must have allocation rules; tag SSOT; periodic review
+status: deprecated
 ---
 
 # I want to prepare a cost allocation

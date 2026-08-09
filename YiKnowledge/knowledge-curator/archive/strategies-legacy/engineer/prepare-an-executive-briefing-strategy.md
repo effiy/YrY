@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Executive briefing is not just a report; it is a contract. Five dimensions: audience + objective + content + cadence + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare an executive briefing strategy

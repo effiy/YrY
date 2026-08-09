@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: CES is not just a score; it is a contract. Ask + measure + analyze + improve + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a customer effort strategy

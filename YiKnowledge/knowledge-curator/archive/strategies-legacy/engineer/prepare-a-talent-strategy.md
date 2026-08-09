@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Talent strategy is not just headcount; it is a contract. Five dimensions: demand + persona + sourcing + development + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a talent strategy

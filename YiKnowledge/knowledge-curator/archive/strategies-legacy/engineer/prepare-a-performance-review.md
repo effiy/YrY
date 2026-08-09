@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Performance is not just scoring; it is a contract. goal + behavior + impact + feedback + growth; bidirectional; not one-shot; traceable
+status: deprecated
 ---
 
 # I want to build a performance review

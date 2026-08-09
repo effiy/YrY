@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Schema Registry not just registration; is contract. schema + compatibility + Governance + Measurement five dimensions; byBusiness-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Schema Registry strategy

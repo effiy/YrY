@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Corporate Real Estate is not just property; it is a contract. Five dimensions — Site selection + Portfolio + Finance + Governance + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Corporate Real Estate strategy

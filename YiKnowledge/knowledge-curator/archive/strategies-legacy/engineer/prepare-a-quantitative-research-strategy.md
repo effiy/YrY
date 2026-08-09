@@ -26,6 +26,7 @@ related:
  -../../knowledge-curator/templates/thinking/second-order-thinking.md
  -../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Quantitative research is not just numbers; it is a contract. Five dimensions: hypothesis + design + collect + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a quantitative research strategy

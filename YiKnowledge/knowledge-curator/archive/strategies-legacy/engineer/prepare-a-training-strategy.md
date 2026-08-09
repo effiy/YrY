@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Training is not just courses; it is a contract spanning five dimensions: needs + design + delivery + evaluation + iteration; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish a training strategy

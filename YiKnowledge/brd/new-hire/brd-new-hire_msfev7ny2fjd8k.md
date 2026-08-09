@@ -30,6 +30,7 @@ goals: 1. land 3 service PRs 2. understand RAG eval set 3. BRD agent iteration 4
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # YiAi New Hire Onboarding

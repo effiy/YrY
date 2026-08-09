@@ -26,6 +26,7 @@ related:
  -../../knowledge-curator/templates/thinking/second-order-thinking.md
  -../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Reliability engineering is not just stability; it is a contract. Design + validation + ops + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a reliability engineering strategy

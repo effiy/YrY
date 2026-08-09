@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Design is not just diagramming; it is a contract. Five dimensions: goals + activities + interfaces + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a process design strategy

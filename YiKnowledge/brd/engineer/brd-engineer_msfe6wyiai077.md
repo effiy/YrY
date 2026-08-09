@@ -41,6 +41,7 @@ notes: Since macOS FSEvents silently misses events on this machine (both watchfi
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-077 knowledge base file watcher and sync

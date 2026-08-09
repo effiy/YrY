@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Caching is not just memory; it's a contract. Tiering + invalidation + penetration + governance + metrics five dimensions; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a caching strategy

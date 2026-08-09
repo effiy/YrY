@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: ArgoCD not just CD; is contract. Repo + sync + drift + Governance + Measurement five dimensions; business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want toprepare ArgoCD strategy

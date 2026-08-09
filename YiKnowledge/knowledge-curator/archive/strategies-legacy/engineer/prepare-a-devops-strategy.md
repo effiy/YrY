@@ -32,6 +32,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: DevOps is not just toolchain; it is a contract. Collaboration + automation + measurement + governance + improvement five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a DevOps strategy

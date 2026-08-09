@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/inversion.md
 tacit: RACI is not a table; it is a responsibility contract. Every task must tag R/A/C/I; do not omit R; do not share A; R owns doing; A owns decision; C consulted; I informed; periodic review
+status: deprecated
 ---
 
 # I want to prepare a RACI matrix

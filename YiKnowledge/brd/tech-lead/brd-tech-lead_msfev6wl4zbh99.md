@@ -25,6 +25,7 @@ rollback: "Independent rollback per phase: Phase 1 failure deletes lockfile; Pha
 stakeholders: YiAi lead owner (decision); CTO (approval); YiVad/YiPet lead owners (downstream consumption); architecture team (supply-chain review)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi multi-provider switch implementation

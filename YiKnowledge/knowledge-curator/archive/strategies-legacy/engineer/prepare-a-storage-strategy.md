@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: storage is not just space; it is a contract. type + tier + backup + Governance + cost; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a storage strategy

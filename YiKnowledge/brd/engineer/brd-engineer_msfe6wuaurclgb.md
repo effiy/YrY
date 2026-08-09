@@ -39,6 +39,7 @@ notes: Through multi-region Aurora Global + CloudFormation StackSet + monthly dr
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-065 Multi-region disaster recovery and DR platform build

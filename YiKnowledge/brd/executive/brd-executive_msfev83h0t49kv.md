@@ -23,6 +23,7 @@ stakeholders: CTO + CEO (Decision); YiPet main owner + YiVad main owner (Execute
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # YiPet Collaboration Org Diagnosis

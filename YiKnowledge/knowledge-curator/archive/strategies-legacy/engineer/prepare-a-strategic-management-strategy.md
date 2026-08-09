@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Strategic management is more than planning; it is a contract. Five dimensions of formulation + execution + retrospective + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a strategic management strategy

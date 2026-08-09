@@ -41,6 +41,7 @@ notes: Through MV3 dual-world boundary governance (type branding + envelope) + A
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-069 YiPet MV3 Dual-World Boundary Governance

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Conversational UX is not just chat; it is a contract. Intent + slot + dialogue flow + recovery + analytics five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a conversational UX strategy

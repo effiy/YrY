@@ -23,6 +23,7 @@ slo_impact: P0 incident MTTR > 60min → severe SLO breach
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Major Incident Response Strategy — Prepare a Major Incident Response Strategy

@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: FinOps maturity is not just cost reports; it is a contract. Crawl + Walk + Run + Fly; driven by maturity levels; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to do a FinOps maturity assessment

@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Data classification is not a tag; it is a governance contract. Four tiers: public + internal + confidential + restricted; tiered controls; encryption + access + audit + retention; not vague"
+status: deprecated
 ---
 
 # Prepare a data classification

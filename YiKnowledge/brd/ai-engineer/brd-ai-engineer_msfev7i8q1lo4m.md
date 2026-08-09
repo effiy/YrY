@@ -23,6 +23,7 @@ risks: 1. Langfuse self-hosted ops — K8s + monitoring; 2. trace latency overhe
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # LLM observability comparison — Langfuse / Phoenix / Helicone

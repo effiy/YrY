@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Alliance is not just cooperation; it is a contract. Identify + structure + Operations + Governance + Measurement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare an alliance strategy

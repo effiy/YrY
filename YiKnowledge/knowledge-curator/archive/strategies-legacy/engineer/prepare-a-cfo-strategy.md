@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "CFO is not just reports; it is a contract. Five dimensions: capital + budget + risk + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build a CFO strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Business intelligence is not just dashboards; it is a contract. Five dimensions: data + model + visualization + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Build a business intelligence strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Audit Compliance is more than checking; it is a contract. Five dimensions: internal audit + external audit + remediation + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare an Audit Compliance strategy

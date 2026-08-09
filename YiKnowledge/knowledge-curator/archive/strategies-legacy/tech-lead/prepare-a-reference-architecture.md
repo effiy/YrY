@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: reference architecture is not just diagrams; it is a contract. principles + components + relationships + patterns + standards; anchored on business capability; not sloganeering; landing-able
+status: deprecated
 ---
 
 # I want to build a reference architecture

@@ -23,6 +23,7 @@ goals: 1. Complete handoff 2. Lead 1 iteration 3. Original owner exits 4. Docume
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Handoff Project

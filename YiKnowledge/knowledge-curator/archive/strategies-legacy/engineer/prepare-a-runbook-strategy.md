@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Runbook is not just documentation; it is a contract spanning five dimensions: diagnosis + mitigation + escalation + governance + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to establish a Runbook strategy

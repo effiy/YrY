@@ -22,6 +22,7 @@ goals: 1. run through dev 2. implement 3 items PR 3. lead 1 iteration 4. can onb
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Onboarding Checklist

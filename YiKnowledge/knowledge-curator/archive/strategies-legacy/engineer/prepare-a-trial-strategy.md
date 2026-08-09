@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: trial is not just free try; it is a contract. Five dimensions: audience + scope + cadence + conversion + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare trial strategy

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data lineage not just diagram; is contract. Collect + parse + store + query + apply; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a data lineage strategy

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: CIO is more than vendor selection; it is a contract. Five dimensions: strategy + investment + operations + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a chief information officer strategy

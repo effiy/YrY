@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Self-service analytics is not just reports; it is a contract. data + model + tool + Governance + enablement five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a self-service analytics strategy

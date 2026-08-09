@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Co-marketing is not just shared logos; it is a contract. Five dimensions — Partners + Content + Channel + Cadence + Measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a co-marketing strategy

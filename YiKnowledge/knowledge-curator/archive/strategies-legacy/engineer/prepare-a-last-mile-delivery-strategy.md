@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Last Mile Delivery is not just delivery; it is a contract. Five dimensions: route + time window + experience + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a Last Mile Delivery strategy

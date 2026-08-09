@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Thu, 16 Jul 2026 14:56:22 +0000
 author: Naga Bhargav
+status: stable
+lifecycle: stable
 ---
 
 <p>If you run critical workloads on AWS, such as a contact center on <a href="https://aws.amazon.com/connect/" rel="noopener" target="_blank">Amazon Connect Customer</a>, database workloads on <a href="https://aws.amazon.com/rds/" rel="noopener" target="_blank">Amazon Relational Database Service (Amazon RDS)</a>, or hybrid connectivity through <a href="https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html" rel="noopener" target="_blank">AWS Direct Connect</a>, service health events demand your attention. But not all events are equal. An operational issue, a scheduled maintenance window, and a deprecation notice buried in your inbox have very different consequences. The problem is that they all arrive through the same channel, making their urgency difficult to determine.</p> 

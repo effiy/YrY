@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: recruitment plan is not just headcount; it is a contract. requirement + budget + time + channel + interview + offer; not gut call; measurable
+status: deprecated
 ---
 
 # I want to build a recruitment plan

@@ -25,6 +25,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Partner success is not just customer service; it is a contract. Recruit + enablement + co-sell + Measurement + iteration five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a partner success strategy

@@ -22,6 +22,7 @@ slo_impact: P0 without IC → MTTR > 1h
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident Commander strategy — Prepare an Incident Commander Strategy

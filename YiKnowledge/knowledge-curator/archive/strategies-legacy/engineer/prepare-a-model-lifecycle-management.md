@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model lifecycle is not just deployment; it is a contract. Requirements + data + training + evaluation + deployment + monitoring + retirement; closed-loop driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build model lifecycle management

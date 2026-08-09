@@ -28,6 +28,7 @@ related:
   - ./tl-capacity-cost-2026-08-trend.md
   - ../README.md
   - ../INDEX.md
+type: reference
 ---
 
 # Capacity Plan — OSS Storage — 2026 Q3

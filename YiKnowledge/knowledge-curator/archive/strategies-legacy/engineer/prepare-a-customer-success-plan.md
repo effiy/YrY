@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Customer success is not just support; it is a contract. Onboarding + adoption + retention + value-add + renewal; proactive; not passive; measurable
+status: deprecated
 ---
 
 # Prepare a customer success plan

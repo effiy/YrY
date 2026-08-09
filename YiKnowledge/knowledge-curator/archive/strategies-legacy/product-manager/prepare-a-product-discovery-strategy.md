@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Product discovery is not just ideation; it is a contract. problem + solution + validation + priority + conversion (five dimensions); byBusiness-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a product discovery strategy

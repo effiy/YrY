@@ -22,6 +22,7 @@ slo_impact: Blast radius assessment wrong -> response over- or under-sized
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Blast Radius Analysis - Do a Blast Radius Analysis

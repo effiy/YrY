@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: An account plan is not just documentation; it is a contract. Five dimensions: target + stakeholder + path + risk + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an account plan strategy

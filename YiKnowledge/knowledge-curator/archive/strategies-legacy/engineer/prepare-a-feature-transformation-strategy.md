@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Feature transformation is not just operators; it is a contract. Five dimensions: input + transform + output + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a feature transformation strategy

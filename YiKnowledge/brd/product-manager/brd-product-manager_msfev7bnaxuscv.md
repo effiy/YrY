@@ -23,6 +23,7 @@ stakeholders: Tech Lead Team (decision); architecture team (review); CTO (approv
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — Tech review process

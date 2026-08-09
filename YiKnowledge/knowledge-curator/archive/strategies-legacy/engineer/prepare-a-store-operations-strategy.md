@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Store Operations is not just opening stores; it is a contract. Five dimensions: staffing + inventory + process + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Store Operations strategy

@@ -29,6 +29,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Usability testing is not just finding bugs; it is a contract. Five dimensions: task + scenario + Measurement + moderation + analysis; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a usability testing strategy

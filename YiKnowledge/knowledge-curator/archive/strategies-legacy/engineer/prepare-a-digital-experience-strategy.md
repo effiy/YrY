@@ -28,6 +28,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Digital experience is not just interface; is contract. channel + consistency + personalization + performance + Measurement five dimensions; by Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a digital experience strategy

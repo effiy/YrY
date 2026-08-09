@@ -42,6 +42,7 @@ notes: Port YiWeb sessionChat fully to YiVad aiChat, unify 5 message actions + s
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-079 aiChat Port and Streaming SSE Experience Unified

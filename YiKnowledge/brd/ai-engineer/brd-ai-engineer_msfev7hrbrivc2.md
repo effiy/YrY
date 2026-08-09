@@ -28,6 +28,7 @@ risks: 1. vLLM model compatibility — quarterly eval; 2. SGLang small community
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Inference engine comparison — vLLM / TGI / SGLang / TensorRT-LLM

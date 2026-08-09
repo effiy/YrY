@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Model Embedding is not just vectorization; it is a contract. Five dimensions: model + index + retrieval + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a Model Embedding strategy

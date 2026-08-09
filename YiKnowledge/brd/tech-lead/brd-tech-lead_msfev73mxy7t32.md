@@ -29,6 +29,7 @@ rollback: Phase failure → switch back to previous phase + fix + retry (1 busin
 stakeholders: YiVad lead owner + architecture team (decision); CTO (approval); frontend lead; YiWeb maintainers (baseline)
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiVad aicr 7-Phase Port Methodology

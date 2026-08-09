@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Product Research is not just research; it is a contract. Five dimensions: question + hypothesis + method + governance + measurement; driven by business value; not a one-shot exercise; measurable"
+status: deprecated
 ---
 
 # I want to prepare a Product Research strategy

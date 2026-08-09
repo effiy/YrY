@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A tech debt strategy is not just a list; it is a contract. Identify + classify + quantify + prioritize + repay + govern; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a tech debt strategy

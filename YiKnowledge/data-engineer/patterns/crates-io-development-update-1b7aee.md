@@ -10,6 +10,8 @@ source_name: Rust Blog
 source_url: https://blog.rust-lang.org/feed.xml
 published: '2026-07-13T00:00:00+00:00'
 author: Tobias Bieniek
+status: stable
+lifecycle: stable
 ---
 
 <p>Another six months have passed since our <a href="https://blog.rust-lang.org/2026/01/21/crates-io-development-update/" rel="external">last development update</a>, and the crates.io team has been busy. Here's a summary of the most notable changes and improvements made to <a href="https://crates.io/" rel="external">crates.io</a> since then.</p>

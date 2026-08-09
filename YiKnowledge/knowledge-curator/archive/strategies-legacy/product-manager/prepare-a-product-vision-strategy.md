@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "A product vision is not just a slogan; it is a contract. Five dimensions: user + value + differentiation + time window + measurement; driven by business value; not a one-shot exercise; measurable"
+status: deprecated
 ---
 
 # I want to prepare a product vision strategy

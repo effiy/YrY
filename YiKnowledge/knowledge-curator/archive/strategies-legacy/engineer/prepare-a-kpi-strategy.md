@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: KPI is not just numbers; it is a contract. definition + goal + tracking + responsibility + retrospective five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a KPI strategy

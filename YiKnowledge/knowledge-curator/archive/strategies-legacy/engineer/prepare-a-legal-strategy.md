@@ -32,6 +32,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Legal is more than litigation; it is a contract. Five dimensions of transactions + support + risk control + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a legal strategy

@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data retention is not "longer is better"; classification + cycle + deletion policy; compliance-driven; data minimization
+status: deprecated
 ---
 
 # I want to prepare a data retention policy

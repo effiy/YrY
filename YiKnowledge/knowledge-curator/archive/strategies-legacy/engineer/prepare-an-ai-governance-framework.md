@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: AI Governance is not just compliance; it is a contract. Principle + Role + Process + Measurement + audit + Retrospective; risk-classification driven; no empty slogans; measurable
+status: deprecated
 ---
 
 # Prepare an AI governance framework

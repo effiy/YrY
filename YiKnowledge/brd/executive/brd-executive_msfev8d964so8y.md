@@ -23,6 +23,7 @@ stakeholders: CTO + Legal (decision); CFO (budget); Engineering Team (reform)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Regulatory Change Response Strategy

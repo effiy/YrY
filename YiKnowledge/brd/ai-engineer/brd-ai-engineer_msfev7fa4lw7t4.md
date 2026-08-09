@@ -27,6 +27,7 @@ risks: 1. model-upgrade breakage — lockfile pins versions + quarterly review; 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Mainstream LLM Comparison (2026)

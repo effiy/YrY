@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Resource allocation is more than dispatching; it is a contract. Five dimensions: prioritization + matching + scheduling + governance + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a resource-allocation strategy

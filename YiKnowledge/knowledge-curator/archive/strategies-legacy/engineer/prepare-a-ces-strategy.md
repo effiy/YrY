@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Customer effort is more than a score; it is a contract. Five dimensions: touchpoints + survey + segment + closed loop + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a customer effort score strategy

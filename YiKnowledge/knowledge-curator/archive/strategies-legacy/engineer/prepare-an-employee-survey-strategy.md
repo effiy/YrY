@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Employee surveys are not just questionnaires; they are a contract. Design + collect + action + governance + measurement, five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an employee survey strategy

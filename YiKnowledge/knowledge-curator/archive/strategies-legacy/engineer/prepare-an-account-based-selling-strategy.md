@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Account-based selling is more than big accounts; it is a contract. Five dimensions: audience + content + channel + cadence + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare an account-based selling strategy

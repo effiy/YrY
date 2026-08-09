@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "FinOps is more than invoices; it is a contract. Five dimensions: visibility + optimization + governance + allocation + continuity; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a FinOps strategy

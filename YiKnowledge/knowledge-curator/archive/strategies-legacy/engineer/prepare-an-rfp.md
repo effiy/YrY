@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: RFP is not just a template; it is a contract. Requirements + evaluation + SLA + commercial + legal; anchored to the business problem; not sloganeering; measurable
+status: deprecated
 ---
 
 # I want to write an RFP

@@ -30,6 +30,7 @@ rollback: routing exception -> switch back to single Ollama provider + fix + gra
 stakeholders: YiAi lead owner + architecture team (decision); CTO (approval); YiVad/YiPet lead owner (downstream consumption); QA
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiAi multi-provider LLM routing

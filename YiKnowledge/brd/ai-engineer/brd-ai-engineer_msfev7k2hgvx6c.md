@@ -25,6 +25,7 @@ risks: 1. Insufficient data overfitting — decision tree guidance; 2. High cost
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Model fine-tuning decision tree

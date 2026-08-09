@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Market is not just size; it is a contract. Five dimensions: identify + assess + choose + govern + measure; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a market strategy

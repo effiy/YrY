@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Master Data is not just master tables; it is a contract. entity + Governance + distribution + Measurement + Governance five dimensions; Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Master Data strategy

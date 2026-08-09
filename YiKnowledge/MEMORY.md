@@ -171,7 +171,7 @@ created: YYYY-MM-DD                     # required
 updated: YYYY-MM-DD                     # required
 source: original link or file path               # required
 type: summary | original | template | prompt  # required
-status: draft | stable | deprecated    # recommended, default stable
+status: stable  # valid values: draft | stable | deprecated
 lifecycle: inbox | triage | active | reference | archive  # recommended, default active
 review_cycle: weekly | monthly | quarterly | yearly       # required for external content
 last_verified: YYYY-MM-DD              # required for external content

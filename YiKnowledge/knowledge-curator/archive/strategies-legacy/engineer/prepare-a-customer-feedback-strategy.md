@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Customer feedback is not just surveys; it is a contract. Five dimensions: channel + collection + analysis + closed loop + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a customer feedback strategy

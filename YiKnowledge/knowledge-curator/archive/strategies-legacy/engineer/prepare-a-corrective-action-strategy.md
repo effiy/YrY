@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Corrective action is not just a fix; it is a contract. Five dimensions: identify + root cause + action + Governance + Measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to prepare a corrective action strategy

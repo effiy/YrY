@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Chef not just config; is contract. cookbook + recipe + node + Governance + Measurement five dimensions; by Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a Chef strategy

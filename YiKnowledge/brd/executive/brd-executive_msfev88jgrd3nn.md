@@ -23,6 +23,7 @@ stakeholders: CTO + PM Team (decision); Executive team (review); Engineering tea
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # AI Industry Report

@@ -43,6 +43,7 @@ notes: Through llama-datasets bilingual eval set + ragas 4 metrics + CI recall r
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-075 RAG Evaluation Infrastructure and Recall Regression Gate

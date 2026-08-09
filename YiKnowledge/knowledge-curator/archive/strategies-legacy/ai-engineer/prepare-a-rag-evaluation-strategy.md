@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "RAG evaluation is not just ragas; it is a contract. Retrieval + generation + reference + end-to-end + cost five dimensions; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a RAG evaluation strategy

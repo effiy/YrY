@@ -26,6 +26,7 @@ stakeholders: YiPet PM (decision); YiPet lead owner (execution); CTO (approval);
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — YiPet project management and extension iteration

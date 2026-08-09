@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "CASB is not just a proxy; it is a contract. Five dimensions: discover + policy + enforce + Governance + Measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a CASB strategy

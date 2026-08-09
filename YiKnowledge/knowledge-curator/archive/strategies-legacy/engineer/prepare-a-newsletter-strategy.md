@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Newsletter is not just blast email; it is a contract. Five dimensions: audience + content + cadence + channel + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # Prepare a Newsletter strategy

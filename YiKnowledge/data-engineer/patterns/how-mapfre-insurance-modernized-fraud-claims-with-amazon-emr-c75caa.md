@@ -10,6 +10,8 @@ source_name: AWS Architecture
 source_url: https://aws.amazon.com/blogs/architecture/feed/
 published: Tue, 14 Jul 2026 21:47:35 +0000
 author: Lijan Kuniyil
+status: stable
+lifecycle: stable
 ---
 
 <p>Insurance fraud remains a significant challenge for the insurance industry because fraudulent claims can increase loss costs, reduce trust, and consume investigation capacity that could otherwise be focused on serving customers. Traditional fraud detection approaches typically rely on rules-based controls, manual investigation triggers, historical claim patterns, and structured-data-only analysis. These approaches are useful for known fraud patterns, but they can struggle to detect sophisticated fraud rings or hidden relationships across claimants, policies, vehicles, providers, addresses, and prior suspicious activities.</p> 

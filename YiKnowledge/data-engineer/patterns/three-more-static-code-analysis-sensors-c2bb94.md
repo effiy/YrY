@@ -9,6 +9,8 @@ type: rss
 source_name: Martin Fowler
 source_url: https://martinfowler.com/feed.atom
 author: Martin Fowler (martin@martinfowler.com)
+status: stable
+lifecycle: stable
 ---
 
 <div class="img-link"><a href="https://martinfowler.com/articles/sensors-for-coding-agents.html#StaticCodeAnalysisDependencyRules"><img src="https://martinfowler.com/articles/sensors-for-coding-agents/card.png" width="350px" /></a></div>

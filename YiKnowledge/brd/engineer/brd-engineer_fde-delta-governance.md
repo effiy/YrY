@@ -42,6 +42,7 @@ notes: Reference Awesome-FDE-Roadmap, treat Delta as a contract rather than a fe
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-070 FDE Practice role discipline and Delta governance

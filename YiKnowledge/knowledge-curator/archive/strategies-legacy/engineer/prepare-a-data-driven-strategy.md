@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Data-driven is not just looking at numbers; it is a contract. Five dimensions: decision + experiment + measurement + governance + culture; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a data-driven strategy

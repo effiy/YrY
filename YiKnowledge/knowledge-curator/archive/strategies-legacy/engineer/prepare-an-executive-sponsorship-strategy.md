@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Executive sponsorship is not just a name on a list; it is a contract. Five dimensions: matching + accountability + cadence + communication + measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build an executive sponsorship strategy

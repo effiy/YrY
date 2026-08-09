@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: BCP is not just technical recovery; it is business continuity. People + process + communication + vendor + compliance + finance; RTO/RPO quantified; not just DR; periodic drills
+status: deprecated
 ---
 
 # I want to prepare a business continuity plan

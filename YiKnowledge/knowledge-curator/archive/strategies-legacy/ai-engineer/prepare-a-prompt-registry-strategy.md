@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "A prompt registry is not just storage; it is a contract. Five dimensions: version + access + audit + drift + retirement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a prompt registry strategy

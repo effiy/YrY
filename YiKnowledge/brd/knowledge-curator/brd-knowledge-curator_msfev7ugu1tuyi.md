@@ -20,6 +20,7 @@ related_docs: ../governance/governance.md / ../diagrams/directory-blueprint.md
 review_notes: Quarterly audit of archive completeness
 tacit: false
 related: []
+type: reference
 ---
 
 # Archive strategy / Archive Policy

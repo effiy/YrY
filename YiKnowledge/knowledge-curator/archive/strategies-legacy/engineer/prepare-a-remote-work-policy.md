@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Remote work is not just working from home; it is a contract. async-first + documentation + timezone + communication + health; not verbal; measurable
+status: deprecated
 ---
 
 # I want to build a remote work policy

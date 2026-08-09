@@ -23,6 +23,7 @@ stakeholders: CTO(decision); CEO(approval); CFO(budget); PM Team(execution); Eng
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # 2026 H1 AI Market Trends

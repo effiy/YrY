@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Model Interpretability is not just readability; it is a contract. Five dimensions: mechanism + proxy + post-hoc + Governance + Measurement; business-value driven; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a Model Interpretability strategy

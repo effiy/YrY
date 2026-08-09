@@ -35,6 +35,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: LLM Cost is not just bookkeeping; it is a contract. Budget + allocation + optimize + governance + measurement — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an LLM Cost strategy

@@ -27,6 +27,7 @@ rollback: Vitest exception → keep manual test + fix + re-enable (1 workday).
 stakeholders: YiVad primary owner + architecture team (decision); CTO (approval); QA; frontend lead
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiVad introduces Vitest testing infrastructure

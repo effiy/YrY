@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: security roadmap is not just a list; it is a contract. vision + topic + priority + measurement + cadence; risk-driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build security roadmap

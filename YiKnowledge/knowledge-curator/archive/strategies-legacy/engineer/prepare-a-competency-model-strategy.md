@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A competency model is not just a capability list; it is a contract. Five dimensions: identify + model + apply + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Competency Model strategy

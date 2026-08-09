@@ -38,6 +38,7 @@ notes: Through FinOps platform + Cost Center OKR + quarterly QBR + Champion 5-pe
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-064 Cost optimisation and FinOps platform build

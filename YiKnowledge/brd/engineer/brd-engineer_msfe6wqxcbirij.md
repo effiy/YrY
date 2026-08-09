@@ -41,6 +41,7 @@ notes: Unified Data Governance Platform + Privacy Engineering, via DataHub + Gre
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-062 Data Governance Platform and Privacy Engineering

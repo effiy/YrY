@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/inversion.md
 tacit: A team charter is not a slogan; it is a behavioral contract + decision mechanism + collaboration convention + values; consensus-driven; quarterly review
+status: deprecated
 ---
 
 # I want to prepare a team charter

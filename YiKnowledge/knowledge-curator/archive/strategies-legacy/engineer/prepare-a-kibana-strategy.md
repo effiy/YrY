@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Kibana is not just visualization; it's a contract. Index pattern + dashboard + alerting + governance + metrics five dimensions; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a Kibana strategy

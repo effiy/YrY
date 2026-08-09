@@ -55,7 +55,7 @@ created: YYYY-MM-DD # required
 updated: YYYY-MM-DD # required
 source: <URL | internal> # required, source link or internal
 type: summary | original | template | prompt # required
-status: draft | stable | deprecated # recommended, defaults to stable
+status: stable  # valid values: draft | stable | deprecated
 lifecycle: inbox | triage | active | reference | archive # recommended, defaults to active
 review_cycle: weekly | monthly | quarterly | yearly # required for external content
 last_verified: YYYY-MM-DD # required for external content

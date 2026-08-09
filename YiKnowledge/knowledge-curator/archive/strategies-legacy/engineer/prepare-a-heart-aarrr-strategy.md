@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: HEART+AARRR is more than metrics; it is a contract. Happiness + Engagement + Adoption + Retention + Task Success + Acquisition + Activation + Retention + Revenue + Referral are the five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare a HEART+AARRR strategy

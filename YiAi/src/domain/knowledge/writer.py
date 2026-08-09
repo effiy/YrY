@@ -65,6 +65,11 @@ def write_entry_markdown(rel_path: str, content: str, meta: dict) -> str:
     the frontmatter block.
     """
     abs_path = _resolve_safe(rel_path)
+    if os.path.isdir(abs_path):
+        raise BusinessException(
+            ErrorCode.INVALID_PARAMS,
+            message=f"Cannot write to a directory: {rel_path}",
+        )
     os.makedirs(os.path.dirname(abs_path) or _base_dir(), exist_ok=True)
     front = yaml.safe_dump(_normalize_meta(meta), allow_unicode=True, sort_keys=False, default_flow_style=False).strip()
     text = f"---\n{front}\n---\n\n{content.lstrip()}"

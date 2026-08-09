@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Brand Awareness is not just exposure; it is a contract. Five dimensions: audience + touchpoints + content + channels + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Build a Brand Awareness strategy

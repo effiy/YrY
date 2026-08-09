@@ -28,6 +28,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Adoption is not just install; it is a contract. Five dimensions: penetration + frequency + depth + path + measurement; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an adoption strategy

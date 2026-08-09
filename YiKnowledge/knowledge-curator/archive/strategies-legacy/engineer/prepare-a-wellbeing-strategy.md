@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Wellbeing is not just benefits; it is a contract. Physical + mental + financial + social + governance five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a Wellbeing strategy

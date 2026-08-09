@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Data lifecycle is not just archiving; it is a contract. Create + storage + use + archive + delete five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # Prepare a data lifecycle strategy

@@ -39,6 +39,7 @@ notes: Via Backstage + Golden Path + Service Catalog + AI assist + Plugin govern
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-066 Internal Developer Platform and DevEx Build-out

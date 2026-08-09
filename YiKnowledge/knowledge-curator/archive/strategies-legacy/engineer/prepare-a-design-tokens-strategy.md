@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Design tokens are not just variables; they are a contract. Color + spacing + typography + components + theme five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a design tokens strategy

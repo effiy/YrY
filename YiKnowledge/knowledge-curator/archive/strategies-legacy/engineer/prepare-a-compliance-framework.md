@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: A compliance framework is not just rules; it is a contract. Principles + scope + controls + evidence + audit + retrospective; risk-driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a compliance framework

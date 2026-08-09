@@ -46,6 +46,7 @@ notes: References Awesome-FDE-Roadmap Air-Gapped & Tactical Edge Deployment sect
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-071 Air-Gapped / Tactical Edge Deployment Platform

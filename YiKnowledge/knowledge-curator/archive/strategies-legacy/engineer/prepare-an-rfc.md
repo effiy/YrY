@@ -40,6 +40,7 @@ related:
 - ../../knowledge-curator/templates/thinking/second-order-thinking.md
 - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: An RFC is a proposal not a decision; diverge first then converge; review cadence is not a formality; after RFC lands must run ADR to record the decision
+status: deprecated
 ---
 
 # I want to write an RFC

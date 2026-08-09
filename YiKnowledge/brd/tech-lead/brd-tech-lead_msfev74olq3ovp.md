@@ -25,6 +25,7 @@ rollback: Phase failure → revert to previous phase + fix + retry (1 business d
 stakeholders: YiVad lead owner (decision); CTO (approval); YiAi lead owner (contract co-build); QA
 tacit: false
 related: []
+type: reference
 ---
 
 # ADR — YiVad Vitest rollout implementation

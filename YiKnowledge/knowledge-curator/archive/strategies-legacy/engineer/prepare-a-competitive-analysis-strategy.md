@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Competitive analysis is not just comparison; it is a contract. Identify + analyze + gap + trend + response — five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a competitive analysis strategy

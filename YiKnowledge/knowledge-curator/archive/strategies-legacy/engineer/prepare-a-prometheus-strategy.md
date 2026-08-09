@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Prometheus is not just metrics; it's a contract. Scrape + storage + query + governance + metrics five dimensions; business-value driven; not one-off; measurable
+status: deprecated
 ---
 
 # I want to prepare a Prometheus strategy

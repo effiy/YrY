@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Crossplane not just K8s IaC; iscontract. provider + composite + claim + Governance + Measurementfive dimensions; withBusiness-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build Crossplane strategy

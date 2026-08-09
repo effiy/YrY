@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: HR Tech is not just systems; it is a contract. Five dimensions: selection + integration + experience + governance + measurement; driven by business value; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an HR Tech strategy

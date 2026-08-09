@@ -27,6 +27,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Knowledge transfer is not just handover; it is a contract. Explicit + tacit + relationships + tools; staged; not one-shot; not by word of mouth
+status: deprecated
 ---
 
 # I want to build a knowledge transfer plan

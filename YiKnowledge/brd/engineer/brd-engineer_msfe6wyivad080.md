@@ -44,6 +44,7 @@ notes: Through 7-stage methodology (baseline align + parity test + store/modal d
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-080 aicr 7-stage port and parity regression

@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: observability is not just a tool; it is a contract. log + metric + tracking + event + topology; Business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build an observability strategy

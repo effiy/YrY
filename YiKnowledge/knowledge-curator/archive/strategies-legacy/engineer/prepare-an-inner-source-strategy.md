@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: InnerSource is not just open source; it is a contract. Collaboration + governance + measurement are the dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to prepare an InnerSource strategy

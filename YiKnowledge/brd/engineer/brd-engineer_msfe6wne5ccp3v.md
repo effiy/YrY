@@ -40,6 +40,7 @@ notes: Unify the flag platform (OpenFeature + Unleash self-hosted) + directory p
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-059 Progressive delivery platform and experiment governance

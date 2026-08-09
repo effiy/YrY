@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Code review is not just annotation; it is a contract. Gate + dimension + feedback + tracking + culture are five dimensions; business-value driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a code review strategy

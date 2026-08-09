@@ -29,6 +29,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Feature flag strategy is more than tooling; it is a contract. Five uses combined + type layering + lifecycle cadence + governance; risk-driven; not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build a feature flag strategy

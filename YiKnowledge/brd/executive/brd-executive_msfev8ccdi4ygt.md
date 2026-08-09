@@ -23,6 +23,7 @@ stakeholders: PM Team (decision); CTO + CFO (review)
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Regional Market Observation

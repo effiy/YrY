@@ -11,6 +11,8 @@ acceptance_criteria:
 review_cycle: quarterly
 tacit: false
 related: []
+status: stable
+type: brd
 ---
 
 # brd-2026-069 YiPet MV3 dual-world boundary Governance — stakeholder

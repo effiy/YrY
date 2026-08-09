@@ -22,6 +22,7 @@ stakeholders: PM Team + CTO (decision); executive team (alignment); engineering 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Market trends strategy

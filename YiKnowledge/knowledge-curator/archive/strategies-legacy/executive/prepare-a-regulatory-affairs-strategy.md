@@ -26,6 +26,7 @@ related:
  - ../../knowledge-curator/templates/thinking/second-order-thinking.md
  - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: Regulatory Affairs is not just filing; it is a contract。monitoring + interpretation + implementation + governance + measurement (five dimensions)；byBusiness-value driven；Not one-shot；measurable
+status: deprecated
 ---
 
 # I want to prepare a regulatory affairs strategy

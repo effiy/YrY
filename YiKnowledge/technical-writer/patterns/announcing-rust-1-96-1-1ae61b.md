@@ -10,6 +10,8 @@ source_name: Rust Blog
 source_url: https://blog.rust-lang.org/feed.xml
 published: '2026-06-30T00:00:00+00:00'
 author: The Rust Release Team
+status: stable
+lifecycle: stable
 ---
 
 <p>The Rust team has published a new point release of Rust, 1.96.1. Rust is a programming language that is empowering everyone to build reliable and efficient software.</p>

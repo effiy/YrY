@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: LLM Routing not just dispatching; is contract. rule + model + monitor + Governance + Measurement five dimensions; with Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build LLM Routing strategy

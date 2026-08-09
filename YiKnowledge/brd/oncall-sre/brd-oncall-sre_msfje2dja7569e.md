@@ -38,6 +38,7 @@ slo_impact: 'Event SLA: 99.9% / Actual: 99.78% (4 minutes breach); error budget 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # Incident — 2026-08-05 Async processing platform schema evolution triggers canary failure

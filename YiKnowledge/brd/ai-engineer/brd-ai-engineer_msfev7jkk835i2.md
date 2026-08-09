@@ -25,6 +25,7 @@ risks: 1. Eval set drift — add new scenarios quarterly; 2. ragas metric drift 
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # LLM evaluation methodology

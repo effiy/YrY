@@ -37,6 +37,7 @@ notes: Through MLflow + Feast + DVC + Airflow + SageMaker AutoML + Continuous Tr
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # BRD-2026-067 MLOps Platform and model life Cadence setup

@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: ML Platform not just tool set; is contract. training + service + Monitoring + Governance + Measurement five dimensions; with Business-value driven; Not one-shot; measurable
+status: deprecated
 ---
 
 # I want to build ML Platform strategy

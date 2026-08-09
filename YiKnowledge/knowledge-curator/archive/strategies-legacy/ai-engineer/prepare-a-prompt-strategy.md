@@ -26,6 +26,7 @@ related:
   - ../../knowledge-curator/templates/thinking/second-order-thinking.md
   - ../../knowledge-curator/templates/thinking/ockhams-razor.md
 tacit: "Prompt strategy is not just a template; it is a contract. Five dimensions: scenario + template + version + governance + measurement; driven by business value; not one-shot; measurable"
+status: deprecated
 ---
 
 # I want to build a prompt strategy

@@ -23,6 +23,7 @@ stakeholders: PM Team (decision); YiAi primary owner (consumer); customer servic
 review_cycle: quarterly
 tacit: false
 related: []
+type: reference
 ---
 
 # PRD — AI Customer Service Industry Case Library
