@@ -12,6 +12,8 @@ import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { streamAgentChat, confirmAgentTool, answerAgent, type AgentStreamEvent, type TodoItem } from "@/api/modules/agentService";
+import type { ToolCallEntry } from "@/views/aiChat/types";
+import { toolCallsFromResults, runningToolCall, finalizeToolCall, modelSwitchNotice, MAX_TURNS_NOTICE } from "@/utils/agentEvent";
 import { webSearch, formatSearchResults } from "@/api/modules/searchService";
 import { getFaqs } from "@/api/modules/faqService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
@@ -45,14 +47,6 @@ const STORAGE_MODEL_PREFIX = "kchat:model:";
 const DEFAULT_MODEL = "qwen3.5";
 const MAX_IMAGES = 4;
 
-interface AgentToolCall {
-  name: string;
-  label: string;
-  content?: string;
-  error?: string;
-  durationMs?: number;
-}
-
 interface LocalMessage {
   type: "user" | "pet";
   message: string;
@@ -63,7 +57,7 @@ interface LocalMessage {
   sources?: RagSource[];
   searchContext?: string;
   /** Tool calls the agent ran while producing this message (agent mode). */
-  toolCalls?: AgentToolCall[];
+  toolCalls?: ToolCallEntry[];
 }
 
 // ── Core state ────────────────────────────────────────────────────────────
@@ -459,13 +453,7 @@ async function send() {
             }
             break;
           case "turn_end": {
-            const toolCalls: AgentToolCall[] = (event.tool_results ?? []).map(tr => ({
-              name: tr.name,
-              label: tr.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
-              content: tr.content,
-              error: tr.error,
-              durationMs: tr.duration_ms,
-            }));
+            const toolCalls = toolCallsFromResults(event.tool_results);
             if (toolCalls.length) {
               const existing = messages.value[petIdx].toolCalls ?? [];
               messages.value[petIdx] = { ...messages.value[petIdx], toolCalls: [...existing, ...toolCalls] };
@@ -477,25 +465,16 @@ async function send() {
               const existing = messages.value[petIdx].toolCalls ?? [];
               messages.value[petIdx] = {
                 ...messages.value[petIdx],
-                toolCalls: [...existing, {
-                  name: event.tool.name,
-                  label: event.tool.label || event.tool.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
-                  content: "(running)",
-                }],
+                toolCalls: [...existing, runningToolCall(event.tool)],
               };
             }
             break;
           case "tool_execution_end":
             if (event.tool?.name) {
-              const calls = [...(messages.value[petIdx].toolCalls ?? [])];
-              const call = calls.find(tc => tc.name === event.tool!.name);
-              if (call) {
-                if (event.tool.content) call.content = event.tool.content;
-                else if (call.content === "(running)") call.content = "";
-                call.error = event.tool.error;
-                call.durationMs = event.tool.duration_ms;
-              }
-              messages.value[petIdx] = { ...messages.value[petIdx], toolCalls: calls };
+              messages.value[petIdx] = {
+                ...messages.value[petIdx],
+                toolCalls: finalizeToolCall(messages.value[petIdx].toolCalls ?? [], event.tool),
+              };
             }
             break;
           case "confirmation_required":
@@ -521,7 +500,7 @@ async function send() {
             // model. Surface the handoff so the stall isn't invisible.
             const m = (event.message ?? {}) as { from?: string; to?: string };
             if (m.from && m.to) {
-              streamingText.value += `\n\n> ⚙️ 模型自动切换：${m.from} → ${m.to}\n\n`;
+              streamingText.value += modelSwitchNotice(m.from, m.to);
               messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
             }
             break;
@@ -531,7 +510,7 @@ async function send() {
             // (previously hardcoded "completed"). Tell the user the task may be
             // unfinished so they can reply 继续 to resume from the accumulated history.
             if (event.stop_reason === "max_turns_reached") {
-              streamingText.value += "\n\n> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。\n\n";
+              streamingText.value += MAX_TURNS_NOTICE;
               messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
             }
             break;

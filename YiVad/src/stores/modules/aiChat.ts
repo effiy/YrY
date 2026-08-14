@@ -26,6 +26,7 @@ import type { WebSearchResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
 import type { AiChatFeedbackRating, AiChatStreamingType, AgentTurnSummary, ToolCallEntry } from "@/views/aiChat/types";
+import { toolCallsFromResults, runningToolCall, finalizeToolCall, modelSwitchNotice, MAX_TURNS_NOTICE } from "@/utils/agentEvent";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 
 import { loadBool, saveBool, loadNum, saveNum, loadStr, saveStr, loadJson, saveJson } from "@/utils/storage";
@@ -1410,13 +1411,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                     last.thinkingText = thinkingText;
                   }
                   if (event.tool_results) {
-                    last.toolCalls = event.tool_results.map((tr: any) => ({
-                      name: tr.name,
-                      label: tr.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
-                      content: tr.content,
-                      error: tr.error,
-                      durationMs: tr.duration_ms,
-                    }));
+                    last.toolCalls = toolCallsFromResults(event.tool_results);
                   }
                   agentTurnSummaries.value = summaries;
                 }
@@ -1452,7 +1447,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 // the user the task may be unfinished so they can reply 继续 and
                 // the loop resumes from the accumulated history.
                 if (event.stop_reason === "max_turns_reached") {
-                  const notice = "\n\n> ⚠️ 已达到最大轮次，任务可能未完成。回复「继续」可接着完成。\n\n";
+                  const notice = MAX_TURNS_NOTICE;
                   streamed += notice;
                   setActiveMessages(msgs => {
                     const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -1502,7 +1497,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 // with KnowledgeChatPanel's model_switch handling).
                 const m = (event.message ?? {}) as { from?: string; to?: string };
                 if (m.from && m.to) {
-                  const notice = `\n\n> ⚙️ 模型自动切换：${m.from} → ${m.to}\n\n`;
+                  const notice = modelSwitchNotice(m.from, m.to);
                   streamed += notice;
                   setActiveMessages(msgs => {
                     const idx = msgs.findIndex(x => x.timestamp === petTimestamp);
@@ -1523,11 +1518,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 if (last && event.tool?.name) {
                   last.toolCalls = [
                     ...last.toolCalls,
-                    {
-                      name: event.tool.name,
-                      label: event.tool.label || event.tool.name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
-                      content: "(running)",
-                    },
+                    runningToolCall(event.tool),
                   ];
                   agentTurnSummaries.value = summaries;
                 }
@@ -1538,13 +1529,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 const summaries = [...agentTurnSummaries.value];
                 const last = summaries[summaries.length - 1];
                 if (last && event.tool?.name) {
-                  const call = last.toolCalls.find((tc: any) => tc.name === event.tool!.name);
-                  if (call) {
-                    if (event.tool.content) call.content = event.tool.content;
-                    else if (call.content === "(running)") call.content = "";
-                    call.error = event.tool.error;
-                    call.durationMs = event.tool.duration_ms;
-                  }
+                  last.toolCalls = finalizeToolCall(last.toolCalls, event.tool);
                   agentTurnSummaries.value = summaries;
                 }
                 // Pi: a confirmation is resolved once the backend surfaces the

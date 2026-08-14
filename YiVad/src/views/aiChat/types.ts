@@ -32,42 +32,6 @@ export interface ToolCallEntry {
   durationMs?: number;
 }
 
-/** Agent event from the SSE stream. */
-export interface AgentStreamEvent {
-  type: string;
-  timestamp: number;
-  message?: { role: string; content: string };
-  turn_index?: number;
-  tool_results?: Array<{
-    name: string;
-    content: string;
-    error?: string;
-    duration_ms: number;
-  }>;
-  tool?: {
-    name: string;
-    label: string;
-    args?: Record<string, unknown>;
-    content?: string;
-    error?: string;
-    duration_ms: number;
-  };
-  phase?: string;
-  delta?: string;
-  error?: string;
-  usage?: Record<string, unknown>;
-  stop_reason?: string;
-  messages?: Array<{ role: string; content: string }>;
-  // Compaction event fields
-  before_count?: number;
-  after_count?: number;
-  saved_tokens?: number;
-  // Confirmation event fields (tool requires user approval)
-  tool_name?: string;
-  tool_args?: Record<string, unknown>;
-  confirmation_id?: string;
-}
-
 /** Per-turn summary for the agent timeline UI. */
 export interface AgentTurnSummary {
   turnIndex: number;

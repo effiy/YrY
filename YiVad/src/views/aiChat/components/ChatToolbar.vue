@@ -2655,7 +2655,7 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
                     clearable
                     placeholder="(any category)"
                     style="width: 100%;"
-                    @update:model-value="v => emit('update-rag-category', (v as string) || '')"
+                    @update:model-value="emit('update-rag-category', ($event as string) || '')"
                   >
                     <el-option
                       v-for="cat in kbCategories"
@@ -2675,7 +2675,7 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
                     filterable
                     placeholder="(any tags)"
                     style="width: 100%;"
-                    @update:model-value="v => emit('update-rag-tags', (v as string[]) || [])"
+                    @update:model-value="emit('update-rag-tags', ($event as string[]) || [])"
                   >
                     <el-option
                       v-for="t in tagOptions"
