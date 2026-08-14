@@ -18,7 +18,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Business directories under YiVad src/views/ that appear in the sidebar.
 # Pure-template dirs (form, echarts, directives, assembly, etc.) are skipped.
-BUSINESS_DIRS = ["home", "aiChat", "brd", "code-review", "rag", "story", "system", "tech-leadership"]
+BUSINESS_DIRS = ["home", "aiChat", "system"]
 SKIP_SUBDIRS = {"components", "composables", "styles", "constants", "utils", "hooks", "meta"}
 
 
