@@ -22,7 +22,7 @@ export function useTopicList(options: UseTopicListOptions) {
   const router = useRouter();
   const proTableRef = ref<ProTableInstance>();
 
-  const routePrefix = tree === "tech-leadership" ? "tlr" : "cr";
+  const routePrefix = tree === "leader" ? "leader" : "cr";
 
   function toDetail(key: string) {
     const routeName = `${routePrefix}${pascal(topic)}Detail`;

@@ -39,7 +39,7 @@ const msgCount = computed(() => (props.conversation.messages || []).length);
 
 const SOURCE_DOMAIN_LABEL: Record<string, string> = {
   brd: "BRD",
-  "tech-leadership": "TL",
+  "leader": "TL",
   "code-review": "CR",
   story: "Story",
   rag: "RAG",

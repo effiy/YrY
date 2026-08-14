@@ -5,7 +5,7 @@
 import type { KnowledgeFileSummary, KnowledgeModuleStats } from "@/api/interface/yiweb";
 import type { ECOption } from "@/components/ECharts/config";
 import { countByField } from "../utils";
-import { STATUS_COLORS, LIFECYCLE_COLORS, REVIEW_CYCLE_COLORS, TYPE_COLORS, CATEGORY_COLORS } from "../utils";
+import { STATUS_COLORS, LIFECYCLE_COLORS, REVIEW_CYCLE_COLORS, TYPE_COLORS, CATEGORY_COLORS, MISSING_LABEL } from "../utils";
 
 export const CHART_PALETTE = [
   "#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de",
@@ -40,7 +40,7 @@ export function buildReviewCycleDonut(
 // ── Type Bar ──
 
 export function buildTypeBar(data: { name: string; count: number }[]): ECOption {
-  const top = data.slice(0, 12);
+  const top = data.filter(d => d.name !== MISSING_LABEL).slice(0, 12);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
@@ -55,13 +55,14 @@ export function buildTypeBar(data: { name: string; count: number }[]): ECOption 
 // ── Status Bar ──
 
 export function buildStatusBar(data: { name: string; count: number }[]): ECOption {
+  const filtered = data.filter(d => d.name !== MISSING_LABEL);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
     xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: data.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
     series: [{ type: "bar", barWidth: "65%",
-      data: data.map(d => ({ value: d.count, itemStyle: { color: STATUS_COLORS[d.name] || "#5470c6", borderRadius: [0, 4, 4, 0] } })).reverse(),
+      data: filtered.map(d => ({ value: d.count, itemStyle: { color: STATUS_COLORS[d.name] || "#5470c6", borderRadius: [0, 4, 4, 0] } })).reverse(),
     }]
   };
 }
@@ -131,13 +132,14 @@ export function buildFileAge(files: KnowledgeFileSummary[]): ECOption {
 // ── Lifecycle Bar ──
 
 export function buildLifecycleBar(data: { name: string; count: number }[]): ECOption {
+  const filtered = data.filter(d => d.name !== MISSING_LABEL);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
     xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: data.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
     series: [{ type: "bar", barWidth: "65%",
-      data: data.map(d => ({ value: d.count, itemStyle: { color: LIFECYCLE_COLORS[d.name] || "#5470c6", borderRadius: [0, 4, 4, 0] } })).reverse(),
+      data: filtered.map(d => ({ value: d.count, itemStyle: { color: LIFECYCLE_COLORS[d.name] || "#5470c6", borderRadius: [0, 4, 4, 0] } })).reverse(),
     }]
   };
 }

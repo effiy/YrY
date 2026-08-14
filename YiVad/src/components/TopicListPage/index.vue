@@ -81,7 +81,7 @@ import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interf
 import { getTopicList, deleteTopicEntry, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
 import { useHandleData } from "@/hooks/useHandleData";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const { t } = useI18n();
 
@@ -208,9 +208,9 @@ function viewRelatedAiChatSessions(row: TopicEntryDocument) {
 
 function detailRouteNameFor(tree: string, topic: string): string {
   // brd topic is stored as "brd-engineer"; route path segment is "engineer".
-  // tl/cr topics are stored as-is ("adr-review", "summary").
+  // tl/cr topics are stored as-is ("architecture", "summary").
   const topicSeg = topic.startsWith(tree + "-") ? topic.slice(tree.length + 1) : topic;
-  const treeSeg = tree === "tech-leadership" ? "tech-leadership" : tree === "brd" ? "brd" : "code-review";
+  const treeSeg = tree === "leader" ? "leader" : tree === "code-review" ? "code-review" : tree === "brd" ? "brd" : tree;
   return `/${treeSeg}/${topicSeg}/detail`;
 }
 
@@ -365,7 +365,18 @@ function pascal(s: string): string {
     .join("");
 }
 
-const routePrefix = props.tree === "tech-leadership" ? "tlr" : props.tree === "brd" ? "brd" : "cr";
+const ROUTE_PREFIX_MAP: Record<string, string> = {
+    "leader": "leader",
+    "code-review": "cr",
+    brd: "brd",
+    engineer: "eng",
+    producter: "pm",
+    aier: "ai",
+    srer: "sre",
+    executiver: "exec",
+    curator: "cur"
+  };
+  const routePrefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
 
 function toDetail(key: string, viewMode = false) {
   // BRD topics already contain the tree prefix (e.g. "brd-documents"),

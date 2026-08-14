@@ -188,6 +188,10 @@ class KnowledgeSearchRequest(BaseModel):
     category: Optional[str] = Field(default=None, description="Optional category filter")
     max_results: int = Field(default=50, description="Max results to return")
 
+class KnowledgeExportRequest(BaseModel):
+    """Export a knowledge directory as a zip archive."""
+    target_dir: str = Field(..., description="Relative directory path under the knowledge base dir, e.g. skills/vue")
+
 # --- RAG Schemas (llama_index) ---
 class RagQueryRequest(BaseModel):
     """One-shot retrieval over the YiKnowledge VectorStoreIndex."""

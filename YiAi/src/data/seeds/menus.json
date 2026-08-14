@@ -1,6 +1,5 @@
 [
   {
-    "key": "menu_home",
     "path": "/home/index",
     "name": "home",
     "component": "/home/index",
@@ -18,907 +17,6 @@
     "order": 0
   },
   {
-    "key": "menu_knowledgeHub",
-    "path": "/knowledge",
-    "name": "knowledgeHub",
-    "component": "/knowledge/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Collection",
-      "title": "Knowledge Base",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 1
-  },
-  {
-    "key": "menu_brd",
-    "path": "/brd",
-    "name": "brd",
-    "component": "",
-    "redirect": "/brd/index",
-    "meta": {
-      "icon": "DocumentChecked",
-      "title": "BRD Management",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 2
-  },
-  {
-    "key": "menu_brdReviewHub",
-    "path": "/brd/index",
-    "name": "brdReviewHub",
-    "component": "/brd/index/index",
-    "redirect": "",
-    "meta": {
-      "icon": "DataAnalysis",
-      "title": "Review Hub",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 0
-  },
-  {
-    "key": "menu_brdEngineer",
-    "path": "/brd/engineer",
-    "name": "brdEngineer",
-    "component": "/brd/engineer/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Engineer",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 1
-  },
-  {
-    "key": "menu_brdTechLead",
-    "path": "/brd/tech-lead",
-    "name": "brdTechLead",
-    "component": "/brd/tech-lead/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tech Lead",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 2
-  },
-  {
-    "key": "menu_brdProductManager",
-    "path": "/brd/product-manager",
-    "name": "brdProductManager",
-    "component": "/brd/product-manager/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Product Manager",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 3
-  },
-  {
-    "key": "menu_brdAiEngineer",
-    "path": "/brd/ai-engineer",
-    "name": "brdAiEngineer",
-    "component": "/brd/ai-engineer/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "AI Engineer",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 4
-  },
-  {
-    "key": "menu_brdNewHire",
-    "path": "/brd/new-hire",
-    "name": "brdNewHire",
-    "component": "/brd/new-hire/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "New Hire",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 5
-  },
-  {
-    "key": "menu_brdKnowledgeCurator",
-    "path": "/brd/knowledge-curator",
-    "name": "brdKnowledgeCurator",
-    "component": "/brd/knowledge-curator/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Knowledge Curator",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 6
-  },
-  {
-    "key": "menu_brdExecutive",
-    "path": "/brd/executive",
-    "name": "brdExecutive",
-    "component": "/brd/executive/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Executive",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 7
-  },
-  {
-    "key": "menu_brdOncallSre",
-    "path": "/brd/oncall-sre",
-    "name": "brdOncallSre",
-    "component": "/brd/oncall-sre/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Oncall SRE",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/brd",
-    "order": 8
-  },
-  {
-    "key": "menu_codeReview",
-    "path": "/code-review",
-    "name": "codeReview",
-    "component": "",
-    "redirect": "/code-review/index",
-    "meta": {
-      "icon": "DocumentChecked",
-      "title": "Code Review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 3
-  },
-  {
-    "key": "menu_crReviewHub",
-    "path": "/code-review/index",
-    "name": "crReviewHub",
-    "component": "/code-review/index/index",
-    "redirect": "",
-    "meta": {
-      "icon": "DataAnalysis",
-      "title": "Review Hub",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 0
-  },
-  {
-    "key": "menu_crSummary",
-    "path": "/code-review/summary",
-    "name": "crSummary",
-    "component": "/code-review/summary/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Summarize this file",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 1
-  },
-  {
-    "key": "menu_crBugs",
-    "path": "/code-review/bugs",
-    "name": "crBugs",
-    "component": "/code-review/bugs/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Find potential bugs",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 2
-  },
-  {
-    "key": "menu_crExplain",
-    "path": "/code-review/explain",
-    "name": "crExplain",
-    "component": "/code-review/explain/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Explain the logic",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 3
-  },
-  {
-    "key": "menu_crSecurity",
-    "path": "/code-review/security",
-    "name": "crSecurity",
-    "component": "/code-review/security/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Security review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 4
-  },
-  {
-    "key": "menu_crDependencyRisk",
-    "path": "/code-review/dependency-risk",
-    "name": "crDependencyRisk",
-    "component": "/code-review/dependency-risk/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dependency risk",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 5
-  },
-  {
-    "key": "menu_crAccessReview",
-    "path": "/code-review/access-review",
-    "name": "crAccessReview",
-    "component": "/code-review/access-review/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Access review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 6
-  },
-  {
-    "key": "menu_crRefactor",
-    "path": "/code-review/refactor",
-    "name": "crRefactor",
-    "component": "/code-review/refactor/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Refactor suggestions",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 7
-  },
-  {
-    "key": "menu_crPerf",
-    "path": "/code-review/perf",
-    "name": "crPerf",
-    "component": "/code-review/perf/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Performance analysis",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 8
-  },
-  {
-    "key": "menu_crTests",
-    "path": "/code-review/tests",
-    "name": "crTests",
-    "component": "/code-review/tests/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Generate tests",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 9
-  },
-  {
-    "key": "menu_crStyle",
-    "path": "/code-review/style",
-    "name": "crStyle",
-    "component": "/code-review/style/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Naming & style",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 10
-  },
-  {
-    "key": "menu_crApiContract",
-    "path": "/code-review/api-contract",
-    "name": "crApiContract",
-    "component": "/code-review/api-contract/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "API contract check",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 11
-  },
-  {
-    "key": "menu_crObservabilityGap",
-    "path": "/code-review/observability-gap",
-    "name": "crObservabilityGap",
-    "component": "/code-review/observability-gap/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Observability gap",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 12
-  },
-  {
-    "key": "menu_crConcurrency",
-    "path": "/code-review/concurrency",
-    "name": "crConcurrency",
-    "component": "/code-review/concurrency/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Concurrency review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 13
-  },
-  {
-    "key": "menu_crErrorHandling",
-    "path": "/code-review/error-handling",
-    "name": "crErrorHandling",
-    "component": "/code-review/error-handling/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Error handling review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 14
-  },
-  {
-    "key": "menu_crDeadCode",
-    "path": "/code-review/dead-code",
-    "name": "crDeadCode",
-    "component": "/code-review/dead-code/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dead code review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 15
-  },
-  {
-    "key": "menu_crBackwardCompat",
-    "path": "/code-review/backward-compat",
-    "name": "crBackwardCompat",
-    "component": "/code-review/backward-compat/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Backward compat review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 16
-  },
-  {
-    "key": "menu_crI18nA11y",
-    "path": "/code-review/i18n-a11y",
-    "name": "crI18nA11y",
-    "component": "/code-review/i18n-a11y/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "i18n / a11y review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/code-review",
-    "order": 17
-  },
-  {
-    "key": "menu_techLeadership",
-    "path": "/tech-leadership",
-    "name": "techLeadership",
-    "component": "",
-    "redirect": "/tech-leadership/index",
-    "meta": {
-      "icon": "Monitor",
-      "title": "Tech Leadership",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 4
-  },
-  {
-    "key": "menu_tlrReviewHub",
-    "path": "/tech-leadership/index",
-    "name": "tlrReviewHub",
-    "component": "/tech-leadership/index/index",
-    "redirect": "",
-    "meta": {
-      "icon": "DataAnalysis",
-      "title": "Review Hub",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 0
-  },
-  {
-    "key": "menu_tlrAdrReview",
-    "path": "/tech-leadership/adr-review",
-    "name": "tlrAdrReview",
-    "component": "/tech-leadership/adr-review/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Architecture Decision Records",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 1
-  },
-  {
-    "key": "menu_tlrTechSelection",
-    "path": "/tech-leadership/tech-selection",
-    "name": "tlrTechSelection",
-    "component": "/tech-leadership/tech-selection/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tech Selection Evaluation",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 2
-  },
-  {
-    "key": "menu_tlrTechDebt",
-    "path": "/tech-leadership/tech-debt",
-    "name": "tlrTechDebt",
-    "component": "/tech-leadership/tech-debt/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Tech Debt Inventory",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 3
-  },
-  {
-    "key": "menu_tlrRiskRegister",
-    "path": "/tech-leadership/risk-register",
-    "name": "tlrRiskRegister",
-    "component": "/tech-leadership/risk-register/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Risk Register",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 4
-  },
-  {
-    "key": "menu_tlrPostmortem",
-    "path": "/tech-leadership/postmortem",
-    "name": "tlrPostmortem",
-    "component": "/tech-leadership/postmortem/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Postmortems",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 5
-  },
-  {
-    "key": "menu_tlrOncallHandover",
-    "path": "/tech-leadership/oncall-handover",
-    "name": "tlrOncallHandover",
-    "component": "/tech-leadership/oncall-handover/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Oncall Handover",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 6
-  },
-  {
-    "key": "menu_tlrOrgDiagnose",
-    "path": "/tech-leadership/org-diagnose",
-    "name": "tlrOrgDiagnose",
-    "component": "/tech-leadership/org-diagnose/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Org Diagnose",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 7
-  },
-  {
-    "key": "menu_tlrDependencyAudit",
-    "path": "/tech-leadership/dependency-audit",
-    "name": "tlrDependencyAudit",
-    "component": "/tech-leadership/dependency-audit/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dependency Audit",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 8
-  },
-  {
-    "key": "menu_tlrRoadmapReview",
-    "path": "/tech-leadership/roadmap-review",
-    "name": "tlrRoadmapReview",
-    "component": "/tech-leadership/roadmap-review/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Roadmap Review",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 9
-  },
-  {
-    "key": "menu_tlrCapacityPlan",
-    "path": "/tech-leadership/capacity-plan",
-    "name": "tlrCapacityPlan",
-    "component": "/tech-leadership/capacity-plan/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Capacity Plan",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 10
-  },
-  {
-    "key": "menu_tlrCapacityCost",
-    "path": "/tech-leadership/capacity-cost",
-    "name": "tlrCapacityCost",
-    "component": "/tech-leadership/capacity-cost/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Capacity & Cost (FinOps)",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 11
-  },
-  {
-    "key": "menu_tlrMaturityModel",
-    "path": "/tech-leadership/maturity-model",
-    "name": "tlrMaturityModel",
-    "component": "/tech-leadership/maturity-model/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Maturity Model",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 12
-  },
-  {
-    "key": "menu_tlrDoraMetrics",
-    "path": "/tech-leadership/dora-metrics",
-    "name": "tlrDoraMetrics",
-    "component": "/tech-leadership/dora-metrics/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "DORA Metrics",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 13
-  },
-  {
-    "key": "menu_tlrMentorshipGrowth",
-    "path": "/tech-leadership/mentorship-growth",
-    "name": "tlrMentorshipGrowth",
-    "component": "/tech-leadership/mentorship-growth/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Mentorship & Growth",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 14
-  },
-  {
-    "key": "menu_tlrProjectHandoffs",
-    "path": "/tech-leadership/project-handoffs",
-    "name": "tlrProjectHandoffs",
-    "component": "/tech-leadership/project-handoffs/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Project Handoffs",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 15
-  },
-  {
-    "key": "menu_tlrDependencyAdoption",
-    "path": "/tech-leadership/dependency-adoption",
-    "name": "tlrDependencyAdoption",
-    "component": "/tech-leadership/dependency-adoption/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Dependency Adoption",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 16
-  },
-  {
-    "key": "menu_tlrProjectBootstrap",
-    "path": "/tech-leadership/project-bootstrap",
-    "name": "tlrProjectBootstrap",
-    "component": "/tech-leadership/project-bootstrap/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Project Bootstrap",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 17
-  },
-  {
-    "key": "menu_tlrKnowledgeEvolution",
-    "path": "/tech-leadership/knowledge-evolution",
-    "name": "tlrKnowledgeEvolution",
-    "component": "/tech-leadership/knowledge-evolution/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "Knowledge Evolution",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/tech-leadership",
-    "order": 18
-  },
-  {
-    "key": "menu_resume",
     "path": "/resume",
     "name": "resume",
     "component": "/resume/index",
@@ -936,115 +34,6 @@
     "order": 5
   },
   {
-    "key": "menu_storyBoard",
-    "path": "/story",
-    "name": "storyBoard",
-    "component": "/story/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Tickets",
-      "title": "Story Board",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 6
-  },
-  {
-    "key": "menu_rssFeeds",
-    "path": "/rss",
-    "name": "rssFeeds",
-    "component": "",
-    "redirect": "/rss/all",
-    "meta": {
-      "icon": "Link",
-      "title": "RSS Feeds",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": null,
-    "order": 7
-  },
-  {
-    "key": "menu_rssAll",
-    "path": "/rss/all",
-    "name": "rssAll",
-    "component": "/rss/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Menu",
-      "title": "All Items",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/rss",
-    "order": 0
-  },
-  {
-    "key": "menu_rssStarred",
-    "path": "/rss/starred",
-    "name": "rssStarred",
-    "component": "/rss/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Star",
-      "title": "Starred",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/rss",
-    "order": 1
-  },
-  {
-    "key": "menu_rssUnread",
-    "path": "/rss/unread",
-    "name": "rssUnread",
-    "component": "/rss/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Reading",
-      "title": "Unread",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/rss",
-    "order": 2
-  },
-  {
-    "key": "menu_rssScheduler",
-    "path": "/rss/scheduler",
-    "name": "rssScheduler",
-    "component": "/rss/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Setting",
-      "title": "Scheduler & Seeds",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/rss",
-    "order": 3
-  },
-  {
-    "key": "menu_system",
     "path": "/system",
     "name": "system",
     "component": "",
@@ -1062,7 +51,6 @@
     "order": 8
   },
   {
-    "key": "menu_systemMenuMange",
     "path": "/system/menuMange",
     "name": "systemMenuMange",
     "component": "/system/menuMange/index",
@@ -1080,7 +68,6 @@
     "order": 0
   },
   {
-    "key": "menu_systemAccountManage",
     "path": "/system/accountManage",
     "name": "systemAccountManage",
     "component": "/system/accountManage/index",
@@ -1098,7 +85,6 @@
     "order": 1
   },
   {
-    "key": "menu_systemRoleManage",
     "path": "/system/roleManage",
     "name": "systemRoleManage",
     "component": "/system/roleManage/index",
@@ -1116,7 +102,6 @@
     "order": 2
   },
   {
-    "key": "menu_systemDepartmentManage",
     "path": "/system/departmentManage",
     "name": "systemDepartmentManage",
     "component": "/system/departmentManage/index",
@@ -1134,7 +119,6 @@
     "order": 3
   },
   {
-    "key": "menu_systemDictManage",
     "path": "/system/dictManage",
     "name": "systemDictManage",
     "component": "/system/dictManage/index",
@@ -1152,7 +136,6 @@
     "order": 4
   },
   {
-    "key": "menu_systemSystemLog",
     "path": "/system/systemLog",
     "name": "systemSystemLog",
     "component": "/system/systemLog/index",
@@ -1170,7 +153,6 @@
     "order": 5
   },
   {
-    "key": "menu_systemTimingTask",
     "path": "/system/timingTask",
     "name": "systemTimingTask",
     "component": "/system/timingTask/index",
@@ -1188,7 +170,6 @@
     "order": 6
   },
   {
-    "key": "menu_dashboard",
     "path": "/dashboard",
     "name": "dashboard",
     "component": "",
@@ -1206,61 +187,6 @@
     "order": 9
   },
   {
-    "key": "menu_dashAiAnalytics",
-    "path": "/dashboard/aiAnalytics",
-    "name": "dashAiAnalytics",
-    "component": "/dashboard/aiAnalytics/index",
-    "redirect": "",
-    "meta": {
-      "icon": "TrendCharts",
-      "title": "AI Analytics",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 0
-  },
-  {
-    "key": "menu_dashDataVisualize",
-    "path": "/dashboard/dataVisualize",
-    "name": "dashDataVisualize",
-    "component": "/dashboard/dataVisualize/index",
-    "redirect": "",
-    "meta": {
-      "icon": "PieChart",
-      "title": "Data Visualize",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 1
-  },
-  {
-    "key": "menu_dashEngineeringMaturity",
-    "path": "/dashboard/engineeringMaturity",
-    "name": "dashEngineeringMaturity",
-    "component": "/dashboard/engineeringMaturity/index",
-    "redirect": "",
-    "meta": {
-      "icon": "DataAnalysis",
-      "title": "Engineering Maturity",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 2
-  },
-  {
-    "key": "menu_dashKnowledgeBase",
     "path": "/dashboard/knowledgeBase",
     "name": "dashKnowledgeBase",
     "component": "/dashboard/knowledgeBase/index",
@@ -1278,61 +204,6 @@
     "order": 3
   },
   {
-    "key": "menu_dashOrganization",
-    "path": "/dashboard/organization",
-    "name": "dashOrganization",
-    "component": "/dashboard/organization/index",
-    "redirect": "",
-    "meta": {
-      "icon": "OfficeBuilding",
-      "title": "Organization",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 4
-  },
-  {
-    "key": "menu_dashPerformance",
-    "path": "/dashboard/performance",
-    "name": "dashPerformance",
-    "component": "/dashboard/performance/index",
-    "redirect": "",
-    "meta": {
-      "icon": "DataLine",
-      "title": "Performance",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 5
-  },
-  {
-    "key": "menu_dashRagAnalytics",
-    "path": "/dashboard/ragAnalytics",
-    "name": "dashRagAnalytics",
-    "component": "/dashboard/ragAnalytics/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Histogram",
-      "title": "RAG Analytics",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 6
-  },
-  {
-    "key": "menu_dashRssContent",
     "path": "/dashboard/rssContent",
     "name": "dashRssContent",
     "component": "/dashboard/rssContent/index",
@@ -1350,61 +221,6 @@
     "order": 7
   },
   {
-    "key": "menu_dashRssSources",
-    "path": "/dashboard/rssSources",
-    "name": "dashRssSources",
-    "component": "/dashboard/rssSources/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Connection",
-      "title": "RSS Sources",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 8
-  },
-  {
-    "key": "menu_dashServicePerformance",
-    "path": "/dashboard/servicePerformance",
-    "name": "dashServicePerformance",
-    "component": "/dashboard/servicePerformance/index",
-    "redirect": "",
-    "meta": {
-      "icon": "Monitor",
-      "title": "Service Performance",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 9
-  },
-  {
-    "key": "menu_dashSystemHealth",
-    "path": "/dashboard/systemHealth",
-    "name": "dashSystemHealth",
-    "component": "/dashboard/systemHealth/index",
-    "redirect": "",
-    "meta": {
-      "icon": "CircleCheck",
-      "title": "System Health",
-      "isLink": "",
-      "isHide": false,
-      "isFull": false,
-      "isAffix": false,
-      "isKeepAlive": true
-    },
-    "parent": "/dashboard",
-    "order": 10
-  },
-  {
-    "key": "menu_about",
     "path": "/about",
     "name": "about",
     "component": "/about/index",
@@ -1422,7 +238,6 @@
     "order": 10
   },
   {
-    "key": "menu_aboutYiai",
     "path": "/about/yiai",
     "name": "aboutYiai",
     "component": "/about/yiai/index",
@@ -1440,7 +255,6 @@
     "order": 0
   },
   {
-    "key": "menu_aboutYipet",
     "path": "/about/yipet",
     "name": "aboutYipet",
     "component": "/about/yipet/index",
@@ -1458,7 +272,6 @@
     "order": 1
   },
   {
-    "key": "menu_aboutYivad",
     "path": "/about/yivad",
     "name": "aboutYivad",
     "component": "/about/yivad/index",
@@ -1476,7 +289,6 @@
     "order": 2
   },
   {
-    "key": "menu_assembly",
     "path": "/assembly",
     "name": "assembly",
     "component": "",
@@ -1494,7 +306,6 @@
     "order": 11
   },
   {
-    "key": "menu_assemblyBatchImport",
     "path": "/assembly/batchImport",
     "name": "assemblyBatchImport",
     "component": "/assembly/batchImport/index",
@@ -1512,7 +323,6 @@
     "order": 0
   },
   {
-    "key": "menu_assemblyDraggable",
     "path": "/assembly/draggable",
     "name": "assemblyDraggable",
     "component": "/assembly/draggable/index",
@@ -1530,7 +340,6 @@
     "order": 1
   },
   {
-    "key": "menu_assemblyGuide",
     "path": "/assembly/guide",
     "name": "assemblyGuide",
     "component": "/assembly/guide/index",
@@ -1548,7 +357,6 @@
     "order": 2
   },
   {
-    "key": "menu_assemblySelectFilter",
     "path": "/assembly/selectFilter",
     "name": "assemblySelectFilter",
     "component": "/assembly/selectFilter/index",
@@ -1566,7 +374,6 @@
     "order": 3
   },
   {
-    "key": "menu_assemblySelectIcon",
     "path": "/assembly/selectIcon",
     "name": "assemblySelectIcon",
     "component": "/assembly/selectIcon/index",
@@ -1584,7 +391,6 @@
     "order": 4
   },
   {
-    "key": "menu_assemblySvgIcon",
     "path": "/assembly/svgIcon",
     "name": "assemblySvgIcon",
     "component": "/assembly/svgIcon/index",
@@ -1602,7 +408,6 @@
     "order": 5
   },
   {
-    "key": "menu_assemblyTabs",
     "path": "/assembly/tabs",
     "name": "assemblyTabs",
     "component": "/assembly/tabs/index",
@@ -1620,7 +425,6 @@
     "order": 6
   },
   {
-    "key": "menu_assemblyTreeFilter",
     "path": "/assembly/treeFilter",
     "name": "assemblyTreeFilter",
     "component": "/assembly/treeFilter/index",
@@ -1638,7 +442,6 @@
     "order": 7
   },
   {
-    "key": "menu_assemblyUploadFile",
     "path": "/assembly/uploadFile",
     "name": "assemblyUploadFile",
     "component": "/assembly/uploadFile/index",
@@ -1656,7 +459,6 @@
     "order": 8
   },
   {
-    "key": "menu_assemblyWangEditor",
     "path": "/assembly/wangEditor",
     "name": "assemblyWangEditor",
     "component": "/assembly/wangEditor/index",
@@ -1674,7 +476,6 @@
     "order": 9
   },
   {
-    "key": "menu_authDemo",
     "path": "/auth",
     "name": "authDemo",
     "component": "",
@@ -1692,7 +493,6 @@
     "order": 12
   },
   {
-    "key": "menu_authButton",
     "path": "/auth/button",
     "name": "authButton",
     "component": "/auth/button/index",
@@ -1710,7 +510,6 @@
     "order": 0
   },
   {
-    "key": "menu_authMenu",
     "path": "/auth/menu",
     "name": "authMenu",
     "component": "/auth/menu/index",
@@ -1728,7 +527,6 @@
     "order": 1
   },
   {
-    "key": "menu_dataScreen",
     "path": "/dataScreen",
     "name": "dataScreen",
     "component": "/dataScreen/index",
@@ -1746,7 +544,6 @@
     "order": 13
   },
   {
-    "key": "menu_directivesDemo",
     "path": "/directives",
     "name": "directivesDemo",
     "component": "",
@@ -1764,7 +561,6 @@
     "order": 14
   },
   {
-    "key": "menu_directivesCopyDirect",
     "path": "/directives/copyDirect",
     "name": "directivesCopyDirect",
     "component": "/directives/copyDirect/index",
@@ -1782,7 +578,6 @@
     "order": 0
   },
   {
-    "key": "menu_directivesDebounceDirect",
     "path": "/directives/debounceDirect",
     "name": "directivesDebounceDirect",
     "component": "/directives/debounceDirect/index",
@@ -1800,7 +595,6 @@
     "order": 1
   },
   {
-    "key": "menu_directivesDragDirect",
     "path": "/directives/dragDirect",
     "name": "directivesDragDirect",
     "component": "/directives/dragDirect/index",
@@ -1818,7 +612,6 @@
     "order": 2
   },
   {
-    "key": "menu_directivesLongpressDirect",
     "path": "/directives/longpressDirect",
     "name": "directivesLongpressDirect",
     "component": "/directives/longpressDirect/index",
@@ -1836,7 +629,6 @@
     "order": 3
   },
   {
-    "key": "menu_directivesThrottleDirect",
     "path": "/directives/throttleDirect",
     "name": "directivesThrottleDirect",
     "component": "/directives/throttleDirect/index",
@@ -1854,7 +646,6 @@
     "order": 4
   },
   {
-    "key": "menu_directivesWatermarkDirect",
     "path": "/directives/watermarkDirect",
     "name": "directivesWatermarkDirect",
     "component": "/directives/watermarkDirect/index",
@@ -1872,7 +663,6 @@
     "order": 5
   },
   {
-    "key": "menu_echartsDemo",
     "path": "/echarts",
     "name": "echartsDemo",
     "component": "",
@@ -1890,7 +680,6 @@
     "order": 15
   },
   {
-    "key": "menu_echartsColumnChart",
     "path": "/echarts/columnChart",
     "name": "echartsColumnChart",
     "component": "/echarts/columnChart/index",
@@ -1908,7 +697,6 @@
     "order": 0
   },
   {
-    "key": "menu_echartsLineChart",
     "path": "/echarts/lineChart",
     "name": "echartsLineChart",
     "component": "/echarts/lineChart/index",
@@ -1926,7 +714,6 @@
     "order": 1
   },
   {
-    "key": "menu_echartsNestedChart",
     "path": "/echarts/nestedChart",
     "name": "echartsNestedChart",
     "component": "/echarts/nestedChart/index",
@@ -1944,7 +731,6 @@
     "order": 2
   },
   {
-    "key": "menu_echartsPieChart",
     "path": "/echarts/pieChart",
     "name": "echartsPieChart",
     "component": "/echarts/pieChart/index",
@@ -1962,7 +748,6 @@
     "order": 3
   },
   {
-    "key": "menu_echartsRadarChart",
     "path": "/echarts/radarChart",
     "name": "echartsRadarChart",
     "component": "/echarts/radarChart/index",
@@ -1980,7 +765,6 @@
     "order": 4
   },
   {
-    "key": "menu_echartsWaterChart",
     "path": "/echarts/waterChart",
     "name": "echartsWaterChart",
     "component": "/echarts/waterChart/index",
@@ -1998,7 +782,6 @@
     "order": 5
   },
   {
-    "key": "menu_formDemo",
     "path": "/form",
     "name": "formDemo",
     "component": "",
@@ -2016,7 +799,6 @@
     "order": 16
   },
   {
-    "key": "menu_formBasicForm",
     "path": "/form/basicForm",
     "name": "formBasicForm",
     "component": "/form/basicForm/index",
@@ -2034,7 +816,6 @@
     "order": 0
   },
   {
-    "key": "menu_formDynamicForm",
     "path": "/form/dynamicForm",
     "name": "formDynamicForm",
     "component": "/form/dynamicForm/index",
@@ -2052,7 +833,6 @@
     "order": 1
   },
   {
-    "key": "menu_formProForm",
     "path": "/form/proForm",
     "name": "formProForm",
     "component": "/form/proForm/index",
@@ -2070,7 +850,6 @@
     "order": 2
   },
   {
-    "key": "menu_formValidateForm",
     "path": "/form/validateForm",
     "name": "formValidateForm",
     "component": "/form/validateForm/index",
@@ -2088,7 +867,6 @@
     "order": 3
   },
   {
-    "key": "menu_link",
     "path": "/link",
     "name": "link",
     "component": "",
@@ -2106,7 +884,6 @@
     "order": 17
   },
   {
-    "key": "menu_linkClaude",
     "path": "/link/claude",
     "name": "linkClaude",
     "component": "/link/claude/index",
@@ -2124,7 +901,6 @@
     "order": 0
   },
   {
-    "key": "menu_menuDemo",
     "path": "/menu",
     "name": "menuDemo",
     "component": "",
@@ -2142,7 +918,6 @@
     "order": 18
   },
   {
-    "key": "menu_menuMenu1",
     "path": "/menu/menu1",
     "name": "menuMenu1",
     "component": "/menu/menu1/index",
@@ -2160,7 +935,6 @@
     "order": 0
   },
   {
-    "key": "menu_menuMenu2",
     "path": "/menu/menu2",
     "name": "menuMenu2",
     "component": "",
@@ -2178,7 +952,6 @@
     "order": 1
   },
   {
-    "key": "menu_menuMenu21",
     "path": "/menu/menu2/menu21",
     "name": "menuMenu21",
     "component": "/menu/menu2/menu21/index",
@@ -2196,7 +969,6 @@
     "order": 0
   },
   {
-    "key": "menu_menuMenu22",
     "path": "/menu/menu2/menu22",
     "name": "menuMenu22",
     "component": "",
@@ -2214,7 +986,6 @@
     "order": 1
   },
   {
-    "key": "menu_menuMenu221",
     "path": "/menu/menu2/menu22/menu221",
     "name": "menuMenu221",
     "component": "/menu/menu2/menu22/menu221/index",
@@ -2232,7 +1003,6 @@
     "order": 0
   },
   {
-    "key": "menu_menuMenu222",
     "path": "/menu/menu2/menu22/menu222",
     "name": "menuMenu222",
     "component": "/menu/menu2/menu22/menu222/index",
@@ -2250,7 +1020,6 @@
     "order": 1
   },
   {
-    "key": "menu_menuMenu23",
     "path": "/menu/menu2/menu23",
     "name": "menuMenu23",
     "component": "/menu/menu2/menu23/index",
@@ -2268,7 +1037,6 @@
     "order": 2
   },
   {
-    "key": "menu_menuMenu3",
     "path": "/menu/menu3",
     "name": "menuMenu3",
     "component": "/menu/menu3/index",
@@ -2286,7 +1054,6 @@
     "order": 2
   },
   {
-    "key": "menu_proTableDemo",
     "path": "/proTable",
     "name": "proTableDemo",
     "component": "",
@@ -2304,7 +1071,6 @@
     "order": 19
   },
   {
-    "key": "menu_proTableComplexProTable",
     "path": "/proTable/complexProTable",
     "name": "proTableComplexProTable",
     "component": "/proTable/complexProTable/index",
@@ -2322,7 +1088,6 @@
     "order": 0
   },
   {
-    "key": "menu_proTableDocument",
     "path": "/proTable/document",
     "name": "proTableDocument",
     "component": "/proTable/document/index",
@@ -2340,7 +1105,6 @@
     "order": 1
   },
   {
-    "key": "menu_proTableTreeProTable",
     "path": "/proTable/treeProTable",
     "name": "proTableTreeProTable",
     "component": "/proTable/treeProTable/index",
@@ -2358,7 +1122,6 @@
     "order": 2
   },
   {
-    "key": "menu_proTableUseProTable",
     "path": "/proTable/useProTable",
     "name": "proTableUseProTable",
     "component": "/proTable/useProTable/index",
@@ -2376,7 +1139,6 @@
     "order": 3
   },
   {
-    "key": "menu_proTableUseSelectFilter",
     "path": "/proTable/useSelectFilter",
     "name": "proTableUseSelectFilter",
     "component": "/proTable/useSelectFilter/index",
@@ -2394,7 +1156,6 @@
     "order": 4
   },
   {
-    "key": "menu_proTableUseTreeFilter",
     "path": "/proTable/useTreeFilter",
     "name": "proTableUseTreeFilter",
     "component": "/proTable/useTreeFilter/index",
@@ -2412,7 +1173,6 @@
     "order": 5
   },
   {
-    "key": "menu_aiChat",
     "path": "/aiChat",
     "name": "aiChat",
     "component": "/aiChat/index",
@@ -2428,5 +1188,616 @@
     },
     "parent": null,
     "order": 20
+  },
+  {
+    "key": "menu_1786429099887_68c6ql",
+    "path": "/rag",
+    "name": "menu_rag",
+    "component": "",
+    "redirect": "/rag/retrieval",
+    "meta": {
+      "icon": "DataBoard",
+      "title": "RAG System",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_qp26yz",
+    "path": "/rag/retrieval",
+    "name": "menu_ragRetrieval",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Search",
+      "title": "Retrieval Explorer",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rag",
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_zsf3zj",
+    "path": "/rag/chat",
+    "name": "menu_ragChat",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "ChatDotRound",
+      "title": "RAG Chat",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rag",
+    "order": 1
+  },
+  {
+    "key": "menu_1786429099887_dni860",
+    "path": "/rag/compare",
+    "name": "menu_ragCompare",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Switch",
+      "title": "RAG vs Baseline",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rag",
+    "order": 2
+  },
+  {
+    "key": "menu_1786429099887_fytt8x",
+    "path": "/rag/history",
+    "name": "menu_ragHistory",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Timer",
+      "title": "Query History",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/rag",
+    "order": 3
+  },
+  {
+    "path": "/knowledge-base",
+    "name": "menu_knowledge_base",
+    "component": "",
+    "redirect": "/pipeline",
+    "meta": {
+      "icon": "Reading",
+      "title": "Knowledge Base",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 21
+  },
+  {
+    "key": "menu_1786429099887_cs3ite",
+    "path": "/pipeline",
+    "name": "menu_pipeline",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Guide",
+      "title": "Pipeline",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_f0zf5f",
+    "path": "/domain",
+    "name": "menu_domain",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Connection",
+      "title": "Domain Indexes",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 1
+  },
+  {
+    "key": "menu_1786429099887_qbbngp",
+    "path": "/governance",
+    "name": "menu_governance",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Setting",
+      "title": "Governance",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 2
+  },
+  {
+    "key": "menu_1786429099887_ckvldl",
+    "path": "/roles",
+    "name": "menu_roles",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "User",
+      "title": "Role Index",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 3
+  },
+  {
+    "key": "menu_1786429099887_7f77vz",
+    "path": "/navigation",
+    "name": "menu_navigation",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Compass",
+      "title": "Navigation",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 4
+  },
+  {
+    "key": "menu_1786429099887_2j9usi",
+    "path": "/lifecycle",
+    "name": "menu_lifecycle",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Refresh",
+      "title": "Lifecycle",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 5
+  },
+  {
+    "key": "menu_1786429099887_1uc4eq",
+    "path": "/workflow",
+    "name": "menu_workflow",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Operation",
+      "title": "Workflow",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 6
+  },
+  {
+    "key": "menu_1786429099887_goals",
+    "path": "/goals",
+    "name": "menu_goals",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Aim",
+      "title": "Goals",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge-base",
+    "order": 7
+  },
+  {
+    "key": "menu_1786429099887_metrics",
+    "path": "/metrics",
+    "name": "menu_metrics",
+    "component": "",
+    "redirect": "",
+    "meta": {
+      "icon": "Odometer",
+      "title": "Metrics",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/goals",
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_ustmmz",
+    "path": "/componentDemo",
+    "name": "menu_componentDemo",
+    "component": "",
+    "redirect": "/componentDemo/index",
+    "meta": {
+      "icon": "Grid",
+      "title": "Component Demo",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_cgpc4i",
+    "path": "/componentDemo/index",
+    "name": "menu_componentDemo_index",
+    "component": "/componentDemo/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Document",
+      "title": "Overview",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 0
+  },
+  {
+    "key": "menu_1786429099887_9qouu7",
+    "path": "/componentDemo/proTable",
+    "name": "menu_componentDemo_proTable",
+    "component": "/componentDemo/proTable/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Grid",
+      "title": "ProTable",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 1
+  },
+  {
+    "key": "menu_1786429099887_uq3ocj",
+    "path": "/componentDemo/echarts",
+    "name": "menu_componentDemo_echarts",
+    "component": "/componentDemo/echarts/index",
+    "redirect": "",
+    "meta": {
+      "icon": "PieChart",
+      "title": "ECharts",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 2
+  },
+  {
+    "key": "menu_1786429099887_8auiwq",
+    "path": "/componentDemo/searchForm",
+    "name": "menu_componentDemo_searchForm",
+    "component": "/componentDemo/searchForm/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Search",
+      "title": "SearchForm",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 3
+  },
+  {
+    "key": "menu_1786429099887_xqb7ea",
+    "path": "/componentDemo/selectFilter",
+    "name": "menu_componentDemo_selectFilter",
+    "component": "/componentDemo/selectFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Select",
+      "title": "SelectFilter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 4
+  },
+  {
+    "key": "menu_1786429099887_xjkubg",
+    "path": "/componentDemo/selectIcon",
+    "name": "menu_componentDemo_selectIcon",
+    "component": "/componentDemo/selectIcon/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Star",
+      "title": "SelectIcon",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 5
+  },
+  {
+    "key": "menu_1786429099887_e9y0ew",
+    "path": "/componentDemo/svgIcon",
+    "name": "menu_componentDemo_svgIcon",
+    "component": "/componentDemo/svgIcon/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Picture",
+      "title": "SvgIcon",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 6
+  },
+  {
+    "key": "menu_1786429099887_5q9h04",
+    "path": "/componentDemo/treeFilter",
+    "name": "menu_componentDemo_treeFilter",
+    "component": "/componentDemo/treeFilter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "List",
+      "title": "TreeFilter",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 7
+  },
+  {
+    "key": "menu_1786429099887_nbe5e5",
+    "path": "/componentDemo/upload",
+    "name": "menu_componentDemo_upload",
+    "component": "/componentDemo/upload/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Upload",
+      "title": "Upload",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 8
+  },
+  {
+    "key": "menu_1786429099887_xivpwr",
+    "path": "/componentDemo/wangEditor",
+    "name": "menu_componentDemo_wangEditor",
+    "component": "/componentDemo/wangEditor/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Edit",
+      "title": "WangEditor",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 9
+  },
+  {
+    "key": "menu_1786429099887_jkz7e9",
+    "path": "/componentDemo/importExcel",
+    "name": "menu_componentDemo_importExcel",
+    "component": "/componentDemo/importExcel/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Files",
+      "title": "ImportExcel",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 10
+  },
+  {
+    "key": "menu_1786429099887_d8a6lw",
+    "path": "/componentDemo/errorMessage",
+    "name": "menu_componentDemo_errorMessage",
+    "component": "/componentDemo/errorMessage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Warning",
+      "title": "ErrorMessage",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 11
+  },
+  {
+    "key": "menu_1786429099887_j3x3bd",
+    "path": "/componentDemo/loading",
+    "name": "menu_componentDemo_loading",
+    "component": "/componentDemo/loading/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Loading",
+      "title": "Loading",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 12
+  },
+  {
+    "key": "menu_1786429099887_k7tjb6",
+    "path": "/componentDemo/switchDark",
+    "name": "menu_componentDemo_switchDark",
+    "component": "/componentDemo/switchDark/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Moon",
+      "title": "SwitchDark",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 13
+  },
+  {
+    "key": "menu_1786429099887_wecypb",
+    "path": "/componentDemo/grid",
+    "name": "menu_componentDemo_grid",
+    "component": "/componentDemo/grid/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Grid",
+      "title": "Grid",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 14
+  },
+  {
+    "key": "menu_1786429099887_b5ggyd",
+    "path": "/componentDemo/mermaidViewer",
+    "name": "menu_componentDemo_mermaidViewer",
+    "component": "/componentDemo/mermaidViewer/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Share",
+      "title": "MermaidViewer",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 15
+  },
+  {
+    "key": "menu_1786429099887_d7yo6c",
+    "path": "/componentDemo/knowledgeMetaStrip",
+    "name": "menu_componentDemo_knowledgeMetaStrip",
+    "component": "/componentDemo/knowledgeMetaStrip/index",
+    "redirect": "",
+    "meta": {
+      "icon": "CollectionTag",
+      "title": "KnowledgeMetaStrip",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 16
+  },
+  {
+    "key": "menu_1786429099887_g769o2",
+    "path": "/componentDemo/ragSources",
+    "name": "menu_componentDemo_ragSources",
+    "component": "/componentDemo/ragSources/index",
+    "redirect": "",
+    "meta": {
+      "icon": "DataBoard",
+      "title": "RagSources",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/componentDemo",
+    "order": 17
   }
 ]

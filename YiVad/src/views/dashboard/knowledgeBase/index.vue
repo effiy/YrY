@@ -36,17 +36,17 @@
             <div class="stat-icon"><el-icon><Cpu /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ statDeltas ? statDeltas.modules.filtered : totalModules }}</div>
-              <div class="stat-label">Modules</div>
+              <div class="stat-label">Modules <span class="stat-sub">(top role: {{ topRole }})</span></div>
               <div class="stat-delta" v-if="statDeltas">{{ statDeltas.modules.baseline }} → {{ statDeltas.modules.filtered }}</div>
             </div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
-          <div class="stat-card stat-total-size" :class="{ 'stat-pulse': pulsingCard === 'size' }" @click="pulseCard('size'); scrollToDrillDown">
-            <div class="stat-icon"><el-icon><Coin /></el-icon></div>
+          <div class="stat-card stat-recent" :class="{ 'stat-pulse': pulsingCard === 'recent' }" @click="pulseCard('recent'); onTimeFilterChange('week')">
+            <div class="stat-icon"><el-icon><Timer /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ totalSizeFormatted }}</div>
-              <div class="stat-label">Total Size</div>
+              <div class="stat-value">{{ recentWeekCount }}</div>
+              <div class="stat-label">Active This Week <span class="stat-sub">({{ recentWeekPct }}%)</span></div>
             </div>
           </div>
         </el-col>
@@ -57,9 +57,8 @@
           <div class="stat-card stat-coverage" :class="{ 'stat-pulse': pulsingCard === 'coverage' }" @click="pulseCard('coverage'); toggleNoReviewFilter()">
             <div class="stat-icon"><el-icon><TrendCharts /></el-icon></div>
             <div class="stat-info">
-              <div class="stat-value">{{ statDeltas ? statDeltas.coverage.filtered : (knowledgeData?.health.review_coverage_pct ?? 0) }}%</div>
-              <div class="stat-label">Review Coverage <span class="stat-sub">({{ knowledgeData?.health.no_review_cycle_count ?? 0 }} missing)</span></div>
-              <div class="stat-delta" v-if="statDeltas">{{ statDeltas.coverage.baseline }}% → {{ statDeltas.coverage.filtered }}%</div>
+              <div class="stat-value">{{ clientReviewCoveragePct }}%</div>
+              <div class="stat-label">Review Coverage <span class="stat-sub">({{ clientMissingStats.no_review_cycle }} missing)</span></div>
             </div>
           </div>
         </el-col>
@@ -86,7 +85,7 @@
             <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
             <div class="stat-info">
               <div class="stat-value">{{ statDeltas ? statDeltas.stale.filtered : (knowledgeData?.health.stale_count ?? 0) }}</div>
-              <div class="stat-label">Stale</div>
+              <div class="stat-label">Stale <span class="stat-sub">({{ stalePct }}%)</span></div>
               <div class="stat-delta" v-if="statDeltas">{{ statDeltas.stale.baseline }} → {{ statDeltas.stale.filtered }}</div>
             </div>
           </div>
@@ -170,107 +169,188 @@
     <div class="card quality-box">
       <div class="top-header">
         <span class="top-title">Data Quality</span>
-        <span class="chart-hint">Click any metric to drill down to affected files</span>
+        <div class="top-actions">
+          <span class="chart-hint">Weighted score: status/type/lifecycle(25%) review(15%) roles/tags(5%)</span>
+          <el-button size="small" type="warning" plain @click="fixMetadataWithAgent" v-if="dataQualityScore < 80">
+            <el-icon><MagicStick /></el-icon> Fix with Agent
+          </el-button>
+        </div>
       </div>
       <el-row :gutter="12">
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('status')">
+          <div class="quality-mini-card" :class="qualityCardClass(statusCompletenessPct)" @click="setQualityFilter('status')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(statusCompletenessPct) }">{{ statusCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: statusCompletenessPct + '%', background: dataQualityColor(statusCompletenessPct) }"></div></div>
             <div class="qmc-label">Status</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_status ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_status }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('type')">
+          <div class="quality-mini-card" :class="qualityCardClass(typeCompletenessPct)" @click="setQualityFilter('type')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(typeCompletenessPct) }">{{ typeCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: typeCompletenessPct + '%', background: dataQualityColor(typeCompletenessPct) }"></div></div>
             <div class="qmc-label">Type</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_type ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_type }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('lifecycle')">
+          <div class="quality-mini-card" :class="qualityCardClass(lifecycleCompletenessPct)" @click="setQualityFilter('lifecycle')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(lifecycleCompletenessPct) }">{{ lifecycleCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: lifecycleCompletenessPct + '%', background: dataQualityColor(lifecycleCompletenessPct) }"></div></div>
             <div class="qmc-label">Lifecycle</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_lifecycle ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_lifecycle }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('review_cycle')">
+          <div class="quality-mini-card" :class="qualityCardClass(reviewCycleCompletenessPct)" @click="setQualityFilter('review_cycle')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(reviewCycleCompletenessPct) }">{{ reviewCycleCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: reviewCycleCompletenessPct + '%', background: dataQualityColor(reviewCycleCompletenessPct) }"></div></div>
             <div class="qmc-label">Review Cycle</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_review_cycle ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_review_cycle }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('roles')">
+          <div class="quality-mini-card" :class="qualityCardClass(rolesCompletenessPct)" @click="setQualityFilter('roles')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(rolesCompletenessPct) }">{{ rolesCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: rolesCompletenessPct + '%', background: dataQualityColor(rolesCompletenessPct) }"></div></div>
             <div class="qmc-label">Roles</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_roles ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_roles }} missing</div>
           </div>
         </el-col>
         <el-col class="mb12" :xs="12" :sm="8" :md="4" :lg="4" :xl="4">
-          <div class="quality-mini-card" @click="setQualityFilter('tags')">
+          <div class="quality-mini-card" :class="qualityCardClass(tagsCompletenessPct)" @click="setQualityFilter('tags')">
             <div class="qmc-pct" :style="{ color: dataQualityColor(tagsCompletenessPct) }">{{ tagsCompletenessPct }}%</div>
+            <div class="qmc-bar"><div class="qmc-bar-fill" :style="{ width: tagsCompletenessPct + '%', background: dataQualityColor(tagsCompletenessPct) }"></div></div>
             <div class="qmc-label">Tags</div>
-            <div class="qmc-sub">{{ knowledgeData?.data_quality?.no_tags ?? 0 }} missing</div>
+            <div class="qmc-sub">{{ clientMissingStats.no_tags }} missing</div>
           </div>
         </el-col>
       </el-row>
+      <!-- Quality by Category -->
+      <div class="quality-by-cat" v-if="worstCategories.length > 0">
+        <div class="qbc-header">
+          <span class="qbc-title">Needs Attention by Category</span>
+          <span class="qbc-hint">{{ worstCategories.length }} categor{{ worstCategories.length === 1 ? 'y' : 'ies' }} below 80% quality</span>
+        </div>
+        <div class="qbc-list">
+          <div
+            v-for="cat in worstCategories" :key="cat.name"
+            class="qbc-item"
+            @click="setFilter('category', cat.name)"
+          >
+            <span class="qbc-item-name" :style="{ color: catColor(cat.name) }">{{ cat.name }}</span>
+            <div class="qbc-item-bar-wrap">
+              <div class="qbc-item-bar" :style="{ width: cat.score + '%', background: dataQualityColor(cat.score) }"></div>
+            </div>
+            <span class="qbc-item-score" :style="{ color: dataQualityColor(cat.score) }">{{ cat.score }}%</span>
+            <span class="qbc-item-missing">{{ cat.totalMissing }} missing</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Needs Attention Summary -->
-    <div class="card attention-box" v-if="needsAttentionFiles.length > 0 && !hasActiveFilter">
+    <div class="card attention-box" v-if="needsAttentionFiles.length > 0">
       <div class="top-header">
         <span class="top-title">Needs Attention</span>
-        <span class="chart-hint">{{ needsAttentionFiles.length }} files need metadata fixes — click to drill down</span>
-      </div>
-      <div class="attention-grid">
-        <div class="attn-item" v-if="clientMissingStats.no_status > 0" @click="setQualityFilter('status')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_status }}</span>
-          <span class="attn-label">Missing Status</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.unknown_status > 0" @click="setFilter('status', 'unknown')">
-          <el-icon><QuestionFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.unknown_status }}</span>
-          <span class="attn-label">Status: unknown</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.no_type > 0" @click="setQualityFilter('type')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_type }}</span>
-          <span class="attn-label">Missing Type</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.unknown_type > 0" @click="setFilter('type', 'unknown')">
-          <el-icon><QuestionFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.unknown_type }}</span>
-          <span class="attn-label">Type: unknown</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.no_lifecycle > 0" @click="setQualityFilter('lifecycle')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_lifecycle }}</span>
-          <span class="attn-label">Missing Lifecycle</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.unknown_lifecycle > 0" @click="setFilter('lifecycle', 'unknown')">
-          <el-icon><QuestionFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.unknown_lifecycle }}</span>
-          <span class="attn-label">Lifecycle: unknown</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.no_review_cycle > 0" @click="setQualityFilter('review_cycle')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_review_cycle }}</span>
-          <span class="attn-label">Missing Review</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.no_roles > 0" @click="setQualityFilter('roles')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_roles }}</span>
-          <span class="attn-label">Missing Roles</span>
-        </div>
-        <div class="attn-item" v-if="clientMissingStats.no_tags > 0" @click="setQualityFilter('tags')">
-          <el-icon><WarningFilled /></el-icon>
-          <span class="attn-count">{{ clientMissingStats.no_tags }}</span>
-          <span class="attn-label">Missing Tags</span>
+        <div class="top-actions">
+          <span class="chart-hint">{{ needsAttentionFiles.length }} files ({{ attentionPct }}%) need fixes</span>
+          <el-button size="small" text @click="showAttentionDetail = !showAttentionDetail">
+            {{ showAttentionDetail ? 'Collapse' : 'Expand' }}
+          </el-button>
+          <el-button size="small" type="warning" text @click="showAllAttentionFiles()">View all {{ needsAttentionFiles.length }} files &rarr;</el-button>
         </div>
       </div>
+      <template v-if="showAttentionDetail">
+      <div class="attention-summary-strip">
+        <div class="attn-summary-item attn-summary-total">
+          <span class="attn-summary-count">{{ needsAttentionFiles.length }}</span>
+          <span class="attn-summary-label">Total</span>
+        </div>
+        <div class="attn-summary-item attn-summary-missing">
+          <span class="attn-summary-count">{{ totalMissingCount }}</span>
+          <span class="attn-summary-label">Missing</span>
+        </div>
+        <div class="attn-summary-item attn-summary-unknown">
+          <span class="attn-summary-count">{{ totalUnknownCount }}</span>
+          <span class="attn-summary-label">Unknown</span>
+        </div>
+        <div class="attn-summary-item attn-summary-stale" v-if="clientMissingStats.stale_count > 0">
+          <span class="attn-summary-count">{{ clientMissingStats.stale_count }}</span>
+          <span class="attn-summary-label">Stale</span>
+        </div>
+      </div>
+      <div class="attention-group" v-if="hasMissingItems">
+        <div class="attention-group-label">Missing Metadata</div>
+        <div class="attention-grid">
+          <div class="attn-item" v-if="clientMissingStats.no_status > 0" @click="setQualityFilter('status')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_status }}</span>
+            <span class="attn-label">Status</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_type > 0" @click="setQualityFilter('type')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_type }}</span>
+            <span class="attn-label">Type</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_lifecycle > 0" @click="setQualityFilter('lifecycle')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_lifecycle }}</span>
+            <span class="attn-label">Lifecycle</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_review_cycle > 0" @click="setQualityFilter('review_cycle')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_review_cycle }}</span>
+            <span class="attn-label">Review</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_roles > 0" @click="setQualityFilter('roles')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_roles }}</span>
+            <span class="attn-label">Roles</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_tags > 0" @click="setQualityFilter('tags')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_tags }}</span>
+            <span class="attn-label">Tags</span>
+          </div>
+          <div class="attn-item" v-if="clientMissingStats.no_benefit > 0" @click="setQualityFilter('benefit')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.no_benefit }}</span>
+            <span class="attn-label">Benefit</span>
+          </div>
+        </div>
+      </div>
+      <div class="attention-group" v-if="hasUnknownItems">
+        <div class="attention-group-label">Unknown Values</div>
+        <div class="attention-grid">
+          <div class="attn-item attn-item-unknown" v-if="clientMissingStats.unknown_status > 0" @click="setFilter('status', 'unknown')">
+            <el-icon><QuestionFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.unknown_status }}</span>
+            <span class="attn-label">Status</span>
+          </div>
+          <div class="attn-item attn-item-unknown" v-if="clientMissingStats.unknown_type > 0" @click="setFilter('type', 'unknown')">
+            <el-icon><QuestionFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.unknown_type }}</span>
+            <span class="attn-label">Type</span>
+          </div>
+          <div class="attn-item attn-item-unknown" v-if="clientMissingStats.unknown_lifecycle > 0" @click="setFilter('lifecycle', 'unknown')">
+            <el-icon><QuestionFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.unknown_lifecycle }}</span>
+            <span class="attn-label">Lifecycle</span>
+          </div>
+        </div>
+      </div>
+      <div class="attention-group" v-if="clientMissingStats.stale_count > 0">
+        <div class="attention-group-label">Review Overdue</div>
+        <div class="attention-grid">
+          <div class="attn-item attn-item-stale" @click="setFilter('stale', 'true')">
+            <el-icon><WarningFilled /></el-icon>
+            <span class="attn-count">{{ clientMissingStats.stale_count }}</span>
+            <span class="attn-label">Stale files</span>
+          </div>
+        </div>
+      </div>
+      </template>
     </div>
 
     <!-- Filter Pills Bar -->
@@ -385,10 +465,11 @@
           <!-- Panel Header -->
           <div class="panel-header">
             <span class="panel-title">
-              File Classification
+              <template v-if="viewAttentionFiles">Files Needing Attention</template>
+              <template v-else>File Classification</template>
               <span class="panel-count">({{ sortedDrillTableData.length ?? 0 }} files)</span>
             </span>
-            <div class="panel-actions">
+            <div class="panel-actions" v-if="!viewAttentionFiles">
               <div class="search-wrapper">
                 <el-input
                   v-model="searchText" :placeholder="searchMode === 'content' ? 'Search content...' : 'Ctrl+K search...'"
@@ -423,6 +504,10 @@
                 <el-radio-button value="files">Files</el-radio-button>
                 <el-radio-button value="modules">Modules</el-radio-button>
               </el-radio-group>
+            </div>
+            <div class="panel-actions" v-if="viewAttentionFiles">
+              <span class="attention-mode-hint">Showing all files with missing or invalid metadata</span>
+              <el-button size="small" type="warning" plain @click="clearAllFilters()">Clear &amp; return</el-button>
             </div>
           </div>
 
@@ -851,7 +936,7 @@
               </el-table-column>
               <el-table-column prop="type" label="Type" width="85" show-overflow-tooltip sortable="custom">
                 <template #default="{ row }">
-                  <span class="type-badge" :class="'type-' + (row.type || 'unknown')" @click.stop="setFilter('type', row.type || 'unknown')">{{ row.type || 'unknown' }}</span>
+                  <span class="type-badge" :class="'type-' + (row.type || 'unknown')" @click.stop="setFilter('type', row.type || 'unknown')">{{ row.type || '--' }}</span>
                 </template>
               </el-table-column>
               <el-table-column prop="module" label="Module" width="115" show-overflow-tooltip sortable="custom">
@@ -886,8 +971,15 @@
               </el-table-column>
               <el-table-column prop="health" label="Health" width="100" align="center" sortable="custom">
                 <template #default="{ row }">
-                  <el-tooltip :content="'Metadata completeness: ' + (fileHealthLevel(row) === 'good' ? 'Good' : fileHealthLevel(row) === 'warn' ? 'Fair' : 'Poor')" placement="top">
-                    <span class="health-dot" :class="'health-' + fileHealthLevel(row)"></span>
+                  <el-tooltip placement="top" :show-after="300">
+                    <template #content>
+                      <div v-if="fileHealthIssues(row).length > 0">
+                        <div v-for="issue in fileHealthIssues(row)" :key="issue">{{ issue }}</div>
+                      </div>
+                      <div v-else>All metadata complete</div>
+                    </template>
+                    <span v-if="fileHealthIssues(row).length > 0" class="health-issues-badge" :class="'health-issues-' + fileHealthLevel(row)">{{ fileHealthIssues(row).length }}</span>
+                    <span v-else class="health-dot health-good"></span>
                   </el-tooltip>
                 </template>
               </el-table-column>
@@ -996,7 +1088,7 @@
                 </div>
                 <div class="fd-meta-item">
                   <span class="fd-meta-label">Type</span>
-                  <span class="type-badge" :class="'type-' + (selectedFile.type || 'unknown')">{{ selectedFile.type || 'unknown' }}</span>
+                  <span class="type-badge" :class="'type-' + (selectedFile.type || 'unknown')">{{ selectedFile.type || '--' }}</span>
                 </div>
                 <div class="fd-meta-item">
                   <span class="fd-meta-label">Review</span>
@@ -1021,6 +1113,15 @@
                   <span class="fd-meta-label">Updated</span>
                   <span class="fd-meta-value">{{ selectedFile.updated ? formatRelativeTime(selectedFile.updated) : '--' }}</span>
                 </div>
+              </div>
+              <div class="fd-missing-strip" v-if="fileHealthIssues(selectedFile).length > 0">
+                <span class="fd-missing-label">Needs Attention</span>
+                <span
+                  v-for="issue in fileHealthIssues(selectedFile)" :key="issue"
+                  class="fd-missing-chip"
+                  :class="{ 'fd-missing-chip-stale': issue === 'Stale' }"
+                  @click="issue === 'Stale' ? setFilter('stale', 'true') : issue === 'Missing status' ? setQualityFilter('status') : issue === 'Missing type' ? setQualityFilter('type') : issue === 'Missing lifecycle' ? setQualityFilter('lifecycle') : issue === 'Missing review cycle' ? setQualityFilter('review_cycle') : issue === 'Missing roles' ? setQualityFilter('roles') : issue === 'Missing tags' ? setQualityFilter('tags') : issue === 'Missing benefit' ? setQualityFilter('benefit') : issue === 'Status: unknown' ? setFilter('status', 'unknown') : issue === 'Type: unknown' ? setFilter('type', 'unknown') : setFilter('lifecycle', 'unknown')"
+                >{{ issue }}</span>
               </div>
               <div class="fd-module-context" v-if="sameModuleCount > 0">
                 <span class="fd-context-item">
@@ -1095,11 +1196,6 @@
 
 <script setup lang="ts" name="knowledgeBase">
 import { ref } from "vue";
-import {
-  Document, Folder, Grid, Refresh, TrendCharts, Star, WarningFilled,
-  Search, InfoFilled, User, Cpu, ArrowLeft, ArrowRight, Coin, Close, View,
-  DataAnalysis, HomeFilled, QuestionFilled,
-} from "@element-plus/icons-vue";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
@@ -1145,16 +1241,18 @@ const {
   recentlyViewed, drillDownRef, detailPanelRef,
   chartPulseKey, drillHighlight, pulsingCard,
   showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
-  showTreeView, showTagCloud, showRoleCloud, showReviewCompliance,
-  filterHistory,
+  showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showAttentionDetail,
+  filterHistory, viewAttentionFiles,
   // cross-filter
   activeFilterPills, filterBreadcrumb, filteredDimensions, isDimensionFiltered,
   chartContextFiles,
   // computed
   hasActiveFilter, showSubModuleGrid, isShowingTreeView,
-  topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
+  topCategory, tacitPct, topRole, totalModules, recentWeekCount, recentWeekPct, stalePct, clientReviewCoveragePct,
   dataQualityScore, missingMetadataCount,
-  needsAttentionFiles, unknownStatusFiles, clientMissingStats, attentionBreakdown,
+  qualityByCategory, worstCategories,
+  needsAttentionFiles, unknownStatusFiles, clientMissingStats,
+  attentionPct, totalMissingCount, totalUnknownCount, hasMissingItems, hasUnknownItems,
   statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
   reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
   filteredModuleDrillData,
@@ -1180,15 +1278,16 @@ const {
   isMissingField, isUnknownField, normalizeMetaValue, MISSING_LABEL,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
   dataQualityColor,
+  qualityCardClass,
   setFilter, removeFilter, undoLastFilter, selectTreeNode,
   pulseCard, toggleNoReviewFilter, setQualityFilter,
-  backToCategory, clearAllFilters,
+  backToCategory, clearAllFilters, showAllAttentionFiles,
   drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
   navigateToModule, crossFilterSubModule,
   onTimeFilterChange, onTableSortChange, scrollToDrillDown,
   openFilePreview, clearRecentlyViewed,
   navigateToFile, resolveRelatedNames, getModuleStats,
-  discussInAiChat, discussSearchResult, deleteFile,
+  discussInAiChat, discussSearchResult, deleteFile, fixMetadataWithAgent,
   exportCSV, onSearchInput, onChartClick, onDetailKeydown, fetchData,
 } = kb;
 </script>

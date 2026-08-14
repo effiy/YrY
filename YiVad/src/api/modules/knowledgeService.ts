@@ -103,3 +103,25 @@ export interface KnowledgeDeleteResponse {
 export function deleteKnowledgeFile(targetFile: string): Promise<KnowledgeDeleteResponse> {
   return postJson<KnowledgeDeleteResponse>("/knowledge-delete", { target_file: targetFile });
 }
+
+/** Export a knowledge directory as a zip archive and trigger browser download. */
+export async function exportKnowledgeDir(targetDir: string): Promise<void> {
+  const url = buildYiAiUrl("/knowledge-export");
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: yiAiAuthHeaders(),
+    body: JSON.stringify({ target_dir: targetDir })
+  });
+  if (!resp.ok) {
+    throw new Error(`Export failed: HTTP ${resp.status}`);
+  }
+  const blob = await resp.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = (targetDir.split("/").pop() || "export") + ".zip";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(blobUrl);
+}

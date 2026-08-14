@@ -14,7 +14,14 @@ export const useTabsStore = defineStore("yivad-tabs", {
   actions: {
     // Add Tabs
     async addTabs(tabItem: TabsMenuProps) {
-      if (this.tabsMenuList.every((item: TabsMenuProps) => item.path !== tabItem.path)) {
+      // Use route name as dedup key so dynamic routes (e.g. /okr/:roleId/metric/:metricId)
+      // share a single tab regardless of param values. Fall back to path for unnamed routes.
+      const dedupKey = tabItem.name || tabItem.path;
+      const existing = this.tabsMenuList.find((item: TabsMenuProps) => (item.name || item.path) === dedupKey);
+      if (existing) {
+        existing.path = tabItem.path;
+        existing.title = tabItem.title;
+      } else {
         this.tabsMenuList.push(tabItem);
       }
       // add keepalive
@@ -66,8 +73,9 @@ export const useTabsStore = defineStore("yivad-tabs", {
     },
     // Set Tabs Title
     async setTabsTitle(title: string) {
+      const currentPath = getUrlWithParams();
       this.tabsMenuList.forEach((item: TabsMenuProps) => {
-        if (item.path == getUrlWithParams()) item.title = title;
+        if (item.path === currentPath) item.title = title;
       });
     }
   },

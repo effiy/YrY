@@ -316,15 +316,13 @@ export interface AiCodingHistoryDocument {
 }
 
 // ── Menu documents (system menus) ──
+// Wire format: nested `meta` + `parent` + `order` — the shape the backend
+// returns from GET /auth/menu/list and the menuMange page reads/writes via
+// the data_service RPC. The flattened `parentId`/`sort`/`icon`/`title`/...
+// fields in older versions of this interface were template artifacts and did
+// not match the runtime documents.
 
-export interface MenuDocument {
-  key: string;
-  path: string;
-  name: string;
-  component?: string;
-  redirect?: string;
-  parentId?: string | null;
-  sort?: number;
+export interface MenuMeta {
   icon?: string;
   title: string;
   isLink?: string;
@@ -332,6 +330,17 @@ export interface MenuDocument {
   isFull?: boolean;
   isAffix?: boolean;
   isKeepAlive?: boolean;
+}
+
+export interface MenuDocument {
+  key: string;
+  path: string;
+  name: string;
+  component?: string;
+  redirect?: string;
+  meta: MenuMeta;
+  parent?: string | null;
+  order?: number;
   createdAt?: number;
   updatedAt?: number;
 }
@@ -662,6 +671,7 @@ export interface KnowledgeRoleStats {
 }
 
 export interface KnowledgeDataQuality {
+  total: number;  // number of markdown files (only .md files can have frontmatter)
   no_status: number;
   no_type: number;
   no_lifecycle: number;

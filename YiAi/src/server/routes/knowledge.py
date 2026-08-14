@@ -8,10 +8,15 @@ routes mirroring the file routes' style:
   - /knowledge-story-read    → read a specific story's story.md
   - /knowledge-sync          → trigger a full disk → DB reconciliation
   - /knowledge-files         → read metadata from DB mirror (no disk scan)
+  - /knowledge-export        → zip a knowledge directory and stream the download
 """
+import io
 import logging
+import os
+import zipfile
 
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 
 from domain.knowledge import (
     scan_knowledge,
@@ -23,6 +28,7 @@ from domain.knowledge import (
     write_entry_markdown,
     delete_entry_markdown,
 )
+from domain.knowledge.scanner import _resolve_safe
 from models.schemas import (
     KnowledgeReadRequest,
     KnowledgeScanRequest,
@@ -32,6 +38,7 @@ from models.schemas import (
     KnowledgeWriteRequest,
     KnowledgeDeleteRequest,
     KnowledgeSearchRequest,
+    KnowledgeExportRequest,
 )
 from shared.response import success
 
@@ -198,3 +205,32 @@ async def knowledge_search_route(request: KnowledgeSearchRequest):
             break
 
     return success(data={"results": results, "total": len(results)})
+
+
+@router.post("/knowledge-export", operation_id="knowledge_export")
+async def knowledge_export_route(request: KnowledgeExportRequest):
+    """Export a knowledge directory as a zip archive."""
+    dir_path = _resolve_safe(request.target_dir)
+    if not os.path.isdir(dir_path):
+        from shared.error_codes import ErrorCode
+        from shared.exceptions import BusinessException
+        raise BusinessException(ErrorCode.KNOWLEDGE_FILE_NOT_FOUND, message="Directory not found")
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for root, dirs, files in os.walk(dir_path):
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+            for fname in files:
+                if fname.startswith("."):
+                    continue
+                full = os.path.join(root, fname)
+                arcname = os.path.relpath(full, os.path.dirname(dir_path))
+                zf.write(full, arcname)
+
+    buf.seek(0)
+    dir_name = request.target_dir.rstrip("/").split("/")[-1] or "export"
+    return StreamingResponse(
+        buf,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{dir_name}.zip"'},
+    )

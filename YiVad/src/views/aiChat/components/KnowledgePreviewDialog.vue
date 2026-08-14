@@ -2,7 +2,7 @@
 import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { ElInput, ElMessage } from "element-plus";
-import { ArrowLeft, ChatDotRound, Loading, FolderOpened } from "@element-plus/icons-vue";
+import { ArrowLeft, ChatDotRound, Close, Download, Loading, FolderOpened } from "@element-plus/icons-vue";
 import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
 import { useResizable } from "@/hooks/useResizable";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
@@ -122,6 +122,9 @@ onBeforeUnmount(() => teardownSyncScroll());
 /** TOC entries parsed from the rendered markdown — populated after render. */
 const toc = ref<{ level: number; text: string; id: string }[]>([]);
 
+/** Whether the TOC sidebar is collapsed. */
+const tocCollapsed = ref(false);
+
 /** System prompt fed to the embedded chat — the knowledge file content. */
 const chatSystemPrompt = computed(() => {
   if (!showChat.value || !rawContent.value) return "";
@@ -211,8 +214,8 @@ function loadDoc(path: string) {
       rawContent.value = res.content || "";
       meta.value = res.meta || {};
     })
-    .catch(() => {
-      rawContent.value = "*Failed to load content.*";
+    .catch((err: any) => {
+      rawContent.value = `*Failed to load content: ${err?.message || "unknown error"}*`;
     })
     .finally(() => {
       loading.value = false;
@@ -253,7 +256,7 @@ async function discussInAiChat() {
 /**
  * Resolve a YiKnowledge path to its source-domain detail route, when the path
  * matches a known pattern (brd/<role>/<key>.md, code-review/<topic>/<key>.md,
- * tech-leadership/<topic>/<key>.md, stories/<project>/<key>/..., rss/<...>).
+ * leader/<topic>/<key>.md, stories/<project>/<key>/..., rss/<...>).
  * Returns null for paths outside these patterns (e.g. notes/…).
  */
 function resolveSourceRoute(path: string): { path: string; query?: Record<string, string> } | null {
@@ -262,17 +265,9 @@ function resolveSourceRoute(path: string): { path: string; query?: Record<string
   const parts = clean.split("/").filter(Boolean);
   if (parts.length < 2) return null;
 
-  // brd/<role>/<key>
-  if (parts[0] === "brd" && parts.length >= 3) {
-    return { path: `/brd/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
-  }
-  // code-review/<topic>/<key>
-  if (parts[0] === "code-review" && parts.length >= 3) {
-    return { path: `/code-review/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
-  }
-  // tech-leadership/<topic>/<key>
-  if (parts[0] === "tech-leadership" && parts.length >= 3) {
-    return { path: `/tech-leadership/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
+  // leader/<topic>/<key>
+  if (parts[0] === "leader" && parts.length >= 3) {
+    return { path: `/leader/${parts[1]}/detail/${parts.slice(2).join("/")}`, query: { mode: "view" } };
   }
   // stories/<project>/<key>(/<file>)
   if (parts[0] === "stories" && parts.length >= 3) {
@@ -442,6 +437,19 @@ function toggleChat() {
   }
 }
 
+function downloadFile() {
+  if (!rawContent.value || !currentPath.value) return;
+  const blob = new Blob([rawContent.value], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = currentPath.value.split("/").pop() || "file.md";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 async function translateTo(targetLang: "zh" | "en", bilingual = false) {
   if (translating.value || !rawContent.value) return;
 
@@ -493,10 +501,10 @@ defineExpose({ open });
 <template>
   <el-dialog
     v-model="visible"
-    :title="title"
-    width="91vw"
-    top="4vh"
+    width="100vw"
+    top="0"
     :close-on-click-modal="true"
+    :show-close="false"
     append-to-body
     class="kpd-dialog"
     @close="close"
@@ -557,12 +565,26 @@ defineExpose({ open });
           @click="openInSourcePage"
         />
         <el-button
+          size="small"
+          text
+          :icon="Download"
+          title="Download file"
+          @click="downloadFile"
+        />
+        <el-button
           :type="showChat ? 'primary' : 'default'"
           :icon="ChatDotRound"
           size="small"
           text
           :title="showChat ? 'Hide chat' : 'Chat about this file'"
           @click="toggleChat"
+        />
+        <el-button
+          size="small"
+          text
+          :icon="Close"
+          title="Close"
+          @click="close"
         />
       </div>
     </div>
@@ -614,15 +636,22 @@ defineExpose({ open });
       <!-- Standard mode: optional TOC sidebar + (editor / preview) -->
       <div v-else class="kpd-body" :class="`kpd-body--${mode}`">
         <!-- TOC sidebar (preview mode only, ≥3 headings) -->
-        <aside v-if="showToc" class="kpd-toc">
-          <div class="kpd-toc-title">Contents</div>
+        <aside v-if="showToc" class="kpd-toc" :class="{ 'is-collapsed': tocCollapsed }">
+          <div class="kpd-toc-title" @click="tocCollapsed = !tocCollapsed">
+            <span class="kpd-toc-title-text">Contents</span>
+            <span class="kpd-toc-toggle">{{ tocCollapsed ? '▶' : '◀' }}</span>
+          </div>
           <ul class="kpd-toc-list">
             <li
               v-for="item in toc"
               :key="item.id"
               :class="`kpd-toc-item--h${item.level}`"
+              :title="tocCollapsed ? item.text : ''"
             >
-              <a href="#" @click.prevent="scrollToHeading(item.id)">{{ item.text }}</a>
+              <a href="#" @click.prevent="scrollToHeading(item.id)">
+                <span class="kpd-toc-full">{{ item.text }}</span>
+                <span class="kpd-toc-initial">{{ item.text.charAt(0) }}</span>
+              </a>
             </li>
           </ul>
         </aside>
@@ -819,17 +848,68 @@ defineExpose({ open });
   flex-shrink: 0;
   width: 200px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 8px 12px 8px 0;
   border-right: 1px solid var(--el-border-color-lighter);
   font-size: 12px;
   line-height: 1.5;
+  transition: width 0.2s ease;
+
+  &.is-collapsed {
+    width: 36px;
+    padding: 8px 4px 8px 0;
+
+    .kpd-toc-title {
+      justify-content: center;
+    }
+    .kpd-toc-title-text {
+      display: none;
+    }
+    .kpd-toc-toggle {
+      margin-left: 0;
+    }
+    .kpd-toc-full {
+      display: none;
+    }
+    .kpd-toc-initial {
+      display: inline;
+    }
+    .kpd-toc-list a {
+      justify-content: center;
+      padding: 4px 2px;
+      border-radius: 4px;
+    }
+    .kpd-toc-item--h3 a {
+      padding-left: 2px;
+    }
+  }
 }
 .kpd-toc-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 11px;
   margin-bottom: 6px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
+.kpd-toc-title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kpd-toc-toggle {
+  flex-shrink: 0;
+  font-size: 10px;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
 }
 .kpd-toc-list {
   list-style: none;
@@ -840,7 +920,7 @@ defineExpose({ open });
   margin: 0;
 }
 .kpd-toc-list a {
-  display: block;
+  display: flex;
   padding: 2px 4px;
   color: var(--el-text-color-regular);
   text-decoration: none;
@@ -854,6 +934,15 @@ defineExpose({ open });
     background: var(--el-fill-color-light);
     color: var(--el-color-primary);
   }
+}
+.kpd-toc-full {
+  display: inline;
+}
+.kpd-toc-initial {
+  display: none;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
 }
 .kpd-toc-item--h3 a {
   padding-left: 12px;
@@ -928,9 +1017,14 @@ defineExpose({ open });
 // Dialog sizing — non-scoped because el-dialog uses append-to-body,
 // which teleports the dialog outside the component DOM tree.
 .kpd-dialog {
-  height: 88vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  margin: 0;
+
+  .el-dialog__header {
+    display: none;
+  }
 
   .el-dialog__body {
     flex: 1;

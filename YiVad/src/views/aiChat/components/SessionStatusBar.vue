@@ -21,7 +21,7 @@ const router = useRouter();
 const FROM_PREFIX = "from:";
 const SOURCE_DOMAIN_LABEL: Record<string, string> = {
   brd: "BRD",
-  "tech-leadership": "TL",
+  "leader": "TL",
   "code-review": "CR",
   story: "Story",
   rag: "RAG",

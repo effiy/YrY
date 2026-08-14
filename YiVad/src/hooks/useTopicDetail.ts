@@ -108,7 +108,7 @@ export function useTopicDetail(options: UseTopicDetailOptions) {
   }
 
   function back() {
-    const routePrefix = tree === "tech-leadership" ? "tlr" : "cr";
+    const routePrefix = tree === "leader" ? "leader" : "cr";
     router.push({ name: `${routePrefix}${pascal(topic)}List` });
   }
 

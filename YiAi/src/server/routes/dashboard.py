@@ -350,6 +350,7 @@ class KnowledgeHealthSummary(BaseModel):
 
 class KnowledgeDataQuality(BaseModel):
     """Per-field metadata completeness counts — files missing each key field."""
+    total: int = 0  # number of markdown files (only .md files can have frontmatter)
     no_status: int = 0
     no_type: int = 0
     no_lifecycle: int = 0
@@ -358,7 +359,7 @@ class KnowledgeDataQuality(BaseModel):
     no_tags: int = 0
     no_benefit: int = 0
     no_title: int = 0
-    complete: int = 0  # files with all four key fields (status/type/lifecycle/review_cycle) present
+    complete: int = 0  # files with all six key fields (status/type/lifecycle/review_cycle/roles/tags) present
 
 
 class KnowledgeFileSummary(BaseModel):
@@ -460,7 +461,7 @@ async def knowledge_stats():
         }
 
         # Category (role) distribution
-        categories = Counter(f.get("category", "unknown") for f in files)
+        categories = Counter(f.get("category", "") for f in files)
         category_stats = [KnowledgeCategoryStats(name=k, count=v) for k, v in categories.most_common(20)]
 
         # Meta-driven distributions
@@ -473,7 +474,8 @@ async def knowledge_stats():
         stale_count = 0
         no_review_cycle_count = 0
 
-        # Data quality counters
+        # Data quality counters (only .md files — non-markdown files can't have frontmatter)
+        dq_total = 0
         dq_no_status = 0
         dq_no_type = 0
         dq_no_lifecycle = 0
@@ -488,9 +490,9 @@ async def knowledge_stats():
 
         for f in files:
             meta = f.get("meta", {}) or {}
-            status = meta.get("status", "unknown")
-            lifecycle = meta.get("lifecycle", "unknown")
-            ftype = meta.get("type", "unknown")
+            status = meta.get("status", "")
+            lifecycle = meta.get("lifecycle", "")
+            ftype = meta.get("type", "")
             review_cycle = meta.get("review_cycle", "")
             tacit = meta.get("tacit", False)
             file_roles_raw = meta.get("roles", []) or []
@@ -515,21 +517,38 @@ async def knowledge_stats():
             else:
                 no_review_cycle_count += 1
 
+            # Resolve tags
+            file_tags_raw = meta.get("tags", []) or []
+            if isinstance(file_tags_raw, list):
+                file_tags = [t for t in file_tags_raw if isinstance(t, str)]
+            elif isinstance(file_tags_raw, str):
+                file_tags = [file_tags_raw]
+            else:
+                file_tags = []
+
             # Data quality counts (fields available here)
-            if status == "unknown":
-                dq_no_status += 1
-            if ftype == "unknown":
-                dq_no_type += 1
-            if lifecycle == "unknown":
-                dq_no_lifecycle += 1
-            if not review_cycle:
-                dq_no_review_cycle += 1
-            if not file_roles:
-                dq_no_roles += 1
-            if not meta.get("benefit"):
-                dq_no_benefit += 1
-            if not meta.get("title") and not f.get("name"):
-                dq_no_title += 1
+            path = f.get("path", "")
+            if path.endswith(".md") and ftype != "rss":
+                dq_total += 1
+                if not status:
+                    dq_no_status += 1
+                if not ftype:
+                    dq_no_type += 1
+                if not lifecycle:
+                    dq_no_lifecycle += 1
+                if not review_cycle:
+                    dq_no_review_cycle += 1
+                if not file_roles:
+                    dq_no_roles += 1
+                if not meta.get("benefit"):
+                    dq_no_benefit += 1
+                if not meta.get("title") and not f.get("name"):
+                    dq_no_title += 1
+                if not file_tags:
+                    dq_no_tags += 1
+                # Complete = all six key fields present (non-empty)
+                if status and ftype and lifecycle and review_cycle and file_roles and file_tags:
+                    dq_complete += 1
 
             # Tacit knowledge: boolean True or non-empty string
             if isinstance(tacit, str) and tacit.strip():
@@ -563,42 +582,27 @@ async def knowledge_stats():
             else:
                 sub_mod_name = "__root__"
 
-            # Resolve tags
-            file_tags_raw = meta.get("tags", []) or []
-            if isinstance(file_tags_raw, list):
-                file_tags = [t for t in file_tags_raw if isinstance(t, str)]
-            elif isinstance(file_tags_raw, str):
-                file_tags = [file_tags_raw]
-            else:
-                file_tags = []
-
-            if not file_tags:
-                dq_no_tags += 1
-
-            # Complete = all four key fields present (non-unknown)
-            if status != "unknown" and ftype != "unknown" and lifecycle != "unknown" and review_cycle:
-                dq_complete += 1
-
             # Build file summary for drill-down
-            file_summaries.append(KnowledgeFileSummary(
-                path=path,
-                title=(meta.get("title", "")) or f.get("name", ""),
-                category=f.get("category", "unknown"),
-                module=mod_name,
-                sub_module=sub_mod_name,
-                size=f.get("size", 0),
-                status=status,
-                lifecycle=lifecycle,
-                type=ftype,
-                review_cycle=review_cycle,
-                updated=str(f.get("updatedTime", f.get("updatedAt", ""))),
-                tacit=bool(tacit),
-                roles=file_roles,
-                tags=file_tags,
-                benefit=str(meta.get("benefit", "")) if meta.get("benefit") else "",
-                related_count=len(meta.get("related", [])) if isinstance(meta.get("related"), list) else 0,
-                related=meta.get("related", []) if isinstance(meta.get("related"), list) else [],
-            ))
+            if path.endswith(".md"):
+                file_summaries.append(KnowledgeFileSummary(
+                    path=path,
+                    title=(meta.get("title", "")) or f.get("name", ""),
+                    category=f.get("category", ""),
+                    module=mod_name,
+                    sub_module=sub_mod_name,
+                    size=f.get("size", 0),
+                    status=status,
+                    lifecycle=lifecycle,
+                    type=ftype,
+                    review_cycle=review_cycle,
+                    updated=str(f.get("updatedTime", f.get("updatedAt", ""))),
+                    tacit=bool(tacit),
+                    roles=file_roles,
+                    tags=file_tags,
+                    benefit=str(meta.get("benefit", "")) if meta.get("benefit") else "",
+                    related_count=len(meta.get("related", [])) if isinstance(meta.get("related"), list) else 0,
+                    related=meta.get("related", []) if isinstance(meta.get("related"), list) else [],
+                ))
 
         # Module-level aggregation: group by (category, subdirectory)
         from collections import defaultdict
@@ -613,12 +617,12 @@ async def knowledge_stats():
         })
 
         for f in files:
-            cat = f.get("category", "unknown")
+            cat = f.get("category", "")
             path = f.get("path", "")
             meta = f.get("meta", {}) or {}
-            status = meta.get("status", "unknown")
-            ftype = meta.get("type", "unknown")
-            lifecycle = meta.get("lifecycle", "unknown")
+            status = meta.get("status", "")
+            ftype = meta.get("type", "")
+            lifecycle = meta.get("lifecycle", "")
             review_cycle = meta.get("review_cycle", "")
             tacit = meta.get("tacit", False)
 
@@ -743,6 +747,7 @@ async def knowledge_stats():
         )
 
         data_quality = KnowledgeDataQuality(
+            total=dq_total,
             no_status=dq_no_status,
             no_type=dq_no_type,
             no_lifecycle=dq_no_lifecycle,
@@ -773,7 +778,7 @@ async def knowledge_stats():
         ]
 
         return success(data=KnowledgeStatsResponse(
-            total=len(files),
+            total=len(file_summaries),
             categories=category_stats,
             statuses=status_stats,
             lifecycles=lifecycle_stats,

@@ -1,7 +1,7 @@
 /**
  * Generic per-topic CRUD.
  *
- * Each tech-leadership / code-review topic lives in its own Mongo collection
+ * Each leader / code-review topic lives in its own Mongo collection
  * (e.g. `tech_roadmap_review`, `cr_summary`). YiAi creates the collection on
  * first insert — no schema migration needed.
  *
@@ -15,7 +15,7 @@ import { queryDocuments, createDocument, updateDocument, deleteDocument, callSer
 import { readKnowledgeFile } from "./knowledgeService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
-export type TopicTree = "tech-leadership" | "code-review" | "brd";
+export type TopicTree = "leader" | "code-review" | "brd" | "engineer" | "producter" | "aier" | "srer" | "executiver" | "curator";
 
 export interface TopicEntryDocument {
   key: string;
@@ -40,11 +40,12 @@ export interface TopicListParams {
   pageSize?: number;
 }
 
-/** Convention: tech-leadership → `tech_<value>`; code-review → `cr_<value>`; brd → `brd_<value>`. */
+/** Convention: leader → `tech_<value>`; code-review → `cr_<value>`; brd → `brd_<value>`; other roles → `<role>_<value>`. */
 export function cnameFor(tree: TopicTree, topic: string): string {
-  if (tree === "tech-leadership") return `tech_${topic}`;
+  if (tree === "leader") return `tech_${topic}`;
   if (tree === "brd") return `brd_${topic}`;
-  return `cr_${topic}`;
+  if (tree === "code-review") return `cr_${topic}`;
+  return `${tree}_${topic}`;
 }
 
 /** YiKnowledge content path for BRD split-storage entries, e.g. "brd/brd-documents/brd_xxx.md". */
@@ -55,7 +56,18 @@ export function contentPathFor(tree: TopicTree, topic: string, key: string): str
 export function makeKey(tree: TopicTree, topic: string): string {
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
-  const prefix = tree === "tech-leadership" ? "tl" : tree === "brd" ? "brd" : "cr";
+  const prefixMap: Record<TopicTree, string> = {
+    "leader": "leader",
+    "code-review": "cr",
+    brd: "brd",
+    engineer: "eng",
+    producter: "pm",
+    aier: "ai",
+    srer: "sre",
+    executiver: "exec",
+    curator: "cur"
+  };
+  const prefix = prefixMap[tree];
   return `${prefix}_${topic}_${stamp}${rand}`;
 }
 

@@ -587,7 +587,12 @@ async function saveAndContinue() {
 // Renders a VNode message so the toast carries a clickable link that jumps
 // to the just-saved entry's view URL — survives the subsequent navigation.
 function detailRouteName(): string {
-  const prefix = props.tree === "tech-leadership" ? "tlr" : "cr";
+  const ROUTE_PREFIX_MAP: Record<string, string> = {
+    "leader": "leader", "code-review": "cr", brd: "brd",
+    engineer: "eng", producter: "pm", aier: "ai",
+    srer: "sre", executiver: "exec", curator: "cur"
+  };
+  const prefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
   return `${prefix}${pascal(topicName)}Detail`;
 }
@@ -652,8 +657,13 @@ async function handleCancel() {
 }
 
 function back() {
-  const prefix = props.tree === "tech-leadership" ? "tlr" : "cr";
-  // Topics that contain the tree prefix (e.g. "tlr-postmortem").
+  const ROUTE_PREFIX_MAP: Record<string, string> = {
+    "leader": "leader", "code-review": "cr", brd: "brd",
+    engineer: "eng", producter: "pm", aier: "ai",
+    srer: "sre", executiver: "exec", curator: "cur"
+  };
+  const prefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
+  // Topics that contain the tree prefix (e.g. "leader-postmortem").
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
   router.push({ name: `${prefix}${pascal(topicName)}` });
 }

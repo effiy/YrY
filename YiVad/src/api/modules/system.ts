@@ -28,7 +28,7 @@ export async function getMenuList(): Promise<YiAiEnvelope<MenuDocument[]>> {
   const res = await queryDocuments<MenuDocument>({
     cname: "menus",
     limit: 1000,
-    orderBy: "sort",
+    orderBy: "order",
     orderType: "asc"
   });
   return { ...res, data: (res.data?.list ?? []) as MenuDocument[] };
@@ -45,10 +45,12 @@ export function createMenu(params: Record<string, any>): Promise<YiAiEnvelope> {
 }
 
 export function updateMenu(key: string, params: Record<string, any>): Promise<YiAiEnvelope> {
+  if (!key) return Promise.reject(new Error("updateMenu: key is required"));
   return updateDocument("menus", key, { ...params, key, updatedAt: Date.now() });
 }
 
 export function deleteMenu(key: string): Promise<YiAiEnvelope> {
+  if (!key) return Promise.reject(new Error("deleteMenu: key is required"));
   return deleteDocument("menus", key);
 }
 

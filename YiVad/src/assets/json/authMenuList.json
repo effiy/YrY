@@ -18,648 +18,6 @@
       "children": []
     },
     {
-      "path": "/knowledge",
-      "name": "knowledgeHub",
-      "component": "/knowledge/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Collection",
-        "title": "Knowledge Base",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": []
-    },
-    {
-      "path": "/code-review",
-      "name": "codeReview",
-      "component": "",
-      "redirect": "/code-review/index",
-      "meta": {
-        "icon": "DocumentChecked",
-        "title": "Code Review",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/code-review/index",
-          "name": "crReviewHub",
-          "component": "/code-review/index/index",
-          "redirect": "",
-          "meta": {
-            "icon": "DataAnalysis",
-            "title": "Review Hub",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/summary",
-          "name": "crSummary",
-          "component": "/code-review/summary/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Summarize this file",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/bugs",
-          "name": "crBugs",
-          "component": "/code-review/bugs/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Find potential bugs",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/explain",
-          "name": "crExplain",
-          "component": "/code-review/explain/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Explain the logic",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/security",
-          "name": "crSecurity",
-          "component": "/code-review/security/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Security review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/dependency-risk",
-          "name": "crDependencyRisk",
-          "component": "/code-review/dependency-risk/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Dependency risk",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/access-review",
-          "name": "crAccessReview",
-          "component": "/code-review/access-review/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Access review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/refactor",
-          "name": "crRefactor",
-          "component": "/code-review/refactor/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Refactor suggestions",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/perf",
-          "name": "crPerf",
-          "component": "/code-review/perf/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Performance analysis",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/tests",
-          "name": "crTests",
-          "component": "/code-review/tests/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Generate tests",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/style",
-          "name": "crStyle",
-          "component": "/code-review/style/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Naming & style",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/api-contract",
-          "name": "crApiContract",
-          "component": "/code-review/api-contract/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "API contract check",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/observability-gap",
-          "name": "crObservabilityGap",
-          "component": "/code-review/observability-gap/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Observability gap",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/concurrency",
-          "name": "crConcurrency",
-          "component": "/code-review/concurrency/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Concurrency review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/error-handling",
-          "name": "crErrorHandling",
-          "component": "/code-review/error-handling/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Error handling review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/dead-code",
-          "name": "crDeadCode",
-          "component": "/code-review/dead-code/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Dead code review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/backward-compat",
-          "name": "crBackwardCompat",
-          "component": "/code-review/backward-compat/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Backward compat review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/code-review/i18n-a11y",
-          "name": "crI18nA11y",
-          "component": "/code-review/i18n-a11y/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "i18n / a11y review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        }
-      ]
-    },
-    {
-      "path": "/tech-leadership",
-      "name": "techLeadership",
-      "component": "",
-      "redirect": "/tech-leadership/index",
-      "meta": {
-        "icon": "Monitor",
-        "title": "Tech Leadership",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/tech-leadership/index",
-          "name": "tlrReviewHub",
-          "component": "/tech-leadership/index/index",
-          "redirect": "",
-          "meta": {
-            "icon": "DataAnalysis",
-            "title": "Review Hub",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/adr-review",
-          "name": "tlrAdrReview",
-          "component": "/tech-leadership/adr-review/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Architecture Decision Records",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/tech-selection",
-          "name": "tlrTechSelection",
-          "component": "/tech-leadership/tech-selection/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Tech Selection Evaluation",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/tech-debt",
-          "name": "tlrTechDebt",
-          "component": "/tech-leadership/tech-debt/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Tech Debt Inventory",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/risk-register",
-          "name": "tlrRiskRegister",
-          "component": "/tech-leadership/risk-register/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Risk Register",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/postmortem",
-          "name": "tlrPostmortem",
-          "component": "/tech-leadership/postmortem/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Postmortems",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/oncall-handover",
-          "name": "tlrOncallHandover",
-          "component": "/tech-leadership/oncall-handover/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Oncall Handover",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/org-diagnose",
-          "name": "tlrOrgDiagnose",
-          "component": "/tech-leadership/org-diagnose/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Org Diagnose",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/dependency-audit",
-          "name": "tlrDependencyAudit",
-          "component": "/tech-leadership/dependency-audit/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Dependency Audit",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/roadmap-review",
-          "name": "tlrRoadmapReview",
-          "component": "/tech-leadership/roadmap-review/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Roadmap Review",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/capacity-plan",
-          "name": "tlrCapacityPlan",
-          "component": "/tech-leadership/capacity-plan/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Capacity Plan",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/capacity-cost",
-          "name": "tlrCapacityCost",
-          "component": "/tech-leadership/capacity-cost/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Capacity & Cost (FinOps)",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/maturity-model",
-          "name": "tlrMaturityModel",
-          "component": "/tech-leadership/maturity-model/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Maturity Model",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/dora-metrics",
-          "name": "tlrDoraMetrics",
-          "component": "/tech-leadership/dora-metrics/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "DORA Metrics",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/mentorship-growth",
-          "name": "tlrMentorshipGrowth",
-          "component": "/tech-leadership/mentorship-growth/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Mentorship & Growth",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/project-handoffs",
-          "name": "tlrProjectHandoffs",
-          "component": "/tech-leadership/project-handoffs/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Project Handoffs",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/dependency-adoption",
-          "name": "tlrDependencyAdoption",
-          "component": "/tech-leadership/dependency-adoption/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Dependency Adoption",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/project-bootstrap",
-          "name": "tlrProjectBootstrap",
-          "component": "/tech-leadership/project-bootstrap/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Project Bootstrap",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/tech-leadership/knowledge-evolution",
-          "name": "tlrKnowledgeEvolution",
-          "component": "/tech-leadership/knowledge-evolution/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Knowledge Evolution",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        }
-      ]
-    },
-    {
       "path": "/resume",
       "name": "resume",
       "component": "/resume/index",
@@ -674,103 +32,6 @@
         "isKeepAlive": true
       },
       "children": []
-    },
-    {
-      "path": "/story",
-      "name": "storyBoard",
-      "component": "/story/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Tickets",
-        "title": "Story Board",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": []
-    },
-    {
-      "path": "/rss",
-      "name": "rssFeeds",
-      "component": "",
-      "redirect": "/rss/all",
-      "meta": {
-        "icon": "Link",
-        "title": "RSS Feeds",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/rss/all",
-          "name": "rssAll",
-          "component": "/rss/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "All Items",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/rss/starred",
-          "name": "rssStarred",
-          "component": "/rss/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Star",
-            "title": "Starred",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/rss/unread",
-          "name": "rssUnread",
-          "component": "/rss/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Reading",
-            "title": "Unread",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/rss/scheduler",
-          "name": "rssScheduler",
-          "component": "/rss/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Setting",
-            "title": "Scheduler & Seeds",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        }
-      ]
     },
     {
       "path": "/system",
@@ -917,54 +178,6 @@
       },
       "children": [
         {
-          "path": "/dashboard/aiAnalytics",
-          "name": "dashAiAnalytics",
-          "component": "/dashboard/aiAnalytics/index",
-          "redirect": "",
-          "meta": {
-            "icon": "TrendCharts",
-            "title": "AI Analytics",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/dataVisualize",
-          "name": "dashDataVisualize",
-          "component": "/dashboard/dataVisualize/index",
-          "redirect": "",
-          "meta": {
-            "icon": "PieChart",
-            "title": "Data Visualize",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/engineeringMaturity",
-          "name": "dashEngineeringMaturity",
-          "component": "/dashboard/engineeringMaturity/index",
-          "redirect": "",
-          "meta": {
-            "icon": "DataAnalysis",
-            "title": "Engineering Maturity",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
           "path": "/dashboard/knowledgeBase",
           "name": "dashKnowledgeBase",
           "component": "/dashboard/knowledgeBase/index",
@@ -981,54 +194,6 @@
           "children": []
         },
         {
-          "path": "/dashboard/organization",
-          "name": "dashOrganization",
-          "component": "/dashboard/organization/index",
-          "redirect": "",
-          "meta": {
-            "icon": "OfficeBuilding",
-            "title": "Organization",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/performance",
-          "name": "dashPerformance",
-          "component": "/dashboard/performance/index",
-          "redirect": "",
-          "meta": {
-            "icon": "DataLine",
-            "title": "Performance",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/ragAnalytics",
-          "name": "dashRagAnalytics",
-          "component": "/dashboard/ragAnalytics/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Histogram",
-            "title": "RAG Analytics",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
           "path": "/dashboard/rssContent",
           "name": "dashRssContent",
           "component": "/dashboard/rssContent/index",
@@ -1036,54 +201,6 @@
           "meta": {
             "icon": "Notebook",
             "title": "RSS Content",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/rssSources",
-          "name": "dashRssSources",
-          "component": "/dashboard/rssSources/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Connection",
-            "title": "RSS Sources",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/servicePerformance",
-          "name": "dashServicePerformance",
-          "component": "/dashboard/servicePerformance/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Monitor",
-            "title": "Service Performance",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "children": []
-        },
-        {
-          "path": "/dashboard/systemHealth",
-          "name": "dashSystemHealth",
-          "component": "/dashboard/systemHealth/index",
-          "redirect": "",
-          "meta": {
-            "icon": "CircleCheck",
-            "title": "System Health",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -2002,6 +1119,293 @@
       ]
     },
     {
+      "path": "/componentDemo",
+      "name": "componentDemo",
+      "component": "",
+      "redirect": "/componentDemo/index",
+      "meta": {
+        "icon": "Box",
+        "title": "Component Demo",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/componentDemo/index",
+          "name": "componentDemoIndex",
+          "component": "/componentDemo/index",
+          "redirect": "",
+          "meta": {
+            "title": "Overview",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/proTable",
+          "name": "componentDemoProTable",
+          "component": "/componentDemo/proTable/index",
+          "redirect": "",
+          "meta": {
+            "title": "ProTable",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/echarts",
+          "name": "componentDemoEcharts",
+          "component": "/componentDemo/echarts/index",
+          "redirect": "",
+          "meta": {
+            "title": "ECharts",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/searchForm",
+          "name": "componentDemoSearchForm",
+          "component": "/componentDemo/searchForm/index",
+          "redirect": "",
+          "meta": {
+            "title": "SearchForm",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/selectFilter",
+          "name": "componentDemoSelectFilter",
+          "component": "/componentDemo/selectFilter/index",
+          "redirect": "",
+          "meta": {
+            "title": "SelectFilter",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/selectIcon",
+          "name": "componentDemoSelectIcon",
+          "component": "/componentDemo/selectIcon/index",
+          "redirect": "",
+          "meta": {
+            "title": "SelectIcon",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/svgIcon",
+          "name": "componentDemoSvgIcon",
+          "component": "/componentDemo/svgIcon/index",
+          "redirect": "",
+          "meta": {
+            "title": "SvgIcon",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/treeFilter",
+          "name": "componentDemoTreeFilter",
+          "component": "/componentDemo/treeFilter/index",
+          "redirect": "",
+          "meta": {
+            "title": "TreeFilter",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/upload",
+          "name": "componentDemoUpload",
+          "component": "/componentDemo/upload/index",
+          "redirect": "",
+          "meta": {
+            "title": "Upload",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/wangEditor",
+          "name": "componentDemoWangEditor",
+          "component": "/componentDemo/wangEditor/index",
+          "redirect": "",
+          "meta": {
+            "title": "WangEditor",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/importExcel",
+          "name": "componentDemoImportExcel",
+          "component": "/componentDemo/importExcel/index",
+          "redirect": "",
+          "meta": {
+            "title": "ImportExcel",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/errorMessage",
+          "name": "componentDemoErrorMessage",
+          "component": "/componentDemo/errorMessage/index",
+          "redirect": "",
+          "meta": {
+            "title": "ErrorMessage",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/loading",
+          "name": "componentDemoLoading",
+          "component": "/componentDemo/loading/index",
+          "redirect": "",
+          "meta": {
+            "title": "Loading",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/switchDark",
+          "name": "componentDemoSwitchDark",
+          "component": "/componentDemo/switchDark/index",
+          "redirect": "",
+          "meta": {
+            "title": "SwitchDark",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/grid",
+          "name": "componentDemoGrid",
+          "component": "/componentDemo/grid/index",
+          "redirect": "",
+          "meta": {
+            "title": "Grid",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/mermaidViewer",
+          "name": "componentDemoMermaidViewer",
+          "component": "/componentDemo/mermaidViewer/index",
+          "redirect": "",
+          "meta": {
+            "title": "MermaidViewer",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/knowledgeMetaStrip",
+          "name": "componentDemoKnowledgeMetaStrip",
+          "component": "/componentDemo/knowledgeMetaStrip/index",
+          "redirect": "",
+          "meta": {
+            "title": "KnowledgeMetaStrip",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        },
+        {
+          "path": "/componentDemo/ragSources",
+          "name": "componentDemoRagSources",
+          "component": "/componentDemo/ragSources/index",
+          "redirect": "",
+          "meta": {
+            "title": "RagSources",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "path": "/aiChat",
       "name": "aiChat",
       "component": "/aiChat/index",
@@ -2015,6 +1419,368 @@
         "isAffix": false,
         "isKeepAlive": true
       },
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/rag",
+      "name": "menu_rag",
+      "component": "",
+      "redirect": "/rag/retrieval",
+      "meta": {
+        "icon": "DataBoard",
+        "title": "RAG System",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 0,
+      "children": [
+        {
+          "key": null,
+          "path": "/rag/retrieval",
+          "name": "menu_ragRetrieval",
+          "component": "",
+          "redirect": "",
+          "meta": {
+            "icon": "Search",
+            "title": "Retrieval Explorer",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": null,
+          "path": "/rag/chat",
+          "name": "menu_ragChat",
+          "component": "",
+          "redirect": "",
+          "meta": {
+            "icon": "ChatDotRound",
+            "title": "RAG Chat",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": null,
+          "path": "/rag/compare",
+          "name": "menu_ragCompare",
+          "component": "",
+          "redirect": "",
+          "meta": {
+            "icon": "Switch",
+            "title": "RAG vs Baseline",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": null,
+          "path": "/rag/history",
+          "name": "menu_ragHistory",
+          "component": "",
+          "redirect": "",
+          "meta": {
+            "icon": "Timer",
+            "title": "Query History",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 0,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": null,
+      "path": "/knowledge",
+      "name": "menu_knowledge",
+      "component": "",
+      "redirect": "/pipeline",
+      "meta": {
+        "icon": "Reading",
+        "title": "Knowledge Base",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 21,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/pipeline",
+      "name": "menu_pipeline",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Guide",
+        "title": "Pipeline",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 0,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/domain",
+      "name": "menu_domain",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Connection",
+        "title": "Domain Indexes",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 1,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/governance",
+      "name": "menu_governance",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Setting",
+        "title": "Governance",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 2,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/roles",
+      "name": "menu_roles",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "User",
+        "title": "Role Index",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 3,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/navigation",
+      "name": "menu_navigation",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Compass",
+        "title": "Navigation",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 4,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/lifecycle",
+      "name": "menu_lifecycle",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Refresh",
+        "title": "Lifecycle",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 5,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/workflow",
+      "name": "menu_workflow",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "icon": "Operation",
+        "title": "Workflow",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 6,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/skills",
+      "name": "menu_skills",
+      "component": "/knowledge/skills/index",
+      "redirect": "",
+      "meta": {
+        "icon": "MagicStick",
+        "title": "Skills",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 7,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/aier",
+      "name": "menu_aier",
+      "component": "/knowledge/aier/index",
+      "redirect": "",
+      "meta": {
+        "icon": "Cpu",
+        "title": "AI Engineer",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/knowledge",
+      "order": 8,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/executiver",
+      "name": "menu_executiver",
+      "component": "",
+      "redirect": "/executiver",
+      "meta": {
+        "icon": "Medal",
+        "title": "Executive",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 22,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/executiver/home",
+      "name": "menu_executiver_home",
+      "component": "",
+      "redirect": "/executiver",
+      "meta": {
+        "icon": "HomeFilled",
+        "title": "Home",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/executiver",
+      "order": 0,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/executiver/rss",
+      "name": "menu_executiver_rss",
+      "component": "/executiver/rssManager",
+      "redirect": "",
+      "meta": {
+        "icon": "Connection",
+        "title": "RSS Manager",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/executiver",
+      "order": 1,
+      "children": []
+    },
+    {
+      "key": null,
+      "path": "/executiver/okr",
+      "name": "menu_executiver_okr",
+      "component": "/executiver/okr",
+      "redirect": "",
+      "meta": {
+        "icon": "Aim",
+        "title": "OKR",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": "/executiver",
+      "order": 2,
       "children": []
     }
   ],

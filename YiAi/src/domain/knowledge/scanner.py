@@ -30,26 +30,13 @@ logger = logging.getLogger(__name__)
 # to 20 bare-role dirs. Additional top-level directories discovered on disk are
 # appended alphabetically after these.
 _WELL_KNOWN_CATEGORIES = (
+    "producter",
+    "leader",
     "engineer",
-    "ai-engineer",
-    "designer",
-    "product-manager",
-    "tech-lead",
-    "data-engineer",
-    "devops",
-    "security-engineer",
-    "qa-engineer",
-    "code-reviewer",
-    "release-manager",
-    "api-designer",
-    "performance-engineer",
-    "accessibility-engineer",
-    "technical-writer",
-    "knowledge-curator",
-    "skill-author",
-    "executive",
-    "new-hire",
-    "oncall-sre",
+    "srer",
+    "executiver",
+    "aier",
+    "curator",
 )
 
 # Directories that should never be surfaced as knowledge categories.

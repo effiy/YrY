@@ -5,6 +5,7 @@
         <el-icon v-if="subItem.meta.icon">
           <component :is="subItem.meta.icon"></component>
         </el-icon>
+        <span v-else class="menu-first-letter">{{ subItem.meta.title?.charAt(0) }}</span>
         <span class="sle">{{ subItem.meta.title }}</span>
       </template>
       <SubMenu :menu-list="subItem.children" />
@@ -13,6 +14,7 @@
       <el-icon v-if="subItem.meta.icon">
         <component :is="subItem.meta.icon"></component>
       </el-icon>
+      <span v-else class="menu-first-letter">{{ subItem.meta.title?.charAt(0) }}</span>
       <template #title>
         <span class="sle">{{ subItem.meta.title }}</span>
       </template>
@@ -44,6 +46,16 @@ const handleClickMenu = (subItem: Menu.MenuOptions) => {
       color: #ffffff !important;
       background-color: var(--el-color-primary) !important;
     }
+  }
+  .menu-first-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
   }
 }
 .el-menu-item {

@@ -14,8 +14,7 @@
     >
       <!-- Table header buttons -->
       <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu <kbd class="mm-kbd">N</kbd></el-button>
-        <span class="mm-hint"><kbd>/</kbd> focus search · <kbd>?</kbd> help</span>
+        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu</el-button>
       </template>
       <!-- Menu icon -->
       <template #icon="scope">
@@ -89,7 +88,7 @@
           <el-input v-model="form.redirect" placeholder="redirect path" clearable />
         </el-form-item>
         <el-form-item label="Icon">
-          <el-input v-model="form.icon" placeholder="HomeFilled" clearable />
+          <SelectIcon v-model:icon-value="form.icon" />
         </el-form-item>
         <el-form-item label="External Link">
           <el-input v-model="form.isLink" placeholder="https://..." clearable />
@@ -149,6 +148,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "elem
 import { useAuthStore } from "@/stores/modules/auth";
 import { createMenu, updateMenu, deleteMenu } from "@/api/modules/system";
 import ProTable from "@/components/ProTable/index.vue";
+import SelectIcon from "@/components/SelectIcon/index.vue";
 import { ColumnProps } from "@/components/ProTable/interface";
 
 const proTable = ref();
@@ -346,6 +346,10 @@ async function handleSave() {
 
 // ── Delete ──
 async function handleDelete(row: any) {
+  if (!row.key) {
+    ElMessage.error("Cannot delete: menu document has no key field");
+    return;
+  }
   const childCount = row.children?.length ?? 0;
   const title = row.meta?.title ?? row.name;
   const message = childCount > 0

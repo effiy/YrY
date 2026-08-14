@@ -10,6 +10,27 @@ export function isMissingField(val: any): boolean {
   return val === null || val === undefined || val === "" || (Array.isArray(val) && val.length === 0);
 }
 
+/** Check if a file path represents a markdown file (has frontmatter-capable metadata). */
+export function isMarkdownFile(path: string): boolean {
+  return path?.toLowerCase().endsWith(".md") ?? false;
+}
+
+/** Modules excluded from data quality checks (e.g. auto-generated skill files). */
+const QUALITY_EXCLUDED_MODULES = new Set(["aier/skills"]);
+
+/** Check if a file is excluded from data quality checks based on its category/module. */
+export function isExcludedFromQuality(f: { category?: string; module?: string; path?: string }): boolean {
+  const modKey = `${f.category || ""}/${f.module || ""}`;
+  if (QUALITY_EXCLUDED_MODULES.has(modKey)) return true;
+  // Also check if the path starts with an excluded prefix
+  if (f.path) {
+    for (const excluded of QUALITY_EXCLUDED_MODULES) {
+      if (f.path.startsWith(excluded + "/")) return true;
+    }
+  }
+  return false;
+}
+
 /** Check if a field value is the literal "unknown" string (explicitly set, not missing). */
 export function isUnknownField(val: any): boolean {
   return typeof val === "string" && val === "unknown";
@@ -188,6 +209,7 @@ export function fileHealthIssues(f: KnowledgeFileSummary): string[] {
   if (isMissingField(f.review_cycle)) issues.push("Missing review cycle");
   if (isMissingField(f.roles)) issues.push("Missing roles");
   if (isMissingField(f.tags)) issues.push("Missing tags");
+  if (isMissingField(f.benefit)) issues.push("Missing benefit");
   if (isStaleFile(f)) issues.push("Stale");
   return issues;
 }
@@ -264,12 +286,14 @@ export function metaDisplayValue(val: string | undefined | null, field: string):
 /** Aggregate unknown + missing counts for data quality dashboards. */
 export function aggregateMissingStats(files: KnowledgeFileSummary[]): {
   no_status: number; no_type: number; no_lifecycle: number;
-  no_review_cycle: number; no_roles: number; no_tags: number;
+  no_review_cycle: number; no_roles: number; no_tags: number; no_benefit: number;
   unknown_status: number; unknown_type: number; unknown_lifecycle: number;
+  stale_count: number;
 } {
   let no_status = 0, no_type = 0, no_lifecycle = 0;
-  let no_review_cycle = 0, no_roles = 0, no_tags = 0;
+  let no_review_cycle = 0, no_roles = 0, no_tags = 0, no_benefit = 0;
   let unknown_status = 0, unknown_type = 0, unknown_lifecycle = 0;
+  let stale_count = 0;
   for (const f of files) {
     if (isMissingField(f.status)) no_status++;
     else if (isUnknownField(f.status)) unknown_status++;
@@ -280,8 +304,10 @@ export function aggregateMissingStats(files: KnowledgeFileSummary[]): {
     if (isMissingField(f.review_cycle)) no_review_cycle++;
     if (isMissingField(f.roles)) no_roles++;
     if (isMissingField(f.tags)) no_tags++;
+    if (isMissingField(f.benefit)) no_benefit++;
+    if (isStaleFile(f)) stale_count++;
   }
-  return { no_status, no_type, no_lifecycle, no_review_cycle, no_roles, no_tags, unknown_status, unknown_type, unknown_lifecycle };
+  return { no_status, no_type, no_lifecycle, no_review_cycle, no_roles, no_tags, no_benefit, unknown_status, unknown_type, unknown_lifecycle, stale_count };
 }
 
 // ── Filter Labels ──
@@ -296,6 +322,7 @@ export const FILTER_LABEL_MAP: Record<string, string> = {
   sub_module: "Sub-module",
   role: "Role",
   tag: "Tag",
+  benefit: "Benefit",
   tacit: "Tacit",
   stale: "Stale",
   size_min: "Min Size",
@@ -314,6 +341,7 @@ export const FILTER_DIMENSION_COLORS: Record<string, string> = {
   sub_module: "#73c0de",
   role: "#fc8452",
   tag: "#5470c6",
+  benefit: "#67c23a",
   tacit: "#9a60b4",
   stale: "#e6a23c",
   size_min: "#909399",

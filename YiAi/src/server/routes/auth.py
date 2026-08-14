@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from data.database import db
+from data.repository import query_documents
 from domain.auth import create_jwt, verify_password
 from shared.config import settings
 from shared.error_codes import ErrorCode
@@ -86,9 +87,8 @@ async def menu_list():
     are top-level; docs with `parent == "/<top>"` are children of that top.
     """
     await db.initialize()
-    collection = db.db["menus"]
-
-    docs = await collection.find({}, {"_id": 0}).to_list(length=None)
+    result = await query_documents({"cname": "menus", "limit": 1000, "orderBy": "order", "orderType": "asc"})
+    docs = result.get("list", [])
     if docs:
         return success(data=_build_menu_tree(docs))
 
@@ -105,6 +105,7 @@ def _build_menu_tree(docs: list[dict]) -> list[dict]:
         if not path:
             continue
         node = {
+            "key": d.get("key"),
             "path": path,
             "name": d.get("name") or path.lstrip("/"),
             "component": d.get("component") or "",

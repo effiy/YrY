@@ -2,7 +2,7 @@
 import { inject, ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import {
   ChatLineSquare, Picture, PriceTag, ChatDotRound, Search, Loading,
-  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Edit, Refresh, Download
+  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Edit, Refresh, Download, MagicStick
 } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
@@ -2445,7 +2445,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           @click="emit('toggle-web-search')"
         >
           <el-icon :size="14"><Search /></el-icon>
-          <span class="ct-pill-label">Web</span>
           <el-switch :model-value="webSearchToggle" size="small" @click.stop @update:model-value="emit('toggle-web-search')" />
         </div>
         <div
@@ -2453,7 +2452,7 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           :title="ragToggle ? 'RAG on — ' + (store.activeTools.find(t => t.name === 'rag_search')?.promptSnippet || 'answers grounded in context files') : 'RAG off — direct chat'"
           @click="emit('toggle-rag')"
         >
-          <span class="ct-pill-label">RAG</span>
+          <el-icon :size="14"><Cpu /></el-icon>
           <el-switch :model-value="ragToggle" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
         </div>
         <div
@@ -2461,22 +2460,8 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           :title="props.agentMode ? 'Agent mode on — multi-turn tool calling with observability' : 'Agent mode off — direct chat'"
           @click="emit('toggle-agent')"
         >
-          <el-icon :size="14"><Cpu /></el-icon>
-          <span class="ct-pill-label">Agent</span>
+          <el-icon :size="14"><MagicStick /></el-icon>
           <el-switch :model-value="props.agentMode" size="small" @click.stop @update:model-value="emit('toggle-agent')" />
-        </div>
-        <div v-if="props.agentMode" class="ct-pill ct-pill--max-turns" title="Max tool-calling turns per message">
-          <span class="ct-pill-label">Turns</span>
-          <el-input-number
-            :model-value="props.agentMaxTurns ?? 10"
-            :min="1"
-            :max="20"
-            :step="1"
-            size="small"
-            controls-position="right"
-            style="width: 72px"
-            @update:model-value="emit('update-agent-max-turns', $event as number)"
-          />
         </div>
         <div v-if="props.agentMode" class="ct-pill ct-pill--sys-prompt" title="Customize agent system prompt">
           <el-icon :size="14" @click="showSysPromptEditor = true"><Edit /></el-icon>
@@ -2707,12 +2692,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
 .ct-spin { animation: ct-spin 1s linear infinite; }
 @keyframes ct-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .ct-pill-label { line-height: 1; }
-.ct-pill--max-turns {
-  cursor: default;
-  gap: 4px;
-  padding: 0 6px;
-  &:hover { border-color: var(--el-border-color-light); }
-}
 
 // ── RAG override options (collapsible sub-row) ──
 .ct-rag-options {

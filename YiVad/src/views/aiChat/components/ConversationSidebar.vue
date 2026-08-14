@@ -134,13 +134,18 @@ const treeData = computed<TreeNode[]>(() => {
   return rootChildren;
 });
 
-const defaultExpandedKeys = computed(() => {
+function collectAllFolderKeys(nodes: TreeNode[]): string[] {
   const keys: string[] = [];
-  for (const n of treeData.value) {
-    if (n.type === "folder") keys.push(n.key);
+  for (const n of nodes) {
+    if (n.type === "folder") {
+      keys.push(n.key);
+      if (n.children) keys.push(...collectAllFolderKeys(n.children));
+    }
   }
   return keys;
-});
+}
+
+const defaultExpandedKeys = computed(() => collectAllFolderKeys(treeData.value));
 
 onMounted(() => {
   knowledgeStore.loadAll();
@@ -235,6 +240,7 @@ function onDragStart(e: DragEvent, data: TreeNode) {
       </div>
       <el-tree
         v-else
+        :key="knowledgeStore.searchQuery"
         :data="treeData"
         :props="{ children: 'children', label: 'label' }"
         :default-expanded-keys="defaultExpandedKeys"

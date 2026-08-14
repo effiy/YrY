@@ -18,7 +18,7 @@ import {
   formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
   isStaleFile, fileHealthLevel, fileHealthIssues, countByField, countByFieldWithMissing,
   getModuleClassSummary, isMissingField, isUnknownField, normalizeMetaValue,
-  MISSING_LABEL, aggregateMissingStats,
+  MISSING_LABEL, aggregateMissingStats, isMarkdownFile, isExcludedFromQuality,
   catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
   dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
   topPairs,
@@ -82,6 +82,7 @@ export function useKnowledgeBase() {
   const moduleDrillSearch = ref("");
   const expandedModuleKeys = ref<string[]>([]);
   const moduleTableRef = ref<any>(null);
+  const viewAttentionFiles = ref(false);
 
   // ── File Content Preview ──
   const fileContent = ref("");
@@ -112,6 +113,9 @@ export function useKnowledgeBase() {
   const showTagCloud = ref(false);
   const showRoleCloud = ref(false);
   const showReviewCompliance = ref(false);
+
+  // ── Needs Attention collapsible detail ──
+  const showAttentionDetail = ref(true);
 
   // ── Filter history for undo ──
   const filterHistory = ref<Record<string, string>[]>([]);
@@ -154,40 +158,108 @@ export function useKnowledgeBase() {
     return modules.length;
   });
 
-  const totalSizeFormatted = computed(() => {
-    const files = knowledgeData.value?.files ?? [];
-    const totalBytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
-    if (totalBytes < 1024) return totalBytes + " B";
-    if (totalBytes < 1048576) return (totalBytes / 1024).toFixed(1) + " KB";
-    return (totalBytes / 1048576).toFixed(1) + " MB";
+  const recentWeekCount = computed(() => weekFiles.value.length);
+
+  const recentWeekPct = computed(() => {
+    const total = knowledgeData.value?.total ?? 1;
+    return ((recentWeekCount.value / total) * 100).toFixed(1);
+  });
+
+  const stalePct = computed(() => {
+    const total = knowledgeData.value?.total ?? 1;
+    return (((knowledgeData.value?.health.stale_count ?? 0) / total) * 100).toFixed(1);
+  });
+
+  /** Review coverage using client-side stats (markdown only, excluding skills). */
+  const clientReviewCoveragePct = computed(() => {
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_review_cycle) / total) * 100);
   });
 
   // ── Computed: Data Quality ──
+  /** Weighted quality score using client-side stats (excludes skill modules).
+   *  status(25) + type(25) + lifecycle(25) + review_cycle(15) + roles(5) + tags(5) */
   const dataQualityScore = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round((dq.complete / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    const weights = { status: 25, type: 25, lifecycle: 25, review_cycle: 15, roles: 5, tags: 5 };
+    const fields: Array<{ key: string; weight: number }> = [
+      { key: "no_status", weight: weights.status },
+      { key: "no_type", weight: weights.type },
+      { key: "no_lifecycle", weight: weights.lifecycle },
+      { key: "no_review_cycle", weight: weights.review_cycle },
+      { key: "no_roles", weight: weights.roles },
+      { key: "no_tags", weight: weights.tags },
+    ];
+    let score = 0;
+    for (const f of fields) {
+      const missing = (s as any)[f.key] ?? 0;
+      score += ((total - missing) / total) * f.weight;
+    }
+    return Math.round(score);
   });
 
   const missingMetadataCount = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 0;
-    if (!dq) return 0;
-    return total - dq.complete;
+    const s = clientMissingStats.value;
+    return s.no_status + s.no_type + s.no_lifecycle + s.no_review_cycle + s.no_roles + s.no_tags;
   });
 
+  /** Per-category data quality breakdown (markdown files only, excluding skill modules). */
+  const qualityByCategory = computed(() => {
+    const files = knowledgeData.value?.files ?? [];
+    const cats = knowledgeData.value?.categories ?? [];
+    const mdFiles = files.filter(f => isMarkdownFile(f.path) && !isExcludedFromQuality(f));
+    return cats
+      .map(cat => {
+        const catFiles = mdFiles.filter(f => f.category === cat.name);
+        const total = catFiles.length || 1;
+        const missing = (field: string) => catFiles.filter(f => isMissingField((f as any)[field])).length;
+        const fields = ["status", "type", "lifecycle", "review_cycle", "roles", "tags"] as const;
+        let weightedScore = 0;
+        const weights: Record<string, number> = { status: 25, type: 25, lifecycle: 25, review_cycle: 15, roles: 5, tags: 5 };
+        for (const f of fields) {
+          const m = missing(f);
+          const fieldPct = (total - m) / total;
+          weightedScore += fieldPct * weights[f];
+        }
+        const totalMissing = fields.reduce((s, f) => s + missing(f), 0);
+        return {
+          name: cat.name,
+          total: catFiles.length,
+          score: Math.round(weightedScore),
+          totalMissing,
+          missingStatus: missing("status"),
+          missingType: missing("type"),
+          missingLifecycle: missing("lifecycle"),
+          missingReviewCycle: missing("review_cycle"),
+          missingRoles: missing("roles"),
+          missingTags: missing("tags"),
+        };
+      })
+      .sort((a, b) => a.score - b.score);
+  });
+
+  /** Categories with the worst data quality (lowest scores first). */
+  const worstCategories = computed(() =>
+    qualityByCategory.value.filter(c => c.score < 80).slice(0, 5)
+  );
+
   // ── Computed: Needs Attention Files ──
-  /** Files that need metadata fixes: missing or unknown status/type/lifecycle, no review cycle, stale. */
+  /** Files that need metadata fixes: only markdown files with missing or unknown fields, or stale. Excludes auto-generated skill files. */
   const needsAttentionFiles = computed(() => {
     const files = knowledgeData.value?.files ?? [];
     return files.filter(f =>
-      isMissingField(f.status) || isUnknownField(f.status) ||
-      isMissingField(f.type) || isUnknownField(f.type) ||
-      isMissingField(f.lifecycle) || isUnknownField(f.lifecycle) ||
-      isMissingField(f.review_cycle) ||
-      isMissingField(f.roles) ||
-      isStaleFile(f)
+      isMarkdownFile(f.path) && !isExcludedFromQuality(f) && (
+        isMissingField(f.status) || isUnknownField(f.status) ||
+        isMissingField(f.type) || isUnknownField(f.type) ||
+        isMissingField(f.lifecycle) || isUnknownField(f.lifecycle) ||
+        isMissingField(f.review_cycle) ||
+        isMissingField(f.roles) ||
+        isMissingField(f.tags) ||
+        isMissingField(f.benefit) ||
+        isStaleFile(f)
+      )
     );
   });
 
@@ -196,72 +268,71 @@ export function useKnowledgeBase() {
     return (knowledgeData.value?.files ?? []).filter(f => isUnknownField(f.status) || isMissingField(f.status));
   });
 
-  /** Client-side aggregated missing/unknown stats for richer display. */
+  /** Client-side aggregated missing/unknown stats for markdown files only, excluding skill modules. */
   const clientMissingStats = computed(() => {
-    const files = knowledgeData.value?.files ?? [];
+    const files = (knowledgeData.value?.files ?? []).filter(f => isMarkdownFile(f.path) && !isExcludedFromQuality(f));
     return aggregateMissingStats(files);
   });
 
-  /** Summary of attention-needed breakdown. */
-  const attentionBreakdown = computed(() => {
+  const attentionPct = computed(() => {
+    const total = knowledgeData.value?.total ?? 1;
+    return Math.round((needsAttentionFiles.value.length / total) * 100);
+  });
+
+  const totalMissingCount = computed(() => {
+    const s = clientMissingStats.value;
+    return s.no_status + s.no_type + s.no_lifecycle + s.no_review_cycle + s.no_roles + s.no_tags + s.no_benefit;
+  });
+
+  const totalUnknownCount = computed(() => {
+    const s = clientMissingStats.value;
+    return s.unknown_status + s.unknown_type + s.unknown_lifecycle;
+  });
+
+  const hasMissingItems = computed(() => totalMissingCount.value > 0);
+
+  const hasUnknownItems = computed(() => totalUnknownCount.value > 0);
+
+  /** Total markdown files eligible for quality checks (excludes skill modules). */
+  const qualityEligibleTotal = computed(() => {
     const files = knowledgeData.value?.files ?? [];
-    const total = files.length || 1;
-    const missing = aggregateMissingStats(files);
-    return {
-      missingStatus: missing.no_status,
-      unknownStatus: missing.unknown_status,
-      missingType: missing.no_type,
-      unknownType: missing.unknown_type,
-      missingLifecycle: missing.no_lifecycle,
-      unknownLifecycle: missing.unknown_lifecycle,
-      missingReview: missing.no_review_cycle,
-      missingRoles: missing.no_roles,
-      missingTags: missing.no_tags,
-      total,
-      attentionPct: Math.round((needsAttentionFiles.value.length / total) * 100),
-    };
+    return files.filter(f => isMarkdownFile(f.path) && !isExcludedFromQuality(f)).length || 1;
   });
 
   const statusCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_status) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_status) / total) * 100);
   });
 
   const typeCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_type) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_type) / total) * 100);
   });
 
   const lifecycleCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_lifecycle) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_lifecycle) / total) * 100);
   });
 
   const reviewCycleCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_review_cycle) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_review_cycle) / total) * 100);
   });
 
   const rolesCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_roles) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_roles) / total) * 100);
   });
 
   const tagsCompletenessPct = computed(() => {
-    const dq = knowledgeData.value?.data_quality;
-    const total = knowledgeData.value?.total ?? 1;
-    if (!dq) return 0;
-    return Math.round(((total - dq.no_tags) / total) * 100);
+    const s = clientMissingStats.value;
+    const total = qualityEligibleTotal.value;
+    return Math.round(((total - s.no_tags) / total) * 100);
   });
 
   // ── Computed: Module Drill Data ──
@@ -378,6 +449,9 @@ export function useKnowledgeBase() {
   });
 
   const drillTableData = computed(() => {
+    if (viewAttentionFiles.value) {
+      return needsAttentionFiles.value;
+    }
     if (drillView.value === "recent") {
       return filteredFiles.value
         .filter(f => f.updated)
@@ -932,7 +1006,7 @@ export function useKnowledgeBase() {
             if (val === "__missing__") { if (f.review_cycle) return false; }
             else if (!val) { if (!f.review_cycle) return false; }
             else { if (f.review_cycle !== val) return false; }
-          } else if (key === "status" || key === "type" || key === "lifecycle" || key === "tags" || key === "roles") {
+          } else if (key === "status" || key === "type" || key === "lifecycle" || key === "tags" || key === "roles" || key === "benefit") {
             if (val === "__missing__") {
               const v = (f as any)[key];
               if (Array.isArray(v) ? v.length > 0 : !!v) return false;
@@ -1057,6 +1131,8 @@ export function useKnowledgeBase() {
       setFilter("roles", "__missing__");
     } else if (field === "tags") {
       setFilter("tags", "__missing__");
+    } else if (field === "benefit") {
+      setFilter("benefit", "__missing__");
     }
   }
 
@@ -1065,6 +1141,15 @@ export function useKnowledgeBase() {
     activeFilter.value = cat ? { category: cat } : {};
     activeSubCategory.value = "";
     drillPage.value = 1;
+  }
+
+  function showAllAttentionFiles() {
+    clearAllFilters();
+    viewAttentionFiles.value = true;
+    viewMode.value = "files";
+    fileViewMode.value = "table";
+    drillPage.value = 1;
+    setTimeout(() => scrollToDrillDown(), 100);
   }
 
   function clearAllFilters() {
@@ -1076,6 +1161,7 @@ export function useKnowledgeBase() {
     searchText.value = "";
     activeTimeFilter.value = "";
     browseAllFiles.value = false;
+    viewAttentionFiles.value = false;
     searchMode.value = "title";
     contentSearchResults.value = [];
     selectedFile.value = null;
@@ -1220,6 +1306,28 @@ export function useKnowledgeBase() {
       title: row.title || row.path.split("/").pop() || "Knowledge file",
       pageContent: `File: ${row.path}\nCategory: ${row.category}\nModule: ${row.module}\nStatus: ${row.status}\nLifecycle: ${row.lifecycle}\nType: ${row.type}`,
       tags: [`ctx:${row.path}`, `file:${row.path}`, "knowledge", `cat:${row.category}`, `mod:${row.module}`],
+      sourceUrl: `/dashboard/knowledgeBase`,
+    });
+  }
+
+  /** Open aiChat with a pre-filled prompt to fix missing metadata on the filtered files. */
+  async function fixMetadataWithAgent() {
+    const dq = knowledgeData.value?.data_quality;
+    const files = needsAttentionFiles.value.slice(0, 20);
+    const missingSummary = [
+      dq?.no_status ? `- ${dq.no_status} files missing status` : "",
+      dq?.no_type ? `- ${dq.no_type} files missing type` : "",
+      dq?.no_lifecycle ? `- ${dq.no_lifecycle} files missing lifecycle` : "",
+      dq?.no_review_cycle ? `- ${dq.no_review_cycle} files missing review_cycle` : "",
+      dq?.no_roles ? `- ${dq.no_roles} files missing roles` : "",
+      dq?.no_tags ? `- ${dq.no_tags} files missing tags` : "",
+      dq?.no_benefit ? `- ${dq.no_benefit} files missing benefit` : "",
+    ].filter(Boolean).join("\n");
+    const fileList = files.map(f => `- ${f.path} (missing: ${fileHealthIssues(f).join(", ")})`).join("\n");
+    await openInAiChat({
+      title: "Fix knowledge base metadata",
+      pageContent: `Help me fix missing metadata in the knowledge base.\n\nCurrent Data Quality: ${dataQualityScore.value}%\n\nMissing fields:\n${missingSummary}\n\nAffected files (first ${files.length}):\n${fileList}\n\nFor each file, read its content, determine appropriate frontmatter values, and use db_update on the knowledge_files collection to add the missing fields.`,
+      tags: ["knowledge", "metadata-fix", "data-quality"],
       sourceUrl: `/dashboard/knowledgeBase`,
     });
   }
@@ -1451,6 +1559,13 @@ export function useKnowledgeBase() {
     document.removeEventListener("keydown", onGlobalKeydown);
   });
 
+  /** CSS class for quality mini-card based on completeness percentage. */
+  function qualityCardClass(pct: number): string {
+    if (pct >= 80) return "qmc-healthy";
+    if (pct >= 50) return "qmc-warn";
+    return "qmc-poor";
+  }
+
   // ── Return ──
   return {
     // State
@@ -1465,15 +1580,17 @@ export function useKnowledgeBase() {
     drillDownRef, detailPanelRef,
     chartPulseKey, drillHighlight, pulsingCard,
     showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
-    showTreeView, showTagCloud, showRoleCloud, showReviewCompliance,
-    filterHistory,
+    showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showAttentionDetail,
+    filterHistory, viewAttentionFiles,
     // Cross-filter
     ...xf,
     // Computed
     hasActiveFilter, showSubModuleGrid, isShowingTreeView,
-    topCategory, tacitPct, topRole, totalModules, totalSizeFormatted,
+    topCategory, tacitPct, topRole, totalModules, recentWeekCount, recentWeekPct, stalePct, clientReviewCoveragePct,
     dataQualityScore, missingMetadataCount,
-    needsAttentionFiles, unknownStatusFiles, clientMissingStats, attentionBreakdown,
+    qualityEligibleTotal, qualityByCategory, worstCategories,
+    needsAttentionFiles, unknownStatusFiles, clientMissingStats,
+    attentionPct, totalMissingCount, totalUnknownCount, hasMissingItems, hasUnknownItems,
     statusCompletenessPct, typeCompletenessPct, lifecycleCompletenessPct,
     reviewCycleCompletenessPct, rolesCompletenessPct, tagsCompletenessPct,
     moduleDrillData, filteredModuleDrillData,
@@ -1499,14 +1616,14 @@ export function useKnowledgeBase() {
     // Methods
     setFilter, removeFilter, undoLastFilter, selectTreeNode,
     pulseCard, toggleNoReviewFilter, setQualityFilter,
-    backToCategory, clearAllFilters,
+    backToCategory, clearAllFilters, showAllAttentionFiles,
     drillToModule, drillToSubdir, drillFromModule, onModuleExpandChange,
     navigateToModule, crossFilterSubModule,
     onTimeFilterChange, onTableSortChange, scrollToDrillDown,
     openFilePreview, addRecentlyViewed, clearRecentlyViewed,
     openFileInDialog, navigateDialogFile, navigateToFile,
     resolveRelatedNames, getModuleStats,
-    discussInAiChat, discussSearchResult,
+    discussInAiChat, discussSearchResult, fixMetadataWithAgent,
     deleteFile,
     exportCSV, onSearchInput, onChartClick,
     onDetailKeydown, fetchData,
@@ -1514,7 +1631,9 @@ export function useKnowledgeBase() {
     formatNumber, formatFileSize, formatRelativeTime, highlightSnippet,
     isStaleFile, fileHealthLevel, fileHealthIssues, countByField, countByFieldWithMissing,
     getModuleClassSummary, isMissingField, isUnknownField, normalizeMetaValue, MISSING_LABEL,
+    isMarkdownFile, isExcludedFromQuality,
     catColor, statusColor, statusTagType, lifecycleColor, lifecycleTagType, reviewCycleTagType,
     dataQualityColor, daysUntilDue, moduleHealthScore, FILTER_LABEL_MAP,
+    qualityCardClass,
   };
 }

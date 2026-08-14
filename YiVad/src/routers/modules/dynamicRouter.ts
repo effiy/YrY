@@ -43,6 +43,9 @@ export const initDynamicRouter = async () => {
         // Skip menu entries whose view file is missing — a static route with the same name/path will handle them, otherwise 404.
         if (!resolved) return;
         item.component = resolved;
+      } else if (item.redirect && !item.component) {
+        // Menu group headers — redirect-only, no component needed.
+        delete item.component;
       }
       if (item.meta.isFull) {
         router.addRoute(item as unknown as RouteRecordRaw);
