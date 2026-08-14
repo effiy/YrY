@@ -8,6 +8,58 @@
       </p>
     </header>
 
+    <section class="skills__agent">
+      <h2 class="skills__section-title skills__section-title--agent">
+        🤖 Server agent capabilities <span class="skills__section-badge">/agent/tools</span>
+      </h2>
+      <p class="skills__section-desc">
+        Live catalog exposed by the YiAi agent loop — {{ agentTools.length }} tools,
+        {{ agentSkills.length }} skills.
+      </p>
+
+      <div v-if="agentLoading" class="skills__agent-loading">Loading agent capabilities…</div>
+
+      <template v-else>
+        <h3 class="skills__agent-sub">Tools</h3>
+        <div v-for="(tools, group) in toolGroups" :key="group" class="skills__agent-group">
+          <div class="skills__agent-group-title">{{ group }}</div>
+          <div class="skills__grid">
+            <el-card v-for="tool in tools" :key="tool.name" class="skills__card skills__card--tool" shadow="never">
+              <div class="skills__card-head">
+                <span class="skills__card-icon">🔧</span>
+                <div class="skills__card-title">
+                  <h3 class="skills__card-name">{{ tool.name }}</h3>
+                  <span class="skills__card-handle">{{ tool.group }}</span>
+                </div>
+              </div>
+              <p class="skills__card-desc">{{ tool.description }}</p>
+              <div class="skills__card-meta">
+                <span v-if="tool.requires_confirmation" class="skills__card-tag skills__card-tag--confirm">needs confirmation</span>
+                <span v-else class="skills__card-tag skills__card-tag--auto">auto</span>
+              </div>
+            </el-card>
+          </div>
+        </div>
+
+        <h3 class="skills__agent-sub">Skills</h3>
+        <div class="skills__grid">
+          <el-card v-for="skill in agentSkills" :key="skill.name" class="skills__card skills__card--skill" shadow="never">
+            <div class="skills__card-head">
+              <span class="skills__card-icon">📄</span>
+              <div class="skills__card-title">
+                <h3 class="skills__card-name">{{ skill.name }}</h3>
+                <span v-if="skill.chip" class="skills__card-handle">{{ skill.chip }}</span>
+              </div>
+            </div>
+            <p class="skills__card-desc">{{ skill.description }}</p>
+            <div v-if="skill.tags?.length" class="skills__card-meta">
+              <span v-for="tag in skill.tags" :key="tag" class="skills__card-tag skills__card-tag--skill">{{ tag }}</span>
+            </div>
+          </el-card>
+        </div>
+      </template>
+    </section>
+
     <div class="skills__stats">
       <div
         v-for="cat in categories"
@@ -61,7 +113,13 @@
 </template>
 
 <script setup lang="ts" name="skillsHub">
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import {
+  listAgentTools,
+  type AgentSkillDescriptor,
+  type AgentToolDescriptor,
+} from "@/api/modules/agentService";
 import { skills, categories, skillsInCat, type SkillDef } from "./constants";
 
 const router = useRouter();
@@ -73,6 +131,29 @@ function lifecycleClass(lc: string) {
 function openSkill(skill: SkillDef) {
   router.push(`/skills/${skill.id}`);
 }
+
+// ── Server-side agent capabilities (deepseek-harness: capabilities = tools) ──
+const agentTools = ref<AgentToolDescriptor[]>([]);
+const agentSkills = ref<AgentSkillDescriptor[]>([]);
+const agentLoading = ref(true);
+
+const toolGroups = ref<Record<string, AgentToolDescriptor[]>>({});
+
+async function loadAgentTools() {
+  agentLoading.value = true;
+  const res = await listAgentTools();
+  agentTools.value = res.tools;
+  agentSkills.value = res.skills;
+  const groups: Record<string, AgentToolDescriptor[]> = {};
+  for (const tool of res.tools) {
+    const g = tool.group || "other";
+    (groups[g] ||= []).push(tool);
+  }
+  toolGroups.value = groups;
+  agentLoading.value = false;
+}
+
+onMounted(loadAgentTools);
 </script>
 
 <style scoped lang="scss">
@@ -252,5 +333,71 @@ function openSkill(skill: SkillDef) {
     background: #fef0f0;
     color: #f56c6c;
   }
+
+  &--confirm {
+    background: #fff7e6;
+    color: #f59e0b;
+  }
+
+  &--auto {
+    background: #e6f9f2;
+    color: #10b981;
+  }
+
+  &--skill {
+    background: #f4f4f5;
+    color: var(--el-text-color-secondary);
+  }
+}
+
+/* ── Server agent capabilities section ────────────────────────────────── */
+
+.skills__agent {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 10px;
+  background: var(--el-fill-color-blank);
+}
+
+.skills__section-title--agent {
+  border-left-color: #7c3aed;
+}
+
+.skills__section-badge {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: "SF Mono", "Fira Code", monospace;
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.skills__agent-loading {
+  padding: 16px 0;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+
+.skills__agent-sub {
+  margin: 12px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+}
+
+.skills__agent-group {
+  margin-bottom: 10px;
+}
+
+.skills__agent-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--el-text-color-placeholder);
+  margin: 0 0 6px 2px;
 }
 </style>

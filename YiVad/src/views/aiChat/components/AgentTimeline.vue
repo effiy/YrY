@@ -70,6 +70,47 @@ function previewContent(content?: string): string {
   return content.length > 120 ? content.slice(0, 120) + "..." : content;
 }
 
+// ── Capability-tool rich rendering (dsh: todo / skill / ask_user) ──
+// These three read-only/planning tools get first-class rendering instead of
+// the generic args/JSON dump, so the user reads a checklist, a Q&A pair, or a
+// loaded skill name — not a stringified parameter blob.
+
+type CapabilityKind = "todo" | "skill" | "ask";
+
+function capabilityKind(call: ToolCallEntry): CapabilityKind | null {
+  if (call.name === "todo_write") return "todo";
+  if (call.name === "skill_list" || call.name === "skill_load") return "skill";
+  if (call.name === "ask_user") return "ask";
+  return null;
+}
+
+interface TodoItemShape {
+  id: string;
+  content: string;
+  status: string;
+}
+
+function todoItems(call: ToolCallEntry): TodoItemShape[] {
+  const raw = call.args?.todos;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((t): t is Record<string, unknown> => !!t && typeof t === "object")
+    .map(t => ({
+      id: String(t.id ?? ""),
+      content: String(t.content ?? ""),
+      status: String(t.status ?? "pending"),
+    }));
+}
+
+function askQuestion(call: ToolCallEntry): string {
+  return String(call.args?.question ?? "");
+}
+
+function askOptions(call: ToolCallEntry): string[] {
+  const o = call.args?.options;
+  return Array.isArray(o) ? o.map(String) : [];
+}
+
 const copiedCallIdx = ref<number | null>(null);
 async function copyCallContent(content: string, idx: number) {
   try {
@@ -142,9 +183,34 @@ async function copyCallContent(content: string, idx: number) {
             <component :is="expandedCallIdx === idx ? Close : Check" />
           </el-icon>
         </div>
-        <div v-if="call.args && Object.keys(call.args).length" class="agent-timeline__call-args">
+        <div v-if="call.args && Object.keys(call.args).length && !capabilityKind(call)" class="agent-timeline__call-args">
           {{ formatArgs(call.args) }}
         </div>
+
+        <!-- Capability-tool rich rendering (todo / ask_user / skill) -->
+        <div v-if="capabilityKind(call) === 'todo' && todoItems(call).length" class="agent-timeline__capability">
+          <div
+            v-for="t in todoItems(call)"
+            :key="t.id"
+            class="agent-timeline__todo"
+            :class="`agent-timeline__todo--${t.status}`"
+          >
+            <span class="agent-timeline__todo-mark">{{ t.status === "completed" ? "✓" : t.status === "in_progress" ? "▶" : "○" }}</span>
+            <span class="agent-timeline__todo-text">{{ t.content }}</span>
+          </div>
+        </div>
+        <div v-else-if="capabilityKind(call) === 'ask'" class="agent-timeline__capability agent-timeline__ask">
+          <div class="agent-timeline__ask-q">Q: {{ askQuestion(call) }}</div>
+          <div v-if="askOptions(call).length" class="agent-timeline__ask-opts">
+            <span v-for="o in askOptions(call)" :key="o" class="agent-timeline__ask-opt">{{ o }}</span>
+          </div>
+          <div v-if="call.content" class="agent-timeline__ask-a">A: {{ call.content }}</div>
+        </div>
+        <div v-else-if="capabilityKind(call) === 'skill' && call.args?.name" class="agent-timeline__capability agent-timeline__skill">
+          <span class="agent-timeline__skill-label">Skill</span>
+          <span class="agent-timeline__skill-name">{{ call.args.name }}</span>
+        </div>
+
         <div v-if="call.error && expandedCallIdx !== idx" class="agent-timeline__call-error">
           {{ call.error }}
         </div>
@@ -355,6 +421,100 @@ async function copyCallContent(content: string, idx: number) {
   color: var(--el-text-color-regular);
   line-height: 1.4;
   word-break: break-word;
+}
+
+// ── Capability-tool rich rendering (todo / ask_user / skill) ──
+.agent-timeline__capability {
+  margin-top: 2px;
+}
+
+.agent-timeline__todo {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+
+  & + & {
+    margin-top: 1px;
+  }
+}
+
+.agent-timeline__todo-mark {
+  flex-shrink: 0;
+  width: 12px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.agent-timeline__todo-text {
+  font-size: 11px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.agent-timeline__todo--completed .agent-timeline__todo-mark {
+  color: var(--el-color-success);
+}
+
+.agent-timeline__todo--completed .agent-timeline__todo-text {
+  color: var(--el-text-color-placeholder);
+  text-decoration: line-through;
+}
+
+.agent-timeline__todo--in_progress .agent-timeline__todo-mark {
+  color: var(--el-color-primary);
+}
+
+.agent-timeline__todo--pending .agent-timeline__todo-mark {
+  color: var(--el-text-color-placeholder);
+}
+
+.agent-timeline__ask-q {
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--el-text-color-primary);
+  line-height: 1.4;
+}
+
+.agent-timeline__ask-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.agent-timeline__ask-opt {
+  font-size: 10px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.agent-timeline__ask-a {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.4;
+}
+
+.agent-timeline__skill {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.agent-timeline__skill-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--el-color-info);
+}
+
+.agent-timeline__skill-name {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 11px;
+  color: var(--el-text-color-primary);
 }
 
 .agent-timeline__call-detail {

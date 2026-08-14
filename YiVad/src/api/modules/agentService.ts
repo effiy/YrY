@@ -19,7 +19,8 @@ export interface AgentStreamEvent {
   timestamp: number;
   message?:
     | { role: string; content: string }
-    | { from: string; to: string };
+    | { from: string; to: string }
+    | { todos: TodoItem[] };
   turn_index?: number;
   tool_results?: Array<{
     name: string;
@@ -50,6 +51,10 @@ export interface AgentStreamEvent {
   tool_name?: string;
   tool_args?: Record<string, unknown>;
   confirmation_id?: string;
+  // ask_user event fields (Pi/dsh: interaction/ask-user)
+  question_id?: string;
+  question?: string;
+  options?: string[];
   // Tool execution update fields (Pi: partial progress)
   tool_call_id?: string;
   partial_result?: Record<string, unknown>;
@@ -59,6 +64,13 @@ export interface AgentStreamEvent {
 
 /** @deprecated Use AgentStreamEvent instead. */
 export type AgentEvent = AgentStreamEvent;
+
+/** A single todo item surfaced by the ``todo_update`` event. */
+export interface TodoItem {
+  id: string;
+  content: string;
+  status: "pending" | "in_progress" | "completed";
+}
 
 export interface AgentChatPayload {
   messages: Array<{ role: string; content: string }>;
@@ -114,6 +126,7 @@ export function streamAgentChat(
       ...(payload.images?.length ? { images: payload.images } : {}),
       ...(payload.session_id ? { session_id: payload.session_id } : {}),
       ...(payload.model_rotation?.length ? { model_rotation: payload.model_rotation } : {}),
+      ...(payload.model_fallback ? { model_fallback: payload.model_fallback } : {}),
       ...(payload.resume ? { resume: true } : {}),
     }),
     signal: controller.signal,
@@ -298,5 +311,117 @@ export async function followUpAgent(
     return data?.code === 0;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Answer an ask_user question the agent posed mid-run.
+ * The agent loop pauses after emitting ``ask_user`` and resumes with the answer
+ * as the tool result.
+ */
+export async function answerAgent(
+  questionId: string,
+  answer: string
+): Promise<boolean> {
+  const url = buildYiAiUrl("/agent/answer");
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...yiAiAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ question_id: questionId, answer }),
+    });
+    const data = await res.json();
+    return data?.code === 0;
+  } catch {
+    return false;
+  }
+}
+
+/** A server-side agent tool descriptor (from `/agent/tools`). */
+export interface AgentToolDescriptor {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+  requires_confirmation: boolean;
+  group: string;
+}
+
+/** A skill in the YiKnowledge skill suite (from `/agent/tools`). */
+export interface AgentSkillDescriptor {
+  name: string;
+  description: string;
+  tags: string[];
+  chip: string;
+  category: string;
+}
+
+/** Response shape of `/agent/tools`. */
+export interface AgentToolsResponse {
+  tools: AgentToolDescriptor[];
+  skills: AgentSkillDescriptor[];
+}
+
+/**
+ * Fetch the browsable server-side tool + skill catalog from `/agent/tools`
+ * (deepseek-harness style: "agent capabilities = tools"). Returns empty lists
+ * on failure so the discovery UI degrades to a plain empty state.
+ */
+export async function listAgentTools(): Promise<AgentToolsResponse> {
+  const url = buildYiAiUrl("/agent/tools");
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...yiAiAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json();
+    return {
+      tools: data?.data?.tools ?? [],
+      skills: data?.data?.skills ?? [],
+    };
+  } catch {
+    return { tools: [], skills: [] };
+  }
+}
+
+/** A single message in a persisted agent run trajectory (dsh: append-only log). */
+export interface AgentSessionMessage {
+  role: string;
+  content: string;
+  name?: string;
+  tool_call_id?: string;
+}
+
+/**
+ * Fetch the persisted agent run trajectory for a session from `/agent/session`
+ * (deepseek-harness style: append-only session log). Returns `null` when the
+ * server has no live trajectory for the session (expired / never persisted).
+ */
+export async function getAgentSession(
+  sessionId: string
+): Promise<AgentSessionMessage[] | null> {
+  const url = buildYiAiUrl("/agent/session");
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...yiAiAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    const data = await res.json();
+    return data?.data?.messages ?? null;
+  } catch {
+    return null;
   }
 }

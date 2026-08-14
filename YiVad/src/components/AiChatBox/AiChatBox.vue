@@ -12,6 +12,8 @@ import SessionStatusBar from "@/views/aiChat/components/SessionStatusBar.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
 import LlamaIndexPanel from "@/views/aiChat/components/LlamaIndexPanel.vue";
+import AgentToolsDrawer from "@/views/aiChat/components/AgentToolsDrawer.vue";
+import AgentSessionLogDialog from "@/views/aiChat/components/AgentSessionLogDialog.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -338,6 +340,9 @@ async function onDrop(e: DragEvent) {
         />
       </template>
     </template>
+
+    <AgentToolsDrawer />
+    <AgentSessionLogDialog />
   </div>
 </template>
 

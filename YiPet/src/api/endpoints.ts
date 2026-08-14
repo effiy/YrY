@@ -67,3 +67,14 @@ export const RAG = {
   FILE_QUERY: '/rag-file-query',
   FILE_CHAT: '/rag-file-chat',
 } as const;
+
+// ── Agent (Pi-inspired multi-turn tool-calling loop) ────────────────────
+
+export const AGENT = {
+  CHAT: '/agent/chat',
+  CONFIRM: '/agent/confirm',
+  STEER: '/agent/steer',
+  FOLLOW_UP: '/agent/follow-up',
+  ANSWER: '/agent/answer',
+  TOOLS: '/agent/tools',
+} as const;

@@ -5,6 +5,7 @@
  */
 
 import {
+  AppstoreOutlined,
   AudioOutlined,
   BookOutlined,
   BugOutlined,
@@ -22,6 +23,7 @@ import {
   ProfileOutlined,
   RobotOutlined,
   TagOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Badge, Button, Dropdown, Popover, Switch, Tooltip, Typography, Upload } from 'antd';
@@ -254,6 +256,29 @@ export const ChatToolbar: FC<ChatToolbarProps> = ({
             icon={<TagOutlined />}
             onClick={() => controller.openTagManager()}
             aria-label="Tag management"
+          />
+        </Tooltip>
+        <Tooltip
+          title={s.agentMode ? 'Agent mode ON (tool-calling loop)' : 'Agent mode OFF (plain chat)'}
+        >
+          <Button
+            type="text"
+            size="small"
+            icon={<ToolOutlined />}
+            color={s.agentMode ? 'primary' : 'default'}
+            variant={s.agentMode ? 'solid' : 'text'}
+            onClick={() => controller.toggleAgentMode()}
+            aria-label="Agent mode toggle"
+            aria-pressed={s.agentMode}
+          />
+        </Tooltip>
+        <Tooltip title="Browse agent capabilities (tools & skills)">
+          <Button
+            type="text"
+            size="small"
+            icon={<AppstoreOutlined />}
+            onClick={() => controller.openAgentTools()}
+            aria-label="Browse agent capabilities"
           />
         </Tooltip>
         <Tooltip

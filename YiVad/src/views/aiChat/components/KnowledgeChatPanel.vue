@@ -11,13 +11,15 @@ import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
-import { streamAgentChat, confirmAgentTool, type AgentStreamEvent } from "@/api/modules/agentService";
+import { streamAgentChat, confirmAgentTool, answerAgent, type AgentStreamEvent, type TodoItem } from "@/api/modules/agentService";
 import { webSearch, formatSearchResults } from "@/api/modules/searchService";
 import { getFaqs } from "@/api/modules/faqService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
 import ChatToolbar from "./ChatToolbar.vue";
 import DraftImageList from "./DraftImageList.vue";
 import RagSources from "@/components/RagSources.vue";
+import TodoPanel from "./TodoPanel.vue";
+import AskUserBanner from "./AskUserBanner.vue";
 import type { ChatMessage, FaqDocument } from "@/api/interface/yiweb";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
 
@@ -113,8 +115,11 @@ const agentMode = ref(false);
 const agentMaxTurns = ref(10);
 const agentSystemPrompt = ref("");
 const agentModelRotation = ref<string[]>([]);
+const agentModelFallback = ref<string[]>([]);
 /** Tool awaiting user approval — the backend agent loop is paused until decided. */
 const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, unknown>; confirmationId: string } | null>(null);
+const agentTodos = ref<TodoItem[]>([]);
+const pendingQuestion = ref<{ questionId: string; question: string; options: string[] } | null>(null);
 /** Stable per-file session key so /agent/confirm routes the decision to the right loop. */
 const sessionId = computed(() => `kchat:${props.filePath}`);
 
@@ -141,6 +146,7 @@ interface PanelSettings {
   agentMaxTurns: number;
   agentSystemPrompt: string;
   agentModelRotation: string[];
+  agentModelFallback: string[];
 }
 const settingsKey = computed(() => `${STORAGE_SETTINGS_PREFIX}${props.filePath}`);
 
@@ -155,6 +161,7 @@ function loadSettings() {
       agentMaxTurns.value = s.agentMaxTurns ?? 10;
       agentSystemPrompt.value = s.agentSystemPrompt ?? "";
       agentModelRotation.value = s.agentModelRotation ?? [];
+      agentModelFallback.value = s.agentModelFallback ?? [];
     }
   } catch { /* ignore */ }
 }
@@ -166,11 +173,12 @@ function saveSettings() {
       agentMode: agentMode.value,
       agentMaxTurns: agentMaxTurns.value,
       agentSystemPrompt: agentSystemPrompt.value,
-      agentModelRotation: agentModelRotation.value
+      agentModelRotation: agentModelRotation.value,
+      agentModelFallback: agentModelFallback.value
     }));
   } catch { /* ignore */ }
 }
-watch([ragEnabled, webSearchEnabled, agentMode, agentMaxTurns, agentSystemPrompt, agentModelRotation], () => saveSettings(), { deep: true });
+watch([ragEnabled, webSearchEnabled, agentMode, agentMaxTurns, agentSystemPrompt, agentModelRotation, agentModelFallback], () => saveSettings(), { deep: true });
 
 // ── Tags / context ────────────────────────────────────────────────────────
 
@@ -376,6 +384,8 @@ async function send() {
   sending.value = true;
   streamingText.value = "";
   pendingConfirmation.value = null;
+  agentTodos.value = [];
+  pendingQuestion.value = null;
 
   const images = [...draftImages.value];
   const userMsg: LocalMessage = {
@@ -429,6 +439,7 @@ async function send() {
       system_prompt: agentSystem,
       max_turns: agentMaxTurns.value,
       ...(agentModelRotation.value.length > 1 ? { model_rotation: agentModelRotation.value } : {}),
+      ...(agentModelFallback.value.length ? { model_fallback: agentModelFallback.value } : {}),
       ...(images.length ? { images } : {}),
       session_id: sessionId.value,
     }, {
@@ -492,6 +503,16 @@ async function send() {
               toolName: (event.tool_name as string) || "unknown",
               toolArgs: (event.tool_args as Record<string, unknown>) || {},
               confirmationId: (event.confirmation_id as string) || "",
+            };
+            break;
+          case "todo_update":
+            agentTodos.value = ((event.message as any)?.todos ?? []) as TodoItem[];
+            break;
+          case "ask_user":
+            pendingQuestion.value = {
+              questionId: (event.question_id as string) || "",
+              question: (event.question as string) || "",
+              options: (event.options as string[]) || [],
             };
             break;
           case "model_switch": {
@@ -618,6 +639,14 @@ async function rejectTool() {
   if (!conf) return;
   pendingConfirmation.value = null;
   await confirmAgentTool(sessionId.value, conf.confirmationId, false);
+}
+
+async function answerQuestion(answer: string) {
+  const q = pendingQuestion.value;
+  if (!q) return;
+  pendingQuestion.value = null;
+  if (!q.questionId) return;
+  await answerAgent(q.questionId, answer);
 }
 
 function clearInput() {
@@ -879,6 +908,18 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
 
     <!-- ── Input area (toolbar + input — matches ChatInput layout) ── -->
     <div class="kcp-input-area">
+      <!-- Todo list (Pi/dsh: todo capability) -->
+      <TodoPanel :todos="agentTodos" />
+
+      <!-- ask_user banner (Pi/dsh: interaction/ask-user) -->
+      <AskUserBanner
+        v-if="pendingQuestion"
+        :question-id="pendingQuestion.questionId"
+        :question="pendingQuestion.question"
+        :options="pendingQuestion.options"
+        @answer="answerQuestion"
+      />
+
       <!-- Tool confirmation banner (agent mode — the loop is paused until decided) -->
       <div v-if="pendingConfirmation" class="kcp-confirm">
         <div class="kcp-confirm-head">
@@ -903,6 +944,7 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
         :agent-max-turns="agentMaxTurns"
         :agent-system-prompt="agentSystemPrompt"
         :agent-model-rotation="agentModelRotation"
+        :agent-model-fallback="agentModelFallback"
         :selected-model="selectedModel"
         :available-models="store.availableModels"
         @toggle-faq="toggleFaq"
@@ -915,6 +957,7 @@ const isStreaming = (msg: LocalMessage, idx: number) =>
         @update-agent-max-turns="agentMaxTurns = $event"
         @update-agent-system-prompt="agentSystemPrompt = $event"
         @update-agent-model-rotation="agentModelRotation = $event"
+        @update-agent-model-fallback="agentModelFallback = $event"
         @update-selected-model="selectedModel = $event"
         @stop="stopSending"
         @remove-context-file="removeTag('ctx:' + $event)"

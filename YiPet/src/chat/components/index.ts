@@ -2,6 +2,8 @@
  * YiPet Chat — Components barrel export.
  *   import { ChatWindow, ChatHeader, ChatInput } from './components';
  */
+export { AgentPanel } from './AgentPanel/AgentPanel';
+export { AgentToolsDrawer } from './AgentToolsDrawer/AgentToolsDrawer';
 export { BugReportDialog } from './BugReportDialog/BugReportDialog';
 export { ChatHeader } from './ChatHeader/ChatHeader';
 export { ChatInput } from './ChatInput/ChatInput';

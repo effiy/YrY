@@ -33,6 +33,8 @@ function buildChatCSS() {
     'ChatSidebar/ChatSidebar.css',
     'ContextScopeBar/ContextScopeBar.css',
     'SessionStatusBar/SessionStatusBar.css',
+    'AgentPanel/AgentPanel.css',
+    'AgentToolsDrawer/AgentToolsDrawer.css',
   ];
 
   const parts: string[] = [];

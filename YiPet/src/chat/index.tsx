@@ -28,6 +28,7 @@ function initChatApp() {
   const api = createApiServices({ baseUrl: API_BASE });
   const controller = new ChatController(
     api.chat,
+    api.agent,
     api.sessions,
     api.wework,
     api.knowledge,

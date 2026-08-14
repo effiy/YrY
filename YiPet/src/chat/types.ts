@@ -3,6 +3,8 @@
  */
 
 import type {
+  AgentSkill,
+  AgentToolDescriptor,
   BugDocument,
   BugFrequency,
   BugPriority,
@@ -17,6 +19,7 @@ import type {
   RagDecomposeResponse,
   RagSource,
   RagStatusResponse,
+  TodoItem,
   WeWorkBot,
 } from '@/api/types';
 
@@ -67,6 +70,38 @@ export interface WindowState {
   width: number;
   height: number;
   isFullscreen: boolean;
+}
+
+// ── Agent (Pi-inspired tool-calling loop) ───────────────────────────────
+
+/** A single tool call in the live agent timeline. */
+export interface AgentToolCall {
+  id: string;
+  name: string;
+  status: 'running' | 'done' | 'error';
+  content?: string;
+  error?: string;
+}
+
+/** A tool call awaiting user approval (rendered as Approve/Reject banner). */
+export interface PendingConfirmation {
+  confirmationId: string;
+  toolName: string;
+  toolArgs: Record<string, unknown>;
+}
+
+/** An ask_user question the agent posed mid-run. */
+export interface PendingQuestion {
+  questionId: string;
+  question: string;
+  options: string[];
+}
+
+/** A structured run note surfaced as a chip (model_switch / agent_end / error). */
+export interface AgentNote {
+  id: number;
+  kind: 'model_switch' | 'agent_end' | 'error';
+  text: string;
 }
 
 // ── Chat State ──────────────────────────────────────────────────────────
@@ -230,6 +265,27 @@ export interface ChatState {
   /** Current streaming action type — controls RequestStatusButton label. */
   streamingType: '' | 'send' | 'regenerate' | 'resend';
   streamingPhase: '' | 'thinking' | 'retrieving' | 'streaming';
+  /** Agent mode — route sends through /agent/chat (tool-calling loop) instead
+   *  of the plain chat endpoint. Toggled from the toolbar. */
+  agentMode: boolean;
+  /** Live todo list surfaced by the agent's `todo_write` capability. */
+  agentTodos: TodoItem[];
+  /** Live tool-call timeline for the in-flight agent run. */
+  agentToolCalls: AgentToolCall[];
+  /** Tool call awaiting approval (Approve/Reject banner). */
+  pendingConfirmation: PendingConfirmation | null;
+  /** ask_user question awaiting an answer. */
+  pendingQuestion: PendingQuestion | null;
+  /** Structured run notes (model_switch / max_turns / error) — rendered as chips. */
+  agentNotes: AgentNote[];
+  /** Browsable server-side agent tools (from /agent/tools). Empty until loaded. */
+  agentTools: AgentToolDescriptor[];
+  /** Browsable skill catalog (from /agent/tools). Empty until loaded. */
+  agentSkills: AgentSkill[];
+  /** Whether the tool/skill browser drawer is open. */
+  agentToolsVisible: boolean;
+  /** True while the tool/skill catalog is being fetched. */
+  agentToolsLoading: boolean;
   /** Monotonic counter bumped during streaming to trigger auto-scroll. */
   scrollTick: number;
   /** Per-timestamp copy feedback state — '' or 'copied'. */

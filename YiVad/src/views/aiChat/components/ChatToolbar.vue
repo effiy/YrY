@@ -2,7 +2,7 @@
 import { inject, ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import {
   ChatLineSquare, Picture, PriceTag, ChatDotRound, Search, Loading,
-  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Edit, Refresh, Download, MagicStick
+  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Edit, Refresh, Download, MagicStick, Grid, Memo
 } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
@@ -36,10 +36,11 @@ const props = withDefaults(
     agentMaxTurns?: number;
     agentSystemPrompt?: string;
     agentModelRotation?: string[];
+    agentModelFallback?: string[];
     selectedModel?: string;
     availableModels?: string[];
   }>(),
-  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, webSearchToggle: false, ragHybrid: true, ragRerank: false, ragCitations: true, ragNumQueries: 1, ragChatMode: "condense_plus_context", ragCategory: "", ragTags: () => [], contextFiles: () => [], agentMode: false, agentMaxTurns: 10, agentSystemPrompt: "", agentModelRotation: () => [], selectedModel: "", availableModels: () => [] }
+  { faqActive: false, sending: false, streamingType: "", ragToggle: false, ragAvailable: false, webSearchToggle: false, ragHybrid: true, ragRerank: false, ragCitations: true, ragNumQueries: 1, ragChatMode: "condense_plus_context", ragCategory: "", ragTags: () => [], contextFiles: () => [], agentMode: false, agentMaxTurns: 10, agentSystemPrompt: "", agentModelRotation: () => [], agentModelFallback: () => [], selectedModel: "", availableModels: () => [] }
 );
 
 const emit = defineEmits<{
@@ -62,6 +63,7 @@ const emit = defineEmits<{
   (e: "update-agent-max-turns", turns: number): void;
   (e: "update-agent-system-prompt", prompt: string): void;
   (e: "update-agent-model-rotation", models: string[]): void;
+  (e: "update-agent-model-fallback", models: string[]): void;
   (e: "update-selected-model", model: string): void;
 }>();
 
@@ -154,6 +156,31 @@ function saveModelRotation() {
   emit("update-agent-model-rotation", models);
   showModelRotationEditor.value = false;
 }
+
+// ── Agent model fallback editor (Pi: escalate when the active model stalls) ──
+const showModelFallbackEditor = ref(false);
+const modelFallbackDraft = ref("");
+
+function openModelFallbackEditor() {
+  modelFallbackDraft.value = (props.agentModelFallback ?? []).join(", ");
+  showModelFallbackEditor.value = true;
+}
+
+function saveModelFallback() {
+  const models = modelFallbackDraft.value
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+  emit("update-agent-model-fallback", models);
+  showModelFallbackEditor.value = false;
+}
+
+// ── Model selector options (dedupe + always surface the active model) ──
+const modelOptions = computed(() => {
+  const list = [...(props.availableModels ?? [])];
+  if (props.selectedModel && !list.includes(props.selectedModel)) list.unshift(props.selectedModel);
+  return list;
+});
 
 // ── Prompt history sub-panel (Pi-inspired: recent prompts browser) ──
 // Singleton shared with ChatInput's ArrowUp/ArrowDown recall — pushes there
@@ -2401,8 +2428,25 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
       <el-tooltip content="WeCom bot settings" placement="bottom">
         <el-button circle size="default" :icon="ChatDotRound" @click="emit('open-wechat')" />
       </el-tooltip>
+      <el-tooltip content="Browse agent capabilities (tools & skills)" placement="bottom">
+        <el-button circle size="default" :icon="Grid" @click="store.openAgentToolsDrawer()" />
+      </el-tooltip>
+      <el-tooltip content="View agent session log (persisted trajectory)" placement="bottom">
+        <el-button circle size="default" :icon="Memo" @click="store.openAgentSessionLog()" />
+      </el-tooltip>
     </div>
     <div class="ct-right">
+      <!-- Model selector (bound to aiChat store selectedModel/availableModels) -->
+      <el-select
+        v-if="modelOptions.length"
+        :model-value="props.selectedModel"
+        size="small"
+        class="ct-model-select"
+        placeholder="Model"
+        @update:model-value="emit('update-selected-model', $event)"
+      >
+        <el-option v-for="m in modelOptions" :key="m" :label="m" :value="m" />
+      </el-select>
       <!-- Pills group: status toggles -->
       <div class="ct-pills-group">
         <el-popover
@@ -2470,6 +2514,10 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           <el-icon :size="14" @click="openModelRotationEditor"><Refresh /></el-icon>
           <span v-if="props.agentModelRotation?.length" class="ct-pill-label">{{ props.agentModelRotation.length }}⇄</span>
         </div>
+        <div v-if="props.agentMode" class="ct-pill ct-pill--model-fallback" :title="props.agentModelFallback?.length ? `Fallback models: ${props.agentModelFallback.join(' → ')}` : 'Configure fallback models (escalation when the active model stalls)'">
+          <el-icon :size="14" @click="openModelFallbackEditor"><ArrowLeft /></el-icon>
+          <span v-if="props.agentModelFallback?.length" class="ct-pill-label">{{ props.agentModelFallback.length }}↓</span>
+        </div>
         <!-- Agent system prompt editor dialog -->
         <el-dialog
           v-model="showSysPromptEditor"
@@ -2503,6 +2551,23 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           <template #footer>
             <el-button @click="showModelRotationEditor = false">Cancel</el-button>
             <el-button type="primary" @click="saveModelRotation">Save</el-button>
+          </template>
+        </el-dialog>
+        <!-- Agent model fallback editor dialog (Pi: escalate on stall) -->
+        <el-dialog
+          v-model="showModelFallbackEditor"
+          title="Agent Fallback Models"
+          width="480px"
+          :close-on-click-modal="false"
+        >
+          <p class="ct-dialog-hint">Comma-separated fallback models to escalate to when the active model stalls (narrates a tool call without executing it). Leave empty to use the server default.</p>
+          <el-input
+            v-model="modelFallbackDraft"
+            placeholder="e.g. qwen3-coder, qwen3.5"
+          />
+          <template #footer>
+            <el-button @click="showModelFallbackEditor = false">Cancel</el-button>
+            <el-button type="primary" @click="saveModelFallback">Save</el-button>
           </template>
         </el-dialog>
       </div>
@@ -2692,6 +2757,14 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
 .ct-spin { animation: ct-spin 1s linear infinite; }
 @keyframes ct-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .ct-pill-label { line-height: 1; }
+
+// ── Model selector ──
+.ct-model-select {
+  width: 160px;
+  :deep(.el-select__wrapper) {
+    border-radius: 14px;
+  }
+}
 
 // ── RAG override options (collapsible sub-row) ──
 .ct-rag-options {

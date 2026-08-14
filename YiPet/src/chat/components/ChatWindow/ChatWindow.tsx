@@ -12,6 +12,8 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import type { ChatController } from '@/chat/controller';
 import type { PageInfo } from '@/chat/types';
 import { getAntdTheme } from '@/shared/theme';
+import { AgentPanel } from '../AgentPanel/AgentPanel';
+import { AgentToolsDrawer } from '../AgentToolsDrawer/AgentToolsDrawer';
 import { BugReportDialog } from '../BugReportDialog/BugReportDialog';
 import { ChatHeader } from '../ChatHeader/ChatHeader';
 import { ChatInput } from '../ChatInput/ChatInput';
@@ -177,6 +179,7 @@ export function ChatWindow(props: ChatWindowProps) {
                   currentSessionMessageCount={messageCount}
                 />
               </div>
+              <AgentPanel controller={ctrl} />
               <SessionStatusBar controller={ctrl} />
               <Content className="yipet-chat-input-wrap">
                 <ChatInput controller={ctrl} />
@@ -195,6 +198,7 @@ export function ChatWindow(props: ChatWindowProps) {
           <RagDecomposeDialog controller={ctrl} />
           <BugReportDialog controller={ctrl} />
           <SessionSummaryDialog controller={ctrl} />
+          <AgentToolsDrawer controller={ctrl} />
 
           {!fullscreen && (
             <div

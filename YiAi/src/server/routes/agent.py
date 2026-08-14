@@ -37,6 +37,12 @@ _follow_up_last_access: Dict[str, float] = {}
 _confirmation_store: Dict[tuple, str] = {}
 _confirmation_last_access: Dict[tuple, float] = {}
 
+# ── Ask-user answer store (Pi/dsh: interaction/ask-user) ───────────────────
+# Keyed by question_id (globally unique per ask). The agent loop polls get_answer
+# while waiting; POST /agent/answer writes here. Consumed once by mark_answer_seen.
+_answer_store: Dict[str, str] = {}
+_answer_last_access: Dict[str, float] = {}
+
 def _cleanup_steering_store() -> None:
     """Remove entries older than 5 minutes."""
     now = time.time()
@@ -52,6 +58,10 @@ def _cleanup_steering_store() -> None:
     for k in stale_conf:
         _confirmation_store.pop(k, None)
         _confirmation_last_access.pop(k, None)
+    stale_ans = [k for k, t in _answer_last_access.items() if now - t > 300]
+    for k in stale_ans:
+        _answer_store.pop(k, None)
+        _answer_last_access.pop(k, None)
 
 
 def set_confirmation_decision(session_id: str, confirmation_id: str, approve: bool) -> None:
@@ -70,6 +80,23 @@ def mark_confirmation_seen(session_id: str, confirmation_id: str) -> None:
     """Consume a decision once the agent loop has read it."""
     _confirmation_store.pop((session_id, confirmation_id), None)
     _confirmation_last_access.pop((session_id, confirmation_id), None)
+
+
+def set_answer(question_id: str, answer: str) -> None:
+    """Record the user's answer to an ask_user question."""
+    _answer_last_access[question_id] = time.time()
+    _answer_store[question_id] = answer
+
+
+def get_answer(question_id: str) -> Optional[str]:
+    """Return the recorded answer or None if pending."""
+    return _answer_store.get(question_id)
+
+
+def mark_answer_seen(question_id: str) -> None:
+    """Consume an answer once the agent loop has read it."""
+    _answer_store.pop(question_id, None)
+    _answer_last_access.pop(question_id, None)
 
 
 def get_steering_messages(session_id: str) -> List[Dict[str, Any]]:
@@ -256,13 +283,49 @@ async def agent_confirm_route(
     return {"code": 0, "message": "ok", "data": {"decision": "approved" if approve else "rejected"}}
 
 
+@router.post("/agent/answer", operation_id="agent_answer")
+async def agent_answer_route(
+    question_id: str = Body(..., embed=True),
+    answer: str = Body(..., embed=True),
+):
+    """Answer an ask_user question the agent posed mid-run.
+
+    The agent loop pauses after emitting ``ask_user`` and polls this answer
+    (see ``domain/ai/agent.py:_wait_for_answer``). The answer becomes the tool
+    result content, so the model continues with the user's reply.
+    """
+    if not question_id or not answer.strip():
+        return {"code": 1, "message": "question_id and answer are required"}
+    set_answer(question_id, answer.strip())
+    logger.info(f"Agent ask_user answered {question_id}: {answer[:80]}")
+    return {"code": 0, "message": "ok", "data": {"answered": True}}
+
+
 @router.post("/agent/tools", operation_id="agent_tools")
 async def agent_tools_route():
-    """List available agent tools with their schemas."""
+    """List available agent tools + the skill catalog for capability discovery."""
     from domain.ai.tools import get_tool_registry
+    from domain.ai.skill_tool import list_skills
     registry = get_tool_registry()
-    tools = registry.get_function_definitions()
-    return {"code": 0, "message": "ok", "data": {"tools": tools}}
+    tools = registry.get_tool_catalog()
+    skills = list_skills()
+    return {"code": 0, "message": "ok", "data": {"tools": tools, "skills": skills}}
+
+
+@router.post("/agent/session", operation_id="agent_session")
+async def agent_session_route(session_id: str = Body(..., embed=True)):
+    """Fetch a persisted agent run trajectory (dsh: append-only session log).
+
+    Returns the full ``agent_messages`` list — including ``tool_result`` entries
+    (role/name/tool_call_id) saved at run end — so the UI can render a faithful
+    replay of what the agent did even after the in-memory history expired or the
+    server restarted. ``messages`` is ``null`` when no live trajectory exists.
+    """
+    if not session_id:
+        return {"code": 1, "message": "session_id is required"}
+    from domain.ai.agent import load_session_history
+    messages = await load_session_history(session_id)
+    return {"code": 0, "message": "ok", "data": {"session_id": session_id, "messages": messages}}
 
 
 @router.get("/models", operation_id="list_models")

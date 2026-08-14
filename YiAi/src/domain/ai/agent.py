@@ -39,6 +39,11 @@ from domain.ai.tools import (
     ToolResult,
     get_tool_registry,
 )
+from domain.ai.todo_tool import (
+    format_session_todos,
+    get_session_todos,
+    set_current_session_id,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +61,8 @@ _DEFAULT_CONTEXT_WINDOW = 8192
 _DEFAULT_MAX_TOOL_RESULT_CHARS = 6000
 _CONFIRMATION_TIMEOUT_S = 120  # how long the loop waits for a user approve/reject
 _CONFIRMATION_POLL_S = 1.5  # poll interval for the user's decision
+_ASK_TIMEOUT_S = 120  # how long the loop waits for a user answer to ask_user
+_ASK_POLL_S = 0.5  # poll interval for the user's answer
 
 # Substrings that mark a user message as a *write task* (mutate data) rather than
 # pure Q&A or a read-only query. Used by the task-completion nudge below: a run that
@@ -204,33 +211,55 @@ _MISSION_PREFIX = "[TASK] The user's concrete task"
 # had already made). Persist each run's full agent_messages — including
 # tool_result messages (rendered to the model as "[Tool result: <name>] …") —
 # per session, and let a resume call restore them and append only the user's
-# continuation. In-memory + TTL, matching the existing steer/follow-up stores.
+# continuation. MongoDB-backed (survives restart) with an in-memory read cache;
+# `tool_call_id` is preserved so restored tool_results keep their tool name.
 _session_history: Dict[str, List[Dict[str, Any]]] = {}
 _session_history_ts: Dict[str, float] = {}
 _SESSION_HISTORY_TTL = 3600.0  # seconds
 
 
-def save_session_history(session_id: str, messages: List["AgentMessage"]) -> None:
+async def save_session_history(session_id: str, messages: List["AgentMessage"]) -> None:
     """Persist a finished run's trajectory for later resume (no-op without session_id)."""
     if not session_id:
         return
-    _session_history[session_id] = [
-        {"role": m.role, "content": m.content, "name": m.name}
+    payload = [
+        {"role": m.role, "content": m.content, "name": m.name, "tool_call_id": m.tool_call_id}
         for m in messages
     ]
+    _session_history[session_id] = payload
     _session_history_ts[session_id] = time.time()
+    try:
+        from data.agent_sessions import save_agent_session
+        await save_agent_session(session_id, payload)
+    except Exception as e:  # MongoDB unavailable → degrade to in-memory only
+        logger.warning(f"Agent session {session_id!r} persist to MongoDB failed: {e}")
 
 
-def load_session_history(session_id: str) -> Optional[List[Dict[str, Any]]]:
-    """Return the persisted trajectory if present and not expired, else None."""
+async def load_session_history(session_id: str) -> Optional[List[Dict[str, Any]]]:
+    """Return the persisted trajectory if present and not expired, else None.
+
+    Read-through cache: a same-process hit returns the in-memory copy; on a miss
+    (e.g. after a restart) the MongoDB document is consulted. Expired trajectories
+    (older than _SESSION_HISTORY_TTL) are ignored either way.
+    """
     if not session_id:
         return None
     ts = _session_history_ts.get(session_id)
-    if ts is None or time.time() - ts > _SESSION_HISTORY_TTL:
+    if ts is not None and time.time() - ts <= _SESSION_HISTORY_TTL:
+        return _session_history.get(session_id)
+    if ts is not None:
         _session_history.pop(session_id, None)
         _session_history_ts.pop(session_id, None)
+    try:
+        from data.agent_sessions import load_agent_session
+        stored = await load_agent_session(session_id)
+    except Exception as e:
+        logger.warning(f"Agent session {session_id!r} load from MongoDB failed: {e}")
         return None
-    return _session_history.get(session_id)
+    if stored:
+        _session_history[session_id] = stored
+        _session_history_ts[session_id] = time.time()
+    return stored
 
 
 def _inject_mission_if_needed(
@@ -343,6 +372,8 @@ class AgentEventType(str, Enum):
     COMPACTION = "compaction"
     CONFIRMATION_REQUIRED = "confirmation_required"
     MODEL_SWITCH = "model_switch"
+    TODO_UPDATE = "todo_update"
+    ASK_USER = "ask_user"
     ERROR = "error"
 
 
@@ -370,6 +401,10 @@ class AgentEvent:
     tool_name: Optional[str] = None
     tool_args: Optional[Dict[str, Any]] = None
     confirmation_id: Optional[str] = None  # call id the user approves/rejects via /agent/confirm
+    # ask_user event (Pi/dsh: interaction/ask-user)
+    question_id: Optional[str] = None  # id the user answers via /agent/answer
+    question: Optional[str] = None
+    options: Optional[List[str]] = None
     # tool_execution_update event (Pi: partial progress)
     tool_call_id: Optional[str] = None
     partial_result: Optional[Dict[str, Any]] = None
@@ -410,6 +445,12 @@ class AgentEvent:
             payload["tool_args"] = self.tool_args
         if self.confirmation_id is not None:
             payload["confirmation_id"] = self.confirmation_id
+        if self.question_id is not None:
+            payload["question_id"] = self.question_id
+        if self.question is not None:
+            payload["question"] = self.question
+        if self.options is not None:
+            payload["options"] = self.options
         if self.tool_call_id is not None:
             payload["tool_call_id"] = self.tool_call_id
         if self.partial_result is not None:
@@ -637,6 +678,32 @@ async def _wait_for_confirmation(session_id: str, call: ToolCall, abort: asyncio
             return decision
         await asyncio.sleep(_CONFIRMATION_POLL_S)
     return "timeout"
+
+
+async def _wait_for_answer(question_id: str, abort: asyncio.Event) -> Optional[str]:
+    """Wait for the user's answer to an ``ask_user`` question.
+
+    The answer is recorded via ``POST /agent/answer`` and read from an
+    in-memory store in ``server/routes/agent.py`` (same pattern as confirmation).
+    Returns the answer string, or ``None`` on timeout/disconnect (the loop then
+    feeds the model a ``[USER DID NOT ANSWER]`` note).
+    """
+    if not question_id:
+        return None
+    try:
+        from server.routes.agent import get_answer, mark_answer_seen
+    except Exception:
+        return None
+    deadline = time.monotonic() + _ASK_TIMEOUT_S
+    while time.monotonic() < deadline:
+        if abort.is_set():
+            return None
+        answer = get_answer(question_id)
+        if answer is not None:
+            mark_answer_seen(question_id)
+            return answer
+        await asyncio.sleep(_ASK_POLL_S)
+    return None
 
 
 def _budget_warning(
@@ -1004,6 +1071,28 @@ async def run_agent_loop(
                     f"{cfg.max_turns - turn_index} left"
                 )
 
+        # ── Todo visibility (Pi/dsh: "model-visible ⟺ logged") ──────────
+        # Inject the current session todo list as a [TODOS] system note each turn,
+        # replacing any stale note from a prior turn. The list is plan state the
+        # model maintains via todo_write; re-injecting it keeps a multi-step task
+        # coherent across turns and after compaction. `[TODOS]` is a system
+        # message, so it can never shadow the user's task text.
+        _todo_note = format_session_todos(session_id) if session_id else None
+        _had_todo_note = any(
+            m.role == "system" and m.content.startswith("[TODOS]") for m in agent_messages
+        )
+        if _todo_note or _had_todo_note:
+            agent_messages = [
+                m for m in agent_messages
+                if not (m.role == "system" and m.content.startswith("[TODOS]"))
+            ]
+            if _todo_note:
+                agent_messages.append(AgentMessage(role="system", content=_todo_note))
+
+        # Make the session id visible to tools (todo_write) without threading it
+        # through every execute() call. Set before tool execution below.
+        set_current_session_id(session_id)
+
         yield await _emit(AgentEvent(
             type=AgentEventType.TURN_START,
             turn_index=turn_index,
@@ -1221,6 +1310,41 @@ async def run_agent_loop(
                     )))
                     continue
 
+                # ── ask_user (Pi/dsh: interaction/ask-user) ─────────────
+                # The agent wants to ask the user a question. Emit ASK_USER so the
+                # frontend renders the prompt, then block on the /agent/answer store
+                # (same poll pattern as confirmation). The answer becomes the tool
+                # result content, so the model continues with the user's reply.
+                if tool_def and call.name == "ask_user":
+                    question = str(call.arguments.get("question", "")).strip()
+                    raw_options = call.arguments.get("options") or []
+                    options = [str(o) for o in raw_options] if isinstance(raw_options, list) else []
+                    if not question:
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content="",
+                            error="ask_user requires a non-empty 'question' argument",
+                        )))
+                        continue
+                    qid = f"t{turn_index}:{uuid.uuid4().hex[:8]}"
+                    yield await _emit(AgentEvent(
+                        type=AgentEventType.ASK_USER,
+                        question_id=qid,
+                        question=question,
+                        options=options,
+                        turn_index=turn_index,
+                    ), on_event)
+                    answer = await _wait_for_answer(qid, abort)
+                    if answer is None:
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content="",
+                            error="[USER DID NOT ANSWER] — the user did not respond. Proceed with reasonable assumptions, or ask again.",
+                        )))
+                    else:
+                        _preflight.append((call, ToolResult(
+                            call_id=call.id, name=call.name, content=answer,
+                        )))
+                    continue
+
                 if cfg.before_tool_call:
                     hook_result = await cfg.before_tool_call(call, agent_messages)
                     if hook_result and hook_result.get("block"):
@@ -1374,6 +1498,17 @@ async def run_agent_loop(
                     metadata={"error": result.error, "duration_ms": result.duration_ms},
                 )
                 agent_messages.append(tr_msg)
+
+            # ── Todo update event (Pi/dsh: capability event) ────────────
+            # When the agent wrote the todo list this turn, surface the new list
+            # so the frontend can render it live. The list is also re-injected into
+            # context at the next turn start (see above).
+            if "todo_write" in _executed_tool_names and session_id:
+                yield await _emit(AgentEvent(
+                    type=AgentEventType.TODO_UPDATE,
+                    message={"todos": get_session_todos(session_id)},
+                    turn_index=turn_index,
+                ), on_event)
 
             total_tokens += turn_tokens
 
@@ -1731,7 +1866,7 @@ async def run_agent_loop(
         )
     # Persist the faithful trajectory (incl. tool_result names) so a later
     # "继续" resume in this session restores it instead of a text-only re-send.
-    save_session_history(session_id, agent_messages)
+    await save_session_history(session_id, agent_messages)
     yield await _emit(AgentEvent(
         type=AgentEventType.AGENT_END,
         stop_reason=final_stop_reason,
@@ -1992,7 +2127,7 @@ async def agent_chat_stream(
     # user's continuation message(s) come from this request. If no stored
     # history exists (server restarted / TTL), fall back to the request as-is.
     if resume and session_id:
-        stored = load_session_history(session_id)
+        stored = await load_session_history(session_id)
         if stored:
             base = list(stored)
             done = sorted({m["name"] for m in stored if m.get("role") == "tool_result" and m.get("name")})

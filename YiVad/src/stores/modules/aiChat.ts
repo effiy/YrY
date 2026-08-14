@@ -17,7 +17,7 @@ import { useSlashCommands } from "@/hooks/useSlashCommands";
 import { getSessions, getSession, upsertSession, deleteSession } from "@/api/modules/sessions";
 import { streamChat } from "@/api/modules/chatService";
 import { streamAgentChat } from "@/api/modules/agentService";
-import type { AgentStreamEvent } from "@/api/modules/agentService";
+import type { AgentStreamEvent, TodoItem } from "@/api/modules/agentService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
@@ -47,6 +47,7 @@ const STORAGE_AGENT_KEY = "aiChat.agentMode";
 const STORAGE_AGENT_MAX_TURNS_KEY = "aiChat.agentMaxTurns";
 const STORAGE_AGENT_SYSTEM_PROMPT_KEY = "aiChat.agentSystemPrompt";
 const STORAGE_AGENT_MODEL_ROTATION_KEY = "aiChat.agentModelRotation";
+const STORAGE_AGENT_MODEL_FALLBACK_KEY = "aiChat.agentModelFallback";
 const STORAGE_SELECTED_MODEL_KEY = "aiChat.selectedModel";
 const STORAGE_TEMPLATES_KEY = "aiChat.promptTemplates";
 const MAX_DRAFT_IMAGES = 4;
@@ -94,6 +95,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const agentSystemPrompt = ref(loadStr(STORAGE_AGENT_SYSTEM_PROMPT_KEY, ""));
   // Model rotation list for prepareNextTurn (Pi: switch models between turns).
   const agentModelRotation = ref<string[]>(loadJson(STORAGE_AGENT_MODEL_ROTATION_KEY, []));
+  // Ordered fallback models to escalate to when the active model stalls
+  // (narrates a tool call without executing it). Empty [] => server default.
+  const agentModelFallback = ref<string[]>(loadJson(STORAGE_AGENT_MODEL_FALLBACK_KEY, []));
   // Selected model for chat/agent calls (Pi: model selection). Persisted.
   const selectedModel = ref(loadStr(STORAGE_SELECTED_MODEL_KEY, DEFAULT_MODEL));
   // Available models fetched from YiAi (Pi: model list from server).
@@ -107,6 +111,10 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Surfaced as a banner in MessageList with Approve/Reject. confirmationId
   // maps to the backend tool-call id for POST /agent/confirm.
   const pendingConfirmation = ref<{ toolName: string; toolArgs: Record<string, any>; confirmationId: string; timestamp: number } | null>(null);
+  // Current session todo list (Pi/dsh: todo capability). Driven by todo_update events.
+  const agentTodos = ref<TodoItem[]>([]);
+  // Pending ask_user question (Pi/dsh: interaction/ask-user). Rendered as a banner.
+  const pendingQuestion = ref<{ questionId: string; question: string; options: string[] } | null>(null);
   const scrollTick = ref(0);
   const copyFeedback = ref<Record<string, string>>({});
   const feedback = ref<Record<number, AiChatFeedbackRating>>({});
@@ -204,6 +212,9 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const systemPrompt = ref("");
   const weChatVisible = ref(false);
   const llamaIndexVisible = ref(false);
+  // dsh: capability discovery (tools + skills) + append-only session-log viewer
+  const agentToolsDrawerVisible = ref(false);
+  const agentSessionLogVisible = ref(false);
   const batchMode = ref(false);
   const selectedKeys = ref<Set<string>>(new Set());
 
@@ -631,6 +642,22 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     llamaIndexVisible.value = !llamaIndexVisible.value;
   }
 
+  function openAgentToolsDrawer() {
+    agentToolsDrawerVisible.value = true;
+  }
+
+  function closeAgentToolsDrawer() {
+    agentToolsDrawerVisible.value = false;
+  }
+
+  function openAgentSessionLog() {
+    agentSessionLogVisible.value = true;
+  }
+
+  function closeAgentSessionLog() {
+    agentSessionLogVisible.value = false;
+  }
+
   async function addTag(name: string) {
     const trimmed = name.trim();
     const s = activeConversation.value;
@@ -678,6 +705,17 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     await confirmAgentTool(activeConversation.value.key, conf.confirmationId, false);
   }
 
+  // ── ask_user (Pi/dsh: interaction/ask-user) ──
+  /** Answer the pending ask_user question — the agent loop resumes with the answer. */
+  async function answerPendingQuestion(answer: string) {
+    const q = pendingQuestion.value;
+    if (!q) return;
+    pendingQuestion.value = null;
+    if (!q.questionId) return;
+    const { answerAgent } = await import("@/api/modules/agentService");
+    await answerAgent(q.questionId, answer);
+  }
+
   /** Fetch available models from YiAi server. */
   async function fetchModels() {
     if (modelsLoading.value) return;
@@ -705,6 +743,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Persist agent system prompt
   watch(agentSystemPrompt, (v) => saveStr(STORAGE_AGENT_SYSTEM_PROMPT_KEY, v));
   watch(agentModelRotation, (v) => saveJson(STORAGE_AGENT_MODEL_ROTATION_KEY, v), { deep: true });
+  watch(agentModelFallback, (v) => saveJson(STORAGE_AGENT_MODEL_FALLBACK_KEY, v), { deep: true });
   watch(selectedModel, (v) => saveStr(STORAGE_SELECTED_MODEL_KEY, v));
 
   function setSystemPrompt(text: string) {
@@ -1269,6 +1308,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       agentUsage.value = null;
       agentCompaction.value = null;
       pendingConfirmation.value = null;
+      agentTodos.value = [];
+      pendingQuestion.value = null;
 
       let currentTurnIdx = 0;
       let turnStartStreamLen = 0; // track streamed length at turn_start for thinkingText capture
@@ -1287,6 +1328,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
             .join("\n\n"),
           max_turns: agentMaxTurns.value,
           ...(agentModelRotation.value.length > 1 ? { model_rotation: agentModelRotation.value } : {}),
+          ...(agentModelFallback.value.length ? { model_fallback: agentModelFallback.value } : {}),
           ...(images.length ? { images } : {}),
           session_id: activeConversation.value?.key ?? "",
         },
@@ -1537,6 +1579,19 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
                 }
                 break;
               }
+              case "todo_update":
+                // Pi/dsh: the agent wrote its task list — reflect it live.
+                agentTodos.value = ((event.message as any)?.todos ?? []) as TodoItem[];
+                break;
+              case "ask_user":
+                // Pi/dsh: the agent paused to ask the user a question.
+                // AskUserBanner renders the prompt and calls answerPendingQuestion.
+                pendingQuestion.value = {
+                  questionId: (event.question_id as string) || "",
+                  question: (event.question as string) || "",
+                  options: (event.options as string[]) || [],
+                };
+                break;
               case "error":
                 onError(new Error(event.error ?? "Agent error"));
                 break;
@@ -2202,6 +2257,12 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     openLlamaIndex,
     closeLlamaIndex,
     toggleLlamaIndex,
+    agentToolsDrawerVisible,
+    openAgentToolsDrawer,
+    closeAgentToolsDrawer,
+    agentSessionLogVisible,
+    openAgentSessionLog,
+    closeAgentSessionLog,
     addTag,
     removeTag,
     setContextSwitchEnabled,
@@ -2249,11 +2310,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     agentEvents,
     agentMaxTurns,
     agentModelRotation,
+    agentModelFallback,
     agentUsage,
     agentCompaction,
     pendingConfirmation,
     approvePendingConfirmation,
     rejectPendingConfirmation,
+    agentTodos,
+    pendingQuestion,
+    answerPendingQuestion,
     agentSystemPrompt,
     selectedModel,
     availableModels,

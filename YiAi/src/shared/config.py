@@ -96,6 +96,7 @@ class Settings(BaseSettings):
     collection_oss_file_info: str = Field("oss_file_info", validation_alias="collection_oss_file_info")
     collection_static_files: str = Field("static_files", validation_alias="collection_static_files")
     collection_knowledge_files: str = Field("knowledge_files", validation_alias="collection_knowledge_files")
+    collection_agent_sessions: str = Field("agent_sessions", validation_alias="collection_agent_sessions")
 
     # OSS
     oss_access_key: str = Field("", validation_alias="oss_access_key")

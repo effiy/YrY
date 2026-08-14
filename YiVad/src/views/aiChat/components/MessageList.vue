@@ -2,6 +2,8 @@
 import { ref, watch, computed } from "vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import MessageBubble from "./MessageBubble.vue";
+import TodoPanel from "./TodoPanel.vue";
+import AskUserBanner from "./AskUserBanner.vue";
 
 const store = useAiChatStore();
 const container = ref<HTMLDivElement>();
@@ -51,6 +53,10 @@ function approveConfirmation() {
 function rejectConfirmation() {
   store.rejectPendingConfirmation();
 }
+
+function answerQuestion(answer: string) {
+  store.answerPendingQuestion(answer);
+}
 </script>
 
 <template>
@@ -65,6 +71,18 @@ function rejectConfirmation() {
         </span>
       </span>
     </div>
+
+    <!-- Todo list (Pi/dsh: todo capability) -->
+    <TodoPanel :todos="store.agentTodos" />
+
+    <!-- ask_user banner (Pi/dsh: interaction/ask-user) -->
+    <AskUserBanner
+      v-if="store.pendingQuestion"
+      :question-id="store.pendingQuestion.questionId"
+      :question="store.pendingQuestion.question"
+      :options="store.pendingQuestion.options"
+      @answer="answerQuestion"
+    />
 
     <!-- Tool confirmation banner (Pi-inspired: tool requires user approval) -->
     <div v-if="store.pendingConfirmation" class="ml-confirmation">

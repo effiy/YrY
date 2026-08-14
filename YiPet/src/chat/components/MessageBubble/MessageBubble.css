@@ -304,3 +304,47 @@
   opacity: 0.6;
   flex: 0 0 auto;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Streaming caret + code-copy buttons
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mb-markdown-wrap {
+  position: relative;
+}
+
+.mb-caret {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: text-bottom;
+  animation: mb-caret-blink 1s steps(2, start) infinite;
+}
+
+@keyframes mb-caret-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.mb-code-copy {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary, #d4d0e8);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+#yipet-chat-root .markdown-content pre:hover .mb-code-copy {
+  opacity: 1;
+}

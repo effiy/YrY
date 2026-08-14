@@ -159,6 +159,24 @@ class ToolRegistry:
             })
         return defs
 
+    def get_tool_catalog(self) -> List[Dict[str, Any]]:
+        """Return enriched tool descriptors for capability-discovery UIs.
+
+        Unlike ``get_function_definitions`` (which produces the LLM-facing
+        OpenAI schema), this exposes the confirmation flag + a coarse group so
+        a frontend can render a browsable registry of what the agent can do.
+        """
+        return [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "parameters": tool.parameters,
+                "requires_confirmation": tool.requires_confirmation,
+                "group": _group_for(tool.name),
+            }
+            for tool in self.get_enabled()
+        ]
+
     async def execute(
         self,
         call: ToolCall,
@@ -389,6 +407,24 @@ def get_tool_registry() -> ToolRegistry:
             register_data_tools(_registry)
         except Exception as e:  # pragma: no cover
             logger.warning(f"Data tools not registered: {e}")
+        # Capability tools (Pi/dsh parity): todo / skill / ask_user. Lazy import
+        # avoids a circular dependency with the agent loop (which reads the todo
+        # store and handles ask_user in its preflight).
+        try:
+            from domain.ai.todo_tool import register_todo_tool
+            register_todo_tool(_registry)
+        except Exception as e:  # pragma: no cover
+            logger.warning(f"Todo tool not registered: {e}")
+        try:
+            from domain.ai.skill_tool import register_skill_tool
+            register_skill_tool(_registry)
+        except Exception as e:  # pragma: no cover
+            logger.warning(f"Skill tools not registered: {e}")
+        try:
+            from domain.ai.ask_tool import register_ask_tool
+            register_ask_tool(_registry)
+        except Exception as e:  # pragma: no cover
+            logger.warning(f"Ask-user tool not registered: {e}")
     return _registry
 
 
@@ -400,6 +436,41 @@ def _format_file_size(size_bytes: int) -> str:
         return f"{size_bytes / 1024:.1f}KB"
     else:
         return f"{size_bytes / (1024 * 1024):.1f}MB"
+
+
+# Coarse grouping used only by capability-discovery UIs (`/agent/tools`).
+# Unknown tools fall back to "general".
+_TOOL_GROUPS: Dict[str, str] = {
+    "web_search": "search",
+    "web_fetch": "search",
+    "rag_search": "search",
+    "file_read": "files",
+    "file_write": "files",
+    "read": "files",
+    "write": "files",
+    "edit": "files",
+    "ls": "files",
+    "find": "files",
+    "grep": "files",
+    "bash": "files",
+    "db_list": "data",
+    "db_schema": "data",
+    "db_create": "data",
+    "db_update": "data",
+    "db_delete": "data",
+    "todo_write": "planning",
+    "skill_list": "capability",
+    "skill_load": "capability",
+    "ask_user": "capability",
+    "mcp_chat": "mcp",
+    "mcp_list_models": "mcp",
+    "mcp_health": "mcp",
+    "mcp_query_db": "mcp",
+}
+
+
+def _group_for(name: str) -> str:
+    return _TOOL_GROUPS.get(name, "general")
 
 
 def _register_builtin_tools(registry: ToolRegistry) -> None:

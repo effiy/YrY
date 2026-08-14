@@ -20,10 +20,10 @@ import {
   SendOutlined,
 } from '@ant-design/icons';
 import { Button, Modal, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChatController } from '@/chat/controller';
 import type { Message } from '@/chat/types';
-import { formatTime, renderMarkdown } from '@/chat/utils';
+import { addCodeCopyButtons, formatTime, renderMarkdown, runMermaid } from '@/chat/utils';
 import './MessageBubble.css';
 
 export interface MessageBubbleProps {
@@ -53,9 +53,22 @@ export function MessageBubble(props: MessageBubbleProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [editValue, setEditValue] = useState('');
 
+  const markdownRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (editOpen) setEditValue(msg.content || '');
   }, [editOpen, msg.content]);
+
+  // Post-process rendered markdown once streaming settles: add per-code-block
+  // copy buttons and render any mermaid diagrams. Skipped mid-stream so the
+  // DOM isn't decorated on every token delta.
+  useEffect(() => {
+    if (streaming) return;
+    const el = markdownRef.current;
+    if (!el) return;
+    addCodeCopyButtons(el);
+    void runMermaid(el);
+  }, [msg.content, streaming]);
 
   const onEditSave = () => {
     ctrl.editMessage(index, editValue);
@@ -95,17 +108,21 @@ export function MessageBubble(props: MessageBubbleProps) {
         )}
         {empty && !streaming ? (
           <div className="mb-empty" />
-        ) : streaming ? (
+        ) : streaming && !hasContent ? (
           <div className="mb-typing" aria-label="Generating">
             <span className="mb-dot" />
             <span className="mb-dot" />
             <span className="mb-dot" />
           </div>
         ) : (
-          <div
-            className="mb-markdown markdown-content"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content || '') }}
-          />
+          <div className="mb-markdown-wrap">
+            <div
+              ref={markdownRef}
+              className="mb-markdown markdown-content"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content || '') }}
+            />
+            {streaming && <span className="mb-caret" aria-hidden="true" />}
+          </div>
         )}
         {msg.error && <div className="mb-tag mb-tag--error">Generation failed</div>}
         {msg.aborted && !msg.error && <div className="mb-tag mb-tag--aborted">Stopped</div>}

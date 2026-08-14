@@ -15,7 +15,10 @@ const props = defineProps<{
     type: string;
     timestamp: number;
     turn_index?: number;
-    message?: { role: string; content: string } | { from: string; to: string };
+    message?:
+      | { role: string; content: string }
+      | { from: string; to: string }
+      | { todos: Array<{ id: string; content: string; status: string }> };
     tool_results?: Array<{ name: string; content: string; error?: string; duration_ms: number }>;
     phase?: string;
     delta?: string;
@@ -27,6 +30,9 @@ const props = defineProps<{
     saved_tokens?: number;
     tool_name?: string;
     tool_args?: Record<string, unknown>;
+    question_id?: string;
+    question?: string;
+    options?: string[];
   }>;
   turnSummaries: AgentTurnSummary[];
 }>();

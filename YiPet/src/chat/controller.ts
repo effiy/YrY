@@ -8,6 +8,7 @@
 
 import type { TreeDataNode } from 'antd';
 import type {
+  AgentService,
   BugService,
   ChatService,
   KnowledgeService,
@@ -17,6 +18,9 @@ import type {
 } from '@/api/services';
 import { detectPageTypeFromUrl, detectProjectFromUrl, makeBugKey } from '@/api/services/bug';
 import type {
+  AgentChatMessage,
+  AgentChatPayload,
+  AgentStreamEvent,
   BugFrequency,
   BugPriority,
   BugSeverity,
@@ -31,6 +35,7 @@ import type {
   RagDecomposeResponse,
   RagSource,
   RagStatusResponse,
+  TodoItem,
   WeWorkBot,
 } from '@/api/types';
 import { DEFAULT_MODEL } from './constants';
@@ -57,6 +62,7 @@ type NotifyHandler = (message: string, type: NotifyType) => void;
 export class ChatController {
   state: ChatState;
   private _chat: ChatService;
+  private _agent: AgentService;
   private _sessions: SessionService;
   private _wework: WeWorkService;
   private _knowledge: KnowledgeService;
@@ -78,8 +84,14 @@ export class ChatController {
   // Sidebar resize state
   private _sidebarResizeStart = { x: 0, startWidth: 0 };
 
+  // Agent tool-call timeline sequence (monotonic id source)
+  private _agentToolSeq = 0;
+  // Agent run-note sequence (monotonic id source)
+  private _agentNoteSeq = 0;
+
   constructor(
     chat: ChatService,
+    agent: AgentService,
     sessions: SessionService,
     wework: WeWorkService,
     knowledge: KnowledgeService,
@@ -89,6 +101,7 @@ export class ChatController {
     systemPrompt: string,
   ) {
     this._chat = chat;
+    this._agent = agent;
     this._sessions = sessions;
     this._wework = wework;
     this._knowledge = knowledge;
@@ -193,6 +206,16 @@ export class ChatController {
       streamingTargetTimestamp: null,
       streamingType: '',
       streamingPhase: '',
+      agentMode: false,
+      agentTodos: [],
+      agentToolCalls: [],
+      pendingConfirmation: null,
+      pendingQuestion: null,
+      agentNotes: [],
+      agentTools: [],
+      agentSkills: [],
+      agentToolsVisible: false,
+      agentToolsLoading: false,
       scrollTick: 0,
       copyFeedback: {},
       feedback: {},
@@ -338,6 +361,7 @@ export class ChatController {
             'ragScope',
             'ragScopeIsFile',
             'promptHistory',
+            'agentMode',
           ],
           (items) => resolve(items || {}),
         );
@@ -373,6 +397,9 @@ export class ChatController {
         this.state.promptHistory = (result.promptHistory as unknown[])
           .filter((s): s is string => typeof s === 'string')
           .slice(-100);
+      }
+      if (typeof result.agentMode === 'boolean') {
+        this.state.agentMode = result.agentMode;
       }
     } catch {
       /* ignore */
@@ -825,7 +852,11 @@ export class ChatController {
     const userIdx = this.state.messages.length - 2;
     this._emit();
 
-    await this._runStream(userIdx, petMsg.timestamp, 'send');
+    if (this.state.agentMode) {
+      await this._runAgentStream(userIdx, petMsg.timestamp);
+    } else {
+      await this._runStream(userIdx, petMsg.timestamp, 'send');
+    }
   };
 
   /**
@@ -976,6 +1007,236 @@ export class ChatController {
     }
   }
 
+  /**
+   * Agent-mode streaming helper — routes the conversation through the agent's
+   * tool-calling loop (`/agent/chat`) instead of the plain chat endpoint. The
+   * backend emits structured SSE events (thinking deltas, tool lifecycle,
+   * confirmation gates, todo updates, ask_user prompts) which we fold into the
+   * pet message + live timeline state.
+   */
+  private async _runAgentStream(userIdx: number, petTimestamp: number) {
+    const slice = this.state.messages.slice(0, userIdx + 1);
+    const lastUserMsg = slice[slice.length - 1];
+    const images =
+      lastUserMsg?.imageDataUrls ?? (lastUserMsg?.imageDataUrl ? [lastUserMsg.imageDataUrl] : []);
+    const sessionPageContent = this._currentPageContent();
+    const userContent =
+      this.state.contextEnabled && sessionPageContent
+        ? `${sessionPageContent}\n\n---\n\n${lastUserMsg?.content || ''}`
+        : lastUserMsg?.content || '';
+
+    this.state.streamingTargetTimestamp = petTimestamp;
+    this.state.streamingType = 'send';
+    this.state.isProcessing = true;
+    this.state.streamingPhase = 'thinking';
+    this.state.ragSources = [];
+    this.state.agentTodos = [];
+    this.state.agentToolCalls = [];
+    this.state.pendingConfirmation = null;
+    this.state.pendingQuestion = null;
+    this.state.agentNotes = [];
+    this._abortController = new AbortController();
+
+    let streamed = '';
+    let lastScrollAt = 0;
+    const SCROLL_THROTTLE_MS = 120;
+
+    const findPetIdx = () => this.state.messages.findIndex((m) => m.timestamp === petTimestamp);
+
+    const onToken = (token: string) => {
+      streamed += token;
+      this.state.streamingPhase = 'streaming';
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        this.state.messages[idx].content = streamed;
+        this.state.messages[idx].error = false;
+        this.state.messages[idx].aborted = false;
+      }
+      const now2 = Date.now();
+      if (now2 - lastScrollAt > SCROLL_THROTTLE_MS) {
+        lastScrollAt = now2;
+        this.state.scrollTick++;
+      }
+      this._emit();
+    };
+
+    // Send the full user-visible history so the agent has context. The agent's
+    // own multi-turn loop accumulates further on the backend keyed by session_id.
+    const messages: AgentChatMessage[] = [];
+    if (this.state.systemPrompt) {
+      messages.push({ role: 'system', content: this.state.systemPrompt });
+    }
+    for (const m of slice) {
+      if (m.type === 'user') {
+        messages.push({ role: 'user', content: m === lastUserMsg ? userContent : m.content });
+      } else if (m.type === 'pet' && (m.content || '').trim()) {
+        messages.push({ role: 'assistant', content: m.content });
+      }
+    }
+
+    try {
+      const payload: AgentChatPayload = {
+        messages,
+        model: DEFAULT_MODEL,
+        session_id: this._agentSessionId(),
+        images: images.length > 0 ? images : undefined,
+      };
+      for await (const chunk of this._agent.stream(payload, this._abortController.signal)) {
+        if (chunk.error) throw new Error(chunk.error);
+        if (chunk.done) break;
+        const ev = chunk.data as AgentStreamEvent | undefined;
+        if (!ev) continue;
+        this._handleAgentEvent(ev, onToken);
+      }
+
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        const final = streamed.trim() || 'Please continue.';
+        this.state.messages[idx].streaming = false;
+        this.state.messages[idx].content = final;
+      }
+      const target = this.state.sessions.find((s) => s.id === this.state.currentSessionId);
+      if (target) target.messageCount = this.state.messages.length;
+
+      this._persistMessages();
+      if (streamed.trim()) this._forwardToWeWorkBots(streamed);
+    } catch (err: unknown) {
+      const isAbort = (err as Error)?.name === 'AbortError';
+      const idx = findPetIdx();
+      if (idx >= 0) {
+        this.state.messages[idx].streaming = false;
+        if (isAbort) {
+          this.state.messages[idx].aborted = true;
+          this.state.messages[idx].content = streamed.trim() || 'Stopped';
+        } else {
+          this.state.messages[idx].error = true;
+          this.state.messages[idx].content =
+            streamed || `❌ ${(err as Error).message || 'Agent run failed'}`;
+        }
+      }
+      this._persistMessages();
+    } finally {
+      this.state.isProcessing = false;
+      this.state.streamingTargetTimestamp = null;
+      this.state.streamingType = '';
+      this.state.streamingPhase = '';
+      this.state.pendingConfirmation = null;
+      this.state.pendingQuestion = null;
+      this._abortController = null;
+      setTimeout(() => this.scrollToBottom(true), 50);
+      this._emit();
+    }
+  }
+
+  /** Fold one agent SSE event into the live pet message + timeline state. */
+  private _handleAgentEvent(ev: AgentStreamEvent, onToken: (token: string) => void) {
+    switch (ev.type) {
+      case 'thinking':
+        // Content deltas arrive twice (THINKING event + raw {data:{message}} frame).
+        // Accumulate from the structured event only to avoid double-counting.
+        if (ev.delta) onToken(ev.delta);
+        break;
+      case 'tool_execution_start': {
+        const name = ev.tool?.name || ev.tool_name || 'tool';
+        const existing = this.state.agentToolCalls.find(
+          (t) => t.name === name && t.status === 'running',
+        );
+        if (existing) existing.status = 'running';
+        else this.state.agentToolCalls.push({ id: `t${++this._agentToolSeq}`, name, status: 'running' });
+        this._emit();
+        break;
+      }
+      case 'tool_execution_end': {
+        const name = ev.tool?.name || ev.tool_name || 'tool';
+        const status = ev.tool?.error ? 'error' : 'done';
+        const running = this.state.agentToolCalls.find(
+          (t) => t.name === name && t.status === 'running',
+        );
+        if (running) {
+          running.status = status;
+          running.content = ev.tool?.content;
+          running.error = ev.tool?.error;
+        } else {
+          this.state.agentToolCalls.push({
+            id: `t${++this._agentToolSeq}`,
+            name,
+            status,
+            content: ev.tool?.content,
+            error: ev.tool?.error,
+          });
+        }
+        // A confirmation for this tool is now resolved (executed OR skipped).
+        if (this.state.pendingConfirmation?.toolName === name) {
+          this.state.pendingConfirmation = null;
+        }
+        this._emit();
+        break;
+      }
+      case 'confirmation_required': {
+        this.state.pendingConfirmation = {
+          confirmationId: ev.confirmation_id || '',
+          toolName: ev.tool_name || 'tool',
+          toolArgs: ev.tool_args || {},
+        };
+        this._emit();
+        break;
+      }
+      case 'todo_update': {
+        const msg = ev.message as { todos?: TodoItem[] } | undefined;
+        this.state.agentTodos = Array.isArray(msg?.todos) ? msg.todos : [];
+        this._emit();
+        break;
+      }
+      case 'ask_user': {
+        this.state.pendingQuestion = {
+          questionId: ev.question_id || '',
+          question: ev.question || '',
+          options: Array.isArray(ev.options) ? ev.options : [],
+        };
+        this._emit();
+        break;
+      }
+      case 'model_switch': {
+        const msg = ev.message as { from?: string; to?: string } | undefined;
+        if (msg?.from && msg?.to) {
+          this.state.agentNotes.push({
+            id: ++this._agentNoteSeq,
+            kind: 'model_switch',
+            text: `模型自动切换：${msg.from} → ${msg.to}`,
+          });
+          this._emit();
+        }
+        break;
+      }
+      case 'agent_end': {
+        if (ev.stop_reason === 'max_turns_reached') {
+          this.state.agentNotes.push({
+            id: ++this._agentNoteSeq,
+            kind: 'agent_end',
+            text: '已达到最大轮次，任务可能未完成。回复「继续」可接着完成。',
+          });
+          this._emit();
+        }
+        break;
+      }
+      case 'error': {
+        if (ev.error) {
+          this.state.agentNotes.push({
+            id: ++this._agentNoteSeq,
+            kind: 'error',
+            text: ev.error,
+          });
+          this._emit();
+        }
+        break;
+      }
+      default:
+        // turn_start/end, message_start/end, compaction, tool_execution_update,
+        // and raw {message} frames are ignored (content comes from `thinking`).
+        break;
+    }
+  }
+
   stopSending = () => {
     const targetTs = this.state.streamingTargetTimestamp;
     this._abortController?.abort();
@@ -995,6 +1256,86 @@ export class ChatController {
     }
     this._persistMessages();
     this._emit();
+  };
+
+  // ── Agent Mode ─────────────────────────────────────────────────────
+
+  /** Agent session key — shared with the backend's steering/confirmation stores. */
+  private _agentSessionId(): string {
+    return this.state.currentSessionId ? `yipet:${this.state.currentSessionId}` : '';
+  }
+
+  toggleAgentMode = () => {
+    const value = !this.state.agentMode;
+    this.state.agentMode = value;
+    this._persistSetting('agentMode', value);
+    this._emit();
+  };
+
+  /** Open the tool/skill browser drawer, lazily fetching the catalog once. */
+  openAgentTools = async () => {
+    this.state.agentToolsVisible = true;
+    this._emit();
+    if (this.state.agentTools.length || this.state.agentSkills.length) return;
+    if (this.state.agentToolsLoading) return;
+    this.state.agentToolsLoading = true;
+    this._emit();
+    try {
+      const data = await this._agent.listTools();
+      this.state.agentTools = data.tools ?? [];
+      this.state.agentSkills = data.skills ?? [];
+    } catch (err) {
+      this._notify((err as Error)?.message || 'Failed to load agent tools', 'error');
+    } finally {
+      this.state.agentToolsLoading = false;
+      this._emit();
+    }
+  };
+
+  closeAgentTools = () => {
+    this.state.agentToolsVisible = false;
+    this._emit();
+  };
+
+  approvePendingConfirmation = () => {
+    const c = this.state.pendingConfirmation;
+    if (!c) return;
+    this.state.pendingConfirmation = null;
+    this._emit();
+    this._agent.confirm(this._agentSessionId(), c.confirmationId, true).catch(() => {});
+    this._notify(`Approved ${c.toolName}`, 'success');
+  };
+
+  rejectPendingConfirmation = () => {
+    const c = this.state.pendingConfirmation;
+    if (!c) return;
+    this.state.pendingConfirmation = null;
+    this._emit();
+    this._agent.confirm(this._agentSessionId(), c.confirmationId, false).catch(() => {});
+    this._notify(`Rejected ${c.toolName}`, 'info');
+  };
+
+  answerPendingQuestion = (answer: string) => {
+    const q = this.state.pendingQuestion;
+    if (!q) return;
+    this.state.pendingQuestion = null;
+    this._emit();
+    this._agent.answer(q.questionId, answer).catch(() => {});
+    this._notify('Answer sent to agent', 'success');
+  };
+
+  /** Steer a running agent mid-turn (redirect without waiting for a fresh turn). */
+  steerAgent = (message: string) => {
+    const sid = this._agentSessionId();
+    if (!sid || !message.trim()) return;
+    this._agent.steer(sid, message).catch(() => {});
+  };
+
+  /** Queue a follow-up that runs after the agent would otherwise stop. */
+  followUpAgent = (message: string) => {
+    const sid = this._agentSessionId();
+    if (!sid || !message.trim()) return;
+    this._agent.followUp(sid, message).catch(() => {});
   };
 
   submitFeedback = (timestamp: number, rating: 'like' | 'dislike') => {

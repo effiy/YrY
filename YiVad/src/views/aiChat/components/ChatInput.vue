@@ -206,6 +206,7 @@ function cycleRagNumQueries() {
       :agent-max-turns="store.agentMaxTurns"
       :agent-system-prompt="store.agentSystemPrompt"
       :agent-model-rotation="store.agentModelRotation"
+      :agent-model-fallback="store.agentModelFallback"
       :selected-model="store.selectedModel"
       :available-models="store.availableModels"
       @toggle-faq="store.toggleFaq()"
@@ -227,6 +228,7 @@ function cycleRagNumQueries() {
       @update-agent-max-turns="t => store.agentMaxTurns = t"
       @update-agent-system-prompt="p => store.agentSystemPrompt = p"
       @update-agent-model-rotation="m => store.agentModelRotation = m"
+      @update-agent-model-fallback="m => store.agentModelFallback = m"
       @update-selected-model="m => store.selectedModel = m"
     />
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />

@@ -401,3 +401,92 @@ export interface BugContent {
   causeProblem?: string;
   solution?: string;
 }
+
+// ── Agent (Pi-inspired multi-turn tool-calling loop) ─────────────────────
+
+export type TodoItemStatus = 'pending' | 'in_progress' | 'completed';
+
+/** A single todo item surfaced by the agent's `todo_write` capability. */
+export interface TodoItem {
+  id: string;
+  content: string;
+  status: TodoItemStatus;
+}
+
+/** Message role/content pair sent to `/agent/chat`. */
+export interface AgentChatMessage {
+  role: string;
+  content: string;
+}
+
+/** Request body for `/agent/chat`. Mirrors YiAi's `AgentChatRequest`. */
+export interface AgentChatPayload {
+  messages: AgentChatMessage[];
+  model?: string;
+  system_prompt?: string;
+  max_turns?: number;
+  images?: string[];
+  session_id?: string;
+  model_rotation?: string[];
+  model_fallback?: string[];
+  resume?: boolean;
+}
+
+/** A structured event yielded by the agent SSE stream. */
+export interface AgentStreamEvent {
+  type: string;
+  timestamp?: number;
+  turn_index?: number;
+  message?:
+    | { role: string; content: string }
+    | { from: string; to: string }
+    | { todos: TodoItem[] };
+  delta?: string;
+  phase?: string;
+  tool?: { name: string; label?: string; content?: string; error?: string };
+  tool_results?: Array<{
+    name: string;
+    content?: string;
+    error?: string;
+    duration_ms?: number;
+  }>;
+  tool_name?: string;
+  tool_args?: Record<string, unknown>;
+  tool_call_id?: string;
+  partial_result?: Record<string, unknown>;
+  is_error?: boolean;
+  confirmation_id?: string;
+  question_id?: string;
+  question?: string;
+  options?: string[];
+  error?: string;
+  stop_reason?: string;
+  before_count?: number;
+  after_count?: number;
+  saved_tokens?: number;
+  usage?: Record<string, unknown>;
+}
+
+/** A server-side agent tool descriptor (from `/agent/tools`). */
+export interface AgentToolDescriptor {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+  requires_confirmation: boolean;
+  group: string;
+}
+
+/** A skill in the YiKnowledge skill suite (from `/agent/tools`). */
+export interface AgentSkill {
+  name: string;
+  description: string;
+  tags: string[];
+  chip: string;
+  category: string;
+}
+
+/** Response body for `/agent/tools`. */
+export interface AgentToolsResponse {
+  tools: AgentToolDescriptor[];
+  skills: AgentSkill[];
+}
