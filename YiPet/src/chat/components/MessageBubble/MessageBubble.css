@@ -1,0 +1,306 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet Chat — Shared Styles
+   Markdown content, streaming indicator, scrollbar styling.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Markdown Content
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.markdown-content  {
+  user-select: text;
+  -webkit-user-select: text;
+  color: var(--text-primary, #f5f3ff);
+  line-height: 1.6;
+}#yipet-chat-root .markdown-content p  {
+  margin: 0.4em 0;
+}#yipet-chat-root .markdown-content p:first-child  {
+  margin-top: 0;
+}#yipet-chat-root .markdown-content p:last-child  {
+  margin-bottom: 0;
+}#yipet-chat-root .markdown-content code  {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+  color: var(--primary-light, #818cf8);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+}#yipet-chat-root .markdown-content pre  {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25);
+  color: var(--text-primary, #f5f3ff);
+}#yipet-chat-root .markdown-content pre code  {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}#yipet-chat-root .markdown-content blockquote  {
+  border-left: 3px solid rgba(var(--primary-rgb, 99, 102, 241), 0.5);
+  margin: 0.5em 0;
+  padding: 2px 0 2px 12px;
+  color: var(--text-secondary, #d4d0e8);
+}#yipet-chat-root .markdown-content ul, #yipet-chat-root .markdown-content ol  {
+  margin: 0.4em 0;
+  padding-left: 1.5em;
+}#yipet-chat-root .markdown-content li  {
+  margin: 0.2em 0;
+}#yipet-chat-root .markdown-content a  {
+  color: var(--primary-light, #818cf8);
+  text-decoration: underline;
+}#yipet-chat-root .markdown-content h1, #yipet-chat-root .markdown-content h2, #yipet-chat-root .markdown-content h3, #yipet-chat-root .markdown-content h4, #yipet-chat-root .markdown-content h5, #yipet-chat-root .markdown-content h6  {
+  margin: 0.6em 0 0.3em;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary, #f5f3ff);
+}#yipet-chat-root .markdown-content h1  { font-size: 1.4em; }#yipet-chat-root .markdown-content h2  { font-size: 1.2em; }#yipet-chat-root .markdown-content h3  { font-size: 1.1em; }#yipet-chat-root .markdown-content h4  { font-size: 1em; }#yipet-chat-root .markdown-content table  {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  width: 100%;
+  font-size: 0.9em;
+}#yipet-chat-root .markdown-content th, #yipet-chat-root .markdown-content td  {
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
+  padding: 6px 10px;
+  text-align: left;
+}#yipet-chat-root .markdown-content th  {
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
+  font-weight: 600;
+}#yipet-chat-root .markdown-content strong  {
+  font-weight: 600;
+}#yipet-chat-root .markdown-content hr  {
+  border: none;
+  border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
+  margin: 0.8em 0;
+} /* ═══════════════════════════════════════════════════════════════════════════
+   Streaming indicator
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yipet-streaming-indicator {
+  color: var(--primary, #667eea);
+  animation: yipet-blink 1s step-end infinite;
+  font-size: 14px;
+  margin-top: -8px;
+  margin-left: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MessageBubble (rewritten) — bubble, typing, tags, actions
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mb-bubble {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  margin-bottom: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.18));
+  background: var(--bg-elevated, rgba(30, 26, 59, 0.85));
+  color: var(--text-primary, #f5f3ff);
+  padding: 10px 14px;
+}
+
+.mb-bubble--user {
+  align-self: flex-end;
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+  border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.4);
+}
+
+.mb-bubble--pet {
+  align-self: flex-start;
+}
+
+.mb-bubble--error {
+  border-color: #ff4d4f;
+}
+
+.mb-bubble--aborted {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.mb-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.mb-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.mb-image {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+.mb-empty {
+  min-height: 14px;
+}
+
+.mb-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.mb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+  animation: mb-blink 1.2s infinite;
+}
+
+.mb-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.mb-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes mb-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mb-tag {
+  align-self: flex-start;
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.mb-tag--error {
+  background: rgba(255, 77, 79, 0.15);
+  color: #ff4d4f;
+  border: 1px solid rgba(255, 77, 79, 0.4);
+}
+
+.mb-tag--aborted {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.mb-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  opacity: 0.75;
+  flex-wrap: wrap;
+}
+
+.mb-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.mb-action--active {
+  color: var(--primary, #6366f1);
+}
+
+.mb-time {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Per-message token chip — Pi-inspired input vs output economics.
+   User msgs = input (info/blue); pet msgs = output (success/green).
+   Coarse chars/4 estimate — see SessionStatusBar for the same heuristic. */
+.mb-token-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 0 5px;
+  border-radius: 8px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.mb-token-chip--in {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.mb-token-chip--out {
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RAG Sources — shown under the latest pet message when knowledgeGrounded
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.mb-sources {
+  margin-top: 8px;
+  padding: 6px 8px;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.18);
+  font-size: 11px;
+  color: var(--text-secondary, #d4d0e8);
+}
+
+.mb-sources__title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--primary-light, #818cf8);
+}
+
+.mb-sources__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mb-sources__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.mb-sources__path {
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+.mb-sources__score {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+  flex: 0 0 auto;
+}

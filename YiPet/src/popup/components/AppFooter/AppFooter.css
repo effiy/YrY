@@ -1,0 +1,33 @@
+/*
+ * YiPet Popup — AppFooter Styles
+ *
+ * Component: components/ui/AppFooter.js
+ */
+
+.footer {
+  background: var(--bg-primary);
+  padding: 10px 20px;
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hint-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.hint-text::before {
+  content: '\01F4A1';
+  margin-right: 4px;
+}
+
+.version-badge {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 10px;
+}

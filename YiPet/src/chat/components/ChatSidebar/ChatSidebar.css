@@ -1,0 +1,31 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet Chat — Sidebar list scrollbar
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#yipet-chat-root .yipet-sidebar-list::-webkit-scrollbar {
+  width: 6px;
+}
+#yipet-chat-root .yipet-sidebar-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+#yipet-chat-root .yipet-sidebar-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-rgb, 102, 126, 234), 0.35);
+  border-radius: 3px;
+}
+#yipet-chat-root .yipet-sidebar-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-rgb, 102, 126, 234), 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   YiPet Chat — Session list item hover-revealed action row
+   Matches aicr FileTree baseline: actions fade in on hover/active.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#yipet-chat-root .yipet-session-actions {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+#yipet-chat-root .yipet-session-item:hover .yipet-session-actions,
+#yipet-chat-root .yipet-session-item.is-active .yipet-session-actions {
+  opacity: 1;
+}

@@ -1,0 +1,34 @@
+.yipet-mention-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--bg-secondary, rgba(30, 41, 59, 0.96));
+  border: 1px solid rgba(var(--primary-rgb, 102, 126, 234), 0.35);
+  border-radius: 6px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+  margin-bottom: 4px;
+}
+.yipet-mention-header {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+}
+.yipet-mention-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.1);
+}
+.yipet-mention-item:hover,
+.yipet-mention-item.is-active {
+  background: rgba(var(--primary-rgb, 102, 126, 234), 0.18);
+}
+.yipet-mention-path {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

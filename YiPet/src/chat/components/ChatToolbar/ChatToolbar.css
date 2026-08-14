@@ -1,0 +1,31 @@
+.yipet-chat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.12));
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ct-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ct-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ct-context-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.04);
+}
