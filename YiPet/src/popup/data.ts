@@ -6,6 +6,7 @@
 
 import type { AppConfig } from '@/config/config';
 import { PET_CONFIG } from '@/config/config';
+import { NONE_PALETTE, THEME_PALETTES } from '@/shared/theme';
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
@@ -29,13 +30,54 @@ const COLOR_LABELS = [
   'Quantum Sunset',
 ];
 
-function buildColors(gradients: string[]): { value: number; label: string }[] {
-  const result: { value: number; label: string }[] = [{ value: -1, label: 'None' }];
-  for (let i = 0; i < gradients.length; i++) {
-    result.push({ value: i, label: COLOR_LABELS[i] || `Theme ${i + 1}` });
-  }
-  return result;
+/** A selectable color theme — value is the palette index (-1 = None). */
+export interface ColorOption {
+  value: number;
+  label: string;
+  /** CSS gradient shown on the swatch (mirrors the theme's primary gradient). */
+  gradient: string;
 }
+
+/**
+ * Color theme options, index-aligned with `THEME_PALETTES`. The first entry
+ * is the "None" (light) theme; the rest are the five dark quantum palettes.
+ * Swatch gradients reuse the palettes' `primaryGradient` so the picker shows
+ * exactly the accent the pet + page surface will adopt.
+ */
+export const COLOR_OPTIONS: ColorOption[] = [
+  { value: -1, label: 'None', gradient: NONE_PALETTE.primaryGradient },
+  ...THEME_PALETTES.map((p, i) => ({
+    value: i,
+    label: COLOR_LABELS[i] || `Theme ${i + 1}`,
+    gradient: p.primaryGradient,
+  })),
+];
+
+// ── Roles ────────────────────────────────────────────────────────────────
+
+export const ROLE_NAMES = ['Teacher', 'Doctor', 'Pastry Chef', 'Police Officer'] as const;
+
+/**
+ * Resolve the pet image URL for a role name.
+ * Role image files live under `assets/images/<slug>/icon.png` (web-accessible).
+ * Slugs mirror the content script's `role.toLowerCase().replace(/\s+/g, '-')`.
+ */
+export function roleImageUrl(role: string): string {
+  const slug = role.toLowerCase().replace(/\s+/g, '-');
+  if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+    return chrome.runtime.getURL(`assets/images/${slug}/icon.png`);
+  }
+  return `assets/images/${slug}/icon.png`;
+}
+
+// ── Models ───────────────────────────────────────────────────────────────
+
+/**
+ * Chat models surfaced by the popup selector. Mirrors YiVad aiChat's model
+ * placeholders + YiAi's model_runtime default (`qwen3.5`), plus the agent
+ * escalation fallback (`qwen3-coder`) and the thinking variant.
+ */
+export const MODELS = ['qwen3.5', 'qwen3.5-think', 'qwen3-coder'] as const;
 
 // ── Message Table ───────────────────────────────────────────────────────
 
@@ -57,7 +99,7 @@ function buildMessages(table: Record<string, MessageEntry>): Record<string, stri
 
 export interface PopupConfig {
   ROLES: string[];
-  COLORS: { value: number; label: string }[];
+  COLORS: ColorOption[];
   SIZE: { MIN: number; MAX: number; STEP: number; MARKS: Record<number, string> };
   STORAGE_KEY: string;
   TIMING: {
@@ -72,7 +114,7 @@ export interface PopupConfig {
     SIZE: number;
     ROLE: string;
     COLOR: number;
-    MODEL: string | null;
+    MODEL: string;
     VERSION: string;
   };
 }
@@ -84,9 +126,9 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
   const P = cfg.pet;
 
   return {
-    ROLES: ['Teacher', 'Doctor', 'Pastry Chef', 'Police Officer'],
+    ROLES: [...ROLE_NAMES],
 
-    COLORS: buildColors(P.colors || []),
+    COLORS: COLOR_OPTIONS,
 
     SIZE: {
       MIN: pick(P, 'sizeLimits.min', 80),
@@ -135,7 +177,7 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
       SIZE: pick(P, 'defaultSize', 260),
       ROLE: pick(C, 'DEFAULTS.PET_ROLE', 'Teacher'),
       COLOR: pick(P, 'defaultColorIndex', 0),
-      MODEL: null,
+      MODEL: 'qwen3.5',
       VERSION: pick(C, 'DEFAULTS.VERSION', '1.2.0'),
     },
   };

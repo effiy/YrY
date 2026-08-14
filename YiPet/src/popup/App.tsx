@@ -1,9 +1,13 @@
 /**
  * YiPet Popup — Root Component (function component + hooks).
  * Wraps content in antd ConfigProvider so color theme changes apply live.
+ *
+ * Layout (top → bottom): gradient AppHeader → PetPreview (live) → Pet Settings
+ * card (visibility / size / role / color / model / language) → collapsible
+ * AboutCard → AppFooter.
  */
 
-import { CheckCircleOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import {
   App as AntApp,
   Card,
@@ -14,7 +18,6 @@ import {
   Select,
   Slider,
   Switch,
-  Tag,
   Typography,
 } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -26,7 +29,10 @@ import { applyThemeColors, getAntdTheme } from '@/shared/theme';
 import { AboutCard } from './components/AboutCard/AboutCard';
 import { AppFooter } from './components/AppFooter/AppFooter';
 import { AppHeader } from './components/AppHeader/AppHeader';
-import { POPUP_CONFIG } from './data';
+import { ColorPicker } from './components/ColorPicker/ColorPicker';
+import { PetPreview } from './components/PetPreview/PetPreview';
+import { RolePicker } from './components/RolePicker/RolePicker';
+import { COLOR_OPTIONS, MODELS, POPUP_CONFIG } from './data';
 import type { ChromeService } from './services/chrome';
 import { createChromeService } from './services/chrome';
 import { connect } from './services/connection';
@@ -172,6 +178,17 @@ export function PopupApp() {
     [send],
   );
 
+  const updateModel = useCallback(
+    (model: string) => {
+      setState((s) => ({ ...s, model }));
+      // Model has no content-script action; persist directly to global state.
+      const chrome = chromeSvcRef.current;
+      if (chrome) chrome.saveState({ ...stateRef.current, model });
+      message.success(t('notifyModelUpdated'));
+    },
+    [message],
+  );
+
   const changeLanguage = useCallback(
     (locale: SupportedLocale) => {
       setUserLocale(locale)
@@ -292,15 +309,26 @@ export function PopupApp() {
   const theme = useMemo(() => getAntdTheme(state.color), [state.color]);
   const disabled = !state.controlsEnabled;
 
+  const colorLabel = useMemo(
+    () => COLOR_OPTIONS.find((c) => c.value === state.color)?.label ?? '',
+    [state.color],
+  );
+
   return (
     <ConfigProvider theme={theme}>
       <Layout className="popup-layout">
         <AppHeader
-          model={state.model}
           visible={state.visible}
           statusText={state.visible ? t('popupStatusActive') : t('popupStatusHidden')}
         />
         <Content className="popup-content">
+          <PetPreview
+            role={state.role}
+            size={state.displaySize}
+            colorLabel={colorLabel}
+            disabled={disabled}
+          />
+
           <Card title={t('popupSettingsTitle')} size="small" className="popup-card">
             <Form layout="vertical" disabled={disabled}>
               <Form.Item label={t('popupSwitchLabel')} tooltip={t('popupSwitchDesc')}>
@@ -311,6 +339,7 @@ export function PopupApp() {
                   unCheckedChildren={<EyeInvisibleOutlined />}
                 />
               </Form.Item>
+
               <Form.Item label={t('popupSizeLabel')}>
                 <Slider
                   min={POPUP_CONFIG.SIZE.MIN}
@@ -326,16 +355,23 @@ export function PopupApp() {
                   {t('popupSizeUnit')}
                 </Typography.Text>
               </Form.Item>
+
               <Form.Item label={t('popupRoleLabel')}>
+                <RolePicker value={state.role} onChange={updateRole} disabled={disabled} />
+              </Form.Item>
+
+              <Form.Item label={t('popupColorLabel')}>
+                <ColorPicker value={state.color} onChange={updateColor} disabled={disabled} />
+              </Form.Item>
+
+              <Form.Item label={t('popupModelLabel')}>
                 <Select
-                  value={state.role}
-                  onChange={updateRole}
-                  options={POPUP_CONFIG.ROLES.map((r: string) => ({ value: r, label: r }))}
+                  value={state.model}
+                  onChange={(v) => updateModel(v as string)}
+                  options={MODELS.map((m) => ({ value: m, label: m }))}
                 />
               </Form.Item>
-              <Form.Item label={t('popupColorLabel')}>
-                <Select value={state.color} onChange={updateColor} options={POPUP_CONFIG.COLORS} />
-              </Form.Item>
+
               <Form.Item label={t('popupLanguageLabel')}>
                 <Segmented
                   value={state.locale}
@@ -348,16 +384,8 @@ export function PopupApp() {
               </Form.Item>
             </Form>
           </Card>
+
           <AboutCard />
-          {state.controlsEnabled && (
-            <Tag
-              color={state.visible ? 'success' : 'warning'}
-              icon={state.visible ? <CheckCircleOutlined /> : undefined}
-              className="popup-status-tag"
-            >
-              {state.visible ? t('popupStatusActive') : t('popupStatusHidden')}
-            </Tag>
-          )}
         </Content>
         <Footer className="popup-footer">
           <AppFooter

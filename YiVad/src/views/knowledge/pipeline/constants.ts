@@ -13,8 +13,6 @@ export interface Stage {
   role: string;
   /** Knowledge category key matching useKnowledgeStore categories */
   category: string;
-  input: string;
-  output: string;
   /** Individual clickable input items */
   inputItems: FlowItem[];
   /** Individual clickable output items */
@@ -22,8 +20,6 @@ export interface Stage {
   description: string;
   topics: { label: string; file: string }[];
   boundary: string;
-  /** Secondary categories to also scan for this stage (e.g. engineer/lessons/ for operate-learn) */
-  secondaryCategories?: string[];
 }
 
 export interface DecisionRule {
@@ -31,54 +27,12 @@ export interface DecisionRule {
   role: string;
 }
 
-export interface ProjectInfo {
-  key: string;
-  label: string;
-  tagType: "primary" | "success" | "warning";
-  /** Path segment to filter knowledge files by project */
-  pathSegment: string;
-  description: string;
-}
-
-export const projects: ProjectInfo[] = [
-  {
-    key: "all",
-    label: "All",
-    tagType: "primary",
-    pathSegment: "",
-    description: "All three Yi-family projects"
-  },
-  {
-    key: "yiai",
-    label: "YiAi",
-    tagType: "primary",
-    pathSegment: "yiai",
-    description: "FastAPI backend — AI chat, RAG engine, agent loop"
-  },
-  {
-    key: "yivad",
-    label: "YiVad",
-    tagType: "success",
-    pathSegment: "yivad",
-    description: "Vue 3.5 admin dashboard — management UI"
-  },
-  {
-    key: "yipet",
-    label: "YiPet",
-    tagType: "warning",
-    pathSegment: "yipet",
-    description: "Chrome MV3 extension — AI companion"
-  }
-];
-
 export const stages: Stage[] = [
   {
     id: "requirements",
     name: "Requirements",
     role: "producter/",
     category: "producter",
-    input: "Business strategy",
-    output: "PRDs, user stories, priorities",
     inputItems: [
       { id: "business-strategy", label: "Business strategy", keywords: ["strategy", "business"], description: "Market intelligence, competitive landscape, and org-level goals from executiver/" }
     ],
@@ -104,8 +58,6 @@ export const stages: Stage[] = [
     name: "Decisions",
     role: "leader/",
     category: "leader",
-    input: "PRDs, requirements",
-    output: "ADRs, tech selections, capacity plans",
     inputItems: [
       { id: "prds", label: "PRDs", keywords: ["prd", "brd", "product-requirement"], description: "Product Requirement Documents from producter/ — the feature definitions to make decisions about" },
       { id: "requirements", label: "requirements", keywords: ["requirement", "spec"], description: "Functional and non-functional requirements that constrain technical decisions" }
@@ -134,8 +86,6 @@ export const stages: Stage[] = [
     name: "Design + Build",
     role: "engineer/",
     category: "engineer",
-    input: "ADRs, PRDs",
-    output: "Working software",
     inputItems: [
       { id: "adrs", label: "ADRs", keywords: ["adr", "decision", "architecture-decision"], description: "Architecture Decision Records from leader/ — the technical direction to implement" },
       { id: "prds", label: "PRDs", keywords: ["prd", "brd", "product-requirement"], description: "Product Requirement Documents from producter/ — the feature specifications to build" }
@@ -167,9 +117,6 @@ export const stages: Stage[] = [
     name: "Ship + Operate",
     role: "srer/ + engineer/lessons/",
     category: "srer",
-    secondaryCategories: ["engineer"],
-    input: "Working software",
-    output: "Reliable systems in production",
     inputItems: [
       { id: "working-software", label: "Working software", keywords: ["implementation", "deployable", "artifact"], description: "Implementation artifacts from engineer/ — code that has passed design and build quality gates" }
     ],
@@ -304,20 +251,4 @@ export const stageColors: Record<string, string> = {
   decisions: "#7c3aed",
   "design-build": "#10b981",
   "quality-release": "#f59e0b"
-};
-
-/** Map stage id to its color */
-export function getStageColor(stageId: string): string {
-  return stageColors[stageId] || "#409eff";
-}
-
-/** Map category key to stage id (reverse lookup) */
-export const categoryToStage: Record<string, string> = {
-  "producter": "requirements",
-  "leader": "decisions",
-  engineer: "design-build",
-  "srer": "quality-release",
-  executiver: "business",
-  "aier": "ai",
-  "curator": "governance"
 };

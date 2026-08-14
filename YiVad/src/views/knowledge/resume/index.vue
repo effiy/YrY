@@ -306,7 +306,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, type Component } from "vue";
 import {
   Aim,
   Connection,
@@ -317,7 +317,6 @@ import {
   Warning,
   CircleCloseFilled,
   CircleClose,
-  MoreFilled,
   DataAnalysis,
   Search,
   Document,
@@ -333,7 +332,7 @@ interface MethodologyItem {
   tag: string;
   tagType: TagType;
   color: string;
-  icon: any;
+  icon: Component;
   desc: string;
   details: string[];
 }

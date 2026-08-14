@@ -25,6 +25,9 @@ export type MessageKey =
   | 'popupColorLabel'
   | 'popupSettingsTitle'
   | 'popupModelPrefix'
+  | 'popupSubtitle'
+  | 'popupPreviewTitle'
+  | 'popupModelLabel'
   // Popup — status
   | 'popupStatusConnecting'
   | 'popupStatusReady'
@@ -37,6 +40,7 @@ export type MessageKey =
   | 'notifySizeUpdated'
   | 'notifyRoleChanged'
   | 'notifyColorSet'
+  | 'notifyModelUpdated'
   | 'notifyLanguageChanged'
   // Popup — error notifications
   | 'errorOperationFailed'

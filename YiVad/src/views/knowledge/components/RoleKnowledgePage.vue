@@ -27,7 +27,7 @@
     </div>
 
     <template v-if="viewMode === 'card'">
-    <section v-for="dir in subdirs" :key="dir.id" class="role-page__section" :ref="(el: any) => sectionRefs[dir.id] = el">
+    <section v-for="dir in subdirs" :key="dir.id" class="role-page__section" :ref="(el) => { if (el) sectionRefs[dir.id] = el as HTMLElement; }">
       <h2 class="role-page__section-title" :style="{ borderLeftColor: dir.color }" @click="toggleSection(dir.id)">
         <span class="role-page__section-arrow" :class="{ collapsed: collapsedSections.has(dir.id) }">▸</span>
         {{ dir.icon }} {{ dir.label }}

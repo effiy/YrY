@@ -404,7 +404,7 @@ import {
   parseFeed, parseAllEnabledFeeds,
   startRssScheduler, stopRssScheduler,
   getRssSchedulerStatus,
-  type RssSeedDocument, type RssItemDocument, type RssSchedulerStatus
+  type RssSeedDocument, type RssItemDocument, type RssSchedulerStatus, type RssListParams
 } from "@/api/modules/rssService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 
@@ -483,7 +483,7 @@ function openSeedDrawer(row: RssSeedDocument) {
   seedDrawerVisible.value = true;
   if (seedArticleCounts[row.url] === undefined) {
     getRssList({ source_url: row.url, pageSize: 1 })
-      .then(res => { seedArticleCounts[row.url] = (res.data as any)?.total ?? 0; })
+      .then(res => { seedArticleCounts[row.url] = res.data?.total ?? 0; })
       .catch(() => { seedArticleCounts[row.url] = 0; });
   }
 }
@@ -510,7 +510,7 @@ async function saveSeed() {
   if (!seedForm.url.trim()) { ElMessage.warning("Feed URL is required"); return; }
   seedSaving.value = true;
   try {
-    const patch: any = {
+    const patch: Partial<RssSeedDocument> & { url: string } = {
       url: seedForm.url.trim(),
       name: seedForm.name.trim(),
       category: seedForm.category.trim() || undefined,
@@ -529,8 +529,8 @@ async function saveSeed() {
     }
     seedDialogVisible.value = false;
     await loadSeeds();
-  } catch (e: any) {
-    ElMessage.error(e.message || "Failed to save source");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Failed to save source");
   } finally {
     seedSaving.value = false;
   }
@@ -543,8 +543,8 @@ async function removeSeed(row: RssSeedDocument) {
     ElMessage.success("Source removed");
     seedDrawerVisible.value = false;
     await loadSeeds();
-  } catch (e: any) {
-    ElMessage.error(e.message || "Failed to remove source");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Failed to remove source");
   }
 }
 
@@ -556,8 +556,8 @@ async function toggleSeed(row: RssSeedDocument) {
     await updateSeed(row.key, { enabled: next });
     row.enabled = next;
     ElMessage.success(next ? "Source enabled" : "Source paused");
-  } catch (e: any) {
-    ElMessage.error(e.message || "Failed to toggle source");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Failed to toggle source");
   } finally {
     seedToggling.value = "";
   }
@@ -580,9 +580,10 @@ async function parseOneFeed(row: RssSeedDocument) {
     addParseHistory(row.name || row.url, d.success, d.saved_count || 0, d.updated_count || 0, d.error);
     ElMessage.success(`Parsed: ${d.saved_count || 0} new, ${d.updated_count || 0} updated`);
     await loadItems();
-  } catch (e: any) {
-    addParseHistory(row.name || row.url, false, 0, 0, e.message || "Parse failed");
-    ElMessage.error(e.message || "Parse failed");
+  } catch (e) {
+    const msg = errorMessage(e) || "Parse failed";
+    addParseHistory(row.name || row.url, false, 0, 0, msg);
+    ElMessage.error(msg);
   } finally {
     parsingSeed.value = "";
   }
@@ -598,9 +599,10 @@ async function parseAllFeeds() {
     const now = Date.now();
     for (const s of seeds.value) { if (s.enabled !== false) parseTimes[s.url] = now; }
     await loadItems();
-  } catch (e: any) {
-    addParseHistory("All sources", false, 0, 0, e.message || "Batch parse failed");
-    ElMessage.error(e.message || "Batch parse failed");
+  } catch (e) {
+    const msg = errorMessage(e) || "Batch parse failed";
+    addParseHistory("All sources", false, 0, 0, msg);
+    ElMessage.error(msg);
   } finally {
     parseAllLoading.value = false;
   }
@@ -610,7 +612,7 @@ async function loadSeeds() {
   seedsLoading.value = true;
   try {
     const res = await getSeedList();
-    const list = ((res.data as any)?.list ?? []) as RssSeedDocument[];
+    const list = res.data?.list ?? [];
     seeds.value = list;
     for (const s of list) {
       if (s.interval) seedIntervals[s.url] = s.interval;
@@ -638,8 +640,8 @@ async function doQuickParse() {
     quickParseForm.url = "";
     quickParseForm.name = "";
     await loadItems();
-  } catch (e: any) {
-    ElMessage.error(e.message || "Quick parse failed");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Quick parse failed");
   } finally {
     quickParseLoading.value = false;
   }
@@ -676,8 +678,8 @@ const hasActiveFilters = computed(() =>
   !!(itemSearch.value || itemSourceFilter.value || itemCategoryFilter.value || itemDateRange.value)
 );
 
-function onSelectionChange(rows: any[]) {
-  selectedItems.value = rows as RssItemDocument[];
+function onSelectionChange(rows: RssItemDocument[]) {
+  selectedItems.value = rows;
 }
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -700,7 +702,7 @@ async function loadItems() {
   itemsLoading.value = true;
   selectedItems.value = [];
   try {
-    const params: any = { pageNum: itemPage.value, pageSize: itemPageSize };
+    const params: RssListParams = { pageNum: itemPage.value, pageSize: itemPageSize };
     if (itemSearch.value) params.search = itemSearch.value;
     if (itemSourceFilter.value) params.source_name = itemSourceFilter.value;
     if (itemCategoryFilter.value) params.category_path = itemCategoryFilter.value;
@@ -720,8 +722,8 @@ async function loadItems() {
       params.orderType = "asc";
     }
     const res = await getRssList(params);
-    items.value = (res.data as any)?.list ?? [];
-    totalItems.value = (res.data as any)?.total ?? 0;
+    items.value = res.data?.list ?? [];
+    totalItems.value = res.data?.total ?? 0;
   } catch { items.value = []; totalItems.value = 0; }
   finally { itemsLoading.value = false; }
 }
@@ -740,8 +742,8 @@ async function removeItem(row: RssItemDocument) {
     await deleteRssItem(row.key);
     ElMessage.success("Article deleted");
     await loadItems();
-  } catch (e: any) {
-    ElMessage.error(e.message || "Failed to delete article");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Failed to delete article");
   }
 }
 
@@ -787,8 +789,8 @@ async function toggleScheduler() {
       ElMessage.success("Scheduler started");
     }
     await loadSchedulerStatus();
-  } catch (e: any) {
-    ElMessage.error(e.message || "Failed to toggle scheduler");
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "Failed to toggle scheduler");
   } finally {
     schedulerLoading.value = false;
   }
@@ -822,6 +824,11 @@ function sourceHistory(row: RssSeedDocument) {
 // ═══════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════
+/** Normalize an unknown thrown value to a user-facing message. */
+function errorMessage(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
+}
+
 function formatDate(raw?: string): string {
   if (!raw) return "-";
   try {
@@ -876,7 +883,7 @@ function estimateNextRun(url: string): string {
   return `${Math.round(diff / 3600000)}h`;
 }
 
-function onTabChange(tab: any) {
+function onTabChange(tab: string | number) {
   if (tab === "items") loadItems();
   else if (tab === "seeds") loadSeeds();
 }

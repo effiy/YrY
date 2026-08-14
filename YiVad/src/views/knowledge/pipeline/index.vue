@@ -43,7 +43,7 @@
           <span v-for="topic in layer.topics" :key="topic.file" class="pipeline__stage-topic" @click.stop="goToStage(layer.id)">{{ topic.label }}</span>
         </div>
         <div class="pipeline__stage-stats">
-          <span class="pipeline__stage-stats-total">{{ statsFor(layer.category).total }} files</span>
+          <span class="pipeline__stage-stats-total">{{ statsFor(layer.category) }} files</span>
         </div>
         <p class="pipeline__stage-boundary">{{ layer.boundary }}</p>
       </el-card>
@@ -93,7 +93,7 @@
           </div>
 
           <div class="pipeline__stage-stats">
-            <span class="pipeline__stage-stats-total">{{ statsFor(stage.category).total }} files</span>
+            <span class="pipeline__stage-stats-total">{{ statsFor(stage.category) }} files</span>
           </div>
 
           <p class="pipeline__stage-boundary">{{ stage.boundary }}</p>
@@ -133,7 +133,6 @@ import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDi
 
 const router = useRouter();
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
-const statsLoading = ref(false);
 
 const layerColors: Record<string, string> = {
   business: "#6366f1",
@@ -141,15 +140,10 @@ const layerColors: Record<string, string> = {
   governance: "#f59e0b"
 };
 
-/** File counts per category key: { total, yiai, yivad, yipet } */
-const stageStats = reactive<Record<string, { total: number; yiai: number; yivad: number; yipet: number }>>({});
-
-function countProject(paths: string[], seg: string): number {
-  return paths.filter(p => p.toLowerCase().includes(`/${seg}/`) || p.toLowerCase().includes(`/${seg}-`)).length;
-}
+/** File counts per category key */
+const stageStats = reactive<Record<string, number>>({});
 
 async function loadStats() {
-  statsLoading.value = true;
   try {
     const res = await listKnowledgeFiles();
     const allPaths = res.files.map(f => f.path);
@@ -158,23 +152,15 @@ async function loadStats() {
     for (const s of stages) categories.add(s.category);
     for (const l of crossCuttingLayers) categories.add(l.category);
     for (const cat of categories) {
-      const catPaths = allPaths.filter(p => p.startsWith(cat + "/") || p.startsWith(cat.replace(/-/g, "_") + "/"));
-      stageStats[cat] = {
-        total: catPaths.length,
-        yiai: countProject(catPaths, "yiai"),
-        yivad: countProject(catPaths, "yivad"),
-        yipet: countProject(catPaths, "yipet")
-      };
+      stageStats[cat] = allPaths.filter(p => p.startsWith(cat + "/") || p.startsWith(cat.replace(/-/g, "_") + "/")).length;
     }
   } catch {
     // Stats are optional — don't block the page
-  } finally {
-    statsLoading.value = false;
   }
 }
 
-function statsFor(category: string) {
-  return stageStats[category] || { total: 0, yiai: 0, yivad: 0, yipet: 0 };
+function statsFor(category: string): number {
+  return stageStats[category] || 0;
 }
 
 /** Resolve a role string (e.g. "executiver/" or "srer/release/ + engineer/quality-security/")
@@ -456,18 +442,6 @@ onMounted(() => {
   font-size: 13px;
   font-weight: 700;
   color: var(--el-text-color-primary);
-}
-
-.pipeline__stage-stats-chip {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 3px;
-  white-space: nowrap;
-
-  &--yiai { background: #e6f0ff; color: #1677ff; }
-  &--yivad { background: #e6f9f2; color: #10b981; }
-  &--yipet { background: #fff7e6; color: #f59e0b; }
 }
 
 // ── Boundary callout ─────────────────────────────────────

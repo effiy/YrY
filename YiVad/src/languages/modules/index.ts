@@ -8,6 +8,8 @@ import zhTopicDetail from "./topicdetail/zh";
 import enTopicDetail from "./topicdetail/en";
 import zhRss from "./rss/zh";
 import enRss from "./rss/en";
+import zhHome from "./home/zh";
+import enHome from "./home/en";
 
 export const messages = {
   zh: {
@@ -15,13 +17,15 @@ export const messages = {
     ...zhAichat,
     ...zhStory,
     ...zhTopicDetail,
-    ...zhRss
+    ...zhRss,
+    ...zhHome
   },
   en: {
     ...enCommon,
     ...enAichat,
     ...enStory,
     ...enTopicDetail,
-    ...enRss
+    ...enRss,
+    ...enHome
   }
 };

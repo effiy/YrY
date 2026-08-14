@@ -1,25 +1,23 @@
+/**
+ * YiPet Popup — AppFooter
+ * Status hint line + version badge.
+ */
+
 import { Typography } from 'antd';
-import type { CSSProperties } from 'react';
+import './AppFooter.css';
 
 export interface AppFooterProps {
   hintText: string;
   version: string;
 }
 
-const footerStyle: CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '8px 12px',
-};
-
 export function AppFooter(props: AppFooterProps) {
   return (
-    <div className="popup-footer-row" style={footerStyle}>
-      <Typography.Text type="secondary" ellipsis style={{ flex: 1 }}>
+    <div className="popup-footer-row">
+      <Typography.Text className="popup-footer-hint" ellipsis>
         {props.hintText}
       </Typography.Text>
-      <Typography.Text code>{props.version}</Typography.Text>
+      <Typography.Text className="popup-footer-version">{props.version}</Typography.Text>
     </div>
   );
 }

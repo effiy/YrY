@@ -242,13 +242,21 @@ export function createPetOverlay(
   petContainer.style.cssText =
     'position:fixed;bottom:20%;right:20px;z-index:2147483647;' +
     'transition:opacity 100ms ease;opacity:0;pointer-events:none;' +
-    'padding:24px;border-radius:50%;' +
-    'background-size:cover;';
+    'padding:10px;border-radius:50%;' +
+    // Theme gradient ring — the pet's "skin" follows the active color theme
+    // via --primary-gradient / --primary-rgb, injected by applyThemeColors.
+    'background:var(--primary-gradient,linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%));' +
+    'box-shadow:0 10px 30px rgba(var(--primary-rgb,102,126,234),0.45),' +
+    '0 0 0 1px rgba(255,255,255,0.08) inset;';
   petContainer.setAttribute('data-pet', 'yipet');
   const petImg = document.createElement('img');
   petImg.id = 'yipet-pet-img';
   petImg.alt = 'YiPet';
-  petImg.style.cssText = `width:${PET_DEFAULTS.pet.defaultSize}px;height:auto;`;
+  petImg.title = initialRole;
+  petImg.style.cssText =
+    `width:${PET_DEFAULTS.pet.defaultSize}px;height:auto;` +
+    'border-radius:50%;display:block;user-select:none;';
+  petImg.draggable = false;
   petImg.src =
     extRoot + 'assets/images/' + initialRole.toLowerCase().replace(/\s+/g, '-') + '/icon.png';
   petContainer.appendChild(petImg);
@@ -370,6 +378,10 @@ export function createPetOverlay(
       .toLowerCase()
       .replace(/\s+/g, '-');
     petImg.src = extRoot + 'assets/images/' + role + '/icon.png';
+    // Surface the canonical role name as a native tooltip on hover.
+    if (e.detail.role) {
+      petImg.title = String(e.detail.role);
+    }
     if (e.detail.systemPrompt) {
       petContainer.dataset.systemPrompt = String(e.detail.systemPrompt);
     }

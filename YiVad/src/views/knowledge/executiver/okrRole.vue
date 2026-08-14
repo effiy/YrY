@@ -197,7 +197,7 @@
         </el-table-column>
         <el-table-column label="Avg" width="70">
           <template #default="{ row }">
-            <el-progress :percentage="krAvg(row)" :status="krStatus(krAvg(row))" :stroke-width="6" :show-text="true" />
+            <el-progress :percentage="krAvg(row as GoalItem)" :status="krStatus(krAvg(row as GoalItem))" :stroke-width="6" :show-text="true" />
           </template>
         </el-table-column>
         <el-table-column label="Actions" width="120" fixed="right">
@@ -422,7 +422,7 @@ import { ElMessage } from "element-plus";
 import {
   rolesData, goalsData, metricsData, allMetricsMap, goalMetricMap, getGoalMetrics,
   roleDailyDataMap, roleChecklistMap, roleWeeklyDataMap,
-  type GoalItem, type MetricItem, type DailyRoleData, type ChecklistItem, type WeeklyRoleData
+  type GoalItem, type ChecklistItem
 } from "./okrData";
 
 const props = defineProps<{ roleId: string }>();
@@ -656,10 +656,9 @@ const periodAvgProgress = computed(() => {
   return Math.round(total / filteredGoals.value.length);
 });
 
-function krAvg(row: any) {
-  const krs = row.keyResults as Array<{ progress: number }> | undefined;
-  if (!krs || !krs.length) return 0;
-  return Math.round(krs.reduce((s: number, kr: { progress: number }) => s + Number(kr.progress), 0) / krs.length);
+function krAvg(row: GoalItem): number {
+  if (!row.keyResults.length) return 0;
+  return Math.round(row.keyResults.reduce((s, kr) => s + kr.progress, 0) / row.keyResults.length);
 }
 function statusTagType(status: string) {
   return status === "active" ? "success" : status === "planned" ? "warning" : status === "blocked" ? "danger" : "info";

@@ -1,24 +1,38 @@
-import { Tag, Typography } from 'antd';
-import { t } from '@/shared/i18n/index';
+/**
+ * YiPet Popup — AppHeader
+ * Branded gradient header (theme-following) with the extension icon, name,
+ * tagline, and a live status pill (Active / Hidden).
+ */
+
+import { Typography } from 'antd';
+import { t } from '@/shared/i18n';
+import './AppHeader.css';
 
 export interface AppHeaderProps {
-  model: string | null;
   visible: boolean;
   statusText: string;
 }
 
 export function AppHeader(props: AppHeaderProps) {
   return (
-    <div className="popup-header">
-      <div className="popup-header-brand">
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          {t('extName')}
-        </Typography.Title>
-        <Typography.Text type="secondary">
-          {t('popupModelPrefix', props.model || '-')}
-        </Typography.Text>
+    <header className="popup-header">
+      <div className="popup-header-logo">
+        <img
+          className="popup-header-icon"
+          src={chrome.runtime.getURL('assets/icons/icon.png')}
+          alt="YiPet"
+        />
+        <div className="popup-header-brand">
+          <Typography.Title level={4} className="popup-header-title">
+            {t('extName')}
+          </Typography.Title>
+          <Typography.Text className="popup-header-sub">{t('popupSubtitle')}</Typography.Text>
+        </div>
       </div>
-      <Tag color={props.visible ? 'success' : 'warning'}>{props.statusText}</Tag>
-    </div>
+      <span className={`popup-status-pill${props.visible ? ' is-active' : ' is-hidden'}`}>
+        <span className="popup-status-dot" aria-hidden="true" />
+        {props.statusText}
+      </span>
+    </header>
   );
 }

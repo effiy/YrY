@@ -1,91 +1,108 @@
-/*
- * YiPet Popup — AppHeader Styles
- *
- * Component: components/ui/AppHeader.js
- */
+/* YiPet Popup — AppHeader */
 
-.header {
-  background: linear-gradient(135deg, #667eea 0%, #7c5ce7 35%, #a855f7 70%, #f093fb 100%);
-  color: white;
-  padding: 18px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.popup-header {
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  color: #fff;
+  background: var(--primary-gradient, linear-gradient(135deg, #667eea, #f093fb));
 }
 
-.header::before {
+.popup-header::before {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
-    radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
   pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.18) 0%, transparent 55%),
+    radial-gradient(circle at 82% 60%, rgba(255, 255, 255, 0.1) 0%, transparent 45%);
 }
 
-.logo {
+.popup-header-logo {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative;
-  z-index: 1;
+  min-width: 0;
 }
 
-.logo::before {
-  content: attr(data-icon);
-  font-size: 26px;
-  line-height: 1;
-  animation: popupBounce 2s infinite;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+.popup-header-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
 }
 
-.logo h1 {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-.brand {
+.popup-header-brand {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  line-height: 1.1;
+  gap: 1px;
+  min-width: 0;
 }
 
-.brand-sub {
+.popup-header-title {
+  margin: 0 !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.popup-header-sub {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
   white-space: nowrap;
-  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(4px);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.popup-status-pill {
   position: relative;
   z-index: 1;
-  --status-dot-color: var(--success, #22c55e);
-  transition: background 0.2s ease;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
 }
 
-.status-indicator::before {
-  content: '';
+.popup-status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--status-dot-color);
-  box-shadow: 0 0 6px var(--status-dot-color);
-  animation: popupPulse 2s infinite;
+  background: #f59e0b;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.popup-status-pill.is-active .popup-status-dot {
+  background: #22c55e;
+  animation: popupStatusPulse 2s ease-in-out infinite;
+}
+
+.popup-status-pill.is-hidden .popup-status-dot {
+  background: #f59e0b;
+}
+
+@keyframes popupStatusPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0);
+  }
 }

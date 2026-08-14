@@ -13,7 +13,7 @@ export interface PopupState {
   size: number;
   role: string;
   color: number;
-  model: string | null;
+  model: string;
   displaySize: number;
   controlsEnabled: boolean;
   hintText: string;

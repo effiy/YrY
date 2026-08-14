@@ -1,29 +1,20 @@
 /* YiPet Popup — base layout for antd-driven UI. */
 
+html,
 body {
   width: 420px;
-  min-width: 360px;
+  max-height: 600px;
   margin: 0;
+}
+
+body {
+  overflow-y: auto;
+  background: var(--bg-primary, #13122a);
 }
 
 .popup-layout {
   min-height: 100vh;
   background: var(--bg-primary, #13122a);
-}
-
-.popup-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--bg-secondary, #1e1a3b);
-  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
-}
-
-.popup-header-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .popup-content {
@@ -37,12 +28,12 @@ body {
   background: var(--bg-secondary, #1e1a3b);
 }
 
-.popup-footer {
-  padding: 8px 12px !important;
-  background: var(--bg-secondary, #1e1a3b) !important;
-  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
+.popup-card .ant-card-head {
+  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
 }
 
-.popup-status-tag {
-  align-self: flex-start;
+.popup-footer {
+  padding: 0 !important;
+  background: var(--bg-secondary, #1e1a3b) !important;
+  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
 }

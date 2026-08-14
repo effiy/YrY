@@ -187,6 +187,27 @@ Popup (React) dispatches action
 
 ## Recent Changes
 
+### 2026-08-15 — Popup skin-center overhaul + pet overlay skin ring
+
+Referencing deepseek-harness's "everything is a plugin / skin center / pet preview" aesthetic, the popup was rebuilt into a live skin center and the floating pet now wears the selected skin.
+
+- **`src/popup/data.ts`**: `COLOR_OPTIONS` gains a `gradient` field per swatch (reusing `THEME_PALETTES[i].primaryGradient` / `NONE_PALETTE.primaryGradient`); new `ROLE_NAMES`, `roleImageUrl(role)` (chrome.runtime.getURL-resolved asset path), and `MODELS` (`qwen3.5` / `qwen3.5-think` / `qwen3-coder`). `DEFAULTS.MODEL` is now `'qwen3.5'` (was `null`); `PopupConfig.COLORS` is typed `ColorOption[]`.
+- **`src/popup/types.ts`**: `PopupState.model` is `string` (was `string | null`).
+- **`src/popup/components/AppHeader`**: gradient header with extension icon + title + subtitle + pulsing status pill (`visible` / `statusText` props).
+- **`src/popup/components/PetPreview`** (new): live pet preview — role image inside a `--primary-gradient` ring, scaled by the size slider, with a float animation + `prefers-reduced-motion` guard.
+- **`src/popup/components/ColorPicker`** (new): 6-swatch grid; selected swatch shows a check + ring highlight.
+- **`src/popup/components/RolePicker`** (new): 2-column role cards with image + name, `--border-focus` highlight.
+- **`src/popup/components/AppFooter`** + **`AboutCard`**: hint/version footer; About collapsed into an antd `Collapse` (prod/dev dep list removed).
+- **`src/popup/App.tsx`**: integrates preview + pickers + model `Select`; new `updateModel` action persists directly to global state (no content-script action for model).
+- **`src/content/rendering/overlay.ts`**: the floating pet now wears the active skin — `#yipet-overlay` gets a `--primary-gradient` ring + `--primary-rgb` glow (previously `padding:24px;border-radius:50%` with no background), the pet image is rounded + `draggable=false`, and the role name is surfaced as a native tooltip.
+- **`public/_locales/*/messages.json`** + **`src/shared/i18n/index.ts`**: added `popupSubtitle`, `popupPreviewTitle`, `popupModelLabel`, `notifyModelUpdated`.
+- **`vitest.config.ts`**: dropped the unused `@vitejs/plugin-react` (v6 requires Vite 6, incompatible with Vitest 2's Vite 5) — tests are pure `.ts`, no JSX.
+- **`tests/config/data.test.ts`**: `DEFAULTS.MODEL` assertion now expects `'qwen3.5'`; `COLORS` assertions use `toMatchObject` + a gradient-presence check.
+
+Cross-project relevance: the popup is now a skin center — pick a role (persona system prompt), a color skin (full page-surface recolor via `applyThemeColors`), a model, and see the result live in the pet preview; the same skin ring renders on the floating pet on every host page. Mirrors the popup-preview ↔ on-page-pet loop that deepseek-harness's skin center establishes.
+
+`npm run typecheck` ✓, `npm run build` ✓, `npm test` ✓ (97/97).
+
 ### 2026-08-05 — Auto-generated session title
 
 - **`src/chat/controller.ts`**: new action `autoGenerateSessionTitle(opts?: { apply?: boolean; onResult?: (title: string) => void })` — takes the first 4 user messages (capped at 300 chars each), asks the LLM via `_chat.streamWithCallback` with a "title generator" system prompt + "4-6 word title, no quotes, no markdown, no trailing punctuation" user prompt. Strips residual quotes/punctuation from the LLM's response. Truncates to 80 chars. When `apply !== false` (default), persists the title via `_sessions.update` and updates `state.sessions[i].title` + `state.title`. Surfaces success/error notifications. When `onResult` is provided, fires with the generated title (used by SessionEditDialog to populate the input without saving — user can still edit before clicking Save).
