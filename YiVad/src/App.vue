@@ -3,6 +3,8 @@
     <router-view></router-view>
     <SparkGlowDefs />
     <MermaidViewer />
+    <AgentToolsDrawer />
+    <AgentSessionLogDialog />
   </el-config-provider>
 </template>
 
@@ -16,6 +18,8 @@ import { LanguageType } from "./stores/interface";
 import { useGlobalStore } from "@/stores/modules/global";
 import SparkGlowDefs from "@/components/SparkGlowDefs.vue";
 import MermaidViewer from "@/components/MermaidViewer.vue";
+import AgentToolsDrawer from "@/views/aiChat/components/AgentToolsDrawer.vue";
+import AgentSessionLogDialog from "@/views/aiChat/components/AgentSessionLogDialog.vue";
 import { setupMermaidThemeWatcher } from "@/hooks/useMarkdown";
 import en from "element-plus/es/locale/lang/en";
 import zhCn from "element-plus/es/locale/lang/zh-cn";

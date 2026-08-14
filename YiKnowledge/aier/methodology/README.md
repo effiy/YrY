@@ -62,6 +62,7 @@ Includes AI product R&D specific methodology: Prompt engineering, RAG design, Ag
 - `blueprint-an-enterprise-rag.md` — Enterprise RAG blueprint
 - `tune-prompts.md` — Prompt tuning methodology
 - `run-a-two-loop-llm-evaluation.md` — Two-loop LLM evaluation process
+- `agent-harness-plugin-architecture.md` — Plugin-based agent harness architecture (Cordis / profiles / capability seams / events), mapped to YiAi's agent loop
 
 ## File type and naming
 

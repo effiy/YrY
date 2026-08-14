@@ -28,9 +28,24 @@
           </div>
         </div>
         <p class="pipeline__stage-desc">{{ layer.description }}</p>
+        <div class="pipeline__stage-flow">
+          <template v-if="layer.inputItems.length">
+            <el-tooltip v-for="item in layer.inputItems" :key="item.id" :content="item.description" placement="top">
+              <span class="pipeline__stage-flow-chip pipeline__stage-flow-chip--input" @click.stop="previewRole(layer.role)">{{ item.label }}</span>
+            </el-tooltip>
+            <span class="pipeline__stage-flow-arrow">→</span>
+          </template>
+          <el-tooltip v-for="item in layer.outputItems" :key="item.id" :content="item.description" placement="top">
+            <span class="pipeline__stage-flow-chip" @click.stop="previewRole(layer.role)">{{ item.label }}</span>
+          </el-tooltip>
+        </div>
+        <div class="pipeline__stage-topics">
+          <span v-for="topic in layer.topics" :key="topic.file" class="pipeline__stage-topic" @click.stop="goToStage(layer.id)">{{ topic.label }}</span>
+        </div>
         <div class="pipeline__stage-stats">
           <span class="pipeline__stage-stats-total">{{ statsFor(layer.category).total }} files</span>
         </div>
+        <p class="pipeline__stage-boundary">{{ layer.boundary }}</p>
       </el-card>
     </div>
 
@@ -61,9 +76,27 @@
 
           <p class="pipeline__stage-desc">{{ stage.description }}</p>
 
+          <div class="pipeline__stage-flow">
+            <template v-if="stage.inputItems.length">
+              <el-tooltip v-for="item in stage.inputItems" :key="item.id" :content="item.description" placement="top">
+                <span class="pipeline__stage-flow-chip pipeline__stage-flow-chip--input" @click.stop="previewRole(stage.role)">{{ item.label }}</span>
+              </el-tooltip>
+              <span class="pipeline__stage-flow-arrow">→</span>
+            </template>
+            <el-tooltip v-for="item in stage.outputItems" :key="item.id" :content="item.description" placement="top">
+              <span class="pipeline__stage-flow-chip" @click.stop="previewRole(stage.role)">{{ item.label }}</span>
+            </el-tooltip>
+          </div>
+
+          <div class="pipeline__stage-topics">
+            <span v-for="topic in stage.topics" :key="topic.file" class="pipeline__stage-topic" @click.stop="goToStage(stage.id)">{{ topic.label }}</span>
+          </div>
+
           <div class="pipeline__stage-stats">
             <span class="pipeline__stage-stats-total">{{ statsFor(stage.category).total }} files</span>
           </div>
+
+          <p class="pipeline__stage-boundary">{{ stage.boundary }}</p>
         </el-card>
       </div>
     </div>
@@ -435,6 +468,17 @@ onMounted(() => {
   &--yiai { background: #e6f0ff; color: #1677ff; }
   &--yivad { background: #e6f9f2; color: #10b981; }
   &--yipet { background: #fff7e6; color: #f59e0b; }
+}
+
+// ── Boundary callout ─────────────────────────────────────
+.pipeline__stage-boundary {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: 1px dashed var(--el-border-color-lighter);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--el-text-color-placeholder);
+  line-height: 1.5;
 }
 
 // ── Decision tree ───────────────────────────────────────

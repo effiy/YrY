@@ -7,7 +7,7 @@
  * (grouped by category). Mirrors YiPet's AgentToolsDrawer at the same surface.
  * Fetches lazily on first open and caches for the session.
  */
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { Loading } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import {
@@ -41,8 +41,6 @@ function open() {
 function close() {
   store.closeAgentToolsDrawer();
 }
-
-onMounted(load);
 
 const toolGroups = computed(() => {
   const groups: Record<string, AgentToolDescriptor[]> = {};

@@ -5,7 +5,7 @@ import { HOME_URL, LOGIN_URL } from "@/config";
  * staticRouter (static routes)
  *
  * Static routes are the skeleton: login, layout, RAG pages,
- * pipeline, goals, and metrics.
+ * pipeline
  * Everything else comes from the dynamic menu tree.
  */
 export const staticRouter: RouteRecordRaw[] = [
@@ -147,20 +147,6 @@ export const staticRouter: RouteRecordRaw[] = [
         component: () => import("@/views/knowledge/executiver/okrRole.vue"),
         props: true,
         meta: { title: "Role OKR", icon: "Aim", activeMenu: "/executiver" }
-      },
-      {
-        path: "/executiver/okr/:roleId/goal/:goalId",
-        name: "okrGoalDetail",
-        component: () => import("@/views/knowledge/goals/detail.vue"),
-        props: true,
-        meta: { title: "Goal Detail", icon: "Aim", activeMenu: "/executiver" }
-      },
-      {
-        path: "/executiver/okr/:roleId/metric/:metricId",
-        name: "okrMetricDetail",
-        component: () => import("@/views/knowledge/metrics/detail.vue"),
-        props: true,
-        meta: { title: "Metric Detail", icon: "Aim", activeMenu: "/executiver" }
       },
       {
         path: "/leader",

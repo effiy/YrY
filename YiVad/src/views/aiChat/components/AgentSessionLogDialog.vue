@@ -8,7 +8,7 @@
  * and the injected [TASK]/[CONTINUE]/[BUDGET]/[RESUME] notes — and export it
  * as Markdown or JSON for audit / handoff.
  */
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { CopyDocument, Download, Loading } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
@@ -32,6 +32,18 @@ const ROLE_LABELS: Record<string, string> = {
 function roleClass(role: string): string {
   return `asl__role--${role.replace(/_/g, "-")}`;
 }
+
+/** One-line trajectory summary: message count per role (dsh observability). */
+const roleSummary = computed(() => {
+  const counts: Record<string, number> = {};
+  for (const m of messages.value) {
+    const label = ROLE_LABELS[m.role] ?? m.role;
+    counts[label] = (counts[label] ?? 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([label, n]) => `${label} ×${n}`)
+    .join(" · ");
+});
 
 async function load() {
   const key = store.activeConversation?.key;
@@ -119,6 +131,7 @@ async function copyMarkdown() {
       <div class="asl__bar">
         <span class="asl__meta">
           Session: <code>{{ sessionId || "—" }}</code> · {{ messages.length }} messages
+          <template v-if="roleSummary"> · {{ roleSummary }}</template>
         </span>
         <div class="asl__actions">
           <el-button size="small" text :icon="CopyDocument" :disabled="!messages.length" @click="copyMarkdown">
