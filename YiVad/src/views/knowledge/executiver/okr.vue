@@ -38,9 +38,6 @@
             <span class="okr__role-cell-name">{{ item.roleName }}</span>
             <el-tag :type="item.roleStatusType" size="small">{{ item.roleStatus }}</el-tag>
           </div>
-          <div class="okr__card-meta">
-            <span class="okr__card-owner">{{ item.owner }}</span>
-          </div>
           <el-progress :percentage="item.progress" :status="item.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
         </el-card>
       </div>
@@ -56,7 +53,6 @@
             <span class="okr__role-cell-icon">{{ item.roleIcon }}</span>
             <span class="okr__role-cell-name">{{ item.roleName }}</span>
           </span>
-          <span class="okr__list-owner">{{ item.owner }}</span>
           <el-tag :type="item.statusType" size="small" class="okr__list-status">{{ item.status }}</el-tag>
           <el-progress
             class="okr__list-progress"
@@ -99,7 +95,6 @@
             <div class="okr__role-cell" @click.stop="goRole(row.linkRole)">
               <span class="okr__role-cell-icon">{{ row.roleIcon }}</span>
               <span class="okr__role-cell-name">{{ row.roleName }}</span>
-              <el-tag v-if="row.roleStatusType !== 'success'" :type="row.roleStatusType" size="small" effect="plain">{{ row.roleStatus }}</el-tag>
             </div>
           </template>
         </el-table-column>
@@ -108,7 +103,6 @@
             <el-tag :type="row.statusType" size="small">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="owner" label="Owner" width="150" sortable show-overflow-tooltip />
         <el-table-column prop="deadline" label="Deadline" width="160" sortable>
           <template #default="{ row }">
             <span class="okr__deadline" :class="{ 'okr__deadline-overdue': row.isOverdue }">
@@ -146,6 +140,7 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { Delete, House, Connection } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
+import { loadBool, saveBool } from "@/utils/storage";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
@@ -193,6 +188,9 @@ function roleInfo(roleId?: string) {
 }
 
 const actionItems = ref<ActionItem[]>([]);
+
+/** 示例数据只落盘一次；用户删空后刷新不应再自动补回。 */
+const SEEDED_KEY = "yivad.okr.actionItemsSeeded";
 
 /** 优先级排序权重（P0 最前）。 */
 const PRIORITY_ORDER: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
@@ -350,9 +348,16 @@ async function loadActionItems() {
   } catch {
     actionItems.value = [];
   }
-  // 首次无数据时，写入完整例子数据并作为真实文件展示（可预览）
-  if (!actionItems.value.length) {
-    actionItems.value = await seedExampleActionItems();
+  if (actionItems.value.length) {
+    // 已有数据（历史种子 / 用户自建 / AI 生成）→ 标记已初始化，之后删空不再自动补回。
+    saveBool(SEEDED_KEY, true);
+  } else if (!loadBool(SEEDED_KEY, false)) {
+    // 首次且为空 → 写入示例数据；落盘成功才标记，避免后端暂不可用时永久跳过种子。
+    const seeded = await seedExampleActionItems();
+    if (seeded.length) {
+      actionItems.value = seeded;
+      saveBool(SEEDED_KEY, true);
+    }
   }
 }
 
