@@ -4,15 +4,12 @@
 // 参考 deepseek-harness 的「todo/」能力（Pi/dsh parity）：
 //   - 能力即插件：把各角色的 OKR 上下文（目标 / 关键结果 / 指标 / 阻塞）
 //     拼装成模型可见的 prompt，让模型自主推导「现在最该做什么」。
-//   - 模型可见 ⟺ 可重放：推荐结果回落到确定性的 fallback，保证在没有
-//     LLM 可用时也能生成一份可复现的任务清单（session log 精神）。
 //
 // 职责：
 //   1. 定义推荐任务的数据结构 OkrTaskItem
 //   2. 拼装 system prompt + user prompt（提示语）
 //   3. 从 OKR 静态数据构建模型可见的上下文
 //   4. 解析模型返回的 JSON（容错）
-//   5. 生成确定性的 fallback 推荐（LLM 不可用 / 超时时兜底）
 // ═══════════════════════════════════════════════════════════════════
 import dayjs from "dayjs";
 import {
@@ -22,8 +19,7 @@ import {
   allMetricsMap,
   getGoalMetrics,
   roleDailyDataMap,
-  roleWeeklyDataMap,
-  ROLE_IDS
+  roleWeeklyDataMap
 } from "@/views/knowledge/executiver/okrData";
 import type { GoalItem, MetricItem } from "@/views/knowledge/executiver/okrData";
 import { skills as SKILLS } from "@/views/knowledge/skills/constants";
@@ -34,7 +30,6 @@ const SKILL_ID_LIST = SKILLS.map(s => s.id).join(", ");
 
 // ── 类型 ────────────────────────────────────────
 
-export type OkrHorizon = "daily" | "weekly";
 export type OkrListType = "daily" | "weekly" | "risk" | "sprint";
 export type OkrScope = "all" | string; // "all" 或具体角色 id
 
@@ -61,6 +56,7 @@ export interface OkrTaskItem {
   skill: string; // 实现该任务最合适的 skill（id 取自 skills/constants.ts）
   agent: string; // 负责该任务的 agent persona（如 "Engineer Agent"）
   mcp: OkrMcp; // 需要的 MCP 服务器：github | yiai | ""（无需）
+  filePath?: string; // 落盘路径（加载 / 持久化后回填，供文件预览弹框打开正文）
 }
 
 export interface OkrRecommendResult {
@@ -72,15 +68,13 @@ export interface OkrRecommendResult {
 export interface OkrListMeta {
   key: OkrListType;
   icon: string;
-  horizon: OkrHorizon;
-  count: number;
 }
 
 export const LIST_TYPES: OkrListMeta[] = [
-  { key: "daily", icon: "📅", horizon: "daily", count: 6 },
-  { key: "weekly", icon: "🗓", horizon: "weekly", count: 6 },
-  { key: "risk", icon: "🚨", horizon: "daily", count: 5 },
-  { key: "sprint", icon: "🎯", horizon: "weekly", count: 5 }
+  { key: "daily", icon: "📅" },
+  { key: "weekly", icon: "🗓" },
+  { key: "risk", icon: "🚨" },
+  { key: "sprint", icon: "🎯" }
 ];
 
 const VALID_EFFORT = ["S", "M", "L"] as const;
@@ -297,41 +291,7 @@ function formatRoleDetail(roleId: string): string {
   return lines.join("\n");
 }
 
-/** 全角色精简上下文（scope = all 时用，避免 prompt 过长）。 */
-function formatRoleCompact(roleId: string): string {
-  const meta = rolesData[roleId];
-  const weekly = roleWeeklyDataMap[roleId];
-  if (!meta) return "";
-
-  const goals = (goalsData[roleId] || []).sort((a, b) => krAvg(a) - krAvg(b));
-  const laggingGoals = goals.filter(g => krAvg(g) < 50).slice(0, 2);
-  const laggingMetrics = (metricsData[roleId] || [])
-    .sort((a, b) => metricProgress(a) - metricProgress(b))
-    .filter(m => metricProgress(m) < 50)
-    .slice(0, 2);
-
-  const lines: string[] = [];
-  lines.push(`【${meta.icon} ${meta.name} · ${roleId}】状态：${weekly.status}`);
-  if (weekly.blockers.length) lines.push(`  阻塞：${weekly.blockers.join("；")}`);
-  if (weekly.nextWeek.length) lines.push(`  本周关键：${weekly.nextWeek.join("；")}`);
-  if (laggingGoals.length) lines.push(`  滞后目标：${laggingGoals.map(g => `${g.id} ${g.title}（${krAvg(g)}%）`).join("；")}`);
-  if (laggingMetrics.length) lines.push(`  滞后指标：${laggingMetrics.map(m => `${m.name} ${m.current}${m.unit}→${m.target}${m.unit}`).join("；")}`);
-  return lines.join("\n");
-}
-
-/** 构建模型可见的 OKR 上下文。 */
-export function buildOkrContext(scope: OkrScope): string {
-  const roles = scope === "all" ? [...ROLE_IDS] : [scope];
-  const formatter = scope === "all" ? formatRoleCompact : formatRoleDetail;
-  return roles.map(formatter).filter(Boolean).join("\n\n");
-}
-
 // ── 提示语（User Prompt）────────────────────────
-
-function scopeLabel(scope: OkrScope): string {
-  if (scope === "all") return "全部角色";
-  return rolesData[scope]?.name ?? scope;
-}
 
 /** 序列化历史任务（借鉴以前的任务内容，最多 15 条）。 */
 function formatHistory(history?: OkrTaskItem[]): string {
@@ -340,60 +300,6 @@ function formatHistory(history?: OkrTaskItem[]): string {
     .slice(-15)
     .map((it, i) => `${i + 1}. [${it.roleName}] ${it.title}（skill=${it.skill} · agent=${it.agent} · mcp=${it.mcp || "—"}）`)
     .join("\n");
-}
-
-export function buildUserPrompt(listType: OkrListType, scope: OkrScope, history?: OkrTaskItem[]): string {
-  const ctx = buildOkrContext(scope);
-  const today = dayjs().format("YYYY-MM-DD");
-  const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD"); // 周一
-  const weekEnd = dayjs().startOf("week").add(5, "day").format("YYYY-MM-DD"); // 周五
-  const label = scopeLabel(scope);
-
-  let prompt: string;
-  switch (listType) {
-    case "daily":
-      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐今日任务清单（6 条）：
-- 优先处理：逾期/临期的 Action Item、今日 Top3、阻塞项的下一步动作、进度 < 40% 的 Key Result 推进动作。
-- dueDate 一律取今天（${today}）或明天。
-
-OKR 上下文：
-${ctx}`;
-      break;
-    case "weekly":
-      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐本周任务清单（6 条）：
-- 优先处理：本周关键里程碑（nextWeek）、进度最滞后的 Objective/Key Result、需要跨角色协作的事项、本周到期的 Action Item。
-- dueDate 落在本周（${weekStart} ~ ${weekEnd}）。
-
-OKR 上下文：
-${ctx}`;
-      break;
-    case "risk":
-      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐「风险与阻塞」处理清单（5 条）：
-- 聚焦：各角色 blockers、状态为 blocked / At Risk 的目标、逾期未完成的 Action Item。
-- 每个任务给出「解除阻塞」的下一步可执行动作。
-- dueDate 优先今天（${today}）或本周。
-
-OKR 上下文：
-${ctx}`;
-      break;
-    case "sprint":
-      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐「目标冲刺」清单（5 条）：
-- 聚焦：进度最低（progress < 40%）的 Key Result 与指标。
-- 每个滞后项给出一个本周内能完成的推进任务。
-- dueDate 落在本周（${weekStart} ~ ${weekEnd}）。
-
-OKR 上下文：
-${ctx}`;
-      break;
-    default:
-      prompt = ctx;
-  }
-
-  const hist = formatHistory(history);
-  if (hist) {
-    prompt += `\n\n历史任务（借鉴以前的任务内容，避免重复、延续上下文）：\n${hist}`;
-  }
-  return prompt;
 }
 
 /** 单条重生成提示语：为指定角色重新推荐一条任务（替代已失效的旧任务，要求与之不同）。 */
@@ -533,165 +439,6 @@ export function parseRecommendation(raw: string, scope: OkrScope, listType?: Okr
     .sort((a, b) => b.score - a.score); // 综合评分降序，快速见效项排最前
 }
 
-// ── 确定性 fallback（LLM 不可用 / 超时）─────────
-//
-// 与 AI 输出同构，直接从静态 OKR 数据推导，保证「刷新推荐」永远有结果。
-
-function fallbackItem(
-  partial: Partial<OkrTaskItem> & { title: string; role: string },
-  index: number,
-  listType: OkrListType
-): OkrTaskItem {
-  const { roleName, roleIcon } = roleMeta(partial.role);
-  const dueDate = partial.dueDate ?? dayjs().format("YYYY-MM-DD");
-  const roi = partial.roi ?? "medium";
-  const difficulty = partial.difficulty ?? "medium";
-  const urgency = partial.urgency ?? urgencyFromDue(dueDate);
-  const score = scoreTask(roi, difficulty, urgency);
-  const goalId = partial.goalId ?? "";
-  const metricId = partial.metricId ?? "";
-  const metric = resolveMetric(partial.role, metricId, goalId);
-  const orchestration = applyOrchestration({ role: partial.role, listType });
-  return {
-    id: `okr-fb-${index}`,
-    title: partial.title,
-    role: partial.role,
-    roleName,
-    roleIcon,
-    priority: priorityFromScore(score),
-    goalId,
-    metricId,
-    metric,
-    effort: partial.effort ?? "M",
-    dueDate,
-    reason: partial.reason ?? "",
-    roi,
-    difficulty,
-    urgency,
-    score,
-    ...orchestration
-  };
-}
-
-export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): OkrTaskItem[] {
-  const roles = scope === "all" ? [...ROLE_IDS] : [scope];
-  const items: OkrTaskItem[] = [];
-  const today = dayjs().format("YYYY-MM-DD");
-  const weekEnd = dayjs().startOf("week").add(5, "day").format("YYYY-MM-DD"); // 周五
-  let idx = 0;
-
-  for (const roleId of roles) {
-    const daily = roleDailyDataMap[roleId];
-    const weekly = roleWeeklyDataMap[roleId];
-    const meta = rolesData[roleId];
-    if (!meta) continue;
-
-    const firstActiveGoal = (goalsData[roleId] || []).find(g => g.status === "active");
-    const goalId = firstActiveGoal?.id ?? "";
-
-    switch (listType) {
-      case "daily": {
-        (daily?.today ?? []).slice(0, 3).forEach((t, i) => {
-          items.push(fallbackItem({
-            title: t,
-            role: roleId,
-            goalId,
-            effort: "M",
-            dueDate: today,
-            roi: i === 0 ? "high" : "medium",
-            difficulty: "low",
-            urgency: "high"
-          }, idx++, listType));
-        });
-        if (daily?.blocker) {
-          items.push(fallbackItem({
-            title: `解除阻塞：${daily.blocker}`,
-            role: roleId,
-            goalId,
-            effort: "S",
-            dueDate: today,
-            roi: "high",
-            difficulty: "low",
-            urgency: "high",
-            reason: "今日阻塞项，需优先推进"
-          }, idx++, listType));
-        }
-        break;
-      }
-      case "weekly": {
-        (weekly.nextWeek ?? []).slice(0, 3).forEach(t => {
-          items.push(fallbackItem({
-            title: t,
-            role: roleId,
-            goalId,
-            effort: "L",
-            dueDate: weekEnd,
-            roi: "medium",
-            difficulty: "low",
-            urgency: "medium"
-          }, idx++, listType));
-        });
-        break;
-      }
-      case "risk": {
-        (weekly.blockers ?? []).forEach(b => {
-          items.push(fallbackItem({
-            title: `解除阻塞：${b}`,
-            role: roleId,
-            goalId,
-            effort: "S",
-            dueDate: today,
-            roi: "high",
-            difficulty: "low",
-            urgency: "high",
-            reason: "阻塞项，需解除"
-          }, idx++, listType));
-        });
-        // blocked 目标 → 处理动作
-        (goalsData[roleId] || []).filter(g => g.status === "blocked").forEach(g => {
-          items.push(fallbackItem({
-            title: `推进被阻塞目标：${g.title}`,
-            role: roleId,
-            goalId: g.id,
-            effort: "M",
-            dueDate: weekEnd,
-            roi: "high",
-            difficulty: "high",
-            urgency: "high",
-            reason: "目标处于 blocked 状态"
-          }, idx++, listType));
-        });
-        break;
-      }
-      case "sprint": {
-        (goalsData[roleId] || [])
-          .sort((a, b) => krAvg(a) - krAvg(b))
-          .filter(g => krAvg(g) < 40)
-          .slice(0, 2)
-          .forEach(g => {
-            const laggingKr = g.keyResults.find(kr => kr.progress < 40);
-            items.push(fallbackItem({
-              title: laggingKr ? `冲刺 ${g.id}：${laggingKr.text}` : `冲刺目标：${g.title}`,
-              role: roleId,
-              goalId: g.id,
-              effort: "L",
-              dueDate: weekEnd,
-              roi: "high",
-              difficulty: "high",
-              urgency: "medium",
-              reason: `目标整体进度 ${krAvg(g)}%，滞后`
-            }, idx++, listType));
-          });
-        break;
-      }
-    }
-  }
-
-  return items
-    .sort((a, b) => b.score - a.score)
-    .slice(0, LIST_TYPES.find(l => l.key === listType)?.count ?? 6);
-}
-
 // ── 知识库序列化（任务 ⇄ 扁平 frontmatter）─────────
 //
 // OkrRecommendPanel 把推荐任务落盘到 YiKnowledge/okr/，每个任务以扁平字段
@@ -747,5 +494,64 @@ export function taskFromMeta(meta: Record<string, unknown>, fallbackId: string):
     urgency: clampLevel(meta.urgency),
     score: toNumber(meta.score),
     ...applyOrchestration({ role, skill: meta.skill, agent: meta.agent, mcp: meta.mcp })
+  };
+}
+
+// ── Action Item（okr-action）→ 表格行 ───────────────
+//
+// 与推荐任务（okr-task）合并进同一张表：Action Item 是「已承诺的执行项」，
+// 有既定的状态（status）与进度（progress）。映射到统一行时用 progress 填充
+// score 栏、status 填充 reason 栏，并保留自身字段供表格差异化渲染。
+
+export interface OkrActionItem extends OkrTaskItem {
+  kind: "action";
+  /** Action Item 也归属某个清单（daily/weekly/risk/sprint），随 frontmatter 落盘。 */
+  listType: OkrListType;
+  status: string;
+  progress: number;
+  owner: string;
+  subtaskCount: number;
+  filePath: string;
+}
+
+/** 从 okr-action 的 frontmatter 重建表格行；无 title 视为无效返回 null。 */
+export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: string): OkrActionItem | null {
+  const title = typeof meta.title === "string" ? meta.title : "";
+  if (!title) return null;
+  const role = typeof meta.role === "string" ? meta.role : "";
+  const { roleName, roleIcon } = roleMeta(role);
+  const goalId = typeof meta.goal === "string" ? meta.goal : typeof meta.goalId === "string" ? meta.goalId : "";
+  const deadline = typeof meta.deadline === "string" ? meta.deadline : "";
+  const status = typeof meta.status === "string" ? meta.status : "Planned";
+  const progress = toNumber(meta.progress);
+  const priority = clampPriority(meta.priority);
+  const listType: OkrListType = LIST_TYPES.some(l => l.key === meta.listType) ? (meta.listType as OkrListType) : "sprint";
+  return {
+    id: typeof meta.id === "string" ? meta.id : fallbackId,
+    title,
+    role,
+    roleName,
+    roleIcon,
+    priority,
+    goalId,
+    metricId: "",
+    metric: null,
+    effort: "M",
+    dueDate: deadline,
+    reason: status,
+    roi: priority === "P0" ? "high" : priority === "P1" ? "medium" : "low",
+    difficulty: "medium",
+    urgency: urgencyFromDue(deadline),
+    score: progress,
+    skill: typeof meta.skill === "string" ? meta.skill : "",
+    agent: typeof meta.agent === "string" ? meta.agent : "",
+    mcp: (typeof meta.mcp === "string" ? meta.mcp : "") as OkrMcp,
+    kind: "action",
+    listType,
+    status,
+    progress,
+    owner: typeof meta.owner === "string" ? meta.owner : "",
+    subtaskCount: toNumber(meta.subtaskCount),
+    filePath: ""
   };
 }

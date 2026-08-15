@@ -7,11 +7,6 @@ export default {
     rss: "RSS",
     knowledge: "Knowledge",
 
-    flow: {
-      title: "Requirement → Launch · End-to-End Flow",
-      subtitle: "From OKR definition to deployment, four stages fully wired"
-    },
-
     status: {
       online: "Online",
       offline: "Offline",
@@ -42,9 +37,6 @@ export default {
       title: "AI Autonomous Recommendation · OKR Task Lists",
       subtitle: "Modeled on deepseek-harness \"everything is a plugin\" — model-visible means logged, refresh means replay",
       scopeAll: "All roles",
-      generateAll: "Generate all",
-      refresh: "Refresh recommendations",
-      generating: "Generating…",
       filterAll: "All",
       searchPlaceholder: "Search task / role…",
       datePlaceholder: "Due date",
@@ -53,7 +45,7 @@ export default {
         p0: "P0 {n}",
         overdue: "Overdue {n}"
       },
-      empty: "No recommendations yet — click refresh to generate",
+      empty: "No recommendations yet",
       view: {
         table: "Table",
         list: "List",

@@ -7,11 +7,6 @@ export default {
     rss: "RSS",
     knowledge: "知识库",
 
-    flow: {
-      title: "需求 → 上线 · 整套流程",
-      subtitle: "从 OKR 定义到部署上线，四个阶段一路打通"
-    },
-
     status: {
       online: "在线",
       offline: "离线",
@@ -42,9 +37,6 @@ export default {
       title: "AI 自主推荐 · OKR 任务清单",
       subtitle: "参考 deepseek-harness「一切皆插件」——模型可见即日志，刷新即可重放",
       scopeAll: "全部角色",
-      generateAll: "生成全部",
-      refresh: "刷新推荐",
-      generating: "AI 生成中…",
       filterAll: "全部",
       searchPlaceholder: "搜索任务 / 角色…",
       datePlaceholder: "截止日期",
@@ -53,7 +45,7 @@ export default {
         p0: "P0 {n} 项",
         overdue: "逾期 {n} 项"
       },
-      empty: "暂无推荐，点击刷新生成",
+      empty: "暂无推荐",
       view: {
         table: "表格",
         list: "列表",

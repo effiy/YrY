@@ -60,7 +60,6 @@ import { useI18n } from "vue-i18n";
 import { ChatDotRound, Aim, Connection, Reading } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
-import { FLOW_STAGES } from "@/views/knowledge/executiver/okrFlowData";
 import { getDashboardHealth } from "@/api/modules/dashboard";
 import type { DashboardHealthData } from "@/api/interface/yiweb";
 
@@ -75,7 +74,8 @@ const loading = ref(true);
 const lastUpdated = ref("");
 
 type Status = "ok" | "warn" | "off";
-const dotTitle = (s: Status) => t(`home.status.${s === "ok" ? "online" : s === "warn" ? "disconnected" : "offline"}`);
+const STATUS_LABEL: Record<Status, string> = { ok: "online", warn: "disconnected", off: "offline" };
+const dotTitle = (s: Status) => t(`home.status.${STATUS_LABEL[s]}`);
 
 function onProjectClick(to: string | null) {
   if (to) router.push(to);
@@ -102,16 +102,18 @@ const clock = computed(() => dayjs(now.value).format("YYYY-MM-DD HH:mm:ss"));
 // ═══════════════════════════════════════════════
 // Projects
 // ═══════════════════════════════════════════════
+/** 服务连接状态 → 展示状态：已连接 ok；未连接时健康数据已返回为 warn，尚未返回（首屏/失败）为 off。 */
+const toStatus = (connected: boolean, hasHealth: boolean): Status =>
+  connected ? "ok" : hasHealth ? "warn" : "off";
+
 const projects = computed(() => {
   const h = health.value;
-  const ollamaOk = !!h?.ollama?.connected;
-  const serverOk = !!h?.server?.running;
-  const mongoOk = !!h?.mongodb?.connected;
+  const hasHealth = !!h;
   return [
-    { key: "yiAi", icon: "🤖", to: "/aiChat", status: (ollamaOk ? "ok" : h ? "warn" : "off") as Status },
-    { key: "yiVad", icon: "🖥️", to: "/executiver/okr", status: (serverOk ? "ok" : h ? "warn" : "off") as Status },
+    { key: "yiAi", icon: "🤖", to: "/aiChat", status: toStatus(!!h?.ollama?.connected, hasHealth) },
+    { key: "yiVad", icon: "🖥️", to: "/executiver/okr", status: toStatus(!!h?.server?.running, hasHealth) },
     { key: "yiPet", icon: "🧩", to: "/executiver/rss", status: "off" as Status },
-    { key: "yiKnowledge", icon: "📚", to: "/knowledge/goals", status: (mongoOk ? "ok" : h ? "warn" : "off") as Status }
+    { key: "yiKnowledge", icon: "📚", to: "/knowledge/goals", status: toStatus(!!h?.mongodb?.connected, hasHealth) }
   ];
 });
 
@@ -209,51 +211,5 @@ onBeforeUnmount(() => {
   font-size: 11px;
   color: var(--el-text-color-secondary);
   line-height: 1.4;
-}
-
-// ── Section head ─────────────────────────────────
-.ho__section-head { margin-bottom: 10px; }
-.ho__section-title { margin: 0; font-size: 16px; font-weight: 700; }
-.ho__section-subtitle { margin: 2px 0 0; font-size: 12px; color: var(--el-text-color-secondary); }
-
-// ── Flow strip (需求 → 上线) ─────────────────────
-.ho__flow { display: flex; align-items: stretch; gap: 8px; }
-.ho__flow-arrow { align-self: center; font-size: 18px; color: var(--el-text-color-placeholder); flex-shrink: 0; }
-.ho__flow-stage {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
-  &:hover {
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
-  }
-}
-.ho__flow-icon { font-size: 22px; flex-shrink: 0; }
-.ho__flow-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.ho__flow-label { font-size: 14px; font-weight: 700; }
-.ho__flow-desc { font-size: 11px; color: var(--el-text-color-secondary); line-height: 1.4; }
-.ho__flow-count {
-  flex-shrink: 0;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9);
 }
 </style>

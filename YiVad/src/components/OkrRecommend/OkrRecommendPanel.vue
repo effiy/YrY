@@ -11,13 +11,6 @@
           <el-option :value="'all'" :label="t('home.aiRecommend.scopeAll')" />
           <el-option v-for="r in roleOptions" :key="r.id" :value="r.id" :label="`${r.icon} ${r.name}`" />
         </el-select>
-        <el-button size="small" type="primary" :icon="MagicStick" :loading="anyLoading" @click="generateAll">
-          {{ t("home.aiRecommend.generateAll") }}
-        </el-button>
-        <el-tooltip :content="t('home.aiRecommend.refresh')" placement="top">
-          <el-button circle size="small" :icon="Refresh" :loading="anyLoading" @click="generateAll" />
-        </el-tooltip>
-        <el-tag v-if="anyLoading" size="small" type="warning" effect="light">{{ t("home.aiRecommend.generating") }}</el-tag>
       </div>
     </div>
 
@@ -57,11 +50,6 @@
 
     <!-- ═══ 表格视图：四类推荐清单合并 ═══ -->
     <el-table v-if="viewMode === 'table'" :data="filteredItems" size="small" border stripe style="width: 100%" row-key="id">
-      <el-table-column :label="t('home.aiRecommend.cols.category')" width="140" fixed="left">
-        <template #default="{ row }">
-          <el-tag size="small" effect="light" :type="categoryTagType(row.listType)" round>{{ categoryIcon(row.listType) }} {{ categoryLabel(row.listType) }}</el-tag>
-        </template>
-      </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.priority')" prop="priority" width="90" sortable>
         <template #default="{ row }">
           <el-tag :type="priorityType(row.priority)" size="small" effect="dark">{{ row.priority }}</el-tag>
@@ -70,14 +58,14 @@
       <el-table-column :label="t('home.aiRecommend.cols.score')" prop="score" width="120" sortable>
         <template #default="{ row }">
           <div class="okr-rec__score">
-            <span class="okr-rec__score-bar"><i :class="`is-${scoreTagType(row.score)}`" :style="{ width: `${row.score}%` }" /></span>
-            <span class="okr-rec__score-num" :class="`is-${scoreTagType(row.score)}`">{{ row.score }}</span>
+            <span class="okr-rec__score-bar"><i :class="row.kind === 'action' ? 'is-success' : `is-${scoreTagType(row.score)}`" :style="{ width: `${row.kind === 'action' ? row.progress : row.score}%` }" /></span>
+            <span class="okr-rec__score-num" :class="row.kind === 'action' ? 'is-success' : `is-${scoreTagType(row.score)}`">{{ row.kind === 'action' ? `${row.progress}%` : row.score }}</span>
           </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.task')" prop="title" min-width="320">
         <template #default="{ row }">
-          <span class="okr-rec__cell-title">{{ row.title }}</span>
+          <span class="okr-rec__cell-title okr-rec__cell-title--link" @click="openPreview(row as TableRow)">{{ row.title }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.role')" width="150">
@@ -130,11 +118,19 @@
           <span :class="{ 'okr-rec__cell-due-overdue': isOverdue(row.dueDate) }">{{ row.dueDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.reason')" prop="reason" min-width="220" show-overflow-tooltip />
+      <el-table-column :label="t('home.aiRecommend.cols.reason')" min-width="220">
+        <template #default="{ row }">
+          <template v-if="row.kind === 'action'">
+            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
+            <span v-if="row.subtaskCount" class="okr-rec__subtask">{{ row.subtaskCount }} subtasks</span>
+          </template>
+          <span v-else>{{ row.reason }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.action')" width="110" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button link type="primary" size="small" :icon="MagicStick" :loading="regeneratingId === row.id" @click="regenerateItem(row.listType, row.id, row.role, row.title)" />
-          <el-button link type="danger" size="small" :icon="Delete" @click="removeItem(row.listType, row.id)" />
+          <el-button v-if="row.kind !== 'action'" link type="primary" size="small" :icon="MagicStick" :loading="regeneratingId === row.id" @click="regenerateItem(row.listType, row.id, row.role, row.title)" />
+          <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row as TableRow)" />
         </template>
       </el-table-column>
     </el-table>
@@ -144,9 +140,9 @@
       <div v-for="item in filteredItems" :key="item.id" class="okr-rec__list-item">
         <el-tag :type="priorityType(item.priority)" size="small" effect="dark" class="okr-rec__list-priority">{{ item.priority }}</el-tag>
         <div class="okr-rec__list-main">
-          <div class="okr-rec__list-title">{{ item.title }}</div>
+          <div class="okr-rec__list-title okr-rec__cell-title--link" @click="openPreview(item)">{{ item.title }}</div>
           <div class="okr-rec__list-meta">
-            <el-tag size="small" effect="light" :type="categoryTagType(item.listType)" round>{{ categoryIcon(item.listType) }} {{ categoryLabel(item.listType) }}</el-tag>
+            <el-tag size="small" effect="light" :type="categoryTagType(categoryKey(item))" round>{{ categoryIcon(categoryKey(item)) }} {{ categoryLabel(categoryKey(item)) }}</el-tag>
             <span class="okr-rec__list-role" @click="goRole(item.role)">{{ item.roleIcon }} {{ item.roleName }}</span>
             <code v-if="item.goalId" class="okr-rec__list-goal" @click="goGoal(item.role, item.goalId)">{{ item.goalId }}</code>
             <span v-if="item.metric" class="okr-rec__list-metric">{{ item.metric.icon }} {{ item.metric.name }} {{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }}</span>
@@ -166,10 +162,10 @@
       <div v-for="item in filteredItems" :key="item.id" class="okr-rec__card">
         <div class="okr-rec__card-head">
           <el-tag :type="priorityType(item.priority)" size="small" effect="dark">{{ item.priority }}</el-tag>
-          <el-tag size="small" effect="light" :type="categoryTagType(item.listType)" round>{{ categoryIcon(item.listType) }} {{ categoryLabel(item.listType) }}</el-tag>
+          <el-tag size="small" effect="light" :type="categoryTagType(categoryKey(item))" round>{{ categoryIcon(categoryKey(item)) }} {{ categoryLabel(categoryKey(item)) }}</el-tag>
           <span class="okr-rec__card-score" :class="`is-${scoreTagType(item.score)}`">{{ item.score }}</span>
         </div>
-        <div class="okr-rec__card-title">{{ item.title }}</div>
+        <div class="okr-rec__card-title okr-rec__cell-title--link" @click="openPreview(item)">{{ item.title }}</div>
         <div class="okr-rec__cell-dims">
           <span class="okr-rec__dim" :class="`is-${item.roi}`"><em>{{ t("home.aiRecommend.dims.roi") }}</em><b>{{ levelLabel(item.roi) }}</b></span>
           <span class="okr-rec__dim" :class="`is-${item.difficulty}`"><em>{{ t("home.aiRecommend.dims.difficulty") }}</em><b>{{ levelLabel(item.difficulty) }}</b></span>
@@ -196,7 +192,9 @@
     </div>
 
     <!-- ═══ 空状态 ═══ -->
-    <el-empty v-if="!anyLoading && !filteredItems.length" :description="t('home.aiRecommend.empty')" :image-size="48" />
+    <el-empty v-if="!filteredItems.length" :description="t('home.aiRecommend.empty')" :image-size="48" />
+
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
@@ -205,7 +203,7 @@ import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { Refresh, MagicStick, Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
+import { MagicStick, Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { chat } from "@/api/modules/chatService";
 import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
@@ -213,23 +211,26 @@ import type { ChatPayload, KnowledgeFileEntry } from "@/api/interface/yiweb";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 import { rolesData } from "@/views/knowledge/executiver/okrData";
 import { skills } from "@/views/knowledge/skills/constants";
+import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import {
   LIST_TYPES,
   OKR_SYSTEM_PROMPT,
-  buildUserPrompt,
   buildSingleItemPrompt,
   parseRecommendation,
-  fallbackRecommendation,
   taskToMeta,
   taskFromMeta,
+  actionItemFromMeta,
   type OkrLevel,
   type OkrListType,
   type OkrScope,
-  type OkrTaskItem
+  type OkrTaskItem,
+  type OkrActionItem
 } from "./okrRecommend";
 
 const { t } = useI18n();
 const router = useRouter();
+
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 const roleScope = ref<OkrScope>("all");
 const roleOptions = Object.values(rolesData).map(r => ({ id: r.id, name: r.name, icon: r.icon }));
@@ -242,13 +243,12 @@ const regeneratingId = ref("");
 
 interface ListState {
   items: OkrTaskItem[];
-  loading: boolean;
   source: "ai" | "fallback" | "";
   generatedAt: string;
   filePaths: string[];
 }
 
-const emptyState = (): ListState => ({ items: [], loading: false, source: "", generatedAt: "", filePaths: [] });
+const emptyState = (): ListState => ({ items: [], source: "", generatedAt: "", filePaths: [] });
 
 const lists = reactive<Record<OkrListType, ListState>>({
   daily: emptyState(),
@@ -257,27 +257,34 @@ const lists = reactive<Record<OkrListType, ListState>>({
   sprint: emptyState()
 });
 
-/** 四类清单合并为一张表；每行带 listType 以区分来源清单（item.id 已含清单前缀，天然唯一）。 */
-const combinedItems = computed<(OkrTaskItem & { listType: OkrListType })[]>(() => {
-  const out: (OkrTaskItem & { listType: OkrListType })[] = [];
-  for (const l of LIST_TYPES) {
-    out.push(...lists[l.key].items.map(item => ({ ...item, listType: l.key })));
-  }
-  return out.sort((a, b) => b.score - a.score);
+/** Action Item（okr-action）— 与推荐任务合并展示，只读、不参与 AI 生成。 */
+const actionItems = ref<OkrActionItem[]>([]);
+
+/** 统一表格行：推荐任务（listType 区分来源清单）或 Action Item（kind 区分）。 */
+type TableRow = (OkrTaskItem & { kind: "task"; listType: OkrListType }) | OkrActionItem;
+
+/** 四类推荐清单 + Action Item 合并为一张表。 */
+const allRows = computed<TableRow[]>(() => {
+  const tasks: TableRow[] = LIST_TYPES.flatMap(l =>
+    lists[l.key].items.map(item => ({ ...item, kind: "task" as const, listType: l.key }))
+  );
+  return [...tasks, ...actionItems.value].sort((a, b) => b.score - a.score);
 });
 
-const anyLoading = computed(() => LIST_TYPES.some(l => lists[l.key].loading));
+function categoryKey(row: TableRow): OkrListType {
+  return row.listType;
+}
 
 // ── 分类筛选 + 搜索 + 日期 ──────────────────────────
-const categoryFilter = ref<"all" | OkrListType>("daily");
+const categoryFilter = ref<"all" | OkrListType>("all");
 const searchKeyword = ref("");
 const dueDateFilter = ref("");
 
 const filteredItems = computed(() => {
   let result =
     categoryFilter.value === "all"
-      ? combinedItems.value
-      : combinedItems.value.filter(i => i.listType === categoryFilter.value);
+      ? allRows.value
+      : allRows.value.filter(i => categoryKey(i) === categoryFilter.value);
   const date = dueDateFilter.value;
   if (date) result = result.filter(i => i.dueDate === date);
   const kw = searchKeyword.value.trim().toLowerCase();
@@ -331,6 +338,13 @@ function priorityType(p: OkrTaskItem["priority"]): "danger" | "warning" | "prima
   return p === "P0" ? "danger" : p === "P1" ? "warning" : p === "P2" ? "primary" : "info";
 }
 
+function statusTagType(status: string): "success" | "danger" | "warning" | "info" {
+  if (status === "Done") return "success";
+  if (status === "At Risk") return "danger";
+  if (status === "In Progress") return "warning";
+  return "info";
+}
+
 function isOverdue(dueDate: string): boolean {
   if (!dueDate) return false;
   const d = dayjs(dueDate);
@@ -367,8 +381,12 @@ function goGoal(role: string, goalId: string) {
   if (goalId) router.push(`/executiver/okr/${role}?goal=${goalId}`);
 }
 
+function openPreview(row: TableRow) {
+  if (row.filePath) previewDlg.value?.open(row.filePath);
+}
+
 // ── 知识库持久化 ─────────────────────────────
-// 推荐任务落盘到 YiKnowledge/okr/task-<listType>-<NN>.md，
+// 推荐任务按各自 dueDate 归档到 YiKnowledge/okr/YYYY-MM-DD/task-<listType>-<NN>-<slug>.md，
 // 每个任务以扁平 frontmatter 携带自身指标数据（metric* 前缀）。
 
 const KB_DIR = "okr";
@@ -377,13 +395,24 @@ function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
 
-function taskFileName(listType: OkrListType, index: number): string {
-  return `${KB_DIR}/task-${listType}-${pad(index + 1)}.md`;
+/** 任务标题 → 文件名可读 slug（保留中文/英文/数字，其余分隔符归一为 `-`）。 */
+function slugifyTitle(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48)
+    .replace(/-+$/g, "");
 }
 
-/** 从文件名推导稳定 id（task-daily-03.md → daily-03）。 */
+function taskFileName(listType: OkrListType, index: number, dir: string, slug: string): string {
+  return `${KB_DIR}/${dir}/task-${listType}-${pad(index + 1)}-${slug}.md`;
+}
+
+/** 从文件名推导稳定 id（task-daily-03-<slug>.md → daily-03）。 */
 function taskIdFromFileName(name: string): string {
-  const m = name.match(/^task-(daily|weekly|risk|sprint)-(\d{2})\.md$/);
+  const m = name.match(/^task-(daily|weekly|risk|sprint)-(\d{2})(?:-.*)?\.md$/);
   return m ? `${m[1]}-${m[2]}` : name.replace(/\.md$/, "");
 }
 
@@ -416,12 +445,14 @@ function renderTaskBody(item: OkrTaskItem): string {
 /** 把某一清单整体落盘：顺序编号 → 写文件 → 删除不再存在的旧文件。 */
 async function persistList(listType: OkrListType) {
   const state = lists[listType];
+  const today = dayjs().format("YYYY-MM-DD");
   const newPaths: string[] = [];
   let failed = false;
   for (let i = 0; i < state.items.length; i++) {
     const item = state.items[i];
     item.id = `${listType}-${pad(i + 1)}`;
-    const path = taskFileName(listType, i);
+    const path = taskFileName(listType, i, item.dueDate || today, slugifyTitle(item.title) || pad(i + 1));
+    item.filePath = path;
     newPaths.push(path);
     const meta: Record<string, unknown> = {
       type: "okr-task",
@@ -447,13 +478,13 @@ async function persistList(listType: OkrListType) {
   if (failed) ElMessage.error("部分任务保存到知识库失败");
 }
 
-/** 挂载时从 YiKnowledge/okr/ 加载已落盘的任务清单。 */
+/** 挂载时从 YiKnowledge/okr/ 加载已落盘的任务清单（任务按 dueDate 归档到日期目录）。 */
 async function loadFromKnowledge() {
   try {
     const res = await scanKnowledge(KB_DIR);
-    const files = (res.categories?.flatMap(c => c.files) ?? []).filter(f => f.meta?.type === "okr-task");
+    const files = res.categories?.flatMap(c => c.files) ?? [];
     const byList: Record<OkrListType, KnowledgeFileEntry[]> = { daily: [], weekly: [], risk: [], sprint: [] };
-    for (const f of files) {
+    for (const f of files.filter(f => f.meta?.type === "okr-task")) {
       const list = f.meta?.list;
       if (typeof list === "string" && list in byList) byList[list as OkrListType].push(f);
     }
@@ -461,10 +492,22 @@ async function loadFromKnowledge() {
       const state = lists[l.key];
       const entries = byList[l.key].sort((a, b) => (taskIdFromFileName(a.name) < taskIdFromFileName(b.name) ? -1 : 1));
       state.items = entries
-        .map(f => taskFromMeta(f.meta ?? {}, taskIdFromFileName(f.name)))
+        .map(f => {
+          const item = taskFromMeta(f.meta ?? {}, taskIdFromFileName(f.name));
+          if (item) item.filePath = f.path;
+          return item;
+        })
         .filter((x): x is OkrTaskItem => x !== null);
       state.filePaths = entries.map(f => f.path);
     }
+    actionItems.value = files
+      .filter(f => f.meta?.type === "okr-action")
+      .map(f => {
+        const row = actionItemFromMeta(f.meta ?? {}, f.name.replace(/\.md$/, ""));
+        if (row) row.filePath = f.path;
+        return row;
+      })
+      .filter((x): x is OkrActionItem => x !== null);
   } catch {
     // 保持空态，等待用户手动生成
   }
@@ -477,6 +520,25 @@ async function removeItem(listType: OkrListType, id: string) {
   if (idx === -1) return;
   state.items.splice(idx, 1);
   await persistList(listType);
+}
+
+/** 删除一条 Action Item（直接删知识库文件，不参与清单重编号）。 */
+async function removeActionItem(row: OkrActionItem) {
+  if (row.filePath) {
+    try {
+      await deleteKnowledgeFile(row.filePath);
+    } catch {
+      ElMessage.error("Failed to delete action item");
+      return;
+    }
+  }
+  actionItems.value = actionItems.value.filter(a => a.id !== row.id);
+}
+
+/** 表格行删除入口：任务走清单持久化，Action Item 走文件删除。 */
+async function handleDelete(row: TableRow) {
+  if (row.kind === "action") await removeActionItem(row);
+  else await removeItem(row.listType, row.id);
 }
 
 /** 单条 AI 重新生成：替换该行推荐（保留原 id，避免行 key 变动；强制回原角色）。 */
@@ -514,13 +576,6 @@ async function regenerateItem(listType: OkrListType, id: string, role: string, t
   }
 }
 
-function fillFallback(key: OkrListType) {
-  const state = lists[key];
-  state.items = fallbackRecommendation(key, roleScope.value);
-  state.source = "fallback";
-  state.generatedAt = dayjs().format("HH:mm:ss");
-}
-
 /** 拼装历史任务：其它清单已加载的任务（借鉴以前的任务内容，避免重复、延续上下文）。 */
 function buildHistory(excludeKey?: OkrListType): OkrTaskItem[] {
   const out: OkrTaskItem[] = [];
@@ -529,41 +584,6 @@ function buildHistory(excludeKey?: OkrListType): OkrTaskItem[] {
     out.push(...lists[l.key].items);
   }
   return out;
-}
-
-/** 手动调用：先即时刷新确定性兜底并落盘，再后台请求 AI，成功后把兜底升级为 AI 结果。 */
-async function generateList(key: OkrListType) {
-  const state = lists[key];
-  const scope = roleScope.value;
-  fillFallback(key);
-  await persistList(key);
-  if (state.loading) return;
-  state.loading = true;
-  try {
-    const payload: ChatPayload = {
-      model: DEFAULT_MODEL,
-      system: OKR_SYSTEM_PROMPT,
-      messages: [{ type: "user", message: buildUserPrompt(key, scope, buildHistory(key)), timestamp: Date.now() }]
-    };
-    const text = await chat(payload);
-    if (roleScope.value !== scope) return; // 期间切换角色 → 丢弃过期结果
-    const items = parseRecommendation(text, scope, key);
-    if (items.length) {
-      state.items = items;
-      state.source = "ai";
-      state.generatedAt = dayjs().format("HH:mm:ss");
-      await persistList(key);
-    }
-  } catch {
-    // 保留兜底结果
-  } finally {
-    if (roleScope.value === scope) state.loading = false;
-  }
-}
-
-/** 手动生成全部清单（并发生成；单个失败不影响其余）。 */
-async function generateAll() {
-  await Promise.all(LIST_TYPES.map(l => generateList(l.key)));
 }
 
 onMounted(loadFromKnowledge);
@@ -616,6 +636,7 @@ onMounted(loadFromKnowledge);
 
 // ── Table cells ────────────────────────────────
 .okr-rec__cell-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
+.okr-rec__cell-title--link { cursor: pointer; &:hover { color: var(--el-color-primary); } }
 .okr-rec__cell-role { font-size: 12px; cursor: pointer; transition: color 0.15s; &:hover { color: var(--el-color-primary); } }
 .okr-rec__cell-goal { font-family: monospace; font-size: 11px; color: var(--el-color-primary); cursor: pointer; &:hover { text-decoration: underline; } }
 .okr-rec__cell-none { color: var(--el-text-color-placeholder); }
@@ -633,6 +654,7 @@ onMounted(loadFromKnowledge);
   &.is-L { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
 }
 .okr-rec__cell-due-overdue { color: var(--el-color-danger); font-weight: 700; }
+.okr-rec__subtask { margin-left: 6px; font-size: 11px; color: var(--el-text-color-secondary); }
 
 // ── Metric（任务自身指标）────────────────────
 .okr-rec__cell-metric { display: flex; align-items: center; gap: 6px; }
@@ -679,6 +701,7 @@ onMounted(loadFromKnowledge);
 .okr-rec__score-bar i.is-warning { background: var(--el-color-warning); }
 .okr-rec__score-bar i.is-primary { background: var(--el-color-primary); }
 .okr-rec__score-bar i.is-info { background: var(--el-color-info); }
+.okr-rec__score-bar i.is-success { background: var(--el-color-success); }
 .okr-rec__score-num,
 .okr-rec__list-score,
 .okr-rec__card-score {
@@ -688,6 +711,7 @@ onMounted(loadFromKnowledge);
   &.is-warning { color: var(--el-color-warning); }
   &.is-primary { color: var(--el-color-primary); }
   &.is-info { color: var(--el-color-info); }
+  &.is-success { color: var(--el-color-success); }
 }
 .okr-rec__score-num { font-size: 12px; }
 .okr-rec__list-score { font-size: 16px; }

@@ -9,6 +9,11 @@
         <el-button size="small" text type="primary" :icon="House" @click="router.push('/home/index')">Home</el-button>
         <el-button size="small" text type="primary" :icon="Connection" @click="router.push('/executiver/rss')">RSS</el-button>
       </div>
+      <div class="okr__filters">
+        <el-select v-model="monthFilter" size="small" clearable placeholder="All months" style="width: 140px">
+          <el-option v-for="m in MONTHS" :key="m.value" :label="m.label" :value="m.value" />
+        </el-select>
+      </div>
       <div class="okr__view-toggle">
         <el-radio-group v-model="viewMode" size="small">
           <el-radio-button value="card">Card</el-radio-button>
@@ -39,9 +44,10 @@
             <el-tag :type="item.roleStatusType" size="small">{{ item.roleStatus }}</el-tag>
           </div>
           <el-progress :percentage="item.progress" :status="item.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
+          <span v-if="item.subtaskCount" class="okr__subtask-count">{{ item.subtaskCount }} subtasks</span>
         </el-card>
       </div>
-      <div v-if="!actionItems.length" class="okr__empty">No action items.</div>
+      <div v-if="!sortedActionItems.length" class="okr__empty">{{ emptyText }}</div>
     </template>
 
     <template v-else-if="viewMode === 'list'">
@@ -60,6 +66,7 @@
             :status="item.progress >= 100 ? 'success' : undefined"
             :stroke-width="6"
           />
+          <span v-if="item.subtaskCount" class="okr__subtask-count">{{ item.subtaskCount }} subtasks</span>
           <div class="okr__list-actions">
             <el-tooltip content="删除" placement="top">
               <el-button text type="danger" size="small" :icon="Delete" @click="handleDelete(item)" />
@@ -67,7 +74,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!actionItems.length" class="okr__empty">No action items.</div>
+      <div v-if="!sortedActionItems.length" class="okr__empty">{{ emptyText }}</div>
     </template>
 
     <template v-else>
@@ -78,7 +85,7 @@
         style="width: 100%"
         row-key="id"
         :default-sort="{ prop: 'priorityOrder', order: 'ascending' }"
-        empty-text="No action items."
+        :empty-text="emptyText"
       >
         <el-table-column prop="priorityOrder" label="Priority" width="120" sortable align="center">
           <template #default="{ row }">
@@ -117,6 +124,12 @@
               <el-progress :percentage="row.progress" :status="row.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
               <span class="okr__progress-num">{{ row.progress }}%</span>
             </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="subtaskCount" label="Subtasks" width="90" sortable align="center">
+          <template #default="{ row }">
+            <span v-if="row.subtaskCount" class="okr__subtask-count">{{ row.subtaskCount }}</span>
+            <span v-else class="okr__subtask-count">—</span>
           </template>
         </el-table-column>
         <el-table-column label="Actions" width="80" fixed="right" align="center">
@@ -168,6 +181,7 @@ interface ActionItem {
   progress: number;
   isOverdue: boolean;
   filePath?: string;
+  subtaskCount: number;
 }
 
 const roleStatusMap: Record<string, { name: string; icon: string; status: string; statusType: ActionItem["roleStatusType"] }> = {
@@ -200,11 +214,40 @@ function deadlineTs(deadline: string): number {
   return t.isValid() ? t.valueOf() : Number.MAX_SAFE_INTEGER;
 }
 
+/** 月份筛选：值取 1–12（dayjs `month()` 为 0–11，故 +1），字符串便于 el-select 清空回退。 */
+const MONTHS: { value: string; label: string }[] = [
+  { value: "1", label: "January" },
+  { value: "2", label: "February" },
+  { value: "3", label: "March" },
+  { value: "4", label: "April" },
+  { value: "5", label: "May" },
+  { value: "6", label: "June" },
+  { value: "7", label: "July" },
+  { value: "8", label: "August" },
+  { value: "9", label: "September" },
+  { value: "10", label: "October" },
+  { value: "11", label: "November" },
+  { value: "12", label: "December" }
+];
+
+const monthFilter = ref("");
+
+const filteredActionItems = computed(() => {
+  if (!monthFilter.value) return actionItems.value;
+  const target = Number(monthFilter.value);
+  return actionItems.value.filter(a => {
+    const d = dayjs(a.deadline);
+    return d.isValid() && d.month() + 1 === target;
+  });
+});
+
 const sortedActionItems = computed(() =>
-  [...actionItems.value].sort(
+  [...filteredActionItems.value].sort(
     (a, b) => a.priorityOrder - b.priorityOrder || deadlineTs(a.deadline) - deadlineTs(b.deadline)
   )
 );
+
+const emptyText = computed(() => (monthFilter.value ? "No action items in this month." : "No action items."));
 
 function statusTypeOf(status: string): ActionItem["statusType"] {
   if (status === "Done") return "success";
@@ -222,9 +265,7 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
   const priority = typeof m.priority === "string" ? m.priority : "P2";
   const progress = Number(m.progress ?? 0) || 0;
   const goal = typeof m.goal === "string" && m.goal ? m.goal : undefined;
-  const isOverdue =
-    m.overdue === true ||
-    (dayjs(deadline).isValid() && dayjs(deadline).isBefore(dayjs().startOf("day")));
+  const isOverdue = m.overdue === true || (dayjs(deadline).isValid() && dayjs(deadline).isBefore(dayjs().startOf("day")));
   return {
     id: typeof m.id === "string" ? m.id : f.name.replace(/\.md$/, ""),
     action: title,
@@ -240,7 +281,8 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
     priorityOrder: PRIORITY_ORDER[priority] ?? 99,
     progress,
     isOverdue,
-    filePath: f.path
+    filePath: f.path,
+    subtaskCount: Number(m.subtaskCount ?? 0) || 0
   };
 }
 
@@ -261,7 +303,8 @@ function actionItemFromExample(t: ExampleTask, filePath: string): ActionItem {
     priorityOrder: PRIORITY_ORDER[t.priority] ?? 99,
     progress: t.progress,
     isOverdue: dayjs(t.deadline).isValid() && dayjs(t.deadline).isBefore(dayjs().startOf("day")),
-    filePath
+    filePath,
+    subtaskCount: t.subtasks.length
   };
 }
 
@@ -272,6 +315,7 @@ function actionItemMeta(t: ExampleTask): Record<string, unknown> {
     id: t.id,
     title: t.title,
     role: t.role,
+    listType: t.listType,
     goal: t.goalId,
     owner: t.owner,
     deadline: t.deadline,
@@ -280,16 +324,21 @@ function actionItemMeta(t: ExampleTask): Record<string, unknown> {
     progress: t.progress,
     skill: t.skill,
     agent: t.agent,
-    mcp: t.mcp
+    mcp: t.mcp,
+    subtaskCount: t.subtasks.length
   };
 }
 
 /** 示例任务的 markdown 正文（文件内容 → 知识库）。 */
 function renderActionBody(t: ExampleTask): string {
-  return [
-    `# ${t.title}`,
-    "",
-    t.description,
+  const lines: string[] = [`# ${t.title}`, "", t.description];
+  if (t.subtasks?.length) {
+    lines.push("", `## 可执行任务分解（${t.subtasks.length} 项）`);
+    t.subtasks.forEach((s, i) => {
+      lines.push("", `### ${i + 1}. ${s.title}`, "", `- 做法：${s.detail}`, `- 完成标准：${s.acceptance}`);
+    });
+  }
+  lines.push(
     "",
     "| Field | Value |",
     "|---|---|",
@@ -303,7 +352,8 @@ function renderActionBody(t: ExampleTask): string {
     `| Skill | ${t.skill} |`,
     `| Agent | ${t.agent} |`,
     `| MCP | ${t.mcp || "—"} |`
-  ].join("\n");
+  );
+  return lines.join("\n");
 }
 
 /** 任务标题 → 文件名可读 slug（保留中文/英文/数字，其余分隔符归一为 `-`）。 */
@@ -317,11 +367,13 @@ function slugifyTitle(title: string): string {
     .replace(/-+$/g, "");
 }
 
-/** Action Item 落盘文件名：`okr/action-<priority>-<role>-<slug>.md`。
+/** Action Item 落盘文件名：`okr/<deadline>/<priority>-<role>-<slug>.md`。
+ *  按截止日期归档到日期目录（与推荐任务按 dueDate 归档保持一致）；
  *  优先级前缀让 P0 排前、role 便于按角色归组、slug 让文件名自解释。 */
 function actionFileName(t: ExampleTask): string {
   const slug = slugifyTitle(t.title);
-  return `okr/action-${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
+  const dir = t.deadline || "undated";
+  return `okr/${dir}/${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
 }
 
 /** 知识库无 okr-action 文件时，把完整例子数据写入知识库（文件内容 → KB，元数据 → 后端），
@@ -415,7 +467,6 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   if (priority === "P2") return "primary";
   return "info";
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -448,11 +499,16 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   gap: 6px;
   align-items: center;
 }
-.okr__view-toggle {
+.okr__filters {
   display: flex;
   gap: 6px;
   align-items: center;
   margin-left: auto;
+}
+.okr__view-toggle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 .okr__view-label {
   font-size: 12px;
@@ -525,6 +581,13 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   font-size: 13px;
   color: var(--el-text-color-secondary);
   text-align: center;
+}
+
+.okr__subtask-count {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 // Card view
