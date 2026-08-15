@@ -160,7 +160,7 @@ ai_provider: "ollama"
 # RAG (llama_index) Configuration
 rag:
   embed_model: "nomic-embed-text"
-  llm_model: "qwen3.5"
+  llm_model: "qwen3.5:4b"
   persist_dir: "./data/rag_store"
   top_k: 4
   chunk_size: 1024

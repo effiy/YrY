@@ -1,31 +1,18 @@
 export default {
   home: {
-    welcome: "欢迎",
     title: "Yi 系统 · Agent Harness 总览",
-    subtitle: "一切皆插件 · Everything is a plugin",
     updated: "更新于 {time}",
-    refresh: "刷新",
     aiChat: "AI 对话",
     okr: "OKR",
 
     status: {
       online: "在线",
       offline: "离线",
-      running: "运行中",
-      stopped: "已停止",
-      connected: "已连接",
       disconnected: "未连接",
-      enabled: "已开启",
-      disabled: "已关闭",
-      built: "已构建",
-      notBuilt: "未构建",
-      ready: "就绪",
-      noData: "暂无数据"
+      ready: "就绪"
     },
 
     projects: {
-      title: "项目版图",
-      subtitle: "Yi 家族的每个产品都是 harness 中的一个可组合插件",
       yiAi: {
         name: "YiAi",
         role: "Agent 核心 · 模型适配 / 工具 / 确认门"
@@ -44,93 +31,55 @@ export default {
       }
     },
 
-    seams: {
-      title: "Harness 能力接缝",
-      subtitle: "把 deepseek-harness 的插件模型映射到 YiAi 的 agent 循环",
-      modelAdapter: {
-        name: "模型适配器",
-        mapping: "ctx.llm → OllamaRuntime + model_fallback"
+    aiRecommend: {
+      title: "AI 自主推荐 · OKR 任务清单",
+      subtitle: "参考 deepseek-harness「一切皆插件」——模型可见即日志，刷新即可重放",
+      scopeAll: "全部角色",
+      generateAll: "生成全部",
+      refresh: "刷新推荐",
+      generating: "AI 生成中…",
+      filterAll: "全部",
+      searchPlaceholder: "搜索任务 / 角色…",
+      datePlaceholder: "截止日期",
+      stats: {
+        total: "共 {n} 条",
+        p0: "P0 {n} 项",
+        overdue: "逾期 {n} 项"
       },
-      toolRegistry: {
-        name: "工具注册表",
-        mapping: "ctx.tools → get_tool_registry()"
+      empty: "暂无推荐，点击刷新生成",
+      view: {
+        table: "表格",
+        list: "列表",
+        card: "卡片"
       },
-      confirmationGate: {
-        name: "确认门",
-        mapping: "approval 策略 → _wait_for_confirmation"
+      lists: {
+        daily: "今日推荐",
+        weekly: "本周推荐",
+        risk: "风险与阻塞",
+        sprint: "目标冲刺"
       },
-      sessionLog: {
-        name: "会话日志",
-        mapping: "session log → save/load_session_history"
+      cols: {
+        category: "清单",
+        priority: "优先级",
+        score: "综合评分",
+        task: "任务",
+        role: "角色",
+        goal: "关联目标",
+        effort: "工作量",
+        due: "截止",
+        reason: "推荐理由",
+        action: "操作"
       },
-      turnBudget: {
-        name: "轮次预算",
-        mapping: "turn / step → max_turns"
+      dims: {
+        roi: "ROI",
+        difficulty: "难度",
+        urgency: "紧迫"
       },
-      eventSurface: {
-        name: "事件面",
-        mapping: "capability events → on_event / AgentEvent"
+      level: {
+        high: "高",
+        medium: "中",
+        low: "低"
       }
-    },
-
-    health: {
-      title: "系统健康",
-      server: "服务",
-      mongodb: "MongoDB",
-      scheduler: "调度器",
-      watcher: "知识监听",
-      ollama: "Ollama",
-      observer: "Observer",
-      version: "版本",
-      uptime: "运行时长",
-      database: "数据库",
-      modelCount: "模型数",
-      sessions: "会话",
-      knowledgeFiles: "知识文件",
-      rssSources: "RSS 源"
-    },
-
-    ai: {
-      title: "AI Agent 活动",
-      totalSessions: "会话总数",
-      messagesToday: "今日消息",
-      activeToday: "今日活跃会话",
-      avgPerSession: "平均消息/会话",
-      dailyTrend: "每日趋势",
-      modelUsage: "模型使用分布"
-    },
-
-    services: {
-      title: "服务性能",
-      totalCalls: "总调用",
-      successRate: "成功率",
-      avgLatency: "平均延迟",
-      byService: "各服务调用"
-    },
-
-    rag: {
-      title: "RAG 检索",
-      docs: "文档数",
-      llmModel: "LLM 模型",
-      embedModel: "嵌入模型",
-      lastBuilt: "最近构建",
-      recentQueries: "最近查询"
-    },
-
-    infra: {
-      title: "基础设施",
-      memory: "内存",
-      disk: "磁盘"
-    },
-
-    quickLinks: {
-      title: "快捷入口",
-      aiChat: "Agent 对话",
-      pipeline: "知识管道",
-      skills: "技能库",
-      rag: "RAG 系统",
-      rss: "RSS 管理",
-      okr: "OKR 看板"
     }
   }
 };

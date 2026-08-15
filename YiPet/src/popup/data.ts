@@ -74,10 +74,10 @@ export function roleImageUrl(role: string): string {
 
 /**
  * Chat models surfaced by the popup selector. Mirrors YiVad aiChat's model
- * placeholders + YiAi's model_runtime default (`qwen3.5`), plus the agent
+ * placeholders + YiAi's model_runtime default (`qwen3.5:4b`), plus the agent
  * escalation fallback (`qwen3-coder`) and the thinking variant.
  */
-export const MODELS = ['qwen3.5', 'qwen3.5-think', 'qwen3-coder'] as const;
+export const MODELS = ['qwen3.5:4b', 'qwen3.5-think', 'qwen3-coder'] as const;
 
 // ── Message Table ───────────────────────────────────────────────────────
 
@@ -177,7 +177,7 @@ export function createPopupConfig(cfg: AppConfig): PopupConfig {
       SIZE: pick(P, 'defaultSize', 260),
       ROLE: pick(C, 'DEFAULTS.PET_ROLE', 'Teacher'),
       COLOR: pick(P, 'defaultColorIndex', 0),
-      MODEL: 'qwen3.5',
+      MODEL: 'qwen3.5:4b',
       VERSION: pick(C, 'DEFAULTS.VERSION', '1.2.0'),
     },
   };

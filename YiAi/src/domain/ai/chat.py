@@ -115,7 +115,7 @@ class OllamaService:
     def generate_response(self,
                           system_prompt: str = "You are a helpful AI assistant.",
                           user_content: str = "",
-                          model_name: str = "qwen3.5",
+                          model_name: str = "qwen3.5:4b",
                           images: Optional[List[bytes]] = None,
                           messages: Optional[List[Dict[str, Any]]] = None,
                           max_retries: int = 2) -> Dict[str, Any]:
@@ -228,7 +228,7 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
 
     system_prompt = params.get("system", "You are a helpful AI assistant.")
     user_content = params.get("user", "")
-    model_name = params.get("model", "qwen3.5")
+    model_name = params.get("model", "qwen3.5:4b")
     stream = params.get("stream") is True
     images_param = params.get("images")
     has_images_param = isinstance(images_param, list) and any(isinstance(x, str) and x.strip() for x in images_param)

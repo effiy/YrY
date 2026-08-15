@@ -27,14 +27,9 @@ import type {
   BugStatus,
   BugType,
   ChatMessage,
-  KnowledgeReadResponse,
-  KnowledgeStory,
   KnowledgeTreeNode,
-  RagCategoriesResponse,
   RagChatMessage,
-  RagDecomposeResponse,
   RagSource,
-  RagStatusResponse,
   TodoItem,
   WeWorkBot,
 } from '@/api/types';
@@ -203,6 +198,8 @@ export class ChatController {
       weChatSettingsVisible: false,
       colorIndex: colorIndex,
       systemPrompt: systemPrompt || '',
+      roleName: 'Teacher',
+      roleImageUrl: '',
       streamingTargetTimestamp: null,
       streamingType: '',
       streamingPhase: '',
@@ -264,6 +261,15 @@ export class ChatController {
     const next = String(text || '');
     if (next === this.state.systemPrompt) return;
     this.state.systemPrompt = next;
+    this._emit();
+  };
+
+  setRole = (name: string, imageUrl: string) => {
+    const nextName = String(name || '');
+    const nextUrl = String(imageUrl || '');
+    if (nextName === this.state.roleName && nextUrl === this.state.roleImageUrl) return;
+    this.state.roleName = nextName;
+    this.state.roleImageUrl = nextUrl;
     this._emit();
   };
 
@@ -1142,7 +1148,12 @@ export class ChatController {
           (t) => t.name === name && t.status === 'running',
         );
         if (existing) existing.status = 'running';
-        else this.state.agentToolCalls.push({ id: `t${++this._agentToolSeq}`, name, status: 'running' });
+        else
+          this.state.agentToolCalls.push({
+            id: `t${++this._agentToolSeq}`,
+            name,
+            status: 'running',
+          });
         this._emit();
         break;
       }
@@ -1982,7 +1993,7 @@ export class ChatController {
   /** Open the "save to YiKnowledge" modal pre-populated from a pet message. */
   openSaveToKnowledge = (timestamp: number) => {
     const msg = this.state.messages.find((m) => m.timestamp === timestamp);
-    if (!msg || msg.type !== 'pet') {
+    if (msg?.type !== 'pet') {
       this._notify('Select a pet message to save', 'warning');
       return;
     }
@@ -2983,9 +2994,7 @@ export class ChatController {
               session.title = title;
               session.updatedAt = Date.now();
             }
-            if (this.state.title === this.state.sessions.find((s) => s.id === sid)?.title || true) {
-              this.state.title = title;
-            }
+            this.state.title = title;
             this._notify(`Title set: ${title}`, 'success');
           } catch (err) {
             this._notify((err as Error)?.message || 'Failed to save title', 'error');

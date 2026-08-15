@@ -54,7 +54,7 @@ def _get_settings():
 )
 async def chat_with_ollama(
     prompt: str,
-    model: str = "qwen3.5",
+    model: str = "qwen3.5:4b",
     system_prompt: str = "You are a helpful AI assistant.",
 ) -> str:
     """Chat with an Ollama model through YiAi."""

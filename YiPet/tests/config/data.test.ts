@@ -17,7 +17,9 @@ describe('popup data adapter', () => {
       expect(popupConfig.COLORS[1]).toMatchObject({ value: 0, label: 'Quantum Violet' });
       expect(popupConfig.COLORS[5]).toMatchObject({ value: 4, label: 'Quantum Sunset' });
       // Every option carries a CSS gradient for the swatch (added with the picker).
-      expect(popupConfig.COLORS.every((c) => typeof c.gradient === 'string' && c.gradient.length > 0)).toBe(true);
+      expect(
+        popupConfig.COLORS.every((c) => typeof c.gradient === 'string' && c.gradient.length > 0),
+      ).toBe(true);
     });
 
     it('exports SIZE limits', () => {
@@ -56,7 +58,7 @@ describe('popup data adapter', () => {
       expect(popupConfig.DEFAULTS.SIZE).toBe(120);
       expect(popupConfig.DEFAULTS.ROLE).toBe('Teacher');
       expect(popupConfig.DEFAULTS.COLOR).toBe(0);
-      expect(popupConfig.DEFAULTS.MODEL).toBe('qwen3.5');
+      expect(popupConfig.DEFAULTS.MODEL).toBe('qwen3.5:4b');
       expect(popupConfig.DEFAULTS.VERSION).toBe('1.2.0');
     });
   });

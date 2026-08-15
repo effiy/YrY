@@ -58,7 +58,7 @@ async def compact_messages(
     messages: List[Dict[str, Any]],
     *,
     keep_last: int = _DEFAULT_KEEP_LAST,
-    compact_model: str = "qwen3.5",
+    compact_model: str = "qwen3.5:4b",
     max_tokens: int = 8192,
 ) -> List[Dict[str, Any]]:
     """Summarize early messages, keep recent ones verbatim.

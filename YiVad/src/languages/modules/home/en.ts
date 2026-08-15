@@ -1,31 +1,18 @@
 export default {
   home: {
-    welcome: "Welcome",
     title: "Yi System · Agent Harness Overview",
-    subtitle: "Everything is a plugin",
     updated: "Updated {time}",
-    refresh: "Refresh",
     aiChat: "AI Chat",
     okr: "OKR",
 
     status: {
       online: "Online",
       offline: "Offline",
-      running: "Running",
-      stopped: "Stopped",
-      connected: "Connected",
       disconnected: "Disconnected",
-      enabled: "Enabled",
-      disabled: "Disabled",
-      built: "Built",
-      notBuilt: "Not built",
-      ready: "Ready",
-      noData: "No data"
+      ready: "Ready"
     },
 
     projects: {
-      title: "Project Landscape",
-      subtitle: "Every Yi-family product is a composable plugin in the harness",
       yiAi: {
         name: "YiAi",
         role: "Agent core · model adapter / tools / confirmation gate"
@@ -44,93 +31,55 @@ export default {
       }
     },
 
-    seams: {
-      title: "Harness Capability Seams",
-      subtitle: "Mapping deepseek-harness's plugin model onto YiAi's agent loop",
-      modelAdapter: {
-        name: "Model Adapter",
-        mapping: "ctx.llm → OllamaRuntime + model_fallback"
+    aiRecommend: {
+      title: "AI Autonomous Recommendation · OKR Task Lists",
+      subtitle: "Modeled on deepseek-harness \"everything is a plugin\" — model-visible means logged, refresh means replay",
+      scopeAll: "All roles",
+      generateAll: "Generate all",
+      refresh: "Refresh recommendations",
+      generating: "Generating…",
+      filterAll: "All",
+      searchPlaceholder: "Search task / role…",
+      datePlaceholder: "Due date",
+      stats: {
+        total: "{n} items",
+        p0: "P0 {n}",
+        overdue: "Overdue {n}"
       },
-      toolRegistry: {
-        name: "Tool Registry",
-        mapping: "ctx.tools → get_tool_registry()"
+      empty: "No recommendations yet — click refresh to generate",
+      view: {
+        table: "Table",
+        list: "List",
+        card: "Card"
       },
-      confirmationGate: {
-        name: "Confirmation Gate",
-        mapping: "approval policy → _wait_for_confirmation"
+      lists: {
+        daily: "Today",
+        weekly: "This Week",
+        risk: "Risks & Blockers",
+        sprint: "Goal Sprint"
       },
-      sessionLog: {
-        name: "Session Log",
-        mapping: "session log → save/load_session_history"
+      cols: {
+        category: "Category",
+        priority: "Priority",
+        score: "Score",
+        task: "Task",
+        role: "Role",
+        goal: "Goal",
+        effort: "Effort",
+        due: "Due",
+        reason: "Why",
+        action: "Actions"
       },
-      turnBudget: {
-        name: "Turn Budget",
-        mapping: "turn / step → max_turns"
+      dims: {
+        roi: "ROI",
+        difficulty: "Diff",
+        urgency: "Urgent"
       },
-      eventSurface: {
-        name: "Event Surface",
-        mapping: "capability events → on_event / AgentEvent"
+      level: {
+        high: "High",
+        medium: "Mid",
+        low: "Low"
       }
-    },
-
-    health: {
-      title: "System Health",
-      server: "Server",
-      mongodb: "MongoDB",
-      scheduler: "Scheduler",
-      watcher: "Knowledge Watcher",
-      ollama: "Ollama",
-      observer: "Observer",
-      version: "Version",
-      uptime: "Uptime",
-      database: "Database",
-      modelCount: "Models",
-      sessions: "Sessions",
-      knowledgeFiles: "Knowledge files",
-      rssSources: "RSS sources"
-    },
-
-    ai: {
-      title: "AI Agent Activity",
-      totalSessions: "Total sessions",
-      messagesToday: "Messages today",
-      activeToday: "Active sessions today",
-      avgPerSession: "Avg messages / session",
-      dailyTrend: "Daily trend",
-      modelUsage: "Model usage"
-    },
-
-    services: {
-      title: "Service Performance",
-      totalCalls: "Total calls",
-      successRate: "Success rate",
-      avgLatency: "Avg latency",
-      byService: "Calls by service"
-    },
-
-    rag: {
-      title: "RAG Retrieval",
-      docs: "Documents",
-      llmModel: "LLM model",
-      embedModel: "Embedding model",
-      lastBuilt: "Last built",
-      recentQueries: "Recent queries"
-    },
-
-    infra: {
-      title: "Infrastructure",
-      memory: "Memory",
-      disk: "Disk"
-    },
-
-    quickLinks: {
-      title: "Quick Links",
-      aiChat: "Agent Chat",
-      pipeline: "Knowledge Pipeline",
-      skills: "Skills",
-      rag: "RAG System",
-      rss: "RSS Manager",
-      okr: "OKR Board"
     }
   }
 };

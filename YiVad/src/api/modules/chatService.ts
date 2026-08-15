@@ -64,7 +64,7 @@ export function streamChat(
     module_name: CHAT_SERVICE,
     method_name: "chat",
     parameters: {
-      model: payload.model ?? "qwen3.5",
+      model: payload.model ?? "qwen3.5:4b",
       messages: toOllamaMessages(payload),
       stream: true,
       ...(payload.system ? { system: payload.system } : {}),
@@ -179,7 +179,7 @@ export function streamChat(
  */
 export async function chat(payload: ChatPayload): Promise<string> {
   const res = await callService<any>(CHAT_SERVICE, "chat", {
-    model: payload.model ?? "qwen3.5",
+    model: payload.model ?? "qwen3.5:4b",
     messages: toOllamaMessages(payload),
     stream: false,
     ...(payload.system ? { system: payload.system } : {}),

@@ -9,6 +9,8 @@ import type { CSSProperties } from 'react';
 
 export interface ChatHeaderProps {
   title: string;
+  role: string;
+  roleImageUrl: string;
   onClose: () => void;
   onToggleSidebar: () => void;
   onToggleFullscreen: () => void;
@@ -57,7 +59,16 @@ export function ChatHeader(props: ChatHeaderProps) {
           title="Toggle sidebar"
           aria-label="Toggle sidebar"
         />
-        <span aria-hidden="true">💕</span>
+        {props.roleImageUrl ? (
+          <img
+            className="yipet-chat-header-avatar"
+            src={props.roleImageUrl}
+            alt={props.role}
+            title={props.role}
+          />
+        ) : (
+          <span aria-hidden="true">💕</span>
+        )}
         <Typography.Text strong ellipsis style={{ flex: 1, minWidth: 0 }}>
           {props.title}
         </Typography.Text>

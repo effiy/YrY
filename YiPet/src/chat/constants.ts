@@ -66,4 +66,4 @@ export const QUICK_BUTTONS_NEW: QuickButton[] = [
   },
 ];
 
-export const DEFAULT_MODEL = 'qwen3.5';
+export const DEFAULT_MODEL = 'qwen3.5:4b';

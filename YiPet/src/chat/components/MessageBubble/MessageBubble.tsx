@@ -62,6 +62,7 @@ export function MessageBubble(props: MessageBubbleProps) {
   // Post-process rendered markdown once streaming settles: add per-code-block
   // copy buttons and render any mermaid diagrams. Skipped mid-stream so the
   // DOM isn't decorated on every token delta.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: msg.content drives the rendered HTML
   useEffect(() => {
     if (streaming) return;
     const el = markdownRef.current;
@@ -100,7 +101,7 @@ export function MessageBubble(props: MessageBubbleProps) {
               <img
                 key={`img-${i}-${src.slice(0, 12)}`}
                 src={src}
-                alt={`Image ${i + 1}`}
+                alt={`Attachment ${i + 1}`}
                 className="mb-image"
               />
             ))}
@@ -109,7 +110,7 @@ export function MessageBubble(props: MessageBubbleProps) {
         {empty && !streaming ? (
           <div className="mb-empty" />
         ) : streaming && !hasContent ? (
-          <div className="mb-typing" aria-label="Generating">
+          <div className="mb-typing" role="status" aria-label="Generating">
             <span className="mb-dot" />
             <span className="mb-dot" />
             <span className="mb-dot" />
@@ -119,6 +120,7 @@ export function MessageBubble(props: MessageBubbleProps) {
             <div
               ref={markdownRef}
               className="mb-markdown markdown-content"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
               dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content || '') }}
             />
             {streaming && <span className="mb-caret" aria-hidden="true" />}

@@ -7,8 +7,8 @@
  *   const result = await api.sessions.list();
  */
 
-export { AuthService } from './auth';
 export { AgentService } from './agent';
+export { AuthService } from './auth';
 export { BugService } from './bug';
 export { ChatService } from './chat';
 export { DatabaseService } from './database';
@@ -18,8 +18,8 @@ export { SessionService } from './sessions';
 export { WeWorkService } from './wework';
 
 import { type ApiClient, type ApiClientConfig, createApiClient } from '../client';
-import { AuthService } from './auth';
 import { AgentService } from './agent';
+import { AuthService } from './auth';
 import { BugService } from './bug';
 import { ChatService } from './chat';
 import { DatabaseService } from './database';

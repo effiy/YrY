@@ -197,7 +197,7 @@ async def agent_chat_route(request: AgentChatRequest, http_request: Request):
         try:
             async for frame in agent_chat_stream(
                 messages=request.messages,
-                model=request.model or "qwen3.5",
+                model=request.model or "qwen3.5:4b",
                 system_prompt=request.system_prompt or "",
                 max_turns=request.max_turns or 10,
                 signal=abort,

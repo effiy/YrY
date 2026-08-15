@@ -44,7 +44,7 @@ const STORAGE_PREFIX = "kchat:msgs:";
 const STORAGE_TAGS_PREFIX = "kchat:tags:";
 const STORAGE_SETTINGS_PREFIX = "kchat:cfg:";
 const STORAGE_MODEL_PREFIX = "kchat:model:";
-const DEFAULT_MODEL = "qwen3.5";
+const DEFAULT_MODEL = "qwen3.5:4b";
 const MAX_IMAGES = 4;
 
 interface LocalMessage {

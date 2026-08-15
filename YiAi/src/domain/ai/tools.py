@@ -1058,7 +1058,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
     async def _mcp_chat(args: Dict[str, Any]) -> Dict[str, Any]:
         from server.mcp_server import mcp
         prompt = str(args.get("prompt", ""))
-        model = str(args.get("model", "qwen3.5"))
+        model = str(args.get("model", "qwen3.5:4b"))
         system = str(args.get("system_prompt", "You are a helpful AI assistant."))
         try:
             result = await mcp.call_tool("chat_with_ollama", {
@@ -1076,7 +1076,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
             "type": "object",
             "properties": {
                 "prompt": {"type": "string", "description": "The prompt to send to the LLM"},
-                "model": {"type": "string", "description": "Model name (default: qwen3.5)"},
+                "model": {"type": "string", "description": "Model name (default: qwen3.5:4b)"},
                 "system_prompt": {"type": "string", "description": "System prompt for the LLM"},
             },
             "required": ["prompt"],

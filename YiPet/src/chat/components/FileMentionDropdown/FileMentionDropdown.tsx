@@ -52,6 +52,7 @@ export const FileMentionDropdown: FC<FileMentionDropdownProps> = ({
           key={node.path}
           className="yipet-mention-item"
           role="option"
+          tabIndex={-1}
           aria-selected={false}
           data-idx={idx}
           onClick={() => {

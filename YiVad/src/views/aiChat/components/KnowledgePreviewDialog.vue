@@ -460,7 +460,7 @@ async function translateTo(targetLang: "zh" | "en", bilingual = false) {
 
   const { abort } = streamChat(
     {
-      model: "qwen3.5",
+      model: "qwen3.5:4b",
       messages: [{ type: "user", message: source, timestamp: Date.now() }],
       system: `You are a professional translator. Translate the following markdown content to ${langName}. Preserve all markdown formatting, code blocks, links, and structure exactly. Only output the translated content, nothing else.`
     },

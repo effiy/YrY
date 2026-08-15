@@ -60,7 +60,7 @@ export const SessionSummaryDialog: FC<SessionSummaryDialogProps> = ({ controller
       {!s.sessionSummaryLoading && s.sessionSummaryText && (
         <div
           className="yipet-session-summary-body"
-          // eslint-disable-next-line react/no-danger -- renderMarkdown escapes untrusted input
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
           dangerouslySetInnerHTML={{ __html: renderMarkdown(s.sessionSummaryText) }}
         />
       )}

@@ -72,7 +72,7 @@ class ModelRuntime(ABC):
 
     def model_name(self) -> str:
         """Default model ID for this runtime."""
-        return "qwen3.5"
+        return "qwen3.5:4b"
 
 
 # ── OllamaRuntime ───────────────────────────────────────────────────────
@@ -96,7 +96,7 @@ class OllamaRuntime(ModelRuntime):
         return Client(**kwargs)
 
     def model_name(self) -> str:
-        return "qwen3.5"
+        return "qwen3.5:4b"
 
     async def stream_chat(
         self,

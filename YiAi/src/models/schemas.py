@@ -37,7 +37,7 @@ class AgentChatRequest(BaseModel):
         default_factory=list,
         description="Conversation history in [{role, content}] format"
     )
-    model: Optional[str] = Field(default="qwen3.5", description="Model name")
+    model: Optional[str] = Field(default="qwen3.5:4b", description="Model name")
     system_prompt: Optional[str] = Field(default="", description="System prompt")
     max_turns: Optional[int] = Field(default=10, description="Max tool-calling turns")
     images: Optional[List[str]] = Field(

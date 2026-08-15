@@ -51,6 +51,7 @@ export function ChatWindow(props: ChatWindowProps) {
   }, [ctrl, message]);
 
   // Auto-scroll on message updates and during streaming (scrollTick throttled in controller)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scrollTick is an intentional re-trigger
   useEffect(() => {
     if (state.visible && state.messages.length > 0) {
       const id = setTimeout(() => ctrl.scrollToBottom(), 50);
@@ -128,6 +129,8 @@ export function ChatWindow(props: ChatWindowProps) {
         >
           <ChatHeader
             title={state.title}
+            role={state.roleName}
+            roleImageUrl={state.roleImageUrl}
             onClose={ctrl.close}
             onToggleSidebar={ctrl.toggleSidebar}
             onToggleFullscreen={ctrl.toggleFullscreen}
@@ -142,6 +145,7 @@ export function ChatWindow(props: ChatWindowProps) {
                 <div
                   className="yipet-sidebar-resizer"
                   role="separator"
+                  tabIndex={0}
                   aria-orientation="vertical"
                   aria-label="Resize sidebar"
                   onMouseDown={(e) => ctrl.onSidebarResizeMouseDown(e.nativeEvent)}

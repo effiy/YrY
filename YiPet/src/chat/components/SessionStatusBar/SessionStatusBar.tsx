@@ -50,8 +50,6 @@ export function SessionStatusBar(props: SessionStatusBarProps) {
 
   const stats = useMemo(() => {
     const msgs = s.messages ?? [];
-    const userChars = 0;
-    const petChars = 0;
     let pageChars = 0;
     const costHistory: number[] = [];
     let runningUser = 0;
@@ -225,7 +223,7 @@ export function SessionStatusBar(props: SessionStatusBarProps) {
                 strokeLinecap="round"
               />
               {stats.bandW > 0 &&
-                stats.points.map((p, i) => (
+                stats.points.map((_, i) => (
                   <rect
                     key={`spark-band-${i}`}
                     x={SPARK_PAD + i * stats.bandW}

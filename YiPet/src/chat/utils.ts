@@ -75,12 +75,10 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
     _mermaidInit = true;
   }
 
-  const elements = Array.from(
-    (container ?? document).querySelectorAll<HTMLElement>('pre.mermaid'),
-  );
+  const elements = Array.from((container ?? document).querySelectorAll<HTMLElement>('pre.mermaid'));
   for (const el of elements) {
     if (el.querySelector('svg')) continue;
-    let code = el.getAttribute('data-mermaid-b64')
+    const code = el.getAttribute('data-mermaid-b64')
       ? (() => {
           try {
             return decodeURIComponent(escape(atob(el.getAttribute('data-mermaid-b64') as string)));

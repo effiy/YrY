@@ -260,6 +260,10 @@ export interface ChatState {
   colorIndex: number;
   /** Role system prompt sent as `system` field in chat requests. Updated via yipet:roleChanged. */
   systemPrompt: string;
+  /** Canonical role name (e.g. "Teacher"), drives the header avatar. Updated via yipet:roleChanged. */
+  roleName: string;
+  /** Resolved URL of the active role's icon, for the header avatar. Empty = fallback emoji. */
+  roleImageUrl: string;
   /** Timestamp of the pet message currently being streamed. */
   streamingTargetTimestamp: number | null;
   /** Current streaming action type — controls RequestStatusButton label. */

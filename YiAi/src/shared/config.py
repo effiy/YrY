@@ -166,7 +166,7 @@ class Settings(BaseSettings):
     # tool-calling task (narrates a tool call without executing it, resisting
     # the nudge guard). Popped in order; a stronger model takes over with the
     # full conversation context and completes the task. Default targets a
-    # capable local coder model over the lightweight qwen3.5 default.
+    # capable local coder model over the lightweight qwen3.5:4b default.
     agent_model_fallback: List[str] = Field(["qwen3-coder"], validation_alias="agent_model_fallback")
 
     # OpenAI
@@ -186,7 +186,7 @@ class Settings(BaseSettings):
 
     # RAG (llama_index) — embeddings + persisted VectorStoreIndex over ~/YiKnowledge
     rag_embed_model: str = Field("nomic-embed-text", validation_alias="rag_embed_model")
-    rag_llm_model: str = Field("qwen3.5", validation_alias="rag_llm_model")
+    rag_llm_model: str = Field("qwen3.5:4b", validation_alias="rag_llm_model")
     rag_persist_dir: str = Field("./data/rag_store", validation_alias="rag_persist_dir")
     rag_top_k: int = Field(4, validation_alias="rag_top_k")
     rag_chunk_size: int = Field(1024, validation_alias="rag_chunk_size")

@@ -83,6 +83,7 @@ export const PageContextEditor: FC<PageContextEditorProps> = ({ controller }) =>
         {(mode === 'preview' || mode === 'split') && (
           <div
             className="pe-preview markdown-content"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
             dangerouslySetInnerHTML={{ __html: renderMarkdown(value) }}
           />
         )}

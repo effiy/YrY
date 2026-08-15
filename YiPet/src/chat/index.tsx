@@ -17,6 +17,15 @@ const COLOR_INDEX = parseInt(dataset.colorIndex || '0', 10);
 const INITIAL_ROLE = dataset.role || 'Teacher';
 const INITIAL_SYSTEM_PROMPT = getSystemPrompt(INITIAL_ROLE);
 
+// Extension root (chrome-extension://<id>/) resolved from the chat bundle src.
+const EXT_ROOT = (currentScript?.src || '').replace(/assets\/chat\.js.*$/, '');
+
+/** Resolve a role's avatar icon URL (mirrors popup `roleImageUrl`). */
+function roleImageUrl(role: string): string {
+  const slug = role.toLowerCase().replace(/\s+/g, '-');
+  return EXT_ROOT + 'assets/images/' + slug + '/icon.png';
+}
+
 function initChatApp() {
   if ((window as unknown as Record<string, unknown>).__yipetChatInit) return;
   (window as unknown as Record<string, unknown>).__yipetChatInit = true;
@@ -38,6 +47,7 @@ function initChatApp() {
     INITIAL_SYSTEM_PROMPT,
   );
   controller.mount();
+  controller.setRole(INITIAL_ROLE, roleImageUrl(INITIAL_ROLE));
   const root = createRoot(container);
   root.render(<ChatWindow controller={controller} />);
 
@@ -64,7 +74,9 @@ function initChatApp() {
   }) as EventListener);
 
   window.addEventListener('yipet:roleChanged', ((e: CustomEvent) => {
+    const role = e?.detail?.role;
     const prompt = e?.detail?.systemPrompt;
+    if (typeof role === 'string') controller.setRole(role, roleImageUrl(role));
     if (typeof prompt === 'string') controller.setSystemPrompt(prompt);
   }) as EventListener);
 
@@ -72,11 +84,10 @@ function initChatApp() {
     controller.toggle();
   }) as EventListener);
 
-  const extRoot = (currentScript?.src || '').replace(/assets\/chat\.js.*$/, '');
-  if (extRoot) {
+  if (EXT_ROOT) {
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
-    cssLink.href = extRoot + 'cdn/styles/chat.css';
+    cssLink.href = EXT_ROOT + 'cdn/styles/chat.css';
     document.head.appendChild(cssLink);
   }
 

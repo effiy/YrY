@@ -71,6 +71,7 @@ export const RagDecomposeDialog: FC<RagDecomposeDialogProps> = ({ controller: ct
                   {sq.answer && (
                     <div
                       className="rdd-item__answer markdown-content"
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
                       dangerouslySetInnerHTML={{ __html: renderMarkdown(sq.answer) }}
                     />
                   )}
@@ -95,6 +96,7 @@ export const RagDecomposeDialog: FC<RagDecomposeDialogProps> = ({ controller: ct
               </Typography.Text>
               <div
                 className="rdd-synthesis__body markdown-content"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(data.synthesis) }}
               />
             </div>

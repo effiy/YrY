@@ -505,7 +505,7 @@ class AgentLoopTurnUpdate:
 class AgentConfig:
     """Configuration for an agent run."""
 
-    model: str = "qwen3.5"
+    model: str = "qwen3.5:4b"
     system_prompt: str = "You are a helpful AI assistant with access to tools."
     max_turns: int = 10
     tool_execution: str = "parallel"  # "sequential" | "parallel" (Pi default: parallel)
@@ -830,7 +830,7 @@ def _should_compact(messages: List[AgentMessage], context_window: int) -> bool:
 async def _compact_messages(
     messages: List[AgentMessage],
     keep_last: int = 4,
-    model: str = "qwen3.5",
+    model: str = "qwen3.5:4b",
 ) -> List[AgentMessage]:
     """Summarize older messages, keep recent ones verbatim."""
     if len(messages) <= keep_last:
@@ -2060,7 +2060,7 @@ async def _emit(
 
 async def agent_chat_stream(
     messages: List[Dict[str, Any]],
-    model: str = "qwen3.5",
+    model: str = "qwen3.5:4b",
     system_prompt: str = "",
     max_turns: int = 10,
     signal: Optional[asyncio.Event] = None,

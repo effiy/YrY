@@ -99,6 +99,7 @@ export const KnowledgePreviewDialog: FC<KnowledgePreviewDialogProps> = ({ contro
           )}
           <div
             className="kp-markdown markdown-content"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown escapes untrusted input
             dangerouslySetInnerHTML={{ __html: renderMarkdown(data.content || '') }}
           />
         </div>

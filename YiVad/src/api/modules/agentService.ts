@@ -120,7 +120,7 @@ export function streamAgentChat(
     },
     body: JSON.stringify({
       messages: payload.messages,
-      model: payload.model ?? "qwen3.5",
+      model: payload.model ?? "qwen3.5:4b",
       system_prompt: payload.system_prompt ?? "",
       max_turns: payload.max_turns ?? 10,
       ...(payload.images?.length ? { images: payload.images } : {}),

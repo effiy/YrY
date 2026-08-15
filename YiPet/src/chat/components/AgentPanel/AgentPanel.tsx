@@ -192,9 +192,7 @@ export function AgentPanel({ controller }: AgentPanelProps) {
                   <input
                     type="checkbox"
                     checked={done}
-                    onChange={() =>
-                      setTodoOverrides((prev) => ({ ...prev, [t.id]: !done }))
-                    }
+                    onChange={() => setTodoOverrides((prev) => ({ ...prev, [t.id]: !done }))}
                   />
                 </label>
                 <Tag
@@ -260,11 +258,7 @@ export function AgentPanel({ controller }: AgentPanelProps) {
           >
             Steer
           </Button>
-          <Button
-            size="small"
-            disabled={!steer.trim()}
-            onClick={() => submitSteer('followUp')}
-          >
+          <Button size="small" disabled={!steer.trim()} onClick={() => submitSteer('followUp')}>
             Queue
           </Button>
         </div>
