@@ -14,6 +14,12 @@
         <el-button size="small" :icon="Aim" @click="router.push('/executiver/okr')">
           {{ t("home.okr") }}
         </el-button>
+        <el-button size="small" :icon="Connection" @click="router.push('/executiver/rss')">
+          {{ t("home.rss") }}
+        </el-button>
+        <el-button size="small" :icon="Reading" @click="router.push('/knowledge/pipeline')">
+          {{ t("home.knowledge") }}
+        </el-button>
       </div>
     </div>
 
@@ -51,9 +57,10 @@
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ChatDotRound, Aim } from "@element-plus/icons-vue";
+import { ChatDotRound, Aim, Connection, Reading } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
+import { FLOW_STAGES } from "@/views/knowledge/executiver/okrFlowData";
 import { getDashboardHealth } from "@/api/modules/dashboard";
 import type { DashboardHealthData } from "@/api/interface/yiweb";
 
@@ -102,9 +109,9 @@ const projects = computed(() => {
   const mongoOk = !!h?.mongodb?.connected;
   return [
     { key: "yiAi", icon: "🤖", to: "/aiChat", status: (ollamaOk ? "ok" : h ? "warn" : "off") as Status },
-    { key: "yiVad", icon: "🖥️", to: null, status: (serverOk ? "ok" : h ? "warn" : "off") as Status },
-    { key: "yiPet", icon: "🧩", to: null, status: "off" as Status },
-    { key: "yiKnowledge", icon: "📚", to: "/pipeline", status: (mongoOk ? "ok" : h ? "warn" : "off") as Status }
+    { key: "yiVad", icon: "🖥️", to: "/executiver/okr", status: (serverOk ? "ok" : h ? "warn" : "off") as Status },
+    { key: "yiPet", icon: "🧩", to: "/executiver/rss", status: "off" as Status },
+    { key: "yiKnowledge", icon: "📚", to: "/knowledge/goals", status: (mongoOk ? "ok" : h ? "warn" : "off") as Status }
   ];
 });
 
@@ -202,5 +209,51 @@ onBeforeUnmount(() => {
   font-size: 11px;
   color: var(--el-text-color-secondary);
   line-height: 1.4;
+}
+
+// ── Section head ─────────────────────────────────
+.ho__section-head { margin-bottom: 10px; }
+.ho__section-title { margin: 0; font-size: 16px; font-weight: 700; }
+.ho__section-subtitle { margin: 2px 0 0; font-size: 12px; color: var(--el-text-color-secondary); }
+
+// ── Flow strip (需求 → 上线) ─────────────────────
+.ho__flow { display: flex; align-items: stretch; gap: 8px; }
+.ho__flow-arrow { align-self: center; font-size: 18px; color: var(--el-text-color-placeholder); flex-shrink: 0; }
+.ho__flow-stage {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  &:hover {
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+}
+.ho__flow-icon { font-size: 22px; flex-shrink: 0; }
+.ho__flow-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ho__flow-label { font-size: 14px; font-weight: 700; }
+.ho__flow-desc { font-size: 11px; color: var(--el-text-color-secondary); line-height: 1.4; }
+.ho__flow-count {
+  flex-shrink: 0;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
 }
 </style>

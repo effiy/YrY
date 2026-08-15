@@ -1,7 +1,9 @@
 <template>
   <div class="okr-role">
     <el-breadcrumb separator="/" class="okr-role__breadcrumb">
+      <el-breadcrumb-item :to="{ path: '/home/index' }">Home</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/executiver/okr' }">OKR Dashboard</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/executiver/rss' }">RSS</el-breadcrumb-item>
       <el-breadcrumb-item>{{ role.name }} OKR</el-breadcrumb-item>
     </el-breadcrumb>
 
@@ -59,7 +61,7 @@
       <p class="okr-role__section-desc">Goals cascade from org strategy. Each goal links to measurable metrics that track progress toward the objective. Click a goal or metric to drill into details.</p>
 
       <div v-if="periodMetrics.length" class="okr-role__metrics-grid">
-        <div v-for="m in periodMetrics" :key="m.id" class="okr-role__metric-card" @click="$router.push(`/executiver/okr/${role.id}/metric/${m.id}`)">
+        <div v-for="m in periodMetrics" :key="m.id" :id="`metric-${m.id}`" class="okr-role__metric-card" @click="scrollToMetric(m.id)">
           <div class="okr-role__metric-card-top">
             <span class="okr-role__metric-card-icon">{{ m.icon }}</span>
             <span class="okr-role__metric-card-trend" :class="m.trend === 'up' ? 'okr-role__metric-card-trend--up' : m.trend === 'down' ? 'okr-role__metric-card-trend--down' : ''">
@@ -90,7 +92,7 @@
           Clear
         </el-button>
       </div>
-      <el-table v-if="filteredGoals.length" :data="filteredGoals" stripe border style="width: 100%" row-key="id" :default-sort="{ prop: 'id', order: 'ascending' }">
+      <el-table v-if="filteredGoals.length" :data="filteredGoals" stripe border style="width: 100%" row-key="id" :expand-row-keys="expandedGoalIds" @expand-change="onExpandChange" :default-sort="{ prop: 'id', order: 'ascending' }">
         <el-table-column type="expand">
           <template #default="{ row }">
             <div class="okr-role__expand">
@@ -107,7 +109,7 @@
                       <div class="okr-role__table-item">
                         <span class="okr-role__table-icon">{{ mr.icon }}</span>
                         <div>
-                          <span class="okr-role__table-title okr-role__table-title--link" @click="$router.push(`/executiver/okr/${role.id}/metric/${mr.id}`)">{{ mr.name }}</span>
+                          <span class="okr-role__table-title okr-role__table-title--link" @click="scrollToMetric(mr.id)">{{ mr.name }}</span>
                           <p class="okr-role__table-desc">{{ mr.description }}</p>
                         </div>
                       </div>
@@ -145,7 +147,7 @@
                   </el-table-column>
                   <el-table-column label="Actions" width="100" fixed="right">
                     <template #default="{ row: mr }">
-                      <el-button size="small" type="primary" link @click="$router.push(`/executiver/okr/${role.id}/metric/${mr.id}`)">Details</el-button>
+                      <el-button size="small" type="primary" link @click="scrollToMetric(mr.id)">Details</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -166,7 +168,7 @@
             <div class="okr-role__table-item">
               <span class="okr-role__table-icon">{{ row.icon }}</span>
               <div>
-                <span class="okr-role__table-title okr-role__table-title--link" @click="$router.push(`/executiver/okr/${role.id}/goal/${row.id}`)">{{ row.title }}</span>
+                <span class="okr-role__table-title okr-role__table-title--link" @click="toggleGoalExpand(row as GoalItem)">{{ row.title }}</span>
                 <p class="okr-role__table-desc">{{ row.description }}</p>
               </div>
             </div>
@@ -202,7 +204,7 @@
         </el-table-column>
         <el-table-column label="Actions" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" type="primary" link @click="$router.push(`/executiver/okr/${role.id}/goal/${row.id}`)">Details</el-button>
+            <el-button size="small" type="primary" link @click="toggleGoalExpand(row as GoalItem)">Details</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -416,7 +418,8 @@
 </template>
 
 <script setup lang="ts" name="okrRole">
-import { computed, reactive, ref, watch, onUnmounted } from "vue";
+import { computed, reactive, ref, watch, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 import { ArrowLeft, Search, CircleClose, VideoPlay, VideoPause, RefreshRight } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import {
@@ -426,6 +429,7 @@ import {
 } from "./okrData";
 
 const props = defineProps<{ roleId: string }>();
+const route = useRoute();
 
 const selectedPeriod = ref("q3");
 const searchQuery = ref("");
@@ -443,6 +447,26 @@ const hasActiveFilters = computed(() => statusFilter.value !== "all" || searchQu
 function clearFilters() {
   searchQuery.value = "";
   statusFilter.value = "all";
+}
+
+// ── Goal row expansion (goal detail is inline, not a separate route) ──────────
+const expandedGoalIds = ref<string[]>([]);
+function toggleGoalExpand(row: GoalItem) {
+  const idx = expandedGoalIds.value.indexOf(row.id);
+  if (idx >= 0) expandedGoalIds.value.splice(idx, 1);
+  else expandedGoalIds.value.push(row.id);
+}
+function onExpandChange(_row: GoalItem, expandedRows: GoalItem[] | boolean) {
+  if (Array.isArray(expandedRows)) expandedGoalIds.value = expandedRows.map(r => r.id);
+}
+
+/** 指标详情已完整渲染在页内（顶部指标卡），点击 → 原地滚动 + 高亮，不再跳转不存在的路由。 */
+function scrollToMetric(metricId: string) {
+  const el = document.getElementById(`metric-${metricId}`);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("okr-role__metric-card--flash");
+  setTimeout(() => el.classList.remove("okr-role__metric-card--flash"), 1600);
 }
 
 const role = computed(() => rolesData[props.roleId] || rolesData.executiver);
@@ -590,9 +614,13 @@ watch(() => props.roleId, (newRoleId) => {
   selectedPeriod.value = "q3";
   searchQuery.value = "";
   statusFilter.value = "all";
+  expandedGoalIds.value = [];
   const container = document.querySelector(".okr-role");
   if (container) container.scrollTop = 0;
+  applyGoalFromQuery();
 });
+
+onMounted(applyGoalFromQuery);
 
 onUnmounted(() => {
   pauseTimer();
@@ -608,6 +636,24 @@ function goalMatchesPeriod(period: string, selected: string): boolean {
   };
   const patterns = qMap[selected] || [];
   return patterns.some(p => period.includes(p));
+}
+
+/** 由目标 period 反推应选中的 period 分组（供 ?goal= 深链自动定位用）。 */
+function periodForGoal(period: string): string {
+  for (const p of ["q1", "q2", "q3", "q4", "annual"]) {
+    if (goalMatchesPeriod(period, p)) return p;
+  }
+  return "annual";
+}
+
+/** 读路由 ?goal= 参数：切换到该目标所在分组并自动展开该行。 */
+function applyGoalFromQuery() {
+  const goal = route.query.goal;
+  if (typeof goal !== "string" || !goal) return;
+  const found = allGoals.value.find(g => g.id === goal);
+  if (!found) return;
+  selectedPeriod.value = periodForGoal(found.period);
+  if (!expandedGoalIds.value.includes(goal)) expandedGoalIds.value.push(goal);
 }
 
 const filteredGoals = computed(() => {
@@ -773,6 +819,10 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
   cursor: pointer; transition: box-shadow .15s, border-color .15s, transform .15s;
   display: flex; flex-direction: column; gap: 6px;
   &:hover { border-color: var(--el-color-primary-light-5); box-shadow: 0 2px 8px rgba(0,0,0,.06); transform: translateY(-1px); }
+}
+.okr-role__metric-card--flash {
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 3px var(--el-color-primary-light-5);
 }
 .okr-role__metric-card-top { display: flex; align-items: center; justify-content: space-between; }
 .okr-role__metric-card-icon { font-size: 20px; }

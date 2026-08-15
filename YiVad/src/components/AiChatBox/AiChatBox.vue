@@ -8,7 +8,6 @@ import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/aiChat/components/MessageList.vue";
 import QuickButtons from "@/views/aiChat/components/QuickButtons.vue";
-import SessionStatusBar from "@/views/aiChat/components/SessionStatusBar.vue";
 import ChatInput from "@/views/aiChat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/aiChat/components/ConversationSessionSidebar.vue";
 import LlamaIndexPanel from "@/views/aiChat/components/LlamaIndexPanel.vue";
@@ -301,7 +300,6 @@ async function onDrop(e: DragEvent) {
             </div>
             <MessageList />
             <QuickButtons />
-            <SessionStatusBar />
             <ChatInput />
             <LlamaIndexPanel
               v-if="store.llamaIndexVisible"

@@ -4,6 +4,13 @@ export default {
     updated: "更新于 {time}",
     aiChat: "AI 对话",
     okr: "OKR",
+    rss: "RSS",
+    knowledge: "知识库",
+
+    flow: {
+      title: "需求 → 上线 · 整套流程",
+      subtitle: "从 OKR 定义到部署上线，四个阶段一路打通"
+    },
 
     status: {
       online: "在线",
@@ -65,6 +72,10 @@ export default {
         task: "任务",
         role: "角色",
         goal: "关联目标",
+        metric: "指标",
+        skill: "技能",
+        agent: "Agent",
+        mcp: "MCP",
         effort: "工作量",
         due: "截止",
         reason: "推荐理由",

@@ -1,7 +1,10 @@
 <template>
   <div class="role-page">
     <header class="role-page__header">
-      <h1>{{ title }}</h1>
+      <div class="role-page__header-row">
+        <h1>{{ title }}</h1>
+        <el-button size="small" type="primary" plain @click="$router.push(`/executiver/okr/${category}`)">OKR →</el-button>
+      </div>
       <p>
         {{ totalFiles }} files across {{ subdirs.length }} {{ domainsWord }} — {{ description }}
       </p>
@@ -379,6 +382,7 @@ onMounted(loadFiles);
 <style scoped lang="scss">
 .role-page { display: flex; flex-direction: column; box-sizing: border-box; padding: 20px 24px; background: var(--el-bg-color-page); }
 .role-page__header { margin-bottom: 14px; h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; } p { margin: 0; font-size: 13px; color: var(--el-text-color-secondary); line-height: 1.6; } }
+.role-page__header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; h1 { margin-bottom: 4px; } }
 .role-page__controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .role-page__stats { display: flex; flex-wrap: wrap; gap: 8px; }
 .role-page__stat-chip { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; border: 1px solid; transition: background .2s, border-color .2s, box-shadow .2s; }

@@ -5,12 +5,6 @@
       <el-breadcrumb-item>RSS Manager</el-breadcrumb-item>
     </el-breadcrumb>
 
-    <div class="rss-manager__sub-nav">
-      <span class="rss-manager__sub-nav-item" @click="$router.push('/executiver/okr')">
-        🎯 OKR Dashboard
-      </span>
-    </div>
-
     <header class="rss-manager__header">
       <div class="rss-manager__header-row">
         <h1>RSS Feed Management</h1>

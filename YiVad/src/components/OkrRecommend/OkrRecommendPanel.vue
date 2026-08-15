@@ -91,6 +91,35 @@
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
+      <el-table-column :label="t('home.aiRecommend.cols.metric')" min-width="200">
+        <template #default="{ row }">
+          <div v-if="row.metric" class="okr-rec__cell-metric">
+            <span class="okr-rec__metric-icon">{{ row.metric.icon }}</span>
+            <div class="okr-rec__metric-body">
+              <span class="okr-rec__metric-name">{{ row.metric.name }}</span>
+              <span class="okr-rec__metric-val">{{ row.metric.current }}{{ row.metric.unit }} → {{ row.metric.target }}{{ row.metric.unit }} · {{ row.metric.progress }}%</span>
+            </div>
+          </div>
+          <span v-else class="okr-rec__cell-none">—</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('home.aiRecommend.cols.skill')" width="150">
+        <template #default="{ row }">
+          <el-tag v-if="row.skill" size="small" type="primary" effect="light">{{ skillLabel(row.skill) }}</el-tag>
+          <span v-else class="okr-rec__cell-none">—</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('home.aiRecommend.cols.agent')" width="150">
+        <template #default="{ row }">
+          <el-tag v-if="row.agent" size="small" effect="plain">{{ row.agent }}</el-tag>
+          <span v-else class="okr-rec__cell-none">—</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('home.aiRecommend.cols.mcp')" width="110">
+        <template #default="{ row }">
+          <el-tag size="small" :type="mcpTagType(row.mcp)" effect="light">{{ mcpLabel(row.mcp) }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.effort')" width="90">
         <template #default="{ row }">
           <span class="okr-rec__cell-effort" :class="`is-${row.effort}`">{{ row.effort }}</span>
@@ -120,6 +149,10 @@
             <el-tag size="small" effect="light" :type="categoryTagType(item.listType)" round>{{ categoryIcon(item.listType) }} {{ categoryLabel(item.listType) }}</el-tag>
             <span class="okr-rec__list-role" @click="goRole(item.role)">{{ item.roleIcon }} {{ item.roleName }}</span>
             <code v-if="item.goalId" class="okr-rec__list-goal" @click="goGoal(item.role, item.goalId)">{{ item.goalId }}</code>
+            <span v-if="item.metric" class="okr-rec__list-metric">{{ item.metric.icon }} {{ item.metric.name }} {{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }}</span>
+            <el-tag v-if="item.skill" size="small" type="primary" effect="light">{{ skillLabel(item.skill) }}</el-tag>
+            <el-tag v-if="item.agent" size="small" effect="plain">{{ item.agent }}</el-tag>
+            <el-tag size="small" :type="mcpTagType(item.mcp)" effect="light">{{ mcpLabel(item.mcp) }}</el-tag>
             <span class="okr-rec__cell-effort" :class="`is-${item.effort}`">{{ item.effort }}</span>
             <span class="okr-rec__list-due" :class="{ 'okr-rec__cell-due-overdue': isOverdue(item.dueDate) }">{{ item.dueDate }}</span>
           </div>
@@ -142,7 +175,17 @@
           <span class="okr-rec__dim" :class="`is-${item.difficulty}`"><em>{{ t("home.aiRecommend.dims.difficulty") }}</em><b>{{ levelLabel(item.difficulty) }}</b></span>
           <span class="okr-rec__dim" :class="`is-${item.urgency}`"><em>{{ t("home.aiRecommend.dims.urgency") }}</em><b>{{ levelLabel(item.urgency) }}</b></span>
         </div>
+        <div v-if="item.metric" class="okr-rec__card-metric">
+          <span>{{ item.metric.icon }}</span>
+          <span class="okr-rec__card-metric-name">{{ item.metric.name }}</span>
+          <span class="okr-rec__card-metric-val">{{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }} ({{ item.metric.progress }}%)</span>
+        </div>
         <div class="okr-rec__card-reason">{{ item.reason }}</div>
+        <div class="okr-rec__card-orch">
+          <el-tag v-if="item.skill" size="small" type="primary" effect="light">{{ skillLabel(item.skill) }}</el-tag>
+          <el-tag v-if="item.agent" size="small" effect="plain">{{ item.agent }}</el-tag>
+          <el-tag size="small" :type="mcpTagType(item.mcp)" effect="light">{{ mcpLabel(item.mcp) }}</el-tag>
+        </div>
         <div class="okr-rec__card-foot">
           <span class="okr-rec__cell-role" @click="goRole(item.role)">{{ item.roleIcon }} {{ item.roleName }}</span>
           <span class="okr-rec__cell-effort" :class="`is-${item.effort}`">{{ item.effort }}</span>
@@ -158,15 +201,18 @@
 </template>
 
 <script setup lang="ts" name="OkrRecommendPanel">
-import { computed, reactive, ref, watch, onMounted } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 import { Refresh, MagicStick, Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { chat } from "@/api/modules/chatService";
-import type { ChatPayload } from "@/api/interface/yiweb";
+import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
+import type { ChatPayload, KnowledgeFileEntry } from "@/api/interface/yiweb";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
 import { rolesData } from "@/views/knowledge/executiver/okrData";
+import { skills } from "@/views/knowledge/skills/constants";
 import {
   LIST_TYPES,
   OKR_SYSTEM_PROMPT,
@@ -174,6 +220,8 @@ import {
   buildSingleItemPrompt,
   parseRecommendation,
   fallbackRecommendation,
+  taskToMeta,
+  taskFromMeta,
   type OkrLevel,
   type OkrListType,
   type OkrScope,
@@ -197,9 +245,10 @@ interface ListState {
   loading: boolean;
   source: "ai" | "fallback" | "";
   generatedAt: string;
+  filePaths: string[];
 }
 
-const emptyState = (): ListState => ({ items: [], loading: false, source: "", generatedAt: "" });
+const emptyState = (): ListState => ({ items: [], loading: false, source: "", generatedAt: "", filePaths: [] });
 
 const lists = reactive<Record<OkrListType, ListState>>({
   daily: emptyState(),
@@ -208,11 +257,11 @@ const lists = reactive<Record<OkrListType, ListState>>({
   sprint: emptyState()
 });
 
-/** 四类清单合并为一张表；每行带 listType 以区分来源清单，id 加前缀保证唯一。 */
+/** 四类清单合并为一张表；每行带 listType 以区分来源清单（item.id 已含清单前缀，天然唯一）。 */
 const combinedItems = computed<(OkrTaskItem & { listType: OkrListType })[]>(() => {
   const out: (OkrTaskItem & { listType: OkrListType })[] = [];
   for (const l of LIST_TYPES) {
-    out.push(...lists[l.key].items.map(item => ({ ...item, id: `${l.key}-${item.id}`, listType: l.key })));
+    out.push(...lists[l.key].items.map(item => ({ ...item, listType: l.key })));
   }
   return out.sort((a, b) => b.score - a.score);
 });
@@ -238,7 +287,11 @@ const filteredItems = computed(() => {
       i.title.toLowerCase().includes(kw) ||
       i.roleName.toLowerCase().includes(kw) ||
       i.role.toLowerCase().includes(kw) ||
-      i.goalId.toLowerCase().includes(kw)
+      i.goalId.toLowerCase().includes(kw) ||
+      i.skill.toLowerCase().includes(kw) ||
+      skillLabel(i.skill).toLowerCase().includes(kw) ||
+      i.agent.toLowerCase().includes(kw) ||
+      i.mcp.toLowerCase().includes(kw)
   );
 });
 
@@ -292,25 +345,144 @@ function scoreTagType(score: number): "danger" | "warning" | "primary" | "info" 
   return score >= 60 ? "danger" : score >= 35 ? "warning" : score >= 15 ? "primary" : "info";
 }
 
+/** 技能 id → 展示标题（取 skills/constants.ts 的 title，未知则原样显示 id）。 */
+function skillLabel(skillId: string): string {
+  return skills.find(s => s.id === skillId)?.title ?? skillId;
+}
+
+/** MCP 服务器 → 标签色：github 蓝、yiai 绿、无需则灰。 */
+function mcpTagType(mcp: string): "primary" | "success" | "info" {
+  return mcp === "github" ? "primary" : mcp === "yiai" ? "success" : "info";
+}
+
+function mcpLabel(mcp: string): string {
+  return mcp || "—";
+}
+
 function goRole(roleId: string) {
   if (roleId) router.push(`/executiver/okr/${roleId}`);
 }
 
 function goGoal(role: string, goalId: string) {
-  if (goalId) router.push(`/executiver/okr/${role}/goal/${goalId}`);
+  if (goalId) router.push(`/executiver/okr/${role}?goal=${goalId}`);
 }
 
-/** 从对应清单中删除一条推荐（combinedItems 的 id 带 `${listType}-` 前缀，需剥掉再匹配原条目）。 */
-function removeItem(listType: OkrListType, id: string) {
-  const originalId = id.slice(listType.length + 1);
-  lists[listType].items = lists[listType].items.filter(i => i.id !== originalId);
+// ── 知识库持久化 ─────────────────────────────
+// 推荐任务落盘到 YiKnowledge/okr/task-<listType>-<NN>.md，
+// 每个任务以扁平 frontmatter 携带自身指标数据（metric* 前缀）。
+
+const KB_DIR = "okr";
+
+function pad(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+function taskFileName(listType: OkrListType, index: number): string {
+  return `${KB_DIR}/task-${listType}-${pad(index + 1)}.md`;
+}
+
+/** 从文件名推导稳定 id（task-daily-03.md → daily-03）。 */
+function taskIdFromFileName(name: string): string {
+  const m = name.match(/^task-(daily|weekly|risk|sprint)-(\d{2})\.md$/);
+  return m ? `${m[1]}-${m[2]}` : name.replace(/\.md$/, "");
+}
+
+function renderTaskBody(item: OkrTaskItem): string {
+  const metric = item.metric;
+  const metricLine = metric
+    ? `- **指标** ${metric.icon} ${metric.name}（当前 ${metric.current}${metric.unit} → 目标 ${metric.target}${metric.unit}，进度 ${metric.progress}%）`
+    : "- **指标** —";
+  return [
+    `# ${item.title}`,
+    "",
+    `> ${item.reason || item.title}`,
+    "",
+    "| Field | Value |",
+    "|---|---|",
+    `| Role | ${item.roleName} |`,
+    `| Priority | ${item.priority} |`,
+    `| Score | ${item.score} |`,
+    `| Effort | ${item.effort} |`,
+    `| Due | ${item.dueDate || "—"} |`,
+    `| Goal | ${item.goalId || "—"} |`,
+    `| Skill | ${item.skill ? skillLabel(item.skill) : "—"} |`,
+    `| Agent | ${item.agent || "—"} |`,
+    `| MCP | ${mcpLabel(item.mcp)} |`,
+    "",
+    metricLine
+  ].join("\n");
+}
+
+/** 把某一清单整体落盘：顺序编号 → 写文件 → 删除不再存在的旧文件。 */
+async function persistList(listType: OkrListType) {
+  const state = lists[listType];
+  const newPaths: string[] = [];
+  let failed = false;
+  for (let i = 0; i < state.items.length; i++) {
+    const item = state.items[i];
+    item.id = `${listType}-${pad(i + 1)}`;
+    const path = taskFileName(listType, i);
+    newPaths.push(path);
+    const meta: Record<string, unknown> = {
+      type: "okr-task",
+      list: listType,
+      id: item.id,
+      ...taskToMeta(item, state.source === "ai" ? "ai" : "fallback")
+    };
+    try {
+      await writeKnowledgeFile(path, renderTaskBody(item), meta);
+    } catch {
+      failed = true;
+    }
+  }
+  const stale = state.filePaths.filter(p => !newPaths.includes(p));
+  for (const p of stale) {
+    try {
+      await deleteKnowledgeFile(p);
+    } catch {
+      /* ignore */
+    }
+  }
+  state.filePaths = newPaths;
+  if (failed) ElMessage.error("部分任务保存到知识库失败");
+}
+
+/** 挂载时从 YiKnowledge/okr/ 加载已落盘的任务清单。 */
+async function loadFromKnowledge() {
+  try {
+    const res = await scanKnowledge(KB_DIR);
+    const files = (res.categories?.flatMap(c => c.files) ?? []).filter(f => f.meta?.type === "okr-task");
+    const byList: Record<OkrListType, KnowledgeFileEntry[]> = { daily: [], weekly: [], risk: [], sprint: [] };
+    for (const f of files) {
+      const list = f.meta?.list;
+      if (typeof list === "string" && list in byList) byList[list as OkrListType].push(f);
+    }
+    for (const l of LIST_TYPES) {
+      const state = lists[l.key];
+      const entries = byList[l.key].sort((a, b) => (taskIdFromFileName(a.name) < taskIdFromFileName(b.name) ? -1 : 1));
+      state.items = entries
+        .map(f => taskFromMeta(f.meta ?? {}, taskIdFromFileName(f.name)))
+        .filter((x): x is OkrTaskItem => x !== null);
+      state.filePaths = entries.map(f => f.path);
+    }
+  } catch {
+    // 保持空态，等待用户手动生成
+  }
+}
+
+/** 从对应清单中删除一条推荐，并同步落盘（重新编号 + 清理旧文件）。 */
+async function removeItem(listType: OkrListType, id: string) {
+  const state = lists[listType];
+  const idx = state.items.findIndex(i => i.id === id);
+  if (idx === -1) return;
+  state.items.splice(idx, 1);
+  await persistList(listType);
 }
 
 /** 单条 AI 重新生成：替换该行推荐（保留原 id，避免行 key 变动；强制回原角色）。 */
 async function regenerateItem(listType: OkrListType, id: string, role: string, title: string) {
   const state = lists[listType];
-  const originalId = id.slice(listType.length + 1);
-  const idx = state.items.findIndex(i => i.id === originalId);
+  const idx = state.items.findIndex(i => i.id === id);
   if (idx === -1) return;
 
   regeneratingId.value = id;
@@ -318,21 +490,22 @@ async function regenerateItem(listType: OkrListType, id: string, role: string, t
     const payload: ChatPayload = {
       model: DEFAULT_MODEL,
       system: OKR_SYSTEM_PROMPT,
-      messages: [{ type: "user", message: buildSingleItemPrompt(listType, role, title), timestamp: Date.now() }]
+      messages: [{ type: "user", message: buildSingleItemPrompt(listType, role, title, buildHistory(listType)), timestamp: Date.now() }]
     };
     const text = await chat(payload);
-    const items = parseRecommendation(text, role);
+    const items = parseRecommendation(text, role, listType);
     if (items.length) {
       const meta = rolesData[role];
       state.items[idx] = {
         ...items[0],
-        id: originalId,
+        id,
         role,
         roleName: meta?.name ?? role,
         roleIcon: meta?.icon ?? "👤"
       };
       state.source = "ai";
       state.generatedAt = dayjs().format("HH:mm:ss");
+      await persistList(listType);
     }
   } catch {
     // 失败保留原条目
@@ -348,30 +521,38 @@ function fillFallback(key: OkrListType) {
   state.generatedAt = dayjs().format("HH:mm:ss");
 }
 
-function fillFallbackAll() {
-  LIST_TYPES.forEach(l => fillFallback(l.key));
+/** 拼装历史任务：其它清单已加载的任务（借鉴以前的任务内容，避免重复、延续上下文）。 */
+function buildHistory(excludeKey?: OkrListType): OkrTaskItem[] {
+  const out: OkrTaskItem[] = [];
+  for (const l of LIST_TYPES) {
+    if (l.key === excludeKey) continue;
+    out.push(...lists[l.key].items);
+  }
+  return out;
 }
 
-/** 手动调用：先即时刷新确定性兜底，再后台请求 AI，成功后把兜底升级为 AI 结果。 */
+/** 手动调用：先即时刷新确定性兜底并落盘，再后台请求 AI，成功后把兜底升级为 AI 结果。 */
 async function generateList(key: OkrListType) {
   const state = lists[key];
   const scope = roleScope.value;
   fillFallback(key);
+  await persistList(key);
   if (state.loading) return;
   state.loading = true;
   try {
     const payload: ChatPayload = {
       model: DEFAULT_MODEL,
       system: OKR_SYSTEM_PROMPT,
-      messages: [{ type: "user", message: buildUserPrompt(key, scope), timestamp: Date.now() }]
+      messages: [{ type: "user", message: buildUserPrompt(key, scope, buildHistory(key)), timestamp: Date.now() }]
     };
     const text = await chat(payload);
     if (roleScope.value !== scope) return; // 期间切换角色 → 丢弃过期结果
-    const items = parseRecommendation(text, scope);
+    const items = parseRecommendation(text, scope, key);
     if (items.length) {
       state.items = items;
       state.source = "ai";
       state.generatedAt = dayjs().format("HH:mm:ss");
+      await persistList(key);
     }
   } catch {
     // 保留兜底结果
@@ -385,10 +566,7 @@ async function generateAll() {
   await Promise.all(LIST_TYPES.map(l => generateList(l.key)));
 }
 
-onMounted(fillFallbackAll);
-
-// 切换角色时立即刷新兜底（AI 由用户手动点击「生成全部」触发）
-watch(roleScope, fillFallbackAll);
+onMounted(loadFromKnowledge);
 </script>
 
 <style scoped lang="scss">
@@ -455,6 +633,17 @@ watch(roleScope, fillFallbackAll);
   &.is-L { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
 }
 .okr-rec__cell-due-overdue { color: var(--el-color-danger); font-weight: 700; }
+
+// ── Metric（任务自身指标）────────────────────
+.okr-rec__cell-metric { display: flex; align-items: center; gap: 6px; }
+.okr-rec__metric-icon { font-size: 14px; }
+.okr-rec__metric-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.okr-rec__metric-name { font-size: 12px; font-weight: 600; line-height: 1.3; }
+.okr-rec__metric-val { font-size: 11px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
+.okr-rec__list-metric { font-size: 12px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
+.okr-rec__card-metric { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--el-text-color-secondary); }
+.okr-rec__card-metric-name { font-weight: 600; }
+.okr-rec__card-metric-val { font-variant-numeric: tabular-nums; }
 
 // ── Dimensions（ROI / 难度 / 紧迫 合并列）───────
 .okr-rec__cell-dims { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
@@ -557,6 +746,7 @@ watch(roleScope, fillFallbackAll);
 .okr-rec__card-head { display: flex; align-items: center; gap: 8px; }
 .okr-rec__card-score { margin-left: auto; }
 .okr-rec__card-title { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.okr-rec__card-orch { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .okr-rec__card-reason {
   font-size: 12px;
   color: var(--el-text-color-secondary);

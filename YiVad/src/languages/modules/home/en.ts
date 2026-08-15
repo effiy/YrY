@@ -4,6 +4,13 @@ export default {
     updated: "Updated {time}",
     aiChat: "AI Chat",
     okr: "OKR",
+    rss: "RSS",
+    knowledge: "Knowledge",
+
+    flow: {
+      title: "Requirement → Launch · End-to-End Flow",
+      subtitle: "From OKR definition to deployment, four stages fully wired"
+    },
 
     status: {
       online: "Online",
@@ -65,6 +72,10 @@ export default {
         task: "Task",
         role: "Role",
         goal: "Goal",
+        metric: "Metric",
+        skill: "Skill",
+        agent: "Agent",
+        mcp: "MCP",
         effort: "Effort",
         due: "Due",
         reason: "Why",

@@ -9,6 +9,14 @@
   >
     <template #header>
       <div class="role-page__quick-nav">
+        <div class="role-page__quick-nav-card" @click="$router.push('/home/index')">
+          <span class="role-page__quick-nav-icon">🏠</span>
+          <div class="role-page__quick-nav-body">
+            <span class="role-page__quick-nav-title">Home</span>
+            <span class="role-page__quick-nav-desc">Agent harness overview &amp; OKR task orchestration</span>
+          </div>
+          <span class="role-page__quick-nav-arrow">→</span>
+        </div>
         <div class="role-page__quick-nav-card" @click="$router.push('/executiver/okr')">
           <span class="role-page__quick-nav-icon">🎯</span>
           <div class="role-page__quick-nav-body">

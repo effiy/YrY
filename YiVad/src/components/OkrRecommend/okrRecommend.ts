@@ -19,11 +19,18 @@ import {
   rolesData,
   goalsData,
   metricsData,
+  allMetricsMap,
+  getGoalMetrics,
   roleDailyDataMap,
   roleWeeklyDataMap,
   ROLE_IDS
 } from "@/views/knowledge/executiver/okrData";
 import type { GoalItem, MetricItem } from "@/views/knowledge/executiver/okrData";
+import { skills as SKILLS } from "@/views/knowledge/skills/constants";
+import { applyOrchestration, type OkrMcp } from "./okrOrchestration";
+
+/** 供 system prompt 使用的技能 id 清单（AI 从中选择 skill）。 */
+const SKILL_ID_LIST = SKILLS.map(s => s.id).join(", ");
 
 // ── 类型 ────────────────────────────────────────
 
@@ -43,6 +50,7 @@ export interface OkrTaskItem {
   priority: OkrPriority; // 由综合评分 score 推导（不再由模型直接拍定）
   goalId: string; // 关联目标 id，可为空字符串
   metricId: string; // 关联指标 id，可为空字符串
+  metric: MetricItem | null; // 任务自身的指标数据（由 metricId 解析，缺失时回退到目标/角色首指标）
   effort: "S" | "M" | "L";
   dueDate: string; // YYYY-MM-DD
   reason: string; // 推荐理由
@@ -50,6 +58,9 @@ export interface OkrTaskItem {
   difficulty: OkrLevel; // MVP 实现难度
   urgency: OkrLevel; // 紧迫度
   score: number; // 综合优先级评分 0-100（WSJF：价值 × 紧迫度 ÷ 难度）
+  skill: string; // 实现该任务最合适的 skill（id 取自 skills/constants.ts）
+  agent: string; // 负责该任务的 agent persona（如 "Engineer Agent"）
+  mcp: OkrMcp; // 需要的 MCP 服务器：github | yiai | ""（无需）
 }
 
 export interface OkrRecommendResult {
@@ -120,6 +131,78 @@ export function priorityFromScore(score: number): OkrPriority {
   return "P3";
 }
 
+const VALID_PRIORITY = ["P0", "P1", "P2", "P3"] as const;
+
+/** 读取存储的优先级（非法值回退 P2）。 */
+function clampPriority(v: unknown): OkrPriority {
+  const s = String(v ?? "");
+  return (VALID_PRIORITY as readonly string[]).includes(s) ? (s as OkrPriority) : "P2";
+}
+
+/** 解析任务的指标数据：优先 metricId，其次 goalId 关联的首指标，最后回退到角色首指标。
+ *  保证「每个任务都有自己的指标数据」。 */
+export function resolveMetric(roleId: string, metricId: string, goalId: string): MetricItem | null {
+  if (metricId && allMetricsMap[metricId]) return allMetricsMap[metricId];
+  if (goalId) {
+    const fromGoal = getGoalMetrics(goalId);
+    if (fromGoal.length) return fromGoal[0];
+  }
+  return (metricsData[roleId] || [])[0] ?? null;
+}
+
+// ── 指标数据 ⇄ 扁平 frontmatter ───────────────
+//
+// 后端 writer 会丢弃空字符串、把嵌套 dict 强转成字符串，因此任务的指标数据
+// 必须拍平成 metric* 前缀的标量字段才能完整落盘、原样读回。
+
+/** 指标 → 扁平 frontmatter 字段。 */
+export function metricToMeta(metric: MetricItem): Record<string, unknown> {
+  return {
+    metricId: metric.id,
+    metricIcon: metric.icon,
+    metricName: metric.name,
+    metricCategory: metric.category,
+    metricFramework: metric.framework,
+    metricDescription: metric.description,
+    metricCurrent: metric.current,
+    metricTarget: metric.target,
+    metricBaseline: metric.baseline,
+    metricUnit: metric.unit,
+    metricTrend: metric.trend,
+    metricProgress: metric.progress
+  };
+}
+
+function toNumber(v: unknown): number {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/** 从扁平 frontmatter 重建指标；缺失时回退 resolveMetric。 */
+export function metricFromMeta(
+  meta: Record<string, unknown>,
+  roleId: string,
+  metricId: string,
+  goalId: string
+): MetricItem | null {
+  const name = typeof meta.metricName === "string" ? meta.metricName : "";
+  if (!name) return resolveMetric(roleId, metricId, goalId);
+  return {
+    id: typeof meta.metricId === "string" ? meta.metricId : metricId,
+    icon: typeof meta.metricIcon === "string" ? meta.metricIcon : "📊",
+    name,
+    category: typeof meta.metricCategory === "string" ? meta.metricCategory : "",
+    framework: typeof meta.metricFramework === "string" ? meta.metricFramework : "",
+    description: typeof meta.metricDescription === "string" ? meta.metricDescription : "",
+    current: toNumber(meta.metricCurrent),
+    target: toNumber(meta.metricTarget),
+    baseline: toNumber(meta.metricBaseline),
+    unit: typeof meta.metricUnit === "string" ? meta.metricUnit : "",
+    trend: typeof meta.metricTrend === "string" ? meta.metricTrend : "",
+    progress: toNumber(meta.metricProgress)
+  };
+}
+
 // ── 提示语（System Prompt）───────────────────────
 //
 // 这是「AI 自主推荐」能力的核心提示语。它把模型塑造成一名 OKR 规划助手，
@@ -137,6 +220,10 @@ export const OKR_SYSTEM_PROMPT = `你是「Yi 系统」的 OKR 智能规划助�
    综合评分 = (roi 权重 × urgency 权重) ÷ difficulty 权重，归一化到 0-100；「高价值 × 高紧迫 × 低难度」的快速见效项最优先。
 4. 工作量 effort：S = <2 小时，M = 半天，L = 1 天以上。
 5. 推荐理由 reason 一句话说清：为什么现在做、对齐哪个目标、不做的代价。
+6. 为每个任务指定实现它的三要素（编排）：
+   - skill：从可用技能 id（${SKILL_ID_LIST}）中选一个最贴切的。
+   - agent：负责执行的 agent persona（如 "Engineer Agent"、"Executive Agent"）。
+   - mcp：需要的外部 MCP 服务器（"github" | "yiai" | "" 表示无需）。
 
 输出要求（严格遵守）：
 - 只输出一个 JSON 数组，不要 markdown 代码块、不要任何解释文字、不要前后缀。
@@ -151,7 +238,10 @@ export const OKR_SYSTEM_PROMPT = `你是「Yi 系统」的 OKR 智能规划助�
   "roi": "high | medium | low",
   "difficulty": "high | medium | low",
   "urgency": "high | medium | low",
-  "reason": "推荐理由（一句话）"
+  "reason": "推荐理由（一句话）",
+  "skill": "技能 id（从上面可用技能中选择一个）",
+  "agent": "agent persona（如 Engineer Agent）",
+  "mcp": "github | yiai | \"\""
 }`;
 
 // ── 上下文构建 ──────────────────────────────────
@@ -243,51 +333,71 @@ function scopeLabel(scope: OkrScope): string {
   return rolesData[scope]?.name ?? scope;
 }
 
-export function buildUserPrompt(listType: OkrListType, scope: OkrScope): string {
+/** 序列化历史任务（借鉴以前的任务内容，最多 15 条）。 */
+function formatHistory(history?: OkrTaskItem[]): string {
+  if (!history || !history.length) return "";
+  return history
+    .slice(-15)
+    .map((it, i) => `${i + 1}. [${it.roleName}] ${it.title}（skill=${it.skill} · agent=${it.agent} · mcp=${it.mcp || "—"}）`)
+    .join("\n");
+}
+
+export function buildUserPrompt(listType: OkrListType, scope: OkrScope, history?: OkrTaskItem[]): string {
   const ctx = buildOkrContext(scope);
   const today = dayjs().format("YYYY-MM-DD");
   const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD"); // 周一
   const weekEnd = dayjs().startOf("week").add(5, "day").format("YYYY-MM-DD"); // 周五
   const label = scopeLabel(scope);
 
+  let prompt: string;
   switch (listType) {
     case "daily":
-      return `请基于以下 OKR 上下文，为「${label}」自主推荐今日任务清单（6 条）：
+      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐今日任务清单（6 条）：
 - 优先处理：逾期/临期的 Action Item、今日 Top3、阻塞项的下一步动作、进度 < 40% 的 Key Result 推进动作。
 - dueDate 一律取今天（${today}）或明天。
 
 OKR 上下文：
 ${ctx}`;
+      break;
     case "weekly":
-      return `请基于以下 OKR 上下文，为「${label}」自主推荐本周任务清单（6 条）：
+      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐本周任务清单（6 条）：
 - 优先处理：本周关键里程碑（nextWeek）、进度最滞后的 Objective/Key Result、需要跨角色协作的事项、本周到期的 Action Item。
 - dueDate 落在本周（${weekStart} ~ ${weekEnd}）。
 
 OKR 上下文：
 ${ctx}`;
+      break;
     case "risk":
-      return `请基于以下 OKR 上下文，为「${label}」自主推荐「风险与阻塞」处理清单（5 条）：
+      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐「风险与阻塞」处理清单（5 条）：
 - 聚焦：各角色 blockers、状态为 blocked / At Risk 的目标、逾期未完成的 Action Item。
 - 每个任务给出「解除阻塞」的下一步可执行动作。
 - dueDate 优先今天（${today}）或本周。
 
 OKR 上下文：
 ${ctx}`;
+      break;
     case "sprint":
-      return `请基于以下 OKR 上下文，为「${label}」自主推荐「目标冲刺」清单（5 条）：
+      prompt = `请基于以下 OKR 上下文，为「${label}」自主推荐「目标冲刺」清单（5 条）：
 - 聚焦：进度最低（progress < 40%）的 Key Result 与指标。
 - 每个滞后项给出一个本周内能完成的推进任务。
 - dueDate 落在本周（${weekStart} ~ ${weekEnd}）。
 
 OKR 上下文：
 ${ctx}`;
+      break;
     default:
-      return ctx;
+      prompt = ctx;
   }
+
+  const hist = formatHistory(history);
+  if (hist) {
+    prompt += `\n\n历史任务（借鉴以前的任务内容，避免重复、延续上下文）：\n${hist}`;
+  }
+  return prompt;
 }
 
 /** 单条重生成提示语：为指定角色重新推荐一条任务（替代已失效的旧任务，要求与之不同）。 */
-export function buildSingleItemPrompt(listType: OkrListType, roleId: string, excludeTitle: string): string {
+export function buildSingleItemPrompt(listType: OkrListType, roleId: string, excludeTitle: string, history?: OkrTaskItem[]): string {
   const ctx = formatRoleDetail(roleId);
   const label = rolesData[roleId]?.name ?? roleId;
   const today = dayjs().format("YYYY-MM-DD");
@@ -304,10 +414,30 @@ export function buildSingleItemPrompt(listType: OkrListType, roleId: string, exc
           : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
   const due = listType === "daily" ? `dueDate 取今天（${today}）或明天` : `dueDate 落在本周（${weekStart} ~ ${weekEnd}）`;
 
-  return `请基于以下 OKR 上下文，为「${label}」重新推荐一条任务（仅 1 条）：
+  let prompt = `请基于以下 OKR 上下文，为「${label}」重新推荐一条任务（仅 1 条）：
 - 该任务用于替代已失效的任务「${excludeTitle}」，请给出一个与之不同的、当前最该做的新任务。
 - ${focus}。
 - ${due}。
+
+OKR 上下文：
+${ctx}`;
+
+  const hist = formatHistory(history);
+  if (hist) {
+    prompt += `\n\n历史任务（借鉴以前的任务内容，避免重复、延续上下文）：\n${hist}`;
+  }
+  return prompt;
+}
+
+/** 为 Action Item 重新生成更聚焦的标题 + 优先级 + 关联目标（保留既有 deadline / owner / role）。
+ *  与任务清单不同：Action Item 有既定截止日期与责任人，AI 只应优化「做什么」与「多优先」。 */
+export function buildActionItemPrompt(roleId: string, currentTitle: string, deadline: string): string {
+  const ctx = formatRoleDetail(roleId);
+  const label = rolesData[roleId]?.name ?? roleId;
+  return `请基于以下 OKR 上下文，为「${label}」优化一条 Action Item（仅 1 条）：
+- 现有 Action Item：${currentTitle}${deadline ? `（截止 ${deadline}）` : ""}。
+- 请给出一个更具体、可验收、含动作动词的新标题（≤30 字），并重新评估其优先级与关联目标（goalId）。
+- 截止日期保持 ${deadline || "未设"} 不变，只需优化标题、优先级、关联目标。
 
 OKR 上下文：
 ${ctx}`;
@@ -326,7 +456,7 @@ function roleMeta(roleId: string) {
 }
 
 /** 把模型返回的原始对象规整成 OkrTaskItem。 */
-function normalizeItem(raw: unknown, scope: OkrScope, index: number): OkrTaskItem | null {
+function normalizeItem(raw: unknown, scope: OkrScope, index: number, listType?: OkrListType): OkrTaskItem | null {
   if (!raw || typeof raw !== "object") return null;
   const o = raw as Record<string, unknown>;
   const title = String(o.title ?? "").trim();
@@ -337,11 +467,15 @@ function normalizeItem(raw: unknown, scope: OkrScope, index: number): OkrTaskIte
   const { roleName, roleIcon } = roleMeta(validRole);
 
   const dueDate = String(o.dueDate ?? "").trim();
+  const goalId = String(o.goalId ?? "").trim();
+  const metricId = String(o.metricId ?? "").trim();
   const roi = clampLevel(o.roi);
   const difficulty = clampLevel(o.difficulty);
   // 优先用模型给出的紧迫度，缺失时由截止时间推导
   const urgency = o.urgency != null && String(o.urgency).trim() !== "" ? clampLevel(o.urgency) : urgencyFromDue(dueDate);
   const score = scoreTask(roi, difficulty, urgency);
+  const metric = resolveMetric(validRole, metricId, goalId);
+  const orchestration = applyOrchestration({ role: validRole, listType, skill: o.skill, agent: o.agent, mcp: o.mcp });
 
   return {
     id: `okr-${scope}-${index}`,
@@ -350,15 +484,17 @@ function normalizeItem(raw: unknown, scope: OkrScope, index: number): OkrTaskIte
     roleName,
     roleIcon,
     priority: priorityFromScore(score),
-    goalId: String(o.goalId ?? "").trim(),
-    metricId: String(o.metricId ?? "").trim(),
+    goalId,
+    metricId,
+    metric,
     effort: clampEffort(o.effort),
     dueDate,
     reason: String(o.reason ?? "").trim(),
     roi,
     difficulty,
     urgency,
-    score
+    score,
+    ...orchestration
   };
 }
 
@@ -388,11 +524,11 @@ function extractJsonArray(text: string): unknown[] | null {
 }
 
 /** 解析模型返回的推荐结果；解析失败返回空数组。 */
-export function parseRecommendation(raw: string, scope: OkrScope): OkrTaskItem[] {
+export function parseRecommendation(raw: string, scope: OkrScope, listType?: OkrListType): OkrTaskItem[] {
   const arr = extractJsonArray(raw);
   if (!arr) return [];
   return arr
-    .map((item, i) => normalizeItem(item, scope, i))
+    .map((item, i) => normalizeItem(item, scope, i, listType))
     .filter((x): x is OkrTaskItem => x !== null)
     .sort((a, b) => b.score - a.score); // 综合评分降序，快速见效项排最前
 }
@@ -403,7 +539,8 @@ export function parseRecommendation(raw: string, scope: OkrScope): OkrTaskItem[]
 
 function fallbackItem(
   partial: Partial<OkrTaskItem> & { title: string; role: string },
-  index: number
+  index: number,
+  listType: OkrListType
 ): OkrTaskItem {
   const { roleName, roleIcon } = roleMeta(partial.role);
   const dueDate = partial.dueDate ?? dayjs().format("YYYY-MM-DD");
@@ -411,6 +548,10 @@ function fallbackItem(
   const difficulty = partial.difficulty ?? "medium";
   const urgency = partial.urgency ?? urgencyFromDue(dueDate);
   const score = scoreTask(roi, difficulty, urgency);
+  const goalId = partial.goalId ?? "";
+  const metricId = partial.metricId ?? "";
+  const metric = resolveMetric(partial.role, metricId, goalId);
+  const orchestration = applyOrchestration({ role: partial.role, listType });
   return {
     id: `okr-fb-${index}`,
     title: partial.title,
@@ -418,15 +559,17 @@ function fallbackItem(
     roleName,
     roleIcon,
     priority: priorityFromScore(score),
-    goalId: partial.goalId ?? "",
-    metricId: partial.metricId ?? "",
+    goalId,
+    metricId,
+    metric,
     effort: partial.effort ?? "M",
     dueDate,
     reason: partial.reason ?? "",
     roi,
     difficulty,
     urgency,
-    score
+    score,
+    ...orchestration
   };
 }
 
@@ -458,7 +601,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
             roi: i === 0 ? "high" : "medium",
             difficulty: "low",
             urgency: "high"
-          }, idx++));
+          }, idx++, listType));
         });
         if (daily?.blocker) {
           items.push(fallbackItem({
@@ -471,7 +614,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
             difficulty: "low",
             urgency: "high",
             reason: "今日阻塞项，需优先推进"
-          }, idx++));
+          }, idx++, listType));
         }
         break;
       }
@@ -486,7 +629,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
             roi: "medium",
             difficulty: "low",
             urgency: "medium"
-          }, idx++));
+          }, idx++, listType));
         });
         break;
       }
@@ -502,7 +645,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
             difficulty: "low",
             urgency: "high",
             reason: "阻塞项，需解除"
-          }, idx++));
+          }, idx++, listType));
         });
         // blocked 目标 → 处理动作
         (goalsData[roleId] || []).filter(g => g.status === "blocked").forEach(g => {
@@ -516,7 +659,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
             difficulty: "high",
             urgency: "high",
             reason: "目标处于 blocked 状态"
-          }, idx++));
+          }, idx++, listType));
         });
         break;
       }
@@ -537,7 +680,7 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
               difficulty: "high",
               urgency: "medium",
               reason: `目标整体进度 ${krAvg(g)}%，滞后`
-            }, idx++));
+            }, idx++, listType));
           });
         break;
       }
@@ -547,4 +690,62 @@ export function fallbackRecommendation(listType: OkrListType, scope: OkrScope): 
   return items
     .sort((a, b) => b.score - a.score)
     .slice(0, LIST_TYPES.find(l => l.key === listType)?.count ?? 6);
+}
+
+// ── 知识库序列化（任务 ⇄ 扁平 frontmatter）─────────
+//
+// OkrRecommendPanel 把推荐任务落盘到 YiKnowledge/okr/，每个任务以扁平字段
+// 携带自身指标数据（metric* 前缀），读回时原样重建、不再依赖静态 id 解析。
+
+export function taskToMeta(item: OkrTaskItem, source: "ai" | "fallback"): Record<string, unknown> {
+  const meta: Record<string, unknown> = {
+    title: item.title,
+    role: item.role,
+    goalId: item.goalId,
+    effort: item.effort,
+    dueDate: item.dueDate,
+    reason: item.reason,
+    priority: item.priority,
+    score: item.score,
+    roi: item.roi,
+    difficulty: item.difficulty,
+    urgency: item.urgency,
+    skill: item.skill,
+    agent: item.agent,
+    mcp: item.mcp,
+    source
+  };
+  if (item.metric) Object.assign(meta, metricToMeta(item.metric));
+  else if (item.metricId) meta.metricId = item.metricId;
+  return meta;
+}
+
+/** 从 frontmatter 重建任务；无 title 视为无效返回 null。 */
+export function taskFromMeta(meta: Record<string, unknown>, fallbackId: string): OkrTaskItem | null {
+  const title = typeof meta.title === "string" ? meta.title : "";
+  if (!title) return null;
+  const role = typeof meta.role === "string" ? meta.role : "executiver";
+  const { roleName, roleIcon } = roleMeta(role);
+  const goalId = typeof meta.goalId === "string" ? meta.goalId : "";
+  const metricId = typeof meta.metricId === "string" ? meta.metricId : "";
+  const metric = metricFromMeta(meta, role, metricId, goalId);
+  return {
+    id: typeof meta.id === "string" ? meta.id : fallbackId,
+    title,
+    role,
+    roleName,
+    roleIcon,
+    priority: clampPriority(meta.priority),
+    goalId,
+    metricId: metric?.id ?? metricId,
+    metric,
+    effort: clampEffort(meta.effort),
+    dueDate: typeof meta.dueDate === "string" ? meta.dueDate : "",
+    reason: typeof meta.reason === "string" ? meta.reason : "",
+    roi: clampLevel(meta.roi),
+    difficulty: clampLevel(meta.difficulty),
+    urgency: clampLevel(meta.urgency),
+    score: toNumber(meta.score),
+    ...applyOrchestration({ role, skill: meta.skill, agent: meta.agent, mcp: meta.mcp })
+  };
 }

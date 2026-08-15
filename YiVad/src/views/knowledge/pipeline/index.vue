@@ -129,10 +129,30 @@ import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { stages, decisionTree, stageColors, crossCuttingLayers } from "./constants";
 import { listKnowledgeFiles } from "@/api/modules/knowledgeService";
+import { EXAMPLE_LAUNCHES, launchStatusType } from "@/views/knowledge/executiver/okrFlowData";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 
 const router = useRouter();
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+
+const launches = EXAMPLE_LAUNCHES;
+
+/** 上线记录的 goalId（如 exec-005）→ 角色 id（如 executiver），跳回角色 OKR 并深链该目标。 */
+const GOAL_ROLE_PREFIX: Record<string, string> = {
+  exec: "executiver",
+  prod: "producter",
+  lead: "leader",
+  eng: "engineer",
+  sre: "srer",
+  aier: "aier",
+  cur: "curator"
+};
+
+function goLaunchGoal(goalId: string) {
+  const prefix = goalId.split("-")[0];
+  const role = GOAL_ROLE_PREFIX[prefix];
+  if (role) router.push(`/executiver/okr/${role}?goal=${goalId}`);
+}
 
 const layerColors: Record<string, string> = {
   business: "#6366f1",
@@ -219,6 +239,87 @@ onMounted(() => {
     font-size: 13px;
     color: var(--el-text-color-secondary);
     line-height: 1.6;
+  }
+}
+
+// ── Recent launches ─────────────────────────────────────
+.pipeline__launches {
+  margin-bottom: 18px;
+}
+.pipeline__launches-head {
+  margin-bottom: 10px;
+  h2 {
+    margin: 0 0 2px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+.pipeline__launches-sub {
+  margin: 0;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.pipeline__launches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.pipeline__launch-card {
+  :deep(.el-card__body) {
+    padding: 12px;
+  }
+}
+.pipeline__launch-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pipeline__launch-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.pipeline__launch-project {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.pipeline__launch-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.pipeline__launch-version {
+  font-size: 11px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  color: var(--el-text-color-secondary);
+}
+.pipeline__launch-artifact {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.pipeline__launch-meta {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+.pipeline__launch-desc {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+.pipeline__launch-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
   }
 }
 

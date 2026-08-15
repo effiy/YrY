@@ -1,15 +1,14 @@
 <template>
   <div class="okr">
-    <el-breadcrumb separator="/" class="okr__breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
-      <el-breadcrumb-item>OKR Dashboard</el-breadcrumb-item>
-    </el-breadcrumb>
-
     <div class="okr__head">
       <h1 class="okr__title">Action Items</h1>
       <el-tag size="small" :type="actionSummary.overdue > 0 ? 'danger' : 'success'"
         >{{ actionSummary.open }} open · {{ actionSummary.overdue }} overdue</el-tag
       >
+      <div class="okr__nav">
+        <el-button size="small" text type="primary" :icon="House" @click="router.push('/home/index')">Home</el-button>
+        <el-button size="small" text type="primary" :icon="Connection" @click="router.push('/executiver/rss')">RSS</el-button>
+      </div>
       <div class="okr__view-toggle">
         <el-radio-group v-model="viewMode" size="small">
           <el-radio-button value="card">Card</el-radio-button>
@@ -17,23 +16,12 @@
           <el-radio-button value="table">Table</el-radio-button>
         </el-radio-group>
       </div>
-      <el-button size="small" type="primary" class="okr__ai-btn" @click="router.push('/home/index')">🤖 AI 自主推荐</el-button>
     </div>
 
     <template v-if="viewMode === 'card'">
       <div class="okr__grid">
-        <el-card v-for="item in actionItems" :key="item.id" class="okr__card" shadow="hover">
+        <el-card v-for="item in sortedActionItems" :key="item.id" class="okr__card" shadow="hover">
           <div class="okr__card-actions">
-            <el-tooltip content="AI 重新生成" placement="top">
-              <el-button
-                text
-                type="primary"
-                size="small"
-                :icon="MagicStick"
-                :loading="isRegenerating(item.id)"
-                @click.stop="regenerateItem(item)"
-              />
-            </el-tooltip>
             <el-tooltip content="删除" placement="top">
               <el-button text type="danger" size="small" :icon="Delete" @click.stop="handleDelete(item)" />
             </el-tooltip>
@@ -42,21 +30,16 @@
             <el-tag :type="item.priorityType" size="small">{{ item.priority }}</el-tag>
             <el-tag :type="item.statusType" size="small">{{ item.status }}</el-tag>
           </div>
-          <p
-            class="okr__card-action"
-            :class="{ 'okr__action-text--link': item.linkGoal }"
-            @click="item.linkGoal && router.push(`/executiver/okr/${item.linkRole}/goal/${item.linkGoal}`)"
-          >
+          <p class="okr__card-action okr__action-text--link" @click="openFile(item)">
             {{ item.action }}
           </p>
-          <div class="okr__card-role" @click.stop="item.linkRole && router.push(`/${item.linkRole}`)">
+          <div class="okr__card-role" @click.stop="goRole(item.linkRole)">
             <span class="okr__role-cell-icon">{{ item.roleIcon }}</span>
             <span class="okr__role-cell-name">{{ item.roleName }}</span>
             <el-tag :type="item.roleStatusType" size="small">{{ item.roleStatus }}</el-tag>
           </div>
           <div class="okr__card-meta">
             <span class="okr__card-owner">{{ item.owner }}</span>
-            <span class="okr__card-deadline" :class="{ 'okr__deadline-overdue': item.isOverdue }">{{ item.deadline }}</span>
           </div>
           <el-progress :percentage="item.progress" :status="item.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
         </el-card>
@@ -66,20 +49,14 @@
 
     <template v-else-if="viewMode === 'list'">
       <div class="okr__list">
-        <div v-for="item in actionItems" :key="item.id" class="okr__list-row">
+        <div v-for="item in sortedActionItems" :key="item.id" class="okr__list-row">
           <el-tag :type="item.priorityType" size="small" class="okr__list-priority">{{ item.priority }}</el-tag>
-          <span
-            class="okr__list-action"
-            :class="{ 'okr__action-text--link': item.linkGoal }"
-            @click="item.linkGoal && router.push(`/executiver/okr/${item.linkRole}/goal/${item.linkGoal}`)"
-            >{{ item.action }}</span
-          >
-          <span class="okr__list-role" @click.stop="item.linkRole && router.push(`/${item.linkRole}`)">
+          <span class="okr__list-action okr__action-text--link" @click="openFile(item)">{{ item.action }}</span>
+          <span class="okr__list-role" @click.stop="goRole(item.linkRole)">
             <span class="okr__role-cell-icon">{{ item.roleIcon }}</span>
             <span class="okr__role-cell-name">{{ item.roleName }}</span>
           </span>
           <span class="okr__list-owner">{{ item.owner }}</span>
-          <span class="okr__list-deadline" :class="{ 'okr__deadline-overdue': item.isOverdue }">{{ item.deadline }}</span>
           <el-tag :type="item.statusType" size="small" class="okr__list-status">{{ item.status }}</el-tag>
           <el-progress
             class="okr__list-progress"
@@ -88,16 +65,6 @@
             :stroke-width="6"
           />
           <div class="okr__list-actions">
-            <el-tooltip content="AI 重新生成" placement="top">
-              <el-button
-                text
-                type="primary"
-                size="small"
-                :icon="MagicStick"
-                :loading="isRegenerating(item.id)"
-                @click="regenerateItem(item)"
-              />
-            </el-tooltip>
             <el-tooltip content="删除" placement="top">
               <el-button text type="danger" size="small" :icon="Delete" @click="handleDelete(item)" />
             </el-tooltip>
@@ -108,76 +75,84 @@
     </template>
 
     <template v-else>
-      <el-table :data="actionItems" stripe border style="width: 100%" row-key="id">
-        <el-table-column prop="action" label="Action" min-width="360" sortable>
+      <el-table
+        :data="sortedActionItems"
+        stripe
+        border
+        style="width: 100%"
+        row-key="id"
+        :default-sort="{ prop: 'priorityOrder', order: 'ascending' }"
+        empty-text="No action items."
+      >
+        <el-table-column prop="priorityOrder" label="Priority" width="120" sortable align="center">
           <template #default="{ row }">
-            <div class="okr__action-cell">
-              <el-tag :type="row.priorityType" size="small" class="okr__action-priority">{{ row.priority }}</el-tag>
-              <span
-                class="okr__action-text"
-                :class="{ 'okr__action-text--link': row.linkGoal }"
-                @click="row.linkGoal && router.push(`/executiver/okr/${row.linkRole}/goal/${row.linkGoal}`)"
-                >{{ row.action }}</span
-              >
-            </div>
+            <el-tag :type="row.priorityType" size="small" effect="dark">{{ row.priority }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Role" width="180" sortable prop="roleName">
+        <el-table-column prop="action" label="Action" min-width="320" sortable>
           <template #default="{ row }">
-            <div class="okr__role-cell" @click.stop="row.linkRole && router.push(`/${row.linkRole}`)">
+            <span class="okr__action-text okr__action-text--link" @click="openFile(row as ActionItem)">{{ row.action }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="roleName" label="Role" width="200" sortable>
+          <template #default="{ row }">
+            <div class="okr__role-cell" @click.stop="goRole(row.linkRole)">
               <span class="okr__role-cell-icon">{{ row.roleIcon }}</span>
               <span class="okr__role-cell-name">{{ row.roleName }}</span>
+              <el-tag v-if="row.roleStatusType !== 'success'" :type="row.roleStatusType" size="small" effect="plain">{{ row.roleStatus }}</el-tag>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="owner" label="Owner" width="160" sortable />
-        <el-table-column prop="deadline" label="Deadline" width="120" sortable>
-          <template #default="{ row }">
-            <span :class="{ 'okr__deadline-overdue': row.isOverdue }">{{ row.deadline }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="Status" width="100" sortable>
+        <el-table-column prop="status" label="Status" width="120" sortable>
           <template #default="{ row }">
             <el-tag :type="row.statusType" size="small">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Progress" width="140">
+        <el-table-column prop="owner" label="Owner" width="150" sortable show-overflow-tooltip />
+        <el-table-column prop="deadline" label="Deadline" width="160" sortable>
           <template #default="{ row }">
-            <el-progress :percentage="row.progress" :status="row.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
+            <span class="okr__deadline" :class="{ 'okr__deadline-overdue': row.isOverdue }">
+              <span>{{ row.deadline || "—" }}</span>
+              <em v-if="row.deadline" class="okr__deadline-hint">{{ deadlineHint(row as ActionItem) }}</em>
+            </span>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="150" fixed="right">
+        <el-table-column label="Progress" width="170">
           <template #default="{ row }">
-            <el-tooltip content="AI 重新生成" placement="top">
-              <el-button
-                size="small"
-                text
-                type="primary"
-                :icon="MagicStick"
-                :loading="isRegenerating(row.id)"
-                @click="regenerateItem(row as ActionItem)"
-              />
+            <div class="okr__progress-cell">
+              <el-progress :percentage="row.progress" :status="row.progress >= 100 ? 'success' : undefined" :stroke-width="6" />
+              <span class="okr__progress-num">{{ row.progress }}%</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" width="80" fixed="right" align="center">
+          <template #default="{ row }">
+            <el-tooltip content="Delete" placement="top">
+              <el-button text type="danger" size="small" :icon="Delete" @click="handleDelete(row as ActionItem)" />
             </el-tooltip>
-            <el-button size="small" text type="danger" @click="handleDelete(row as ActionItem)">Del</el-button>
           </template>
         </el-table-column>
       </el-table>
     </template>
+
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
 <script setup lang="ts" name="okrIndex">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { Delete, MagicStick } from "@element-plus/icons-vue";
+import { Delete, House, Connection } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import { chat } from "@/api/modules/chatService";
-import type { ChatPayload } from "@/api/interface/yiweb";
-import { DEFAULT_MODEL } from "@/views/aiChat/constants";
-import { OKR_SYSTEM_PROMPT, parseRecommendation } from "@/components/OkrRecommend/okrRecommend";
+import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
+import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
+import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
 
 const router = useRouter();
+
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 interface ActionItem {
   id: string;
@@ -194,8 +169,10 @@ interface ActionItem {
   statusType: "success" | "warning" | "danger" | "info" | "primary";
   priority: string;
   priorityType: "danger" | "warning" | "primary" | "info" | "success";
+  priorityOrder: number;
   progress: number;
   isOverdue: boolean;
+  filePath?: string;
 }
 
 const roleStatusMap: Record<string, { name: string; icon: string; status: string; statusType: ActionItem["roleStatusType"] }> = {
@@ -215,155 +192,187 @@ function roleInfo(roleId?: string) {
     : { roleName: "—", roleIcon: "", roleStatus: "", roleStatusType: "info" as const };
 }
 
-const actionItems = ref<ActionItem[]>([
-  {
-    id: "ACT-01",
-    action: "Close alert coverage gap: add monitors for all YiAi endpoints missing SLO alerts",
-    ...roleInfo("srer"),
-    linkRole: "srer",
-    owner: "SRE Lead",
-    deadline: "2026-08-22",
-    status: "In Progress",
-    statusType: "warning",
-    priority: "P0",
-    priorityType: "danger",
-    progress: 60,
-    isOverdue: false
-  },
-  {
-    id: "ACT-02",
-    action: "Resolve YiVad 18 vue-tsc errors: dedicate Friday engineering time",
-    ...roleInfo("engineer"),
-    linkRole: "engineer",
-    linkGoal: "eng-005",
-    owner: "Engineering Lead",
-    deadline: "2026-08-29",
-    status: "In Progress",
-    statusType: "warning",
-    priority: "P1",
-    priorityType: "warning",
-    progress: 15,
-    isOverdue: false
-  },
-  {
-    id: "ACT-03",
-    action: "Implement A/B test framework for prompt changes — deploy to staging",
-    ...roleInfo("aier"),
-    linkRole: "aier",
-    linkGoal: "aier-005",
-    owner: "AI Engineer",
-    deadline: "2026-08-18",
-    status: "In Progress",
-    statusType: "warning",
-    priority: "P0",
-    priorityType: "danger",
-    progress: 30,
-    isOverdue: false
-  },
-  {
-    id: "ACT-04",
-    action: "YiPet: collect first round of extension ratings and user feedback",
-    ...roleInfo("producter"),
-    linkRole: "producter",
-    linkGoal: "prod-003",
-    owner: "PM YiPet",
-    deadline: "2026-08-15",
-    status: "At Risk",
-    statusType: "danger",
-    priority: "P0",
-    priorityType: "danger",
-    progress: 20,
-    isOverdue: true
-  },
-  {
-    id: "ACT-05",
-    action: "LLM cost optimization sprint: target $0.08/task (currently $0.12)",
-    ...roleInfo("leader"),
-    linkRole: "leader",
-    linkGoal: "lead-004",
-    owner: "Tech Lead",
-    deadline: "2026-09-05",
-    status: "Planned",
-    statusType: "info",
-    priority: "P1",
-    priorityType: "warning",
-    progress: 0,
-    isOverdue: false
-  },
-  {
-    id: "ACT-06",
-    action: "Pre-mortem workshop for all Q4 goals — schedule with 7 role leads",
-    ...roleInfo("executiver"),
-    linkRole: "executiver",
-    owner: "Executive",
-    deadline: "2026-09-12",
-    status: "Planned",
-    statusType: "info",
-    priority: "P1",
-    priorityType: "warning",
-    progress: 0,
-    isOverdue: false
-  },
-  {
-    id: "ACT-07",
-    action: "Set up cross-role pairing rotation: Engineer + AI Engineer weekly",
-    ...roleInfo("leader"),
-    linkRole: "leader",
-    owner: "Tech Lead",
-    deadline: "2026-08-22",
-    status: "Planned",
-    statusType: "info",
-    priority: "P2",
-    priorityType: "primary",
-    progress: 0,
-    isOverdue: false
-  },
-  {
-    id: "ACT-08",
-    action: "Readiness checklist pass rate: engage role owners for stalled files",
-    ...roleInfo("curator"),
-    linkRole: "curator",
-    linkGoal: "cur-003",
-    owner: "Curator",
-    deadline: "2026-08-29",
-    status: "Planned",
-    statusType: "info",
-    priority: "P2",
-    priorityType: "primary",
-    progress: 0,
-    isOverdue: false
-  },
-  {
-    id: "ACT-09",
-    action: "No-Friday-deploy policy: update CI/CD to block Friday production deploys",
-    ...roleInfo("srer"),
-    linkRole: "srer",
-    linkGoal: "sre-004",
-    owner: "SRE Lead",
-    deadline: "2026-08-22",
-    status: "Planned",
-    statusType: "info",
-    priority: "P1",
-    priorityType: "warning",
-    progress: 0,
-    isOverdue: false
-  },
-  {
-    id: "ACT-10",
-    action: "ADR gate on PRs: add PR template checklist item for architecture changes",
-    ...roleInfo("leader"),
-    linkRole: "leader",
-    linkGoal: "lead-001",
-    owner: "Tech Lead",
-    deadline: "2026-08-15",
-    status: "Done",
-    statusType: "success",
-    priority: "P1",
-    priorityType: "warning",
-    progress: 100,
-    isOverdue: false
+const actionItems = ref<ActionItem[]>([]);
+
+/** 优先级排序权重（P0 最前）。 */
+const PRIORITY_ORDER: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+function deadlineTs(deadline: string): number {
+  const t = dayjs(deadline);
+  return t.isValid() ? t.valueOf() : Number.MAX_SAFE_INTEGER;
+}
+
+const sortedActionItems = computed(() =>
+  [...actionItems.value].sort(
+    (a, b) => a.priorityOrder - b.priorityOrder || deadlineTs(a.deadline) - deadlineTs(b.deadline)
+  )
+);
+
+function statusTypeOf(status: string): ActionItem["statusType"] {
+  if (status === "Done") return "success";
+  if (status === "At Risk") return "danger";
+  if (status === "In Progress") return "warning";
+  return "info";
+}
+
+function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
+  const m = f.meta ?? {};
+  const title = typeof m.title === "string" ? m.title : f.name.replace(/\.md$/, "");
+  const linkRole = typeof m.role === "string" ? m.role : undefined;
+  const deadline = typeof m.deadline === "string" ? m.deadline : "";
+  const status = typeof m.status === "string" ? m.status : "Planned";
+  const priority = typeof m.priority === "string" ? m.priority : "P2";
+  const progress = Number(m.progress ?? 0) || 0;
+  const goal = typeof m.goal === "string" && m.goal ? m.goal : undefined;
+  const isOverdue =
+    m.overdue === true ||
+    (dayjs(deadline).isValid() && dayjs(deadline).isBefore(dayjs().startOf("day")));
+  return {
+    id: typeof m.id === "string" ? m.id : f.name.replace(/\.md$/, ""),
+    action: title,
+    ...roleInfo(linkRole),
+    linkRole,
+    linkGoal: goal,
+    owner: typeof m.owner === "string" ? m.owner : "",
+    deadline,
+    status,
+    statusType: statusTypeOf(status),
+    priority,
+    priorityType: priorityTypeOf(priority),
+    priorityOrder: PRIORITY_ORDER[priority] ?? 99,
+    progress,
+    isOverdue,
+    filePath: f.path
+  };
+}
+
+/** 示例任务 → 前端 ActionItem（带 filePath，点击用文件预览弹框查看正文）。 */
+function actionItemFromExample(t: ExampleTask, filePath: string): ActionItem {
+  return {
+    id: t.id,
+    action: t.title,
+    ...roleInfo(t.role),
+    linkRole: t.role,
+    linkGoal: t.goalId,
+    owner: t.owner,
+    deadline: t.deadline,
+    status: t.status,
+    statusType: statusTypeOf(t.status),
+    priority: t.priority,
+    priorityType: priorityTypeOf(t.priority),
+    priorityOrder: PRIORITY_ORDER[t.priority] ?? 99,
+    progress: t.progress,
+    isOverdue: dayjs(t.deadline).isValid() && dayjs(t.deadline).isBefore(dayjs().startOf("day")),
+    filePath
+  };
+}
+
+/** 示例任务的 YAML frontmatter（元数据 → 后端接口，随文件落盘）。 */
+function actionItemMeta(t: ExampleTask): Record<string, unknown> {
+  return {
+    type: "okr-action",
+    id: t.id,
+    title: t.title,
+    role: t.role,
+    goal: t.goalId,
+    owner: t.owner,
+    deadline: t.deadline,
+    status: t.status,
+    priority: t.priority,
+    progress: t.progress,
+    skill: t.skill,
+    agent: t.agent,
+    mcp: t.mcp
+  };
+}
+
+/** 示例任务的 markdown 正文（文件内容 → 知识库）。 */
+function renderActionBody(t: ExampleTask): string {
+  return [
+    `# ${t.title}`,
+    "",
+    t.description,
+    "",
+    "| Field | Value |",
+    "|---|---|",
+    `| Role | ${t.roleIcon} ${t.roleName} |`,
+    `| Goal | ${t.goalId} |`,
+    `| Owner | ${t.owner} |`,
+    `| Deadline | ${t.deadline} |`,
+    `| Priority | ${t.priority} |`,
+    `| Status | ${t.status} |`,
+    `| Progress | ${t.progress}% |`,
+    `| Skill | ${t.skill} |`,
+    `| Agent | ${t.agent} |`,
+    `| MCP | ${t.mcp || "—"} |`
+  ].join("\n");
+}
+
+/** 任务标题 → 文件名可读 slug（保留中文/英文/数字，其余分隔符归一为 `-`）。 */
+function slugifyTitle(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48)
+    .replace(/-+$/g, "");
+}
+
+/** Action Item 落盘文件名：`okr/action-<priority>-<role>-<slug>.md`。
+ *  优先级前缀让 P0 排前、role 便于按角色归组、slug 让文件名自解释。 */
+function actionFileName(t: ExampleTask): string {
+  const slug = slugifyTitle(t.title);
+  return `okr/action-${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
+}
+
+/** 知识库无 okr-action 文件时，把完整例子数据写入知识库（文件内容 → KB，元数据 → 后端），
+ *  随后直接以真实 filePath 展示，点击即可通过文件预览弹框查看正文。 */
+async function seedExampleActionItems(): Promise<ActionItem[]> {
+  const out: ActionItem[] = [];
+  for (const t of EXAMPLE_TASKS) {
+    const filePath = actionFileName(t);
+    try {
+      await writeKnowledgeFile(filePath, renderActionBody(t), actionItemMeta(t));
+      out.push(actionItemFromExample(t, filePath));
+    } catch {
+      // 后端不可用 → 跳过该条，保持空态（不伪造内存数据）
+    }
   }
-]);
+  return out;
+}
+
+async function loadActionItems() {
+  try {
+    const res = await scanKnowledge("okr");
+    const files = res.categories?.flatMap(c => c.files) ?? [];
+    actionItems.value = files.filter(f => f.meta?.type === "okr-action").map(actionItemFromFile);
+  } catch {
+    actionItems.value = [];
+  }
+  // 首次无数据时，写入完整例子数据并作为真实文件展示（可预览）
+  if (!actionItems.value.length) {
+    actionItems.value = await seedExampleActionItems();
+  }
+}
+
+function openFile(item: ActionItem) {
+  if (item.filePath) previewDlg.value?.open(item.filePath);
+}
+function goRole(roleId?: string) {
+  if (roleId) router.push(`/executiver/okr/${roleId}`);
+}
+function deadlineHint(item: ActionItem): string {
+  if (!item.deadline) return "";
+  const d = dayjs(item.deadline);
+  if (!d.isValid()) return "";
+  const diff = d.diff(dayjs().startOf("day"), "day");
+  if (diff < 0) return `${Math.abs(diff)}d overdue`;
+  if (diff === 0) return "today";
+  if (diff === 1) return "tomorrow";
+  return `${diff}d left`;
+}
+onMounted(loadActionItems);
 
 const viewMode = ref<"card" | "list" | "table">("table");
 
@@ -383,14 +392,16 @@ async function handleDelete(item: ActionItem) {
   } catch {
     return;
   }
+  if (item.filePath) {
+    try {
+      await deleteKnowledgeFile(item.filePath);
+    } catch {
+      ElMessage.error("Failed to delete file");
+      return;
+    }
+  }
   actionItems.value = actionItems.value.filter(a => a.id !== item.id);
   ElMessage.success("Action item deleted");
-}
-
-const regenerating = ref(new Set<string>());
-
-function isRegenerating(id: string) {
-  return regenerating.value.has(id);
 }
 
 function priorityTypeOf(priority: string): ActionItem["priorityType"] {
@@ -400,45 +411,6 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   return "info";
 }
 
-function buildRegeneratePrompt(item: ActionItem): string {
-  return `请基于该角色的 OKR 上下文，重新生成下面这条 Action Item（保持角色不变，让任务更具体、可验收、含动作动词）。
-
-原 Action Item：
-- 角色：${item.roleName}（${item.linkRole || "executiver"}）
-- 任务：${item.action}
-- 优先级：${item.priority} · 截止：${item.deadline} · 状态：${item.status}
-
-只输出一个 JSON 数组，数组只含一个元素，字段：title / role / goalId / metricId / effort / dueDate / roi / difficulty / urgency / reason。
-role 必须是 "${item.linkRole || "executiver"}"。`;
-}
-
-async function regenerateItem(item: ActionItem) {
-  if (regenerating.value.has(item.id)) return;
-  regenerating.value.add(item.id);
-  try {
-    const payload: ChatPayload = {
-      model: DEFAULT_MODEL,
-      system: OKR_SYSTEM_PROMPT,
-      messages: [{ type: "user", message: buildRegeneratePrompt(item), timestamp: Date.now() }]
-    };
-    const text = await chat(payload);
-    const [next] = parseRecommendation(text, item.linkRole ?? "executiver");
-    if (!next) {
-      ElMessage.warning("AI 未返回有效结果");
-      return;
-    }
-    item.action = next.title;
-    item.priority = next.priority;
-    item.priorityType = priorityTypeOf(next.priority);
-    item.deadline = next.dueDate || item.deadline;
-    item.isOverdue = dayjs(item.deadline).isValid() && dayjs(item.deadline).isBefore(dayjs().startOf("day"));
-    ElMessage.success("已重新生成");
-  } catch {
-    ElMessage.error("重新生成失败");
-  } finally {
-    regenerating.value.delete(item.id);
-  }
-}
 </script>
 
 <style scoped lang="scss">
@@ -466,6 +438,11 @@ async function regenerateItem(item: ActionItem) {
   font-size: 22px;
   font-weight: 700;
 }
+.okr__nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
 .okr__view-toggle {
   display: flex;
   gap: 6px;
@@ -475,14 +452,6 @@ async function regenerateItem(item: ActionItem) {
 .okr__view-label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
-}
-.okr__action-cell {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.okr__action-priority {
-  flex-shrink: 0;
 }
 .okr__action-text {
   font-size: 13px;
@@ -511,9 +480,40 @@ async function regenerateItem(item: ActionItem) {
   font-size: 12px;
   font-weight: 600;
 }
+.okr__deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.okr__deadline-hint {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
 .okr__deadline-overdue {
   font-weight: 700;
   color: var(--el-color-danger);
+  .okr__deadline-hint {
+    color: var(--el-color-danger);
+  }
+}
+.okr__progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  :deep(.el-progress) {
+    flex: 1;
+    min-width: 0;
+  }
+}
+.okr__progress-num {
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
 }
 .okr__empty {
   padding: 32px;
