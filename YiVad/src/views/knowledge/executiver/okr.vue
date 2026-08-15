@@ -5,12 +5,6 @@
       <el-tag size="small" :type="actionSummary.overdue > 0 ? 'danger' : 'success'"
         >{{ actionSummary.open }} open · {{ actionSummary.overdue }} overdue</el-tag
       >
-      <div class="okr__nav">
-        <el-button size="small" text type="primary" :icon="House" @click="router.push('/home/index')">Home</el-button>
-        <el-button size="small" text type="primary" :icon="Connection" @click="router.push('/executiver/rss')">RSS</el-button>
-        <el-button size="small" text type="primary" :icon="Aim" @click="router.push('/knowledge/goals')">Goals</el-button>
-        <el-button size="small" text type="primary" :icon="Odometer" @click="router.push('/knowledge/metrics')">Metrics</el-button>
-      </div>
       <div class="okr__filters">
         <el-select v-model="monthFilter" size="small" clearable placeholder="All months" style="width: 140px">
           <el-option v-for="m in MONTHS" :key="m.value" :label="m.label" :value="m.value" />
@@ -94,7 +88,7 @@
             <PriorityTag :priority="row.priority" />
           </template>
         </el-table-column>
-        <el-table-column prop="action" label="Action" min-width="320" sortable>
+        <el-table-column prop="action" label="Action" min-width="360" sortable>
           <template #default="{ row }">
             <span class="okr__action-text okr__action-text--link" @click="openFile(row as ActionItem)">{{ row.action }}</span>
           </template>
@@ -104,9 +98,9 @@
             <RoleLink :role="row.linkRole" :role-name="row.roleName" :role-icon="row.roleIcon" />
           </template>
         </el-table-column>
-        <el-table-column label="Goal" width="110">
+        <el-table-column label="Goal" width="280">
           <template #default="{ row }">
-            <GoalLink v-if="row.linkGoal && row.linkRole" :role="row.linkRole" :goal-id="row.linkGoal" />
+            <GoalCell v-if="row.linkGoal && row.linkRole" :role="row.linkRole" :goal-id="row.linkGoal" />
           </template>
         </el-table-column>
         <el-table-column prop="owner" label="Owner" width="140" sortable>
@@ -183,7 +177,7 @@ import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDi
 import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
 import PriorityTag from "@/components/OkrRecommend/fields/PriorityTag.vue";
 import RoleLink from "@/components/OkrRecommend/fields/RoleLink.vue";
-import GoalLink from "@/components/OkrRecommend/fields/GoalLink.vue";
+import GoalCell from "@/components/OkrRecommend/fields/GoalCell.vue";
 import SkillTag from "@/components/OkrRecommend/fields/SkillTag.vue";
 import AgentTag from "@/components/OkrRecommend/fields/AgentTag.vue";
 import McpTag from "@/components/OkrRecommend/fields/McpTag.vue";
@@ -263,7 +257,8 @@ const MONTHS: { value: string; label: string }[] = [
   { value: "12", label: "December" }
 ];
 
-const monthFilter = ref("");
+/** 默认显示当前月份（`dayjs().month()` 0–11，+1 对齐 MONTHS 的 1–12 值）。 */
+const monthFilter = ref(String(dayjs().month() + 1));
 
 const filteredActionItems = computed(() => {
   if (!monthFilter.value) return actionItems.value;

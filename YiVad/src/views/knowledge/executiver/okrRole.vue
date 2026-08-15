@@ -16,7 +16,6 @@
           <span class="okr-role__sticky-icon">{{ role.icon }}</span>
           <div class="okr-role__sticky-info">
             <h1 class="okr-role__sticky-name">{{ role.name }} OKR</h1>
-            <span class="okr-role__sticky-dir">{{ role.dir }}</span>
           </div>
         </div>
         <div class="okr-role__sticky-center">
@@ -43,18 +42,6 @@
           </div>
         </div>
       </div>
-      <div class="okr-role__sticky-bottom">
-        <p class="okr-role__sticky-desc">{{ role.description }}</p>
-        <div class="okr-role__sticky-tags">
-          <el-tag v-for="p in role.projects" :key="p" size="small" :type="projectTagType(p)">{{ p }}</el-tag>
-          <el-tag v-for="c in role.categories" :key="c" size="small" effect="plain" round>{{ c }}</el-tag>
-        </div>
-        <div class="okr-role__sticky-nav">
-          <el-button size="small" text type="primary" @click="$router.push('/executiver/okr')">Action Items</el-button>
-          <el-button size="small" text type="primary" @click="$router.push('/knowledge/goals')">Goals</el-button>
-          <el-button size="small" text type="primary" @click="$router.push('/knowledge/metrics')">Metrics</el-button>
-        </div>
-      </div>
     </div>
 
     <section class="okr-role__section">
@@ -63,27 +50,6 @@
         <span class="okr-role__section-count">{{ filteredGoals.length }} goals</span>
       </div>
       <p class="okr-role__section-desc">Goals cascade from org strategy. Each goal links to measurable metrics that track progress toward the objective. Click a goal or metric to drill into details.</p>
-
-      <div v-if="periodMetrics.length" class="okr-role__metrics-grid">
-        <div v-for="m in periodMetrics" :key="m.id" :id="`metric-${m.id}`" class="okr-role__metric-card" @click="scrollToMetric(m.id)">
-          <div class="okr-role__metric-card-top">
-            <span class="okr-role__metric-card-icon">{{ m.icon }}</span>
-            <span class="okr-role__metric-card-trend" :class="m.trend === 'up' ? 'okr-role__metric-card-trend--up' : m.trend === 'down' ? 'okr-role__metric-card-trend--down' : ''">
-              {{ m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '→' }}
-            </span>
-          </div>
-          <span class="okr-role__metric-card-name">{{ m.name }}</span>
-          <div class="okr-role__metric-card-values">
-            <span class="okr-role__metric-card-current">{{ m.current }}{{ m.unit }}</span>
-            <span class="okr-role__metric-card-target">/ {{ m.target }}{{ m.unit }}</span>
-          </div>
-          <el-progress :percentage="m.progress" :status="krStatus(m.progress)" :stroke-width="4" />
-        </div>
-      </div>
-      <div v-else-if="filteredGoals.length" class="okr-role__metrics-empty">
-        <span class="okr-role__metrics-empty-icon">📊</span>
-        <span class="okr-role__metrics-empty-text">No metrics linked to the current goals. Metrics are linked to goals via the goal-metric mapping.</span>
-      </div>
 
       <div class="okr-role__table-toolbar">
         <el-input v-model="searchQuery" placeholder="Search goals by title, description, or ID..." clearable :prefix-icon="Search" size="default" class="okr-role__search" />
@@ -113,7 +79,7 @@
                       <div class="okr-role__table-item">
                         <span class="okr-role__table-icon">{{ mr.icon }}</span>
                         <div>
-                          <span class="okr-role__table-title okr-role__table-title--link" @click="scrollToMetric(mr.id)">{{ mr.name }}</span>
+                          <span class="okr-role__table-title okr-role__table-title--link" @click="openMetricFile(mr as MetricItem)">{{ mr.name }}</span>
                           <p class="okr-role__table-desc">{{ mr.description }}</p>
                         </div>
                       </div>
@@ -151,7 +117,7 @@
                   </el-table-column>
                   <el-table-column label="Actions" width="100" fixed="right">
                     <template #default="{ row: mr }">
-                      <el-button size="small" type="primary" link @click="scrollToMetric(mr.id)">Details</el-button>
+                      <el-button size="small" type="primary" link @click="openMetricFile(mr as MetricItem)">Details</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -172,7 +138,7 @@
             <div class="okr-role__table-item">
               <span class="okr-role__table-icon">{{ row.icon }}</span>
               <div>
-                <span class="okr-role__table-title okr-role__table-title--link" @click="toggleGoalExpand(row as GoalItem)">{{ row.title }}</span>
+                <span class="okr-role__table-title okr-role__table-title--link" @click="openGoalFile(row as GoalItem)">{{ row.title }}</span>
                 <p class="okr-role__table-desc">{{ row.description }}</p>
               </div>
             </div>
@@ -224,109 +190,9 @@
 
     <section class="okr-role__section">
       <div class="okr-role__section-head">
-        <h2>Daily Standup</h2>
-        <span class="okr-role__mood-tag" :class="`okr-role__mood-tag--${dailyData.moodType}`">
-          <span class="okr-role__mood-dot"></span>
-          {{ dailyData.mood }}
-        </span>
-        <span class="okr-role__section-date">2026-08-14 · Thursday</span>
-        <el-button text size="small" type="primary" class="okr-role__copy-btn" @click="copyDailyStandup">Copy</el-button>
-      </div>
-      <p class="okr-role__section-desc">Today's priorities and yesterday's results for the {{ role.name }} role.</p>
-
-      <div class="okr-role__daily-grid">
-        <div class="okr-role__daily-card okr-role__daily-card--yesterday">
-          <div class="okr-role__daily-card-head">
-            <span class="okr-role__daily-card-icon">📋</span>
-            <span class="okr-role__daily-card-label">Yesterday</span>
-          </div>
-          <ul class="okr-role__daily-card-list">
-            <li v-for="(y, i) in dailyData.yesterday" :key="'y'+i">{{ y }}</li>
-          </ul>
-        </div>
-        <div class="okr-role__daily-card okr-role__daily-card--today">
-          <div class="okr-role__daily-card-head">
-            <span class="okr-role__daily-card-icon">🎯</span>
-            <span class="okr-role__daily-card-label">Today's Top 3</span>
-            <span class="okr-role__daily-card-progress">{{ todayDoneCount }}/{{ todayTotal }}</span>
-          </div>
-          <el-progress :percentage="todayTotal ? Math.round(todayDoneCount / todayTotal * 100) : 0" :stroke-width="3" :show-text="false" class="okr-role__today-progress-bar" />
-          <ol class="okr-role__daily-card-list okr-role__daily-card-list--numbered">
-            <li v-for="(t, i) in dailyData.today" :key="'t'+i" :class="{ 'okr-role__today-item--done': todayDone.has(i) }" @click="!isEditing('today', i) && toggleTodayItem(i)">
-              <template v-if="isEditing('today', i)">
-                <el-input v-model="editingText" size="small" class="okr-role__inline-input" @keyup.enter="saveEdit()" @keyup.escape="cancelEdit()" @blur="saveEdit()" :autofocus="true" @click.stop />
-              </template>
-              <template v-else>
-                <span class="okr-role__today-item-text" @dblclick.stop="startEdit('today', i)">{{ t }}</span>
-                <span v-if="todayDone.has(i)" class="okr-role__today-item-check">✓</span>
-              </template>
-            </li>
-          </ol>
-        </div>
-        <div v-if="dailyData.blocker" class="okr-role__daily-card okr-role__daily-card--blocker">
-          <div class="okr-role__daily-card-head">
-            <span class="okr-role__daily-card-icon">🚧</span>
-            <span class="okr-role__daily-card-label">Blocker</span>
-          </div>
-          <p class="okr-role__daily-card-blocker">{{ dailyData.blocker }}</p>
-        </div>
-      </div>
-
-      <div class="okr-role__focus-timer">
-        <div class="okr-role__focus-timer-ring">
-          <svg viewBox="0 0 36 36">
-            <path class="okr-role__focus-timer-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="okr-role__focus-timer-fg" :stroke-dasharray="`${timerProgress}, 100`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-          </svg>
-          <span class="okr-role__focus-timer-text">{{ timerDisplay }}</span>
-        </div>
-        <div class="okr-role__focus-timer-info">
-          <span class="okr-role__focus-timer-label">Focus Timer</span>
-          <span class="okr-role__focus-timer-hint">25 min Pomodoro</span>
-        </div>
-        <div class="okr-role__focus-timer-actions">
-          <el-button v-if="!timerRunning" size="small" type="primary" :icon="VideoPlay" @click="startTimer">Start</el-button>
-          <el-button v-else size="small" type="warning" :icon="VideoPause" @click="pauseTimer">Pause</el-button>
-          <el-button size="small" :icon="RefreshRight" @click="resetTimer" :disabled="timerRemaining === FOCUS_DURATION && !timerRunning">Reset</el-button>
-        </div>
-      </div>
-
-      <h3 class="okr-role__subsection-title">Daily Checklist</h3>
-      <div class="okr-role__checklist-wrap">
-        <div class="okr-role__checklist-progress">
-          <div class="okr-role__progress-ring" :style="{ '--pct': dailyDonePercent }">
-            <svg viewBox="0 0 36 36">
-              <path class="okr-role__progress-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path class="okr-role__progress-ring-fg" :stroke-dasharray="`${dailyDonePercent}, 100`" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            </svg>
-            <span class="okr-role__progress-ring-text">{{ dailyDonePercent }}%</span>
-          </div>
-          <span class="okr-role__progress-ring-label">{{ dailyDoneCount }}/{{ dailyChecklist.length }} done</span>
-          <el-button text size="small" type="primary" class="okr-role__checklist-complete-all" @click="completeAllChecklist">
-            {{ dailyChecklist.every(i => i.done) ? 'Undo All' : 'Complete All' }}
-          </el-button>
-        </div>
-        <div class="okr-role__checklist">
-          <div v-for="item in dailyChecklist" :key="item.id" class="okr-role__checklist-item" :class="{ 'okr-role__checklist-item--done': item.done }">
-            <el-checkbox v-model="item.done" />
-            <div class="okr-role__checklist-item-body">
-              <span class="okr-role__checklist-item-text">{{ item.text }}</span>
-              <span v-if="item.value" class="okr-role__checklist-item-value">{{ item.value }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <el-divider />
-
-    <section class="okr-role__section">
-      <div class="okr-role__section-head">
         <h2>Weekly Report</h2>
-        <el-tag size="small" type="info">Week 33 · 2026-08-11 → 2026-08-15</el-tag>
-        <el-tag size="small" :type="weeklyData.statusType">{{ weeklyData.status }}</el-tag>
-        <el-button text size="small" type="primary" class="okr-role__copy-btn" @click="copyWeeklyReport">Copy Text</el-button>
-        <el-button text size="small" type="success" class="okr-role__copy-btn" @click="copyWeeklyReportMarkdown">Copy MD</el-button>
+        <el-tag size="small" type="info">{{ weekRangeLabel }}</el-tag>
+        <el-button text size="small" type="primary" class="okr-role__copy-btn" @click="openWeeklyFile">Open File</el-button>
       </div>
       <p class="okr-role__section-desc">Weekly summary of accomplishments, blockers, decisions, and next-week priorities for the {{ role.name }} role.</p>
 
@@ -418,18 +284,23 @@
         </div>
       </div>
     </section>
+
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
 <script setup lang="ts" name="okrRole">
-import { computed, reactive, ref, watch, onMounted, onUnmounted } from "vue";
+import { computed, reactive, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { ArrowLeft, Search, CircleClose, VideoPlay, VideoPause, RefreshRight } from "@element-plus/icons-vue";
+import { ArrowLeft, Search, CircleClose } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import dayjs from "dayjs";
+import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
+import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import {
-  rolesData, goalsData, metricsData, allMetricsMap, goalMetricMap, getGoalMetrics,
-  roleDailyDataMap, roleChecklistMap, roleWeeklyDataMap,
-  type GoalItem, type ChecklistItem
+  rolesData, goalsData, metricsData, goalMetricMap, getGoalMetrics,
+  roleWeeklyDataMap,
+  type GoalItem, type MetricItem
 } from "./okrData";
 
 const props = defineProps<{ roleId: string }>();
@@ -461,55 +332,94 @@ function onExpandChange(_row: GoalItem, expandedRows: GoalItem[] | boolean) {
   if (Array.isArray(expandedRows)) expandedGoalIds.value = expandedRows.map(r => r.id);
 }
 
-/** 指标详情已完整渲染在页内（顶部指标卡），点击 → 原地滚动 + 高亮，不再跳转不存在的路由。 */
-function scrollToMetric(metricId: string) {
-  const el = document.getElementById(`metric-${metricId}`);
-  if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "center" });
-  el.classList.add("okr-role__metric-card--flash");
-  setTimeout(() => el.classList.remove("okr-role__metric-card--flash"), 1600);
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+
+// ── Goal / Metric → 知识库文件（okr 目录）→ 文件预览弹框 ──
+function goalFilePath(goalId: string): string {
+  return `okr/goals/${goalId}.md`;
 }
+function metricFilePath(metricId: string): string {
+  return `okr/metrics/${metricId}.md`;
+}
+
+function renderGoalBody(g: GoalItem): string {
+  const lines: string[] = [`# ${g.icon} ${g.title}`, "", g.description];
+  lines.push(
+    "",
+    "| Field | Value |",
+    "|---|---|",
+    `| ID | \`${g.id}\` |`,
+    `| Status | ${g.status} |`,
+    `| Period | ${g.period} |`,
+    `| Owner | ${g.owner} |`,
+    `| Project | ${g.project} |`
+  );
+  if (g.keyResults?.length) {
+    lines.push("", `## Key Results (${g.keyResults.length})`);
+    g.keyResults.forEach((kr, i) => {
+      lines.push(`- KR${i + 1}: ${kr.text} — ${kr.progress}%`);
+    });
+  }
+  const metrics = getGoalMetrics(g.id);
+  if (metrics.length) {
+    lines.push("", `## Related Metrics (${metrics.length})`);
+    metrics.forEach(m => {
+      lines.push(`- ${m.icon} ${m.name} (\`${m.id}\`) — ${m.current}${m.unit} / ${m.target}${m.unit} · ${m.progress}%`);
+    });
+  }
+  return lines.join("\n");
+}
+
+function goalMeta(g: GoalItem): Record<string, unknown> {
+  return { type: "okr-goal", id: g.id, title: g.title, status: g.status, period: g.period, owner: g.owner, project: g.project, progress: krAvg(g) };
+}
+
+function renderMetricBody(m: MetricItem): string {
+  const trendLabel = m.trend === "up" ? "↑ Up" : m.trend === "down" ? "↓ Down" : "→ Flat";
+  return [
+    `# ${m.icon} ${m.name}`,
+    "",
+    m.description,
+    "",
+    "| Field | Value |",
+    "|---|---|",
+    `| ID | \`${m.id}\` |`,
+    `| Category | ${m.category} |`,
+    `| Framework | ${m.framework} |`,
+    `| Baseline | ${m.baseline}${m.unit} |`,
+    `| Current | ${m.current}${m.unit} |`,
+    `| Target | ${m.target}${m.unit} |`,
+    `| Trend | ${trendLabel} |`,
+    `| Progress | ${m.progress}% |`
+  ].join("\n");
+}
+
+function metricMeta(m: MetricItem): Record<string, unknown> {
+  return { type: "okr-metric", id: m.id, name: m.name, category: m.category, framework: m.framework, trend: m.trend, progress: m.progress };
+}
+
+async function openGoalFile(g: GoalItem) {
+  const path = goalFilePath(g.id);
+  try { await writeKnowledgeFile(path, renderGoalBody(g), goalMeta(g)); } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
+  previewDlg.value?.open(path);
+}
+async function openMetricFile(m: MetricItem) {
+  const path = metricFilePath(m.id);
+  try { await writeKnowledgeFile(path, renderMetricBody(m), metricMeta(m)); } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
+  previewDlg.value?.open(path);
+}
+
+/** 周报区间（周一 → 周五）。 */
+const weekRangeLabel = computed(() => {
+  const mon = dayjs().startOf("week").add(1, "day");
+  const fri = mon.add(4, "day");
+  return `${mon.format("YYYY-MM-DD")} → ${fri.format("YYYY-MM-DD")}`;
+});
 
 const role = computed(() => rolesData[props.roleId] || rolesData.executiver);
 const allGoals = computed(() => goalsData[props.roleId] || []);
 
-const dailyData = computed(() => roleDailyDataMap[props.roleId] || roleDailyDataMap.executiver);
 const weeklyData = computed(() => roleWeeklyDataMap[props.roleId] || roleWeeklyDataMap.executiver);
-
-const dailyChecklist = reactive<ChecklistItem[]>(
-  (roleChecklistMap[props.roleId] || roleChecklistMap.executiver).map(item => ({ ...item }))
-);
-
-const dailyDoneCount = computed(() => dailyChecklist.filter(i => i.done).length);
-const dailyDonePercent = computed(() => {
-  if (!dailyChecklist.length) return 0;
-  return Math.round((dailyDoneCount.value / dailyChecklist.length) * 100);
-});
-
-// ── Daily Standup: today items toggle ──────────
-const todayDone = reactive<Set<number>>(new Set());
-const todayDoneCount = computed(() => todayDone.size);
-const todayTotal = computed(() => dailyData.value.today.length);
-function toggleTodayItem(index: number) {
-  if (todayDone.has(index)) todayDone.delete(index);
-  else todayDone.add(index);
-}
-async function copyDailyStandup() {
-  const d = dailyData.value;
-  const r = role.value;
-  let text = `Daily Standup — ${r.name} — 2026-08-14\nMood: ${d.mood}\n\n`;
-  text += `Yesterday:\n${d.yesterday.map(y => `  • ${y}`).join("\n")}\n\n`;
-  text += `Today:\n${d.today.map((t, i) => `  ${i + 1}. ${t}${todayDone.has(i) ? " ✓" : ""}`).join("\n")}`;
-  if (d.blocker) text += `\n\nBlocker: ${d.blocker}`;
-  await navigator.clipboard.writeText(text);
-  ElMessage.success("Daily standup copied");
-}
-
-// ── Checklist: complete all ────────────────────
-function completeAllChecklist() {
-  const allDone = dailyChecklist.every(i => i.done);
-  dailyChecklist.forEach(i => { i.done = !allDone; });
-}
 
 // ── Weekly Report: collapse + copy ─────────────
 const collapsedWeeklySections = reactive<Set<string>>(new Set());
@@ -521,28 +431,31 @@ async function copyWeeklyItem(text: string) {
   await navigator.clipboard.writeText(text);
   ElMessage.success("Copied to clipboard");
 }
-async function copyWeeklyReport() {
-  const w = weeklyData.value;
-  const r = role.value;
-  let text = `Weekly Report — ${r.name} — Week 33, 2026\nStatus: ${w.status}\n\n`;
-  text += `✅ Accomplishments:\n${w.done.map(d => `  • ${d}`).join("\n")}\n\n`;
-  text += `🚧 Blockers:\n${w.blockers.length ? w.blockers.map(b => `  • ${b}`).join("\n") : "  • None"}\n\n`;
-  text += `📅 Next Week:\n${w.nextWeek.map(n => `  • ${n}`).join("\n")}\n\n`;
-  text += `📝 Key Decisions:\n${w.decisions.map(d => `  • ${d}`).join("\n")}`;
-  await navigator.clipboard.writeText(text);
-  ElMessage.success("Weekly report copied");
+// ── Weekly Report → 知识库文件（okr 目录）→ 文件预览弹框 ──
+function weeklyFilePath(): string {
+  const monday = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
+  return `okr/weekly/${props.roleId}-${monday}.md`;
 }
-async function copyWeeklyReportMarkdown() {
+
+function renderWeeklyBody(): string {
   const w = weeklyData.value;
   const r = role.value;
   let md = `# Weekly Report — ${r.name}\n\n`;
-  md += `**Week 33, 2026** · Status: **${w.status}**\n\n`;
+  md += `**${weekRangeLabel.value}** · Status: **${w.status}**\n\n`;
   md += `## ✅ Accomplishments\n\n${w.done.map(d => `- ${d}`).join("\n")}\n\n`;
   md += `## 🚧 Blockers\n\n${w.blockers.length ? w.blockers.map(b => `- ${b}`).join("\n") : "- None"}\n\n`;
   md += `## 📅 Next Week\n\n${w.nextWeek.map(n => `- ${n}`).join("\n")}\n\n`;
   md += `## 📝 Key Decisions\n\n${w.decisions.map(d => `- ${d}`).join("\n")}\n`;
-  await navigator.clipboard.writeText(md);
-  ElMessage.success("Markdown report copied");
+  return md;
+}
+
+async function openWeeklyFile() {
+  const w = weeklyData.value;
+  const path = weeklyFilePath();
+  try {
+    await writeKnowledgeFile(path, renderWeeklyBody(), { type: "okr-weekly", role: props.roleId, week: weekRangeLabel.value, status: w.status });
+  } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
+  previewDlg.value?.open(path);
 }
 
 // ── Inline Editing ──────────────────────────────
@@ -550,9 +463,7 @@ const editingTarget = ref<{ section: string; card?: string; index: number } | nu
 const editingText = ref("");
 function startEdit(section: string, index: number, card?: string) {
   editingTarget.value = { section, card, index };
-  if (section === "today") {
-    editingText.value = dailyData.value.today[index];
-  } else if (section === "weekly" && card) {
+  if (section === "weekly" && card) {
     const w = weeklyData.value;
     const arr = card === "done" ? w.done : card === "blockers" ? w.blockers : card === "next" ? w.nextWeek : w.decisions;
     editingText.value = arr[index];
@@ -560,10 +471,8 @@ function startEdit(section: string, index: number, card?: string) {
 }
 function saveEdit() {
   if (!editingTarget.value) return;
-  const { section, card, index } = editingTarget.value;
-  if (section === "today") {
-    dailyData.value.today[index] = editingText.value;
-  } else if (section === "weekly" && card) {
+  const { card, index } = editingTarget.value;
+  if (card) {
     const w = weeklyData.value;
     const arr = card === "done" ? w.done : card === "blockers" ? w.blockers : card === "next" ? w.nextWeek : w.decisions;
     arr[index] = editingText.value;
@@ -579,39 +488,7 @@ function isEditing(section: string, index: number, card?: string): boolean {
   return !!t && t.section === section && t.index === index && t.card === card;
 }
 
-// ── Focus Timer ─────────────────────────────────
-const FOCUS_DURATION = 25 * 60;
-const timerRemaining = ref(FOCUS_DURATION);
-const timerRunning = ref(false);
-let timerInterval: ReturnType<typeof setInterval> | null = null;
-const timerDisplay = computed(() => {
-  const m = Math.floor(timerRemaining.value / 60);
-  const s = timerRemaining.value % 60;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-});
-const timerProgress = computed(() => Math.round((1 - timerRemaining.value / FOCUS_DURATION) * 100));
-function startTimer() {
-  if (timerRunning.value) return;
-  timerRunning.value = true;
-  timerInterval = setInterval(() => {
-    if (timerRemaining.value > 0) { timerRemaining.value--; }
-    else { pauseTimer(); ElMessage.success("Focus session complete! Take a 5-minute break."); }
-  }, 1000);
-}
-function pauseTimer() {
-  timerRunning.value = false;
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-}
-function resetTimer() {
-  pauseTimer();
-  timerRemaining.value = FOCUS_DURATION;
-}
-
-watch(() => props.roleId, (newRoleId) => {
-  const items = roleChecklistMap[newRoleId] || roleChecklistMap.executiver;
-  dailyChecklist.length = 0;
-  dailyChecklist.push(...items.map(item => ({ ...item })));
-  todayDone.clear();
+watch(() => props.roleId, () => {
   selectedPeriod.value = "q3";
   searchQuery.value = "";
   statusFilter.value = "all";
@@ -622,10 +499,6 @@ watch(() => props.roleId, (newRoleId) => {
 });
 
 onMounted(applyGoalFromQuery);
-
-onUnmounted(() => {
-  pauseTimer();
-});
 
 function goalMatchesPeriod(period: string, selected: string): boolean {
   if (selected === "annual") return true;
@@ -681,16 +554,6 @@ const periodMetricCount = computed(() => {
     }
   }
   return metricIds.size;
-});
-
-const periodMetrics = computed(() => {
-  const ids = new Set<string>();
-  for (const g of filteredGoals.value) {
-    for (const mid of (goalMetricMap[g.id] || [])) {
-      ids.add(mid);
-    }
-  }
-  return [...ids].map(id => allMetricsMap[id]).filter(Boolean);
 });
 
 const periodAvgProgress = computed(() => {
@@ -750,22 +613,8 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 .okr-role__sticky-icon { font-size: 24px; }
 .okr-role__sticky-info { display: flex; flex-direction: column; gap: 0; }
 .okr-role__sticky-name { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; }
-.okr-role__sticky-dir { font-size: 11px; color: var(--el-text-color-placeholder); font-family: monospace; }
 .okr-role__sticky-center { flex-shrink: 0; }
 .okr-role__sticky-right { display: flex; gap: 6px; flex-shrink: 0; }
-
-.okr-role__sticky-bottom {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-top: 8px; padding-top: 8px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.okr-role__sticky-desc {
-  margin: 0; font-size: 12px; line-height: 1.5; color: var(--el-text-color-secondary);
-  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-width: 600px;
-}
-.okr-role__sticky-tags { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.okr-role__sticky-nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: 4px; }
 
 .okr-role__stat-pill {
   display: flex; flex-direction: column; align-items: center; gap: 1px;
@@ -788,61 +637,14 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
   h2 { margin: 0; }
 }
 .okr-role__section-count { font-size: 12px; color: var(--el-text-color-secondary); font-weight: 600; }
-.okr-role__section-date { font-size: 12px; color: var(--el-text-color-placeholder); margin-left: auto; }
 .okr-role__section-desc { margin: 0 0 14px; font-size: 12px; color: var(--el-text-color-secondary); max-width: 800px; line-height: 1.5; }
-.okr-role__subsection-title { font-size: 14px; font-weight: 700; margin: 18px 0 12px; }
 .okr-role__copy-btn { margin-left: auto; flex-shrink: 0; font-size: 12px; }
-
-// ── Mood tag ───────────────────────────────────
-.okr-role__mood-tag {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
-}
-.okr-role__mood-dot { width: 6px; height: 6px; border-radius: 50%; }
-.okr-role__mood-tag--primary { background: var(--el-color-primary-light-9); color: var(--el-color-primary); .okr-role__mood-dot { background: var(--el-color-primary); } }
-.okr-role__mood-tag--success { background: var(--el-color-success-light-9); color: var(--el-color-success); .okr-role__mood-dot { background: var(--el-color-success); } }
-.okr-role__mood-tag--warning { background: var(--el-color-warning-light-9); color: var(--el-color-warning); .okr-role__mood-dot { background: var(--el-color-warning); } }
-.okr-role__mood-tag--danger { background: var(--el-color-danger-light-9); color: var(--el-color-danger); .okr-role__mood-dot { background: var(--el-color-danger); } }
-.okr-role__mood-tag--info { background: var(--el-color-info-light-9); color: var(--el-color-info); .okr-role__mood-dot { background: var(--el-color-info); } }
 
 // ── Table Toolbar ──────────────────────────────
 .okr-role__table-toolbar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
 }
 
-// ── Metrics Summary Grid ────────────────────────
-.okr-role__metrics-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
-  margin-bottom: 14px;
-}
-.okr-role__metric-card {
-  padding: 12px 14px; border-radius: 10px;
-  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter);
-  cursor: pointer; transition: box-shadow .15s, border-color .15s, transform .15s;
-  display: flex; flex-direction: column; gap: 6px;
-  &:hover { border-color: var(--el-color-primary-light-5); box-shadow: 0 2px 8px rgba(0,0,0,.06); transform: translateY(-1px); }
-}
-.okr-role__metric-card--flash {
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 3px var(--el-color-primary-light-5);
-}
-.okr-role__metric-card-top { display: flex; align-items: center; justify-content: space-between; }
-.okr-role__metric-card-icon { font-size: 20px; }
-.okr-role__metric-card-trend { font-size: 14px; font-weight: 700; color: var(--el-text-color-placeholder); }
-.okr-role__metric-card-trend--up { color: var(--el-color-success); }
-.okr-role__metric-card-trend--down { color: var(--el-color-danger); }
-.okr-role__metric-card-name { font-size: 12px; font-weight: 600; color: var(--el-text-color-regular); line-height: 1.3; }
-.okr-role__metric-card-values { display: flex; align-items: baseline; gap: 2px; }
-.okr-role__metric-card-current { font-size: 18px; font-weight: 700; color: var(--el-color-primary); }
-.okr-role__metric-card-target { font-size: 11px; color: var(--el-text-color-placeholder); }
-.okr-role__metrics-empty {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px; margin-bottom: 14px;
-  background: var(--el-fill-color-light); border-radius: 8px;
-  border: 1px dashed var(--el-border-color-lighter);
-}
-.okr-role__metrics-empty-icon { font-size: 20px; opacity: .6; }
-.okr-role__metrics-empty-text { font-size: 12px; color: var(--el-text-color-secondary); line-height: 1.5; }
 .okr-role__search { width: 320px; }
 .okr-role__status-chips { display: flex; gap: 6px; }
 .okr-role__status-chip { cursor: pointer; user-select: none; transition: transform .15s; &:active { transform: scale(.95); } }
@@ -883,114 +685,7 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 .okr-role__expand-title { margin: 0 0 8px; font-size: 13px; color: var(--el-text-color-secondary); }
 .okr-role__expand-empty { font-size: 13px; color: var(--el-text-color-placeholder); font-style: italic; padding: 8px 0; }
 
-// ── Daily Standup Cards ────────────────────────
-.okr-role__daily-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
-.okr-role__daily-card {
-  padding: 16px; border-radius: 10px; background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  transition: box-shadow .2s, border-color .2s;
-  &:hover { border-color: var(--el-color-primary-light-5); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-}
-.okr-role__daily-card--yesterday { border-left: 3px solid var(--el-color-info); }
-.okr-role__daily-card--today { border-left: 3px solid var(--el-color-primary); }
-.okr-role__daily-card--blocker {
-  grid-column: 1 / -1; border-left: 3px solid var(--el-color-danger);
-  background: var(--el-color-danger-light-9);
-}
-.okr-role__daily-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.okr-role__daily-card-icon { font-size: 16px; }
-.okr-role__daily-card-label { font-weight: 700; font-size: 12px; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: .3px; }
-.okr-role__daily-card-progress { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--el-color-primary); font-family: monospace; }
-.okr-role__today-progress-bar { margin-bottom: 10px; }
-.okr-role__daily-card-list { margin: 0; padding: 0 0 0 16px; display: flex; flex-direction: column; gap: 5px; }
-.okr-role__daily-card-list li { font-size: 13px; line-height: 1.5; color: var(--el-text-color-regular); }
-.okr-role__daily-card-list--numbered { padding-left: 20px; }
-.okr-role__daily-card-list--numbered li {
-  cursor: pointer; user-select: none; transition: background .15s, color .15s;
-  padding: 3px 6px; margin: 0 -6px; border-radius: 4px;
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  &:hover { background: var(--el-color-primary-light-9); }
-}
-.okr-role__today-item--done {
-  .okr-role__today-item-text { text-decoration: line-through; color: var(--el-text-color-placeholder); }
-}
-.okr-role__today-item-text { flex: 1; }
-.okr-role__today-item-check { color: var(--el-color-success); font-weight: 700; font-size: 14px; flex-shrink: 0; }
 .okr-role__inline-input { flex: 1; }
-.okr-role__daily-card-blocker { margin: 0; font-size: 13px; font-weight: 600; color: var(--el-color-danger); line-height: 1.5; }
-
-// ── Focus Timer ─────────────────────────────────
-.okr-role__focus-timer {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 16px; margin: 12px 0 4px;
-  border-radius: 10px; background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
-}
-.okr-role__focus-timer-ring {
-  position: relative; width: 48px; height: 48px; flex-shrink: 0;
-  svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-}
-.okr-role__focus-timer-bg { fill: none; stroke: var(--el-fill-color); stroke-width: 3; }
-.okr-role__focus-timer-fg {
-  fill: none; stroke: var(--el-color-primary); stroke-width: 3;
-  stroke-linecap: round; transition: stroke-dasharray .3s ease;
-}
-.okr-role__focus-timer-text {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: var(--el-color-primary); font-family: monospace;
-}
-.okr-role__focus-timer-info { display: flex; flex-direction: column; gap: 1px; flex: 1; }
-.okr-role__focus-timer-label { font-size: 13px; font-weight: 700; color: var(--el-text-color-primary); }
-.okr-role__focus-timer-hint { font-size: 11px; color: var(--el-text-color-placeholder); }
-.okr-role__focus-timer-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-// ── Checklist ──────────────────────────────────
-.okr-role__checklist-wrap { display: flex; gap: 24px; align-items: flex-start; }
-.okr-role__checklist-progress {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  flex-shrink: 0; padding-top: 4px;
-}
-.okr-role__progress-ring {
-  position: relative; width: 72px; height: 72px;
-  svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-}
-.okr-role__progress-ring-bg {
-  fill: none; stroke: var(--el-fill-color); stroke-width: 3;
-}
-.okr-role__progress-ring-fg {
-  fill: none;
-  stroke: var(--el-color-primary);
-  stroke-width: 3;
-  stroke-linecap: round;
-  transition: stroke-dasharray .4s ease;
-}
-.okr-role__progress-ring-text {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; color: var(--el-color-primary);
-}
-.okr-role__progress-ring-label { font-size: 11px; color: var(--el-text-color-secondary); font-weight: 600; white-space: nowrap; }
-.okr-role__checklist-complete-all { margin-top: 4px; font-size: 11px; }
-
-.okr-role__checklist { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.okr-role__checklist-item {
-  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-  border-radius: 8px; background: var(--el-fill-color-light);
-  transition: background .2s, border-color .2s;
-  border: 1px solid transparent;
-  &:hover { border-color: var(--el-border-color-lighter); }
-}
-.okr-role__checklist-item--done {
-  background: var(--el-color-success-light-9); border-color: var(--el-color-success-light-7);
-  .okr-role__checklist-item-text { text-decoration: line-through; color: var(--el-text-color-placeholder); }
-}
-.okr-role__checklist-item-body { display: flex; align-items: center; gap: 10px; flex: 1; }
-.okr-role__checklist-item-text { font-size: 13px; color: var(--el-text-color-regular); flex: 1; }
-.okr-role__checklist-item-value {
-  font-size: 11px; font-family: monospace; color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9); padding: 2px 8px; border-radius: 4px; white-space: nowrap;
-}
 
 // ── Weekly Report Cards ────────────────────────
 .okr-role__weekly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

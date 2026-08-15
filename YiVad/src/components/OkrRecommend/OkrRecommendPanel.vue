@@ -73,9 +73,9 @@
           <RoleLink :role="row.role" :role-name="row.roleName" :role-icon="row.roleIcon" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.goal')" width="110">
+      <el-table-column :label="t('home.aiRecommend.cols.goal')" width="260">
         <template #default="{ row }">
-          <GoalLink v-if="row.goalId" :role="row.role" :goal-id="row.goalId" />
+          <GoalCell v-if="row.goalId" :role="row.role" :goal-id="row.goalId" />
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
@@ -143,7 +143,7 @@
           <div class="okr-rec__list-meta">
             <CategoryTag :list-type="item.listType" />
             <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
-            <GoalLink v-if="item.goalId" :role="item.role" :goal-id="item.goalId" />
+            <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" compact />
             <span v-if="item.metric" class="okr-rec__list-metric">{{ item.metric.icon }} {{ item.metric.name }} {{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }}</span>
             <SkillTag v-if="item.skill" :skill="item.skill" />
             <AgentTag v-if="item.agent" :agent="item.agent" />
@@ -184,7 +184,7 @@
         <div class="okr-rec__card-foot">
           <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
           <EffortBadge :effort="item.effort" />
-          <GoalLink v-if="item.goalId" :role="item.role" :goal-id="item.goalId" />
+          <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" compact />
           <DueLabel class="okr-rec__card-due" :due-date="item.dueDate" />
         </div>
       </div>
@@ -211,7 +211,7 @@ import { skillLabel, mcpLabel, isOverdue } from "./format";
 import PriorityTag from "./fields/PriorityTag.vue";
 import CategoryTag from "./fields/CategoryTag.vue";
 import RoleLink from "./fields/RoleLink.vue";
-import GoalLink from "./fields/GoalLink.vue";
+import GoalCell from "./fields/GoalCell.vue";
 import SkillTag from "./fields/SkillTag.vue";
 import AgentTag from "./fields/AgentTag.vue";
 import McpTag from "./fields/McpTag.vue";
