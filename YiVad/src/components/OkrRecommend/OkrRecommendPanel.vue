@@ -18,8 +18,8 @@
     <div class="okr-rec__toolbar">
       <div class="okr-rec__toolbar-left">
         <el-radio-group v-model="categoryFilter" size="small">
-          <el-radio-button value="all">{{ t("home.aiRecommend.filterAll") }}</el-radio-button>
-          <el-radio-button v-for="l in LIST_TYPES" :key="l.key" :value="l.key">{{ l.icon }} {{ t(`home.aiRecommend.lists.${l.key}`) }}</el-radio-button>
+          <el-radio-button value="all">{{ t("home.aiRecommend.filterAll") }} ({{ categoryCounts.all }})</el-radio-button>
+          <el-radio-button v-for="l in LIST_TYPES" :key="l.key" :value="l.key">{{ l.icon }} {{ t(`home.aiRecommend.lists.${l.key}`) }} ({{ categoryCounts[l.key] }})</el-radio-button>
         </el-radio-group>
         <el-input v-model="searchKeyword" size="small" clearable class="okr-rec__search" :placeholder="t('home.aiRecommend.searchPlaceholder')">
           <template #prefix><el-icon><Search /></el-icon></template>
@@ -129,7 +129,6 @@
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.action')" width="110" fixed="right" align="center">
         <template #default="{ row }">
-          <el-button v-if="row.kind !== 'action'" link type="primary" size="small" :icon="MagicStick" :loading="regeneratingId === row.id" @click="regenerateItem(row.listType, row.id, row.role, row.title)" />
           <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row as TableRow)" />
         </template>
       </el-table-column>
@@ -202,12 +201,10 @@
 import { computed, reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { MagicStick, Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
+import { Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import { chat } from "@/api/modules/chatService";
 import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
-import type { ChatPayload, KnowledgeFileEntry } from "@/api/interface/yiweb";
-import { DEFAULT_MODEL } from "@/views/aiChat/constants";
+import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import { rolesData, allGoalsMap } from "@/views/knowledge/executiver/okrData";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import { skillLabel, mcpLabel, isOverdue } from "./format";
@@ -222,9 +219,6 @@ import EffortBadge from "./fields/EffortBadge.vue";
 import DueLabel from "./fields/DueLabel.vue";
 import {
   LIST_TYPES,
-  OKR_SYSTEM_PROMPT,
-  buildSingleItemPrompt,
-  parseRecommendation,
   taskToMeta,
   taskFromMeta,
   actionItemFromMeta,
@@ -237,8 +231,8 @@ import {
 
 const { t } = useI18n();
 
-/** 由父组件（home）传入的联动项目 id（小写，如 "yiai"）；null/空 = 展示全部。 */
-const props = defineProps<{ project?: string | null }>();
+/** 由父组件（home）传入的联动项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
+const props = defineProps<{ projects?: string[] }>();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -248,17 +242,13 @@ const roleOptions = Object.values(rolesData).map(r => ({ id: r.id, name: r.name,
 type ViewMode = "table" | "list" | "card";
 const viewMode = ref<ViewMode>("table");
 
-/** 正在单条重新生成的组合 id（带 listType 前缀），用于行内按钮 loading 态。 */
-const regeneratingId = ref("");
-
 interface ListState {
   items: OkrTaskItem[];
   source: "ai" | "fallback" | "";
-  generatedAt: string;
   filePaths: string[];
 }
 
-const emptyState = (): ListState => ({ items: [], source: "", generatedAt: "", filePaths: [] });
+const emptyState = (): ListState => ({ items: [], source: "", filePaths: [] });
 
 const lists = reactive<Record<OkrListType, ListState>>({
   daily: emptyState(),
@@ -282,7 +272,7 @@ const allRows = computed<TableRow[]>(() => {
 });
 
 // ── 分类筛选 + 搜索 + 日期 ──────────────────────────
-const categoryFilter = ref<"all" | OkrListType>("all");
+const categoryFilter = ref<"all" | OkrListType>("daily");
 const searchKeyword = ref("");
 const dueDateFilter = ref("");
 
@@ -293,12 +283,22 @@ function projectOfRow(row: TableRow): string {
   return p.toLowerCase();
 }
 
+/** 分类按钮上的数量：按项目筛选（不按分类/日期/搜索）统计每类行数。 */
+const categoryCounts = computed<Record<string, number>>(() => {
+  const projs = props.projects;
+  const scoped = projs?.length ? allRows.value.filter(i => projs.includes(projectOfRow(i))) : allRows.value;
+  const counts: Record<string, number> = { all: scoped.length };
+  for (const l of LIST_TYPES) counts[l.key] = scoped.filter(i => i.listType === l.key).length;
+  return counts;
+});
+
 const filteredItems = computed(() => {
   let result =
     categoryFilter.value === "all"
       ? allRows.value
       : allRows.value.filter(i => i.listType === categoryFilter.value);
-  if (props.project) result = result.filter(i => projectOfRow(i) === props.project);
+  const projs = props.projects;
+  if (projs?.length) result = result.filter(i => projs.includes(projectOfRow(i)));
   const date = dueDateFilter.value;
   if (date) result = result.filter(i => i.dueDate === date);
   const kw = searchKeyword.value.trim().toLowerCase();
@@ -501,51 +501,6 @@ async function removeActionItem(row: OkrActionItem) {
 async function handleDelete(row: TableRow) {
   if (row.kind === "action") await removeActionItem(row);
   else await removeItem(row.listType, row.id);
-}
-
-/** 单条 AI 重新生成：替换该行推荐（保留原 id，避免行 key 变动；强制回原角色）。 */
-async function regenerateItem(listType: OkrListType, id: string, role: string, title: string) {
-  const state = lists[listType];
-  const idx = state.items.findIndex(i => i.id === id);
-  if (idx === -1) return;
-
-  regeneratingId.value = id;
-  try {
-    const payload: ChatPayload = {
-      model: DEFAULT_MODEL,
-      system: OKR_SYSTEM_PROMPT,
-      messages: [{ type: "user", message: buildSingleItemPrompt(listType, role, title, buildHistory(listType)), timestamp: Date.now() }]
-    };
-    const text = await chat(payload);
-    const items = parseRecommendation(text, role, listType);
-    if (items.length) {
-      const meta = rolesData[role];
-      state.items[idx] = {
-        ...items[0],
-        id,
-        role,
-        roleName: meta?.name ?? role,
-        roleIcon: meta?.icon ?? "👤"
-      };
-      state.source = "ai";
-      state.generatedAt = dayjs().format("HH:mm:ss");
-      await persistList(listType);
-    }
-  } catch {
-    // 失败保留原条目
-  } finally {
-    if (regeneratingId.value === id) regeneratingId.value = "";
-  }
-}
-
-/** 拼装历史任务：其它清单已加载的任务（借鉴以前的任务内容，避免重复、延续上下文）。 */
-function buildHistory(excludeKey?: OkrListType): OkrTaskItem[] {
-  const out: OkrTaskItem[] = [];
-  for (const l of LIST_TYPES) {
-    if (l.key === excludeKey) continue;
-    out.push(...lists[l.key].items);
-  }
-  return out;
 }
 
 onMounted(loadFromKnowledge);

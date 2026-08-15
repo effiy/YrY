@@ -3,7 +3,6 @@
     <el-breadcrumb separator="/" class="okr-role__breadcrumb">
       <el-breadcrumb-item :to="{ path: '/home/index' }">Home</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/executiver/okr' }">OKR Dashboard</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/executiver/rss' }">RSS</el-breadcrumb-item>
       <el-breadcrumb-item>{{ role.name }} OKR</el-breadcrumb-item>
     </el-breadcrumb>
 
@@ -49,6 +48,11 @@
         <div class="okr-role__sticky-tags">
           <el-tag v-for="p in role.projects" :key="p" size="small" :type="projectTagType(p)">{{ p }}</el-tag>
           <el-tag v-for="c in role.categories" :key="c" size="small" effect="plain" round>{{ c }}</el-tag>
+        </div>
+        <div class="okr-role__sticky-nav">
+          <el-button size="small" text type="primary" @click="$router.push('/executiver/okr')">Action Items</el-button>
+          <el-button size="small" text type="primary" @click="$router.push('/knowledge/goals')">Goals</el-button>
+          <el-button size="small" text type="primary" @click="$router.push('/knowledge/metrics')">Metrics</el-button>
         </div>
       </div>
     </div>
@@ -437,10 +441,7 @@ const statusFilter = ref("all");
 
 const statusOptions = [
   { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Planned", value: "planned" },
-  { label: "Blocked", value: "blocked" },
-  { label: "Done", value: "done" }
+  { label: "Active", value: "active" }
 ];
 
 const hasActiveFilters = computed(() => statusFilter.value !== "all" || searchQuery.value.trim().length > 0);
@@ -764,6 +765,7 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
   max-width: 600px;
 }
 .okr-role__sticky-tags { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.okr-role__sticky-nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: 4px; }
 
 .okr-role__stat-pill {
   display: flex; flex-direction: column; align-items: center; gap: 1px;

@@ -523,7 +523,7 @@ export const EXAMPLE_LAUNCHES: ExampleLaunch[] = [
     env: "staging",
     status: "rolling",
     deployedAt: "2026-08-15",
-    goalId: "prod-003",
+    goalId: "cur-001",
     taskId: "flow-t-007",
     description: "Chrome MV3 内容脚本注入 10+ 内网平台，采集文章自动分类。"
   },

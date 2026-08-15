@@ -30,7 +30,7 @@
           v-for="p in projects"
           :key="p.key"
           class="ho__project"
-          :class="{ 'is-active': selectedProject === p.key.toLowerCase() }"
+          :class="{ 'is-active': selectedProjects.includes(p.key.toLowerCase()) }"
           @click="toggleProject(p.key)"
         >
           <span class="ho__project-icon">{{ p.icon }}</span>
@@ -48,7 +48,7 @@
 
     <!-- ═══ AI 自主推荐 OKR 任务清单 (deepseek-harness todo/ capability) ═══ -->
     <section class="ho__section">
-      <OkrRecommendPanel :project="selectedProject" />
+      <OkrRecommendPanel :projects="selectedProjects" />
     </section>
   </div>
 </template>
@@ -57,7 +57,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ChatDotRound, Aim, Connection, Reading } from "@element-plus/icons-vue";
+import { ChatDotRound, Connection, Reading, Aim } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
 import { getDashboardHealth } from "@/api/modules/dashboard";
@@ -77,13 +77,15 @@ type Status = "ok" | "warn" | "off";
 const STATUS_LABEL: Record<Status, string> = { ok: "online", warn: "disconnected", off: "offline" };
 const dotTitle = (s: Status) => t(`home.status.${STATUS_LABEL[s]}`);
 
-/** 当前联动选中的项目 id（小写，如 "yiai"）；null = 展示全部。 */
-const selectedProject = ref<string | null>(null);
+/** 当前联动选中的项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
+const selectedProjects = ref<string[]>([]);
 
-/** 点击项目卡片：切换该项目的表格筛选（再点一次取消，回到全部）。 */
+/** 点击项目卡片：切换该项目的表格筛选（支持多选，再点一次取消该项）。 */
 function toggleProject(key: string) {
   const id = key.toLowerCase();
-  selectedProject.value = selectedProject.value === id ? null : id;
+  const i = selectedProjects.value.indexOf(id);
+  if (i === -1) selectedProjects.value.push(id);
+  else selectedProjects.value.splice(i, 1);
 }
 
 async function fetchData() {

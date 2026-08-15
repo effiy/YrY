@@ -8,6 +8,8 @@
       <div class="okr__nav">
         <el-button size="small" text type="primary" :icon="House" @click="router.push('/home/index')">Home</el-button>
         <el-button size="small" text type="primary" :icon="Connection" @click="router.push('/executiver/rss')">RSS</el-button>
+        <el-button size="small" text type="primary" :icon="Aim" @click="router.push('/knowledge/goals')">Goals</el-button>
+        <el-button size="small" text type="primary" :icon="Odometer" @click="router.push('/knowledge/metrics')">Metrics</el-button>
       </div>
       <div class="okr__filters">
         <el-select v-model="monthFilter" size="small" clearable placeholder="All months" style="width: 140px">
@@ -87,9 +89,9 @@
         :default-sort="{ prop: 'priorityOrder', order: 'ascending' }"
         :empty-text="emptyText"
       >
-        <el-table-column prop="priorityOrder" label="Priority" width="120" sortable align="center">
+        <el-table-column prop="priorityOrder" label="Priority" width="100" sortable align="center">
           <template #default="{ row }">
-            <el-tag :type="row.priorityType" size="small" effect="dark">{{ row.priority }}</el-tag>
+            <PriorityTag :priority="row.priority" />
           </template>
         </el-table-column>
         <el-table-column prop="action" label="Action" min-width="320" sortable>
@@ -97,17 +99,39 @@
             <span class="okr__action-text okr__action-text--link" @click="openFile(row as ActionItem)">{{ row.action }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="roleName" label="Role" width="200" sortable>
+        <el-table-column prop="roleName" label="Role" width="180" sortable>
           <template #default="{ row }">
-            <div class="okr__role-cell" @click.stop="goRole(row.linkRole)">
-              <span class="okr__role-cell-icon">{{ row.roleIcon }}</span>
-              <span class="okr__role-cell-name">{{ row.roleName }}</span>
-            </div>
+            <RoleLink :role="row.linkRole" :role-name="row.roleName" :role-icon="row.roleIcon" />
+          </template>
+        </el-table-column>
+        <el-table-column label="Goal" width="110">
+          <template #default="{ row }">
+            <GoalLink v-if="row.linkGoal && row.linkRole" :role="row.linkRole" :goal-id="row.linkGoal" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="owner" label="Owner" width="140" sortable>
+          <template #default="{ row }">
+            <span>{{ row.owner || "—" }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="Status" width="120" sortable>
           <template #default="{ row }">
             <el-tag :type="row.statusType" size="small">{{ row.status }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Skill" width="130">
+          <template #default="{ row }">
+            <SkillTag v-if="row.skill" :skill="row.skill" />
+          </template>
+        </el-table-column>
+        <el-table-column label="Agent" width="150">
+          <template #default="{ row }">
+            <AgentTag v-if="row.agent" :agent="row.agent" />
+          </template>
+        </el-table-column>
+        <el-table-column label="MCP" width="90">
+          <template #default="{ row }">
+            <McpTag v-if="row.mcp" :mcp="row.mcp" />
           </template>
         </el-table-column>
         <el-table-column prop="deadline" label="Deadline" width="160" sortable>
@@ -126,7 +150,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="subtaskCount" label="Subtasks" width="90" sortable align="center">
+        <el-table-column prop="subtaskCount" label="Subtasks" width="180" sortable align="center">
           <template #default="{ row }">
             <span v-if="row.subtaskCount" class="okr__subtask-count">{{ row.subtaskCount }}</span>
             <span v-else class="okr__subtask-count">—</span>
@@ -150,13 +174,19 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { Delete, House, Connection } from "@element-plus/icons-vue";
+import { Delete, House, Connection, Aim, Odometer } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { loadBool, saveBool } from "@/utils/storage";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
+import PriorityTag from "@/components/OkrRecommend/fields/PriorityTag.vue";
+import RoleLink from "@/components/OkrRecommend/fields/RoleLink.vue";
+import GoalLink from "@/components/OkrRecommend/fields/GoalLink.vue";
+import SkillTag from "@/components/OkrRecommend/fields/SkillTag.vue";
+import AgentTag from "@/components/OkrRecommend/fields/AgentTag.vue";
+import McpTag from "@/components/OkrRecommend/fields/McpTag.vue";
 
 const router = useRouter();
 
@@ -171,6 +201,9 @@ interface ActionItem {
   roleStatusType: "success" | "warning" | "danger" | "info" | "primary";
   linkRole?: string;
   linkGoal?: string;
+  skill?: string;
+  agent?: string;
+  mcp?: string;
   owner: string;
   deadline: string;
   status: string;
@@ -265,6 +298,9 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
   const priority = typeof m.priority === "string" ? m.priority : "P2";
   const progress = Number(m.progress ?? 0) || 0;
   const goal = typeof m.goal === "string" && m.goal ? m.goal : undefined;
+  const skill = typeof m.skill === "string" ? m.skill : undefined;
+  const agent = typeof m.agent === "string" ? m.agent : undefined;
+  const mcp = typeof m.mcp === "string" ? m.mcp : undefined;
   const isOverdue = m.overdue === true || (dayjs(deadline).isValid() && dayjs(deadline).isBefore(dayjs().startOf("day")));
   return {
     id: typeof m.id === "string" ? m.id : f.name.replace(/\.md$/, ""),
@@ -272,6 +308,9 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
     ...roleInfo(linkRole),
     linkRole,
     linkGoal: goal,
+    skill,
+    agent,
+    mcp,
     owner: typeof m.owner === "string" ? m.owner : "",
     deadline,
     status,
@@ -294,6 +333,9 @@ function actionItemFromExample(t: ExampleTask, filePath: string): ActionItem {
     ...roleInfo(t.role),
     linkRole: t.role,
     linkGoal: t.goalId,
+    skill: t.skill,
+    agent: t.agent,
+    mcp: t.mcp,
     owner: t.owner,
     deadline: t.deadline,
     status: t.status,
@@ -367,12 +409,12 @@ function slugifyTitle(title: string): string {
     .replace(/-+$/g, "");
 }
 
-/** Action Item 落盘文件名：`okr/<deadline>/<priority>-<role>-<slug>.md`。
- *  按截止日期归档到日期目录（与推荐任务按 dueDate 归档保持一致）；
+/** Action Item 落盘文件名：`okr/<year-month>/<priority>-<role>-<slug>.md`。
+ *  按截止日期归档到年月目录（与推荐任务按 dueDate 归档保持一致）；
  *  优先级前缀让 P0 排前、role 便于按角色归组、slug 让文件名自解释。 */
 function actionFileName(t: ExampleTask): string {
   const slug = slugifyTitle(t.title);
-  const dir = t.deadline || "undated";
+  const dir = t.deadline ? t.deadline.slice(0, 7) : "undated"; // YYYY-MM
   return `okr/${dir}/${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
 }
 

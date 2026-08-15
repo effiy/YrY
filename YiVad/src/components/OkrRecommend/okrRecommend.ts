@@ -73,8 +73,7 @@ export interface OkrListMeta {
 export const LIST_TYPES: OkrListMeta[] = [
   { key: "daily", icon: "📅" },
   { key: "weekly", icon: "🗓" },
-  { key: "risk", icon: "🚨" },
-  { key: "sprint", icon: "🎯" }
+  { key: "risk", icon: "🚨" }
 ];
 
 const VALID_EFFORT = ["S", "M", "L"] as const;
