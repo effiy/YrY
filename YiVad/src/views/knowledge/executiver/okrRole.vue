@@ -1,10 +1,24 @@
 <template>
   <div class="okr-role">
-    <el-breadcrumb separator="/" class="okr-role__breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/home/index' }">Home</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/executiver/okr' }">OKR Dashboard</el-breadcrumb-item>
-      <el-breadcrumb-item>{{ role.name }} OKR</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="okr-role__header">
+      <el-breadcrumb separator="/" class="okr-role__breadcrumb">
+        <el-breadcrumb-item :to="{ path: '/home/index' }">Home</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/executiver/okr' }">OKR Dashboard</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ role.name }} OKR</el-breadcrumb-item>
+      </el-breadcrumb>
+      <div class="okr-role__role-nav">
+        <button
+          v-for="rid in ROLE_IDS"
+          :key="rid"
+          class="okr-role__role-nav-item"
+          :class="{ 'is-active': rid === props.roleId }"
+          @click="rid !== props.roleId && $router.push(`/executiver/okr/${rid}`)"
+        >
+          <span class="okr-role__role-nav-icon">{{ rolesData[rid].icon }}</span>
+          <span class="okr-role__role-nav-label">{{ rolesData[rid].name }}</span>
+        </button>
+      </div>
+    </div>
 
     <!-- ═══ Sticky Header Bar ═══ -->
     <div class="okr-role__sticky-bar">
@@ -19,12 +33,15 @@
           </div>
         </div>
         <div class="okr-role__sticky-center">
+          <el-select v-model="selectedYear" size="small" class="okr-role__year-select" @change="onYearChange">
+            <el-option v-for="y in availableYears" :key="y" :label="y" :value="y" />
+          </el-select>
           <el-radio-group v-model="selectedPeriod" size="small">
             <el-radio-button value="q1">Q1</el-radio-button>
             <el-radio-button value="q2">Q2</el-radio-button>
             <el-radio-button value="q3">Q3</el-radio-button>
             <el-radio-button value="q4">Q4</el-radio-button>
-            <el-radio-button value="annual">2026</el-radio-button>
+            <el-radio-button value="annual">{{ selectedYear }}</el-radio-button>
           </el-radio-group>
         </div>
         <div class="okr-role__sticky-right">
@@ -45,35 +62,13 @@
     </div>
 
     <section class="okr-role__section">
-      <div class="okr-role__section-head">
-        <h2>Goals & Metrics</h2>
-        <span class="okr-role__section-count">{{ filteredGoals.length }} goals</span>
-      </div>
-      <p class="okr-role__section-desc">Goals cascade from org strategy. Each goal links to measurable metrics that track progress toward the objective. Click a goal or metric to drill into details.</p>
-
-      <div class="okr-role__table-toolbar">
-        <el-input v-model="searchQuery" placeholder="Search goals by title, description, or ID..." clearable :prefix-icon="Search" size="default" class="okr-role__search" />
-        <div class="okr-role__status-chips">
-          <el-tag v-for="opt in statusOptions" :key="opt.value" :type="statusFilter === opt.value ? 'primary' : 'info'" :effect="statusFilter === opt.value ? 'dark' : 'plain'" size="default" class="okr-role__status-chip" @click="statusFilter = opt.value">
-            {{ opt.label }}
-          </el-tag>
-        </div>
-        <el-button v-if="hasActiveFilters" text size="small" type="warning" :icon="CircleClose" @click="clearFilters" class="okr-role__clear-btn">
-          Clear
-        </el-button>
-      </div>
-      <el-table v-if="filteredGoals.length" :data="filteredGoals" stripe border style="width: 100%" row-key="id" :expand-row-keys="expandedGoalIds" @expand-change="onExpandChange" :default-sort="{ prop: 'id', order: 'ascending' }">
+      <el-table v-if="filteredGoals.length" :data="filteredGoals" stripe border style="width: 100%" row-key="id" :expand-row-keys="expandedGoalIds" @expand-change="onExpandChange">
         <el-table-column type="expand">
           <template #default="{ row }">
             <div class="okr-role__expand">
               <div v-if="getGoalMetrics(row.id).length" class="okr-role__expand-metrics">
                 <h4 class="okr-role__expand-title">Related Metrics ({{ getGoalMetrics(row.id).length }})</h4>
                 <el-table :data="getGoalMetrics(row.id)" size="small" border style="width: 100%">
-                  <el-table-column prop="id" label="Metric ID" width="130">
-                    <template #default="{ row: mr }">
-                      <code class="okr-role__table-id">{{ mr.id }}</code>
-                    </template>
-                  </el-table-column>
                   <el-table-column prop="name" label="Metric" min-width="220">
                     <template #default="{ row: mr }">
                       <div class="okr-role__table-item">
@@ -90,7 +85,6 @@
                       <el-tag size="small" effect="plain">{{ mr.category }}</el-tag>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="framework" label="Framework" width="110" />
                   <el-table-column label="Current" width="110" sortable prop="current">
                     <template #default="{ row: mr }">
                       <span class="okr-role__table-value">{{ mr.current }}{{ mr.unit }}</span>
@@ -115,22 +109,12 @@
                       </el-tag>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Actions" width="100" fixed="right">
-                    <template #default="{ row: mr }">
-                      <el-button size="small" type="primary" link @click="openMetricFile(mr as MetricItem)">Details</el-button>
-                    </template>
-                  </el-table-column>
                 </el-table>
               </div>
               <div v-else class="okr-role__expand-empty">
                 No related metrics for this goal.
               </div>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="id" label="Goal ID" width="120" sortable>
-          <template #default="{ row }">
-            <code class="okr-role__table-id">{{ row.id }}</code>
           </template>
         </el-table-column>
         <el-table-column prop="title" label="Goal" min-width="240" sortable>
@@ -142,18 +126,6 @@
                 <p class="okr-role__table-desc">{{ row.description }}</p>
               </div>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="Status" width="100" sortable>
-          <template #default="{ row }">
-            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="period" label="Period" width="120" sortable />
-        <el-table-column prop="owner" label="Owner" width="140" />
-        <el-table-column prop="project" label="Project" width="100">
-          <template #default="{ row }">
-            <el-tag :type="projectTagType(row.project)" size="small">{{ row.project }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="Key Results" min-width="300">
@@ -172,17 +144,11 @@
             <el-progress :percentage="krAvg(row as GoalItem)" :status="krStatus(krAvg(row as GoalItem))" :stroke-width="6" :show-text="true" />
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="120" fixed="right">
-          <template #default="{ row }">
-            <el-button size="small" type="primary" link @click="toggleGoalExpand(row as GoalItem)">Details</el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <div v-else class="okr-role__empty">
-        <div class="okr-role__empty-icon">🔍</div>
-        <h3 class="okr-role__empty-title">No goals match your filters</h3>
-        <p class="okr-role__empty-desc">Try adjusting the search query or status filter, or switch to a different period.</p>
-        <el-button type="primary" size="small" @click="clearFilters">Clear Filters</el-button>
+        <div class="okr-role__empty-icon">📅</div>
+        <h3 class="okr-role__empty-title">No goals for {{ selectedYear }}</h3>
+        <p class="okr-role__empty-desc">This year has no OKR goals yet. Try a different year or period.</p>
       </div>
     </section>
 
@@ -190,13 +156,29 @@
 
     <section class="okr-role__section">
       <div class="okr-role__section-head">
-        <h2>Weekly Report</h2>
-        <el-tag size="small" type="info">{{ weekRangeLabel }}</el-tag>
-        <el-button text size="small" type="primary" class="okr-role__copy-btn" @click="openWeeklyFile">Open File</el-button>
+        <h2>📋 Weekly Report</h2>
+        <div class="okr-role__week-range">
+          <el-button text size="small" class="okr-role__week-nav" @click="shiftWeek(-1)">
+            <el-icon><ArrowLeft /></el-icon>
+          </el-button>
+          <el-date-picker
+            v-model="selectedWeek"
+            type="week"
+            format="[Week] ww, gggg"
+            :clearable="false"
+            size="small"
+            class="okr-role__week-input"
+          />
+          <el-button text size="small" class="okr-role__week-nav" @click="shiftWeek(1)">
+            <el-icon><ArrowRight /></el-icon>
+          </el-button>
+        </div>
+        <el-button size="small" type="primary" plain class="okr-role__section-action" @click="openWeeklyFile">
+          <el-icon><Document /></el-icon>
+          <span>Open File</span>
+        </el-button>
       </div>
-      <p class="okr-role__section-desc">Weekly summary of accomplishments, blockers, decisions, and next-week priorities for the {{ role.name }} role.</p>
-
-      <div class="okr-role__weekly-grid">
+      <div v-if="isCurrentWeek" class="okr-role__weekly-grid">
         <div class="okr-role__weekly-card okr-role__weekly-card--done" :class="{ 'okr-role__weekly-card--collapsed': collapsedWeeklySections.has('done') }">
           <div class="okr-role__weekly-card-head" @click="toggleWeeklySection('done')">
             <span class="okr-role__weekly-card-icon">✅</span>
@@ -283,6 +265,11 @@
           </div>
         </div>
       </div>
+      <div v-else class="okr-role__empty">
+        <div class="okr-role__empty-icon">📭</div>
+        <h3 class="okr-role__empty-title">No weekly report for this week</h3>
+        <p class="okr-role__empty-desc">Navigate back to the current week to view this week's report.</p>
+      </div>
     </section>
 
     <KnowledgePreviewDialog ref="previewDlg" />
@@ -292,14 +279,14 @@
 <script setup lang="ts" name="okrRole">
 import { computed, reactive, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { ArrowLeft, Search, CircleClose } from "@element-plus/icons-vue";
+import { ArrowLeft, ArrowRight, Document } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import dayjs from "dayjs";
 import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import {
   rolesData, goalsData, metricsData, goalMetricMap, getGoalMetrics,
-  roleWeeklyDataMap,
+  roleWeeklyDataMap, ROLE_IDS,
   type GoalItem, type MetricItem
 } from "./okrData";
 
@@ -307,27 +294,17 @@ const props = defineProps<{ roleId: string }>();
 const route = useRoute();
 
 const selectedPeriod = ref("q3");
-const searchQuery = ref("");
-const statusFilter = ref("all");
-
-const statusOptions = [
-  { label: "All", value: "all" },
-  { label: "Active", value: "active" }
-];
-
-const hasActiveFilters = computed(() => statusFilter.value !== "all" || searchQuery.value.trim().length > 0);
-function clearFilters() {
-  searchQuery.value = "";
-  statusFilter.value = "all";
+const selectedYear = ref(String(dayjs().year()));
+const availableYears = computed(() => {
+  const y = dayjs().year();
+  return [y - 2, y - 1, y, y + 1].map(String);
+});
+function onYearChange() {
+  selectedPeriod.value = "annual";
 }
 
 // ── Goal row expansion (goal detail is inline, not a separate route) ──────────
 const expandedGoalIds = ref<string[]>([]);
-function toggleGoalExpand(row: GoalItem) {
-  const idx = expandedGoalIds.value.indexOf(row.id);
-  if (idx >= 0) expandedGoalIds.value.splice(idx, 1);
-  else expandedGoalIds.value.push(row.id);
-}
 function onExpandChange(_row: GoalItem, expandedRows: GoalItem[] | boolean) {
   if (Array.isArray(expandedRows)) expandedGoalIds.value = expandedRows.map(r => r.id);
 }
@@ -409,11 +386,22 @@ async function openMetricFile(m: MetricItem) {
   previewDlg.value?.open(path);
 }
 
-/** 周报区间（周一 → 周五）。 */
+/** 当前选中的周（默认本周一）。 */
+const selectedWeek = ref(dayjs().startOf("week").add(1, "day").toDate());
+function shiftWeek(delta: number) {
+  selectedWeek.value = dayjs(selectedWeek.value).add(delta, "week").toDate();
+}
+/** 周报区间（周一 → 周五），随 selectedWeek 变化。 */
 const weekRangeLabel = computed(() => {
-  const mon = dayjs().startOf("week").add(1, "day");
+  const mon = dayjs(selectedWeek.value).startOf("week").add(1, "day");
   const fri = mon.add(4, "day");
   return `${mon.format("YYYY-MM-DD")} → ${fri.format("YYYY-MM-DD")}`;
+});
+/** 是否当前周：仅当前周有周报数据，其余周展示空态。 */
+const isCurrentWeek = computed(() => {
+  const thisMonday = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
+  const selMonday = dayjs(selectedWeek.value).startOf("week").add(1, "day").format("YYYY-MM-DD");
+  return thisMonday === selMonday;
 });
 
 const role = computed(() => rolesData[props.roleId] || rolesData.executiver);
@@ -433,20 +421,46 @@ async function copyWeeklyItem(text: string) {
 }
 // ── Weekly Report → 知识库文件（okr 目录）→ 文件预览弹框 ──
 function weeklyFilePath(): string {
-  const monday = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
+  const monday = dayjs(selectedWeek.value).startOf("week").add(1, "day").format("YYYY-MM-DD");
   return `okr/weekly/${props.roleId}-${monday}.md`;
 }
 
 function renderWeeklyBody(): string {
   const w = weeklyData.value;
   const r = role.value;
-  let md = `# Weekly Report — ${r.name}\n\n`;
-  md += `**${weekRangeLabel.value}** · Status: **${w.status}**\n\n`;
-  md += `## ✅ Accomplishments\n\n${w.done.map(d => `- ${d}`).join("\n")}\n\n`;
-  md += `## 🚧 Blockers\n\n${w.blockers.length ? w.blockers.map(b => `- ${b}`).join("\n") : "- None"}\n\n`;
-  md += `## 📅 Next Week\n\n${w.nextWeek.map(n => `- ${n}`).join("\n")}\n\n`;
-  md += `## 📝 Key Decisions\n\n${w.decisions.map(d => `- ${d}`).join("\n")}\n`;
-  return md;
+  const goals = allGoals.value;
+  const metrics = metricsData[props.roleId] || [];
+
+  const lines: string[] = [
+    `# Weekly Report — ${r.name}`,
+    "",
+    `**${weekRangeLabel.value}** · Status: **${w.status}**`,
+    "",
+    "## 🎯 OKR Snapshot",
+    "",
+    `- Goals: ${goals.length}`,
+    `- Overall progress: ${periodAvgProgress.value}%`
+  ];
+
+  if (goals.length) {
+    lines.push("", "### Goals", "", "| Goal | Status | Period | Progress |", "|---|---|---|---|");
+    goals.forEach(g => lines.push(`| ${g.icon} ${g.title} | ${g.status} | ${g.period} | ${krAvg(g)}% |`));
+  }
+  if (metrics.length) {
+    lines.push("", "### Metrics", "", "| Metric | Current | Target | Progress |", "|---|---|---|---|");
+    metrics.forEach(m => lines.push(`| ${m.icon} ${m.name} | ${m.current}${m.unit} | ${m.target}${m.unit} | ${m.progress}% |`));
+  }
+
+  lines.push("", "## ✅ Accomplishments", "");
+  lines.push(...w.done.map(d => `- ${d}`));
+  lines.push("", "## 🚧 Blockers", "");
+  if (w.blockers.length) lines.push(...w.blockers.map(b => `- ${b}`));
+  else lines.push("- None");
+  lines.push("", "## 📅 Next Week", "");
+  lines.push(...w.nextWeek.map(n => `- ${n}`));
+  lines.push("", "## 📝 Key Decisions", "");
+  lines.push(...w.decisions.map(d => `- ${d}`));
+  return lines.join("\n");
 }
 
 async function openWeeklyFile() {
@@ -490,8 +504,7 @@ function isEditing(section: string, index: number, card?: string): boolean {
 
 watch(() => props.roleId, () => {
   selectedPeriod.value = "q3";
-  searchQuery.value = "";
-  statusFilter.value = "all";
+  selectedYear.value = String(dayjs().year());
   expandedGoalIds.value = [];
   const container = document.querySelector(".okr-role");
   if (container) container.scrollTop = 0;
@@ -526,24 +539,16 @@ function applyGoalFromQuery() {
   if (typeof goal !== "string" || !goal) return;
   const found = allGoals.value.find(g => g.id === goal);
   if (!found) return;
+  const year = found.period.match(/\d{4}/)?.[0];
+  if (year) selectedYear.value = year;
   selectedPeriod.value = periodForGoal(found.period);
   if (!expandedGoalIds.value.includes(goal)) expandedGoalIds.value.push(goal);
 }
 
 const filteredGoals = computed(() => {
-  let goals = allGoals.value.filter(g => goalMatchesPeriod(g.period, selectedPeriod.value));
-  if (statusFilter.value !== "all") {
-    goals = goals.filter(g => g.status === statusFilter.value);
-  }
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.trim().toLowerCase();
-    goals = goals.filter(g =>
-      g.title.toLowerCase().includes(q) ||
-      g.description.toLowerCase().includes(q) ||
-      g.id.toLowerCase().includes(q)
-    );
-  }
-  return goals;
+  return allGoals.value.filter(g =>
+    g.period.includes(selectedYear.value) && goalMatchesPeriod(g.period, selectedPeriod.value)
+  );
 });
 
 const periodMetricCount = computed(() => {
@@ -570,12 +575,6 @@ function krAvg(row: GoalItem): number {
   if (!row.keyResults.length) return 0;
   return Math.round(row.keyResults.reduce((s, kr) => s + kr.progress, 0) / row.keyResults.length);
 }
-function statusTagType(status: string) {
-  return status === "active" ? "success" : status === "planned" ? "warning" : status === "blocked" ? "danger" : "info";
-}
-function projectTagType(project: string) {
-  return project === "YiAi" ? "primary" : project === "YiVad" ? "success" : "warning";
-}
 function krStatus(pct: number): "success" | "warning" | "exception" | undefined {
   if (pct >= 100) return "success";
   if (pct >= 70) return undefined;
@@ -590,11 +589,13 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
   height: calc(100vh - 95px); min-height: 0; overflow: auto;
   background: var(--el-bg-color-page);
 }
-.okr-role__breadcrumb {
+.okr-role__header {
   position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 14px 24px 10px;
   background: var(--el-bg-color-page);
 }
+.okr-role__breadcrumb { flex-shrink: 0; }
 
 // ── Sticky Header Bar ──────────────────────────
 .okr-role__sticky-bar {
@@ -613,8 +614,25 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 .okr-role__sticky-icon { font-size: 24px; }
 .okr-role__sticky-info { display: flex; flex-direction: column; gap: 0; }
 .okr-role__sticky-name { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; }
-.okr-role__sticky-center { flex-shrink: 0; }
+.okr-role__sticky-center { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.okr-role__year-select { width: 96px; }
 .okr-role__sticky-right { display: flex; gap: 6px; flex-shrink: 0; }
+
+.okr-role__role-nav {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: flex-end;
+}
+.okr-role__role-nav-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 16px;
+  border: 1px solid var(--el-border-color-lighter);
+  background: var(--el-bg-color); cursor: pointer; font-size: 12px;
+  color: var(--el-text-color-regular);
+  transition: all .15s;
+  &:hover { border-color: var(--el-color-primary-light-5); color: var(--el-color-primary); }
+  &.is-active { background: var(--el-color-primary); border-color: var(--el-color-primary); color: #fff; }
+}
+.okr-role__role-nav-icon { font-size: 13px; }
 
 .okr-role__stat-pill {
   display: flex; flex-direction: column; align-items: center; gap: 1px;
@@ -638,17 +656,11 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 }
 .okr-role__section-count { font-size: 12px; color: var(--el-text-color-secondary); font-weight: 600; }
 .okr-role__section-desc { margin: 0 0 14px; font-size: 12px; color: var(--el-text-color-secondary); max-width: 800px; line-height: 1.5; }
+.okr-role__week-range { display: flex; align-items: center; gap: 2px; }
+.okr-role__week-nav { padding: 2px; }
+.okr-role__week-input { width: 150px; }
+.okr-role__section-action { margin-left: auto; }
 .okr-role__copy-btn { margin-left: auto; flex-shrink: 0; font-size: 12px; }
-
-// ── Table Toolbar ──────────────────────────────
-.okr-role__table-toolbar {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-}
-
-.okr-role__search { width: 320px; }
-.okr-role__status-chips { display: flex; gap: 6px; }
-.okr-role__status-chip { cursor: pointer; user-select: none; transition: transform .15s; &:active { transform: scale(.95); } }
-.okr-role__clear-btn { flex-shrink: 0; }
 
 // ── Empty State ───────────────────────────────
 .okr-role__empty {
@@ -660,7 +672,6 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 .okr-role__empty-desc { margin: 0; font-size: 13px; color: var(--el-text-color-placeholder); max-width: 400px; line-height: 1.5; }
 
 // ── Table ──────────────────────────────────────
-.okr-role__table-id { font-family: monospace; font-size: 12px; color: var(--el-color-primary); }
 .okr-role__table-item { display: flex; align-items: flex-start; gap: 8px; }
 .okr-role__table-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
 .okr-role__table-title { font-weight: 600; font-size: 13px; display: block; }
