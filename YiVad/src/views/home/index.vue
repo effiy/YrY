@@ -30,8 +30,8 @@
           v-for="p in projects"
           :key="p.key"
           class="ho__project"
-          :class="{ 'ho__project--link': p.to }"
-          @click="onProjectClick(p.to)"
+          :class="{ 'is-active': selectedProject === p.key.toLowerCase() }"
+          @click="toggleProject(p.key)"
         >
           <span class="ho__project-icon">{{ p.icon }}</span>
           <div class="ho__project-body">
@@ -48,7 +48,7 @@
 
     <!-- ═══ AI 自主推荐 OKR 任务清单 (deepseek-harness todo/ capability) ═══ -->
     <section class="ho__section">
-      <OkrRecommendPanel />
+      <OkrRecommendPanel :project="selectedProject" />
     </section>
   </div>
 </template>
@@ -77,8 +77,13 @@ type Status = "ok" | "warn" | "off";
 const STATUS_LABEL: Record<Status, string> = { ok: "online", warn: "disconnected", off: "offline" };
 const dotTitle = (s: Status) => t(`home.status.${STATUS_LABEL[s]}`);
 
-function onProjectClick(to: string | null) {
-  if (to) router.push(to);
+/** 当前联动选中的项目 id（小写，如 "yiai"）；null = 展示全部。 */
+const selectedProject = ref<string | null>(null);
+
+/** 点击项目卡片：切换该项目的表格筛选（再点一次取消，回到全部）。 */
+function toggleProject(key: string) {
+  const id = key.toLowerCase();
+  selectedProject.value = selectedProject.value === id ? null : id;
 }
 
 async function fetchData() {
@@ -188,12 +193,17 @@ onBeforeUnmount(() => {
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
+  cursor: pointer;
   transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
-  &.ho__project--link { cursor: pointer; }
-  &.ho__project--link:hover {
+  &:hover {
     border-color: var(--el-color-primary-light-5);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px);
+  }
+  &.is-active {
+    border-color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    box-shadow: 0 0 0 2px var(--el-color-primary-light-7);
   }
 }
 .ho__project-icon { font-size: 26px; flex-shrink: 0; }

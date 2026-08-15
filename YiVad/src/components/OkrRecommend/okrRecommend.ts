@@ -235,7 +235,7 @@ export const OKR_SYSTEM_PROMPT = `你是「Yi 系统」的 OKR 智能规划助�
   "reason": "推荐理由（一句话）",
   "skill": "技能 id（从上面可用技能中选择一个）",
   "agent": "agent persona（如 Engineer Agent）",
-  "mcp": "github | yiai | \"\""
+  "mcp": "github | yiai | ""
 }`;
 
 // ── 上下文构建 ──────────────────────────────────

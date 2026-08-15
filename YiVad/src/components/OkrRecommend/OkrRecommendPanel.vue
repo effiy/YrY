@@ -52,7 +52,7 @@
     <el-table v-if="viewMode === 'table'" :data="filteredItems" size="small" border stripe style="width: 100%" row-key="id">
       <el-table-column :label="t('home.aiRecommend.cols.priority')" prop="priority" width="90" sortable>
         <template #default="{ row }">
-          <el-tag :type="priorityType(row.priority)" size="small" effect="dark">{{ row.priority }}</el-tag>
+          <PriorityTag :priority="row.priority" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.score')" prop="score" width="120" sortable>
@@ -70,12 +70,12 @@
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.role')" width="150">
         <template #default="{ row }">
-          <span class="okr-rec__cell-role" @click="goRole(row.role)">{{ row.roleIcon }} {{ row.roleName }}</span>
+          <RoleLink :role="row.role" :role-name="row.roleName" :role-icon="row.roleIcon" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.goal')" width="110">
         <template #default="{ row }">
-          <code v-if="row.goalId" class="okr-rec__cell-goal" @click="goGoal(row.role, row.goalId)">{{ row.goalId }}</code>
+          <GoalLink v-if="row.goalId" :role="row.role" :goal-id="row.goalId" />
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
@@ -93,29 +93,29 @@
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.skill')" width="150">
         <template #default="{ row }">
-          <el-tag v-if="row.skill" size="small" type="primary" effect="light">{{ skillLabel(row.skill) }}</el-tag>
+          <SkillTag v-if="row.skill" :skill="row.skill" />
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.agent')" width="150">
         <template #default="{ row }">
-          <el-tag v-if="row.agent" size="small" effect="plain">{{ row.agent }}</el-tag>
+          <AgentTag v-if="row.agent" :agent="row.agent" />
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.mcp')" width="110">
         <template #default="{ row }">
-          <el-tag size="small" :type="mcpTagType(row.mcp)" effect="light">{{ mcpLabel(row.mcp) }}</el-tag>
+          <McpTag :mcp="row.mcp" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.effort')" width="90">
         <template #default="{ row }">
-          <span class="okr-rec__cell-effort" :class="`is-${row.effort}`">{{ row.effort }}</span>
+          <EffortBadge :effort="row.effort" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.due')" prop="dueDate" width="110" sortable>
         <template #default="{ row }">
-          <span :class="{ 'okr-rec__cell-due-overdue': isOverdue(row.dueDate) }">{{ row.dueDate }}</span>
+          <DueLabel :due-date="row.dueDate" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.reason')" min-width="220">
@@ -138,19 +138,19 @@
     <!-- ═══ 列表视图 ═══ -->
     <div v-else-if="viewMode === 'list'" class="okr-rec__list">
       <div v-for="item in filteredItems" :key="item.id" class="okr-rec__list-item">
-        <el-tag :type="priorityType(item.priority)" size="small" effect="dark" class="okr-rec__list-priority">{{ item.priority }}</el-tag>
+        <PriorityTag class="okr-rec__list-priority" :priority="item.priority" />
         <div class="okr-rec__list-main">
           <div class="okr-rec__list-title okr-rec__cell-title--link" @click="openPreview(item)">{{ item.title }}</div>
           <div class="okr-rec__list-meta">
-            <el-tag size="small" effect="light" :type="categoryTagType(categoryKey(item))" round>{{ categoryIcon(categoryKey(item)) }} {{ categoryLabel(categoryKey(item)) }}</el-tag>
-            <span class="okr-rec__list-role" @click="goRole(item.role)">{{ item.roleIcon }} {{ item.roleName }}</span>
-            <code v-if="item.goalId" class="okr-rec__list-goal" @click="goGoal(item.role, item.goalId)">{{ item.goalId }}</code>
+            <CategoryTag :list-type="item.listType" />
+            <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
+            <GoalLink v-if="item.goalId" :role="item.role" :goal-id="item.goalId" />
             <span v-if="item.metric" class="okr-rec__list-metric">{{ item.metric.icon }} {{ item.metric.name }} {{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }}</span>
-            <el-tag v-if="item.skill" size="small" type="primary" effect="light">{{ skillLabel(item.skill) }}</el-tag>
-            <el-tag v-if="item.agent" size="small" effect="plain">{{ item.agent }}</el-tag>
-            <el-tag size="small" :type="mcpTagType(item.mcp)" effect="light">{{ mcpLabel(item.mcp) }}</el-tag>
-            <span class="okr-rec__cell-effort" :class="`is-${item.effort}`">{{ item.effort }}</span>
-            <span class="okr-rec__list-due" :class="{ 'okr-rec__cell-due-overdue': isOverdue(item.dueDate) }">{{ item.dueDate }}</span>
+            <SkillTag v-if="item.skill" :skill="item.skill" />
+            <AgentTag v-if="item.agent" :agent="item.agent" />
+            <McpTag :mcp="item.mcp" />
+            <EffortBadge :effort="item.effort" />
+            <DueLabel class="okr-rec__list-due" :due-date="item.dueDate" />
           </div>
         </div>
         <span class="okr-rec__list-score" :class="`is-${scoreTagType(item.score)}`">{{ item.score }}</span>
@@ -161,8 +161,8 @@
     <div v-else class="okr-rec__cards">
       <div v-for="item in filteredItems" :key="item.id" class="okr-rec__card">
         <div class="okr-rec__card-head">
-          <el-tag :type="priorityType(item.priority)" size="small" effect="dark">{{ item.priority }}</el-tag>
-          <el-tag size="small" effect="light" :type="categoryTagType(categoryKey(item))" round>{{ categoryIcon(categoryKey(item)) }} {{ categoryLabel(categoryKey(item)) }}</el-tag>
+          <PriorityTag :priority="item.priority" />
+          <CategoryTag :list-type="item.listType" />
           <span class="okr-rec__card-score" :class="`is-${scoreTagType(item.score)}`">{{ item.score }}</span>
         </div>
         <div class="okr-rec__card-title okr-rec__cell-title--link" @click="openPreview(item)">{{ item.title }}</div>
@@ -178,15 +178,15 @@
         </div>
         <div class="okr-rec__card-reason">{{ item.reason }}</div>
         <div class="okr-rec__card-orch">
-          <el-tag v-if="item.skill" size="small" type="primary" effect="light">{{ skillLabel(item.skill) }}</el-tag>
-          <el-tag v-if="item.agent" size="small" effect="plain">{{ item.agent }}</el-tag>
-          <el-tag size="small" :type="mcpTagType(item.mcp)" effect="light">{{ mcpLabel(item.mcp) }}</el-tag>
+          <SkillTag v-if="item.skill" :skill="item.skill" />
+          <AgentTag v-if="item.agent" :agent="item.agent" />
+          <McpTag :mcp="item.mcp" />
         </div>
         <div class="okr-rec__card-foot">
-          <span class="okr-rec__cell-role" @click="goRole(item.role)">{{ item.roleIcon }} {{ item.roleName }}</span>
-          <span class="okr-rec__cell-effort" :class="`is-${item.effort}`">{{ item.effort }}</span>
-          <code v-if="item.goalId" class="okr-rec__cell-goal" @click="goGoal(item.role, item.goalId)">{{ item.goalId }}</code>
-          <span class="okr-rec__card-due" :class="{ 'okr-rec__cell-due-overdue': isOverdue(item.dueDate) }">{{ item.dueDate }}</span>
+          <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
+          <EffortBadge :effort="item.effort" />
+          <GoalLink v-if="item.goalId" :role="item.role" :goal-id="item.goalId" />
+          <DueLabel class="okr-rec__card-due" :due-date="item.dueDate" />
         </div>
       </div>
     </div>
@@ -200,7 +200,6 @@
 
 <script setup lang="ts" name="OkrRecommendPanel">
 import { computed, reactive, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { MagicStick, Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
@@ -209,9 +208,18 @@ import { chat } from "@/api/modules/chatService";
 import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
 import type { ChatPayload, KnowledgeFileEntry } from "@/api/interface/yiweb";
 import { DEFAULT_MODEL } from "@/views/aiChat/constants";
-import { rolesData } from "@/views/knowledge/executiver/okrData";
-import { skills } from "@/views/knowledge/skills/constants";
+import { rolesData, allGoalsMap } from "@/views/knowledge/executiver/okrData";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import { skillLabel, mcpLabel, isOverdue } from "./format";
+import PriorityTag from "./fields/PriorityTag.vue";
+import CategoryTag from "./fields/CategoryTag.vue";
+import RoleLink from "./fields/RoleLink.vue";
+import GoalLink from "./fields/GoalLink.vue";
+import SkillTag from "./fields/SkillTag.vue";
+import AgentTag from "./fields/AgentTag.vue";
+import McpTag from "./fields/McpTag.vue";
+import EffortBadge from "./fields/EffortBadge.vue";
+import DueLabel from "./fields/DueLabel.vue";
 import {
   LIST_TYPES,
   OKR_SYSTEM_PROMPT,
@@ -228,7 +236,9 @@ import {
 } from "./okrRecommend";
 
 const { t } = useI18n();
-const router = useRouter();
+
+/** 由父组件（home）传入的联动项目 id（小写，如 "yiai"）；null/空 = 展示全部。 */
+const props = defineProps<{ project?: string | null }>();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -271,20 +281,24 @@ const allRows = computed<TableRow[]>(() => {
   return [...tasks, ...actionItems.value].sort((a, b) => b.score - a.score);
 });
 
-function categoryKey(row: TableRow): OkrListType {
-  return row.listType;
-}
-
 // ── 分类筛选 + 搜索 + 日期 ──────────────────────────
 const categoryFilter = ref<"all" | OkrListType>("all");
 const searchKeyword = ref("");
 const dueDateFilter = ref("");
 
+/** 任务 → 项目 id（小写）：优先 goalId 关联目标的 project，回退到角色首项目。 */
+function projectOfRow(row: TableRow): string {
+  const goal = row.goalId ? allGoalsMap[row.goalId] : undefined;
+  const p = goal?.project || rolesData[row.role]?.projects?.[0] || "";
+  return p.toLowerCase();
+}
+
 const filteredItems = computed(() => {
   let result =
     categoryFilter.value === "all"
       ? allRows.value
-      : allRows.value.filter(i => categoryKey(i) === categoryFilter.value);
+      : allRows.value.filter(i => i.listType === categoryFilter.value);
+  if (props.project) result = result.filter(i => projectOfRow(i) === props.project);
   const date = dueDateFilter.value;
   if (date) result = result.filter(i => i.dueDate === date);
   const kw = searchKeyword.value.trim().toLowerCase();
@@ -311,44 +325,11 @@ const stats = computed(() => {
   };
 });
 
-const CATEGORY_TAG: Record<OkrListType, "primary" | "success" | "danger" | "warning"> = {
-  daily: "primary",
-  weekly: "success",
-  risk: "danger",
-  sprint: "warning"
-};
-
-function listTypeMeta(key: OkrListType) {
-  return LIST_TYPES.find(l => l.key === key)!;
-}
-
-function categoryIcon(key: OkrListType): string {
-  return listTypeMeta(key).icon;
-}
-
-function categoryLabel(key: OkrListType): string {
-  return t(`home.aiRecommend.lists.${key}`);
-}
-
-function categoryTagType(key: OkrListType): "primary" | "success" | "danger" | "warning" {
-  return CATEGORY_TAG[key];
-}
-
-function priorityType(p: OkrTaskItem["priority"]): "danger" | "warning" | "primary" | "info" {
-  return p === "P0" ? "danger" : p === "P1" ? "warning" : p === "P2" ? "primary" : "info";
-}
-
 function statusTagType(status: string): "success" | "danger" | "warning" | "info" {
   if (status === "Done") return "success";
   if (status === "At Risk") return "danger";
   if (status === "In Progress") return "warning";
   return "info";
-}
-
-function isOverdue(dueDate: string): boolean {
-  if (!dueDate) return false;
-  const d = dayjs(dueDate);
-  return d.isValid() && d.isBefore(dayjs().startOf("day"));
 }
 
 function levelLabel(l: OkrLevel): string {
@@ -359,35 +340,13 @@ function scoreTagType(score: number): "danger" | "warning" | "primary" | "info" 
   return score >= 60 ? "danger" : score >= 35 ? "warning" : score >= 15 ? "primary" : "info";
 }
 
-/** 技能 id → 展示标题（取 skills/constants.ts 的 title，未知则原样显示 id）。 */
-function skillLabel(skillId: string): string {
-  return skills.find(s => s.id === skillId)?.title ?? skillId;
-}
-
-/** MCP 服务器 → 标签色：github 蓝、yiai 绿、无需则灰。 */
-function mcpTagType(mcp: string): "primary" | "success" | "info" {
-  return mcp === "github" ? "primary" : mcp === "yiai" ? "success" : "info";
-}
-
-function mcpLabel(mcp: string): string {
-  return mcp || "—";
-}
-
-function goRole(roleId: string) {
-  if (roleId) router.push(`/executiver/okr/${roleId}`);
-}
-
-function goGoal(role: string, goalId: string) {
-  if (goalId) router.push(`/executiver/okr/${role}?goal=${goalId}`);
-}
-
 function openPreview(row: TableRow) {
   if (row.filePath) previewDlg.value?.open(row.filePath);
 }
 
 // ── 知识库持久化 ─────────────────────────────
-// 推荐任务按各自 dueDate 归档到 YiKnowledge/okr/YYYY-MM-DD/task-<listType>-<NN>-<slug>.md，
-// 每个任务以扁平 frontmatter 携带自身指标数据（metric* 前缀）。
+// 推荐任务按各自 dueDate 归档到 YiKnowledge/okr/YYYY-MM/task-<listType>-<DD>-<NN>-<slug>.md
+// （目录只到「年-月」，具体「日」放文件名前缀），每个任务以扁平 frontmatter 携带指标数据。
 
 const KB_DIR = "okr";
 
@@ -406,13 +365,16 @@ function slugifyTitle(title: string): string {
     .replace(/-+$/g, "");
 }
 
-function taskFileName(listType: OkrListType, index: number, dir: string, slug: string): string {
-  return `${KB_DIR}/${dir}/task-${listType}-${pad(index + 1)}-${slug}.md`;
+/** 目录用「年-月」（date 取 YYYY-MM），具体「日」（DD）放进文件名前缀。 */
+function taskFileName(listType: OkrListType, index: number, date: string, slug: string): string {
+  const dir = date.slice(0, 7);
+  const day = date.slice(8, 10);
+  return `${KB_DIR}/${dir}/task-${listType}-${day}-${pad(index + 1)}-${slug}.md`;
 }
 
-/** 从文件名推导稳定 id（task-daily-03-<slug>.md → daily-03）。 */
+/** 从文件名推导稳定 id（task-daily-15-03-<slug>.md → daily-03，日仅作归档分组不参与 id）。 */
 function taskIdFromFileName(name: string): string {
-  const m = name.match(/^task-(daily|weekly|risk|sprint)-(\d{2})(?:-.*)?\.md$/);
+  const m = name.match(/^task-(daily|weekly|risk|sprint)-\d{2}-(\d{2})(?:-.*)?\.md$/);
   return m ? `${m[1]}-${m[2]}` : name.replace(/\.md$/, "");
 }
 
@@ -637,23 +599,7 @@ onMounted(loadFromKnowledge);
 // ── Table cells ────────────────────────────────
 .okr-rec__cell-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .okr-rec__cell-title--link { cursor: pointer; &:hover { color: var(--el-color-primary); } }
-.okr-rec__cell-role { font-size: 12px; cursor: pointer; transition: color 0.15s; &:hover { color: var(--el-color-primary); } }
-.okr-rec__cell-goal { font-family: monospace; font-size: 11px; color: var(--el-color-primary); cursor: pointer; &:hover { text-decoration: underline; } }
 .okr-rec__cell-none { color: var(--el-text-color-placeholder); }
-.okr-rec__cell-effort {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  &.is-S { color: var(--el-color-success); background: var(--el-color-success-light-9); }
-  &.is-M { color: var(--el-color-primary); background: var(--el-color-primary-light-9); }
-  &.is-L { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
-}
-.okr-rec__cell-due-overdue { color: var(--el-color-danger); font-weight: 700; }
 .okr-rec__subtask { margin-left: 6px; font-size: 11px; color: var(--el-text-color-secondary); }
 
 // ── Metric（任务自身指标）────────────────────
@@ -741,8 +687,6 @@ onMounted(loadFromKnowledge);
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-.okr-rec__list-role { cursor: pointer; transition: color 0.15s; &:hover { color: var(--el-color-primary); } }
-.okr-rec__list-goal { font-family: monospace; font-size: 11px; color: var(--el-color-primary); cursor: pointer; &:hover { text-decoration: underline; } }
 .okr-rec__list-due { font-size: 12px; }
 .okr-rec__list-score { flex-shrink: 0; }
 

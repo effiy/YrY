@@ -238,6 +238,14 @@ for (const roleMetrics of Object.values(metricsData)) {
   }
 }
 
+// Flat map of all goals by ID for cross-role lookup (goalId → 所属项目等)
+export const allGoalsMap: Record<string, GoalItem> = {};
+for (const roleGoals of Object.values(goalsData)) {
+  for (const g of roleGoals) {
+    allGoalsMap[g.id] = g;
+  }
+}
+
 // Goal → Metric mapping (linked management: one Goal contains multiple Metrics)
 export const goalMetricMap: Record<string, string[]> = {
   "exec-001": ["exec-m01", "exec-m02", "exec-m06"],
