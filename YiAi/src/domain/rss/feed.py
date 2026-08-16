@@ -7,7 +7,7 @@ Storage strategy (refactor 2026-07-30):
     body is NOT stored in MongoDB.
   - Article body is persisted as a markdown file under the YiKnowledge
     knowledge base, auto-classified into a role subdir (e.g.
-    ``ai-engineer/methodology`` / ``executive/industry``), with YAML
+    ``aier/methodology`` / ``executiver/industry``), with YAML
     frontmatter carrying the same metadata for self-describing files.
   - Re-parsing an existing feed is idempotent: file already on disk → skip
     the write; metadata is upserted either way.
@@ -38,35 +38,35 @@ RSS_CHUNK_SIZE = 8192  # bytes per chunk when streaming RSS feed
 
 # ── Auto-classification rules ──
 # Ordered (first match wins). Keywords are matched case-insensitively against
-# title + description. ``executive/industry`` is the fallback when nothing else
+# title + description. ``executiver/industry`` is the fallback when nothing else
 # matches, so RSS content always lands somewhere in the knowledge tree.
 #
-# Updated 2026-08-05: YiKnowledge migrated from legacy category dirs
-# (industry/tech/resources/methodology/lessons) to 20 bare-role dirs.
-# Each rule now routes to an existing subdir under the appropriate role:
-#   ai-engineer/methodology     — AI/LLM/RAG/prompt/agent news
-#   ai-engineer/foundations     — ML/DL/training/inference fundamentals
-#   data-engineer/patterns      — data/database/vector-db news
-#   devops/processes            — cloud/k8s/docker/infra news
-#   executive/industry          — competitor/market/trend/report/whitepaper
-#   product-manager/frameworks  — PM method/framework content
-#   technical-writer/patterns   — templates
-#   engineer/lessons            — failures/wins/best-practices
+# Updated 2026-08-16: YiKnowledge now uses 7 bare-role dirs
+# (producter/leader/engineer/srer/executiver/aier/curator). Each rule routes to
+# an existing subdir under the appropriate role:
+#   aier/methodology            — AI/LLM/RAG/prompt/agent news
+#   aier/foundations            — ML/DL/training/inference fundamentals
+#   engineer/ship               — data/database/vector-db news
+#   srer/release                — cloud/k8s/docker/infra news
+#   executiver/industry         — competitor/market/trend/report/whitepaper
+#   producter/frameworks        — PM method/framework content
+#   curator/templates           — templates
+#   engineer/learn/lessons/*    — failures/wins/best-practices
 _CLASSIFY_RULES: list[tuple[tuple[str, ...], str]] = [
-    (("ai", "llm", "gpt", "claude", "large model", "transformer", "neural"), "ai-engineer/methodology"),
-    (("ml", "machine learning", "deep learning", "training", "inference"), "ai-engineer/foundations"),
-    (("data", "database", "postgres", "mongo", "vector db"), "data-engineer/patterns"),
-    (("cloud", "k8s", "kubernetes", "docker", "infra", "infrastructure", "devops"), "devops/processes"),
-    (("competitor", "market", "trend"), "executive/industry"),
-    (("use case", "case study", "deployment"), "executive/industry"),
-    (("report", "whitepaper"), "executive/industry"),
-    (("prompt", "rag", "agent"), "ai-engineer/methodology"),
-    (("template"), "technical-writer/patterns"),
-    (("method", "framework", "methodology"), "product-manager/frameworks"),
-    (("fail", "failure", "lesson"), "engineer/lessons"),
-    (("win", "success", "best practice"), "engineer/lessons"),
+    (("ai", "llm", "gpt", "claude", "large model", "transformer", "neural"), "aier/methodology"),
+    (("ml", "machine learning", "deep learning", "training", "inference"), "aier/foundations"),
+    (("data", "database", "postgres", "mongo", "vector db"), "engineer/ship"),
+    (("cloud", "k8s", "kubernetes", "docker", "infra", "infrastructure", "devops"), "srer/release"),
+    (("competitor", "market", "trend"), "executiver/industry"),
+    (("use case", "case study", "deployment"), "executiver/industry"),
+    (("report", "whitepaper"), "executiver/industry"),
+    (("prompt", "rag", "agent"), "aier/methodology"),
+    (("template"), "curator/templates"),
+    (("method", "framework", "methodology"), "producter/frameworks"),
+    (("fail", "failure", "lesson"), "engineer/learn/lessons/failures"),
+    (("win", "success", "best practice"), "engineer/learn/lessons/wins"),
 ]
-_CLASSIFY_FALLBACK = "executive/industry"
+_CLASSIFY_FALLBACK = "executiver/industry"
 
 # Source-name → category override. If a feed's source name contains any of
 # these substrings, the source's configured category wins over the keyword
@@ -128,7 +128,7 @@ def _classify_entry(
          (passed in from ``process_feed_from_url``).
       2. ``_SOURCE_CATEGORY_RULES`` — static keyword map on source name.
       3. ``_CLASSIFY_RULES`` — keyword heuristic on title + description.
-      4. ``_CLASSIFY_FALLBACK`` — ``executive/industry``.
+      4. ``_CLASSIFY_FALLBACK`` — ``executiver/industry``.
     """
     if source_category and "/" in source_category:
         return source_category

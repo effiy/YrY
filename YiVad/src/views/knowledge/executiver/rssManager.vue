@@ -475,29 +475,30 @@ const activeTab = ref("briefing");
 /** Category options grouped by role domain — mirrors YiKnowledge directory structure. */
 const categoryGroups = [
   {
-    label: "Executive",
+    label: "Executiver",
     options: [
-      { label: "Industry · market trends, competitors, reports", value: "executive/industry" },
-      { label: "Strategy · frameworks, compliance, positioning", value: "executive/strategy" },
-      { label: "Roadmap · planning, OKR, budget", value: "executive/roadmap" },
-      { label: "Reading List · curated executive readings", value: "executive/reading-list" }
+      { label: "Industry · market trends, competitors, reports", value: "executiver/industry" },
+      { label: "Strategy · frameworks, compliance, positioning", value: "executiver/strategy" },
+      { label: "Roadmap · planning, OKR, budget", value: "executiver/roadmap" },
+      { label: "Reading List · curated executive readings", value: "executiver/reading-list" }
     ]
   },
   {
     label: "AI Engineer",
     options: [
-      { label: "Methodology", value: "ai-engineer/methodology" },
-      { label: "Foundations", value: "ai-engineer/foundations" }
+      { label: "Methodology", value: "aier/methodology" },
+      { label: "Foundations", value: "aier/foundations" }
     ]
   },
   {
     label: "Other Roles",
     options: [
-      { label: "Data Engineer · patterns", value: "data-engineer/patterns" },
-      { label: "DevOps · processes", value: "devops/processes" },
-      { label: "Product Manager · frameworks", value: "product-manager/frameworks" },
-      { label: "Engineer · lessons", value: "engineer/lessons" },
-      { label: "Technical Writer · patterns", value: "technical-writer/patterns" }
+      { label: "Engineer · ship (data & reliability)", value: "engineer/ship" },
+      { label: "SRE · release", value: "srer/release" },
+      { label: "Product Manager · frameworks", value: "producter/frameworks" },
+      { label: "Engineer · lessons · wins", value: "engineer/learn/lessons/wins" },
+      { label: "Engineer · lessons · failures", value: "engineer/learn/lessons/failures" },
+      { label: "Knowledge Curator · templates", value: "curator/templates" }
     ]
   }
 ];
@@ -864,17 +865,19 @@ const briefingGenerating = ref(false);
 
 /** Category path → friendly label + icon for briefing grouping. */
 const BRIEFING_CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
-  "executive/industry": { label: "行业动态", icon: "🏭" },
-  "executive/strategy": { label: "战略", icon: "🎯" },
-  "executive/roadmap": { label: "路线图", icon: "🗺️" },
-  "executive/reading-list": { label: "阅读清单", icon: "📚" },
-  "ai-engineer/methodology": { label: "AI 方法", icon: "🤖" },
-  "ai-engineer/foundations": { label: "AI 基础", icon: "🧠" },
-  "data-engineer/patterns": { label: "数据工程", icon: "🗄️" },
-  "devops/processes": { label: "DevOps", icon: "☁️" },
-  "product-manager/frameworks": { label: "产品管理", icon: "📦" },
-  "technical-writer/patterns": { label: "技术写作", icon: "✍️" },
-  "engineer/lessons": { label: "工程经验", icon: "🔧" }
+  "executiver/industry": { label: "行业动态", icon: "🏭" },
+  "executiver/strategy": { label: "战略", icon: "🎯" },
+  "executiver/roadmap": { label: "路线图", icon: "🗺️" },
+  "executiver/reading-list": { label: "阅读清单", icon: "📚" },
+  "aier/methodology": { label: "AI 方法", icon: "🤖" },
+  "aier/foundations": { label: "AI 基础", icon: "🧠" },
+  "engineer/ship": { label: "工程交付", icon: "🗄️" },
+  "srer/release": { label: "发布运维", icon: "☁️" },
+  "producter/frameworks": { label: "产品管理", icon: "📦" },
+  "curator/templates": { label: "知识模板", icon: "✍️" },
+  "engineer/learn/lessons": { label: "工程经验", icon: "🔧" },
+  "engineer/learn/lessons/wins": { label: "经验 · 胜利", icon: "✅" },
+  "engineer/learn/lessons/failures": { label: "经验 · 失败", icon: "⚠️" }
 };
 
 const briefingDateLabel = computed(() =>

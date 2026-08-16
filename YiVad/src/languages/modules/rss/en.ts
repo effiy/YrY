@@ -57,7 +57,7 @@ export default {
       cancel: "Cancel",
       urlPlaceholder: "https://example.com/feed.xml",
       namePlaceholder: "Optional display name",
-      categoryPlaceholder: "e.g. ai-engineer/methodology (optional override)",
+      categoryPlaceholder: "e.g. aier/methodology (optional override)",
       tagsPlaceholder: "comma-separated",
       urlRequired: "URL is required",
       testFetch: "Test",

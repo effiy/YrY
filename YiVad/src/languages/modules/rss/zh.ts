@@ -57,7 +57,7 @@ export default {
       cancel: "取消",
       urlPlaceholder: "https://example.com/feed.xml",
       namePlaceholder: "可选显示名",
-      categoryPlaceholder: "例如 ai-engineer/methodology（可选覆盖）",
+      categoryPlaceholder: "例如 aier/methodology（可选覆盖）",
       tagsPlaceholder: "逗号分隔",
       urlRequired: "URL 不能为空",
       testFetch: "测试",

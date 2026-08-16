@@ -38,9 +38,9 @@ export interface RssItemDocument {
   source_url: string;
   published?: string;
   published_parsed?: string;
-  /** YiKnowledge role subdir, e.g. "executive/industry" or "ai-engineer/methodology". */
+  /** YiKnowledge role subdir, e.g. "executiver/industry" or "aier/methodology". */
   category_path?: string;
-  /** Relative path under ~/YiKnowledge, e.g. "executive/industry/foo-bar-1a2b3c.md". */
+  /** Relative path under ~/YiKnowledge, e.g. "executiver/industry/foo-bar-1a2b3c.md". */
   file_path?: string;
   author?: string;
   createdTime?: string;
@@ -53,7 +53,7 @@ export interface RssSeedDocument {
   url: string;
   name?: string;
   enabled?: boolean;
-  /** Optional category override, e.g. "ai-engineer/methodology". */
+  /** Optional category override, e.g. "aier/methodology". */
   category?: string;
   interval?: number;
   tags?: string[];
