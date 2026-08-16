@@ -429,11 +429,11 @@ export interface KnowledgeMeta {
 
 /** One markdown entry returned by /knowledge-scan. */
 export interface KnowledgeFileEntry {
-  /** Relative path under the knowledge base dir, e.g. "ai-engineer/methodology/foo.md" */
+  /** Relative path under the knowledge base dir, e.g. "aier/methodology/foo.md" */
   path: string;
   /** File name (last path segment). */
   name: string;
-  /** Top-level YiKnowledge category: one of the 20 role directories (engineer / ai-engineer / ...) or `brd` / `static` / `__root__`. */
+  /** Top-level YiKnowledge category: one of the 7 role directories (producter / leader / engineer / srer / executiver / aier / curator) or `brd` / `static` / `__root__`. */
   category: string;
   meta: KnowledgeMeta;
   size: number;

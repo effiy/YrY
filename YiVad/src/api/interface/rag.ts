@@ -47,7 +47,7 @@ export interface RagQueryRequest {
   question: string;
   /** Number of chunks to retrieve (default 4). */
   top_k?: number;
-  /** Substring filter on file_path metadata (e.g. "engineer/projects/yivad"). */
+  /** Substring filter on file_path metadata (e.g. "engineer/learn/projects/yivad"). */
   scope?: string;
   /** Per-call override of settings.rag_hybrid_retrieval_enabled. */
   hybrid?: boolean;

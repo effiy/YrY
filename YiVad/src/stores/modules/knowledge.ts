@@ -10,15 +10,13 @@ import { scanKnowledge, readKnowledgeFile } from "@/api/modules/knowledgeService
 import type { KnowledgeFileEntry, KnowledgeReadResponse } from "@/api/interface/yiweb";
 
 export const KNOWLEDGE_CATEGORIES = [
-  { key: "engineer", label: "Engineer", desc: "Architecture, quality, security, deployment, data, collaboration, tools, AI/ML, lessons, journeys" },
-  { key: "tech-lead", label: "Tech Lead", desc: "Architecture decisions, ADRs, capacity planning, risk management, roadmap" },
-  { key: "product-manager", label: "Product Manager", desc: "Frameworks, discovery, delivery, strategy, product specs" },
-  { key: "ai-engineer", label: "AI Engineer", desc: "AI/ML foundations, methodology, platform, data pipelines" },
-  { key: "oncall-sre", label: "Oncall SRE", desc: "Incident response, observability, release management" },
-  { key: "executive", label: "Executive", desc: "Strategy, industry intelligence, competitive analysis" },
-  { key: "knowledge-curator", label: "Knowledge Curator", desc: "KB governance, diagrams, templates, archive" },
-  { key: "new-hire", label: "New Hire", desc: "Onboarding, project handoffs, role ramp-up" },
-  { key: "skill-author", label: "Skill Author", desc: "Claude Code skill design, yry-* family, lifecycle conventions" }
+  { key: "producter", label: "Product Manager", desc: "Requirements — frameworks, discovery, delivery, strategy, PRDs" },
+  { key: "leader", label: "Tech Lead", desc: "Decisions — ADRs, architecture, capacity, risk, roadmap" },
+  { key: "engineer", label: "Engineer", desc: "Design + Build — architecture, quality, security, data, lessons" },
+  { key: "srer", label: "Oncall SRE", desc: "Ship + Operate — incident response, observability, release" },
+  { key: "executiver", label: "Executiver", desc: "Business strategy — industry intelligence, roadmap, reading list" },
+  { key: "aier", label: "AI Engineer", desc: "AI enablement — foundations, methodology, platform, ML" },
+  { key: "curator", label: "Knowledge Curator", desc: "Knowledge governance — diagrams, templates, archive" }
 ] as const;
 
 export type KnowledgeCategoryKey = (typeof KNOWLEDGE_CATEGORIES)[number]["key"];

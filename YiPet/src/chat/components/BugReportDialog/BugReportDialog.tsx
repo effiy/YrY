@@ -1,7 +1,7 @@
 /**
  * YiPet Chat — BugReportDialog
  * Cross-project bug collector — writes metadata to MongoDB `bugs` and the
- * long-form body to YiKnowledge/lessons/failures/bugs/<key>.md.
+ * long-form body to YiKnowledge/engineer/learn/lessons/bugs/<key>.md.
  */
 import { BugOutlined, CloseOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal, Select, Spin } from 'antd';

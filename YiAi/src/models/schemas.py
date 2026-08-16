@@ -153,14 +153,14 @@ class FolderRenameRequest(BaseModel):
 # --- Knowledge Base Schemas ---
 class KnowledgeScanRequest(BaseModel):
     """Scan the ~/YiKnowledge markdown tree for a sidebar view."""
-    category: Optional[str] = Field(default=None, description="Limit to one top-level role directory (engineer/ai-engineer/designer/...). Empty = all.")
+    category: Optional[str] = Field(default=None, description="Limit to one top-level role directory (producter/leader/engineer/...). Empty = all.")
 
 class KnowledgeReadRequest(BaseModel):
     """Read a single knowledge markdown file with parsed frontmatter."""
     target_file: str = Field(..., description="Relative path under the knowledge base dir")
 
 class KnowledgeStoriesRequest(BaseModel):
-    """List story.md entries under engineer/projects/{project}/."""
+    """List story.md entries under engineer/learn/projects/{project}/."""
     project: Optional[str] = Field(default=None, description="Limit to one project (YiAi/YiPet/YiVad/...). Empty = all.")
 
 class KnowledgeStoryReadRequest(BaseModel):
@@ -170,7 +170,7 @@ class KnowledgeStoryReadRequest(BaseModel):
 
 class KnowledgeFilesRequest(BaseModel):
     """Read metadata from the DB mirror (no disk scan)."""
-    category: Optional[str] = Field(default=None, description="Filter by top-level role directory (engineer/ai-engineer/.../brd/static/__root__).")
+    category: Optional[str] = Field(default=None, description="Filter by top-level role directory (producter/leader/engineer/.../brd/static/__root__).")
 
 class KnowledgeWriteRequest(BaseModel):
     """Write a markdown file with YAML frontmatter to the knowledge base."""
@@ -197,7 +197,7 @@ class RagQueryRequest(BaseModel):
     """One-shot retrieval over the YiKnowledge VectorStoreIndex."""
     question: str = Field(..., description="Query string")
     top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
-    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'engineer/projects/yivad/')")
+    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'engineer/learn/projects/yivad/')")
     hybrid: Optional[bool] = Field(default=None, description="Override settings.rag_hybrid_retrieval_enabled (vector + BM25 fusion)")
     rerank: Optional[bool] = Field(default=None, description="Override settings.rag_rerank_enabled (LLMRerank postprocessor)")
     citations: Optional[bool] = Field(default=None, description="Override settings.rag_inline_citations_enabled ([Source N] prefix)")

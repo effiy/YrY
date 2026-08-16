@@ -4,7 +4,7 @@
  * Mirrors YiVad's src/api/modules/bug.ts. The bug metadata goes to MongoDB
  * `bugs` collection via the data_service RPC; the long-form body (description
  * / steps / expected / actual / cause / solution) goes to a markdown file
- * under ~/YiKnowledge/lessons/failures/bugs/<key>.md via the knowledge_service
+ * under ~/YiKnowledge/engineer/learn/lessons/bugs/<key>.md via the knowledge_service
  * `write_entry_markdown` RPC.
  *
  * Split rationale: the DB doc stays lean for cheap queries; the long-form
@@ -22,7 +22,7 @@ import type {
 } from '../types';
 
 const CNAME = 'bugs';
-const CONTENT_CATEGORY = 'lessons/failures/bugs';
+const CONTENT_CATEGORY = 'engineer/learn/lessons/bugs';
 
 const KNOWLEDGE_MODULE = 'services.knowledge.knowledge_service';
 const DATA_MODULE = 'services.database.data_service';

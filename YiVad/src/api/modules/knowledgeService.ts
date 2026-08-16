@@ -48,7 +48,7 @@ export function readKnowledgeFile(targetFile: string): Promise<KnowledgeReadResp
   return postJson<KnowledgeReadResponse>("/knowledge-read", { target_file: targetFile });
 }
 
-/** List story.md entries under engineer/projects/{project}/ — pass project to filter. */
+/** List story.md entries under engineer/learn/projects/{project}/ — pass project to filter. */
 export function listKnowledgeStories(project?: string): Promise<KnowledgeStoriesResponse> {
   return postJson<KnowledgeStoriesResponse>("/knowledge-stories", { project });
 }

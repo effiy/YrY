@@ -133,7 +133,7 @@ def _resolve_project_path(project: str, target_file: str) -> tuple[str, str]:
        ``<projects_root>/<project>/``.
     2. ``YiAi/src/foo.vue`` (project-prefixed) → leading ``<project>/`` is
        stripped, then resolved under ``<projects_root>/<project>/``.
-    3. ``YiKnowledge/engineer/projects/YiAi/.../scene.md`` (knowledge-prefixed) →
+    3. ``YiKnowledge/engineer/learn/projects/YiAi/.../scene.md`` (knowledge-prefixed) →
        resolved under ``<knowledge_base_dir>`` (YiKnowledge lives as a
        sibling of the projects, not inside any one project).
 

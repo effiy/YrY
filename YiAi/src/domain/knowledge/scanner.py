@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 # Well-known YiKnowledge categories — surfaced first in the UI for stable ordering.
 # Updated 2026-08-05: YiKnowledge migrated from 9 legacy category dirs
 # (industry/lessons/methodology/people/product/projects/resources/tech/work)
-# to 20 bare-role dirs. Additional top-level directories discovered on disk are
-# appended alphabetically after these.
+# to 7 canonical role dirs. Additional top-level directories discovered on disk
+# are appended alphabetically after these.
 _WELL_KNOWN_CATEGORIES = (
     "producter",
     "leader",
@@ -294,19 +294,19 @@ def _resolve_project_dir(projects_root: str, project: str) -> str | None:
 
 
 def list_stories(project: str | None = None) -> dict:
-    """List story.md files under ``engineer/projects/{project}/stories/``.
+    """List story.md files under ``engineer/learn/projects/{project}/stories/``.
 
-    The directory layout is semantic (per YiKnowledge/engineer/projects/README.md):
-    ``engineer/projects/{project}/stories/{story-name}/story.md``. Each story.md's
+    The directory layout is semantic (per YiKnowledge/engineer/learn/projects/README.md):
+    ``engineer/learn/projects/{project}/stories/{story-name}/story.md``. Each story.md's
     frontmatter carries the database ``key`` for cross-referencing with the
     stories collection.
 
-    Updated 2026-08-05: ``projects/`` migrated under the ``engineer/`` role
-    directory as part of the 14-category → 20-role-dir restructure. Legacy
+    Updated 2026-08-05: ``projects/`` migrated under the ``engineer/learn/``
+    role directory as part of the category-dir restructure. Legacy
     ``projects/`` root no longer exists.
     """
     base = _base_dir()
-    projects_root = os.path.join(base, "engineer", "projects")
+    projects_root = os.path.join(base, "engineer", "learn", "projects")
     if not os.path.isdir(projects_root):
         return {"stories": []}
     if project:
@@ -344,9 +344,9 @@ def list_stories(project: str | None = None) -> dict:
 def read_story_markdown(project: str, story_name: str) -> dict:
     """Read a story's story.md, returning parsed frontmatter + body."""
     base = _base_dir()
-    projects_root = os.path.join(base, "engineer", "projects")
+    projects_root = os.path.join(base, "engineer", "learn", "projects")
     resolved = _resolve_project_dir(projects_root, project)
     if not resolved:
         raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Project not found: {project}")
-    rel = f"engineer/projects/{os.path.basename(resolved)}/stories/{story_name}/story.md"
+    rel = f"engineer/learn/projects/{os.path.basename(resolved)}/stories/{story_name}/story.md"
     return read_knowledge_file(rel)

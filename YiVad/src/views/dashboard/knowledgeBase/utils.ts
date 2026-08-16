@@ -46,12 +46,10 @@ export function normalizeMetaValue(val: any): string {
 // ── Color Maps ──
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  engineer: "#5470c6", "ai-engineer": "#91cc75", "product-manager": "#fac858",
-  executive: "#ee6666", "tech-lead": "#73c0de", "knowledge-curator": "#3ba272",
-  "skill-author": "#fc8452", "new-hire": "#9a60b4", "oncall-sre": "#ea7ccc",
-  brd: "#5ab1ef", static: "#ff99cc",
-  "technical-writer": "#67c23a", "data-engineer": "#e6a23c",
-  __root__: "#909399", devops: "#f56c6c",
+  producter: "#fac858", leader: "#73c0de", engineer: "#5470c6",
+  srer: "#ea7ccc", executiver: "#ee6666", aier: "#91cc75",
+  curator: "#3ba272",
+  brd: "#5ab1ef", static: "#ff99cc", __root__: "#909399",
 };
 
 export const STATUS_COLORS: Record<string, string> = {

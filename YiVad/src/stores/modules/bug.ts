@@ -1,7 +1,7 @@
 /**
  * Bug management — Pinia store. Metadata lives in MongoDB (bugs collection);
  * long-form content (description / steps / expected / actual) lives in a
- * markdown file under ~/YiKnowledge/engineer/lessons/failures/bugs/<key>.md.
+ * markdown file under ~/YiKnowledge/engineer/learn/lessons/bugs/<key>.md.
  */
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";

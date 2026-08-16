@@ -2469,7 +2469,7 @@ export class ChatController {
 
   /** One-click: push the page-aware context chip's prompt into the input
    *  template. For bug-detail chips, also try to scope RAG to the bug's
-   *  content file (`lessons/failures/bugs/<key>.md`) so the answer draws
+   *  content file (`engineer/learn/lessons/bugs/<key>.md`) so the answer draws
    *  on the bug's long-form markdown body. */
   applyPageContextChip = () => {
     const chip = this.pageContextChip;
@@ -2477,7 +2477,7 @@ export class ChatController {
     if (!this.state.visible) this.open();
     this.setInputTemplate(chip.prompt);
     if (chip.bugKey) {
-      const contentPath = `lessons/failures/bugs/${chip.bugKey}.md`;
+      const contentPath = `engineer/learn/lessons/bugs/${chip.bugKey}.md`;
       this.setRagScopeFromNode(contentPath, true);
       if (!this.state.knowledgeGrounded) this.toggleKnowledgeGrounded();
     }

@@ -4,7 +4,7 @@ Wraps ``domain.knowledge`` scanning + reading + watcher behind six flat POST
 routes mirroring the file routes' style:
   - /knowledge-scan          → full or per-category tree with frontmatter (disk)
   - /knowledge-read          → single file body + parsed frontmatter
-  - /knowledge-stories       → list story.md entries under engineer/projects/
+  - /knowledge-stories       → list story.md entries under engineer/learn/projects/
   - /knowledge-story-read    → read a specific story's story.md
   - /knowledge-sync          → trigger a full disk → DB reconciliation
   - /knowledge-files         → read metadata from DB mirror (no disk scan)

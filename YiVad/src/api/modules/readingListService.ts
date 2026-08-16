@@ -2,7 +2,7 @@
  * Reading List service — wraps YiAi's generic data service.
  *
  * A single MongoDB collection `reading_list` stores curated reading items
- * (articles, books, papers) for the executive role — see
+ * (articles, books, papers) for the executiver role — see
  * YiKnowledge/executiver/reading-list/README.md. Each item tracks title,
  * type, link, author, reading status, priority and notes.
  */

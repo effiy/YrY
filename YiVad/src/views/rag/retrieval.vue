@@ -28,7 +28,7 @@
             <span class="rag-param-label">Scope</span>
             <el-input
               v-model="scope"
-              placeholder="e.g. engineer/projects/yivad"
+              placeholder="e.g. engineer/learn/projects/yivad"
               size="small"
               clearable
               class="rag-scope-input"

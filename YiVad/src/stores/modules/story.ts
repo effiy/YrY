@@ -81,7 +81,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
   const viewMode = ref<"cards" | "list">("cards");
 
   // ── Knowledge bridge ──
-  // Story's story.md content (from YiKnowledge/engineer/projects/{project}/{name}/story.md).
+  // Story's story.md content (from YiKnowledge/engineer/learn/projects/{project}/{name}/story.md).
   // Null when not yet loaded or no story.md exists for this story.
   const storyMarkdown = ref<KnowledgeReadResponse | null>(null);
   const storyMarkdownLoading = ref(false);

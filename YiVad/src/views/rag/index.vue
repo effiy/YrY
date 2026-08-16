@@ -98,14 +98,14 @@
           <span><el-icon><Document /></el-icon> RAG Methodology &amp; Reference</span>
         </template>
         <div class="doc-links">
-          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('ai-engineer/methodology/rag-design-patterns.md')">
+          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('aier/methodology/rag-design-patterns.md')">
             <el-icon><Reading /></el-icon>
             <div>
               <strong>RAG Design Patterns</strong>
               <p>Chunking, hybrid search, reranking, and evaluation methodology.</p>
             </div>
           </a>
-          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('ai-engineer/methodology/prompts/rag-system.md')">
+          <a class="doc-link" href="javascript:void(0)" @click.prevent="knowledgeDialogRef?.open('aier/methodology/prompts/rag-system.md')">
             <el-icon><Notebook /></el-icon>
             <div>
               <strong>RAG System Prompt Engineering</strong>

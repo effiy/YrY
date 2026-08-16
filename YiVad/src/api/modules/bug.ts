@@ -1,31 +1,36 @@
 /**
  * Bug management — metadata in MongoDB (bugs collection), long-form body in
- * a markdown file under ~/YiKnowledge/engineer/lessons/failures/bugs/<key>.md.
+ * a markdown file under ~/YiKnowledge/engineer/learn/lessons/bugs/<key>.md.
  *
  * Split mirrors the RSS pattern (see YiAi's domain/rss/feed.py + domain/
  * knowledge/writer.py): the DB doc stays lean for cheap queries, while the
  * description / steps / expected / actual live on disk as structured markdown
  * so they're searchable by YiKnowledge's scanner and editable as files.
  *
- * Legacy bugs written pre-2026-08-05 have contentPath = "lessons/failures/bugs/..."
- * (no engineer/ prefix); normalizeBugContentPath() transparently rewrites those
- * on read/write/delete so no one-time data migration is needed.
+ * Legacy bugs written before the 2026-08 restructure have contentPath under
+ * "lessons/failures/bugs/..." (KB root) or "engineer/lessons/failures/bugs/...".
+ * normalizeBugContentPath() transparently rewrites those to the current
+ * "engineer/learn/lessons/bugs/..." on read/write/delete, so no one-time data
+ * migration is needed.
  */
 import { callService, queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import { readKnowledgeFile } from "./knowledgeService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
 const CNAME = "bugs";
-const CONTENT_CATEGORY = "engineer/lessons/failures/bugs";
+const CONTENT_CATEGORY = "engineer/learn/lessons/bugs";
 
-// Pre-2026-08-05 bugs were written under lessons/failures/bugs/ at the
-// YiKnowledge root. After the 14-category → 20-role-dir migration, that
-// path moved under engineer/lessons/failures/bugs/. Normalize any legacy
-// contentPath stored in MongoDB so reads/writes/deletes all hit the new
-// location without a one-time data migration.
+// Legacy bugs were written under lessons/failures/bugs/ at the YiKnowledge
+// root, then under engineer/lessons/failures/bugs/ after the first migration.
+// The current layout makes bugs a sibling of wins/failures/gotchas under
+// engineer/learn/lessons/bugs/. Normalize any legacy contentPath stored in
+// MongoDB so reads/writes/deletes all hit the current location without a
+// one-time data migration.
 function normalizeBugContentPath(p: string): string {
   if (!p) return p;
-  if (p.startsWith("lessons/")) return `engineer/${p}`;
+  const marker = "lessons/failures/bugs/";
+  const i = p.indexOf(marker);
+  if (i >= 0) return `engineer/learn/lessons/bugs/${p.slice(i + marker.length)}`;
   return p;
 }
 
@@ -81,7 +86,7 @@ export interface BugDocument {
   dueDate: number | null;
   /** Loaded from markdown content at display time. */
   description?: string;
-  /** Relative path under ~/YiKnowledge, e.g. "engineer/lessons/failures/bugs/bug_x.md". */
+  /** Relative path under ~/YiKnowledge, e.g. "engineer/learn/lessons/bugs/bug_x.md". */
   contentPath: string;
   // Lifecycle timestamps
   createdAt: number;

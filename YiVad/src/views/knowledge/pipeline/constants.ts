@@ -105,9 +105,9 @@ export const stages: Stage[] = [
       { label: "Quality & Security", file: "quality-security/" },
       { label: "Data", file: "data/" },
       { label: "Reliability", file: "reliability/" },
-      { label: "Lessons", file: "lessons/" },
+      { label: "Lessons", file: "learn/lessons/" },
       { label: "Process", file: "process/" },
-      { label: "Projects", file: "projects/" }
+      { label: "Projects", file: "learn/projects/" }
     ],
     boundary:
       "engineer is the IMPLEMENTATION layer — it does not substitute for leader's decisions. If an architecture-level issue surfaces during implementation → go back to leader/ and write an ADR; don't decide on the side inside engineer/."
@@ -115,7 +115,7 @@ export const stages: Stage[] = [
   {
     id: "quality-release",
     name: "Ship + Operate",
-    role: "srer/ + engineer/lessons/",
+    role: "srer/ + engineer/learn/lessons/",
     category: "srer",
     inputItems: [
       { id: "working-software", label: "Working software", keywords: ["implementation", "deployable", "artifact"], description: "Implementation artifacts from engineer/ — code that has passed design and build quality gates" }
@@ -133,10 +133,10 @@ export const stages: Stage[] = [
       { label: "Incident Response", file: "incident-response/" },
       { label: "Observability", file: "observability/" },
       { label: "Security Audit", file: "quality-security/" },
-      { label: "Lessons: Wins", file: "lessons/wins/" },
-      { label: "Lessons: Failures", file: "lessons/failures/" },
-      { label: "Lessons: Gotchas", file: "lessons/gotchas/" },
-      { label: "Lessons: Bugs", file: "lessons/bugs/" }
+      { label: "Lessons: Wins", file: "engineer/learn/lessons/wins/" },
+      { label: "Lessons: Failures", file: "engineer/learn/lessons/failures/" },
+      { label: "Lessons: Gotchas", file: "engineer/learn/lessons/gotchas/" },
+      { label: "Lessons: Bugs", file: "engineer/learn/lessons/bugs/" }
     ],
     boundary:
       "srer/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation."

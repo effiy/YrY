@@ -92,30 +92,17 @@ export function stripSourcePrefix(text: string): string {
 export function categoryTagType(cat: string | undefined): "success" | "warning" | "info" | "primary" | "danger" {
   if (!cat) return "info";
   const top = cat.split("/")[0];
-  // Top-level = one of the 20 role directories (post-2026-08-05 migration)
-  // or `brd` / `static` / `__root__`. Assign distinct tag colors per role
-  // family so the source list is scannable at a glance.
+  // Top-level = one of the 7 role directories (producter/leader/engineer/
+  // srer/executiver/aier/curator) or `brd` / `static` / `__root__`. Assign
+  // distinct tag colors per role so the source list is scannable at a glance.
   const map: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = {
+    producter: "danger",
+    leader: "primary",
     engineer: "primary",
-    "ai-engineer": "success",
-    designer: "warning",
-    "product-manager": "danger",
-    "tech-lead": "primary",
-    "data-engineer": "success",
-    devops: "info",
-    "security-engineer": "danger",
-    "qa-engineer": "warning",
-    "code-reviewer": "info",
-    "release-manager": "primary",
-    "api-designer": "success",
-    "performance-engineer": "warning",
-    "accessibility-engineer": "info",
-    "technical-writer": "primary",
-    "knowledge-curator": "success",
-    "skill-author": "warning",
-    executive: "danger",
-    "new-hire": "info",
-    "oncall-sre": "primary",
+    srer: "primary",
+    executiver: "danger",
+    aier: "success",
+    curator: "success",
     brd: "info",
   };
   return map[top] || "info";
