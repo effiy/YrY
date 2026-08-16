@@ -4,7 +4,6 @@
     <div class="okr-rec__header">
       <div class="okr-rec__header-left">
         <h2 class="okr-rec__title">{{ t("home.aiRecommend.title") }}</h2>
-        <span class="okr-rec__subtitle">{{ t("home.aiRecommend.subtitle") }}</span>
       </div>
       <div class="okr-rec__header-right">
         <el-select v-model="roleScope" size="small" class="okr-rec__scope">
@@ -345,8 +344,8 @@ function openPreview(row: TableRow) {
 }
 
 // ── 知识库持久化 ─────────────────────────────
-// 推荐任务按各自 dueDate 归档到 YiKnowledge/okr/YYYY-MM/task-<listType>-<DD>-<NN>-<slug>.md
-// （目录只到「年-月」，具体「日」放文件名前缀），每个任务以扁平 frontmatter 携带指标数据。
+// 推荐任务按各自 dueDate 归档到 YiKnowledge/okr/YYYY-Qn/YYYY-MM/task-<listType>-<DD>-<NN>-<slug>.md
+// （目录到「年-季度 / 年-月」，具体「日」放文件名前缀），每个任务以扁平 frontmatter 携带指标数据。
 
 const KB_DIR = "okr";
 
@@ -365,11 +364,16 @@ function slugifyTitle(title: string): string {
     .replace(/-+$/g, "");
 }
 
-/** 目录用「年-月」（date 取 YYYY-MM），具体「日」（DD）放进文件名前缀。 */
+/** `YYYY-MM` → 归档季度目录名 `YYYY-Qn`。 */
+function quarterDir(monthDir: string): string {
+  return `${monthDir.slice(0, 4)}-Q${Math.ceil(Number(monthDir.slice(5, 7)) / 3)}`;
+}
+
+/** 目录用「年-季度 / 年-月」（date 取 YYYY-MM），具体「日」（DD）放进文件名前缀。 */
 function taskFileName(listType: OkrListType, index: number, date: string, slug: string): string {
   const dir = date.slice(0, 7);
   const day = date.slice(8, 10);
-  return `${KB_DIR}/${dir}/task-${listType}-${day}-${pad(index + 1)}-${slug}.md`;
+  return `${KB_DIR}/${quarterDir(dir)}/${dir}/task-${listType}-${day}-${pad(index + 1)}-${slug}.md`;
 }
 
 /** 从文件名推导稳定 id（task-daily-15-03-<slug>.md → daily-03，日仅作归档分组不参与 id）。 */

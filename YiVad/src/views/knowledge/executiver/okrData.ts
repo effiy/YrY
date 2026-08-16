@@ -102,7 +102,7 @@ export const rolesData: Record<string, {
 export const goalsData: Record<string, GoalItem[]> = {
   executiver: [
     { id: "exec-001", icon: "📈", title: "Yi Product Suite Growth", status: "active", description: "Grow the Yi product suite (YiAi + YiVad + YiPet) from internal tools to a self-serve platform.", period: "2026 H1", owner: "CEO", project: "YiAi", keyResults: [{ text: "YiAi serves 3+ business lines with independent tenant isolation", progress: 67 }, { text: "YiVad becomes the single admin console for all internal operations", progress: 80 }, { text: "YiPet reaches 50+ daily active users across departments", progress: 45 }, { text: "YiKnowledge reaches 500+ verified knowledge files with 90% freshness", progress: 82 }] },
-    { id: "exec-002", icon: "🤖", title: "AI-First Transformation", status: "active", description: "Position AI as the primary interface for all internal tools. The BRD agent, RAG system, and aiChat agent mode should handle 70% of routine operational tasks.", period: "2026 Q3-Q4", owner: "CTO", project: "YiAi", keyResults: [{ text: "BRD agent autonomously generates 80% of BRD first drafts", progress: 60 }, { text: "aiChat agent mode completes 70% of CRUD tasks without human intervention", progress: 55 }, { text: "RAG retrieval relevance score > 0.85", progress: 72 }, { text: "Model cost per task reduced by 30%", progress: 40 }] },
+    { id: "exec-002", icon: "🤖", title: "AI-First Transformation", status: "active", description: "Position AI as the primary interface for all internal tools. The BRD agent, RAG system, and aiChat agent mode should handle 70% of routine operational tasks.", period: "2026 Q3-Q4", owner: "CTO", project: "YiAi", keyResults: [{ text: "BRD agent autonomously generates 80% of BRD first drafts", progress: 60 }, { text: "aiChat agent mode completes 70% of CRUD tasks without human intervention", progress: 62 }, { text: "RAG retrieval relevance score > 0.85", progress: 72 }, { text: "Model cost per task reduced by 30%", progress: 40 }] },
     { id: "exec-005", icon: "🔗", title: "Yi Ecosystem Integration", status: "active", description: "Unify YiAi, YiVad, and YiPet into a seamless product ecosystem with shared identity, navigation, and data flow.", period: "2026 Q4", owner: "CEO", project: "YiVad", keyResults: [{ text: "Single sign-on across all 3 products", progress: 0 }, { text: "Unified notification system: alerts surface in YiVad and YiPet", progress: 0 }, { text: "Cross-product data pipeline: YiVad metrics feed YiAi RAG context", progress: 0 }, { text: "Ecosystem health dashboard with cross-product KPIs", progress: 0 }] },
   ],
   producter: [
@@ -115,7 +115,7 @@ export const goalsData: Record<string, GoalItem[]> = {
   ],
   engineer: [
     { id: "eng-001", icon: "🚀", title: "Delivery Velocity", status: "active", description: "Maintain consistent delivery velocity across all three projects. Measure DORA metrics.", period: "2026 Q3", owner: "Engineering Lead", project: "YiAi", keyResults: [{ text: "YiAi: deploy frequency > 3x/week, lead time < 2 days", progress: 70 }, { text: "YiVad: deploy frequency > 2x/week, lead time < 1 day", progress: 85 }, { text: "YiPet: extension release cycle < 2 weeks", progress: 60 }, { text: "Change failure rate < 10%", progress: 80 }] },
-    { id: "eng-005", icon: "🧹", title: "Technical Debt Reduction", status: "active", description: "Actively reduce technical debt. YiVad's 18 pre-existing type errors must be resolved.", period: "2026 Q1", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "YiVad: resolve 18 pre-existing vue-tsc errors to zero", progress: 15 }, { text: "YiPet: npm audit critical/high severity issues to zero", progress: 50 }, { text: "YiAi: remove deprecated API endpoints", progress: 40 }, { text: "Quarterly tech debt review added to sprint planning", progress: 100 }] },
+    { id: "eng-005", icon: "🧹", title: "Technical Debt Reduction", status: "active", description: "Actively reduce technical debt. YiVad's 22 vue-tsc type errors must be resolved.", period: "2026 Q1", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "YiVad: resolve 22 vue-tsc errors to zero", progress: 15 }, { text: "YiPet: npm audit critical/high severity issues to zero", progress: 50 }, { text: "YiAi: remove deprecated API endpoints", progress: 40 }, { text: "Quarterly tech debt review added to sprint planning", progress: 100 }] },
   ],
   srer: [
     { id: "sre-001", icon: "🎯", title: "SLO Compliance", status: "active", description: "Define and monitor Service Level Objectives for YiAi.", period: "2026 Q2", owner: "SRE Lead", project: "YiAi", keyResults: [{ text: "YiAi API availability > 99.5%", progress: 95 }, { text: "P99 latency < 500ms for non-LLM endpoints", progress: 85 }, { text: "P99 latency < 5s for LLM streaming endpoints", progress: 80 }, { text: "Error budget tracking dashboard live", progress: 60 }] },
@@ -123,7 +123,7 @@ export const goalsData: Record<string, GoalItem[]> = {
   ],
   aier: [
     { id: "aier-001", icon: "🔍", title: "RAG Retrieval Quality", status: "active", description: "The RAG system is the foundation of AI-powered knowledge work.", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "Hybrid retrieval relevance score > 0.85", progress: 72 }, { text: "RAG evaluation benchmark: 100+ test queries", progress: 60 }, { text: "Chunking strategy optimized per content type", progress: 45 }, { text: "Inline citation accuracy: > 90%", progress: 78 }] },
-    { id: "aier-002", icon: "🤖", title: "Agent Task Completion", status: "active", description: "The agent loop (Pi-inspired) must reliably complete multi-step tasks.", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "Agent task completion rate > 70% for CRUD operations", progress: 55 }, { text: "Agent stall recovery: model escalation succeeds > 80%", progress: 70 }, { text: "Tool confirmation rate: < 10% false positives", progress: 85 }, { text: "Agent max_turns: 80% of tasks complete within 5 turns", progress: 60 }] },
+    { id: "aier-002", icon: "🤖", title: "Agent Task Completion", status: "active", description: "The agent loop (Pi-inspired) must reliably complete multi-step tasks.", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "Agent task completion rate > 70% for CRUD operations", progress: 62 }, { text: "Agent stall recovery: model escalation succeeds > 80%", progress: 70 }, { text: "Tool confirmation rate: < 10% false positives", progress: 85 }, { text: "Agent max_turns: 80% of tasks complete within 5 turns", progress: 60 }] },
   ],
   curator: [
     { id: "cur-001", icon: "📖", title: "KB Coverage", status: "active", description: "Ensure every project decision, pattern, and lesson is captured in YiKnowledge.", period: "2026 H2", owner: "Curator", project: "YiAi", keyResults: [{ text: "YiKnowledge: 500+ files with complete frontmatter", progress: 82 }, { text: "Coverage gaps identified and tracked", progress: 60 }, { text: "Each project has architecture + functional-modules + dev-standards docs", progress: 100 }, { text: "No orphaned content: every file has a role home", progress: 75 }] },
@@ -166,7 +166,7 @@ export const metricsData: Record<string, MetricItem[]> = {
   ],
   aier: [
     { id: "aier-m01", icon: "🔍", name: "RAG Relevance Score", category: "RAG Quality", framework: "AI Eval", description: "Hybrid retrieval relevance measured against 100+ test queries.", current: 0.78, target: 0.85, baseline: 0.55, unit: "", trend: "up", progress: 72 },
-    { id: "aier-m02", icon: "✅", name: "Agent Task Completion", category: "Agent Reliability", framework: "AI Eval", description: "Percentage of agent tasks that complete successfully.", current: 62, target: 75, baseline: 30, unit: "%", trend: "up", progress: 55 },
+    { id: "aier-m02", icon: "✅", name: "Agent Task Completion", category: "Agent Reliability", framework: "AI Eval", description: "Percentage of agent tasks that complete successfully.", current: 62, target: 75, baseline: 30, unit: "%", trend: "up", progress: 62 },
     { id: "aier-m03", icon: "🔄", name: "Model Fallback Rate", category: "Agent Reliability", framework: "AI Eval", description: "Percentage of agent turns where the primary model stalls.", current: 15, target: 10, baseline: 35, unit: "%", trend: "down", progress: 65 },
     { id: "aier-m04", icon: "📎", name: "Citation Accuracy", category: "RAG Quality", framework: "AI Eval", description: "Percentage of inline citations that point to the correct source.", current: 85, target: 92, baseline: 60, unit: "%", trend: "up", progress: 72 },
   ],
@@ -191,6 +191,22 @@ export const allGoalsMap: Record<string, GoalItem> = {};
 for (const roleGoals of Object.values(goalsData)) {
   for (const g of roleGoals) {
     allGoalsMap[g.id] = g;
+  }
+}
+
+// goalId → 所属角色 id（用于把目标深链回其角色 OKR 页，与任务 owner 角色区分）
+export const goalRoleMap: Record<string, string> = {};
+for (const [roleId, roleGoals] of Object.entries(goalsData)) {
+  for (const g of roleGoals) {
+    goalRoleMap[g.id] = roleId;
+  }
+}
+
+// metricId → 所属角色 id（用于把指标文件归到对应 role 目录）
+export const metricRoleMap: Record<string, string> = {};
+for (const [roleId, roleMetrics] of Object.entries(metricsData)) {
+  for (const m of roleMetrics) {
+    metricRoleMap[m.id] = roleId;
   }
 }
 
@@ -323,7 +339,7 @@ export const roleChecklistMap: Record<string, ChecklistItem[]> = {
 export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
   executiver: {
     status: "On Track", statusType: "success",
-    done: ["Board deck for Q3 review finalized", "YiProduct Suite DAU crossed 38 (target: 50)", "Signed off on Q4 budget allocation", "Business line adoption pipeline: 2 candidates identified"],
+    done: ["Board deck for Q3 review finalized", "YiProduct Suite DAU crossed 38 (target: 50)", "Signed off on Q4 budget allocation", "Business line adoption pipeline: 2 candidates identified", "AI-First: agent confirmation gate + model escalation shipped (YiAi v1.2.0)", "Ecosystem: YiVad cross-page navigation unified (home / OKR / RSS / knowledge)"],
     blockers: ["YiPet adoption lagging — 45% of DAU target at mid-Q3"],
     nextWeek: ["Q3 all-hands presentation delivery", "Review business line adoption pipeline progress", "Quarterly OKR scoring: mid-Q3 checkpoint"],
     decisions: ["Q4 budget: 15% increase for AI infrastructure", "All-hands format: shift to async video + live Q&A", "OKR scoring: adopt mid-quarter checkpoints for all roles"]
@@ -345,9 +361,9 @@ export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
   engineer: {
     status: "On Track", statusType: "success",
     done: ["YiVad deploy frequency: 3x/week (target met)", "Code review turnaround improved to 3.5h (target: 2h)", "12 KB contributions this month (target: 15)", "Rsbuild dev server: HMR consistently < 200ms"],
-    blockers: ["18 pre-existing vue-tsc errors — only 15% resolved"],
+    blockers: ["22 vue-tsc errors — only 15% resolved"],
     nextWeek: ["Tech debt: dedicate Friday to vue-tsc error resolution", "Developer onboarding guide update", "YiPet multi-entry build optimization review"],
-    decisions: ["vue-tsc errors: pair programming approach for remaining 15 errors", "Code review SLA: 4h during business hours, next-day otherwise", "KB contributions: add to sprint definition of done"]
+    decisions: ["vue-tsc errors: pair programming approach for the remaining errors", "Code review SLA: 4h during business hours, next-day otherwise", "KB contributions: add to sprint definition of done"]
   },
   srer: {
     status: "On Track", statusType: "success",

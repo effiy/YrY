@@ -6,7 +6,6 @@ category: Velocity
 framework: DORA
 trend: up
 progress: 60
-title: Eng M01
 ---
 
 # 🚀 Deployment Frequency

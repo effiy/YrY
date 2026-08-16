@@ -286,7 +286,7 @@ import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import {
   rolesData, goalsData, metricsData, goalMetricMap, getGoalMetrics,
-  roleWeeklyDataMap, ROLE_IDS,
+  roleWeeklyDataMap, ROLE_IDS, goalRoleMap, metricRoleMap,
   type GoalItem, type MetricItem
 } from "./okrData";
 
@@ -312,11 +312,21 @@ function onExpandChange(_row: GoalItem, expandedRows: GoalItem[] | boolean) {
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 // ── Goal / Metric → 知识库文件（okr 目录）→ 文件预览弹框 ──
-function goalFilePath(goalId: string): string {
-  return `okr/goals/${goalId}.md`;
+/** 标题 → 文件名可读 slug（与 okr.vue / OkrRecommendPanel.vue 的 slugifyTitle 保持一致）。 */
+function slugifyTitle(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48)
+    .replace(/-+$/g, "");
 }
-function metricFilePath(metricId: string): string {
-  return `okr/metrics/${metricId}.md`;
+function goalFilePath(g: GoalItem): string {
+  return `okr/2026-Q3/goals/${goalRoleMap[g.id]}/${g.id}-${slugifyTitle(g.title)}.md`;
+}
+function metricFilePath(m: MetricItem): string {
+  return `okr/2026-Q3/metrics/${metricRoleMap[m.id]}/${m.id}-${slugifyTitle(m.name)}.md`;
 }
 
 function renderGoalBody(g: GoalItem): string {
@@ -376,12 +386,12 @@ function metricMeta(m: MetricItem): Record<string, unknown> {
 }
 
 async function openGoalFile(g: GoalItem) {
-  const path = goalFilePath(g.id);
+  const path = goalFilePath(g);
   try { await writeKnowledgeFile(path, renderGoalBody(g), goalMeta(g)); } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
   previewDlg.value?.open(path);
 }
 async function openMetricFile(m: MetricItem) {
-  const path = metricFilePath(m.id);
+  const path = metricFilePath(m);
   try { await writeKnowledgeFile(path, renderMetricBody(m), metricMeta(m)); } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
   previewDlg.value?.open(path);
 }
@@ -420,9 +430,14 @@ async function copyWeeklyItem(text: string) {
   ElMessage.success("Copied to clipboard");
 }
 // ── Weekly Report → 知识库文件（okr 目录）→ 文件预览弹框 ──
+/** `YYYY-MM` → 归档季度目录名 `YYYY-Qn`。 */
+function quarterDir(monthDir: string): string {
+  return `${monthDir.slice(0, 4)}-Q${Math.ceil(Number(monthDir.slice(5, 7)) / 3)}`;
+}
 function weeklyFilePath(): string {
   const monday = dayjs(selectedWeek.value).startOf("week").add(1, "day").format("YYYY-MM-DD");
-  return `okr/weekly/${props.roleId}-${monday}.md`;
+  const monthDir = monday.slice(0, 7);
+  return `okr/${quarterDir(monthDir)}/${monthDir}/weekly/${props.roleId}-${monday}.md`;
 }
 
 function renderWeeklyBody(): string {

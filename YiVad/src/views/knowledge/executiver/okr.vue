@@ -100,7 +100,7 @@
         </el-table-column>
         <el-table-column label="Goal" width="280">
           <template #default="{ row }">
-            <GoalCell v-if="row.linkGoal && row.linkRole" :role="row.linkRole" :goal-id="row.linkGoal" />
+            <GoalCell v-if="row.linkGoal" :role="row.goalRole || row.linkRole" :goal-id="row.linkGoal" />
           </template>
         </el-table-column>
         <el-table-column prop="owner" label="Owner" width="140" sortable>
@@ -175,6 +175,7 @@ import { loadBool, saveBool } from "@/utils/storage";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
+import { rolesData, roleWeeklyDataMap, goalRoleMap } from "@/views/knowledge/executiver/okrData";
 import PriorityTag from "@/components/OkrRecommend/fields/PriorityTag.vue";
 import RoleLink from "@/components/OkrRecommend/fields/RoleLink.vue";
 import GoalCell from "@/components/OkrRecommend/fields/GoalCell.vue";
@@ -195,6 +196,8 @@ interface ActionItem {
   roleStatusType: "success" | "warning" | "danger" | "info" | "primary";
   linkRole?: string;
   linkGoal?: string;
+  /** 目标所属角色（跨角色任务时与 linkRole 不同，用于深链回目标所属角色页）。 */
+  goalRole?: string;
   skill?: string;
   agent?: string;
   mcp?: string;
@@ -211,21 +214,17 @@ interface ActionItem {
   subtaskCount: number;
 }
 
-const roleStatusMap: Record<string, { name: string; icon: string; status: string; statusType: ActionItem["roleStatusType"] }> = {
-  executiver: { name: "Executive", icon: "🏢", status: "On Track", statusType: "success" },
-  producter: { name: "Product", icon: "📋", status: "On Track", statusType: "success" },
-  leader: { name: "Leader", icon: "🧭", status: "At Risk", statusType: "danger" },
-  engineer: { name: "Engineer", icon: "⚡", status: "On Track", statusType: "success" },
-  srer: { name: "SRE", icon: "🔧", status: "On Track", statusType: "success" },
-  aier: { name: "AI Engineer", icon: "🤖", status: "On Track", statusType: "success" },
-  curator: { name: "Curator", icon: "📦", status: "On Track", statusType: "success" }
-};
-
+/** 角色元信息 + 周报状态，统一从 okrData.ts 读取（单一事实来源，避免与各 role OKR 页漂移）。 */
 function roleInfo(roleId?: string) {
-  const r = roleStatusMap[roleId || ""];
-  return r
-    ? { roleName: r.name, roleIcon: r.icon, roleStatus: r.status, roleStatusType: r.statusType }
-    : { roleName: "—", roleIcon: "", roleStatus: "", roleStatusType: "info" as const };
+  const meta = rolesData[roleId || ""];
+  const weekly = roleWeeklyDataMap[roleId || ""];
+  if (!meta) return { roleName: "—", roleIcon: "", roleStatus: "", roleStatusType: "info" as const };
+  return {
+    roleName: meta.name,
+    roleIcon: meta.icon,
+    roleStatus: weekly?.status ?? "",
+    roleStatusType: weekly?.statusType ?? ("info" as const)
+  };
 }
 
 const actionItems = ref<ActionItem[]>([]);
@@ -303,6 +302,7 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
     ...roleInfo(linkRole),
     linkRole,
     linkGoal: goal,
+    goalRole: goal ? goalRoleMap[goal] : undefined,
     skill,
     agent,
     mcp,
@@ -328,6 +328,7 @@ function actionItemFromExample(t: ExampleTask, filePath: string): ActionItem {
     ...roleInfo(t.role),
     linkRole: t.role,
     linkGoal: t.goalId,
+    goalRole: t.goalId ? goalRoleMap[t.goalId] : undefined,
     skill: t.skill,
     agent: t.agent,
     mcp: t.mcp,
@@ -404,13 +405,19 @@ function slugifyTitle(title: string): string {
     .replace(/-+$/g, "");
 }
 
-/** Action Item 落盘文件名：`okr/<year-month>/<priority>-<role>-<slug>.md`。
- *  按截止日期归档到年月目录（与推荐任务按 dueDate 归档保持一致）；
+/** `YYYY-MM` → 归档季度目录名 `YYYY-Qn`（未设截止日期返回 `undated`）。 */
+function quarterDir(monthDir: string): string {
+  if (monthDir === "undated") return "undated";
+  return `${monthDir.slice(0, 4)}-Q${Math.ceil(Number(monthDir.slice(5, 7)) / 3)}`;
+}
+
+/** Action Item 落盘文件名：`okr/<year-quarter>/<year-month>/<priority>-<role>-<slug>.md`。
+ *  按截止日期归档到「年-季度 / 年-月」目录（与推荐任务按 dueDate 归档保持一致）；
  *  优先级前缀让 P0 排前、role 便于按角色归组、slug 让文件名自解释。 */
 function actionFileName(t: ExampleTask): string {
   const slug = slugifyTitle(t.title);
   const dir = t.deadline ? t.deadline.slice(0, 7) : "undated"; // YYYY-MM
-  return `okr/${dir}/${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
+  return `okr/${quarterDir(dir)}/${dir}/${t.priority.toLowerCase()}-${t.role}-${slug}.md`;
 }
 
 /** 知识库无 okr-action 文件时，把完整例子数据写入知识库（文件内容 → KB，元数据 → 后端），
