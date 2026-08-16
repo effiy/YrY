@@ -17,6 +17,77 @@
     </div>
 
     <el-tabs v-model="activeTab" type="card" class="rss-manager__tabs" @tab-change="onTabChange">
+      <el-tab-pane name="briefing">
+        <template #label>
+          <span class="rss-manager__tab-label">📰 每日简报
+            <span v-if="briefingItems.length" class="rss-manager__tab-badge">{{ briefingItems.length }}</span>
+          </span>
+        </template>
+
+        <div class="rss-briefing" v-loading="briefingLoading">
+          <div class="rss-briefing__header">
+            <div class="rss-briefing__heading">
+              <div class="rss-briefing__date">{{ briefingDateLabel }}</div>
+              <div class="rss-briefing__subtitle">
+                {{ briefingItems.length ? `${briefingItems.length} 篇文章 · ${briefingGroups.length} 个主题` : "今日暂无新文章" }}
+              </div>
+            </div>
+            <div class="rss-briefing__actions">
+              <el-button size="small" :icon="Refresh" @click="loadBriefing">刷新</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                :icon="MagicStick"
+                :disabled="!briefingItems.length"
+                :loading="briefingGenerating"
+                @click="generateBriefing"
+              >生成 AI 简报</el-button>
+            </div>
+          </div>
+
+          <div v-if="!briefingLoading && !briefingItems.length" class="rss-briefing__empty">
+            <span class="rss-briefing__empty-icon">🗞️</span>
+            <p class="rss-briefing__empty-title">今日暂无新文章</p>
+            <p class="rss-briefing__empty-hint">前往「📡 Feed Sources」添加源并解析，稍后即可在这里生成每日简报。</p>
+          </div>
+
+          <div v-else-if="briefingGroups.length" class="rss-briefing__groups">
+            <section v-for="group in briefingGroups" :key="group.key" class="rss-briefing__group">
+              <header class="rss-briefing__group-header">
+                <span class="rss-briefing__group-icon">{{ group.icon }}</span>
+                <span class="rss-briefing__group-label">{{ group.label }}</span>
+                <span class="rss-briefing__group-count">{{ group.items.length }}</span>
+              </header>
+              <ul class="rss-briefing__list">
+                <li v-for="item in group.items" :key="item.key || item.link" class="rss-briefing__item">
+                  <div class="rss-briefing__item-main">
+                    <a
+                      :href="item.link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="rss-briefing__item-title"
+                    >{{ item.title }}</a>
+                    <div class="rss-briefing__item-meta">
+                      <span class="rss-briefing__item-source">{{ item.source_name }}</span>
+                      <template v-if="item.author"> · {{ item.author }}</template>
+                      <span> · {{ formatRelativeTime(item.published) }}</span>
+                    </div>
+                  </div>
+                  <el-button
+                    v-if="item.file_path"
+                    size="small"
+                    text
+                    type="primary"
+                    class="rss-briefing__item-read"
+                    @click="previewArticle(item)"
+                  >阅读</el-button>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </el-tab-pane>
+
       <el-tab-pane name="seeds">
         <template #label>
           <span class="rss-manager__tab-label">📡 Feed Sources
@@ -383,7 +454,7 @@
 <script setup lang="ts" name="rssManager">
 import { ref, reactive, computed, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Search, Plus, Refresh, Link } from "@element-plus/icons-vue";
+import { Search, Plus, Refresh, Link, MagicStick } from "@element-plus/icons-vue";
 import {
   getSeedList, createSeed, updateSeed, deleteSeed,
   getRssList, deleteRssItem,
@@ -393,10 +464,11 @@ import {
   type RssSeedDocument, type RssItemDocument, type RssSchedulerStatus, type RssListParams
 } from "@/api/modules/rssService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import { useRssAiChat } from "@/hooks/useRssAiChat";
 import { loadBool, saveBool } from "@/utils/storage";
 import { EXAMPLE_SEEDS } from "./rssSeedData";
 
-const activeTab = ref("seeds");
+const activeTab = ref("briefing");
 
 /** Category options grouped by role domain — mirrors YiKnowledge directory structure. */
 const categoryGroups = [
@@ -780,6 +852,101 @@ async function batchDelete() {
 }
 
 // ═══════════════════════════════════════════════
+// Daily briefing
+// ═══════════════════════════════════════════════
+const { openBatchInAiChat } = useRssAiChat();
+
+const briefingItems = ref<RssItemDocument[]>([]);
+const briefingLoading = ref(false);
+const briefingGenerating = ref(false);
+
+/** Category path → friendly label + icon for briefing grouping. */
+const BRIEFING_CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
+  "executive/industry": { label: "行业动态", icon: "🏭" },
+  "executive/strategy": { label: "战略", icon: "🎯" },
+  "executive/roadmap": { label: "路线图", icon: "🗺️" },
+  "executive/reading-list": { label: "阅读清单", icon: "📚" },
+  "ai-engineer/methodology": { label: "AI 方法", icon: "🤖" },
+  "ai-engineer/foundations": { label: "AI 基础", icon: "🧠" },
+  "data-engineer/patterns": { label: "数据工程", icon: "🗄️" },
+  "devops/processes": { label: "DevOps", icon: "☁️" },
+  "product-manager/frameworks": { label: "产品管理", icon: "📦" },
+  "technical-writer/patterns": { label: "技术写作", icon: "✍️" },
+  "engineer/lessons": { label: "工程经验", icon: "🔧" }
+};
+
+const briefingDateLabel = computed(() =>
+  new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" })
+);
+
+/** 判断时间戳是否落在今天（本地时区）。 */
+function isToday(raw?: string): boolean {
+  if (!raw) return false;
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return false;
+  const today = new Date();
+  return (
+    d.getFullYear() === today.getFullYear() &&
+    d.getMonth() === today.getMonth() &&
+    d.getDate() === today.getDate()
+  );
+}
+
+interface BriefingGroup {
+  key: string;
+  label: string;
+  icon: string;
+  items: RssItemDocument[];
+}
+
+const briefingGroups = computed<BriefingGroup[]>(() => {
+  const groups = new Map<string, BriefingGroup>();
+  for (const item of briefingItems.value) {
+    const cat = item.category_path || "";
+    const key = cat || "__other__";
+    if (!groups.has(key)) {
+      const meta = BRIEFING_CATEGORY_LABELS[cat] || { label: cat || "其他", icon: "📄" };
+      groups.set(key, { key, label: meta.label, icon: meta.icon, items: [] });
+    }
+    groups.get(key)!.items.push(item);
+  }
+  return [...groups.values()].sort((a, b) => b.items.length - a.items.length);
+});
+
+async function loadBriefing() {
+  briefingLoading.value = true;
+  try {
+    const res = await getRssList({ pageNum: 1, pageSize: 100, orderBy: "createdTime", orderType: "desc" });
+    const list = res.data?.list ?? [];
+    briefingItems.value = list.filter(i => isToday(i.createdTime ?? i.published));
+  } catch {
+    briefingItems.value = [];
+  } finally {
+    briefingLoading.value = false;
+  }
+}
+
+async function generateBriefing() {
+  if (!briefingItems.value.length) {
+    ElMessage.warning("今日暂无文章");
+    return;
+  }
+  briefingGenerating.value = true;
+  try {
+    await openBatchInAiChat(briefingItems.value, {
+      titlePrefix: "每日简报",
+      tagPrefix: "daily-briefing",
+      systemPrompt:
+        "你是高管每日简报助手。请基于以下今日 RSS 文章正文，生成一份简洁的中文每日简报：按主题归纳关键信息、重要趋势与可行动洞察，控制在 500 字以内，要点式列出，每条注明来源。"
+    });
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || "生成简报失败");
+  } finally {
+    briefingGenerating.value = false;
+  }
+}
+
+// ═══════════════════════════════════════════════
 // Scheduler
 // ═══════════════════════════════════════════════
 const schedulerStatus = reactive<RssSchedulerStatus>({ enabled: false, type: "interval", interval: 3600 });
@@ -898,11 +1065,13 @@ function estimateNextRun(url: string): string {
 }
 
 function onTabChange(tab: string | number) {
-  if (tab === "items") loadItems();
+  if (tab === "briefing") loadBriefing();
+  else if (tab === "items") loadItems();
   else if (tab === "seeds") loadSeeds();
 }
 
 onMounted(() => {
+  loadBriefing();
   loadSeeds();
   loadItems();
   loadSchedulerStatus();
@@ -1184,4 +1353,174 @@ onMounted(() => {
 }
 
 .rss-manager__seed-history-stat--err { color: var(--el-color-danger); }
+
+// ── Daily briefing ──
+.rss-briefing {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rss-briefing__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+
+.rss-briefing__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rss-briefing__date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+.rss-briefing__subtitle {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.rss-briefing__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rss-briefing__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 48px 0;
+  color: var(--el-text-color-secondary);
+}
+
+.rss-briefing__empty-icon {
+  font-size: 40px;
+}
+
+.rss-briefing__empty-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.rss-briefing__empty-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+}
+
+.rss-briefing__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rss-briefing__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rss-briefing__group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rss-briefing__group-icon {
+  font-size: 14px;
+}
+
+.rss-briefing__group-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+.rss-briefing__group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--el-fill-color);
+  color: var(--el-text-color-secondary);
+}
+
+.rss-briefing__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.rss-briefing__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  & + & {
+    margin-top: 8px;
+  }
+}
+
+.rss-briefing__item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rss-briefing__item-title {
+  color: var(--el-text-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.4;
+  &:hover {
+    color: var(--el-color-primary);
+    text-decoration: underline;
+  }
+}
+
+.rss-briefing__item-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  flex-wrap: wrap;
+}
+
+.rss-briefing__item-source {
+  color: var(--el-text-color-secondary);
+  font-weight: 500;
+}
+
+.rss-briefing__item-read {
+  flex-shrink: 0;
+}
 </style>

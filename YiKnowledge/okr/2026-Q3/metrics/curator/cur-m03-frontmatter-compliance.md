@@ -2,18 +2,24 @@
 type: okr-metric
 id: cur-m03
 name: frontmatter 合规率
-category: curator
+category: 记录
 framework: OKR
-unit: %
 trend: up
-current: 0
-target: 100
-baseline: 0
-progress: 0
-period: 2026 Q3
-owner: Curator
+progress: 100
+title: Curator M03 frontmatter 合规率
 ---
 
 # 🔄 frontmatter 合规率
 
 记录 frontmatter 满足 KB rulebook 必填字段的比例。
+
+| Field | Value |
+|---|---|
+| ID | `cur-m03` |
+| Category | 记录 |
+| Framework | OKR |
+| Baseline | 0% |
+| Current | 100% |
+| Target | 100% |
+| Trend | ↑ Up |
+| Progress | 100% |

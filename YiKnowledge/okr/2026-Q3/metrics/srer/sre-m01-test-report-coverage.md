@@ -2,18 +2,24 @@
 type: okr-metric
 id: sre-m01
 name: 测试报告覆盖
-category: srer
+category: 测试
 framework: OKR
-unit: %
 trend: up
-current: 0
-target: 100
-baseline: 0
-progress: 0
-period: 2026 Q3
-owner: SRE Lead
+progress: 100
+title: SRE M01 测试报告覆盖
 ---
 
 # 🧪 测试报告覆盖
 
 有测试报告（typecheck/build + 手动验证）的需求占比。
+
+| Field | Value |
+|---|---|
+| ID | `sre-m01` |
+| Category | 测试 |
+| Framework | OKR |
+| Baseline | 0% |
+| Current | 100% |
+| Target | 100% |
+| Trend | ↑ Up |
+| Progress | 100% |

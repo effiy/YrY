@@ -2,18 +2,24 @@
 type: okr-metric
 id: eng-m06
 name: 构建健康度
-category: engineer
+category: 构建
 framework: OKR
-unit: 个
 trend: down
-current: 22
-target: 0
-baseline: 22
-progress: 0
-period: 2026 Q3
-owner: Engineering Lead
+progress: 100
+title: Engineer M06 构建健康度
 ---
 
 # 📉 构建健康度
 
-vue-tsc 既有类型错误总数，目标从 22 清零。
+vue-tsc 既有类型错误总数，目标从 23 清零。
+
+| Field | Value |
+|---|---|
+| ID | `eng-m06` |
+| Category | 构建 |
+| Framework | OKR |
+| Baseline | 23 个 |
+| Current | 0 个 |
+| Target | 0 个 |
+| Trend | ↓ Down |
+| Progress | 100% |

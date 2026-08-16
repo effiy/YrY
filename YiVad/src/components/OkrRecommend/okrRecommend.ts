@@ -280,9 +280,9 @@ function formatRoleDetail(roleId: string): string {
   const lines: string[] = [];
   lines.push(`【${meta.icon} ${meta.name} · ${roleId}】${meta.description}`);
   lines.push(`状态：${weekly.status}`);
-  if (weekly.blockers.length) lines.push(`阻塞：${weekly.blockers.join("；")}`);
+  if (weekly.blockers.length) lines.push(`阻塞：${weekly.blockers.map(b => b.text).join("；")}`);
   if (daily?.today?.length) lines.push(`今日 Top3：${daily.today.map((t, i) => `${i + 1}. ${t}`).join("；")}`);
-  if (weekly.nextWeek.length) lines.push(`本周关键：${weekly.nextWeek.join("；")}`);
+  if (weekly.nextWeek.length) lines.push(`本周关键：${weekly.nextWeek.map(n => n.text).join("；")}`);
   if (daily?.blocker) lines.push(`今日阻塞：${daily.blocker}`);
   lines.push("目标（按进度升序，滞后优先）：");
   lines.push(formatGoals(roleId));

@@ -133,7 +133,13 @@
             <div class="okr-role__table-krs">
               <div v-for="(kr, i) in row.keyResults" :key="i" class="okr-role__table-kr">
                 <span class="okr-role__table-kr-num">KR{{ Number(i) + 1 }}</span>
-                <span class="okr-role__table-kr-text">{{ kr.text }}</span>
+                <span
+                  class="okr-role__table-kr-text"
+                  :class="{ 'okr-role__table-kr-text--link': kr.file }"
+                  :title="kr.file ? `证据文件：${kr.file}` : undefined"
+                  @click="kr.file && openKrFile(kr)"
+                >{{ kr.text }}</span>
+                <el-icon v-if="kr.file" class="okr-role__table-kr-doc" @click="openKrFile(kr)"><Document /></el-icon>
                 <el-progress :percentage="kr.progress" :status="krStatus(kr.progress)" :stroke-width="4" style="width: 60px; min-width: 60px" />
               </div>
             </div>
@@ -189,13 +195,12 @@
           <div class="okr-role__weekly-card-body" :class="{ 'okr-role__weekly-card-body--collapsed': collapsedWeeklySections.has('done') }">
             <ul class="okr-role__weekly-card-list">
               <li v-for="(d, i) in weeklyData.done" :key="'d'+i" class="okr-role__weekly-card-item">
-                <template v-if="isEditing('weekly', i, 'done')">
-                  <el-input v-model="editingText" size="small" class="okr-role__inline-input" @keyup.enter="saveEdit()" @keyup.escape="cancelEdit()" @blur="saveEdit()" :autofocus="true" @click.stop />
-                </template>
-                <template v-else>
-                  <span @dblclick.stop="startEdit('weekly', i, 'done')">{{ d }}</span>
-                  <el-button text size="small" type="primary" class="okr-role__weekly-card-copy" @click.stop="copyWeeklyItem(d)">Copy</el-button>
-                </template>
+                <span
+                  class="okr-role__weekly-card-text"
+                  :class="{ 'okr-role__weekly-card-text--link': d.file }"
+                  :title="d.file ? `证据文件：${d.file}` : undefined"
+                  @click="d.file && openWeeklyItemFile(d)"
+                >{{ d.text }}</span>
               </li>
             </ul>
           </div>
@@ -210,13 +215,12 @@
           <div class="okr-role__weekly-card-body" :class="{ 'okr-role__weekly-card-body--collapsed': collapsedWeeklySections.has('blockers') }">
             <ul v-if="weeklyData.blockers.length" class="okr-role__weekly-card-list">
               <li v-for="(b, i) in weeklyData.blockers" :key="'b'+i" class="okr-role__weekly-card-item">
-                <template v-if="isEditing('weekly', i, 'blockers')">
-                  <el-input v-model="editingText" size="small" class="okr-role__inline-input" @keyup.enter="saveEdit()" @keyup.escape="cancelEdit()" @blur="saveEdit()" :autofocus="true" @click.stop />
-                </template>
-                <template v-else>
-                  <span @dblclick.stop="startEdit('weekly', i, 'blockers')">{{ b }}</span>
-                  <el-button text size="small" type="danger" class="okr-role__weekly-card-copy" @click.stop="copyWeeklyItem(b)">Copy</el-button>
-                </template>
+                <span
+                  class="okr-role__weekly-card-text"
+                  :class="{ 'okr-role__weekly-card-text--link': b.file }"
+                  :title="b.file ? `证据文件：${b.file}` : undefined"
+                  @click="b.file && openWeeklyItemFile(b)"
+                >{{ b.text }}</span>
               </li>
             </ul>
             <span v-else class="okr-role__weekly-card-none">No blockers this week.</span>
@@ -232,13 +236,12 @@
           <div class="okr-role__weekly-card-body" :class="{ 'okr-role__weekly-card-body--collapsed': collapsedWeeklySections.has('next') }">
             <ul class="okr-role__weekly-card-list">
               <li v-for="(n, i) in weeklyData.nextWeek" :key="'n'+i" class="okr-role__weekly-card-item">
-                <template v-if="isEditing('weekly', i, 'next')">
-                  <el-input v-model="editingText" size="small" class="okr-role__inline-input" @keyup.enter="saveEdit()" @keyup.escape="cancelEdit()" @blur="saveEdit()" :autofocus="true" @click.stop />
-                </template>
-                <template v-else>
-                  <span @dblclick.stop="startEdit('weekly', i, 'next')">{{ n }}</span>
-                  <el-button text size="small" type="primary" class="okr-role__weekly-card-copy" @click.stop="copyWeeklyItem(n)">Copy</el-button>
-                </template>
+                <span
+                  class="okr-role__weekly-card-text"
+                  :class="{ 'okr-role__weekly-card-text--link': n.file }"
+                  :title="n.file ? `证据文件：${n.file}` : undefined"
+                  @click="n.file && openWeeklyItemFile(n)"
+                >{{ n.text }}</span>
               </li>
             </ul>
           </div>
@@ -253,13 +256,12 @@
           <div class="okr-role__weekly-card-body" :class="{ 'okr-role__weekly-card-body--collapsed': collapsedWeeklySections.has('decisions') }">
             <ul class="okr-role__weekly-card-list">
               <li v-for="(kd, i) in weeklyData.decisions" :key="'kd'+i" class="okr-role__weekly-card-item">
-                <template v-if="isEditing('weekly', i, 'decisions')">
-                  <el-input v-model="editingText" size="small" class="okr-role__inline-input" @keyup.enter="saveEdit()" @keyup.escape="cancelEdit()" @blur="saveEdit()" :autofocus="true" @click.stop />
-                </template>
-                <template v-else>
-                  <span @dblclick.stop="startEdit('weekly', i, 'decisions')">{{ kd }}</span>
-                  <el-button text size="small" type="primary" class="okr-role__weekly-card-copy" @click.stop="copyWeeklyItem(kd)">Copy</el-button>
-                </template>
+                <span
+                  class="okr-role__weekly-card-text"
+                  :class="{ 'okr-role__weekly-card-text--link': kd.file }"
+                  :title="kd.file ? `证据文件：${kd.file}` : undefined"
+                  @click="kd.file && openWeeklyItemFile(kd)"
+                >{{ kd.text }}</span>
               </li>
             </ul>
           </div>
@@ -280,14 +282,13 @@
 import { computed, reactive, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { ArrowLeft, ArrowRight, Document } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
 import dayjs from "dayjs";
 import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import {
   rolesData, goalsData, metricsData, goalMetricMap, getGoalMetrics,
   roleWeeklyDataMap, ROLE_IDS, goalRoleMap, metricRoleMap,
-  type GoalItem, type MetricItem
+  type GoalItem, type MetricItem, type KeyResult, type WeeklyItem
 } from "./okrData";
 
 const props = defineProps<{ roleId: string }>();
@@ -395,6 +396,11 @@ async function openMetricFile(m: MetricItem) {
   try { await writeKnowledgeFile(path, renderMetricBody(m), metricMeta(m)); } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
   previewDlg.value?.open(path);
 }
+/** KR → 证据文件（loop 记录 / 任务记录 / 模板 / 角色文档）→ 文件预览弹框。 */
+function openKrFile(kr: KeyResult) {
+  if (!kr.file) return;
+  previewDlg.value?.open(kr.file);
+}
 
 /** 当前选中的周（默认本周一）。 */
 const selectedWeek = ref(dayjs().startOf("week").add(1, "day").toDate());
@@ -419,15 +425,16 @@ const allGoals = computed(() => goalsData[props.roleId] || []);
 
 const weeklyData = computed(() => roleWeeklyDataMap[props.roleId] || roleWeeklyDataMap.executiver);
 
-// ── Weekly Report: collapse + copy ─────────────
+// ── Weekly Report: collapse ─────────────
 const collapsedWeeklySections = reactive<Set<string>>(new Set());
 function toggleWeeklySection(key: string) {
   if (collapsedWeeklySections.has(key)) collapsedWeeklySections.delete(key);
   else collapsedWeeklySections.add(key);
 }
-async function copyWeeklyItem(text: string) {
-  await navigator.clipboard.writeText(text);
-  ElMessage.success("Copied to clipboard");
+/** 周报条目 → 证据文件（loop 记录 / 任务记录 / 模板 / 角色文档）→ 文件预览弹框。 */
+function openWeeklyItemFile(item: WeeklyItem) {
+  if (!item.file) return;
+  previewDlg.value?.open(item.file);
 }
 // ── Weekly Report → 知识库文件（okr 目录）→ 文件预览弹框 ──
 /** `YYYY-MM` → 归档季度目录名 `YYYY-Qn`。 */
@@ -467,14 +474,14 @@ function renderWeeklyBody(): string {
   }
 
   lines.push("", "## ✅ Accomplishments", "");
-  lines.push(...w.done.map(d => `- ${d}`));
+  lines.push(...w.done.map(d => `- ${d.text}`));
   lines.push("", "## 🚧 Blockers", "");
-  if (w.blockers.length) lines.push(...w.blockers.map(b => `- ${b}`));
+  if (w.blockers.length) lines.push(...w.blockers.map(b => `- ${b.text}`));
   else lines.push("- None");
   lines.push("", "## 📅 Next Week", "");
-  lines.push(...w.nextWeek.map(n => `- ${n}`));
+  lines.push(...w.nextWeek.map(n => `- ${n.text}`));
   lines.push("", "## 📝 Key Decisions", "");
-  lines.push(...w.decisions.map(d => `- ${d}`));
+  lines.push(...w.decisions.map(d => `- ${d.text}`));
   return lines.join("\n");
 }
 
@@ -485,36 +492,6 @@ async function openWeeklyFile() {
     await writeKnowledgeFile(path, renderWeeklyBody(), { type: "okr-weekly", role: props.roleId, week: weekRangeLabel.value, status: w.status });
   } catch { /* 后端不可用则直接尝试读取已存在的文件 */ }
   previewDlg.value?.open(path);
-}
-
-// ── Inline Editing ──────────────────────────────
-const editingTarget = ref<{ section: string; card?: string; index: number } | null>(null);
-const editingText = ref("");
-function startEdit(section: string, index: number, card?: string) {
-  editingTarget.value = { section, card, index };
-  if (section === "weekly" && card) {
-    const w = weeklyData.value;
-    const arr = card === "done" ? w.done : card === "blockers" ? w.blockers : card === "next" ? w.nextWeek : w.decisions;
-    editingText.value = arr[index];
-  }
-}
-function saveEdit() {
-  if (!editingTarget.value) return;
-  const { card, index } = editingTarget.value;
-  if (card) {
-    const w = weeklyData.value;
-    const arr = card === "done" ? w.done : card === "blockers" ? w.blockers : card === "next" ? w.nextWeek : w.decisions;
-    arr[index] = editingText.value;
-  }
-  editingTarget.value = null;
-  ElMessage.success("Saved");
-}
-function cancelEdit() {
-  editingTarget.value = null;
-}
-function isEditing(section: string, index: number, card?: string): boolean {
-  const t = editingTarget.value;
-  return !!t && t.section === section && t.index === index && t.card === card;
 }
 
 watch(() => props.roleId, () => {
@@ -696,6 +673,8 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 .okr-role__table-kr { display: flex; align-items: center; gap: 6px; font-size: 11px; }
 .okr-role__table-kr-num { font-weight: 700; font-family: monospace; color: var(--el-color-primary); white-space: nowrap; font-size: 10px; min-width: 28px; }
 .okr-role__table-kr-text { flex: 1; color: var(--el-text-color-regular); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.okr-role__table-kr-text--link { cursor: pointer; transition: color .15s; &:hover { color: var(--el-color-primary); text-decoration: underline; } }
+.okr-role__table-kr-doc { font-size: 12px; color: var(--el-color-primary); cursor: pointer; flex-shrink: 0; transition: color .15s; &:hover { color: var(--el-color-primary-light-3); } }
 .okr-role__table-value { font-weight: 700; font-size: 14px; color: var(--el-color-primary); }
 .okr-role__table-target { font-weight: 600; font-size: 13px; color: var(--el-color-success); }
 .okr-role__table-progress { display: flex; align-items: center; gap: 8px; }
@@ -710,8 +689,6 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 @keyframes okr-expand-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 .okr-role__expand-title { margin: 0 0 8px; font-size: 13px; color: var(--el-text-color-secondary); }
 .okr-role__expand-empty { font-size: 13px; color: var(--el-text-color-placeholder); font-style: italic; padding: 8px 0; }
-
-.okr-role__inline-input { flex: 1; }
 
 // ── Weekly Report Cards ────────────────────────
 .okr-role__weekly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -742,13 +719,13 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 }
 .okr-role__weekly-card-body--collapsed { max-height: 0; padding: 0; }
 .okr-role__weekly-card-item {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  display: flex; align-items: flex-start; gap: 8px;
   font-size: 13px; line-height: 1.5; color: var(--el-text-color-regular);
   padding: 2px 0; border-radius: 4px; transition: background .15s;
   &:hover { background: var(--el-fill-color-light); }
-  .okr-role__weekly-card-copy { opacity: 0; transition: opacity .15s; flex-shrink: 0; font-size: 11px; }
-  &:hover .okr-role__weekly-card-copy { opacity: 1; }
 }
+.okr-role__weekly-card-text { flex: 1; min-width: 0; }
+.okr-role__weekly-card-text--link { cursor: pointer; transition: color .15s; &:hover { color: var(--el-color-primary); text-decoration: underline; } }
 .okr-role__weekly-card-none { display: block; padding: 10px 14px 12px; font-size: 12px; color: var(--el-text-color-placeholder); font-style: italic; }
 .okr-role__weekly-card--collapsed .okr-role__weekly-card-head { opacity: .7; }
 

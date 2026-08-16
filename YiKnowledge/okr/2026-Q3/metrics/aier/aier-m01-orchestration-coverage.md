@@ -2,18 +2,24 @@
 type: okr-metric
 id: aier-m01
 name: 编排覆盖
-category: aier
+category: 编排
 framework: OKR
-unit: %
 trend: up
-current: 0
-target: 100
-baseline: 0
-progress: 0
-period: 2026 Q3
-owner: AI Engineer
+progress: 100
+title: AI Engineer M01 编排覆盖
 ---
 
 # 🧩 编排覆盖
 
 显式指派 skill/agent/mcp 三要素的推荐任务占比。
+
+| Field | Value |
+|---|---|
+| ID | `aier-m01` |
+| Category | 编排 |
+| Framework | OKR |
+| Baseline | 0% |
+| Current | 100% |
+| Target | 100% |
+| Trend | ↑ Up |
+| Progress | 100% |

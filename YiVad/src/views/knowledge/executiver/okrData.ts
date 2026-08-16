@@ -11,6 +11,8 @@
 export interface KeyResult {
   text: string;
   progress: number;
+  /** 证据文件（相对 YiKnowledge 根目录），点击 KR 可预览。 */
+  file?: string;
 }
 
 export interface GoalItem {
@@ -37,13 +39,19 @@ export interface ChecklistItem {
   id: string; text: string; done: boolean; value?: string;
 }
 
+export interface WeeklyItem {
+  text: string;
+  /** 证据文件（相对 YiKnowledge 根目录），点击条目可预览。 */
+  file?: string;
+}
+
 export interface WeeklyRoleData {
   status: string;
   statusType: "success" | "warning" | "danger" | "info" | "primary";
-  done: string[];
-  blockers: string[];
-  nextWeek: string[];
-  decisions: string[];
+  done: WeeklyItem[];
+  blockers: WeeklyItem[];
+  nextWeek: WeeklyItem[];
+  decisions: WeeklyItem[];
 }
 
 export interface RoleMeta {
@@ -62,15 +70,15 @@ export const rolesData: Record<string, {
 }> = {
   executiver: {
     id: "executiver", name: "Executive", icon: "🏢", dir: "executiver/",
-    description: "自闭环北极星拥有者：定义并审批「AI 从需求到上线全流程自闭环」，确保 7 角色 OKR 全部对齐到该北极星。",
+    description: "经营战略拥有者：提供市场情报（market-intel）、经营战略与组织路线（org-strategy）、经营阅读（reading-list）三类跨管线 Business 上下文，让战略决策基于市场现实。",
     projects: ["YiAi", "YiVad", "YiPet"],
-    categories: ["自闭环", "对齐", "审批"]
+    categories: ["市场情报", "经营战略", "组织路线"]
   },
   producter: {
     id: "producter", name: "Product", icon: "📋", dir: "producter/",
-    description: "需求评审拥有者：为每条需求产出 PRD、验收标准与 WSJF 优先级，评审记录落知识库。",
+    description: "需求评审拥有者：为每条需求产出 PRD（背景/目标/范围/非目标/干系人）、可验证验收标准与 WSJF 优先级（价值×紧迫÷难度），评审记录落知识库（01-requirement-review），需求→任务拆解模板可复用。",
     projects: ["YiAi", "YiVad", "YiPet"],
-    categories: ["需求评审", "PRD", "优先级"]
+    categories: ["PRD", "验收标准", "WSJF 优先级"]
   },
   leader: {
     id: "leader", name: "Leader", icon: "🧭", dir: "leader/",
@@ -98,7 +106,7 @@ export const rolesData: Record<string, {
   },
   curator: {
     id: "curator", name: "Curator", icon: "📦", dir: "curator/",
-    description: "流程记录知识化拥有者：维护 4 类流程记录模板与整合索引，记录 frontmatter 合规。",
+    description: "流程记录知识化拥有者：维护 5 类流程记录模板与整合索引，记录 frontmatter 合规。",
     projects: ["YiAi", "YiVad", "YiPet"],
     categories: ["记录", "模板", "索引"]
   }
@@ -106,64 +114,67 @@ export const rolesData: Record<string, {
 
 export const goalsData: Record<string, GoalItem[]> = {
   executiver: [
-    { id: "exec-001", icon: "🤖", title: "AI 全流程自闭环", status: "active", description: "让 AI 独立完成「需求 → 评审 → 编码 → 调试 → 测试 → 上线」全流程，无需人工编码介入，全过程留痕于知识库。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "一条真实需求从「需求评审」到「上线」走通并完整留痕", progress: 100 }, { text: "四类流程记录（需求评审/技术评审/构建调试/测试报告）有统一落点与整合页", progress: 100 }, { text: "7 角色 OKR 100% 对齐到北极星", progress: 100 }, { text: "单条闭环周期（需求→上线）≤ 2 个工作日", progress: 100 }] },
-    { id: "exec-002", icon: "🎯", title: "7 角色 OKR 对齐与审批", status: "active", description: "每个角色拥有可验证的 KR 与关联指标，每条 Goal 可追溯到北极星，审批与里程碑记录落知识库。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "每个角色有可验证 KR 且关联指标", progress: 100 }, { text: "每条 Goal 可追溯到北极星", progress: 100 }, { text: "审批/里程碑记录落知识库", progress: 100 }, { text: "对齐率 dashboard 可查", progress: 100 }] },
+    { id: "exec-001", icon: "📊", title: "市场情报与竞争洞察", status: "active", description: "追踪 LLM/SaaS 竞品格局、市场趋势与第三方行业报告（Gartner/McKinsey/a16z/CAICT/IDC），让战略决策基于市场现实。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "竞品分析覆盖 LLM 供应商 / SaaS 头部 / 区域竞对", progress: 100, file: "executiver/industry/competitors/README.md" }, { text: "第三方行业报告摘要（Gartner/McKinsey/a16z/CAICT/IDC）落知识库", progress: 67, file: "executiver/industry/reports/README.md" }, { text: "半年度市场趋势复盘 + 新兴赛道追踪", progress: 60, file: "executiver/industry/INDEX.md" }, { text: "竞品与行业信息可被 RAG 检索，过时条目标记 deprecated", progress: 70, file: "executiver/industry/README.md" }] },
+    { id: "exec-002", icon: "🧭", title: "经营战略与组织路线", status: "active", description: "用战略框架（Porter/Blue Ocean/VRIO/SWOT/BMC/价值主张）定义竞争定位，产出年度战略规划、季度经营复盘、组织 OKR 与编制预算规划。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "战略框架与商业模型（BMC/价值主张/第二曲线）落地到产品战略实例", progress: 100, file: "executiver/strategy/README.md" }, { text: "年度战略规划 + 季度经营复盘（QBR）产出", progress: 60, file: "executiver/roadmap/README.md" }, { text: "组织级 OKR 跟踪 + 编制/预算规划落地", progress: 75, file: "executiver/roadmap/README.md" }, { text: "合规与数据留存策略（regulatory change / retention review）有据可查", progress: 80, file: "executiver/strategy/README.md" }] },
+    { id: "exec-003", icon: "📚", title: "经营学习与阅读", status: "active", description: "维护月度精选阅读清单与读书笔记，沉淀可执行洞察（如 High Output Management），并蒸馏到对应语义知识叶。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "月度阅读清单滚动更新", progress: 70, file: "executiver/reading-list/README.md" }, { text: "读书笔记含可执行 takeaway（High Output Management）", progress: 100, file: "executiver/reading-list/README.md" }, { text: "有价值观点蒸馏到方法论/技术语义叶", progress: 50, file: "executiver/reading-list/README.md" }] },
   ],
   producter: [
-    { id: "prod-001", icon: "📋", title: "需求评审可闭环", status: "active", description: "为每条需求产出 PRD、验收标准与 WSJF 优先级，评审记录落知识库，需求→任务拆解模板可复用。", period: "2026 Q3", owner: "PM YiAi", project: "YiAi", keyResults: [{ text: "每条需求产出 PRD + 验收标准", progress: 100 }, { text: "WSJF 优先级（价值×紧迫÷难度）落地", progress: 100 }, { text: "需求评审记录落知识库（01-requirement-review）", progress: 100 }, { text: "需求→任务拆解模板可复用", progress: 100 }] },
+    { id: "prod-001", icon: "📋", title: "需求评审可闭环", status: "active", description: "作为需求评审拥有者，为每条闭环需求产出 PRD（背景/目标/范围/非目标/干系人）、可被测试门禁直接判定的验收标准与 WSJF 优先级（价值×紧迫÷难度），评审记录落知识库，需求→任务拆解模板可复用。", period: "2026 Q3", owner: "PM YiAi", project: "YiAi", keyResults: [{ text: "每条需求产出 PRD（背景/目标/范围/非目标/干系人）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" }, { text: "验收标准可被测试门禁直接判定", progress: 100, file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" }, { text: "WSJF 优先级（价值×紧迫÷难度）打分排序", progress: 100, file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" }, { text: "需求评审记录落知识库（01-requirement-review）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" }, { text: "需求→任务拆解模板可复用", progress: 100, file: "okr/2026-Q3/loop/_templates/01-requirement-review.md" }] },
   ],
   leader: [
-    { id: "lead-001", icon: "🧭", title: "技术评审可闭环", status: "active", description: "为每条需求产出 ADR（Context/Decision/Consequences）与架构决策，保证决策可回溯到需求，评审记录落知识库。", period: "2026 Q3", owner: "Tech Lead", project: "YiAi", keyResults: [{ text: "每条需求产出 ADR（Context/Decision/Consequences）", progress: 100 }, { text: "架构决策可回溯到需求", progress: 100 }, { text: "记录载体/页面结构/目录规范有据可查", progress: 100 }, { text: "技术评审记录落知识库（02-technical-review）", progress: 100 }] },
+    { id: "lead-001", icon: "🧭", title: "技术评审可闭环", status: "active", description: "作为技术评审拥有者，为每条需求产出 ADR（Context/Decision/Consequences）、数据模型与风险对策，保证决策可回溯到需求，评审记录落知识库（02-technical-review），ADR 模板可复用。", period: "2026 Q3", owner: "Tech Lead", project: "YiAi", keyResults: [{ text: "每条需求产出 ADR（Context/Decision/Consequences）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "数据模型与风险对策随技术评审记录产出", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "架构决策可回溯到需求", progress: 100, file: "okr/2026-Q3/2026-08/p0-leader-产出技术评审记录-adr-记录载体选型.md" }, { text: "技术评审记录落知识库（02-technical-review）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "ADR 模板可复用（Context/Decision/Consequences）", progress: 100, file: "okr/2026-Q3/loop/_templates/02-technical-review.md" }] },
   ],
   engineer: [
-    { id: "eng-001", icon: "⚡", title: "代码编写与调试自闭环", status: "active", description: "把需求实现为可构建代码，0 人工编码介入，调试过程（问题→修复→验证）留痕，构建门禁通过。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "需求实现为可构建代码（0 人工编码介入）", progress: 100 }, { text: "改动文件 0 新增类型错误", progress: 100 }, { text: "调试过程（问题→修复→验证）落知识库（03-build-debug）", progress: 100 }, { text: "构建门禁（vue-tsc + build）通过", progress: 100 }] },
-    { id: "eng-005", icon: "🧹", title: "构建健康度清零", status: "active", description: "清零 23 个 vue-tsc 既有类型错误，让 YiVad 恢复可构建可部署。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "清零 23 个 vue-tsc 既有类型错误", progress: 100 }, { text: "knowledgeBase dashboard 17 个错误修复", progress: 100 }, { text: "rag history/retrieval 4 个错误修复", progress: 100 }, { text: "proTable + menuMange 2 个类型错误修复", progress: 100 }] },
+    { id: "eng-001", icon: "⚡", title: "代码编写与调试自闭环", status: "active", description: "作为代码编写与调试拥有者，把需求实现为可构建代码（0 人工编码介入），改动文件 0 新增类型错误，调试过程（问题→修复→验证）留痕落知识库（03-build-debug），构建门禁通过。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "需求实现为可构建代码（0 人工编码介入）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }, { text: "改动文件 0 新增类型错误", progress: 100, file: "okr/2026-Q3/2026-08/p1-engineer-维护-0-类型错误基线-沉淀构建调试模板复用.md" }, { text: "调试过程（问题→修复→验证）落知识库（03-build-debug）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }, { text: "构建门禁（vue-tsc + build）通过", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }] },
+    { id: "eng-005", icon: "🧹", title: "构建健康度清零", status: "active", description: "清零 23 个 vue-tsc 既有类型错误，让 YiVad 恢复可构建可部署。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "清零 23 个 vue-tsc 既有类型错误", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "knowledgeBase dashboard 17 个错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "rag history/retrieval 4 个错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "proTable + menuMange 2 个类型错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }] },
   ],
   srer: [
-    { id: "sre-001", icon: "🔧", title: "测试与上线自闭环", status: "active", description: "为每条需求产出测试报告与上线记录，typecheck/build 门禁通过才上线，上线可追溯可回滚。", period: "2026 Q3", owner: "SRE Lead", project: "YiAi", keyResults: [{ text: "每条需求产出测试报告（04-test-report）", progress: 100 }, { text: "上线记录（artifact/version/env）落知识库（05-launch-record）", progress: 100 }, { text: "typecheck/build 门禁通过才上线", progress: 100 }, { text: "上线可回滚/可追溯", progress: 100 }] },
+    { id: "sre-001", icon: "🔧", title: "测试与上线自闭环", status: "active", description: "作为测试与上线拥有者，为每条需求产出测试报告（04-test-report）与上线记录（05-launch-record），typecheck/build 门禁通过才上线，上线可追溯可回滚。", period: "2026 Q3", owner: "SRE Lead", project: "YiAi", keyResults: [{ text: "每条需求产出测试报告（04-test-report）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/04-test-report.md" }, { text: "上线记录（artifact/version/env）落知识库（05-launch-record）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/05-launch-record.md" }, { text: "typecheck/build 门禁通过才上线", progress: 100, file: "okr/2026-Q3/2026-08/p1-srer-跑门禁-产出测试报告与上线记录.md" }, { text: "上线可回滚/可追溯", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/05-launch-record.md" }] },
   ],
   aier: [
-    { id: "aier-001", icon: "🧩", title: "编排三要素落地", status: "active", description: "为每个推荐任务显式指派 skill/agent/mcp 三要素，确定性角色×清单映射覆盖 7 角色，AI 推荐可复现。", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "每个推荐任务显式指派 skill/agent/mcp", progress: 100 }, { text: "确定性角色×清单映射覆盖 7 角色", progress: 100 }, { text: "AI 推荐按 WSJF 可复现", progress: 100 }, { text: "编排结果落盘可读回", progress: 100 }] },
-    { id: "aier-002", icon: "🤖", title: "Agent 任务可靠", status: "active", description: "Agent 任务完成率稳定，写操作经确认门把关，模型升级链路生效。", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "Agent 任务完成率 > 70%", progress: 100 }, { text: "写操作确认门（approve/reject）把关", progress: 100 }, { text: "模型升级（stall→stronger）生效", progress: 100 }, { text: "80% 任务 ≤ 5 轮完成", progress: 100 }] },
+    { id: "aier-001", icon: "🧩", title: "编排三要素落地", status: "active", description: "作为编排拥有者，为每个推荐任务显式指派 skill/agent/mcp 三要素，确定性角色×清单映射覆盖 7 角色，AI 推荐可复现，编排结果落盘可读回。", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "每个推荐任务显式指派 skill/agent/mcp", progress: 100, file: "okr/2026-Q3/2026-08/p2-aier-沉淀-7-角色三要素编排清单-规划-loop-002-编排.md" }, { text: "确定性角色×清单映射覆盖 7 角色", progress: 100, file: "okr/2026-Q3/2026-08/p2-aier-补齐-7-角色三要素编排映射.md" }, { text: "AI 推荐按 WSJF 可复现", progress: 100, file: "okr/2026-Q3/2026-08/p2-aier-补齐-7-角色三要素编排映射.md" }, { text: "编排结果落盘可读回", progress: 100, file: "okr/2026-Q3/2026-08/p2-aier-沉淀-7-角色三要素编排清单-规划-loop-002-编排.md" }] },
+    { id: "aier-002", icon: "🤖", title: "Agent 任务可靠", status: "active", description: "作为 Agent 可靠拥有者，Agent 任务完成率稳定，写操作经确认门（approve/reject）把关，模型升级（stall→stronger）链路生效。", period: "2026 Q3", owner: "AI Engineer", project: "YiAi", keyResults: [{ text: "Agent 任务完成率 > 70%", progress: 100, file: "aier/methodology/agent-harness-plugin-architecture.md" }, { text: "写操作确认门（approve/reject）把关", progress: 100, file: "aier/methodology/agent-harness-plugin-architecture.md" }, { text: "模型升级（stall→stronger）生效", progress: 100, file: "aier/methodology/agent-harness-plugin-architecture.md" }, { text: "80% 任务 ≤ 5 轮完成", progress: 100, file: "aier/methodology/agent-harness-plugin-architecture.md" }] },
   ],
   curator: [
-    { id: "cur-001", icon: "📦", title: "流程记录知识化", status: "active", description: "维护 4 类流程记录模板与整合索引页，记录 frontmatter 合规，循环记录可被 RAG 检索。", period: "2026 Q3", owner: "Curator", project: "YiAi", keyResults: [{ text: "四类记录模板 + 整合索引页（loop/INDEX）落地", progress: 100 }, { text: "记录 frontmatter 合规率 100%", progress: 100 }, { text: "循环记录可被 RAG 检索", progress: 100 }, { text: "旧数据清零并留迁移记录", progress: 100 }] },
+    { id: "cur-001", icon: "📦", title: "流程记录知识化", status: "active", description: "作为流程记录知识化拥有者，维护 5 类流程记录模板与整合索引（loop/INDEX），记录 frontmatter 合规，循环记录可被 RAG 检索。", period: "2026 Q3", owner: "Curator", project: "YiAi", keyResults: [{ text: "五类记录模板 + 整合索引页（loop/INDEX）落地", progress: 100, file: "okr/2026-Q3/loop/INDEX.md" }, { text: "记录 frontmatter 合规率 100%", progress: 100, file: "okr/2026-Q3/loop/INDEX.md" }, { text: "循环记录可被 RAG 检索", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/README.md" }, { text: "旧数据清零并留迁移记录", progress: 100, file: "okr/2026-Q3/2026-08/p0-curator-清除旧-okr-数据-重置知识库-okr-目录.md" }] },
   ]
 };
 
 
 export const metricsData: Record<string, MetricItem[]> = {
   executiver: [
-    { id: "exec-m01", icon: "📌", name: "闭环完成数", category: "自闭环", framework: "OKR", description: "已走通「需求→上线」的闭环条数。", current: 3, target: 3, baseline: 0, unit: " 条", trend: "up", progress: 100 },
-    { id: "exec-m02", icon: "🎯", name: "OKR 对齐率", category: "对齐", framework: "OKR", description: "trace 到北极星的角色 Goal 占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "exec-m03", icon: "⏱️", name: "闭环周期", category: "自闭环", framework: "OKR", description: "从需求评审到上线的工作日。", current: 2, target: 2, baseline: 5, unit: " 天", trend: "down", progress: 100 },
+    { id: "exec-m01", icon: "🎯", name: "竞品覆盖度", category: "市场情报", framework: "OKR", description: "已分析的竞品分类数（LLM 供应商 / SaaS 头部 / 区域竞对）。", current: 3, target: 3, baseline: 0, unit: " 类", trend: "up", progress: 100 },
+    { id: "exec-m02", icon: "📄", name: "行业报告摘要数", category: "市场情报", framework: "OKR", description: "已摘要的第三方行业报告数（Gartner/McKinsey/a16z/CAICT/IDC）。", current: 4, target: 6, baseline: 0, unit: " 篇", trend: "up", progress: 67 },
+    { id: "exec-m03", icon: "🧭", name: "战略框架落地数", category: "经营战略", framework: "OKR", description: "落地到产品战略实例的战略框架/工具数（Porter/Blue Ocean/BMC/价值主张）。", current: 4, target: 4, baseline: 0, unit: " 个", trend: "up", progress: 100 },
+    { id: "exec-m04", icon: "🗺️", name: "组织规划完备度", category: "组织路线", framework: "OKR", description: "年度规划 / QBR / OKR 跟踪 / 预算规划的文档完备度。", current: 3, target: 4, baseline: 0, unit: " 类", trend: "up", progress: 75 },
+    { id: "exec-m05", icon: "📚", name: "阅读蒸馏率", category: "阅读", framework: "OKR", description: "读书笔记蒸馏到语义知识叶的比例。", current: 50, target: 100, baseline: 0, unit: "%", trend: "up", progress: 50 },
   ],
   producter: [
-    { id: "prod-m01", icon: "📋", name: "需求评审覆盖", category: "需求评审", framework: "OKR", description: "有 PRD + 验收标准的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "prod-m02", icon: "✅", name: "验收标准完备率", category: "需求评审", framework: "OKR", description: "含可验证验收标准的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "prod-m01", icon: "📋", name: "需求评审覆盖", category: "需求评审", framework: "OKR", description: "有 PRD + 验收标准 + WSJF 优先级的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "prod-m02", icon: "✅", name: "验收标准完备率", category: "验收标准", framework: "OKR", description: "验收标准可被测试门禁直接判定的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
   ],
   leader: [
-    { id: "lead-m01", icon: "📝", name: "ADR 覆盖率", category: "技术评审", framework: "OKR", description: "有 ADR 的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "lead-m02", icon: "🔗", name: "决策可回溯率", category: "技术评审", framework: "OKR", description: "可回溯到需求的架构决策占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "lead-m01", icon: "📝", name: "ADR 覆盖率", category: "技术评审", framework: "OKR", description: "产出 ADR（Context/Decision/Consequences）的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "lead-m02", icon: "🔗", name: "决策可回溯率", category: "技术评审", framework: "OKR", description: "架构决策可回溯到需求的比例。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
   ],
   engineer: [
-    { id: "eng-m01", icon: "🧹", name: "0 新增类型错误", category: "构建", framework: "OKR", description: "改动文件新增的 vue-tsc 错误数。", current: 0, target: 0, baseline: 23, unit: " 个", trend: "down", progress: 100 },
-    { id: "eng-m02", icon: "🏗️", name: "构建通过", category: "构建", framework: "OKR", description: "vue-tsc + build 全绿。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "eng-m06", icon: "📉", name: "构建健康度", category: "构建", framework: "OKR", description: "既有类型错误数（23→0）。", current: 0, target: 0, baseline: 23, unit: " 个", trend: "down", progress: 100 },
+    { id: "eng-m01", icon: "🧹", name: "0 新增类型错误", category: "构建", framework: "OKR", description: "改动文件在 vue-tsc --noEmit 下 0 新增错误。", current: 0, target: 0, baseline: 0, unit: " 个", trend: "down", progress: 100 },
+    { id: "eng-m02", icon: "🏗️", name: "构建通过", category: "构建", framework: "OKR", description: "pnpm build 成功产出可部署 artifact。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "eng-m06", icon: "📉", name: "构建健康度", category: "构建", framework: "OKR", description: "vue-tsc 既有类型错误总数，目标从 23 清零。", current: 0, target: 0, baseline: 23, unit: " 个", trend: "down", progress: 100 },
   ],
   srer: [
-    { id: "sre-m01", icon: "🧪", name: "测试报告覆盖", category: "测试", framework: "OKR", description: "有测试报告的闭环占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "sre-m02", icon: "🚀", name: "上线记录完整度", category: "上线", framework: "OKR", description: "含 artifact/version/env 的上线记录占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "sre-m01", icon: "🧪", name: "测试报告覆盖", category: "测试", framework: "OKR", description: "有测试报告（typecheck/build + 手动验证）的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "sre-m02", icon: "🚀", name: "上线记录完整度", category: "上线", framework: "OKR", description: "上线记录含 artifact/version/env 且可追溯的需求占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
   ],
   aier: [
-    { id: "aier-m01", icon: "🧩", name: "编排覆盖", category: "编排", framework: "OKR", description: "有三要素编排的任务占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "aier-m02", icon: "✅", name: "Agent 任务完成率", category: "Agent", framework: "OKR", description: "成功完成的 Agent 任务占比。", current: 0, target: 70, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "aier-m03", icon: "🛡️", name: "确认门生效率", category: "Agent", framework: "OKR", description: "写操作经 approve/reject 把关的占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "aier-m01", icon: "🧩", name: "编排覆盖", category: "编排", framework: "OKR", description: "显式指派 skill/agent/mcp 三要素的推荐任务占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "aier-m02", icon: "✅", name: "Agent 任务完成率", category: "Agent", framework: "OKR", description: "Agent 任务成功完成的比例，目标 > 70%。", current: 0, target: 70, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "aier-m03", icon: "🛡️", name: "确认门生效率", category: "Agent", framework: "OKR", description: "写操作经 approve/reject 确认门把关的比例。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
   ],
   curator: [
-    { id: "cur-m01", icon: "📄", name: "记录模板数", category: "记录", framework: "KB Health", description: "已落地的流程记录模板数。", current: 5, target: 4, baseline: 0, unit: " 个", trend: "up", progress: 100 },
-    { id: "cur-m03", icon: "🔄", name: "frontmatter 合规率", category: "记录", framework: "KB Health", description: "记录文件 frontmatter 合规占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
-    { id: "cur-m06", icon: "🔍", name: "循环可检索性", category: "记录", framework: "KB Health", description: "可被 RAG 检索的循环记录占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "cur-m01", icon: "📄", name: "记录模板数", category: "记录", framework: "OKR", description: "流程记录模板数量（需求评审/技术评审/构建调试/测试报告/上线 5 类）。", current: 5, target: 5, baseline: 0, unit: " 个", trend: "up", progress: 100 },
+    { id: "cur-m03", icon: "🔄", name: "frontmatter 合规率", category: "记录", framework: "OKR", description: "记录 frontmatter 满足 KB rulebook 必填字段的比例。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
+    { id: "cur-m06", icon: "🔍", name: "循环可检索性", category: "记录", framework: "OKR", description: "循环记录可被 RAG 检索到的比例。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
   ]
 };
 
@@ -202,8 +213,9 @@ for (const [roleId, roleMetrics] of Object.entries(metricsData)) {
 
 // Goal → Metric mapping (linked management: one Goal contains multiple Metrics)
 export const goalMetricMap: Record<string, string[]> = {
-  "exec-001": ["exec-m01", "exec-m03"],
-  "exec-002": ["exec-m02"],
+  "exec-001": ["exec-m01", "exec-m02"],
+  "exec-002": ["exec-m03", "exec-m04"],
+  "exec-003": ["exec-m05"],
   "prod-001": ["prod-m01", "prod-m02"],
   "lead-001": ["lead-m01", "lead-m02"],
   "eng-001": ["eng-m01", "eng-m02"],
@@ -220,14 +232,14 @@ export function getGoalMetrics(goalId: string): MetricItem[] {
 
 export const roleDailyDataMap: Record<string, DailyRoleData> = {
   executiver: {
-    yesterday: ["批准「AI 全流程自闭环」北极星", "确认旧 OKR 数据清零范围", "圈定 7 角色各自在闭环上的职责"],
-    today: ["审阅 7 角色重定义后的 OKR", "对齐北极星与各角色 KR", "启动首条闭环 loop-001"],
+    yesterday: ["更新 LLM 供应商竞品格局", "摘要一份第三方行业报告", "审阅年度战略规划框架"],
+    today: ["跑半年度市场趋势复盘", "落地 Business Model Canvas 到产品战略实例", "更新月度阅读清单"],
     blocker: "",
-    mood: "Focused", moodType: "primary"
+    mood: "Strategic", moodType: "primary"
   },
   producter: {
-    yesterday: ["梳理闭环五阶段：需求→评审→编码→调试→上线", "定义 4 类流程记录（需求评审/技术评审/构建调试/测试报告）", "确认 PRD + 验收标准模板"],
-    today: ["产出 loop-001 需求评审记录（PRD + 验收标准）", "给首条闭环需求打分（WSJF）", "拆解需求为可执行任务"],
+    yesterday: ["复盘 loop-001 需求评审：对照 PRD 与验收标准，记录可判定/需人工判据", "产出 loop-002 PRD（背景/目标/范围/非目标）", "WSJF 打分沿用既有实现"],
+    today: ["写 loop-002 验收标准（可被测试门禁直接判定）", "把复盘结论落 01-requirement-review", "需求→任务拆解模板复用到 loop-002"],
     blocker: "",
     mood: "Productive", moodType: "success"
   },
@@ -268,18 +280,18 @@ export const roleDailyDataMap: Record<string, DailyRoleData> = {
 
 export const roleChecklistMap: Record<string, ChecklistItem[]> = {
   executiver: [
-    { id: "e1", text: "北极星「AI 全流程自闭环」已审批", done: true },
-    { id: "e2", text: "7 角色 OKR 对齐到北极星", done: true, value: "对齐率 100%" },
-    { id: "e3", text: "首条闭环 loop-001 启动", done: true },
-    { id: "e4", text: "审批记录落知识库", done: true },
-    { id: "e5", text: "闭环周期 ≤ 2 个工作日", done: true }
+    { id: "e1", text: "竞品分析覆盖 LLM/SaaS/区域竞对", done: true, value: "3 类" },
+    { id: "e2", text: "第三方行业报告摘要落知识库", done: false },
+    { id: "e3", text: "战略框架（Porter/Blue Ocean/BMC）落地", done: true },
+    { id: "e4", text: "年度规划 + QBR + OKR 跟踪就位", done: false },
+    { id: "e5", text: "月度阅读清单滚动更新", done: false }
   ],
   producter: [
-    { id: "p1", text: "loop-001 需求评审记录（PRD + 验收标准）", done: true },
-    { id: "p2", text: "WSJF 优先级打分落地", done: true },
-    { id: "p3", text: "需求→任务拆解模板", done: true },
-    { id: "p4", text: "评审记录落知识库（01-requirement-review）", done: true },
-    { id: "p5", text: "验收标准可验证", done: true }
+    { id: "p1", text: "loop-001 PRD（背景/目标/范围/非目标/干系人）", done: true },
+    { id: "p2", text: "验收标准可被测试门禁直接判定", done: true },
+    { id: "p3", text: "WSJF 优先级（价值×紧迫÷难度）打分", done: true },
+    { id: "p4", text: "需求评审记录落知识库（01-requirement-review）", done: true },
+    { id: "p5", text: "需求→任务拆解模板可复用", done: true }
   ],
   leader: [
     { id: "l1", text: "loop-001 技术评审记录（ADR）", done: true },
@@ -324,51 +336,118 @@ export const roleChecklistMap: Record<string, ChecklistItem[]> = {
 export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
   executiver: {
     status: "On Track", statusType: "success",
-    done: ["批准北极星「AI 从需求到上线全流程自闭环」", "圈定 7 角色在闭环上的职责边界", "确认旧数据清零范围与迁移口径"],
+    done: [
+      { text: "更新 LLM 供应商竞品格局", file: "executiver/industry/competitors/README.md" },
+      { text: "摘要 Gartner/McKinsey 行业报告", file: "executiver/industry/reports/README.md" },
+      { text: "落地 Business Model Canvas 战略实例", file: "executiver/strategy/README.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 全流程，规划 loop-002"],
-    decisions: ["北极星：AI 全流程自闭环，替代旧的「产品矩阵增长」", "执行深度：全量执行", "记录载体：知识库 markdown + YiVad 新页"]
+    nextWeek: [
+      { text: "跑季度经营复盘（QBR）", file: "executiver/roadmap/README.md" },
+      { text: "更新月度阅读清单与读书笔记", file: "executiver/reading-list/README.md" }
+    ],
+    decisions: [
+      { text: "定位：Business Strategy 跨管线上下文", file: "executiver/strategy/README.md" },
+      { text: "三芯片：market-intel / org-strategy / reading-list", file: "executiver/industry/INDEX.md" },
+      { text: "路线：战略框架 → 合成 → 规划 → 执行", file: "executiver/roadmap/README.md" }
+    ]
   },
   producter: {
     status: "On Track", statusType: "success",
-    done: ["定义闭环五阶段", "定义 4 类流程记录", "确认 PRD + 验收标准模板"],
+    done: [
+      { text: "产出 loop-001 需求评审（PRD + 6 验收标准 + WSJF）", file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" },
+      { text: "需求评审记录落知识库（01-requirement-review）", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" },
+      { text: "复盘 loop-001，产出 loop-002 PRD 与验收标准", file: "okr/2026-Q3/2026-08/p1-producter-复盘-loop-001-需求评审-产出-loop-002-prd-与验收标准.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 需求评审，规划 loop-002 需求"],
-    decisions: ["需求评审 = 产出 PRD + 验收标准 + WSJF 优先级", "每需求一条 01-requirement-review 记录"]
+    nextWeek: [
+      { text: "跑通 loop-002 需求评审全流程", file: "okr/2026-Q3/loop/_templates/01-requirement-review.md" },
+      { text: "沉淀 PRD / 验收标准 / WSJF 可复用模板", file: "okr/2026-Q3/loop/_templates/01-requirement-review.md" }
+    ],
+    decisions: [
+      { text: "需求评审 = 产出 PRD + 验收标准 + WSJF 优先级", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" },
+      { text: "每需求一条 01-requirement-review 记录", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" },
+      { text: "验收标准必须可被测试门禁直接判定", file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" }
+    ]
   },
   leader: {
     status: "On Track", statusType: "success",
-    done: ["圈定记录载体（KB markdown + YiVad 新页）", "定 KB loop/ 目录规范", "盘点可复用的 OKR 机制"],
+    done: [
+      { text: "圈定记录载体（KB markdown + YiVad 新页）", file: "okr/2026-Q3/2026-08/p0-leader-产出技术评审记录-adr-记录载体选型.md" },
+      { text: "定 KB loop/ 目录规范", file: "okr/2026-Q3/loop/INDEX.md" },
+      { text: "盘点可复用的 OKR 机制", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 技术评审，沉淀可复用 ADR"],
-    decisions: ["记录载体：KB markdown 为事实源 + YiVad 新页整合展示", "ADR 随 02-technical-review 落知识库"]
+    nextWeek: [
+      { text: "复盘 loop-001 技术评审，沉淀可复用 ADR", file: "okr/2026-Q3/2026-08/p1-leader-复盘-loop-001-技术评审-沉淀可复用-adr-模板.md" }
+    ],
+    decisions: [
+      { text: "记录载体：KB markdown 为事实源 + YiVad 新页整合展示", file: "okr/2026-Q3/2026-08/p0-leader-产出技术评审记录-adr-记录载体选型.md" },
+      { text: "ADR 随 02-technical-review 落知识库", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }
+    ]
   },
   engineer: {
     status: "On Track", statusType: "success",
-    done: ["重写 okrData.ts 7 角色数据", "基线盘点：23 个 vue-tsc 既有错误", "确认类型接口不变、只换数据"],
+    done: [
+      { text: "重写 okrData.ts 7 角色数据", file: "okr/2026-Q3/2026-08/p0-engineer-重定义-7-角色-okr-北极星-ai-全流程自闭环.md" },
+      { text: "基线盘点：23 个 vue-tsc 既有错误", file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" },
+      { text: "确认类型接口不变、只换数据", file: "okr/2026-Q3/2026-08/p1-engineer-写-processrecord-vue-流程记录整合页-路由-菜单.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 构建调试，维护 0 类型错误基线"],
-    decisions: ["类型接口保持不变，只替换数据内容", "清零 23 个既有错误纳入本轮 engineer 收尾目标"]
+    nextWeek: [
+      { text: "复盘 loop-001 构建调试，维护 0 类型错误基线", file: "okr/2026-Q3/2026-08/p1-engineer-维护-0-类型错误基线-沉淀构建调试模板复用.md" }
+    ],
+    decisions: [
+      { text: "类型接口保持不变，只替换数据内容", file: "okr/2026-Q3/2026-08/p0-engineer-重定义-7-角色-okr-北极星-ai-全流程自闭环.md" },
+      { text: "清零 23 个既有错误纳入本轮 engineer 收尾目标", file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }
+    ]
   },
   srer: {
     status: "On Track", statusType: "success",
-    done: ["定测试门禁（vue-tsc + build）", "定上线记录字段", "定回滚/追溯口径"],
+    done: [
+      { text: "定测试门禁（vue-tsc + build）", file: "okr/2026-Q3/2026-08/p1-srer-跑门禁-产出测试报告与上线记录.md" },
+      { text: "定上线记录字段", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/05-launch-record.md" },
+      { text: "定回滚/追溯口径", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/05-launch-record.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 门禁与上线，规划 loop-002 上线"],
-    decisions: ["门禁：typecheck + build 通过才上线", "上线记录含 artifact/version/env"]
+    nextWeek: [
+      { text: "复盘 loop-001 门禁与上线，规划 loop-002 上线", file: "okr/2026-Q3/2026-08/p2-srer-复盘-loop-001-门禁与上线-规划-loop-002-上线口径.md" }
+    ],
+    decisions: [
+      { text: "门禁：typecheck + build 通过才上线", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/04-test-report.md" },
+      { text: "上线记录含 artifact/version/env", file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/05-launch-record.md" }
+    ]
   },
   aier: {
     status: "On Track", statusType: "success",
-    done: ["盘点 skill/agent/mcp 三要素映射", "确认 WSJF 评分逻辑可复用", "确认 Agent 确认门机制在位"],
+    done: [
+      { text: "盘点 skill/agent/mcp 三要素映射", file: "okr/2026-Q3/2026-08/p2-aier-补齐-7-角色三要素编排映射.md" },
+      { text: "确认 WSJF 评分逻辑可复用", file: "okr/2026-Q3/2026-08/p2-aier-沉淀-7-角色三要素编排清单-规划-loop-002-编排.md" },
+      { text: "确认 Agent 确认门机制在位", file: "aier/methodology/agent-harness-plugin-architecture.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 编排映射，沉淀三要素清单"],
-    decisions: ["编排三要素：skill/agent/mcp 确定性映射 + AI 兜底", "WSJF 评分复用既有实现"]
+    nextWeek: [
+      { text: "复盘 loop-001 编排映射，沉淀三要素清单", file: "okr/2026-Q3/2026-08/p2-aier-沉淀-7-角色三要素编排清单-规划-loop-002-编排.md" }
+    ],
+    decisions: [
+      { text: "编排三要素：skill/agent/mcp 确定性映射 + AI 兜底", file: "okr/2026-Q3/2026-08/p2-aier-补齐-7-角色三要素编排映射.md" },
+      { text: "WSJF 评分复用既有实现", file: "okr/2026-Q3/2026-08/p2-aier-沉淀-7-角色三要素编排清单-规划-loop-002-编排.md" }
+    ]
   },
   curator: {
     status: "On Track", statusType: "success",
-    done: ["清空旧 OKR 数据（goals/metrics/2026-08）", "定 loop/ 目录结构", "定 4 类记录模板 frontmatter"],
+    done: [
+      { text: "清空旧 OKR 数据（goals/metrics/2026-08）", file: "okr/2026-Q3/2026-08/p0-curator-清除旧-okr-数据-重置知识库-okr-目录.md" },
+      { text: "定 loop/ 目录结构", file: "okr/2026-Q3/loop/INDEX.md" },
+      { text: "定 4 类记录模板 frontmatter", file: "okr/2026-Q3/2026-08/p1-curator-建立-4-类流程记录模板-loop-目录.md" }
+    ],
     blockers: [],
-    nextWeek: ["复盘 loop-001 记录规范，规划 loop-002 模板复用"],
-    decisions: ["loop/ 每闭环一个目录，含 01~05 记录", "记录 frontmatter 沿用 KB rulebook 规范"]
+    nextWeek: [
+      { text: "复盘 loop-001 记录规范，规划 loop-002 模板复用", file: "okr/2026-Q3/2026-08/p2-curator-复盘-loop-001-记录规范-规划-loop-002-模板复用.md" }
+    ],
+    decisions: [
+      { text: "loop/ 每闭环一个目录，含 01~05 记录", file: "okr/2026-Q3/loop/INDEX.md" },
+      { text: "记录 frontmatter 沿用 KB rulebook 规范", file: "okr/2026-Q3/2026-08/p1-curator-建立-4-类流程记录模板-loop-目录.md" }
+    ]
   }
 };
