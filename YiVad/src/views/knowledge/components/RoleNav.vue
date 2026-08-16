@@ -8,6 +8,7 @@
     >
       <span class="role-nav__icon">🌐</span>
       <span class="role-nav__name">All</span>
+      <span v-if="counts && counts.all !== undefined" class="role-nav__count">{{ counts.all }}</span>
     </button>
     <button
       v-for="rid in ROLE_IDS"
@@ -18,6 +19,7 @@
     >
       <span class="role-nav__icon">{{ rolesData[rid].icon }}</span>
       <span class="role-nav__name">{{ rolesData[rid].name }}</span>
+      <span v-if="counts && counts[rid] !== undefined" class="role-nav__count">{{ counts[rid] }}</span>
     </button>
   </div>
 </template>
@@ -36,8 +38,10 @@ const props = withDefaults(
     modelValue?: string[];
     /** 是否在首位展示「All」选项（用于筛选而非导航）。 */
     all?: boolean;
+    /** 各角色条目上的数量角标（键为角色 id，`all` 为「All」总数）；缺省则隐藏角标。 */
+    counts?: Record<string, number>;
   }>(),
-  { active: "", multiple: false, modelValue: () => [], all: false }
+  { active: "", multiple: false, modelValue: () => [], all: false, counts: () => ({}) }
 );
 
 const emit = defineEmits<{ (e: "update:modelValue", rids: string[]): void }>();
@@ -74,4 +78,23 @@ function onSelect(rid: string) {
 .role-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .role-nav__item { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 16px; border: 1px solid var(--el-border-color-lighter); background: var(--el-bg-color); cursor: pointer; font-size: 12px; color: var(--el-text-color-regular); transition: all .15s; &:hover { border-color: var(--el-color-primary-light-5); color: var(--el-color-primary); } &.is-active { background: var(--el-color-primary); border-color: var(--el-color-primary); color: #fff; cursor: default; } }
 .role-nav__icon { font-size: 13px; }
+.role-nav__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  font-variant-numeric: tabular-nums;
+}
+.role-nav__item.is-active .role-nav__count {
+  color: var(--el-color-primary);
+  background: #fff;
+}
 </style>

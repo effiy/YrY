@@ -2,11 +2,13 @@
   <div class="harness-overview">
     <!-- ═══ Header ═══ -->
     <div class="ho__header">
-      <div class="ho__header-title">
-        <h1 class="ho__title">{{ t("home.title") }}</h1>
-      </div>
+      <!-- ═══ 角色筛选（联动下方任务表格）═══ -->
+      <section class="ho__section">
+        <div class="ho__role-nav">
+          <RoleNav v-model="selectedRoles" multiple all :counts="roleCounts" />
+        </div>
+      </section>
       <div class="ho__header-actions">
-        <span class="ho__clock">{{ clock }}</span>
         <el-button size="small" :icon="Reading" @click="router.push('/knowledge/pipeline')">
           {{ t("home.knowledge") }}
         </el-button>
@@ -19,16 +21,9 @@
       </div>
     </div>
 
-    <!-- ═══ 角色筛选（联动下方任务表格）═══ -->
-    <section class="ho__section">
-      <div class="ho__role-nav">
-        <RoleNav v-model="selectedRoles" multiple all />
-      </div>
-    </section>
-
     <!-- ═══ AI 自主推荐 OKR 任务清单 (deepseek-harness todo/ capability) ═══ -->
     <section class="ho__section">
-      <OkrRecommendPanel :roles="selectedRoles" />
+      <OkrRecommendPanel :roles="selectedRoles" @update:counts="roleCounts = $event" />
     </section>
   </div>
 </template>
@@ -47,6 +42,9 @@ const router = useRouter();
 
 /** 当前联动选中的角色 id 集合（如 ["engineer"]）；空数组 = 展示全部角色。 */
 const selectedRoles = ref<string[]>([]);
+
+/** 各角色推荐任务数量（由 OkrRecommendPanel 上报，键为角色 id / `all`），展示在角色导航角标。 */
+const roleCounts = ref<Record<string, number>>({});
 
 // ═══════════════════════════════════════════════
 // Clock
@@ -91,9 +89,6 @@ onBeforeUnmount(() => {
 .ho__title { margin: 0; font-size: 22px; font-weight: 700; }
 .ho__header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ho__clock { font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); font-family: monospace; }
-
-// ── Section ────────────────────────────────────
-.ho__section { margin-bottom: 22px; }
 
 // ── Role nav ────────────────────────────────────
 .ho__role-nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

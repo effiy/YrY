@@ -118,11 +118,8 @@
           <span v-else>{{ row.reason }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.action')" width="140" fixed="right" align="center">
+      <el-table-column :label="t('home.aiRecommend.cols.action')" width="80" fixed="right" align="center">
         <template #default="{ row }">
-          <el-tooltip :content="t('home.aiRecommend.regen')" placement="top">
-            <el-button link type="primary" size="small" :icon="RefreshRight" :loading="regeneratingId === row.id" @click="handleRegenerate(row as TableRow)" />
-          </el-tooltip>
           <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row as TableRow)" />
         </template>
       </el-table-column>
@@ -192,7 +189,7 @@
 </template>
 
 <script setup lang="ts" name="OkrRecommendPanel">
-import { computed, reactive, ref, onMounted } from "vue";
+import { computed, reactive, ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { Search, Grid, List, Postcard, Delete, MagicStick, RefreshRight } from "@element-plus/icons-vue";
@@ -200,7 +197,7 @@ import dayjs from "dayjs";
 import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile, readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { chat } from "@/api/modules/chatService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
-import { rolesData, allGoalsMap } from "@/views/knowledge/executiver/okrData";
+import { rolesData, allGoalsMap, ROLE_IDS } from "@/views/knowledge/executiver/okrData";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import { skillLabel, mcpLabel, isOverdue } from "./format";
 import PriorityTag from "./fields/PriorityTag.vue";
@@ -234,6 +231,8 @@ const { t } = useI18n();
 
 /** 由父组件（home）传入的联动项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
 const props = defineProps<{ projects?: string[]; roles?: string[] }>();
+
+const emit = defineEmits<{ (e: "update:counts", counts: Record<string, number>): void }>();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -280,6 +279,15 @@ const allRows = computed<TableRow[]>(() => {
   );
   return [...tasks, ...actionItems.value].sort((a, b) => b.score - a.score);
 });
+
+/** 各角色条目数量（`all` 为总数），上报给父组件的角色导航角标。 */
+const roleCounts = computed<Record<string, number>>(() => {
+  const counts: Record<string, number> = { all: allRows.value.length };
+  for (const rid of ROLE_IDS) counts[rid] = allRows.value.filter(i => i.role === rid).length;
+  return counts;
+});
+
+watch(roleCounts, c => emit("update:counts", { ...c }), { immediate: true });
 
 // ── 分类筛选 + 搜索 + 日期 ──────────────────────────
 const categoryFilter = ref<"all" | OkrListType>("all");
