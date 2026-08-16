@@ -576,6 +576,8 @@ export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: st
   const status = typeof meta.status === "string" ? meta.status : "Planned";
   const progress = toNumber(meta.progress);
   const priority = clampPriority(meta.priority);
+  const metricId = typeof meta.metricId === "string" ? meta.metricId : "";
+  const reason = typeof meta.reason === "string" ? meta.reason : "";
   const listType: OkrListType = LIST_TYPES.some(l => l.key === meta.listType) ? (meta.listType as OkrListType) : "sprint";
   return {
     id: typeof meta.id === "string" ? meta.id : fallbackId,
@@ -585,11 +587,11 @@ export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: st
     roleIcon,
     priority,
     goalId,
-    metricId: "",
-    metric: null,
+    metricId,
+    metric: resolveMetric(role, metricId, goalId),
     effort: "M",
     dueDate: deadline,
-    reason: status,
+    reason,
     roi: priority === "P0" ? "high" : priority === "P1" ? "medium" : "low",
     difficulty: "medium",
     urgency: urgencyFromDue(deadline),

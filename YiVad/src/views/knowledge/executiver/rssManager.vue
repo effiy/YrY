@@ -1,28 +1,20 @@
 <template>
   <div class="rss-manager">
-    <el-breadcrumb separator="/" class="rss-manager__breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
-      <el-breadcrumb-item>RSS Manager</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <header class="rss-manager__header">
-      <div class="rss-manager__header-row">
-        <h1>RSS Feed Management</h1>
-        <el-button
-          :type="schedulerStatus.enabled ? 'warning' : 'success'"
-          size="small"
-          plain
-          @click="toggleScheduler"
-          :loading="schedulerLoading"
-        >
-          {{ schedulerStatus.enabled ? '⏸ Pause Scheduler' : '▶ Start Scheduler' }}
-        </el-button>
-      </div>
-      <p>
-        Subscribe to RSS feeds, auto-classify into <code>YiKnowledge/executive</code> subdomains.
-        Articles feed the <em>market-intel</em> and <em>reading-list</em> pipeline chips. Each source manages its own fetch schedule.
-      </p>
-    </header>
+    <div class="rss-manager__topbar">
+      <el-breadcrumb separator="/" class="rss-manager__breadcrumb">
+        <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
+        <el-breadcrumb-item>RSS Manager</el-breadcrumb-item>
+      </el-breadcrumb>
+      <el-button
+        :type="schedulerStatus.enabled ? 'warning' : 'success'"
+        size="small"
+        plain
+        @click="toggleScheduler"
+        :loading="schedulerLoading"
+      >
+        {{ schedulerStatus.enabled ? '⏸ Pause Scheduler' : '▶ Start Scheduler' }}
+      </el-button>
+    </div>
 
     <el-tabs v-model="activeTab" type="card" class="rss-manager__tabs" @tab-change="onTabChange">
       <el-tab-pane name="seeds">
@@ -927,8 +919,14 @@ onMounted(() => {
   min-height: 100%;
 }
 
-// ── Breadcrumb & Sub-nav ──
-.rss-manager__breadcrumb { margin-bottom: 4px; }
+// ── Topbar (breadcrumb + scheduler toggle) ──
+.rss-manager__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
 
 .rss-manager__sub-nav { display: flex; gap: 8px; margin-bottom: 12px; }
 .rss-manager__sub-nav-item {

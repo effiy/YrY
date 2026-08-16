@@ -1,22 +1,5 @@
 <template>
   <div class="okr-rec">
-    <!-- ═══ Header ═══ -->
-    <div class="okr-rec__header">
-      <div class="okr-rec__header-left">
-        <h2 class="okr-rec__title">{{ t("home.aiRecommend.title") }}</h2>
-        <p class="okr-rec__subtitle">{{ t("home.aiRecommend.subtitle") }}</p>
-      </div>
-      <div class="okr-rec__header-right">
-        <el-select v-model="roleScope" size="small" class="okr-rec__scope">
-          <el-option :value="'all'" :label="t('home.aiRecommend.scopeAll')" />
-          <el-option v-for="r in roleOptions" :key="r.id" :value="r.id" :label="`${r.icon} ${r.name}`" />
-        </el-select>
-        <el-button size="small" type="primary" :icon="MagicStick" :loading="generating" @click="handleGenerate">
-          {{ t("home.aiRecommend.generate") }}
-        </el-button>
-      </div>
-    </div>
-
     <!-- ═══ 工具栏：分类筛选 + 搜索 + 统计 ═══ -->
     <div class="okr-rec__toolbar">
       <div class="okr-rec__toolbar-left">
