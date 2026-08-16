@@ -1,39 +1,12 @@
 export default {
   home: {
     title: "Yi 系统 · Agent Harness 总览",
-    updated: "更新于 {time}",
     aiChat: "AI 对话",
     okr: "OKR",
     rss: "RSS",
     knowledge: "知识库",
     skills: "技能",
     roleFilter: "角色筛选",
-
-    status: {
-      online: "在线",
-      offline: "离线",
-      disconnected: "未连接",
-      ready: "就绪"
-    },
-
-    projects: {
-      yiAi: {
-        name: "YiAi",
-        role: "Agent 核心 · 模型适配 / 工具 / 确认门"
-      },
-      yiVad: {
-        name: "YiVad",
-        role: "管理控制台 · 你当前所在的应用"
-      },
-      yiPet: {
-        name: "YiPet",
-        role: "浏览器扩展 · 内容分发与采集"
-      },
-      yiKnowledge: {
-        name: "YiKnowledge",
-        role: "知识库 · 会话日志与可重放事实"
-      }
-    },
 
     aiRecommend: {
       title: "AI 自主推荐 · OKR 任务清单",

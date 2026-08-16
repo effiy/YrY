@@ -5,11 +5,13 @@
 <script setup lang="ts" name="RoleLink">
 import { useRouter } from "vue-router";
 
-const props = defineProps<{ role: string; roleName: string; roleIcon: string }>();
+const props = withDefaults(defineProps<{ role: string; roleName: string; roleIcon: string; to?: string }>(), {
+  to: "/executiver/okr"
+});
 const router = useRouter();
 
 function navigate() {
-  if (props.role) router.push(`/executiver/okr/${props.role}`);
+  if (props.role) router.push(`${props.to}/${props.role}`);
 }
 </script>
 

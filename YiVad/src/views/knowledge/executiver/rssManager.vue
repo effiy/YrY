@@ -1,5 +1,6 @@
 <template>
   <div class="rss-manager">
+    <ExecutiverQuickNav active="rss" />
     <div class="rss-manager__topbar">
       <el-breadcrumb separator="/" class="rss-manager__breadcrumb">
         <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
@@ -464,6 +465,7 @@ import {
   type RssSeedDocument, type RssItemDocument, type RssSchedulerStatus, type RssListParams
 } from "@/api/modules/rssService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 import { useRssAiChat } from "@/hooks/useRssAiChat";
 import { loadBool, saveBool } from "@/utils/storage";
 import { EXAMPLE_SEEDS } from "./rssSeedData";

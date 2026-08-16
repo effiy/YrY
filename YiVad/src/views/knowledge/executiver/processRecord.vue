@@ -1,5 +1,6 @@
 <template>
   <div class="process">
+    <ExecutiverQuickNav active="process" />
     <div class="process__head">
       <h1 class="process__title">流程记录</h1>
       <el-tag size="small" type="primary">{{ loopGroups.length }} 条闭环 · {{ recordCount }} 条记录</el-tag>
@@ -52,6 +53,7 @@ import { Refresh } from "@element-plus/icons-vue";
 import { scanKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 const loading = ref(false);

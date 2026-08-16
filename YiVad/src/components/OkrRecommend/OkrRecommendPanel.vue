@@ -56,7 +56,7 @@
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.role')" width="150">
         <template #default="{ row }">
-          <RoleLink :role="row.role" :role-name="row.roleName" :role-icon="row.roleIcon" />
+          <RoleLink :role="row.role" :role-name="row.roleName" :role-icon="row.roleIcon" to="/knowledge" />
         </template>
       </el-table-column>
       <el-table-column :label="t('home.aiRecommend.cols.goal')" width="260">
@@ -136,7 +136,7 @@
           <div class="okr-rec__list-title okr-rec__cell-title--link" @click="openPreview(item)">{{ item.title }}</div>
           <div class="okr-rec__list-meta">
             <CategoryTag :list-type="item.listType" />
-            <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
+            <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" to="/knowledge" />
             <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" compact />
             <span v-if="item.metric" class="okr-rec__list-metric">{{ item.metric.icon }} {{ item.metric.name }} {{ item.metric.current }}→{{ item.metric.target }}{{ item.metric.unit }}</span>
             <SkillTag v-if="item.skill" :skill="item.skill" />
@@ -176,7 +176,7 @@
           <McpTag :mcp="item.mcp" />
         </div>
         <div class="okr-rec__card-foot">
-          <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" />
+          <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" to="/knowledge" />
           <EffortBadge :effort="item.effort" />
           <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" compact />
           <DueLabel class="okr-rec__card-due" :due-date="item.dueDate" />
@@ -233,12 +233,15 @@ import {
 const { t } = useI18n();
 
 /** 由父组件（home）传入的联动项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
-const props = defineProps<{ projects?: string[]; role?: OkrScope }>();
+const props = defineProps<{ projects?: string[]; roles?: string[] }>();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
-/** 角色筛选：由父组件（home 的角色导航）控制；"all" = 展示全部角色。 */
-const roleScope = computed<OkrScope>(() => props.role ?? "all");
+/** 选中角色 id 集合（由父组件角色导航控制）；空数组 = 展示全部角色。 */
+const selectedRoles = computed(() => props.roles ?? []);
+
+/** AI 生成范围：仅选中单一角色时限定到该角色，否则生成全角色（"all"）。 */
+const roleScope = computed<OkrScope>(() => (selectedRoles.value.length === 1 ? selectedRoles.value[0] : "all"));
 const roleOptions = Object.values(rolesData).map(r => ({ id: r.id, name: r.name, icon: r.icon }));
 
 /** 批量生成进行中（禁用生成按钮）。 */
@@ -294,7 +297,7 @@ function projectOfRow(row: TableRow): string {
 const categoryCounts = computed<Record<string, number>>(() => {
   const projs = props.projects;
   let scoped = projs?.length ? allRows.value.filter(i => projs.includes(projectOfRow(i))) : allRows.value;
-  if (roleScope.value !== "all") scoped = scoped.filter(i => i.role === roleScope.value);
+  if (selectedRoles.value.length) scoped = scoped.filter(i => selectedRoles.value.includes(i.role));
   const counts: Record<string, number> = { all: scoped.length };
   for (const l of LIST_TYPES) counts[l.key] = scoped.filter(i => i.listType === l.key && !isResolvedRisk(i)).length;
   return counts;
@@ -309,7 +312,7 @@ const filteredItems = computed(() => {
   if (categoryFilter.value === "risk") result = result.filter(i => !isResolvedRisk(i));
   const projs = props.projects;
   if (projs?.length) result = result.filter(i => projs.includes(projectOfRow(i)));
-  if (roleScope.value !== "all") result = result.filter(i => i.role === roleScope.value);
+  if (selectedRoles.value.length) result = result.filter(i => selectedRoles.value.includes(i.role));
   const date = dueDateFilter.value;
   if (date) result = result.filter(i => i.dueDate === date);
   const kw = searchKeyword.value.trim().toLowerCase();

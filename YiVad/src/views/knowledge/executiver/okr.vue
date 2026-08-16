@@ -1,10 +1,8 @@
 <template>
   <div class="okr">
+    <ExecutiverQuickNav active="okr" />
     <div class="okr__head">
-      <h1 class="okr__title">Action Items</h1>
-      <el-tag size="small" :type="actionSummary.overdue > 0 ? 'danger' : 'success'"
-        >{{ actionSummary.open }} open · {{ actionSummary.overdue }} overdue</el-tag
-      >
+      <RoleNav v-model="selectedRoles" multiple all />
       <div class="okr__filters">
         <el-select v-model="monthFilter" size="small" clearable placeholder="All months" style="width: 140px">
           <el-option v-for="m in MONTHS" :key="m.value" :label="m.label" :value="m.value" />
@@ -144,9 +142,39 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="subtaskCount" label="Subtasks" width="180" sortable align="center">
+        <el-table-column prop="subtaskCount" label="Subtasks" width="150" sortable align="center">
           <template #default="{ row }">
-            <span v-if="row.subtaskCount" class="okr__subtask-count">{{ row.subtaskCount }}</span>
+            <el-popover
+              v-if="row.subtasks.length"
+              placement="left"
+              :width="380"
+              trigger="click"
+              :show-arrow="false"
+              popper-class="okr__subtask-pop"
+            >
+              <template #reference>
+                <span class="okr__subtask-count okr__subtask-count--link">
+                  <b>{{ row.subtaskCount }}</b>
+                  <span>subtasks</span>
+                </span>
+              </template>
+              <div class="okr__subtask-head">
+                <span class="okr__subtask-head__icon">🧩</span>
+                可执行任务分解 · {{ row.subtaskCount }} 项
+              </div>
+              <div class="okr__subtask-list">
+                <div v-for="(s, i) in row.subtasks as ExampleSubtask[]" :key="s.id || i" class="okr__subtask-item">
+                  <div class="okr__subtask-item__title">
+                    <span class="okr__subtask-item__idx">{{ i + 1 }}</span>
+                    <span class="okr__subtask-item__name">{{ s.title }}</span>
+                  </div>
+                  <div class="okr__subtask-item__meta"><span class="okr__subtask-item__label">做法</span>{{ s.detail }}</div>
+                  <div class="okr__subtask-item__meta okr__subtask-item__meta--acceptance">
+                    <span class="okr__subtask-item__label">完成标准</span>{{ s.acceptance }}
+                  </div>
+                </div>
+              </div>
+            </el-popover>
             <span v-else class="okr__subtask-count">—</span>
           </template>
         </el-table-column>
@@ -174,8 +202,10 @@ import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/mo
 import { loadBool, saveBool } from "@/utils/storage";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
-import { EXAMPLE_TASKS, type ExampleTask } from "@/views/knowledge/executiver/okrFlowData";
+import { EXAMPLE_TASKS, type ExampleTask, type ExampleSubtask } from "@/views/knowledge/executiver/okrFlowData";
 import { rolesData, roleWeeklyDataMap, goalRoleMap } from "@/views/knowledge/executiver/okrData";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
+import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 import PriorityTag from "@/components/OkrRecommend/fields/PriorityTag.vue";
 import RoleLink from "@/components/OkrRecommend/fields/RoleLink.vue";
 import GoalCell from "@/components/OkrRecommend/fields/GoalCell.vue";
@@ -212,6 +242,8 @@ interface ActionItem {
   isOverdue: boolean;
   filePath?: string;
   subtaskCount: number;
+  /** 可执行子任务分解（做法 + 完成标准），供 Subtasks 列展开展示。 */
+  subtasks: ExampleSubtask[];
 }
 
 /** 角色元信息 + 周报状态，统一从 okrData.ts 读取（单一事实来源，避免与各 role OKR 页漂移）。 */
@@ -234,6 +266,9 @@ const SEEDED_KEY = "yivad.okr.actionItemsSeeded.v2";
 
 /** 优先级排序权重（P0 最前）。 */
 const PRIORITY_ORDER: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+/** 示例任务按 id 索引 — 历史种子文件的 subtasks 只落在正文、不在 meta，回退到此还原。 */
+const EXAMPLE_TASK_BY_ID = new Map(EXAMPLE_TASKS.map(t => [t.id, t]));
 
 function deadlineTs(deadline: string): number {
   const t = dayjs(deadline);
@@ -259,10 +294,15 @@ const MONTHS: { value: string; label: string }[] = [
 /** 默认显示当前月份（`dayjs().month()` 0–11，+1 对齐 MONTHS 的 1–12 值）。 */
 const monthFilter = ref(String(dayjs().month() + 1));
 
+/** 角色筛选：选中角色 id 集合（空 = 全部），联动 action items 列表。 */
+const selectedRoles = ref<string[]>([]);
+
 const filteredActionItems = computed(() => {
-  if (!monthFilter.value) return actionItems.value;
+  let list = actionItems.value;
+  if (selectedRoles.value.length) list = list.filter(a => !!a.linkRole && selectedRoles.value.includes(a.linkRole));
+  if (!monthFilter.value) return list;
   const target = Number(monthFilter.value);
-  return actionItems.value.filter(a => {
+  return list.filter(a => {
     const d = dayjs(a.deadline);
     return d.isValid() && d.month() + 1 === target;
   });
@@ -283,6 +323,25 @@ function statusTypeOf(status: string): ActionItem["statusType"] {
   return "info";
 }
 
+/** 从 frontmatter 解析 subtasks（数组 → ExampleSubtask[]）；非法/空值返回 undefined 交由调用方回退。 */
+function parseSubtasks(raw: unknown): ExampleSubtask[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: ExampleSubtask[] = [];
+  for (const s of raw) {
+    if (!s || typeof s !== "object") continue;
+    const o = s as Record<string, unknown>;
+    const title = typeof o.title === "string" ? o.title : "";
+    if (!title) continue;
+    out.push({
+      id: typeof o.id === "string" ? o.id : "",
+      title,
+      detail: typeof o.detail === "string" ? o.detail : "",
+      acceptance: typeof o.acceptance === "string" ? o.acceptance : ""
+    });
+  }
+  return out.length ? out : undefined;
+}
+
 function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
   const m = f.meta ?? {};
   const title = typeof m.title === "string" ? m.title : f.name.replace(/\.md$/, "");
@@ -296,8 +355,10 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
   const agent = typeof m.agent === "string" ? m.agent : undefined;
   const mcp = typeof m.mcp === "string" ? m.mcp : undefined;
   const isOverdue = m.overdue === true || (dayjs(deadline).isValid() && dayjs(deadline).isBefore(dayjs().startOf("day")));
+  const id = typeof m.id === "string" ? m.id : f.name.replace(/\.md$/, "");
+  const subtasks = parseSubtasks(m.subtasks) ?? EXAMPLE_TASK_BY_ID.get(id)?.subtasks ?? [];
   return {
-    id: typeof m.id === "string" ? m.id : f.name.replace(/\.md$/, ""),
+    id,
     action: title,
     ...roleInfo(linkRole),
     linkRole,
@@ -316,7 +377,8 @@ function actionItemFromFile(f: KnowledgeFileEntry): ActionItem {
     progress,
     isOverdue,
     filePath: f.path,
-    subtaskCount: Number(m.subtaskCount ?? 0) || 0
+    subtaskCount: subtasks.length || Number(m.subtaskCount ?? 0) || 0,
+    subtasks
   };
 }
 
@@ -342,7 +404,8 @@ function actionItemFromExample(t: ExampleTask, filePath: string): ActionItem {
     progress: t.progress,
     isOverdue: dayjs(t.deadline).isValid() && dayjs(t.deadline).isBefore(dayjs().startOf("day")),
     filePath,
-    subtaskCount: t.subtasks.length
+    subtaskCount: t.subtasks.length,
+    subtasks: t.subtasks
   };
 }
 
@@ -364,7 +427,8 @@ function actionItemMeta(t: ExampleTask): Record<string, unknown> {
     skill: t.skill,
     agent: t.agent,
     mcp: t.mcp,
-    subtaskCount: t.subtasks.length
+    subtaskCount: t.subtasks.length,
+    subtasks: t.subtasks
   };
 }
 
@@ -478,12 +542,6 @@ onMounted(loadActionItems);
 
 const viewMode = ref<"card" | "list" | "table">("table");
 
-const actionSummary = computed(() => {
-  const open = actionItems.value.filter(a => a.status !== "Done").length;
-  const overdue = actionItems.value.filter(a => a.isOverdue && a.status !== "Done").length;
-  return { open, overdue };
-});
-
 async function handleDelete(item: ActionItem) {
   try {
     await ElMessageBox.confirm(`Delete "${item.action}"? This action cannot be undone.`, "Confirm Delete", {
@@ -533,11 +591,6 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   gap: 10px;
   align-items: center;
   margin-bottom: 16px;
-}
-.okr__title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
 }
 .okr__nav {
   display: flex;
@@ -633,6 +686,19 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   color: var(--el-text-color-secondary);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+.okr__subtask-count--link {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  cursor: pointer;
+  color: var(--el-color-primary);
+  b {
+    font-weight: 700;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 // Card view
@@ -769,5 +835,75 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
   pointer-events: auto;
   opacity: 1;
   transform: translateX(0);
+}
+</style>
+
+<!-- Subtasks 弹出层内容（el-popover 默认 teleport 到 body，scoped 样式无法命中，需全局样式） -->
+<style lang="scss">
+.okr__subtask-pop {
+  padding: 4px 2px;
+}
+.okr__subtask-pop .okr__subtask-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.okr__subtask-pop .okr__subtask-head__icon {
+  font-size: 15px;
+}
+.okr__subtask-pop .okr__subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.okr__subtask-pop .okr__subtask-item {
+  padding-left: 10px;
+  border-left: 2px solid var(--el-border-color);
+}
+.okr__subtask-pop .okr__subtask-item__title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.okr__subtask-pop .okr__subtask-item__idx {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 50%;
+}
+.okr__subtask-pop .okr__subtask-item__name {
+  line-height: 1.4;
+}
+.okr__subtask-pop .okr__subtask-item__meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+.okr__subtask-pop .okr__subtask-item__meta--acceptance {
+  color: var(--el-text-color-secondary);
+}
+.okr__subtask-pop .okr__subtask-item__label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
 }
 </style>

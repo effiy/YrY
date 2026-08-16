@@ -3,8 +3,8 @@
     <button
       v-if="all"
       class="role-nav__item"
-      :class="{ 'is-active': active === ALL_ID }"
-      @click="select(ALL_ID)"
+      :class="{ 'is-active': isAllActive }"
+      @click="onAll"
     >
       <span class="role-nav__icon">🌐</span>
       <span class="role-nav__name">All</span>
@@ -13,8 +13,8 @@
       v-for="rid in ROLE_IDS"
       :key="rid"
       class="role-nav__item"
-      :class="{ 'is-active': rid === active }"
-      @click="select(rid)"
+      :class="{ 'is-active': isActive(rid) }"
+      @click="onSelect(rid)"
     >
       <span class="role-nav__icon">{{ rolesData[rid].icon }}</span>
       <span class="role-nav__name">{{ rolesData[rid].name }}</span>
@@ -28,25 +28,45 @@ import { rolesData, ROLE_IDS } from "@/views/knowledge/executiver/okrData";
 
 const props = withDefaults(
   defineProps<{
-    active: string;
-    /** 选择模式：点击切换选中并 emit update:active（不导航）；默认点击导航到 /knowledge/<role>。 */
-    selectable?: boolean;
+    /** 当前高亮的角色 id（导航模式）。 */
+    active?: string;
+    /** 多选筛选模式：以 modelValue 数组 toggle（空数组 = 全部）；默认点击导航到 /knowledge/<role>。 */
+    multiple?: boolean;
+    /** 多选模式下受控的选中角色 id 集合。 */
+    modelValue?: string[];
     /** 是否在首位展示「All」选项（用于筛选而非导航）。 */
     all?: boolean;
   }>(),
-  { selectable: false, all: false }
+  { active: "", multiple: false, modelValue: () => [], all: false }
 );
 
-const emit = defineEmits<{ (e: "update:active", rid: string): void }>();
+const emit = defineEmits<{ (e: "update:modelValue", rids: string[]): void }>();
 
 const router = useRouter();
 
 const ALL_ID = "all";
 
-function select(rid: string) {
-  if (rid === props.active) return;
-  if (props.selectable) emit("update:active", rid);
-  else router.push(`/knowledge/${rid}`);
+function isAllActive(): boolean {
+  return props.multiple ? props.modelValue.length === 0 : props.active === ALL_ID;
+}
+
+function isActive(rid: string): boolean {
+  return props.multiple ? props.modelValue.includes(rid) : rid === props.active;
+}
+
+function onAll() {
+  if (props.multiple) emit("update:modelValue", []);
+}
+
+function onSelect(rid: string) {
+  if (props.multiple) {
+    const next = props.modelValue.includes(rid)
+      ? props.modelValue.filter(r => r !== rid)
+      : [...props.modelValue, rid];
+    emit("update:modelValue", next);
+    return;
+  }
+  if (rid !== props.active) router.push(`/knowledge/${rid}`);
 }
 </script>
 

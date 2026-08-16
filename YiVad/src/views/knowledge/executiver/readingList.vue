@@ -1,5 +1,6 @@
 <template>
   <div class="reading-list">
+    <ExecutiverQuickNav active="reading-list" />
     <el-breadcrumb separator="/" class="reading-list__breadcrumb">
       <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
       <el-breadcrumb-item>Reading List</el-breadcrumb-item>
@@ -193,6 +194,7 @@ import {
   type ReadingItemStatus,
   type ReadingItemPriority
 } from "@/api/modules/readingListService";
+import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 // ── Static option maps ──
 const typeOptions: Array<{ value: ReadingItemType; label: string }> = [

@@ -1,39 +1,12 @@
 export default {
   home: {
     title: "Yi System · Agent Harness Overview",
-    updated: "Updated {time}",
     aiChat: "AI Chat",
     okr: "OKR",
     rss: "RSS",
     knowledge: "Knowledge",
     skills: "Skills",
     roleFilter: "Role",
-
-    status: {
-      online: "Online",
-      offline: "Offline",
-      disconnected: "Disconnected",
-      ready: "Ready"
-    },
-
-    projects: {
-      yiAi: {
-        name: "YiAi",
-        role: "Agent core · model adapter / tools / confirmation gate"
-      },
-      yiVad: {
-        name: "YiVad",
-        role: "Admin console · the app you're in"
-      },
-      yiPet: {
-        name: "YiPet",
-        role: "Browser extension · content distribution & capture"
-      },
-      yiKnowledge: {
-        name: "YiKnowledge",
-        role: "Knowledge base · session log & replayable facts"
-      }
-    },
 
     aiRecommend: {
       title: "AI Autonomous Recommendation · OKR Task Lists",
