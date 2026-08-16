@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P0
 progress: 100
+reason: '清零 23 个 vue-tsc 类型错误恢复 YiVad 可构建：knowledgeBase dashboard 17（TS2339 Refresh/Search、TS2345 DefaultRow→KnowledgeFileSummary）、rag 4（history/retrieval DefaultRow 收窄）、proTable 1（TS2344 泛型）、menuMange 1（TS2353 TreeOptionProps.value→node-key）。'
 skill: vue
 agent: Engineer Agent
 mcp: github

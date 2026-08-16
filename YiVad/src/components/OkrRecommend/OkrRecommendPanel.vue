@@ -104,11 +104,16 @@
           <DueLabel :due-date="row.dueDate" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.reason')" min-width="220">
+      <el-table-column :label="t('home.aiRecommend.cols.reason')" min-width="240">
         <template #default="{ row }">
           <template v-if="row.kind === 'action'">
-            <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
-            <span v-if="row.subtaskCount" class="okr-rec__subtask">{{ row.subtaskCount }} subtasks</span>
+            <div class="okr-rec__why">
+              <div class="okr-rec__why-head">
+                <el-tag :type="statusTagType(row.status)" size="small">{{ row.status }}</el-tag>
+                <span v-if="row.subtaskCount" class="okr-rec__subtask">{{ row.subtaskCount }} subtasks</span>
+              </div>
+              <div v-if="row.reason" class="okr-rec__why-text">{{ row.reason }}</div>
+            </div>
           </template>
           <span v-else>{{ row.reason }}</span>
         </template>
@@ -290,7 +295,7 @@ const categoryCounts = computed<Record<string, number>>(() => {
   let scoped = projs?.length ? allRows.value.filter(i => projs.includes(projectOfRow(i))) : allRows.value;
   if (roleScope.value !== "all") scoped = scoped.filter(i => i.role === roleScope.value);
   const counts: Record<string, number> = { all: scoped.length };
-  for (const l of LIST_TYPES) counts[l.key] = scoped.filter(i => i.listType === l.key).length;
+  for (const l of LIST_TYPES) counts[l.key] = scoped.filter(i => i.listType === l.key && !isResolvedRisk(i)).length;
   return counts;
 });
 
@@ -299,6 +304,8 @@ const filteredItems = computed(() => {
     categoryFilter.value === "all"
       ? allRows.value
       : allRows.value.filter(i => i.listType === categoryFilter.value);
+  // 「风险与阻塞」只展示未解除的项；已 Done 的阻塞视为已解除，不再列出。
+  if (categoryFilter.value === "risk") result = result.filter(i => !isResolvedRisk(i));
   const projs = props.projects;
   if (projs?.length) result = result.filter(i => projs.includes(projectOfRow(i)));
   if (roleScope.value !== "all") result = result.filter(i => i.role === roleScope.value);
@@ -333,6 +340,11 @@ function statusTagType(status: string): "success" | "danger" | "warning" | "info
   if (status === "At Risk") return "danger";
   if (status === "In Progress") return "warning";
   return "info";
+}
+
+/** 已解除（Done）的风险/阻塞项不再计入「风险与阻塞」清单。 */
+function isResolvedRisk(row: TableRow): boolean {
+  return row.listType === "risk" && row.kind === "action" && row.status === "Done";
 }
 
 function levelLabel(l: OkrLevel): string {
@@ -675,6 +687,17 @@ onMounted(loadFromKnowledge);
 .okr-rec__cell-title--link { cursor: pointer; &:hover { color: var(--el-color-primary); } }
 .okr-rec__cell-none { color: var(--el-text-color-placeholder); }
 .okr-rec__subtask { margin-left: 6px; font-size: 11px; color: var(--el-text-color-secondary); }
+.okr-rec__why { display: flex; flex-direction: column; gap: 4px; }
+.okr-rec__why-head { display: flex; align-items: center; }
+.okr-rec__why-text {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 // ── Metric（任务自身指标）────────────────────
 .okr-rec__cell-metric { display: flex; align-items: center; gap: 6px; }

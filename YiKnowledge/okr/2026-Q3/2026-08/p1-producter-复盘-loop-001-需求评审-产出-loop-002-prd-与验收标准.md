@@ -7,9 +7,10 @@ listType: daily
 goal: prod-001
 owner: PM YiAi
 deadline: '2026-08-17'
-status: In Progress
+status: Done
 priority: P1
-progress: 40
+progress: 100
+reason: '复盘 loop-001 需求评审的产出质量，为 loop-002 产出 PRD（背景/目标/范围/非目标）与可验证验收标准，WSJF 打分沿用既有实现。'
 skill: gen-brd
 agent: Product Agent
 mcp: yiai
@@ -44,8 +45,8 @@ subtaskCount: 3
 | Owner | PM YiAi |
 | Deadline | 2026-08-17 |
 | Priority | P1 |
-| Status | In Progress |
-| Progress | 40% |
+| Status | Done |
+| Progress | 100% |
 | Skill | gen-brd |
 | Agent | Product Agent |
 | MCP | yiai |

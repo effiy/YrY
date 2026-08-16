@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P1
 progress: 100
+reason: '建 YiKnowledge/okr/2026-Q3/loop/ 目录与 _templates（需求评审/技术评审/构建调试/测试报告/上线 5 类模板），frontmatter 沿用 KB rulebook 规范。'
 skill: import
 agent: Curator Agent
 mcp: yiai

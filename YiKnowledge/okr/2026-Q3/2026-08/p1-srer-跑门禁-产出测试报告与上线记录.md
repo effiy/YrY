@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P1
 progress: 100
+reason: '跑 vue-tsc + build 门禁，产出 04-test-report（typecheck/build 结果 + 手动验证）与 05-launch-record（artifact/version/env），上线可追溯。'
 skill: lighthouse
 agent: SRE Agent
 mcp: github

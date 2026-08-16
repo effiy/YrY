@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P2
 progress: 100
+reason: '确认 7 角色 skill/agent/mcp 三要素确定性映射覆盖，AI 推荐按 WSJF 可复现，编排结果落盘可读回。'
 skill: skill-creator
 agent: AI Engineer Agent
 mcp: yiai

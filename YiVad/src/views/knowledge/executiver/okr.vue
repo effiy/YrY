@@ -360,6 +360,7 @@ function actionItemMeta(t: ExampleTask): Record<string, unknown> {
     status: t.status,
     priority: t.priority,
     progress: t.progress,
+    reason: t.description,
     skill: t.skill,
     agent: t.agent,
     mcp: t.mcp,

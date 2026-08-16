@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P0
 progress: 100
+reason: '重写 okrData.ts：7 角色 goals / metrics / daily / weekly 全部围绕「AI 从需求到上线全流程自闭环」北极星，接口不变只换数据。'
 skill: vue
 agent: Engineer Agent
 mcp: github

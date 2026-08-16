@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P0
 progress: 100
+reason: '为 loop-001 产出完整需求评审：PRD（背景/目标/范围）、验收标准（可验证）、WSJF 优先级，落知识库 01-requirement-review。'
 skill: gen-brd
 agent: Product Agent
 mcp: yiai

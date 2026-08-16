@@ -134,7 +134,7 @@ export const goalsData: Record<string, GoalItem[]> = {
 
 export const metricsData: Record<string, MetricItem[]> = {
   executiver: [
-    { id: "exec-m01", icon: "📌", name: "闭环完成数", category: "自闭环", framework: "OKR", description: "已走通「需求→上线」的闭环条数。", current: 1, target: 3, baseline: 0, unit: " 条", trend: "up", progress: 33 },
+    { id: "exec-m01", icon: "📌", name: "闭环完成数", category: "自闭环", framework: "OKR", description: "已走通「需求→上线」的闭环条数。", current: 3, target: 3, baseline: 0, unit: " 条", trend: "up", progress: 100 },
     { id: "exec-m02", icon: "🎯", name: "OKR 对齐率", category: "对齐", framework: "OKR", description: "trace 到北极星的角色 Goal 占比。", current: 100, target: 100, baseline: 0, unit: "%", trend: "up", progress: 100 },
     { id: "exec-m03", icon: "⏱️", name: "闭环周期", category: "自闭环", framework: "OKR", description: "从需求评审到上线的工作日。", current: 2, target: 2, baseline: 5, unit: " 天", trend: "down", progress: 100 },
   ],

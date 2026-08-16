@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P0
 progress: 100
+reason: '去掉所有老数据：删除 YiKnowledge/okr/2026-Q3 下旧 goals / metrics / 2026-08 任务与 weekly，保留机制与视图，为北极星重定义腾出干净空间。'
 skill: market-research
 agent: Curator Agent
 mcp: yiai

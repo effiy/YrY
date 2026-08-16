@@ -7,9 +7,10 @@ listType: sprint
 goal: cur-001
 owner: Curator
 deadline: '2026-08-20'
-status: Planned
+status: Done
 priority: P2
-progress: 15
+progress: 100
+reason: '复盘 loop-001 记录 frontmatter 合规率与目录结构，规划 loop-002 模板复用，建立 loop-002 目录与 INDEX 占位。'
 skill: import
 agent: Curator Agent
 mcp: yiai
@@ -44,8 +45,8 @@ subtaskCount: 3
 | Owner | Curator |
 | Deadline | 2026-08-20 |
 | Priority | P2 |
-| Status | Planned |
-| Progress | 15% |
+| Status | Done |
+| Progress | 100% |
 | Skill | import |
 | Agent | Curator Agent |
 | MCP | yiai |

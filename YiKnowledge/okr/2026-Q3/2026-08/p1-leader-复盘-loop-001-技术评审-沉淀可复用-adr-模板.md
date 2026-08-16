@@ -7,9 +7,10 @@ listType: weekly
 goal: lead-001
 owner: Tech Lead
 deadline: '2026-08-18'
-status: In Progress
+status: Done
 priority: P1
-progress: 30
+progress: 100
+reason: '复盘 loop-001 的 ADR 记录载体与页面结构选型，沉淀可复用的 ADR 模板（Context/Decision/Consequences），保证 loop-002 决策可回溯。'
 skill: code-quality-research
 agent: Leader Agent
 mcp: github
@@ -44,8 +45,8 @@ subtaskCount: 3
 | Owner | Tech Lead |
 | Deadline | 2026-08-18 |
 | Priority | P1 |
-| Status | In Progress |
-| Progress | 30% |
+| Status | Done |
+| Progress | 100% |
 | Skill | code-quality-research |
 | Agent | Leader Agent |
 | MCP | github |

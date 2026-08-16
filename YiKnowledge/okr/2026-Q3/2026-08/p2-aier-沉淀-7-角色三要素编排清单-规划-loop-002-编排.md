@@ -7,9 +7,10 @@ listType: weekly
 goal: aier-001
 owner: AI Engineer
 deadline: '2026-08-19'
-status: In Progress
+status: Done
 priority: P2
-progress: 35
+progress: 100
+reason: '把 loop-001 的 7 角色 skill/agent/mcp 三要素映射沉淀为可复现清单，规划 loop-002 的编排，AI 推荐按 WSJF 可复现。'
 skill: skill-creator
 agent: AI Engineer Agent
 mcp: yiai
@@ -44,8 +45,8 @@ subtaskCount: 3
 | Owner | AI Engineer |
 | Deadline | 2026-08-19 |
 | Priority | P2 |
-| Status | In Progress |
-| Progress | 35% |
+| Status | Done |
+| Progress | 100% |
 | Skill | skill-creator |
 | Agent | AI Engineer Agent |
 | MCP | yiai |

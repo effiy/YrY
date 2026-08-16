@@ -460,10 +460,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "yiai",
     listType: "daily",
     priority: "P1",
-    status: "In Progress",
+    status: "Done",
     owner: "PM YiAi",
     deadline: "2026-08-17",
-    progress: 40,
+    progress: 100,
     description: "复盘 loop-001 需求评审的产出质量，为 loop-002 产出 PRD（背景/目标/范围/非目标）与可验证验收标准，WSJF 打分沿用既有实现。",
     subtasks: [
       {
@@ -498,10 +498,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "github",
     listType: "weekly",
     priority: "P1",
-    status: "In Progress",
+    status: "Done",
     owner: "Tech Lead",
     deadline: "2026-08-18",
-    progress: 30,
+    progress: 100,
     description: "复盘 loop-001 的 ADR 记录载体与页面结构选型，沉淀可复用的 ADR 模板（Context/Decision/Consequences），保证 loop-002 决策可回溯。",
     subtasks: [
       {
@@ -536,10 +536,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "github",
     listType: "daily",
     priority: "P1",
-    status: "In Progress",
+    status: "Done",
     owner: "Engineering Lead",
     deadline: "2026-08-17",
-    progress: 50,
+    progress: 100,
     description: "维持 YiVad 改动文件 0 新增类型错误基线，沉淀 loop-001 的构建调试记录为可复用模板，构建门禁（vue-tsc + build）持续通过。",
     subtasks: [
       {
@@ -574,10 +574,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "github",
     listType: "sprint",
     priority: "P2",
-    status: "Planned",
+    status: "Done",
     owner: "SRE Lead",
     deadline: "2026-08-19",
-    progress: 10,
+    progress: 100,
     description: "复盘 loop-001 的 typecheck/build 门禁与上线记录完整性，规划 loop-002 的上线口径（artifact/version/env）与回滚预案。",
     subtasks: [
       {
@@ -612,10 +612,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "yiai",
     listType: "weekly",
     priority: "P2",
-    status: "In Progress",
+    status: "Done",
     owner: "AI Engineer",
     deadline: "2026-08-19",
-    progress: 35,
+    progress: 100,
     description: "把 loop-001 的 7 角色 skill/agent/mcp 三要素映射沉淀为可复现清单，规划 loop-002 的编排，AI 推荐按 WSJF 可复现。",
     subtasks: [
       {
@@ -650,10 +650,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "yiai",
     listType: "sprint",
     priority: "P2",
-    status: "Planned",
+    status: "Done",
     owner: "Curator",
     deadline: "2026-08-20",
-    progress: 15,
+    progress: 100,
     description: "复盘 loop-001 记录 frontmatter 合规率与目录结构，规划 loop-002 模板复用，建立 loop-002 目录与 INDEX 占位。",
     subtasks: [
       {
@@ -688,10 +688,10 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "yiai",
     listType: "sprint",
     priority: "P1",
-    status: "In Progress",
+    status: "Done",
     owner: "CEO",
     deadline: "2026-08-21",
-    progress: 25,
+    progress: 100,
     description: "复盘 loop-001 的闭环周期与 7 角色对齐情况，审批 loop-002 目标与里程碑，保证闭环周期 ≤ 2 个工作日并持续留痕。",
     subtasks: [
       {

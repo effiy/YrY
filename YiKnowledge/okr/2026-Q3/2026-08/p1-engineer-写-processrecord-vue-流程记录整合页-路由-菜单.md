@@ -10,6 +10,7 @@ deadline: '2026-08-16'
 status: Done
 priority: P1
 progress: 100
+reason: '新增「流程记录」页：通过 knowledgeService.scanKnowledge 读取 loop/ 目录，按闭环列出 4+1 类记录，深链到 KB 文件（复用 KnowledgePreviewDialog）。注册路由与菜单。'
 skill: vue
 agent: Engineer Agent
 mcp: github
