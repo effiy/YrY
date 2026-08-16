@@ -7,6 +7,7 @@ export default {
     rss: "RSS",
     knowledge: "知识库",
     skills: "技能",
+    roleFilter: "角色筛选",
 
     status: {
       online: "在线",

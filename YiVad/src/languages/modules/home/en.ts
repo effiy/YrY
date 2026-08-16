@@ -7,6 +7,7 @@ export default {
     rss: "RSS",
     knowledge: "Knowledge",
     skills: "Skills",
+    roleFilter: "Role",
 
     status: {
       online: "Online",

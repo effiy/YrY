@@ -49,9 +49,17 @@
       </div>
     </section>
 
+    <!-- ═══ 角色筛选（联动下方任务表格）═══ -->
+    <section class="ho__section">
+      <div class="ho__role-nav">
+        <span class="ho__role-nav-label">{{ t("home.roleFilter") }}</span>
+        <RoleNav v-model:active="selectedRole" selectable all />
+      </div>
+    </section>
+
     <!-- ═══ AI 自主推荐 OKR 任务清单 (deepseek-harness todo/ capability) ═══ -->
     <section class="ho__section">
-      <OkrRecommendPanel :projects="selectedProjects" />
+      <OkrRecommendPanel :projects="selectedProjects" :role="selectedRole" />
     </section>
   </div>
 </template>
@@ -63,6 +71,7 @@ import { useI18n } from "vue-i18n";
 import { ChatDotRound, Connection, Reading, Aim, MagicStick } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 import { getDashboardHealth } from "@/api/modules/dashboard";
 import type { DashboardHealthData } from "@/api/interface/yiweb";
 
@@ -82,6 +91,9 @@ const dotTitle = (s: Status) => t(`home.status.${STATUS_LABEL[s]}`);
 
 /** 当前联动选中的项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
 const selectedProjects = ref<string[]>([]);
+
+/** 当前联动选中的角色 id（如 "engineer"）；"all" = 展示全部角色。 */
+const selectedRole = ref<string>("all");
 
 /** 点击项目卡片：切换该项目的表格筛选（支持多选，再点一次取消该项）。 */
 function toggleProject(key: string) {
@@ -227,4 +239,8 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-secondary);
   line-height: 1.4;
 }
+
+// ── Role nav ────────────────────────────────────
+.ho__role-nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ho__role-nav-label { font-size: 12px; font-weight: 600; color: var(--el-text-color-secondary); }
 </style>

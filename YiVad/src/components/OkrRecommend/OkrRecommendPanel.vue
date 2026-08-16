@@ -233,11 +233,12 @@ import {
 const { t } = useI18n();
 
 /** 由父组件（home）传入的联动项目 id 集合（小写，如 "yiai"）；空数组 = 展示全部。 */
-const props = defineProps<{ projects?: string[] }>();
+const props = defineProps<{ projects?: string[]; role?: OkrScope }>();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
-const roleScope = ref<OkrScope>("all");
+/** 角色筛选：由父组件（home 的角色导航）控制；"all" = 展示全部角色。 */
+const roleScope = computed<OkrScope>(() => props.role ?? "all");
 const roleOptions = Object.values(rolesData).map(r => ({ id: r.id, name: r.name, icon: r.icon }));
 
 /** 批量生成进行中（禁用生成按钮）。 */
@@ -278,7 +279,7 @@ const allRows = computed<TableRow[]>(() => {
 });
 
 // ── 分类筛选 + 搜索 + 日期 ──────────────────────────
-const categoryFilter = ref<"all" | OkrListType>("daily");
+const categoryFilter = ref<"all" | OkrListType>("all");
 const searchKeyword = ref("");
 const dueDateFilter = ref("");
 
