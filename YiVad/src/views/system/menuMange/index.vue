@@ -67,7 +67,8 @@
           <el-tree-select
             v-model="form.parent"
             :data="parentMenuOptions"
-            :props="{ label: 'title', value: 'path', children: 'children' }"
+            :props="{ label: 'title', children: 'children' }"
+            node-key="path"
             placeholder="Leave empty for top-level menu"
             clearable
             check-strictly

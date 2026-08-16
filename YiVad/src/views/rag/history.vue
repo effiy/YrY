@@ -98,10 +98,10 @@
             <el-button text type="primary" size="small" @click.stop="rerunQuery($index)">
               <el-icon><RefreshRight /></el-icon> Rerun
             </el-button>
-            <el-button text type="primary" size="small" @click.stop="showQueryDetail(row)">
+            <el-button text type="primary" size="small" @click.stop="showQueryDetail(row as HistoryEntry)">
               Detail
             </el-button>
-            <el-button text type="primary" size="small" @click.stop="continueInAiChat(row)">
+            <el-button text type="primary" size="small" @click.stop="continueInAiChat(row as HistoryEntry)">
               <el-icon><ChatDotRound /></el-icon> Continue
             </el-button>
           </template>

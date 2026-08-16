@@ -114,7 +114,7 @@
         </el-table-column>
         <el-table-column label="Actions" width="160" align="center" fixed="right">
           <template #default="{ row, $index }">
-            <el-button text type="primary" size="small" @click.stop="showDetail(row, $index)">
+            <el-button text type="primary" size="small" @click.stop="showDetail(row as RagSource, $index)">
               Inspect
             </el-button>
             <el-button
@@ -122,7 +122,7 @@
               size="small"
               :icon="ChatDotRound"
               title="Discuss this chunk in AI Chat"
-              @click.stop="discussChunkInAiChat(row)"
+              @click.stop="discussChunkInAiChat(row as RagSource)"
             />
           </template>
         </el-table-column>

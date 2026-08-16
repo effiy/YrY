@@ -552,7 +552,7 @@
                     <el-table :data="m.files.slice(0, m.filePage || 30)" size="small" class="mcv-files-table">
                       <el-table-column label="File" min-width="180" show-overflow-tooltip>
                         <template #default="{ row: f }">
-                          <span class="mcv-file-link" @click="openFileInDialog(f)" :title="f.path">{{ f.title || f.path.split('/').pop() }}</span>
+                          <span class="mcv-file-link" @click="openFileInDialog(f as KnowledgeFileSummary)" :title="f.path">{{ f.title || f.path.split('/').pop() }}</span>
                         </template>
                       </el-table-column>
                       <el-table-column label="Sub" width="100" show-overflow-tooltip>
@@ -601,12 +601,12 @@
                       <el-table-column label="Flags" width="50">
                         <template #default="{ row: f }">
                           <span v-if="f.tacit" class="popover-tacit mcv-flag-tacit" title="tacit">T</span>
-                          <span v-if="isStaleFile(f)" class="popover-stale mcv-flag-stale" title="stale">S</span>
+                          <span v-if="isStaleFile(f as KnowledgeFileSummary)" class="popover-stale mcv-flag-stale" title="stale">S</span>
                         </template>
                       </el-table-column>
                       <el-table-column label="Actions" width="110" fixed="right">
                         <template #default="{ row: f }">
-                          <el-button size="small" type="primary" text @click="openFileInDialog(f)">Preview</el-button>
+                          <el-button size="small" type="primary" text @click="openFileInDialog(f as KnowledgeFileSummary)">Preview</el-button>
                           <el-button size="small" text type="danger" @click.stop="deleteFile(f)"><el-icon><Delete /></el-icon></el-button>
                         </template>
                       </el-table-column>
@@ -814,7 +814,7 @@
             <div class="file-gallery" v-if="fileViewMode === 'gallery'">
               <div
                 v-for="f in paginatedDrillFiles" :key="f.path"
-                class="fg-card" @click="openFileInDialog(f)"
+                class="fg-card" @click="openFileInDialog(f as KnowledgeFileSummary)"
               >
                 <div class="fg-card-header">
                   <span class="fg-card-title">{{ f.title || f.path.split('/').pop() }}</span>
@@ -834,13 +834,13 @@
                   <el-tag v-if="f.status" :type="statusTagType(f.status)" size="small" class="fg-card-meta-tag">{{ f.status }}</el-tag>
                   <el-tag v-if="f.lifecycle && f.lifecycle !== 'unknown'" :type="lifecycleTagType(f.lifecycle)" size="small" class="fg-card-meta-tag">{{ f.lifecycle }}</el-tag>
                   <span v-if="f.tacit" class="fg-tacit">tacit</span>
-                  <span v-if="isStaleFile(f)" class="fg-stale">stale</span>
+                  <span v-if="isStaleFile(f as KnowledgeFileSummary)" class="fg-stale">stale</span>
                   <span v-if="f.review_cycle" class="fg-review">{{ f.review_cycle }}</span>
                 </div>
                 <div class="fg-card-footer">
                   <span class="fg-footer-size">{{ formatFileSize(f.size) }}</span>
                   <span class="fg-footer-time">{{ f.updated ? formatRelativeTime(f.updated) : '--' }}</span>
-                  <el-button size="small" text type="primary" @click.stop="openFileInDialog(f)" class="fg-footer-preview">Preview</el-button>
+                  <el-button size="small" text type="primary" @click.stop="openFileInDialog(f as KnowledgeFileSummary)" class="fg-footer-preview">Preview</el-button>
                   <el-button size="small" text type="danger" @click.stop="deleteFile(f)" class="fg-footer-delete"><el-icon><Delete /></el-icon></el-button>
                 </div>
               </div>
@@ -858,7 +858,7 @@
                     <template #reference>
                       <div class="file-cell">
                         <span class="file-title">
-                          <el-icon v-if="isStaleFile(row)" class="stale-row-icon" :size="12"><WarningFilled /></el-icon>
+                          <el-icon v-if="isStaleFile(row as KnowledgeFileSummary)" class="stale-row-icon" :size="12"><WarningFilled /></el-icon>
                           {{ row.title || row.path.split('/').pop() }}
                         </span>
                         <span class="file-path">
@@ -897,19 +897,19 @@
                       <div><b>Status:</b> {{ row.status }} &middot; <b>Lifecycle:</b> {{ row.lifecycle }} &middot; <b>Type:</b> {{ row.type }}</div>
                       <div v-if="row.review_cycle"><b>Review:</b> {{ row.review_cycle }}</div>
                       <div v-if="row.tacit"><b>Tacit:</b> <span class="popover-tacit">Yes</span></div>
-                      <div v-if="isStaleFile(row)"><b>Stale:</b> <span class="popover-stale">Yes</span></div>
+                      <div v-if="isStaleFile(row as KnowledgeFileSummary)"><b>Stale:</b> <span class="popover-stale">Yes</span></div>
                       <div v-if="row.benefit"><b>Benefit:</b> <span class="popover-benefit">{{ row.benefit.slice(0, 100) }}{{ row.benefit.length > 100 ? '...' : '' }}</span></div>
                       <div v-if="row.related_count > 0"><b>Related:</b> {{ row.related_count }} files
-                        <div v-if="resolveRelatedNames(row).length > 0" class="popover-related-row">
-                          <span v-for="r in resolveRelatedNames(row)" :key="r.path" class="popover-related-link" @click.stop="openFilePreview(knowledgeData?.files?.find(f => f.path === r.path) || { path: r.path, title: r.title } as any)" :title="r.path">{{ r.title }}</span>
+                        <div v-if="resolveRelatedNames(row as KnowledgeFileSummary).length > 0" class="popover-related-row">
+                          <span v-for="r in resolveRelatedNames(row as KnowledgeFileSummary)" :key="r.path" class="popover-related-link" @click.stop="openFilePreview(knowledgeData?.files?.find(f => f.path === r.path) || { path: r.path, title: r.title } as any)" :title="r.path">{{ r.title }}</span>
                         </div>
                       </div>
                       <div v-if="(row.roles || []).length > 0"><b>Roles:</b> {{ (row.roles || []).join(', ') }}</div>
                       <div v-if="(row.tags || []).length > 0"><b>Tags:</b> {{ (row.tags || []).join(', ') }}</div>
                       <div><b>Size:</b> {{ formatFileSize(row.size) }} &middot; <b>Updated:</b> {{ row.updated || '--' }}</div>
                       <div class="popover-actions">
-                        <el-button size="small" type="primary" plain @click.stop="openFileInDialog(row)">Preview</el-button>
-                        <el-button size="small" plain @click.stop="discussInAiChat(row)">Chat</el-button>
+                        <el-button size="small" type="primary" plain @click.stop="openFileInDialog(row as KnowledgeFileSummary)">Preview</el-button>
+                        <el-button size="small" plain @click.stop="discussInAiChat(row as KnowledgeFileSummary)">Chat</el-button>
                       </div>
                     </div>
                   </el-popover>
@@ -973,12 +973,12 @@
                 <template #default="{ row }">
                   <el-tooltip placement="top" :show-after="300">
                     <template #content>
-                      <div v-if="fileHealthIssues(row).length > 0">
-                        <div v-for="issue in fileHealthIssues(row)" :key="issue">{{ issue }}</div>
+                      <div v-if="fileHealthIssues(row as KnowledgeFileSummary).length > 0">
+                        <div v-for="issue in fileHealthIssues(row as KnowledgeFileSummary)" :key="issue">{{ issue }}</div>
                       </div>
                       <div v-else>All metadata complete</div>
                     </template>
-                    <span v-if="fileHealthIssues(row).length > 0" class="health-issues-badge" :class="'health-issues-' + fileHealthLevel(row)">{{ fileHealthIssues(row).length }}</span>
+                    <span v-if="fileHealthIssues(row as KnowledgeFileSummary).length > 0" class="health-issues-badge" :class="'health-issues-' + fileHealthLevel(row as KnowledgeFileSummary)">{{ fileHealthIssues(row as KnowledgeFileSummary).length }}</span>
                     <span v-else class="health-dot health-good"></span>
                   </el-tooltip>
                 </template>
@@ -1196,6 +1196,8 @@
 
 <script setup lang="ts" name="knowledgeBase">
 import { ref } from "vue";
+import { Refresh, Search } from "@element-plus/icons-vue";
+import type { KnowledgeFileSummary } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
@@ -1214,8 +1216,8 @@ const { renderWithHtml } = useMarkdown();
 const kb = useKnowledgeBase();
 const previewDialogRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
-function openFileInDialog(row: { path: string; [key: string]: any }) {
-  kb.openFileInDialog(row as any);
+function openFileInDialog(row: KnowledgeFileSummary) {
+  kb.openFileInDialog(row as KnowledgeFileSummary);
   previewDialogRef.value?.open(row.path);
 }
 

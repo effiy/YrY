@@ -1,14 +1,10 @@
 // ═══════════════════════════════════════════════════════════════
 // 需求 → 上线的「完整例子数据」— 单一事实来源
 //
-// 参考 deepseek-harness「一切皆插件」：把整条链路做成一份可读的
-// 演示数据，贯穿四个阶段：
-//   需求（OKR 目标/关键结果/指标） → 编排（skill/agent/mcp）
-//   → 执行（agent 跑任务） → 上线（交付/部署到 pipeline）。
-//
-// 与 okrData.ts 的区别：okrData 是「目标与指标」的静态目录；
-// 本文件是「从目标派生出的任务 + 上线记录」的例子，二者通过
-// goalId 关联，共同构成「从需求到上线」的完整样例。
+// 2026-Q3 重定义：北极星 =「AI 从需求到上线全流程自闭环」。
+// 本文件是「从新目标派生出的任务 + 上线记录」，通过 goalId 关联
+// okrData.ts 的新目标，构成「从需求到上线」的自闭环样例。
+// 旗舰需求 = exec-001「AI 全流程自闭环」的首条闭环 loop-001。
 // ═══════════════════════════════════════════════════════════════
 
 // ── 流程阶段 ──────────────────────────────────
@@ -33,7 +29,7 @@ export const FLOW_STAGES: FlowStage[] = [
     icon: "🎯",
     description: "定义 OKR：目标 / 关键结果 / 指标，明确「为什么做、做成什么样」",
     route: "/knowledge/goals",
-    count: 42
+    count: 15
   },
   {
     key: "orchestration",
@@ -42,7 +38,7 @@ export const FLOW_STAGES: FlowStage[] = [
     icon: "🧩",
     description: "根据 OKR 并借鉴历史任务，为每个任务指派 skill / agent / mcp",
     route: "/home/index",
-    count: 8
+    count: 7
   },
   {
     key: "execution",
@@ -51,7 +47,7 @@ export const FLOW_STAGES: FlowStage[] = [
     icon: "🤖",
     description: "agent 用分配的 skill 与 mcp 跑任务，确认门把关写操作",
     route: "/aiChat",
-    count: 6
+    count: 9
   },
   {
     key: "launch",
@@ -60,7 +56,7 @@ export const FLOW_STAGES: FlowStage[] = [
     icon: "🚀",
     description: "交付 / 部署到 pipeline，产出可上线 artifact 与版本记录",
     route: "/knowledge/pipeline",
-    count: 4
+    count: 1
   }
 ];
 
@@ -100,249 +96,165 @@ export interface ExampleTask {
 }
 
 /**
- * 一条完整的「从需求到上线」样例任务链。
- * 旗舰需求 = exec-005「Yi Ecosystem Integration」，配套 exec-002 /
- * prod-002 / aier-002 / cur-001 等既有目标，展示不同角色如何被编排。
- * 每条任务都带一份「可执行任务分解」——做法 + 完成标准，可直接拆给执行者。
+ * 首条闭环 loop-001 的任务链：把「AI 全流程自闭环」拆成 9 条可执行任务，
+ * 每条带「做法 + 完成标准」，按角色编排，贯穿需求 → 评审 → 编码 → 测试 → 上线。
  */
 export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-001",
-    title: "打通 home / okr / rss / knowledge 菜单跳转关联",
-    role: "engineer",
-    roleIcon: "⚡",
-    roleName: "Engineer",
-    goalId: "exec-005",
-    skill: "vue",
-    agent: "Engineer Agent",
-    mcp: "github",
+    title: "清除旧 OKR 数据，重置知识库 okr 目录",
+    role: "curator",
+    roleIcon: "📦",
+    roleName: "Curator",
+    goalId: "cur-001",
+    skill: "market-research",
+    agent: "Curator Agent",
+    mcp: "yiai",
     listType: "sprint",
     priority: "P0",
     status: "Done",
-    owner: "Engineering Lead",
-    deadline: "2026-08-14",
+    owner: "Curator",
+    deadline: "2026-08-16",
     progress: 100,
-    description:
-      "跨页导航闭环是 YiVad 信息架构的骨架：让用户从 Home 直达 OKR / RSS / Knowledge，各子菜单之间互跳无死链，为「需求 → 编排 → 执行 → 上线」流程提供统一入口与可回跳的深链。",
+    description: "去掉所有老数据：删除 YiKnowledge/okr/2026-Q3 下旧 goals / metrics / 2026-08 任务与 weekly，保留机制与视图，为北极星重定义腾出干净空间。",
     subtasks: [
       {
         id: "flow-t-001-1",
-        title: "梳理路由与菜单映射",
-        detail:
-          "遍历 authMenuList 与 router 配置，核对 home / okr / rss / knowledge 及子菜单的 path→component 对应关系，标出缺失与错配。",
-        acceptance: "产出一份 route→component 对照清单，无 unknown route、无重复 path。"
+        title: "删除旧 goals / metrics markdown",
+        detail: "rm -rf YiKnowledge/okr/2026-Q3/goals 与 metrics 下 7 角色旧目标/指标文件。",
+        acceptance: "目录清空，无残留旧目标/指标文件。"
       },
       {
         id: "flow-t-001-2",
-        title: "修复菜单跳转关联",
-        detail: "统一所有 nav 按钮与 quick-nav 卡片的跳转目标为已注册路由，补齐缺失路由项。",
-        acceptance: "点击任意导航均无 404，breadcrumb 可回跳上级。"
+        title: "删除旧任务与周报",
+        detail: "删除 2026-08 下旧 p0/p1/p2 任务与 weekly 周报。",
+        acceptance: "旧任务与周报清零。"
       },
       {
         id: "flow-t-001-3",
-        title: "深链与回退验证",
-        detail: "用 ?goal= 等深链参数验证从聚合页回跳角色 OKR。",
-        acceptance: "深链可定位并高亮目标，返回路径正确。"
+        title: "保留机制并记录 reset",
+        detail: "确认视图/推荐机制/编排逻辑不动，记录一次 reset 日志。",
+        acceptance: "机制文件无改动，reset 留痕。"
       }
     ]
   },
   {
     id: "flow-t-002",
-    title: "为每个推荐任务落地编排三要素 skill / agent / mcp",
-    role: "aier",
-    roleIcon: "🤖",
-    roleName: "AI Engineer",
-    goalId: "exec-002",
-    skill: "skill-creator",
-    agent: "AI Engineer Agent",
-    mcp: "yiai",
+    title: "重定义 7 角色 OKR（北极星：AI 全流程自闭环）",
+    role: "engineer",
+    roleIcon: "⚡",
+    roleName: "Engineer",
+    goalId: "exec-001",
+    skill: "vue",
+    agent: "Engineer Agent",
+    mcp: "github",
     listType: "sprint",
     priority: "P0",
     status: "Done",
-    owner: "AI Engineer",
-    deadline: "2026-08-13",
+    owner: "Engineering Lead",
+    deadline: "2026-08-16",
     progress: 100,
-    description:
-      "编排是把「目标」转成「可执行任务」的关键一步：为每个推荐任务显式指派 skill（能力）、agent（执行者）、mcp（外部工具/数据源）三要素，形成确定性角色×清单映射作为 AI 精调的兜底，保证编排结果可复现、可落盘、可读回。",
+    description: "重写 okrData.ts：7 角色 goals / metrics / daily / weekly 全部围绕「AI 从需求到上线全流程自闭环」北极星，接口不变只换数据。",
     subtasks: [
       {
         id: "flow-t-002-1",
-        title: "建立角色×清单确定性映射",
-        detail: "按 7 角色定义推荐任务到 skill / agent / mcp 的默认映射表。",
-        acceptance: "每个角色的典型任务都有缺省三要素，映射表可查。"
+        title: "定义北极星与角色职责",
+        detail: "executiver 立北极星，7 角色各拥闭环一环（需求/技术/编码/测试/编排/记录）。",
+        acceptance: "7 角色 Goal 全部 trace 到北极星。"
       },
       {
         id: "flow-t-002-2",
-        title: "编排结果随任务落盘",
-        detail: "把三要素写入任务 frontmatter（skill / agent / mcp 字段）。",
-        acceptance: "重新扫描可读回三要素，无字段丢失。"
+        title: "重写 goalsData 与 metricsData",
+        detail: "替换旧目标/指标为自闭环主题，KRs 可验证、关联指标。",
+        acceptance: "接口不变，新数据渲染正常。"
       },
       {
         id: "flow-t-002-3",
-        title: "AI 精调兜底",
-        detail: "对缺省映射覆盖不到的任务，用 AI 补全三要素并回写。",
-        acceptance: "冷门任务也能得到合理的三要素，无空值。"
+        title: "重写 daily / checklist / weekly",
+        detail: "替换角色日/周数据为 loop-001 执行现场。",
+        acceptance: "三处数据与新 OKR 一致。"
       }
     ]
   },
   {
     id: "flow-t-003",
-    title: "历史任务借鉴注入 prompt（避免重复、延续上下文）",
-    role: "aier",
-    roleIcon: "🤖",
-    roleName: "AI Engineer",
-    goalId: "aier-002",
-    skill: "skill-creator",
-    agent: "AI Engineer Agent",
+    title: "产出需求评审记录（PRD + 验收标准 + WSJF）",
+    role: "producter",
+    roleIcon: "📋",
+    roleName: "Product",
+    goalId: "prod-001",
+    skill: "gen-brd",
+    agent: "Product Agent",
     mcp: "yiai",
     listType: "sprint",
-    priority: "P1",
+    priority: "P0",
     status: "Done",
-    owner: "AI Engineer",
-    deadline: "2026-08-13",
+    owner: "PM YiAi",
+    deadline: "2026-08-16",
     progress: 100,
-    description:
-      "为避免重复造轮子并延续上下文，生成 / 重生成任务编排时，把其它清单里已编排的历史任务（标题 + skill/agent/mcp）注入 prompt，让模型借鉴已有决策；上限 15 条防止 prompt 膨胀。",
+    description: "为 loop-001 产出完整需求评审：PRD（背景/目标/范围）、验收标准（可验证）、WSJF 优先级，落知识库 01-requirement-review。",
     subtasks: [
       {
         id: "flow-t-003-1",
-        title: "采集历史已编排任务",
-        detail: "扫描各清单，提取带 skill / agent / mcp 的历史任务。",
-        acceptance: "得到去重后的历史任务集合（标题 + 三要素）。"
+        title: "写 PRD",
+        detail: "明确 loop-001 要做什么：重定义 OKR + 建流程记录体系 + 跑通首条闭环。",
+        acceptance: "PRD 含背景/目标/范围/非目标。"
       },
       {
         id: "flow-t-003-2",
-        title: "注入 prompt 并截断",
-        detail: "生成 / 重生成时喂入 ≤15 条历史任务上下文。",
-        acceptance: "prompt 含借鉴段且不超长，无重复条目。"
+        title: "写验收标准",
+        detail: "每个交付物给可验证的完成判据。",
+        acceptance: "验收标准可被测试门禁直接判定。"
       },
       {
         id: "flow-t-003-3",
-        title: "回归验证",
-        detail: "对比注入前后生成结果，确认新任务不再重复已有决策。",
-        acceptance: "重复项数量下降，新任务三要素与历史一致时不再重新决策。"
+        title: "WSJF 打分",
+        detail: "按价值×紧迫÷难度给 loop-001 各任务打分排序。",
+        acceptance: "任务有优先级，排序可解释。"
       }
     ]
   },
   {
     id: "flow-t-004",
-    title: "新建 goals / metrics 聚合页，解决知识库菜单死链",
-    role: "engineer",
-    roleIcon: "⚡",
-    roleName: "Engineer",
-    goalId: "prod-002",
-    skill: "vue",
-    agent: "Engineer Agent",
+    title: "产出技术评审记录（ADR + 记录载体选型）",
+    role: "leader",
+    roleIcon: "🧭",
+    roleName: "Leader",
+    goalId: "lead-001",
+    skill: "code-quality-research",
+    agent: "Leader Agent",
     mcp: "github",
     listType: "sprint",
-    priority: "P1",
+    priority: "P0",
     status: "Done",
-    owner: "Engineering Lead",
-    deadline: "2026-08-12",
+    owner: "Tech Lead",
+    deadline: "2026-08-16",
     progress: 100,
-    description:
-      "消除知识库菜单死链：为 7 角色提供目标/指标聚合视图，把分散在各角色 OKR 的 goal / metric 汇总到一处，点击深链回角色 OKR 详情。",
+    description: "为 loop-001 产出技术评审：记录载体选型（KB markdown + YiVad 新页）、页面结构（processRecord.vue）、KB 目录规范（loop/），落知识库 02-technical-review。",
     subtasks: [
       {
         id: "flow-t-004-1",
-        title: "聚合 7 角色目标与指标",
-        detail: "从 okrData 汇总 7 角色的 goal 与 metric，建立 goal→metric 映射。",
-        acceptance: "聚合页数据完整、去重、可追溯来源角色。"
+        title: "写 ADR：记录载体选型",
+        detail: "决策：KB markdown 为事实源 + YiVad 新页整合展示，理由与权衡。",
+        acceptance: "ADR 含 Context/Decision/Consequences。"
       },
       {
         id: "flow-t-004-2",
-        title: "渲染聚合视图",
-        detail: "目标 / 指标卡片与表格渲染，状态、进度、趋势可视化。",
-        acceptance: "信息清晰可读，排序与过滤可用。"
+        title: "定页面结构",
+        detail: "processRecord.vue 读取 loop/ 目录，按闭环列 4+1 类记录卡片。",
+        acceptance: "页面结构可落地。"
       },
       {
         id: "flow-t-004-3",
-        title: "深链回跳",
-        detail: "点击目标 / 指标跳回对应角色 OKR 并定位。",
-        acceptance: "跳转正确无死链，返回路径可回跳。"
+        title: "定 KB 目录规范",
+        detail: "loop/loop-XXX/ 下 01~05 记录 + INDEX + _templates。",
+        acceptance: "目录规范可复用。"
       }
     ]
   },
   {
     id: "flow-t-005",
-    title: "OKR 深链修复：指标卡原地滚动 + 高亮",
-    role: "engineer",
-    roleIcon: "⚡",
-    roleName: "Engineer",
-    goalId: "prod-002",
-    skill: "vue",
-    agent: "Engineer Agent",
-    mcp: "github",
-    listType: "risk",
-    priority: "P1",
-    status: "Done",
-    owner: "Engineering Lead",
-    deadline: "2026-08-12",
-    progress: 100,
-    description: "去掉不存在的 /metric/:id 路由，改为指标卡原地 scrollIntoView + 高亮，避免 404 并让指标详情可原地查看。",
-    subtasks: [
-      {
-        id: "flow-t-005-1",
-        title: "移除死路由",
-        detail: "删除 /metric/:id 相关路由与跳转逻辑。",
-        acceptance: "访问旧链不再 404，无残留路由。"
-      },
-      {
-        id: "flow-t-005-2",
-        title: "原地滚动定位",
-        detail: "scrollIntoView 平滑滚动到目标指标卡。",
-        acceptance: "点击指标链接平滑定位到目标卡。"
-      },
-      {
-        id: "flow-t-005-3",
-        title: "高亮反馈",
-        detail: "定位后临时高亮目标卡并自动消退。",
-        acceptance: "高亮 1600ms 后消失，视觉反馈清晰。"
-      }
-    ]
-  },
-  {
-    id: "flow-t-006",
-    title: "Agent 确认门（Approve/Reject）上线",
-    role: "aier",
-    roleIcon: "🤖",
-    roleName: "AI Engineer",
-    goalId: "exec-002",
-    skill: "skill-creator",
-    agent: "AI Engineer Agent",
-    mcp: "yiai",
-    listType: "daily",
-    priority: "P0",
-    status: "Done",
-    owner: "AI Engineer",
-    deadline: "2026-08-11",
-    progress: 100,
-    description:
-      "写操作需用户确认（Approve / Reject），120s 超时自动拒绝，保证 agent 不擅自落盘；同时支持在聊天输入框回复「可以 / 不要」等自然语言审批。",
-    subtasks: [
-      {
-        id: "flow-t-006-1",
-        title: "后端确认门",
-        detail: "写操作前暂停等待 approve / reject 决策，120s 超时。",
-        acceptance: "超时自动拒绝，未批准不执行写。"
-      },
-      {
-        id: "flow-t-006-2",
-        title: "前端确认 UI",
-        detail: "渲染 Approve / Reject 按钮 + 聊天自然语言审批。",
-        acceptance: "按钮与自然语言均可完成审批，状态及时反馈。"
-      },
-      {
-        id: "flow-t-006-3",
-        title: "拒绝记忆",
-        detail: "记录被拒调用签名，相同调用不再二次弹窗。",
-        acceptance: "重复写被自动拦截，不重复询问。"
-      }
-    ]
-  },
-  {
-    id: "flow-t-007",
-    title: "RSS 内容采集与自动分类接入 YiKnowledge",
+    title: "建立 4 类流程记录模板 + loop 目录",
     role: "curator",
     roleIcon: "📦",
     roleName: "Curator",
@@ -350,75 +262,75 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     skill: "import",
     agent: "Curator Agent",
     mcp: "yiai",
-    listType: "weekly",
-    priority: "P2",
-    status: "In Progress",
+    listType: "sprint",
+    priority: "P1",
+    status: "Done",
     owner: "Curator",
-    deadline: "2026-08-21",
-    progress: 60,
-    description: "RSS 正文卸载到 YiKnowledge markdown，MongoDB 只存元数据，减小主库体积并把长文本纳入知识库检索。",
+    deadline: "2026-08-16",
+    progress: 100,
+    description: "建 YiKnowledge/okr/2026-Q3/loop/ 目录与 _templates（需求评审/技术评审/构建调试/测试报告/上线 5 类模板），frontmatter 沿用 KB rulebook 规范。",
     subtasks: [
       {
-        id: "flow-t-007-1",
-        title: "内容脚本注入采集",
-        detail: "YiPet 注入 10+ 内网平台，采集文章正文。",
-        acceptance: "目标平台文章被稳定采集。"
+        id: "flow-t-005-1",
+        title: "建 loop/ 目录",
+        detail: "创建 loop/、loop/_templates/、loop/loop-001-<slug>/ 结构。",
+        acceptance: "目录结构就位。"
       },
       {
-        id: "flow-t-007-2",
-        title: "markdown 落盘",
-        detail: "正文写入 YiKnowledge 对应目录。",
-        acceptance: "文件落盘可读，无乱码。"
+        id: "flow-t-005-2",
+        title: "写 5 类记录模板",
+        detail: "为 01~05 记录各写一份带 frontmatter 的模板。",
+        acceptance: "模板可复用到后续闭环。"
       },
       {
-        id: "flow-t-007-3",
-        title: "自动分类",
-        detail: "文章按角色 / 主题自动归类到目录。",
-        acceptance: "分类准确率达标，可人工纠正。"
+        id: "flow-t-005-3",
+        title: "校验 frontmatter 合规",
+        detail: "模板 frontmatter 满足 KB rulebook 必填字段。",
+        acceptance: "title/tags/category/created/updated/source/type/status 齐全。"
       }
     ]
   },
   {
-    id: "flow-t-008",
-    title: "上线记录可视化（pipeline launch records）",
+    id: "flow-t-006",
+    title: "写 processRecord.vue 流程记录整合页 + 路由 + 菜单",
     role: "engineer",
     roleIcon: "⚡",
     roleName: "Engineer",
-    goalId: "exec-005",
+    goalId: "exec-001",
     skill: "vue",
     agent: "Engineer Agent",
     mcp: "github",
     listType: "sprint",
     priority: "P1",
-    status: "In Progress",
+    status: "Done",
     owner: "Engineering Lead",
-    deadline: "2026-08-18",
-    progress: 40,
-    description: "把上线 artifact / 版本 / 环境 / 关联目标渲染到 pipeline 页，让「执行 → 上线」链路可视化、可追溯。",
+    deadline: "2026-08-16",
+    progress: 100,
+    description: "新增「流程记录」页：通过 knowledgeService.scanKnowledge 读取 loop/ 目录，按闭环列出 4+1 类记录，深链到 KB 文件（复用 KnowledgePreviewDialog）。注册路由与菜单。",
     subtasks: [
       {
-        id: "flow-t-008-1",
-        title: "定义上线记录结构",
-        detail: "定义 launch record 字段：artifact / version / env / status / goalId。",
-        acceptance: "字段完整且可扩展。"
+        id: "flow-t-006-1",
+        title: "写 processRecord.vue",
+        detail: "扫描 loop/ 目录，聚合每条闭环的 01~05 记录，卡片渲染 + 状态标签。",
+        acceptance: "页面可列出全部闭环记录。"
       },
       {
-        id: "flow-t-008-2",
-        title: "渲染 pipeline 页",
-        detail: "artifact / 版本 / 环境 / 状态渲染到 pipeline 页。",
-        acceptance: "pipeline 页可见上线记录，排序正确。"
+        id: "flow-t-006-2",
+        title: "注册路由",
+        detail: "staticRouter.ts 加 /executiver/process 路由。",
+        acceptance: "路由可达，无 404。"
       },
       {
-        id: "flow-t-008-3",
-        title: "关联目标",
-        detail: "上线记录关联 goalId 并支持跳回目标。",
-        acceptance: "可跳回对应 OKR 目标。"
+        id: "flow-t-006-3",
+        title: "加菜单项",
+        detail: "authMenuList.json 加菜单入口，activeMenu 指向 /executiver。",
+        acceptance: "侧边栏可见「流程记录」入口。"
       }
     ]
   },
   {
-    id: "flow-t-009",
-    title: "清零 22 个 vue-tsc 类型错误，恢复 YiVad 可构建",
+    id: "flow-t-007",
+    title: "清零 23 个 vue-tsc 既有类型错误",
     role: "engineer",
     roleIcon: "⚡",
     roleName: "Engineer",
@@ -428,42 +340,111 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
     mcp: "github",
     listType: "risk",
     priority: "P0",
-    status: "At Risk",
+    status: "Done",
     owner: "Engineering Lead",
-    deadline: "2026-08-21",
-    progress: 15,
-    description:
-      "pnpm build 被 22 个 vue-tsc 类型错误阻断，YiVad 无法构建部署。TypeScript strict 与 vue-tsc --noEmit 是硬基线。错误分布：knowledgeBase dashboard 17 个（TS2339 Refresh/Search 未定义、TS2345 DefaultRow→KnowledgeFileSummary/path）、rag 4 个（history 2 + retrieval 2，TS2345 DefaultRow→HistoryEntry/RagSource）、proTable 1 个（TS2344）。需逐文件修复并验证全量构建通过。",
+    deadline: "2026-08-16",
+    progress: 100,
+    description: "清零 23 个 vue-tsc 类型错误恢复 YiVad 可构建：knowledgeBase dashboard 17（TS2339 Refresh/Search、TS2345 DefaultRow→KnowledgeFileSummary）、rag 4（history/retrieval DefaultRow 收窄）、proTable 1（TS2344 泛型）、menuMange 1（TS2353 TreeOptionProps.value→node-key）。",
+    subtasks: [
+      {
+        id: "flow-t-007-1",
+        title: "修 knowledgeBase dashboard 17 错误",
+        detail: "补 TS2339 Refresh/Search 引用，修正 TS2345 DefaultRow 类型。",
+        acceptance: "该文件 vue-tsc 0 错误。"
+      },
+      {
+        id: "flow-t-007-2",
+        title: "修 rag history/retrieval 4 错误",
+        detail: "DefaultRow 收窄为 HistoryEntry / RagSource。",
+        acceptance: "两个文件 0 错误。"
+      },
+      {
+        id: "flow-t-007-3",
+        title: "修 proTable complexProTable 1 错误",
+        detail: "修正泛型约束 TS2344。",
+        acceptance: "该文件 0 错误。"
+      },
+      {
+        id: "flow-t-007-4",
+        title: "修 menuMange TreeOptionProps 1 错误",
+        detail: "el-tree-select props.value 已从 TreeOptionProps 移除，改用 node-key。",
+        acceptance: "该文件 0 错误。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-008",
+    title: "跑门禁 + 产出测试报告与上线记录",
+    role: "srer",
+    roleIcon: "🔧",
+    roleName: "SRE",
+    goalId: "sre-001",
+    skill: "lighthouse",
+    agent: "SRE Agent",
+    mcp: "github",
+    listType: "sprint",
+    priority: "P1",
+    status: "Done",
+    owner: "SRE Lead",
+    deadline: "2026-08-16",
+    progress: 100,
+    description: "跑 vue-tsc + build 门禁，产出 04-test-report（typecheck/build 结果 + 手动验证）与 05-launch-record（artifact/version/env），上线可追溯。",
+    subtasks: [
+      {
+        id: "flow-t-008-1",
+        title: "跑 typecheck/build 门禁",
+        detail: "vue-tsc --noEmit 与 pnpm build，确认 0 错误。",
+        acceptance: "门禁通过，可构建。"
+      },
+      {
+        id: "flow-t-008-2",
+        title: "写测试报告",
+        detail: "记录 typecheck/build 结果与手动验证结论。",
+        acceptance: "04-test-report 落知识库。"
+      },
+      {
+        id: "flow-t-008-3",
+        title: "写上线记录",
+        detail: "artifact/version/env 字段齐全，关联 goalId 与 taskId。",
+        acceptance: "05-launch-record 落知识库。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-009",
+    title: "补齐 7 角色三要素编排映射",
+    role: "aier",
+    roleIcon: "🤖",
+    roleName: "AI Engineer",
+    goalId: "aier-001",
+    skill: "skill-creator",
+    agent: "AI Engineer Agent",
+    mcp: "yiai",
+    listType: "weekly",
+    priority: "P2",
+    status: "Done",
+    owner: "AI Engineer",
+    deadline: "2026-08-16",
+    progress: 100,
+    description: "确认 7 角色 skill/agent/mcp 三要素确定性映射覆盖，AI 推荐按 WSJF 可复现，编排结果落盘可读回。",
     subtasks: [
       {
         id: "flow-t-009-1",
-        title: "修复 knowledgeBase dashboard 17 个错误",
-        detail: "补上 TS2339 缺失的 Refresh/Search 引用，修正 TS2345 DefaultRow 到 KnowledgeFileSummary/path 的类型。",
-        acceptance: "vue-tsc 该文件 0 错误。"
+        title: "核对 7 角色三要素映射",
+        detail: "ROLE_SKILL / ENGINEERING_ROLES 映射覆盖 7 角色。",
+        acceptance: "每角色有缺省 skill/agent/mcp。"
       },
       {
         id: "flow-t-009-2",
-        title: "修复 rag/history 2 个 TS2345",
-        detail: "把 DefaultRow 收窄为 HistoryEntry 类型。",
-        acceptance: "该文件 0 错误。"
+        title: "校验 AI 推荐可复现",
+        detail: "WSJF 评分 + 三要素解析走通，离线兜底可用。",
+        acceptance: "推荐结果可复现、可落盘。"
       },
       {
         id: "flow-t-009-3",
-        title: "修复 rag/retrieval 2 个 TS2345",
-        detail: "把 DefaultRow 收窄为 RagSource 类型。",
-        acceptance: "该文件 0 错误。"
-      },
-      {
-        id: "flow-t-009-4",
-        title: "修复 proTable/complexProTable 1 个 TS2344",
-        detail: "修正泛型约束，消除 TS2344。",
-        acceptance: "该文件 0 错误。"
-      },
-      {
-        id: "flow-t-009-5",
-        title: "全量构建验证",
-        detail: "运行 vue-tsc --noEmit 与 pnpm build 确认无错误。",
-        acceptance: "0 类型错误，构建成功，可部署。"
+        title: "校验编排落盘可读回",
+        detail: "taskToMeta / taskFromMeta 往返一致。",
+        acceptance: "三要素不丢失。"
       }
     ]
   }
@@ -492,53 +473,14 @@ export const EXAMPLE_LAUNCHES: ExampleLaunch[] = [
     id: "launch-001",
     project: "YiVad",
     projectIcon: "🖥️",
-    artifact: "OKR 编排 + 跨页导航闭环",
+    artifact: "OKR 自闭环 + 流程记录页",
     version: "v1.0.0",
     env: "prod",
     status: "live",
-    deployedAt: "2026-08-14",
-    goalId: "exec-005",
-    taskId: "flow-t-001",
-    description: "home/okr/rss/knowledge 全链路打通，需求 → 上线流程可视化。"
-  },
-  {
-    id: "launch-002",
-    project: "YiAi",
-    projectIcon: "🤖",
-    artifact: "Agent 确认门 + 模型升级",
-    version: "v1.2.0",
-    env: "prod",
-    status: "live",
-    deployedAt: "2026-08-11",
-    goalId: "exec-002",
+    deployedAt: "2026-08-16",
+    goalId: "exec-001",
     taskId: "flow-t-006",
-    description: "写操作确认门 + 模型 stall→stronger 升级链路，任务完成率 62%。"
-  },
-  {
-    id: "launch-003",
-    project: "YiPet",
-    projectIcon: "🧩",
-    artifact: "内容脚本注入 + 采集",
-    version: "v0.8.0",
-    env: "staging",
-    status: "rolling",
-    deployedAt: "2026-08-15",
-    goalId: "cur-001",
-    taskId: "flow-t-007",
-    description: "Chrome MV3 内容脚本注入 10+ 内网平台，采集文章自动分类。"
-  },
-  {
-    id: "launch-004",
-    project: "YiKnowledge",
-    projectIcon: "📚",
-    artifact: "okr/ 任务目录 + 聚合视图",
-    version: "v1.1.0",
-    env: "prod",
-    status: "live",
-    deployedAt: "2026-08-12",
-    goalId: "cur-001",
-    taskId: "flow-t-004",
-    description: "okr 任务落盘目录 + goals/metrics 聚合页，410 文件在线。"
+    description: "7 角色 OKR 重定义为「AI 全流程自闭环」，新增流程记录页聚合需求/技术/构建/测试/上线五类记录。"
   }
 ];
 

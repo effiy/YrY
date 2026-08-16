@@ -149,6 +149,18 @@ export const staticRouter: RouteRecordRaw[] = [
         meta: { title: "Role OKR", icon: "Aim", activeMenu: "/executiver" }
       },
       {
+        path: "/executiver/reading-list",
+        name: "readingList",
+        component: () => import("@/views/knowledge/executiver/readingList.vue"),
+        meta: { title: "Reading List", icon: "Reading", activeMenu: "/executiver" }
+      },
+      {
+        path: "/executiver/process",
+        name: "processRecord",
+        component: () => import("@/views/knowledge/executiver/processRecord.vue"),
+        meta: { title: "Process Record", icon: "Document", activeMenu: "/executiver" }
+      },
+      {
         path: "/leader",
         name: "leader",
         component: () => import("@/views/knowledge/leader/index.vue"),

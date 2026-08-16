@@ -43,6 +43,7 @@ related:
 | [SECURITY.md](./engineer/SECURITY.md) | Supply chain, appsec, risk, incident response, compliance |
 | [COLLABORATION.md](./curator/COLLABORATION.md) | Team process, meetings, knowledge sharing, onboarding, PM |
 | [ENGINEERING.md](./engineer/ENGINEERING.md) | Architecture, quality, data, tools, lessons |
+| [okr/README.md](./okr/README.md) | 7 角色 OKR + 「AI 全流程自闭环」流程记录（[loop 索引](./okr/2026-Q3/loop/INDEX.md)） |
 
 ## Retrieval strategy
 

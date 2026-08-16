@@ -108,7 +108,7 @@ const setCurrent = () => {
 };
 
 // Table summary row (calculated based on conditions)
-interface SummaryMethodProps<T = User.ResUserList> {
+interface SummaryMethodProps<T extends Record<PropertyKey, any> = User.ResUserList> {
   columns: TableColumnCtx<T>[];
   data: T[];
 }

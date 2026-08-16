@@ -137,7 +137,7 @@ const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null)
 
 const launches = EXAMPLE_LAUNCHES;
 
-/** 上线记录的 goalId（如 exec-005）→ 角色 id（如 executiver），跳回角色 OKR 并深链该目标。 */
+/** 上线记录的 goalId（如 exec-001）→ 角色 id（如 executiver），跳回角色 OKR 并深链该目标。 */
 const GOAL_ROLE_PREFIX: Record<string, string> = {
   exec: "executiver",
   prod: "producter",
