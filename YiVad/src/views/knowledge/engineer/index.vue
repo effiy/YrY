@@ -6,11 +6,16 @@
     category="engineer"
     :subdirs="subdirs"
     :structural-tags="['yivad', 'yiai', 'yipet']"
-  />
+  >
+    <template #title>
+      <RoleNav active="engineer" />
+    </template>
+  </RoleKnowledgePage>
 </template>
 
 <script setup lang="ts" name="engineerHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 
 const subdirs = [
   { id: "build", icon: "🏗️", label: "Build", color: "#1677ff", desc: "Architecture & Development — system design, API and RPC contracts, dev tools, DX, dependency management, vendor evaluation, and project bootstrapping." },

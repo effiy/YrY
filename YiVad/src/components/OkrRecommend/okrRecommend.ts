@@ -73,7 +73,8 @@ export interface OkrListMeta {
 export const LIST_TYPES: OkrListMeta[] = [
   { key: "daily", icon: "📅" },
   { key: "weekly", icon: "🗓" },
-  { key: "risk", icon: "🚨" }
+  { key: "risk", icon: "🚨" },
+  { key: "sprint", icon: "🎯" }
 ];
 
 const VALID_EFFORT = ["S", "M", "L"] as const;
@@ -348,6 +349,42 @@ OKR 上下文：
 ${ctx}`;
 }
 
+/** 为某清单整体生成推荐任务：scope="all" 覆盖全部角色，否则仅指定角色。
+ *  与 buildSingleItemPrompt 的 focus/due 口径一致，仅多角色 + 多条数。 */
+export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPerRole = 2, history?: OkrTaskItem[]): string {
+  const roles = scope === "all" ? Object.keys(rolesData) : [scope];
+  const label = scope === "all" ? "各角色" : rolesData[scope]?.name ?? scope;
+  const icon = LIST_TYPES.find(l => l.key === listType)?.icon ?? "";
+  const today = dayjs().format("YYYY-MM-DD");
+  const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
+  const weekEnd = dayjs().startOf("week").add(5, "day").format("YYYY-MM-DD");
+
+  const focus =
+    listType === "risk"
+      ? "聚焦各角色的 blockers / blocked 目标，给出「解除阻塞」的下一步动作"
+      : listType === "sprint"
+        ? "聚焦进度最低（< 40%）的 Key Result / 指标，给出本周可完成的推进任务"
+        : listType === "weekly"
+          ? "聚焦本周关键里程碑（nextWeek）与滞后目标"
+          : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
+  const due = listType === "daily" ? `dueDate 取今天（${today}）或明天` : `dueDate 落在本周（${weekStart} ~ ${weekEnd}）`;
+
+  const ctx = roles.map(r => formatRoleDetail(r)).filter(Boolean).join("\n\n");
+
+  let prompt = `请基于以下 OKR 上下文，为「${label}」推荐${icon}清单（每角色 ${countPerRole} 条）：
+- ${focus}。
+- ${due}。
+
+OKR 上下文：
+${ctx}`;
+
+  const hist = formatHistory(history);
+  if (hist) {
+    prompt += `\n\n历史任务（借鉴以前的任务内容，避免重复、延续上下文）：\n${hist}`;
+  }
+  return prompt;
+}
+
 // ── 解析模型返回（容错）─────────────────────────
 
 function clampEffort(v: unknown): OkrTaskItem["effort"] {
@@ -436,6 +473,21 @@ export function parseRecommendation(raw: string, scope: OkrScope, listType?: Okr
     .map((item, i) => normalizeItem(item, scope, i, listType))
     .filter((x): x is OkrTaskItem => x !== null)
     .sort((a, b) => b.score - a.score); // 综合评分降序，快速见效项排最前
+}
+
+/** 解析模型对单条 Action Item 的优化响应（buildActionItemPrompt 的输出）：
+ *  提取新标题 + 优先级 + 关联目标，既有 deadline / owner / role 由调用方保留合并。 */
+export function parseActionItem(raw: string): { title: string; priority: OkrPriority; goalId: string } | null {
+  const arr = extractJsonArray(raw);
+  if (!arr) return null;
+  const o = (arr[0] ?? {}) as Record<string, unknown>;
+  const title = String(o.title ?? o.action ?? "").trim();
+  if (!title) return null;
+  return {
+    title,
+    priority: clampPriority(o.priority),
+    goalId: String(o.goalId ?? o.goal ?? "").trim()
+  };
 }
 
 // ── 知识库序列化（任务 ⇄ 扁平 frontmatter）─────────

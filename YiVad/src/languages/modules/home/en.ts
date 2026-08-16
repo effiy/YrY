@@ -6,6 +6,7 @@ export default {
     okr: "OKR",
     rss: "RSS",
     knowledge: "Knowledge",
+    skills: "Skills",
 
     status: {
       online: "Online",
@@ -82,7 +83,15 @@ export default {
         high: "High",
         medium: "Mid",
         low: "Low"
-      }
+      },
+      generate: "Generate",
+      generating: "Generating…",
+      generateSuccess: "Generated {n} recommended tasks",
+      generateEmpty: "Model returned nothing parseable",
+      generateFailed: "Generation failed",
+      regen: "Regenerate",
+      regenSuccess: "Regenerated",
+      regenFailed: "Regenerate failed"
     }
   }
 };

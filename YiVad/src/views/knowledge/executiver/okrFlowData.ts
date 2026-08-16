@@ -447,6 +447,272 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
         acceptance: "三要素不丢失。"
       }
     ]
+  },
+  {
+    id: "flow-t-010",
+    title: "复盘 loop-001 需求评审，产出 loop-002 PRD 与验收标准",
+    role: "producter",
+    roleIcon: "📋",
+    roleName: "Product",
+    goalId: "prod-001",
+    skill: "gen-brd",
+    agent: "Product Agent",
+    mcp: "yiai",
+    listType: "daily",
+    priority: "P1",
+    status: "In Progress",
+    owner: "PM YiAi",
+    deadline: "2026-08-17",
+    progress: 40,
+    description: "复盘 loop-001 需求评审的产出质量，为 loop-002 产出 PRD（背景/目标/范围/非目标）与可验证验收标准，WSJF 打分沿用既有实现。",
+    subtasks: [
+      {
+        id: "flow-t-010-1",
+        title: "复盘 loop-001 需求评审",
+        detail: "对照 PRD 与验收标准，记录哪些判据可被门禁直接判定、哪些需人工。",
+        acceptance: "复盘结论落 01-requirement-review。"
+      },
+      {
+        id: "flow-t-010-2",
+        title: "产出 loop-002 PRD",
+        detail: "明确 loop-002 范围：复盘与模板复用、第二条闭环的交付物。",
+        acceptance: "PRD 含背景/目标/范围/非目标。"
+      },
+      {
+        id: "flow-t-010-3",
+        title: "写 loop-002 验收标准",
+        detail: "每个交付物给可验证完成判据，能由测试门禁直接判定。",
+        acceptance: "验收标准可验证。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-011",
+    title: "复盘 loop-001 技术评审，沉淀可复用 ADR 模板",
+    role: "leader",
+    roleIcon: "🧭",
+    roleName: "Leader",
+    goalId: "lead-001",
+    skill: "code-quality-research",
+    agent: "Leader Agent",
+    mcp: "github",
+    listType: "weekly",
+    priority: "P1",
+    status: "In Progress",
+    owner: "Tech Lead",
+    deadline: "2026-08-18",
+    progress: 30,
+    description: "复盘 loop-001 的 ADR 记录载体与页面结构选型，沉淀可复用的 ADR 模板（Context/Decision/Consequences），保证 loop-002 决策可回溯。",
+    subtasks: [
+      {
+        id: "flow-t-011-1",
+        title: "复盘 loop-001 ADR",
+        detail: "检查 ADR 是否含 Context/Decision/Consequences，记录遗漏点。",
+        acceptance: "复盘结论落 02-technical-review。"
+      },
+      {
+        id: "flow-t-011-2",
+        title: "沉淀 ADR 模板",
+        detail: "把 loop-001 的 ADR 提炼成带 frontmatter 的 _templates。",
+        acceptance: "模板可复用到 loop-002。"
+      },
+      {
+        id: "flow-t-011-3",
+        title: "校验决策可回溯",
+        detail: "确认每条 ADR 能回溯到对应需求。",
+        acceptance: "决策可回溯到需求。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-012",
+    title: "维护 0 类型错误基线，沉淀构建调试模板复用",
+    role: "engineer",
+    roleIcon: "⚡",
+    roleName: "Engineer",
+    goalId: "eng-001",
+    skill: "vue",
+    agent: "Engineer Agent",
+    mcp: "github",
+    listType: "daily",
+    priority: "P1",
+    status: "In Progress",
+    owner: "Engineering Lead",
+    deadline: "2026-08-17",
+    progress: 50,
+    description: "维持 YiVad 改动文件 0 新增类型错误基线，沉淀 loop-001 的构建调试记录为可复用模板，构建门禁（vue-tsc + build）持续通过。",
+    subtasks: [
+      {
+        id: "flow-t-012-1",
+        title: "跑 typecheck/build 门禁",
+        detail: "vue-tsc --noEmit 与 pnpm build，确认 0 错误。",
+        acceptance: "门禁通过，0 新增错误。"
+      },
+      {
+        id: "flow-t-012-2",
+        title: "补构建调试记录",
+        detail: "把 loop-002 的改动与修复过程落 03-build-debug。",
+        acceptance: "调试过程留痕。"
+      },
+      {
+        id: "flow-t-012-3",
+        title: "沉淀调试模板复用",
+        detail: "把「问题→修复→验证」沉淀为 _templates 可复用项。",
+        acceptance: "模板可复用到后续闭环。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-013",
+    title: "复盘 loop-001 门禁与上线，规划 loop-002 上线口径",
+    role: "srer",
+    roleIcon: "🔧",
+    roleName: "SRE",
+    goalId: "sre-001",
+    skill: "lighthouse",
+    agent: "SRE Agent",
+    mcp: "github",
+    listType: "sprint",
+    priority: "P2",
+    status: "Planned",
+    owner: "SRE Lead",
+    deadline: "2026-08-19",
+    progress: 10,
+    description: "复盘 loop-001 的 typecheck/build 门禁与上线记录完整性，规划 loop-002 的上线口径（artifact/version/env）与回滚预案。",
+    subtasks: [
+      {
+        id: "flow-t-013-1",
+        title: "复盘 loop-001 门禁",
+        detail: "核对 typecheck/build 结果与上线记录是否齐全。",
+        acceptance: "复盘结论落 04-test-report。"
+      },
+      {
+        id: "flow-t-013-2",
+        title: "定 loop-002 上线口径",
+        detail: "明确 artifact/version/env 字段规范与回滚预案。",
+        acceptance: "上线口径可追溯可回滚。"
+      },
+      {
+        id: "flow-t-013-3",
+        title: "规划 loop-002 测试报告",
+        detail: "定 loop-002 测试范围与门禁清单。",
+        acceptance: "测试范围清晰。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-014",
+    title: "沉淀 7 角色三要素编排清单，规划 loop-002 编排",
+    role: "aier",
+    roleIcon: "🤖",
+    roleName: "AI Engineer",
+    goalId: "aier-001",
+    skill: "skill-creator",
+    agent: "AI Engineer Agent",
+    mcp: "yiai",
+    listType: "weekly",
+    priority: "P2",
+    status: "In Progress",
+    owner: "AI Engineer",
+    deadline: "2026-08-19",
+    progress: 35,
+    description: "把 loop-001 的 7 角色 skill/agent/mcp 三要素映射沉淀为可复现清单，规划 loop-002 的编排，AI 推荐按 WSJF 可复现。",
+    subtasks: [
+      {
+        id: "flow-t-014-1",
+        title: "沉淀三要素编排清单",
+        detail: "把 ROLE_SKILL / ENGINEERING_ROLES 映射整理为清单落盘。",
+        acceptance: "每角色有缺省 skill/agent/mcp。"
+      },
+      {
+        id: "flow-t-014-2",
+        title: "校验 AI 推荐可复现",
+        detail: "WSJF 评分 + 三要素解析走通，离线兜底可用。",
+        acceptance: "推荐结果可复现。"
+      },
+      {
+        id: "flow-t-014-3",
+        title: "规划 loop-002 编排",
+        detail: "明确 loop-002 各任务的三要素指派。",
+        acceptance: "编排落盘可读回。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-015",
+    title: "复盘 loop-001 记录规范，规划 loop-002 模板复用",
+    role: "curator",
+    roleIcon: "📦",
+    roleName: "Curator",
+    goalId: "cur-001",
+    skill: "import",
+    agent: "Curator Agent",
+    mcp: "yiai",
+    listType: "sprint",
+    priority: "P2",
+    status: "Planned",
+    owner: "Curator",
+    deadline: "2026-08-20",
+    progress: 15,
+    description: "复盘 loop-001 记录 frontmatter 合规率与目录结构，规划 loop-002 模板复用，建立 loop-002 目录与 INDEX 占位。",
+    subtasks: [
+      {
+        id: "flow-t-015-1",
+        title: "复盘记录 frontmatter 合规",
+        detail: "抽查 loop-001 记录，确认 title/tags/category/status 齐全。",
+        acceptance: "合规率 100%。"
+      },
+      {
+        id: "flow-t-015-2",
+        title: "更新模板与 INDEX",
+        detail: "根据复盘结论微调 _templates 与 loop/INDEX。",
+        acceptance: "模板可复用到 loop-002。"
+      },
+      {
+        id: "flow-t-015-3",
+        title: "建 loop-002 目录",
+        detail: "创建 loop-002-<slug>/ 目录占位。",
+        acceptance: "目录结构就位。"
+      }
+    ]
+  },
+  {
+    id: "flow-t-016",
+    title: "复盘 loop-001 全流程，审批 loop-002 目标与里程碑",
+    role: "executiver",
+    roleIcon: "🏢",
+    roleName: "Executive",
+    goalId: "exec-001",
+    skill: "business-strategy",
+    agent: "Executive Agent",
+    mcp: "yiai",
+    listType: "sprint",
+    priority: "P1",
+    status: "In Progress",
+    owner: "CEO",
+    deadline: "2026-08-21",
+    progress: 25,
+    description: "复盘 loop-001 的闭环周期与 7 角色对齐情况，审批 loop-002 目标与里程碑，保证闭环周期 ≤ 2 个工作日并持续留痕。",
+    subtasks: [
+      {
+        id: "flow-t-016-1",
+        title: "复盘 loop-001 闭环周期",
+        detail: "核算需求→上线实际工作日，记录偏离原因。",
+        acceptance: "周期复盘结论可查。"
+      },
+      {
+        id: "flow-t-016-2",
+        title: "审批 loop-002 目标",
+        detail: "确认 loop-002 各角色目标仍对齐北极星。",
+        acceptance: "审批记录落知识库。"
+      },
+      {
+        id: "flow-t-016-3",
+        title: "定 loop-002 里程碑",
+        detail: "设定 loop-002 关键里程碑与时间点。",
+        acceptance: "里程碑可追踪。"
+      }
+    ]
   }
 ];
 

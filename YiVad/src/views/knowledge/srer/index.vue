@@ -5,11 +5,16 @@
     description="incident response, observability, and release management for production reliability."
     category="srer"
     :subdirs="subdirs"
-  />
+  >
+    <template #title>
+      <RoleNav active="srer" />
+    </template>
+  </RoleKnowledgePage>
 </template>
 
 <script setup lang="ts" name="srerHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 
 const subdirs = [
   { id: "incident-response", icon: "🚨", label: "Incident Response", color: "#ef4444", desc: "Production incident management lifecycle — war room protocols, blast radius analysis, rollback drills, oncall handovers, postmortems, and chaos engineering experiments." },

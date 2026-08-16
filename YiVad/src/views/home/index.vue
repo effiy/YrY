@@ -20,6 +20,9 @@
         <el-button size="small" :icon="Reading" @click="router.push('/knowledge/pipeline')">
           {{ t("home.knowledge") }}
         </el-button>
+        <el-button size="small" :icon="MagicStick" @click="router.push('/skills')">
+          {{ t("home.skills") }}
+        </el-button>
       </div>
     </div>
 
@@ -57,7 +60,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ChatDotRound, Connection, Reading, Aim } from "@element-plus/icons-vue";
+import { ChatDotRound, Connection, Reading, Aim, MagicStick } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
 import { getDashboardHealth } from "@/api/modules/dashboard";

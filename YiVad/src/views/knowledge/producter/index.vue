@@ -6,11 +6,16 @@
     category="producter"
     :subdirs="subdirs"
     :structural-tags="['product', 'product-management', 'yivad', 'yiai', 'yipet']"
-  />
+  >
+    <template #title>
+      <RoleNav active="producter" />
+    </template>
+  </RoleKnowledgePage>
 </template>
 
 <script setup lang="ts" name="producterHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 
 const subdirs = [
   { id: "frameworks", icon: "🧩", label: "Frameworks", color: "#1677ff", desc: "Product management frameworks — RICE/ICE prioritization, MoSCoW, JTBD, Kano model, story mapping, OKR design, dual-track agile, and lean startup methodology." },

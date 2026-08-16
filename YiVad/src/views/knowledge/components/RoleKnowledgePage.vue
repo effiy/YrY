@@ -2,12 +2,9 @@
   <div class="role-page">
     <header class="role-page__header">
       <div class="role-page__header-row">
-        <h1>{{ title }}</h1>
+        <slot name="title"><h1>{{ title }}</h1></slot>
         <el-button size="small" type="primary" plain @click="$router.push(`/executiver/okr/${category}`)">OKR →</el-button>
       </div>
-      <p>
-        {{ totalFiles }} files across {{ subdirs.length }} {{ domainsWord }} — {{ description }}
-      </p>
     </header>
 
     <slot name="header" />

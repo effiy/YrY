@@ -6,6 +6,7 @@ export default {
     okr: "OKR",
     rss: "RSS",
     knowledge: "知识库",
+    skills: "技能",
 
     status: {
       online: "在线",
@@ -82,7 +83,15 @@ export default {
         high: "高",
         medium: "中",
         low: "低"
-      }
+      },
+      generate: "生成推荐",
+      generating: "生成中…",
+      generateSuccess: "已生成 {n} 条推荐任务",
+      generateEmpty: "模型未返回可解析结果",
+      generateFailed: "生成失败",
+      regen: "重生成",
+      regenSuccess: "已重生成",
+      regenFailed: "重生成失败"
     }
   }
 };

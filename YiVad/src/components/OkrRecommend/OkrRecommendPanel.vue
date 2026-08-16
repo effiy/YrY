@@ -4,12 +4,16 @@
     <div class="okr-rec__header">
       <div class="okr-rec__header-left">
         <h2 class="okr-rec__title">{{ t("home.aiRecommend.title") }}</h2>
+        <p class="okr-rec__subtitle">{{ t("home.aiRecommend.subtitle") }}</p>
       </div>
       <div class="okr-rec__header-right">
         <el-select v-model="roleScope" size="small" class="okr-rec__scope">
           <el-option :value="'all'" :label="t('home.aiRecommend.scopeAll')" />
           <el-option v-for="r in roleOptions" :key="r.id" :value="r.id" :label="`${r.icon} ${r.name}`" />
         </el-select>
+        <el-button size="small" type="primary" :icon="MagicStick" :loading="generating" @click="handleGenerate">
+          {{ t("home.aiRecommend.generate") }}
+        </el-button>
       </div>
     </div>
 
@@ -126,8 +130,11 @@
           <span v-else>{{ row.reason }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.action')" width="110" fixed="right" align="center">
+      <el-table-column :label="t('home.aiRecommend.cols.action')" width="140" fixed="right" align="center">
         <template #default="{ row }">
+          <el-tooltip :content="t('home.aiRecommend.regen')" placement="top">
+            <el-button link type="primary" size="small" :icon="RefreshRight" :loading="regeneratingId === row.id" @click="handleRegenerate(row as TableRow)" />
+          </el-tooltip>
           <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row as TableRow)" />
         </template>
       </el-table-column>
@@ -200,9 +207,10 @@
 import { computed, reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { Search, Grid, List, Postcard, Delete } from "@element-plus/icons-vue";
+import { Search, Grid, List, Postcard, Delete, MagicStick, RefreshRight } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
-import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
+import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile, readKnowledgeFile } from "@/api/modules/knowledgeService";
+import { chat } from "@/api/modules/chatService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import { rolesData, allGoalsMap } from "@/views/knowledge/executiver/okrData";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
@@ -218,6 +226,12 @@ import EffortBadge from "./fields/EffortBadge.vue";
 import DueLabel from "./fields/DueLabel.vue";
 import {
   LIST_TYPES,
+  OKR_SYSTEM_PROMPT,
+  buildListPrompt,
+  buildSingleItemPrompt,
+  buildActionItemPrompt,
+  parseRecommendation,
+  parseActionItem,
   taskToMeta,
   taskFromMeta,
   actionItemFromMeta,
@@ -237,6 +251,11 @@ const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null)
 
 const roleScope = ref<OkrScope>("all");
 const roleOptions = Object.values(rolesData).map(r => ({ id: r.id, name: r.name, icon: r.icon }));
+
+/** 批量生成进行中（禁用生成按钮）。 */
+const generating = ref(false);
+/** 单条重生成中的行 id（仅该行显示 loading）。 */
+const regeneratingId = ref("");
 
 type ViewMode = "table" | "list" | "card";
 const viewMode = ref<ViewMode>("table");
@@ -285,7 +304,8 @@ function projectOfRow(row: TableRow): string {
 /** 分类按钮上的数量：按项目筛选（不按分类/日期/搜索）统计每类行数。 */
 const categoryCounts = computed<Record<string, number>>(() => {
   const projs = props.projects;
-  const scoped = projs?.length ? allRows.value.filter(i => projs.includes(projectOfRow(i))) : allRows.value;
+  let scoped = projs?.length ? allRows.value.filter(i => projs.includes(projectOfRow(i))) : allRows.value;
+  if (roleScope.value !== "all") scoped = scoped.filter(i => i.role === roleScope.value);
   const counts: Record<string, number> = { all: scoped.length };
   for (const l of LIST_TYPES) counts[l.key] = scoped.filter(i => i.listType === l.key).length;
   return counts;
@@ -298,6 +318,7 @@ const filteredItems = computed(() => {
       : allRows.value.filter(i => i.listType === categoryFilter.value);
   const projs = props.projects;
   if (projs?.length) result = result.filter(i => projs.includes(projectOfRow(i)));
+  if (roleScope.value !== "all") result = result.filter(i => i.role === roleScope.value);
   const date = dueDateFilter.value;
   if (date) result = result.filter(i => i.dueDate === date);
   const kw = searchKeyword.value.trim().toLowerCase();
@@ -505,6 +526,117 @@ async function removeActionItem(row: OkrActionItem) {
 async function handleDelete(row: TableRow) {
   if (row.kind === "action") await removeActionItem(row);
   else await removeItem(row.listType, row.id);
+}
+
+// ── AI 生成 / 重生成 ─────────────────────────────
+// 拼 OKR 上下文 prompt → 调用非流式 chat → 解析 JSON → 落盘知识库。
+// 生成范围由头部 roleScope 决定（"all" = 全角色，否则仅该角色）。
+
+/** 所有清单中的任务（供 AI 生成/重生成时作为历史上下文，避免重复）。 */
+function historyTasks(): OkrTaskItem[] {
+  return LIST_TYPES.flatMap(l => lists[l.key].items);
+}
+
+/** 为某清单生成推荐任务：buildListPrompt → chat → parseRecommendation → persistList。 */
+async function generateFor(listType: OkrListType) {
+  const prompt = buildListPrompt(listType, roleScope.value, 2, historyTasks());
+  const raw = await chat({
+    system: OKR_SYSTEM_PROMPT,
+    messages: [{ type: "user", message: prompt, timestamp: Date.now() }]
+  });
+  const items = parseRecommendation(raw, roleScope.value, listType);
+  if (!items.length) {
+    ElMessage.warning(t("home.aiRecommend.generateEmpty"));
+    return;
+  }
+  const state = lists[listType];
+  state.items = items;
+  state.source = "ai";
+  await persistList(listType);
+}
+
+/** 「生成推荐」入口：当前分类为「全部」时依次生成四类，否则只生成当前分类。 */
+async function handleGenerate() {
+  if (generating.value) return;
+  generating.value = true;
+  try {
+    const target = categoryFilter.value === "all" ? LIST_TYPES.map(l => l.key) : [categoryFilter.value];
+    let total = 0;
+    for (const listType of target) {
+      try {
+        await generateFor(listType);
+        total += lists[listType].items.length;
+      } catch {
+        ElMessage.error(t("home.aiRecommend.generateFailed"));
+      }
+    }
+    if (total) ElMessage.success(t("home.aiRecommend.generateSuccess", { n: total }));
+  } finally {
+    generating.value = false;
+  }
+}
+
+/** 单条任务重生成：buildSingleItemPrompt 推一条新任务，替换同 id 旧任务后落盘。 */
+async function regenerateTask(row: OkrTaskItem & { listType: OkrListType }) {
+  const prompt = buildSingleItemPrompt(row.listType, row.role, row.title, historyTasks());
+  const raw = await chat({
+    system: OKR_SYSTEM_PROMPT,
+    messages: [{ type: "user", message: prompt, timestamp: Date.now() }]
+  });
+  const fresh = parseRecommendation(raw, row.role, row.listType)[0];
+  if (!fresh) {
+    ElMessage.warning(t("home.aiRecommend.generateEmpty"));
+    return;
+  }
+  const state = lists[row.listType];
+  const idx = state.items.findIndex(i => i.id === row.id);
+  if (idx !== -1) state.items[idx] = fresh;
+  state.source = "ai";
+  await persistList(row.listType);
+}
+
+/** 单条 Action Item 重生成：优化标题/优先级/目标，保留既有 deadline/owner/role 与正文。 */
+async function regenerateAction(row: OkrActionItem) {
+  const prompt = buildActionItemPrompt(row.role || "executiver", row.title, row.dueDate);
+  const raw = await chat({
+    system: OKR_SYSTEM_PROMPT,
+    messages: [{ type: "user", message: prompt, timestamp: Date.now() }]
+  });
+  const parsed = parseActionItem(raw);
+  if (!parsed) {
+    ElMessage.warning(t("home.aiRecommend.generateEmpty"));
+    return;
+  }
+  if (row.filePath) {
+    let content = `# ${parsed.title}`;
+    let meta: Record<string, unknown> = { type: "okr-action" };
+    try {
+      const res = await readKnowledgeFile(row.filePath);
+      meta = { ...res.meta, title: parsed.title, priority: parsed.priority, goal: parsed.goalId };
+      content = res.content.replace(/^# .*$/m, `# ${parsed.title}`);
+    } catch {
+      /* 读失败则退回新标题 + 空 meta，仍尽力落盘 */
+    }
+    await writeKnowledgeFile(row.filePath, content, meta);
+  }
+  row.title = parsed.title;
+  row.priority = parsed.priority;
+  row.goalId = parsed.goalId;
+}
+
+/** 表格操作列「重生成」入口：按行类型分派到任务或 Action Item。 */
+async function handleRegenerate(row: TableRow) {
+  if (regeneratingId.value) return;
+  regeneratingId.value = row.id;
+  try {
+    if (row.kind === "action") await regenerateAction(row);
+    else await regenerateTask(row);
+    ElMessage.success(t("home.aiRecommend.regenSuccess"));
+  } catch {
+    ElMessage.error(t("home.aiRecommend.regenFailed"));
+  } finally {
+    regeneratingId.value = "";
+  }
 }
 
 onMounted(loadFromKnowledge);

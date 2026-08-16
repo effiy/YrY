@@ -230,7 +230,7 @@ function roleInfo(roleId?: string) {
 const actionItems = ref<ActionItem[]>([]);
 
 /** 示例数据只落盘一次；用户删空后刷新不应再自动补回。 */
-const SEEDED_KEY = "yivad.okr.actionItemsSeeded";
+const SEEDED_KEY = "yivad.okr.actionItemsSeeded.v2";
 
 /** 优先级排序权重（P0 最前）。 */
 const PRIORITY_ORDER: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };

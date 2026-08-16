@@ -401,6 +401,8 @@ import {
   type RssSeedDocument, type RssItemDocument, type RssSchedulerStatus, type RssListParams
 } from "@/api/modules/rssService";
 import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import { loadBool, saveBool } from "@/utils/storage";
+import { EXAMPLE_SEEDS } from "./rssSeedData";
 
 const activeTab = ref("seeds");
 
@@ -602,13 +604,39 @@ async function parseAllFeeds() {
   }
 }
 
+/** 示例种子只落盘一次；用户删空后刷新不应再自动补回。 */
+const SEEDS_SEEDED_KEY = "yivad.rss.seedsSeeded";
+
+/** seeds 集合为空且未初始化时，写入示例 feed 源。 */
+async function seedExampleSeeds(): Promise<RssSeedDocument[]> {
+  const out: RssSeedDocument[] = [];
+  for (const s of EXAMPLE_SEEDS) {
+    try {
+      await createSeed({ key: s.key, url: s.url, name: s.name, category: s.category, enabled: s.enabled });
+      out.push(s);
+    } catch {
+      // 后端不可用 → 跳过该条
+    }
+  }
+  return out;
+}
+
 async function loadSeeds() {
   seedsLoading.value = true;
   try {
     const res = await getSeedList();
     const list = res.data?.list ?? [];
-    seeds.value = list;
-    for (const s of list) {
+    if (list.length) {
+      seeds.value = list;
+      saveBool(SEEDS_SEEDED_KEY, true);
+    } else if (!loadBool(SEEDS_SEEDED_KEY, false)) {
+      const seeded = await seedExampleSeeds();
+      seeds.value = seeded;
+      if (seeded.length) saveBool(SEEDS_SEEDED_KEY, true);
+    } else {
+      seeds.value = [];
+    }
+    for (const s of seeds.value) {
       if (s.interval) seedIntervals[s.url] = s.interval;
     }
   } catch { seeds.value = []; }

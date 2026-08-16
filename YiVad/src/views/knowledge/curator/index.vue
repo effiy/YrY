@@ -5,11 +5,16 @@
     description="governance, templates, diagrams, and archive for the knowledge base lifecycle."
     category="curator"
     :subdirs="subdirs"
-  />
+  >
+    <template #title>
+      <RoleNav active="curator" />
+    </template>
+  </RoleKnowledgePage>
 </template>
 
 <script setup lang="ts" name="curatorHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
+import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 
 const subdirs = [
   { id: "governance", icon: "⚖️", label: "Governance", color: "#1677ff", desc: "Knowledge base lifecycle management — review cycles, quality gates, triage protocols, tacit knowledge capture, readiness checklists, and knowledge evolution strategy." },
