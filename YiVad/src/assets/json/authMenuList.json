@@ -2,14 +2,14 @@
   "code": 200,
   "data": [
     {
-      "key": "menu_home",
+      "key": "menu_home_index",
       "path": "/home/index",
       "name": "home",
       "component": "/home/index",
       "redirect": "",
       "meta": {
-        "icon": "HomeFilled",
         "title": "Home",
+        "icon": "HomeFilled",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -21,14 +21,14 @@
       "children": []
     },
     {
-      "key": "menu_system",
-      "path": "/system",
-      "name": "system",
+      "key": "menu_pm",
+      "path": "/pm",
+      "name": "pm",
       "component": "",
-      "redirect": "/system/menuMange",
+      "redirect": "/project",
       "meta": {
-        "icon": "Tools",
-        "title": "System Management",
+        "icon": "Briefcase",
+        "title": "Project Management",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -36,1272 +36,291 @@
         "isKeepAlive": true
       },
       "parent": null,
-      "order": 8,
+      "order": 1,
       "children": [
         {
-          "key": "menu_systemMenuMange",
-          "path": "/system/menuMange",
-          "name": "systemMenuMange",
-          "component": "/system/menuMange/index",
+          "key": "menu_pmProject",
+          "path": "/project",
+          "name": "pmProject",
+          "component": "/project/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Menu Management",
+            "icon": "FolderOpened",
+            "title": "Projects",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 0,
           "children": []
         },
         {
-          "key": "menu_systemAccountManage",
-          "path": "/system/accountManage",
-          "name": "systemAccountManage",
-          "component": "/system/accountManage/index",
+          "key": "menu_pmIssue",
+          "path": "/issue",
+          "name": "pmIssue",
+          "component": "/issue/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Account Management",
+            "icon": "Tickets",
+            "title": "Issues",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 1,
           "children": []
         },
         {
-          "key": "menu_systemRoleManage",
-          "path": "/system/roleManage",
-          "name": "systemRoleManage",
-          "component": "/system/roleManage/index",
+          "key": "menu_pmCycle",
+          "path": "/cycle",
+          "name": "pmCycle",
+          "component": "/cycle/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Role Management",
+            "icon": "Refresh",
+            "title": "Cycles",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 2,
           "children": []
         },
         {
-          "key": "menu_systemDepartmentManage",
-          "path": "/system/departmentManage",
-          "name": "systemDepartmentManage",
-          "component": "/system/departmentManage/index",
+          "key": "menu_pmSprintPlanning",
+          "path": "/sprintPlanning",
+          "name": "pmSprintPlanning",
+          "component": "/sprintPlanning/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Department Management",
+            "icon": "Calendar",
+            "title": "Sprint Planning",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 3,
           "children": []
         },
         {
-          "key": "menu_systemDictManage",
-          "path": "/system/dictManage",
-          "name": "systemDictManage",
-          "component": "/system/dictManage/index",
+          "key": "menu_pmKanban",
+          "path": "/kanban",
+          "name": "pmKanban",
+          "component": "/kanban/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Dictionary Management",
+            "icon": "Grid",
+            "title": "Kanban",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 4,
           "children": []
         },
         {
-          "key": "menu_systemSystemLog",
-          "path": "/system/systemLog",
-          "name": "systemSystemLog",
-          "component": "/system/systemLog/index",
+          "key": "menu_pmGantt",
+          "path": "/gantt",
+          "name": "pmGantt",
+          "component": "/gantt/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "System Logs",
+            "icon": "TrendCharts",
+            "title": "Gantt",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
+          "parent": "/pm",
           "order": 5,
           "children": []
         },
         {
-          "key": "menu_systemTimingTask",
-          "path": "/system/timingTask",
-          "name": "systemTimingTask",
-          "component": "/system/timingTask/index",
+          "key": "menu_pmRoadmap",
+          "path": "/roadmap",
+          "name": "pmRoadmap",
+          "component": "/roadmap/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Scheduled Tasks",
+            "icon": "MapLocation",
+            "title": "Roadmap",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/system",
-          "order": 6,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_dashboard",
-      "path": "/dashboard",
-      "name": "dashboard",
-      "component": "",
-      "redirect": "/dashboard/knowledgeBase",
-      "meta": {
-        "icon": "Odometer",
-        "title": "Dashboard",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 9,
-      "children": [
-        {
-          "key": "menu_dashKnowledgeBase",
-          "path": "/dashboard/knowledgeBase",
-          "name": "dashKnowledgeBase",
-          "component": "/dashboard/knowledgeBase/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Reading",
-            "title": "Knowledge Base",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/dashboard",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_dashRssContent",
-          "path": "/dashboard/rssContent",
-          "name": "dashRssContent",
-          "component": "/dashboard/rssContent/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Notebook",
-            "title": "RSS Content",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/dashboard",
-          "order": 7,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_about",
-      "path": "/about",
-      "name": "about",
-      "component": "/about/index",
-      "redirect": "",
-      "meta": {
-        "icon": "InfoFilled",
-        "title": "About",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 10,
-      "children": [
-        {
-          "key": "menu_aboutYiai",
-          "path": "/about/yiai",
-          "name": "aboutYiai",
-          "component": "/about/yiai/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiAi",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_aboutYipet",
-          "path": "/about/yipet",
-          "name": "aboutYipet",
-          "component": "/about/yipet/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiPet",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_aboutYivad",
-          "path": "/about/yivad",
-          "name": "aboutYivad",
-          "component": "/about/yivad/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiVad",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 2,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_assembly",
-      "path": "/assembly",
-      "name": "assembly",
-      "component": "",
-      "redirect": "/assembly/batchImport",
-      "meta": {
-        "icon": "SetUp",
-        "title": "Assembly Components",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 11,
-      "children": [
-        {
-          "key": "menu_assemblyBatchImport",
-          "path": "/assembly/batchImport",
-          "name": "assemblyBatchImport",
-          "component": "/assembly/batchImport/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Batch Import",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_assemblyDraggable",
-          "path": "/assembly/draggable",
-          "name": "assemblyDraggable",
-          "component": "/assembly/draggable/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Draggable",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_assemblyGuide",
-          "path": "/assembly/guide",
-          "name": "assemblyGuide",
-          "component": "/assembly/guide/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Guide",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_assemblySelectFilter",
-          "path": "/assembly/selectFilter",
-          "name": "assemblySelectFilter",
-          "component": "/assembly/selectFilter/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Select Filter",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_assemblySelectIcon",
-          "path": "/assembly/selectIcon",
-          "name": "assemblySelectIcon",
-          "component": "/assembly/selectIcon/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Select Icon",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_assemblySvgIcon",
-          "path": "/assembly/svgIcon",
-          "name": "assemblySvgIcon",
-          "component": "/assembly/svgIcon/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Svg Icon",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
-          "order": 5,
-          "children": []
-        },
-        {
-          "key": "menu_assemblyTabs",
-          "path": "/assembly/tabs",
-          "name": "assemblyTabs",
-          "component": "/assembly/tabs/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Tabs",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/assembly",
+          "parent": "/pm",
           "order": 6,
           "children": []
         },
         {
-          "key": "menu_assemblyTreeFilter",
-          "path": "/assembly/treeFilter",
-          "name": "assemblyTreeFilter",
-          "component": "/assembly/treeFilter/index",
+          "key": "menu_pmReleases",
+          "path": "/release",
+          "name": "pmReleases",
+          "component": "/release/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Tree Filter",
+            "icon": "Rocket",
+            "title": "Releases",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/assembly",
+          "parent": "/pm",
           "order": 7,
           "children": []
         },
         {
-          "key": "menu_assemblyUploadFile",
-          "path": "/assembly/uploadFile",
-          "name": "assemblyUploadFile",
-          "component": "/assembly/uploadFile/index",
+          "key": "menu_pmActivity",
+          "path": "/activity",
+          "name": "pmActivity",
+          "component": "/activity/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Upload File",
+            "icon": "Bell",
+            "title": "Activity",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/assembly",
+          "parent": "/pm",
           "order": 8,
           "children": []
         },
         {
-          "key": "menu_assemblyWangEditor",
-          "path": "/assembly/wangEditor",
-          "name": "assemblyWangEditor",
-          "component": "/assembly/wangEditor/index",
+          "key": "menu_pmSearch",
+          "path": "/search",
+          "name": "pmSearch",
+          "component": "/search/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Wang Editor",
+            "icon": "Search",
+            "title": "Search",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/assembly",
+          "parent": "/pm",
           "order": 9,
           "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_authDemo",
-      "path": "/auth",
-      "name": "authDemo",
-      "component": "",
-      "redirect": "/auth/button",
-      "meta": {
-        "icon": "Lock",
-        "title": "Auth Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 12,
-      "children": [
+        },
         {
-          "key": "menu_authButton",
-          "path": "/auth/button",
-          "name": "authButton",
-          "component": "/auth/button/index",
+          "key": "menu_pmLabel",
+          "path": "/label",
+          "name": "pmLabel",
+          "component": "/label/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Button",
+            "icon": "PriceTag",
+            "title": "Labels",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/auth",
-          "order": 0,
+          "parent": "/pm",
+          "order": 10,
           "children": []
         },
         {
-          "key": "menu_authMenu",
-          "path": "/auth/menu",
-          "name": "authMenu",
-          "component": "/auth/menu/index",
+          "key": "menu_pmModule",
+          "path": "/module",
+          "name": "pmModule",
+          "component": "/module/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Menu",
+            "icon": "Grid",
+            "title": "Modules",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/auth",
-          "order": 1,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_dataScreen",
-      "path": "/dataScreen",
-      "name": "dataScreen",
-      "component": "/dataScreen/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Monitor",
-        "title": "Data Screen",
-        "isLink": "",
-        "isHide": false,
-        "isFull": true,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 13,
-      "children": []
-    },
-    {
-      "key": "menu_directivesDemo",
-      "path": "/directives",
-      "name": "directivesDemo",
-      "component": "",
-      "redirect": "/directives/copyDirect",
-      "meta": {
-        "icon": "Aim",
-        "title": "Directives Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 14,
-      "children": [
-        {
-          "key": "menu_directivesCopyDirect",
-          "path": "/directives/copyDirect",
-          "name": "directivesCopyDirect",
-          "component": "/directives/copyDirect/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Copy Directive",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/directives",
-          "order": 0,
+          "parent": "/pm",
+          "order": 11,
           "children": []
         },
         {
-          "key": "menu_directivesDebounceDirect",
-          "path": "/directives/debounceDirect",
-          "name": "directivesDebounceDirect",
-          "component": "/directives/debounceDirect/index",
+          "key": "menu_pmPage",
+          "path": "/page",
+          "name": "pmPage",
+          "component": "/page/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Debounce Directive",
+            "icon": "Document",
+            "title": "Pages",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/directives",
-          "order": 1,
+          "parent": "/pm",
+          "order": 12,
           "children": []
         },
         {
-          "key": "menu_directivesDragDirect",
-          "path": "/directives/dragDirect",
-          "name": "directivesDragDirect",
-          "component": "/directives/dragDirect/index",
+          "key": "menu_pmBug",
+          "path": "/bug",
+          "name": "pmBug",
+          "component": "/bug/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Drag Directive",
+            "icon": "Warning",
+            "title": "Bugs",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/directives",
-          "order": 2,
+          "parent": "/pm",
+          "order": 13,
           "children": []
         },
         {
-          "key": "menu_directivesLongpressDirect",
-          "path": "/directives/longpressDirect",
-          "name": "directivesLongpressDirect",
-          "component": "/directives/longpressDirect/index",
+          "key": "menu_pmAnalytics",
+          "path": "/analytics",
+          "name": "pmAnalytics",
+          "component": "/analytics/index",
           "redirect": "",
           "meta": {
-            "icon": "Menu",
-            "title": "Long Press Directive",
+            "icon": "TrendCharts",
+            "title": "Analytics",
             "isLink": "",
             "isHide": false,
             "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },
-          "parent": "/directives",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_directivesThrottleDirect",
-          "path": "/directives/throttleDirect",
-          "name": "directivesThrottleDirect",
-          "component": "/directives/throttleDirect/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Throttle Directive",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/directives",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_directivesWatermarkDirect",
-          "path": "/directives/watermarkDirect",
-          "name": "directivesWatermarkDirect",
-          "component": "/directives/watermarkDirect/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Watermark Directive",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/directives",
-          "order": 5,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_echartsDemo",
-      "path": "/echarts",
-      "name": "echartsDemo",
-      "component": "",
-      "redirect": "/echarts/columnChart",
-      "meta": {
-        "icon": "Histogram",
-        "title": "ECharts Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 15,
-      "children": [
-        {
-          "key": "menu_echartsColumnChart",
-          "path": "/echarts/columnChart",
-          "name": "echartsColumnChart",
-          "component": "/echarts/columnChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Column Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_echartsLineChart",
-          "path": "/echarts/lineChart",
-          "name": "echartsLineChart",
-          "component": "/echarts/lineChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Line Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_echartsNestedChart",
-          "path": "/echarts/nestedChart",
-          "name": "echartsNestedChart",
-          "component": "/echarts/nestedChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Nested Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_echartsPieChart",
-          "path": "/echarts/pieChart",
-          "name": "echartsPieChart",
-          "component": "/echarts/pieChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Pie Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_echartsRadarChart",
-          "path": "/echarts/radarChart",
-          "name": "echartsRadarChart",
-          "component": "/echarts/radarChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Radar Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_echartsWaterChart",
-          "path": "/echarts/waterChart",
-          "name": "echartsWaterChart",
-          "component": "/echarts/waterChart/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Water Chart",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/echarts",
-          "order": 5,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_formDemo",
-      "path": "/form",
-      "name": "formDemo",
-      "component": "",
-      "redirect": "/form/basicForm",
-      "meta": {
-        "icon": "EditPen",
-        "title": "Form Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 16,
-      "children": [
-        {
-          "key": "menu_formBasicForm",
-          "path": "/form/basicForm",
-          "name": "formBasicForm",
-          "component": "/form/basicForm/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Basic Form",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/form",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_formDynamicForm",
-          "path": "/form/dynamicForm",
-          "name": "formDynamicForm",
-          "component": "/form/dynamicForm/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Dynamic Form",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/form",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_formProForm",
-          "path": "/form/proForm",
-          "name": "formProForm",
-          "component": "/form/proForm/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Pro Form",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/form",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_formValidateForm",
-          "path": "/form/validateForm",
-          "name": "formValidateForm",
-          "component": "/form/validateForm/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Validate Form",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/form",
-          "order": 3,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_link",
-      "path": "/link",
-      "name": "link",
-      "component": "",
-      "redirect": "/link/claude",
-      "meta": {
-        "icon": "Link",
-        "title": "Link",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 17,
-      "children": [
-        {
-          "key": "menu_linkClaude",
-          "path": "/link/claude",
-          "name": "linkClaude",
-          "component": "/link/claude/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Claude",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/link",
-          "order": 0,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_menuDemo",
-      "path": "/menu",
-      "name": "menuDemo",
-      "component": "",
-      "redirect": "/menu/menu1",
-      "meta": {
-        "icon": "Menu",
-        "title": "Menu Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 18,
-      "children": [
-        {
-          "key": "menu_menuMenu1",
-          "path": "/menu/menu1",
-          "name": "menuMenu1",
-          "component": "/menu/menu1/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Menu 1",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/menu",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_menuMenu2",
-          "path": "/menu/menu2",
-          "name": "menuMenu2",
-          "component": "",
-          "redirect": "/menu/menu2/menu21",
-          "meta": {
-            "icon": "Menu",
-            "title": "Menu 2",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/menu",
-          "order": 1,
-          "children": [
-            {
-              "key": "menu_menuMenu21",
-              "path": "/menu/menu2/menu21",
-              "name": "menuMenu21",
-              "component": "/menu/menu2/menu21/index",
-              "redirect": "",
-              "meta": {
-                "icon": "Menu",
-                "title": "Menu 2-1",
-                "isLink": "",
-                "isHide": false,
-                "isFull": false,
-                "isAffix": false,
-                "isKeepAlive": true
-              },
-              "parent": "/menu/menu2",
-              "order": 0,
-              "children": []
-            },
-            {
-              "key": "menu_menuMenu22",
-              "path": "/menu/menu2/menu22",
-              "name": "menuMenu22",
-              "component": "",
-              "redirect": "/menu/menu2/menu22/menu221",
-              "meta": {
-                "icon": "Menu",
-                "title": "Menu 2-2",
-                "isLink": "",
-                "isHide": false,
-                "isFull": false,
-                "isAffix": false,
-                "isKeepAlive": true
-              },
-              "parent": "/menu/menu2",
-              "order": 1,
-              "children": [
-                {
-                  "key": "menu_menuMenu221",
-                  "path": "/menu/menu2/menu22/menu221",
-                  "name": "menuMenu221",
-                  "component": "/menu/menu2/menu22/menu221/index",
-                  "redirect": "",
-                  "meta": {
-                    "icon": "Menu",
-                    "title": "Menu 2-2-1",
-                    "isLink": "",
-                    "isHide": false,
-                    "isFull": false,
-                    "isAffix": false,
-                    "isKeepAlive": true
-                  },
-                  "parent": "/menu/menu2/menu22",
-                  "order": 0,
-                  "children": []
-                },
-                {
-                  "key": "menu_menuMenu222",
-                  "path": "/menu/menu2/menu22/menu222",
-                  "name": "menuMenu222",
-                  "component": "/menu/menu2/menu22/menu222/index",
-                  "redirect": "",
-                  "meta": {
-                    "icon": "Menu",
-                    "title": "Menu 2-2-2",
-                    "isLink": "",
-                    "isHide": false,
-                    "isFull": false,
-                    "isAffix": false,
-                    "isKeepAlive": true
-                  },
-                  "parent": "/menu/menu2/menu22",
-                  "order": 1,
-                  "children": []
-                }
-              ]
-            },
-            {
-              "key": "menu_menuMenu23",
-              "path": "/menu/menu2/menu23",
-              "name": "menuMenu23",
-              "component": "/menu/menu2/menu23/index",
-              "redirect": "",
-              "meta": {
-                "icon": "Menu",
-                "title": "Menu 2-3",
-                "isLink": "",
-                "isHide": false,
-                "isFull": false,
-                "isAffix": false,
-                "isKeepAlive": true
-              },
-              "parent": "/menu/menu2",
-              "order": 2,
-              "children": []
-            }
-          ]
-        },
-        {
-          "key": "menu_menuMenu3",
-          "path": "/menu/menu3",
-          "name": "menuMenu3",
-          "component": "/menu/menu3/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Menu 3",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/menu",
-          "order": 2,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_proTableDemo",
-      "path": "/proTable",
-      "name": "proTableDemo",
-      "component": "",
-      "redirect": "/proTable/complexProTable",
-      "meta": {
-        "icon": "Grid",
-        "title": "ProTable Demo",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 19,
-      "children": [
-        {
-          "key": "menu_proTableComplexProTable",
-          "path": "/proTable/complexProTable",
-          "name": "proTableComplexProTable",
-          "component": "/proTable/complexProTable/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Complex ProTable",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_proTableDocument",
-          "path": "/proTable/document",
-          "name": "proTableDocument",
-          "component": "/proTable/document/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Document",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_proTableTreeProTable",
-          "path": "/proTable/treeProTable",
-          "name": "proTableTreeProTable",
-          "component": "/proTable/treeProTable/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Tree ProTable",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_proTableUseProTable",
-          "path": "/proTable/useProTable",
-          "name": "proTableUseProTable",
-          "component": "/proTable/useProTable/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Use ProTable",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_proTableUseSelectFilter",
-          "path": "/proTable/useSelectFilter",
-          "name": "proTableUseSelectFilter",
-          "component": "/proTable/useSelectFilter/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Use Select Filter",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_proTableUseTreeFilter",
-          "path": "/proTable/useTreeFilter",
-          "name": "proTableUseTreeFilter",
-          "component": "/proTable/useTreeFilter/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "Use Tree Filter",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/proTable",
-          "order": 5,
+          "parent": "/pm",
+          "order": 14,
           "children": []
         }
       ]
@@ -1322,18 +341,18 @@
         "isKeepAlive": true
       },
       "parent": null,
-      "order": 20,
+      "order": 2,
       "children": []
     },
     {
-      "key": "menu_knowledge",
-      "path": "/knowledge",
-      "name": "knowledge",
+      "key": "menu_1786429045019_wzla55",
+      "path": "/rag",
+      "name": "menu_rag",
       "component": "",
-      "redirect": "/knowledge/aier",
+      "redirect": "/rag/retrieval",
       "meta": {
-        "icon": "Reading",
-        "title": "Knowledge",
+        "icon": "DataBoard",
+        "title": "RAG System",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -1341,17 +360,113 @@
         "isKeepAlive": true
       },
       "parent": null,
-      "order": 21,
+      "order": 3,
       "children": [
         {
-          "key": "menu_knowledgeAier",
-          "path": "/knowledge/aier",
-          "name": "knowledgeAier",
-          "component": "/knowledge/aier/index",
+          "key": "menu_1786429045019_p2rb0q",
+          "path": "/rag/retrieval",
+          "name": "menu_ragRetrieval",
+          "component": "/rag/retrieval",
           "redirect": "",
           "meta": {
-            "icon": "Cpu",
-            "title": "AI Engineer",
+            "icon": "Search",
+            "title": "Retrieval Explorer",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": "menu_1786429045019_6vpoh2",
+          "path": "/rag/chat",
+          "name": "menu_ragChat",
+          "component": "/rag/chat",
+          "redirect": "",
+          "meta": {
+            "icon": "ChatDotRound",
+            "title": "RAG Chat",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_1786429045019_y3gtp6",
+          "path": "/rag/compare",
+          "name": "menu_ragCompare",
+          "component": "/rag/compare",
+          "redirect": "",
+          "meta": {
+            "icon": "Switch",
+            "title": "RAG vs Baseline",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 2,
+          "children": []
+        },
+        {
+          "key": "menu_1786429045019_13qsve",
+          "path": "/rag/history",
+          "name": "menu_ragHistory",
+          "component": "/rag/history",
+          "redirect": "",
+          "meta": {
+            "icon": "Timer",
+            "title": "Query History",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/rag",
+          "order": 3,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": "29424cf8-2b8d-4409-9b37-22ab652ffa76",
+      "path": "/knowledge",
+      "name": "menu_knowledge_base",
+      "component": "",
+      "redirect": "",
+      "meta": {
+        "title": "Knowledge",
+        "icon": "Reading",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 4,
+      "children": [
+        {
+          "key": "menu_1786429045019_egaek2",
+          "path": "/knowledge/pipeline",
+          "name": "menu_pipeline",
+          "component": "/knowledge/pipeline/index",
+          "redirect": "",
+          "meta": {
+            "title": "Pipeline",
+            "icon": "Guide",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -1363,14 +478,14 @@
           "children": []
         },
         {
-          "key": "menu_knowledgeCurator",
-          "path": "/knowledge/curator",
-          "name": "knowledgeCurator",
-          "component": "/knowledge/curator/index",
+          "key": "menu_resume",
+          "path": "/knowledge/resume",
+          "name": "resume",
+          "component": "/knowledge/resume/index",
           "redirect": "",
           "meta": {
-            "icon": "Collection",
-            "title": "Curator",
+            "title": "FDE Resume",
+            "icon": "UserFilled",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -1382,14 +497,14 @@
           "children": []
         },
         {
-          "key": "menu_knowledgeEngineer",
-          "path": "/knowledge/engineer",
-          "name": "knowledgeEngineer",
-          "component": "/knowledge/engineer/index",
+          "key": "menu_skills",
+          "path": "/skills",
+          "name": "menu_skills",
+          "component": "/knowledge/skills/index",
           "redirect": "",
           "meta": {
-            "icon": "Setting",
-            "title": "Engineer",
+            "icon": "MagicStick",
+            "title": "Skills",
             "isLink": "",
             "isHide": false,
             "isFull": false,
@@ -1398,6 +513,120 @@
           },
           "parent": "/knowledge",
           "order": 2,
+          "children": []
+        },
+        {
+          "key": "menu_aier",
+          "path": "/aier",
+          "name": "menu_aier",
+          "component": "/knowledge/aier/index",
+          "redirect": "",
+          "meta": {
+            "title": "AI Engineer",
+            "icon": "Cpu",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 3,
+          "children": []
+        },
+        {
+          "key": "menu_engineer",
+          "path": "/engineer",
+          "name": "menu_engineer",
+          "component": "/knowledge/engineer/index",
+          "redirect": "",
+          "meta": {
+            "title": "Engineer",
+            "icon": "Setting",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 4,
+          "children": []
+        },
+        {
+          "key": "menu_srer",
+          "path": "/srer",
+          "name": "menu_srer",
+          "component": "/knowledge/srer/index",
+          "redirect": "",
+          "meta": {
+            "title": "SRE",
+            "icon": "Warning",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 5,
+          "children": []
+        },
+        {
+          "key": "menu_curator",
+          "path": "/curator",
+          "name": "menu_curator",
+          "component": "/knowledge/curator/index",
+          "redirect": "",
+          "meta": {
+            "title": "Curator",
+            "icon": "Collection",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 6,
+          "children": []
+        },
+        {
+          "key": "menu_leader",
+          "path": "/leader",
+          "name": "menu_leader",
+          "component": "/knowledge/leader/index",
+          "redirect": "",
+          "meta": {
+            "title": "Tech Lead",
+            "icon": "Star",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 7,
+          "children": []
+        },
+        {
+          "key": "menu_producter",
+          "path": "/producter",
+          "name": "menu_producter",
+          "component": "/knowledge/producter/index",
+          "redirect": "",
+          "meta": {
+            "title": "Product Manager",
+            "icon": "Present",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 8,
           "children": []
         },
         {
@@ -1416,7 +645,7 @@
             "isKeepAlive": true
           },
           "parent": "/knowledge",
-          "order": 3,
+          "order": 9,
           "children": []
         },
         {
@@ -1435,26 +664,7 @@
             "isKeepAlive": true
           },
           "parent": "/knowledge",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgeLeader",
-          "path": "/knowledge/leader",
-          "name": "knowledgeLeader",
-          "component": "/knowledge/leader/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Star",
-            "title": "Tech Lead",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
-          "order": 5,
+          "order": 10,
           "children": []
         },
         {
@@ -1473,105 +683,508 @@
             "isKeepAlive": true
           },
           "parent": "/knowledge",
-          "order": 6,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgePipeline",
-          "path": "/knowledge/pipeline",
-          "name": "knowledgePipeline",
-          "component": "/knowledge/pipeline/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Guide",
-            "title": "Pipeline",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
-          "order": 7,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgeProducter",
-          "path": "/knowledge/producter",
-          "name": "knowledgeProducter",
-          "component": "/knowledge/producter/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Present",
-            "title": "Product Manager",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
-          "order": 8,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgeResume",
-          "path": "/knowledge/resume",
-          "name": "knowledgeResume",
-          "component": "/knowledge/resume/index",
-          "redirect": "",
-          "meta": {
-            "icon": "UserFilled",
-            "title": "Resume",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
-          "order": 9,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgeSkills",
-          "path": "/knowledge/skills",
-          "name": "knowledgeSkills",
-          "component": "/knowledge/skills/index",
-          "redirect": "",
-          "meta": {
-            "icon": "MagicStick",
-            "title": "Skills",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
-          "order": 10,
-          "children": []
-        },
-        {
-          "key": "menu_knowledgeSrer",
-          "path": "/knowledge/srer",
-          "name": "knowledgeSrer",
-          "component": "/knowledge/srer/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Warning",
-            "title": "SRE",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/knowledge",
           "order": 11,
           "children": []
         }
       ]
+    },
+    {
+      "key": "menu_dashboard",
+      "path": "/dashboard",
+      "name": "dashboard",
+      "component": "",
+      "redirect": "/dashboard/knowledgeBase",
+      "meta": {
+        "icon": "Odometer",
+        "title": "Dashboard",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 5,
+      "children": [
+        {
+          "key": "menu_dashKnowledgeBase",
+          "path": "/dashboard/knowledgeBase",
+          "name": "dashKnowledgeBase",
+          "component": "/dashboard/knowledgeBase/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Reading",
+            "title": "Knowledge Base",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/dashboard",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": "menu_dashRssContent",
+          "path": "/dashboard/rssContent",
+          "name": "dashRssContent",
+          "component": "/dashboard/rssContent/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Notebook",
+            "title": "RSS Content",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/dashboard",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_dashAiAnalytics",
+          "path": "/dashboard/aiAnalytics",
+          "name": "dashAiAnalytics",
+          "component": "/dashboard/aiAnalytics/index",
+          "redirect": "",
+          "meta": {
+            "icon": "TrendCharts",
+            "title": "AI Analytics",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/dashboard",
+          "order": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": "menu_settings",
+      "path": "/settings",
+      "name": "settings",
+      "component": "",
+      "redirect": "/settings",
+      "meta": {
+        "icon": "Setting",
+        "title": "Settings",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 6,
+      "children": [
+        {
+          "key": "menu_settingsWorkspace",
+          "path": "/settings",
+          "name": "settingsWorkspace",
+          "component": "/settings/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Setting",
+            "title": "Workspace",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": "menu_settingsCustomStatus",
+          "path": "/customStatus",
+          "name": "settingsCustomStatus",
+          "component": "/customStatus/index",
+          "redirect": "",
+          "meta": {
+            "icon": "PriceTag",
+            "title": "Custom Statuses",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_settingsCustomView",
+          "path": "/customView",
+          "name": "settingsCustomView",
+          "component": "/customView/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Grid",
+            "title": "Custom Views",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 2,
+          "children": []
+        },
+        {
+          "key": "menu_settingsApiToken",
+          "path": "/apiToken",
+          "name": "settingsApiToken",
+          "component": "/apiToken/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Key",
+            "title": "API Tokens",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 3,
+          "children": []
+        },
+        {
+          "key": "menu_settingsIntegration",
+          "path": "/integration",
+          "name": "settingsIntegration",
+          "component": "/integration/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Link",
+            "title": "Integrations",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 4,
+          "children": []
+        },
+        {
+          "key": "menu_settingsInvite",
+          "path": "/invite",
+          "name": "settingsInvite",
+          "component": "/invite/index",
+          "redirect": "",
+          "meta": {
+            "icon": "User",
+            "title": "Members",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 5,
+          "children": []
+        },
+        {
+          "key": "menu_settingsImport",
+          "path": "/import",
+          "name": "settingsImport",
+          "component": "/import/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Upload",
+            "title": "Import",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 6,
+          "children": []
+        },
+        {
+          "key": "menu_settingsTrash",
+          "path": "/trash",
+          "name": "settingsTrash",
+          "component": "/trash/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Delete",
+            "title": "Trash",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/settings",
+          "order": 7,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": "menu_system",
+      "path": "/system",
+      "name": "system",
+      "component": "",
+      "redirect": "/system/menuMange",
+      "meta": {
+        "icon": "Tools",
+        "title": "System Management",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 7,
+      "children": [
+        {
+          "key": "menu_system_menuMange",
+          "path": "/system/menuMange",
+          "name": "systemMenuMange",
+          "component": "/system/menuMange/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Menu Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": "menu_system_accountManage",
+          "path": "/system/accountManage",
+          "name": "systemAccountManage",
+          "component": "/system/accountManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Account Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_system_roleManage",
+          "path": "/system/roleManage",
+          "name": "systemRoleManage",
+          "component": "/system/roleManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Role Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 2,
+          "children": []
+        },
+        {
+          "key": "menu_system_departmentManage",
+          "path": "/system/departmentManage",
+          "name": "systemDepartmentManage",
+          "component": "/system/departmentManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Department Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 3,
+          "children": []
+        },
+        {
+          "key": "menu_system_dictManage",
+          "path": "/system/dictManage",
+          "name": "systemDictManage",
+          "component": "/system/dictManage/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Dictionary Management",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 4,
+          "children": []
+        },
+        {
+          "key": "menu_system_systemLog",
+          "path": "/system/systemLog",
+          "name": "systemSystemLog",
+          "component": "/system/systemLog/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "System Logs",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 5,
+          "children": []
+        },
+        {
+          "key": "menu_system_timingTask",
+          "path": "/system/timingTask",
+          "name": "systemTimingTask",
+          "component": "/system/timingTask/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "Scheduled Tasks",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/system",
+          "order": 6,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": "menu_about",
+      "path": "/about",
+      "name": "about",
+      "component": "/about/index",
+      "redirect": "",
+      "meta": {
+        "icon": "InfoFilled",
+        "title": "About",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 8,
+      "children": [
+        {
+          "key": "menu_about_yiai",
+          "path": "/about/yiai",
+          "name": "aboutYiai",
+          "component": "/about/yiai/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiAi",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/about",
+          "order": 0,
+          "children": []
+        },
+        {
+          "key": "menu_about_yipet",
+          "path": "/about/yipet",
+          "name": "aboutYipet",
+          "component": "/about/yipet/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiPet",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/about",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_about_yivad",
+          "path": "/about/yivad",
+          "name": "aboutYivad",
+          "component": "/about/yivad/index",
+          "redirect": "",
+          "meta": {
+            "icon": "Menu",
+            "title": "YiVad",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/about",
+          "order": 2,
+          "children": []
+        }
+      ]
+    },
+    {
+      "key": "menu_welcome",
+      "path": "/welcome",
+      "name": "welcome",
+      "component": "/welcome/index",
+      "redirect": "",
+      "meta": {
+        "icon": "Sunny",
+        "title": "Welcome",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "parent": null,
+      "order": 9,
+      "children": []
     }
   ],
   "msg": "成功"

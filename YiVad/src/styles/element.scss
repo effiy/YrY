@@ -166,9 +166,13 @@
       white-space: wrap;
     }
 
-    // Fix table empty state alignment issue (element-plus only)
+    // Fix table empty state: use relative positioning so the empty block
+    // takes up space in flow, preventing content from being clipped.
     .el-table__empty-block {
-      position: absolute;
+      position: relative;
+      top: unset;
+      transform: unset;
+      min-height: 200px;
       .table-empty {
         line-height: 30px;
         img {

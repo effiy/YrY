@@ -41,8 +41,42 @@ interface RagStreamHandlers {
 function pickDelta(chunk: StreamChunk): string {
   const data = chunk.data as Record<string, unknown> | undefined;
   if (!data) return '';
-  const msg = data.message;
-  if (typeof msg === 'string') return msg;
+
+  // Try multiple nested shapes — mirrors ChatService.pickTextFromResponse
+  const asText = (v: unknown): string | undefined => {
+    if (v === null || v === undefined) return undefined;
+    if (typeof v === 'string') return v;
+    if (Array.isArray(v)) {
+      return v
+        .map((x) => {
+          if (typeof x === 'string') return x;
+          if (x && typeof x === 'object' && typeof (x as { content?: unknown }).content === 'string') {
+            return (x as { content: string }).content;
+          }
+          return '';
+        })
+        .join('') || undefined;
+    }
+    if (typeof v === 'object' && typeof (v as { content?: unknown }).content === 'string') {
+      return (v as { content: string }).content;
+    }
+    return undefined;
+  };
+
+  const candidates: unknown[] = [
+    data.message,
+    data.content,
+    data.response,
+    data.text,
+    data.delta,
+    data.data,
+    (data as Record<string, unknown>).result,
+  ];
+
+  for (const c of candidates) {
+    const text = asText(c);
+    if (typeof text === 'string' && text !== '') return text;
+  }
   return '';
 }
 
@@ -173,6 +207,36 @@ export class RagService {
     }
   }
 
+  /**
+   * Convenience: consume the SSE stream with a per-token callback.
+   * Returns the full concatenated response text. Mirrors ChatService.streamWithCallback.
+   */
+  async streamChatWithCallback(
+    payload: RagChatPayload,
+    onToken: (token: string) => void,
+    onSources?: (sources: RagSource[]) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    return this.streamChat(payload, {
+      onChunk: onToken,
+      onSources,
+      onError: (err) => { throw err; },
+    }, signal);
+  }
+
+  /**
+   * Convenience: consume the SSE file-chat stream with a per-token callback.
+   */
+  async streamFileChatWithCallback(
+    payload: RagFileChatPayload,
+    onToken: (token: string) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    return this.streamFileChat(payload, {
+      onChunk: onToken,
+      onError: (err) => { throw err; },
+    }, signal);
+  }
   /** SSE-streaming RAG chat grounded in a single file's index. */
   async streamFileChat(
     payload: RagFileChatPayload,

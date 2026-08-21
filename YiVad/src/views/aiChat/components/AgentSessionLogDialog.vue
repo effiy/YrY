@@ -13,6 +13,8 @@ import { ElMessage } from "element-plus";
 import { CopyDocument, Download, Loading } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { getAgentSession, type AgentSessionMessage } from "@/api/modules/agentService";
+import ECharts from "@/components/ECharts/index.vue";
+import type { ECOption } from "@/components/ECharts/config";
 
 const store = useAiChatStore();
 
@@ -43,6 +45,84 @@ const roleSummary = computed(() => {
   return Object.entries(counts)
     .map(([label, n]) => `${label} ×${n}`)
     .join(" · ");
+});
+
+// ── Role Distribution Pie Chart (pi-inspired: message breakdown) ──
+const ROLE_COLORS: Record<string, string> = {
+  assistant: "#5470c6",
+  tool_result: "#91cc75",
+  tool: "#fac858",
+  user: "#ee6666",
+  system: "#c0c4cc",
+};
+
+const rolePieOption = computed<ECOption>(() => {
+  const counts: Record<string, number> = {};
+  for (const m of messages.value) {
+    const label = ROLE_LABELS[m.role] ?? m.role;
+    counts[label] = (counts[label] ?? 0) + 1;
+  }
+  const data = Object.entries(counts).map(([name, value]) => ({
+    name, value,
+    itemStyle: { color: ROLE_COLORS[name] ?? "#909399" },
+  }));
+  return {
+    tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+    series: [{
+      type: "pie", radius: ["40%", "65%"], center: ["50%", "50%"],
+      label: { fontSize: 10, formatter: "{b}\n{d}%" },
+      emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
+      data,
+    }],
+  };
+});
+
+// ── Message Sequence Bar (pi-inspired: turn visualization) ──
+const messageSeqOption = computed<ECOption>(() => {
+  const roles = ["user", "assistant", "tool", "tool_result", "system"];
+  const counts = roles.map(r => {
+    const label = ROLE_LABELS[r] ?? r;
+    return { name: label, count: messages.value.filter(m => m.role === r).length };
+  }).filter(c => c.count > 0);
+  return {
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: "3%", right: "4%", top: "3%", bottom: "3%", containLabel: true },
+    xAxis: { type: "value", axisLabel: { fontSize: 9 }, minInterval: 1 },
+    yAxis: { type: "category", data: counts.map(c => c.name).reverse(), axisLabel: { fontSize: 10 } },
+    series: [{
+      type: "bar", barWidth: "55%",
+      data: counts.map(c => ({
+        value: c.count,
+        itemStyle: { color: ROLE_COLORS[c.name] ?? "#909399", borderRadius: [0, 4, 4, 0] },
+      })).reverse(),
+    }],
+  };
+});
+
+// ── Tool name distribution (pi-inspired) ──
+const toolNameOption = computed<ECOption>(() => {
+  const toolCounts = new Map<string, number>();
+  for (const m of messages.value) {
+    if (m.role === "tool" && m.name) {
+      const name = m.name.length > 20 ? m.name.slice(0, 20) + "..." : m.name;
+      toolCounts.set(name, (toolCounts.get(name) || 0) + 1);
+    }
+  }
+  const data = [...toolCounts.entries()].sort((a, b) => b[1] - a[1]);
+  if (!data.length) return {};
+  return {
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
+    xAxis: { type: "value", axisLabel: { fontSize: 9 }, minInterval: 1 },
+    yAxis: { type: "category", data: data.map(d => d[0]).reverse(), axisLabel: { fontSize: 9 } },
+    series: [{
+      type: "bar", barWidth: "55%",
+      data: data.map(([, count], i) => ({
+        value: count,
+        itemStyle: { color: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#fc8452"][i % 6], borderRadius: [0, 4, 4, 0] },
+      })).reverse(),
+    }],
+  };
 });
 
 async function load() {
@@ -151,6 +231,28 @@ async function copyMarkdown() {
         Loading trajectory…
       </div>
 
+      <!-- Charts Row (pi-inspired: session analytics) -->
+      <el-row v-if="!loading && messages.length" :gutter="8" class="asl__charts">
+        <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+          <div class="asl__chart-card">
+            <div class="asl__chart-title">Role Distribution</div>
+            <ECharts :option="rolePieOption" height="160" />
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+          <div class="asl__chart-card">
+            <div class="asl__chart-title">Message Counts</div>
+            <ECharts :option="messageSeqOption" height="160" />
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+          <div class="asl__chart-card" v-if="Object.keys(toolNameOption).length">
+            <div class="asl__chart-title">Tool Usage</div>
+            <ECharts :option="toolNameOption" height="160" />
+          </div>
+        </el-col>
+      </el-row>
+
       <el-empty
         v-else-if="!messages.length"
         description="No persisted trajectory — run an agent task first, then view its log."
@@ -179,6 +281,24 @@ async function copyMarkdown() {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.asl__charts {
+  margin-bottom: 4px;
+}
+
+.asl__chart-card {
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.asl__chart-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 2px;
 }
 
 .asl__bar {

@@ -1,12 +1,12 @@
 /**
  * Content script message relay — handles chrome.runtime.onMessage
- * from popup and background, dispatches to MAIN world via CustomEvent.
- *
- * Extracted from bootstrap.ts Phase 1 (ISOLATED world).
+ * from popup and background. Directly updates the pet DOM (ISOLATED world
+ * shares DOM with MAIN world). Dispatches CustomEvents only for visibility
+ * (so the MAIN world overlay can pause/resume animations) and chat toggle.
  */
-
 import { PET_DEFAULTS } from '@/config/defaults';
 import type { PopupToContent } from '@/shared/ipc/messages';
+import { applyThemeColors } from '@/shared/theme';
 import { getSystemPrompt, validateRole } from '../config/role-config';
 import type { RestoredState } from '../state/persistence';
 import {
@@ -23,21 +23,46 @@ let _petSize = PET_DEFAULTS.pet.defaultSize;
 let _petRole = 'Teacher';
 let _petColor = 0;
 
-export function getPetState(): RestoredState {
-  return { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor };
+// ── DOM Helpers ──────────────────────────────────────────────────────────
+
+function getContainer(): HTMLElement | null {
+  return document.getElementById('yipet-overlay');
 }
 
-export function updatePetState(patch: Partial<RestoredState>): void {
-  if (typeof patch.visible === 'boolean') _petVisible = patch.visible;
-  if (typeof patch.size === 'number') _petSize = patch.size;
-  if (typeof patch.role === 'string') _petRole = patch.role;
-  if (typeof patch.color === 'number') _petColor = patch.color;
+function getImg(): HTMLImageElement | null {
+  return document.getElementById('yipet-pet-img') as HTMLImageElement | null;
 }
 
-// ── MAIN World Dispatch ──────────────────────────────────────────────────
+function applyVisibility(visible: boolean): void {
+  const c = getContainer();
+  if (c) {
+    c.style.opacity = visible ? '1' : '0';
+    c.style.pointerEvents = visible ? 'auto' : 'none';
+  }
+  window.dispatchEvent(new CustomEvent('yipet:visibilityChanged', { detail: { visible } }));
+}
 
-export function notifyMainWorld(type: string, detail: Record<string, unknown>): void {
-  window.dispatchEvent(new CustomEvent(`yipet:${type}`, { detail }));
+function applySize(size: number): void {
+  const img = getImg();
+  if (img) img.style.width = String(size) + 'px';
+}
+
+function applyRole(role: string): void {
+  const img = getImg();
+  if (!img || !role) return;
+  const slug = role.toLowerCase().replace(/\s+/g, '-');
+  img.src = chrome.runtime.getURL(`assets/images/${slug}/icon.png`);
+  img.title = role;
+}
+
+function applyColor(color: number): void {
+  applyThemeColors(document.documentElement, color);
+  const c = getContainer();
+  if (c) c.dataset.colorIndex = String(color);
+}
+
+function persist(): void {
+  persistPetState({ visible: _petVisible, size: _petSize, role: _petRole, color: _petColor });
 }
 
 // ── Self-Injection ───────────────────────────────────────────────────────
@@ -47,16 +72,17 @@ export function injectIntoMainWorld(
   extBase: string,
   initialRole: string,
   initialColor: number,
+  initialVisible: boolean,
 ): void {
   const el = document.createElement('script');
   el.src = bootstrapUrl;
   el.dataset.base = extBase;
   el.dataset.role = initialRole;
   el.dataset.color = String(initialColor);
+  el.dataset.visible = String(initialVisible);
   el.id = 'yipet-bootstrap';
 
   el.onload = () => {
-    // Inject chat script into MAIN world after bootstrap loads
     try {
       const chatUrl = chrome.runtime.getURL('assets/chat.js');
       const chatEl = document.createElement('script');
@@ -91,22 +117,22 @@ export function setupMessageRelay(): void {
       }
       case 'toggleVisibility': {
         _petVisible = !_petVisible;
-        notifyMainWorld('visibilityChanged', { visible: _petVisible });
-        persistPetState(getPetState());
+        applyVisibility(_petVisible);
+        persist();
         sendResponse({ success: true, visible: _petVisible });
         break;
       }
       case 'setVisibility': {
         _petVisible = !!msg.visible;
-        notifyMainWorld('visibilityChanged', { visible: _petVisible });
-        persistPetState(getPetState());
+        applyVisibility(_petVisible);
+        persist();
         sendResponse({ success: true, visible: _petVisible });
         break;
       }
       case 'changeSize': {
         _petSize = (msg.size as number) ?? _petSize;
-        notifyMainWorld('sizeChanged', { size: _petSize });
-        persistPetState(getPetState());
+        applySize(_petSize);
+        persist();
         sendResponse({ success: true, size: _petSize });
         break;
       }
@@ -118,25 +144,24 @@ export function setupMessageRelay(): void {
           break;
         }
         _petRole = canonical;
-        const systemPrompt = getSystemPrompt(canonical);
-        notifyMainWorld('roleChanged', { role: _petRole, systemPrompt });
+        applyRole(_petRole);
         chrome.storage.local.set({ petRole: _petRole }).catch((err: Error) => {
           console.warn('[YiPet] Failed to persist role preference:', err.message);
         });
-        persistPetState(getPetState());
+        persist();
         sendResponse({ success: true, role: _petRole });
         break;
       }
       case 'setColor': {
         _petColor = (msg.color as number) ?? _petColor;
-        notifyMainWorld('colorChanged', { color: _petColor });
-        persistPetState(getPetState());
+        applyColor(_petColor);
+        persist();
         chrome.storage.local.set({ petColorTheme: _petColor }).catch(() => {});
         sendResponse({ success: true });
         break;
       }
       case 'toggleChat': {
-        notifyMainWorld('chatToggled', {});
+        window.dispatchEvent(new CustomEvent('yipet:chatToggled', { detail: {} }));
         sendResponse({ success: true });
         break;
       }
@@ -144,14 +169,13 @@ export function setupMessageRelay(): void {
         sendResponse({ success: false });
       }
     }
-    return true; // keep channel open for async response
+    return true;
   });
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────
 
 export async function initRelay(): Promise<void> {
-  // Load saved color theme and role BEFORE injection
   const savedColor = await loadColorTheme();
   if (savedColor !== _petColor) _petColor = savedColor;
 
@@ -160,33 +184,38 @@ export async function initRelay(): Promise<void> {
     _petRole = savedRole;
   }
 
-  // Self-inject into MAIN world
   const extBase = chrome.runtime.getURL('cdn/');
   const selfUrl = chrome.runtime.getURL('assets/bootstrap.js');
-  injectIntoMainWorld(selfUrl, extBase, _petRole, _petColor);
+  injectIntoMainWorld(selfUrl, extBase, _petRole, _petColor, _petVisible);
 
-  // Setup message relay
   setupMessageRelay();
 
-  // Restore saved state
   restorePetState(
-    getPetState(),
+    { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor },
     (type, detail) => {
-      notifyMainWorld(type, detail);
-      updatePetState(detail as Partial<RestoredState>);
+      switch (type) {
+        case 'visibilityChanged':
+          _petVisible = detail.visible as boolean;
+          applyVisibility(_petVisible);
+          break;
+        case 'sizeChanged':
+          _petSize = detail.size as number;
+          applySize(_petSize);
+          break;
+        case 'colorChanged':
+          _petColor = detail.color as number;
+          applyColor(_petColor);
+          break;
+      }
     },
     (role, _systemPrompt) => {
-      notifyMainWorld('roleChanged', { role, systemPrompt: getSystemPrompt(role) });
+      _petRole = role;
+      applyRole(_petRole);
     },
   );
 
-  // Persist on unload
-  window.addEventListener('beforeunload', () => {
-    persistPetState(getPetState());
-  });
+  window.addEventListener('beforeunload', () => persist());
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      persistPetState(getPetState());
-    }
+    if (document.visibilityState === 'hidden') persist();
   });
 }

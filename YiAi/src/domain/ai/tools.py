@@ -95,23 +95,23 @@ def _validate_arguments(name: str, arguments: Any, schema: Dict[str, Any]) -> Op
     if not isinstance(arguments, dict):
         return f"Arguments for '{name}' must be a JSON object, got {type(arguments).__name__}"
     props = schema.get("properties") or {}
-    for field in schema.get("required") or []:
-        if field not in arguments:
-            return f"Tool '{name}' is missing required argument '{field}'"
-    for field, value in arguments.items():
-        ptype = (props.get(field) or {}).get("type")
+    for req_field in schema.get("required") or []:
+        if req_field not in arguments:
+            return f"Tool '{name}' is missing required argument '{req_field}'"
+    for fname, value in arguments.items():
+        ptype = (props.get(fname) or {}).get("type")
         if ptype == "string" and not isinstance(value, str):
-            return f"Tool '{name}' argument '{field}' must be a string, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be a string, got {type(value).__name__}"
         if ptype == "object" and not isinstance(value, dict):
-            return f"Tool '{name}' argument '{field}' must be an object, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be an object, got {type(value).__name__}"
         if ptype == "array" and not isinstance(value, list):
-            return f"Tool '{name}' argument '{field}' must be an array, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be an array, got {type(value).__name__}"
         if ptype == "boolean" and not isinstance(value, bool):
-            return f"Tool '{name}' argument '{field}' must be a boolean, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be a boolean, got {type(value).__name__}"
         if ptype == "integer" and not isinstance(value, int):
-            return f"Tool '{name}' argument '{field}' must be an integer, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be an integer, got {type(value).__name__}"
         if ptype == "number" and not isinstance(value, (int, float)):
-            return f"Tool '{name}' argument '{field}' must be a number, got {type(value).__name__}"
+            return f"Tool '{name}' argument '{fname}' must be a number, got {type(value).__name__}"
     return None
 
 

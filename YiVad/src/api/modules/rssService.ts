@@ -5,8 +5,8 @@
  *   - `rss`   — per-entry metadata (title, link, source_name, source_url,
  *               published, published_parsed, category_path, file_path,
  *               createdTime, updatedTime, author, tags). Article body is
- *               NOT stored — it lives as markdown under ~/YiKnowledge at
- *               `file_path` (read via knowledgeService.readKnowledgeFile).
+ *               NOT stored — it lives as markdown under ~/YiKnowledge/rss/
+ *               at `file_path` (read via knowledgeService.readKnowledgeFile).
  *   - `seeds` — feed source configs (url, name, enabled, category, interval,
  *               tags, createdAt, updatedAt). The scheduler pulls enabled
  *               seeds on each tick.
@@ -37,12 +37,15 @@ export interface RssItemDocument {
   source_name: string;
   source_url: string;
   published?: string;
-  published_parsed?: string;
-  /** YiKnowledge role subdir, e.g. "executiver/industry" or "aier/methodology". */
+  /** Auto-classification, e.g. "executiver/industry" or "aier/methodology". */
   category_path?: string;
-  /** Relative path under ~/YiKnowledge, e.g. "executiver/industry/foo-bar-1a2b3c.md". */
+  /** Relative path under ~/YiKnowledge, e.g. "rss/foo-bar-1a2b3c.md". */
   file_path?: string;
+  /** Epoch-ms timestamp of the entry's published date. */
+  published_parsed?: number | string;
   author?: string;
+  /** RSS description/summary (max 500 chars, may contain HTML). */
+  summary?: string;
   createdTime?: string;
   updatedTime?: string;
 }
@@ -66,6 +69,8 @@ export interface RssListParams {
   source_name?: string;
   source_url?: string;
   category_path?: string;
+  /** Prefix match for category_path, e.g. "executiver" matches "executiver/industry". */
+  categoryPrefix?: string;
   tags?: string[];
   publishedStart?: number;
   publishedEnd?: number;
@@ -113,6 +118,7 @@ export async function getRssList(
   if (params.source_name) filter.source_name = params.source_name;
   if (params.source_url) filter.source_url = params.source_url;
   if (params.category_path) filter.category_path = params.category_path;
+  if (params.categoryPrefix) filter.category_path = { $regex: `^${params.categoryPrefix}(/|$)`, $options: "i" };
   if (params.tags?.length) filter.tags = { $in: params.tags };
   if (params.publishedStart !== undefined || params.publishedEnd !== undefined) {
     const pub: Record<string, number> = {};

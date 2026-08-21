@@ -4,6 +4,7 @@
 
 import type {
   AgentSkill,
+  AgentStreamEvent,
   AgentToolDescriptor,
   BugDocument,
   BugFrequency,
@@ -22,6 +23,13 @@ import type {
   TodoItem,
   WeWorkBot,
 } from '@/api/types';
+
+/** Web search result surfaced on user messages. */
+export interface WebSearchResult {
+  title: string;
+  url: string;
+  snippet: string;
+}
 
 // ── Page Info ─────────────────────────────────────────────────────────────
 
@@ -45,6 +53,24 @@ export interface Message {
   imageDataUrl?: string;
   /** Multi-image support — list of base64 data URLs. */
   imageDataUrls?: string[];
+  /** RAG provenance — surfaced as a provenance badge below the markdown. */
+  ragMeta?: RagMeta;
+  /** RAG sources for this message (from grounded chat). */
+  sources?: RagSource[];
+  /** Time-to-first-token latency in ms (for latency badge). */
+  firstTokenLatencyMs?: number;
+}
+
+/** RAG provenance metadata surfaced per pet message. */
+export interface RagMeta {
+  chatMode?: string;
+  hybrid?: boolean;
+  rerank?: boolean;
+  citations?: boolean;
+  numQueries?: number;
+  category?: string;
+  tags?: string[];
+  scope?: string;
 }
 
 // ── Session ─────────────────────────────────────────────────────────────
@@ -104,6 +130,27 @@ export interface AgentNote {
   text: string;
 }
 
+/** A single tool call in the per-message/per-turn tool timeline. */
+export interface ToolCallEntry {
+  name: string;
+  label: string;
+  args?: Record<string, unknown>;
+  content?: string;
+  error?: string;
+  durationMs?: number;
+}
+
+/** Per-turn summary for the agent timeline UI. */
+export interface AgentTurnSummary {
+  turnIndex: number;
+  toolCalls: ToolCallEntry[];
+  startTime: number;
+  endTime?: number;
+  stopReason?: string;
+  thinkingText?: string;
+  usage?: { turnTokens: number; totalTokens: number; turns: number };
+}
+
 // ── Chat State ──────────────────────────────────────────────────────────
 
 export interface ChatState {
@@ -119,11 +166,6 @@ export interface ChatState {
   searchInputValue: string;
   /** Debounced query used for actual filtering */
   searchQuery: string;
-  /** When non-empty, `filteredSessions` only includes sessions whose URL's
-   *  site key (hostname + pathname + hash-path, no query) matches. Set by
-   *  filterSessionsByCurrentPage() — lets the user surface "conversations
-   *  I've had about this exact page before" without typing. */
-  sessionSiteFilter: string;
   /** When non-empty, `filteredSessions` only includes sessions whose URL
    *  resolves to this project (via detectProjectFromUrl). Values: 'YiAi' /
    *  'YiVad' / 'YiKnowledge' / 'YiPet' / 'unknown'. Empty string = all. */
@@ -136,10 +178,12 @@ export interface ChatState {
   batchMode: boolean;
   /** Session IDs selected in batch mode */
   selectedSessionIds: string[];
+  /** Session ID currently being context-edited (null = not editing). When set,
+   *  the sidebar shows the ContextFilesPanel and the window widens to reveal a
+   *  knowledge column alongside. */
+  contextEditingId: string | null;
   /** Draft images (base64 data URLs) waiting to be sent */
   draftImages: string[];
-  /** Page context toggle — when enabled, page content is sent as AI context */
-  contextEnabled: boolean;
   /** Knowledge-grounded (RAG) toggle — when enabled, sends the user's message
    *  to /rag-chat instead of the plain chat endpoint, so the answer draws on
    *  the shared YiKnowledge markdown tree. */
@@ -167,6 +211,8 @@ export interface ChatState {
   knowledgeTree: KnowledgeTreeNode[];
   /** True while a knowledge scan is in flight. */
   knowledgeLoading: boolean;
+  /** True while a knowledge metadata sync (/knowledge-sync) is in flight. */
+  knowledgeSyncing: boolean;
   /** Error message from the last knowledge scan, if any. */
   knowledgeError: string;
   /** Stories returned by KnowledgeService.listStories(). Empty until loaded. */
@@ -212,6 +258,22 @@ export interface ChatState {
   ragCategoriesLoading: boolean;
   /** Selected category filter — empty string means "all". */
   knowledgeCategoryFilter: string;
+  /** RAG options — hybrid (BM25+vector), rerank, citation injection. */
+  ragHybrid: boolean;
+  ragRerank: boolean;
+  ragCitations: boolean;
+  /** RAG chat mode (condense_plus_context / condense_question / context / simple). */
+  ragChatMode: string;
+  /** Number of query rewrites for multi-query retrieval. */
+  ragNumQueries: number;
+  /** Frontmatter tags filter for RAG retrieval. */
+  ragTags: string[];
+  /** Web search toggle — when enabled, appends web results to the LLM context. */
+  webSearchEnabled: boolean;
+  /** Currently selected model (e.g. "qwen3.5", "qwen3-coder"). */
+  selectedModel: string;
+  /** Available model list from the backend. */
+  availableModels: string[];
   /** Whether the rag.decompose modal is open. */
   ragDecomposeVisible: boolean;
   /** True while rag.decompose is in flight (synchronous, can take a while). */
@@ -268,10 +330,20 @@ export interface ChatState {
   streamingTargetTimestamp: number | null;
   /** Current streaming action type — controls RequestStatusButton label. */
   streamingType: '' | 'send' | 'regenerate' | 'resend';
-  streamingPhase: '' | 'thinking' | 'retrieving' | 'streaming';
+  streamingPhase: '' | 'fetching' | 'thinking' | 'retrieving' | 'streaming';
   /** Agent mode — route sends through /agent/chat (tool-calling loop) instead
    *  of the plain chat endpoint. Toggled from the toolbar. */
   agentMode: boolean;
+  /** Agent max turns before auto-stop (default 10). */
+  agentMaxTurns: number;
+  /** Agent system prompt override. */
+  agentSystemPrompt: string;
+  /** Agent model rotation — ordered list of models to cycle through. */
+  agentModelRotation: string[];
+  /** Agent model fallback — ordered list of fallback models on stall. */
+  agentModelFallback: string[];
+  /** Agent compaction notification — surfaced when agent compacts conversation. */
+  agentCompaction: { beforeCount: number; afterCount: number; savedTokens: number; timestamp: number } | null;
   /** Live todo list surfaced by the agent's `todo_write` capability. */
   agentTodos: TodoItem[];
   /** Live tool-call timeline for the in-flight agent run. */
@@ -282,6 +354,14 @@ export interface ChatState {
   pendingQuestion: PendingQuestion | null;
   /** Structured run notes (model_switch / max_turns / error) — rendered as chips. */
   agentNotes: AgentNote[];
+  /** Per-turn summaries for the agent timeline (mirrors YiVad aiChat). */
+  agentTurnSummaries: AgentTurnSummary[];
+  /** Raw agent SSE events for inspection (mirrors YiVad aiChat). */
+  agentEvents: AgentStreamEvent[];
+  /** Token usage for the current agent run. */
+  agentUsage: { turnTokens: number; totalTokens: number; turns: number } | null;
+  /** Web search results surfaced on user messages. */
+  webSearchResults: WebSearchResult[];
   /** Browsable server-side agent tools (from /agent/tools). Empty until loaded. */
   agentTools: AgentToolDescriptor[];
   /** Browsable skill catalog (from /agent/tools). Empty until loaded. */
@@ -304,10 +384,6 @@ export interface ChatState {
   faqApplyMode: 'append' | 'insert';
   /** Whether the session-edit modal is open. */
   sessionEditVisible: boolean;
-  /** Whether the page-context editor modal is open. */
-  contextEditorVisible: boolean;
-  /** Draft content for the page-context editor. */
-  contextEditorDraft: string;
   /** Whether the tag-manager modal is open. */
   tagManagerVisible: boolean;
   /** Last template content pushed to the input bar (QuickButtons template mode). */

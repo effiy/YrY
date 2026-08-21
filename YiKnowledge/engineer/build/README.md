@@ -3,8 +3,8 @@ title: Build — Architecture & Development
 tags: [leaf, build, architecture, design, development, dx, api]
 category: engineer/build
 created: 2026-08-06
-updated: 2026-08-14
-last_verified: 2026-08-14
+updated: 2026-08-21
+last_verified: 2026-08-21
 source: internal
 type: summary
 status: stable
@@ -18,6 +18,7 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../../INDEX.md
+  - ./cross-project-rpc-protocol.md
   - ../ship/
   - ../run/
   - ../learn/

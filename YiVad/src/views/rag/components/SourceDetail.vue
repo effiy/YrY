@@ -9,8 +9,8 @@ import { computed, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Document, Link, CopyDocument } from "@element-plus/icons-vue";
 import { scorePercent, scoreLabel, scoreColor } from "@/views/rag/constants";
-import ScoreBar from "./ScoreBar.vue";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import ScoreBar from "@/components/ScoreBar/index.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const props = defineProps<{

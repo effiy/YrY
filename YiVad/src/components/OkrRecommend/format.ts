@@ -38,8 +38,7 @@ export function isOverdue(dueDate: string): boolean {
 const CATEGORY_TAG: Record<OkrListType, TagType> = {
   daily: "primary",
   weekly: "success",
-  risk: "danger",
-  sprint: "warning"
+  risk: "danger"
 };
 
 export function categoryTagType(key: OkrListType): TagType {

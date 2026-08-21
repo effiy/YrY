@@ -27,14 +27,6 @@ def normalize_no_spaces(value: str) -> str:
     return re.sub(r"\s+", "_", (value or "").strip())
 
 
-def normalize_db_key(target_file: str) -> str:
-    """Normalize target_file to a uniform DB key (strip static/ prefix)."""
-    key = (target_file or "").strip().replace("\\", "/")
-    if key.startswith("static/"):
-        key = key[7:]
-    return key.lstrip("/")
-
-
 def validate_path(path: str, param_name: str = "Path") -> str:
     """Validate path safety and return a normalized relative path.
 

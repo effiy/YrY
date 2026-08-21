@@ -1,24 +1,28 @@
 ---
 title: AI Foundations Directory
-tags: [leaf, tech, ai-foundations]
+tags:
+- leaf
+- tech
+- ai-foundations
 category: aier/foundations
-created: 2026-08-03
-updated: 2026-08-10
+created: '2026-08-03'
+updated: '2026-08-10'
 source: internal
 type: summary
 lifecycle: reference
 status: stable
 review_cycle: quarterly
-roles: [aier]
-benefit: "foundations solid"
+roles:
+- aier
+benefit: foundations solid
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - cross-references to related leaves and parent INDEX are present
+- scope of the leaf directory is clearly bounded
+- file inventory table is complete with one-liner descriptions
+- cross-references to related leaves and parent INDEX are present
 related:
-  - ../../aier/ml/find-ai-deployment-cases.md
-  - ../platform/README.md
-  - ../methodology/README.md
+- ../../aier/ml/find-ai-deployment-cases.md
+- ../platform/README.md
+- ../methodology/README.md
 ---
 
 # AI Foundations Directory

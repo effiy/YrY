@@ -1,6 +1,5 @@
 /**
  * Global type declarations for CDN-provided utility libraries.
- * React 15.6.1 types are in src/types/react-cdn.d.ts — don't duplicate here.
  */
 
 declare global {

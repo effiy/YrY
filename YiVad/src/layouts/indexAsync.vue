@@ -10,6 +10,8 @@
       </template>
     </suspense>
     <ThemeDrawer />
+    <CommandPalette />
+    <KeyboardShortcuts />
   </el-watermark>
 </template>
 
@@ -19,6 +21,8 @@ import { ElWatermark } from "element-plus";
 import { LayoutType } from "@/stores/interface";
 import { useGlobalStore } from "@/stores/modules/global";
 import Loading from "@/components/Loading/index.vue";
+import CommandPalette from "@/components/CommandPalette/CommandPalette.vue";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts/index.vue";
 import ThemeDrawer from "./components/ThemeDrawer/index.vue";
 
 const LayoutComponents: Record<LayoutType, Component> = {

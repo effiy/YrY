@@ -78,6 +78,13 @@ function unwrapEnvelope<T>(json: unknown, httpStatus: number): ApiResponse<T> {
   };
 }
 
+/** Unwrap a base-client response, preserving its HTTP-level error message. */
+function unwrap<T>(res: ApiResponse<unknown>): ApiResponse<T> {
+  const result = unwrapEnvelope<T>(res.data, res.status);
+  if (!result.ok && !result.error && res.error) result.error = res.error;
+  return result;
+}
+
 // ── Factory ────────────────────────────────────────────────────────────
 
 export function createApiClient(config: ApiClientConfig): ApiClient {
@@ -171,6 +178,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 
   // ── SSE Streaming ────────────────────────────────────────────────────
 
+  const STREAM_TIMEOUT_MS = 600_000; // 10 min — matches YiVad ragService
+
   async function* stream(
     path: string,
     body?: unknown,
@@ -181,6 +190,12 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     const onAbort = () => controller.abort();
     if (signal) signal.addEventListener('abort', onAbort);
 
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, STREAM_TIMEOUT_MS);
+
     try {
       const init: RequestInit = {
         method: 'POST',
@@ -190,6 +205,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       };
 
       const response = await fetch(url, init);
+      clearTimeout(timeoutId);
       if (!response.ok || !response.body) {
         yield { done: true, error: `HTTP ${response.status}` };
         return;
@@ -247,19 +263,36 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       }
       yield { done: true };
     } catch (err) {
+      clearTimeout(timeoutId);
       // Preserve AbortError identity — otherwise streamWithCallback wraps the
       // message into a fresh `new Error(...)` and the controller's
       // `err.name === 'AbortError'` check fails, mislabeling user-initiated
       // stops as errors (pet message marked `error: true` instead of `aborted: true`).
-      if ((err as Error)?.name === 'AbortError') throw err;
+      if ((err as Error)?.name === 'AbortError') {
+        if (timedOut) {
+          yield { done: true, error: `Stream request timed out after ${STREAM_TIMEOUT_MS / 1000}s` };
+          return;
+        }
+        throw err;
+      }
       yield { done: true, error: (err as Error).message || 'Stream error' };
     } finally {
+      clearTimeout(timeoutId);
       if (signal) signal.removeEventListener('abort', onAbort);
     }
   }
 
   return {
     ...base,
+    // REST endpoints also return the YiAi {code, message, data} envelope —
+    // unwrap them so every service reads the payload directly (like `rpc`).
+    get: <T>(path: string, signal?: AbortSignal) => base.get<unknown>(path, signal).then(unwrap<T>),
+    post: <T>(path: string, body?: unknown, signal?: AbortSignal) =>
+      base.post<unknown>(path, body, signal).then(unwrap<T>),
+    put: <T>(path: string, body?: unknown, signal?: AbortSignal) =>
+      base.put<unknown>(path, body, signal).then(unwrap<T>),
+    delete: <T>(path: string, signal?: AbortSignal) =>
+      base.delete<unknown>(path, signal).then(unwrap<T>),
     rpc,
     stream,
     url: resolveUrl,

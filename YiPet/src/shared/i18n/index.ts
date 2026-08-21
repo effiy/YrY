@@ -28,6 +28,11 @@ export type MessageKey =
   | 'popupSubtitle'
   | 'popupPreviewTitle'
   | 'popupModelLabel'
+  | 'popupReset'
+  | 'popupSectionAppearance'
+  | 'popupSectionPreferences'
+  | 'popupSwitchHint'
+  | 'popupModelHint'
   // Popup — status
   | 'popupStatusConnecting'
   | 'popupStatusReady'

@@ -10,7 +10,7 @@ export interface SlashCommandDeps {
   input: Ref<string>;
   allTools: Ref<ToolDefinition[]>;
   setActiveMessages: (updater: (msgs: ChatMessage[]) => ChatMessage[]) => void;
-  persistActive: () => Promise<void>;
+  persistActive: () => Promise<boolean>;
   createConversation: (title?: string, pageContent?: string, tags?: string[]) => Promise<string>;
   executeTool: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<ToolResult | null>;
   maybeCompact: () => Promise<void>;

@@ -20,6 +20,11 @@
   "popupSubtitle": { "message": "A gentle AI companion for your browser" },
   "popupPreviewTitle": { "message": "Live Preview" },
   "popupModelLabel": { "message": "Model" },
+  "popupReset": { "message": "Reset" },
+  "popupSectionAppearance": { "message": "Appearance" },
+  "popupSectionPreferences": { "message": "Preferences" },
+  "popupSwitchHint": { "message": "Toggle the pet on/off for this tab" },
+  "popupModelHint": { "message": "AI model used for chat responses" },
 
   "popupStatusConnecting": { "message": "Connecting…" },
   "popupStatusReady": { "message": "Ready" },

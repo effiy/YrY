@@ -1,14 +1,16 @@
 """RSS feed parsing + persistence.
 
-Storage strategy (refactor 2026-07-30):
+Storage strategy (refactor 2026-08-17):
   - MongoDB ``rss`` collection stores **metadata only** — key, link, title,
     source_name, source_url, author, published, published_parsed, tags,
     category_path, file_path, createdTime, updatedTime. The full article
     body is NOT stored in MongoDB.
-  - Article body is persisted as a markdown file under the YiKnowledge
-    knowledge base, auto-classified into a role subdir (e.g.
-    ``aier/methodology`` / ``executiver/industry``), with YAML
-    frontmatter carrying the same metadata for self-describing files.
+  - Article body is persisted as a markdown file under
+    ``YiKnowledge/rss/{YYYY-MM-DD}/{slug}.md`` with YAML frontmatter. The
+    date prefix comes from the article's published date (falling back to
+    today). The ``category_path`` metadata field retains the
+    auto-classification (e.g. ``aier/methodology``) for filtering, but
+    files are no longer scattered across role subdirectories.
   - Re-parsing an existing feed is idempotent: file already on disk → skip
     the write; metadata is upserted either way.
 
@@ -39,19 +41,10 @@ RSS_CHUNK_SIZE = 8192  # bytes per chunk when streaming RSS feed
 # ── Auto-classification rules ──
 # Ordered (first match wins). Keywords are matched case-insensitively against
 # title + description. ``executiver/industry`` is the fallback when nothing else
-# matches, so RSS content always lands somewhere in the knowledge tree.
+# matches.
 #
-# Updated 2026-08-16: YiKnowledge now uses 7 bare-role dirs
-# (producter/leader/engineer/srer/executiver/aier/curator). Each rule routes to
-# an existing subdir under the appropriate role:
-#   aier/methodology            — AI/LLM/RAG/prompt/agent news
-#   aier/foundations            — ML/DL/training/inference fundamentals
-#   engineer/ship               — data/database/vector-db news
-#   srer/release                — cloud/k8s/docker/infra news
-#   executiver/industry         — competitor/market/trend/report/whitepaper
-#   producter/frameworks        — PM method/framework content
-#   curator/templates           — templates
-#   engineer/learn/lessons/*    — failures/wins/best-practices
+# Classification determines the ``category_path`` metadata field only; all RSS
+# files are written to ``YiKnowledge/rss/YYYY-MM-DD/`` regardless of classification.
 _CLASSIFY_RULES: list[tuple[tuple[str, ...], str]] = [
     (("ai", "llm", "gpt", "claude", "large model", "transformer", "neural"), "aier/methodology"),
     (("ml", "machine learning", "deep learning", "training", "inference"), "aier/foundations"),
@@ -77,12 +70,16 @@ _SOURCE_CATEGORY_RULES: list[tuple[tuple[str, ...], str]] = [
 ]
 
 
-def _slugify(text: str) -> str:
+def _slugify(text: str, seed: str = "") -> str:
     """Make a filesystem-safe slug from arbitrary text.
 
     Keeps CJK characters (YiKnowledge may have Chinese file names).
     Truncates to 60 chars and appends a short hash so two different
     entries with similar titles don't collide on disk.
+
+    ``seed`` (typically the entry link) is used for the hash to guarantee
+    uniqueness across different articles with the same title in the
+    ``rss/`` directory.
     """
     s = (text or "").strip().lower()
     s = re.sub(r"\s+", "-", s)
@@ -93,9 +90,7 @@ def _slugify(text: str) -> str:
         s = "untitled"
     if len(s) > 60:
         s = s[:60].rstrip("-")
-    # Hash suffix avoids collisions between similar titles from different
-    # sources / dates.
-    h = re.sub(r"[^a-z0-9]", "", uuid.uuid5(uuid.NAMESPACE_URL, text or "x").hex)[:6]
+    h = re.sub(r"[^a-z0-9]", "", uuid.uuid5(uuid.NAMESPACE_URL, seed or text).hex)[:6]
     return f"{s}-{h}"
 
 
@@ -121,7 +116,7 @@ def _classify_entry(
     source_name: str = "",
     source_category: Optional[str] = None,
 ) -> str:
-    """Pick a YiKnowledge role subdir for the entry.
+    """Pick a category for the entry (metadata only — files go to ``rss/YYYY-MM-DD/``).
 
     Priority:
       1. ``source_category`` — explicitly configured on the seeds document
@@ -141,6 +136,21 @@ def _classify_entry(
         if any(_keyword_matches(k, hay) for k in kws):
             return cat
     return _CLASSIFY_FALLBACK
+
+
+def _entry_date_dir(entry) -> str:
+    """Extract a ``YYYY-MM-DD`` directory name from the entry's published date.
+
+    Falls back to today if ``published_parsed`` is missing or unparseable.
+    """
+    parsed = entry.get("published_parsed")
+    if parsed:
+        try:
+            dt = datetime(*parsed[:6], tzinfo=timezone.utc)
+            return dt.strftime("%Y-%m-%d")
+        except Exception:
+            pass
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
 def _entry_body(entry) -> str:
@@ -216,9 +226,10 @@ def _build_entry_metadata(
         "source_name": source_name,
         "source_url": source_url,
         "published": entry.get("published", ""),
-        "published_parsed": str(entry.get("published_parsed", "")) if entry.get("published_parsed") else "",
+        "published_parsed": _entry_published_ts(entry) or 0,
         "category_path": category_path,
         "file_path": file_path,
+        "summary": (entry.get("description") or entry.get("summary") or "")[:500],
         "createdTime": current_time,
         "updatedTime": current_time,
     }
@@ -235,7 +246,7 @@ def _persist_entry_to_knowledge(
     category_path: str,
     tags: list[str],
 ) -> tuple[str, bool]:
-    """Write the entry's body as a markdown file under YiKnowledge.
+    """Write the entry's body as a markdown file under YiKnowledge/rss/YYYY-MM-DD/.
 
     Returns (relative_path, wrote_file). ``wrote_file`` is False when the
     file already existed on disk — re-parsing the same feed shouldn't
@@ -243,8 +254,9 @@ def _persist_entry_to_knowledge(
     """
     title = entry.get("title", "") or "untitled"
     link = entry.get("link", "")
-    slug = _slugify(title)
-    rel = f"{category_path}/{slug}.md"
+    slug = _slugify(title, link)
+    date_dir = _entry_date_dir(entry)
+    rel = f"rss/{date_dir}/{slug}.md"
     if entry_exists(rel):
         return rel, False
     body = _entry_body(entry)
@@ -343,8 +355,8 @@ async def process_feed_from_url(url: str, name: Optional[str] = None) -> Dict[st
     """Fetch, parse, classify, and persist an RSS feed.
 
     Each entry:
-      1. Auto-classified into a YiKnowledge category subtree.
-      2. Body written to ``YiKnowledge/{category}/{slug}.md`` with YAML
+      1. Auto-classified into a category (stored in ``category_path`` metadata).
+      2. Body written to ``YiKnowledge/rss/{date_dir}/{slug}.md`` with YAML
          frontmatter (idempotent — existing file is not re-written).
       3. Metadata-only doc upserted into the ``rss`` collection with
          ``category_path`` + ``file_path``.

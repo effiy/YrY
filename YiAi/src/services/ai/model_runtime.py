@@ -137,18 +137,34 @@ class OllamaRuntime(ModelRuntime):
                         delta = ""
                         tool_calls = None
                         done_reason = None
+                        usage = None
                         if isinstance(item, dict):
                             msg = item.get("message") or {}
                             delta = msg.get("content") or msg.get("thinking") or ""
                             tool_calls = msg.get("tool_calls") or None
                             done_reason = item.get("done_reason")
+                            # Capture token usage from the final chunk (Pi: token tracking)
+                            if item.get("done") and (item.get("eval_count") or item.get("prompt_eval_count")):
+                                usage = {
+                                    "prompt_tokens": item.get("prompt_eval_count", 0),
+                                    "completion_tokens": item.get("eval_count", 0),
+                                    "total_tokens": item.get("prompt_eval_count", 0) + item.get("eval_count", 0),
+                                }
                         else:
                             msg = getattr(item, "message", {}) or {}
                             delta = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
                             tool_calls = getattr(msg, "tool_calls", None) or None
                             done_reason = getattr(item, "done_reason", None)
-                        # Forward native tool calls so the agent loop can execute
-                        # them (Pi: structured tool calling instead of XML parsing).
+                            if getattr(item, "done", False) and (getattr(item, "eval_count", 0) or getattr(item, "prompt_eval_count", 0)):
+                                usage = {
+                                    "prompt_tokens": getattr(item, "prompt_eval_count", 0),
+                                    "completion_tokens": getattr(item, "eval_count", 0),
+                                    "total_tokens": getattr(item, "prompt_eval_count", 0) + getattr(item, "eval_count", 0),
+                                }
+                        if usage:
+                            asyncio.run_coroutine_threadsafe(
+                                queue.put({"usage": usage}), loop
+                            )
                         if tool_calls:
                             asyncio.run_coroutine_threadsafe(
                                 queue.put({"tool_calls": tool_calls}), loop
@@ -157,9 +173,6 @@ class OllamaRuntime(ModelRuntime):
                             asyncio.run_coroutine_threadsafe(
                                 queue.put(str(delta)), loop
                             )
-                        # Forward the final done_reason (Pi: failToolCallsFromTruncatedMessage).
-                        # "length" means the model hit its output token limit, so any
-                        # tool calls in this response may carry truncated arguments.
                         if done_reason:
                             asyncio.run_coroutine_threadsafe(
                                 queue.put({"done_reason": done_reason}), loop
@@ -176,15 +189,17 @@ class OllamaRuntime(ModelRuntime):
         asyncio.create_task(asyncio.to_thread(_worker))
 
         timeout = self._timeout or 300
-        # Send heartbeat events every 15s to keep the SSE connection alive
-        # through proxies/load-balancers while the model is generating.
         heartbeat_interval = 15.0
         start_time = asyncio.get_running_loop().time()
         while True:
+            remaining = timeout - (asyncio.get_running_loop().time() - start_time)
+            if remaining <= 0:
+                yield {"error": f"Chat request timed out after {timeout}s"}
+                break
+            wait = min(heartbeat_interval, remaining)
             try:
-                item = await asyncio.wait_for(queue.get(), timeout=heartbeat_interval)
+                item = await asyncio.wait_for(queue.get(), timeout=wait)
             except asyncio.TimeoutError:
-                # No chunk yet — check overall timeout, then send heartbeat
                 now = asyncio.get_running_loop().time()
                 if now - start_time > timeout:
                     yield {"error": f"Chat request timed out after {timeout}s"}
@@ -199,6 +214,8 @@ class OllamaRuntime(ModelRuntime):
                 yield item
             elif isinstance(item, dict) and "done_reason" in item:
                 yield item
+            elif isinstance(item, dict) and "usage" in item:
+                yield {"data": {"usage": item["usage"]}}
             else:
                 yield {"data": {"message": item}}
 
@@ -345,6 +362,297 @@ class RAGRuntime(ModelRuntime):
         )
 
 
+class OpenAIRuntime(ModelRuntime):
+    """OpenAI-backed runtime — supports any OpenAI-compatible API endpoint.
+
+    Uses the ``openai`` package's async client for streaming chat completions.
+    Compatible with OpenAI, DeepSeek API, and any OpenAI-compatible proxy.
+    """
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        model: str | None = None,
+    ):
+        self._api_key = api_key or settings.openai_api_key
+        self._base_url = base_url or settings.openai_base_url
+        self._model = model or settings.openai_default_model
+        self._timeout = settings.openai_chat_timeout
+
+    def model_name(self) -> str:
+        return self._model
+
+    async def stream_chat(
+        self,
+        messages: List[Dict[str, Any]],
+        model: str | None = None,
+        system: str | None = None,
+        images: List[bytes] | None = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> AsyncIterator[Dict[str, Any]]:
+        try:
+            from openai import AsyncOpenAI
+        except ImportError:
+            yield {"error": "openai package not installed — run: pip install openai"}
+            return
+
+        model_name = model or self._model
+        client = AsyncOpenAI(
+            api_key=self._api_key,
+            base_url=self._base_url,
+            timeout=float(self._timeout),
+        )
+
+        # Build OpenAI-format messages
+        openai_messages = list(messages)
+        if system and not any(m.get("role") == "system" for m in openai_messages):
+            openai_messages.insert(0, {"role": "system", "content": system})
+
+        # Handle images for vision models
+        if images:
+            last = dict(openai_messages[-1])
+            content: Any = last.get("content", "")
+            image_parts = [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{_b64(img)}",
+                        "detail": "auto",
+                    },
+                }
+                for img in images
+            ]
+            last["content"] = [{"type": "text", "text": content}] + image_parts
+            openai_messages[-1] = last
+
+        try:
+            stream = await client.chat.completions.create(
+                model=model_name,
+                messages=openai_messages,
+                stream=True,
+                stream_options={"include_usage": True},
+            )
+            async for chunk in stream:
+                if not chunk.choices:
+                    continue
+                delta = chunk.choices[0].delta
+                if delta.content:
+                    yield {"data": {"message": delta.content}}
+                if delta.tool_calls:
+                    # Forward tool calls to the agent loop
+                    tc_list = []
+                    for tc in delta.tool_calls:
+                        tc_list.append({
+                            "id": tc.id,
+                            "function": {
+                                "name": tc.function.name if tc.function else "",
+                                "arguments": tc.function.arguments if tc.function else "",
+                            },
+                        })
+                    yield {"tool_calls": tc_list}
+                if hasattr(chunk, "usage") and chunk.usage:
+                    yield {
+                        "data": {
+                            "usage": {
+                                "prompt_tokens": chunk.usage.prompt_tokens,
+                                "completion_tokens": chunk.usage.completion_tokens,
+                                "total_tokens": chunk.usage.total_tokens,
+                            }
+                        }
+                    }
+        except Exception as e:
+            logger.error(f"OpenAI stream failed: {e}")
+            yield {"error": f"OpenAI request failed: {e}"}
+
+    async def complete(
+        self,
+        messages: List[Dict[str, Any]],
+        model: str | None = None,
+        system: str | None = None,
+        images: List[bytes] | None = None,
+        max_retries: int = 2,
+    ) -> Dict[str, Any]:
+        try:
+            from openai import AsyncOpenAI
+        except ImportError:
+            return {"success": False, "error": "openai package not installed"}
+
+        model_name = model or self._model
+        client = AsyncOpenAI(
+            api_key=self._api_key,
+            base_url=self._base_url,
+            timeout=float(self._timeout),
+        )
+
+        openai_messages = list(messages)
+        if system and not any(m.get("role") == "system" for m in openai_messages):
+            openai_messages.insert(0, {"role": "system", "content": system})
+
+        attempt = 0
+        last_error: str | None = None
+        while attempt <= max_retries:
+            try:
+                response = await client.chat.completions.create(
+                    model=model_name,
+                    messages=openai_messages,
+                )
+                content = response.choices[0].message.content or ""
+                return {
+                    "success": True,
+                    "model": model_name,
+                    "message": content,
+                    "usage": {
+                        "prompt_tokens": response.usage.prompt_tokens if response.usage else 0,
+                        "completion_tokens": response.usage.completion_tokens if response.usage else 0,
+                        "total_tokens": response.usage.total_tokens if response.usage else 0,
+                    },
+                }
+            except Exception as e:
+                last_error = str(e)
+                logger.warning(f"OpenAI call failed: {last_error}, attempt={attempt}")
+                attempt += 1
+        return {"success": False, "error": last_error or "unknown error", "model": model_name}
+
+
+class AnthropicRuntime(ModelRuntime):
+    """Anthropic-backed runtime — Claude models via the Anthropic Messages API.
+
+    Uses the ``anthropic`` package's async client for streaming.
+    """
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        model: str | None = None,
+    ):
+        self._api_key = api_key or settings.anthropic_api_key
+        self._base_url = base_url or settings.anthropic_base_url
+        self._model = model or settings.anthropic_default_model
+        self._timeout = settings.anthropic_chat_timeout
+
+    def model_name(self) -> str:
+        return self._model
+
+    async def stream_chat(
+        self,
+        messages: List[Dict[str, Any]],
+        model: str | None = None,
+        system: str | None = None,
+        images: List[bytes] | None = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> AsyncIterator[Dict[str, Any]]:
+        try:
+            import anthropic
+        except ImportError:
+            yield {"error": "anthropic package not installed — run: pip install anthropic"}
+            return
+
+        model_name = model or self._model
+
+        # Separate system prompt from messages
+        sys_prompt = system or ""
+        user_assistant_msgs = [
+            m for m in messages if m.get("role") in ("user", "assistant")
+        ]
+
+        # Anthropic requires alternating user/assistant; merge consecutive same-role
+        merged: List[Dict[str, Any]] = []
+        for m in user_assistant_msgs:
+            role = m.get("role", "")
+            content = m.get("content", "")
+            if merged and merged[-1]["role"] == role:
+                merged[-1]["content"] += "\n\n" + content
+            else:
+                merged.append({"role": role, "content": content})
+
+        try:
+            client = anthropic.AsyncAnthropic(
+                api_key=self._api_key,
+                base_url=self._base_url,
+                timeout=float(self._timeout),
+            )
+            kwargs: Dict[str, Any] = {
+                "model": model_name,
+                "max_tokens": 4096,
+                "messages": merged,
+            }
+            if sys_prompt:
+                kwargs["system"] = sys_prompt
+            async with client.messages.stream(**kwargs) as stream:
+                async for text in stream.text_stream:
+                    yield {"data": {"message": text}}
+        except Exception as e:
+            logger.error(f"Anthropic stream failed: {e}")
+            yield {"error": f"Anthropic request failed: {e}"}
+
+    async def complete(
+        self,
+        messages: List[Dict[str, Any]],
+        model: str | None = None,
+        system: str | None = None,
+        images: List[bytes] | None = None,
+        max_retries: int = 2,
+    ) -> Dict[str, Any]:
+        try:
+            import anthropic
+        except ImportError:
+            return {"success": False, "error": "anthropic package not installed"}
+
+        model_name = model or self._model
+        sys_prompt = system or ""
+        user_assistant_msgs = [
+            m for m in messages if m.get("role") in ("user", "assistant")
+        ]
+
+        merged: List[Dict[str, Any]] = []
+        for m in user_assistant_msgs:
+            role = m.get("role", "")
+            content = m.get("content", "")
+            if merged and merged[-1]["role"] == role:
+                merged[-1]["content"] += "\n\n" + content
+            else:
+                merged.append({"role": role, "content": content})
+
+        attempt = 0
+        last_error: str | None = None
+        while attempt <= max_retries:
+            try:
+                client = anthropic.AsyncAnthropic(
+                    api_key=self._api_key,
+                    base_url=self._base_url,
+                    timeout=float(self._timeout),
+                )
+                kwargs: Dict[str, Any] = {
+                    "model": model_name,
+                    "max_tokens": 4096,
+                    "messages": merged,
+                }
+                if sys_prompt:
+                    kwargs["system"] = sys_prompt
+                response = await client.messages.create(**kwargs)
+                text = "".join(
+                    block.text
+                    for block in response.content
+                    if hasattr(block, "text")
+                )
+                return {"success": True, "model": model_name, "message": text}
+            except Exception as e:
+                last_error = str(e)
+                logger.warning(f"Anthropic call failed: {last_error}, attempt={attempt}")
+                attempt += 1
+        return {"success": False, "error": last_error or "unknown error", "model": model_name}
+
+
+# ── Helpers ──────────────────────────────────────────────────────────────
+
+
+def _b64(data: bytes) -> str:
+    import base64
+    return base64.b64encode(data).decode("ascii")
+
+
 # ── Runtime factory ─────────────────────────────────────────────────────
 
 
@@ -355,9 +663,13 @@ def get_runtime(
     """Create a ModelRuntime based on the desired mode.
 
     Args:
-        mode: "ollama" | "rag"
+        mode: "ollama" | "rag" | "openai" | "anthropic"
         **kwargs: Passed to the runtime constructor.
     """
     if mode == "rag":
         return RAGRuntime(**kwargs)
+    if mode == "openai":
+        return OpenAIRuntime(**kwargs)
+    if mode == "anthropic":
+        return AnthropicRuntime(**kwargs)
     return OllamaRuntime(**kwargs)

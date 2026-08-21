@@ -13,7 +13,7 @@ import logging
 import asyncio
 from typing import Any, AsyncIterator
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
 
 from domain.rag import (
@@ -39,6 +39,7 @@ from models.schemas import (
     RagDecomposeRequest,
 )
 from shared.response import success
+from shared.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -80,6 +81,7 @@ async def rag_query_route(request: RagQueryRequest):
             request.num_queries,
             request.category,
             request.tags,
+            hyde=request.hyde if request.hyde is not None else settings.rag_hyde_enabled,
         )
         return success(data={"sources": sources})
     except Exception as e:
@@ -155,6 +157,7 @@ async def rag_chat_route(request: RagChatRequest):
         chat_mode=request.chat_mode,
         category=request.category,
         tags=request.tags,
+        hyde_enabled=request.hyde if request.hyde is not None else settings.rag_hyde_enabled,
     )
     return StreamingResponse(
         _stream_async(gen),
@@ -203,3 +206,46 @@ async def rag_decompose_route(request: RagDecomposeRequest):
     except Exception as e:
         logger.exception(f"RAG decompose failed: {e}")
         return success(data={"original": request.question, "synthesis": "", "sub_questions": [], "error": str(e)})
+
+
+# ── Chat session persistence (Pi-inspired session management) ──────────────
+
+
+@router.post("/chat-sessions", operation_id="chat_sessions_list")
+async def chat_sessions_list():
+    """List recent chat sessions (newest first)."""
+    from data.chat_records import list_chat_sessions
+    try:
+        sessions = await list_chat_sessions()
+        return success(data={"sessions": sessions})
+    except Exception as e:
+        logger.exception(f"Failed to list chat sessions: {e}")
+        return success(data={"sessions": [], "error": str(e)})
+
+
+@router.post("/chat-session-load", operation_id="chat_session_load")
+async def chat_session_load(session_id: str = Body("", embed=True)):
+    """Load a single chat session's full message history."""
+    from data.chat_records import load_chat_session
+    try:
+        if not session_id:
+            return success(data={"session": None, "error": "session_id required"})
+        session = await load_chat_session(session_id)
+        return success(data={"session": session})
+    except Exception as e:
+        logger.exception(f"Failed to load chat session: {e}")
+        return success(data={"session": None, "error": str(e)})
+
+
+@router.post("/chat-session-delete", operation_id="chat_session_delete")
+async def chat_session_delete(session_id: str = Body("", embed=True)):
+    """Delete a chat session."""
+    from data.chat_records import delete_chat_session
+    try:
+        if not session_id:
+            return success(data={"deleted": False, "error": "session_id required"})
+        deleted = await delete_chat_session(session_id)
+        return success(data={"deleted": deleted})
+    except Exception as e:
+        logger.exception(f"Failed to delete chat session: {e}")
+        return success(data={"deleted": False, "error": str(e)})

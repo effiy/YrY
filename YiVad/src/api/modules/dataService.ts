@@ -61,6 +61,16 @@ export function updateDocument<T = any>(cname: string, key: string, data: Record
 }
 
 /**
+ * Count documents in a collection, optionally grouped by a field.
+ * @param cname - collection name
+ * @param filter - optional filter dict
+ * @param groupBy - optional field to group counts by
+ */
+export function countDocuments(cname: string, filter?: Record<string, any>, groupBy?: string): Promise<YiAiEnvelope<{ count?: number; groups?: Array<{ value: any; count: number }>; total?: number }>> {
+  return callService(DATA_SERVICE, "count_documents", { cname, ...(filter ? { filter } : {}), ...(groupBy ? { groupBy } : {}) });
+}
+
+/**
  * Delete a document from a collection.
  * @param cname - collection name
  * @param key - document key

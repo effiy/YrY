@@ -12,6 +12,29 @@
     </div>
 
     <div class="card mb10">
+      <h4 class="title">Architecture</h4>
+      <span class="text">
+        YiPet runs across two Chrome execution contexts (ISOLATED + MAIN world) and communicates with a local YiAi FastAPI
+        backend. The API layer follows a strict four-tier architecture: <strong>client → endpoints → types → services</strong>.
+        State is persisted via <code>chrome.storage.local</code>; popup-to-content-script communication uses
+        <code>chrome.tabs.sendMessage</code>.
+      </span>
+      <div ref="archRef">
+        <pre class="mermaid">
+graph TB
+    Popup[Popup UI<br/>React 18 + Antd 5] -->|chrome.tabs.sendMessage| CS[Content Script<br/>ISOLATED World]
+    CS -->|CustomEvent| Main[MAIN World<br/>Bootstrap]
+    Main -->|mutates| DOM[Pet DOM]
+    Popup -->|ApiClient| API[API Layer<br/>4-tier]
+    Chat[Chat Window<br/>React 18] -->|ApiClient| API
+    API -->|fetch POST /| YiAi[YiAi FastAPI :10086]
+    CS -->|chrome.storage| Storage[(chrome.storage.local)]
+    Popup -->|chrome.storage| Storage
+        </pre>
+      </div>
+    </div>
+
+    <div class="card mb10">
       <h4 class="title">Highlights</h4>
       <el-row :gutter="12">
         <el-col :span="12" v-for="f in features" :key="f" class="feature-item">
@@ -21,20 +44,82 @@
     </div>
 
     <div class="card mb10">
-      <h4 class="title">Architecture</h4>
-      <span class="text">
-        YiPet runs across two Chrome execution contexts (ISOLATED + MAIN world) and communicates with a local YiAi FastAPI
-        backend. The popup UI, content scripts, and API layer form a clean three-tier stack. The API layer follows a strict
-        four-tier architecture: <strong>client → endpoints → types → services</strong>. State is persisted via
-        <code>chrome.storage.local</code>; popup-to-content-script communication uses <code>chrome.tabs.sendMessage</code>.
-      </span>
-      <div class="arch-diagram">
-        <el-tag type="primary" size="large">Popup UI (React 18 + Antd 5)</el-tag>
-        <span class="arch-arrow">↔</span>
-        <el-tag type="success" size="large">Content Script (MV3 Dual-World)</el-tag>
-        <span class="arch-arrow">↔</span>
-        <el-tag type="warning" size="large">YiAi API (FastAPI)</el-tag>
+      <h4 class="title">Data Flow</h4>
+      <div ref="dataFlowRef">
+        <h5 class="subtitle">Chat (SSE Streaming)</h5>
+        <pre class="mermaid">
+sequenceDiagram
+    participant User as User
+    participant Controller as ChatController
+    participant API as api.chat.stream()
+    participant YiAi as YiAi (FastAPI)
+
+    User-&gt;&gt;Controller: send(text)
+    Controller-&gt;&gt;API: stream({user, model, messages, ...})
+    API-&gt;&gt;YiAi: fetch POST / (SSE, AbortController)
+    YiAi--&gt;&gt;API: data: {"data":{"message":"..."}}
+    API--&gt;&gt;Controller: onChunk(text)
+    YiAi--&gt;&gt;API: data: {"done":true}
+    API--&gt;&gt;Controller: onDone()
+    Controller-&gt;&gt;Controller: useSyncExternalStore → React re-render
+        </pre>
+        <h5 class="subtitle">Popup → Content Script → MAIN World</h5>
+        <pre class="mermaid">
+sequenceDiagram
+    participant Popup as Popup (React)
+    participant CS as Content Script<br/>(ISOLATED)
+    participant Main as Bootstrap<br/>(MAIN world)
+    participant DOM as Pet DOM
+
+    Popup-&gt;&gt;CS: chrome.tabs.sendMessage({type, payload})
+    CS-&gt;&gt;Main: CustomEvent (window)
+    Main-&gt;&gt;DOM: mutate pet DOM
+        </pre>
       </div>
+    </div>
+
+    <div class="card mb10">
+      <h4 class="title">API Design</h4>
+      <span class="text">
+        YiPet's API layer follows a strict <strong>four-tier architecture</strong>: client → endpoints → types → services.
+        No tier skips a level — services use client + endpoints + types; types never import services; client never imports
+        services. All cross-project calls use the <strong>RPC envelope</strong> POSTed to YiAi's root.
+      </span>
+      <el-descriptions :column="2" border style="margin-top: 12px;">
+        <el-descriptions-item v-for="a in apiDesign" :key="a.label" :label="a.label" label-align="left">
+          <span class="term-desc">{{ a.desc }}</span>
+        </el-descriptions-item>
+      </el-descriptions>
+      <div ref="apiRef">
+        <pre class="mermaid" style="margin-top: 12px;">
+sequenceDiagram
+    participant UI as Popup / Chat UI
+    participant Service as api/services/*.ts
+    participant Client as ApiClient
+    participant YiAi as YiAi (FastAPI)
+
+    UI-&gt;&gt;Service: domainService.method(params)
+    Service-&gt;&gt;Client: client.post(endpoint, payload)
+    Client-&gt;&gt;YiAi: fetch POST / (RPC envelope)
+    YiAi--&gt;&gt;Client: { code, message, data }
+    Client--&gt;&gt;Service: typed response
+    Service--&gt;&gt;UI: domain data
+    Note over UI,YiAi: SSE Streaming: client.stream()<br/>yields onChunk/onDone/onError
+        </pre>
+      </div>
+    </div>
+
+    <div class="card mb10">
+      <h4 class="title">Module Boundaries</h4>
+      <span class="text">
+        UI components are co-located with their CSS in feature folders. The API layer is the only tier that talks to
+        external services — UI components never call <code>fetch</code> directly.
+      </span>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item v-for="m in moduleBoundaries" :key="m.module" :label="m.module" label-align="left">
+          <span class="term-desc">{{ m.publicApi }}</span>
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
 
     <div class="card mb10">
@@ -86,44 +171,6 @@
     </div>
 
     <div class="card mb10">
-      <h4 class="title">Module Boundaries</h4>
-      <span class="text">
-        YiPet's API layer follows a strict four-tier architecture: <strong>client → endpoints → types → services</strong>.
-        No tier skips a level — services use client + endpoints + types; types never import services; client never imports
-        services. UI components are co-located with their CSS in feature folders.
-      </span>
-      <el-descriptions :column="2" border>
-        <el-descriptions-item v-for="m in moduleBoundaries" :key="m.module" :label="m.module" label-align="left">
-          <span class="term-desc">{{ m.publicApi }}</span>
-        </el-descriptions-item>
-      </el-descriptions>
-    </div>
-
-    <div class="card mb10">
-      <h4 class="title">Data Flow</h4>
-      <span class="text">
-        Chat uses SSE streaming via the RPC envelope — <code>services.ai.chat_service.chat</code> returns
-        <code>text/event-stream</code> with incremental <code>data:</code> frames.
-      </span>
-      <pre class="code-block">{{ dataFlowChat }}</pre>
-      <span class="text">
-        Popup → content script → MAIN world uses <code>chrome.tabs.sendMessage</code> bridged into the page context via
-        <code>&lt;script&gt;</code> injection + <code>CustomEvent</code>.
-      </span>
-      <pre class="code-block">{{ dataFlowPopup }}</pre>
-    </div>
-
-    <div class="card mb10">
-      <h4 class="title">Recent Changes</h4>
-      <el-timeline>
-        <el-timeline-item v-for="c in recentChanges" :key="c.date" :timestamp="c.date" placement="top" :hollow="c.hollow">
-          <h5 class="change-title">{{ c.title }}</h5>
-          <p class="change-desc">{{ c.desc }}</p>
-        </el-timeline-item>
-      </el-timeline>
-    </div>
-
-    <div class="card mb10">
       <h4 class="title">Domain Language</h4>
       <el-descriptions :column="2" border>
         <el-descriptions-item v-for="t in domainTerms" :key="t.name" :label="t.name">
@@ -162,6 +209,16 @@
       </span>
     </div>
 
+    <div class="card mb10">
+      <h4 class="title">Recent Changes</h4>
+      <el-timeline>
+        <el-timeline-item v-for="c in recentChanges" :key="c.date" :timestamp="c.date" placement="top" :hollow="c.hollow">
+          <h5 class="change-title">{{ c.title }}</h5>
+          <p class="change-desc">{{ c.desc }}</p>
+        </el-timeline-item>
+      </el-timeline>
+    </div>
+
     <el-collapse class="mb10">
       <el-collapse-item title="Production Dependencies" name="prod">
         <el-descriptions :column="3" border>
@@ -185,7 +242,7 @@
       </el-collapse-item>
     </el-collapse>
 
-    <div class="card">
+    <div class="card mb10">
       <h4 class="title">Tech Stack</h4>
       <div class="tag-list">
         <el-link v-for="tech in techStack" :key="tech.name" :href="tech.url" target="_blank" :underline="false" class="tech-link">
@@ -197,6 +254,15 @@
 </template>
 
 <script setup lang="ts" name="aboutYiPet">
+import { ref } from "vue";
+import { useMermaid } from "@/hooks/useMermaid";
+
+const archRef = ref<HTMLElement | null>(null);
+const dataFlowRef = ref<HTMLElement | null>(null);
+const apiRef = ref<HTMLElement | null>(null);
+
+useMermaid(archRef, dataFlowRef, apiRef);
+
 interface Dep {
   version: string;
   url: string;
@@ -242,38 +308,14 @@ const features = [
 ];
 
 const domainTerms = [
-  {
-    name: "Pet",
-    desc: "The interactive DOM element injected into the page, with a role image, color theme gradient, and configurable size"
-  },
-  {
-    name: "Role",
-    desc: "The pet's occupational identity — Teacher, Doctor, Pastry Chef, Police Officer (4 roles). Determines appearance"
-  },
-  {
-    name: "Popup",
-    desc: "The action.default_popup page — a React 18 + Ant Design 5 settings panel. Short-lived, closes on outside click"
-  },
-  {
-    name: "Content Script",
-    desc: "Declared in manifest.json. Runs in ISOLATED world at document_end. Has chrome.runtime.* APIs but can't see page JS globals"
-  },
-  {
-    name: "MAIN World",
-    desc: "The page's own JS execution context. After bootstrap self-injects, window.YiPet is accessible from DevTools"
-  },
-  {
-    name: "ISOLATED World",
-    desc: "Default content script environment. Shares page DOM but not JS globals. Uses chrome.tabs.sendMessage for communication"
-  },
-  {
-    name: "CDN Catalog",
-    desc: "Resource manifest in src/content/cdn/catalog.ts — maps short keys (vue, react, gsap) to local file paths under cdn/vendor/. All local, no remote CDN"
-  },
-  {
-    name: "Bootstrap",
-    desc: "src/content/bootstrap.ts — the dual-world entry that self-injects into MAIN world and sets up window.YiPet with YiPet.help() and YiPet.list()"
-  }
+  { name: "Pet", desc: "The interactive DOM element injected into the page, with a role image, color theme gradient, and configurable size" },
+  { name: "Role", desc: "The pet's occupational identity — Teacher, Doctor, Pastry Chef, Police Officer (4 roles). Determines appearance" },
+  { name: "Popup", desc: "The action.default_popup page — a React 18 + Ant Design 5 settings panel. Short-lived, closes on outside click" },
+  { name: "Content Script", desc: "Declared in manifest.json. Runs in ISOLATED world at document_end. Has chrome.runtime.* APIs but can't see page JS globals" },
+  { name: "MAIN World", desc: "The page's own JS execution context. After bootstrap self-injects, window.YiPet is accessible from DevTools" },
+  { name: "ISOLATED World", desc: "Default content script environment. Shares page DOM but not JS globals. Uses chrome.tabs.sendMessage for communication" },
+  { name: "CDN Catalog", desc: "Resource manifest in src/content/cdn/catalog.ts — maps short keys to local file paths under cdn/vendor/. All local, no remote CDN" },
+  { name: "Bootstrap", desc: "src/content/bootstrap.ts — the dual-world entry that self-injects into MAIN world and sets up window.YiPet" }
 ];
 
 const permissions = [
@@ -299,6 +341,17 @@ const techStack: Tech[] = [
   { name: "MongoDB (Motor)", url: "https://motor.readthedocs.io/" }
 ];
 
+const apiDesign = [
+  { label: "ApiClient", desc: "src/api/client.ts — wraps fetch with retry, error extraction, dev-gated logger, and SSE streaming. Other tiers MUST NOT call fetch directly" },
+  { label: "Endpoints", desc: "src/api/endpoints.ts — path constants by domain (auth, sessions, chat, database, knowledge, rag, agent, bug, wework)" },
+  { label: "Types", desc: "src/api/types.ts — single source of truth for RpcRequest, LoginRequest, ChatParams, QueryParams, SessionRecord, and all response interfaces" },
+  { label: "Services", desc: "src/api/services/*.ts — domain service classes (AuthService, ChatService, SessionService, DatabaseService, etc.). createApiServices(config) aggregator" },
+  { label: "RPC Envelope", desc: "POST / { module_name, method_name, parameters } → { code, message, data } — same protocol as YiVad" },
+  { label: "SSE Streaming", desc: "client.stream() parses text/event-stream line-by-line → onChunk(text) / onDone() / onError(err). AbortController for cancellation" },
+  { label: "chrome.storage", desc: "chrome.storage.local for persistent state (preferences, locale, timezone). Survives extension reloads" },
+  { label: "Cross-Context", desc: "Popup → Content Script via chrome.tabs.sendMessage. ISOLATED → MAIN world via CustomEvent + script injection" }
+];
+
 const moduleBoundaries = [
   { module: "src/api/client.ts", publicApi: "ApiClient — wraps CDN api-client (fetch + retry + error extraction) with dev-gated logger + SSE streaming. Other tiers MUST NOT call fetch directly." },
   { module: "src/api/endpoints.ts", publicApi: "Path constants by domain (auth, sessions, chat, ...)" },
@@ -310,150 +363,14 @@ const moduleBoundaries = [
   { module: "src/shared/", publicApi: "i18n/, theme/, roles.ts, locale/, timezone/, datetime/, env.ts, log.ts, state.ts" }
 ];
 
-const dataFlowChat = `User types in chat box
-  ▼ ChatController.send(text)
-api.chat.stream({ user, system?, model?, images?, conversation_id? })
-  ▼ fetch POST /  body: {module_name: "services.ai.chat_service",
-                        method_name: "chat",
-                        parameters: {model, messages, stream: true, system?, images?}}
-                        signal: AbortController
-  ▼
-YiAi FastAPI → StreamingResponse(text/event-stream)
-  yields: data: {"data": {"message": "..."}}\\n\\n
-  ends:   data: {"done": true}\\n\\n
-  ▼
-ApiClient parses SSE → onChunk(text) / onDone() / onError(err)
-  ▼
-ChatController appends deltas → useSyncExternalStore → React re-render
-  on abort: message flagged aborted=true and persisted`;
-
-const dataFlowPopup = `Popup (React) dispatches action
-  ▼ chrome.tabs.sendMessage(tabId, {type: 'TOGGLE_PET', payload})
-  ▼
-Content Script (ISOLATED) receives via chrome.runtime.onMessage
-  ▼ forwards to MAIN world via CustomEvent
-  ▼
-Bootstrap (MAIN world) listens on window, mutates pet DOM`;
-
 const recentChanges = [
-  {
-    date: "2026-07-28",
-    title: "query → filter RPC param fix",
-    desc: "src/api/services/sessions.ts: SessionService.list() and .get(id) were sending query: {...} but YiAi's query_documents only recognises filter. Both now send filter: {...}. Without this fix, list/get silently returned ALL sessions or none. types.ts QueryParams.query also renamed to QueryParams.filter.",
-    hollow: false
-  },
-  {
-    date: "2026-07-28",
-    title: "Stack migration",
-    desc: "React 15 + Bootstrap → React 18.3 + Ant Design 5.21. ESLint → Biome 2.5. Docs updated to match.",
-    hollow: false
-  },
-  {
-    date: "2026-07-28",
-    title: "Chat dev-mode jsxDEV mismatch",
-    desc: "Dev-mode React plugin + production NODE_ENV define produced jsxDEV is not a function at runtime. Chat bundle dev script now runs --mode production.",
-    hollow: false
-  },
-  {
-    date: "2026-07-27",
-    title: "YiPett shortcut + chat box port",
-    desc: "Esc closes chat, Ctrl+Shift+X toggles, role system prompt wired, conversations persist. YiPett's full feature set stays out of scope.",
-    hollow: true
-  }
+  { date: "2026-07-28", title: "query → filter RPC param fix", desc: "src/api/services/sessions.ts: SessionService.list() and .get(id) were sending query: {...} but YiAi's query_documents only recognises filter. Both now send filter: {...}. Without this fix, list/get silently returned ALL sessions or none. types.ts QueryParams.query also renamed to QueryParams.filter.", hollow: false },
+  { date: "2026-07-28", title: "Stack migration", desc: "React 15 + Bootstrap → React 18.3 + Ant Design 5.21. ESLint → Biome 2.5. Docs updated to match.", hollow: false },
+  { date: "2026-07-28", title: "Chat dev-mode jsxDEV mismatch", desc: "Dev-mode React plugin + production NODE_ENV define produced jsxDEV is not a function at runtime. Chat bundle dev script now runs --mode production.", hollow: false },
+  { date: "2026-07-27", title: "YiPett shortcut + chat box port", desc: "Esc closes chat, Ctrl+Shift+X toggles, role system prompt wired, conversations persist. YiPett's full feature set stays out of scope.", hollow: true }
 ];
 </script>
 
 <style lang="scss" scoped>
-.card {
-  .title {
-    margin: 0 0 15px;
-    font-size: 17px;
-    font-weight: bold;
-    color: var(--el-text-color-primary);
-  }
-  .text {
-    font-size: 15px;
-    line-height: 25px;
-    color: var(--el-text-color-regular);
-    code {
-      padding: 1px 5px;
-      font-size: 13px;
-      background: var(--el-fill-color-light);
-      border-radius: 3px;
-    }
-  }
-}
-.feature-item {
-  margin-bottom: 8px;
-}
-.feature-text {
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--el-text-color-regular);
-  &::before {
-    margin-right: 6px;
-    font-weight: bold;
-    color: var(--el-color-primary);
-    content: "•";
-  }
-}
-.arch-diagram {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  margin-top: 15px;
-  background: var(--el-fill-color-light);
-  border-radius: 8px;
-}
-.arch-arrow {
-  font-size: 20px;
-  color: var(--el-text-color-secondary);
-}
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.tech-tag {
-  margin: 0;
-}
-.tech-link {
-  height: auto;
-  line-height: 1;
-}
-.dep-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-.term-desc {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--el-text-color-secondary);
-}
-.code-block {
-  padding: 12px;
-  margin: 10px 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--el-text-color-regular);
-  word-break: break-word;
-  white-space: pre-wrap;
-  background: var(--el-fill-color-light);
-  border-radius: 6px;
-}
-.change-title {
-  margin: 0 0 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.change-desc {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--el-text-color-regular);
-}
+@use "../common.scss";
 </style>

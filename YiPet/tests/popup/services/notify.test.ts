@@ -1,16 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('antd', () => {
-  const message = {
+vi.mock('element-plus', () => {
+  const ElMessage = {
     success: vi.fn(),
     error: vi.fn(),
     info: vi.fn(),
     warning: vi.fn(),
+    closeAll: vi.fn(),
   };
-  return { message };
+  return { ElMessage };
 });
 
-import { message as antdMessage } from 'antd';
+import { ElMessage } from 'element-plus';
 import { createNotifyController } from '../../../src/popup/services/notification';
 
 describe('notify', () => {
@@ -18,26 +19,27 @@ describe('notify', () => {
     vi.clearAllMocks();
   });
 
-  it('show() delegates to antd message with the given type', () => {
+  it('show() delegates to ElMessage with the given type', () => {
     const controller = createNotifyController();
     controller.show('Size Updated', 'success');
-    expect(antdMessage.success).toHaveBeenCalledWith('Size Updated');
+    expect(ElMessage.success).toHaveBeenCalledWith('Size Updated');
   });
 
   it('show() defaults type to info', () => {
     const controller = createNotifyController();
     controller.show('Test');
-    expect(antdMessage.info).toHaveBeenCalledWith('Test');
+    expect(ElMessage.info).toHaveBeenCalledWith('Test');
   });
 
-  it('show() routes error type to antd message.error', () => {
+  it('show() routes error type to ElMessage.error', () => {
     const controller = createNotifyController();
     controller.show('Boom', 'error');
-    expect(antdMessage.error).toHaveBeenCalledWith('Boom');
+    expect(ElMessage.error).toHaveBeenCalledWith('Boom');
   });
 
-  it('dismiss() is a no-op (antd manages toast lifetime)', () => {
+  it('dismiss() closes all ElMessage instances', () => {
     const controller = createNotifyController();
-    expect(() => controller.dismiss()).not.toThrow();
+    controller.dismiss();
+    expect(ElMessage.closeAll).toHaveBeenCalled();
   });
 });

@@ -96,6 +96,7 @@ related:
 | [industry/](./industry/) | What's happening in the market and with competitors? | 19 files: competitor analysis (LLM vendors, SaaS, regional), market trends (H1 retrospective, emerging sectors), industry reports (Gartner, McKinsey, a16z, CAICT, IDC) |
 | [roadmap/](./roadmap/) | What's our organizational plan and direction? | 5 files: annual strategic planning, quarterly business review, OKR tracking, headcount/budget planning |
 | [reading-list/](./reading-list/) | What should I read to stay informed? | 4 files: monthly reading list, reading notes, book summaries |
+| [../okr/2026-Q3/goals/executiver/](../okr/2026-Q3/goals/executiver/) | What are our Q3 goals and metrics? | 14 files: 3 goals, 5 metrics, 11 KR evidence files |
 
 ## Quick reference
 

@@ -56,6 +56,7 @@ function onToggleAll(checked: boolean | string | number) {
 async function onSelect(key: string) {
   // If context panel is in "new" mode, cancel it and show the selected session
   store.exitNewContextMode();
+  store.knowledgeSidebarVisible = false;
   await store.selectConversation(key);
 }
 
@@ -95,9 +96,17 @@ async function onBulkDelete() {
 
 // ── Actions ──
 
-/** "New session" → signals the ContextFilesPanel to enter "new" mode. */
-function onNewSession() {
-  store.enterNewContextMode();
+const creating = ref(false);
+
+/** "New session" → create a new empty conversation and select it. */
+async function onNewSession() {
+  if (creating.value) return;
+  creating.value = true;
+  try {
+    await store.createConversation();
+  } finally {
+    creating.value = false;
+  }
 }
 
 // ── Context panel per-session toggle ──
@@ -108,11 +117,13 @@ const showContextPanel = computed(() => editingContextKey.value !== null);
 async function onEditContext(key: string) {
   await store.selectConversation(key);
   editingContextKey.value = key;
+  store.knowledgeSidebarVisible = true;
 }
 
 function onBackFromContext() {
   editingContextKey.value = null;
   store.exitNewContextMode();
+  store.knowledgeSidebarVisible = false;
 }
 </script>
 
@@ -133,7 +144,7 @@ function onBackFromContext() {
     <template v-else>
       <div class="css-header">
         <el-input v-model="searchQuery" placeholder="Search sessions..." clearable size="small" :prefix-icon="Search" />
-        <el-button size="small" type="primary" :icon="Plus" title="New session" aria-label="New session" @click="onNewSession" />
+        <el-button size="small" type="primary" :icon="Plus" :loading="creating" title="New session" aria-label="New session" @click="onNewSession" />
         <el-button
           v-if="!store.batchMode"
           size="small"

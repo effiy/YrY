@@ -122,7 +122,6 @@ async def list_collections() -> list[str]:
         s.collection_seeds,
         s.collection_oss_file_tags,
         s.collection_oss_file_info,
-        s.collection_static_files,
         s.collection_state_records,
     ]
 

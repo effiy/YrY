@@ -6,7 +6,7 @@
  * YiKnowledge/executiver/reading-list/README.md. Each item tracks title,
  * type, link, author, reading status, priority and notes.
  */
-import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
+import { queryDocuments, createDocument, updateDocument, deleteDocument, countDocuments } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
 export const READING_LIST_COLLECTION = "reading_list";
@@ -27,6 +27,7 @@ export interface ReadingItem {
   status: ReadingItemStatus;
   priority?: ReadingItemPriority;
   notes?: string;
+  role?: string;
   createdTime?: string;
   updatedTime?: string;
 }
@@ -36,6 +37,7 @@ export interface ReadingListParams {
   type?: ReadingItemType;
   status?: ReadingItemStatus;
   priority?: ReadingItemPriority;
+  role?: string;
   pageNum?: number;
   pageSize?: number;
   orderBy?: string;
@@ -55,6 +57,7 @@ export async function getReadingList(
   if (params.type) filter.type = params.type;
   if (params.status) filter.status = params.status;
   if (params.priority) filter.priority = params.priority;
+  if (params.role) filter.role = params.role;
   const pageNum = params.pageNum ?? 1;
   const pageSize = params.pageSize ?? 20;
   const res = await queryDocuments<ReadingItem>({
@@ -88,4 +91,20 @@ export async function updateReadingItem(key: string, patch: Partial<ReadingItem>
 
 export async function deleteReadingItem(key: string): Promise<YiAiEnvelope> {
   return deleteDocument(READING_LIST_COLLECTION, key);
+}
+
+/** Fetch role-wide counts (total, reading, done) in a single API call. */
+export async function getReadingListCounts(role: string): Promise<{ total: number; reading: number; done: number }> {
+  const res = await countDocuments(READING_LIST_COLLECTION, role ? { role } : {}, "status");
+  if (res.code !== 0) throw new Error(res.message || "Failed to load counts");
+  const groups = res.data?.groups || [];
+  const map: Record<string, number> = {};
+  for (const g of groups) {
+    if (g.value) map[g.value] = g.count;
+  }
+  return {
+    total: res.data?.total ?? 0,
+    reading: map.reading ?? 0,
+    done: map.done ?? 0
+  };
 }

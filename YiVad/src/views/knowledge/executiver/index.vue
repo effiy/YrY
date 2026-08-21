@@ -11,7 +11,7 @@
       <RoleNav active="executiver" />
     </template>
     <template #header>
-      <ExecutiverQuickNav />
+      <ExecutiverQuickNav role="executiver" />
     </template>
   </RoleKnowledgePage>
 </template>

@@ -1,16 +1,15 @@
 <script setup lang="ts" name="aiChatMessageBubble">
 import { computed, ref, watch, onBeforeUnmount } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, FolderChecked, Tools, ArrowDown, Check, Close, ChatDotRound, Clock } from "@element-plus/icons-vue";
+import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, Tools, ArrowDown, Check, Close, Clock } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useMermaidRender } from "@/hooks/useMermaidRender";
 import { useSlowThreshold } from "@/hooks/useSlowThreshold";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { detectContextChanges, hasPartialContextBlock } from "@/hooks/useContextChangeDetector";
 import type { ContextChange } from "@/hooks/useContextChangeDetector";
-import RagSources from "@/components/RagSources.vue";
+import RagSources from "@/components/RagSources/RagSources.vue";
 import WebSearchResults from "./WebSearchResults.vue";
 import ContextChangeCard from "./ContextChangeCard.vue";
 import AgentTimeline from "./AgentTimeline.vue";
@@ -26,27 +25,6 @@ const props = defineProps<{
 
 const store = useAiChatStore();
 const { render } = useMarkdown();
-const { openInAiChat } = useAiChatBridge();
-
-async function branchToNewSession() {
-  const conv = store.activeConversation;
-  if (!conv) return;
-  const msgs = (conv.messages ?? []).slice(0, props.index + 1)
-    .filter(m => (m.message ?? "").trim());
-  if (!msgs.length) return;
-  const transcript = msgs
-    .map(m => `**${m.type === "user" ? "User" : m.type === "followup" ? "Follow-up (queued)" : "Assistant"}:** ${m.message ?? ""}`)
-    .join("\n\n");
-  const ctxTags = (conv.tags ?? []).filter(t => typeof t === "string" && t.startsWith("ctx:"));
-  const tags = ["branch", ...ctxTags];
-  const fromTag = (conv.tags ?? []).find(t => typeof t === "string" && t.startsWith("from:"));
-  if (fromTag) tags.push(fromTag);
-  await openInAiChat({
-    title: `Branch of: ${conv.title || "session"}`,
-    pageContent: `# Branched from "${conv.title || "session"}"\n\n## Transcript\n\n${transcript}`,
-    tags
-  });
-}
 
 /** Template ref on RagSources so inline citation chips can call
  *  `focusSource(idx)` to expand + flash the matching source chip. */
@@ -359,51 +337,6 @@ async function copyToolCallContent(content: string, idx: number): Promise<void> 
   }
 }
 
-async function saveToolCallToKB(content: string): Promise<void> {
-  if (!content.trim()) return;
-  try {
-    const res = await ElMessageBox.prompt(
-      "Enter the file path under YiKnowledge (e.g. notes/tool-output.md):",
-      "Save tool result to Knowledge Base",
-      {
-        confirmButtonText: "Save",
-        cancelButtonText: "Cancel",
-        inputValue: `notes/tool-result-${Date.now()}.md`,
-        inputPlaceholder: "notes/tool-result.md",
-      }
-    );
-    const path = (res?.value ?? "").trim();
-    if (!path) return;
-    await store.saveContextToKnowledge(path, content);
-    ElMessage.success(`Saved "${path}" to knowledge base`);
-  } catch {
-    // user cancelled
-  }
-}
-
-async function handleManualSaveToKB() {
-  const text = props.message.message ?? "";
-  if (!text.trim()) return;
-  try {
-    const res = await ElMessageBox.prompt(
-      "Enter the file path under YiKnowledge (e.g. reports/my-report.md):",
-      "Save to Knowledge Base",
-      {
-        confirmButtonText: "Save",
-        cancelButtonText: "Cancel",
-        inputValue: `notes/ai-response-${Date.now()}.md`,
-        inputPlaceholder: "reports/my-report.md"
-      }
-    );
-    const path = (res?.value ?? "").trim();
-    if (!path) return;
-    await onSaveToKB(path, text);
-    ElMessage.success(`Saved "${path}" to knowledge base`);
-  } catch {
-    // user cancelled
-  }
-}
-
 async function applyAllChanges() {
   for (const change of contextChanges.value) {
     try {
@@ -658,14 +591,6 @@ async function onEdit() {
                 :title="copiedToolIdx === i ? 'Copied' : (failedToolIdx === i ? 'Copy failed' : 'Copy error')"
                 @click="copyToolCallContent(call.error!, i)"
               >{{ copiedToolIdx === i ? 'Copied' : (failedToolIdx === i ? 'Failed' : 'Copy') }}</el-button>
-              <el-button
-                size="small"
-                text
-                :icon="FolderChecked"
-                class="mb-tool-call-save mb-tool-call-save--err"
-                title="Save error to the knowledge base"
-                @click="saveToolCallToKB(call.error!)"
-              >Save to KB</el-button>
             </div>
             <div v-else-if="call.content" class="mb-tool-call-content">
               <pre>{{ isContentExpanded(i) || !isContentLong(call.content) ? call.content : call.content.slice(0, CONTENT_COLLAPSE_THRESHOLD) + '…' }}</pre>
@@ -686,14 +611,6 @@ async function onEdit() {
                 :title="copiedToolIdx === i ? 'Copied' : (failedToolIdx === i ? 'Copy failed' : 'Copy result')"
                 @click="copyToolCallContent(call.content!, i)"
               >{{ copiedToolIdx === i ? 'Copied' : (failedToolIdx === i ? 'Failed' : 'Copy') }}</el-button>
-              <el-button
-                size="small"
-                text
-                :icon="FolderChecked"
-                class="mb-tool-call-save"
-                title="Save this tool result to the knowledge base"
-                @click="saveToolCallToKB(call.content!)"
-              >Save to KB</el-button>
             </div>
           </div>
         </div>
@@ -703,27 +620,9 @@ async function onEdit() {
       <div v-if="!isUser" class="mb-actions">
         <el-button size="small" text :icon="CopyDocument" @click="store.copyMessage(props.message)">{{ copyLabel }}</el-button>
         <el-button size="small" text :icon="Edit" :disabled="store.sending" @click="onEdit">Edit</el-button>
-        <el-button
-          v-if="!hasContextChanges && props.message.message?.trim()"
-          size="small"
-          text
-          type="success"
-          :icon="FolderChecked"
-          :disabled="store.sending"
-          title="Save this response to the knowledge base"
-          @click="handleManualSaveToKB"
-        >Save to KB</el-button>
         <el-button size="small" text :icon="RefreshRight" :disabled="store.sending" @click="onRegenerate">{{
           showRetryLabel ? "Retry" : "Regenerate"
         }}</el-button>
-        <el-button
-          size="small"
-          text
-          :icon="ChatDotRound"
-          :disabled="store.sending"
-          title="Branch this conversation into a new session seeded with the transcript up to here"
-          @click="branchToNewSession"
-        >Branch</el-button>
         <el-button size="small" text :icon="Delete" :disabled="store.sending" @click="onDelete">Delete</el-button>
       </div>
       <div v-else class="mb-actions">

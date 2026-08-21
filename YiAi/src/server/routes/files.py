@@ -50,7 +50,7 @@ async def upload_image_to_oss(request: ImageUploadToOssRequest):
 
 @router.post("/read-file", operation_id="read_file")
 async def read_file_route(request: FileReadRequest):
-    """Read file: disk first, fallback to MongoDB if not found on disk. Images return static URL."""
+    """Read file from disk. Images return static URL."""
     data = await read_file(request.target_file)
     return success(data=data)
 
@@ -95,7 +95,7 @@ async def rename_project_folder_route(request: ProjectFolderRenameRequest):
 
 @router.post("/write-file", operation_id="write_file")
 async def write_file_route(request: FileWriteRequest):
-    """Disk + MongoDB dual write. MongoDB upsert, best-effort."""
+    """Write file to disk."""
     data = await write_file(request.target_file, request.content, request.is_base64)
     return success(data=data)
 

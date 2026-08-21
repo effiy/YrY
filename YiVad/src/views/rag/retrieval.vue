@@ -129,6 +129,16 @@
       </el-table>
     </el-card>
 
+    <!-- Charts Row -->
+    <el-row :gutter="12" v-if="sources.length">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+        <ScoreDistributionChart :sources="sources" />
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+        <SourceCategoryChart :sources="sources" />
+      </el-col>
+    </el-row>
+
     <!-- Empty State -->
     <el-card v-if="!sources.length && !querying && searched" shadow="hover" class="rag-section">
       <el-empty description="No chunks matched your query. Try broader terms or a different scope." :image-size="80">
@@ -170,8 +180,10 @@ import {
   scoreLabel, bestScore, avgScore,
   stripSourcePrefix, categoryTagType, truncateText
 } from "@/views/rag/constants";
-import ScoreBar from "./components/ScoreBar.vue";
+import ScoreBar from "@/components/ScoreBar/index.vue";
 import SourceDetail from "./components/SourceDetail.vue";
+import ScoreDistributionChart from "./components/ScoreDistributionChart.vue";
+import SourceCategoryChart from "./components/SourceCategoryChart.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const ragStore = useRagStore();

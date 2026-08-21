@@ -103,17 +103,6 @@
         :disabled="sending"
         resize="none"
       />
-      <div class="input-actions">
-        <span class="rag-text-muted rag-chat-hint"><kbd>/</kbd> focus · <kbd>Enter</kbd> send · <kbd>Shift</kbd>+<kbd>Enter</kbd> newline</span>
-        <div class="rag-chat-actions">
-          <el-button v-if="sending" type="danger" plain size="small" @click="stopChat">
-            <el-icon><Close /></el-icon> Stop
-          </el-button>
-          <el-button type="primary" size="small" :loading="sending" @click="sendChat" :disabled="!chatInput.trim() || sending">
-            <el-icon><Promotion /></el-icon> Send
-          </el-button>
-        </div>
-      </div>
     </div>
 
     <!-- Source Detail Dialog -->
@@ -127,7 +116,7 @@
 import { ref, nextTick, onMounted, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 import type { InputInstance } from "element-plus";
-import { Document, ArrowDown, Close, Promotion, Loading, CopyDocument, RefreshRight, ChatDotRound } from "@element-plus/icons-vue";
+import { Document, ArrowDown, Loading, CopyDocument, RefreshRight, ChatDotRound } from "@element-plus/icons-vue";
 import { streamRagChat } from "@/api/modules/ragService";
 import {
   renderAnswer, CHAT_EXAMPLE_PROMPTS
@@ -157,18 +146,24 @@ let abortFn: (() => void) | null = null;
 function focusChatInput() {
   chatInputRef.value?.focus?.();
 }
-function slashKeyHandler(e: KeyboardEvent) {
-  if (e.key !== "/") return;
-  const target = e.target as HTMLElement | null;
-  const tag = target?.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
-  e.preventDefault();
-  focusChatInput();
+function globalKeyHandler(e: KeyboardEvent) {
+  if (e.key === "/") {
+    const target = e.target as HTMLElement | null;
+    const tag = target?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
+    e.preventDefault();
+    focusChatInput();
+    return;
+  }
+  if (e.key === "Escape") {
+    if (sending.value) { stopChat(); return; }
+    if (chatInput.value) { chatInput.value = ""; return; }
+  }
 }
 
 onMounted(() => {
   focusChatInput();
-  window.addEventListener("keydown", slashKeyHandler);
+  window.addEventListener("keydown", globalKeyHandler);
 });
 
 const sourceDialogVisible = ref(false);
@@ -350,7 +345,7 @@ function scrollToBottom() {
 
 onBeforeUnmount(() => {
   stopChat();
-  window.removeEventListener("keydown", slashKeyHandler);
+  window.removeEventListener("keydown", globalKeyHandler);
 });
 </script>
 
@@ -482,13 +477,6 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 4px;
   margin-top: 6px;
-}
-
-.input-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
 }
 .rag-chat-hint {
   font-size: 11px;

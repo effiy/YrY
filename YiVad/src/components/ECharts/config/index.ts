@@ -11,7 +11,8 @@ import {
   GeoComponent,
   ToolboxComponent,
   DataZoomComponent,
-  VisualMapComponent
+  VisualMapComponent,
+  RadarComponent
 } from "echarts/components";
 import { LabelLayout, UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
@@ -65,6 +66,7 @@ echarts.use([
   ToolboxComponent,
   DataZoomComponent,
   VisualMapComponent,
+  RadarComponent,
   BarChart,
   LineChart,
   LinesChart,

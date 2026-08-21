@@ -356,10 +356,10 @@
     <!-- Filter Pills Bar -->
     <FilterPills
       :pills="activeFilterPills"
-      :hasActiveFilter="hasActiveFilter"
-      :canUndo="filterHistory.length > 0"
+      :has-active-filter="hasActiveFilter"
+      :can-undo="filterHistory.length > 0"
       @remove="(key: string) => removeFilter(key)"
-      @clearAll="clearAllFilters"
+      @clear-all="clearAllFilters"
       @undo="undoLastFilter"
     />
 
@@ -389,27 +389,30 @@
           <el-button text size="small" @click="showReviewCompliance = !showReviewCompliance" :type="showReviewCompliance ? 'primary' : ''">
             Review Compliance
           </el-button>
+          <el-button text size="small" @click="showKnowledgeGraph = !showKnowledgeGraph" :type="showKnowledgeGraph ? 'primary' : ''">
+            Knowledge Graph
+          </el-button>
         </div>
       </div>
 
       <StaleRiskTimeline
         v-if="showStaleRisk"
         :buckets="staleRiskBuckets"
-        @filterFiles="(files: any) => { clearAllFilters(); files.forEach((f: any) => setFilter('stale', 'true')) }"
+        @filter-files="(files: any) => { clearAllFilters(); files.forEach((f: any) => setFilter('stale', 'true')) }"
       />
 
       <CategoryComparison
         v-if="showCategoryComparison"
         :data="categoryComparisonData"
-        :activeCategory="activeFilter.category || ''"
-        @selectCategory="(name: string) => setFilter('category', name)"
+        :active-category="activeFilter.category || ''"
+        @select-category="(name: string) => setFilter('category', name)"
       />
 
       <el-row :gutter="12" v-if="showCrossHeatmap">
         <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
           <CrossHeatmap
             :data="crossStatusLifecycle"
-            @cellClick="(status: string, lifecycle: string) => { setFilter('status', status); setFilter('lifecycle', lifecycle) }"
+            @cell-click="(status: string, lifecycle: string) => { setFilter('status', status); setFilter('lifecycle', lifecycle) }"
           />
         </el-col>
       </el-row>
@@ -417,7 +420,7 @@
       <CoverageGaps
         v-if="showCoverageGaps"
         :data="coverageGapData"
-        @drillGap="(cat: string, mod: string, field: string) => { setFilter('category', cat); setFilter('module', mod); setQualityFilter(field) }"
+        @drill-gap="(cat: string, mod: string, field: string) => { setFilter('category', cat); setFilter('module', mod); setQualityFilter(field) }"
       />
 
       <el-row :gutter="12" v-if="showTagCloud || showRoleCloud">
@@ -427,7 +430,7 @@
             title="Top Tags"
             :tags="tagCounts"
             :pairs="tagPairs"
-            @selectTag="(name: string) => setFilter('tag', name)"
+            @select-tag="(name: string) => setFilter('tag', name)"
           />
         </el-col>
         <el-col class="mb12" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
@@ -436,8 +439,8 @@
             title="Top Roles"
             :tags="roleCounts"
             :pairs="rolePairs"
-            :colorFn="(name: string) => '#fc8452'"
-            @selectTag="(name: string) => setFilter('role', name)"
+            :color-fn="(name: string) => '#fc8452'"
+            @select-tag="(name: string) => setFilter('role', name)"
           />
         </el-col>
       </el-row>
@@ -445,7 +448,13 @@
       <ReviewCompliance
         v-if="showReviewCompliance"
         :data="reviewComplianceData"
-        @selectCycle="(cycle: string) => setFilter('review_cycle', cycle)"
+        @select-cycle="(cycle: string) => setFilter('review_cycle', cycle)"
+      />
+
+      <KnowledgeGraphChart
+        v-if="showKnowledgeGraph"
+        :files="knowledgeData?.files || []"
+        @select-node="(path: string) => openFileDialog(path)"
       />
     </div>
 
@@ -456,11 +465,11 @@
           <!-- Breadcrumb Navigation -->
           <DrillBreadcrumb
             :segments="filterBreadcrumb"
-            :hasActiveFilter="hasActiveFilter"
-            :activeDimensions="activeFilterPills.filter((p: any) => !['category', 'module', 'sub_module'].includes(p.key))"
-            @clearAll="clearAllFilters"
-            @backToCategory="backToCategory"
-            @removeFilter="(key: string) => removeFilter(key)"
+            :has-active-filter="hasActiveFilter"
+            :active-dimensions="activeFilterPills.filter((p: any) => !['category', 'module', 'sub_module'].includes(p.key))"
+            @clear-all="clearAllFilters"
+            @back-to-category="backToCategory"
+            @remove-filter="(key: string) => removeFilter(key)"
           />
           <!-- Panel Header -->
           <div class="panel-header">
@@ -526,8 +535,8 @@
             <CategoryTree
               v-if="showTreeView"
               :data="categoryTreeData"
-              :activeCategory="activeFilter.category || ''"
-              @selectNode="(cat: string, mod?: string, sub?: string) => selectTreeNode(cat, mod, sub)"
+              :active-category="activeFilter.category || ''"
+              @select-node="(cat: string, mod?: string, sub?: string) => selectTreeNode(cat, mod, sub)"
             />
             <el-table
               v-if="!showTreeView"
@@ -1198,7 +1207,7 @@
 import { ref } from "vue";
 import { Refresh, Search } from "@element-plus/icons-vue";
 import type { KnowledgeFileSummary } from "@/api/interface/yiweb";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useKnowledgeBase } from "./composables/useKnowledgeBase";
@@ -1211,6 +1220,7 @@ import CoverageGaps from "./components/CoverageGaps.vue";
 import CategoryTree from "./components/CategoryTree.vue";
 import TagCloud from "./components/TagCloud.vue";
 import ReviewCompliance from "./components/ReviewCompliance.vue";
+import KnowledgeGraphChart from "./components/KnowledgeGraphChart.vue";
 
 const { renderWithHtml } = useMarkdown();
 const kb = useKnowledgeBase();
@@ -1243,7 +1253,7 @@ const {
   recentlyViewed, drillDownRef, detailPanelRef,
   chartPulseKey, drillHighlight, pulsingCard,
   showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
-  showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showAttentionDetail,
+  showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showKnowledgeGraph, showAttentionDetail,
   filterHistory, viewAttentionFiles,
   // cross-filter
   activeFilterPills, filterBreadcrumb, filteredDimensions, isDimensionFiltered,

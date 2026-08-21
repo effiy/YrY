@@ -411,8 +411,6 @@ async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
     update_data.pop('createdTime', None)
     if collection_name == 'sessions':
         update_data.pop('pageContent', None)
-        if 'messages' in update_data and update_data['messages'] == []:
-            update_data.pop('messages', None)
 
     update_data['updatedTime'] = get_current_time()
 
@@ -471,6 +469,47 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
         "modified_count": result.modified_count,
         "upserted_id": str(result.upserted_id) if result.upserted_id else None
     }
+
+async def count_documents(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Count documents in a collection, optionally grouped by a field.
+
+    Args:
+        params: { cname|collection_name, filter?: dict, groupBy?: str }
+
+    Returns:
+        If groupBy: { groups: [{value, count}], total: int }
+        Otherwise:   { count: int }
+    """
+    collection_name = params.get('collection_name') or params.get('cname')
+    if not collection_name:
+        raise ValueError("Collection name (collection_name/cname) is required")
+
+    query_params = params.copy()
+    query_params.pop('cname', None)
+    query_params.pop('collection_name', None)
+
+    filter_param = query_params.pop('filter', None)
+    if filter_param and isinstance(filter_param, dict):
+        query_params.update(filter_param)
+
+    group_by = query_params.pop('groupBy', None)
+
+    await db.initialize()
+    collection = db.db[collection_name]
+    filter_dict = _build_filter(query_params)
+
+    if group_by:
+        pipeline = [
+            {'$match': filter_dict},
+            {'$group': {'_id': f'${group_by}', 'count': {'$sum': 1}}}
+        ]
+        cursor = collection.aggregate(pipeline)
+        groups = [{'value': doc['_id'], 'count': doc['count']} async for doc in cursor]
+        return {'groups': groups, 'total': sum(g['count'] for g in groups)}
+    else:
+        total = await collection.count_documents(filter_dict)
+        return {'count': total}
+
 
 async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')

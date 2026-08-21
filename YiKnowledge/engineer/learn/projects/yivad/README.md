@@ -320,11 +320,41 @@ YiVad
 │  ├─ utils               # Utility functions (color, menu tree ops, localStorage)
 │  ├─ views               # All project pages (organized by feature domain)
 │  │  ├─ about            #   About family pages (yivad, yiai, yipet subpages)
-│  │  ├─ aiChat           #   AI chat page (ported from YiWeb sessionChat; includes knowledge/rag/story/chatpanel)
-│  │  ├─ code-review      #   Code review sub-pages (i18n-a11y, error-handling, explain, security, dead-code, observability-gap, tests, bugs, style, access-review)
-│  │  ├─ story            #   Story Board list + detail drawer
-│  │  ├─ assembly, auth, dashboard, dataScreen, echarts, form,
-│  │  │  home, link, login, menu, proTable, story, system
+│  │  ├─ activity         #   Activity feed
+│  │  ├─ aiChat           #   AI chat page (agent mode, SSE streaming, tool confirmation)
+│  │  ├─ analytics        #   Pipeline analytics dashboard
+│  │  ├─ apiToken         #   API token management
+│  │  ├─ bug              #   Bug tracking (list + detail)
+│  │  ├─ customStatus     #   Custom issue status definitions
+│  │  ├─ customView       #   Saved issue filter views
+│  │  ├─ cycle            #   Sprint cycles (list + detail + planning panel)
+│  │  ├─ dashboard        #   Dashboard (knowledgeBase, rssContent, aiAnalytics)
+│  │  ├─ favorites        #   User favorites
+│  │  ├─ gantt            #   Gantt chart timeline
+│  │  ├─ home             #   Home page
+│  │  ├─ import           #   CSV/JSON issue import
+│  │  ├─ inbox            #   Notification inbox
+│  │  ├─ integration      #   Webhook integrations
+│  │  ├─ invite           #   Member invitations
+│  │  ├─ issue            #   Issue tracking (list + detail)
+│  │  ├─ kanban           #   Kanban board
+│  │  ├─ knowledge        #   Knowledge base (pipeline, roles, skills, goals, metrics)
+│  │  ├─ label            #   Label management
+│  │  ├─ login            #   Login page
+│  │  ├─ module           #   Module management (list + detail)
+│  │  ├─ page             #   Documentation pages
+│  │  ├─ project          #   Project management (list + detail)
+│  │  ├─ projectSettings  #   Per-project settings
+│  │  ├─ rag              #   RAG system (retrieval, chat, compare, history)
+│  │  ├─ release          #   Release management (list + detail)
+│  │  ├─ roadmap          #   Roadmap timeline
+│  │  ├─ search           #   Full-text search
+│  │  ├─ settings         #   Workspace settings
+│  │  ├─ sprintPlanning   #   Sprint planning board
+│  │  ├─ system           #   System management (menu, account, role, dept, dict, logs, tasks)
+│  │  ├─ timeReport       #   Time tracking reports
+│  │  ├─ trash            #   Trash (soft-deleted items)
+│  │  └─ welcome          #   Welcome page
 │  ├─ App.vue             # Root component
 │  ├─ main.ts             # Entry file
 │  └─ rsbuild-env.d.ts    # TypeScript declaration for Rsbuild client types
@@ -446,6 +476,7 @@ YiVad is a domain model for admin management systems, built around three core co
 - [YiVad architecture](../architecture.md) — tech stack, layer boundaries, key data flow, and degradation strategy
 - [YiVad development standards](../dev-standards.md) — coding conventions, naming, ProTable, SSE, and RPC field contract
 - [YiVad functional modules](../functional-modules.md) — 20 view domains, 18 API modules, 11 stores inventory
+- [YiVad pipeline closed-loop](../pipeline-closed-loop.md) — requirements-to-deployment page flow, data models, and stage mapping
 
 ## Recent Changes
 

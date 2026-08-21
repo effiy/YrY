@@ -114,9 +114,9 @@ export const rolesData: Record<string, {
 
 export const goalsData: Record<string, GoalItem[]> = {
   executiver: [
-    { id: "exec-001", icon: "📊", title: "市场情报与竞争洞察", status: "active", description: "追踪 LLM/SaaS 竞品格局、市场趋势与第三方行业报告（Gartner/McKinsey/a16z/CAICT/IDC），让战略决策基于市场现实。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "竞品分析覆盖 LLM 供应商 / SaaS 头部 / 区域竞对", progress: 100, file: "executiver/industry/competitors/README.md" }, { text: "第三方行业报告摘要（Gartner/McKinsey/a16z/CAICT/IDC）落知识库", progress: 67, file: "executiver/industry/reports/README.md" }, { text: "半年度市场趋势复盘 + 新兴赛道追踪", progress: 60, file: "executiver/industry/INDEX.md" }, { text: "竞品与行业信息可被 RAG 检索，过时条目标记 deprecated", progress: 70, file: "executiver/industry/README.md" }] },
-    { id: "exec-002", icon: "🧭", title: "经营战略与组织路线", status: "active", description: "用战略框架（Porter/Blue Ocean/VRIO/SWOT/BMC/价值主张）定义竞争定位，产出年度战略规划、季度经营复盘、组织 OKR 与编制预算规划。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "战略框架与商业模型（BMC/价值主张/第二曲线）落地到产品战略实例", progress: 100, file: "executiver/strategy/README.md" }, { text: "年度战略规划 + 季度经营复盘（QBR）产出", progress: 60, file: "executiver/roadmap/README.md" }, { text: "组织级 OKR 跟踪 + 编制/预算规划落地", progress: 75, file: "executiver/roadmap/README.md" }, { text: "合规与数据留存策略（regulatory change / retention review）有据可查", progress: 80, file: "executiver/strategy/README.md" }] },
-    { id: "exec-003", icon: "📚", title: "经营学习与阅读", status: "active", description: "维护月度精选阅读清单与读书笔记，沉淀可执行洞察（如 High Output Management），并蒸馏到对应语义知识叶。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "月度阅读清单滚动更新", progress: 70, file: "executiver/reading-list/README.md" }, { text: "读书笔记含可执行 takeaway（High Output Management）", progress: 100, file: "executiver/reading-list/README.md" }, { text: "有价值观点蒸馏到方法论/技术语义叶", progress: 50, file: "executiver/reading-list/README.md" }] },
+    { id: "exec-001", icon: "📊", title: "市场情报与竞争洞察", status: "active", description: "追踪 LLM/SaaS 竞品格局、市场趋势与第三方行业报告（Gartner/McKinsey/a16z/CAICT/IDC），让战略决策基于市场现实。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "竞品分析覆盖 LLM 供应商 / SaaS 头部 / 区域竞对", progress: 100, file: "okr/2026-Q3/goals/executiver/kr-exec-001-competitor-coverage.md" }, { text: "第三方行业报告摘要（Gartner/McKinsey/a16z/CAICT/IDC）落知识库", progress: 67, file: "okr/2026-Q3/goals/executiver/kr-exec-001-report-summaries.md" }, { text: "半年度市场趋势复盘 + 新兴赛道追踪", progress: 60, file: "okr/2026-Q3/goals/executiver/kr-exec-001-market-trends.md" }, { text: "竞品与行业信息可被 RAG 检索，过时条目标记 deprecated", progress: 70, file: "okr/2026-Q3/goals/executiver/kr-exec-001-rag-retrievability.md" }] },
+    { id: "exec-002", icon: "🧭", title: "经营战略与组织路线", status: "active", description: "用战略框架（Porter/Blue Ocean/VRIO/SWOT/BMC/价值主张）定义竞争定位，产出年度战略规划、季度经营复盘、组织 OKR 与编制预算规划。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "战略框架与商业模型（BMC/价值主张/第二曲线）落地到产品战略实例", progress: 100, file: "okr/2026-Q3/goals/executiver/kr-exec-002-strategy-frameworks.md" }, { text: "年度战略规划 + 季度经营复盘（QBR）产出", progress: 60, file: "okr/2026-Q3/goals/executiver/kr-exec-002-annual-qbr.md" }, { text: "组织级 OKR 跟踪 + 编制/预算规划落地", progress: 75, file: "okr/2026-Q3/goals/executiver/kr-exec-002-okr-budget.md" }, { text: "合规与数据留存策略（regulatory change / retention review）有据可查", progress: 80, file: "okr/2026-Q3/goals/executiver/kr-exec-002-compliance.md" }] },
+    { id: "exec-003", icon: "📚", title: "经营学习与阅读", status: "active", description: "维护月度精选阅读清单与读书笔记，沉淀可执行洞察（如 High Output Management），并蒸馏到对应语义知识叶。", period: "2026 Q3", owner: "CEO", project: "YiAi", keyResults: [{ text: "月度阅读清单滚动更新", progress: 70, file: "okr/2026-Q3/goals/executiver/kr-exec-003-reading-list.md" }, { text: "读书笔记含可执行 takeaway（High Output Management）", progress: 100, file: "okr/2026-Q3/goals/executiver/kr-exec-003-reading-notes.md" }, { text: "有价值观点蒸馏到方法论/技术语义叶", progress: 50, file: "okr/2026-Q3/goals/executiver/kr-exec-003-knowledge-distillation.md" }] },
   ],
   producter: [
     { id: "prod-001", icon: "📋", title: "需求评审可闭环", status: "active", description: "作为需求评审拥有者，为每条闭环需求产出 PRD（背景/目标/范围/非目标/干系人）、可被测试门禁直接判定的验收标准与 WSJF 优先级（价值×紧迫÷难度），评审记录落知识库，需求→任务拆解模板可复用。", period: "2026 Q3", owner: "PM YiAi", project: "YiAi", keyResults: [{ text: "每条需求产出 PRD（背景/目标/范围/非目标/干系人）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" }, { text: "验收标准可被测试门禁直接判定", progress: 100, file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" }, { text: "WSJF 优先级（价值×紧迫÷难度）打分排序", progress: 100, file: "okr/2026-Q3/2026-08/p0-producter-产出需求评审记录-prd-验收标准-wsjf.md" }, { text: "需求评审记录落知识库（01-requirement-review）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md" }, { text: "需求→任务拆解模板可复用", progress: 100, file: "okr/2026-Q3/loop/_templates/01-requirement-review.md" }] },
@@ -125,7 +125,7 @@ export const goalsData: Record<string, GoalItem[]> = {
     { id: "lead-001", icon: "🧭", title: "技术评审可闭环", status: "active", description: "作为技术评审拥有者，为每条需求产出 ADR（Context/Decision/Consequences）、数据模型与风险对策，保证决策可回溯到需求，评审记录落知识库（02-technical-review），ADR 模板可复用。", period: "2026 Q3", owner: "Tech Lead", project: "YiAi", keyResults: [{ text: "每条需求产出 ADR（Context/Decision/Consequences）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "数据模型与风险对策随技术评审记录产出", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "架构决策可回溯到需求", progress: 100, file: "okr/2026-Q3/2026-08/p0-leader-产出技术评审记录-adr-记录载体选型.md" }, { text: "技术评审记录落知识库（02-technical-review）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/02-technical-review.md" }, { text: "ADR 模板可复用（Context/Decision/Consequences）", progress: 100, file: "okr/2026-Q3/loop/_templates/02-technical-review.md" }] },
   ],
   engineer: [
-    { id: "eng-001", icon: "⚡", title: "代码编写与调试自闭环", status: "active", description: "作为代码编写与调试拥有者，把需求实现为可构建代码（0 人工编码介入），改动文件 0 新增类型错误，调试过程（问题→修复→验证）留痕落知识库（03-build-debug），构建门禁通过。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "需求实现为可构建代码（0 人工编码介入）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }, { text: "改动文件 0 新增类型错误", progress: 100, file: "okr/2026-Q3/2026-08/p1-engineer-维护-0-类型错误基线-沉淀构建调试模板复用.md" }, { text: "调试过程（问题→修复→验证）落知识库（03-build-debug）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }, { text: "构建门禁（vue-tsc + build）通过", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/03-build-debug.md" }] },
+    { id: "eng-001", icon: "⚡", title: "代码编写与调试自闭环", status: "active", description: "作为代码编写与调试拥有者，把需求实现为可构建代码（0 人工编码介入），改动文件 0 新增类型错误，调试过程（问题→修复→验证）留痕落知识库（04-build-debug），构建门禁通过。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "需求实现为可构建代码（0 人工编码介入）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/04-build-debug.md" }, { text: "改动文件 0 新增类型错误", progress: 100, file: "okr/2026-Q3/2026-08/p1-engineer-维护-0-类型错误基线-沉淀构建调试模板复用.md" }, { text: "调试过程（问题→修复→验证）落知识库（04-build-debug）", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/04-build-debug.md" }, { text: "构建门禁（vue-tsc + build）通过", progress: 100, file: "okr/2026-Q3/loop/loop-001-okr-self-closed-loop/04-build-debug.md" }] },
     { id: "eng-005", icon: "🧹", title: "构建健康度清零", status: "active", description: "清零 23 个 vue-tsc 既有类型错误，让 YiVad 恢复可构建可部署。", period: "2026 Q3", owner: "Engineering Lead", project: "YiVad", keyResults: [{ text: "清零 23 个 vue-tsc 既有类型错误", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "knowledgeBase dashboard 17 个错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "rag history/retrieval 4 个错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }, { text: "proTable + menuMange 2 个类型错误修复", progress: 100, file: "okr/2026-Q3/2026-08/p0-engineer-清零-23-个-vue-tsc-既有类型错误.md" }] },
   ],
   srer: [
@@ -305,7 +305,7 @@ export const roleChecklistMap: Record<string, ChecklistItem[]> = {
     { id: "en2", text: "processRecord.vue + 路由 + 菜单", done: true },
     { id: "en3", text: "改动文件 0 新增类型错误", done: true },
     { id: "en4", text: "清零 23 个既有类型错误", done: true },
-    { id: "en5", text: "调试记录落知识库（03-build-debug）", done: true }
+    { id: "en5", text: "调试记录落知识库（04-build-debug）", done: true }
   ],
   srer: [
     { id: "sr1", text: "typecheck/build 门禁验证", done: true },
@@ -337,19 +337,19 @@ export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
   executiver: {
     status: "On Track", statusType: "success",
     done: [
-      { text: "更新 LLM 供应商竞品格局", file: "executiver/industry/competitors/README.md" },
-      { text: "摘要 Gartner/McKinsey 行业报告", file: "executiver/industry/reports/README.md" },
-      { text: "落地 Business Model Canvas 战略实例", file: "executiver/strategy/README.md" }
+      { text: "更新 LLM 供应商竞品格局", file: "okr/2026-Q3/goals/executiver/kr-exec-001-competitor-coverage.md" },
+      { text: "摘要 Gartner/McKinsey 行业报告", file: "okr/2026-Q3/goals/executiver/kr-exec-001-report-summaries.md" },
+      { text: "落地 Business Model Canvas 战略实例", file: "okr/2026-Q3/goals/executiver/kr-exec-002-strategy-frameworks.md" }
     ],
     blockers: [],
     nextWeek: [
-      { text: "跑季度经营复盘（QBR）", file: "executiver/roadmap/README.md" },
-      { text: "更新月度阅读清单与读书笔记", file: "executiver/reading-list/README.md" }
+      { text: "跑季度经营复盘（QBR）", file: "okr/2026-Q3/goals/executiver/kr-exec-002-annual-qbr.md" },
+      { text: "更新月度阅读清单与读书笔记", file: "okr/2026-Q3/goals/executiver/kr-exec-003-reading-list.md" }
     ],
     decisions: [
-      { text: "定位：Business Strategy 跨管线上下文", file: "executiver/strategy/README.md" },
-      { text: "三芯片：market-intel / org-strategy / reading-list", file: "executiver/industry/INDEX.md" },
-      { text: "路线：战略框架 → 合成 → 规划 → 执行", file: "executiver/roadmap/README.md" }
+      { text: "定位：Business Strategy 跨管线上下文", file: "okr/2026-Q3/goals/executiver/kr-exec-002-strategy-frameworks.md" },
+      { text: "三芯片：market-intel / org-strategy / reading-list", file: "okr/2026-Q3/goals/executiver/kr-exec-001-competitor-coverage.md" },
+      { text: "路线：战略框架 → 合成 → 规划 → 执行", file: "okr/2026-Q3/goals/executiver/kr-exec-002-okr-budget.md" }
     ]
   },
   producter: {

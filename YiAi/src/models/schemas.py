@@ -3,7 +3,16 @@
 - Organized by functional module: Module, RSS, etc.
 """
 from typing import Optional, Dict, Any, Union, List
+from enum import Enum
 from pydantic import BaseModel, Field
+
+
+class ChatMode(str, Enum):
+    """RAG chat engine mode."""
+    CONDENSE_PLUS_CONTEXT = "condense_plus_context"
+    CONDENSE_QUESTION = "condense_question"
+    CONTEXT = "context"
+    SIMPLE = "simple"
 
 # --- Module Schemas ---
 class ExecuteRequest(BaseModel):
@@ -204,19 +213,21 @@ class RagQueryRequest(BaseModel):
     num_queries: Optional[int] = Field(default=None, description="QueryFusionRetriever LLM query-variant count (1 = no expansion). Only honored when hybrid active + no metadata filter.")
     category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
     tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
+    hyde: Optional[bool] = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
 
 class RagChatRequest(BaseModel):
     """SSE-streaming RAG chat over the knowledge index."""
-    messages: List[Dict[str, Any]] = Field(..., description="[{role:'user'|'assistant'|'system', content}] — last must be user")
+    messages: List[Dict[str, Any]] = Field(..., min_length=1, description="[{role:'user'|'assistant'|'system', content}] — last must be user")
     scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
     top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
     hybrid: Optional[bool] = Field(default=None, description="Override hybrid retrieval for this turn only")
     rerank: Optional[bool] = Field(default=None, description="Override LLMRerank for this turn only")
     citations: Optional[bool] = Field(default=None, description="Override inline [Source N] prefix for this turn only")
     num_queries: Optional[int] = Field(default=None, description="Override QueryFusionRetriever LLM query-variant count for this turn only")
-    chat_mode: Optional[str] = Field(default=None, description="llama_index chat engine: condense_plus_context (default) | condense_question | context | simple")
+    chat_mode: ChatMode = Field(default=ChatMode.CONDENSE_PLUS_CONTEXT, description="Chat engine mode")
     category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
     tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
+    hyde: Optional[bool] = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
 
 class RagFileChatRequest(BaseModel):
     """SSE-streaming RAG chat grounded in a single file."""

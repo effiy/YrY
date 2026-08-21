@@ -65,6 +65,7 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
         if (dbResult.files?.length) {
           const grouped = new Map<string, KnowledgeFileEntry[]>();
           for (const f of dbResult.files) {
+            if (f.meta?.type === "rss") continue;
             const cat = f.category || "__root__";
             if (!grouped.has(cat)) grouped.set(cat, []);
             grouped.get(cat)!.push(f);
@@ -77,7 +78,7 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
 
       if (!cats.length) {
         const scan = await scanKnowledge();
-        cats = scan.categories ?? [];
+        cats = (scan.categories ?? []).map(c => ({ ...c, files: c.files.filter(f => f.meta?.type !== "rss") }));
       }
 
       const storyList = await listKnowledgeStories().catch(() => ({ stories: [] as KnowledgeStoryEntry[] }));

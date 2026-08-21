@@ -12,7 +12,6 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["assets/bootstrap.js"],
-    "css": [],
     "run_at": "document_end"
   }],
   "background": {

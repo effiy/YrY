@@ -37,6 +37,7 @@ const _injectedColor: number = parseInt(
   (_cs && (_cs as HTMLScriptElement).dataset?.color) || '0',
   10,
 );
+const _injectedVisible: boolean = (_cs && (_cs as HTMLScriptElement).dataset?.visible) !== 'false';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Phase 1: Content Script (ISOLATED world) — inject self into MAIN world
@@ -53,5 +54,5 @@ if (_isContentScript && !_injectedBase) {
 // Only run in MAIN world (no chrome.runtime.getURL) or when injected with data-base.
 if (!_isContentScript || _injectedBase) {
   const BASE = _injectedBase || 'cdn/';
-  createPetOverlay(window, BASE, _injectedColor, _injectedRole);
+  createPetOverlay(window, BASE, _injectedColor, _injectedRole, _injectedVisible);
 }

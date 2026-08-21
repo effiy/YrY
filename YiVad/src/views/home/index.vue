@@ -9,12 +9,6 @@
         </div>
       </section>
       <div class="ho__header-actions">
-        <el-button size="small" :icon="Reading" @click="router.push('/knowledge/pipeline')">
-          {{ t("home.knowledge") }}
-        </el-button>
-        <el-button size="small" :icon="Aim" @click="router.push('/executiver/okr')">
-          {{ t("home.okr") }}
-        </el-button>
         <el-button size="small" type="primary" :icon="ChatDotRound" @click="router.push('/aiChat')">
           {{ t("home.aiChat") }}
         </el-button>

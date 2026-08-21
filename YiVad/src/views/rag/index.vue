@@ -130,11 +130,11 @@ import { useRagStore } from "@/stores/modules/rag";
 import {
   bestScore as scoreBest, formatTimestamp, formatRelativeTime, INDEX_INFO_DEFAULTS
 } from "@/views/rag/constants";
-import ScoreBar from "./components/ScoreBar.vue";
+import ScoreBar from "@/components/ScoreBar/index.vue";
 import IndexStatusCard from "./components/IndexStatusCard.vue";
 import QuickQueryCard from "./components/QuickQueryCard.vue";
 import RetrievalConfigCard from "./components/RetrievalConfigCard.vue";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import type { RagStatusResponse } from "@/api/interface/rag";
 
 const ragStore = useRagStore();

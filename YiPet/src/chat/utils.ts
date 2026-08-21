@@ -104,6 +104,39 @@ export function escapeHtml(s: string): string {
   return div.innerHTML;
 }
 
+// ── Inline citation chips ──────────────────────────────────────────────────
+// Replace `[N]` tokens emitted by the LLM into clickable superscript chips
+// that map to the Nth source. Skips `<pre>` and `<code>` segments so citations
+// inside code samples are not munged.
+
+/** Replace `[N]` tokens in rendered HTML with `<sup class="cite-chip">`
+ *  elements. Returns input unchanged when sourceCount is 0. */
+export function injectCitations(html: string, sourceCount: number): string {
+  if (!sourceCount || !html) return html;
+  const codeRe = /<pre\b[^>]*>[\s\S]*?<\/pre>|<code\b[^>]*>[\s\S]*?<\/code>/gi;
+  const parts: string[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = codeRe.exec(html)) !== null) {
+    parts.push(html.slice(last, m.index));
+    parts.push(m[0]);
+    last = m.index + m[0].length;
+  }
+  parts.push(html.slice(last));
+  const citeRe = /\[(\d+)\]/g;
+  return parts
+    .map((seg, i) =>
+      i % 2 === 0
+        ? seg.replace(citeRe, (s, n) => {
+            const idx = parseInt(n, 10);
+            if (idx < 1 || idx > sourceCount) return s;
+            return `<sup class="cite-chip" data-cite-idx="${idx}">[${idx}]</sup>`;
+          })
+        : seg
+    )
+    .join('');
+}
+
 /** Attach a per-code-block "Copy" button to every `<pre>` in `container`
  *  (mermaid placeholders excluded). Idempotent — blocks already decorated are
  *  skipped. The button copies the code text and flashes "Copied". */

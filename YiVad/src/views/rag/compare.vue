@@ -39,6 +39,16 @@
       </div>
     </el-card>
 
+    <!-- Comparison Charts -->
+    <ComparisonMetricsChart
+      v-if="compareRagAnswer && comparePlainAnswer"
+      :rag-length="compareRagAnswer.length"
+      :plain-length="comparePlainAnswer.length"
+      :rag-sources="compareRagSources"
+      :rag-error="compareRagError"
+      :plain-error="comparePlainError"
+    />
+
     <!-- Side-by-Side Results -->
     <div v-if="compareRagAnswer || comparePlainAnswer || compareRunning" class="rag-section compare-results">
       <!-- RAG Column -->
@@ -152,6 +162,7 @@ import { streamRagChat } from "@/api/modules/ragService";
 import { streamChat } from "@/api/modules/chatService";
 import { scoreLabel, scoreColor, renderAnswer } from "@/views/rag/constants";
 import SourceChip from "./components/SourceChip.vue";
+import ComparisonMetricsChart from "./components/ComparisonMetricsChart.vue";
 import type { RagSource } from "@/api/interface/rag";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 

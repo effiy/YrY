@@ -31,7 +31,22 @@ export interface PetDefaults {
     message: { maxLength: number; thinkingDelay: { min: number; max: number } };
   };
   animation: {
-    pet: { floatDuration: number; blinkDuration: number; wagDuration: number };
+    pet: {
+      floatDuration: number;
+      blinkDuration: number;
+      wagDuration: number;
+      glowPulseDuration: number;
+      ringRotateDuration: number;
+      idleMinInterval: number;
+      idleMaxInterval: number;
+      idleActionCooldown: number;
+      thoughtBubbleMinInterval: number;
+      thoughtBubbleMaxInterval: number;
+      thoughtBubbleShowDuration: number;
+      sparkleCount: number;
+      sparkleDuration: number;
+      hoverScale: number;
+    };
     chatWindow: { transitionDuration: number; scaleEffect: number };
   };
   storage: {
@@ -105,7 +120,22 @@ export const PET_DEFAULTS: PetDefaults = {
   },
 
   animation: {
-    pet: { floatDuration: 3000, blinkDuration: 4000, wagDuration: 2000 },
+    pet: {
+      floatDuration: 3000,
+      blinkDuration: 4000,
+      wagDuration: 2000,
+      glowPulseDuration: 3000,
+      ringRotateDuration: 8000,
+      idleMinInterval: 4000,
+      idleMaxInterval: 9000,
+      idleActionCooldown: 500,
+      thoughtBubbleMinInterval: 8000,
+      thoughtBubbleMaxInterval: 20000,
+      thoughtBubbleShowDuration: 2500,
+      sparkleCount: 6,
+      sparkleDuration: 600,
+      hoverScale: 1.08,
+    },
     chatWindow: { transitionDuration: 300, scaleEffect: 1.02 },
   },
 
@@ -221,6 +251,10 @@ export const PET_DEFAULTS: PetDefaults = {
         '⚡ Almost there...',
         '🌈 Nearly ready...',
         '🚀 Coming right up...',
+      ],
+      IDLE_BUBBLES: [
+        '💡', '✨', '🌟', '💭', '🎯', '🔍', '💕', '🎨', '🌈', '⚡',
+        '🚀', '🎵', '❤️', '🔥', '🌊', '🎪', '🌺', '🍀', '💎', '🎭',
       ],
     },
     DEFAULTS: { PET_ROLE: 'Teacher', VERSION: '1.2.0' },

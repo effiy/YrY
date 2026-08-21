@@ -136,7 +136,7 @@ import { ArrowLeft, Search, Refresh, Delete, Download } from "@element-plus/icon
 import { ElMessageBox, ElMessage } from "element-plus";
 import { readKnowledgeFile, scanKnowledge, deleteKnowledgeFile, exportKnowledgeDir } from "@/api/modules/knowledgeService";
 import type { KnowledgeMeta, KnowledgeFileEntry } from "@/api/interface/yiweb";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { skills, categories, type SkillDef } from "./constants";
 
 const route = useRoute();

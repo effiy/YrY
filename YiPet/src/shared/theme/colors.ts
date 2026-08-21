@@ -1,8 +1,8 @@
 /**
  * Color Theme Palettes — color tokens for all 5 YiPet themes.
  *
- * The full palette drives `getAntdTheme()` (popup + chat antd v5 theming via
- * ConfigProvider, popup uses a fixed Quantum Violet). `applyThemeColors()`
+ * The full palette drives Element Plus theming (popup + chat surfaces).
+ * `applyThemeColors()`
  * injects the WHOLE palette onto the host page's root element — primary,
  * background, text, border, accent, button, input, and selection tokens —
  * so the Color Theme setting recolors the entire page surface (fonts,
@@ -13,7 +13,7 @@
  *   3 = Quantum Forest   4 = Quantum Sunset
  */
 
-/* eslint-disable max-len */
+ 
 
 export interface ThemePalette {
   /* ── Primary family ───────────────────────────────────── */

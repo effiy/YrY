@@ -18,12 +18,16 @@
 </template>
 
 <script setup lang="ts" name="ExecutiverQuickNav">
-withDefaults(
+import { computed } from "vue";
+
+const props = withDefaults(
   defineProps<{
     /** 当前页面对应的卡片 key（高亮用）。 */
     active?: "okr" | "rss" | "reading-list" | "process" | "";
+    /** 当前角色页的 role id，OKR 卡片跳转到该角色的 OKR 页（/executiver/okr/:role）。 */
+    role?: string;
   }>(),
-  { active: "" }
+  { active: "", role: "" }
 );
 
 interface QuickNavItem {
@@ -35,12 +39,12 @@ interface QuickNavItem {
 }
 
 /** 高管知识库统一快捷导航（与 /executiver 首页 quick-nav 保持一致）。 */
-const items: QuickNavItem[] = [
-  { key: "okr", path: "/executiver/okr", icon: "🎯", title: "OKR Dashboard", desc: "Goals, metrics, daily standups, weekly reports & retrospectives" },
-  { key: "rss", path: "/executiver/rss", icon: "📡", title: "RSS Manager", desc: "Feed subscriptions, auto-classification & article management" },
+const items = computed<QuickNavItem[]>(() => [
+  { key: "okr", path: props.role ? `/executiver/okr/${props.role}` : "/executiver/okr", icon: "🎯", title: "OKR Dashboard", desc: "Goals, metrics, daily standups, weekly reports & retrospectives" },
+  { key: "rss", path: props.role ? `/executiver/rss/${props.role}` : "/executiver/rss", icon: "📡", title: "RSS Manager", desc: "Feed subscriptions, auto-classification & article management" },
   { key: "reading-list", path: "/executiver/reading-list", icon: "📚", title: "Reading List", desc: "Curated books, articles & papers with reading status and notes" },
   { key: "process", path: "/executiver/process", icon: "🔁", title: "Process Records", desc: "需求评审 · 技术评审 · 构建调试 · 测试报告 · 上线 — 全流程自闭环记录" }
-];
+]);
 </script>
 
 <style scoped lang="scss">

@@ -9,7 +9,7 @@ import { Refresh, Search, DataAnalysis, Cpu, Collection, FolderOpened, Document,
 import { ragStatus, ragBuild, ragQuery, ragDecompose, ragCategories, ragHistory, ragHistoryClear, ragChatHistory, ragChatHistoryClear, type RagCategories } from "@/api/modules/ragService";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useMarkdown } from "@/hooks/useMarkdown";
-import RagSources from "@/components/RagSources.vue";
+import RagSources from "@/components/RagSources/RagSources.vue";
 import { injectCitations, makeCitationClickHandler } from "@/utils/citations";
 import type { RagStatusResponse, RagSource, RagSubQuestion, RagQueryRecord, RagChatTurnRecord } from "@/api/interface/rag";
 

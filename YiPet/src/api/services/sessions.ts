@@ -19,11 +19,12 @@ const COLLECTION = 'sessions';
 export class SessionService {
   constructor(private client: ApiClient) {}
 
-  /** List all sessions. */
-  async list(): Promise<ApiResponse<SessionRecord[]>> {
+  /** List sessions. */
+  async list(params?: { pageSize?: number }): Promise<ApiResponse<SessionRecord[]>> {
     const result = await this.client.rpc<QueryResult<SessionRecord>>(DB_MODULE, 'query_documents', {
       cname: COLLECTION,
       filter: {},
+      ...(params?.pageSize ? { pageSize: params.pageSize } : {}),
     } satisfies Partial<QueryParams>);
     if (!result.ok) return result as ApiResponse<SessionRecord[]>;
     const data = result.data;

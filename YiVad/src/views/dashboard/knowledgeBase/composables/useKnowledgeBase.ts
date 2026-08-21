@@ -113,6 +113,7 @@ export function useKnowledgeBase() {
   const showTagCloud = ref(false);
   const showRoleCloud = ref(false);
   const showReviewCompliance = ref(false);
+const showKnowledgeGraph = ref(false);
 
   // ── Needs Attention collapsible detail ──
   const showAttentionDetail = ref(true);
@@ -1409,10 +1410,8 @@ export function useKnowledgeBase() {
 
   // ── Chart Click Drill ──
   function onChartClick(dimension: string, event: any) {
-    console.log("[KB] onChartClick dimension:", dimension, "event:", event);
     const name = typeof event?.name === "string" && event.name ? event.name : event?.data?.name;
-    console.log("[KB] onChartClick resolved name:", name);
-    if (typeof name !== "string" || !name) { console.log("[KB] onChartClick bail: name not a string"); return; }
+    if (typeof name !== "string" || !name) return;
 
     // Top Modules: replace filter with { category, module } so the breadcrumb path is coherent
     if (dimension === "module") {
@@ -1471,7 +1470,6 @@ export function useKnowledgeBase() {
     // Review cycle's "__missing__" segment filters files without a review_cycle.
     setFilter(dimension, name);
     forceFileTableView();
-    console.log("[KB] filter applied:", JSON.stringify(activeFilter.value), "drillTableData:", drillTableData.value.length, "filteredFiles:", filteredFiles.value.length);
   }
 
   // ── Keyboard ──
@@ -1519,7 +1517,6 @@ export function useKnowledgeBase() {
   });
 
   // ── Delete ──
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function deleteFile(file: any) {
     const { ElMessageBox, ElMessage } = await import("element-plus");
     try {
@@ -1580,7 +1577,7 @@ export function useKnowledgeBase() {
     drillDownRef, detailPanelRef,
     chartPulseKey, drillHighlight, pulsingCard,
     showCategoryComparison, showCrossHeatmap, showStaleRisk, showCoverageGaps,
-    showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showAttentionDetail,
+    showTreeView, showTagCloud, showRoleCloud, showReviewCompliance, showKnowledgeGraph, showAttentionDetail,
     filterHistory, viewAttentionFiles,
     // Cross-filter
     ...xf,

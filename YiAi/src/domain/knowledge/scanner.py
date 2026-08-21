@@ -40,7 +40,7 @@ _WELL_KNOWN_CATEGORIES = (
 )
 
 # Directories that should never be surfaced as knowledge categories.
-_SKIP_DIRS = frozenset({".git", "__pycache__", "node_modules", ".DS_Store"})
+_SKIP_DIRS = frozenset({".git", "__pycache__", "node_modules", ".DS_Store", "rss"})
 
 _FRONTMATTER_RE = re.compile(
     r"^---\s*\n(?P<yaml>.*?)\n---\s*(?P<rest>.*)$",

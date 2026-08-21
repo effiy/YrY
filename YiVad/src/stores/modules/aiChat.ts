@@ -57,6 +57,7 @@ const SCROLL_THROTTLE_MS = 120;
 export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const conversations = ref<SessionDocument[]>([]);
   const activeConversation = ref<SessionDocument | null>(null);
+  const knowledgeSidebarVisible = ref(false);
   const loading = ref(false);
   const error = ref<string | null>(null);
   const input = ref("");
@@ -788,16 +789,22 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // sending its own request.
   let _persistChain: Promise<void> = Promise.resolve();
 
-  async function persistActive() {
-    if (!activeConversation.value) return;
+  async function persistActive(): Promise<boolean> {
+    if (!activeConversation.value) return false;
     const prev = _persistChain;
     let resolve: () => void;
     _persistChain = new Promise(r => {
       resolve = r;
     });
     try {
-      await prev;
-      if (!activeConversation.value) return;
+      const waitStart = Date.now();
+      // Guard against a stalled chain — resolve after 15s regardless
+      await Promise.race([
+        prev,
+        new Promise<void>(r => setTimeout(r, 15_000))
+      ]);
+      const waitMs = Date.now() - waitStart;
+      if (!activeConversation.value) return false;
       const msgs = activeConversation.value.messages;
       const key = activeConversation.value.key;
       const now = Date.now();
@@ -808,9 +815,11 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     } catch (e: any) {
       console.error("[aiChat] persistActive failed:", e?.message ?? e);
       ElMessage.error("Failed to save messages");
+      return false;
     } finally {
       resolve!();
     }
+    return true;
   }
 
   /**
@@ -1901,9 +1910,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     const messages = Array.isArray(s.messages) ? s.messages : [];
     const i = Number(idx);
     if (!Number.isFinite(i) || i < 0 || i >= messages.length) return;
+
     const nextMessages = messages.filter((_, j) => j !== i);
     activeConversation.value = { ...s, messages: nextMessages, updatedAt: Date.now() };
-    await persistActive();
+    const ok = await persistActive();
+    if (!ok) {
+      // Roll back the UI change on failure
+      activeConversation.value = { ...s, messages, updatedAt: s.updatedAt };
+    }
   }
 
   /** Inline-edit a user message's text. */
@@ -2093,9 +2107,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         saved: Math.max(0, result.original_count - result.compacted_count),
       };
       compactionLog.value = [...compactionLog.value.slice(-(MAX_COMPACTION_LOG - 1)), entry];
-      console.log(
-        `[aiChat] Compaction complete: ${result.original_count} → ${result.compacted_count} messages`
-      );
     } catch (e) {
       console.warn("[aiChat] Compaction failed:", e);
     }
@@ -2159,6 +2170,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
   return {
     agentTurnProgress,
+    knowledgeSidebarVisible,
     conversations,
     activeConversation,
     loading,

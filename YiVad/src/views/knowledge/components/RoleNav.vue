@@ -70,7 +70,7 @@ function onSelect(rid: string) {
     emit("update:modelValue", next);
     return;
   }
-  if (rid !== props.active) router.push(`/knowledge/${rid}`);
+  if (rid !== props.active) router.push(`/${rid}`);
 }
 </script>
 

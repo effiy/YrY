@@ -12,6 +12,28 @@
     </div>
 
     <div class="card mb10">
+      <h4 class="title">Architecture</h4>
+      <span class="text">
+        YiVad follows a <strong>componentization</strong> architecture. The <strong>ProTable</strong> component centralizes table
+        logic — search, pagination, sorting — into a declarative columns-configuration pattern. Auth is button-level via the
+        <code>v-auth</code> directive, decoupled from route guards. Pages are cached through KeepAlive with multi-level nested
+        route support. State syncs to <code>localStorage</code> via <code>pinia-plugin-persistedstate</code>.
+      </span>
+      <div ref="archRef">
+        <pre class="mermaid">
+graph LR
+    Layout[Layout<br/>4 Modes] -->|mounts| Router[Router<br/>Dynamic]
+    Router -->|renders| ProTable[ProTable<br/>Columns Config]
+    ProTable -->|guards| Auth[Auth<br/>v-auth Directive]
+    ProTable -->|calls| API[api/modules]
+    API -->|http.post| YiAi[YiAi :10086]
+    Auth -->|checks| Store[Pinia Stores]
+    Store -->|persists| LS[localStorage]
+        </pre>
+      </div>
+    </div>
+
+    <div class="card mb10">
       <h4 class="title">Layout Modes</h4>
       <el-descriptions :column="2" border>
         <el-descriptions-item v-for="m in layoutModes" :key="m.name" :label="m.name" label-align="left">
@@ -30,45 +52,77 @@
     </div>
 
     <div class="card mb10">
-      <h4 class="title">Architecture</h4>
-      <span class="text">
-        YiVad follows a <strong>componentization</strong> architecture with four layout modes (vertical, classic, transverse,
-        columns) and dynamic role-based routing. The <strong>ProTable</strong> component centralizes table logic — search,
-        pagination, sorting — into a declarative columns-configuration pattern. Auth is button-level via the
-        <code>v-auth</code> directive, decoupled from route guards. Pages are cached through KeepAlive with multi-level nested
-        route support. State syncs to <code>localStorage</code> via <code>pinia-plugin-persistedstate</code> for the
-        <code>global</code>, <code>user</code>, and <code>tabs</code> stores.
-      </span>
-      <div class="arch-diagram">
-        <el-tag type="primary" size="large">Layout (4 Modes)</el-tag>
-        <span class="arch-arrow">→</span>
-        <el-tag type="success" size="large">Router (Dynamic)</el-tag>
-        <span class="arch-arrow">→</span>
-        <el-tag type="warning" size="large">ProTable (Columns)</el-tag>
-        <span class="arch-arrow">→</span>
-        <el-tag type="danger" size="large">Auth (v-auth)</el-tag>
+      <h4 class="title">Data Flow</h4>
+      <div ref="dataFlowRef">
+        <h5 class="subtitle">Table Fetch (ProTable → YiAi → MongoDB)</h5>
+        <pre class="mermaid">
+sequenceDiagram
+    participant View as View (ProTable)
+    participant API as api/modules
+    participant HTTP as RequestHttp
+    participant YiAi as YiAi (FastAPI)
+    participant DB as MongoDB
+
+    View-&gt;&gt;API: requestApi({pageNum, pageSize, ...filters})
+    API-&gt;&gt;HTTP: http.post("", {module_name, method_name, parameters})
+    HTTP-&gt;&gt;YiAi: fetch POST / (X-Token header)
+    YiAi-&gt;&gt;DB: collection.find(filter).sort().skip().limit()
+    DB--&gt;&gt;YiAi: { list, total, pageNum, pageSize, totalPages }
+    YiAi--&gt;&gt;HTTP: { code: 0, message: "ok", data: {...} }
+    HTTP--&gt;&gt;API: response data
+    API--&gt;&gt;View: { list, total }
+    View-&gt;&gt;View: render rows + Pagination
+        </pre>
+        <h5 class="subtitle">Chat (SSE Streaming)</h5>
+        <pre class="mermaid">
+sequenceDiagram
+    participant Store as aiChat Store
+    participant Stream as streamChat()
+    participant YiAi as YiAi (FastAPI)
+    participant Ollama as Ollama
+
+    Store-&gt;&gt;Stream: streamChat(payload, onChunk, onDone, onError)
+    Stream-&gt;&gt;YiAi: fetch POST / (SSE, AbortController)
+    YiAi-&gt;&gt;Ollama: POST /api/chat
+    Ollama--&gt;&gt;YiAi: streaming tokens
+    YiAi--&gt;&gt;Stream: data: {"data":{"message":"..."}}
+    Stream--&gt;&gt;Store: onChunk(text)
+    YiAi--&gt;&gt;Stream: data: {"done":true}
+    Stream--&gt;&gt;Store: onDone()
+    Store-&gt;&gt;Store: upsertSession + autoForwardToWeCom
+        </pre>
       </div>
     </div>
 
     <div class="card mb10">
-      <h4 class="title">Project Structure</h4>
+      <h4 class="title">API Design</h4>
       <span class="text">
-        Source code lives under <code>src/</code> and is organised by concern: <code>api/</code> (HTTP),
-        <code>components/</code> (reusable), <code>config/</code> (constants), <code>directives/</code> (custom directives),
-        <code>hooks/</code> (composables), <code>languages/</code> (i18n), <code>layouts/</code> (4 modes),
-        <code>routers/</code> (dynamic routes), <code>stores/</code> (Pinia), <code>styles/</code> (SCSS),
-        <code>utils/</code> (helpers), <code>views/</code> (pages). Cross-cutting concerns are layered top-down: Layout → Router →
-        ProTable → Auth.
+        YiVad's HTTP layer is built on a custom <strong>RequestHttp</strong> class (Axios wrapper) with
+        request/response interceptors, automatic cancellation, and loading-state management. All API calls go
+        through <code>src/api/modules/</code> domain service functions — nothing imports <code>axios</code> directly.
       </span>
-    </div>
+      <el-descriptions :column="2" border style="margin-top: 12px;">
+        <el-descriptions-item v-for="a in apiDesign" :key="a.label" :label="a.label" label-align="left">
+          <span class="term-desc">{{ a.desc }}</span>
+        </el-descriptions-item>
+      </el-descriptions>
+      <div ref="apiRef">
+        <pre class="mermaid" style="margin-top: 12px;">
+sequenceDiagram
+    participant View as View / Store
+    participant Module as api/modules/*.ts
+    participant HTTP as RequestHttp (Axios)
+    participant YiAi as YiAi (FastAPI)
 
-    <div class="card mb10">
-      <h4 class="title">Related Projects</h4>
-      <div class="related-list">
-        <div v-for="p in relatedProjects" :key="p.name" class="related-item">
-          <span class="related-name">{{ p.name }}</span>
-          <span class="related-desc">{{ p.description }}</span>
-        </div>
+    View-&gt;&gt;Module: domainService.method(params)
+    Module-&gt;&gt;HTTP: http.post("", {module_name, method_name, parameters})
+    HTTP-&gt;&gt;HTTP: Request interceptor<br/>• Attach X-Token<br/>• Duplicate cancellation<br/>• Fullscreen loading
+    HTTP-&gt;&gt;YiAi: fetch POST /
+    YiAi--&gt;&gt;HTTP: { code, message, data }
+    HTTP-&gt;&gt;HTTP: Response interceptor<br/>• checkStatus on error<br/>• Hide loading<br/>• 401 → redirect login
+    HTTP--&gt;&gt;Module: ResultData&lt;T&gt;
+    Module--&gt;&gt;View: typed response
+        </pre>
       </div>
     </div>
 
@@ -76,40 +130,13 @@
       <h4 class="title">Module Boundaries</h4>
       <span class="text">
         Top-down layering: <strong>Layout → Router → ProTable → Auth</strong>. Stores may import from
-        <code>@/api/modules</code> and <code>@/hooks</code> but MUST NOT import <code>axios</code> directly — they go through
-        the <code>RequestHttp</code> wrapper in <code>src/api/index.ts</code>.
+        <code>@/api/modules</code> and <code>@/hooks</code> but MUST NOT import <code>axios</code> directly.
       </span>
       <el-descriptions :column="2" border>
         <el-descriptions-item v-for="m in moduleBoundaries" :key="m.module" :label="m.module" label-align="left">
           <span class="term-desc">{{ m.publicApi }}</span>
         </el-descriptions-item>
       </el-descriptions>
-    </div>
-
-    <div class="card mb10">
-      <h4 class="title">Data Flow</h4>
-      <span class="text">
-        Cross-project calls use the <strong>RPC envelope</strong>:
-        <code>{ module_name, method_name, parameters }</code> POSTed to YiAi's root. The
-        <code>filter</code> (not <code>query</code>) and <code>target_file</code> (not <code>path</code>) field names are
-        load-bearing contracts — they have been past bug sources.
-      </span>
-      <pre class="code-block">{{ dataFlowTable }}</pre>
-      <span class="text">
-        Chat uses SSE streaming via <code>services.ai.chat_service.chat</code>. The store's <code>onDone</code> handler
-        skips auto-forward to WeCom when the message is aborted or errored.
-      </span>
-      <pre class="code-block">{{ dataFlowChat }}</pre>
-    </div>
-
-    <div class="card mb10">
-      <h4 class="title">Recent Changes</h4>
-      <el-timeline>
-        <el-timeline-item v-for="c in recentChanges" :key="c.date" :timestamp="c.date" placement="top" :hollow="c.hollow">
-          <h5 class="change-title">{{ c.title }}</h5>
-          <p class="change-desc">{{ c.desc }}</p>
-        </el-timeline-item>
-      </el-timeline>
     </div>
 
     <div class="card mb10">
@@ -163,6 +190,16 @@
       </el-descriptions>
     </div>
 
+    <div class="card mb10">
+      <h4 class="title">Recent Changes</h4>
+      <el-timeline>
+        <el-timeline-item v-for="c in recentChanges" :key="c.date" :timestamp="c.date" placement="top" :hollow="c.hollow">
+          <h5 class="change-title">{{ c.title }}</h5>
+          <p class="change-desc">{{ c.desc }}</p>
+        </el-timeline-item>
+      </el-timeline>
+    </div>
+
     <el-collapse class="mb10">
       <el-collapse-item title="Production Dependencies" name="prod">
         <el-descriptions :column="3" border>
@@ -186,7 +223,7 @@
       </el-collapse-item>
     </el-collapse>
 
-    <div class="card">
+    <div class="card mb10">
       <h4 class="title">Tech Stack</h4>
       <div class="tag-list">
         <el-link v-for="tech in techStack" :key="tech.name" :href="tech.url" target="_blank" :underline="false" class="tech-link">
@@ -194,10 +231,29 @@
         </el-link>
       </div>
     </div>
+
+    <div class="card">
+      <h4 class="title">Related Projects</h4>
+      <div class="related-list">
+        <div v-for="p in relatedProjects" :key="p.name" class="related-item">
+          <span class="related-name">{{ p.name }}</span>
+          <span class="related-desc">{{ p.description }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts" name="aboutYivad">
+import { ref } from "vue";
+import { useMermaid } from "@/hooks/useMermaid";
+
+const archRef = ref<HTMLElement | null>(null);
+const dataFlowRef = ref<HTMLElement | null>(null);
+const apiRef = ref<HTMLElement | null>(null);
+
+useMermaid(archRef, dataFlowRef, apiRef);
+
 interface Dep {
   version: string;
   url: string;
@@ -307,31 +363,24 @@ const features = [
   "Browser support: Chrome, Edge, Firefox, Safari (last 2 versions)"
 ];
 
+const apiDesign = [
+  { label: "RequestHttp", desc: "Axios wrapper with request/response interceptors, duplicate cancellation, loading-state management, and 401 redirect to login" },
+  { label: "RPC Envelope", desc: "POST / { module_name, method_name, parameters } → { code, message, data } — the universal protocol for all YiAi calls" },
+  { label: "API Modules", desc: "30+ domain service modules under src/api/modules/ — each module exports typed functions that call http.post(). Views and stores import from here, never from axios directly" },
+  { label: "X-Token Auth", desc: "Request interceptor attaches Bearer token from userStore. 401 responses trigger automatic logout and redirect to login" },
+  { label: "SSE Streaming", desc: "Chat uses fetch with AbortController and line-by-line SSE parsing. On abort, partial content is persisted but not auto-forwarded to WeCom" },
+  { label: "File I/O", desc: "readFile/writeFile via POST /read-file and /write-file with target_file param (not path — a past bug source)" },
+  { label: "Data CRUD", desc: "data_service.query_documents uses filter param (not query). Supports pagination (pageNum/pageSize), sorting (orderBy/orderType), projection (fields/excludeFields)" },
+  { label: "Type Safety", desc: "All RPC types defined in src/api/interface/yiweb.ts — ServicePayload, YiAiEnvelope<T>, QueryDocumentsData<T>, etc." }
+];
+
 const domainTerms = [
-  {
-    name: "ProTable",
-    desc: "Declarative table built on el-table, driven by a columns config array for search, pagination, sorting — eliminating repetitive table markup"
-  },
-  {
-    name: "Dynamic Router",
-    desc: "Fetches permission menu tree from backend API at runtime, flattens it, and registers routes via router.addRoute() based on user permissions"
-  },
-  {
-    name: "AuthButton (v-auth)",
-    desc: "Button-level permission control directive that hides elements when the user lacks the required operation permission string"
-  },
-  {
-    name: "Pinia Persist",
-    desc: "pinia-plugin-persistedstate auto-syncs global/user/tabs stores to localStorage so state survives page refresh"
-  },
-  {
-    name: "Layout Mode",
-    desc: "Four switchable page-level structures: vertical (sidebar), classic, transverse (top nav), columns (split) — controlled via globalStore.layout"
-  },
-  {
-    name: "KeepAlive Cache",
-    desc: "Multi-level nested route caching — visited pages stay mounted in memory, preserving scroll position and form state"
-  }
+  { name: "ProTable", desc: "Declarative table built on el-table, driven by a columns config array for search, pagination, sorting — eliminating repetitive table markup" },
+  { name: "Dynamic Router", desc: "Fetches permission menu tree from backend API at runtime, flattens it, and registers routes via router.addRoute() based on user permissions" },
+  { name: "AuthButton (v-auth)", desc: "Button-level permission control directive that hides elements when the user lacks the required operation permission string" },
+  { name: "Pinia Persist", desc: "pinia-plugin-persistedstate auto-syncs global/user/tabs stores to localStorage so state survives page refresh" },
+  { name: "Layout Mode", desc: "Four switchable page-level structures: vertical (sidebar), classic, transverse (top nav), columns (split) — controlled via globalStore.layout" },
+  { name: "KeepAlive Cache", desc: "Multi-level nested route caching — visited pages stay mounted in memory, preserving scroll position and form state" }
 ];
 
 const layoutModes = [
@@ -377,195 +426,17 @@ const moduleBoundaries = [
   { module: "src/routers/", publicApi: "Hash-mode Vue Router 5 with dynamic routes from backend menu API. Guards in src/routers/beforeEach.ts." }
 ];
 
-const dataFlowTable = `View defines columns + requestApi
-  ▼ requestApi({ pageNum, pageSize, ...filters })
-api/modules/<domain>.ts → callService("services.database.data_service",
-                                      "query_documents",
-                                      { cname, filter, pageNum, pageSize })
-  ▼ http.post("", {module_name, method_name, parameters})
-RequestHttp interceptor: attach X-Token, transform response, checkStatus on error
-  ▼ fetch POST http://localhost:10086/
-YiAi data_service.query_documents → repository.query_documents
-  ▼ _build_filter(query_params) → MongoDB find().sort().skip().limit()
-  ▼ { list: [...], total, pageNum, pageSize, totalPages }
-ProTable receives { list, total } → renders rows + Pagination`;
-
-const dataFlowChat = `aiChat store — sendMessage / regenerateMessageAt / resendMessageAt
-  ▼ streamChat(payload, onChunk, onDone, onError)
-fetch POST /  body: {module_name: "services.ai.chat_service",
-                     method_name: "chat",
-                     parameters: {model, messages, stream: true, system?, images?}}
-                     signal: AbortController
-  ▼
-YiAi FastAPI → StreamingResponse(text/event-stream)
-  yields: data: {"data": {"message": "..."}}\\n\\n
-  ends:   data: {"done": true}\\n\\n
-  ▼
-streamChat parses SSE → onChunk(text) / onDone() / onError(err)
-  ▼
-Store appends deltas to the in-flight pet message; on abort marks aborted=true
-  on done: upsertSession(...) + autoForwardToWeCom(streamed) [skipped if aborted]`;
-
 const recentChanges = [
-  {
-    date: "2026-07-31",
-    title: "Knowledge + RAG + Story pages",
-    desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. src/views/story/ now displays story.md via MarkdownView with cross-links. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).",
-    hollow: false
-  },
-  {
-    date: "2026-07-30",
-    title: "Sidebar parity + RSS → YiKnowledge offload",
-    desc: "ChatSidebar (aiChat) and ConversationSidebar aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename. RSS body content moved to YiKnowledge markdown; MongoDB now stores metadata only (category_path + file_path).",
-    hollow: false
-  },
-  {
-    date: "2026-07-28",
-    title: "readFile / writeFile target_file fix",
-    desc: "src/api/modules/fileService.ts: readFile and writeFile were sending { path } but YiAi's /read-file and /write-file require target_file (Pydantic FileReadRequest/FileWriteRequest). Every call would 422. Fixed both to send { target_file: path, content }.",
-    hollow: false
-  },
-  {
-    date: "2026-07-28",
-    title: "chat abort guard",
-    desc: "On SSE onDone, the store now checks !lastPet?.aborted && !lastPet?.error before calling autoForwardToRobots(streamed). Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots.",
-    hollow: false
-  },
-  {
-    date: "2026-07-28",
-    title: "Vite → Rsbuild migration",
-    desc: "Migrated from Vite 8 to Rsbuild 1. Env prefix is now RSBUILD_ENV_* (no more VITE_ leaks). svg-sprite + views-glob custom plugins replicate dropped Vite features.",
-    hollow: false
-  },
-  {
-    date: "2026-07-27",
-    title: "aiChat port (from YiWeb)",
-    desc: "Ported YiWeb's sessionChat page. Per-message actions (regenerate / retry / resend / delete / edit), streamingType, aborted flag, scrollTick throttle. Fixed index.vue useResizable scaffold bug.",
-    hollow: true
-  },
-  {
-    date: "2026-07-27",
-    title: "code review chat port (from YiWeb)",
-    desc: "Ported chat and knowledge-tree infrastructure: stores, modal components, cards/graph views.",
-    hollow: true
-  }
+  { date: "2026-07-31", title: "Knowledge + RAG + Story pages", desc: "New src/views/knowledge/ (CategoryList + Detail + MarkdownView) browsing the YiKnowledge markdown tree. src/views/story/ now displays story.md via MarkdownView with cross-links. Added api/modules/knowledgeService.ts and ragService.ts (RAG chat uses the existing SSE parser).", hollow: false },
+  { date: "2026-07-30", title: "Sidebar parity + RSS → YiKnowledge offload", desc: "ChatSidebar (aiChat) and ConversationSidebar aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename. RSS body content moved to YiKnowledge markdown; MongoDB now stores metadata only (category_path + file_path).", hollow: false },
+  { date: "2026-07-28", title: "readFile / writeFile target_file fix", desc: "src/api/modules/fileService.ts: readFile and writeFile were sending { path } but YiAi's /read-file and /write-file require target_file (Pydantic FileReadRequest/FileWriteRequest). Every call would 422. Fixed both to send { target_file: path, content }.", hollow: false },
+  { date: "2026-07-28", title: "chat abort guard", desc: "On SSE onDone, the store now checks !lastPet?.aborted && !lastPet?.error before calling autoForwardToRobots(streamed). Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots.", hollow: false },
+  { date: "2026-07-28", title: "Vite → Rsbuild migration", desc: "Migrated from Vite 8 to Rsbuild 1. Env prefix is now RSBUILD_ENV_* (no more VITE_ leaks). svg-sprite + views-glob custom plugins replicate dropped Vite features.", hollow: false },
+  { date: "2026-07-27", title: "aiChat port (from YiWeb)", desc: "Ported YiWeb's sessionChat page. Per-message actions (regenerate / retry / resend / delete / edit), streamingType, aborted flag, scrollTick throttle. Fixed index.vue useResizable scaffold bug.", hollow: true },
+  { date: "2026-07-27", title: "code review chat port (from YiWeb)", desc: "Ported chat and knowledge-tree infrastructure: stores, modal components, cards/graph views.", hollow: true }
 ];
 </script>
 
 <style lang="scss" scoped>
-.card {
-  .title {
-    margin: 0 0 15px;
-    font-size: 17px;
-    font-weight: bold;
-    color: var(--el-text-color-primary);
-  }
-  .text {
-    font-size: 15px;
-    line-height: 25px;
-    color: var(--el-text-color-regular);
-    code {
-      padding: 1px 5px;
-      font-size: 13px;
-      background: var(--el-fill-color-light);
-      border-radius: 3px;
-    }
-  }
-}
-.feature-item {
-  margin-bottom: 8px;
-}
-.feature-text {
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--el-text-color-regular);
-  &::before {
-    margin-right: 6px;
-    font-weight: bold;
-    color: var(--el-color-primary);
-    content: "•";
-  }
-}
-.arch-diagram {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  margin-top: 15px;
-  background: var(--el-fill-color-light);
-  border-radius: 8px;
-}
-.arch-arrow {
-  font-size: 20px;
-  color: var(--el-text-color-secondary);
-}
-.related-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.related-item {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--el-fill-color-light);
-  border-radius: 6px;
-}
-.related-name {
-  min-width: 50px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-color-primary);
-}
-.related-desc {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-}
-.term-desc {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--el-text-color-secondary);
-}
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.tech-tag {
-  margin: 0;
-}
-.tech-link {
-  height: auto;
-  line-height: 1;
-}
-.dep-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-.code-block {
-  padding: 12px;
-  margin: 10px 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--el-text-color-regular);
-  word-break: break-word;
-  white-space: pre-wrap;
-  background: var(--el-fill-color-light);
-  border-radius: 6px;
-}
-.change-title {
-  margin: 0 0 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.change-desc {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--el-text-color-regular);
-}
+@use "../common.scss";
 </style>

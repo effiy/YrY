@@ -1,11 +1,6 @@
 <template>
   <div class="okr-role">
     <div class="okr-role__header">
-      <el-breadcrumb separator="/" class="okr-role__breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/home/index' }">Home</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/executiver/okr' }">OKR Dashboard</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ role.name }} OKR</el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="okr-role__role-nav">
         <button
           v-for="rid in ROLE_IDS"
@@ -24,9 +19,6 @@
     <div class="okr-role__sticky-bar">
       <div class="okr-role__sticky-top">
         <div class="okr-role__sticky-left">
-          <el-button text class="okr-role__back-btn" @click="$router.push('/executiver/okr')">
-            <el-icon><ArrowLeft /></el-icon>
-          </el-button>
           <span class="okr-role__sticky-icon">{{ role.icon }}</span>
           <div class="okr-role__sticky-info">
             <h1 class="okr-role__sticky-name">{{ role.name }} OKR</h1>
@@ -284,7 +276,7 @@ import { useRoute } from "vue-router";
 import { ArrowLeft, ArrowRight, Document } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import {
   rolesData, goalsData, metricsData, goalMetricMap, getGoalMetrics,
   roleWeeklyDataMap, ROLE_IDS, goalRoleMap, metricRoleMap,
@@ -327,7 +319,7 @@ function goalFilePath(g: GoalItem): string {
   return `okr/2026-Q3/goals/${goalRoleMap[g.id]}/${g.id}-${slugifyTitle(g.title)}.md`;
 }
 function metricFilePath(m: MetricItem): string {
-  return `okr/2026-Q3/metrics/${metricRoleMap[m.id]}/${m.id}-${slugifyTitle(m.name)}.md`;
+  return `okr/2026-Q3/goals/${metricRoleMap[m.id]}/${m.id}-${slugifyTitle(m.name)}.md`;
 }
 
 function renderGoalBody(g: GoalItem): string {
@@ -583,11 +575,10 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 }
 .okr-role__header {
   position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  display: flex; align-items: center; gap: 16px;
   padding: 14px 24px 10px;
   background: var(--el-bg-color-page);
 }
-.okr-role__breadcrumb { flex-shrink: 0; }
 
 // ── Sticky Header Bar ──────────────────────────
 .okr-role__sticky-bar {
@@ -602,7 +593,6 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
 .okr-role__sticky-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.okr-role__back-btn { padding: 4px 8px; }
 .okr-role__sticky-icon { font-size: 24px; }
 .okr-role__sticky-info { display: flex; flex-direction: column; gap: 0; }
 .okr-role__sticky-name { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; }
@@ -612,7 +602,6 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 
 .okr-role__role-nav {
   display: flex; flex-wrap: wrap; gap: 6px;
-  justify-content: flex-end;
 }
 .okr-role__role-nav-item {
   display: inline-flex; align-items: center; gap: 5px;

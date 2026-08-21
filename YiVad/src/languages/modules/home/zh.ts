@@ -46,6 +46,7 @@ export default {
         effort: "工作量",
         due: "截止",
         reason: "推荐理由",
+        process: "流程记录",
         action: "操作"
       },
       dims: {

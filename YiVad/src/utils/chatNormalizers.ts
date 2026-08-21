@@ -17,7 +17,7 @@ export function readFileAsDataUrl(file: File): Promise<string> {
 // Legacy sessions stored messages under `content`; normalize to `message` on load.
 export function normalizeMessage(m: ChatMessage): ChatMessage {
   if (!m) return m;
-  const message = m.message ?? (m as { content?: string }).content ?? "";
+  const message = m.message ?? m.content ?? "";
   return message === m.message ? m : { ...m, message };
 }
 
@@ -27,7 +27,7 @@ export function normalizeSession(s: SessionDocument | null): SessionDocument | n
   const messages = (s.messages ?? []).map(normalizeMessage);
   // Step 2: normalize to ChatEntry format (backward compat with Pi-inspired entry types)
   // This is non-destructive: old ChatMessage objects are wrapped as entryType:"message"
-  const entries = normalizeEntries(messages as any);
+  const entries = normalizeEntries(messages);
   // Store normalized entries as both messages (for backward compat) and entries (for new code)
   const result = messages === s.messages ? s : { ...s, messages };
   (result as any)._entries = entries;

@@ -105,10 +105,25 @@ export interface MutationResult {
 
 // ── Session record (sessions collection) ───────────────────────────────
 
+export interface SessionData {
+  title?: string;
+  url?: string;
+  messages?: ChatMessage[];
+  pageContent?: string;
+  pageDescription?: string;
+  isFavorite?: boolean;
+  tags?: string[];
+  createdAt?: number;
+  updatedAt?: number;
+  lastAccessTime?: number;
+  messageCount?: number;
+}
+
 export interface SessionRecord {
   key: string;
-  url?: string;
+  id?: string;
   title?: string;
+  url?: string;
   pageDescription?: string;
   pageContent?: string;
   messages?: ChatMessage[];
@@ -117,6 +132,9 @@ export interface SessionRecord {
   updatedAt?: number;
   lastAccessTime?: number;
   isFavorite?: boolean;
+  messageCount?: number;
+  /** Nested data field — some MongoDB docs store session info inside a `data` wrapper. */
+  data?: SessionData;
 }
 
 export interface ChatMessage {
@@ -217,7 +235,19 @@ export interface WeWorkSendMessageResult {
 
 // ── Knowledge base (YiKnowledge markdown tree) ─────────────────────────
 
-/** A node in the scanned knowledge tree (file or folder). */
+/** A flat knowledge file as returned by /knowledge-scan (grouped by category). */
+export interface KnowledgeFileEntry {
+  path: string;
+  name: string;
+  category: string;
+  isMarkdown?: boolean;
+  mime?: string;
+  meta?: Record<string, unknown>;
+  size?: number;
+  updatedAt?: number | null;
+}
+
+/** A node in the nested knowledge tree (file or folder), built from the flat scan. */
 export interface KnowledgeTreeNode {
   path: string;
   name: string;
@@ -228,9 +258,7 @@ export interface KnowledgeTreeNode {
 }
 
 export interface KnowledgeScanResponse {
-  tree: KnowledgeTreeNode[];
-  total_files: number;
-  category?: string;
+  categories: { category: string; files: KnowledgeFileEntry[] }[];
 }
 
 /** Parsed YAML frontmatter from a knowledge markdown file. */
@@ -240,8 +268,9 @@ export interface KnowledgeFrontmatter {
 
 export interface KnowledgeReadResponse {
   path: string;
+  name?: string;
   content: string;
-  frontmatter?: KnowledgeFrontmatter;
+  meta?: KnowledgeFrontmatter;
   category?: string;
 }
 
@@ -430,6 +459,7 @@ export interface AgentChatPayload {
   model_rotation?: string[];
   model_fallback?: string[];
   resume?: boolean;
+  web_search?: boolean;
 }
 
 /** A structured event yielded by the agent SSE stream. */

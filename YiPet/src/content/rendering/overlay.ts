@@ -2,8 +2,9 @@
  * Pet overlay — creates and manages the YiPet DOM element in the MAIN world.
  *
  * Extracted from bootstrap.ts Phase 2 (MAIN world).
- * Handles: pet container/image creation, event listeners for visibility/size/role/color,
- * CDN style management, CDN JS auto-loading, and the window.YiPet API.
+ * Handles: pet container/image creation, animation lifecycle (ambient, idle, bubbles),
+ * drag interaction, CDN style/JS management, and the window.YiPet API.
+ * DOM updates for settings (visibility/size/role/color) are handled by relay.ts.
  */
 
 import { PET_DEFAULTS } from '@/config/defaults';
@@ -38,6 +39,418 @@ function _err(msg: string) {
   );
 }
 
+// ── Helpers ─────────────────────────────────────────────────────────────
+
+function rand(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ── Animation Stylesheet Injection ──────────────────────────────────────
+
+let _stylesheetInjected = false;
+
+function injectPetStylesheet(): void {
+  if (_stylesheetInjected) return;
+  if (!document.head) return;
+
+  const cfg = PET_DEFAULTS.animation.pet;
+  const style = document.createElement('style');
+  style.id = 'yipet-animations';
+  style.textContent = `
+/* ── Keyframes ─────────────────────────── */
+
+@keyframes yipet-float {
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50%      { transform: translateY(-8px) translateZ(0); }
+}
+
+@keyframes yipet-glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+@keyframes yipet-bounce {
+  0%   { transform: scale(1) translateZ(0); }
+  30%  { transform: scale(1.12) translateZ(0); }
+  60%  { transform: scale(0.95) translateZ(0); }
+  100% { transform: scale(1) translateZ(0); }
+}
+
+@keyframes yipet-wiggle {
+  0%   { transform: rotate(0deg) translateZ(0); }
+  25%  { transform: rotate(-6deg) translateZ(0); }
+  75%  { transform: rotate(6deg) translateZ(0); }
+  100% { transform: rotate(0deg) translateZ(0); }
+}
+
+@keyframes yipet-blink-img {
+  0%, 90%, 100% { transform: scaleY(1) translateZ(0); }
+  95%           { transform: scaleY(0.1) translateZ(0); }
+}
+
+@keyframes yipet-tilt {
+  0%   { transform: rotate(0deg) translateZ(0); }
+  40%  { transform: rotate(-10deg) translateZ(0); }
+  80%  { transform: rotate(10deg) translateZ(0); }
+  100% { transform: rotate(0deg) translateZ(0); }
+}
+
+@keyframes yipet-sparkle {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
+}
+
+@keyframes yipet-bubble-in {
+  0%   { transform: translate(-50%, 8px) scale(0.8); opacity: 0; }
+  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+@keyframes yipet-bubble-out {
+  0%   { transform: translate(-50%, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -12px) scale(0.8); opacity: 0; }
+}
+
+@keyframes yipet-entrance {
+  0%   { transform: scale(0.3) translateZ(0); opacity: 0; }
+  60%  { transform: scale(1.08) translateZ(0); opacity: 1; }
+  100% { transform: scale(1) translateZ(0); opacity: 1; }
+}
+
+/* ── Container ──────────────────────────── */
+
+#yipet-overlay {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+#yipet-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    0 10px 30px rgba(var(--primary-rgb), 0.4),
+    0 0 0 1px rgba(255,255,255,0.08) inset;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+/* ── Always-on ambient class ───────────── */
+
+#yipet-overlay.yipet-ambient {
+  animation:
+    yipet-float var(--yipet-float-dur, 3000ms) cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+#yipet-overlay.yipet-ambient::after {
+  animation: yipet-glow-pulse var(--yipet-glow-dur, 3000ms) ease-in-out infinite;
+}
+
+/* ── Idle action classes (override ambient) ─ */
+
+#yipet-overlay.yipet-wiggle {
+  animation: yipet-wiggle var(--yipet-wag-dur, 2000ms) cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+#yipet-overlay.yipet-bounce {
+  animation: yipet-bounce 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#yipet-overlay.yipet-tilt {
+  animation: yipet-tilt 600ms cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+#yipet-pet-img.yipet-blink {
+  animation: yipet-blink-img var(--yipet-blink-dur, 4000ms) ease-in-out;
+}
+
+/* Entrance animation on first show */
+#yipet-overlay.yipet-entrance {
+  animation: yipet-entrance 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Hover ─────────────────────────────── */
+
+#yipet-overlay:hover {
+  box-shadow: 0 10px 45px rgba(var(--primary-rgb), 0.7), 0 0 0 1px rgba(255,255,255,0.12) inset !important;
+  transform: scale(1.03);
+}
+
+#yipet-overlay:hover::after {
+  opacity: 1;
+}
+
+#yipet-overlay:hover #yipet-pet-img {
+  transform: scale(${cfg.hoverScale});
+  filter: brightness(1.15) drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.6));
+}
+
+#yipet-pet-img {
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+}
+
+/* ── Sparkle particles ─────────────────── */
+
+.yipet-sparkle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb), 0.9);
+  pointer-events: none;
+  filter: blur(0.5px);
+  will-change: transform, opacity;
+  animation: yipet-sparkle ${cfg.sparkleDuration}ms cubic-bezier(0, 0.7, 0.3, 1) forwards;
+}
+
+/* ── Thought bubble ────────────────────── */
+
+.yipet-thought-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  will-change: transform, opacity;
+}
+
+.yipet-thought-bubble.in {
+  animation: yipet-bubble-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.yipet-thought-bubble.out {
+  animation: yipet-bubble-out 300ms ease-in forwards;
+}
+
+/* ── Accessibility ─────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  #yipet-overlay,
+  #yipet-overlay *,
+  #yipet-overlay::before,
+  #yipet-overlay::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+`;
+
+  document.head.appendChild(style);
+  _stylesheetInjected = true;
+}
+
+// ── Idle Behavior ───────────────────────────────────────────────────────
+
+interface IdleAction {
+  name: string;
+  target: 'overlay' | 'img';
+  duration: number;
+  weight: number;
+}
+
+function pickWeightedAction(actions: IdleAction[]): IdleAction {
+  const total = actions.reduce((s, a) => s + a.weight, 0);
+  let r = Math.random() * total;
+  for (const a of actions) {
+    r -= a.weight;
+    if (r <= 0) return a;
+  }
+  return actions[actions.length - 1];
+}
+
+function triggerPetAction(
+  container: HTMLElement,
+  img: HTMLElement,
+  action: IdleAction,
+): void {
+  const el = action.target === 'img' ? img : container;
+  el.classList.add('yipet-' + action.name);
+
+  function cleanup() {
+    el.classList.remove('yipet-' + action.name);
+    el.removeEventListener('animationend', onEnd);
+  }
+
+  function onEnd(e: AnimationEvent) {
+    if (e.animationName && e.animationName.indexOf('yipet-' + action.name) === 0) {
+      cleanup();
+    }
+  }
+
+  el.addEventListener('animationend', onEnd, { once: false });
+  // Fallback timeout in case animationend doesn't fire
+  setTimeout(() => {
+    if (el.classList.contains('yipet-' + action.name)) {
+      cleanup();
+    }
+  }, action.duration + 300);
+}
+
+function startIdleBehavior(
+  container: HTMLElement,
+  img: HTMLElement,
+): { stop: () => void; pause: () => void; resume: () => void } {
+  const cfg = PET_DEFAULTS.animation.pet;
+
+  const actions: IdleAction[] = [
+    { name: 'wiggle', target: 'overlay', duration: cfg.wagDuration, weight: 30 },
+    { name: 'blink', target: 'img', duration: cfg.blinkDuration, weight: 30 },
+    { name: 'tilt', target: 'overlay', duration: 1200, weight: 25 },
+    { name: 'bounce', target: 'overlay', duration: 400, weight: 15 },
+  ];
+
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let paused = false;
+
+  function scheduleNext() {
+    if (paused) return;
+    const delay = rand(cfg.idleMinInterval, cfg.idleMaxInterval);
+    timer = setTimeout(() => {
+      if (paused) return;
+      // Don't play idle actions while user is dragging
+      if (container.dataset.dragging === 'true') {
+        scheduleNext();
+        return;
+      }
+      const action = pickWeightedAction(actions);
+      triggerPetAction(container, img, action);
+      // Schedule next after this action's duration + cooldown
+      timer = setTimeout(scheduleNext, action.duration + cfg.idleActionCooldown);
+    }, delay);
+  }
+
+  scheduleNext();
+
+  return {
+    stop() {
+      paused = true;
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    },
+    pause() {
+      paused = true;
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    },
+    resume() {
+      paused = false;
+      scheduleNext();
+    },
+  };
+}
+
+// ── Sparkle Particles ───────────────────────────────────────────────────
+
+function createSparkles(container: HTMLElement, count: number, duration: number): void {
+  for (let i = 0; i < count; i++) {
+    const sparkle = document.createElement('span');
+    sparkle.className = 'yipet-sparkle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 40;
+    sparkle.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+    sparkle.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+    container.appendChild(sparkle);
+    sparkle.addEventListener('animationend', () => {
+      sparkle.remove();
+    }, { once: true });
+  }
+  // Cleanup any stragglers
+  setTimeout(() => {
+    container.querySelectorAll('.yipet-sparkle').forEach((s) => s.remove());
+  }, duration + 100);
+}
+
+// ── Thought Bubbles ─────────────────────────────────────────────────────
+
+function startThoughtBubbles(
+  container: HTMLElement,
+): { stop: () => void; pause: () => void; resume: () => void } {
+  const cfg = PET_DEFAULTS.animation.pet;
+  const bubbles = PET_DEFAULTS.constants.ANIMATION.IDLE_BUBBLES;
+
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let paused = false;
+  let bubbleEl: HTMLElement | null = null;
+
+  function showBubble() {
+    if (paused) return;
+    if (bubbleEl) bubbleEl.remove();
+
+    bubbleEl = document.createElement('div');
+    bubbleEl.className = 'yipet-thought-bubble';
+    bubbleEl.textContent = pickRandom(bubbles);
+    container.appendChild(bubbleEl);
+
+    // Trigger in animation
+    requestAnimationFrame(() => {
+      if (!bubbleEl) return;
+      bubbleEl.classList.add('in');
+    });
+
+    // Start out animation after show duration
+    const outTimer = setTimeout(() => {
+      if (!bubbleEl) return;
+      bubbleEl.classList.add('out');
+      bubbleEl.addEventListener('animationend', (e) => {
+        if (e.animationName === 'yipet-bubble-out' && bubbleEl) {
+          bubbleEl.remove();
+          bubbleEl = null;
+        }
+      }, { once: true });
+      // Fallback cleanup
+      setTimeout(() => {
+        if (bubbleEl) { bubbleEl.remove(); bubbleEl = null; }
+      }, 400);
+    }, cfg.thoughtBubbleShowDuration);
+
+    // Schedule next bubble
+    const nextDelay = cfg.thoughtBubbleShowDuration + 400 + rand(cfg.thoughtBubbleMinInterval, cfg.thoughtBubbleMaxInterval);
+    timer = setTimeout(showBubble, nextDelay);
+  }
+
+  // Initial delay before first bubble
+  timer = setTimeout(showBubble, rand(cfg.thoughtBubbleMinInterval, cfg.thoughtBubbleMaxInterval));
+
+  return {
+    stop() {
+      paused = true;
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+      if (bubbleEl) { bubbleEl.remove(); bubbleEl = null; }
+    },
+    pause() {
+      paused = true;
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    },
+    resume() {
+      paused = false;
+      timer = setTimeout(showBubble, rand(2000, cfg.thoughtBubbleMinInterval));
+    },
+  };
+}
+
 // ── Main ────────────────────────────────────────────────────────────────
 
 export function createPetOverlay(
@@ -45,8 +458,12 @@ export function createPetOverlay(
   BASE: string,
   initialColor: number,
   initialRole: string,
+  initialVisible: boolean,
 ): void {
   const injector = createInjector(BASE);
+
+  // Inject animation stylesheet (once, idempotent)
+  injectPetStylesheet();
 
   // ── window.YiPet API ────────────────────────────────────────────────
 
@@ -236,26 +653,33 @@ export function createPetOverlay(
   // ── Pet Overlay DOM ──────────────────────────────────────────────────
 
   const extRoot = BASE.replace(/cdn\/$/, '');
+  const animCfg = PET_DEFAULTS.animation.pet;
 
   const petContainer = document.createElement('div');
   petContainer.id = 'yipet-overlay';
   petContainer.style.cssText =
-    'position:fixed;bottom:20%;right:20px;z-index:2147483647;' +
-    'transition:opacity 100ms ease;opacity:0;pointer-events:none;' +
+    'position:fixed;bottom:20%;right:20px;z-index:2147483645;' +
+    'transition:opacity 100ms ease;opacity:' + (initialVisible ? '1' : '0') + ';pointer-events:' + (initialVisible ? 'auto' : 'none') + ';' +
     'padding:10px;border-radius:50%;' +
-    // Theme gradient ring — the pet's "skin" follows the active color theme
-    // via --primary-gradient / --primary-rgb, injected by applyThemeColors.
     'background:var(--primary-gradient,linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%));' +
     'box-shadow:0 10px 30px rgba(var(--primary-rgb,102,126,234),0.45),' +
     '0 0 0 1px rgba(255,255,255,0.08) inset;';
   petContainer.setAttribute('data-pet', 'yipet');
+  // Set CSS custom properties for animation durations
+  petContainer.style.setProperty('--yipet-float-dur', animCfg.floatDuration + 'ms');
+  petContainer.style.setProperty('--yipet-wag-dur', animCfg.wagDuration + 'ms');
+  petContainer.style.setProperty('--yipet-blink-dur', animCfg.blinkDuration + 'ms');
+  petContainer.style.setProperty('--yipet-glow-dur', animCfg.glowPulseDuration + 'ms');
+  petContainer.style.setProperty('--yipet-ring-dur', animCfg.ringRotateDuration + 'ms');
+
   const petImg = document.createElement('img');
   petImg.id = 'yipet-pet-img';
   petImg.alt = 'YiPet';
   petImg.title = initialRole;
   petImg.style.cssText =
     `width:${PET_DEFAULTS.pet.defaultSize}px;height:auto;` +
-    'border-radius:50%;display:block;user-select:none;';
+    'border-radius:50%;display:block;user-select:none;' +
+    'position:relative;z-index:1;';
   petImg.draggable = false;
   petImg.src =
     extRoot + 'assets/images/' + initialRole.toLowerCase().replace(/\s+/g, '-') + '/icon.png';
@@ -263,6 +687,31 @@ export function createPetOverlay(
 
   // Double-click pet to toggle chat window
   petImg.style.cursor = 'grab';
+
+  // ── Always-on ambient animation classes ──────────────────────────────
+
+  if (initialVisible) {
+    petContainer.classList.add('yipet-entrance');
+    petContainer.addEventListener('animationend', function onEntrance(e: AnimationEvent) {
+      if (e.animationName && e.animationName.indexOf('yipet-entrance') === 0) {
+        petContainer.classList.remove('yipet-entrance');
+        petContainer.classList.add('yipet-ambient');
+        petContainer.removeEventListener('animationend', onEntrance);
+      }
+    });
+  }
+
+  // ── Idle behavior & thought bubbles ──────────────────────────────────
+
+  const idleCtrl = startIdleBehavior(petContainer, petImg);
+  const bubbleCtrl = startThoughtBubbles(petContainer);
+
+  if (!initialVisible) {
+    idleCtrl.pause();
+    bubbleCtrl.pause();
+  }
+
+  // ── Drag Handling ────────────────────────────────────────────────────
 
   let dragState: {
     startX: number;
@@ -286,6 +735,8 @@ export function createPetOverlay(
       moved: false,
     };
     petImg.style.cursor = 'grabbing';
+    petContainer.dataset.dragging = 'true';
+    petContainer.classList.add('yipet-hover');
     document.addEventListener('mousemove', onDocMouseMove);
     document.addEventListener('mouseup', endDrag);
     document.addEventListener('touchmove', onDocTouchMove, { passive: true });
@@ -314,13 +765,23 @@ export function createPetOverlay(
 
   function endDrag() {
     if (!dragState) return;
+    const wasMoved = dragState.moved;
     dragState = null;
     petImg.style.cursor = 'grab';
+    delete petContainer.dataset.dragging;
+    petContainer.classList.remove('yipet-hover');
     document.removeEventListener('mousemove', onDocMouseMove);
     document.removeEventListener('mouseup', endDrag);
     document.removeEventListener('touchmove', onDocTouchMove);
     document.removeEventListener('touchend', endDrag);
     document.removeEventListener('touchcancel', endDrag);
+
+    // Click feedback (not a drag): bounce + sparkles
+    if (!wasMoved) {
+      const bounceAction: IdleAction = { name: 'bounce', target: 'overlay', duration: 400, weight: 0 };
+      triggerPetAction(petContainer, petImg, bounceAction);
+      createSparkles(petContainer, animCfg.sparkleCount, animCfg.sparkleDuration);
+    }
   }
 
   petImg.addEventListener('mousedown', (e) => {
@@ -362,44 +823,39 @@ export function createPetOverlay(
 
   // ── Event Listeners ──────────────────────────────────────────────────
 
+  // Visibility — relay.ts updates DOM directly; we only manage animations.
   window.addEventListener('yipet:visibilityChanged', ((e: CustomEvent) => {
     ensureOverlayInDOM();
     const visible = e.detail.visible;
-    petContainer.style.opacity = visible ? '1' : '0';
-    petContainer.style.pointerEvents = visible ? 'auto' : 'none';
-  }) as EventListener);
-
-  window.addEventListener('yipet:sizeChanged', ((e: CustomEvent) => {
-    petImg.style.width = String(e.detail.size) + 'px';
-  }) as EventListener);
-
-  window.addEventListener('yipet:roleChanged', ((e: CustomEvent) => {
-    const role = String(e.detail.role || 'teacher')
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-    petImg.src = extRoot + 'assets/images/' + role + '/icon.png';
-    // Surface the canonical role name as a native tooltip on hover.
-    if (e.detail.role) {
-      petImg.title = String(e.detail.role);
+    if (visible) {
+      petContainer.classList.add('yipet-entrance');
+      petContainer.addEventListener('animationend', function onEntrance(e: AnimationEvent) {
+        if (e.animationName && e.animationName.indexOf('yipet-entrance') === 0) {
+          petContainer.classList.remove('yipet-entrance');
+          petContainer.classList.add('yipet-ambient');
+          petContainer.removeEventListener('animationend', onEntrance);
+        }
+      });
+      idleCtrl.resume();
+      bubbleCtrl.resume();
+    } else {
+      petContainer.classList.remove(
+        'yipet-ambient', 'yipet-entrance',
+        'yipet-wiggle', 'yipet-bounce', 'yipet-tilt',
+      );
+      petImg.classList.remove('yipet-blink');
+      idleCtrl.pause();
+      bubbleCtrl.pause();
     }
-    if (e.detail.systemPrompt) {
-      petContainer.dataset.systemPrompt = String(e.detail.systemPrompt);
-    }
   }) as EventListener);
 
-  window.addEventListener('yipet:colorChanged', ((e: CustomEvent) => {
-    const idx = Number(e.detail.color) || 0;
-    petContainer.dataset.colorIndex = String(idx);
-    applyThemeColors(document.documentElement, idx);
-  }) as EventListener);
-
+  // Chat toggle — dispatched by relay.ts.
   window.addEventListener('yipet:chatToggled', (() => {
     const w = window as unknown as Record<string, unknown>;
     const chat = w.YiPetChat as { toggle: () => void } | undefined;
     if (!chat) {
       w.__yipetPendingChatToggle = true;
     }
-    // When chat is loaded, index.tsx's own listener handles the toggle.
   }) as EventListener);
 
   // ── Auto-load JS ─────────────────────────────────────────────────────

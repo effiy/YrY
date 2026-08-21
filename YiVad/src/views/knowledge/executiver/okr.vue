@@ -1,6 +1,5 @@
 <template>
   <div class="okr">
-    <ExecutiverQuickNav active="okr" />
     <div class="okr__head">
       <RoleNav v-model="selectedRoles" multiple all />
       <div class="okr__filters">
@@ -93,7 +92,7 @@
         </el-table-column>
         <el-table-column prop="roleName" label="Role" width="180" sortable>
           <template #default="{ row }">
-            <RoleLink :role="row.linkRole" :role-name="row.roleName" :role-icon="row.roleIcon" />
+            <RoleLink :role="row.linkRole" :role-name="row.roleName" :role-icon="row.roleIcon" to="" />
           </template>
         </el-table-column>
         <el-table-column label="Goal" width="280">
@@ -201,11 +200,10 @@ import dayjs from "dayjs";
 import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { loadBool, saveBool } from "@/utils/storage";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { EXAMPLE_TASKS, type ExampleTask, type ExampleSubtask } from "@/views/knowledge/executiver/okrFlowData";
 import { rolesData, roleWeeklyDataMap, goalRoleMap } from "@/views/knowledge/executiver/okrData";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 import PriorityTag from "@/components/OkrRecommend/fields/PriorityTag.vue";
 import RoleLink from "@/components/OkrRecommend/fields/RoleLink.vue";
 import GoalCell from "@/components/OkrRecommend/fields/GoalCell.vue";
@@ -526,7 +524,7 @@ function openFile(item: ActionItem) {
   if (item.filePath) previewDlg.value?.open(item.filePath);
 }
 function goRole(roleId?: string) {
-  if (roleId) router.push(`/executiver/okr/${roleId}`);
+  if (roleId) router.push(`/${roleId}`);
 }
 function deadlineHint(item: ActionItem): string {
   if (!item.deadline) return "";

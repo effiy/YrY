@@ -1,9 +1,7 @@
 /**
- * Toast notification controller — thin wrapper over antd `message` static API.
- * Toast lifetime is managed by antd internally; dismiss() is a no-op kept
- * for interface compatibility.
+ * Toast notification controller — thin wrapper over Element Plus ElMessage.
  */
-import { message as antdMessage } from 'antd';
+import { ElMessage } from 'element-plus';
 
 export interface NotifyController {
   show(message: string, type?: 'success' | 'error' | 'info' | 'warning'): void;
@@ -13,10 +11,10 @@ export interface NotifyController {
 export function createNotifyController(): NotifyController {
   return {
     show(msg: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
-      antdMessage[type](msg);
+      ElMessage[type](msg);
     },
     dismiss(): void {
-      /* no-op — antd message auto-dismisses */
+      ElMessage.closeAll();
     },
   };
 }

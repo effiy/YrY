@@ -14,9 +14,11 @@ roles: [executiver]
 benefit: "Executives find strategy, industry intelligence, and roadmap content in one index"
 acceptance_criteria:
   - "4 subdirectories with README files"
+  - "OKR goals and metrics in okr/2026-Q3/"
 related:
   - ./README.md
   - ../INDEX.md
+  - ../okr/2026-Q3/goals/executiver/README.md
 ---
 
 # Executiver — Role Index
@@ -31,6 +33,7 @@ related:
 | [industry/](./industry/) | Industry reports, competitors, market trends |
 | [roadmap/](./roadmap/) | Organizational roadmap, strategic planning |
 | [reading-list/](./reading-list/) | Executive reading and learning resources |
+| [../okr/2026-Q3/goals/executiver/](../okr/2026-Q3/goals/executiver/) | Q3 2026 OKR goals, metrics, and key result evidence |
 
 ## Cross-role references
 

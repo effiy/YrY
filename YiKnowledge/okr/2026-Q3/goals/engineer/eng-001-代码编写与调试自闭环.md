@@ -1,0 +1,32 @@
+---
+type: okr-goal
+id: eng-001
+title: 代码编写与调试自闭环
+status: active
+period: 2026 Q3
+owner: Engineering Lead
+project: YiVad
+progress: 100
+---
+
+# ⚡ 代码编写与调试自闭环
+
+作为代码编写与调试拥有者，把需求实现为可构建代码（0 人工编码介入），改动文件 0 新增类型错误，调试过程（问题→修复→验证）留痕落知识库（03-build-debug），构建门禁通过。
+
+| Field | Value |
+|---|---|
+| ID | `eng-001` |
+| Status | active |
+| Period | 2026 Q3 |
+| Owner | Engineering Lead |
+| Project | YiVad |
+
+## Key Results (4)
+- KR1: 需求实现为可构建代码（0 人工编码介入） — 100%
+- KR2: 改动文件 0 新增类型错误 — 100%
+- KR3: 调试过程（问题→修复→验证）落知识库（03-build-debug） — 100%
+- KR4: 构建门禁（vue-tsc + build）通过 — 100%
+
+## Related Metrics (2)
+- 🧹 0 新增类型错误 (`eng-m01`) — 0 个 / 0 个 · 100%
+- 🏗️ 构建通过 (`eng-m02`) — 100% / 100% · 100%

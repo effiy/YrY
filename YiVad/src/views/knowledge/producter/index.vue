@@ -11,7 +11,7 @@
       <RoleNav active="producter" />
     </template>
     <template #header>
-      <ExecutiverQuickNav />
+      <ExecutiverQuickNav role="producter" />
     </template>
   </RoleKnowledgePage>
 </template>

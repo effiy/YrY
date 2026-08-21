@@ -37,11 +37,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 onBeforeMount(() => props.collapsed && findIndex());
 onMounted(() => {
-  resize({ target: { innerWidth: window.innerWidth } } as unknown as UIEvent);
+  resize({ target: window } as unknown as UIEvent);
   window.addEventListener("resize", resize);
 });
 onActivated(() => {
-  resize({ target: { innerWidth: window.innerWidth } } as unknown as UIEvent);
+  resize({ target: window } as unknown as UIEvent);
   window.addEventListener("resize", resize);
 });
 onUnmounted(() => {
@@ -125,9 +125,7 @@ const findIndex = () => {
       return prev;
     }, 0);
     if (!find) hiddenIndex.value = -1;
-  } catch (e) {
-    // console.warn(e);
-  }
+  } catch (_e) { /* findIndex may throw on edge cases */ }
 };
 
 // Execute findIndex when breakpoint changes

@@ -17,15 +17,16 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
         if os.path.exists(config_file):
             with open(config_file, 'r', encoding='utf-8') as f:
                 data = yaml.safe_load(f) or {}
-                self.data = self._flatten(data)
+                self.data = YamlConfigSettingsSource._flatten(data)
         self.data = {k: os.path.expanduser(v) if isinstance(v, str) else v for k, v in self.data.items()}
 
-    def _flatten(self, d: Dict[str, Any], parent_key: str = '', sep: str = '_') -> Dict[str, Any]:
+    @staticmethod
+    def _flatten(d: Dict[str, Any], parent_key: str = '', sep: str = '_') -> Dict[str, Any]:
         items = []
         for k, v in d.items():
             new_key = f"{parent_key}{sep}{k}" if parent_key else k
             if isinstance(v, dict):
-                items.extend(self._flatten(v, new_key, sep=sep).items())
+                items.extend(YamlConfigSettingsSource._flatten(v, new_key, sep=sep).items())
             else:
                 items.append((new_key, v))
         return dict(items)
@@ -41,10 +42,9 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
     def __call__(self) -> Dict[str, Any]:
         return self.data
 
-MB = 1024 * 1024
-
-
 class Settings(BaseSettings):
+    _MB = 1024 * 1024
+
     # Server
     server_host: str = Field("0.0.0.0", validation_alias="server_host")
     server_port: int = Field(8000, validation_alias="server_port")
@@ -188,14 +188,25 @@ class Settings(BaseSettings):
     rag_embed_model: str = Field("nomic-embed-text", validation_alias="rag_embed_model")
     rag_llm_model: str = Field("qwen3.5:4b", validation_alias="rag_llm_model")
     rag_persist_dir: str = Field("./data/rag_store", validation_alias="rag_persist_dir")
-    rag_top_k: int = Field(4, validation_alias="rag_top_k")
-    rag_chunk_size: int = Field(1024, validation_alias="rag_chunk_size")
-    rag_chunk_overlap: int = Field(80, validation_alias="rag_chunk_overlap")
+    rag_top_k: int = Field(3, validation_alias="rag_top_k")
+    rag_chunk_size: int = Field(512, validation_alias="rag_chunk_size")
+    rag_chunk_overlap: int = Field(40, validation_alias="rag_chunk_overlap")
     rag_auto_rebuild_enabled: bool = Field(True, validation_alias="rag_auto_rebuild_enabled")
     rag_auto_rebuild_debounce_seconds: int = Field(30, validation_alias="rag_auto_rebuild_debounce_seconds")
     rag_hybrid_retrieval_enabled: bool = Field(True, validation_alias="rag_hybrid_retrieval_enabled")
     rag_rerank_enabled: bool = Field(False, validation_alias="rag_rerank_enabled")
     rag_inline_citations_enabled: bool = Field(True, validation_alias="rag_inline_citations_enabled")
+    rag_chat_timeout: int = Field(180, validation_alias="rag_chat_timeout")
+    rag_llm_request_timeout: int = Field(120, validation_alias="rag_llm_request_timeout")
+    rag_num_predict: int = Field(512, validation_alias="rag_num_predict")
+    rag_temperature: float = Field(0.0, validation_alias="rag_temperature")
+    rag_context_chunks: int = Field(4, validation_alias="rag_context_chunks")
+    rag_snippet_chars: int = Field(600, validation_alias="rag_snippet_chars")
+    rag_history_msgs: int = Field(6, validation_alias="rag_history_msgs")
+    rag_history_chars: int = Field(500, validation_alias="rag_history_chars")
+    rag_hyde_enabled: bool = Field(False, validation_alias="rag_hyde_enabled")
+    rag_sentence_window_enabled: bool = Field(True, validation_alias="rag_sentence_window_enabled")
+    rag_sentence_window_size: int = Field(3, validation_alias="rag_sentence_window_size")
 
     # Logging
     logging_level: str = Field("INFO", validation_alias="logging_level")
@@ -224,38 +235,31 @@ class Settings(BaseSettings):
 
     @property
     def static_max_zip_size(self) -> int:
-        return self.static_max_zip_size_mb * MB
+        return self.static_max_zip_size_mb * Settings._MB
 
     @property
     def oss_max_file_size(self) -> int:
-        return self.oss_max_file_size_mb * MB
+        return self.oss_max_file_size_mb * Settings._MB
 
     def get_cors_origins(self) -> List[str]:
         if isinstance(self.cors_origins, str) and self.cors_origins == "*":
             return ["*"]
-        if isinstance(self.cors_origins, str):
-             return [item.strip() for item in self.cors_origins.split(',') if item.strip()]
-        return self.cors_origins
+        return Settings._to_list(self.cors_origins)
 
-    def _to_list(self, value: Union[str, List[str]]) -> List[str]:
+    @staticmethod
+    def _to_list(value: Union[str, List[str]]) -> List[str]:
         if isinstance(value, str):
             return [item.strip() for item in value.split(',') if item.strip()]
         return value
 
     def get_throttle_whitelist(self) -> List[str]:
-        return self._to_list(self.observer_throttle_whitelist)
+        return Settings._to_list(self.observer_throttle_whitelist)
 
     def get_sandbox_fs_allowlist(self) -> List[str]:
-        return self._to_list(self.observer_sandbox_fs_allowlist)
+        return Settings._to_list(self.observer_sandbox_fs_allowlist)
 
     def get_sandbox_network_allowlist(self) -> List[str]:
-        return self._to_list(self.observer_sandbox_network_allowlist)
-
-    # Compat methods
-    def is_startup_init_database_enabled(self) -> bool: return self.startup_init_database
-    def is_startup_init_rss_enabled(self) -> bool: return self.startup_init_rss_system
-    def is_rss_scheduler_enabled(self) -> bool: return self.rss_scheduler_enabled
-    def is_auth_middleware_enabled(self) -> bool: return self.middleware_auth_enabled
+        return Settings._to_list(self.observer_sandbox_network_allowlist)
 
     @property
     def auth_token(self) -> str:

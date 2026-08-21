@@ -6,10 +6,9 @@ import { useResizable } from "@/hooks/useResizable";
 import AiChatBox from "@/components/AiChatBox/AiChatBox.vue";
 import ConversationSidebar from "./components/ConversationSidebar.vue";
 import SessionEditDialog from "./components/SessionEditDialog.vue";
-import PageContextEditor from "./components/PageContextEditor.vue";
 import TagManagerDialog from "./components/TagManagerDialog.vue";
 import WeChatSettingsDialog from "./components/WeChatSettingsDialog.vue";
-import KnowledgePreviewDialog from "./components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 
 const store = useAiChatStore();
 const route = useRoute();
@@ -49,16 +48,15 @@ watch(
 
 <template>
   <div class="ai-chat">
-    <aside class="ai-chat__side" :style="{ width: sidebarW + 'px' }">
+    <aside v-if="store.knowledgeSidebarVisible" class="ai-chat__side" :style="{ width: sidebarW + 'px' }">
       <ConversationSidebar />
     </aside>
-    <div class="ai-chat__resizer" @pointerdown="startResize" />
+    <div v-if="store.knowledgeSidebarVisible" class="ai-chat__resizer" @pointerdown="startResize" />
     <section class="ai-chat__main">
       <AiChatBox />
     </section>
     <KnowledgePreviewDialog ref="previewDlg" />
     <SessionEditDialog />
-    <PageContextEditor />
     <TagManagerDialog />
     <WeChatSettingsDialog />
   </div>

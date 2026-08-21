@@ -54,7 +54,7 @@ describe('popup data adapter', () => {
     });
 
     it('exports DEFAULTS', () => {
-      expect(popupConfig.DEFAULTS.VISIBLE).toBe(false);
+      expect(popupConfig.DEFAULTS.VISIBLE).toBe(true);
       expect(popupConfig.DEFAULTS.SIZE).toBe(120);
       expect(popupConfig.DEFAULTS.ROLE).toBe('Teacher');
       expect(popupConfig.DEFAULTS.COLOR).toBe(0);

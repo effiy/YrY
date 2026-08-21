@@ -798,7 +798,6 @@ def _bound_tool_result(
     tail_start = max(head_end, total - int(max_chars * 0.22))
     head = content[:head_end]
     tail = content[tail_start:]
-    omitted_chars = total - len(head) - len(tail)
     omitted_lines = content.count("\n", head_end, tail_start)
     note = (
         f"\n... [result truncated for context: {total:,} chars, "
@@ -851,9 +850,10 @@ async def _compact_messages(
     )
 
     try:
-        from services.ai.model_runtime import OllamaRuntime
+        from services.ai.model_runtime import get_runtime
+        from shared.config import settings
 
-        runtime = OllamaRuntime()
+        runtime = get_runtime(settings.ai_provider or "ollama")
         result = await runtime.complete(
             messages=[{"role": "user", "content": summary_prompt}],
             model=model,
@@ -1883,8 +1883,9 @@ async def _stream_llm_response(
     abort: asyncio.Event,
     images: Optional[List[bytes]] = None,
 ) -> AsyncIterator[Dict[str, Any]]:
-    """Stream an LLM response via Ollama, yielding deltas and tool calls."""
-    from services.ai.model_runtime import OllamaRuntime
+    """Stream an LLM response via the configured provider, yielding deltas and tool calls."""
+    from services.ai.model_runtime import get_runtime
+    from shared.config import settings
     from domain.ai.tools import ToolCall
 
     tool_defs = registry.get_function_definitions()
@@ -1910,7 +1911,7 @@ async def _stream_llm_response(
     if full_system:
         ollama_messages.insert(0, {"role": "system", "content": full_system})
 
-    runtime = OllamaRuntime()
+    runtime = get_runtime(settings.ai_provider or "ollama")
     max_attempts = max(1, config.llm_max_retries + 1)
 
     # Pi: retry transient LLM failures (connection reset, model still loading into

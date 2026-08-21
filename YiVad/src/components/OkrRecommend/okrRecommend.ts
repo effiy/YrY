@@ -12,25 +12,101 @@
 //   4. 解析模型返回的 JSON（容错）
 // ═══════════════════════════════════════════════════════════════════
 import dayjs from "dayjs";
-import {
-  rolesData,
-  goalsData,
-  metricsData,
-  allMetricsMap,
-  getGoalMetrics,
-  roleDailyDataMap,
-  roleWeeklyDataMap
-} from "@/views/knowledge/executiver/okrData";
-import type { GoalItem, MetricItem } from "@/views/knowledge/executiver/okrData";
 import { skills as SKILLS } from "@/views/knowledge/skills/constants";
 import { applyOrchestration, type OkrMcp } from "./okrOrchestration";
+
+// ── In-memory metadata types (API data shapes after transformation) ─
+
+interface KeyResult {
+  text: string;
+  progress: number;
+  file?: string;
+}
+
+interface GoalItem {
+  id: string; icon: string; title: string; status: string;
+  description: string; period: string; owner: string; project: string;
+  keyResults: KeyResult[];
+}
+
+interface MetricItem {
+  id: string; icon: string; name: string; category: string; framework: string;
+  description: string; current: number; target: number; baseline: number;
+  unit: string; trend: string; progress: number;
+}
+
+interface DailyRoleData {
+  yesterday: string[];
+  today: string[];
+  blocker: string;
+  mood: string;
+  moodType: string;
+}
+
+interface WeeklyItem {
+  text: string;
+  file?: string;
+}
+
+interface WeeklyRoleData {
+  status: string;
+  statusType: string;
+  done: WeeklyItem[];
+  blockers: WeeklyItem[];
+  nextWeek: WeeklyItem[];
+  decisions: WeeklyItem[];
+}
+
+interface RoleMeta {
+  id: string; name: string; icon: string; dir: string;
+  description: string; projects: string[]; categories: string[];
+}
+
+/** Metadata context — when provided from API, overrides static imports. */
+export interface OkrMetadataContext {
+  rolesData: Record<string, RoleMeta>;
+  goalsData: Record<string, GoalItem[]>;
+  metricsData: Record<string, MetricItem[]>;
+  allMetricsMap: Record<string, MetricItem>;
+  goalMetricMap: Record<string, string[]>;
+  roleDailyDataMap: Record<string, DailyRoleData>;
+  roleWeeklyDataMap: Record<string, WeeklyRoleData>;
+}
+
+function rd(ctx?: OkrMetadataContext) {
+  return ctx?.rolesData ?? ({} as Record<string, RoleMeta>);
+}
+function gd(ctx?: OkrMetadataContext) {
+  return ctx?.goalsData ?? ({} as Record<string, GoalItem[]>);
+}
+function md(ctx?: OkrMetadataContext) {
+  return ctx?.metricsData ?? ({} as Record<string, MetricItem[]>);
+}
+function amm(ctx?: OkrMetadataContext) {
+  return ctx?.allMetricsMap ?? ({} as Record<string, MetricItem>);
+}
+function gmm(ctx?: OkrMetadataContext) {
+  return ctx?.goalMetricMap ?? ({} as Record<string, string[]>);
+}
+function rdd(ctx?: OkrMetadataContext) {
+  return ctx?.roleDailyDataMap ?? ({} as Record<string, DailyRoleData>);
+}
+function rwd(ctx?: OkrMetadataContext) {
+  return ctx?.roleWeeklyDataMap ?? ({} as Record<string, WeeklyRoleData>);
+}
+
+function getGoalMetrics(goalId: string, ctx?: OkrMetadataContext): MetricItem[] {
+  const map = ctx?.goalMetricMap ?? {};
+  const metrics = ctx?.allMetricsMap ?? {};
+  return (map[goalId] || []).map((id: string) => metrics[id]).filter(Boolean);
+}
 
 /** 供 system prompt 使用的技能 id 清单（AI 从中选择 skill）。 */
 const SKILL_ID_LIST = SKILLS.map(s => s.id).join(", ");
 
 // ── 类型 ────────────────────────────────────────
 
-export type OkrListType = "daily" | "weekly" | "risk" | "sprint";
+export type OkrListType = "daily" | "weekly" | "risk";
 export type OkrScope = "all" | string; // "all" 或具体角色 id
 
 export type OkrPriority = "P0" | "P1" | "P2" | "P3";
@@ -73,8 +149,7 @@ export interface OkrListMeta {
 export const LIST_TYPES: OkrListMeta[] = [
   { key: "daily", icon: "📅" },
   { key: "weekly", icon: "🗓" },
-  { key: "risk", icon: "🚨" },
-  { key: "sprint", icon: "🎯" }
+  { key: "risk", icon: "🚨" }
 ];
 
 const VALID_EFFORT = ["S", "M", "L"] as const;
@@ -135,13 +210,14 @@ function clampPriority(v: unknown): OkrPriority {
 
 /** 解析任务的指标数据：优先 metricId，其次 goalId 关联的首指标，最后回退到角色首指标。
  *  保证「每个任务都有自己的指标数据」。 */
-export function resolveMetric(roleId: string, metricId: string, goalId: string): MetricItem | null {
-  if (metricId && allMetricsMap[metricId]) return allMetricsMap[metricId];
+export function resolveMetric(roleId: string, metricId: string, goalId: string, ctx?: OkrMetadataContext): MetricItem | null {
+  const am = amm(ctx);
+  if (metricId && am[metricId]) return am[metricId];
   if (goalId) {
-    const fromGoal = getGoalMetrics(goalId);
+    const fromGoal = getGoalMetrics(goalId, ctx);
     if (fromGoal.length) return fromGoal[0];
   }
-  return (metricsData[roleId] || [])[0] ?? null;
+  return (md(ctx)[roleId] || [])[0] ?? null;
 }
 
 // ── 指标数据 ⇄ 扁平 frontmatter ───────────────
@@ -177,10 +253,11 @@ export function metricFromMeta(
   meta: Record<string, unknown>,
   roleId: string,
   metricId: string,
-  goalId: string
+  goalId: string,
+  ctx?: OkrMetadataContext
 ): MetricItem | null {
   const name = typeof meta.metricName === "string" ? meta.metricName : "";
-  if (!name) return resolveMetric(roleId, metricId, goalId);
+  if (!name) return resolveMetric(roleId, metricId, goalId, ctx);
   return {
     id: typeof meta.metricId === "string" ? meta.metricId : metricId,
     icon: typeof meta.metricIcon === "string" ? meta.metricIcon : "📊",
@@ -250,8 +327,8 @@ function metricProgress(m: MetricItem): number {
 }
 
 /** 序列化单个角色的目标（按进度升序，滞后优先）。 */
-function formatGoals(roleId: string, limit = 6): string {
-  const goals = goalsData[roleId] || [];
+function formatGoals(roleId: string, ctx?: OkrMetadataContext, limit = 6): string {
+  const goals = gd(ctx)[roleId] || [];
   const sorted = [...goals].sort((a, b) => krAvg(a) - krAvg(b)).slice(0, limit);
   return sorted
     .map(g => {
@@ -262,8 +339,8 @@ function formatGoals(roleId: string, limit = 6): string {
 }
 
 /** 序列化单个角色的指标（按进度升序，滞后优先）。 */
-function formatMetrics(roleId: string, limit = 8): string {
-  const metrics = metricsData[roleId] || [];
+function formatMetrics(roleId: string, ctx?: OkrMetadataContext, limit = 8): string {
+  const metrics = md(ctx)[roleId] || [];
   const sorted = [...metrics].sort((a, b) => metricProgress(a) - metricProgress(b)).slice(0, limit);
   return sorted
     .map(m => `  ${m.id} ${m.name}：当前 ${m.current}${m.unit} / 目标 ${m.target}${m.unit}（${metricProgress(m)}%）`)
@@ -271,10 +348,10 @@ function formatMetrics(roleId: string, limit = 8): string {
 }
 
 /** 单个角色详细上下文（今日 / 本周推荐时用）。 */
-function formatRoleDetail(roleId: string): string {
-  const meta = rolesData[roleId];
-  const daily = roleDailyDataMap[roleId];
-  const weekly = roleWeeklyDataMap[roleId];
+function formatRoleDetail(roleId: string, ctx?: OkrMetadataContext): string {
+  const meta = rd(ctx)[roleId];
+  const daily = rdd(ctx)[roleId];
+  const weekly = rwd(ctx)[roleId];
   if (!meta) return "";
 
   const lines: string[] = [];
@@ -285,9 +362,9 @@ function formatRoleDetail(roleId: string): string {
   if (weekly.nextWeek.length) lines.push(`本周关键：${weekly.nextWeek.map(n => n.text).join("；")}`);
   if (daily?.blocker) lines.push(`今日阻塞：${daily.blocker}`);
   lines.push("目标（按进度升序，滞后优先）：");
-  lines.push(formatGoals(roleId));
+  lines.push(formatGoals(roleId, ctx));
   lines.push("指标（按进度升序，滞后优先）：");
-  lines.push(formatMetrics(roleId));
+  lines.push(formatMetrics(roleId, ctx));
   return lines.join("\n");
 }
 
@@ -303,9 +380,9 @@ function formatHistory(history?: OkrTaskItem[]): string {
 }
 
 /** 单条重生成提示语：为指定角色重新推荐一条任务（替代已失效的旧任务，要求与之不同）。 */
-export function buildSingleItemPrompt(listType: OkrListType, roleId: string, excludeTitle: string, history?: OkrTaskItem[]): string {
-  const ctx = formatRoleDetail(roleId);
-  const label = rolesData[roleId]?.name ?? roleId;
+export function buildSingleItemPrompt(listType: OkrListType, roleId: string, excludeTitle: string, history?: OkrTaskItem[], ctx?: OkrMetadataContext): string {
+  const ctx2 = formatRoleDetail(roleId, ctx);
+  const label = rd(ctx)[roleId]?.name ?? roleId;
   const today = dayjs().format("YYYY-MM-DD");
   const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
   const weekEnd = dayjs().startOf("week").add(5, "day").format("YYYY-MM-DD");
@@ -313,11 +390,9 @@ export function buildSingleItemPrompt(listType: OkrListType, roleId: string, exc
   const focus =
     listType === "risk"
       ? "聚焦该角色的 blockers / blocked 目标，给出「解除阻塞」的下一步动作"
-      : listType === "sprint"
-        ? "聚焦进度最低（< 40%）的 Key Result / 指标，给出本周可完成的推进任务"
-        : listType === "weekly"
-          ? "聚焦本周关键里程碑（nextWeek）与滞后目标"
-          : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
+      : listType === "weekly"
+        ? "聚焦本周关键里程碑（nextWeek）与滞后目标"
+        : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
   const due = listType === "daily" ? `dueDate 取今天（${today}）或明天` : `dueDate 落在本周（${weekStart} ~ ${weekEnd}）`;
 
   let prompt = `请基于以下 OKR 上下文，为「${label}」重新推荐一条任务（仅 1 条）：
@@ -326,7 +401,7 @@ export function buildSingleItemPrompt(listType: OkrListType, roleId: string, exc
 - ${due}。
 
 OKR 上下文：
-${ctx}`;
+${ctx2}`;
 
   const hist = formatHistory(history);
   if (hist) {
@@ -337,23 +412,23 @@ ${ctx}`;
 
 /** 为 Action Item 重新生成更聚焦的标题 + 优先级 + 关联目标（保留既有 deadline / owner / role）。
  *  与任务清单不同：Action Item 有既定截止日期与责任人，AI 只应优化「做什么」与「多优先」。 */
-export function buildActionItemPrompt(roleId: string, currentTitle: string, deadline: string): string {
-  const ctx = formatRoleDetail(roleId);
-  const label = rolesData[roleId]?.name ?? roleId;
+export function buildActionItemPrompt(roleId: string, currentTitle: string, deadline: string, ctx?: OkrMetadataContext): string {
+  const detail = formatRoleDetail(roleId, ctx);
+  const label = rd(ctx)[roleId]?.name ?? roleId;
   return `请基于以下 OKR 上下文，为「${label}」优化一条 Action Item（仅 1 条）：
 - 现有 Action Item：${currentTitle}${deadline ? `（截止 ${deadline}）` : ""}。
 - 请给出一个更具体、可验收、含动作动词的新标题（≤30 字），并重新评估其优先级与关联目标（goalId）。
 - 截止日期保持 ${deadline || "未设"} 不变，只需优化标题、优先级、关联目标。
 
 OKR 上下文：
-${ctx}`;
+${detail}`;
 }
 
 /** 为某清单整体生成推荐任务：scope="all" 覆盖全部角色，否则仅指定角色。
  *  与 buildSingleItemPrompt 的 focus/due 口径一致，仅多角色 + 多条数。 */
-export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPerRole = 2, history?: OkrTaskItem[]): string {
-  const roles = scope === "all" ? Object.keys(rolesData) : [scope];
-  const label = scope === "all" ? "各角色" : rolesData[scope]?.name ?? scope;
+export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPerRole = 2, history?: OkrTaskItem[], ctx?: OkrMetadataContext): string {
+  const roles = scope === "all" ? Object.keys(rd(ctx)) : [scope];
+  const label = scope === "all" ? "各角色" : rd(ctx)[scope]?.name ?? scope;
   const icon = LIST_TYPES.find(l => l.key === listType)?.icon ?? "";
   const today = dayjs().format("YYYY-MM-DD");
   const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
@@ -362,21 +437,19 @@ export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPer
   const focus =
     listType === "risk"
       ? "聚焦各角色的 blockers / blocked 目标，给出「解除阻塞」的下一步动作"
-      : listType === "sprint"
-        ? "聚焦进度最低（< 40%）的 Key Result / 指标，给出本周可完成的推进任务"
-        : listType === "weekly"
-          ? "聚焦本周关键里程碑（nextWeek）与滞后目标"
-          : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
+      : listType === "weekly"
+        ? "聚焦本周关键里程碑（nextWeek）与滞后目标"
+        : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
   const due = listType === "daily" ? `dueDate 取今天（${today}）或明天` : `dueDate 落在本周（${weekStart} ~ ${weekEnd}）`;
 
-  const ctx = roles.map(r => formatRoleDetail(r)).filter(Boolean).join("\n\n");
+  const detail = roles.map(r => formatRoleDetail(r, ctx)).filter(Boolean).join("\n\n");
 
   let prompt = `请基于以下 OKR 上下文，为「${label}」推荐${icon}清单（每角色 ${countPerRole} 条）：
 - ${focus}。
 - ${due}。
 
 OKR 上下文：
-${ctx}`;
+${detail}`;
 
   const hist = formatHistory(history);
   if (hist) {
@@ -392,21 +465,21 @@ function clampEffort(v: unknown): OkrTaskItem["effort"] {
   return (VALID_EFFORT as readonly string[]).includes(s) ? (s as OkrTaskItem["effort"]) : "M";
 }
 
-function roleMeta(roleId: string) {
-  const meta = rolesData[roleId];
+function roleMeta(roleId: string, ctx?: OkrMetadataContext) {
+  const meta = rd(ctx)[roleId];
   return meta ? { roleName: meta.name, roleIcon: meta.icon } : { roleName: roleId, roleIcon: "👤" };
 }
 
 /** 把模型返回的原始对象规整成 OkrTaskItem。 */
-function normalizeItem(raw: unknown, scope: OkrScope, index: number, listType?: OkrListType): OkrTaskItem | null {
+function normalizeItem(raw: unknown, scope: OkrScope, index: number, listType?: OkrListType, ctx?: OkrMetadataContext): OkrTaskItem | null {
   if (!raw || typeof raw !== "object") return null;
   const o = raw as Record<string, unknown>;
   const title = String(o.title ?? "").trim();
   if (!title) return null;
 
   const role = String(o.role ?? "").trim();
-  const validRole = rolesData[role] ? role : scope !== "all" ? scope : "executiver";
-  const { roleName, roleIcon } = roleMeta(validRole);
+  const validRole = rd(ctx)[role] ? role : scope !== "all" ? scope : "executiver";
+  const { roleName, roleIcon } = roleMeta(validRole, ctx);
 
   const dueDate = String(o.dueDate ?? "").trim();
   const goalId = String(o.goalId ?? "").trim();
@@ -466,11 +539,11 @@ function extractJsonArray(text: string): unknown[] | null {
 }
 
 /** 解析模型返回的推荐结果；解析失败返回空数组。 */
-export function parseRecommendation(raw: string, scope: OkrScope, listType?: OkrListType): OkrTaskItem[] {
+export function parseRecommendation(raw: string, scope: OkrScope, listType?: OkrListType, ctx?: OkrMetadataContext): OkrTaskItem[] {
   const arr = extractJsonArray(raw);
   if (!arr) return [];
   return arr
-    .map((item, i) => normalizeItem(item, scope, i, listType))
+    .map((item, i) => normalizeItem(item, scope, i, listType, ctx))
     .filter((x): x is OkrTaskItem => x !== null)
     .sort((a, b) => b.score - a.score); // 综合评分降序，快速见效项排最前
 }
@@ -519,14 +592,14 @@ export function taskToMeta(item: OkrTaskItem, source: "ai" | "fallback"): Record
 }
 
 /** 从 frontmatter 重建任务；无 title 视为无效返回 null。 */
-export function taskFromMeta(meta: Record<string, unknown>, fallbackId: string): OkrTaskItem | null {
+export function taskFromMeta(meta: Record<string, unknown>, fallbackId: string, ctx?: OkrMetadataContext): OkrTaskItem | null {
   const title = typeof meta.title === "string" ? meta.title : "";
   if (!title) return null;
   const role = typeof meta.role === "string" ? meta.role : "executiver";
-  const { roleName, roleIcon } = roleMeta(role);
+  const { roleName, roleIcon } = roleMeta(role, ctx);
   const goalId = typeof meta.goalId === "string" ? meta.goalId : "";
   const metricId = typeof meta.metricId === "string" ? meta.metricId : "";
-  const metric = metricFromMeta(meta, role, metricId, goalId);
+  const metric = metricFromMeta(meta, role, metricId, goalId, ctx);
   return {
     id: typeof meta.id === "string" ? meta.id : fallbackId,
     title,
@@ -556,7 +629,7 @@ export function taskFromMeta(meta: Record<string, unknown>, fallbackId: string):
 
 export interface OkrActionItem extends OkrTaskItem {
   kind: "action";
-  /** Action Item 也归属某个清单（daily/weekly/risk/sprint），随 frontmatter 落盘。 */
+  /** Action Item 也归属某个清单（daily/weekly/risk），随 frontmatter 落盘。 */
   listType: OkrListType;
   status: string;
   progress: number;
@@ -566,11 +639,11 @@ export interface OkrActionItem extends OkrTaskItem {
 }
 
 /** 从 okr-action 的 frontmatter 重建表格行；无 title 视为无效返回 null。 */
-export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: string): OkrActionItem | null {
+export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: string, ctx?: OkrMetadataContext): OkrActionItem | null {
   const title = typeof meta.title === "string" ? meta.title : "";
   if (!title) return null;
   const role = typeof meta.role === "string" ? meta.role : "";
-  const { roleName, roleIcon } = roleMeta(role);
+  const { roleName, roleIcon } = roleMeta(role, ctx);
   const goalId = typeof meta.goal === "string" ? meta.goal : typeof meta.goalId === "string" ? meta.goalId : "";
   const deadline = typeof meta.deadline === "string" ? meta.deadline : "";
   const status = typeof meta.status === "string" ? meta.status : "Planned";
@@ -578,7 +651,7 @@ export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: st
   const priority = clampPriority(meta.priority);
   const metricId = typeof meta.metricId === "string" ? meta.metricId : "";
   const reason = typeof meta.reason === "string" ? meta.reason : "";
-  const listType: OkrListType = LIST_TYPES.some(l => l.key === meta.listType) ? (meta.listType as OkrListType) : "sprint";
+  const listType: OkrListType = LIST_TYPES.some(l => l.key === meta.listType) ? (meta.listType as OkrListType) : "daily";
   return {
     id: typeof meta.id === "string" ? meta.id : fallbackId,
     title,
@@ -588,7 +661,7 @@ export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: st
     priority,
     goalId,
     metricId,
-    metric: resolveMetric(role, metricId, goalId),
+    metric: resolveMetric(role, metricId, goalId, ctx),
     effort: "M",
     dueDate: deadline,
     reason,
@@ -605,6 +678,76 @@ export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: st
     progress,
     owner: typeof meta.owner === "string" ? meta.owner : "",
     subtaskCount: toNumber(meta.subtaskCount),
+    filePath: ""
+  };
+}
+
+// ── API Example Task → 表格行 ─────────────────────
+//
+// 从 MongoDB okr_example_tasks 集合加载的示例任务，直接映射为表格行。
+// 与 AI 推荐任务合并展示，提供「已承诺的执行项」初始数据。
+
+/** API 返回的示例任务形状（最小输入类型，与 okrService 的 OkrExampleTask 对齐）。 */
+export interface ApiExampleTask {
+  key: string;
+  title: string;
+  role: string;
+  roleIcon: string;
+  roleName: string;
+  goalId: string;
+  skill: string;
+  agent: string;
+  mcp: string;
+  listType: string;
+  priority: string;
+  status: string;
+  owner: string;
+  deadline: string;
+  progress: number;
+  description: string;
+  subtasks?: { id: string; title: string; detail: string; acceptance: string }[];
+}
+
+/** 将 API 示例任务转为表格行（OkrActionItem）。 */
+export function exampleTaskToActionItem(raw: ApiExampleTask, ctx?: OkrMetadataContext): OkrActionItem | null {
+  const title = raw.title?.trim();
+  if (!title) return null;
+  const role = raw.role || "";
+  const { roleName, roleIcon } = roleMeta(role, ctx);
+  const goalId = raw.goalId || "";
+  const deadline = raw.deadline || "";
+  const listType: OkrListType = LIST_TYPES.some(l => l.key === raw.listType) ? (raw.listType as OkrListType) : "daily";
+  const priority = clampPriority(raw.priority);
+  const status = raw.status || "Planned";
+  const progress = typeof raw.progress === "number" ? raw.progress : 0;
+  const reason = raw.description || "";
+  const metricId = "";
+  return {
+    id: raw.key,
+    title,
+    role,
+    roleName: roleName || raw.roleName || role,
+    roleIcon: roleIcon || raw.roleIcon || "👤",
+    priority,
+    goalId,
+    metricId,
+    metric: resolveMetric(role, metricId, goalId, ctx),
+    effort: "M",
+    dueDate: deadline,
+    reason,
+    roi: priority === "P0" ? "high" : priority === "P1" ? "medium" : "low",
+    difficulty: "medium",
+    urgency: urgencyFromDue(deadline),
+    score: progress,
+    skill: raw.skill || "",
+    agent: raw.agent || "",
+    mcp: (raw.mcp || "") as OkrMcp,
+    kind: "action",
+    listType,
+    status,
+    progress,
+    owner: raw.owner || "",
+    subtaskCount: raw.subtasks?.length ?? 0,
     filePath: ""
   };
 }

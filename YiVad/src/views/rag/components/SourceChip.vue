@@ -4,7 +4,7 @@
  * score. Used in chat messages, comparison panels, and history detail drawers.
  */
 import { scoreLabel, scoreColor } from "@/views/rag/constants";
-import ScoreBar from "./ScoreBar.vue";
+import ScoreBar from "@/components/ScoreBar/index.vue";
 
 defineProps<{
   source: { file_path: string; score: number };

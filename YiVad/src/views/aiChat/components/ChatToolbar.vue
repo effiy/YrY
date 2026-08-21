@@ -1,15 +1,14 @@
 <script setup lang="ts" name="aiChatToolbar">
 import { inject, ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import {
-  ChatLineSquare, Picture, PriceTag, ChatDotRound, Search, Loading,
-  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Refresh, Download, Grid, Memo
+  ChatLineSquare, Picture, ChatDotRound, Search, Loading,
+  ArrowLeft, ArrowRight, CollectionTag, Delete, Tools, Check, Close, FolderChecked, DocumentCopy, Clock, Cpu, Refresh
 } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { usePromptHistory, clearPromptHistory, removePromptHistoryAt } from "@/hooks/usePromptHistory";
 import { useSlowThreshold } from "@/hooks/useSlowThreshold";
 import { useSparkLegendToggle } from "@/hooks/useSparkLegendToggle";
-import { ragCategories } from "@/api/modules/ragService";
 import RequestStatusButton from "./RequestStatusButton.vue";
 import FaqPopover from "./FaqPopover.vue";
 import AgentSettingsControls from "./AgentSettingsControls.vue";
@@ -68,43 +67,6 @@ const emit = defineEmits<{
   (e: "update-selected-model", model: string): void;
 }>();
 
-// ── KB metadata filters (llama_index MetadataFilters on frontmatter) ──
-// Loaded lazily on first popover open — surfaces the categories + tag counts
-// from the YiKnowledge index so the user can narrow RAG retrieval by
-// frontmatter without typing paths. Like scope, metadata filters disable
-// hybrid (BM25Retriever doesn't support them).
-const filtersPopoverVisible = ref(false);
-const kbCategories = ref<Array<{ name: string; file_count: number }>>([]);
-const kbTags = ref<Record<string, number>>({});
-const filtersLoading = ref(false);
-let filtersLoaded = false;
-async function loadKbFilters(): Promise<void> {
-  if (filtersLoaded || filtersLoading.value) return;
-  filtersLoading.value = true;
-  try {
-    const res = await ragCategories();
-    kbCategories.value = res.categories ?? [];
-    kbTags.value = res.tags ?? {};
-    filtersLoaded = true;
-  } catch { /* best-effort — chip just won't populate */ }
-  finally { filtersLoading.value = false; }
-}
-function onFiltersPopoverOpen(): void {
-  if (!filtersLoaded && !filtersLoading.value) void loadKbFilters();
-}
-const tagOptions = computed(() => {
-  const entries = Object.entries(kbTags.value);
-  return entries
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 50);
-});
-const hasMetaFilter = computed(() => !!(props.ragCategory || (props.ragTags ?? []).length));
-const filterActiveCount = computed(() => (props.ragCategory ? 1 : 0) + ((props.ragTags ?? []).length || 0));
-function clearFilters(): void {
-  emit("update-rag-category", "");
-  emit("update-rag-tags", []);
-}
 const collapseCtx = inject<{ collapsible: boolean; side: "fill" | "right" | "left"; toggle: () => void } | null>(
   "aiChatBoxCollapse", null
 );
@@ -114,29 +76,21 @@ const openKnowledgePreview = inject<(path: string) => void>("openKnowledgePrevie
 const contextPopoverVisible = ref(false);
 const contextFileCount = computed(() => (props.contextFiles ?? []).length);
 
+/** Whether RAG is auto-scoped to session context files. */
+const ragAutoScoped = computed(() => {
+  if (!props.ragToggle || !contextFileCount.value) return false;
+  return true; // When RAG is on and context files exist, they feed into RAG
+});
+
 function handleFileClick(path: string) {
   openKnowledgePreview(path);
   contextPopoverVisible.value = false;
 }
 
-// ── Tool execution status (Pi-inspired: tool_execution_start/end events) ──
 const store = useAiChatStore();
 const { slowThresholdMs } = useSlowThreshold();
 
-// ── RAG options collapse (cleans up the toolbar when RAG overrides are visible) ──
-const ragOptionsExpanded = ref(false);
-
-// ── Model selector options (dedupe + always surface the active model) ──
-const modelOptions = computed(() => {
-  const list = [...(props.availableModels ?? [])];
-  if (props.selectedModel && !list.includes(props.selectedModel)) list.unshift(props.selectedModel);
-  return list;
-});
-
-// ── Prompt history sub-panel (Pi-inspired: recent prompts browser) ──
-// Singleton shared with ChatInput's ArrowUp/ArrowDown recall — pushes there
-// surface here live. List is shown most-recent-last; panel displays reversed
-// so newest is at the top (matches shell `history` reading order).
+// ── Prompt history sub-panel
 const { promptHistory } = usePromptHistory();
 const historyPopoverVisible = ref(false);
 const historyQuery = ref("");
@@ -1423,23 +1377,6 @@ async function runMcpToolInline(tool: McpTool): Promise<void> {
 const showLlmPrompt = ref(false);
 const llmPromptText = computed(() => (store.getToolsForSystemPrompt ?? (() => ""))());
 
-// ── RAG chat-mode picker (llama_index ChatEngine selector) ──
-type ChatMode = "condense_plus_context" | "condense_question" | "context" | "simple";
-const chatModePopoverVisible = ref(false);
-const chatModeOptions: Array<{ value: ChatMode; label: string; desc: string }> = [
-  { value: "condense_plus_context", label: "condense+ctx", desc: "Multi-turn condense + context (default — best for Q&A over a knowledge base)" },
-  { value: "condense_question", label: "condense_q", desc: "Condense history into a single query, then retrieve + answer" },
-  { value: "context", label: "ctx_only", desc: "Last user message + context only — no history condense" },
-  { value: "simple", label: "simple", desc: "Plain LLM, no retrieval — baseline for A/B comparison" },
-];
-const chatModeLabel = computed(() => {
-  const m = (props.ragChatMode ?? "condense_plus_context") as ChatMode;
-  return chatModeOptions.find(o => o.value === m)?.label ?? "condense+ctx";
-});
-function selectChatMode(m: ChatMode) {
-  emit("select-rag-chat-mode", m);
-  chatModePopoverVisible.value = false;
-}
 async function copyLlmPrompt(): Promise<void> {
   try {
     await navigator.clipboard.writeText(llmPromptText.value);
@@ -2379,25 +2316,8 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
       <el-tooltip content="WeCom bot settings" placement="bottom">
         <el-button circle size="default" :icon="ChatDotRound" @click="emit('open-wechat')" />
       </el-tooltip>
-      <el-tooltip content="Browse agent capabilities (tools & skills)" placement="bottom">
-        <el-button circle size="default" :icon="Grid" @click="store.openAgentToolsDrawer()" />
-      </el-tooltip>
-      <el-tooltip content="View agent session log (persisted trajectory)" placement="bottom">
-        <el-button circle size="default" :icon="Memo" @click="store.openAgentSessionLog()" />
-      </el-tooltip>
     </div>
     <div class="ct-right">
-      <!-- Model selector (bound to aiChat store selectedModel/availableModels) -->
-      <el-select
-        v-if="modelOptions.length"
-        :model-value="props.selectedModel"
-        size="small"
-        class="ct-model-select"
-        placeholder="Model"
-        @update:model-value="emit('update-selected-model', $event)"
-      >
-        <el-option v-for="m in modelOptions" :key="m" :label="m" :value="m" />
-      </el-select>
       <!-- Pills group: status toggles -->
       <div class="ct-pills-group">
         <el-popover
@@ -2443,11 +2363,16 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           <el-switch :model-value="webSearchToggle" size="small" @click.stop @update:model-value="emit('toggle-web-search')" />
         </div>
         <div
-          class="ct-pill" :class="{ on: ragToggle }"
-          :title="ragToggle ? 'RAG on — ' + (store.activeTools.find(t => t.name === 'rag_search')?.promptSnippet || 'answers grounded in context files') : 'RAG off — direct chat'"
+          class="ct-pill" :class="{ on: ragToggle, 'ct-pill--auto': ragAutoScoped }"
+          :title="ragToggle
+            ? (ragAutoScoped
+              ? `RAG on — grounded in ${contextFileCount} session context file${contextFileCount > 1 ? 's' : ''}: ${(contextFiles ?? []).join(', ')}`
+              : 'RAG on — searching full knowledge base')
+            : 'RAG off — direct chat'"
           @click="emit('toggle-rag')"
         >
           <el-icon :size="14"><Cpu /></el-icon>
+          <span v-if="ragToggle && ragAutoScoped" class="ct-pill-label ct-pill-label--rag">{{ contextFileCount }}</span>
           <el-switch :model-value="ragToggle" size="small" @click.stop @update:model-value="emit('toggle-rag')" />
         </div>
         <AgentSettingsControls
@@ -2460,131 +2385,6 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
           @update-agent-model-rotation="emit('update-agent-model-rotation', $event)"
           @update-agent-model-fallback="emit('update-agent-model-fallback', $event)"
         />
-      </div>
-      <!-- RAG override chips — collapsible sub-row -->
-      <div v-if="ragToggle" class="ct-rag-options" :class="{ 'is-expanded': ragOptionsExpanded }">
-        <button
-          class="ct-mini ct-rag-toggle"
-          :title="ragOptionsExpanded ? 'Collapse RAG options' : 'Expand RAG options'"
-          @click="ragOptionsExpanded = !ragOptionsExpanded"
-        >{{ ragOptionsExpanded ? '◂' : '▸' }}</button>
-        <template v-if="ragOptionsExpanded">
-          <button
-            class="ct-mini" :class="{ on: ragHybrid }"
-            title="Hybrid: vector + BM25 reciprocal-rank fusion (auto-disabled when scope is active)"
-            @click="emit('toggle-rag-hybrid')"
-          >hybrid</button>
-          <button
-            class="ct-mini" :class="{ on: ragRerank }"
-            title="Rerank: LLMRerank postprocessor (extra LLM call, trims top-k)"
-            @click="emit('toggle-rag-rerank')"
-          >rerank</button>
-          <button
-            class="ct-mini" :class="{ on: ragCitations }"
-            title="Citations: prepend [Source N] to each chunk"
-            @click="emit('toggle-rag-citations')"
-          >citations</button>
-          <button
-            v-if="ragHybrid"
-            class="ct-mini"
-            :class="{ on: ragNumQueries && ragNumQueries > 1 }"
-            :title="`Query variants: ${ragNumQueries} (LLM query expansion, only applied without scope)`"
-            @click="emit('cycle-rag-num-queries')"
-          >Q×{{ ragNumQueries }}</button>
-          <el-popover
-            v-model:visible="chatModePopoverVisible"
-            placement="bottom"
-            :width="280"
-            trigger="click"
-            title="Chat engine mode"
-          >
-            <template #reference>
-              <button
-                class="ct-mini ct-mini--mode"
-                :title="`llama_index ChatEngine: ${ragChatMode}`"
-              >{{ chatModeLabel }}</button>
-            </template>
-            <div class="ct-mode-list">
-              <button
-                v-for="opt in chatModeOptions"
-                :key="opt.value"
-                class="ct-mode-item"
-                :class="{ on: opt.value === ragChatMode }"
-                @click="selectChatMode(opt.value)"
-              >
-                <span class="ct-mode-item-label">{{ opt.label }}</span>
-                <span class="ct-mode-item-desc">{{ opt.desc }}</span>
-              </button>
-            </div>
-          </el-popover>
-          <el-popover
-            v-model:visible="filtersPopoverVisible"
-            placement="bottom"
-            :width="320"
-            trigger="click"
-            title="KB metadata filters"
-            @show="onFiltersPopoverOpen"
-          >
-            <template #reference>
-              <button
-                class="ct-mini"
-                :class="{ on: hasMetaFilter }"
-                :title="hasMetaFilter
-                  ? `Filtering by category='${props.ragCategory || '(any)'}', tags=[${(props.ragTags ?? []).join(', ')}] — hybrid auto-disabled`
-                  : 'Narrow retrieval by frontmatter category / tags (disables hybrid)'"
-              >filter{{ filterActiveCount ? `·${filterActiveCount}` : "" }}</button>
-            </template>
-            <div class="ct-filter-body">
-              <div v-if="filtersLoading && !filtersLoaded" class="ct-filter-loading">Loading…</div>
-              <template v-else>
-                <div class="ct-filter-row">
-                  <label class="ct-filter-label">Category</label>
-                  <el-select
-                    :model-value="props.ragCategory || ''"
-                    size="small"
-                    clearable
-                    placeholder="(any category)"
-                    style="width: 100%;"
-                    @update:model-value="emit('update-rag-category', ($event as string) || '')"
-                  >
-                    <el-option
-                      v-for="cat in kbCategories"
-                      :key="cat.name"
-                      :label="`${cat.name} (${cat.file_count})`"
-                      :value="cat.name"
-                    />
-                  </el-select>
-                </div>
-                <div class="ct-filter-row">
-                  <label class="ct-filter-label">Tags <span class="ct-filter-hint">(AND-combined, max 50)</span></label>
-                  <el-select
-                    :model-value="(props.ragTags ?? []) as string[]"
-                    size="small"
-                    multiple
-                    clearable
-                    filterable
-                    placeholder="(any tags)"
-                    style="width: 100%;"
-                    @update:model-value="emit('update-rag-tags', ($event as string[]) || [])"
-                  >
-                    <el-option
-                      v-for="t in tagOptions"
-                      :key="t.name"
-                      :label="`${t.name} (${t.count})`"
-                      :value="t.name"
-                    />
-                  </el-select>
-                </div>
-                <div v-if="hasMetaFilter" class="ct-filter-warn">
-                  ⚠ Hybrid auto-disabled — BM25 doesn't support metadata filters
-                </div>
-                <div class="ct-filter-actions">
-                  <el-button size="small" text @click="clearFilters">Clear</el-button>
-                </div>
-              </template>
-            </div>
-          </el-popover>
-        </template>
       </div>
       <!-- Running tools indicator -->
       <div v-for="tool in runningTools" :key="tool.name" class="ct-pill on" :title="`Running: ${tool.label}`">
@@ -2648,103 +2448,29 @@ async function probeMcp(server: McpServerConfig): Promise<void> {
 @keyframes ct-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .ct-pill-label { line-height: 1; }
 
-// ── Model selector ──
-.ct-model-select {
-  width: 160px;
-  :deep(.el-select__wrapper) {
-    border-radius: 14px;
-  }
-}
-
-// ── RAG override options (collapsible sub-row) ──
-.ct-rag-options {
-  display: flex;
-  gap: 4px;
+.ct-pill-label--rag {
+  display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-  transition: all .15s;
-  &.is-expanded {
-    padding: 2px 8px;
-  }
-}
-.ct-rag-toggle {
-  font-size: 10px;
-  padding: 0 6px;
-  min-width: 22px;
-  letter-spacing: 0;
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-
-// ── Per-call retrieval override chips ──
-.ct-mini {
-  height: 22px;
-  padding: 0 8px;
-  font-size: 10px;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  font-size: 9px;
   font-weight: 700;
-  line-height: 1;
-  font-family: "SF Mono", Menlo, monospace;
-  letter-spacing: .3px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color-blank);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 11px;
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-  transition: color .12s, background .12s, border-color .12s;
-  &:hover {
-    color: var(--el-text-color-secondary);
-    background: var(--el-fill-color-light);
-  }
+  color: #fff;
+  background: var(--el-color-primary);
+  border-radius: 7px;
+}
+
+.ct-pill--auto {
+  border-color: rgba(34, 197, 94, 0.35);
   &.on {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.3);
   }
 }
-.ct-mini--mode { min-width: 70px; text-align: center; }
 
-// ── KB metadata filters popover (llama_index MetadataFilters) ──
-.ct-filter-body { display: flex; flex-direction: column; gap: 8px; padding: 2px; }
-.ct-filter-row { display: flex; flex-direction: column; gap: 4px; }
-.ct-filter-label {
-  font-size: 11px; font-weight: 600; color: var(--el-text-color-secondary);
-  display: flex; gap: 4px; align-items: baseline;
-}
-.ct-filter-hint { font-size: 10px; font-weight: 400; color: var(--el-text-color-placeholder); }
-.ct-filter-loading { padding: 12px 0; font-size: 12px; color: var(--el-text-color-placeholder); text-align: center; }
-.ct-filter-warn {
-  font-size: 10px; padding: 4px 6px; border-radius: 4px;
-  background: var(--el-color-warning-light-9); color: var(--el-color-warning);
-  border: 1px solid var(--el-color-warning-light-7);
-}
-.ct-filter-actions { display: flex; justify-content: flex-end; gap: 4px; }
-
-// ── Chat-engine mode picker popover (llama_index ChatEngine selector) ──
-.ct-mode-list { display: flex; flex-direction: column; gap: 4px; padding: 2px; }
-.ct-mode-item {
-  display: flex; flex-direction: column; gap: 2px;
-  padding: 6px 8px; text-align: left; cursor: pointer;
-  background: transparent; border: 1px solid transparent; border-radius: 6px;
-  transition: background .12s, border-color .12s;
-  &:hover { background: var(--el-fill-color-light); }
-  &.on { background: var(--el-color-primary-light-9); border-color: var(--el-color-primary-light-5); }
-}
-.ct-mode-item-label {
-  font-family: "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 700;
-  color: var(--el-text-color-primary);
-}
-.ct-mode-item-desc {
-  font-size: 10px; line-height: 1.4;
-  color: var(--el-text-color-secondary);
-}
 .ct-context-list { max-height: 240px; overflow-y: auto; }
 .ct-context-item { display: flex; gap: 4px; align-items: center; padding: 4px 0; font-size: 12px; font-family: "SF Mono", Menlo, monospace; }
 .ct-context-item+.ct-context-item { border-top: 1px solid var(--el-border-color-lighter); }

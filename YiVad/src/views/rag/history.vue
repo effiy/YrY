@@ -43,6 +43,11 @@
       </el-card>
     </div>
 
+    <!-- Charts Row -->
+    <div v-if="history.length" class="rag-section">
+      <QueryTrendsChart :history="history" />
+    </div>
+
     <!-- History Table -->
     <el-card shadow="hover" v-if="filteredHistory.length">
       <el-table
@@ -176,7 +181,8 @@ import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import {
   scoreLabel, bestScore, avgScore, truncateText, formatTimestamp, formatRelativeTime
 } from "@/views/rag/constants";
-import ScoreBar from "./components/ScoreBar.vue";
+import ScoreBar from "@/components/ScoreBar/index.vue";
+import QueryTrendsChart from "./components/QueryTrendsChart.vue";
 import type { RagSource } from "@/api/interface/rag";
 
 const router = useRouter();
@@ -201,7 +207,7 @@ interface HistoryEntry {
   scope: string;
   topK: number;
   sources: RagSource[];
-  timestamp: number;
+  timestamp: string;
   resultCount: number;
   topScore: number;
   avgScore: number;

@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import shutil
+import time
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -34,6 +35,10 @@ logger = logging.getLogger(__name__)
 _kb_index: Optional[Any] = None           # VectorStoreIndex singleton
 _kb_index_built_at: Optional[str] = None  # ISO-ish timestamp string
 _kb_doc_count: int = 0
+
+# Category cache globals
+_last_categories_scan: Optional[float] = None
+_cached_categories: Optional[Dict[str, Any]] = None
 
 # Matches leading YAML frontmatter delimited by `---` lines. CRLF tolerant.
 _FRONTMATTER_RE = re.compile(r"^---\s*\r?\n(.*?)\r?\n---\s*\r?\n?(.*)$", re.DOTALL)
@@ -118,9 +123,16 @@ def _to_rel_file_path(doc: Any) -> str:
 
 
 def build_kb_index() -> Any:
-    """Fresh-build the VectorStoreIndex and persist to disk."""
+    """Fresh-build the VectorStoreIndex and persist to disk.
+
+    Uses ``SentenceWindowNodeParser`` when enabled — each sentence is embedded
+    separately, and at query time a ``MetadataReplacementPostProcessor`` expands
+    the context around matching sentences. This produces richer context than
+    fixed-size chunking for the same embedding cost.
+    """
     global _kb_index, _kb_index_built_at, _kb_doc_count
     from llama_index.core import VectorStoreIndex, StorageContext
+    from llama_index.core.node_parser import SentenceWindowNodeParser, SentenceSplitter
 
     ensure_settings_configured()
     persist = _persist_dir()
@@ -134,9 +146,27 @@ def build_kb_index() -> Any:
         if rel:
             d.id_ = rel
 
+    # Choose node parser based on config
+    if settings.rag_sentence_window_enabled:
+        window_size = settings.rag_sentence_window_size
+        node_parser = SentenceWindowNodeParser.from_defaults(
+            window_size=window_size,
+            window_metadata_key="window",
+            original_text_metadata_key="original_text",
+        )
+        logger.info(f"RAG index using SentenceWindowNodeParser (window={window_size})")
+    else:
+        node_parser = SentenceSplitter(
+            chunk_size=settings.rag_chunk_size,
+            chunk_overlap=settings.rag_chunk_overlap,
+        )
+        logger.info(f"RAG index using SentenceSplitter (chunk={settings.rag_chunk_size}, overlap={settings.rag_chunk_overlap})")
+
+    nodes = node_parser.get_nodes_from_documents(docs)
+
     storage_context = StorageContext.from_defaults()
-    index = VectorStoreIndex.from_documents(
-        docs,
+    index = VectorStoreIndex(
+        nodes,
         storage_context=storage_context,
         show_progress=False,
     )
@@ -282,6 +312,12 @@ async def rebuild_index_async() -> Any:
     return await asyncio.to_thread(rebuild_index)
 
 
+async def preload_kb_index() -> None:
+    """Preload the KB index at startup so the first request doesn't pay the cold-start penalty."""
+    import asyncio
+    await asyncio.to_thread(load_kb_index)
+
+
 def rag_status() -> Dict[str, Any]:
     persist = _persist_dir()
     built = _kb_index is not None or (
@@ -314,8 +350,31 @@ def rag_status() -> Dict[str, Any]:
             "inline_citations": settings.rag_inline_citations_enabled,
             "auto_rebuild": settings.rag_auto_rebuild_enabled,
             "knowledge_base_dir": settings.knowledge_base_dir,
+            "context_chunks": settings.rag_context_chunks,
+            "snippet_chars": settings.rag_snippet_chars,
+            "sentence_window": settings.rag_sentence_window_enabled,
+            "sentence_window_size": settings.rag_sentence_window_size,
+            "hyde_enabled": settings.rag_hyde_enabled,
         },
+        "ollama": _check_ollama_sync(),
     }
+
+
+def _check_ollama_sync() -> Dict[str, Any]:
+    """Check if Ollama is reachable and the configured model is available."""
+    try:
+        import requests
+        r = requests.get(f"{settings.ollama_url}/api/tags", timeout=5)
+        r.raise_for_status()
+        models = [m.get("name", "") for m in (r.json().get("models", []) or [])]
+        model = settings.rag_llm_model
+        base = model.split(":")[0]
+        for m in models:
+            if m == model or m.startswith(f"{base}:"):
+                return {"available": True, "model": m, "all_models": models}
+        return {"available": False, "error": f"model {model} not found", "all_models": models}
+    except Exception as e:
+        return {"available": False, "error": str(e)}
 
 
 def build_file_index(abs_path: str) -> Any:
@@ -346,47 +405,42 @@ def rag_categories() -> Dict[str, Any]:
     and collects distinct YAML frontmatter tags from all .md files.
     Cached for 60s to avoid repeated filesystem scans.
     """
-    import os as _os
-    import re as _re
-    import time as _time
-
     global _last_categories_scan, _cached_categories
 
-    now = _time.time()
+    now = time.time()
     if _last_categories_scan is not None and now - _last_categories_scan < 60:
         return _cached_categories or {"categories": [], "tags": {}, "total_files": 0}
 
-    base = _os.path.realpath(_os.path.abspath(settings.knowledge_base_dir))
+    base = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
     cats: list = []
     tag_counts: dict = {}
     total_files = 0
 
-    if _os.path.isdir(base):
-        for entry in sorted(_os.listdir(base)):
-            full = _os.path.join(base, entry)
-            if _os.path.isdir(full) and not entry.startswith("."):
+    if os.path.isdir(base):
+        for entry in sorted(os.listdir(base)):
+            full = os.path.join(base, entry)
+            if os.path.isdir(full) and not entry.startswith("."):
                 file_count = sum(
-                    1 for _root, _dirs, files in _os.walk(full)
+                    1 for _root, _dirs, files in os.walk(full)
                     for f in files if f.endswith(".md") and not f.startswith(".")
                 )
                 cats.append({"name": entry, "file_count": file_count})
 
         # Sample tags from .md files (read up to 50 files per category for perf)
-        frontmatter_re = _re.compile(r"^---\s*\n(.*?)\n---", _re.DOTALL)
+        frontmatter_re = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
         for cat in cats[:8]:  # Limit to first 8 categories
-            cat_dir = _os.path.join(base, cat["name"])
+            cat_dir = os.path.join(base, cat["name"])
             sampled = 0
-            for root, _dirs, files in _os.walk(cat_dir):
+            for root, _dirs, files in os.walk(cat_dir):
                 for f in files:
                     if not f.endswith(".md") or sampled >= 50:
                         break
                     try:
-                        with open(_os.path.join(root, f), "r") as fh:
+                        with open(os.path.join(root, f), "r") as fh:
                             content = fh.read(4096)
                         m = frontmatter_re.match(content)
                         if m:
-                            import yaml as _yaml
-                            fm = _yaml.safe_load(m.group(1)) or {}
+                            fm = yaml.safe_load(m.group(1)) or {}
                             tags = fm.get("tags") or []
                             if isinstance(tags, str):
                                 tags = [t.strip() for t in tags.split(",")]
@@ -408,8 +462,3 @@ def rag_categories() -> Dict[str, Any]:
     _cached_categories = result
     _last_categories_scan = now
     return result
-
-
-# Category cache globals
-_last_categories_scan: float | None = None
-_cached_categories: Dict[str, Any] | None = None

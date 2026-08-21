@@ -166,8 +166,9 @@ export function formatRelativeTime(dateStr: string): string {
 
 export function highlightSnippet(snippet: string, query: string): string {
   if (!query) return snippet;
+  const escaped = snippet.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const q = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return snippet.replace(new RegExp(`(${q})`, "gi"), "<b style='background:#fff3cd;color:#303133'>$1</b>");
+  return escaped.replace(new RegExp(`(${q})`, "gi"), "<b style='background:#fff3cd;color:#303133'>$1</b>");
 }
 
 // ── Health Checkers ──

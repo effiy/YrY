@@ -48,7 +48,6 @@ watch(props, () => {
 });
 
 const handleClick = (event: ECElementEvent) => {
-  console.log("[ECharts] chart clicked, name:", (event as any)?.name, "componentType:", (event as any)?.componentType);
   emit("chartClick", event);
 };
 

@@ -63,7 +63,7 @@ export const useKnowledgeStore = defineStore("yivad-knowledge", () => {
     error.value = null;
     try {
       const res = await scanKnowledge(cat);
-      categoryFiles.value = { ...categoryFiles.value, [cat]: res.categories?.[0]?.files ?? [] };
+      categoryFiles.value = { ...categoryFiles.value, [cat]: (res.categories?.[0]?.files ?? []).filter(f => f.meta?.type !== "rss") };
     } catch (e: any) {
       error.value = e?.message || `Failed to load category ${cat}`;
     } finally {

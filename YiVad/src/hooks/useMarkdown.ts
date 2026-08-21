@@ -113,7 +113,7 @@ function sanitizeMermaidCode(code: string): string {
     // Em/en dash → hyphen (safe for labels)
     .replace(/[–—]/g, "-")
     // Zero-width and other invisible Unicode that trips parsers
-    .replace(/[​‌‍﻿]/g, "")
+    .replace(/\u200B/g, "").replace(/\u200C/g, "").replace(/\u200D/g, "").replace(/\uFEFF/g, "")
     // Normalize line endings
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n");

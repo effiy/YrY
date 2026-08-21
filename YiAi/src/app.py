@@ -23,7 +23,7 @@ from shared.config import settings
 from server.middleware import header_verification_middleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import about, agent, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search, mcp, dashboard
+from server.routes import about, agent, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search, mcp, dashboard, openai_compat
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
@@ -97,6 +97,17 @@ def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
                 init_rss_system()
             if init_knowledge and settings.knowledge_watcher_enabled:
                 await init_knowledge_watcher()
+            logger.info("Application startup complete")
+            # Preload RAG index in the background — fire-and-forget so it
+            # never blocks the app from accepting requests. The first
+            # /rag-chat call will load it lazily if the background task
+            # hasn't finished yet.
+            try:
+                from domain.rag import preload_kb_index
+                import asyncio
+                asyncio.ensure_future(preload_kb_index())
+            except Exception:
+                logger.warning("RAG index preload failed — first request will load it", exc_info=True)
             logger.info("Application startup complete")
         except Exception as e:
             logger.error(f"Application startup failed: {str(e)}", exc_info=True)
@@ -184,6 +195,7 @@ def create_app(
     app.include_router(search.router, tags=["Search"])
     app.include_router(mcp.router, tags=["MCP"])
     app.include_router(dashboard.router, tags=["Dashboard"])
+    app.include_router(openai_compat.router, tags=["OpenAI Compat"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(

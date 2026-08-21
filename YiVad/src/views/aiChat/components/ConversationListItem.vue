@@ -136,14 +136,6 @@ function backToSource() {
           <el-icon><FolderOpened /></el-icon>
         </el-button>
         <el-button
-          v-if="sourceUrl"
-          text
-          :icon="Back"
-          size="small"
-          title="Back to source"
-          @click="backToSource"
-        />
-        <el-button
           text
           :icon="Edit"
           size="small"

@@ -1,26 +1,25 @@
 """Local file storage service layer.
 
-Encapsulates disk + MongoDB dual persistence: read / write / delete / rename /
+Encapsulates disk-only file persistence: read / write / delete / rename /
 upload. Route layer only parses requests and wraps success responses; all IO +
-error conversion + dual-write consistency is handled here.
+error conversion is handled here.
 
-Boundary: OSS uploads are in ``storage.py``; this file only handles local
-disk + local Mongo mirroring.
+Metadata (file path, size, type, timestamps) should be stored in MongoDB via
+the data_service API. File content lives on disk only.
+
+Boundary: OSS uploads are in ``storage.py``; this file only handles local disk.
 """
 import base64
 import logging
 import os
-import re
 import shutil
 from datetime import datetime
 
-from data.database import db
 from domain.files import paths
 from domain.files.storage import upload_bytes_to_oss
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
-from shared.utils import get_current_time
 
 logger = logging.getLogger(__name__)
 
@@ -29,27 +28,23 @@ def _static_url(rel_path: str) -> str:
     return f"{settings.static_base_url.rstrip('/')}/{rel_path}"
 
 
-async def _db():
-    await db.initialize()
-    return db.db[settings.collection_static_files]
-
-
 # ---------------------------------------------------------------------------
 # read
 # ---------------------------------------------------------------------------
 
 async def read_file(target_file: str) -> dict:
-    """Read file: disk-first, fall back to MongoDB on miss.
+    """Read file from disk.
 
     Image files return a static URL (``type=url``); text returns ``type=text``;
-    binary returns ``type=base64``. MongoDB fallback includes ``source=database``.
+    binary returns ``type=base64``.
     """
     target_file = paths.normalize_no_spaces(target_file)
-    db_key = paths.normalize_db_key(target_file)
     found_path = paths.resolve_static_path(target_file)
 
     if not os.path.exists(found_path) or not os.path.isfile(found_path):
-        return await _read_from_database(target_file, db_key)
+        raise BusinessException(
+            ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
+        )
 
     filename = os.path.basename(target_file)
     if paths.is_image_file(filename):
@@ -75,46 +70,6 @@ async def read_file(target_file: str) -> dict:
         logger.error(f"Failed to read file: {str(e)}", exc_info=True)
         raise BusinessException(
             ErrorCode.INTERNAL_ERROR, message=f"Failed to read file: {str(e)}"
-        ) from e
-
-
-async def _read_from_database(target_file: str, db_key: str) -> dict:
-    """Read from MongoDB when disk miss."""
-    try:
-        collection = await _db()
-        doc = await collection.find_one(
-            {"target_file": db_key}, projection={"_id": 0}
-        )
-        if not doc:
-            raise BusinessException(
-                ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
-            )
-
-        content = doc.get("content", "")
-        is_base64 = doc.get("is_base64", False)
-        filename = os.path.basename(target_file)
-
-        if paths.is_image_file(filename):
-            static_url = _static_url(db_key)
-            logger.info(f"Read image from MongoDB, returning static URL: {static_url}")
-            return {
-                "content": static_url,
-                "type": "url",
-                "source": "database",
-            }
-
-        logger.info(f"Read file from MongoDB: {target_file}")
-        return {
-            "content": content,
-            "type": "base64" if is_base64 else "text",
-            "source": "database",
-        }
-    except BusinessException:
-        raise
-    except Exception as e:
-        logger.error(f"MongoDB fallback read failed: {target_file}: {e}")
-        raise BusinessException(
-            ErrorCode.DATA_NOT_FOUND, message=f"File does not exist: {target_file}"
         ) from e
 
 
@@ -338,12 +293,12 @@ async def rename_project_folder(project: str, old_dir: str, new_dir: str) -> dic
     if not os.path.exists(old_abs):
         raise BusinessException(
             ErrorCode.DATA_NOT_FOUND,
-            message=f"Directory does not exist: {old_project}/{old_dir}",
+            message=f"Directory does not exist: {project}/{old_dir}",
         )
     if not os.path.isdir(old_abs):
         raise BusinessException(
             ErrorCode.INVALID_PARAMS,
-            message=f"Path is not a directory: {old_project}/{old_dir}",
+            message=f"Path is not a directory: {project}/{old_dir}",
         )
 
     try:
@@ -368,7 +323,7 @@ async def rename_project_folder(project: str, old_dir: str, new_dir: str) -> dic
 # ---------------------------------------------------------------------------
 
 async def write_file(target_file: str, content: str, is_base64: bool) -> dict:
-    """Disk + MongoDB dual write. MongoDB upsert, failure does not affect disk."""
+    """Write file to disk only."""
     target_file = paths.normalize_no_spaces(target_file)
     paths.validate_path(target_file, "Target file path")
     target_path = paths.resolve_static_path(target_file)
@@ -390,8 +345,6 @@ async def write_file(target_file: str, content: str, is_base64: bool) -> dict:
                 message=f"File write verification failed: {target_file}",
             )
 
-        await _dual_write_mongo(target_file, content, is_base64, content_bytes)
-
         logger.info(f"File write successful: {target_path} ({len(content_bytes)} bytes)")
         return {"message": "Write successful", "path": target_path}
     except BusinessException:
@@ -403,31 +356,6 @@ async def write_file(target_file: str, content: str, is_base64: bool) -> dict:
         ) from e
 
 
-async def _dual_write_mongo(
-    target_file: str, content: str, is_base64: bool, content_bytes: bytes
-) -> None:
-    db_key = paths.normalize_db_key(target_file)
-    try:
-        collection = await _db()
-        await collection.update_one(
-            {"target_file": db_key},
-            {
-                "$set": {
-                    "target_file": db_key,
-                    "content": content,
-                    "is_base64": is_base64,
-                    "size": len(content_bytes),
-                    "updatedTime": get_current_time(),
-                },
-                "$setOnInsert": {"createdTime": get_current_time()},
-            },
-            upsert=True,
-        )
-        logger.info(f"File synchronized to MongoDB: {db_key}")
-    except Exception as e:
-        logger.warning(f"MongoDB persistence failed (file already written to disk): {target_file}: {e}")
-
-
 # ---------------------------------------------------------------------------
 # delete
 # ---------------------------------------------------------------------------
@@ -435,7 +363,6 @@ async def _dual_write_mongo(
 async def delete_file(target_file: str) -> dict:
     target_file = paths.normalize_no_spaces(target_file)
     paths.validate_path(target_file)
-    db_key = paths.normalize_db_key(target_file)
     abs_path = paths.resolve_static_path(target_file)
 
     if not os.path.exists(abs_path):
@@ -455,14 +382,6 @@ async def delete_file(target_file: str) -> dict:
         raise BusinessException(
             ErrorCode.DATA_DESTROY_FAIL, message=f"Failed to delete file: {str(e)}"
         ) from e
-
-    try:
-        collection = await _db()
-        result = await collection.delete_one({"target_file": db_key})
-        if result.deleted_count > 0:
-            logger.info(f"Deleted file from MongoDB: {db_key}")
-    except Exception as e:
-        logger.warning(f"MongoDB delete failed: {db_key}: {e}")
 
     return {"message": "Delete successful", "path": target_file}
 
@@ -513,21 +432,6 @@ async def rename_file(old_path: str, new_path: str) -> dict:
             ErrorCode.DATA_UPDATE_FAIL, message=f"Failed to rename file: {str(e)}"
         ) from e
 
-    old_db_key = paths.normalize_db_key(old_path)
-    new_db_key = paths.normalize_db_key(new_path)
-    try:
-        collection = await _db()
-        result = await collection.update_one(
-            {"target_file": old_db_key},
-            {"$set": {"target_file": new_db_key, "updatedTime": get_current_time()}},
-        )
-        if result.matched_count > 0:
-            logger.info(f"MongoDB rename synchronized: {old_db_key} -> {new_db_key}")
-    except Exception as e:
-        logger.warning(
-            f"MongoDB rename sync failed: {old_db_key} -> {new_db_key}: {e}"
-        )
-
     return {"message": "Rename successful", "old_path": old_path, "new_path": new_path}
 
 
@@ -546,31 +450,6 @@ async def rename_folder(old_dir: str, new_dir: str) -> dict:
         raise BusinessException(
             ErrorCode.DATA_UPDATE_FAIL, message=f"Failed to rename folder: {str(e)}"
         ) from e
-
-    old_db_prefix = paths.normalize_db_key(old_dir)
-    new_db_prefix = paths.normalize_db_key(new_dir)
-    try:
-        collection = await _db()
-        cursor = collection.find(
-            {"target_file": {"$regex": f"^{re.escape(old_db_prefix)}/"}}
-        )
-        updated_count = 0
-        async for doc in cursor:
-            old_key = doc["target_file"]
-            new_key = new_db_prefix + old_key[len(old_db_prefix):]
-            await collection.update_one(
-                {"target_file": old_key},
-                {"$set": {"target_file": new_key, "updatedTime": get_current_time()}},
-            )
-            updated_count += 1
-        if updated_count > 0:
-            logger.info(
-                f"MongoDB folder rename synchronized: {old_db_prefix} -> {new_db_prefix} ({updated_count} entries)"
-            )
-    except Exception as e:
-        logger.warning(
-            f"MongoDB folder rename sync failed: {old_db_prefix} -> {new_db_prefix}: {e}"
-        )
 
     return {"message": "Rename successful", "old_path": old_dir, "new_path": new_dir}
 

@@ -518,34 +518,6 @@ async function onSave() {
         {{ mode === "new" ? "New session" : "Context files" }}
         <span v-if="fileCount" class="cfp-count">{{ fileCount }}</span>
       </span>
-      <div class="cfp-header-right">
-        <el-button
-          v-if="mode === 'view' && sourceUrl"
-          size="small"
-          text
-          type="primary"
-          :icon="Link"
-          :title="`Open source page: ${sourceUrl}`"
-          @click="backToSource"
-        >View source</el-button>
-        <el-button
-          v-if="mode === 'view' && ctxCount > 0"
-          size="small"
-          :type="store.ragActive ? 'primary' : ''"
-          :icon="DataAnalysis"
-          :title="`RAG search ${ctxCount} context file(s)`"
-          @click="onOpenRag"
-        >
-          <span class="cfp-rag-count">{{ ctxCount }}</span>
-        </el-button>
-        <el-button
-          v-if="mode === 'new'"
-          size="small"
-          text
-          title="Back"
-          @click="cancelNewMode"
-        >← Back</el-button>
-      </div>
     </div>
 
     <div class="cfp-body">

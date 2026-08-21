@@ -11,7 +11,7 @@
 
 type ThemeRecord = Record<string, string>;
 
-// eslint-disable-next-line max-len
+ 
 const THEMES: ThemeRecord[] = [
   {
     /* 0: Quantum Violet */

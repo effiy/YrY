@@ -211,24 +211,29 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Structured chat interface — delegates to ModelRuntime (Pi-inspired).
 
+    Supports multiple AI providers via ``ai_provider`` config: ollama, openai, anthropic.
+    Provider-specific config (api_key, base_url, model) is read from config.yaml.
+
     Args:
         params: Parameter dictionary
             - system (str): System prompt (optional)
             - user (str): User input (used when `messages` is absent)
-            - model (str): Model name (optional)
-            - messages (list): Full conversation history in Ollama format
+            - model (str): Model name (optional, overrides provider default)
+            - messages (list): Full conversation history
                 [{role, content}]; when provided, overrides `system`+`user`.
             - stream (bool): Enable SSE streaming
             - images (list): Optional image refs (URL/data-URL/base64) for VL models
+            - provider (str): Override ai_provider for this request (ollama|openai|anthropic)
 
     Returns:
         Dict[str, Any]: Chat response (non-stream) or async generator (stream)
     """
-    from services.ai.model_runtime import OllamaRuntime
+    from services.ai.model_runtime import OllamaRuntime, OpenAIRuntime, AnthropicRuntime, get_runtime
 
+    provider = params.get("provider") or settings.ai_provider or "ollama"
     system_prompt = params.get("system", "You are a helpful AI assistant.")
     user_content = params.get("user", "")
-    model_name = params.get("model", "qwen3.5:4b")
+    model_name = params.get("model") or ""
     stream = params.get("stream") is True
     images_param = params.get("images")
     has_images_param = isinstance(images_param, list) and any(isinstance(x, str) and x.strip() for x in images_param)
@@ -237,7 +242,7 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     use_messages = isinstance(raw_messages, list) and len(raw_messages) > 0
 
     if has_images_param:
-        model_name = "qwen3-vl"
+        model_name = model_name or "qwen3-vl"
         if use_messages:
             last = dict(raw_messages[-1])
             if last.get("role") == "user":
@@ -250,9 +255,6 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     def _build_ollama_messages() -> List[Dict[str, Any]]:
         if use_messages:
             msgs = list(raw_messages)
-            # Prepend system prompt when provided — the `system` param is
-            # otherwise ignored in the messages path, which broke translation
-            # and other single-message system-prompt-driven flows.
             if system_prompt:
                 msgs.insert(0, {"role": "system", "content": system_prompt})
             return msgs
@@ -261,7 +263,9 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
             {"role": "user", "content": user_content},
         ]
 
-    runtime = OllamaRuntime()
+    runtime = get_runtime(provider)
+    if not model_name:
+        model_name = runtime.model_name()
 
     if not stream:
         return await runtime.complete(
@@ -270,7 +274,6 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
             images=images,
         )
 
-    # Streaming: delegate to ModelRuntime.stream_chat()
     return runtime.stream_chat(
         messages=_build_ollama_messages(),
         model=model_name,
@@ -297,9 +300,110 @@ async def list_ollama_models(params: Dict[str, Any] = None) -> Dict[str, Any]:
     logger.debug("Executing list_ollama_models")
     service = OllamaService()
     loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, service.list_models)
 
-    # Execute sync method in thread pool to avoid blocking the event loop
-    return await loop.run_in_executor(
-        None,
-        service.list_models
-    )
+
+# ── Error classification (Pi-inspired) ────────────────────────────────────
+
+_ERROR_PATTERNS = {
+    "connection_refused": (
+        "Cannot connect to the AI service. Please check that the LLM server "
+        "is running and reachable."
+    ),
+    "connection_error": (
+        "Connection to AI service lost. The server may be restarting or "
+        "unreachable. Please try again in a moment."
+    ),
+    "timeout": (
+        "The AI service took too long to respond. This may be due to high "
+        "load or a complex query. Please try again with a shorter message."
+    ),
+    "model_not_found": (
+        "The requested model is not available. Please check the model name "
+        "or install it on the server."
+    ),
+    "context_overflow": (
+        "The conversation is too long for the model's context window. "
+        "Please start a new conversation or summarize the previous discussion."
+    ),
+    "rate_limit": (
+        "Too many requests. Please wait a moment before sending another message."
+    ),
+    "unknown": "An unexpected error occurred. Please try again.",
+}
+
+
+def classify_error(error: str) -> Dict[str, str]:
+    """Classify a raw error string into a user-friendly message.
+
+    Pi-inspired: maps raw provider errors to readable messages so the
+    frontend can show actionable feedback instead of stack traces.
+    """
+    error_lower = (error or "").lower()
+    if any(kw in error_lower for kw in ("connection refused", "connect", "econnrefused")):
+        return {"type": "connection_refused", "message": _ERROR_PATTERNS["connection_refused"]}
+    if any(kw in error_lower for kw in ("timeout", "timed out")):
+        return {"type": "timeout", "message": _ERROR_PATTERNS["timeout"]}
+    if any(kw in error_lower for kw in ("not found", "not_found", "no such model")):
+        return {"type": "model_not_found", "message": _ERROR_PATTERNS["model_not_found"]}
+    if any(kw in error_lower for kw in ("context", "overflow", "token limit", "too long")):
+        return {"type": "context_overflow", "message": _ERROR_PATTERNS["context_overflow"]}
+    if any(kw in error_lower for kw in ("rate", "throttl", "too many")):
+        return {"type": "rate_limit", "message": _ERROR_PATTERNS["rate_limit"]}
+    if any(kw in error_lower for kw in ("connection", "network", "unreachable", "dns")):
+        return {"type": "connection_error", "message": _ERROR_PATTERNS["connection_error"]}
+    return {"type": "unknown", "message": _ERROR_PATTERNS["unknown"]}
+
+
+async def get_model_info(params: Dict[str, Any] = None) -> Dict[str, Any]:
+    """Return available models and provider status for the frontend model selector.
+
+    Queries the configured provider for available models and returns their
+    capabilities (vision, tool calling, context window). Pi-inspired: the
+    model picker shows what each model can do before the user selects it.
+    """
+    provider = (params or {}).get("provider") or settings.ai_provider or "ollama"
+    info: Dict[str, Any] = {
+        "provider": provider,
+        "default_model": "",
+        "models": [],
+        "status": "unknown",
+    }
+
+    if provider == "ollama":
+        info["default_model"] = settings.rag_llm_model
+        try:
+            import aiohttp
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{settings.ollama_url}/api/tags",
+                    timeout=aiohttp.ClientTimeout(total=5),
+                ) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        info["status"] = "connected"
+                        for m in data.get("models", []) or []:
+                            name = m.get("name", "") if isinstance(m, dict) else str(m)
+                            details = m.get("details", {}) if isinstance(m, dict) else {}
+                            info["models"].append({
+                                "name": name,
+                                "size": details.get("parameter_size", ""),
+                                "family": details.get("family", ""),
+                                "format": details.get("format", ""),
+                            })
+                    else:
+                        info["status"] = "error"
+                        info["error"] = f"HTTP {resp.status}"
+        except Exception as e:
+            info["status"] = "disconnected"
+            info["error"] = str(e)
+    elif provider == "openai":
+        info["default_model"] = settings.openai_default_model
+        info["models"].append({"name": settings.openai_default_model})
+        info["status"] = "configured"
+    elif provider == "anthropic":
+        info["default_model"] = settings.anthropic_default_model
+        info["models"].append({"name": settings.anthropic_default_model})
+        info["status"] = "configured"
+
+    return info

@@ -3,6 +3,8 @@
   <el-watermark id="watermark" :font="font" :content="watermark ? ['YiVad', 'Happy Working'] : ''">
     <component :is="LayoutComponents[layout]" />
     <ThemeDrawer />
+    <CommandPalette />
+    <KeyboardShortcuts />
   </el-watermark>
 </template>
 
@@ -12,6 +14,8 @@ import { ElWatermark } from "element-plus";
 import { LayoutType } from "@/stores/interface";
 import { useGlobalStore } from "@/stores/modules/global";
 import ThemeDrawer from "./components/ThemeDrawer/index.vue";
+import CommandPalette from "@/components/CommandPalette/CommandPalette.vue";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts/index.vue";
 import LayoutVertical from "./LayoutVertical/index.vue";
 import LayoutClassic from "./LayoutClassic/index.vue";
 import LayoutTransverse from "./LayoutTransverse/index.vue";

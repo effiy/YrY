@@ -11,6 +11,7 @@ import type { KnowledgeReadResponse, KnowledgeStoryEntry } from "@/api/interface
 import { PROJECTS, PROJECT_LABELS } from "@/config";
 import type {
   StoryDocument,
+  StoryStatus,
   Scenario,
   ScenarioStep,
   ScenarioPriority,
@@ -284,7 +285,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
       });
       let list = result.list;
       // Migrate old scenario status values to the shared StoryStatus set
-      const statusMap: Record<string, string> = {
+      const statusMap: Record<string, StoryStatus> = {
         pending: "planning",
         in_progress: "develop",
         done: "operations",
@@ -293,7 +294,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
       for (const s of list) {
         if (s.scenarios) {
           for (const sc of s.scenarios) {
-            if (statusMap[sc.status]) sc.status = statusMap[sc.status] as any;
+            if (statusMap[sc.status]) sc.status = statusMap[sc.status];
           }
         }
       }
@@ -553,7 +554,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     }
 
     try {
-      await updateStory(selectedStory.value.key, { scenarios } as any);
+      await updateStory(selectedStory.value.key, { scenarios });
       selectedStory.value = { ...selectedStory.value, scenarios };
       scenarioDialogVisible.value = false;
       ElMessage.success("Scenario saved");
@@ -567,7 +568,7 @@ export const useStoryStore = defineStore("yivad-story", () => {
     try {
       await ElMessageBox.confirm("Delete this scenario?", "Confirm", { type: "warning" });
       const scenarios = selectedStory.value.scenarios.filter((_, i) => i !== idx);
-      await updateStory(selectedStory.value.key, { scenarios } as any);
+      await updateStory(selectedStory.value.key, { scenarios });
       selectedStory.value = { ...selectedStory.value, scenarios };
       ElMessage.success("Scenario deleted");
     } catch {

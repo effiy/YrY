@@ -50,7 +50,7 @@ function getCategory(id: string): string {
       :props="{ children: 'children', label: 'label' }"
       @node-click="onNodeClick"
     >
-      <template #default="{ node, data: nodeData }">
+      <template #default="{ data: nodeData }">
         <span class="ct-node" :class="'ct-level-' + getLevel(nodeData.id)">
           <span
             v-if="getLevel(nodeData.id) === 1"

@@ -1,5 +1,5 @@
 <template>
-  <div class="role-page">
+  <div class="role-page" v-loading="loading">
     <header class="role-page__header">
       <div class="role-page__header-row">
         <slot name="title"><h1>{{ title }}</h1></slot>
@@ -9,22 +9,35 @@
 
     <slot name="header" />
 
-    <div class="role-page__controls">
-      <div class="role-page__stats">
-        <div v-for="dir in subdirs" :key="dir.id" class="role-page__stat-chip" :class="{ 'role-page__stat-chip--active': filters.domain.includes(dir.label) }" :style="{ background: (filters.domain.includes(dir.label) ? dir.color + '28' : dir.color + '18'), borderColor: (filters.domain.includes(dir.label) ? dir.color : dir.color + '40'), color: dir.color, cursor: 'pointer' }" @click="scrollTo(dir.id)">
-          <span class="role-page__stat-chip-icon">{{ dir.icon }}</span>
-          <span class="role-page__stat-chip-label">{{ dir.label }}</span>
-          <span class="role-page__stat-chip-count">{{ fileCounts[dir.id] || 0 }}</span>
-        </div>
-      </div>
-      <div class="role-page__toolbar">
-        <span class="role-page__toolbar-label">View</span>
-        <el-radio-group v-model="viewMode" size="small">
-          <el-radio-button value="card">Cards</el-radio-button>
-          <el-radio-button value="table">Table</el-radio-button>
-        </el-radio-group>
-      </div>
+    <div v-if="error" class="role-page__error">
+      <span>Failed to load files: {{ error }}</span>
+      <el-button size="small" type="primary" @click="loadFiles">Retry</el-button>
     </div>
+
+    <template v-else>
+    <div class="role-page__body">
+      <nav class="role-page__sidebar">
+        <div class="role-page__sidebar-view">
+          <el-radio-group v-model="viewMode" size="small">
+            <el-radio-button value="card">Cards</el-radio-button>
+            <el-radio-button value="list">List</el-radio-button>
+            <el-radio-button value="table">Table</el-radio-button>
+          </el-radio-group>
+        </div>
+        <button
+          v-for="dir in subdirs"
+          :key="dir.id"
+          class="role-page__sidebar-item"
+          :class="{ 'is-active': isStatActive(dir) }"
+          @click="scrollTo(dir.id)"
+        >
+          <span class="role-page__sidebar-icon">{{ dir.icon }}</span>
+          <span class="role-page__sidebar-label">{{ dir.label }}</span>
+          <span class="role-page__sidebar-badge">{{ fileCounts[dir.id] || 0 }}</span>
+        </button>
+      </nav>
+
+      <div class="role-page__content">
 
     <template v-if="viewMode === 'card'">
     <section v-for="dir in subdirs" :key="dir.id" class="role-page__section" :ref="(el) => { if (el) sectionRefs[dir.id] = el as HTMLElement; }">
@@ -58,6 +71,32 @@
       <div v-if="!filesByDir[dir.id]?.length" class="role-page__empty-dir"><span>No files found in this area.</span></div>
       </template>
     </section>
+    </template>
+
+    <template v-else-if="viewMode === 'list'">
+      <div class="role-page__list">
+        <div v-for="row in filteredFiles" :key="row.file.path" class="role-page__list-row" @click="openFile(row.file)">
+          <el-button class="role-page__list-delete" text type="danger" size="small" :icon="Delete" @click.stop="handleDelete(row.file)" />
+          <span class="role-page__list-icon">{{ fileIcon(row.file) }}</span>
+          <div class="role-page__list-main">
+            <span class="role-page__list-title">{{ row.title }}</span>
+            <span class="role-page__list-path">{{ filePathHint(row.file) }}</span>
+          </div>
+          <span class="role-page__list-domain" :style="{ color: row.domainColor }">
+            <span>{{ row.domainIcon }}</span>
+            <span>{{ row.domain }}</span>
+          </span>
+          <div class="role-page__list-tags">
+            <el-tag v-if="row.file.meta?.type" :type="typeTagType(row.file.meta.type)" size="small">{{ row.file.meta.type }}</el-tag>
+            <el-tag v-if="row.file.meta?.status" :type="statusTagType(row.file.meta.status)" size="small">{{ row.file.meta.status }}</el-tag>
+            <el-tag v-if="row.file.meta?.lifecycle" :type="lifecycleTagType(row.file.meta.lifecycle)" size="small">{{ row.file.meta.lifecycle }}</el-tag>
+          </div>
+          <span class="role-page__list-size">{{ formatSize(row.file.size) }}</span>
+        </div>
+      </div>
+      <div v-if="flatFiles.length && !filteredFiles.length" class="role-page__empty-dir">
+        <span>No files match the current filters.</span>
+      </div>
     </template>
 
     <template v-else>
@@ -142,13 +181,19 @@
             <span class="role-page__card-size">{{ formatSize(row.size) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="130" fixed="right">
+        <el-table-column label="Actions" width="80" fixed="right">
           <template #default="{ row }">
-            <el-button size="small" text type="primary" @click="openFile(row.file)">Open</el-button>
             <el-button size="small" text type="danger" @click="handleDelete(row.file)">Del</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <div v-if="flatFiles.length && !filteredFiles.length" class="role-page__empty-dir">
+        <span>No files match the current filters.</span>
+      </div>
+    </template>
+
+      </div>
+    </div>
     </template>
 
     <KnowledgePreviewDialog ref="previewDlg" />
@@ -161,7 +206,7 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { Delete } from "@element-plus/icons-vue";
 import { scanKnowledge, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 
 interface Subdir {
   id: string;
@@ -186,9 +231,12 @@ const props = withDefaults(
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 const allFiles = ref<KnowledgeFileEntry[]>([]);
+const loading = ref(false);
+const error = ref("");
 const sectionRefs: Record<string, HTMLElement> = {};
-const collapsedSections = ref(new Set(props.subdirs.map(d => d.id)));
-const viewMode = ref<"card" | "table">("table");
+const collapsedSections = ref(new Set(props.subdirs.slice(1).map(d => d.id)));
+const viewMode = ref<"card" | "list" | "table">("table");
+const cardActiveDomain = ref<string | null>(null);
 
 const filters = reactive({
   title: "",
@@ -200,8 +248,13 @@ const filters = reactive({
   review: ""
 });
 
+function isStatActive(dir: Subdir): boolean {
+  if (viewMode.value === "table") return filters.domain.includes(dir.label);
+  return cardActiveDomain.value === dir.id;
+}
+
 function scrollTo(id: string) {
-  if (viewMode.value === "table") {
+  if (viewMode.value === "table" || viewMode.value === "list") {
     const dir = props.subdirs.find(d => d.id === id);
     if (!dir) return;
     const idx = filters.domain.indexOf(dir.label);
@@ -209,6 +262,7 @@ function scrollTo(id: string) {
     else filters.domain.push(dir.label);
     return;
   }
+  cardActiveDomain.value = cardActiveDomain.value === id ? null : id;
   if (collapsedSections.value.has(id)) toggleSection(id);
   nextTick(() => sectionRefs[id]?.scrollIntoView({ behavior: "smooth", block: "start" }));
 }
@@ -219,7 +273,6 @@ function toggleSection(id: string) {
   collapsedSections.value = new Set(s);
 }
 
-const totalFiles = computed(() => allFiles.value.length);
 const filesByDir = computed<Record<string, KnowledgeFileEntry[]>>(() => {
   const map: Record<string, KnowledgeFileEntry[]> = {};
   for (const dir of props.subdirs) map[dir.id] = [];
@@ -368,10 +421,17 @@ async function handleDelete(file: KnowledgeFileEntry) {
 }
 
 async function loadFiles() {
+  loading.value = true;
+  error.value = "";
   try {
     const res = await scanKnowledge(props.category);
-    allFiles.value = res.categories?.flatMap(c => c.files) ?? [];
-  } catch { allFiles.value = []; }
+    allFiles.value = (res.categories?.flatMap(c => c.files) ?? []).filter(f => f.meta?.type !== "rss");
+  } catch (e: any) {
+    error.value = e?.message || "Unknown error";
+    allFiles.value = [];
+  } finally {
+    loading.value = false;
+  }
 }
 onMounted(loadFiles);
 </script>
@@ -380,13 +440,75 @@ onMounted(loadFiles);
 .role-page { display: flex; flex-direction: column; box-sizing: border-box; padding: 20px 24px; background: var(--el-bg-color-page); }
 .role-page__header { margin-bottom: 14px; h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; } p { margin: 0; font-size: 13px; color: var(--el-text-color-secondary); line-height: 1.6; } }
 .role-page__header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; h1 { margin-bottom: 4px; } }
-.role-page__controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-.role-page__stats { display: flex; flex-wrap: wrap; gap: 8px; }
-.role-page__stat-chip { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; border: 1px solid; transition: background .2s, border-color .2s, box-shadow .2s; }
-.role-page__stat-chip--active { box-shadow: 0 0 0 1px currentColor; }
-.role-page__stat-chip-icon { font-size: 14px; } .role-page__stat-chip-count { font-size: 11px; opacity: 0.7; margin-left: 2px; }
-.role-page__toolbar { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.role-page__toolbar-label { font-size: 12px; font-weight: 600; color: var(--el-text-color-secondary); text-transform: uppercase; letter-spacing: .3px; }
+.role-page__error { display: flex; align-items: center; gap: 12px; padding: 16px; margin-bottom: 20px; border-radius: 8px; background: var(--el-color-danger-light-9); color: var(--el-color-danger); font-size: 13px; }
+// ── Body + Sidebar ──
+.role-page__body { display: flex; gap: 16px; align-items: flex-start; }
+.role-page__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 180px;
+  flex-shrink: 0;
+  padding: 8px 10px 12px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  position: sticky;
+  top: 12px;
+  overflow: hidden;
+}
+.role-page__sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  transition: all .15s;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+  &:hover { background: var(--el-fill-color-light); color: var(--el-text-color-primary); }
+  &.is-active {
+    background: var(--el-color-primary-light-9);
+    color: var(--el-color-primary);
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--el-color-primary);
+  }
+}
+.role-page__sidebar-icon { font-size: 18px; flex-shrink: 0; }
+.role-page__sidebar-label { flex: 1; min-width: 0; overflow: hidden; }
+.role-page__sidebar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--el-fill-color);
+  color: var(--el-text-color-secondary);
+  flex-shrink: 0;
+  .role-page__sidebar-item.is-active & {
+    background: var(--el-color-primary);
+    color: #fff;
+  }
+}
+.role-page__sidebar-view {
+  padding: 4px 8px 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  :deep(.el-radio-group) { display: flex; width: 100%; }
+  :deep(.el-radio-button) { flex: 1; }
+  :deep(.el-radio-button__inner) { width: 100%; text-align: center; padding: 4px 0; font-size: 12px; }
+}
+.role-page__content { flex: 1; min-width: 0; }
 .role-page__table { margin-bottom: 20px; }
 .role-page__th { display: flex; flex-direction: column; gap: 6px; padding: 2px 0; }
 .role-page__table-item { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
@@ -411,5 +533,24 @@ onMounted(loadFiles);
 .role-page__card-desc { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--el-text-color-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .role-page__card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .role-page__card-size { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder); }
+// ── List view ──
+.role-page__list { display: flex; flex-direction: column; gap: 6px; }
+.role-page__list-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px; cursor: pointer; transition: box-shadow 0.2s; position: relative;
+  &:hover { box-shadow: 0 2px 8px rgb(0 0 0 / 6%); }
+}
+.role-page__list-delete {
+  position: absolute; top: 6px; right: 6px; opacity: 0; transition: opacity 0.2s;
+  .role-page__list-row:hover & { opacity: 1; }
+}
+.role-page__list-icon { font-size: 18px; flex-shrink: 0; }
+.role-page__list-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.role-page__list-title { font-size: 13px; font-weight: 600; color: var(--el-text-color-primary); line-height: 1.3; word-break: break-word; }
+.role-page__list-path { font-size: 11px; font-family: monospace; color: var(--el-text-color-placeholder); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.role-page__list-domain { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.role-page__list-tags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.role-page__list-size { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder); flex-shrink: 0; }
 .role-page__empty-dir { padding: 24px; text-align: center; font-size: 13px; color: var(--el-text-color-secondary); }
 </style>

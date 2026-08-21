@@ -1,8 +1,8 @@
 /**
- * Theme system barrel — color palettes and injection utilities.
+ * Theme system barrel — color palettes, injection utilities, and Element Plus adapter.
  */
 
-export { getAntdTheme } from './antd-theme';
+export { applyElementTheme, clearElementTheme } from './element-theme';
 export {
   applyThemeColors,
   clearThemeColors,

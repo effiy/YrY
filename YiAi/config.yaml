@@ -162,14 +162,29 @@ rag:
   embed_model: "nomic-embed-text"
   llm_model: "qwen3.5:4b"
   persist_dir: "./data/rag_store"
-  top_k: 4
-  chunk_size: 1024
-  chunk_overlap: 80
+  top_k: 3
+  chunk_size: 512
+  chunk_overlap: 40
   auto_rebuild_enabled: true
   auto_rebuild_debounce_seconds: 30
   hybrid_retrieval_enabled: true
-  rerank_enabled: false
+  rerank_enabled: true
   inline_citations_enabled: true
+  # Sentence window retrieval — parses docs into sentences, embeds each sentence,
+  # then expands context around matching sentences at query time. Produces
+  # richer context than fixed-size chunking for the same embedding cost.
+  sentence_window_enabled: true
+  sentence_window_size: 3    # sentences before/after the match to include
+  chat_timeout: 180
+  llm_request_timeout: 120
+  num_predict: 512           # max tokens for RAG chat responses
+  temperature: 0.0            # temperature for RAG (factual answers)
+  # Context builder — how retrieved chunks and history are assembled into the LLM prompt.
+  context_chunks: 4        # number of top retrieved chunks to include
+  snippet_chars: 600       # max characters per chunk snippet
+  history_msgs: 6          # max history messages to include
+  history_chars: 500       # max characters per history message
+  hyde_enabled: true        # HyDE — generate hypothetical answer for retrieval query
 
 # Logging Configuration
 logging:

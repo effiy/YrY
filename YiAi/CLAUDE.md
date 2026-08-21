@@ -58,8 +58,8 @@
 | Auth | bcrypt + PyJWT (optional X-Token header) |
 | Config | `config.yaml` + pydantic-settings |
 | Knowledge base | `../YiKnowledge` markdown tree, apscheduler watcher (poll fallback for macOS FSEvents) |
-| Test framework | None (add `pytest` + `httpx` when coverage becomes a priority) |
-| Lint / format | None (add `ruff` when code style drift becomes a problem) |
+| Test framework | pytest 8 + pytest-asyncio + httpx + pytest-cov |
+| Lint / format | ruff (see ruff.toml) |
 
 ## Project Structure
 
@@ -185,7 +185,7 @@ success
 
 ### Self-constraints
 
-- **No test framework configured** — add `pytest` + `httpx` for integration testing when coverage becomes a priority.
+- **Test framework: pytest 8** — `python -m pytest tests/ -v` runs the test suite. Config in `pyproject.toml`. Coverage via `pytest-cov` (htmlcov/).
 - **No linting or formatting enforcement** — add `ruff` when code style drift becomes a problem.
 
 ## Degradation Countermeasures
@@ -206,6 +206,13 @@ success
 - **`_build_filter` parameter names are load-bearing.** `filter` (not `query`), `target_file` (not `path`), `cname`/`collection_name`. Past bugs have come from callers using the wrong name.
 
 ## Recent Changes
+
+### 2026-08-21 — pytest test infrastructure
+
+- **`pyproject.toml`**: pytest config — `pythonpath = ["src"]`, `testpaths = ["tests"]`, `--cov=src` with term-missing + html reports, `slow` + `integration` markers.
+- **`tests/conftest.py`**: src/ path setup + shared fixtures (`sample_text`, `sample_json_text`, `sample_markdown_json`).
+- **`tests/`** (new): 5 test suites, 76 tests — `test_utils.py` (estimateTokens, cleanText, truncateText, extractJsonFromText, isNumber, formatFileSize, formatTokens, chunkList, etc.), `test_error_codes.py` (ErrorCode enum + map_http_to_error_code), `test_response.py` (StandardResponse, success, fail), `test_exceptions.py` (BusinessException), `test_config.py` (YamlConfigSettingsSource._flatten, Settings._to_list).
+- **Coverage**: shared/error_codes.py 100%, shared/exceptions.py 100%, shared/response.py 100%, shared/utils.py 93%, shared/config.py 92%.
 
 ### 2026-08-08 — Escalate to the fallback model when the no-write nudge is ignored (recon-only stall recovery)
 
@@ -301,7 +308,7 @@ success
 ### 2026-07-31 — RAG + Knowledge modules
 
 - **`domain/rag/` + `services/rag/`**: New RAG (retrieval-augmented generation) module built on `llama_index`. `engine.py` exposes `rag_query`, `rag_chat_stream` (SSE), `rag_file_query`, `rag_file_chat_stream`. Hybrid retrieval (vector + BM25 via `QueryFusionRetriever`), optional `LLMRerank`, inline citation numbering via `_NumberSourcesPostprocessor`. Scope filtering by `file_path` substring. Persisted index at `./data/rag_store`. Configured under `rag:` section in `config.yaml` (embed/llm models, top_k, chunk_size, hybrid/retrieval toggles).
-- **`domain/knowledge/` + `services/knowledge/`**: Knowledge-base management module. `scanner.py` walks `../YiKnowledge` markdown tree with frontmatter parsing, `watcher.py` polls via apscheduler (macOS FSEvents is broken — see `YiKnowledge/lessons/gotchas/macos-fsevents-silent-drop.md`), `writer.py` performs markdown write-back with metadata upsert to MongoDB `knowledge_files` collection.
+- **`domain/knowledge/` + `services/knowledge/`**: Knowledge-base management module. `scanner.py` walks `../YiKnowledge` markdown tree with frontmatter parsing, `watcher.py` polls via apscheduler (macOS FSEvents is broken — see `YiKnowledge/engineer/learn/lessons/gotchas/macos-fsevents-silent-drop.md`), `writer.py` performs markdown write-back with metadata upsert to MongoDB `knowledge_files` collection.
 - **`config.yaml`**: Added `knowledge` (base_dir, watcher_enabled, watcher_poll_seconds) and `rag` (models, top_k, chunk_size, hybrid/retrieval/rerank/citations toggles) sections.
 - **`server/routes/`**: Added `knowledge.py` and `rag.py` route modules; registered in `src/app.py`.
 
@@ -319,6 +326,7 @@ success
 
 | Resource | Location |
 |----------|---------|
+| Monorepo entry point | `../CLAUDE.md` — cross-project relationships, shared conventions |
 | Project README | `README.md` |
 | Server config | `config.yaml` |
 | Route definitions | `src/server/routes/` |

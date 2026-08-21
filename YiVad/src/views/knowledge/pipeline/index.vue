@@ -130,7 +130,7 @@ import { useRouter } from "vue-router";
 import { stages, decisionTree, stageColors, crossCuttingLayers } from "./constants";
 import { listKnowledgeFiles } from "@/api/modules/knowledgeService";
 import { EXAMPLE_LAUNCHES, launchStatusType } from "@/views/knowledge/executiver/okrFlowData";
-import KnowledgePreviewDialog from "@/views/aiChat/components/KnowledgePreviewDialog.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 
 const router = useRouter();
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);

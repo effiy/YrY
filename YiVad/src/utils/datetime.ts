@@ -52,3 +52,17 @@ export function formatAbsolute(ts: number | string | Date | undefined | null): s
     return String(ts);
   }
 }
+
+/**
+ * Locale date formatter. Two variants:
+ * - "full" (default): "2026 Aug 21"
+ * - "short": "Aug 21"
+ */
+export function formatDate(iso: string | undefined | null, opts?: { fallback?: string; variant?: "full" | "short" }): string {
+  const fallback = opts?.fallback ?? "-";
+  if (!iso) return fallback;
+  const options: Intl.DateTimeFormatOptions = opts?.variant === "short"
+    ? { month: "short", day: "numeric" }
+    : { year: "numeric", month: "short", day: "numeric" };
+  return new Date(iso).toLocaleDateString("zh-CN", options);
+}

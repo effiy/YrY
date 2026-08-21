@@ -9,7 +9,7 @@ export default {
     roleFilter: "Role",
 
     aiRecommend: {
-      title: "AI Autonomous Recommendation · OKR Task Lists",
+      title: "OKR Task Lists",
       subtitle: "Modeled on deepseek-harness \"everything is a plugin\" — model-visible means logged, refresh means replay",
       scopeAll: "All roles",
       filterAll: "All",
@@ -46,6 +46,7 @@ export default {
         effort: "Effort",
         due: "Due",
         reason: "Why",
+        process: "Process",
         action: "Actions"
       },
       dims: {

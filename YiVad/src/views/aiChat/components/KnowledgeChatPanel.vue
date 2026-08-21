@@ -19,7 +19,7 @@ import { getFaqs } from "@/api/modules/faqService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
 import ChatToolbar from "./ChatToolbar.vue";
 import DraftImageList from "./DraftImageList.vue";
-import RagSources from "@/components/RagSources.vue";
+import RagSources from "@/components/RagSources/RagSources.vue";
 import TodoPanel from "./TodoPanel.vue";
 import AskUserBanner from "./AskUserBanner.vue";
 import type { ChatMessage, FaqDocument } from "@/api/interface/yiweb";
@@ -705,6 +705,8 @@ async function editMessage(idx: number) {
 }
 
 async function deleteMessage(idx: number) {
+  const msg = messages.value[idx];
+  if (!msg) return;
   try {
     await ElMessageBox.confirm("Delete this message?", "Confirm delete", {
       confirmButtonText: "Delete",
@@ -712,6 +714,7 @@ async function deleteMessage(idx: number) {
       type: "warning"
     });
   } catch { return; }
+
   messages.value.splice(idx, 1);
   saveMessages();
 }

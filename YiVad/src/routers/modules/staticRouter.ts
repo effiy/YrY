@@ -14,6 +14,12 @@ export const staticRouter: RouteRecordRaw[] = [
     redirect: HOME_URL
   },
   {
+    path: "/welcome",
+    name: "welcome",
+    component: () => import("@/views/welcome/index.vue"),
+    meta: { title: "Welcome" }
+  },
+  {
     path: LOGIN_URL,
     name: "login",
     component: () => import("@/views/login/index.vue"),
@@ -132,8 +138,15 @@ export const staticRouter: RouteRecordRaw[] = [
       {
         path: "/executiver/rss",
         name: "rssManager",
-        component: () => import("@/views/knowledge/executiver/rssManager.vue"),
+        component: () => import("@/views/knowledge/executiver/rssOverview.vue"),
         meta: { title: "RSS Manager", icon: "Connection", activeMenu: "/executiver" }
+      },
+      {
+        path: "/executiver/rss/:roleId",
+        name: "rssManagerRole",
+        component: () => import("@/views/knowledge/executiver/rssManager.vue"),
+        props: true,
+        meta: { title: "Role RSS Manager", icon: "Connection", activeMenu: "/executiver" }
       },
       {
         path: "/executiver/okr",
@@ -171,6 +184,50 @@ export const staticRouter: RouteRecordRaw[] = [
         name: "producter",
         component: () => import("@/views/knowledge/producter/index.vue"),
         meta: { title: "Product Manager", icon: "Present", isKeepAlive: true }
+      },
+      // ── PM detail pages (hidden from menu) ──────────────────────
+      {
+        path: "/project/:key",
+        name: "projectDetail",
+        component: () => import("@/views/project/detail.vue"),
+        meta: { title: "Project Detail", activeMenu: "/project" }
+      },
+      {
+        path: "/issue/:key",
+        name: "issueDetail",
+        component: () => import("@/views/issue/detail.vue"),
+        meta: { title: "Issue Detail", activeMenu: "/issue" }
+      },
+      {
+        path: "/cycle/:key",
+        name: "cycleDetail",
+        component: () => import("@/views/cycle/detail.vue"),
+        meta: { title: "Cycle Detail", activeMenu: "/project" }
+      },
+      {
+        path: "/module/:key",
+        name: "moduleDetail",
+        component: () => import("@/views/module/detail.vue"),
+        meta: { title: "Module Detail", activeMenu: "/project" }
+      },
+      {
+        path: "/release/:key",
+        name: "releaseDetail",
+        component: () => import("@/views/release/detail.vue"),
+        meta: { title: "Release Detail", activeMenu: "/release" }
+      },
+      // ── Bug Management ──────────────────────────────────────────
+      {
+        path: "/bug",
+        name: "bug",
+        component: () => import("@/views/bug/index.vue"),
+        meta: { title: "Bugs", icon: "Warning", isKeepAlive: true }
+      },
+      {
+        path: "/bug/:key",
+        name: "bugDetail",
+        component: () => import("@/views/bug/detail.vue"),
+        meta: { title: "Bug Detail", activeMenu: "/bug" }
       }
     ]
   }

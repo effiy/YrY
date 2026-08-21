@@ -92,8 +92,6 @@ class MongoDB:
         try:
             # RSS Link Unique Index
             await self._ensure_unique_index(settings.collection_rss, 'link')
-            # Static Files target_file Unique Index
-            await self._ensure_unique_index(settings.collection_static_files, 'target_file')
             # Knowledge Files path Unique Index
             await self._ensure_unique_index(settings.collection_knowledge_files, 'path')
         except Exception as e:

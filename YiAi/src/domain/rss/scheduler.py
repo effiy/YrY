@@ -313,7 +313,7 @@ def get_scheduler_status_info(params: Optional[Dict[str, Any]] = None) -> Dict[s
 
 def init_rss_system():
     """Initialize RSS system"""
-    if settings.is_rss_scheduler_enabled():
+    if settings.rss_scheduler_enabled:
         try:
             _scheduler_manager.start()
             logger.info("RSS scheduled task started")
@@ -323,7 +323,7 @@ def init_rss_system():
 
 def shutdown_rss_system():
     """Shutdown RSS system (stop scheduled tasks)"""
-    if settings.is_rss_scheduler_enabled():
+    if settings.rss_scheduler_enabled:
         try:
             _scheduler_manager.stop()
             logger.info("RSS scheduled task stopped")
