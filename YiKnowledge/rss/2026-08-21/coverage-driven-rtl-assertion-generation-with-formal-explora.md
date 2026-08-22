@@ -1,0 +1,17 @@
+---
+title: Coverage-Driven RTL Assertion Generation with Formal Exploration and Neuro-Symbolic
+  Refinement
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2608.18482
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Zhiyuan Yan, Ziyue Zheng, Hongce Zhang
+---
+
+arXiv:2608.18482v1 Announce Type: cross 
+Abstract: Hardware functional verification relies on high-quality assertions to expose design bugs and establish confidence in Register Transfer Level (RTL) designs. Yet existing assertion mining methods still struggle to produce complete and reliable assertion sets: random or limited traces fail to cover hard-to-reach behaviors, and one-shot generation provides little feedback about what remains unverified or how the assertion set should be improved. As a result, critical design behaviors can remain uncovered even when many assertions are generated. We present NeuroAssertion, a coverage-driven assertion generation framework that combines formal trace generation, syntax-guided synthesis (SyGuS), and an agent-inspired refinement process within a unified framework. Our framework first converts hard-to-reach control-flow conditions into formal reachability objectives, uses model checking to generate behaviorally diverse traces, and mines initial assertions from these traces with SyGuS. It then performs targeted agent-inspired refinement under verification feedback: one LLM first proposes candidate assertions for uncovered regions, and if a candidate fails formal checking, a second LLM generates a repair grammar that guides constrained symbolic synthesis in a neuro-symbolic repair procedure. Experimental results show that this framework delivers around 2X more assertions and about 2X higher mutation coverage than traditional assertion mining methods.

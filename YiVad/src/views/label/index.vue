@@ -3,26 +3,73 @@
     <div class="label-mgmt__head">
       <div class="label-mgmt__head-left">
         <h1 class="label-mgmt__title">Labels</h1>
-        <el-tag size="small" type="info">{{ labels.length }} labels</el-tag>
+        <el-tag size="small" type="info" round>{{ countLabel }}</el-tag>
       </div>
-      <el-button type="primary" :icon="Plus" @click="openCreate">New Label</el-button>
+      <div class="label-mgmt__head-actions">
+        <el-input
+          v-model="searchText"
+          class="label-mgmt__search"
+          size="small"
+          clearable
+          placeholder="Search labels…"
+          :prefix-icon="Search"
+        />
+        <el-select v-model="sortBy" class="label-mgmt__sort" size="small">
+          <el-option label="Name" value="name" />
+          <el-option label="Most used" value="usage" />
+        </el-select>
+        <el-button type="primary" :icon="Plus" @click="openCreate">New Label</el-button>
+      </div>
+    </div>
+
+    <div class="label-mgmt__summary">
+      <div class="label-summary__tile label-summary__tile--clickable" @click="clearUsage">
+        <span class="label-summary__value">{{ labels.length }}</span>
+        <span class="label-summary__label">Labels</span>
+      </div>
+      <div class="label-summary__tile label-summary__tile--used label-summary__tile--clickable" :class="{ 'label-summary__tile--active': usageFilter === 'used' }" @click="toggleUsage('used')">
+        <span class="label-summary__value">{{ inUseCount }}</span>
+        <span class="label-summary__label">In Use</span>
+      </div>
+      <div class="label-summary__tile label-summary__tile--unused label-summary__tile--clickable" :class="{ 'label-summary__tile--active': usageFilter === 'unused' }" @click="toggleUsage('unused')">
+        <span class="label-summary__value">{{ unusedCount }}</span>
+        <span class="label-summary__label">Unused</span>
+      </div>
+      <div class="label-summary__tile label-summary__tile--tagged label-summary__tile--clickable" @click="goIssues">
+        <span class="label-summary__value">{{ totalTaggings }}</span>
+        <span class="label-summary__label">Issue Tagged</span>
+      </div>
     </div>
 
     <div v-loading="loading" class="label-mgmt__body">
-      <div v-if="labels.length" class="label-mgmt__grid">
-        <div v-for="label in labels" :key="label.key" class="label-card">
-          <div class="label-card__swatch" :style="{ background: label.color }" />
-          <div class="label-card__info">
-            <span class="label-card__name">{{ label.name }}</span>
-            <span v-if="label.description" class="label-card__desc">{{ label.description }}</span>
+      <div v-if="displayedLabels.length" class="label-mgmt__grid">
+        <div
+          v-for="label in displayedLabels"
+          :key="label.key"
+          class="label-card"
+          :style="{ borderLeftColor: label.color }"
+          :class="{ 'label-card--unused': usage(label) === 0 }"
+        >
+          <div class="label-card__body">
+            <div class="label-card__head">
+              <el-tag :color="label.color" effect="dark" round size="large" class="label-card__chip">
+                {{ label.name }}
+              </el-tag>
+              <span class="label-card__usage">{{ usageText(label) }}</span>
+            </div>
+            <div v-if="label.description" class="label-card__desc">{{ label.description }}</div>
+            <div class="label-card__hex" @click="copyColor(label)">{{ label.color }}</div>
+            <span class="label-card__updated">Updated {{ formatRelativeTime(label.updated_at) }}</span>
           </div>
           <div class="label-card__actions">
+            <el-button link :icon="CopyDocument" size="small" @click="copyColor(label)" />
             <el-button link :icon="Edit" size="small" @click="openEdit(label)" />
             <el-button link :icon="Delete" size="small" @click="handleDelete(label)" />
           </div>
         </div>
       </div>
-      <el-empty v-else description="No labels yet" :image-size="60">
+      <el-empty v-else-if="!loading && !displayedLabels.length && labels.length" description="No matching labels" :image-size="60" />
+      <el-empty v-else-if="!loading" description="No labels yet" :image-size="60">
         <el-button type="primary" @click="openCreate">Create your first label</el-button>
       </el-empty>
     </div>
@@ -67,16 +114,78 @@
 </template>
 
 <script setup lang="ts" name="labelManagement">
-import { onMounted, reactive, ref } from "vue";
-import { Plus, Edit, Delete } from "@element-plus/icons-vue";
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Plus, Edit, Delete, Search, CopyDocument } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { getLabelList, createLabel, updateLabel, deleteLabel } from "@/api/modules/labelService";
 import type { Label } from "@/api/modules/labelService";
+import { getIssueList } from "@/api/modules/issueService";
+import type { Issue } from "@/api/modules/issueService";
+import { formatRelativeTime } from "@/utils/datetime";
 
 const loading = ref(false);
 const labels = ref<Label[]>([]);
 const formRef = ref<FormInstance>();
+const searchText = ref("");
+const sortBy = ref<"name" | "usage">("name");
+const usageFilter = ref<"" | "used" | "unused">("");
+const router = useRouter();
+
+// ── Usage: how many issues carry each label (case-insensitive name match) ───
+const usageByLabel = ref<Map<string, number>>(new Map());
+
+async function loadUsage() {
+  try {
+    const res = await getIssueList({ pageSize: 1000 });
+    const issues = (res.data?.list as Issue[]) ?? [];
+    const map = new Map<string, number>();
+    for (const i of issues) {
+      for (const l of i.labels || []) {
+        const k = l.trim().toLowerCase();
+        map.set(k, (map.get(k) || 0) + 1);
+      }
+    }
+    usageByLabel.value = map;
+  } catch {
+    // usage is best-effort
+  }
+}
+
+function usage(label: Label): number {
+  return usageByLabel.value.get(label.name.trim().toLowerCase()) || 0;
+}
+
+function usageText(label: Label): string {
+  const n = usage(label);
+  return n ? `${n} issue${n > 1 ? "s" : ""}` : "Unused";
+}
+
+const displayedLabels = computed(() => {
+  const q = searchText.value.trim().toLowerCase();
+  let list = labels.value;
+  if (q) {
+    list = list.filter(l => l.name.toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q));
+  }
+  if (usageFilter.value === "used") list = list.filter(l => usage(l) > 0);
+  else if (usageFilter.value === "unused") list = list.filter(l => usage(l) === 0);
+  const sorted = [...list];
+  if (sortBy.value === "usage") {
+    sorted.sort((a, b) => usage(b) - usage(a) || a.name.localeCompare(b.name));
+  } else {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  return sorted;
+});
+
+const inUseCount = computed(() => labels.value.filter(l => usage(l) > 0).length);
+const unusedCount = computed(() => labels.value.filter(l => usage(l) === 0).length);
+const totalTaggings = computed(() => labels.value.reduce((s, l) => s + usage(l), 0));
+const countLabel = computed(() => {
+  const isFiltered = !!searchText.value.trim();
+  return isFiltered ? `${displayedLabels.value.length} of ${labels.value.length} labels` : `${labels.value.length} labels`;
+});
 
 const rules: FormRules = {
   name: [{ required: true, message: "Label name is required", trigger: "blur" }],
@@ -144,7 +253,22 @@ async function handleDelete(label: Label) {
   } catch { /* cancelled */ }
 }
 
-onMounted(() => { loadLabels(); });
+async function copyColor(label: Label) {
+  try {
+    await navigator.clipboard.writeText(label.color);
+    ElMessage.success(`Copied ${label.color}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+function toggleUsage(v: "used" | "unused") {
+  usageFilter.value = usageFilter.value === v ? "" : v;
+}
+function clearUsage() { usageFilter.value = ""; }
+function goIssues() { router.push("/issue"); }
+
+onMounted(() => { loadLabels(); loadUsage(); });
 </script>
 
 <style scoped lang="scss">
@@ -158,6 +282,8 @@ onMounted(() => { loadLabels(); });
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 .label-mgmt__head-left {
@@ -165,47 +291,120 @@ onMounted(() => { loadLabels(); });
   align-items: center;
   gap: 12px;
 }
-.label-mgmt__title { margin: 0; font-size: 20px; font-weight: 600; }
-.label-mgmt__body {
-  max-width: 600px;
+.label-mgmt__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+.label-mgmt__title { margin: 0; font-size: 20px; font-weight: 600; }
+.label-mgmt__search { width: 190px; }
+.label-mgmt__sort { width: 130px; }
+.label-mgmt__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.label-summary__tile {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.label-summary__tile--clickable {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  &:hover {
+    border-color: var(--el-color-primary);
+    box-shadow: var(--el-box-shadow-light);
+    transform: translateY(-2px);
+  }
+}
+.label-summary__tile--active {
+  border-color: var(--el-color-primary);
+}
+.label-summary__value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--el-text-color-primary);
+}
+.label-summary__label { font-size: 12px; color: var(--el-text-color-secondary); }
+.label-summary__tile--used .label-summary__value { color: var(--el-color-success); }
+.label-summary__tile--unused .label-summary__value { color: var(--el-color-info); }
+.label-summary__tile--tagged .label-summary__value { color: var(--el-color-primary); }
+.label-mgmt__body { max-width: 100%; }
 .label-mgmt__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.label-card {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-left: 3px solid transparent;
+  border-radius: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--el-box-shadow-light);
+  }
+  &--unused {
+    opacity: 0.72;
+  }
+}
+.label-card__body {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.label-card {
+.label-card__head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  &:hover { border-color: var(--el-color-primary-light-5); }
+  gap: 10px;
 }
-.label-card__swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  flex-shrink: 0;
+.label-card__chip {
+  font-size: 13px;
 }
-.label-card__info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.label-card__name {
-  font-weight: 600;
-  font-size: 14px;
+.label-card__usage {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 .label-card__desc {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+  line-height: 1.4;
+}
+.label-card__updated {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
+.label-card__hex {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--el-text-color-placeholder);
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 1px 6px;
+  border-radius: 4px;
+  &:hover { color: var(--el-color-primary); background: var(--el-fill-color-light); }
 }
 .label-card__actions {
   display: flex;
-  gap: 4px;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+  flex-shrink: 0;
 }
 .label-mgmt__color-pick {
   display: flex;

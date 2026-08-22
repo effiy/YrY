@@ -10,7 +10,7 @@
           <div>
             <h1 class="project-detail__name">{{ project.name }}</h1>
             <div class="project-detail__meta">
-              <code>{{ project.identifier }}</code>
+              <code class="project-detail__id-chip" title="Copy identifier" @click="copyIdentifier">{{ project.identifier }}</code>
               <el-tag :type="project.status === 'active' ? 'success' : 'info'" size="small">{{ project.status }}</el-tag>
             </div>
           </div>
@@ -27,27 +27,27 @@
         <el-tab-pane label="Overview" name="overview">
           <!-- Stats Cards -->
           <div class="project-detail__stats">
-            <div class="project-detail__stat">
+            <div class="project-detail__stat project-detail__stat--clickable" title="View issues" @click="goTab('issues')">
               <div class="project-detail__stat-value">{{ overviewStats.totalIssues }}</div>
               <div class="project-detail__stat-label">Total Issues</div>
             </div>
-            <div class="project-detail__stat project-detail__stat--done">
+            <div class="project-detail__stat project-detail__stat--done project-detail__stat--clickable" title="View issues" @click="goTab('issues')">
               <div class="project-detail__stat-value">{{ overviewStats.doneIssues }}</div>
               <div class="project-detail__stat-label">Completed</div>
             </div>
-            <div class="project-detail__stat project-detail__stat--progress">
+            <div class="project-detail__stat project-detail__stat--progress project-detail__stat--clickable" title="View issues" @click="goTab('issues')">
               <div class="project-detail__stat-value">{{ overviewStats.inProgressIssues }}</div>
               <div class="project-detail__stat-label">In Progress</div>
             </div>
-            <div class="project-detail__stat project-detail__stat--overdue">
+            <div class="project-detail__stat project-detail__stat--overdue project-detail__stat--clickable" title="View issues" @click="goTab('issues')">
               <div class="project-detail__stat-value">{{ overviewStats.overdueIssues }}</div>
               <div class="project-detail__stat-label">Overdue</div>
             </div>
-            <div class="project-detail__stat project-detail__stat--cycle">
+            <div class="project-detail__stat project-detail__stat--cycle project-detail__stat--clickable" title="View cycles" @click="goTab('cycles')">
               <div class="project-detail__stat-value">{{ overviewStats.activeCycles }}</div>
               <div class="project-detail__stat-label">Active Cycles</div>
             </div>
-            <div class="project-detail__stat project-detail__stat--release">
+            <div class="project-detail__stat project-detail__stat--release project-detail__stat--clickable" title="View releases" @click="goTab('releases')">
               <div class="project-detail__stat-value">{{ overviewStats.pendingReleases }}</div>
               <div class="project-detail__stat-label">Pending Releases</div>
             </div>
@@ -131,28 +131,58 @@
             <el-empty v-else description="No description" :image-size="60" />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="Issues" name="issues">
+        <el-tab-pane name="issues">
+          <template #label>
+            <span class="project-detail__tab-label">Issues<span class="project-detail__tab-count">{{ overviewStats.totalIssues }}</span></span>
+          </template>
           <IssueList :project-key="project.key" />
         </el-tab-pane>
-        <el-tab-pane label="Cycles" name="cycles">
+        <el-tab-pane name="cycles">
+          <template #label>
+            <span class="project-detail__tab-label">Cycles<span class="project-detail__tab-count">{{ overviewStats.totalCycles }}</span></span>
+          </template>
           <CycleList :project-key="project.key" />
         </el-tab-pane>
-        <el-tab-pane label="Releases" name="releases">
+        <el-tab-pane name="releases">
+          <template #label>
+            <span class="project-detail__tab-label">Releases<span class="project-detail__tab-count">{{ overviewStats.totalReleases }}</span></span>
+          </template>
           <ReleaseList :project-key="project.key" />
         </el-tab-pane>
-        <el-tab-pane label="Pages" name="pages">
+        <el-tab-pane name="pages">
+          <template #label>
+            <span class="project-detail__tab-label">Pages</span>
+          </template>
           <PageList :project-key="project.key" />
         </el-tab-pane>
-        <el-tab-pane label="Members" name="members">
-          <div class="project-detail__members">
+        <el-tab-pane name="members">
+          <template #label>
+            <span class="project-detail__tab-label">Members<span class="project-detail__tab-count">{{ project.members.length }}</span></span>
+          </template>
+          <div class="project-detail__members-head">
+            <span class="project-detail__members-count">{{ project.members.length }} member{{ project.members.length === 1 ? "" : "s" }}</span>
+            <el-button size="small" type="primary" :icon="Plus" @click="openAddMember">Add Member</el-button>
+          </div>
+          <div v-if="project.members.length" class="project-detail__members">
             <div v-for="m in project.members" :key="m.user_id" class="project-detail__member">
-              <el-avatar :size="32">{{ m.username.charAt(0) }}</el-avatar>
-              <span class="project-detail__member-name">{{ m.username }}</span>
-              <el-tag size="small" :type="m.role === 'owner' ? 'warning' : m.role === 'admin' ? 'primary' : 'info'">
-                {{ m.role }}
-              </el-tag>
+              <el-avatar :size="32" :src="m.avatar">{{ m.username.charAt(0).toUpperCase() }}</el-avatar>
+              <div class="project-detail__member-info">
+                <span class="project-detail__member-name">{{ m.username }}</span>
+                <span class="project-detail__member-id">{{ m.user_id }}</span>
+              </div>
+              <el-tag size="small" :type="roleTagType(m.role)">{{ m.role }}</el-tag>
+              <el-button
+                v-if="m.role !== 'owner'"
+                link
+                size="small"
+                type="danger"
+                :icon="Close"
+                title="Remove member"
+                @click="removeMember(m)"
+              />
             </div>
           </div>
+          <el-empty v-else description="No members yet" :image-size="60" />
         </el-tab-pane>
       </el-tabs>
 
@@ -180,6 +210,27 @@
           <el-button type="primary" :loading="editDialog.submitting" @click="submitEdit">Save</el-button>
         </template>
       </el-dialog>
+
+      <!-- Add Member Dialog -->
+      <el-dialog v-model="memberDialog.visible" title="Add Member" width="420px" destroy-on-close>
+        <el-form label-width="90px">
+          <el-form-item label="Username">
+            <el-input v-model="memberDialog.username" placeholder="Username" maxlength="40" @keyup.enter="submitAddMember" />
+          </el-form-item>
+          <el-form-item label="Role">
+            <el-select v-model="memberDialog.role" style="width: 100%">
+              <el-option label="Owner" value="owner" />
+              <el-option label="Admin" value="admin" />
+              <el-option label="Member" value="member" />
+              <el-option label="Viewer" value="viewer" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button @click="memberDialog.visible = false">Cancel</el-button>
+          <el-button type="primary" :loading="memberDialog.submitting" @click="submitAddMember">Add</el-button>
+        </template>
+      </el-dialog>
     </template>
 
     <div v-else-if="!loading" class="project-detail__not-found">
@@ -195,7 +246,7 @@
 <script setup lang="ts" name="projectDetail">
 import { computed, onMounted, reactive, ref, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, CopyDocument, Star } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, CopyDocument, Star, Plus, Close } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import * as echarts from "echarts";
@@ -214,6 +265,7 @@ import { formatRelativeTime, formatDate } from "@/utils/datetime";
 import type { Issue, IssueStatus } from "@/api/modules/issueService";
 import type { Cycle } from "@/api/modules/cycleService";
 import type { Release } from "@/api/modules/releaseService";
+import type { ProjectMember } from "@/api/modules/projectService";
 
 const route = useRoute();
 const router = useRouter();
@@ -223,6 +275,7 @@ const { render: renderMarkdown } = useMarkdown();
 const loading = ref(true);
 const project = computed(() => store.currentProject);
 const activeTab = ref("overview");
+const TAB_NAMES: string[] = ["overview", "issues", "cycles", "releases", "pages", "members"];
 const editFormRef = ref<FormInstance>();
 
 const overviewStats = reactive({
@@ -231,7 +284,9 @@ const overviewStats = reactive({
   inProgressIssues: 0,
   overdueIssues: 0,
   activeCycles: 0,
-  pendingReleases: 0
+  pendingReleases: 0,
+  totalCycles: 0,
+  totalReleases: 0
 });
 
 const overviewCycles = ref<Cycle[]>([]);
@@ -272,6 +327,8 @@ async function loadOverviewStats() {
     overviewStats.overdueIssues = issues.filter(i => i.due_date && i.due_date < now && i.status !== "done").length;
     overviewStats.activeCycles = cycles.filter(c => c.status === "active").length;
     overviewStats.pendingReleases = releases.filter(r => r.status !== "released").length;
+    overviewStats.totalCycles = cycles.length;
+    overviewStats.totalReleases = releases.length;
 
     overviewCycles.value = cycles.filter(c => c.status === "active" || c.status === "upcoming").slice(0, 5);
     overviewReleases.value = releases.filter(r => r.status !== "released").slice(0, 5);
@@ -492,12 +549,79 @@ function coverStyle(cover?: string) {
   return cover ? { backgroundImage: `url(${cover})`, backgroundSize: "cover" } : {};
 }
 
+const memberDialog = reactive({
+  visible: false,
+  submitting: false,
+  username: "",
+  role: "member" as ProjectMember["role"]
+});
+
+function openAddMember() {
+  memberDialog.username = "";
+  memberDialog.role = "member";
+  memberDialog.visible = true;
+}
+
+async function submitAddMember() {
+  const username = memberDialog.username.trim();
+  if (!username || !project.value) return;
+  memberDialog.submitting = true;
+  try {
+    const member: ProjectMember = {
+      user_id: `mem-${Date.now().toString(36)}`,
+      username,
+      role: memberDialog.role
+    };
+    await store.editProject(project.value.key, { members: [...(project.value.members || []), member] });
+    ElMessage.success(`Added ${username}`);
+    memberDialog.visible = false;
+  } finally {
+    memberDialog.submitting = false;
+  }
+}
+
+async function removeMember(m: ProjectMember) {
+  if (!project.value) return;
+  await store.editProject(project.value.key, {
+    members: (project.value.members || []).filter(x => x.user_id !== m.user_id)
+  });
+  ElMessage.success(`Removed ${m.username}`);
+}
+
+function roleTagType(role: ProjectMember["role"]): "warning" | "primary" | "info" | "success" {
+  const m: Record<ProjectMember["role"], "warning" | "primary" | "info" | "success"> = {
+    owner: "warning",
+    admin: "primary",
+    member: "info",
+    viewer: "success"
+  };
+  return m[role];
+}
+
+function goTab(name: string) {
+  if (TAB_NAMES.includes(name)) activeTab.value = name;
+}
+
+async function copyIdentifier() {
+  if (!project.value) return;
+  try {
+    await navigator.clipboard.writeText(project.value.identifier);
+    ElMessage.success(`Copied ${project.value.identifier}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
 onMounted(async () => {
   const key = route.params.key as string;
   if (key) {
     await store.fetchProject(key);
   }
   loading.value = false;
+  const tab = route.query.tab;
+  if (typeof tab === "string" && TAB_NAMES.includes(tab)) {
+    activeTab.value = tab;
+  }
   await loadOverviewStats();
 });
 </script>
@@ -750,11 +874,65 @@ onMounted(async () => {
   border-radius: 8px;
   background: var(--el-fill-color-lighter);
 }
-.project-detail__member-name {
+.project-detail__members-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.project-detail__members-count {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+.project-detail__member-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.project-detail__member-name {
   font-weight: 500;
+}
+.project-detail__member-id {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .project-detail__not-found {
   padding: 80px 0;
+}
+.project-detail__id-chip {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.project-detail__stat--clickable {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--el-box-shadow-light);
+  }
+}
+.project-detail__tab-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.project-detail__tab-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--el-fill-color);
+  color: var(--el-text-color-secondary);
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
 }
 </style>

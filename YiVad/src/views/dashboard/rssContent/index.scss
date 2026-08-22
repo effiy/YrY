@@ -1,72 +1,198 @@
-.rss-content-box {
-  .top-box {
-    box-sizing: border-box;
-    padding: 25px 40px 0;
-    margin-bottom: 10px;
-    .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .top-title { font-family: DIN; font-size: 18px; font-weight: bold; }
-    .top-actions { display: flex; align-items: center; gap: 12px; .last-updated { font-size: 12px; color: #909399; } }
-    .top-content { margin-top: 10px; }
-  }
-  .stat-card {
+// RSS Content dashboard — layout + components
+// NOTE: drawer content is teleported to <body>, so drawer styles are NOT
+// nested under a page wrapper (a `.rss-content-box .detail-*` selector would
+// never match the teleported node). All classes are top-level; scoping comes
+// from Vue's data-v attribute.
+
+// ── Top section ──
+
+.top-box {
+  padding: 25px 40px 0;
+  margin-bottom: 10px;
+  .top-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .top-title { font-family: DIN; font-size: 18px; font-weight: bold; }
+  .top-actions { display: flex; align-items: center; gap: 12px; .last-updated { font-size: 12px; color: #909399; } }
+  .top-content { margin-top: 10px; }
+}
+
+// ── Stat cards ──
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px 24px;
+  border-radius: 12px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  &:hover { box-shadow: 0 6px 20px rgb(0 0 0 / 8%); transform: translateY(-2px); }
+  &.stat-total { cursor: pointer; }
+  .stat-icon {
     display: flex;
     align-items: center;
-    box-sizing: border-box;
-    height: 100%;
-    padding: 20px 24px;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin-right: 16px;
+    font-size: 24px;
     border-radius: 12px;
-    .stat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      margin-right: 16px;
-      font-size: 24px;
-      border-radius: 12px;
-      color: #fff;
-    }
-    .stat-info {
-      .stat-value { font-family: DIN; font-size: 28px; font-weight: bold; color: #303133; }
-      .stat-label { font-size: 13px; color: #909399; margin-top: 2px; }
-      .stat-sub { font-size: 11px; color: #c0c4cc; margin-top: 2px; }
-    }
+    color: #fff;
   }
-  .stat-total .stat-icon { background: linear-gradient(135deg, #5470c6, #4460b0); }
-  .stat-sources .stat-icon { background: linear-gradient(135deg, #91cc75, #7ab85e); }
-  .stat-categories .stat-icon { background: linear-gradient(135deg, #fac858, #e0b040); }
-  .stat-months .stat-icon { background: linear-gradient(135deg, #ee6666, #da5a5a); }
-  .chart-row {
-    padding: 20px 40px;
-    margin-bottom: 10px;
+  .stat-info {
+    .stat-value { font-family: DIN; font-size: 28px; font-weight: bold; color: #303133; }
+    .stat-label { font-size: 13px; color: #909399; margin-top: 2px; }
+    .stat-sub { font-size: 11px; color: #c0c4cc; margin-top: 2px; }
   }
-  .chart-box {
-    box-sizing: border-box;
-    height: 380px;
-    border: 1px solid var(--el-border-color);
-    border-radius: 12px;
-    .chart-title {
-      padding: 15px 20px;
-      font-family: DIN;
-      font-size: 16px;
-      font-weight: bold;
-      border-bottom: 1px solid var(--el-border-color);
-    }
-    .chart-body { width: 100%; height: calc(100% - 55px); }
-  }
-  .recent-box {
-    padding: 25px 40px;
-    .recent-title {
-      margin-bottom: 15px;
-      font-family: DIN;
-      font-size: 18px;
-      font-weight: bold;
-    }
-  }
-  .article-link {
-    color: #5470c6;
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
-  }
-  .mb20 { margin-bottom: 20px; }
 }
+.stat-total .stat-icon { background: linear-gradient(135deg, #5470c6, #4460b0); }
+.stat-sources .stat-icon { background: linear-gradient(135deg, #91cc75, #7ab85e); }
+.stat-categories .stat-icon { background: linear-gradient(135deg, #fac858, #e0b040); }
+.stat-months .stat-icon { background: linear-gradient(135deg, #ee6666, #da5a5a); }
+
+// ── Chart rows ──
+
+.chart-row {
+  padding: 20px 40px;
+  margin-bottom: 10px;
+}
+.chart-box {
+  box-sizing: border-box;
+  height: 380px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 12px;
+  &--timeline { height: 300px; }
+  .chart-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    font-family: DIN;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--el-border-color);
+  }
+  .chart-hint { font-family: inherit; font-size: 11px; font-weight: normal; color: #909399; }
+  .chart-body { width: 100%; height: calc(100% - 55px); }
+}
+
+// ── Article browser ──
+
+.articles-box {
+  padding: 20px 40px 24px;
+}
+.articles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.articles-title {
+  font-family: DIN;
+  font-size: 18px;
+  font-weight: bold;
+}
+.articles-count {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 10px;
+}
+.articles-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.toolbar-search { width: 240px; }
+.toolbar-select { width: 200px; }
+
+.filter-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.filter-pill { cursor: pointer; }
+
+.article-title {
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+.source-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.chip-chip { cursor: pointer; }
+.tag-chip { margin-right: 4px; cursor: pointer; }
+
+.cell-muted { color: var(--el-text-color-placeholder); }
+.cell-date { color: var(--el-text-color-secondary); font-size: 12px; }
+
+.pagination-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+// ── Detail drawer ──
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.detail-meta-item { font-size: 13px; color: var(--el-text-color-secondary); }
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.detail-body { min-height: 200px; }
+.detail-body__summary {
+  color: var(--el-text-color-regular);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.detail-body__markdown {
+  color: var(--el-text-color-primary);
+  :deep(h1) { font-size: 1.6em; margin: 0.8em 0 0.4em; padding-bottom: 0.3em; border-bottom: 1px solid var(--el-border-color-lighter); }
+  :deep(h2) { font-size: 1.35em; margin: 0.8em 0 0.4em; }
+  :deep(h3) { font-size: 1.15em; margin: 0.7em 0 0.3em; }
+  :deep(h4), :deep(h5), :deep(h6) { font-size: 1em; margin: 0.6em 0 0.3em; }
+  :deep(p) { margin: 0.5em 0; line-height: 1.7; }
+  :deep(ul), :deep(ol) { padding-left: 1.5em; margin: 0.5em 0; }
+  :deep(li) { margin: 0.2em 0; }
+  :deep(a) { color: var(--el-color-primary); text-decoration: none; &:hover { text-decoration: underline; } }
+  :deep(blockquote) { margin: 0.6em 0; padding: 0.4em 1em; border-left: 4px solid var(--el-color-primary-light-5); background: var(--el-fill-color-light); color: var(--el-text-color-secondary); }
+  :deep(code) { font-family: monospace; padding: 1px 5px; border-radius: 3px; background: var(--el-fill-color-light); font-size: 0.9em; }
+  :deep(pre) { padding: 12px; border-radius: 6px; background: var(--el-fill-color-light); overflow-x: auto; code { padding: 0; background: transparent; } }
+  :deep(img) { max-width: 100%; border-radius: 6px; }
+  :deep(table) { margin: 0.6em 0; border-collapse: collapse; th, td { padding: 6px 10px; border: 1px solid var(--el-border-color-lighter); } th { background: var(--el-fill-color-light); } }
+}
+
+// ── Utilities ──
+
+.mb20 { margin-bottom: 20px; }

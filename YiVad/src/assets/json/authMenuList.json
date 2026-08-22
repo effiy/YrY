@@ -178,7 +178,7 @@
       "path": "/dashboard",
       "name": "dashboard",
       "component": "",
-      "redirect": "/dashboard/aiAnalytics",
+      "redirect": "/dashboard/knowledgeBase",
       "meta": {
         "icon": "Odometer",
         "title": "Dashboard",
@@ -191,25 +191,6 @@
       "parent": null,
       "order": 9,
       "children": [
-        {
-          "key": "menu_dashAiAnalytics",
-          "path": "/dashboard/aiAnalytics",
-          "name": "dashAiAnalytics",
-          "component": "/dashboard/aiAnalytics/index",
-          "redirect": "",
-          "meta": {
-            "icon": "TrendCharts",
-            "title": "AI Analytics",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/dashboard",
-          "order": 0,
-          "children": []
-        },
         {
           "key": "menu_dashKnowledgeBase",
           "path": "/dashboard/knowledgeBase",

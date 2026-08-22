@@ -389,24 +389,31 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   /** Ensure the page content is saved as a context file for the given session.
-   *  Idempotent — skips if the session already has the ctx: tag. */
+   *  Idempotent — skips the write if the session already has the ctx: tag, but
+   *  always surfaces the page md as the first "Active context" scope. */
   async function _ensurePageContext(session: SessionItem) {
     const filename = slugifyUrl(session.url);
     const ctxPath = `websites/${filename}.md`;
+    // Always make this page the active context scope so the Context pill shows
+    // the page md as its first item, independent of the knowledge write result.
+    setRagScopeFromNode(ctxPath, true);
+
     const hasCtx = (session.tags || []).some((t) => t === `${CTX_PREFIX}${ctxPath}`);
     if (hasCtx) return;
+
     const rawContent = document.body?.innerText?.slice(0, 8000) || '';
-    if (!rawContent.trim() || !_knowledge) return;
+    const tags = [...(session.tags || []).filter((t) => !t.startsWith(CTX_PREFIX)), `${CTX_PREFIX}${ctxPath}`];
+    if (!tags.includes('source:YiPet')) tags.push('source:YiPet');
+    if (!tags.some((t) => t.startsWith('from:'))) tags.push(`from:${session.url}`);
     try {
-      const existing = await _knowledge.read(ctxPath);
-      if (!existing.ok || !existing.data) {
-        const md = formatPageMarkdown(session.title, session.url, rawContent);
-        await _knowledge.write(ctxPath, md, { title: session.title, url: session.url, source: 'YiPet' });
+      if (_knowledge) {
+        const existing = await _knowledge.read(ctxPath);
+        if (!existing.ok || !existing.data) {
+          const md = formatPageMarkdown(session.title, session.url, rawContent);
+          await _knowledge.write(ctxPath, md, { title: session.title, url: session.url, source: 'YiPet' });
+        }
       }
       const bodyOnly = [`# ${session.title}`, '', rawContent].join('\n');
-      const tags = [...(session.tags || []).filter((t) => !t.startsWith(CTX_PREFIX)), `${CTX_PREFIX}${ctxPath}`];
-      if (!tags.includes('source:YiPet')) tags.push('source:YiPet');
-      if (!tags.some((t) => t.startsWith('from:'))) tags.push(`from:${session.url}`);
       await _sessions.update(session.id, {
         pageContent: `## ${ctxPath}\n\n${bodyOnly}`,
         tags,
@@ -511,10 +518,13 @@ export const useChatStore = defineStore('chat', () => {
     title: string,
     rawContent: string,
   ): Promise<boolean> {
-    if (!rawContent.trim()) return false;
-    if (!_knowledge) return false;
     const filename = slugifyUrl(url);
     const ctxPath = `websites/${filename}.md`;
+    // Surface the page md as the active context scope even if the body is empty
+    // or the knowledge write later fails — keeps the Context pill visible.
+    setRagScopeFromNode(ctxPath, true);
+    if (!rawContent.trim()) return false;
+    if (!_knowledge) return false;
     try {
       const existing = await _knowledge.read(ctxPath);
       if (existing.ok && existing.data) {

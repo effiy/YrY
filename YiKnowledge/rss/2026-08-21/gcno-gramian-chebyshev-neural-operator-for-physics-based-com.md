@@ -1,0 +1,17 @@
+---
+title: 'GCNO: Gramian Chebyshev Neural Operator for Physics-Based Compression of Wireless
+  Channels'
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2608.18522
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Rafid Umayer Murshed, Shahab Hamidi-Rad, Elahe Soltanaghai, Akshay Malhotra
+---
+
+arXiv:2608.18522v1 Announce Type: cross 
+Abstract: Large antenna arrays allow wireless systems to serve more users and achieve higher data rates, but they also make channel feedback expensive: the receiving device must repeatedly report a large complex-valued channel matrix to the base station. Most neural compressors treat this matrix like an image and replace it with a fixed-length code that only a matched neural decoder can interpret. The message therefore does not adapt to channel complexity, and changing the antenna count typically requires retraining. We ask whether a device can instead report only the few dominant propagation paths underlying each channel. We introduce the Gramian Chebyshev Neural Operator (GCNO), a physics-based, variable-rate compressor that identifies a sample-dependent set of path directions. GCNO uses receive-transmit channel structure to locate paths, a first-order Taylor correction to refine directions that fall between grid points, and least squares to recover their complex strengths. It is trained without path labels, and the base station reconstructs the channel analytically from the transmitted path tuples rather than through a learned decoder. Across three ray-traced environments, GCNO achieves better reconstruction accuracy at the same payload - or lower payload at the same accuracy - than neural feedback baselines, and transfers to unseen antenna counts without retraining.

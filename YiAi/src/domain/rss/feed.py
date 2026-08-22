@@ -70,16 +70,13 @@ _SOURCE_CATEGORY_RULES: list[tuple[tuple[str, ...], str]] = [
 ]
 
 
-def _slugify(text: str, seed: str = "") -> str:
+def _slugify(text: str) -> str:
     """Make a filesystem-safe slug from arbitrary text.
 
     Keeps CJK characters (YiKnowledge may have Chinese file names).
-    Truncates to 60 chars and appends a short hash so two different
-    entries with similar titles don't collide on disk.
-
-    ``seed`` (typically the entry link) is used for the hash to guarantee
-    uniqueness across different articles with the same title in the
-    ``rss/`` directory.
+    Truncates to 60 chars. No hash suffix \u2014 the file name is the title
+    slug directly. Note: two different articles with the same title (and
+    the same date) collide on disk; the second is skipped as idempotent.
     """
     s = (text or "").strip().lower()
     s = re.sub(r"\s+", "-", s)
@@ -90,8 +87,7 @@ def _slugify(text: str, seed: str = "") -> str:
         s = "untitled"
     if len(s) > 60:
         s = s[:60].rstrip("-")
-    h = re.sub(r"[^a-z0-9]", "", uuid.uuid5(uuid.NAMESPACE_URL, seed or text).hex)[:6]
-    return f"{s}-{h}"
+    return s
 
 
 def _keyword_matches(keyword: str, haystack: str) -> bool:
@@ -254,7 +250,7 @@ def _persist_entry_to_knowledge(
     """
     title = entry.get("title", "") or "untitled"
     link = entry.get("link", "")
-    slug = _slugify(title, link)
+    slug = _slugify(title)
     date_dir = _entry_date_dir(entry)
     rel = f"rss/{date_dir}/{slug}.md"
     if entry_exists(rel):

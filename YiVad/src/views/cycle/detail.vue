@@ -7,15 +7,18 @@
           <div>
             <h1 class="cycle-detail__name">{{ cycle.name }}</h1>
             <div class="cycle-detail__meta">
+              <code class="cycle-detail__key" title="Copy key" @click="copyKey">{{ cycle.key }}</code>
               <el-tag :type="statusTagType(cycle.status)" size="small">{{ statusLabel(cycle.status) }}</el-tag>
               <span class="cycle-detail__dates">
                 <el-icon><Calendar /></el-icon>
                 {{ formatDate(cycle.start_date) }} — {{ formatDate(cycle.end_date) }}
               </span>
+              <span class="cycle-detail__time-hint" :class="timeHintClass(cycle)">{{ timeHint(cycle) }}</span>
             </div>
           </div>
         </div>
         <div class="cycle-detail__head-actions">
+          <el-button :icon="Link" :disabled="!cycle.project_key" @click="router.push(`/project/${cycle.project_key}`)">Open Project</el-button>
           <el-button :icon="Edit" @click="openEdit">Edit</el-button>
           <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
         </div>
@@ -35,7 +38,14 @@
           </div>
 
           <div class="cycle-detail__section">
-            <h3>Issues ({{ cycle.issue_keys?.length || 0 }})</h3>
+            <div class="cycle-detail__section-head">
+              <h3>Issues ({{ cycle.issue_keys?.length || 0 }})</h3>
+              <div class="cycle-detail__issue-totals">
+                <span class="cycle-detail__totals-done">{{ doneCount }} done</span>
+                <span class="cycle-detail__totals-progress">{{ inProgressCount }} in progress</span>
+                <span class="cycle-detail__totals-todo">{{ (cycle.issue_keys?.length || 0) - doneCount - inProgressCount }} todo</span>
+              </div>
+            </div>
             <div v-if="issues.length" class="cycle-detail__issue-list">
               <div v-for="issue in issues" :key="issue.key" class="cycle-detail__issue" @click="router.push(`/issue/${issue.key}`)">
                 <div class="cycle-detail__issue-left">
@@ -61,7 +71,9 @@
           <div class="cycle-detail__props">
             <div class="cycle-detail__prop">
               <span class="cycle-detail__prop-label">Project</span>
-              <span>{{ cycle.project_key }}</span>
+              <el-button link size="small" type="primary" @click="router.push(`/project/${cycle.project_key}`)">
+                {{ projectName }}
+              </el-button>
             </div>
             <div class="cycle-detail__prop">
               <span class="cycle-detail__prop-label">Duration</span>
@@ -78,6 +90,18 @@
             <div class="cycle-detail__prop">
               <span class="cycle-detail__prop-label">Velocity</span>
               <span>{{ cycle.issue_keys?.length || 0 }} issues / {{ daysRemaining(cycle) }}d remaining</span>
+            </div>
+            <div class="cycle-detail__prop">
+              <span class="cycle-detail__prop-label">Breakdown</span>
+              <span>{{ doneCount }} done · {{ inProgressCount }} active</span>
+            </div>
+            <div class="cycle-detail__prop">
+              <span class="cycle-detail__prop-label">Created</span>
+              <span>{{ formatRelativeTime(cycle.created_at) }}</span>
+            </div>
+            <div class="cycle-detail__prop">
+              <span class="cycle-detail__prop-label">Updated</span>
+              <span>{{ formatRelativeTime(cycle.updated_at) }}</span>
             </div>
           </div>
           <div v-if="linkedReleases.length" class="cycle-detail__props" style="margin-top: 12px">
@@ -141,19 +165,21 @@
 <script setup lang="ts" name="cycleDetail">
 import { computed, onMounted, reactive, ref, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, Calendar } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, Calendar, Link } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import * as echarts from "echarts";
 import { useCycleStore } from "@/stores/modules/cycle";
-import { formatDate } from "@/utils/datetime";
+import { formatDate, formatRelativeTime } from "@/utils/datetime";
 import { CYCLE_STATUS_MAP } from "@/api/modules/cycleService";
 import { getCycleList, updateCycle } from "@/api/modules/cycleService";
 import { getIssueList, issueStatusLabel, issueStatusTag, typeLabel, issueTypeTag } from "@/api/modules/issueService";
 import { getReleaseList } from "@/api/modules/releaseService";
+import { getProjectList } from "@/api/modules/projectService";
 import type { Cycle, CycleStatus } from "@/api/modules/cycleService";
 import type { Issue } from "@/api/modules/issueService";
 import type { Release } from "@/api/modules/releaseService";
+import type { Project } from "@/api/modules/projectService";
 
 const route = useRoute();
 const router = useRouter();
@@ -167,6 +193,7 @@ const transferTarget = ref("");
 const allCycles = ref<Cycle[]>([]);
 const issues = ref<Issue[]>([]);
 const linkedReleases = ref<Release[]>([]);
+const projectName = ref("");
 
 const doneCount = computed(() => issues.value.filter(i => i.status === "done").length);
 const inProgressCount = computed(() => issues.value.filter(i => i.status === "in_progress").length);
@@ -315,10 +342,45 @@ function daysRemaining(c: Cycle) {
   return Math.max(0, Math.ceil(ms / 86400000));
 }
 
+function timeHint(c: Cycle): string {
+  if (c.status === "completed") return "Completed";
+  if (c.status === "upcoming") return `Starts ${formatDate(c.start_date)}`;
+  const d = daysRemaining(c);
+  return d > 0 ? `${d}d left` : "Ended";
+}
+
+function timeHintClass(c: Cycle): string {
+  if (c.status === "completed") return "cycle-detail__time-hint--done";
+  if (c.status === "upcoming") return "cycle-detail__time-hint--upcoming";
+  const d = daysRemaining(c);
+  if (d <= 0) return "cycle-detail__time-hint--ended";
+  if (d <= 3) return "cycle-detail__time-hint--soon";
+  return "cycle-detail__time-hint--ok";
+}
+
+async function copyKey() {
+  if (!cycle.value) return;
+  try {
+    await navigator.clipboard.writeText(cycle.value.key);
+    ElMessage.success(`Copied ${cycle.value.key}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
 async function loadAllCycles() {
   try {
     const res = await getCycleList({ pageSize: 100 });
     allCycles.value = (res.data?.list as Cycle[]) ?? [];
+  } catch { /* ignore */ }
+}
+
+async function loadProjectName() {
+  if (!cycle.value?.project_key) return;
+  try {
+    const res = await getProjectList({ pageSize: 500 });
+    const projects = (res.data?.list as Project[]) ?? [];
+    projectName.value = projects.find(p => p.key === cycle.value!.project_key)?.name || cycle.value!.project_key;
   } catch { /* ignore */ }
 }
 
@@ -372,6 +434,7 @@ onMounted(async () => {
   renderChart();
   await loadAllCycles();
   await loadLinkedReleases();
+  await loadProjectName();
 });
 </script>
 
@@ -410,6 +473,44 @@ onMounted(async () => {
   align-items: center;
   gap: 4px;
 }
+.cycle-detail__key {
+  cursor: pointer;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--el-fill-color-light);
+  transition: color 0.15s, background 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.cycle-detail__time-hint {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 999px;
+  padding: 1px 8px;
+  &--ok {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+  &--soon {
+    color: #fff;
+    background: var(--el-color-warning);
+  }
+  &--ended {
+    color: #fff;
+    background: var(--el-color-danger);
+  }
+  &--done {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
+  &--upcoming {
+    color: var(--el-color-info);
+    background: var(--el-color-info-light-9);
+  }
+}
 .cycle-detail__head-actions {
   display: flex;
   gap: 8px;
@@ -434,9 +535,28 @@ onMounted(async () => {
 .cycle-detail__section {
   h3 { margin: 0 0 12px; font-size: 15px; }
 }
+.cycle-detail__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h3 { margin: 0 0 12px; }
+}
+.cycle-detail__issue-totals {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 12px;
+}
+.cycle-detail__totals-done { color: var(--el-color-success); }
+.cycle-detail__totals-progress { color: var(--el-color-primary); }
+.cycle-detail__totals-todo { color: var(--el-text-color-secondary); }
 .cycle-detail__sidebar {
   width: 260px;
   flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  align-self: flex-start;
 }
 .cycle-detail__props {
   background: var(--el-fill-color-lighter);

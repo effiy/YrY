@@ -1,0 +1,65 @@
+[
+  {
+    "key": "yivad-r1",
+    "project_key": "yivad",
+    "version": "1.0.0",
+    "name": "Core Admin Dashboard",
+    "notes": "Core admin dashboard, aiChat port, Vite→Rsbuild migration, knowledge + RAG, and agent mode.",
+    "status": "released",
+    "target_date": "2026-08-08",
+    "release_date": "2026-08-08",
+    "issue_keys": ["yivad-1", "yivad-2", "yivad-4", "yivad-5"],
+    "created_at": "2026-07-26T00:00:00.000Z",
+    "updated_at": "2026-08-08T00:00:00.000Z"
+  },
+  {
+    "key": "yivad-r2",
+    "project_key": "yivad",
+    "version": "1.1.0",
+    "name": "Componentization + Vitest",
+    "notes": "ProTable component extraction and the first Vitest suite.",
+    "status": "planned",
+    "target_date": "2026-09-15",
+    "issue_keys": ["yivad-3", "yivad-6"],
+    "created_at": "2026-08-08T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-r1",
+    "project_key": "yiai",
+    "version": "1.0.0",
+    "name": "RAG + Knowledge Watcher",
+    "notes": "RAG module (hybrid retrieval + citations) and the knowledge watcher.",
+    "status": "released",
+    "target_date": "2026-07-31",
+    "release_date": "2026-07-31",
+    "issue_keys": ["yiai-4", "yiai-5"],
+    "created_at": "2026-07-29T00:00:00.000Z",
+    "updated_at": "2026-07-31T00:00:00.000Z"
+  },
+  {
+    "key": "yipet-r1",
+    "project_key": "yipet",
+    "version": "1.0.0",
+    "name": "Extension Modernization",
+    "notes": "React 18 + AntD 5 migration, Biome, and the chat box port.",
+    "status": "released",
+    "target_date": "2026-08-05",
+    "release_date": "2026-08-05",
+    "issue_keys": ["yipet-1", "yipet-2", "yipet-3"],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge-r1",
+    "project_key": "yiknowledge",
+    "version": "1.0.0",
+    "name": "Governance Baseline",
+    "notes": "Governance pipeline and readiness checklist.",
+    "status": "planned",
+    "target_date": "2026-08-31",
+    "issue_keys": ["yiknowledge-1", "yiknowledge-2"],
+    "created_at": "2026-08-06T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,15 @@
+---
+title: X 算法向民主党用户推送更多激发愤怒的内容
+tags:
+- Solidot 奇客
+category: engineer/lessons
+created: '2026-08-22'
+source: https://www.solidot.org/story?sid=85143
+type: rss
+source_name: Solidot 奇客
+source_url: https://www.solidot.org/index.rss
+published: Thu, 20 Aug 2026 14:41:01 +0800
+---
+
+根据发表在 PNAS 期刊上的一项研究，X 算法会向民主党用户推送更多激发愤怒（ragebait）的信息流。论文合作者、斯坦福大学博士后研究员 Ziv Epstein 说，和其它社媒网站类似，X 信息流算法的优化目标是提升用户参与度，但并非所有类型的参与度都一视同仁。X 的算法会向用户推送与其价值观相冲突的内容，尤其是当他们回复那些令其愤怒或挑衅的帖子时。尽管回复仅占互动的 6.8%，但它们承载了不成比例的权重：“这是一个愤怒诱饵（ragebait）的反馈循环。算法学会你会被激怒，然后继续为你推送更多此类内容。”目前不清楚为什么 X 更频繁向民主党用户而不是共和党用户推送激发愤怒的内容。这可能是因为 X 上右翼内容总体上更多，或者民主党用户更倾向于与其不认同的帖子互动。
+<p></p>

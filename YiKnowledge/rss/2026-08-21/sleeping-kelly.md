@@ -1,0 +1,16 @@
+---
+title: Sleeping Kelly
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2510.15911
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Ben Abramowitz
+---
+
+arXiv:2510.15911v4 Announce Type: replace-cross 
+Abstract: The Sleeping Beauty problem is a problem of imperfect recall that has received considerable attention. One approach to resolving the Sleeping Beauty problem has been to allow Sleeping Beauty to make decisions based on her beliefs, and then characterize what it takes for her decisions to be "rational". In particular, she can be allowed to make monetary bets based on her beliefs, with the assumption that she wants to gain wealth rather than lose it. However, this approach is often coupled with the erroneous assumption that Sleeping Beauty should maximize the expected value of her bets. Here, we show that (1) Sleeping Beauty's ex ante optimal betting strategy and de se optimal betting strategy are identical, and (2) under an asymptotically optimal betting strategy Sleeping Beauty is invulnerable to diachronic Dutch Books as a Thirder but remains vulnerable as a Halfer.

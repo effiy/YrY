@@ -44,12 +44,12 @@
 <script setup lang="ts" name="GoalCell">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { allGoalsMap } from "@/views/knowledge/executiver/okrData";
+import { allGoalsMap, type GoalItem } from "@/views/knowledge/executiver/okrData";
 
-const props = defineProps<{ role: string; goalId: string; compact?: boolean }>();
+const props = defineProps<{ role: string; goalId: string; compact?: boolean; goal?: GoalItem | null }>();
 const router = useRouter();
 
-const goal = computed(() => allGoalsMap[props.goalId]);
+const goal = computed(() => props.goal ?? allGoalsMap[props.goalId]);
 
 /** 目标整体进度 = 各 Key Result 进度的均值（与 okrRole.vue 一致）。 */
 const avg = computed(() => {

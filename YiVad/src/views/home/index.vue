@@ -23,11 +23,10 @@
 </template>
 
 <script setup lang="ts" name="home">
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ChatDotRound, Connection, Reading, Aim, MagicStick } from "@element-plus/icons-vue";
-import dayjs from "dayjs";
+import { ChatDotRound } from "@element-plus/icons-vue";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
 
@@ -39,27 +38,6 @@ const selectedRoles = ref<string[]>([]);
 
 /** 各角色推荐任务数量（由 OkrRecommendPanel 上报，键为角色 id / `all`），展示在角色导航角标。 */
 const roleCounts = ref<Record<string, number>>({});
-
-// ═══════════════════════════════════════════════
-// Clock
-// ═══════════════════════════════════════════════
-const now = ref(Date.now());
-const clock = computed(() => dayjs(now.value).format("YYYY-MM-DD HH:mm:ss"));
-
-// ═══════════════════════════════════════════════
-// Lifecycle
-// ═══════════════════════════════════════════════
-let clockTimer: ReturnType<typeof setInterval> | null = null;
-
-onMounted(() => {
-  clockTimer = setInterval(() => {
-    now.value = Date.now();
-  }, 1000);
-});
-
-onBeforeUnmount(() => {
-  if (clockTimer) clearInterval(clockTimer);
-});
 </script>
 
 <style scoped lang="scss">
@@ -79,10 +57,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   margin-bottom: 22px;
 }
-.ho__header-title { display: flex; flex-direction: column; gap: 2px; }
-.ho__title { margin: 0; font-size: 22px; font-weight: 700; }
 .ho__header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.ho__clock { font-size: 13px; font-weight: 600; color: var(--el-text-color-secondary); font-family: monospace; }
 
 // ── Role nav ────────────────────────────────────
 .ho__role-nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

@@ -42,6 +42,14 @@ _SEED_SPECS: list[tuple[str, str, str]] = [
     ("dict_gender", "dict_gender.json", "key"),
     ("dict_department", "dict_department.json", "key"),
     ("dict_role", "dict_role.json", "key"),
+    # Project Management collections (YiVad PM pages)
+    ("projects", "projects.json", "key"),
+    ("issues", "issues.json", "key"),
+    ("cycles", "cycles.json", "key"),
+    ("releases", "releases.json", "key"),
+    ("modules", "modules.json", "key"),
+    ("pages", "pages.json", "key"),
+    ("labels", "labels.json", "key"),
 ]
 
 

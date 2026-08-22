@@ -7,63 +7,97 @@
           <div>
             <h1 class="mod-detail__name">{{ mod.name }}</h1>
             <div class="mod-detail__meta">
-              <code>{{ mod.key }}</code>
+              <code class="mod-detail__key" title="Copy key" @click="copyKey">{{ mod.key }}</code>
               <el-tag :type="statusTagType(mod.status)" size="small">{{ statusLabel(mod.status) }}</el-tag>
               <span v-if="mod.lead" class="mod-detail__lead">{{ mod.lead }}</span>
               <span class="mod-detail__project">
                 <el-icon><Folder /></el-icon>
-                <el-button link size="small" @click="router.push(`/project/${mod.project_key}`)">{{ mod.project_key }}</el-button>
+                <el-button link size="small" @click="router.push(`/project/${mod.project_key}`)">{{ projectName }}</el-button>
               </span>
             </div>
           </div>
         </div>
         <div class="mod-detail__head-actions">
+          <el-button :icon="Link" :disabled="!mod.project_key" @click="router.push(`/project/${mod.project_key}`)">Open Project</el-button>
           <el-button :icon="Edit" @click="openEdit">Edit</el-button>
           <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
         </div>
       </div>
 
       <div class="mod-detail__body">
-        <div class="mod-detail__stats">
-          <div class="mod-detail__stat">
-            <div class="mod-detail__stat-value">{{ issues.length }}</div>
-            <div class="mod-detail__stat-label">Total Issues</div>
-          </div>
-          <div class="mod-detail__stat mod-detail__stat--done">
-            <div class="mod-detail__stat-value">{{ doneCount }}</div>
-            <div class="mod-detail__stat-label">Done</div>
-          </div>
-          <div class="mod-detail__stat mod-detail__stat--progress">
-            <div class="mod-detail__stat-value">{{ inProgressCount }}</div>
-            <div class="mod-detail__stat-label">In Progress</div>
-          </div>
-          <div class="mod-detail__stat mod-detail__stat--pending">
-            <div class="mod-detail__stat-value">{{ pendingCount }}</div>
-            <div class="mod-detail__stat-label">Pending</div>
-          </div>
-        </div>
-        <el-progress :percentage="progressPct" :stroke-width="8" :color="progressColor" style="margin-bottom: 20px" />
-
-        <div v-if="mod.description" class="mod-detail__desc">
-          <h3>Description</h3>
-          <div class="markdown-body" v-html="renderedDesc" />
-        </div>
-
-        <div class="mod-detail__section">
-          <h3>Issues ({{ issues.length }})</h3>
-          <div v-if="issues.length" class="mod-detail__issue-list">
-            <div v-for="issue in issues" :key="issue.key" class="mod-detail__issue" @click="router.push(`/issue/${issue.key}`)">
-              <div class="mod-detail__issue-left">
-                <el-tag :type="issueTypeTag(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
-                <span class="mod-detail__issue-title">{{ issue.title }}</span>
-              </div>
-              <div class="mod-detail__issue-right">
-                <el-tag :type="issueStatusTag(issue.status)" size="small">{{ issueStatusLabel(issue.status) }}</el-tag>
-                <span v-if="issue.assignee" class="mod-detail__issue-assignee">{{ issue.assignee }}</span>
-              </div>
+        <div class="mod-detail__main">
+          <div class="mod-detail__stats">
+            <div class="mod-detail__stat mod-detail__stat--clickable" @click="setIssueFilter('')">
+              <div class="mod-detail__stat-value">{{ issues.length }}</div>
+              <div class="mod-detail__stat-label">Total Issues</div>
+            </div>
+            <div class="mod-detail__stat mod-detail__stat--done mod-detail__stat--clickable" @click="setIssueFilter('done')">
+              <div class="mod-detail__stat-value">{{ doneCount }}</div>
+              <div class="mod-detail__stat-label">Done</div>
+            </div>
+            <div class="mod-detail__stat mod-detail__stat--progress mod-detail__stat--clickable" @click="setIssueFilter('in_progress')">
+              <div class="mod-detail__stat-value">{{ inProgressCount }}</div>
+              <div class="mod-detail__stat-label">In Progress</div>
+            </div>
+            <div class="mod-detail__stat mod-detail__stat--pending mod-detail__stat--clickable" @click="setIssueFilter('pending')">
+              <div class="mod-detail__stat-value">{{ pendingCount }}</div>
+              <div class="mod-detail__stat-label">Pending</div>
             </div>
           </div>
-          <el-empty v-else description="No issues in this module" :image-size="40" />
+          <el-progress :percentage="progressPct" :stroke-width="8" :color="progressColor" style="margin-bottom: 20px" />
+
+          <div v-if="mod.description" class="mod-detail__desc">
+            <h3>Description</h3>
+            <div class="markdown-body" v-html="renderedDesc" />
+          </div>
+
+          <div class="mod-detail__section">
+            <div class="mod-detail__section-head">
+              <h3>Issues ({{ filteredIssues.length }})</h3>
+              <el-tag v-if="issueFilter" size="small" closable @close="issueFilter = ''">{{ issueFilterLabel }}</el-tag>
+            </div>
+            <div v-if="filteredIssues.length" class="mod-detail__issue-list">
+              <div v-for="issue in filteredIssues" :key="issue.key" class="mod-detail__issue" @click="router.push(`/issue/${issue.key}`)">
+                <div class="mod-detail__issue-left">
+                  <el-tag :type="issueTypeTag(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
+                  <span class="mod-detail__issue-title">{{ issue.title }}</span>
+                </div>
+                <div class="mod-detail__issue-right">
+                  <el-tag :type="issueStatusTag(issue.status)" size="small">{{ issueStatusLabel(issue.status) }}</el-tag>
+                  <span v-if="issue.assignee" class="mod-detail__issue-assignee">{{ issue.assignee }}</span>
+                </div>
+              </div>
+            </div>
+            <el-empty v-else :description="issueFilter ? 'No matching issues' : 'No issues in this module'" :image-size="40" />
+          </div>
+        </div>
+        <div class="mod-detail__sidebar">
+          <div class="mod-detail__props">
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Project</span>
+              <el-button link size="small" type="primary" @click="router.push(`/project/${mod.project_key}`)">{{ projectName }}</el-button>
+            </div>
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Status</span>
+              <el-tag :type="statusTagType(mod.status)" size="small">{{ statusLabel(mod.status) }}</el-tag>
+            </div>
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Lead</span>
+              <span>{{ mod.lead || '—' }}</span>
+            </div>
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Issues</span>
+              <span>{{ doneCount }} done · {{ inProgressCount }} active · {{ pendingCount }} pending</span>
+            </div>
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Created</span>
+              <span>{{ formatRelativeTime(mod.created_at) }}</span>
+            </div>
+            <div class="mod-detail__prop">
+              <span class="mod-detail__prop-label">Updated</span>
+              <span>{{ formatRelativeTime(mod.updated_at) }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -108,7 +142,7 @@
 <script setup lang="ts" name="moduleDetail">
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, Folder } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, Folder, Link } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { useModuleStore } from "@/stores/modules/module";
@@ -116,7 +150,10 @@ import { MODULE_STATUS_MAP } from "@/api/modules/moduleService";
 import type { ModuleStatus } from "@/api/modules/moduleService";
 import { getIssueList, issueStatusLabel, issueStatusTag, typeLabel, issueTypeTag } from "@/api/modules/issueService";
 import type { Issue } from "@/api/modules/issueService";
+import { getProjectList } from "@/api/modules/projectService";
+import type { Project } from "@/api/modules/projectService";
 import { useMarkdown } from "@/hooks/useMarkdown";
+import { formatRelativeTime } from "@/utils/datetime";
 
 const route = useRoute();
 const router = useRouter();
@@ -127,6 +164,8 @@ const loading = ref(true);
 const mod = computed(() => store.currentModule);
 const issues = ref<Issue[]>([]);
 const editFormRef = ref<FormInstance>();
+const projectName = ref("");
+const issueFilter = ref("");
 
 const rules: FormRules = {
   name: [{ required: true, message: "Name is required", trigger: "blur" }]
@@ -156,6 +195,17 @@ const progressColor = computed(() => {
 const renderedDesc = computed(() => {
   if (!mod.value?.description) return "";
   return renderMarkdown(mod.value.description);
+});
+
+const filteredIssues = computed(() => {
+  if (!issueFilter.value) return issues.value;
+  if (issueFilter.value === "pending") return issues.value.filter(i => i.status !== "done" && i.status !== "cancelled");
+  return issues.value.filter(i => i.status === issueFilter.value);
+});
+
+const issueFilterLabel = computed(() => {
+  const m: Record<string, string> = { done: "Done", in_progress: "In Progress", pending: "Pending" };
+  return m[issueFilter.value] || issueFilter.value;
 });
 
 function openEdit() {
@@ -202,6 +252,29 @@ function goBack() {
   else router.push("/module");
 }
 
+function setIssueFilter(status: string) {
+  issueFilter.value = issueFilter.value === status ? "" : status;
+}
+
+async function copyKey() {
+  if (!mod.value) return;
+  try {
+    await navigator.clipboard.writeText(mod.value.key);
+    ElMessage.success(`Copied ${mod.value.key}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function loadProjectName() {
+  if (!mod.value?.project_key) return;
+  try {
+    const res = await getProjectList({ pageSize: 500 });
+    const projects = (res.data?.list as Project[]) ?? [];
+    projectName.value = projects.find(p => p.key === mod.value!.project_key)?.name || mod.value!.project_key;
+  } catch { /* ignore */ }
+}
+
 function statusLabel(s: ModuleStatus) { return MODULE_STATUS_MAP[s] || s; }
 function statusTagType(s: ModuleStatus): "success" | "warning" | "info" | "primary" | "danger" {
   const m: Record<ModuleStatus, "success" | "warning" | "info" | "primary" | "danger"> = { planned: "info", in_progress: "primary", completed: "success", cancelled: "danger" };
@@ -212,6 +285,7 @@ onMounted(async () => {
   if (key) {
     await store.fetchModule(key);
     await loadIssues();
+    await loadProjectName();
   }
   loading.value = false;
 });
@@ -223,12 +297,19 @@ onMounted(async () => {
 .mod-detail__head-left { display: flex; align-items: flex-start; gap: 16px; }
 .mod-detail__name { margin: 0 0 8px; font-size: 22px; font-weight: 600; }
 .mod-detail__meta { display: flex; gap: 10px; align-items: center; code { font-size: 12px; color: var(--el-text-color-secondary); background: var(--el-fill-color-light); padding: 1px 8px; border-radius: 4px; } }
+.mod-detail__key { cursor: pointer; transition: color 0.15s, background 0.15s; &:hover { color: var(--el-color-primary); background: var(--el-color-primary-light-9); } }
 .mod-detail__lead { font-size: 13px; color: var(--el-text-color-secondary); }
 .mod-detail__project { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--el-text-color-secondary); }
 .mod-detail__head-actions { display: flex; gap: 8px; }
-.mod-detail__body { max-width: 900px; }
+.mod-detail__body { display: flex; gap: 24px; align-items: flex-start; }
+.mod-detail__main { flex: 1; min-width: 0; }
+.mod-detail__sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 24px; }
+.mod-detail__props { background: var(--el-fill-color-lighter); border-radius: 8px; padding: 16px; }
+.mod-detail__prop { padding: 8px 0; font-size: 13px; & + & { border-top: 1px solid var(--el-border-color-lighter); } }
+.mod-detail__prop-label { display: block; color: var(--el-text-color-secondary); font-weight: 500; margin-bottom: 4px; }
 .mod-detail__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
 .mod-detail__stat { background: var(--el-fill-color-lighter); border-radius: 10px; padding: 20px; text-align: center; }
+.mod-detail__stat--clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; &:hover { transform: translateY(-2px); box-shadow: var(--el-box-shadow-light); } }
 .mod-detail__stat--done { background: var(--el-color-success-light-9); .mod-detail__stat-value { color: var(--el-color-success); } }
 .mod-detail__stat--progress { background: var(--el-color-primary-light-9); .mod-detail__stat-value { color: var(--el-color-primary); } }
 .mod-detail__stat--pending { background: var(--el-color-warning-light-9); .mod-detail__stat-value { color: var(--el-color-warning); } }
@@ -236,6 +317,7 @@ onMounted(async () => {
 .mod-detail__stat-label { font-size: 13px; color: var(--el-text-color-secondary); margin-top: 4px; }
 .mod-detail__desc { margin-bottom: 24px; h3 { margin: 0 0 8px; font-size: 15px; } }
 .mod-detail__section { h3 { margin: 0 0 12px; font-size: 15px; } }
+.mod-detail__section-head { display: flex; align-items: center; justify-content: space-between; h3 { margin: 0 0 12px; } }
 .mod-detail__issue-list { display: flex; flex-direction: column; gap: 4px; }
 .mod-detail__issue { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 8px; cursor: pointer; &:hover { background: var(--el-fill-color-light); } }
 .mod-detail__issue-left { display: flex; align-items: center; gap: 10px; }

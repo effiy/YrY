@@ -1,0 +1,62 @@
+[
+  {
+    "key": "yivad-page-overview",
+    "project_key": "yivad",
+    "title": "Overview",
+    "content": "# YiVad\n\nVue 3.5 admin dashboard for the Yi family.\n\n- **Stack**: Vue 3.5 + TypeScript, Rsbuild 1, Pinia 4, Element Plus 2.14, ECharts 6\n- **Axis**: componentization\n- **Table pattern**: ProTable (no raw `el-table`)\n- **Permissions**: `v-auth` directive, never inline `v-if`\n",
+    "parent_key": "",
+    "order": 1,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yivad-page-architecture",
+    "project_key": "yivad",
+    "title": "Architecture",
+    "content": "# Architecture\n\nSingle SPA with dynamic routing from the backend menu API.\n\n- `src/views/` — pages by feature domain\n- `src/components/` — ProTable, ECharts, Upload, WangEditor\n- `src/stores/` — Pinia setup-function stores\n- `src/api/modules/` — domain services\n\nAll cross-project calls use the RPC envelope over `POST /`.\n",
+    "parent_key": "",
+    "order": 2,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-08T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-page-overview",
+    "project_key": "yiai",
+    "title": "Overview",
+    "content": "# YiAi\n\nFastAPI backend — single source of truth for all data.\n\n- **Runtime**: uvicorn (ASGI) on port 10086\n- **DB**: MongoDB via Motor (async)\n- **Axis**: modularization\n- **LLM**: Ollama (self-hosted)\n",
+    "parent_key": "",
+    "order": 1,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-page-api",
+    "project_key": "yiai",
+    "title": "API Reference",
+    "content": "# RPC Envelope\n\n```\nPOST /  body: { module_name, method_name, parameters }\nresponse: { code, message, data }\n```\n\nKey contracts:\n\n- `data_service.query_documents` uses `filter`, never `query`\n- `/read-file` and `/write-file` use `target_file`, never `path`\n- collection parameter is `cname` / `collection_name`\n",
+    "parent_key": "",
+    "order": 2,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-07-31T00:00:00.000Z"
+  },
+  {
+    "key": "yipet-page-overview",
+    "project_key": "yipet",
+    "title": "Overview",
+    "content": "# YiPet\n\nChrome MV3 extension — interactive pet companion.\n\n- **Stack**: React 18 + Ant Design 5\n- **Axis**: componentization + API layering\n- **API**: 4-tier (client → endpoints → types → services)\n- **Boundary**: ISOLATED + MAIN worlds\n",
+    "parent_key": "",
+    "order": 1,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge-page-overview",
+    "project_key": "yiknowledge",
+    "title": "Overview",
+    "content": "# YiKnowledge\n\nMarkdown knowledge base — 7 role directories, 4 pipeline stages.\n\nServes both humans (documentation) and AI (RAG data source).\n\n- kebab-case filenames only\n- frontmatter required: `title`, `tags`, `category`, `created`, `updated`, `source`, `type`, `status`\n",
+    "parent_key": "",
+    "order": 1,
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

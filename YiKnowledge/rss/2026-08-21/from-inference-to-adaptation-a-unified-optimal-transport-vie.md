@@ -1,0 +1,18 @@
+---
+title: 'From Inference to Adaptation: A Unified Optimal Transport View of Vision Language
+  Model'
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2608.18339
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Qi Yu, Zhichen Zeng, Katherine Tieu, Xiyuan Yang, Ruizhong Qiu, Yuchen Yan,
+  Lihui Liu, Yanjun Zhao, Lingjie Chen, Jingrui He, Hanghang Tong
+---
+
+arXiv:2608.18339v1 Announce Type: cross 
+Abstract: Vision-language models (VLMs) have demonstrated remarkable zero-shot capabilities yet remain sensitive to real-world distribution shifts during inference. Although significant efforts are devoted to adapting VLMs at test time, they rely heavily on noisy pseudo-labels predicted directly from raw embedding similarities during inference, which are unreliable under distribution shift and mislead the adaptation. To avoid noise amplification, existing works craft coarse-grained surrogate objectives during adaptation, which fail to explicitly model sample-level relationships across different modalities, creating objective mismatch with inference, thus leading to marginal performance improvement. In this work, we aim to bridge the detached objectives of inference and adaptation for VLMs, and propose a principled VLM TTA method called \algname. For VLM inference, we formulate the zero-shot image classification task as a cross-modal alignment problem encoded via a Wasserstein OT formulation, providing robust pseudo-labels at the sample-level to effectively adapt VLMs. For VLM adaptation, we adopt a soft-label InfoNCE loss to adapt VLMs based on the OT-induced pseudo-labels, leveraging fine-grained supervisions to explicitly model relationships of individual image-text pairs via contrastive learning, which empowers accurate inference at the same granularity. Moreover, we theoretically reveal that the InfoNCE loss can be neatly reformulated as a Wasserstein OT formulation, thereby unifying the objectives of the inference and adaptation of VLMs to achieve their mutual benefits. Extensive experiments demonstrate the effectiveness and efficiency of our methods, outperforming the best-performing methods by up to 7% with state-of-the-art efficiency.

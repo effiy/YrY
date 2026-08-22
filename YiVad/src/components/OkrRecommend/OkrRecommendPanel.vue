@@ -44,6 +44,9 @@
             <el-button v-if="filterDate" size="small" :icon="Close" text @click="clearFilterDate" title="清除日期筛选" />
           </div>
           <span class="okr-rec__toolbar-right">
+            <el-button size="small" type="primary" :icon="MagicStick" :loading="generating" @click="handleGenerate">
+              {{ generating ? t("home.aiRecommend.generating") : t("home.aiRecommend.generate") }}
+            </el-button>
             <span class="okr-rec__result-count">{{ stats.total }} 条 · P0 {{ stats.p0 }} · 逾期 {{ stats.overdue }}</span>
           </span>
         </div>
@@ -111,6 +114,18 @@
         </template>
         <template #default="{ row }">
           <RoleLink :role="row.role" :role-name="row.roleName" :role-icon="row.roleIcon" to="" />
+        </template>
+      </el-table-column>
+      <el-table-column min-width="200">
+        <template #header>
+          <div class="okr-rec__col-header">
+            <span>{{ t("home.aiRecommend.cols.goal") }}</span>
+            <el-input v-model="columnFilters.goal" size="small" placeholder="搜索" clearable @click.stop />
+          </div>
+        </template>
+        <template #default="{ row }">
+          <GoalCell v-if="row.goalId" :role="row.role" :goal-id="row.goalId" :goal="apiGoals[row.goalId]" />
+          <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
             <el-table-column min-width="220">
@@ -195,8 +210,9 @@
           <div v-else class="okr-rec__why-text">{{ row.reason }}</div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('home.aiRecommend.cols.action')" width="80" fixed="right" align="center">
+      <el-table-column :label="t('home.aiRecommend.cols.action')" width="100" fixed="right" align="center">
         <template #default="{ row }">
+          <el-button link type="primary" size="small" :loading="regeneratingId === row.id" :icon="RefreshRight" :title="t('home.aiRecommend.regen')" @click="handleRegenerate(row as TableRow)" />
           <el-button link type="danger" size="small" :icon="Delete" @click="handleDelete(row as TableRow)" />
         </template>
       </el-table-column>
@@ -234,6 +250,7 @@
           </div>
           <div class="okr-rec__list-meta">
             <RoleLink :role="item.role" :role-name="item.roleName" :role-icon="item.roleIcon" to="" />
+            <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" :goal="apiGoals[item.goalId]" compact />
             <EffortBadge :effort="item.effort" />
             <span class="okr-rec__list-due" :class="{ 'is-overdue': isOverdue(item.dueDate) }">
               <template v-if="dueRelative(item.dueDate)">{{ dueRelative(item.dueDate) }}</template>
@@ -257,6 +274,7 @@
           </div>
           <div class="okr-rec__list-actions">
             <el-button link type="primary" size="small" :icon="View" @click.stop="openPreview(item)" title="预览" />
+            <el-button link type="primary" size="small" :loading="regeneratingId === item.id" :icon="RefreshRight" @click.stop="handleRegenerate(item)" :title="t('home.aiRecommend.regen')" />
             <el-button link type="danger" size="small" :icon="Delete" @click.stop="handleDelete(item)" title="删除" />
           </div>
         </div>
@@ -331,6 +349,7 @@
         </div>
 
         <div class="okr-rec__card-orch">
+          <GoalCell v-if="item.goalId" :role="item.role" :goal-id="item.goalId" :goal="apiGoals[item.goalId]" compact />
           <SkillTag v-if="item.skill" :skill="item.skill" :clickable="true" @open="openSkillPreview(item.skill)" />
           <AgentTag v-if="item.agent" :agent="item.agent" :clickable="true" @open="openAgentChat(item.agent)" />
           <McpTag :mcp="item.mcp" :clickable="true" @open="openMcp(item.mcp)" />
@@ -341,6 +360,7 @@
           <EffortBadge :effort="item.effort" />
           <div class="okr-rec__card-actions">
             <el-button link type="primary" size="small" :icon="View" @click.stop="openPreview(item)" title="预览" />
+            <el-button link type="primary" size="small" :loading="regeneratingId === item.id" :icon="RefreshRight" @click.stop="handleRegenerate(item)" :title="t('home.aiRecommend.regen')" />
             <el-button link type="danger" size="small" :icon="Delete" @click.stop="handleDelete(item)" title="删除" />
           </div>
         </div>
@@ -375,6 +395,7 @@ import { skillLabel, mcpLabel, isOverdue } from "./format";
 import PriorityTag from "./fields/PriorityTag.vue";
 import CategoryTag from "./fields/CategoryTag.vue";
 import RoleLink from "./fields/RoleLink.vue";
+import GoalCell from "./fields/GoalCell.vue";
 import SkillTag from "./fields/SkillTag.vue";
 import AgentTag from "./fields/AgentTag.vue";
 import McpTag from "./fields/McpTag.vue";
@@ -619,6 +640,7 @@ const filteredItems = computed(() => {
   const f = (k: string) => (columnFilters[k] || "").trim().toLowerCase();
   const tf = f("title"); if (tf) result = result.filter(i => i.title.toLowerCase().includes(tf));
   const rf = f("role"); if (rf) result = result.filter(i => i.roleName.toLowerCase().includes(rf) || i.role.toLowerCase().includes(rf));
+  const gf = f("goal"); if (gf) result = result.filter(i => apiGoals.value[i.goalId]?.title?.toLowerCase().includes(gf) || i.goalId.toLowerCase().includes(gf));
   const mf = f("metric"); if (mf) result = result.filter(i => i.metric?.name?.toLowerCase().includes(mf));
   const sf = f("skill"); if (sf) result = result.filter(i => i.skill.toLowerCase().includes(sf) || skillLabel(i.skill).toLowerCase().includes(sf));
   const af = f("agent"); if (af) result = result.filter(i => i.agent.toLowerCase().includes(af));

@@ -1,5 +1,33 @@
 <template>
   <div class="issue-list">
+    <!-- Summary Strip -->
+    <div v-if="!props.projectKey" class="issue-list__summary">
+      <div class="issue-summary__tile issue-summary__tile--clickable" @click="setStatusFilter('')">
+        <span class="issue-summary__value">{{ stats.total }}</span>
+        <span class="issue-summary__label">Issues</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--todo issue-summary__tile--clickable" @click="setStatusFilter('todo')">
+        <span class="issue-summary__value">{{ stats.todo }}</span>
+        <span class="issue-summary__label">Todo</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--progress issue-summary__tile--clickable" @click="setStatusFilter('in_progress')">
+        <span class="issue-summary__value">{{ stats.in_progress }}</span>
+        <span class="issue-summary__label">In Progress</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--review issue-summary__tile--clickable" @click="setStatusFilter('in_review')">
+        <span class="issue-summary__value">{{ stats.in_review }}</span>
+        <span class="issue-summary__label">In Review</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--done issue-summary__tile--clickable" @click="setStatusFilter('done')">
+        <span class="issue-summary__value">{{ stats.done }}</span>
+        <span class="issue-summary__label">Done</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--completion">
+        <span class="issue-summary__value">{{ completionPct }}%</span>
+        <span class="issue-summary__label">Completed</span>
+      </div>
+    </div>
+
     <!-- Quick Filters -->
     <div class="issue-list__filters">
       <el-button
@@ -41,6 +69,11 @@
         <el-button :icon="Download" style="margin-left: 8px" @click="exportCSV">CSV</el-button>
         <el-button :icon="Download" style="margin-left: 4px" @click="exportJSON">JSON</el-button>
       </template>
+      <template #title="scope">
+        <el-button link type="primary" class="issue-list__title" @click="goDetail(scope.row.key)">
+          {{ scope.row.title }}
+        </el-button>
+      </template>
       <template #status="scope">
         <el-tag :type="statusTagType(scope.row.status)" size="small">
           {{ statusLabel(scope.row.status) }}
@@ -55,6 +88,33 @@
         <el-tag :type="typeTagType(scope.row.issue_type)" size="small" effect="plain">
           {{ typeLabel(scope.row.issue_type) }}
         </el-tag>
+      </template>
+      <template #labels="scope">
+        <div v-if="scope.row.labels?.length" class="issue-list__labels">
+          <el-tag v-for="l in scope.row.labels" :key="l" size="small" round effect="plain">{{ l }}</el-tag>
+        </div>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
+      <template #project_key="scope">
+        <button v-if="scope.row.project_key" type="button" class="issue-list__link-chip" @click="goProject(scope.row.project_key)">
+          {{ projectName(scope.row.project_key) }}
+        </button>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
+      <template #cycle_key="scope">
+        <button v-if="scope.row.cycle_key" type="button" class="issue-list__link-chip issue-list__link-chip--cycle" @click="goCycle(scope.row.cycle_key)">
+          {{ cycleName(scope.row.cycle_key) }}
+        </button>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
+      <template #release_key="scope">
+        <button v-if="scope.row.release_key" type="button" class="issue-list__link-chip issue-list__link-chip--release" @click="goRelease(scope.row.release_key)">
+          {{ releaseVersion(scope.row.release_key) }}
+        </button>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
+      <template #due_date="scope">
+        <span :class="dueCell(scope.row).cls">{{ dueCell(scope.row).text }}</span>
       </template>
       <template #operation="scope">
         <el-button type="primary" link :icon="View" @click="goDetail(scope.row.key)">View</el-button>
@@ -151,7 +211,7 @@
 </template>
 
 <script setup lang="tsx" name="issueList">
-import { reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, Delete, View, Edit, ArrowDown, Download } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -169,6 +229,13 @@ import {
   typeLabel
 } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType, TagType } from "@/api/modules/issueService";
+import { getProjectList } from "@/api/modules/projectService";
+import type { Project } from "@/api/modules/projectService";
+import { getCycleList } from "@/api/modules/cycleService";
+import type { Cycle } from "@/api/modules/cycleService";
+import { getReleaseList } from "@/api/modules/releaseService";
+import type { Release } from "@/api/modules/releaseService";
+import { formatDate } from "@/utils/datetime";
 import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
 import { useHandleData } from "@/hooks/useHandleData";
@@ -181,6 +248,69 @@ const proTable = ref<ProTableInstance>();
 const formRef = ref<FormInstance>();
 const activeFilter = ref("");
 
+// ── Summary stats (standalone overview) ─────────────────────────────────────
+const stats = reactive({ total: 0, todo: 0, in_progress: 0, in_review: 0, done: 0, backlog: 0, cancelled: 0 });
+const completionPct = computed(() => (stats.total ? Math.round((stats.done / stats.total) * 100) : 0));
+
+async function loadStats() {
+  try {
+    const res = await getIssueList({ project_key: props.projectKey || undefined, pageSize: 1000 });
+    const list = (res.data?.list as Issue[]) ?? [];
+    const s = { total: 0, todo: 0, in_progress: 0, in_review: 0, done: 0, backlog: 0, cancelled: 0 };
+    for (const i of list) {
+      s.total++;
+      if (i.status === "todo") s.todo++;
+      else if (i.status === "in_progress") s.in_progress++;
+      else if (i.status === "in_review") s.in_review++;
+      else if (i.status === "done") s.done++;
+      else if (i.status === "backlog") s.backlog++;
+      else if (i.status === "cancelled") s.cancelled++;
+    }
+    Object.assign(stats, s);
+  } catch {
+    // stats are best-effort — the table still renders without them
+  }
+}
+
+// ── Cross-entity name maps (project / cycle / release chips) ────────────────
+const projectNameByKey = ref<Map<string, string>>(new Map());
+const cycleNameByKey = ref<Map<string, string>>(new Map());
+const releaseVersionByKey = ref<Map<string, string>>(new Map());
+
+async function loadNames() {
+  try {
+    const [projRes, cycleRes, relRes] = await Promise.all([
+      getProjectList({ pageSize: 500 }),
+      getCycleList({ pageSize: 500 }),
+      getReleaseList({ pageSize: 500 })
+    ]);
+    projectNameByKey.value = new Map((projRes.data?.list as Project[]).map(p => [p.key, p.name]));
+    cycleNameByKey.value = new Map((cycleRes.data?.list as Cycle[]).map(c => [c.key, c.name]));
+    releaseVersionByKey.value = new Map((relRes.data?.list as Release[]).map(r => [r.key, r.version]));
+  } catch {
+    // names are best-effort — fall back to raw keys
+  }
+}
+
+function projectName(key: string) { return projectNameByKey.value.get(key) || key; }
+function cycleName(key: string) { return cycleNameByKey.value.get(key) || key; }
+function releaseVersion(key: string) { return releaseVersionByKey.value.get(key) || key; }
+
+function goProject(key: string) { if (key) router.push(`/project/${key}`); }
+function goCycle(key: string) { if (key) router.push(`/cycle/${key}`); }
+function goRelease(key: string) { if (key) router.push(`/release/${key}`); }
+
+function dueCell(row: Issue): { text: string; cls: string } {
+  if (!row.due_date) return { text: "—", cls: "issue-list__muted" };
+  if (row.status !== "done") {
+    const ms = new Date(row.due_date).getTime() - Date.now();
+    if (ms < 0) return { text: `${formatDate(row.due_date)} · Overdue`, cls: "issue-list__due--overdue" };
+    const days = Math.ceil(ms / 86400000);
+    if (days <= 3) return { text: `${formatDate(row.due_date)} · ${days}d`, cls: "issue-list__due--soon" };
+  }
+  return { text: formatDate(row.due_date), cls: "" };
+}
+
 const quickFilters = [
   { key: "my", label: "My Issues" },
   { key: "open", label: "Open" },
@@ -191,12 +321,16 @@ const quickFilters = [
 
 function applyQuickFilter(key: string) {
   activeFilter.value = key === activeFilter.value ? "" : key;
-  // Reload table with filter applied via fetchIssues
   proTable.value?.getTableList();
 }
 
 function clearFilter() {
   activeFilter.value = "";
+  proTable.value?.getTableList();
+}
+
+function setStatusFilter(status: string) {
+  activeFilter.value = activeFilter.value === status ? "" : status;
   proTable.value?.getTableList();
 }
 
@@ -207,18 +341,26 @@ const rules: FormRules = {
   status: [{ required: true, message: "Status is required", trigger: "change" }]
 };
 
-const columns: ColumnProps<Issue>[] = [
-  { type: "selection", width: 50 },
-  { type: "index", label: "#", width: 60 },
-  { prop: "title", label: "Title", minWidth: 200, search: { el: "input" } },
-  { prop: "issue_type", label: "Type", width: 100 },
-  { prop: "status", label: "Status", width: 110 },
-  { prop: "priority", label: "Priority", width: 90 },
-  { prop: "assignee", label: "Assignee", width: 100 },
-  { prop: "due_date", label: "Due Date", width: 120 },
-  { prop: "sequence_id", label: "ID", width: 100 },
-  { prop: "operation", label: "Actions", width: 200, fixed: "right" }
-];
+const columns = computed<ColumnProps<Issue>[]>(() => {
+  const cols: ColumnProps<Issue>[] = [
+    { type: "selection", width: 50 },
+    { type: "index", label: "#", width: 60 },
+    { prop: "title", label: "Title", minWidth: 220, search: { el: "input" } },
+    { prop: "issue_type", label: "Type", width: 105 },
+    { prop: "priority", label: "Priority", width: 92 },
+    { prop: "status", label: "Status", width: 110 },
+    { prop: "labels", label: "Labels", width: 150 },
+    { prop: "cycle_key", label: "Cycle", width: 120 },
+    { prop: "release_key", label: "Release", width: 120 },
+    { prop: "assignee", label: "Assignee", width: 100 },
+    { prop: "due_date", label: "Due", width: 135 },
+    { prop: "operation", label: "Actions", width: 190, fixed: "right" }
+  ];
+  if (!props.projectKey) {
+    cols.splice(7, 0, { prop: "project_key", label: "Project", width: 130 });
+  }
+  return cols;
+});
 
 interface IssueForm {
   title: string;
@@ -267,9 +409,17 @@ async function fetchIssues(params: any) {
   else if (activeFilter.value === "high") merged.priority = "urgent,high";
   else if (activeFilter.value === "week") { merged.due_date_start = now; merged.due_date_end = weekEnd; }
   else if (activeFilter.value === "done") { merged.status = "done"; merged.orderBy = "updated_at"; }
+  else if (activeFilter.value === "todo") merged.status = "todo";
+  else if (activeFilter.value === "in_progress") merged.status = "in_progress";
+  else if (activeFilter.value === "in_review") merged.status = "in_review";
 
   const res = await getIssueList(merged);
-  return { list: res.data?.list ?? [], total: res.data?.total ?? 0 };
+  const list = res.data?.list ?? [];
+  const total = res.data?.total ?? 0;
+  // Keep the store in sync so CSV/JSON export have data to export.
+  store.issues = list;
+  store.total = total;
+  return { list, total };
 }
 
 function openCreate() {
@@ -446,6 +596,12 @@ function priorityColor(p: IssuePriority) {
   return map[p] || "#909399";
 }
 function typeTagType(t: IssueType): TagType { return ISSUE_TYPE_TAG_MAP[t] || "info"; }
+
+onMounted(async () => {
+  if (!props.projectKey) {
+    await Promise.all([loadStats(), loadNames()]);
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -453,10 +609,97 @@ function typeTagType(t: IssueType): TagType { return ISSUE_TYPE_TAG_MAP[t] || "i
   padding: 24px;
   background: var(--el-bg-color-page);
 }
+.issue-list__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.issue-summary__tile {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.issue-summary__tile--clickable {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  &:hover {
+    border-color: var(--el-color-primary);
+    box-shadow: var(--el-box-shadow-light);
+    transform: translateY(-2px);
+  }
+}
+.issue-summary__value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--el-text-color-primary);
+}
+.issue-summary__label {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.issue-summary__tile--todo .issue-summary__value { color: var(--el-color-info); }
+.issue-summary__tile--progress .issue-summary__value { color: var(--el-color-primary); }
+.issue-summary__tile--review .issue-summary__value { color: var(--el-color-warning); }
+.issue-summary__tile--done .issue-summary__value { color: var(--el-color-success); }
+.issue-summary__tile--completion .issue-summary__value { color: var(--el-color-danger); }
 .issue-list__filters {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+}
+.issue-list__title {
+  font-weight: 500;
+  justify-content: flex-start;
+  padding: 0;
+  white-space: normal;
+}
+.issue-list__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.issue-list__muted {
+  color: var(--el-text-color-placeholder);
+  font-size: 12px;
+}
+.issue-list__link-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+  &--cycle:hover { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
+  &--release:hover { color: var(--el-color-success); background: var(--el-color-success-light-9); }
+}
+.issue-list__due--overdue {
+  color: var(--el-color-danger);
+  font-weight: 600;
+  font-size: 12px;
+}
+.issue-list__due--soon {
+  color: var(--el-color-warning);
+  font-weight: 500;
+  font-size: 12px;
 }
 </style>

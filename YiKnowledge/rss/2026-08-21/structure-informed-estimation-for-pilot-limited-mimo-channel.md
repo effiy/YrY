@@ -1,0 +1,16 @@
+---
+title: Structure-Informed Estimation for Pilot-Limited MIMO Channels via Tensor Decomposition
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2602.04083
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Alexandre Barbosa de Lima
+---
+
+arXiv:2602.04083v3 Announce Type: replace-cross 
+Abstract: Accurate channel state information in wideband MIMO systems is constrained by pilot overhead, a challenge intensifying as bandwidths scale toward 6G. This paper proposes a structure-informed hybrid estimator formulating pilot-limited MIMO channel estimation as low-rank tensor completion from sparse pilot observations---an underdetermined inverse problem that prior approaches avoid by assuming fully observed tensors. Canonical polyadic~(CP) and Tucker decompositions are compared: CP excels for specular channels matching its rank-one parameterization exactly, while Tucker provides numerical stability at extreme pilot scarcity where CP exhibits heavy-tail divergence. A lightweight 3D U-Net learns residual components beyond the low-rank structure, compensating for diffuse scattering and hardware non-idealities. On synthetic specular channels, Tucker completion improves normalized mean-squared error (NMSE) by $10.88$~dB over least squares and $7.83$~dB over orthogonal matching pursuit at $10\%$ pilot density ($\rho$); CP outperforms Tucker by $13.11$~dB at SNR=20~dB. On DeepMIMO channels, the hybrid Tensor--NN estimator has two regimes: Tensor--NN(Tucker) remains stable at $\rho=2\%$ where CP diverges, while a CP-guided variant becomes best from $\rho\ge 4\%$, reaching $-16.44$~dB at $\rho=8\%$ and $-20.34$~dB at $\rho=20\%$. The Tucker-guided variant outperforms unconstrained deep learning across the full pilot range; the CP-guided variant widens this gap once stable. Empirical analysis confirms sample complexity scales with intrinsic channel dimensionality (dominant paths) rather than ambient tensor size.

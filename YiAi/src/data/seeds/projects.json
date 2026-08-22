@@ -1,0 +1,52 @@
+[
+  {
+    "key": "yivad",
+    "name": "YiVad",
+    "identifier": "YIVAD",
+    "description": "Vue 3.5 admin dashboard — the management UI member of the Yi family.\n\nProTable-driven, four layout modes, dynamic routing with backend menu API, and button-level permissions via `v-auth`.\n\n**Axis:** componentization.",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" },
+      { "user_id": "admin", "username": "Admin", "role": "admin" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai",
+    "name": "YiAi",
+    "identifier": "YIAI",
+    "description": "FastAPI backend server — the single source of truth for all Yi-family apps.\n\nAI chat (Ollama), file management with dual-write persistence, RAG, RSS aggregation, WeCom messaging, and the agent loop.\n\n**Axis:** modularization.",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yipet",
+    "name": "YiPet",
+    "identifier": "YIPET",
+    "description": "Chrome MV3 browser extension — injects an interactive pet companion into any page.\n\nMulti-role chat, knowledge grounding, and a cross-project bridge to YiVad.\n\n**Axis:** componentization + API layering.",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge",
+    "name": "YiKnowledge",
+    "identifier": "YKB",
+    "description": "Markdown knowledge base — 7 role directories, 4 pipeline stages.\n\nServes both humans (documentation) and AI (RAG data source for YiAi's BRD Agent).",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" },
+      { "user_id": "curator", "username": "Curator", "role": "member" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

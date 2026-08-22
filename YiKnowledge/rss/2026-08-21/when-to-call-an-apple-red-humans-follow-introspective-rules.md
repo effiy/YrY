@@ -1,0 +1,17 @@
+---
+title: 'When to Call an Apple Red: Humans Follow Introspective Rules, VLMs Don''t'
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2604.06422
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Jonathan Nemitz, Carsten Eickhoff, Junyi Jessy Li, Kyle Mahowald, Michal Golovanevsky,
+  William Rudman
+---
+
+arXiv:2604.06422v2 Announce Type: replace-cross 
+Abstract: Understanding when Vision-Language Models (VLMs) will behave unexpectedly, whether models can reliably predict their own behavior, and if models adhere to their introspective reasoning are central challenges for trustworthy deployment. To study this, we introduce the Graded Color Attribution (GCA) dataset, a controlled benchmark designed to elicit decision rules and evaluate participant faithfulness to these rules. GCA consists of line drawings that vary pixel-level color coverage across three conditions: world-knowledge recolorings, counterfactual recolorings, and shapes with no color priors. Using GCA, we ask both VLMs and human participants to state a threshold rule: the share of an object's pixels that must be a given color for the object to receive that color label. We then compare these rules with their subsequent color attribution decisions. Our findings reveal that models systematically violate their own introspective rules. For example, GPT-5-mini violates its stated introspection rules in nearly 60% of cases on objects with strong color priors. Human participants remain faithful to their stated rules, with any apparent violations being explained by a well-documented tendency to overestimate color coverage. In contrast, we find that VLMs can accurately estimate color coverage, yet directly contradict their own reasoning in their final responses. Across all models and strategies for eliciting introspective rules, world-knowledge priors systematically degrade faithfulness in ways that do not mirror human cognition. Our findings challenge the view that VLM reasoning failures are difficulty-driven and suggest that VLM introspective self-knowledge is miscalibrated, with direct implications for high-stakes deployment.

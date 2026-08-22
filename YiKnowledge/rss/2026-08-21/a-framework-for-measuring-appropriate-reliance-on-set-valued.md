@@ -1,0 +1,16 @@
+---
+title: A Framework for Measuring Appropriate Reliance on Set-Valued AI Advice
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2606.06081
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Ranjan Mishra, Jakob Schoeffer
+---
+
+arXiv:2606.06081v2 Announce Type: replace 
+Abstract: Appropriate reliance on AI advice has become a central research theme in human-AI collaboration. Existing frameworks have focused exclusively on point predictions as AI advice. However, set-valued AI advice (e.g., discrete sets or continuous intervals) is increasingly being used to communicate uncertainty and improve human decision making. In this paper, we develop the first formal framework for measuring appropriate reliance on set-valued AI advice within the sequential judge-advisor paradigm, spanning both classification and regression tasks. For classification, we first introduce the dimensions that are necessary for evaluating set-valued AI advice. We then define two metrics: correct reliance rate on AI and correct reliance rate on self, which jointly characterize appropriate reliance in this setting. For regression, we introduce quantity of AI reliance and quality of AI reliance, which respectively measure whether a decision maker utilized the AI advice and whether their reliance helped them get closer to the ground truth relative to their initial estimate. Through the application of our framework, we demonstrate how these metrics capture important nuances in human-AI collaboration that existing measures overlook.

@@ -1,0 +1,16 @@
+---
+title: Accuracy and Robustness of Model Cascades Under Data Perturbations
+tags:
+- arXiv cs.AI
+category: aier/foundations
+created: '2026-08-22'
+source: https://arxiv.org/abs/2608.17711
+type: rss
+source_name: arXiv cs.AI
+source_url: https://rss.arxiv.org/rss/cs.AI
+published: Fri, 21 Aug 2026 00:00:00 -0400
+author: Pallavi Mitra, Jai Kushwaha, Felix Biessmann
+---
+
+arXiv:2608.17711v2 Announce Type: replace 
+Abstract: Prediction cascades significantly reduce energy consumption of Artificial Intelligence (AI) models while maintaining high predictive performance. The idea is that easy inputs are routed through a lightweight small model, and difficult uncertain cases are deferred to a larger model. While this design can improve computational efficiency on clean data, its effectiveness depends on the reliability of confidence-based routing. Input degradations, such as static corruptions and sequential perturbations, can shift model confidence and routing decisions. In this paper, we study confidence-based cascade frameworks for image classification and investigate how such degradations affect their confidence-based deferral behavior. We select a model cascade at the pareto-optimum of accuracy, routing quality, and energy consumption that achieves competitive predictive performance with an up to 10-fold decrease in CO$_2$ emissions. We study the behavior of that model cascade under input corruptions and analyze how the cascade's routing decisions change when the input distribution shifts. Our analysis identifies three failure modes. Static corruptions either (1) break the routing signal while the large model remains useful, or (2) degrade both models so deferral no longer recovers accuracy. Sequential perturbations reveal a third mode: predictions stabilize but deferral suppresses, yielding stable but unreliable predictions. These findings demonstrate that energy efficient model cascades require evaluation beyond clean accuracy, with explicit attention to routing reliability under distribution shift.

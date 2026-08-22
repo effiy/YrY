@@ -6,15 +6,15 @@
           <el-button text :icon="ArrowLeft" @click="goBack">Releases</el-button>
           <div>
             <div class="rel-detail__title-row">
-              <h1 class="rel-detail__version">{{ release.version }}</h1>
+              <h1 class="rel-detail__version" title="Copy version" @click="copyVersion">{{ release.version }}</h1>
               <el-tag :type="statusTagType(release.status)" size="small">{{ statusLabel(release.status) }}</el-tag>
             </div>
             <div class="rel-detail__meta">
-              <code>{{ release.key }}</code>
+              <code class="rel-detail__key" title="Copy key" @click="copyKey">{{ release.key }}</code>
               <span class="rel-detail__name">{{ release.name }}</span>
               <span class="rel-detail__project">
                 <el-icon><Folder /></el-icon>
-                <el-button link size="small" @click="router.push(`/project/${release.project_key}`)">{{ release.project_key }}</el-button>
+                <el-button link size="small" @click="router.push(`/project/${release.project_key}`)">{{ projectName }}</el-button>
               </span>
             </div>
           </div>
@@ -30,19 +30,19 @@
       <div class="rel-detail__body">
         <div class="rel-detail__main">
           <div class="rel-detail__stats">
-            <div class="rel-detail__stat">
+            <div class="rel-detail__stat rel-detail__stat--clickable" @click="setIssueFilter('')">
               <div class="rel-detail__stat-value">{{ issues.length }}</div>
               <div class="rel-detail__stat-label">Issues</div>
             </div>
-            <div class="rel-detail__stat rel-detail__stat--done">
+            <div class="rel-detail__stat rel-detail__stat--done rel-detail__stat--clickable" @click="setIssueFilter('done')">
               <div class="rel-detail__stat-value">{{ doneCount }}</div>
               <div class="rel-detail__stat-label">Done</div>
             </div>
-            <div class="rel-detail__stat rel-detail__stat--progress">
+            <div class="rel-detail__stat rel-detail__stat--progress rel-detail__stat--clickable" @click="setIssueFilter('in_progress')">
               <div class="rel-detail__stat-value">{{ inProgressCount }}</div>
               <div class="rel-detail__stat-label">In Progress</div>
             </div>
-            <div class="rel-detail__stat rel-detail__stat--pending">
+            <div class="rel-detail__stat rel-detail__stat--pending rel-detail__stat--clickable" @click="setIssueFilter('pending')">
               <div class="rel-detail__stat-value">{{ pendingCount }}</div>
               <div class="rel-detail__stat-label">Pending</div>
             </div>
@@ -95,9 +95,12 @@
           </div>
 
           <div class="rel-detail__section">
-            <h3>Issues ({{ issues.length }})</h3>
-            <div v-if="issues.length" class="rel-detail__issue-list">
-              <div v-for="issue in issues" :key="issue.key" class="rel-detail__issue" @click="router.push(`/issue/${issue.key}`)">
+            <div class="rel-detail__section-head">
+              <h3>Issues ({{ filteredIssues.length }})</h3>
+              <el-tag v-if="issueFilter" size="small" closable @close="issueFilter = ''">{{ issueFilterLabel }}</el-tag>
+            </div>
+            <div v-if="filteredIssues.length" class="rel-detail__issue-list">
+              <div v-for="issue in filteredIssues" :key="issue.key" class="rel-detail__issue" @click="router.push(`/issue/${issue.key}`)">
                 <div class="rel-detail__issue-left">
                   <el-tag :type="issueTypeTag(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
                   <span class="rel-detail__issue-title">{{ issue.title }}</span>
@@ -108,17 +111,49 @@
                 </div>
               </div>
             </div>
-            <el-empty v-else description="No issues in this release" :image-size="40" />
+            <el-empty v-else :description="issueFilter ? 'No matching issues' : 'No issues in this release'" :image-size="40" />
           </div>
 
           <div class="rel-detail__dates">
             <div v-if="release.target_date" class="rel-detail__date">
               <span class="rel-detail__date-label">Target Date</span>
-              <span>{{ formatDate(release.target_date) }}</span>
+              <span :class="{ 'rel-detail__date-overdue': isOverdue }">{{ formatDate(release.target_date) }}</span>
             </div>
             <div v-if="release.release_date" class="rel-detail__date">
               <span class="rel-detail__date-label">Released</span>
               <span>{{ formatDate(release.release_date) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="rel-detail__sidebar">
+          <div class="rel-detail__props">
+            <div class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Project</span>
+              <el-button link size="small" type="primary" @click="router.push(`/project/${release.project_key}`)">{{ projectName }}</el-button>
+            </div>
+            <div class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Status</span>
+              <el-tag :type="statusTagType(release.status)" size="small">{{ statusLabel(release.status) }}</el-tag>
+            </div>
+            <div v-if="release.target_date" class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Target Date</span>
+              <span :class="{ 'rel-detail__date-overdue': isOverdue }">{{ formatDate(release.target_date) }}</span>
+            </div>
+            <div v-if="release.release_date" class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Released</span>
+              <span>{{ formatDate(release.release_date) }}</span>
+            </div>
+            <div class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Issues</span>
+              <span>{{ doneCount }} done · {{ inProgressCount }} active · {{ pendingCount }} pending</span>
+            </div>
+            <div class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Created</span>
+              <span>{{ formatRelativeTime(release.created_at) }}</span>
+            </div>
+            <div class="rel-detail__prop">
+              <span class="rel-detail__prop-label">Updated</span>
+              <span>{{ formatRelativeTime(release.updated_at) }}</span>
             </div>
           </div>
         </div>
@@ -178,8 +213,10 @@ import { getIssueList, issueStatusLabel, issueStatusTag, typeLabel, issueTypeTag
 import type { Issue } from "@/api/modules/issueService";
 import { getCycleList } from "@/api/modules/cycleService";
 import type { Cycle } from "@/api/modules/cycleService";
+import { getProjectList } from "@/api/modules/projectService";
+import type { Project } from "@/api/modules/projectService";
 import { useMarkdown } from "@/hooks/useMarkdown";
-import { formatDate } from "@/utils/datetime";
+import { formatDate, formatRelativeTime } from "@/utils/datetime";
 
 const route = useRoute();
 const router = useRouter();
@@ -191,6 +228,8 @@ const release = computed(() => store.currentRelease);
 const issues = ref<Issue[]>([]);
 const editFormRef = ref<FormInstance>();
 const linkedCycles = ref<Cycle[]>([]);
+const projectName = ref("");
+const issueFilter = ref("");
 
 const rules: FormRules = {
   version: [{ required: true, message: "Version is required", trigger: "blur" }],
@@ -236,6 +275,22 @@ const progressColor = computed(() => {
 const renderedNotes = computed(() => {
   if (!release.value?.notes) return "";
   return renderMarkdown(release.value.notes);
+});
+
+const filteredIssues = computed(() => {
+  if (!issueFilter.value) return issues.value;
+  if (issueFilter.value === "pending") return issues.value.filter(i => i.status !== "done" && i.status !== "cancelled");
+  return issues.value.filter(i => i.status === issueFilter.value);
+});
+
+const issueFilterLabel = computed(() => {
+  const m: Record<string, string> = { done: "Done", in_progress: "In Progress", pending: "Pending" };
+  return m[issueFilter.value] || issueFilter.value;
+});
+
+const isOverdue = computed(() => {
+  if (release.value?.status !== "in_progress" || !release.value?.target_date) return false;
+  return new Date(release.value.target_date).getTime() < Date.now();
 });
 
 function openEdit() {
@@ -311,6 +366,39 @@ function goBack() {
   else router.push("/release");
 }
 
+function setIssueFilter(status: string) {
+  issueFilter.value = issueFilter.value === status ? "" : status;
+}
+
+async function copyVersion() {
+  if (!release.value) return;
+  try {
+    await navigator.clipboard.writeText(release.value.version);
+    ElMessage.success(`Copied ${release.value.version}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function copyKey() {
+  if (!release.value) return;
+  try {
+    await navigator.clipboard.writeText(release.value.key);
+    ElMessage.success(`Copied ${release.value.key}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
+async function loadProjectName() {
+  if (!release.value?.project_key) return;
+  try {
+    const res = await getProjectList({ pageSize: 500 });
+    const projects = (res.data?.list as Project[]) ?? [];
+    projectName.value = projects.find(p => p.key === release.value!.project_key)?.name || release.value!.project_key;
+  } catch { /* ignore */ }
+}
+
 function statusLabel(s: ReleaseStatus) { return RELEASE_STATUS_MAP[s] || s; }
 function statusTagType(s: ReleaseStatus): "success" | "warning" | "info" | "primary" | "danger" {
   const m: Record<ReleaseStatus, "success" | "warning" | "info" | "primary" | "danger"> = { planned: "info", in_progress: "primary", released: "success" };
@@ -322,6 +410,7 @@ onMounted(async () => {
     await store.fetchRelease(key);
     await loadIssues();
     await loadLinkedCycles();
+    await loadProjectName();
   }
   loading.value = false;
 });
@@ -332,14 +421,21 @@ onMounted(async () => {
 .rel-detail__head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
 .rel-detail__head-left { display: flex; align-items: flex-start; gap: 16px; }
 .rel-detail__title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.rel-detail__version { margin: 0; font-size: 22px; font-weight: 700; font-family: monospace; }
+.rel-detail__version { margin: 0; font-size: 22px; font-weight: 700; font-family: monospace; cursor: pointer; transition: color 0.15s; &:hover { color: var(--el-color-primary); } }
 .rel-detail__meta { display: flex; gap: 10px; align-items: center; code { font-size: 12px; color: var(--el-text-color-secondary); background: var(--el-fill-color-light); padding: 1px 8px; border-radius: 4px; } }
+.rel-detail__key { cursor: pointer; transition: color 0.15s, background 0.15s; &:hover { color: var(--el-color-primary); background: var(--el-color-primary-light-9); } }
 .rel-detail__name { font-size: 14px; color: var(--el-text-color-secondary); }
 .rel-detail__project { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--el-text-color-secondary); }
 .rel-detail__head-actions { display: flex; gap: 8px; }
-.rel-detail__body { max-width: 900px; }
+.rel-detail__body { display: flex; gap: 24px; align-items: flex-start; }
+.rel-detail__main { flex: 1; min-width: 0; }
+.rel-detail__sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 24px; }
+.rel-detail__props { background: var(--el-fill-color-lighter); border-radius: 8px; padding: 16px; }
+.rel-detail__prop { padding: 8px 0; font-size: 13px; & + & { border-top: 1px solid var(--el-border-color-lighter); } }
+.rel-detail__prop-label { display: block; color: var(--el-text-color-secondary); font-weight: 500; margin-bottom: 4px; }
 .rel-detail__stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 20px; }
 .rel-detail__stat { background: var(--el-fill-color-lighter); border-radius: 10px; padding: 20px; text-align: center; }
+.rel-detail__stat--clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; &:hover { transform: translateY(-2px); box-shadow: var(--el-box-shadow-light); } }
 .rel-detail__stat--done { background: var(--el-color-success-light-9); .rel-detail__stat-value { color: var(--el-color-success); } }
 .rel-detail__stat--progress { background: var(--el-color-primary-light-9); .rel-detail__stat-value { color: var(--el-color-primary); } }
 .rel-detail__stat--pending { background: var(--el-color-warning-light-9); .rel-detail__stat-value { color: var(--el-color-warning); } }
@@ -357,6 +453,7 @@ onMounted(async () => {
 .rel-detail__deploy-step--done { .rel-detail__deploy-label { color: var(--el-color-success); } }
 .rel-detail__notes { margin-bottom: 24px; h3 { margin: 0 0 8px; font-size: 15px; } }
 .rel-detail__section { h3 { margin: 0 0 12px; font-size: 15px; } }
+.rel-detail__section-head { display: flex; align-items: center; justify-content: space-between; h3 { margin: 0 0 12px; } }
 .rel-detail__issue-list { display: flex; flex-direction: column; gap: 4px; }
 .rel-detail__issue { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 8px; cursor: pointer; &:hover { background: var(--el-fill-color-light); } }
 .rel-detail__issue-left { display: flex; align-items: center; gap: 10px; }
@@ -366,6 +463,7 @@ onMounted(async () => {
 .rel-detail__dates { display: flex; gap: 24px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--el-border-color-lighter); }
 .rel-detail__date { display: flex; flex-direction: column; gap: 4px; }
 .rel-detail__date-label { font-size: 12px; color: var(--el-text-color-placeholder); }
+.rel-detail__date-overdue { color: var(--el-color-danger); font-weight: 600; }
 .rel-detail__not-found { padding: 80px 0; }
 .rel-detail__cycle-list { display: flex; flex-direction: column; gap: 8px; }
 .rel-detail__cycle-item {

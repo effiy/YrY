@@ -7,7 +7,7 @@
           <div>
             <h1 class="issue-detail__title">{{ issue.title }}</h1>
             <div class="issue-detail__meta">
-              <code>{{ issue.key }}</code>
+              <code class="issue-detail__key" title="Copy key" @click="copyKey">{{ issue.key }}</code>
               <el-tag :type="typeTagType(issue.issue_type)" size="small" effect="plain">
                 {{ typeLabel(issue.issue_type) }}
               </el-tag>
@@ -175,7 +175,9 @@
             </div>
             <div class="issue-detail__prop">
               <span class="issue-detail__prop-label">Project</span>
-              <span>{{ issue.project_key }}</span>
+              <el-button link size="small" type="primary" @click="router.push(`/project/${issue.project_key}`)">
+                {{ projectName }}
+              </el-button>
             </div>
             <div v-if="linkedCycle" class="issue-detail__prop">
               <span class="issue-detail__prop-label">Cycle</span>
@@ -220,7 +222,7 @@
             </div>
             <div class="issue-detail__prop">
               <span class="issue-detail__prop-label">Due Date</span>
-              <span>{{ issue.due_date || '-' }}</span>
+              <span :class="{ 'issue-detail__due-overdue': isOverdue }">{{ issue.due_date || '-' }}</span>
             </div>
             <div class="issue-detail__prop">
               <span class="issue-detail__prop-label">Source</span>
@@ -232,11 +234,11 @@
             </div>
             <div class="issue-detail__prop">
               <span class="issue-detail__prop-label">Created</span>
-              <span>{{ formatDate(issue.created_at) }}</span>
+              <span>{{ formatRelativeTime(issue.created_at) }}</span>
             </div>
             <div class="issue-detail__prop">
               <span class="issue-detail__prop-label">Updated</span>
-              <span>{{ formatDate(issue.updated_at) }}</span>
+              <span>{{ formatRelativeTime(issue.updated_at) }}</span>
             </div>
           </div>
           <div v-if="issue.labels?.length" class="issue-detail__labels">
@@ -374,7 +376,7 @@
 </template>
 
 <script setup lang="ts" name="issueDetail">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowLeft, Edit, Delete, Plus, Upload, Document, VideoPlay, VideoPause, MoreFilled, CopyDocument, Switch, Bell, BellFilled, Lock, Unlock, Share } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -388,17 +390,19 @@ import {
 } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType, IssueSource, ReviewStatus, TagType } from "@/api/modules/issueService";
 import { useMarkdown } from "@/hooks/useMarkdown";
-import { formatDate } from "@/utils/datetime";
+import { formatDate, formatRelativeTime } from "@/utils/datetime";
 import { getComments, createComment, deleteComment as deleteCommentApi } from "@/api/modules/commentService";
 import type { Comment } from "@/api/modules/commentService";
 import { getIssueHistory, fieldLabel } from "@/api/modules/issueHistoryService";
 import { getCycleList } from "@/api/modules/cycleService";
 import { getModuleList } from "@/api/modules/moduleService";
 import { getReleaseList } from "@/api/modules/releaseService";
+import { getProjectList } from "@/api/modules/projectService";
 import type { IssueChange } from "@/api/modules/issueHistoryService";
 import type { Cycle } from "@/api/modules/cycleService";
 import type { Module } from "@/api/modules/moduleService";
 import type { Release } from "@/api/modules/releaseService";
+import type { Project } from "@/api/modules/projectService";
 
 const route = useRoute();
 const router = useRouter();
@@ -409,6 +413,8 @@ const loading = ref(true);
 const issue = computed(() => store.currentIssue);
 const quickStatus = ref("");
 const editFormRef = ref<FormInstance>();
+
+watch(() => issue.value?.status, s => { quickStatus.value = s || ""; });
 
 // Comments
 const comments = ref<Comment[]>([]);
@@ -448,6 +454,7 @@ const history = ref<IssueChange[]>([]);
 const linkedCycles = ref<Cycle[]>([]);
 const linkedModules = ref<Module[]>([]);
 const linkedReleases = ref<Release[]>([]);
+const projectName = ref("");
 
 // Direct cycle/release linkage from issue fields
 const linkedCycle = computed(() => {
@@ -458,6 +465,12 @@ const linkedCycle = computed(() => {
 const linkedRelease = computed(() => {
   if (!issue.value?.release_key) return null;
   return linkedReleases.value.find(r => r.key === issue.value!.release_key) || null;
+});
+
+const isOverdue = computed(() => {
+  const i = issue.value;
+  if (!i?.due_date || i.status === "done") return false;
+  return i.due_date < new Date().toISOString().slice(0, 10);
 });
 
 async function loadHistory() {
@@ -471,17 +484,20 @@ async function loadHistory() {
 async function loadLinked() {
   if (!issue.value) return;
   try {
-    const [cycleRes, moduleRes, releaseRes] = await Promise.all([
+    const [cycleRes, moduleRes, releaseRes, projectRes] = await Promise.all([
       getCycleList({ project_key: issue.value.project_key, pageSize: 200 }),
       getModuleList({ project_key: issue.value.project_key, pageSize: 200 }),
-      getReleaseList({ project_key: issue.value.project_key, pageSize: 200 })
+      getReleaseList({ project_key: issue.value.project_key, pageSize: 200 }),
+      getProjectList({ pageSize: 500 })
     ]);
     const cycles = (cycleRes.data?.list as Cycle[]) ?? [];
     const modules = (moduleRes.data?.list as Module[]) ?? [];
     const releases = (releaseRes.data?.list as Release[]) ?? [];
+    const projects = (projectRes.data?.list as Project[]) ?? [];
     linkedCycles.value = cycles.filter(c => c.issue_keys?.includes(issue.value!.key));
     linkedModules.value = modules.filter(m => m.issue_keys?.includes(issue.value!.key));
     linkedReleases.value = releases.filter(r => r.issue_keys?.includes(issue.value!.key));
+    projectName.value = projects.find(p => p.key === issue.value!.project_key)?.name || issue.value!.project_key;
   } catch { /* ignore */ }
 }
 
@@ -515,6 +531,16 @@ function shareIssue() {
   const url = window.location.href;
   navigator.clipboard.writeText(url);
   ElMessage.success("Issue link copied to clipboard");
+}
+
+async function copyKey() {
+  if (!issue.value) return;
+  try {
+    await navigator.clipboard.writeText(issue.value.key);
+    ElMessage.success(`Copied ${issue.value.key}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
 }
 
 function toggleTimer() {
@@ -874,6 +900,18 @@ onMounted(async () => {
   font-size: 13px;
   font-weight: 500;
 }
+.issue-detail__key {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.issue-detail__due-overdue {
+  color: var(--el-color-danger);
+  font-weight: 600;
+}
 .issue-detail__head-actions {
   display: flex;
   gap: 8px;
@@ -899,6 +937,9 @@ onMounted(async () => {
 .issue-detail__sidebar {
   width: 260px;
   flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  align-self: flex-start;
 }
 .issue-detail__props {
   background: var(--el-fill-color-lighter);

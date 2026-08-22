@@ -34,7 +34,6 @@ related:
 |---|---|---|
 | [vue/](./vue/) | Vue 3 Composition API, Pinia, Vue Router, Element Plus, SFC conventions | 10 |
 | [vite/](./vite/) | Vite.js build tool, plugins, framework integrations, SSR/SSG | 3 |
-| [css/](./css/) | Modern CSS: cascade layers, container queries, custom properties, Grid/Flexbox | 1 |
 | [h5/](./h5/) | H5 mobile web development: viewport, touch events, responsive design | 1 |
 | [ui-ux/](./ui-ux/) | UI/UX design: logos, icons, banners, slides, CIP, design systems | 51 |
 | [chrome/](./chrome/) | Chrome Extension MV3: service workers, content scripts, Chrome APIs | 1 |
@@ -76,9 +75,3 @@ related:
 | [market-research/](./market-research/) | Full research lifecycle: landscape surveys, single-project evaluation, head-to-head comparison, YiKnowledge output | 1 |
 | [code-quality-research/](./code-quality-research/) | Evaluate and select AI-powered code quality tools across 4 key paths: review, test generation, refactoring, style alignment | 1 |
 | [business-strategy/](./business-strategy/) | Define organizational strategy: market intelligence, competitive analysis, OKRs, roadmaps, build-vs-buy decisions | 1 |
-
-### Project-specific config
-
-| Directory | Description | Files |
-|---|---|---|
-| [yivad/](./yivad/) | YiVad project Claude Code config: agents, commands, rules, settings (no SKILL.md) | 9 |

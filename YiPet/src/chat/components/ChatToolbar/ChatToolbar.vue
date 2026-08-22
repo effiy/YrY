@@ -452,21 +452,6 @@ function saveModelFallback() {
 
     <!-- Right: pills group + running tools + clear + stop -->
     <div class="ct-right">
-      <!-- Model selector (mirrors YiVad aiChat) -->
-      <el-select
-        :model-value="s.selectedModel"
-        class="ct-model-select"
-        size="small"
-        placeholder="Model"
-        @update:model-value="s.selectedModel = $event"
-      >
-        <el-option
-          v-for="m in modelOptions"
-          :key="m"
-          :label="m"
-          :value="m"
-        />
-      </el-select>
 
       <!-- Pills group: status toggles -->
       <div class="ct-pills-group">
@@ -731,15 +716,6 @@ function saveModelFallback() {
     color: #22c55e;
     background: rgba(34, 197, 94, 0.08);
     border-color: rgba(34, 197, 94, 0.3);
-  }
-}
-
-// ── Model selector (mirrors YiVad aiChat) ──
-.ct-model-select {
-  width: 150px;
-  :deep(.el-select__wrapper) {
-    border-radius: 14px;
-    font-size: 12px;
   }
 }
 
