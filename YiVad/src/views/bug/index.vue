@@ -1,6 +1,6 @@
 <template>
   <div class="bug-list">
-    <div class="bug-list__filters">
+    <div v-if="!props.projectKey" class="bug-list__filters">
       <el-button
         v-for="f in quickFilters"
         :key="f.key"
@@ -19,7 +19,7 @@
       :pagination="true"
     >
       <template #tableHeader="scope">
-        <el-button type="primary" :icon="Plus" @click="store.openCreateDialog()">New Bug</el-button>
+        <el-button type="primary" :icon="Plus" @click="store.openCreateDialog(props.projectKey ? projectName(props.projectKey) : '', props.projectKey)">New Bug</el-button>
         <el-button
           :disabled="!scope.isSelected"
           type="danger"
@@ -51,6 +51,20 @@
         <el-tag type="info" size="small" effect="plain">
           {{ scope.row.type }}
         </el-tag>
+      </template>
+
+      <template #project="scope">
+        <el-button v-if="scope.row.project_key" link type="primary" @click="goProject(scope.row.project_key)">
+          {{ projectName(scope.row.project_key) || scope.row.project || scope.row.project_key }}
+        </el-button>
+        <span v-else class="bug-list__project-text">{{ scope.row.project || "—" }}</span>
+      </template>
+
+      <template #issue_key="scope">
+        <el-button v-if="scope.row.issue_key" link type="warning" @click="goIssue(scope.row.issue_key)">
+          {{ issueTitle(scope.row.issue_key) }}
+        </el-button>
+        <span v-else>—</span>
       </template>
 
       <template #updatedAt="scope">
@@ -123,12 +137,23 @@
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="Project">
-              <el-input v-model="store.form.project" placeholder="Project name" />
+              <el-select v-model="store.form.project_key" filterable clearable placeholder="Select project" style="width: 100%" @change="onProjectChange">
+                <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Module">
               <el-input v-model="store.form.module" placeholder="Module name" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16">
+          <el-col :span="12">
+            <el-form-item label="Issue">
+              <el-select v-model="store.form.issue_key" filterable clearable placeholder="Link to issue" style="width: 100%">
+                <el-option v-for="i in selectableIssues" :key="i.key" :label="`${i.key} · ${i.title}`" :value="i.key" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -196,19 +221,24 @@
 </template>
 
 <script setup lang="tsx" name="bugList">
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Plus, Delete, View, Edit } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { useBugStore } from "@/stores/modules/bug";
+import { useProjectStore } from "@/stores/modules/project";
+import { useIssueStore } from "@/stores/modules/issue";
 import { getBugList, readBugContent } from "@/api/modules/bug";
 import type { BugDocument, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency } from "@/api/modules/bug";
 import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
 
 const router = useRouter();
+const props = defineProps<{ projectKey?: string }>();
 const store = useBugStore();
+const projectStore = useProjectStore();
+const issueStore = useIssueStore();
 const proTable = ref<ProTableInstance>();
 const formRef = ref<FormInstance>();
 const activeFilter = ref("");
@@ -245,6 +275,7 @@ const columns: ColumnProps<BugDocument>[] = [
   { prop: "status", label: "Status", width: 110 },
   { prop: "type", label: "Type", width: 110 },
   { prop: "project", label: "Project", width: 120, search: { el: "input" } },
+  { prop: "issue_key", label: "Issue", width: 140 },
   { prop: "module", label: "Module", width: 120, search: { el: "input" } },
   { prop: "assignee", label: "Assignee", width: 100 },
   { prop: "updatedAt", label: "Updated", width: 160 },
@@ -270,13 +301,16 @@ async function fetchBugs(params: any) {
   if (filters.project) merged.project = filters.project;
   if (filters.module) merged.module = filters.module;
 
+  // Scope to the parent project when embedded in the project detail page.
+  if (props.projectKey) merged.project_key = props.projectKey;
+
   // Apply quick filter
   if (activeFilter.value === "open") merged.status = "open";
   else if (activeFilter.value === "critical") merged.severity = "critical";
   else if (activeFilter.value === "mine") merged.assignee = "admin";
 
   const res = await getBugList(merged);
-  return { list: res.data?.list ?? [], total: res.data?.total ?? 0 };
+  return res;
 }
 
 async function openEdit(bug: BugDocument) {
@@ -310,6 +344,43 @@ function batchDelete(ids: string[]) {
 function goDetail(key: string) {
   router.push(`/bug/${key}`);
 }
+
+const projects = computed(() => projectStore.projects);
+
+function projectName(key: string): string {
+  return projects.value.find(p => p.key === key)?.name ?? "";
+}
+
+function goProject(key: string) {
+  router.push(`/project/${key}`);
+}
+
+const issues = computed(() => issueStore.issues);
+
+/** Issues scoped to the currently selected project (for the link-to-issue select). */
+const selectableIssues = computed(() => {
+  const pk = store.form.project_key;
+  return pk ? issues.value.filter(i => i.project_key === pk) : issues.value;
+});
+
+function issueTitle(key: string): string {
+  const i = issues.value.find(x => x.key === key);
+  return i ? i.title : key;
+}
+
+function goIssue(key: string) {
+  router.push(`/issue/${key}`);
+}
+
+/** Sync the free-text `project` name whenever a project key is selected/cleared. */
+function onProjectChange(key: string) {
+  store.form.project = key ? projectName(key) : "";
+}
+
+onMounted(() => {
+  projectStore.fetchProjects({ pageSize: 100 });
+  issueStore.fetchIssues({ pageSize: 500 });
+});
 
 function formatDate(ts: number): string {
   return new Date(ts).toLocaleString("zh-CN");

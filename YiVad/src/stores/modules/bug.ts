@@ -35,6 +35,8 @@ function emptyForm() {
     key: "",
     title: "",
     project: "",
+    project_key: "",
+    issue_key: "",
     module: "",
     iteration: "",
     defectUrl: "",
@@ -119,11 +121,12 @@ export const useBugStore = defineStore("yivad-bug", () => {
     }
   }
 
-  function openCreateDialog(project = "") {
+  function openCreateDialog(project = "", projectKey = "") {
     isEdit.value = false;
     resetForm();
     form.key = newKey();
     form.project = project;
+    form.project_key = projectKey;
     dialogVisible.value = true;
   }
 
@@ -133,6 +136,8 @@ export const useBugStore = defineStore("yivad-bug", () => {
       key: bug.key,
       title: bug.title ?? "",
       project: bug.project ?? "",
+      project_key: bug.project_key ?? "",
+      issue_key: bug.issue_key ?? "",
       module: bug.module ?? "",
       iteration: bug.iteration ?? "",
       defectUrl: bug.defectUrl ?? "",
@@ -179,6 +184,8 @@ export const useBugStore = defineStore("yivad-bug", () => {
       const meta = {
         title: form.title,
         project: form.project,
+        project_key: form.project_key,
+        issue_key: form.issue_key,
         module: form.module,
         iteration: form.iteration,
         defectUrl: form.defectUrl,

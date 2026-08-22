@@ -244,7 +244,7 @@
           <div v-if="issue.labels?.length" class="issue-detail__labels">
             <span class="issue-detail__prop-label">Labels</span>
             <div class="issue-detail__label-list">
-              <el-tag v-for="label in issue.labels" :key="label" size="small" round>{{ label }}</el-tag>
+              <el-tag v-for="label in issue.labels" :key="label" size="small" round style="cursor:pointer" @click="goLabel(label)">{{ label }}</el-tag>
             </div>
           </div>
           <div v-if="(issue.blocked_by?.length || issue.blocks?.length)" class="issue-detail__labels">
@@ -264,7 +264,7 @@
               <el-tag v-for="k in issue.related" :key="k" size="small" type="info" style="cursor:pointer" @click="router.push(`/issue/${k}`)">{{ k }}</el-tag>
             </div>
           </div>
-          <div v-if="linkedCycles.length || linkedModules.length || linkedReleases.length" class="issue-detail__labels">
+          <div v-if="linkedCycles.length || linkedModules.length || linkedReleases.length || linkedBugs.length" class="issue-detail__labels">
             <span class="issue-detail__prop-label">Linked</span>
             <div v-if="linkedCycles.length" class="issue-detail__dep-group">
               <span class="issue-detail__dep-type">Cycle</span>
@@ -277,6 +277,10 @@
             <div v-if="linkedReleases.length" class="issue-detail__dep-group">
               <span class="issue-detail__dep-type">Release</span>
               <el-tag v-for="r in linkedReleases" :key="r.key" size="small" type="success" style="cursor:pointer" @click="router.push(`/release/${r.key}`)">{{ r.version }}</el-tag>
+            </div>
+            <div v-if="linkedBugs.length" class="issue-detail__dep-group">
+              <span class="issue-detail__dep-type">Bug</span>
+              <el-tag v-for="b in linkedBugs" :key="b.key" size="small" type="danger" style="cursor:pointer" @click="router.push(`/bug/${b.key}`)">{{ b.title }}</el-tag>
             </div>
           </div>
         </div>
@@ -403,6 +407,8 @@ import type { Cycle } from "@/api/modules/cycleService";
 import type { Module } from "@/api/modules/moduleService";
 import type { Release } from "@/api/modules/releaseService";
 import type { Project } from "@/api/modules/projectService";
+import { getBugList } from "@/api/modules/bug";
+import type { BugDocument } from "@/api/modules/bug";
 
 const route = useRoute();
 const router = useRouter();
@@ -454,6 +460,7 @@ const history = ref<IssueChange[]>([]);
 const linkedCycles = ref<Cycle[]>([]);
 const linkedModules = ref<Module[]>([]);
 const linkedReleases = ref<Release[]>([]);
+const linkedBugs = ref<BugDocument[]>([]);
 const projectName = ref("");
 
 // Direct cycle/release linkage from issue fields
@@ -484,11 +491,12 @@ async function loadHistory() {
 async function loadLinked() {
   if (!issue.value) return;
   try {
-    const [cycleRes, moduleRes, releaseRes, projectRes] = await Promise.all([
+    const [cycleRes, moduleRes, releaseRes, projectRes, bugRes] = await Promise.all([
       getCycleList({ project_key: issue.value.project_key, pageSize: 200 }),
       getModuleList({ project_key: issue.value.project_key, pageSize: 200 }),
       getReleaseList({ project_key: issue.value.project_key, pageSize: 200 }),
-      getProjectList({ pageSize: 500 })
+      getProjectList({ pageSize: 500 }),
+      getBugList({ issue_key: issue.value.key, pageSize: 100 })
     ]);
     const cycles = (cycleRes.data?.list as Cycle[]) ?? [];
     const modules = (moduleRes.data?.list as Module[]) ?? [];
@@ -497,6 +505,7 @@ async function loadLinked() {
     linkedCycles.value = cycles.filter(c => c.issue_keys?.includes(issue.value!.key));
     linkedModules.value = modules.filter(m => m.issue_keys?.includes(issue.value!.key));
     linkedReleases.value = releases.filter(r => r.issue_keys?.includes(issue.value!.key));
+    linkedBugs.value = (bugRes.data?.list as BugDocument[]) ?? [];
     projectName.value = projects.find(p => p.key === issue.value!.project_key)?.name || issue.value!.project_key;
   } catch { /* ignore */ }
 }
@@ -711,6 +720,10 @@ function goBack() {
   } else {
     router.push("/issue");
   }
+}
+
+function goLabel(name: string) {
+  router.push(`/issue?label=${encodeURIComponent(name)}`);
 }
 
 function statusLabel(s: IssueStatus) { return ISSUE_STATUS_MAP[s] || s; }

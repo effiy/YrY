@@ -63,7 +63,15 @@ export interface BugDocument {
   key: string;
   // Identification
   title: string;
+  /** Free-text project name — legacy field, kept for bugs synced without a key. */
   project: string;
+  /** Project key (foreign key to the `projects` collection). Added to join the
+   *  bug → project closed loop; legacy bugs may only carry `project`. */
+  project_key?: string;
+  /** Issue key (foreign key to the `issues` collection). The issue this bug is
+   *  reported against / fixed by — completes the bug → issue → project loop.
+   *  Optional; legacy bugs may not carry it. */
+  issue_key?: string;
   module: string;
   // Iteration / defect link — sourced from agile platform when synced
   iteration?: string;
@@ -112,6 +120,8 @@ export interface BugListParams {
   search?: string;
   title?: string;
   project?: string;
+  project_key?: string;
+  issue_key?: string;
   module?: string;
   iteration?: string;
   severity?: BugSeverity;
@@ -147,6 +157,8 @@ function buildFrontmatter(bug: BugDocument): Record<string, any> {
     severity: bug.severity,
     priority: bug.priority,
     project: bug.project,
+    project_key: bug.project_key ?? "",
+    issue_key: bug.issue_key ?? "",
     module: bug.module,
     iteration: bug.iteration ?? "",
     defectUrl: bug.defectUrl ?? "",
@@ -292,6 +304,8 @@ export async function getBugList(
     filter.$or = [{ title: rx }, { module: rx }];
   }
   if (params.project) filter.project = params.project;
+  if (params.project_key) filter.project_key = params.project_key;
+  if (params.issue_key) filter.issue_key = params.issue_key;
   if (params.module) filter.module = { $regex: params.module, $options: "i" };
   if (params.iteration) filter.iteration = { $regex: params.iteration, $options: "i" };
   if (params.severity) filter.severity = params.severity;

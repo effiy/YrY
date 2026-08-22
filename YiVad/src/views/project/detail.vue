@@ -16,6 +16,7 @@
           </div>
         </div>
         <div class="project-detail__head-actions">
+          <el-button :icon="TrendCharts" @click="goOkr">OKR Tasks</el-button>
           <el-button :icon="Edit" @click="openEdit">Edit</el-button>
           <el-button :icon="CopyDocument" @click="cloneProject">Clone</el-button>
           <el-button :icon="Star" @click="saveAsTemplate">Save as Template</el-button>
@@ -50,6 +51,18 @@
             <div class="project-detail__stat project-detail__stat--release project-detail__stat--clickable" title="View releases" @click="goTab('releases')">
               <div class="project-detail__stat-value">{{ overviewStats.pendingReleases }}</div>
               <div class="project-detail__stat-label">Pending Releases</div>
+            </div>
+            <div class="project-detail__stat project-detail__stat--module project-detail__stat--clickable" title="View modules" @click="goTab('modules')">
+              <div class="project-detail__stat-value">{{ overviewStats.totalModules }}</div>
+              <div class="project-detail__stat-label">Modules</div>
+            </div>
+            <div class="project-detail__stat project-detail__stat--req project-detail__stat--clickable" title="View requirements" @click="goTab('issues')">
+              <div class="project-detail__stat-value">{{ overviewStats.totalRequirements }}</div>
+              <div class="project-detail__stat-label">Requirements</div>
+            </div>
+            <div class="project-detail__stat project-detail__stat--bug project-detail__stat--clickable" title="View bugs" @click="goTab('bugs')">
+              <div class="project-detail__stat-value">{{ overviewStats.totalBugs }}</div>
+              <div class="project-detail__stat-label">Bugs</div>
             </div>
           </div>
 
@@ -137,6 +150,12 @@
           </template>
           <IssueList :project-key="project.key" />
         </el-tab-pane>
+        <el-tab-pane name="bugs">
+          <template #label>
+            <span class="project-detail__tab-label">Bugs<span class="project-detail__tab-count">{{ overviewStats.totalBugs }}</span></span>
+          </template>
+          <BugList :project-key="project.key" />
+        </el-tab-pane>
         <el-tab-pane name="cycles">
           <template #label>
             <span class="project-detail__tab-label">Cycles<span class="project-detail__tab-count">{{ overviewStats.totalCycles }}</span></span>
@@ -148,6 +167,12 @@
             <span class="project-detail__tab-label">Releases<span class="project-detail__tab-count">{{ overviewStats.totalReleases }}</span></span>
           </template>
           <ReleaseList :project-key="project.key" />
+        </el-tab-pane>
+        <el-tab-pane name="modules">
+          <template #label>
+            <span class="project-detail__tab-label">Modules<span class="project-detail__tab-count">{{ overviewStats.totalModules }}</span></span>
+          </template>
+          <ModuleList :project-key="project.key" />
         </el-tab-pane>
         <el-tab-pane name="pages">
           <template #label>
@@ -246,7 +271,7 @@
 <script setup lang="ts" name="projectDetail">
 import { computed, onMounted, reactive, ref, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, CopyDocument, Star, Plus, Close } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, CopyDocument, Star, Plus, Close, TrendCharts } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import * as echarts from "echarts";
@@ -256,16 +281,21 @@ import IssueList from "@/views/issue/index.vue";
 import CycleList from "@/views/cycle/index.vue";
 import ReleaseList from "@/views/release/index.vue";
 import PageList from "@/views/page/index.vue";
+import ModuleList from "@/views/module/index.vue";
+import BugList from "@/views/bug/index.vue";
 import { getIssueList } from "@/api/modules/issueService";
 import { getCycleList } from "@/api/modules/cycleService";
 import { getReleaseList } from "@/api/modules/releaseService";
 import { getModuleList } from "@/api/modules/moduleService";
+import { getBugList } from "@/api/modules/bug";
+import type { BugDocument } from "@/api/modules/bug";
 import { createLabel } from "@/api/modules/labelService";
 import { formatRelativeTime, formatDate } from "@/utils/datetime";
 import type { Issue, IssueStatus } from "@/api/modules/issueService";
 import type { Cycle } from "@/api/modules/cycleService";
 import type { Release } from "@/api/modules/releaseService";
 import type { ProjectMember } from "@/api/modules/projectService";
+import type { Module } from "@/api/modules/moduleService";
 
 const route = useRoute();
 const router = useRouter();
@@ -275,7 +305,7 @@ const { render: renderMarkdown } = useMarkdown();
 const loading = ref(true);
 const project = computed(() => store.currentProject);
 const activeTab = ref("overview");
-const TAB_NAMES: string[] = ["overview", "issues", "cycles", "releases", "pages", "members"];
+const TAB_NAMES: string[] = ["overview", "issues", "bugs", "cycles", "releases", "modules", "pages", "members"];
 const editFormRef = ref<FormInstance>();
 
 const overviewStats = reactive({
@@ -286,7 +316,10 @@ const overviewStats = reactive({
   activeCycles: 0,
   pendingReleases: 0,
   totalCycles: 0,
-  totalReleases: 0
+  totalReleases: 0,
+  totalModules: 0,
+  totalRequirements: 0,
+  totalBugs: 0
 });
 
 const overviewCycles = ref<Cycle[]>([]);
@@ -309,15 +342,19 @@ const progressColor = computed(() => {
 async function loadOverviewStats() {
   if (!project.value) return;
   try {
-    const [issueRes, cycleRes, releaseRes] = await Promise.all([
+    const [issueRes, cycleRes, releaseRes, moduleRes, bugRes] = await Promise.all([
       getIssueList({ project_key: project.value.key, pageSize: 500 }),
       getCycleList({ project_key: project.value.key, pageSize: 50 }),
-      getReleaseList({ project_key: project.value.key, pageSize: 50 })
+      getReleaseList({ project_key: project.value.key, pageSize: 50 }),
+      getModuleList({ project_key: project.value.key, pageSize: 500 }),
+      getBugList({ project_key: project.value.key, pageSize: 20 })
     ]);
 
     const issues = (issueRes.data?.list as Issue[]) ?? [];
     const cycles = (cycleRes.data?.list as Cycle[]) ?? [];
     const releases = (releaseRes.data?.list as Release[]) ?? [];
+    const modules = (moduleRes.data?.list as Module[]) ?? [];
+    const bugs = (bugRes.data?.list as BugDocument[]) ?? [];
 
     overviewIssues.value = issues;
     overviewStats.totalIssues = issues.length;
@@ -329,6 +366,9 @@ async function loadOverviewStats() {
     overviewStats.pendingReleases = releases.filter(r => r.status !== "released").length;
     overviewStats.totalCycles = cycles.length;
     overviewStats.totalReleases = releases.length;
+    overviewStats.totalModules = modules.length;
+    overviewStats.totalRequirements = issues.filter(i => i.issue_type === "requirement").length;
+    overviewStats.totalBugs = bugRes.data?.total ?? 0;
 
     overviewCycles.value = cycles.filter(c => c.status === "active" || c.status === "upcoming").slice(0, 5);
     overviewReleases.value = releases.filter(r => r.status !== "released").slice(0, 5);
@@ -366,6 +406,28 @@ async function loadOverviewStats() {
         timeAgo: formatRelativeTime(r.updated_at),
         updatedAt: r.updated_at,
         link: `/release/${r.key}`
+      });
+    });
+    modules.slice(0, 5).forEach(m => {
+      activity.push({
+        id: m.key,
+        type: "module",
+        action: m.status === "completed" ? "Completed" : m.status === "in_progress" ? "Started" : "Planned",
+        target: m.name,
+        timeAgo: formatRelativeTime(m.updated_at),
+        updatedAt: m.updated_at,
+        link: `/module/${m.key}`
+      });
+    });
+    bugs.slice(0, 5).forEach(b => {
+      activity.push({
+        id: b.key,
+        type: "bug",
+        action: b.status === "resolved" || b.status === "closed" ? "Resolved" : b.status === "in_progress" ? "Started" : "Reported",
+        target: b.title,
+        timeAgo: formatRelativeTime(b.updatedAt),
+        updatedAt: new Date(b.updatedAt).toISOString(),
+        link: `/bug/${b.key}`
       });
     });
     activity.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -407,7 +469,7 @@ function releaseProgressPct(r: Release) {
 }
 
 function activityColor(type: string) {
-  const m: Record<string, string> = { issue: "#409eff", cycle: "#e6a23c", release: "#67c23a" };
+  const m: Record<string, string> = { issue: "#409eff", cycle: "#e6a23c", release: "#67c23a", module: "#9b59b6", bug: "#f56c6c" };
   return m[type] || "#909399";
 }
 
@@ -539,6 +601,11 @@ async function saveAsTemplate() {
 
 function goBack() {
   router.push("/project");
+}
+
+/** 反向闭环：跳回 Home 的 AI OKR 推荐，并按当前项目预选筛选。 */
+function goOkr() {
+  if (project.value?.key) router.push(`/home/index?project=${project.value.key}`);
 }
 
 function avatarChar(name: string) {
@@ -685,7 +752,7 @@ onMounted(async () => {
 }
 .project-detail__stats {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -699,6 +766,9 @@ onMounted(async () => {
   &--overdue { background: var(--el-color-danger-light-9); }
   &--cycle { background: var(--el-color-warning-light-9); }
   &--release { background: var(--el-color-info-light-9); }
+  &--module { background: #e0f2fe; }
+  &--req { background: #f3e8ff; }
+  &--bug { background: #fef2f2; }
 }
 .project-detail__stat-value {
   font-size: 28px;
@@ -709,6 +779,9 @@ onMounted(async () => {
   .project-detail__stat--overdue & { color: var(--el-color-danger); }
   .project-detail__stat--cycle & { color: var(--el-color-warning); }
   .project-detail__stat--release & { color: var(--el-color-info); }
+  .project-detail__stat--module & { color: #0ea5e9; }
+  .project-detail__stat--req & { color: #7c3aed; }
+  .project-detail__stat--bug & { color: #dc2626; }
 }
 .project-detail__stat-label {
   font-size: 13px;

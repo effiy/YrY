@@ -26,18 +26,22 @@
       <div class="label-summary__tile label-summary__tile--clickable" @click="clearUsage">
         <span class="label-summary__value">{{ labels.length }}</span>
         <span class="label-summary__label">Labels</span>
+        <span class="label-summary__sub">{{ inUseCount }} of {{ labels.length }} used</span>
       </div>
       <div class="label-summary__tile label-summary__tile--used label-summary__tile--clickable" :class="{ 'label-summary__tile--active': usageFilter === 'used' }" @click="toggleUsage('used')">
         <span class="label-summary__value">{{ inUseCount }}</span>
         <span class="label-summary__label">In Use</span>
+        <span class="label-summary__sub">{{ pctLabel(inUseCount) }}</span>
       </div>
       <div class="label-summary__tile label-summary__tile--unused label-summary__tile--clickable" :class="{ 'label-summary__tile--active': usageFilter === 'unused' }" @click="toggleUsage('unused')">
         <span class="label-summary__value">{{ unusedCount }}</span>
         <span class="label-summary__label">Unused</span>
+        <span class="label-summary__sub">{{ pctLabel(unusedCount) }}</span>
       </div>
       <div class="label-summary__tile label-summary__tile--tagged label-summary__tile--clickable" @click="goIssues">
         <span class="label-summary__value">{{ totalTaggings }}</span>
         <span class="label-summary__label">Issue Tagged</span>
+        <span class="label-summary__sub">across {{ inUseCount }} labels</span>
       </div>
     </div>
 
@@ -52,7 +56,7 @@
         >
           <div class="label-card__body">
             <div class="label-card__head">
-              <el-tag :color="label.color" effect="dark" round size="large" class="label-card__chip">
+              <el-tag :color="label.color" effect="dark" round size="large" class="label-card__chip" style="cursor:pointer" title="View issues with this label" @click="goLabel(label.name)">
                 {{ label.name }}
               </el-tag>
               <span class="label-card__usage">{{ usageText(label) }}</span>
@@ -182,6 +186,10 @@ const displayedLabels = computed(() => {
 const inUseCount = computed(() => labels.value.filter(l => usage(l) > 0).length);
 const unusedCount = computed(() => labels.value.filter(l => usage(l) === 0).length);
 const totalTaggings = computed(() => labels.value.reduce((s, l) => s + usage(l), 0));
+function pctLabel(count: number): string {
+  if (!labels.value.length) return "";
+  return `${Math.round((count / labels.value.length) * 100)}% of all`;
+}
 const countLabel = computed(() => {
   const isFiltered = !!searchText.value.trim();
   return isFiltered ? `${displayedLabels.value.length} of ${labels.value.length} labels` : `${labels.value.length} labels`;
@@ -267,6 +275,7 @@ function toggleUsage(v: "used" | "unused") {
 }
 function clearUsage() { usageFilter.value = ""; }
 function goIssues() { router.push("/issue"); }
+function goLabel(name: string) { router.push(`/issue?label=${encodeURIComponent(name)}`); }
 
 onMounted(() => { loadLabels(); loadUsage(); });
 </script>
@@ -334,6 +343,7 @@ onMounted(() => { loadLabels(); loadUsage(); });
   color: var(--el-text-color-primary);
 }
 .label-summary__label { font-size: 12px; color: var(--el-text-color-secondary); }
+.label-summary__sub { font-size: 11px; color: var(--el-text-color-placeholder); }
 .label-summary__tile--used .label-summary__value { color: var(--el-color-success); }
 .label-summary__tile--unused .label-summary__value { color: var(--el-color-info); }
 .label-summary__tile--tagged .label-summary__value { color: var(--el-color-primary); }

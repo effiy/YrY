@@ -51,6 +51,7 @@
       >
         <span class="project-summary__value">{{ allProjects.length || store.total }}</span>
         <span class="project-summary__label">Projects</span>
+        <span class="project-summary__sub">{{ activeCount }} active</span>
       </div>
       <div
         class="project-summary__tile project-summary__tile--active project-summary__tile--clickable"
@@ -60,6 +61,7 @@
       >
         <span class="project-summary__value">{{ activeCount }}</span>
         <span class="project-summary__label">Active</span>
+        <span class="project-summary__sub">{{ pctLabel(activeCount) }}</span>
       </div>
       <div
         class="project-summary__tile project-summary__tile--archived project-summary__tile--clickable"
@@ -69,6 +71,7 @@
       >
         <span class="project-summary__value">{{ archivedCount }}</span>
         <span class="project-summary__label">Archived</span>
+        <span class="project-summary__sub">{{ pctLabel(archivedCount) }}</span>
       </div>
       <div
         class="project-summary__tile project-summary__tile--issues project-summary__tile--clickable"
@@ -86,6 +89,7 @@
       >
         <span class="project-summary__value">{{ totalRequirements }}</span>
         <span class="project-summary__label">Requirements</span>
+        <span class="project-summary__sub">of {{ totalIssues }} issues</span>
       </div>
       <div class="project-summary__tile project-summary__tile--progress">
         <span class="project-summary__value">{{ overallCompletion }}%</span>
@@ -99,6 +103,7 @@
       >
         <span class="project-summary__value">{{ totalActiveCycles }}</span>
         <span class="project-summary__label">Active Cycles</span>
+        <span class="project-summary__sub">{{ totalActiveCycles }} of {{ totalCycles }}</span>
       </div>
     </div>
 
@@ -435,6 +440,12 @@ const totalRequirements = computed(() => [...statsByKey.value.values()].reduce((
 const totalDone = computed(() => [...statsByKey.value.values()].reduce((s, v) => s + v.done, 0));
 const overallCompletion = computed(() => (totalIssues.value ? Math.round((totalDone.value / totalIssues.value) * 100) : 0));
 const totalActiveCycles = computed(() => [...statsByKey.value.values()].reduce((s, v) => s + v.activeCycles, 0));
+const totalCycles = computed(() => [...statsByKey.value.values()].reduce((s, v) => s + v.cycles, 0));
+function pctLabel(count: number): string {
+  const total = allProjects.value.length || store.total;
+  if (!total) return "";
+  return `${Math.round((count / total) * 100)}% of all`;
+}
 const countLabel = computed(() => {
   const isFiltered = !!searchText.value.trim() || showStarredOnly.value;
   return isFiltered ? `${displayedProjects.value.length} of ${store.total} projects` : `${store.total} projects`;

@@ -25,6 +25,7 @@
             <el-option label="End date" value="end" />
             <el-option label="Name A–Z" value="name" />
             <el-option label="Most issues" value="issues" />
+            <el-option label="Most done" value="progress" />
           </el-select>
         </template>
         <el-button type="primary" :icon="Plus" @click="openCreate">New Cycle</el-button>
@@ -40,6 +41,7 @@
       >
         <span class="cycle-summary__value">{{ store.total }}</span>
         <span class="cycle-summary__label">Cycles</span>
+        <span class="cycle-summary__sub">{{ activeCount }} active</span>
       </div>
       <div
         class="cycle-summary__tile cycle-summary__tile--upcoming cycle-summary__tile--clickable"
@@ -49,6 +51,7 @@
       >
         <span class="cycle-summary__value">{{ upcomingCount }}</span>
         <span class="cycle-summary__label">Upcoming</span>
+        <span class="cycle-summary__sub">{{ pctLabel(upcomingCount) }}</span>
       </div>
       <div
         class="cycle-summary__tile cycle-summary__tile--active cycle-summary__tile--clickable"
@@ -58,6 +61,7 @@
       >
         <span class="cycle-summary__value">{{ activeCount }}</span>
         <span class="cycle-summary__label">Active</span>
+        <span class="cycle-summary__sub">{{ pctLabel(activeCount) }}</span>
       </div>
       <div
         class="cycle-summary__tile cycle-summary__tile--completed cycle-summary__tile--clickable"
@@ -67,14 +71,17 @@
       >
         <span class="cycle-summary__value">{{ completedCount }}</span>
         <span class="cycle-summary__label">Completed</span>
+        <span class="cycle-summary__sub">{{ pctLabel(completedCount) }}</span>
       </div>
-      <div class="cycle-summary__tile cycle-summary__tile--issues">
+      <div class="cycle-summary__tile cycle-summary__tile--issues cycle-summary__tile--clickable" title="Open issues" @click="goIssues">
         <span class="cycle-summary__value">{{ totalIssues }}</span>
         <span class="cycle-summary__label">Issues</span>
+        <span class="cycle-summary__sub">{{ totalDone }} done</span>
       </div>
       <div class="cycle-summary__tile cycle-summary__tile--progress">
         <span class="cycle-summary__value">{{ overallCompletion }}%</span>
-        <span class="cycle-summary__label">Completed</span>
+        <span class="cycle-summary__label">Completion</span>
+        <span class="cycle-summary__sub">{{ totalDone }} of {{ totalIssues }}</span>
       </div>
     </div>
 
@@ -216,7 +223,7 @@ const planningVisible = ref(false);
 const planningCycle = ref<Cycle | null>(null);
 const searchText = ref("");
 const statusFilter = ref("");
-const sortBy = ref<"end" | "name" | "issues">("end");
+const sortBy = ref<"end" | "name" | "issues" | "progress">("end");
 
 // ── Per-cycle issue stats (real progress from issue status) ────────────────
 const statsByKey = ref<Map<string, { issues: number; done: number }>>(new Map());
@@ -326,6 +333,8 @@ const displayedCycles = computed(() => {
     sorted.sort((a, b) => a.name.localeCompare(b.name));
   } else if (sortBy.value === "issues") {
     sorted.sort((a, b) => issueCount(b) - issueCount(a));
+  } else if (sortBy.value === "progress") {
+    sorted.sort((a, b) => progressPct(b) - progressPct(a));
   } else {
     sorted.sort((a, b) => (b.end_date || "").localeCompare(a.end_date || ""));
   }
@@ -338,6 +347,10 @@ const completedCount = computed(() => store.cycles.filter(c => c.status === "com
 const totalIssues = computed(() => store.cycles.reduce((s, c) => s + issueCount(c), 0));
 const totalDone = computed(() => store.cycles.reduce((s, c) => s + doneCount(c), 0));
 const overallCompletion = computed(() => (totalIssues.value ? Math.round((totalDone.value / totalIssues.value) * 100) : 0));
+function pctLabel(count: number): string {
+  if (!store.total) return "";
+  return `${Math.round((count / store.total) * 100)}% of all`;
+}
 const countLabel = computed(() => {
   const isFiltered = !!searchText.value.trim() || !!statusFilter.value;
   return isFiltered ? `${displayedCycles.value.length} of ${store.total} cycles` : `${store.total} cycles`;
@@ -442,6 +455,10 @@ function goProject(key: string) {
   if (key) router.push(`/project/${key}`);
 }
 
+function goIssues() {
+  router.push("/issue");
+}
+
 function statusLabel(s: CycleStatus) { return CYCLE_STATUS_MAP[s] || s; }
 function statusTagType(s: CycleStatus): "success" | "warning" | "info" | "primary" | "danger" {
   const m: Record<CycleStatus, "success" | "warning" | "info" | "primary" | "danger"> = { upcoming: "info", active: "primary", completed: "success" };
@@ -540,6 +557,10 @@ onMounted(() => {
 .cycle-summary__label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+.cycle-summary__sub {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 .cycle-summary__tile--upcoming .cycle-summary__value { color: var(--el-color-info); }
 .cycle-summary__tile--active .cycle-summary__value { color: var(--el-color-primary); }

@@ -25,6 +25,7 @@
             <el-option label="Target date" value="date" />
             <el-option label="Version" value="version" />
             <el-option label="Most issues" value="issues" />
+            <el-option label="Most done" value="progress" />
           </el-select>
           <el-select v-model="projectFilter" placeholder="Filter by project" clearable class="releases__project" size="small" @change="loadData">
             <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
@@ -38,26 +39,32 @@
       <div class="release-summary__tile release-summary__tile--clickable" @click="clearStatus">
         <span class="release-summary__value">{{ store.total }}</span>
         <span class="release-summary__label">Releases</span>
+        <span class="release-summary__sub">{{ projects.length }} projects</span>
       </div>
       <div class="release-summary__tile release-summary__tile--planned release-summary__tile--clickable" @click="setStatusFilter('planned')">
         <span class="release-summary__value">{{ plannedCount }}</span>
         <span class="release-summary__label">Planned</span>
+        <span class="release-summary__sub">{{ pctLabel(plannedCount) }}</span>
       </div>
       <div class="release-summary__tile release-summary__tile--progress release-summary__tile--clickable" @click="setStatusFilter('in_progress')">
         <span class="release-summary__value">{{ inProgressCount }}</span>
         <span class="release-summary__label">In Progress</span>
+        <span class="release-summary__sub">{{ pctLabel(inProgressCount) }}</span>
       </div>
       <div class="release-summary__tile release-summary__tile--released release-summary__tile--clickable" @click="setStatusFilter('released')">
         <span class="release-summary__value">{{ releasedCount }}</span>
         <span class="release-summary__label">Released</span>
+        <span class="release-summary__sub">{{ pctLabel(releasedCount) }}</span>
       </div>
       <div class="release-summary__tile release-summary__tile--issues release-summary__tile--clickable" @click="goIssues">
         <span class="release-summary__value">{{ totalIssues }}</span>
         <span class="release-summary__label">Issues</span>
+        <span class="release-summary__sub">{{ totalDone }} done</span>
       </div>
       <div class="release-summary__tile release-summary__tile--done">
         <span class="release-summary__value">{{ overallCompletion }}%</span>
         <span class="release-summary__label">Completed</span>
+        <span class="release-summary__sub">{{ totalDone }} of {{ totalIssues }}</span>
       </div>
     </div>
 
@@ -191,7 +198,7 @@ const formRef = ref<FormInstance>();
 const projects = ref<{ key: string; name: string }[]>([]);
 const searchText = ref("");
 const statusFilter = ref("");
-const sortBy = ref<"date" | "version" | "issues">("date");
+const sortBy = ref<"date" | "version" | "issues" | "progress">("date");
 
 // ── Per-release issue stats (real progress from issue status) ──────────────
 const statsByKey = ref<Map<string, { issues: number; done: number }>>(new Map());
@@ -300,6 +307,8 @@ const displayedReleases = computed(() => {
     sorted.sort((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true }));
   } else if (sortBy.value === "issues") {
     sorted.sort((a, b) => issueCount(b) - issueCount(a));
+  } else if (sortBy.value === "progress") {
+    sorted.sort((a, b) => progressPct(b) - progressPct(a));
   } else {
     sorted.sort((a, b) => (b.target_date || b.release_date || "").localeCompare(a.target_date || a.release_date || ""));
   }
@@ -312,6 +321,10 @@ const releasedCount = computed(() => store.releases.filter(r => r.status === "re
 const totalIssues = computed(() => store.releases.reduce((s, r) => s + issueCount(r), 0));
 const totalDone = computed(() => store.releases.reduce((s, r) => s + doneCount(r), 0));
 const overallCompletion = computed(() => (totalIssues.value ? Math.round((totalDone.value / totalIssues.value) * 100) : 0));
+function pctLabel(count: number): string {
+  if (!store.total) return "";
+  return `${Math.round((count / store.total) * 100)}% of all`;
+}
 const countLabel = computed(() => {
   const isFiltered = !!searchText.value.trim() || !!statusFilter.value;
   return isFiltered ? `${displayedReleases.value.length} of ${store.total} releases` : `${store.total} releases`;
@@ -478,6 +491,10 @@ onMounted(async () => {
 .release-summary__label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+.release-summary__sub {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 .release-summary__tile--planned .release-summary__value { color: var(--el-color-info); }
 .release-summary__tile--progress .release-summary__value { color: var(--el-color-primary); }

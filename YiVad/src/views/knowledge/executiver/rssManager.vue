@@ -61,7 +61,7 @@
         <button
           class="rss-role__sidebar-item"
           :class="{ 'is-active': activeTab === 'briefing' }"
-          @click="activeTab = 'briefing'; onTabChange('briefing')"
+          @click="switchTab('briefing')"
         >
           <span class="rss-role__sidebar-icon">📰</span>
           <span class="rss-role__sidebar-label">每日简报</span>
@@ -70,7 +70,7 @@
         <button
           class="rss-role__sidebar-item"
           :class="{ 'is-active': activeTab === 'seeds' }"
-          @click="activeTab = 'seeds'; onTabChange('seeds')"
+          @click="switchTab('seeds')"
         >
           <span class="rss-role__sidebar-icon">📡</span>
           <span class="rss-role__sidebar-label">Feed Sources</span>
@@ -79,7 +79,7 @@
         <button
           class="rss-role__sidebar-item"
           :class="{ 'is-active': activeTab === 'items' }"
-          @click="activeTab = 'items'; onTabChange('items')"
+          @click="switchTab('items')"
         >
           <span class="rss-role__sidebar-icon">📄</span>
           <span class="rss-role__sidebar-label">Articles</span>
@@ -122,10 +122,10 @@
                   <span class="rss-briefing__group-count">{{ group.items.length }}</span>
                 </header>
                 <ul class="rss-briefing__list">
-                  <li v-for="item in group.items" :key="item.key || item.link" class="rss-briefing__item">
+                  <li v-for="item in group.items" :key="item.key || item.link" class="rss-briefing__item" @click="openArticleLink(item)">
                     <div class="rss-briefing__item-main">
                       <div class="rss-briefing__item-head">
-                        <span class="rss-briefing__item-title" @click="openArticleLink(item)">{{ item.title }}</span>
+                        <span class="rss-briefing__item-title">{{ item.title }}</span>
                       </div>
                       <div class="rss-briefing__item-meta">
                         <template v-if="item.author">{{ item.author }} · </template>
@@ -547,8 +547,6 @@ const roleCounts = computed(() => {
   return counts;
 });
 
-// ═══════════════════════════════════════════════
-// Seeds
 function roleFromCategory(cat?: string): string {
   if (!cat) return "";
   return cat.split("/")[0] || "";
@@ -617,13 +615,11 @@ const categoryGroups = [
 
 // ═══════════════════════════════════════════════
 // Seeds
-// ═══════════════════════════════════════════════
 const seeds = ref<RssSeedDocument[]>([]);
 const seedsLoading = ref(false);
 const seedSearch = ref("");
 const parsingSeed = ref("");
 const seedToggling = ref("");
-const parseResults = reactive<Record<string, { ok: boolean; saved: number; updated: number }>>({});
 const parseTimes = reactive<Record<string, number>>({});
 const seedIntervals = reactive<Record<string, number>>({});
 const seedArticleCounts = reactive<Record<string, number>>({});
@@ -656,44 +652,6 @@ async function loadTodayCount() {
     }
   } catch { todayCount.value = 0; }
 }
-
-/** Summary: articles this week. */
-const weekCount = ref(0);
-async function loadWeekCount() {
-  try {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
-    monday.setHours(0, 0, 0, 0);
-    const base = { pageNum: 1, pageSize: 1, publishedStart: monday.getTime(), publishedEnd: now.getTime() };
-    const roles = selectedRoles.value.length ? selectedRoles.value : [];
-    if (!roles.length) {
-      const res = await getRssList(base);
-      weekCount.value = res.data?.total ?? 0;
-    } else if (roles.length === 1) {
-      const res = await getRssList({ ...base, categoryPrefix: roles[0] });
-      weekCount.value = res.data?.total ?? 0;
-    } else {
-      const results = await Promise.allSettled(roles.map(rid => getRssList({ ...base, categoryPrefix: rid })));
-      weekCount.value = results.reduce((sum, r) => sum + (r.status === "fulfilled" ? r.value.data?.total ?? 0 : 0), 0);
-    }
-  } catch { weekCount.value = 0; }
-}
-
-/** Summary: last parse time label. */
-const lastParseLabel = computed(() => {
-  const times = Object.values(parseTimes);
-  if (!times.length) return "—";
-  const latest = Math.max(...times);
-  return formatTimeAgo(latest);
-});
-
-/** Summary: active (enabled) feed count for current role. */
-const activeFeedsCount = computed(() => {
-  if (!selectedRoles.value.length) return seeds.value.filter(s => s.enabled !== false).length;
-  return seeds.value.filter(s => s.enabled !== false && selectedRoles.value.includes(roleFromCategory(s.category))).length;
-});
 
 const filteredSeeds = computed(() => {
   let list = seeds.value;
@@ -766,6 +724,7 @@ async function saveSeed() {
     }
     seedDialogVisible.value = false;
     await loadSeeds();
+    if (activeTab.value === "seeds") loadSeedArticleCounts();
   } catch (e) {
     ElMessage.error(errorMessage(e) || "Failed to save source");
   } finally {
@@ -779,6 +738,7 @@ async function removeSeed(row: RssSeedDocument) {
     await deleteSeed(row.key);
     ElMessage.success("Source removed");
     await loadSeeds();
+    if (activeTab.value === "seeds") loadSeedArticleCounts();
   } catch (e) {
     ElMessage.error(errorMessage(e) || "Failed to remove source");
   }
@@ -799,28 +759,17 @@ async function toggleSeed(row: RssSeedDocument) {
   }
 }
 
-function setSeedInterval(row: RssSeedDocument, val: number) {
-  seedIntervals[row.url] = val || 0;
-  if (row.key) {
-    updateSeed(row.key, { interval: val > 0 ? val : undefined }).catch(() => {});
-  }
-}
-
 async function parseOneFeed(row: RssSeedDocument) {
   parsingSeed.value = row.url;
   try {
     const res = await parseFeed(row.url, row.name);
     const d = res.data;
-    parseResults[row.url] = { ok: d.success, saved: d.saved_count || 0, updated: d.updated_count || 0 };
     parseTimes[row.url] = Date.now();
-    addParseHistory(row.name || row.url, d.success, d.saved_count || 0, d.updated_count || 0, d.error);
     ElMessage.success(`Parsed: ${d.saved_count || 0} new, ${d.updated_count || 0} updated`);
     await loadItems();
     loadTodayCount();
-    loadWeekCount();
   } catch (e) {
     const msg = errorMessage(e) || "Parse failed";
-    addParseHistory(row.name || row.url, false, 0, 0, msg);
     ElMessage.error(msg);
   } finally {
     parsingSeed.value = "";
@@ -832,16 +781,13 @@ async function parseAllFeeds() {
   try {
     const res = await parseAllEnabledFeeds();
     const d = res.data;
-    addParseHistory("All sources", d.success_count === d.total_sources, d.success_count || 0, 0);
     ElMessage.success(`${d.total_sources} sources: ${d.success_count} ok, ${d.failed_count} failed`);
     const now = Date.now();
     for (const s of seeds.value) { if (s.enabled !== false) parseTimes[s.url] = now; }
     await loadItems();
     loadTodayCount();
-    loadWeekCount();
   } catch (e) {
     const msg = errorMessage(e) || "Batch parse failed";
-    addParseHistory("All sources", false, 0, 0, msg);
     ElMessage.error(msg);
   } finally {
     parseAllLoading.value = false;
@@ -900,13 +846,17 @@ async function loadSeeds() {
     for (const s of seeds.value) {
       if (s.interval) seedIntervals[s.url] = s.interval;
     }
-    for (const s of seeds.value) {
-      getRssList({ source_url: s.url, pageSize: 1 })
-        .then(res => { seedArticleCounts[s.url] = res.data?.total ?? 0; })
-        .catch(() => { seedArticleCounts[s.url] = 0; });
-    }
   } catch { seeds.value = []; }
   finally { seedsLoading.value = false; }
+}
+
+/** Per-seed article counts — only loaded when the Seeds tab is visible. */
+function loadSeedArticleCounts() {
+  for (const s of seeds.value) {
+    getRssList({ source_url: s.url, pageSize: 1 })
+      .then(res => { seedArticleCounts[s.url] = res.data?.total ?? 0; })
+      .catch(() => { seedArticleCounts[s.url] = 0; });
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -922,14 +872,12 @@ async function doQuickParse() {
   try {
     const res = await parseFeed(quickParseForm.url.trim(), quickParseForm.name.trim() || undefined);
     const d = res.data;
-    addParseHistory(d.source_name || quickParseForm.url, d.success, d.saved_count || 0, d.updated_count || 0, d.error);
     ElMessage.success(`Parsed: ${d.saved_count || 0} new, ${d.updated_count || 0} updated`);
     quickParseVisible.value = false;
     quickParseForm.url = "";
     quickParseForm.name = "";
     await loadItems();
     loadTodayCount();
-    loadWeekCount();
   } catch (e) {
     ElMessage.error(errorMessage(e) || "Quick parse failed");
   } finally {
@@ -1049,7 +997,6 @@ async function removeItem(row: RssItemDocument) {
     ElMessage.success("Article deleted");
     await loadItems();
     loadTodayCount();
-    loadWeekCount();
   } catch (e) {
     ElMessage.error(errorMessage(e) || "Failed to delete article");
   }
@@ -1072,7 +1019,6 @@ async function batchDelete() {
   ElMessage.success(`Deleted ${deleted} articles`);
   await loadItems();
   loadTodayCount();
-  loadWeekCount();
 }
 
 // ═══════════════════════════════════════════════
@@ -1185,31 +1131,6 @@ function openArticleLink(item: RssItemDocument) {
   if (item.link) window.open(item.link, "_blank", "noopener,noreferrer");
 }
 
-// ═══════════════════════════════════════════════
-// Parse history
-// ═══════════════════════════════════════════════
-interface ParseHistoryEntry {
-  id: number;
-  time: string;
-  label: string;
-  ok: boolean;
-  saved: number;
-  updated: number;
-  error?: string;
-}
-const parseHistory = ref<ParseHistoryEntry[]>([]);
-let _historyId = 0;
-
-function addParseHistory(label: string, ok: boolean, saved: number, updated: number, error?: string) {
-  parseHistory.value.unshift({ id: ++_historyId, time: formatTime(new Date()), label, ok, saved, updated, error });
-  if (parseHistory.value.length > 100) parseHistory.value.length = 100;
-}
-
-function sourceHistory(row: RssSeedDocument) {
-  const key = row.name || row.url;
-  return parseHistory.value.filter(h => h.label === key);
-}
-
 function stripHtml(html: string): string {
   if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
@@ -1265,36 +1186,26 @@ function formatInterval(seconds: number): string {
   return `${(seconds / 3600).toFixed(1)}h`;
 }
 
-function estimateNextRun(url: string): string {
-  const interval = seedIntervals[url] || 3600;
-  const last = parseTimes[url];
-  if (!last) return "on next tick";
-  const diff = (last + interval * 1000) - Date.now();
-  if (diff < 0) return "any moment";
-  if (diff < 60000) return `${Math.round(diff / 1000)}s`;
-  if (diff < 3600000) return `${Math.round(diff / 60000)}m`;
-  return `${Math.round(diff / 3600000)}h`;
+function switchTab(tab: "briefing" | "seeds" | "items") {
+  if (activeTab.value === tab) return;
+  activeTab.value = tab;
+  onTabChange(tab);
 }
 
 function onTabChange(tab: string | number) {
   if (tab === "briefing") { briefingDate.value = new Date(); loadBriefing(); }
   else if (tab === "items") loadItems();
-  else if (tab === "seeds") loadSeeds();
+  else if (tab === "seeds") { loadSeeds(); loadSeedArticleCounts(); }
 }
 
-onMounted(async () => {
-  await loadBriefing();
-  await loadSeeds();
-  await loadItems();
-  await loadTodayCount();
-  await loadWeekCount();
+onMounted(() => {
+  Promise.allSettled([loadBriefing(), loadSeeds(), loadItems(), loadTodayCount()]);
 });
 
 watch(selectedRoles, () => {
   if (activeTab.value === "briefing") loadBriefing();
   if (activeTab.value === "items") { itemPage.value = 1; loadItems(); }
   loadTodayCount();
-  loadWeekCount();
 }, { deep: true });
 
 watch(() => props.roleId, () => {

@@ -128,6 +128,12 @@
           <span v-else class="okr-rec__cell-none">—</span>
         </template>
       </el-table-column>
+      <el-table-column :label="t('home.aiRecommend.cols.project')" width="110">
+        <template #default="{ row }">
+          <span v-if="projectOfRow(row as TableRow)" class="okr-rec__cell-project" @click="goToProject(projectOfRow(row as TableRow))">{{ projectLabel(projectOfRow(row as TableRow)) }}</span>
+          <span v-else class="okr-rec__cell-none">—</span>
+        </template>
+      </el-table-column>
             <el-table-column min-width="220">
         <template #header>
           <div class="okr-rec__col-header">
@@ -384,6 +390,7 @@ import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Grid, List, Postcard, Delete, MagicStick, RefreshRight, ArrowLeft, ArrowRight, Close, View } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
+import { PROJECT_LABELS } from "@/config";
 import { scanKnowledge, writeKnowledgeFile, deleteKnowledgeFile, readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { chat } from "@/api/modules/chatService";
 import { deleteDocument } from "@/api/modules/dataService";
@@ -938,6 +945,16 @@ function goToProcess(loopId: string) {
   router.push({ path: "/executiver/process", query: { loop: loopId } });
 }
 
+/** 项目 key → 展示名（无映射时回退原 key）。 */
+function projectLabel(key: string): string {
+  return PROJECT_LABELS[key] ?? key;
+}
+
+/** 正向闭环：跳转到该项目的 Project Management 详情页。 */
+function goToProject(key: string) {
+  router.push(`/project/${key}`);
+}
+
 function openRecord(path: string) {
   previewDlg.value?.open(path);
 }
@@ -1343,6 +1360,7 @@ onMounted(async () => {
 .okr-rec__cell-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .okr-rec__cell-title--link { cursor: pointer; &:hover { color: var(--el-color-primary); } }
 .okr-rec__cell-none { color: var(--el-text-color-placeholder); }
+.okr-rec__cell-project { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; color: var(--el-color-primary); background: var(--el-color-primary-light-9); cursor: pointer; transition: all .15s; &:hover { color: #fff; background: var(--el-color-primary); } }
 .okr-rec__subtask { margin-left: 6px; font-size: 11px; color: var(--el-text-color-secondary); }
 .okr-rec__why { display: flex; flex-direction: column; gap: 4px; }
 .okr-rec__why-head { display: flex; align-items: center; }

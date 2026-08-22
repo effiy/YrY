@@ -7,6 +7,7 @@ export default {
     knowledge: "Knowledge",
     skills: "Skills",
     roleFilter: "Role",
+    projectFilter: "Project",
 
     aiRecommend: {
       title: "OKR Task Lists",
@@ -39,6 +40,7 @@ export default {
         task: "Task",
         role: "Role",
         goal: "Goal",
+        project: "Project",
         metric: "Metric",
         skill: "Skill",
         agent: "Agent",

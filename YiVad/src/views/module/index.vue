@@ -44,6 +44,7 @@
       >
         <span class="module-summary__value">{{ store.total }}</span>
         <span class="module-summary__label">Modules</span>
+        <span class="module-summary__sub">{{ projects.length }} projects</span>
       </div>
       <div
         class="module-summary__tile module-summary__tile--planned module-summary__tile--clickable"
@@ -53,6 +54,7 @@
       >
         <span class="module-summary__value">{{ plannedCount }}</span>
         <span class="module-summary__label">Planned</span>
+        <span class="module-summary__sub">{{ pctLabel(plannedCount) }}</span>
       </div>
       <div
         class="module-summary__tile module-summary__tile--progress module-summary__tile--clickable"
@@ -62,6 +64,7 @@
       >
         <span class="module-summary__value">{{ inProgressCount }}</span>
         <span class="module-summary__label">In Progress</span>
+        <span class="module-summary__sub">{{ pctLabel(inProgressCount) }}</span>
       </div>
       <div
         class="module-summary__tile module-summary__tile--completed module-summary__tile--clickable"
@@ -71,6 +74,7 @@
       >
         <span class="module-summary__value">{{ completedCount }}</span>
         <span class="module-summary__label">Completed</span>
+        <span class="module-summary__sub">{{ pctLabel(completedCount) }}</span>
       </div>
       <div
         class="module-summary__tile module-summary__tile--cancelled module-summary__tile--clickable"
@@ -80,6 +84,7 @@
       >
         <span class="module-summary__value">{{ cancelledCount }}</span>
         <span class="module-summary__label">Cancelled</span>
+        <span class="module-summary__sub">{{ pctLabel(cancelledCount) }}</span>
       </div>
       <div
         class="module-summary__tile module-summary__tile--issues module-summary__tile--clickable"
@@ -88,6 +93,7 @@
       >
         <span class="module-summary__value">{{ totalIssues }}</span>
         <span class="module-summary__label">Issues</span>
+        <span class="module-summary__sub">{{ totalDoneIssues }} done</span>
       </div>
     </div>
 
@@ -344,6 +350,19 @@ const inProgressCount = computed(() => store.modules.filter(m => m.status === "i
 const completedCount = computed(() => store.modules.filter(m => m.status === "completed").length);
 const cancelledCount = computed(() => store.modules.filter(m => m.status === "cancelled").length);
 const totalIssues = computed(() => store.modules.reduce((s, m) => s + issueCount(m), 0));
+const totalDoneIssues = computed(() => {
+  let done = 0;
+  for (const m of store.modules) {
+    for (const k of m.issue_keys || []) {
+      if (issueStatusByKey.value.get(k) === "done") done++;
+    }
+  }
+  return done;
+});
+function pctLabel(count: number): string {
+  if (!store.total) return "";
+  return `${Math.round((count / store.total) * 100)}% of all`;
+}
 const countLabel = computed(() => {
   const isFiltered = !!searchText.value.trim() || !!statusFilter.value;
   return isFiltered ? `${displayedModules.value.length} of ${store.total} modules` : `${store.total} modules`;
@@ -503,6 +522,7 @@ onMounted(async () => {
   color: var(--el-text-color-primary);
 }
 .module-summary__label { font-size: 12px; color: var(--el-text-color-secondary); }
+.module-summary__sub { font-size: 11px; color: var(--el-text-color-placeholder); }
 .module-summary__tile--planned .module-summary__value { color: var(--el-color-info); }
 .module-summary__tile--progress .module-summary__value { color: var(--el-color-primary); }
 .module-summary__tile--completed .module-summary__value { color: var(--el-color-success); }

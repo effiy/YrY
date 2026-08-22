@@ -7,6 +7,7 @@ export default {
     knowledge: "知识库",
     skills: "技能",
     roleFilter: "角色筛选",
+    projectFilter: "项目",
 
     aiRecommend: {
       title: "AI 自主推荐 · OKR 任务清单",
@@ -39,6 +40,7 @@ export default {
         task: "任务",
         role: "角色",
         goal: "关联目标",
+        project: "项目",
         metric: "指标",
         skill: "技能",
         agent: "Agent",

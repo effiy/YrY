@@ -420,10 +420,6 @@ export const useChatStore = defineStore('chat', () => {
       } as unknown as Record<string, unknown>);
       session.pageContent = `## ${ctxPath}\n\n${bodyOnly}`;
       session.tags = tags;
-      if (state.sidebarCollapsed) {
-        state.sidebarCollapsed = false;
-        _persistSetting('sidebarCollapsed', false);
-      }
       state.contextEditingId = session.id;
       if (state.knowledgeTree.length === 0) loadKnowledgeTree();
     } catch (e) { /* ignore */ }
@@ -498,11 +494,6 @@ export const useChatStore = defineStore('chat', () => {
         const saved = await _autoSavePageContext(id, url, title, rawContent);
         await _loadSessions();
         if (saved) {
-          // Ensure sidebar is visible so the user sees the context file
-          if (state.sidebarCollapsed) {
-            state.sidebarCollapsed = false;
-            _persistSetting('sidebarCollapsed', false);
-          }
           state.contextEditingId = id;
           if (state.knowledgeTree.length === 0) loadKnowledgeTree();
         }

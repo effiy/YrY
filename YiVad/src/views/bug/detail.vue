@@ -24,6 +24,8 @@
           </div>
         </div>
         <div class="bug-detail__head-actions">
+          <el-button v-if="store.selectedBug.project_key" :icon="Link" @click="goProject(store.selectedBug.project_key)">Project</el-button>
+          <el-button v-if="store.selectedBug.issue_key" :icon="Link" type="warning" plain @click="goIssue(store.selectedBug.issue_key)">Issue</el-button>
           <el-button :icon="Edit" @click="store.openEditDialog(store.selectedBug, store.selectedBugContent)">Edit</el-button>
           <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
         </div>
@@ -33,7 +35,16 @@
         <div class="bug-detail__sidebar">
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Project</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.project || '-' }}</span>
+            <el-button v-if="store.selectedBug.project_key" link type="primary" class="bug-detail__field-value" @click="goProject(store.selectedBug.project_key)">
+              {{ projectName(store.selectedBug.project_key) || store.selectedBug.project || store.selectedBug.project_key }}
+            </el-button>
+            <span v-else class="bug-detail__field-value">{{ store.selectedBug.project || '-' }}</span>
+          </div>
+          <div class="bug-detail__field" v-if="store.selectedBug.issue_key">
+            <span class="bug-detail__field-label">Issue</span>
+            <el-button link type="warning" class="bug-detail__field-value" @click="goIssue(store.selectedBug.issue_key)">
+              {{ issueTitle(store.selectedBug.issue_key) }}
+            </el-button>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Module</span>
@@ -136,21 +147,47 @@
 </template>
 
 <script setup lang="ts" name="bugDetail">
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, Link } from "@element-plus/icons-vue";
 import { useBugStore } from "@/stores/modules/bug";
+import { useProjectStore } from "@/stores/modules/project";
+import { useIssueStore } from "@/stores/modules/issue";
 import type { BugSeverity, BugPriority, BugStatus } from "@/api/modules/bug";
 
 const route = useRoute();
 const router = useRouter();
 const store = useBugStore();
+const projectStore = useProjectStore();
+const issueStore = useIssueStore();
 
 const key = route.params.key as string;
 
+const projects = computed(() => projectStore.projects);
+const issues = computed(() => issueStore.issues);
+
 onMounted(() => {
   store.loadDetail(key);
+  projectStore.fetchProjects({ pageSize: 100 });
+  issueStore.fetchIssues({ pageSize: 500 });
 });
+
+function projectName(key: string): string {
+  return projects.value.find(p => p.key === key)?.name ?? "";
+}
+
+function goProject(key: string) {
+  router.push(`/project/${key}`);
+}
+
+function issueTitle(key: string): string {
+  const i = issues.value.find(x => x.key === key);
+  return i ? i.title : key;
+}
+
+function goIssue(key: string) {
+  router.push(`/issue/${key}`);
+}
 
 function goBack() {
   router.push("/bug");

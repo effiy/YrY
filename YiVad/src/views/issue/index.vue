@@ -5,26 +5,42 @@
       <div class="issue-summary__tile issue-summary__tile--clickable" @click="setStatusFilter('')">
         <span class="issue-summary__value">{{ stats.total }}</span>
         <span class="issue-summary__label">Issues</span>
+        <span class="issue-summary__sub">{{ stats.done }} done</span>
       </div>
       <div class="issue-summary__tile issue-summary__tile--todo issue-summary__tile--clickable" @click="setStatusFilter('todo')">
         <span class="issue-summary__value">{{ stats.todo }}</span>
         <span class="issue-summary__label">Todo</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.todo) }}</span>
       </div>
       <div class="issue-summary__tile issue-summary__tile--progress issue-summary__tile--clickable" @click="setStatusFilter('in_progress')">
         <span class="issue-summary__value">{{ stats.in_progress }}</span>
         <span class="issue-summary__label">In Progress</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.in_progress) }}</span>
       </div>
       <div class="issue-summary__tile issue-summary__tile--review issue-summary__tile--clickable" @click="setStatusFilter('in_review')">
         <span class="issue-summary__value">{{ stats.in_review }}</span>
         <span class="issue-summary__label">In Review</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.in_review) }}</span>
       </div>
       <div class="issue-summary__tile issue-summary__tile--done issue-summary__tile--clickable" @click="setStatusFilter('done')">
         <span class="issue-summary__value">{{ stats.done }}</span>
         <span class="issue-summary__label">Done</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.done) }}</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--backlog issue-summary__tile--clickable" @click="setStatusFilter('backlog')">
+        <span class="issue-summary__value">{{ stats.backlog }}</span>
+        <span class="issue-summary__label">Backlog</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.backlog) }}</span>
+      </div>
+      <div class="issue-summary__tile issue-summary__tile--cancelled issue-summary__tile--clickable" @click="setStatusFilter('cancelled')">
+        <span class="issue-summary__value">{{ stats.cancelled }}</span>
+        <span class="issue-summary__label">Cancelled</span>
+        <span class="issue-summary__sub">{{ pctLabel(stats.cancelled) }}</span>
       </div>
       <div class="issue-summary__tile issue-summary__tile--completion">
         <span class="issue-summary__value">{{ completionPct }}%</span>
         <span class="issue-summary__label">Completed</span>
+        <span class="issue-summary__sub">{{ stats.done }} of {{ stats.total }}</span>
       </div>
     </div>
 
@@ -38,6 +54,12 @@
         @click="applyQuickFilter(f.key)"
       >{{ f.label }}</el-button>
       <el-button v-if="activeFilter" size="small" text @click="clearFilter">Clear</el-button>
+    </div>
+    <div v-if="labelFilter" class="issue-list__label-filter">
+      <span class="issue-list__label-filter-text">
+        Filtered by label <el-tag size="small" round>{{ labelFilter }}</el-tag>
+      </span>
+      <el-button size="small" text @click="clearLabelFilter">Clear</el-button>
     </div>
     <ProTable
       ref="proTable"
@@ -69,6 +91,9 @@
         <el-button :icon="Download" style="margin-left: 8px" @click="exportCSV">CSV</el-button>
         <el-button :icon="Download" style="margin-left: 4px" @click="exportJSON">JSON</el-button>
       </template>
+      <template #key="scope">
+        <code class="issue-list__key" title="Copy key" @click="copyKey(scope.row.key)">{{ scope.row.key }}</code>
+      </template>
       <template #title="scope">
         <el-button link type="primary" class="issue-list__title" @click="goDetail(scope.row.key)">
           {{ scope.row.title }}
@@ -84,6 +109,10 @@
           {{ priorityLabel(scope.row.priority) }}
         </span>
       </template>
+      <template #estimate_points="scope">
+        <span v-if="scope.row.estimate_points != null" class="issue-list__points">{{ scope.row.estimate_points }} pts</span>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
       <template #issue_type="scope">
         <el-tag :type="typeTagType(scope.row.issue_type)" size="small" effect="plain">
           {{ typeLabel(scope.row.issue_type) }}
@@ -95,10 +124,29 @@
         </div>
         <span v-else class="issue-list__muted">—</span>
       </template>
+      <template #source="scope">
+        <span :class="scope.row.source ? 'issue-list__source' : 'issue-list__muted'">{{ scope.row.source ? sourceLabel(scope.row.source) : "—" }}</span>
+      </template>
+      <template #review_status="scope">
+        <el-tag v-if="scope.row.review_status" :type="reviewTagType(scope.row.review_status)" size="small" effect="plain">{{ reviewLabel(scope.row.review_status) }}</el-tag>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
       <template #project_key="scope">
         <button v-if="scope.row.project_key" type="button" class="issue-list__link-chip" @click="goProject(scope.row.project_key)">
           {{ projectName(scope.row.project_key) }}
         </button>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
+      <template #module="scope">
+        <div v-if="modulesForIssue(scope.row.key).length" class="issue-list__modules">
+          <button
+            v-for="m in modulesForIssue(scope.row.key)"
+            :key="m.key"
+            type="button"
+            class="issue-list__link-chip issue-list__link-chip--module"
+            @click="goModule(m.key)"
+          >{{ m.name }}</button>
+        </div>
         <span v-else class="issue-list__muted">—</span>
       </template>
       <template #cycle_key="scope">
@@ -113,8 +161,18 @@
         </button>
         <span v-else class="issue-list__muted">—</span>
       </template>
+      <template #start_date="scope">
+        <span v-if="scope.row.start_date" class="issue-list__start">{{ formatDate(scope.row.start_date) }}</span>
+        <span v-else class="issue-list__muted">—</span>
+      </template>
       <template #due_date="scope">
         <span :class="dueCell(scope.row).cls">{{ dueCell(scope.row).text }}</span>
+      </template>
+      <template #created_at="scope">
+        <span class="issue-list__updated">{{ formatRelativeTime(scope.row.created_at) }}</span>
+      </template>
+      <template #updated_at="scope">
+        <span class="issue-list__updated">{{ formatRelativeTime(scope.row.updated_at) }}</span>
       </template>
       <template #operation="scope">
         <el-button type="primary" link :icon="View" @click="goDetail(scope.row.key)">View</el-button>
@@ -212,7 +270,7 @@
 
 <script setup lang="tsx" name="issueList">
 import { computed, onMounted, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { Plus, Delete, View, Edit, ArrowDown, Download } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
@@ -228,14 +286,16 @@ import {
   ISSUE_TYPE_TAG_MAP,
   typeLabel
 } from "@/api/modules/issueService";
-import type { Issue, IssueStatus, IssuePriority, IssueType, TagType } from "@/api/modules/issueService";
+import type { Issue, IssueStatus, IssuePriority, IssueType, TagType, IssueSource, ReviewStatus } from "@/api/modules/issueService";
 import { getProjectList } from "@/api/modules/projectService";
 import type { Project } from "@/api/modules/projectService";
 import { getCycleList } from "@/api/modules/cycleService";
 import type { Cycle } from "@/api/modules/cycleService";
 import { getReleaseList } from "@/api/modules/releaseService";
 import type { Release } from "@/api/modules/releaseService";
-import { formatDate } from "@/utils/datetime";
+import { getModuleList } from "@/api/modules/moduleService";
+import type { Module } from "@/api/modules/moduleService";
+import { formatDate, formatRelativeTime } from "@/utils/datetime";
 import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
 import { useHandleData } from "@/hooks/useHandleData";
@@ -243,14 +303,20 @@ import { useHandleData } from "@/hooks/useHandleData";
 const props = defineProps<{ projectKey?: string }>();
 
 const router = useRouter();
+const route = useRoute();
 const store = useIssueStore();
 const proTable = ref<ProTableInstance>();
 const formRef = ref<FormInstance>();
 const activeFilter = ref("");
+const labelFilter = ref("");
 
 // ── Summary stats (standalone overview) ─────────────────────────────────────
 const stats = reactive({ total: 0, todo: 0, in_progress: 0, in_review: 0, done: 0, backlog: 0, cancelled: 0 });
 const completionPct = computed(() => (stats.total ? Math.round((stats.done / stats.total) * 100) : 0));
+function pctLabel(count: number): string {
+  if (!stats.total) return "";
+  return `${Math.round((count / stats.total) * 100)}% of all`;
+}
 
 async function loadStats() {
   try {
@@ -276,20 +342,38 @@ async function loadStats() {
 const projectNameByKey = ref<Map<string, string>>(new Map());
 const cycleNameByKey = ref<Map<string, string>>(new Map());
 const releaseVersionByKey = ref<Map<string, string>>(new Map());
+const modulesByIssueKey = ref<Map<string, Module[]>>(new Map());
 
 async function loadNames() {
   try {
-    const [projRes, cycleRes, relRes] = await Promise.all([
+    const [projRes, cycleRes, relRes, modRes] = await Promise.all([
       getProjectList({ pageSize: 500 }),
       getCycleList({ pageSize: 500 }),
-      getReleaseList({ pageSize: 500 })
+      getReleaseList({ pageSize: 500 }),
+      getModuleList({ pageSize: 500 })
     ]);
     projectNameByKey.value = new Map((projRes.data?.list as Project[]).map(p => [p.key, p.name]));
     cycleNameByKey.value = new Map((cycleRes.data?.list as Cycle[]).map(c => [c.key, c.name]));
     releaseVersionByKey.value = new Map((relRes.data?.list as Release[]).map(r => [r.key, r.version]));
+    // Reverse-map module.issue_keys → issue, so the list can show which
+    // module(s) each issue belongs to (module membership lives on the module,
+    // not the issue).
+    const byIssue = new Map<string, Module[]>();
+    for (const m of modRes.data?.list as Module[]) {
+      for (const ik of m.issue_keys ?? []) {
+        const arr = byIssue.get(ik) ?? [];
+        arr.push(m);
+        byIssue.set(ik, arr);
+      }
+    }
+    modulesByIssueKey.value = byIssue;
   } catch {
     // names are best-effort — fall back to raw keys
   }
+}
+
+function modulesForIssue(issueKey: string): Module[] {
+  return modulesByIssueKey.value.get(issueKey) ?? [];
 }
 
 function projectName(key: string) { return projectNameByKey.value.get(key) || key; }
@@ -299,6 +383,7 @@ function releaseVersion(key: string) { return releaseVersionByKey.value.get(key)
 function goProject(key: string) { if (key) router.push(`/project/${key}`); }
 function goCycle(key: string) { if (key) router.push(`/cycle/${key}`); }
 function goRelease(key: string) { if (key) router.push(`/release/${key}`); }
+function goModule(key: string) { if (key) router.push(`/module/${key}`); }
 
 function dueCell(row: Issue): { text: string; cls: string } {
   if (!row.due_date) return { text: "—", cls: "issue-list__muted" };
@@ -329,6 +414,11 @@ function clearFilter() {
   proTable.value?.getTableList();
 }
 
+function clearLabelFilter() {
+  labelFilter.value = "";
+  proTable.value?.getTableList();
+}
+
 function setStatusFilter(status: string) {
   activeFilter.value = activeFilter.value === status ? "" : status;
   proTable.value?.getTableList();
@@ -344,20 +434,27 @@ const rules: FormRules = {
 const columns = computed<ColumnProps<Issue>[]>(() => {
   const cols: ColumnProps<Issue>[] = [
     { type: "selection", width: 50 },
-    { type: "index", label: "#", width: 60 },
+    { prop: "key", label: "Key", width: 100 },
     { prop: "title", label: "Title", minWidth: 220, search: { el: "input" } },
     { prop: "issue_type", label: "Type", width: 105 },
     { prop: "priority", label: "Priority", width: 92 },
+    { prop: "estimate_points", label: "Points", width: 80 },
     { prop: "status", label: "Status", width: 110 },
     { prop: "labels", label: "Labels", width: 150 },
+    { prop: "source", label: "Source", width: 105 },
+    { prop: "review_status", label: "Review", width: 105 },
+    { prop: "module", label: "Module", width: 120 },
     { prop: "cycle_key", label: "Cycle", width: 120 },
     { prop: "release_key", label: "Release", width: 120 },
     { prop: "assignee", label: "Assignee", width: 100 },
+    { prop: "start_date", label: "Start", width: 110 },
     { prop: "due_date", label: "Due", width: 135 },
+    { prop: "created_at", label: "Created", width: 120 },
+    { prop: "updated_at", label: "Updated", width: 120 },
     { prop: "operation", label: "Actions", width: 190, fixed: "right" }
   ];
   if (!props.projectKey) {
-    cols.splice(7, 0, { prop: "project_key", label: "Project", width: 130 });
+    cols.splice(10, 0, { prop: "project_key", label: "Project", width: 130 });
   }
   return cols;
 });
@@ -401,6 +498,7 @@ const dialog = reactive({
 async function fetchIssues(params: any) {
   const { pageNum, pageSize, ...filters } = params;
   const merged: any = { pageNum, pageSize, project_key: props.projectKey, ...filters };
+  if (labelFilter.value) merged.labels = labelFilter.value;
   // Apply quick filter
   const now = new Date().toISOString().slice(0, 10);
   const weekEnd = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
@@ -412,6 +510,8 @@ async function fetchIssues(params: any) {
   else if (activeFilter.value === "todo") merged.status = "todo";
   else if (activeFilter.value === "in_progress") merged.status = "in_progress";
   else if (activeFilter.value === "in_review") merged.status = "in_review";
+  else if (activeFilter.value === "backlog") merged.status = "backlog";
+  else if (activeFilter.value === "cancelled") merged.status = "cancelled";
 
   const res = await getIssueList(merged);
   const list = res.data?.list ?? [];
@@ -419,7 +519,7 @@ async function fetchIssues(params: any) {
   // Keep the store in sync so CSV/JSON export have data to export.
   store.issues = list;
   store.total = total;
-  return { list, total };
+  return res;
 }
 
 function openCreate() {
@@ -585,6 +685,15 @@ function goDetail(key: string) {
   router.push(`/issue/${key}`);
 }
 
+async function copyKey(key: string) {
+  try {
+    await navigator.clipboard.writeText(key);
+    ElMessage.success(`Copied ${key}`);
+  } catch {
+    ElMessage.warning("Clipboard unavailable");
+  }
+}
+
 function statusLabel(status: IssueStatus) { return ISSUE_STATUS_MAP[status] || status; }
 function priorityLabel(p: IssuePriority) { return ISSUE_PRIORITY_MAP[p] || p; }
 
@@ -596,8 +705,16 @@ function priorityColor(p: IssuePriority) {
   return map[p] || "#909399";
 }
 function typeTagType(t: IssueType): TagType { return ISSUE_TYPE_TAG_MAP[t] || "info"; }
+function sourceLabel(s: IssueSource) { return ISSUE_SOURCE_MAP[s] || s; }
+function reviewLabel(s: ReviewStatus) { return REVIEW_STATUS_MAP[s] || s; }
+function reviewTagType(s: ReviewStatus): TagType {
+  const m: Record<ReviewStatus, TagType> = { pending: "info", approved: "success", rejected: "danger", in_review: "warning" };
+  return m[s] || "info";
+}
 
 onMounted(async () => {
+  const initialLabel = route.query.label;
+  if (typeof initialLabel === "string" && initialLabel) labelFilter.value = initialLabel;
   if (!props.projectKey) {
     await Promise.all([loadStats(), loadNames()]);
   }
@@ -643,16 +760,33 @@ onMounted(async () => {
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
+.issue-summary__sub {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
 .issue-summary__tile--todo .issue-summary__value { color: var(--el-color-info); }
 .issue-summary__tile--progress .issue-summary__value { color: var(--el-color-primary); }
 .issue-summary__tile--review .issue-summary__value { color: var(--el-color-warning); }
 .issue-summary__tile--done .issue-summary__value { color: var(--el-color-success); }
+.issue-summary__tile--backlog .issue-summary__value { color: #8b5cf6; }
+.issue-summary__tile--cancelled .issue-summary__value { color: var(--el-color-danger); }
 .issue-summary__tile--completion .issue-summary__value { color: var(--el-color-danger); }
 .issue-list__filters {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+}
+.issue-list__label-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  background: var(--el-fill-color-light);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 .issue-list__title {
   font-weight: 500;
@@ -668,6 +802,42 @@ onMounted(async () => {
 .issue-list__muted {
   color: var(--el-text-color-placeholder);
   font-size: 12px;
+}
+.issue-list__source {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.issue-list__key {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  padding: 1px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.issue-list__updated {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+.issue-list__points {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.issue-list__start {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
 }
 .issue-list__link-chip {
   display: inline-flex;
@@ -691,6 +861,12 @@ onMounted(async () => {
   }
   &--cycle:hover { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
   &--release:hover { color: var(--el-color-success); background: var(--el-color-success-light-9); }
+  &--module:hover { color: #9b59b6; background: #f3e8fb; }
+}
+.issue-list__modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .issue-list__due--overdue {
   color: var(--el-color-danger);

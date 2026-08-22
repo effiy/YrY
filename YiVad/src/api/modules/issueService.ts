@@ -114,19 +114,21 @@ export interface IssueQueryParams {
   priority?: string;
   issue_type?: string;
   assignee?: string;
+  labels?: string;
   search?: string;
   orderBy?: string;
   orderType?: "asc" | "desc";
 }
 
 export function getIssueList(params: IssueQueryParams) {
-  const { pageNum = 1, pageSize = 20, project_key, status, priority, issue_type, assignee, search, orderBy = "updated_at", orderType = "desc" } = params;
+  const { pageNum = 1, pageSize = 20, project_key, status, priority, issue_type, assignee, labels, search, orderBy = "updated_at", orderType = "desc" } = params;
   const filter: Record<string, any> = {};
   if (project_key) filter.project_key = project_key;
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (issue_type) filter.issue_type = issue_type;
   if (assignee) filter.assignee = assignee;
+  if (labels) filter.labels = { $regex: labels, $options: "i" };
   if (search) {
     filter.$or = [
       { title: { $regex: search, $options: "i" } },
