@@ -538,19 +538,6 @@
 .toolbar-search { width: 240px; }
 .toolbar-select { width: 200px; }
 
-.briefing__date-nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.briefing__date {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--el-text-color-primary);
-  min-width: 180px;
-  text-align: center;
-}
-
 .article-title {
   color: var(--el-color-primary);
   cursor: pointer;

@@ -162,12 +162,6 @@
               Articles
               <span class="articles-count">{{ total }}</span>
             </div>
-            <div class="briefing__date-nav">
-              <el-button size="small" :icon="ArrowLeft" text @click="goToPrevDay" :disabled="listLoading" />
-              <span class="briefing__date">{{ filterDateLabel }}</span>
-              <el-button size="small" :icon="ArrowRight" text @click="goToNextDay" :disabled="isFilterToday" />
-              <el-button v-if="!isFilterToday" size="small" text type="primary" @click="goToFilterToday" :disabled="listLoading">Today</el-button>
-            </div>
             <div class="articles-toolbar">
               <el-input
                 v-model="search"
@@ -391,9 +385,7 @@ import {
   User,
   DocumentDelete,
   Folder,
-  PriceTag,
-  ArrowLeft,
-  ArrowRight
+  PriceTag
 } from "@element-plus/icons-vue";
 import { getRssStats } from "@/api/modules/dashboard";
 import { getRssList, type RssItemDocument } from "@/api/modules/rssService";
