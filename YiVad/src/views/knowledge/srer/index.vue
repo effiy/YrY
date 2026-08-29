@@ -7,10 +7,7 @@
     :subdirs="subdirs"
   >
     <template #title>
-      <RoleNav active="srer" />
-    </template>
-    <template #header>
-      <ExecutiverQuickNav role="srer" />
+      <RoleNav active="srer" show-quick-nav quick-role="srer" sticky />
     </template>
   </RoleKnowledgePage>
 </template>
@@ -18,7 +15,6 @@
 <script setup lang="ts" name="srerHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const subdirs = [
   { id: "incident-response", icon: "🚨", label: "Incident Response", color: "#ef4444", desc: "Production incident management lifecycle — war room protocols, blast radius analysis, rollback drills, oncall handovers, postmortems, and chaos engineering experiments." },

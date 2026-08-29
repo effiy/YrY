@@ -1,6 +1,15 @@
 <template>
   <div class="role-page" v-loading="loading">
-    <header class="role-page__header">
+    <header
+      class="role-page__header"
+      v-sticky="{
+        top: 0,
+        zIndex: 20,
+        offsetX: [24, 24],
+        offsetY: [20, 14],
+        activeClass: 'is-stuck'
+      }"
+    >
       <div class="role-page__header-row">
         <slot name="title"><h1>{{ title }}</h1></slot>
         <el-button size="small" type="primary" plain @click="$router.push(`/executiver/okr/${category}`)">OKR →</el-button>
@@ -16,7 +25,14 @@
 
     <template v-else>
     <div class="role-page__body">
-      <nav class="role-page__sidebar">
+      <nav
+        class="role-page__sidebar"
+        v-sticky="{
+          top: 96,
+          zIndex: 18,
+          activeClass: 'is-stuck'
+        }"
+      >
         <div class="role-page__sidebar-view">
           <el-radio-group v-model="viewMode" size="small">
             <el-radio-button value="card">Cards</el-radio-button>
@@ -438,8 +454,20 @@ onMounted(loadFiles);
 
 <style scoped lang="scss">
 .role-page { display: flex; flex-direction: column; box-sizing: border-box; padding: 20px 24px; background: var(--el-bg-color-page); }
-.role-page__header { margin-bottom: 14px; h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; } p { margin: 0; font-size: 13px; color: var(--el-text-color-secondary); line-height: 1.6; } }
-.role-page__header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; h1 { margin-bottom: 4px; } }
+.role-page__header {
+  z-index: 20;
+  transition: box-shadow .2s ease, border-color .2s ease, background-color .2s ease, backdrop-filter .2s ease;
+  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+  p { margin: 0; font-size: 13px; color: var(--el-text-color-secondary); line-height: 1.6; }
+  &.is-stuck {
+    background: color-mix(in srgb, var(--el-bg-color-page) 82%, transparent);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--el-border-color-lighter) 70%, transparent);
+    box-shadow: 0 6px 20px -12px rgba(0, 0, 0, .1);
+  }
+}
+.role-page__header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; h1 { margin-bottom: 4px; } }
 .role-page__error { display: flex; align-items: center; gap: 12px; padding: 16px; margin-bottom: 20px; border-radius: 8px; background: var(--el-color-danger-light-9); color: var(--el-color-danger); font-size: 13px; }
 // ── Body + Sidebar ──
 .role-page__body { display: flex; gap: 16px; align-items: flex-start; }
@@ -449,13 +477,18 @@ onMounted(loadFiles);
   gap: 4px;
   width: 180px;
   flex-shrink: 0;
-  padding: 8px 10px 12px;
+  padding: 10px 10px 12px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  position: sticky;
-  top: 12px;
   overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  &.is-stuck {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, .12),
+                0 2px 6px rgba(0, 0, 0, .04);
+    border-color: color-mix(in srgb, var(--el-border-color) 70%, transparent);
+  }
 }
 .role-page__sidebar-item {
   display: flex;

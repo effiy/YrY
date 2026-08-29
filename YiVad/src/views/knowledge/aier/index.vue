@@ -8,10 +8,7 @@
     :structural-tags="['prompts']"
   >
     <template #title>
-      <RoleNav active="aier" />
-    </template>
-    <template #header>
-      <ExecutiverQuickNav role="aier" />
+      <RoleNav active="aier" show-quick-nav quick-role="aier" sticky />
     </template>
   </RoleKnowledgePage>
 </template>
@@ -19,7 +16,6 @@
 <script setup lang="ts" name="aierHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const subdirs = [
   { id: "foundations", icon: "🧠", label: "Foundations", color: "#1677ff", desc: "Core architectural primitives of modern LLMs: self-attention mechanisms, KV-cache optimization, MoE routing, long-context scaling, quantization, alignment, and multimodal fusion — the theoretical foundation every AI engineer must master." },

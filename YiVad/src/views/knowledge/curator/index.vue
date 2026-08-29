@@ -7,10 +7,7 @@
     :subdirs="subdirs"
   >
     <template #title>
-      <RoleNav active="curator" />
-    </template>
-    <template #header>
-      <ExecutiverQuickNav role="curator" />
+      <RoleNav active="curator" show-quick-nav quick-role="curator" sticky />
     </template>
   </RoleKnowledgePage>
 </template>
@@ -18,7 +15,6 @@
 <script setup lang="ts" name="curatorHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const subdirs = [
   { id: "governance", icon: "⚖️", label: "Governance", color: "#1677ff", desc: "Knowledge base lifecycle management — review cycles, quality gates, triage protocols, tacit knowledge capture, readiness checklists, and knowledge evolution strategy." },

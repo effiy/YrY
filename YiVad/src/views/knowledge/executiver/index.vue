@@ -8,10 +8,7 @@
     :structural-tags="['resources', 'product', 'product-management', 'product-strategy']"
   >
     <template #title>
-      <RoleNav active="executiver" />
-    </template>
-    <template #header>
-      <ExecutiverQuickNav role="executiver" />
+      <RoleNav active="executiver" show-quick-nav quick-role="executiver" sticky />
     </template>
   </RoleKnowledgePage>
 </template>
@@ -19,7 +16,6 @@
 <script setup lang="ts" name="executiverHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const subdirs = [
   { id: "strategy", icon: "🎯", label: "Strategy", color: "#ef4444", desc: "Executive strategy frameworks — Porter's Five Forces, Blue Ocean, SWOT, VRIO, product strategy, business model canvas, and value proposition design for competitive advantage." },

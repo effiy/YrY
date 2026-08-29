@@ -61,6 +61,25 @@ export default {
       srer: "SRE"
     },
 
+    knowledgeQuickNav: {
+      okr: {
+        title: "OKR Dashboard",
+        desc: "Goals, metrics, daily standups, weekly reports & retrospectives"
+      },
+      rss: {
+        title: "RSS Manager",
+        desc: "Feed subscriptions, auto-classification & article management"
+      },
+      readingList: {
+        title: "Reading List",
+        desc: "Curated books, articles & papers with reading status and notes"
+      },
+      process: {
+        title: "Process Records",
+        desc: "Requirements review · Tech review · Build debug · Test report · Deploy — full lifecycle self-closed records"
+      }
+    },
+
     project: {
       active: "Active",
       archived: "Archived",

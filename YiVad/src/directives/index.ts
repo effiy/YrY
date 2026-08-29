@@ -6,6 +6,7 @@ import draggable from "./modules/draggable";
 import debounce from "./modules/debounce";
 import throttle from "./modules/throttle";
 import longpress from "./modules/longpress";
+import sticky from "./modules/sticky";
 
 const directivesList: { [key: string]: Directive } = {
   auth,
@@ -14,7 +15,8 @@ const directivesList: { [key: string]: Directive } = {
   draggable,
   debounce,
   throttle,
-  longpress
+  longpress,
+  sticky
 };
 
 const directives = {
@@ -26,3 +28,4 @@ const directives = {
 };
 
 export default directives;
+

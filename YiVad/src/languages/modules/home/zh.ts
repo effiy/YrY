@@ -61,6 +61,25 @@ export default {
       srer: "SRE"
     },
 
+    knowledgeQuickNav: {
+      okr: {
+        title: "OKR 仪表盘",
+        desc: "目标、指标、每日站会、周报与复盘"
+      },
+      rss: {
+        title: "RSS 管理",
+        desc: "订阅源、自动分类与文章管理"
+      },
+      readingList: {
+        title: "阅读清单",
+        desc: "精选书籍、文章与论文，含阅读状态与笔记"
+      },
+      process: {
+        title: "流程记录",
+        desc: "需求评审 · 技术评审 · 构建调试 · 测试报告 · 上线 — 全流程自闭环记录"
+      }
+    },
+
     project: {
       active: "活跃",
       archived: "已归档",

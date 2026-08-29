@@ -8,10 +8,7 @@
     :structural-tags="['yivad', 'yiai', 'yipet', 'adr']"
   >
     <template #title>
-      <RoleNav active="leader" />
-    </template>
-    <template #header>
-      <ExecutiverQuickNav role="leader" />
+      <RoleNav active="leader" show-quick-nav quick-role="leader" sticky />
     </template>
   </RoleKnowledgePage>
 </template>
@@ -19,7 +16,6 @@
 <script setup lang="ts" name="leaderHub">
 import RoleKnowledgePage from "@/views/knowledge/components/RoleKnowledgePage.vue";
 import RoleNav from "@/views/knowledge/components/RoleNav.vue";
-import ExecutiverQuickNav from "@/views/knowledge/components/ExecutiverQuickNav.vue";
 
 const subdirs = [
   { id: "architecture", icon: "🏛️", label: "Architecture", color: "#1677ff", desc: "Technical leadership architecture — maturity model assessments, architecture decision records, tech selection evaluations, and system coherence strategies." },
