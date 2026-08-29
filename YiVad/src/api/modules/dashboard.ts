@@ -5,8 +5,15 @@ export function getDashboardHealth(): Promise<{ code: number; message: string; d
   return http.get("/dashboard/health") as any;
 }
 
-export function getRssStats(): Promise<{ code: number; message: string; data: RssStatsData }> {
-  return http.get("/dashboard/rss-stats") as any;
+export interface RssStatsParams {
+  /** Inclusive start, ms-precision timestamp against ``published_parsed``. */
+  start?: number;
+  /** Inclusive end, ms-precision timestamp against ``published_parsed``. */
+  end?: number;
+}
+
+export function getRssStats(params?: RssStatsParams): Promise<{ code: number; message: string; data: RssStatsData }> {
+  return http.get("/dashboard/rss-stats", { params }) as any;
 }
 
 export function getKnowledgeStats(): Promise<{ code: number; message: string; data: KnowledgeStatsData }> {

@@ -68,7 +68,7 @@ export interface RssSeedDocument {
 
 export interface RssListParams {
   search?: string;
-  source_name?: string;
+  source_name?: string | string[];
   source_url?: string;
   category_path?: string;
   /** Prefix match for category_path, e.g. "executiver" matches "executiver/industry". */
@@ -117,7 +117,11 @@ export async function getRssList(
     const rx = { $regex: search, $options: "i" };
     filter.$or = [{ title: rx }, { link: rx }, { author: rx }];
   }
-  if (params.source_name) filter.source_name = params.source_name;
+  if (params.source_name) {
+    filter.source_name = Array.isArray(params.source_name)
+      ? { $in: params.source_name }
+      : params.source_name;
+  }
   if (params.source_url) filter.source_url = params.source_url;
   if (params.category_path) filter.category_path = params.category_path;
   if (params.categoryPrefix) filter.category_path = { $regex: `^${params.categoryPrefix}(/|$)`, $options: "i" };

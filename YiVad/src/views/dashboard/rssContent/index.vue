@@ -80,77 +80,27 @@
         </div>
         <div class="issue-list__sidebar-section">
           <div class="issue-list__sidebar-section-header">
-            <span class="issue-list__sidebar-section-label">Overview</span>
+            <span class="issue-list__sidebar-section-label">Sources</span>
+            <span class="issue-list__sidebar-section-hint">{{ rssData?.sources.length ?? 0 }}</span>
           </div>
-          <div class="issue-list__sidebar-section-body">
-            <div class="issue-list__sidebar-card" @click="clearAllFilters">
-              <div class="issue-list__sidebar-card-icon icon-gradient--primary"><el-icon><Reading /></el-icon></div>
-              <div class="issue-list__sidebar-card-info">
-                <span class="issue-list__sidebar-card-value">{{ rssData?.total ?? 0 }}</span>
-                <span class="issue-list__sidebar-card-label">Articles</span>
-              </div>
+          <div class="issue-list__sidebar-section-body issue-list__sidebar-list">
+            <div
+              v-for="s in rssData?.sources ?? []"
+              :key="s.name"
+              class="issue-list__sidebar-list-item"
+              :class="{ 'is-active': isSourceActive(s.name) }"
+              @click="toggleSource(s.name)"
+            >
+              <span class="issue-list__sidebar-list-dot" :style="{ background: sourceColor(s.name) }" />
+              <span class="issue-list__sidebar-list-label">{{ s.name }}</span>
+              <span class="issue-list__sidebar-list-count">{{ s.count }}</span>
             </div>
-            <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon icon-gradient--success"><el-icon><Connection /></el-icon></div>
-              <div class="issue-list__sidebar-card-info">
-                <span class="issue-list__sidebar-card-value">{{ rssData?.sources.length ?? 0 }}</span>
-                <span class="issue-list__sidebar-card-label">Sources</span>
-              </div>
-            </div>
-            <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon icon-gradient--warning"><el-icon><Collection /></el-icon></div>
-              <div class="issue-list__sidebar-card-info">
-                <span class="issue-list__sidebar-card-value">{{ rssData?.categories.length ?? 0 }}</span>
-                <span class="issue-list__sidebar-card-label">Categories</span>
-              </div>
-            </div>
-            <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon icon-gradient--danger"><el-icon><WarningFilled /></el-icon></div>
-              <div class="issue-list__sidebar-card-info">
-                <span class="issue-list__sidebar-card-value">{{ rssData?.body_missing ?? 0 }}</span>
-                <span class="issue-list__sidebar-card-label">No Body</span>
-              </div>
-            </div>
-          </div>
-          <div class="issue-list__sidebar-progress">
-            <span class="issue-list__sidebar-progress-label">Body Coverage</span>
-            <el-progress :percentage="bodyCoveragePct" :stroke-width="6" :show-text="true" :color="qualityBarColor(bodyCoveragePct)" />
-          </div>
-        </div>
-        <div class="issue-list__sidebar-section issue-list__sidebar-section--spaced">
-          <div class="issue-list__sidebar-section-header issue-list__sidebar-section-header--danger">
-            <span class="issue-list__sidebar-section-label">Needs Attention</span>
-          </div>
-          <div class="issue-list__sidebar-section-body">
-            <div class="issue-list__sidebar-card issue-list__sidebar-card--overdue" @click="applyAttentionFilter('missing_body')">
-              <el-icon class="issue-list__sidebar-card-accent-icon"><DocumentDelete /></el-icon>
-              <span class="issue-list__sidebar-card-accent-value">{{ attention.missingBody }}</span>
-              <span class="issue-list__sidebar-card-accent-label">Missing Body</span>
-            </div>
-            <div class="issue-list__sidebar-card issue-list__sidebar-card--unassigned" @click="applyAttentionFilter('no_category')">
-              <el-icon class="issue-list__sidebar-card-accent-icon"><Folder /></el-icon>
-              <span class="issue-list__sidebar-card-accent-value">{{ attention.noCategory }}</span>
-              <span class="issue-list__sidebar-card-accent-label">No Category</span>
-            </div>
-            <div class="issue-list__sidebar-card issue-list__sidebar-card--blocked" @click="applyAttentionFilter('no_tags')">
-              <el-icon class="issue-list__sidebar-card-accent-icon"><PriceTag /></el-icon>
-              <span class="issue-list__sidebar-card-accent-value">{{ attention.noTags }}</span>
-              <span class="issue-list__sidebar-card-accent-label">No Tags</span>
-            </div>
-          </div>
-        </div>
-        <div class="issue-list__sidebar-section issue-list__sidebar-section--spaced">
-          <div class="issue-list__sidebar-section-header issue-list__sidebar-section-header--success">
-            <span class="issue-list__sidebar-section-label">Data Quality</span>
-            <span class="issue-list__sidebar-section-hint">{{ rssData?.total ?? 0 }} articles</span>
-          </div>
-          <div class="issue-list__sidebar-section-body">
-            <div v-for="c in completeness" :key="c.key" class="issue-list__sidebar-quality">
-              <div class="issue-list__sidebar-quality-head">
-                <span class="issue-list__sidebar-quality-label">{{ c.label }}</span>
-                <span class="issue-list__sidebar-quality-pct" :style="{ color: qualityBarColor(c.pct) }">{{ c.pct }}%</span>
-              </div>
-              <el-progress :percentage="c.pct" :stroke-width="4" :show-text="false" :color="qualityBarColor(c.pct)" />
+            <div
+              v-if="sourceFilter.length"
+              class="issue-list__sidebar-list-clear"
+              @click="clearSourceFilter"
+            >
+              Clear selection
             </div>
           </div>
         </div>
@@ -171,18 +121,12 @@
                 clearable
                 @input="onSearchInput"
               />
-              <el-select v-model="sourceFilter" class="toolbar-select" placeholder="All sources" clearable filterable @change="onFilterChange">
+              <el-select v-model="sourceFilter" class="toolbar-select" placeholder="All sources" clearable filterable multiple collapse-tags collapse-tags-tooltip @change="onFilterChange">
                 <el-option v-for="s in rssData?.sources ?? []" :key="s.name" :label="`${s.name} (${s.count})`" :value="s.name" />
               </el-select>
               <el-select v-model="categoryFilter" class="toolbar-select" placeholder="All categories" clearable filterable @change="onFilterChange">
                 <el-option v-for="c in rssData?.categories ?? []" :key="c.name" :label="`${c.name} (${c.count})`" :value="c.name" />
               </el-select>
-              <el-radio-group v-model="quickRange" size="small" @change="onQuickRangeChange">
-                <el-radio-button value="all">All</el-radio-button>
-                <el-radio-button value="today">Today</el-radio-button>
-                <el-radio-button value="7d">7 days</el-radio-button>
-                <el-radio-button value="30d">30 days</el-radio-button>
-              </el-radio-group>
             </div>
           </div>
 
@@ -193,7 +137,6 @@
               :data="articles"
               stripe
               size="small"
-              max-height="560"
               empty-text="No articles match the current filters"
               @sort-change="onSortChange"
             >
@@ -237,7 +180,6 @@
               </el-table-column>
               <el-table-column width="100" align="right">
                 <template #default="{ row }">
-                  <el-button size="small" text type="primary" @click="openDetail(row as RssItemDocument)">Read</el-button>
                   <el-tooltip content="Open original" placement="top">
                     <el-button size="small" text @click="openOriginal(row as RssItemDocument)">
                       <el-icon><TopRight /></el-icon>
@@ -334,72 +276,31 @@
       </div>
     </div>
 
-    <el-drawer v-model="detailVisible" :title="detail?.title ?? ''" size="56%" destroy-on-close>
-      <template v-if="detail">
-        <div class="detail-meta">
-          <span class="source-badge" :style="{ background: sourceColor(detail.source_name) }">{{ detail.source_name }}</span>
-          <el-tag v-if="detail.category_path" size="small" class="chip-chip">{{ detail.category_path }}</el-tag>
-          <span class="detail-meta-item" v-if="detail.author">By {{ detail.author }}</span>
-          <span class="detail-meta-item" v-if="detail.published">{{ formatDate(detail.published) }}</span>
-        </div>
-        <div class="detail-actions">
-          <el-button type="primary" :icon="TopRight" @click="openOriginal(detail)">Open Original</el-button>
-          <el-button :icon="CopyDocument" @click="copyLink(detail)">Copy Link</el-button>
-          <el-button v-if="detail.category_path" :icon="FolderOpened" @click="goToRoleManager(detail.category_path)">View Feeds</el-button>
-        </div>
-        <div class="detail-tags" v-if="detail.tags?.length">
-          <el-tag v-for="t in detail.tags || []" :key="t" size="small" effect="plain" class="tag-chip">{{ t }}</el-tag>
-        </div>
-        <el-divider />
-        <div class="detail-body" v-loading="detailLoading">
-          <div v-if="detailBodyMissing && !detailHtml" class="detail-body__notice">
-            <span>📭 Body file missing — metadata-only record</span>
-            <span v-if="detail.file_path" class="detail-body__notice-path">{{ detail.file_path }}</span>
-          </div>
-          <div v-if="detailHtml" class="detail-body__markdown markdown-body" v-html="detailHtml" />
-          <div v-else-if="detailSummary" class="detail-body__summary">{{ detailSummary }}</div>
-          <el-empty v-else-if="!detailBodyMissing" description="No content — open the original article." />
-        </div>
-      </template>
-    </el-drawer>
+    <KnowledgePreviewDialog ref="previewDlg" />
   </div>
 </template>
 
 <script setup lang="ts" name="rssContent">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
-import { ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
 import {
   Reading,
-  Connection,
-  Collection,
   Search,
   TopRight,
-  CopyDocument,
-  Setting,
-  FolderOpened,
-  WarningFilled,
   Grid,
   Postcard,
   List,
-  User,
-  DocumentDelete,
-  Folder,
-  PriceTag
+  User
 } from "@element-plus/icons-vue";
 import { getRssStats } from "@/api/modules/dashboard";
 import { getRssList, type RssItemDocument } from "@/api/modules/rssService";
-import { readKnowledgeFile } from "@/api/modules/knowledgeService";
-import { useMarkdown } from "@/hooks/useMarkdown";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import type { RssStatsData } from "@/api/interface/yiweb";
 import { ECOption } from "@/components/ECharts/config";
 import type { ECElementEvent } from "echarts/core";
 import ECharts from "@/components/ECharts/index.vue";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
-
-const { render: renderMarkdown } = useMarkdown();
-const router = useRouter();
+import { KnowledgePreviewDialog } from "@/components";
+import type { KnowledgeMeta } from "@/api/interface/yiweb";
 
 const rssData = ref<RssStatsData | null>(null);
 const loading = ref(true);
@@ -437,7 +338,6 @@ const filterDate = ref<Date | null>(null);
 const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
 
 watch(filterDateStr, () => {
-  quickRange.value = "all";
   monthRange.value = null;
   resetAndLoad();
 });
@@ -451,33 +351,22 @@ const pageNum = ref(1);
 const pageSize = ref(20);
 
 const search = ref("");
-const sourceFilter = ref("");
+const sourceFilter = ref<string[]>([]);
 const categoryFilter = ref("");
 const tagFilter = ref("");
-const attentionFilter = ref<"missing_body" | "no_category" | "no_tags" | "">("");
 const monthRange = ref<{ start: number; end: number } | null>(null);
-const quickRange = ref<"all" | "today" | "7d" | "30d">("all");
 const orderBy = ref("published_parsed");
 const orderType = ref<"asc" | "desc">("desc");
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-// ── Detail drawer state ──
+// ── Preview dialog ref ──
 
-const detailVisible = ref(false);
-const detail = ref<RssItemDocument | null>(null);
-const detailLoading = ref(false);
-const detailHtml = ref("");
-const detailBodyMissing = ref(false);
+const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 // ── Colors ──
 
 const SOURCE_PALETTE = ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc", "#5ab1ef"];
-
-/** Top-level RSS roles — first segment of ``category_path`` (see ``/executiver/rss``). */
-const RSS_ROLES = ["executiver", "producter", "leader", "engineer", "srer", "aier", "curator"];
-
-const QUICK_RANGE_LABELS: Record<string, string> = { today: "Today", "7d": "7 days", "30d": "30 days" };
 
 /** Stable source → color map, matching the pie chart's slice colors. */
 const sourceColorMap = computed<Record<string, string>>(() => {
@@ -505,76 +394,6 @@ const bodyMissingPct = computed(() => {
   const missing = rssData.value?.body_missing ?? 0;
   return total_ ? Math.round((missing / total_) * 100) : 0;
 });
-
-const bodyCoveragePct = computed(() => 100 - bodyMissingPct.value);
-
-// ── Attention & Data Quality ──
-
-const allArticlesForQuality = computed<RssItemDocument[]>(() => {
-  if (articles.value.length > 0) return articles.value;
-  if (cardArticlesAll.value.length > 0) return cardArticlesAll.value;
-  return [];
-});
-
-const attention = computed(() => {
-  const list = allArticlesForQuality.value;
-  const hasData = list.length > 0;
-  const missingBody = hasData
-    ? list.filter(i => !i.file_path).length
-    : (rssData.value?.body_missing ?? 0);
-  const noCategory = hasData
-    ? list.filter(i => !i.category_path).length
-    : Math.max(0, (rssData.value?.total ?? 0) - (rssData.value?.categories?.reduce((s, c) => s + c.count, 0) ?? 0));
-  const noTags = hasData
-    ? list.filter(i => !i.tags?.length).length
-    : Math.round((rssData.value?.total ?? 0) * 0.35);
-  return { missingBody, noCategory, noTags };
-});
-
-const completeness = computed(() => {
-  const list = allArticlesForQuality.value;
-  const total_ = list.length > 0 ? list.length : (rssData.value?.total ?? 0);
-  let withBody = 0, withCategory = 0, withTags = 0, withAuthor = 0, withSummary = 0;
-  if (list.length > 0) {
-    for (const a of list) {
-      if (a.file_path) withBody++;
-      if (a.category_path) withCategory++;
-      if (a.tags?.length) withTags++;
-      if (a.author) withAuthor++;
-      if (a.summary) withSummary++;
-    }
-  } else {
-    const t = total_ || 1;
-    withBody = Math.max(0, t - (rssData.value?.body_missing ?? 0));
-    withCategory = rssData.value?.categories?.reduce((s, c) => s + c.count, 0) ?? Math.round(t * 0.75);
-    withTags = Math.round(t * 0.65);
-    withAuthor = Math.round(t * 0.6);
-    withSummary = Math.round(t * 0.7);
-  }
-  const fields = [
-    { key: "body", label: "Body Content", filled: withBody },
-    { key: "category", label: "Category", filled: withCategory },
-    { key: "tags", label: "Tags", filled: withTags },
-    { key: "author", label: "Author", filled: withAuthor },
-    { key: "summary", label: "Summary", filled: withSummary }
-  ];
-  return fields.map(f => ({
-    ...f,
-    pct: total_ ? Math.round((f.filled / total_) * 100) : 0,
-    missing: total_ - f.filled
-  }));
-});
-
-function qualityBarColor(pct: number) {
-  if (pct >= 80) return "#67c23a";
-  if (pct >= 50) return "#e6a23c";
-  return "#f56c6c";
-}
-
-function applyAttentionFilter(type: "missing_body" | "no_category" | "no_tags") {
-  attentionFilter.value = attentionFilter.value === type ? "" : type;
-  resetAndLoad();
-}
 
 // ── Chart options ──
 
@@ -652,18 +471,12 @@ const activeFilters = computed<ActiveFilter[]>(() => {
   const list: ActiveFilter[] = [];
   if (filterDateStr.value) list.push({ key: "date_nav", label: `Date: ${filterDateLabel.value}`, type: "danger" });
   if (search.value) list.push({ key: "search", label: `Search: ${search.value}`, type: "info" });
-  if (sourceFilter.value) list.push({ key: "source", label: `Source: ${sourceFilter.value}`, type: "primary" });
+  if (sourceFilter.value.length) list.push({ key: "source", label: `Sources: ${sourceFilter.value.join(", ")}`, type: "primary" });
   if (categoryFilter.value) list.push({ key: "category", label: `Category: ${categoryFilter.value}`, type: "success" });
   if (tagFilter.value) list.push({ key: "tag", label: `Tag: ${tagFilter.value}`, type: "warning" });
-  if (attentionFilter.value) list.push({ key: "attention", label: `Attention: ${attentionLabel(attentionFilter.value)}`, type: "danger" });
-  if (quickRange.value !== "all") list.push({ key: "range", label: `Date: ${QUICK_RANGE_LABELS[quickRange.value]}`, type: "danger" });
-  else if (monthRange.value) list.push({ key: "month", label: `Month: ${monthLabel(monthRange.value.start)}`, type: "danger" });
+  if (monthRange.value) list.push({ key: "month", label: `Month: ${monthLabel(monthRange.value.start)}`, type: "danger" });
   return list;
 });
-
-function attentionLabel(t: "missing_body" | "no_category" | "no_tags"): string {
-  return { missing_body: "Missing Body", no_category: "No Category", no_tags: "No Tags" }[t];
-}
 
 function monthLabel(epoch: number): string {
   const d = new Date(epoch);
@@ -675,9 +488,7 @@ function monthLabel(epoch: number): string {
 function onSourceChartClick(e: ECElementEvent) {
   const name = e.name as string;
   if (!name) return;
-  if (sourceFilter.value === name) sourceFilter.value = "";
-  else sourceFilter.value = name;
-  resetAndLoad();
+  toggleSource(name);
 }
 
 function onCategoryChartClick(e: ECElementEvent) {
@@ -692,7 +503,7 @@ function onTimelineChartClick(e: ECElementEvent) {
   const name = e.name as string;
   if (!name || !/^\d{4}-\d{2}$/.test(name)) return;
   if (monthRange.value && monthLabel(monthRange.value.start) === name) monthRange.value = null;
-  else { monthRange.value = monthToRange(name); quickRange.value = "all"; filterDate.value = null; }
+  else { monthRange.value = monthToRange(name); filterDate.value = null; }
   resetAndLoad();
 }
 
@@ -704,6 +515,22 @@ function monthToRange(month: string): { start: number; end: number } {
 }
 
 // ── Filter helpers ──
+
+function toggleSource(name: string) {
+  const idx = sourceFilter.value.indexOf(name);
+  if (idx >= 0) sourceFilter.value.splice(idx, 1);
+  else sourceFilter.value.push(name);
+  resetAndLoad();
+}
+
+function isSourceActive(name: string): boolean {
+  return sourceFilter.value.indexOf(name) >= 0;
+}
+
+function clearSourceFilter() {
+  sourceFilter.value = [];
+  resetAndLoad();
+}
 
 function setCategoryFilter(name: string) {
   categoryFilter.value = name;
@@ -718,24 +545,20 @@ function setTagFilter(tag: string) {
 function clearFilter(key: string) {
   if (key === "date_nav") clearFilterDate();
   else if (key === "search") search.value = "";
-  else if (key === "source") sourceFilter.value = "";
+  else if (key === "source") sourceFilter.value = [];
   else if (key === "category") categoryFilter.value = "";
   else if (key === "tag") tagFilter.value = "";
-  else if (key === "attention") attentionFilter.value = "";
   else if (key === "month") monthRange.value = null;
-  else if (key === "range") quickRange.value = "all";
   resetAndLoad();
 }
 
 function clearAllFilters() {
   filterDate.value = null;
   search.value = "";
-  sourceFilter.value = "";
+  sourceFilter.value = [];
   categoryFilter.value = "";
   tagFilter.value = "";
-  attentionFilter.value = "";
   monthRange.value = null;
-  quickRange.value = "all";
   resetAndLoad();
 }
 
@@ -748,21 +571,9 @@ function onFilterChange() {
   resetAndLoad();
 }
 
-function onQuickRangeChange() {
-  monthRange.value = null;
-  filterDate.value = null;
-  resetAndLoad();
-}
-
 function onSortChange({ order }: { order: "ascending" | "descending" | null }) {
   orderType.value = order === "ascending" ? "asc" : "desc";
   loadArticles();
-}
-
-function goToRoleManager(categoryPath?: string) {
-  const role = (categoryPath || "").split("/")[0];
-  if (role && RSS_ROLES.includes(role)) router.push(`/executiver/rss/${role}`);
-  else router.push("/executiver/rss");
 }
 
 function onSizeChange() {
@@ -773,6 +584,7 @@ function onSizeChange() {
 function resetAndLoad() {
   pageNum.value = 1;
   cardPage.value = 1;
+  fetchStats();
   loadArticles();
 }
 
@@ -786,14 +598,6 @@ function currentDateRange(): { start?: number; end?: number } {
     d.setHours(23, 59, 59, 999);
     return { start, end: d.getTime() };
   }
-  const now = Date.now();
-  if (quickRange.value === "today") {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return { start: d.getTime() };
-  }
-  if (quickRange.value === "7d") return { start: now - 7 * 24 * 3600 * 1000 };
-  if (quickRange.value === "30d") return { start: now - 30 * 24 * 3600 * 1000 };
   if (monthRange.value) return { start: monthRange.value.start, end: monthRange.value.end };
   return {};
 }
@@ -808,12 +612,9 @@ async function loadArticles() {
       orderType: orderType.value
     };
     if (search.value.trim()) params.search = search.value.trim();
-    if (sourceFilter.value) params.source_name = sourceFilter.value;
+    if (sourceFilter.value.length) params.source_name = sourceFilter.value;
     if (categoryFilter.value) params.category_path = categoryFilter.value;
     if (tagFilter.value) params.tags = [tagFilter.value];
-    if (attentionFilter.value === "missing_body") params.body_missing = true;
-    else if (attentionFilter.value === "no_category") params.no_category = true;
-    else if (attentionFilter.value === "no_tags") params.no_tags = true;
     const range = currentDateRange();
     if (range.start !== undefined) params.publishedStart = range.start;
     if (range.end !== undefined) params.publishedEnd = range.end;
@@ -838,7 +639,8 @@ async function loadArticles() {
 
 async function fetchStats() {
   try {
-    const res = await getRssStats();
+    const { start, end } = currentDateRange();
+    const res = await getRssStats({ start, end });
     rssData.value = res.data;
     lastUpdated.value = new Date().toLocaleTimeString();
   } catch {
@@ -848,45 +650,51 @@ async function fetchStats() {
   }
 }
 
-// ── Detail drawer ──
+// ── Detail preview ──
 
-async function openDetail(row: RssItemDocument) {
-  detail.value = row;
-  detailVisible.value = true;
-  detailHtml.value = "";
-  detailBodyMissing.value = !row.file_path;
-  if (!row.file_path) {
-    detailLoading.value = false;
+function openDetail(row: RssItemDocument) {
+  if (!previewDlg.value) return;
+  if (row.file_path) {
+    previewDlg.value.open(row.file_path);
     return;
   }
-  detailLoading.value = true;
-  try {
-    const res = await readKnowledgeFile(row.file_path);
-    detailHtml.value = renderMarkdown(res.content);
-  } catch {
-    detailBodyMissing.value = true;
-  } finally {
-    detailLoading.value = false;
+  const summary = stripHtml(row.summary || "");
+  const contentParts: string[] = [];
+  contentParts.push(`# ${row.title || "Untitled"}`);
+  contentParts.push("");
+  const metaLines: string[] = [];
+  if (row.source_name) metaLines.push(`**Source:** ${row.source_name}`);
+  if (row.category_path) metaLines.push(`**Category:** ${row.category_path}`);
+  if (row.author) metaLines.push(`**Author:** ${row.author}`);
+  if (row.published) metaLines.push(`**Published:** ${formatDate(row.published)}`);
+  if (row.link) metaLines.push(`**Original:** [Open](${row.link})`);
+  if (metaLines.length) {
+    contentParts.push(metaLines.join("  \n"));
+    contentParts.push("");
   }
+  if (row.tags?.length) {
+    contentParts.push(`**Tags:** ${row.tags.map(t => `\`${t}\``).join(" ")}`);
+    contentParts.push("");
+  }
+  contentParts.push("---");
+  contentParts.push("");
+  if (summary) {
+    contentParts.push("## Summary");
+    contentParts.push("");
+    contentParts.push(summary);
+    contentParts.push("");
+  }
+  contentParts.push("> *No body file available — metadata-only record.*");
+  const meta: KnowledgeMeta = {
+    type: "rss-article",
+    tags: row.tags || [],
+    roles: row.category_path ? [row.category_path.split("/")[0]] : []
+  };
+  previewDlg.value.openRaw({ title: row.title || "Untitled", content: contentParts.join("\n"), meta });
 }
-
-const detailSummary = computed(() => {
-  const s = detail.value?.summary ?? "";
-  return stripHtml(s);
-});
 
 function openOriginal(row?: RssItemDocument | null) {
   if (row?.link) window.open(row.link, "_blank", "noopener,noreferrer");
-}
-
-async function copyLink(row?: RssItemDocument | null) {
-  if (!row?.link) return;
-  try {
-    await navigator.clipboard.writeText(row.link);
-    ElMessage.success("Link copied");
-  } catch {
-    ElMessage.error("Copy failed");
-  }
 }
 
 // ── Utils ──

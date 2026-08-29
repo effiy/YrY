@@ -245,16 +245,62 @@ class RssStatsResponse(BaseModel):
 
 
 @router.get("/rss-stats", operation_id="dashboard_rss_stats")
-async def rss_stats():
-    """Return RSS article statistics."""
+async def rss_stats(start: Optional[int] = None, end: Optional[int] = None):
+    """Return RSS article statistics, optionally filtered by a date range.
+
+    ``start`` / ``end`` are millisecond-precision timestamps compared against
+    ``published_parsed`` (falling back to ``createdTime`` or ``published`` when
+    missing). Both ends are inclusive.
+    """
     try:
         from data.database import db
         from collections import Counter
+        from datetime import datetime, timezone as tz
 
         await db.initialize()
         collection = db.db[settings.collection_rss]
         cursor = collection.find({}, {"_id": 0})
         articles = await cursor.to_list(length=None)
+
+        # Date-range filtering — use ``published_parsed`` first (already normalised
+        # to ms timestamps by the RSS pipeline), then gracefully fall back to
+        # ``createdTime`` and ``published`` for older documents so the filter
+        # still works across the full corpus.
+        def _article_ts(a: dict) -> Optional[int]:
+            ts = a.get("published_parsed") or a.get("createdTime") or a.get("published")
+            if ts is None:
+                return None
+            if isinstance(ts, (int, float)):
+                i = int(ts)
+                return i * 1000 if len(str(abs(i))) <= 10 else i
+            ts_str = str(ts).strip()
+            if not ts_str:
+                return None
+            if ts_str.isdigit():
+                i = int(ts_str)
+                return i * 1000 if len(ts_str) <= 10 else i
+            for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+                try:
+                    return int(datetime.strptime(ts_str, fmt).replace(tzinfo=tz.utc).timestamp() * 1000)
+                except ValueError:
+                    continue
+            try:
+                return int(datetime.fromisoformat(ts_str.replace("Z", "+00:00")).timestamp() * 1000)
+            except Exception:
+                return None
+
+        if start is not None or end is not None:
+            filtered: list[dict] = []
+            for a in articles:
+                ts = _article_ts(a)
+                if ts is None:
+                    continue
+                if start is not None and ts < start:
+                    continue
+                if end is not None and ts > end:
+                    continue
+                filtered.append(a)
+            articles = filtered
 
         # Source distribution
         sources = Counter(a.get("source_name", "Unknown") for a in articles)
