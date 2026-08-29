@@ -12,7 +12,6 @@
     >
       <div class="role-page__header-row">
         <slot name="title"><h1>{{ title }}</h1></slot>
-        <el-button size="small" type="primary" plain @click="$router.push(`/executiver/okr/${category}`)">OKR →</el-button>
       </div>
     </header>
 
