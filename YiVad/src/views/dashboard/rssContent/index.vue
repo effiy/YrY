@@ -42,16 +42,6 @@
             </div>
           </el-col>
           <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-            <div class="stat-card stat-months">
-              <div class="stat-icon"><el-icon><Calendar /></el-icon></div>
-              <div class="stat-info">
-                <div class="stat-value">{{ rssData?.timeline.length ?? 0 }}</div>
-                <div class="stat-label">Active Months</div>
-                <div class="stat-sub">Latest: {{ latestMonth }}</div>
-              </div>
-            </div>
-          </el-col>
-          <el-col class="mb20" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
             <div class="stat-card stat-missing">
               <div class="stat-icon"><el-icon><WarningFilled /></el-icon></div>
               <div class="stat-info">
@@ -86,22 +76,6 @@
             </div>
             <div class="chart-body">
               <ECharts :option="categoryBarOption" @chartClick="onCategoryChartClick" />
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
-
-    <div class="card chart-row">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <div class="chart-box chart-box--timeline">
-            <div class="chart-title">
-              Articles Over Time
-              <span class="chart-hint">click a month to filter</span>
-            </div>
-            <div class="chart-body">
-              <ECharts :option="timelineOption" @chartClick="onTimelineChartClick" />
             </div>
           </div>
         </el-col>

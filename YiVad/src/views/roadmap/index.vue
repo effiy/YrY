@@ -4,29 +4,29 @@
       <div class="roadmap__head-left">
         <div class="roadmap__head-stat" @click="clearFilters">
           <span class="roadmap__head-stat-value">{{ totalItems }}</span>
-          <span class="roadmap__head-stat-label">Total</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.total") }}</span>
         </div>
         <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-cycle">{{ kindCounts.cycle }}</span>
-          <span class="roadmap__head-stat-label">Sprints</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.cycles") }}</span>
         </div>
         <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-module">{{ kindCounts.module }}</span>
-          <span class="roadmap__head-stat-label">Epics</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.modules") }}</span>
         </div>
         <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-release">{{ kindCounts.release }}</span>
-          <span class="roadmap__head-stat-label">Milestones</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.releases") }}</span>
         </div>
         <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-done">{{ overallProgress.pct }}%</span>
-          <span class="roadmap__head-stat-label">Done</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.done") }}</span>
         </div>
       </div>
       <div class="roadmap__head-right">
         <el-input
           v-model="search"
-          placeholder="Search..."
+          :placeholder="t('roadmap.searchPlaceholder')"
           size="small"
           clearable
           style="width: 200px"
@@ -50,7 +50,7 @@
 
     <div v-if="hasKindFilter" class="roadmap__filters">
       <div class="roadmap__filter-row">
-        <span class="roadmap__filter-label">Kind</span>
+        <span class="roadmap__filter-label">{{ t("roadmap.kind.label") }}</span>
         <el-check-tag
           v-for="k in kindOptions"
           :key="k.value"
@@ -64,9 +64,9 @@
     </div>
 
     <div class="roadmap__stats" v-if="totalItems > 0">
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('cycle') + '%', background: '#409eff' }" :title="`Sprints: ${kindCounts.cycle}`" />
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('module') + '%', background: '#9b59b6' }" :title="`Epics: ${kindCounts.module}`" />
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('release') + '%', background: '#20c997' }" :title="`Milestones: ${kindCounts.release}`" />
+      <div class="roadmap__stat-segment" :style="{ width: kindPct('cycle') + '%', background: '#409eff' }" :title="`${t('roadmap.kind.cycles')}: ${kindCounts.cycle}`" />
+      <div class="roadmap__stat-segment" :style="{ width: kindPct('module') + '%', background: '#9b59b6' }" :title="`${t('roadmap.kind.modules')}: ${kindCounts.module}`" />
+      <div class="roadmap__stat-segment" :style="{ width: kindPct('release') + '%', background: '#20c997' }" :title="`${t('roadmap.kind.releases')}: ${kindCounts.release}`" />
     </div>
 
     <div v-loading="loading" class="roadmap__board">
@@ -82,9 +82,9 @@
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="date">By Date</el-dropdown-item>
-                    <el-dropdown-item command="progress">By Progress</el-dropdown-item>
-                    <el-dropdown-item command="name">By Name</el-dropdown-item>
+                    <el-dropdown-item command="date">{{ t("roadmap.sort.byDate") }}</el-dropdown-item>
+                    <el-dropdown-item command="progress">{{ t("roadmap.sort.byProgress") }}</el-dropdown-item>
+                    <el-dropdown-item command="name">{{ t("roadmap.sort.byName") }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -92,7 +92,7 @@
           </div>
           <div class="roadmap__col-progress">
             <el-progress :percentage="colProgress(col).pct" :stroke-width="3" :show-text="false" color="#67c23a" />
-            <span>{{ colProgress(col).done }}/{{ colProgress(col).total }} done</span>
+            <span>{{ t("roadmap.progress.ofTotal", colProgress(col)) }}</span>
           </div>
         </div>
         <div class="roadmap__col-body">
@@ -102,6 +102,7 @@
             class="roadmap__item"
             :class="{ 'roadmap__item--overdue': isOverdue(item) }"
             @click="goTo(item.link)"
+            @contextmenu.prevent="openContextMenu($event, item)"
           >
             <div class="roadmap__item-accent" :style="{ background: item.color }" />
             <div class="roadmap__item-head">
@@ -119,7 +120,7 @@
               </span>
               <span v-if="item.total > 0" class="roadmap__item-foot-item">
                 <el-progress :percentage="pct(item)" :stroke-width="4" :show-text="false" :color="progressColor(item)" />
-                <span>{{ item.done }}/{{ item.total }}</span>
+                <span>{{ t("roadmap.progress.ofTotal", item) }}</span>
               </span>
             </div>
             <div v-if="item.detail" class="roadmap__item-detail">{{ item.detail }}</div>
@@ -137,34 +138,99 @@
           </div>
           <div v-if="col.items.length === 0" class="roadmap__col-empty">
             <el-icon :size="28"><Folder /></el-icon>
-            <span>No items</span>
+            <span>{{ t("roadmap.empty.noItems") }}</span>
           </div>
         </div>
       </div>
-      <el-empty v-if="!loading && !columns.length" description="No roadmap items" :image-size="60" />
+      <el-empty v-if="!loading && !columns.length" :description="t('roadmap.empty.noRoadmapItems')" :image-size="60" />
     </div>
+
+    <teleport to="body">
+      <div
+        v-if="contextMenu.visible"
+        class="roadmap-ctxmenu"
+        :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+        @click.stop
+      >
+        <template v-if="contextMenu.item">
+          <div class="roadmap-ctxmenu__item" @click="ctxOpen">
+            <el-icon><View /></el-icon>{{ t("roadmap.ctxMenu.open") }}
+          </div>
+          <div class="roadmap-ctxmenu__item" @click="ctxPreview">
+            <el-icon><Document /></el-icon>{{ t("roadmap.ctxMenu.preview") }}
+          </div>
+          <div class="roadmap-ctxmenu__item" @click="ctxCopyId">
+            <el-icon><CopyDocument /></el-icon>{{ t("roadmap.ctxMenu.copyId") }}
+          </div>
+          <div class="roadmap-ctxmenu__divider" />
+          <template v-if="contextMenu.item.kind === 'cycle'">
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('upcoming')">
+              <el-icon><Clock /></el-icon>{{ t("roadmap.ctxMenu.markUpcoming") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('active')">
+              <el-icon><VideoPlay /></el-icon>{{ t("roadmap.ctxMenu.markActive") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
+              <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
+            </div>
+          </template>
+          <template v-else-if="contextMenu.item.kind === 'module'">
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
+              <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
+              <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
+              <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('cancelled')">
+              <el-icon><CircleClose /></el-icon>{{ t("roadmap.ctxMenu.markCancelled") }}
+            </div>
+          </template>
+          <template v-else-if="contextMenu.item.kind === 'release'">
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
+              <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
+              <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
+            </div>
+            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('released')">
+              <el-icon><Promotion /></el-icon>{{ t("roadmap.ctxMenu.markReleased") }}
+            </div>
+          </template>
+          <div class="roadmap-ctxmenu__divider" />
+          <div class="roadmap-ctxmenu__item roadmap-ctxmenu__item--danger" @click="ctxDelete">
+            <el-icon><Delete /></el-icon>{{ t("roadmap.ctxMenu.delete") }}
+          </div>
+        </template>
+      </div>
+    </teleport>
 
     <KnowledgePreviewDialog ref="descDialogRef" />
   </div>
 </template>
 
 <script setup lang="ts" name="roadmapView">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ElMessage, ElMessageBox } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import { Search, Folder, User, Sort, Clock } from "@element-plus/icons-vue";
+import { Search, Folder, User, Sort, Clock, View, Document, CopyDocument, VideoPlay, CircleCheck, Calendar, Loading, CircleClose, Promotion, Delete } from "@element-plus/icons-vue";
 import { useCycleStore } from "@/stores/modules/cycle";
 import { useModuleStore } from "@/stores/modules/module";
 import { useReleaseStore } from "@/stores/modules/release";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
-import { CYCLE_STATUS_MAP } from "@/api/modules/cycleService";
-import { MODULE_STATUS_MAP } from "@/api/modules/moduleService";
-import { RELEASE_STATUS_MAP } from "@/api/modules/releaseService";
+import { CYCLE_STATUS_MAP, type CycleStatus } from "@/api/modules/cycleService";
+import { MODULE_STATUS_MAP, type ModuleStatus } from "@/api/modules/moduleService";
+import { RELEASE_STATUS_MAP, type ReleaseStatus } from "@/api/modules/releaseService";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 
+const { t } = useI18n();
 const router = useRouter();
 const cycleStore = useCycleStore();
 const moduleStore = useModuleStore();
@@ -174,11 +240,9 @@ const issueStore = useIssueStore();
 
 const loading = ref(false);
 
-// ── Date filter ──
 const filterDate = ref<Date | null>(null);
 const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
 
-// ── Search ──
 const search = ref("");
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 function onSearchInput() {
@@ -186,14 +250,13 @@ function onSearchInput() {
   searchTimer = setTimeout(() => loadData(), 250);
 }
 
-// ── Kind filter ──
 type RoadmapKind = "cycle" | "module" | "release";
 const kindFilter = ref(new Set<RoadmapKind>());
-const kindOptions: { value: RoadmapKind; label: string }[] = [
-  { value: "cycle", label: "Sprints" },
-  { value: "module", label: "Epics" },
-  { value: "release", label: "Milestones" }
-];
+const kindOptions = computed<{ value: RoadmapKind; label: string }[]>(() => [
+  { value: "cycle", label: t("roadmap.kind.cycles") },
+  { value: "module", label: t("roadmap.kind.modules") },
+  { value: "release", label: t("roadmap.kind.releases") }
+]);
 function toggleKind(val: RoadmapKind) {
   if (kindFilter.value.has(val)) kindFilter.value.delete(val);
   else kindFilter.value.add(val);
@@ -201,7 +264,6 @@ function toggleKind(val: RoadmapKind) {
 }
 const hasKindFilter = computed(() => kindFilter.value.size > 0);
 
-// ── Project filter ──
 const projectFilter = ref("");
 
 type TagType = "success" | "warning" | "info" | "primary" | "danger";
@@ -211,6 +273,7 @@ interface RoadmapItem {
   name: string;
   kind: RoadmapKind;
   kindLabel: string;
+  status: string;
   statusLabel: string;
   tagType: TagType;
   color: string;
@@ -243,11 +306,11 @@ const COL_HEADER_STYLES = [
   { status: "e", headerBg: "linear-gradient(180deg, #f0f2f5 0%, #e4e7ed 100%)", countTagType: "info" as const },
 ];
 
-const KIND_LABEL: Record<RoadmapKind, string> = {
-  cycle: "Sprint",
-  module: "Epic",
-  release: "Milestone"
-};
+const KIND_LABEL = computed<Record<RoadmapKind, string>>(() => ({
+  cycle: t("roadmap.kind.cycleLabel"),
+  module: t("roadmap.kind.moduleLabel"),
+  release: t("roadmap.kind.releaseLabel")
+}));
 
 const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: string }>> = {
   cycle: {
@@ -266,6 +329,12 @@ const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: str
     in_progress: { tag: "warning", color: "#e6a23c" },
     released: { tag: "success", color: "#67c23a" }
   }
+};
+
+const FINAL_STATUS: Record<RoadmapKind, Set<string>> = {
+  cycle: new Set(["completed"]),
+  module: new Set(["completed", "cancelled"]),
+  release: new Set(["released"])
 };
 
 const STATUS_LABEL: Record<RoadmapKind, Record<string, string>> = {
@@ -350,7 +419,8 @@ function progressColor(item: RoadmapItem) {
 }
 
 function isOverdue(item: RoadmapItem): boolean {
-  if (!item.endDate || item.statusLabel === "Completed" || item.statusLabel === "Released" || item.statusLabel === "Cancelled") return false;
+  if (!item.endDate) return false;
+  if (FINAL_STATUS[item.kind]?.has(item.status)) return false;
   const today = new Date().toISOString().slice(0, 10);
   return item.endDate < today;
 }
@@ -438,16 +508,19 @@ async function loadData() {
 
     const items: RoadmapItem[] = [];
     const dateTarget = filterDateStr.value;
+    const kindLabelMap = KIND_LABEL.value;
 
     cycleStore.cycles.forEach(c => {
       if (dateTarget && !inDateRange(c.start_date, c.end_date, dateTarget)) return;
-      const meta = STATUS_META.cycle[c.status] ?? { tag: "info" as TagType, color: "#909399" };
+      const status = c.status ?? "upcoming";
+      const meta = STATUS_META.cycle[status] ?? { tag: "info" as TagType, color: "#909399" };
       items.push({
         id: c.key,
         name: c.name,
         kind: "cycle",
-        kindLabel: KIND_LABEL.cycle,
-        statusLabel: STATUS_LABEL.cycle[c.status] ?? c.status,
+        kindLabel: kindLabelMap.cycle,
+        status,
+        statusLabel: STATUS_LABEL.cycle[status] ?? status,
         tagType: meta.tag,
         color: meta.color,
         dates: `${fmtDate(c.start_date)} → ${fmtDate(c.end_date)}`,
@@ -462,13 +535,15 @@ async function loadData() {
 
     moduleStore.modules.forEach(m => {
       if (dateTarget && !inDateRange(m.start_date ?? "", m.due_date ?? "", dateTarget)) return;
-      const meta = STATUS_META.module[m.status] ?? { tag: "info" as TagType, color: "#909399" };
+      const status = m.status ?? "planned";
+      const meta = STATUS_META.module[status] ?? { tag: "info" as TagType, color: "#909399" };
       items.push({
         id: m.key,
         name: m.name,
         kind: "module",
-        kindLabel: KIND_LABEL.module,
-        statusLabel: STATUS_LABEL.module[m.status] ?? m.status,
+        kindLabel: kindLabelMap.module,
+        status,
+        statusLabel: STATUS_LABEL.module[status] ?? status,
         tagType: meta.tag,
         color: meta.color,
         dates: `${fmtDate(m.start_date)} → ${fmtDate(m.due_date)}`,
@@ -485,13 +560,15 @@ async function loadData() {
     releaseStore.releases.forEach(r => {
       const date = r.release_date ?? r.target_date;
       if (dateTarget && date && date < dateTarget) return;
-      const meta = STATUS_META.release[r.status] ?? { tag: "info" as TagType, color: "#909399" };
+      const status = r.status ?? "planned";
+      const meta = STATUS_META.release[status] ?? { tag: "info" as TagType, color: "#909399" };
       items.push({
         id: r.key,
         name: r.name,
         kind: "release",
-        kindLabel: KIND_LABEL.release,
-        statusLabel: STATUS_LABEL.release[r.status] ?? r.status,
+        kindLabel: kindLabelMap.release,
+        status,
+        statusLabel: STATUS_LABEL.release[status] ?? status,
         tagType: meta.tag,
         color: meta.color,
         dates: fmtDate(date),
@@ -523,7 +600,6 @@ function clearFilters() {
   loadData();
 }
 
-// ── Preview dialog ──
 const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
 async function openPreview(item: RoadmapItem) {
   const date = (item.startDate || "").slice(0, 10);
@@ -549,9 +625,106 @@ async function openPreview(item: RoadmapItem) {
   });
 }
 
+const contextMenu = reactive<{
+  visible: boolean;
+  x: number;
+  y: number;
+  item: RoadmapItem | null;
+}>({ visible: false, x: 0, y: 0, item: null });
+
+function openContextMenu(e: MouseEvent, item: RoadmapItem) {
+  contextMenu.x = Math.min(e.clientX, window.innerWidth - 200);
+  contextMenu.y = Math.min(e.clientY, window.innerHeight - 320);
+  contextMenu.item = item;
+  contextMenu.visible = true;
+}
+
+function closeContextMenu() {
+  contextMenu.visible = false;
+  contextMenu.item = null;
+}
+
+function ctxOpen() {
+  const item = contextMenu.item;
+  closeContextMenu();
+  if (item) goTo(item.link);
+}
+
+function ctxPreview() {
+  const item = contextMenu.item;
+  closeContextMenu();
+  if (item) openPreview(item);
+}
+
+async function ctxCopyId() {
+  const item = contextMenu.item;
+  closeContextMenu();
+  if (!item) return;
+  try {
+    await navigator.clipboard.writeText(item.id);
+    ElMessage.success(t("roadmap.messages.copied", { id: item.id }));
+  } catch {
+    ElMessage.error(t("roadmap.messages.copyFailed"));
+  }
+}
+
+type RoadmapStatus = CycleStatus | ModuleStatus | ReleaseStatus;
+
+async function ctxQuickStatus(status: RoadmapStatus) {
+  const item = contextMenu.item;
+  closeContextMenu();
+  if (!item) return;
+  try {
+    let statusLabel: string = status as string;
+    if (item.kind === "cycle") {
+      await cycleStore.editCycle(item.id, { status: status as CycleStatus });
+      statusLabel = CYCLE_STATUS_MAP[status as CycleStatus] || status;
+    } else if (item.kind === "module") {
+      await moduleStore.editModule(item.id, { status: status as ModuleStatus });
+      statusLabel = MODULE_STATUS_MAP[status as ModuleStatus] || status;
+    } else if (item.kind === "release") {
+      await releaseStore.editRelease(item.id, { status: status as ReleaseStatus });
+      statusLabel = RELEASE_STATUS_MAP[status as ReleaseStatus] || status;
+    }
+    ElMessage.success(t("roadmap.messages.statusChanged", { name: item.name, status: statusLabel }));
+    loadData();
+  } catch {
+    loadData();
+  }
+}
+
+async function ctxDelete() {
+  const item = contextMenu.item;
+  closeContextMenu();
+  if (!item) return;
+  try {
+    await ElMessageBox.confirm(
+      t("roadmap.confirm.deleteMessage", { kindLabel: item.kindLabel, name: item.name }),
+      t("roadmap.confirm.deleteTitle"),
+      { type: "warning" }
+    );
+    const projectKey = item.id.split("-")[0];
+    if (item.kind === "cycle") {
+      await cycleStore.removeCycle(item.id, projectKey);
+    } else if (item.kind === "module") {
+      await moduleStore.removeModule(item.id, projectKey);
+    } else if (item.kind === "release") {
+      await releaseStore.removeRelease(item.id, projectKey);
+    }
+    ElMessage.success(t("roadmap.messages.deleted", { name: item.name }));
+    loadData();
+  } catch { /* cancelled */ }
+}
+
 onMounted(async () => {
   await projectStore.fetchProjects({ pageSize: 100 });
   await loadData();
+  document.addEventListener("click", closeContextMenu);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", closeContextMenu);
+  if (searchTimer) clearTimeout(searchTimer);
 });
 
 watch(filterDateStr, () => { loadData(); });
@@ -952,5 +1125,44 @@ watch(filterDateStr, () => { loadData(); });
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// ── Context Menu ──
+.roadmap-ctxmenu {
+  position: fixed;
+  z-index: 9999;
+  background: var(--el-bg-color-overlay);
+  border: 1px solid var(--el-border-color);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  min-width: 180px;
+}
+
+.roadmap-ctxmenu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--el-text-color-primary);
+
+  .el-icon { font-size: 14px; color: var(--el-text-color-secondary); }
+
+  &:hover { background: var(--el-fill-color-light); }
+
+  &--danger {
+    color: var(--el-color-danger);
+    .el-icon { color: var(--el-color-danger); }
+    &:hover { background: var(--el-color-danger-light-9); }
+  }
+}
+
+.roadmap-ctxmenu__divider {
+  height: 1px;
+  background: var(--el-border-color-lighter);
+  margin: 4px 8px;
 }
 </style>

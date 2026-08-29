@@ -12,6 +12,8 @@ import zhHome from "./home/zh";
 import enHome from "./home/en";
 import zhKanban from "./kanban/zh";
 import enKanban from "./kanban/en";
+import zhRoadmap from "./roadmap/zh";
+import enRoadmap from "./roadmap/en";
 
 export const messages = {
   zh: {
@@ -21,7 +23,8 @@ export const messages = {
     ...zhTopicDetail,
     ...zhRss,
     ...zhHome,
-    ...zhKanban
+    ...zhKanban,
+    ...zhRoadmap
   },
   en: {
     ...enCommon,
@@ -30,6 +33,7 @@ export const messages = {
     ...enTopicDetail,
     ...enRss,
     ...enHome,
-    ...enKanban
+    ...enKanban,
+    ...enRoadmap
   }
 };
