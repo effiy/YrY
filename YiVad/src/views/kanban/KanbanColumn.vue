@@ -56,6 +56,9 @@ import { useI18n } from "vue-i18n";
 import { Sort, Clock, Folder, Plus } from "@element-plus/icons-vue";
 import draggable from "vuedraggable";
 import type { Issue, IssueStatus } from "@/api/modules/issueService";
+import type { BugDocument } from "@/api/modules/bug";
+
+export type KanbanColumnItem = Issue | BugDocument;
 
 defineProps<{
   status: IssueStatus;
@@ -63,7 +66,7 @@ defineProps<{
   color: string;
   headerBg: string;
   countTagType: "info" | "primary" | "warning" | "success" | "danger";
-  issues: Issue[];
+  issues: KanbanColumnItem[];
   overdueCount: number;
 }>();
 

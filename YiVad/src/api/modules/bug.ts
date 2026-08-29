@@ -84,6 +84,102 @@ export type BugType =
   | "other";
 export type BugFrequency = "always" | "sometimes" | "rarely" | "once" | "unable";
 
+import type { IssuePriority, IssueStatus, IssueType, TagType } from "@/api/modules/issueService";
+
+export const BUG_STATUS_MAP: Record<BugStatus, string> = {
+  open: "Open",
+  in_progress: "In Progress",
+  resolved: "Resolved",
+  closed: "Closed",
+  rejected: "Rejected",
+  reopened: "Reopened"
+};
+
+export const BUG_SEVERITY_MAP: Record<BugSeverity, string> = {
+  critical: "Critical",
+  major: "Major",
+  minor: "Minor",
+  trivial: "Trivial"
+};
+
+export const BUG_PRIORITY_MAP: Record<BugPriority, string> = {
+  p0: "P0",
+  p1: "P1",
+  p2: "P2",
+  p3: "P3"
+};
+
+export const BUG_TYPE_MAP: Record<BugType, string> = {
+  functional: "Functional",
+  performance: "Performance",
+  ui: "UI",
+  security: "Security",
+  compatibility: "Compatibility",
+  regression: "Regression",
+  data: "Data",
+  other: "Other"
+};
+
+export const BUG_STATUS_TO_ISSUE_STATUS: Record<BugStatus, IssueStatus> = {
+  open: "todo",
+  in_progress: "in_progress",
+  resolved: "in_review",
+  closed: "done",
+  rejected: "cancelled",
+  reopened: "todo"
+};
+
+export const ISSUE_STATUS_TO_BUG_STATUS: Partial<Record<IssueStatus, BugStatus>> = {
+  backlog: "open",
+  todo: "open",
+  in_progress: "in_progress",
+  in_review: "resolved",
+  done: "closed",
+  cancelled: "rejected"
+};
+
+export const BUG_PRIORITY_TO_ISSUE_PRIORITY: Record<BugPriority, IssuePriority> = {
+  p0: "urgent",
+  p1: "high",
+  p2: "medium",
+  p3: "low"
+};
+
+export const ISSUE_PRIORITY_TO_BUG_PRIORITY: Record<IssuePriority, BugPriority> = {
+  urgent: "p0",
+  high: "p1",
+  medium: "p2",
+  low: "p3",
+  none: "p3"
+};
+
+export const BUG_SEVERITY_TAG_MAP: Record<BugSeverity, TagType> = {
+  critical: "danger",
+  major: "warning",
+  minor: "info",
+  trivial: "info"
+};
+
+export const BUG_TYPE_TAG_MAP: Record<BugType, TagType> = {
+  functional: "danger",
+  performance: "warning",
+  ui: "primary",
+  security: "danger",
+  compatibility: "warning",
+  regression: "warning",
+  data: "info",
+  other: "info"
+};
+
+export const BUG_STATUS_TAG_MAP: Record<BugStatus, TagType> = {
+  open: "primary",
+  in_progress: "warning",
+  resolved: "success",
+  closed: "info",
+  rejected: "danger",
+  reopened: "warning"
+};
+
 /**
  * Metadata — persisted in MongoDB `bugs` collection. Long-form fields
  * (description, stepsToReproduce, expectedResult, actualResult, causeProblem,

@@ -3,7 +3,7 @@
     <div class="kanban__head">
       <div class="kanban__head-left">
         <KanbanStats
-          :total-issues="totalIssues"
+          :total-issues="totalEntries"
           :urgent-count="urgentCount"
           :overdue-count="overdueCount"
           :done-count="doneCount"
@@ -35,7 +35,7 @@
     />
 
     <KanbanProgressBar
-      v-if="totalIssues > 0"
+      v-if="totalEntries > 0"
       :segments="progressSegments"
     />
 
@@ -56,14 +56,14 @@
       >
         <template #card="{ element }">
           <KanbanCard
-            :issue="element"
-            :project-name="projectName(element.project_key)"
-            :release-name="releaseName(element.release_key)"
-            @click="goDetail(element.key)"
+            :item="toKanbanItemSource(element)"
+            :project-name="projectName(getProjectKey(element))"
+            :release-name="releaseName(getReleaseKey(element))"
+            @click="goDetail(element)"
             @title-click="openPreview(element)"
-            @goal-click="goGoal(element.goal_id)"
-            @project-click="goProject(element.project_key)"
-            @release-click="goRelease(element.release_key)"
+            @goal-click="goGoal(getGoalId(element))"
+            @project-click="goProject(getProjectKey(element))"
+            @release-click="goRelease(getReleaseKey(element))"
             @contextmenu="(e: MouseEvent) => openContextMenu(e, element)"
           />
         </template>
@@ -96,6 +96,7 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useIssueStore } from "@/stores/modules/issue";
 import { useProjectStore } from "@/stores/modules/project";
+import { useBugStore } from "@/stores/modules/bug";
 import { getReleaseList } from "@/api/modules/releaseService";
 import type { Release } from "@/api/modules/releaseService";
 import {
@@ -103,11 +104,19 @@ import {
   ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP
 } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
+import {
+  getBugList, updateBug, deleteBug,
+  BUG_STATUS_TO_ISSUE_STATUS, ISSUE_STATUS_TO_BUG_STATUS,
+  BUG_PRIORITY_TO_ISSUE_PRIORITY, ISSUE_PRIORITY_TO_BUG_PRIORITY,
+  BUG_STATUS_MAP, BUG_PRIORITY_MAP,
+  type BugDocument, type BugStatus, type BugPriority
+} from "@/api/modules/bug";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { goalRoleMap } from "@/views/knowledge/executiver/okrData";
 import KanbanCard from "./KanbanCard.vue";
 import KanbanStats from "./KanbanStats.vue";
 import KanbanColumn from "./KanbanColumn.vue";
+import type { KanbanColumnItem } from "./KanbanColumn.vue";
 import KanbanFilters from "./KanbanFilters.vue";
 import KanbanProgressBar from "./KanbanProgressBar.vue";
 import KanbanSearchBar from "./KanbanSearchBar.vue";
@@ -121,6 +130,7 @@ const { t } = useI18n();
 const router = useRouter();
 const issueStore = useIssueStore();
 const projectStore = useProjectStore();
+const bugStore = useBugStore();
 
 const loading = ref(false);
 
@@ -172,11 +182,11 @@ function togglePriorityFilter(val: IssuePriority) {
   loadBoard();
 }
 
-const totalIssues = ref(0);
-const urgentCount = computed(() => columns.reduce((sum, col) => sum + col.issues.filter(i => i.priority === "urgent").length, 0));
+const totalEntries = ref(0);
+const urgentCount = computed(() => columns.reduce((sum, col) => sum + col.issues.filter(i => isUrgent(i)).length, 0));
 const overdueCount = computed(() => columns.reduce((sum, col) => sum + col.overdueCount, 0));
 const doneCount = computed(() => columns.find(c => c.status === "done")?.issues.length ?? 0);
-const completionPct = computed(() => totalIssues.value ? Math.round((doneCount.value / totalIssues.value) * 100) : 0);
+const completionPct = computed(() => totalEntries.value ? Math.round((doneCount.value / totalEntries.value) * 100) : 0);
 
 function clearFilters() {
   search.value = "";
@@ -192,7 +202,7 @@ interface Column {
   color: string;
   headerBg: string;
   countTagType: "info" | "primary" | "warning" | "success" | "danger";
-  issues: Issue[];
+  issues: KanbanColumnItem[];
   overdueCount: number;
 }
 
@@ -210,7 +220,7 @@ const progressSegments = computed(() =>
     label: col.label,
     color: col.color,
     count: col.issues.length,
-    width: totalIssues.value === 0 ? 0 : (Math.round((col.issues.length / totalIssues.value) * 100) || 0)
+    width: totalEntries.value === 0 ? 0 : (Math.round((col.issues.length / totalEntries.value) * 100) || 0)
   }))
 );
 
@@ -219,33 +229,6 @@ const createDialog = reactive({
   loading: false,
   defaultStatus: "backlog" as IssueStatus
 });
-
-const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
-async function openPreview(issue: Issue) {
-  const date = (issue.created_at || "").slice(0, 10);
-  const type = issue.issue_type || "task";
-  const slug = issue.title.toLowerCase().replace(/[→+(),]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  const filePath = `issues/${date}/${type}/${slug}.md`;
-  let content = issue.description || "";
-  try {
-    const res = await readKnowledgeFile(filePath);
-    content = res.content || content;
-  } catch { /* use issue.description as fallback */ }
-  descDialogRef.value?.openFile({
-    path: filePath,
-    title: issue.title,
-    content,
-    onSave: async (newContent: string) => {
-      await writeKnowledgeFile(filePath, newContent, {
-        title: issue.title,
-        type: "issue-description",
-        status: issue.status,
-        project: issue.project_key,
-        created: date
-      });
-    }
-  });
-}
 
 function openCreateDialog(status: IssueStatus) {
   createDialog.defaultStatus = status;
@@ -290,82 +273,237 @@ async function submitCreate(form: CreateIssueForm) {
   }
 }
 
-const contextMenu = reactive({ visible: false, x: 0, y: 0, issue: null as Issue | null });
-function openContextMenu(e: MouseEvent, issue: Issue) {
+// ── Type guards and accessors for KanbanColumnItem (Issue | BugDocument) ──
+function isBug(item: KanbanColumnItem): item is BugDocument {
+  return typeof (item as any).issue_type === "undefined" && typeof (item as any).severity !== "undefined";
+}
+
+function isIssue(item: KanbanColumnItem): item is Issue {
+  return !isBug(item);
+}
+
+function getProjectKey(item: KanbanColumnItem): string {
+  return isBug(item) ? (item.project_key || "") : item.project_key;
+}
+function getReleaseKey(item: KanbanColumnItem): string {
+  return isBug(item) ? "" : (item.release_key || "");
+}
+function getGoalId(item: KanbanColumnItem): string {
+  return isBug(item) ? "" : (item.goal_id || "");
+}
+function getUpdatedAt(item: KanbanColumnItem): string {
+  if (isBug(item)) {
+    return item.updatedAt ? new Date(item.updatedAt).toISOString() : "";
+  }
+  return item.updated_at || "";
+}
+function getCreatedAt(item: KanbanColumnItem): string {
+  if (isBug(item)) {
+    return item.createdAt ? new Date(item.createdAt).toISOString() : "";
+  }
+  return item.created_at || "";
+}
+function getDueDate(item: KanbanColumnItem): string {
+  if (isBug(item)) {
+    return item.dueDate ? new Date(item.dueDate).toISOString().slice(0, 10) : "";
+  }
+  return item.due_date ? item.due_date.slice(0, 10) : "";
+}
+function getPriority(item: KanbanColumnItem): IssuePriority {
+  if (isBug(item)) {
+    return BUG_PRIORITY_TO_ISSUE_PRIORITY[(item.priority || "p2") as BugPriority];
+  }
+  return item.priority;
+}
+function isUrgent(item: KanbanColumnItem): boolean {
+  return getPriority(item) === "urgent";
+}
+
+function toKanbanItemSource(element: KanbanColumnItem) {
+  return isBug(element)
+    ? { kind: "bug" as const, bug: element }
+    : { kind: "issue" as const, issue: element };
+}
+
+function mapBugToColumnStatus(bug: BugDocument): IssueStatus {
+  return BUG_STATUS_TO_ISSUE_STATUS[(bug.status || "open") as BugStatus] || "todo";
+}
+
+// ── Preview ──
+const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
+
+async function openPreview(item: KanbanColumnItem) {
+  if (isBug(item)) {
+    const filePath = item.contentPath || "";
+    let content = "";
+    try {
+      if (filePath) {
+        const res = await readKnowledgeFile(filePath);
+        content = res.content || "";
+      }
+    } catch { /* use empty */ }
+    descDialogRef.value?.openFile({
+      path: filePath,
+      title: item.title,
+      content,
+      onSave: async (newContent: string) => {
+        if (filePath) {
+          await writeKnowledgeFile(filePath, newContent, {
+            title: item.title,
+            type: "bug",
+            status: item.status,
+            project: item.project_key,
+            severity: item.severity,
+            priority: item.priority
+          });
+        }
+      }
+    });
+    return;
+  }
+  const date = (item.created_at || "").slice(0, 10);
+  const type = item.issue_type || "task";
+  const slug = item.title.toLowerCase().replace(/[→+(),]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const filePath = `issues/${date}/${type}/${slug}.md`;
+  let content = item.description || "";
+  try {
+    const res = await readKnowledgeFile(filePath);
+    content = res.content || content;
+  } catch { /* use issue.description as fallback */ }
+  descDialogRef.value?.openFile({
+    path: filePath,
+    title: item.title,
+    content,
+    onSave: async (newContent: string) => {
+      await writeKnowledgeFile(filePath, newContent, {
+        title: item.title,
+        type: "issue-description",
+        status: item.status,
+        project: item.project_key,
+        created: date
+      });
+    }
+  });
+}
+
+// ── Context Menu ──
+const contextMenu = reactive({ visible: false, x: 0, y: 0, item: null as KanbanColumnItem | null });
+function openContextMenu(e: MouseEvent, item: KanbanColumnItem) {
   contextMenu.x = Math.min(e.clientX, window.innerWidth - 180);
   contextMenu.y = Math.min(e.clientY, window.innerHeight - 260);
-  contextMenu.issue = issue;
+  contextMenu.item = item;
   contextMenu.visible = true;
 }
 function closeContextMenu() {
   contextMenu.visible = false;
-  contextMenu.issue = null;
+  contextMenu.item = null;
 }
 onUnmounted(() => document.removeEventListener("click", closeContextMenu));
 
 async function ctxQuickStatus(status: IssueStatus) {
-  const issue = contextMenu.issue;
+  const item = contextMenu.item;
   closeContextMenu();
-  if (issue) await quickChangeStatus(issue, status);
+  if (item) await quickChangeStatus(item, status);
 }
 async function ctxEditPriority(priority: IssuePriority) {
-  const issue = contextMenu.issue;
+  const item = contextMenu.item;
   closeContextMenu();
-  if (issue) {
-    try {
-      await updateIssue(issue.key, { priority });
-      ElMessage.success(t("kanban.message.priorityChanged", { name: issue.title, priority: ISSUE_PRIORITY_MAP[priority] }));
-      loadBoard();
-    } catch { loadBoard(); }
-  }
+  if (!item) return;
+  try {
+    if (isBug(item)) {
+      const bugPri = ISSUE_PRIORITY_TO_BUG_PRIORITY[priority];
+      await updateBug(item.key, { priority: bugPri });
+      ElMessage.success(`Bug priority changed: ${item.title} → ${BUG_PRIORITY_MAP[bugPri]}`);
+    } else {
+      await updateIssue(item.key, { priority });
+      ElMessage.success(t("kanban.message.priorityChanged", { name: item.title, priority: ISSUE_PRIORITY_MAP[priority] }));
+    }
+    loadBoard();
+  } catch { loadBoard(); }
 }
 async function ctxDelete() {
-  const issue = contextMenu.issue;
+  const item = contextMenu.item;
   closeContextMenu();
-  if (!issue) return;
+  if (!item) return;
   try {
     await ElMessageBox.confirm(
-      t("kanban.createDialog.deleteConfirm.title", { name: issue.title }),
+      isBug(item)
+        ? `Delete bug "${item.title}"?`
+        : t("kanban.createDialog.deleteConfirm.title", { name: item.title }),
       t("kanban.createDialog.deleteConfirm.okText"),
       { type: "warning" }
     );
-    await deleteIssue(issue.key);
+    if (isBug(item)) {
+      await deleteBug(item.key);
+    } else {
+      await deleteIssue(item.key);
+    }
     ElMessage.success(t("kanban.createDialog.deleteConfirm.success"));
     loadBoard();
   } catch { /* cancelled */ }
 }
 
-async function quickChangeStatus(issue: Issue, newStatus: IssueStatus) {
+async function quickChangeStatus(item: KanbanColumnItem, newStatus: IssueStatus) {
   try {
-    await updateIssue(issue.key, { status: newStatus });
-    ElMessage.success(t("kanban.message.statusChanged", { name: issue.title, status: ISSUE_STATUS_MAP[newStatus] }));
+    if (isBug(item)) {
+      const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
+      if (!bugStatus) return;
+      await updateBug(item.key, { status: bugStatus });
+      ElMessage.success(`Bug status changed: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
+    } else {
+      await updateIssue(item.key, { status: newStatus });
+      ElMessage.success(t("kanban.message.statusChanged", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
+    }
     loadBoard();
   } catch { loadBoard(); }
 }
 
+// ── Load board (Issues + Bugs) ──
 async function loadBoard() {
   loading.value = true;
   try {
-    const params: any = { pageSize: 200 };
-    if (search.value) params.search = search.value;
-    if (filterDateStr.value) {
-      params.updated_at_start = filterDateStr.value;
-      params.updated_at_end = filterDateStr.value;
+    const issueParams: any = { pageSize: 200 };
+    const bugParams: any = { pageSize: 500 };
+    if (search.value) {
+      issueParams.search = search.value;
+      bugParams.search = search.value;
     }
-    const res = await getIssueList(params);
-    let allIssues = (res.data?.list as Issue[]) ?? [];
+    if (filterDateStr.value) {
+      issueParams.updated_at_start = filterDateStr.value;
+      issueParams.updated_at_end = filterDateStr.value;
+      const start = new Date(filterDateStr.value + "T00:00:00").getTime();
+      const end = new Date(filterDateStr.value + "T23:59:59").getTime();
+      bugParams.createdAtStart = start;
+      bugParams.createdAtEnd = end;
+    }
+
+    const [issueRes, bugRes] = await Promise.all([
+      getIssueList(issueParams).catch(() => ({ data: { list: [] as Issue[] } })),
+      getBugList(bugParams).catch(() => ({ data: { list: [] as BugDocument[] } }))
+    ]);
+    let issues = (issueRes.data?.list as Issue[]) ?? [];
+    let bugs = (bugRes.data?.list as BugDocument[]) ?? [];
 
     if (typeFilter.value.size > 0) {
-      allIssues = allIssues.filter(i => typeFilter.value.has(i.issue_type));
+      issues = issues.filter(i => typeFilter.value.has(i.issue_type));
+      // Bugs don't have the exact IssueType enum — if "bug" type filter is on, keep them; otherwise drop
+      if (!typeFilter.value.has("bug" as IssueType)) {
+        bugs = [];
+      }
     }
     if (priorityFilter.value.size > 0) {
-      allIssues = allIssues.filter(i => priorityFilter.value.has(i.priority));
+      issues = issues.filter(i => priorityFilter.value.has(i.priority));
+      bugs = bugs.filter(b => {
+        const mapped = BUG_PRIORITY_TO_ISSUE_PRIORITY[(b.priority || "p2") as BugPriority];
+        return priorityFilter.value.has(mapped);
+      });
     }
 
-    totalIssues.value = allIssues.length;
+    const all: KanbanColumnItem[] = [...issues, ...bugs];
+    totalEntries.value = all.length;
 
     for (const col of columns) {
-      col.issues = allIssues.filter(i => i.status === col.status);
+      col.issues = all.filter(i => getColumnStatus(i) === col.status);
       col.overdueCount = col.issues.filter(i => isOverdue(i)).length;
     }
   } finally {
@@ -373,36 +511,55 @@ async function loadBoard() {
   }
 }
 
+function getColumnStatus(item: KanbanColumnItem): IssueStatus {
+  return isBug(item) ? mapBugToColumnStatus(item) : item.status;
+}
+
 const PRIORITY_ORDER: Record<IssuePriority, number> = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
 
 function sortColumn(col: Column, cmd: string) {
   if (cmd === "priority") {
-    col.issues.sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
+    col.issues.sort((a, b) => PRIORITY_ORDER[getPriority(a)] - PRIORITY_ORDER[getPriority(b)]);
   } else if (cmd === "due_date") {
     col.issues.sort((a, b) => {
-      if (!a.due_date) return 1;
-      if (!b.due_date) return -1;
-      return a.due_date.localeCompare(b.due_date);
+      const da = getDueDate(a);
+      const db = getDueDate(b);
+      if (!da) return 1;
+      if (!db) return -1;
+      return da.localeCompare(db);
     });
   } else if (cmd === "updated_at") {
-    col.issues.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
+    col.issues.sort((a, b) => getUpdatedAt(b).localeCompare(getUpdatedAt(a)));
   } else if (cmd === "created_at") {
-    col.issues.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    col.issues.sort((a, b) => getCreatedAt(b).localeCompare(getCreatedAt(a)));
   }
 }
 
-async function onDragChange(evt: { added?: { element: Issue } }, newStatus: IssueStatus) {
+async function onDragChange(evt: { added?: { element: KanbanColumnItem } }, newStatus: IssueStatus) {
   if (!evt.added) return;
-  const issue = evt.added.element;
+  const item = evt.added.element;
   try {
-    await updateIssue(issue.key, { status: newStatus });
-    ElMessage.success(t("kanban.message.movedTo", { name: issue.title, status: ISSUE_STATUS_MAP[newStatus] }));
+    if (isBug(item)) {
+      const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
+      if (!bugStatus) { loadBoard(); return; }
+      await updateBug(item.key, { status: bugStatus });
+      ElMessage.success(`Bug moved: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
+    } else {
+      await updateIssue(item.key, { status: newStatus });
+      ElMessage.success(t("kanban.message.movedTo", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
+    }
   } catch {
     loadBoard();
   }
 }
 
-function goDetail(key: string) { router.push(`/issue/${key}`); }
+function goDetail(item: KanbanColumnItem) {
+  if (isBug(item)) {
+    router.push(`/bug/${item.key}`);
+    return;
+  }
+  router.push(`/issue/${item.key}`);
+}
 function goGoal(goalId: string) {
   const role = goalRoleMap[goalId];
   if (role) router.push(`/executiver/okr/${role}?goal=${goalId}`);
@@ -423,10 +580,13 @@ async function loadNames() {
   } catch { /* best-effort */ }
 }
 
-function isOverdue(issue: Issue): boolean {
-  if (!issue.due_date || issue.status === "done" || issue.status === "cancelled") return false;
+function isOverdue(item: KanbanColumnItem): boolean {
+  const due = getDueDate(item);
+  if (!due) return false;
+  const colStatus = getColumnStatus(item);
+  if (colStatus === "done" || colStatus === "cancelled") return false;
   const today = new Date().toISOString().slice(0, 10);
-  return issue.due_date.slice(0, 10) < today;
+  return due < today;
 }
 
 onMounted(async () => {
