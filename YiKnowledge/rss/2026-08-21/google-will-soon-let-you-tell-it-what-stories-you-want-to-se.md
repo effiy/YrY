@@ -1,0 +1,25 @@
+---
+title: Google Will Soon Let You Tell It What Stories You Want to See in Your Discovery
+  Feed
+tags:
+- Lifehacker
+category: life/lifestyle
+created: '2026-08-29'
+source: https://lifehacker.com/tech/google-news-will-soon-let-you-tell-it-what-stories-you-want-to-see?utm_medium=RSS
+type: rss
+source_name: Lifehacker
+source_url: https://lifehacker.com/feed/rss
+published: Fri, 21 Aug 2026 19:00:02 +0000
+author: Jake Peterson
+---
+
+<p>I don't know what the far future of tech looks like, but I know what's in store for the near future: AI. Specifically, AI that responds to natural language prompts. It's already the reality for many platforms, apps, and services: Rather than doing things yourself, you tell the AI what you want done, and it follows suit. Natural language commands are popping up <em>everywhere</em>, from <a href="https://lifehacker.com/tech/vibe-coding-apps-dont-have-to-be-a-security-nightmare" target="_blank">coding platforms</a> to <a href="https://lifehacker.com/tech/apple-music-will-soon-let-you-generate-playlists-with-ai" target="_blank">playlist generators</a>. Now, apparently, they're coming to your news app too. </p><h2 id="natural-language-commands-are-coming-to-the-google-apps-discovery-feed">Natural language commands are coming to the Google app's Discovery feed</h2><div class="eloquent-imagery-image">
+    <div class="flex justify-center">
+                    <img alt="google app discovery feed" class="border border-gray-100" height="1125" src="https://lifehacker.com/imagery/articles/01M0JQSCTY4ZDT7HKTNB1ZSXAS/images-1.fill.size_2000x1125.v1787337069.png" width="2000" />
+            </div>
+            <div class="mt-2 font-akshar">
+                            <span class="image-caption block text-sm leading-4 tracking-wide text-[#1F2937]"></span>
+                                        <span class="mt-1 block font-sans text-xs tracking-normal text-gray-600">Credit: Google</span>
+                    </div>
+    </div>
+<p><a href="https://blog.google/products-and-platforms/products/search/personalize-search-discover-news/" rel="noopener" target="_blank" title="open in a new window">Google announced a handful of changes</a> coming to its self-named app on Friday. Perhaps most notably among the developments is the new ability to "tune" and "tailor" your Discovery feed to your liking&mdash;not by giving feedback for specific articles or sources, but by simply telling Google what news you want to see, and what you don't. </p><p>Here's how it works, according to Google: Once the feature is live in your Google app, you can tap any three-dot menu in the feed to tell Google how you want to change your feed. When you do, you'll pull up a new window that reads "What do you want to see." Here, you'll find sample prompts ("Show me content from...," I want videos about..." etc.) and a text field to enter them in. As an example, Google says you can enter a query like "show me kitchen renovation tips and ideas." Gemini will then show you a list of the types of stories it thinks you'll want to see (e.g., "Modern layout ideas and floor plans," "Budget-friendly cabinet and countertop refreshes," etc.). If that looks good, you can hit "Refresh your feed."</p><p>If you aren't happy with Gemini's first interpretation of your instruction, you can refine it before refreshing your feed. You can send another prompt (e.g., "can you focus on eco-friendly and sustainable upgrades?") and see how Gemini responds. You can repeat this process until you're happy with the direction Gemini is taking, then hit "Refresh your feed" to see what it came up with. (Of course, you can tap a three-dot menu again to continue changing the experience.) Google says these updates will roll out "in the coming days."</p><h2 id="other-changes-coming-to-the-google-app">Other changes coming to the Google app</h2><p>In addition to this natural language feature, Google also announced two new changes for its app. First, Google is making it easier to customize the audio briefings you might receive in Google News on Android. Now, you'll be able to choose specific topics you want to hear, including between main topics and subtopics. For example, you could say you want to hear science and technology news, but only about neuroscience and space, not environment, gaming, or virtual reality. There are a lot of curation possibilities here. </p><p>In addition, Google says it's rolling out a new "Preferred Sources" button for publishers to use. You may have seen the first iteration of this button on Lifehacker articles. While it isn't clear what's new with the latest version, this button lets you tell Google that you want to see more articles from a particular publisher for topics going forward. If you add Lifehacker as a preferred source, for example, you may see our articles for topics like AI, Apple, and security when they appear in your feed.</p>

@@ -1,0 +1,15 @@
+---
+title: The Pokémon Company Looks to Smart Device Integrations as Future Targets
+tags:
+- IGN
+category: life/game
+created: '2026-08-29'
+source: https://www.ign.com/articles/the-pokemon-company-looks-to-smart-device-integrations-as-future-targets
+type: rss
+source_name: IGN
+source_url: https://feeds.ign.com/ign/all
+published: Sat, 29 Aug 2026 00:55:25 +0000
+author: Casey DeFreitas
+---
+
+<section class="article-page"><img src="https://assets-prd.ignimgs.com/2026/08/29/pokemon-fitbit-air-design-intro-width-1600-format-webp-1787964526418.png" /><section></section><p>President and CEO of The Pokémon Company, Tsunekazu Ishihara, shared a small bit of insight about the company’s possible future plans with wearable technology during a panel discussion at the inaugural PokémonXP in San Francisco, CA. </p><p>During the Producing Pokémon: A Conversation with Mr. Ishihara panel at the main PokémonXP stage, Ishihara spoke about how Pokémon has evolved alongside major technological shifts in handheld gaming and wireless connectivity over the years. He said after smartphones arrived, they had to change their approach a little to accessories. </p><section></section><p>“In the past, these gadgets or companion accessories [like the Pokéwalker and PokémonGO Plus]  were kind of like these cool secret weapons you could pull out of your pocket and do something really cool with,” Ishihara said, <strong>“</strong>but today I was thinking, going forward, maybe a challenge for us is going to be figuring out how we can integrate Pokémon more with some of the wearable technology, like smart watches, smart glasses, or even smart rings, for example.” <br />The comment comes on the tail of the <a href="https://blog.google/products-and-platforms/devices/fitbit/fitbit-air-special-edition-pokemon-sleep/">reveal of the Fitbit Air Special Edition Pokémon Sleep</a>, a wearable health tracker with full connectivity to Pokémon Sleep, a Pokémon app that essentially gamifies sleep into collecting Pokémon. </p><section></section><p>Ishihara is also the founder and previous CEO of Creatures Inc., a co-owner of the Pokémon franchise alongside Nintendo and Game Freak, who together make The Pokémon Company International. Ishihara has experienced the complete history of the franchise, from Pokémon Red and Pokémon Green to the conception of the anime and trading card game. During the panel, Ishihara said he’s always loved handheld gadgets and toys and is particularly passionate about them. </p><p>“I really hope Pokémon and the people who are stewarding it will continue to be creating entirely new forms of play that really excite people. And also that humanity, in general, will continue to really enjoy those experiences. And maybe even across three or four generations in the future,” Ishihara said.</p><section></section><p><em>Casey DeFreitas is the deputy editor of guides at IGN, and has attended the Pokémon World Championships since 2017. She's here at PokémonXP! Catch her on socials </em><a href="https://bsky.app/profile/shinycaseyd.bsky.social"><em>@ShinyCaseyD</em></a><em>, and at Worlds!</em></p></section>

@@ -3,31 +3,18 @@
     <!-- ═══ Hero + Pipeline (merged row) ═══ -->
     <section class="ho__hero">
       <div class="ho__hero-body">
-        <div class="ho__hero-stats" :class="{ 'is-loading': loading }">
-          <div class="ho__hero-stat" @click="router.push('/issue')">
-            <span class="ho__hero-stat-value">{{ roleCounts.all ?? 0 }}</span>
-            <span class="ho__hero-stat-label">{{ t("home.stats.tasks") }}</span>
-          </div>
-          <div class="ho__hero-stat" @click="router.push('/issue?priority=urgent')">
-            <span class="ho__hero-stat-value is-p0">{{ roleCounts.p0 ?? 0 }}</span>
-            <span class="ho__hero-stat-label">{{ t("home.stats.p0") }}</span>
-          </div>
-          <div class="ho__hero-stat" @click="router.push('/bug')">
-            <span class="ho__hero-stat-value">{{ bugCount }}</span>
-            <span class="ho__hero-stat-label">{{ t("home.stats.bugs") }}</span>
-          </div>
-        </div>
-        <div class="ho__hero-text">
-          <HeroDateNav
-            :filter-date="filterDate"
-            :label="filterDateLabel"
-            :is-today="isFilterToday"
-            @prev="goToPrevDay"
-            @next="goToNextDay"
-            @today="goToFilterToday"
-            @clear="clearFilterDate"
-          />
-        </div>
+        <HeroStats
+          :loading="loading"
+          :role-counts="roleCounts"
+          :bug-count="bugCount"
+          :filter-date="filterDate"
+          :filter-date-label="filterDateLabel"
+          :is-filter-today="isFilterToday"
+          @prev="goToPrevDay"
+          @next="goToNextDay"
+          @today="goToFilterToday"
+          @clear="clearFilterDate"
+        />
       </div>
     </section>
 
@@ -103,7 +90,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ArrowDown, TopRight } from "@element-plus/icons-vue";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
-import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
+import HeroStats from "./HeroStats.vue";
 import { useProjectStore } from "@/stores/modules/project";
 import { queryDocuments } from "@/api/modules/dataService";
 import { useDateFilter } from "@/hooks/useDateFilter";
@@ -157,7 +144,7 @@ async function loadCounts() {
 const knowledgePopoverVisible = ref(false);
 
 const knowledgeSubPages = [
-  { icon: "🤖", label: "AI Engineer", path: "/aier" },
+  { icon: "🤖", label: "AI", path: "/aier" },
   { icon: "📚", label: "Curator", path: "/curator" },
   { icon: "⚙️", label: "Engineer", path: "/engineer" },
   { icon: "🏆", label: "Executive", path: "/executiver" },
@@ -279,73 +266,6 @@ watch(filterDateStr, () => {
     opacity: 0.12;
     pointer-events: none;
   }
-}
-
-.ho__hero-body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.ho__hero-text {
-  flex-shrink: 0;
-  padding-left: 12px;
-  border-left: 1px solid var(--el-border-color-lighter);
-}
-
-// ── Hero quick-stats row ──────────────────────
-.ho__hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  flex-shrink: 0;
-}
-
-.ho__hero-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: background 0.2s;
-  position: relative;
-
-  &:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background: var(--el-border-color-lighter);
-  }
-
-  &:hover {
-    background: var(--el-fill-color-light);
-  }
-}
-
-.ho__hero-stat-value {
-  font-size: 16px;
-  font-weight: 800;
-  font-family: "SF Mono", "Fira Code", monospace;
-  line-height: 1;
-  color: var(--el-text-color-primary);
-  font-variant-numeric: tabular-nums;
-  transition: opacity 0.3s;
-
-  .is-loading & { opacity: 0.4; }
-
-  &.is-p0 { color: var(--el-color-danger); }
-}
-
-.ho__hero-stat-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
 }
 
 // ── Body ─────────────────────────────────────
@@ -488,21 +408,14 @@ watch(filterDateStr, () => {
 }
 
 // ── Responsive ───────────────────────────────
-@media (max-width: 1024px) {
-  .ho__hero-body { flex-wrap: wrap; }
-  .ho__hero-text { border-left: none; padding-left: 0; }
-}
-
 @media (max-width: 900px) {
   .ho__quick-nav { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 640px) {
   .ho__hero { padding: 10px 16px; }
-  .ho__hero-body { flex-direction: column; gap: 8px; }
   .ho__body { padding: 12px 16px 16px; }
   .ho__quick-nav { grid-template-columns: 1fr; }
-  .ho__hero-text { border-left: none; padding-left: 0; }
 }
 </style>
 
