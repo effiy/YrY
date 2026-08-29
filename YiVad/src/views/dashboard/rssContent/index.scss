@@ -628,6 +628,46 @@
   :deep(table) { margin: 0.6em 0; border-collapse: collapse; th, td { padding: 6px 10px; border: 1px solid var(--el-border-color-lighter); } th { background: var(--el-fill-color-light); } }
 }
 
+// ── Icon Gradient Variants ──
+
+.icon-gradient--primary {
+  background: linear-gradient(135deg, #5470c6, #4460b0);
+}
+.icon-gradient--success {
+  background: linear-gradient(135deg, #91cc75, #7ab85e);
+}
+.icon-gradient--warning {
+  background: linear-gradient(135deg, #fac858, #e0b040);
+}
+.icon-gradient--danger {
+  background: linear-gradient(135deg, #e6a23c, #d18a2c);
+}
+
+// ── Pill Clickable Variant ──
+
+.issue-list__header-pill--clickable {
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  &:hover {
+    background: var(--el-fill-color);
+    transform: translateY(-1px);
+  }
+}
+
+// ── Sidebar Section Variants ──
+
+.issue-list__sidebar-section--spaced {
+  margin-top: 12px;
+}
+
+.issue-list__sidebar-section-header--danger {
+  border-left-color: var(--el-color-danger);
+}
+
+.issue-list__sidebar-section-header--success {
+  border-left-color: var(--el-color-success);
+}
+
 // ── Utilities ──
 
 .mb20 { margin-bottom: 20px; }

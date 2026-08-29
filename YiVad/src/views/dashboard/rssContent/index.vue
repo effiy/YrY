@@ -2,7 +2,7 @@
   <div class="rss-content-box" v-loading="loading">
     <!-- Header Card -->
     <div class="issue-list__header rss-header">
-      <div class="issue-list__header-icon" style="background:linear-gradient(135deg,#5470c6,#4460b0)">
+      <div class="issue-list__header-icon icon-gradient--primary">
         <el-icon><Reading /></el-icon>
       </div>
       <div class="issue-list__header-text">
@@ -10,7 +10,7 @@
         <p class="issue-list__header-desc">Aggregated articles from configured feeds</p>
       </div>
       <div class="issue-list__header-pills">
-        <div class="issue-list__header-pill" @click="clearAllFilters" style="cursor:pointer">
+        <div class="issue-list__header-pill issue-list__header-pill--clickable" @click="clearAllFilters">
           <span class="issue-list__header-pill-val">{{ rssData?.total ?? 0 }}</span>
           <span class="issue-list__header-pill-lbl">Total</span>
         </div>
@@ -84,28 +84,28 @@
           </div>
           <div class="issue-list__sidebar-section-body">
             <div class="issue-list__sidebar-card" @click="clearAllFilters">
-              <div class="issue-list__sidebar-card-icon" style="background:linear-gradient(135deg,#5470c6,#4460b0)"><el-icon><Reading /></el-icon></div>
+              <div class="issue-list__sidebar-card-icon icon-gradient--primary"><el-icon><Reading /></el-icon></div>
               <div class="issue-list__sidebar-card-info">
                 <span class="issue-list__sidebar-card-value">{{ rssData?.total ?? 0 }}</span>
                 <span class="issue-list__sidebar-card-label">Articles</span>
               </div>
             </div>
             <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon" style="background:linear-gradient(135deg,#91cc75,#7ab85e)"><el-icon><Connection /></el-icon></div>
+              <div class="issue-list__sidebar-card-icon icon-gradient--success"><el-icon><Connection /></el-icon></div>
               <div class="issue-list__sidebar-card-info">
                 <span class="issue-list__sidebar-card-value">{{ rssData?.sources.length ?? 0 }}</span>
                 <span class="issue-list__sidebar-card-label">Sources</span>
               </div>
             </div>
             <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon" style="background:linear-gradient(135deg,#fac858,#e0b040)"><el-icon><Collection /></el-icon></div>
+              <div class="issue-list__sidebar-card-icon icon-gradient--warning"><el-icon><Collection /></el-icon></div>
               <div class="issue-list__sidebar-card-info">
                 <span class="issue-list__sidebar-card-value">{{ rssData?.categories.length ?? 0 }}</span>
                 <span class="issue-list__sidebar-card-label">Categories</span>
               </div>
             </div>
             <div class="issue-list__sidebar-card">
-              <div class="issue-list__sidebar-card-icon" style="background:linear-gradient(135deg,#e6a23c,#d18a2c)"><el-icon><WarningFilled /></el-icon></div>
+              <div class="issue-list__sidebar-card-icon icon-gradient--danger"><el-icon><WarningFilled /></el-icon></div>
               <div class="issue-list__sidebar-card-info">
                 <span class="issue-list__sidebar-card-value">{{ rssData?.body_missing ?? 0 }}</span>
                 <span class="issue-list__sidebar-card-label">No Body</span>
@@ -117,8 +117,8 @@
             <el-progress :percentage="bodyCoveragePct" :stroke-width="6" :show-text="true" :color="qualityBarColor(bodyCoveragePct)" />
           </div>
         </div>
-        <div class="issue-list__sidebar-section" style="margin-top:12px">
-          <div class="issue-list__sidebar-section-header" style="border-left-color: var(--el-color-danger);">
+        <div class="issue-list__sidebar-section issue-list__sidebar-section--spaced">
+          <div class="issue-list__sidebar-section-header issue-list__sidebar-section-header--danger">
             <span class="issue-list__sidebar-section-label">Needs Attention</span>
           </div>
           <div class="issue-list__sidebar-section-body">
@@ -139,8 +139,8 @@
             </div>
           </div>
         </div>
-        <div class="issue-list__sidebar-section" style="margin-top:12px">
-          <div class="issue-list__sidebar-section-header" style="border-left-color: var(--el-color-success);">
+        <div class="issue-list__sidebar-section issue-list__sidebar-section--spaced">
+          <div class="issue-list__sidebar-section-header issue-list__sidebar-section-header--success">
             <span class="issue-list__sidebar-section-label">Data Quality</span>
             <span class="issue-list__sidebar-section-hint">{{ rssData?.total ?? 0 }} articles</span>
           </div>
