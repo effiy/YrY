@@ -37,7 +37,28 @@ export default {
       aiChat: { label: "AI 对话", desc: "Agent 驱动的智能助手" },
       knowledge: { label: "知识库", desc: "团队知识管理" },
       rag: { label: "RAG 检索", desc: "AI 增强检索问答" },
-      analytics: { label: "分析", desc: "数据统计与报表" }
+      analytics: { label: "分析", desc: "数据统计与报表" },
+      skills: { label: "技能", desc: "技能管理" },
+      rss: { label: "RSS", desc: "RSS 订阅内容" }
+    },
+
+    quickNavGroups: {
+      plan: { label: "P · 规划" },
+      build: { label: "D · 执行" },
+      quality: { label: "C · 检查" },
+      intelligence: { label: "A · 改进" }
+    },
+
+    knowledgeSubPages: {
+      aier: "AI",
+      curator: "Curator",
+      engineer: "Engineer",
+      executiver: "Executive",
+      leader: "Tech Lead",
+      producter: "Producter",
+      pipeline: "Pipeline",
+      skills: "Skills",
+      srer: "SRE"
     },
 
     project: {

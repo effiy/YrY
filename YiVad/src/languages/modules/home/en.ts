@@ -37,7 +37,28 @@ export default {
       aiChat: { label: "AI Chat", desc: "Agent-powered assistant" },
       knowledge: { label: "Knowledge", desc: "Team knowledge base" },
       rag: { label: "RAG", desc: "AI-enhanced retrieval" },
-      analytics: { label: "Analytics", desc: "Stats & reports" }
+      analytics: { label: "Analytics", desc: "Stats & reports" },
+      skills: { label: "Skills", desc: "Skills management" },
+      rss: { label: "RSS", desc: "RSS subscriptions" }
+    },
+
+    quickNavGroups: {
+      plan: { label: "P · Plan" },
+      build: { label: "D · Do" },
+      quality: { label: "C · Check" },
+      intelligence: { label: "A · Act" }
+    },
+
+    knowledgeSubPages: {
+      aier: "AI",
+      curator: "Curator",
+      engineer: "Engineer",
+      executiver: "Executive",
+      leader: "Tech Lead",
+      producter: "Producter",
+      pipeline: "Pipeline",
+      skills: "Skills",
+      srer: "SRE"
     },
 
     project: {
