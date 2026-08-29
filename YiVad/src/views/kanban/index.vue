@@ -604,6 +604,7 @@ onMounted(async () => {
   flex-direction: column;
   background: var(--el-bg-color-page);
   overflow: hidden;
+  min-height: 0;
 }
 
 .kanban__head {
@@ -613,6 +614,7 @@ onMounted(async () => {
   margin-bottom: 12px;
   flex-shrink: 0;
   gap: 16px;
+  min-width: 0;
 }
 
 .kanban__head-left {
@@ -620,6 +622,7 @@ onMounted(async () => {
   align-items: center;
   gap: 0;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .kanban__head-right {
@@ -627,22 +630,38 @@ onMounted(async () => {
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .kanban__board {
   display: flex;
   gap: 14px;
   flex: 1;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  align-items: stretch;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 12px 12px 4px;
+  align-items: flex-start;
+  scrollbar-width: thin;
+  scrollbar-color: var(--el-border-color) transparent;
 
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
   &::-webkit-scrollbar-thumb {
     background: var(--el-border-color);
-    border-radius: 3px;
-    &:hover { background: var(--el-border-color-dark); }
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--el-border-color-dark);
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 </style>

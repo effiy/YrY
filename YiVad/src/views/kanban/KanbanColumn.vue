@@ -81,21 +81,27 @@ const { t } = useI18n();
 
 <style scoped lang="scss">
 .kanban-col {
-  flex: 1;
-  min-width: 270px;
+  flex: 0 0 auto;
+  width: 290px;
+  min-width: 290px;
   display: flex;
   flex-direction: column;
   background: var(--el-fill-color-lighter);
   border-radius: 10px;
   overflow: hidden;
-  max-height: 100%;
+  min-height: 260px;
+  max-height: none;
   border: 1px solid var(--el-border-color-lighter);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .kanban-col__head {
   padding: 10px 14px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--el-border-color-lighter);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .kanban-col__head-row {
@@ -130,19 +136,12 @@ const { t } = useI18n();
 
 .kanban-col__body {
   flex: 1;
-  padding: 8px 10px;
-  overflow-y: auto;
+  padding: 10px;
+  overflow-y: visible;
   min-height: 50px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--el-border-color);
-    border-radius: 2px;
-  }
+  gap: 8px;
 }
 
 .kanban-col__empty {
@@ -154,8 +153,8 @@ const { t } = useI18n();
   gap: 8px;
   color: var(--el-text-color-placeholder);
   font-size: 13px;
-  padding: 24px;
-  min-height: 80px;
+  padding: 28px 24px;
+  min-height: 100px;
 }
 
 .kanban-col__card--ghost {
@@ -168,6 +167,9 @@ const { t } = useI18n();
   padding: 8px 10px;
   flex-shrink: 0;
   border-top: 1px solid var(--el-border-color-lighter);
+  position: sticky;
+  bottom: 0;
+  background: inherit;
   :deep(.el-button) {
     width: 100%;
     justify-content: flex-start;
