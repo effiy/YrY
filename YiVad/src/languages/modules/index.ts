@@ -10,6 +10,8 @@ import zhRss from "./rss/zh";
 import enRss from "./rss/en";
 import zhHome from "./home/zh";
 import enHome from "./home/en";
+import zhKanban from "./kanban/zh";
+import enKanban from "./kanban/en";
 
 export const messages = {
   zh: {
@@ -18,7 +20,8 @@ export const messages = {
     ...zhStory,
     ...zhTopicDetail,
     ...zhRss,
-    ...zhHome
+    ...zhHome,
+    ...zhKanban
   },
   en: {
     ...enCommon,
@@ -26,6 +29,7 @@ export const messages = {
     ...enStory,
     ...enTopicDetail,
     ...enRss,
-    ...enHome
+    ...enHome,
+    ...enKanban
   }
 };

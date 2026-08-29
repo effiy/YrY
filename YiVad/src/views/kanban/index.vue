@@ -2,272 +2,90 @@
   <div class="kanban">
     <div class="kanban__head">
       <div class="kanban__head-left">
-        <div class="kanban__head-stat" @click="clearFilters">
-          <span class="kanban__head-stat-value">{{ totalIssues }}</span>
-          <span class="kanban__head-stat-label">Total</span>
-        </div>
-        <div class="kanban__head-stat" :class="{ 'is-active': urgentCount > 0 }">
-          <span class="kanban__head-stat-value is-urgent">{{ urgentCount }}</span>
-          <span class="kanban__head-stat-label">Urgent</span>
-        </div>
-        <div class="kanban__head-stat" :class="{ 'is-active': overdueCount > 0 }">
-          <span class="kanban__head-stat-value is-overdue">{{ overdueCount }}</span>
-          <span class="kanban__head-stat-label">Overdue</span>
-        </div>
-        <div class="kanban__head-stat">
-          <span class="kanban__head-stat-value is-done">{{ doneCount }}</span>
-          <span class="kanban__head-stat-label">Done</span>
-        </div>
-        <div class="kanban__head-stat">
-          <span class="kanban__head-stat-value">{{ completionPct }}%</span>
-          <span class="kanban__head-stat-label">Completed</span>
-        </div>
+        <KanbanStats
+          :total-issues="totalIssues"
+          :urgent-count="urgentCount"
+          :overdue-count="overdueCount"
+          :done-count="doneCount"
+          :completion-pct="completionPct"
+          @clear-filters="clearFilters"
+        />
       </div>
       <div class="kanban__head-right">
-        <el-input
-          v-model="search"
-          placeholder="Search issues..."
-          size="small"
-          clearable
-          style="width: 200px"
-          @update:model-value="onSearchInput"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-        <HeroDateNav
+        <KanbanSearchBar
+          v-model:search="search"
           :filter-date="filterDate"
-          :label="filterDateLabel"
-          :is-today="isFilterToday"
-          @prev="goToPrevDay"
-          @next="goToNextDay"
-          @today="goToFilterToday"
-          @clear="clearFilterDate"
+          :filter-date-label="filterDateLabel"
+          :is-filter-today="isFilterToday"
+          @search-change="onSearchInput"
+          @prev-day="goToPrevDay"
+          @next-day="goToNextDay"
+          @go-today="goToFilterToday"
+          @clear-date="clearFilterDate"
         />
       </div>
     </div>
 
-    <div v-if="hasQuickFilters" class="kanban__filters">
-      <div class="kanban__filter-row">
-        <span class="kanban__filter-label">Type</span>
-        <el-check-tag
-          v-for="(label, val) in ISSUE_TYPE_MAP"
-          :key="val"
-          :checked="typeFilter.has(val)"
-          size="small"
-          @change="() => toggleTypeFilter(val)"
-        >
-          {{ label }}
-        </el-check-tag>
-      </div>
-      <div class="kanban__filter-row">
-        <span class="kanban__filter-label">Priority</span>
-        <el-check-tag
-          v-for="[val, label] in PRIORITY_FILTERS"
-          :key="val"
-          :checked="priorityFilter.has(val)"
-          size="small"
-          @change="() => togglePriorityFilter(val)"
-        >
-          {{ label }}
-        </el-check-tag>
-      </div>
-    </div>
+    <KanbanFilters
+      v-if="hasQuickFilters"
+      :type-filter="typeFilter"
+      :priority-filter="priorityFilter"
+      @toggle-type="toggleTypeFilter"
+      @toggle-priority="togglePriorityFilter"
+    />
 
-    <div class="kanban__stats" v-if="totalIssues > 0">
-      <div
-        v-for="col in columns"
-        :key="col.status"
-        class="kanban__stat-segment"
-        :style="{ width: statPct(col) + '%', background: col.color }"
-        :title="`${col.label}: ${col.issues.length}`"
-      />
-    </div>
+    <KanbanProgressBar
+      v-if="totalIssues > 0"
+      :segments="progressSegments"
+    />
 
     <div v-loading="loading" class="kanban__board">
-      <div v-for="col in columns" :key="col.status" class="kanban__col" :class="`kanban__col--${col.status}`">
-        <div class="kanban__col-head" :style="{ background: col.headerBg }">
-          <div class="kanban__col-head-row">
-            <span class="kanban__col-title">{{ col.label }}</span>
-            <div class="kanban__col-head-actions">
-              <el-tag size="small" round :type="col.countTagType">{{ col.issues.length }}</el-tag>
-              <el-dropdown trigger="click" @command="(cmd: string) => sortColumn(col, cmd)">
-                <el-button size="small" text style="padding: 2px 4px; margin-left: 2px;">
-                  <el-icon><Sort /></el-icon>
-                </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item command="priority">By Priority</el-dropdown-item>
-                    <el-dropdown-item command="due_date">By Due Date</el-dropdown-item>
-                    <el-dropdown-item command="updated_at">By Recent</el-dropdown-item>
-                    <el-dropdown-item command="created_at">By Created</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </div>
-          </div>
-          <div v-if="col.overdueCount > 0" class="kanban__col-overdue">
-            <el-icon><Clock /></el-icon> {{ col.overdueCount }} overdue
-          </div>
-        </div>
-
-        <draggable
-            :list="col.issues"
-            :group="{ name: 'issues', pull: true, put: true }"
-            item-key="key"
-            class="kanban__col-body"
-            ghost-class="kanban__card--ghost"
-            :animation="200"
-            @change="(evt: any) => onDragChange(evt, col.status)"
-          >
-            <template #item="{ element }">
-              <KanbanCard
-                :issue="element"
-                :project-name="projectName(element.project_key)"
-                :release-name="releaseName(element.release_key)"
-                @click="goDetail(element.key)"
-                @title-click="openPreview(element)"
-                @goal-click="goGoal(element.goal_id)"
-                @project-click="goProject(element.project_key)"
-                @release-click="goRelease(element.release_key)"
-                @contextmenu="(e: MouseEvent) => openContextMenu(e, element)"
-              />
-            </template>
-          </draggable>
-          <div v-if="col.issues.length === 0" class="kanban__col-empty">
-            <el-icon :size="28"><Folder /></el-icon>
-            <span>No issues</span>
-          </div>
-
-        <div class="kanban__col-foot">
-          <el-button text @click="openCreateDialog(col.status)"><el-icon><Plus /></el-icon>Add issue</el-button>
-        </div>
-      </div>
+      <KanbanColumn
+        v-for="col in columns"
+        :key="col.status"
+        :status="col.status"
+        :label="col.label"
+        :color="col.color"
+        :header-bg="col.headerBg"
+        :count-tag-type="col.countTagType"
+        :issues="col.issues"
+        :overdue-count="col.overdueCount"
+        @sort="(cmd) => sortColumn(col, cmd)"
+        @drag-change="(evt) => onDragChange(evt, col.status)"
+        @add="openCreateDialog(col.status)"
+      >
+        <template #card="{ element }">
+          <KanbanCard
+            :issue="element"
+            :project-name="projectName(element.project_key)"
+            :release-name="releaseName(element.release_key)"
+            @click="goDetail(element.key)"
+            @title-click="openPreview(element)"
+            @goal-click="goGoal(element.goal_id)"
+            @project-click="goProject(element.project_key)"
+            @release-click="goRelease(element.release_key)"
+            @contextmenu="(e: MouseEvent) => openContextMenu(e, element)"
+          />
+        </template>
+      </KanbanColumn>
     </div>
 
-    <!-- Context Menu -->
-    <teleport to="body">
-      <div
-        v-if="contextMenu.visible"
-        class="kanban__ctxmenu"
-        :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
-        @click.stop
-      >
-        <div class="kanban__ctxmenu-item" @click="ctxQuickStatus('todo')">
-          <el-icon><ArrowRight /></el-icon> Move to Todo
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxQuickStatus('in_progress')">
-          <el-icon><ArrowRight /></el-icon> Move to In Progress
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxQuickStatus('in_review')">
-          <el-icon><ArrowRight /></el-icon> Move to In Review
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxQuickStatus('done')">
-          <el-icon><CircleCheck /></el-icon> Move to Done
-        </div>
-        <div class="kanban__ctxmenu-divider" />
-        <div class="kanban__ctxmenu-item" @click="ctxEditPriority('urgent')">
-          <span class="kanban__ctxmenu-priority" style="color:#f56c6c">●</span> Urgent
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxEditPriority('high')">
-          <span class="kanban__ctxmenu-priority" style="color:#e6a23c">●</span> High
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxEditPriority('medium')">
-          <span class="kanban__ctxmenu-priority" style="color:#409eff">●</span> Medium
-        </div>
-        <div class="kanban__ctxmenu-item" @click="ctxEditPriority('low')">
-          <span class="kanban__ctxmenu-priority" style="color:#909399">●</span> Low
-        </div>
-        <div class="kanban__ctxmenu-divider" />
-        <div class="kanban__ctxmenu-item kanban__ctxmenu-item--danger" @click="ctxDelete">
-          <el-icon><Delete /></el-icon> Delete
-        </div>
-      </div>
-    </teleport>
+    <KanbanContextMenu
+      :visible="contextMenu.visible"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      @quick-status="ctxQuickStatus"
+      @edit-priority="ctxEditPriority"
+      @delete="ctxDelete"
+    />
 
-    <!-- Create Issue Dialog -->
-    <el-dialog
-      v-model="createDialog.visible"
-      title="Create Issue"
-      width="520px"
-      :close-on-click-modal="false"
-      destroy-on-close
-    >
-      <el-form :model="createDialog.form" label-position="top" size="small">
-        <el-form-item label="Title" prop="title" required>
-          <el-input v-model="createDialog.form.title" placeholder="Issue title" />
-        </el-form-item>
-        <el-row :gutter="12">
-          <el-col :span="8">
-            <el-form-item label="Type" prop="issue_type">
-              <el-select v-model="createDialog.form.issue_type" style="width:100%">
-                <el-option v-for="(label, val) in ISSUE_TYPE_MAP" :key="val" :label="label" :value="val" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Priority" prop="priority">
-              <el-select v-model="createDialog.form.priority" style="width:100%">
-                <el-option v-for="(label, val) in PRIORITY_OPTIONS" :key="val" :label="label" :value="val" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Status" prop="status">
-              <el-select v-model="createDialog.form.status" style="width:100%">
-                <el-option v-for="(label, val) in STATUS_OPTIONS" :key="val" :label="label" :value="val" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="12">
-          <el-col :span="12">
-            <el-form-item label="Assignee" prop="assignee">
-              <el-input v-model="createDialog.form.assignee" placeholder="Assignee" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Due Date" prop="due_date">
-              <el-date-picker
-                v-model="createDialog.form.due_date"
-                type="date"
-                placeholder="Pick a date"
-                style="width:100%"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="Labels" prop="labels">
-          <el-select
-            v-model="createDialog.form.labels"
-            multiple
-            filterable
-            allow-create
-            default-first-option
-            placeholder="Add labels"
-            style="width:100%"
-          />
-        </el-form-item>
-        <el-form-item label="Description" prop="description">
-          <el-input
-            v-model="createDialog.form.description"
-            type="textarea"
-            :rows="3"
-            placeholder="Optional description"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="createDialog.visible = false">Cancel</el-button>
-        <el-button type="primary" :loading="createDialog.loading" @click="submitCreate">
-          Create
-        </el-button>
-      </template>
-    </el-dialog>
+    <CreateIssueDialog
+      v-model:visible="createDialog.visible"
+      :loading="createDialog.loading"
+      :default-status="createDialog.defaultStatus"
+      @submit="submitCreate"
+    />
 
-    <!-- Issue Preview Dialog (same as issue detail page) -->
     <KnowledgePreviewDialog ref="descDialogRef" />
   </div>
 </template>
@@ -275,32 +93,37 @@
 <script setup lang="ts" name="kanbanBoard">
 import { onMounted, onUnmounted, reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { Plus, Search, Clock, Folder, Sort, ArrowRight, CircleCheck, Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import draggable from "vuedraggable";
 import { useIssueStore } from "@/stores/modules/issue";
 import { useProjectStore } from "@/stores/modules/project";
 import { getReleaseList } from "@/api/modules/releaseService";
 import type { Release } from "@/api/modules/releaseService";
 import {
   getIssueList, updateIssue, deleteIssue,
-  ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP, ISSUE_TYPE_MAP
+  ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP
 } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { goalRoleMap } from "@/views/knowledge/executiver/okrData";
 import KanbanCard from "./KanbanCard.vue";
+import KanbanStats from "./KanbanStats.vue";
+import KanbanColumn from "./KanbanColumn.vue";
+import KanbanFilters from "./KanbanFilters.vue";
+import KanbanProgressBar from "./KanbanProgressBar.vue";
+import KanbanSearchBar from "./KanbanSearchBar.vue";
+import KanbanContextMenu from "./KanbanContextMenu.vue";
+import CreateIssueDialog from "./CreateIssueDialog.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
-import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const router = useRouter();
 const issueStore = useIssueStore();
 const projectStore = useProjectStore();
 
 const loading = ref(false);
 
-// ── Date filter ──
 const filterDate = ref<Date | null>(null);
 const { label: filterDateLabel, isToday: isFilterToday, filterDateStr } = useDateFilter(filterDate);
 
@@ -324,20 +147,15 @@ function clearFilterDate() {
   filterDate.value = null;
   loadBoard();
 }
+
 const search = ref("");
 const typeFilter = ref(new Set<IssueType>());
 const priorityFilter = ref(new Set<IssuePriority>());
 
-const PRIORITY_FILTERS: [IssuePriority, string][] = [
-  ["urgent", "Urgent"], ["high", "High"], ["medium", "Medium"], ["low", "Low"]
-];
-
 const hasQuickFilters = computed(() => typeFilter.value.size > 0 || priorityFilter.value.size > 0);
 
-let searchTimer: ReturnType<typeof setTimeout> | null = null;
 function onSearchInput() {
-  if (searchTimer) clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => loadBoard(), 250);
+  loadBoard();
 }
 
 function toggleTypeFilter(val: IssueType) {
@@ -386,29 +204,22 @@ const columns = reactive<Column[]>([
   { status: "done", label: "Done", color: "#67c23a", headerBg: "var(--kanban-bg-done, linear-gradient(180deg, #f0f9eb 0%, #e1f3d8 100%))", countTagType: "success", issues: [], overdueCount: 0 }
 ]);
 
-function statPct(col: Column): number {
-  if (totalIssues.value === 0) return 0;
-  return Math.round((col.issues.length / totalIssues.value) * 100) || 0;
-}
+const progressSegments = computed(() =>
+  columns.map(col => ({
+    status: col.status,
+    label: col.label,
+    color: col.color,
+    count: col.issues.length,
+    width: totalIssues.value === 0 ? 0 : (Math.round((col.issues.length / totalIssues.value) * 100) || 0)
+  }))
+);
 
-// Create dialog
 const createDialog = reactive({
   visible: false,
   loading: false,
-  defaultStatus: "backlog" as IssueStatus,
-  form: {
-    title: "",
-    issue_type: "task" as IssueType,
-    priority: "medium" as IssuePriority,
-    status: "backlog" as IssueStatus,
-    assignee: "",
-    due_date: "",
-    labels: [] as string[],
-    description: ""
-  }
+  defaultStatus: "backlog" as IssueStatus
 });
 
-// Preview dialog (KnowledgePreviewDialog — same as issue detail page)
 const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
 async function openPreview(issue: Issue) {
   const date = (issue.created_at || "").slice(0, 10);
@@ -436,31 +247,24 @@ async function openPreview(issue: Issue) {
   });
 }
 
-const PRIORITY_OPTIONS: [IssuePriority, string][] = [
-  ["urgent", "Urgent"], ["high", "High"], ["medium", "Medium"], ["low", "Low"]
-];
-
-const STATUS_OPTIONS: [IssueStatus, string][] = [
-  ["backlog", "Backlog"], ["todo", "Todo"], ["in_progress", "In Progress"], ["in_review", "In Review"], ["done", "Done"]
-];
-
 function openCreateDialog(status: IssueStatus) {
   createDialog.defaultStatus = status;
-  createDialog.form = {
-    title: "",
-    issue_type: "task",
-    priority: "medium",
-    status,
-    assignee: "",
-    due_date: "",
-    labels: [],
-    description: ""
-  };
   createDialog.visible = true;
 }
 
-async function submitCreate() {
-  if (!createDialog.form.title.trim()) return;
+interface CreateIssueForm {
+  title: string;
+  issue_type: IssueType;
+  priority: IssuePriority;
+  status: IssueStatus;
+  assignee: string;
+  due_date: string;
+  labels: string[];
+  description: string;
+}
+
+async function submitCreate(form: CreateIssueForm) {
+  if (!form.title.trim()) return;
   createDialog.loading = true;
   try {
     const key = `ISS-${Date.now().toString(36).toUpperCase()}`;
@@ -468,17 +272,17 @@ async function submitCreate() {
       key,
       project_key: "default",
       sequence_id: Date.now(),
-      title: createDialog.form.title.trim(),
-      description: createDialog.form.description.trim() || undefined,
-      status: createDialog.form.status,
-      priority: createDialog.form.priority,
-      issue_type: createDialog.form.issue_type,
-      assignee: createDialog.form.assignee.trim() || "",
-      labels: createDialog.form.labels,
+      title: form.title.trim(),
+      description: form.description.trim() || undefined,
+      status: form.status,
+      priority: form.priority,
+      issue_type: form.issue_type,
+      assignee: form.assignee.trim() || "",
+      labels: form.labels,
       start_date: "",
-      due_date: createDialog.form.due_date
+      due_date: form.due_date
     });
-    ElMessage.success("Issue created");
+    ElMessage.success(t("kanban.createDialog.createSuccess"));
     createDialog.visible = false;
     loadBoard();
   } finally {
@@ -486,7 +290,6 @@ async function submitCreate() {
   }
 }
 
-// Context menu
 const contextMenu = reactive({ visible: false, x: 0, y: 0, issue: null as Issue | null });
 function openContextMenu(e: MouseEvent, issue: Issue) {
   contextMenu.x = Math.min(e.clientX, window.innerWidth - 180);
@@ -511,7 +314,7 @@ async function ctxEditPriority(priority: IssuePriority) {
   if (issue) {
     try {
       await updateIssue(issue.key, { priority });
-      ElMessage.success(`"${issue.title}" priority → ${ISSUE_PRIORITY_MAP[priority]}`);
+      ElMessage.success(t("kanban.message.priorityChanged", { name: issue.title, priority: ISSUE_PRIORITY_MAP[priority] }));
       loadBoard();
     } catch { loadBoard(); }
   }
@@ -521,9 +324,13 @@ async function ctxDelete() {
   closeContextMenu();
   if (!issue) return;
   try {
-    await ElMessageBox.confirm(`Delete "${issue.title}"?`, "Confirm", { type: "warning" });
+    await ElMessageBox.confirm(
+      t("kanban.createDialog.deleteConfirm.title", { name: issue.title }),
+      t("kanban.createDialog.deleteConfirm.okText"),
+      { type: "warning" }
+    );
     await deleteIssue(issue.key);
-    ElMessage.success("Deleted");
+    ElMessage.success(t("kanban.createDialog.deleteConfirm.success"));
     loadBoard();
   } catch { /* cancelled */ }
 }
@@ -531,7 +338,7 @@ async function ctxDelete() {
 async function quickChangeStatus(issue: Issue, newStatus: IssueStatus) {
   try {
     await updateIssue(issue.key, { status: newStatus });
-    ElMessage.success(`"${issue.title}" → ${ISSUE_STATUS_MAP[newStatus]}`);
+    ElMessage.success(t("kanban.message.statusChanged", { name: issue.title, status: ISSUE_STATUS_MAP[newStatus] }));
     loadBoard();
   } catch { loadBoard(); }
 }
@@ -589,7 +396,7 @@ async function onDragChange(evt: { added?: { element: Issue } }, newStatus: Issu
   const issue = evt.added.element;
   try {
     await updateIssue(issue.key, { status: newStatus });
-    ElMessage.success(`"${issue.title}" moved to ${ISSUE_STATUS_MAP[newStatus]}`);
+    ElMessage.success(t("kanban.message.movedTo", { name: issue.title, status: ISSUE_STATUS_MAP[newStatus] }));
   } catch {
     loadBoard();
   }
@@ -632,7 +439,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .kanban {
   padding: 20px 24px;
-  height: calc(100vh - 95px);
+  height: calc(100vh - 136px);
   display: flex;
   flex-direction: column;
   background: var(--el-bg-color-page);
@@ -655,94 +462,11 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.kanban__head-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-  position: relative;
-
-  &:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 15%;
-    height: 70%;
-    width: 1px;
-    background: var(--el-border-color-lighter);
-  }
-
-  &:hover { background: var(--el-fill-color-light); }
-
-  &:first-child {
-    cursor: pointer;
-    &:hover .kanban__head-stat-value { color: var(--el-color-primary); }
-  }
-}
-
-.kanban__head-stat-value {
-  font-size: 16px;
-  font-weight: 800;
-  font-family: "SF Mono", "Fira Code", monospace;
-  line-height: 1;
-  color: var(--el-text-color-primary);
-  font-variant-numeric: tabular-nums;
-
-  &.is-urgent { color: var(--el-color-danger); }
-  &.is-overdue { color: var(--el-color-warning); }
-  &.is-done { color: var(--el-color-success); }
-}
-
-.kanban__head-stat-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-
 .kanban__head-right {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-}
-
-.kanban__filters {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-}
-
-.kanban__filter-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.kanban__filter-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  min-width: 48px;
-}
-
-.kanban__stats {
-  display: flex;
-  height: 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  flex-shrink: 0;
-  background: var(--el-fill-color);
-}
-
-.kanban__stat-segment {
-  transition: width 0.4s ease;
-  min-width: 0;
 }
 
 .kanban__board {
@@ -760,145 +484,5 @@ onMounted(async () => {
     border-radius: 3px;
     &:hover { background: var(--el-border-color-dark); }
   }
-}
-
-.kanban__col {
-  flex: 1;
-  min-width: 270px;
-  display: flex;
-  flex-direction: column;
-  background: var(--el-fill-color-lighter);
-  border-radius: 10px;
-  overflow: hidden;
-  max-height: 100%;
-  border: 1px solid var(--el-border-color-lighter);
-}
-
-.kanban__col-head {
-  padding: 10px 14px;
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-
-.kanban__col-head-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.kanban__col-head-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.kanban__col-title {
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--el-text-color-primary);
-}
-
-.kanban__col-overdue {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin-top: 5px;
-  font-size: 11px;
-  color: var(--el-color-danger);
-  .el-icon { font-size: 12px; }
-}
-
-.kanban__col-body {
-  flex: 1;
-  padding: 8px 10px;
-  overflow-y: auto;
-  min-height: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--el-border-color);
-    border-radius: 2px;
-  }
-}
-
-.kanban__col-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--el-text-color-placeholder);
-  font-size: 13px;
-  padding: 24px;
-  min-height: 80px;
-}
-
-.kanban__card--ghost {
-  opacity: 0.35;
-  background: var(--el-color-primary-light-8);
-  border: 2px dashed var(--el-color-primary);
-}
-
-.kanban__col-foot {
-  padding: 8px 10px;
-  flex-shrink: 0;
-  border-top: 1px solid var(--el-border-color-lighter);
-  :deep(.el-button) {
-    width: 100%;
-    justify-content: flex-start;
-    color: var(--el-text-color-secondary);
-    &:hover { color: var(--el-color-primary); }
-  }
-}
-
-
-// Context menu
-.kanban__ctxmenu {
-  position: fixed;
-  z-index: 9999;
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  padding: 4px;
-  min-width: 180px;
-}
-
-.kanban__ctxmenu-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: 4px;
-  color: var(--el-text-color-primary);
-
-  .el-icon { font-size: 14px; color: var(--el-text-color-secondary); }
-
-  &:hover { background: var(--el-fill-color-light); }
-
-  &--danger {
-    color: var(--el-color-danger);
-    .el-icon { color: var(--el-color-danger); }
-    &:hover { background: var(--el-color-danger-light-9); }
-  }
-}
-
-.kanban__ctxmenu-priority {
-  font-size: 10px;
-}
-
-.kanban__ctxmenu-divider {
-  height: 1px;
-  background: var(--el-border-color-lighter);
-  margin: 4px 8px;
 }
 </style>
