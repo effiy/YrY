@@ -150,6 +150,323 @@ export default {
       relatedSessions: "Related aiChat sessions",
       relatedSessionsAll: "View all",
       relatedSessionsEmpty: "No related aiChat sessions yet"
+    },
+    manager: {
+      breadcrumb: {
+        executive: "Executive",
+        rss: "RSS"
+      },
+      sticky: {
+        allRolesTitle: "All Roles RSS Manager",
+        singleRoleTitle: "{name} RSS Manager",
+        multiRoleTitle: "{n} Roles RSS Manager",
+        allRolesDesc: "Aggregated RSS feeds and articles across all roles.",
+        feeds: "Feeds",
+        articles: "Articles",
+        today: "Today",
+        viewFeeds: "View feed sources",
+        viewArticles: "View all articles",
+        backToBriefing: "Back to today's briefing"
+      },
+      sidebar: {
+        sections: "Sections",
+        view: {
+          list: "List",
+          card: "Card",
+          table: "Table"
+        },
+        tabs: {
+          briefing: "Daily Briefing",
+          seeds: "Feed Sources",
+          items: "Articles"
+        }
+      },
+      briefing: {
+        title: "📰 Daily Briefing",
+        todayLabel: "Today · {date}",
+        goToday: "Today",
+        groupBy: {
+          source: "By Source",
+          category: "By Category"
+        },
+        resultCount: "{count} articles · {groups} {unit}",
+        groupUnit: {
+          source: "sources",
+          category: "categories"
+        },
+        refresh: "Refresh",
+        searchPlaceholder: "Search title, author...",
+        categoryAll: "All categories",
+        clear: "Clear",
+        activeFilters: {
+          search: "Search: {value}",
+          category: "Category: {value}"
+        },
+        charts: {
+          categoryDist: "Category Distribution",
+          topSources: "Top Sources",
+          volumeTrend: "Volume · Last {n} Days"
+        },
+        coverage: {
+          withSummary: "With summary",
+          withAuthor: "With author",
+          categorized: "Categorized"
+        },
+        empty: {
+          todayIcon: "🗞️",
+          dateIcon: "📭",
+          todayTitle: "No new articles today",
+          dateTitle: "No articles for this date",
+          todayHint: "Go to \"📡 Feed Sources\" to add and parse a feed — your daily briefing will appear here shortly.",
+          dateHint: "Try a different date, or jump back to today for the latest.",
+          backToday: "Back to Today",
+          noMatchIcon: "🔍",
+          noMatchTitle: "No matching articles",
+          noMatchHint: "The current search or category filters did not match any articles.",
+          clearFilters: "Clear filters"
+        },
+        table: {
+          noData: "No articles for this date.",
+          source: "Source",
+          title: "Title",
+          author: "Author",
+          published: "Published",
+          category: "Category",
+          summary: "Summary",
+          actions: "Actions",
+          detail: "Details",
+          deleteConfirm: "Delete this article?"
+        },
+        deleteOk: "Article deleted",
+        deleteFail: "Failed to delete article"
+      },
+      seeds: {
+        title: "📡 Feed Sources",
+        resultCount: "{filtered} of {total} sources",
+        addSource: "Add Source",
+        parseAllBtn: "Parse All",
+        quickParseBtn: "Quick Parse",
+        searchPlaceholder: "Search name, URL...",
+        table: {
+          noData: "No feed sources yet. Add one to start fetching articles.",
+          name: "Name",
+          feedUrl: "Feed URL",
+          category: "Category",
+          interval: "Interval",
+          active: "Active",
+          articles: "Articles",
+          lastParsed: "Last Parsed",
+          actions: "Actions",
+          parse: "Parse",
+          editing: "...",
+          edit: "Edit",
+          globalInterval: "global",
+          neverParsed: "never"
+        },
+        card: {
+          globalInterval: "global",
+          articles: "{n} articles",
+          neverParsed: "never"
+        },
+        deleteConfirm: "Remove this source and all its articles?",
+        added: "Added {n} new feed sources",
+        dialog: {
+          addTitle: "Add Source",
+          editTitle: "Edit Source",
+          feedUrl: "Feed URL",
+          feedUrlPlaceholder: "https://example.com/rss.xml",
+          name: "Name",
+          namePlaceholder: "Display name",
+          targetCategory: "Target Category",
+          autoClassify: "Auto-classify",
+          overrideHint: "Override classification target. Leave empty for auto.",
+          fetchInterval: "Fetch Interval",
+          globalDefault: "Global default",
+          schedulerHint: "Leave empty to use the global scheduler setting.",
+          status: "Status",
+          active: "Active",
+          paused: "Paused"
+        },
+        quickParse: {
+          title: "Quick Parse URL",
+          url: "URL",
+          urlPlaceholder: "https://example.com/rss.xml",
+          name: "Name",
+          nameOptional: "Optional",
+          parse: "Parse",
+          parseOk: "Parsed: {saved} new, {updated} updated",
+          parseFail: "Quick parse failed",
+          urlRequired: "URL is required"
+        },
+        save: {
+          urlRequired: "Feed URL is required",
+          updateOk: "Source updated",
+          addOk: "Source added",
+          fail: "Failed to save source"
+        },
+        remove: {
+          ok: "Source removed",
+          fail: "Failed to remove source"
+        },
+        toggle: {
+          enabled: "Source enabled",
+          disabled: "Source paused",
+          fail: "Failed to toggle source"
+        },
+        parseOne: {
+          ok: "Parsed: {saved} new, {updated} updated",
+          fail: "Parse failed"
+        },
+        parseAll: {
+          ok: "{total} sources: {ok} ok, {fail} failed",
+          fail: "Batch parse failed"
+        }
+      },
+      items: {
+        title: "📄 Articles",
+        resultCount: "{filtered} of {total} articles",
+        batchDelete: "Delete ({n})",
+        clearFilters: "Clear",
+        exportBtn: "Export",
+        refresh: "Refresh",
+        searchPlaceholder: "Search title, author...",
+        categoryAll: "All categories",
+        sourceAll: "All sources",
+        timePreset: {
+          all: "All",
+          today: "Today",
+          week: "Week",
+          month: "Month"
+        },
+        dateRange: {
+          from: "From",
+          to: "To"
+        },
+        sort: {
+          newest: "Newest",
+          oldest: "Oldest",
+          source: "Source",
+          category: "Category"
+        },
+        activeFilters: {
+          search: "Search: {value}",
+          category: "Category: {value}",
+          source: "Source: {value}",
+          date: "Date: {from} ~ {to}"
+        },
+        recent: {
+          label: "Recently opened",
+          clear: "✕",
+          clearTitle: "Clear recently opened"
+        },
+        empty: {
+          noMatch: "No matching articles",
+          noMatchHint: "Adjust the filters or role selection above.",
+          clearFilters: "Clear filters",
+          noItems: "No articles yet. Add a feed source and click Parse."
+        },
+        table: {
+          title: "Title",
+          published: "Published",
+          category: "Category",
+          actions: "Actions",
+          detail: "Details",
+          noData: {
+            filtered: "No matching articles.",
+            empty: "No articles yet. Add a feed source and click Parse."
+          },
+          deleteConfirm: "Delete this article?"
+        },
+        export: {
+          noData: "No articles to export.",
+          ok: "Exported {n} articles",
+          fail: "Failed to export articles"
+        },
+        delete: {
+          ok: "Article deleted",
+          fail: "Failed to delete article"
+        },
+        batch: {
+          title: "Batch Delete",
+          confirm: "Delete {n} articles?",
+          deleteBtn: "Delete",
+          cancel: "Cancel",
+          ok: "Deleted {n} articles"
+        }
+      },
+      detail: {
+        defaultTitle: "Article",
+        fields: {
+          source: "Source",
+          author: "Author",
+          category: "Category",
+          published: "Published",
+          tags: "Tags",
+          summary: "Summary",
+          noSummary: "No summary available for this article.",
+          body: "Body",
+          loadingBody: "Reading article body…",
+          noBodyFile: "No body file — metadata-only record.",
+          noBodyContent: "No body content.",
+          missingMarkdown: "The ingested markdown for this article is missing from YiKnowledge.",
+          unknown: "—"
+        },
+        open: "Open article"
+      },
+      categories: {
+        groups: {
+          executiver: "Executiver",
+          aier: "AI Engineer",
+          engineer: "Engineer",
+          sre: "SRE",
+          producter: "Product Manager",
+          curator: "Curator",
+          leader: "Leader"
+        },
+        options: {
+          executiver: {
+            industry: "Industry · market trends, competitors, reports",
+            strategy: "Strategy · frameworks, compliance, positioning",
+            roadmap: "Roadmap · planning, OKR, budget",
+            readingList: "Reading List · curated executive readings"
+          },
+          aier: {
+            methodology: "Methodology · tools, workflows, best practices",
+            foundations: "Foundations · papers, research, theory"
+          },
+          engineer: {
+            ship: "Ship · data & reliability",
+            learnLessons: "Learn · Lessons",
+            learnWins: "Learn · Wins",
+            learnFailures: "Learn · Failures"
+          },
+          srer: {
+            release: "Release · deployment, infrastructure"
+          },
+          producter: {
+            frameworks: "Frameworks · product strategy, growth"
+          },
+          curator: {
+            templates: "Templates · knowledge curation"
+          },
+          leader: {
+            leadership: "Tech Leadership · team, culture, scaling",
+            architecture: "Architecture · system design, patterns"
+          }
+        },
+        uncategorized: "Uncategorized",
+        unknownSource: "Unknown"
+      },
+      common: {
+        save: "Save",
+        cancel: "Cancel"
+      },
+      time: {
+        justNow: "just now",
+        minutesAgo: "{n}m ago",
+        hoursAgo: "{n}h ago",
+        daysAgo: "{n}d ago"
+      }
     }
   }
 };

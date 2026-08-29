@@ -2,8 +2,8 @@
   <div class="rss-role">
     <div class="rss-role__header">
       <el-breadcrumb separator="/" class="rss-role__breadcrumb">
-        <el-breadcrumb-item :to="{ path: '/executiver' }">Executive</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/executiver/rss' }">RSS</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/executiver' }">{{ t('rss.manager.breadcrumb.executive') }}</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/executiver/rss' }">{{ t('rss.manager.breadcrumb.rss') }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ roleData.name }}</el-breadcrumb-item>
       </el-breadcrumb>
       <RoleNav v-model="selectedRoles" multiple all :counts="roleCounts" />
@@ -20,28 +20,28 @@
           </div>
         </div>
         <div class="rss-role__sticky-right">
-          <div class="rss-role__stat-pill rss-role__stat-pill--feeds" title="View feed sources" @click="switchTab('seeds')">
+          <div class="rss-role__stat-pill rss-role__stat-pill--feeds" :title="t('rss.manager.sticky.viewFeeds')" @click="switchTab('seeds')">
             <span class="rss-role__stat-pill-icon">📡</span>
             <span class="rss-role__stat-pill-info">
               <span class="rss-role__stat-pill-value">{{ animatedFeeds }}</span>
-              <span class="rss-role__stat-pill-label">Feeds</span>
+              <span class="rss-role__stat-pill-label">{{ t('rss.manager.sticky.feeds') }}</span>
             </span>
           </div>
-          <div class="rss-role__stat-pill rss-role__stat-pill--articles" title="View all articles" @click="switchTab('items')">
+          <div class="rss-role__stat-pill rss-role__stat-pill--articles" :title="t('rss.manager.sticky.viewArticles')" @click="switchTab('items')">
             <span class="rss-role__stat-pill-icon">📄</span>
             <span class="rss-role__stat-pill-info">
               <span class="rss-role__stat-pill-value">{{ animatedArticles }}</span>
-              <span class="rss-role__stat-pill-label">Articles</span>
+              <span class="rss-role__stat-pill-label">{{ t('rss.manager.sticky.articles') }}</span>
             </span>
           </div>
-          <div class="rss-role__stat-pill rss-role__stat-pill--accent" title="Back to today's briefing" @click="goToBriefingToday">
+          <div class="rss-role__stat-pill rss-role__stat-pill--accent" :title="t('rss.manager.sticky.backToBriefing')" @click="goToBriefingToday">
             <span class="rss-role__stat-pill-icon">⚡</span>
             <span class="rss-role__stat-pill-info">
               <span class="rss-role__stat-pill-value">
                 {{ animatedToday }}
                 <span v-if="todayDelta !== 0" class="rss-role__stat-pill-delta" :class="todayDelta > 0 ? 'is-up' : 'is-down'">{{ todayDelta > 0 ? "+" : "" }}{{ todayDelta }}</span>
               </span>
-              <span class="rss-role__stat-pill-label">Today</span>
+              <span class="rss-role__stat-pill-label">{{ t('rss.manager.sticky.today') }}</span>
             </span>
           </div>
         </div>
@@ -50,26 +50,26 @@
 
     <div class="rss-role__body">
       <nav class="rss-role__sidebar">
-        <div class="rss-role__sidebar-title">Sections</div>
+        <div class="rss-role__sidebar-title">{{ t('rss.manager.sidebar.sections') }}</div>
         <div class="rss-role__sidebar-view">
           <template v-if="activeTab === 'briefing'">
             <el-radio-group v-model="briefingViewMode" size="small">
-              <el-radio-button value="list">List</el-radio-button>
-              <el-radio-button value="card">Card</el-radio-button>
-              <el-radio-button value="table">Table</el-radio-button>
+              <el-radio-button value="list">{{ t('rss.manager.sidebar.view.list') }}</el-radio-button>
+              <el-radio-button value="card">{{ t('rss.manager.sidebar.view.card') }}</el-radio-button>
+              <el-radio-button value="table">{{ t('rss.manager.sidebar.view.table') }}</el-radio-button>
             </el-radio-group>
           </template>
           <template v-else-if="activeTab === 'seeds'">
             <el-radio-group v-model="seedsViewMode" size="small">
-              <el-radio-button value="table">Table</el-radio-button>
-              <el-radio-button value="card">Card</el-radio-button>
+              <el-radio-button value="table">{{ t('rss.manager.sidebar.view.table') }}</el-radio-button>
+              <el-radio-button value="card">{{ t('rss.manager.sidebar.view.card') }}</el-radio-button>
             </el-radio-group>
           </template>
           <template v-else>
             <el-radio-group v-model="itemsViewMode" size="small">
-              <el-radio-button value="card">Card</el-radio-button>
-              <el-radio-button value="list">List</el-radio-button>
-              <el-radio-button value="table">Table</el-radio-button>
+              <el-radio-button value="card">{{ t('rss.manager.sidebar.view.card') }}</el-radio-button>
+              <el-radio-button value="list">{{ t('rss.manager.sidebar.view.list') }}</el-radio-button>
+              <el-radio-button value="table">{{ t('rss.manager.sidebar.view.table') }}</el-radio-button>
             </el-radio-group>
           </template>
         </div>
@@ -79,7 +79,7 @@
           @click="switchTab('briefing')"
         >
           <span class="rss-role__sidebar-icon">📰</span>
-          <span class="rss-role__sidebar-label">每日简报</span>
+          <span class="rss-role__sidebar-label">{{ t('rss.manager.sidebar.tabs.briefing') }}</span>
           <span class="rss-role__sidebar-badge" :data-count="todayCount">{{ todayCount }}</span>
         </button>
         <button
@@ -88,7 +88,7 @@
           @click="switchTab('seeds')"
         >
           <span class="rss-role__sidebar-icon">📡</span>
-          <span class="rss-role__sidebar-label">Feed Sources</span>
+          <span class="rss-role__sidebar-label">{{ t('rss.manager.sidebar.tabs.seeds') }}</span>
           <span class="rss-role__sidebar-badge" :data-count="feedsCount">{{ feedsCount }}</span>
         </button>
         <button
@@ -97,7 +97,7 @@
           @click="switchTab('items')"
         >
           <span class="rss-role__sidebar-icon">📄</span>
-          <span class="rss-role__sidebar-label">Articles</span>
+          <span class="rss-role__sidebar-label">{{ t('rss.manager.sidebar.tabs.items') }}</span>
           <span class="rss-role__sidebar-badge" :data-count="totalItems">{{ totalItems }}</span>
         </button>
       </nav>
@@ -106,20 +106,20 @@
         <!-- ═══ Briefing ═══ -->
         <section v-if="activeTab === 'briefing'" class="rss-role__section">
           <div class="rss-role__section-head">
-            <h2 class="rss-role__section-title">📰 每日简报</h2>
+            <h2 class="rss-role__section-title">{{ t('rss.manager.briefing.title') }}</h2>
             <div class="rss-briefing__date-nav">
               <el-button size="small" :icon="ArrowLeft" text @click="goToPrevDay" :disabled="briefingLoading" />
               <span class="rss-briefing__date">{{ briefingDateLabel }}</span>
               <el-button size="small" :icon="ArrowRight" text @click="goToNextDay" :disabled="isToday" />
-              <el-button v-if="!isToday" size="small" text type="primary" @click="goToToday" :disabled="briefingLoading">Today</el-button>
+              <el-button v-if="!isToday" size="small" text type="primary" @click="goToToday" :disabled="briefingLoading">{{ t('rss.manager.briefing.goToday') }}</el-button>
             </div>
             <el-radio-group v-if="briefingViewMode === 'list'" v-model="briefingGroupBy" size="small">
-              <el-radio-button value="source">按来源</el-radio-button>
-              <el-radio-button value="category">按分类</el-radio-button>
+              <el-radio-button value="source">{{ t('rss.manager.briefing.groupBy.source') }}</el-radio-button>
+              <el-radio-button value="category">{{ t('rss.manager.briefing.groupBy.category') }}</el-radio-button>
             </el-radio-group>
             <span class="rss-role__toolbar-right">
-              <span v-if="filteredBriefingCount" class="rss-role__result-count">{{ filteredBriefingCount }} 篇文章 · {{ briefingGroups.length }} 个{{ briefingGroupBy === 'category' ? '分类' : '来源' }}</span>
-              <el-button size="small" :icon="Refresh" @click="loadBriefing" :loading="briefingLoading">刷新</el-button>
+              <span v-if="filteredBriefingCount" class="rss-role__result-count">{{ t('rss.manager.briefing.resultCount', { count: filteredBriefingCount, groups: briefingGroups.length, unit: t('rss.manager.briefing.groupUnit.' + briefingGroupBy) }) }}</span>
+              <el-button size="small" :icon="Refresh" @click="loadBriefing" :loading="briefingLoading">{{ t('rss.manager.briefing.refresh') }}</el-button>
             </span>
           </div>
 
@@ -127,20 +127,20 @@
             <div class="rss-role__toolbar">
               <el-input
                 v-model="briefingSearch"
-                placeholder="Search title, author..."
+                :placeholder="t('rss.manager.briefing.searchPlaceholder')"
                 clearable
                 :prefix-icon="Search"
                 style="width:180px"
               />
-              <el-select v-model="briefingCategoryFilter" placeholder="All categories" clearable style="width:180px">
+              <el-select v-model="briefingCategoryFilter" :placeholder="t('rss.manager.briefing.categoryAll')" clearable style="width:180px">
                 <el-option v-for="c in categoryOptions" :key="c.value" :label="`${c.icon} ${c.label}`" :value="c.value" />
               </el-select>
-              <el-button v-if="briefingSearch || briefingCategoryFilter" size="small" text @click="clearBriefingFilters">Clear</el-button>
+              <el-button v-if="briefingSearch || briefingCategoryFilter" size="small" text @click="clearBriefingFilters">{{ t('rss.manager.briefing.clear') }}</el-button>
             </div>
 
             <div v-if="briefingSearch || briefingCategoryFilter" class="rss-role__active-filters">
-              <el-tag v-if="briefingSearch" size="small" closable @close="briefingSearch = ''">Search: {{ briefingSearch }}</el-tag>
-              <el-tag v-if="briefingCategoryFilter" size="small" closable @close="briefingCategoryFilter = ''">Category: {{ briefingCategoryFilter }}</el-tag>
+              <el-tag v-if="briefingSearch" size="small" closable @close="briefingSearch = ''">{{ t('rss.manager.briefing.activeFilters.search', { value: briefingSearch }) }}</el-tag>
+              <el-tag v-if="briefingCategoryFilter" size="small" closable @close="briefingCategoryFilter = ''">{{ t('rss.manager.briefing.activeFilters.category', { value: briefingCategoryFilter }) }}</el-tag>
             </div>
 
             <div v-if="briefingCoverage" class="rss-briefing__coverage">
@@ -153,31 +153,31 @@
 
             <div v-if="briefingItems.length || dailyVolume.length" class="rss-briefing__charts">
               <div v-if="briefingItems.length" class="rss-briefing__chart">
-                <div class="rss-briefing__chart-title">Category Distribution</div>
+                <div class="rss-briefing__chart-title">{{ t('rss.manager.briefing.charts.categoryDist') }}</div>
                 <ECharts :option="briefingCategoryOption" height="200" />
               </div>
               <div v-if="briefingItems.length" class="rss-briefing__chart">
-                <div class="rss-briefing__chart-title">Top Sources</div>
+                <div class="rss-briefing__chart-title">{{ t('rss.manager.briefing.charts.topSources') }}</div>
                 <ECharts :option="briefingSourceOption" height="200" />
               </div>
               <div class="rss-briefing__chart rss-briefing__chart--full">
-                <div class="rss-briefing__chart-title">Volume · Last {{ dailyVolume.length }} Days</div>
+                <div class="rss-briefing__chart-title">{{ t('rss.manager.briefing.charts.volumeTrend', { n: dailyVolume.length }) }}</div>
                 <ECharts :option="briefingVolumeOption" height="180" v-loading="volumeLoading" />
               </div>
             </div>
 
             <div v-if="!briefingLoading && !briefingItems.length" class="rss-briefing__empty">
-              <span class="rss-briefing__empty-icon">{{ isToday ? '🗞️' : '📭' }}</span>
-              <p class="rss-briefing__empty-title">{{ isToday ? '今日暂无新文章' : '该日期暂无文章' }}</p>
-              <p class="rss-briefing__empty-hint">{{ isToday ? '前往「📡 Feed Sources」添加源并解析，稍后即可在这里生成每日简报。' : '换个日期看看，或返回今日查看最新文章。' }}</p>
-              <el-button v-if="!isToday" size="small" type="primary" @click="goToToday">返回今日</el-button>
+              <span class="rss-briefing__empty-icon">{{ isToday ? t('rss.manager.briefing.empty.todayIcon') : t('rss.manager.briefing.empty.dateIcon') }}</span>
+              <p class="rss-briefing__empty-title">{{ isToday ? t('rss.manager.briefing.empty.todayTitle') : t('rss.manager.briefing.empty.dateTitle') }}</p>
+              <p class="rss-briefing__empty-hint">{{ isToday ? t('rss.manager.briefing.empty.todayHint') : t('rss.manager.briefing.empty.dateHint') }}</p>
+              <el-button v-if="!isToday" size="small" type="primary" @click="goToToday">{{ t('rss.manager.briefing.empty.backToday') }}</el-button>
             </div>
 
             <div v-else-if="!briefingLoading && !filteredBriefingCount" class="rss-briefing__empty">
-              <span class="rss-briefing__empty-icon">🔍</span>
-              <p class="rss-briefing__empty-title">没有匹配的文章</p>
-              <p class="rss-briefing__empty-hint">当前搜索或分类筛选没有命中任何文章。</p>
-              <el-button size="small" text type="primary" @click="clearBriefingFilters">清除筛选</el-button>
+              <span class="rss-briefing__empty-icon">{{ t('rss.manager.briefing.empty.noMatchIcon') }}</span>
+              <p class="rss-briefing__empty-title">{{ t('rss.manager.briefing.empty.noMatchTitle') }}</p>
+              <p class="rss-briefing__empty-hint">{{ t('rss.manager.briefing.empty.noMatchHint') }}</p>
+              <el-button size="small" text type="primary" @click="clearBriefingFilters">{{ t('rss.manager.briefing.empty.clearFilters') }}</el-button>
             </div>
 
             <div v-else-if="briefingGroups.length" class="rss-briefing__groups">
@@ -189,52 +189,52 @@
                 border
                 style="width:100%"
                 row-key="key"
-                :empty-text="'No articles for this date.'"
+                :empty-text="t('rss.manager.briefing.table.noData')"
               >
-                <el-table-column label="Source" width="150" show-overflow-tooltip>
+                <el-table-column :label="t('rss.manager.briefing.table.source')" width="150" show-overflow-tooltip>
                   <template #default="{ row }">
                     <span class="rss-role__item-source">{{ (row as RssItemDocument).source_name }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="Title" min-width="320">
+                <el-table-column :label="t('rss.manager.briefing.table.title')" min-width="320">
                   <template #default="{ row }">
                     <a :href="(row as RssItemDocument).link" target="_blank" rel="noopener noreferrer" class="rss-role__item-link" @click.stop="addRecentArticle(row as RssItemDocument)">
                       {{ (row as RssItemDocument).title }}
                     </a>
                   </template>
                 </el-table-column>
-                <el-table-column label="Author" width="140" show-overflow-tooltip>
+                <el-table-column :label="t('rss.manager.briefing.table.author')" width="140" show-overflow-tooltip>
                   <template #default="{ row }">
                     <span v-if="(row as RssItemDocument).author">{{ (row as RssItemDocument).author }}</span>
-                    <span v-else class="rss-role__text-muted">—</span>
+                    <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="Published" width="120" align="center">
+                <el-table-column :label="t('rss.manager.briefing.table.published')" width="120" align="center">
                   <template #default="{ row }">
                     <el-tooltip :content="formatDate((row as RssItemDocument).published)" placement="top" :show-after="400">
                       <span class="rss-role__date">{{ formatRelativeTime((row as RssItemDocument).published) }}</span>
                     </el-tooltip>
                   </template>
                 </el-table-column>
-                <el-table-column label="Category" width="160" show-overflow-tooltip>
+                <el-table-column :label="t('rss.manager.briefing.table.category')" width="160" show-overflow-tooltip>
                   <template #default="{ row }">
                     <span v-if="subCategory((row as RssItemDocument).category_path)" class="rss-role__cat-chip">
                       <span class="rss-role__cat-dot" :style="{ background: roleColor((row as RssItemDocument).category_path) }"></span>
                       {{ subCategory((row as RssItemDocument).category_path) }}
                     </span>
-                    <span v-else class="rss-role__text-muted">—</span>
+                    <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="Summary" min-width="240" show-overflow-tooltip>
+                <el-table-column :label="t('rss.manager.briefing.table.summary')" min-width="240" show-overflow-tooltip>
                   <template #default="{ row }">
                     <span v-if="(row as RssItemDocument).summary">{{ trimSummary((row as RssItemDocument).summary!) }}</span>
-                    <span v-else class="rss-role__text-muted">—</span>
+                    <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="Actions" width="180" fixed="right" align="center">
+                <el-table-column :label="t('rss.manager.briefing.table.actions')" width="180" fixed="right" align="center">
                   <template #default="{ row }">
-                    <el-button size="small" text :icon="View" title="Details" @click.stop="openArticleDetail(row as RssItemDocument)" />
-                    <el-popconfirm title="Delete this article?" @confirm="removeBriefingItem(row as RssItemDocument)">
+                    <el-button size="small" text :icon="View" :title="t('rss.manager.briefing.table.detail')" @click.stop="openArticleDetail(row as RssItemDocument)" />
+                    <el-popconfirm :title="t('rss.manager.briefing.table.deleteConfirm')" @confirm="removeBriefingItem(row as RssItemDocument)">
                       <template #reference>
                         <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                       </template>
@@ -269,7 +269,7 @@
                       <p v-if="item.summary" class="rss-briefing__item-summary">{{ stripHtml(item.summary) }}</p>
                     </div>
                     <div class="rss-briefing__item-actions">
-                      <el-popconfirm title="Delete this article?" @confirm="removeBriefingItem(item)">
+                      <el-popconfirm :title="t('rss.manager.briefing.table.deleteConfirm')" @confirm="removeBriefingItem(item)">
                         <template #reference>
                           <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                         </template>
@@ -284,7 +284,7 @@
                 <el-card v-for="item in allBriefingItems" :key="item.key || item.link" class="rss-role__item-card" shadow="hover" @click="onArticleRowClick(item)">
                   <div class="rss-role__item-card-top">
                     <span class="rss-role__item-card-date">{{ formatRelativeTime(item.published) }}</span>
-                    <el-popconfirm title="Delete this article?" @confirm="removeBriefingItem(item)">
+                    <el-popconfirm :title="t('rss.manager.briefing.table.deleteConfirm')" @confirm="removeBriefingItem(item)">
                       <template #reference>
                         <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                       </template>
@@ -307,12 +307,12 @@
         <!-- ═══ Feed Sources ═══ -->
         <section v-if="activeTab === 'seeds'" class="rss-role__section">
           <div class="rss-role__section-head">
-            <h2 class="rss-role__section-title">📡 Feed Sources</h2>
-            <span class="rss-role__result-count">{{ filteredSeeds.length }} of {{ feedsCount }} sources</span>
+            <h2 class="rss-role__section-title">{{ t('rss.manager.seeds.title') }}</h2>
+            <span class="rss-role__result-count">{{ t('rss.manager.seeds.resultCount', { filtered: filteredSeeds.length, total: feedsCount }) }}</span>
             <span class="rss-role__toolbar-right">
-              <el-button type="primary" :icon="Plus" @click="openSeedDialog()">Add Source</el-button>
-              <el-button :icon="Refresh" @click="parseAllFeeds" :loading="parseAllLoading">Parse All</el-button>
-              <el-button :icon="Link" @click="quickParseVisible = true">Quick Parse</el-button>
+              <el-button type="primary" :icon="Plus" @click="openSeedDialog()">{{ t('rss.manager.seeds.addSource') }}</el-button>
+              <el-button :icon="Refresh" @click="parseAllFeeds" :loading="parseAllLoading">{{ t('rss.manager.seeds.parseAllBtn') }}</el-button>
+              <el-button :icon="Link" @click="quickParseVisible = true">{{ t('rss.manager.seeds.quickParseBtn') }}</el-button>
             </span>
           </div>
 
@@ -320,7 +320,7 @@
             <div class="rss-role__toolbar">
               <el-input
                 v-model="seedSearch"
-                placeholder="Search name, URL..."
+                :placeholder="t('rss.manager.seeds.searchPlaceholder')"
                 clearable
                 :prefix-icon="Search"
                 style="width:220px"
@@ -334,33 +334,33 @@
               border
               style="width:100%"
               row-key="url"
-              :empty-text="seedsLoading ? '' : 'No feed sources yet. Add one to start fetching articles.'"
+              :empty-text="seedsLoading ? '' : t('rss.manager.seeds.table.noData')"
               >
-              <el-table-column prop="name" label="Name" min-width="140" show-overflow-tooltip />
-              <el-table-column label="Feed URL" min-width="240">
+              <el-table-column prop="name" :label="t('rss.manager.seeds.table.name')" min-width="140" show-overflow-tooltip />
+              <el-table-column :label="t('rss.manager.seeds.table.feedUrl')" min-width="240">
                 <template #default="{ row }">
                   <span class="rss-role__seed-url">
                     <span class="rss-role__seed-url-text">{{ (row as RssSeedDocument).url }}</span>
                   </span>
                 </template>
               </el-table-column>
-              <el-table-column label="Category" width="150" show-overflow-tooltip>
+              <el-table-column :label="t('rss.manager.seeds.table.category')" width="150" show-overflow-tooltip>
                 <template #default="{ row }">
                   <span v-if="subCategory((row as RssSeedDocument).category)" class="rss-role__cat-chip">
                     <span class="rss-role__cat-dot" :style="{ background: roleColor((row as RssSeedDocument).category) }"></span>{{ subCategory((row as RssSeedDocument).category) }}
                   </span>
-                  <span v-else class="rss-role__text-muted">—</span>
+                  <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="Interval" width="90" align="center">
+              <el-table-column :label="t('rss.manager.seeds.table.interval')" width="90" align="center">
                 <template #default="{ row }">
                   <span v-if="seedIntervals[(row as RssSeedDocument).url]" class="rss-role__schedule-badge">
                     {{ formatInterval(seedIntervals[(row as RssSeedDocument).url]) }}
                   </span>
-                  <span v-else class="rss-role__text-muted">global</span>
+                  <span v-else class="rss-role__text-muted">{{ t('rss.manager.seeds.table.globalInterval') }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="Active" width="70" align="center">
+              <el-table-column :label="t('rss.manager.seeds.table.active')" width="70" align="center">
                 <template #default="{ row }">
                   <el-switch
                     :model-value="(row as RssSeedDocument).enabled !== false"
@@ -371,29 +371,29 @@
                   />
                 </template>
               </el-table-column>
-              <el-table-column label="Articles" width="80" align="center">
+              <el-table-column :label="t('rss.manager.seeds.table.articles')" width="80" align="center">
                 <template #default="{ row }">
                   <span v-if="seedArticleCounts[(row as RssSeedDocument).url] !== undefined" class="rss-role__article-count">
                     {{ seedArticleCounts[(row as RssSeedDocument).url] }}
                   </span>
-                  <span v-else class="rss-role__text-muted">—</span>
+                  <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="Last Parsed" width="110" align="center">
+              <el-table-column :label="t('rss.manager.seeds.table.lastParsed')" width="110" align="center">
                 <template #default="{ row }">
                   <el-tooltip v-if="parseTimes[(row as RssSeedDocument).url]" :content="formatTime(new Date(parseTimes[(row as RssSeedDocument).url]))" placement="top" :show-after="400">
                     <span class="rss-role__date">{{ formatTimeAgo(parseTimes[(row as RssSeedDocument).url]) }}</span>
                   </el-tooltip>
-                  <span v-else class="rss-role__text-muted">never</span>
+                  <span v-else class="rss-role__text-muted">{{ t('rss.manager.seeds.table.neverParsed') }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="Actions" width="190" fixed="right">
+              <el-table-column :label="t('rss.manager.seeds.table.actions')" width="190" fixed="right">
                 <template #default="{ row }">
                   <el-button size="small" text type="primary" :loading="parsingSeed === (row as RssSeedDocument).url" @click.stop="parseOneFeed(row as RssSeedDocument)">
-                    {{ parsingSeed === (row as RssSeedDocument).url ? '...' : 'Parse' }}
+                    {{ parsingSeed === (row as RssSeedDocument).url ? t('rss.manager.seeds.table.editing') : t('rss.manager.seeds.table.parse') }}
                   </el-button>
-                  <el-button size="small" text @click.stop="openSeedDialog(row as RssSeedDocument)">Edit</el-button>
-                  <el-popconfirm title="Remove this source and all its articles?" @confirm="removeSeed(row as RssSeedDocument)">
+                  <el-button size="small" text @click.stop="openSeedDialog(row as RssSeedDocument)">{{ t('rss.manager.seeds.table.edit') }}</el-button>
+                  <el-popconfirm :title="t('rss.manager.seeds.deleteConfirm')" @confirm="removeSeed(row as RssSeedDocument)">
                     <template #reference>
                       <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                     </template>
@@ -419,15 +419,15 @@
                     <span class="rss-role__cat-dot" :style="{ background: roleColor(seed.category) }"></span>{{ subCategory(seed.category) }}
                   </span>
                   <span v-if="seedIntervals[seed.url]">{{ formatInterval(seedIntervals[seed.url]) }}</span>
-                  <span v-else>global</span>
-                  <span v-if="seedArticleCounts[seed.url] !== undefined">{{ seedArticleCounts[seed.url] }} articles</span>
+                  <span v-else>{{ t('rss.manager.seeds.card.globalInterval') }}</span>
+                  <span v-if="seedArticleCounts[seed.url] !== undefined">{{ t('rss.manager.seeds.card.articles', { n: seedArticleCounts[seed.url] }) }}</span>
                   <span v-if="parseTimes[seed.url]">{{ formatTimeAgo(parseTimes[seed.url]) }}</span>
-                  <span v-else>never</span>
+                  <span v-else>{{ t('rss.manager.seeds.card.neverParsed') }}</span>
                 </div>
                 <div class="rss-role__seed-card-actions">
-                  <el-button size="small" text type="primary" :loading="parsingSeed === seed.url" @click.stop="parseOneFeed(seed)">{{ parsingSeed === seed.url ? '...' : 'Parse' }}</el-button>
-                  <el-button size="small" text @click.stop="openSeedDialog(seed)">Edit</el-button>
-                  <el-popconfirm title="Remove this source and all its articles?" @confirm="removeSeed(seed)">
+                  <el-button size="small" text type="primary" :loading="parsingSeed === seed.url" @click.stop="parseOneFeed(seed)">{{ parsingSeed === seed.url ? t('rss.manager.seeds.table.editing') : t('rss.manager.seeds.table.parse') }}</el-button>
+                  <el-button size="small" text @click.stop="openSeedDialog(seed)">{{ t('rss.manager.seeds.table.edit') }}</el-button>
+                  <el-popconfirm :title="t('rss.manager.seeds.deleteConfirm')" @confirm="removeSeed(seed)">
                     <template #reference>
                       <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                     </template>
@@ -441,13 +441,13 @@
         <!-- ═══ Articles ═══ -->
         <section v-if="activeTab === 'items'" class="rss-role__section">
           <div class="rss-role__section-head">
-            <h2 class="rss-role__section-title">📄 Articles</h2>
-            <span class="rss-role__result-count">{{ items.length }} of {{ totalItems }} articles</span>
+            <h2 class="rss-role__section-title">{{ t('rss.manager.items.title') }}</h2>
+            <span class="rss-role__result-count">{{ t('rss.manager.items.resultCount', { filtered: items.length, total: totalItems }) }}</span>
             <span class="rss-role__toolbar-right">
-              <el-button v-if="selectedItems.length" type="danger" size="small" @click="batchDelete">Delete ({{ selectedItems.length }})</el-button>
-              <el-button v-if="hasActiveFilters" size="small" text @click="clearFilters">Clear</el-button>
-              <el-button size="small" text :icon="Download" :loading="exportingItems" @click="exportItems">Export</el-button>
-              <el-button size="small" text :icon="Refresh" @click="loadItems">Refresh</el-button>
+              <el-button v-if="selectedItems.length" type="danger" size="small" @click="batchDelete">{{ t('rss.manager.items.batchDelete', { n: selectedItems.length }) }}</el-button>
+              <el-button v-if="hasActiveFilters" size="small" text @click="clearFilters">{{ t('rss.manager.items.clearFilters') }}</el-button>
+              <el-button size="small" text :icon="Download" :loading="exportingItems" @click="exportItems">{{ t('rss.manager.items.exportBtn') }}</el-button>
+              <el-button size="small" text :icon="Refresh" @click="loadItems">{{ t('rss.manager.items.refresh') }}</el-button>
             </span>
           </div>
 
@@ -455,58 +455,58 @@
             <div class="rss-role__toolbar">
               <el-input
                 v-model="itemSearch"
-                placeholder="Search title, author..."
+                :placeholder="t('rss.manager.items.searchPlaceholder')"
                 clearable
                 :prefix-icon="Search"
                 style="width:180px"
                 @clear="onItemFilterChange"
                 @keyup.enter="onItemFilterChange"
               />
-              <el-select v-model="itemCategoryFilter" placeholder="All categories" clearable style="width:160px" @change="onItemFilterChange">
+              <el-select v-model="itemCategoryFilter" :placeholder="t('rss.manager.items.categoryAll')" clearable style="width:160px" @change="onItemFilterChange">
                 <el-option v-for="c in categoryOptions" :key="c.value" :label="`${c.icon} ${c.label}`" :value="c.value" />
               </el-select>
-              <el-select v-model="itemSourceFilter" placeholder="All sources" clearable style="width:140px" @change="onItemFilterChange">
+              <el-select v-model="itemSourceFilter" :placeholder="t('rss.manager.items.sourceAll')" clearable style="width:140px" @change="onItemFilterChange">
                 <el-option v-for="s in seedOptions" :key="s.value" :label="s.label" :value="s.value" />
               </el-select>
               <el-radio-group v-model="timePreset" size="small" @change="setTimePreset">
-                <el-radio-button value="all">All</el-radio-button>
-                <el-radio-button value="today">Today</el-radio-button>
-                <el-radio-button value="week">Week</el-radio-button>
-                <el-radio-button value="month">Month</el-radio-button>
+                <el-radio-button value="all">{{ t('rss.manager.items.timePreset.all') }}</el-radio-button>
+                <el-radio-button value="today">{{ t('rss.manager.items.timePreset.today') }}</el-radio-button>
+                <el-radio-button value="week">{{ t('rss.manager.items.timePreset.week') }}</el-radio-button>
+                <el-radio-button value="month">{{ t('rss.manager.items.timePreset.month') }}</el-radio-button>
               </el-radio-group>
               <el-date-picker
                 v-model="itemDateRange"
                 type="daterange"
                 range-separator="~"
-                start-placeholder="From"
-                end-placeholder="To"
+                :start-placeholder="t('rss.manager.items.dateRange.from')"
+                :end-placeholder="t('rss.manager.items.dateRange.to')"
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
                 style="width:220px"
                 @change="timePreset = ''; onItemFilterChange()"
               />
               <el-select v-model="itemSortKey" style="width:110px" @change="onItemFilterChange">
-                <el-option label="Newest" value="published_parsed" />
-                <el-option label="Oldest" value="published_parsed-asc" />
-                <el-option label="Source" value="source_name" />
-                <el-option label="Category" value="category_path" />
+                <el-option :label="t('rss.manager.items.sort.newest')" value="published_parsed" />
+                <el-option :label="t('rss.manager.items.sort.oldest')" value="published_parsed-asc" />
+                <el-option :label="t('rss.manager.items.sort.source')" value="source_name" />
+                <el-option :label="t('rss.manager.items.sort.category')" value="category_path" />
               </el-select>
             </div>
 
             <div v-if="hasActiveFilters" class="rss-role__active-filters">
-              <el-tag v-if="itemSearch" size="small" closable @close="itemSearch = ''; onItemFilterChange()">Search: {{ itemSearch }}</el-tag>
-              <el-tag v-if="itemCategoryFilter" size="small" closable @close="itemCategoryFilter = ''; onItemFilterChange()">Category: {{ itemCategoryFilter }}</el-tag>
-              <el-tag v-if="itemSourceFilter" size="small" closable @close="itemSourceFilter = ''; onItemFilterChange()">Source: {{ itemSourceFilter }}</el-tag>
-              <el-tag v-if="itemDateRange" size="small" closable @close="itemDateRange = null; timePreset = 'all'; onItemFilterChange()">Date: {{ itemDateRange[0] }} ~ {{ itemDateRange[1] }}</el-tag>
+              <el-tag v-if="itemSearch" size="small" closable @close="itemSearch = ''; onItemFilterChange()">{{ t('rss.manager.items.activeFilters.search', { value: itemSearch }) }}</el-tag>
+              <el-tag v-if="itemCategoryFilter" size="small" closable @close="itemCategoryFilter = ''; onItemFilterChange()">{{ t('rss.manager.items.activeFilters.category', { value: itemCategoryFilter }) }}</el-tag>
+              <el-tag v-if="itemSourceFilter" size="small" closable @close="itemSourceFilter = ''; onItemFilterChange()">{{ t('rss.manager.items.activeFilters.source', { value: itemSourceFilter }) }}</el-tag>
+              <el-tag v-if="itemDateRange" size="small" closable @close="itemDateRange = null; timePreset = 'all'; onItemFilterChange()">{{ t('rss.manager.items.activeFilters.date', { from: itemDateRange[0], to: itemDateRange[1] }) }}</el-tag>
             </div>
 
             <div v-if="recentArticles.length" class="rss-role__recent-strip">
-              <span class="rss-role__recent-label">Recently opened</span>
+              <span class="rss-role__recent-label">{{ t('rss.manager.items.recent.label') }}</span>
               <button v-for="a in recentArticles" :key="a.key ?? a.link" class="rss-role__recent-chip" :title="a.link" @click="openArticleLink(a)">
                 <span class="rss-role__recent-dot" :style="{ background: roleColor(a.category_path) }"></span>
                 {{ a.title }}
               </button>
-              <button class="rss-role__recent-clear" title="Clear recently opened" @click="clearRecentArticles">✕</button>
+              <button class="rss-role__recent-clear" :title="t('rss.manager.items.recent.clearTitle')" @click="clearRecentArticles">{{ t('rss.manager.items.recent.clear') }}</button>
             </div>
 
             <!-- ═══ Table View ═══ -->
@@ -518,13 +518,13 @@
               border
               style="width:100%"
               row-key="key"
-              :empty-text="itemsLoading ? '' : (items.length || hasActiveFilters ? 'No matching articles.' : 'No articles yet. Add a feed source and click Parse.')"
+              :empty-text="itemsLoading ? '' : (items.length || hasActiveFilters ? t('rss.manager.items.table.noData.filtered') : t('rss.manager.items.table.noData.empty'))"
               highlight-current-row
               @selection-change="onSelectionChange"
               @row-click="onArticleRowClick"
             >
               <el-table-column type="selection" width="40" />
-              <el-table-column label="Title" min-width="340">
+              <el-table-column :label="t('rss.manager.items.table.title')" min-width="340">
                 <template #default="{ row }">
                   <div class="rss-role__item-title">
                     <a :href="(row as RssItemDocument).link" target="_blank" rel="noopener noreferrer" class="rss-role__item-link" @click.stop>
@@ -538,25 +538,25 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Published" width="130" align="center">
+              <el-table-column :label="t('rss.manager.items.table.published')" width="130" align="center">
                 <template #default="{ row }">
                   <el-tooltip :content="formatDate((row as RssItemDocument).published)" placement="top" :show-after="400">
                     <span class="rss-role__date">{{ formatRelativeTime((row as RssItemDocument).published) }}</span>
                   </el-tooltip>
                 </template>
               </el-table-column>
-              <el-table-column label="Category" width="150" show-overflow-tooltip>
+              <el-table-column :label="t('rss.manager.items.table.category')" width="150" show-overflow-tooltip>
                 <template #default="{ row }">
                   <span v-if="subCategory((row as RssItemDocument).category_path)" class="rss-role__cat-chip">
                     <span class="rss-role__cat-dot" :style="{ background: roleColor((row as RssItemDocument).category_path) }"></span>{{ subCategory((row as RssItemDocument).category_path) }}
                   </span>
-                  <span v-else class="rss-role__text-muted">—</span>
+                  <span v-else class="rss-role__text-muted">{{ t('rss.manager.detail.fields.unknown') }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="Actions" width="180" fixed="right">
+              <el-table-column :label="t('rss.manager.items.table.actions')" width="180" fixed="right">
                 <template #default="{ row }">
-                  <el-button size="small" text :icon="View" title="Details" @click.stop="openArticleDetail(row as RssItemDocument)" />
-                  <el-popconfirm title="Delete this article?" @confirm="removeItem(row as RssItemDocument)">
+                  <el-button size="small" text :icon="View" :title="t('rss.manager.items.table.detail')" @click.stop="openArticleDetail(row as RssItemDocument)" />
+                  <el-popconfirm :title="t('rss.manager.items.table.deleteConfirm')" @confirm="removeItem(row as RssItemDocument)">
                     <template #reference>
                       <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                     </template>
@@ -569,12 +569,12 @@
             <div v-else-if="itemsViewMode === 'card'" v-loading="itemsLoading" class="rss-role__items-grid">
               <div v-if="!itemsLoading && !filteredItems.length" class="rss-role__items-empty">
                 <template v-if="items.length || hasActiveFilters">
-                  <p>No matching articles</p>
-                  <p class="rss-role__items-empty-hint">Adjust the filters or role selection above.</p>
-                  <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">Clear filters</el-button>
+                  <p>{{ t('rss.manager.items.empty.noMatch') }}</p>
+                  <p class="rss-role__items-empty-hint">{{ t('rss.manager.items.empty.noMatchHint') }}</p>
+                  <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">{{ t('rss.manager.items.empty.clearFilters') }}</el-button>
                 </template>
                 <template v-else>
-                  <p>No articles yet. Add a feed source and click Parse.</p>
+                  <p>{{ t('rss.manager.items.empty.noItems') }}</p>
                 </template>
               </div>
               <el-card v-for="item in filteredItems" :key="item.key" class="rss-role__item-card" shadow="hover" @click="onArticleRowClick(item)">
@@ -592,8 +592,8 @@
                 </div>
                 <p v-if="item.summary" class="rss-role__item-card-summary">{{ trimSummary(item.summary) }}</p>
                 <div class="rss-role__item-card-actions">
-                  <el-button size="small" text :icon="View" title="Details" @click.stop="openArticleDetail(item)" />
-                  <el-popconfirm title="Delete this article?" @confirm="removeItem(item)">
+                  <el-button size="small" text :icon="View" :title="t('rss.manager.items.table.detail')" @click.stop="openArticleDetail(item)" />
+                  <el-popconfirm :title="t('rss.manager.items.table.deleteConfirm')" @confirm="removeItem(item)">
                     <template #reference>
                       <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                     </template>
@@ -606,12 +606,12 @@
             <div v-else v-loading="itemsLoading" class="rss-role__items-list">
               <div v-if="!itemsLoading && !filteredItems.length" class="rss-role__items-empty">
                 <template v-if="items.length || hasActiveFilters">
-                  <p>No matching articles</p>
-                  <p class="rss-role__items-empty-hint">Adjust the filters or role selection above.</p>
-                  <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">Clear filters</el-button>
+                  <p>{{ t('rss.manager.items.empty.noMatch') }}</p>
+                  <p class="rss-role__items-empty-hint">{{ t('rss.manager.items.empty.noMatchHint') }}</p>
+                  <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">{{ t('rss.manager.items.empty.clearFilters') }}</el-button>
                 </template>
                 <template v-else>
-                  <p>No articles yet. Add a feed source and click Parse.</p>
+                  <p>{{ t('rss.manager.items.empty.noItems') }}</p>
                 </template>
               </div>
               <div v-for="item in filteredItems" :key="item.key" class="rss-role__items-list-row" @click="onArticleRowClick(item)">
@@ -622,8 +622,8 @@
                 </span>
                 <span class="rss-role__items-list-date">{{ formatRelativeTime(item.published) }}</span>
                 <div class="rss-role__items-list-actions">
-                  <el-button size="small" text :icon="View" title="Details" @click.stop="openArticleDetail(item)" />
-                  <el-popconfirm title="Delete this article?" @confirm="removeItem(item)">
+                  <el-button size="small" text :icon="View" :title="t('rss.manager.items.table.detail')" @click.stop="openArticleDetail(item)" />
+                  <el-popconfirm :title="t('rss.manager.items.table.deleteConfirm')" @confirm="removeItem(item)">
                     <template #reference>
                       <el-button size="small" text type="danger" :icon="Delete" @click.stop />
                     </template>
@@ -647,31 +647,31 @@
       </div>
     </div>
 
-    <!-- Quick Parse Dialog -->
+    <!-- Seed Dialog -->
     <el-dialog
       v-model="seedDialogVisible"
-      :title="editingSeed?.key ? 'Edit Source' : 'Add Source'"
+      :title="editingSeed?.key ? t('rss.manager.seeds.dialog.editTitle') : t('rss.manager.seeds.dialog.addTitle')"
       width="520px"
       destroy-on-close
     >
       <el-form :model="seedForm" label-width="110px">
-        <el-form-item label="Feed URL" required>
-          <el-input v-model="seedForm.url" placeholder="https://example.com/rss.xml" />
+        <el-form-item :label="t('rss.manager.seeds.dialog.feedUrl')" required>
+          <el-input v-model="seedForm.url" :placeholder="t('rss.manager.seeds.dialog.feedUrlPlaceholder')" />
         </el-form-item>
-        <el-form-item label="Name">
-          <el-input v-model="seedForm.name" placeholder="Display name" />
+        <el-form-item :label="t('rss.manager.seeds.dialog.name')">
+          <el-input v-model="seedForm.name" :placeholder="t('rss.manager.seeds.dialog.namePlaceholder')" />
         </el-form-item>
-        <el-form-item label="Target Category">
-          <el-select v-model="seedForm.category" placeholder="Auto-classify" clearable allow-create filterable style="width:100%">
+        <el-form-item :label="t('rss.manager.seeds.dialog.targetCategory')">
+          <el-select v-model="seedForm.category" :placeholder="t('rss.manager.seeds.dialog.autoClassify')" clearable allow-create filterable style="width:100%">
             <el-option-group v-for="g in categoryGroups" :key="g.label" :label="g.label">
               <el-option v-for="o in g.options" :key="o.value" :label="o.label" :value="o.value" />
             </el-option-group>
           </el-select>
-          <span class="rss-role__form-hint">Override classification target. Leave empty for auto.</span>
+          <span class="rss-role__form-hint">{{ t('rss.manager.seeds.dialog.overrideHint') }}</span>
         </el-form-item>
-        <el-form-item label="Fetch Interval">
-          <el-select v-model="seedForm.interval" placeholder="Global default" clearable style="width:100%">
-            <el-option :value="0" label="Global default" />
+        <el-form-item :label="t('rss.manager.seeds.dialog.fetchInterval')">
+          <el-select v-model="seedForm.interval" :placeholder="t('rss.manager.seeds.dialog.globalDefault')" clearable style="width:100%">
+            <el-option :value="0" :label="t('rss.manager.seeds.dialog.globalDefault')" />
             <el-option :value="600" label="10 minutes" />
             <el-option :value="1800" label="30 minutes" />
             <el-option :value="3600" label="1 hour" />
@@ -680,62 +680,62 @@
             <el-option :value="43200" label="12 hours" />
             <el-option :value="86400" label="24 hours" />
           </el-select>
-          <span class="rss-role__form-hint">Leave empty to use the global scheduler setting.</span>
+          <span class="rss-role__form-hint">{{ t('rss.manager.seeds.dialog.schedulerHint') }}</span>
         </el-form-item>
-        <el-form-item label="Status">
-          <el-switch v-model="seedForm.enabled" active-text="Active" inactive-text="Paused" />
+        <el-form-item :label="t('rss.manager.seeds.dialog.status')">
+          <el-switch v-model="seedForm.enabled" :active-text="t('rss.manager.seeds.dialog.active')" :inactive-text="t('rss.manager.seeds.dialog.paused')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="seedDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="saveSeed" :loading="seedSaving">Save</el-button>
+        <el-button @click="seedDialogVisible = false">{{ t('rss.manager.common.cancel') }}</el-button>
+        <el-button type="primary" @click="saveSeed" :loading="seedSaving">{{ t('rss.manager.common.save') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- Quick Parse Dialog -->
-    <el-dialog v-model="quickParseVisible" title="Quick Parse URL" width="460px" destroy-on-close>
+    <el-dialog v-model="quickParseVisible" :title="t('rss.manager.seeds.quickParse.title')" width="460px" destroy-on-close>
       <el-form :model="quickParseForm" label-width="60px">
-        <el-form-item label="URL" required>
-          <el-input v-model="quickParseForm.url" placeholder="https://example.com/rss.xml" />
+        <el-form-item :label="t('rss.manager.seeds.quickParse.url')" required>
+          <el-input v-model="quickParseForm.url" :placeholder="t('rss.manager.seeds.quickParse.urlPlaceholder')" />
         </el-form-item>
-        <el-form-item label="Name">
-          <el-input v-model="quickParseForm.name" placeholder="Optional" />
+        <el-form-item :label="t('rss.manager.seeds.quickParse.name')">
+          <el-input v-model="quickParseForm.name" :placeholder="t('rss.manager.seeds.quickParse.nameOptional')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="quickParseVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="doQuickParse" :loading="quickParseLoading">Parse</el-button>
+        <el-button @click="quickParseVisible = false">{{ t('rss.manager.common.cancel') }}</el-button>
+        <el-button type="primary" @click="doQuickParse" :loading="quickParseLoading">{{ t('rss.manager.seeds.quickParse.parse') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- Article Detail Dialog -->
-    <el-dialog v-model="articleDetailVisible" :title="detailArticle?.title || 'Article'" width="620px" destroy-on-close>
+    <el-dialog v-model="articleDetailVisible" :title="detailArticle?.title || t('rss.manager.detail.defaultTitle')" width="620px" destroy-on-close>
       <div v-if="detailArticle" class="rss-role__article-detail">
         <div class="rss-role__article-detail-meta">
-          <div class="rss-role__article-detail-field"><b>Source</b><span>{{ detailArticle.source_name || '—' }}</span></div>
-          <div class="rss-role__article-detail-field"><b>Author</b><span>{{ detailArticle.author || '—' }}</span></div>
-          <div class="rss-role__article-detail-field"><b>Category</b><span>{{ detailArticle.category_path || '—' }}</span></div>
-          <div class="rss-role__article-detail-field"><b>Published</b><span>{{ detailArticle.published ? formatDate(detailArticle.published) : '—' }}</span></div>
-          <div class="rss-role__article-detail-field"><b>Tags</b><span>{{ (detailArticle.tags || []).join(', ') || '—' }}</span></div>
+          <div class="rss-role__article-detail-field"><b>{{ t('rss.manager.detail.fields.source') }}</b><span>{{ detailArticle.source_name || t('rss.manager.detail.fields.unknown') }}</span></div>
+          <div class="rss-role__article-detail-field"><b>{{ t('rss.manager.detail.fields.author') }}</b><span>{{ detailArticle.author || t('rss.manager.detail.fields.unknown') }}</span></div>
+          <div class="rss-role__article-detail-field"><b>{{ t('rss.manager.detail.fields.category') }}</b><span>{{ detailArticle.category_path || t('rss.manager.detail.fields.unknown') }}</span></div>
+          <div class="rss-role__article-detail-field"><b>{{ t('rss.manager.detail.fields.published') }}</b><span>{{ detailArticle.published ? formatDate(detailArticle.published) : t('rss.manager.detail.fields.unknown') }}</span></div>
+          <div class="rss-role__article-detail-field"><b>{{ t('rss.manager.detail.fields.tags') }}</b><span>{{ (detailArticle.tags || []).join(', ') || t('rss.manager.detail.fields.unknown') }}</span></div>
         </div>
         <div class="rss-role__article-detail-summary">
-          <b>Summary</b>
-          <p>{{ stripHtml(detailArticle.summary || '') || 'No summary available for this article.' }}</p>
+          <b>{{ t('rss.manager.detail.fields.summary') }}</b>
+          <p>{{ stripHtml(detailArticle.summary || '') || t('rss.manager.detail.fields.noSummary') }}</p>
         </div>
         <div class="rss-role__article-detail-body">
           <div class="rss-role__article-detail-body-head">
-            <b>Body</b>
+            <b>{{ t('rss.manager.detail.fields.body') }}</b>
             <span v-if="detailArticle.file_path" class="rss-role__article-detail-body-path">{{ detailArticle.file_path }}</span>
           </div>
-          <div v-if="articleBodyLoading" class="rss-role__article-detail-body-state" v-loading="true" element-loading-text="Reading article body…" />
+          <div v-if="articleBodyLoading" class="rss-role__article-detail-body-state" v-loading="true" :element-loading-text="t('rss.manager.detail.fields.loadingBody')" />
           <div v-else-if="renderedArticleBody" class="rss-role__article-detail-body-content markdown-body" v-html="renderedArticleBody" />
           <div v-else class="rss-role__article-detail-body-state rss-role__article-detail-body-state--empty">
-            <span>📭 {{ articleBodyError ? 'No body file — metadata-only record.' : 'No body content.' }}</span>
-            <span v-if="articleBodyError" class="rss-role__article-detail-body-hint">The ingested markdown for this article is missing from YiKnowledge.</span>
+            <span>📭 {{ articleBodyError ? t('rss.manager.detail.fields.noBodyFile') : t('rss.manager.detail.fields.noBodyContent') }}</span>
+            <span v-if="articleBodyError" class="rss-role__article-detail-body-hint">{{ t('rss.manager.detail.fields.missingMarkdown') }}</span>
           </div>
         </div>
         <div class="rss-role__article-detail-actions">
-          <el-button type="primary" :icon="Link" @click="openArticleLink(detailArticle)">Open article</el-button>
+          <el-button type="primary" :icon="Link" @click="openArticleLink(detailArticle)">{{ t('rss.manager.detail.open') }}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -747,6 +747,7 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search, Plus, Refresh, Link, ArrowLeft, ArrowRight, Delete, Download, View } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
 import {
   getSeedList, createSeed, updateSeed, deleteSeed,
   getRssList, deleteRssItem,
@@ -762,6 +763,8 @@ import type { ECOption } from "@/components/ECharts/config";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useMarkdown } from "@/hooks/useMarkdown";
 
+const { t, locale } = useI18n();
+
 const props = withDefaults(defineProps<{ roleId?: string }>(), { roleId: "executiver" });
 const roleData = computed(() => rolesData[props.roleId] || rolesData.executiver);
 
@@ -776,12 +779,12 @@ const stickyIcon = computed(() => {
   return "📡";
 });
 const stickyTitle = computed(() => {
-  if (selectedRoles.value.length === 0) return "All Roles RSS Manager";
-  if (selectedRoles.value.length === 1) return `${rolesData[selectedRoles.value[0]]?.name || "Role"} RSS Manager`;
-  return `${selectedRoles.value.length} Roles RSS Manager`;
+  if (selectedRoles.value.length === 0) return t('rss.manager.sticky.allRolesTitle');
+  if (selectedRoles.value.length === 1) return t('rss.manager.sticky.singleRoleTitle', { name: rolesData[selectedRoles.value[0]]?.name || '' });
+  return t('rss.manager.sticky.multiRoleTitle', { n: selectedRoles.value.length });
 });
 const stickyDesc = computed(() => {
-  if (selectedRoles.value.length === 0) return "Aggregated RSS feeds and articles across all roles.";
+  if (selectedRoles.value.length === 0) return t('rss.manager.sticky.allRolesDesc', { feeds: feedsCount.value, articles: totalItems.value, today: todayCount.value });
   if (selectedRoles.value.length === 1) return rolesData[selectedRoles.value[0]]?.description || "";
   return rolesData[selectedRoles.value[0]]?.description || "";
 });
@@ -824,59 +827,61 @@ function roleColor(cat?: string): string {
   return ROLE_COLORS[roleFromCategory(cat)] || "#909399";
 }
 
+const localeTag = computed(() => locale.value === 'zh' ? 'zh-CN' : 'en-US');
+
 /** Category options grouped by role domain — mirrors YiKnowledge directory structure. */
-const categoryGroups = [
+const categoryGroups = computed(() => [
   {
-    label: "Executiver",
+    label: t('rss.manager.categories.groups.executiver'),
     options: [
-      { label: "Industry · market trends, competitors, reports", value: "executiver/industry" },
-      { label: "Strategy · frameworks, compliance, positioning", value: "executiver/strategy" },
-      { label: "Roadmap · planning, OKR, budget", value: "executiver/roadmap" },
-      { label: "Reading List · curated executive readings", value: "executiver/reading-list" }
+      { label: t('rss.manager.categories.options.executiver.industry'), value: "executiver/industry" },
+      { label: t('rss.manager.categories.options.executiver.strategy'), value: "executiver/strategy" },
+      { label: t('rss.manager.categories.options.executiver.roadmap'), value: "executiver/roadmap" },
+      { label: t('rss.manager.categories.options.executiver.readingList'), value: "executiver/reading-list" }
     ]
   },
   {
-    label: "AI Engineer",
+    label: t('rss.manager.categories.groups.aier'),
     options: [
-      { label: "Methodology · tools, workflows, best practices", value: "aier/methodology" },
-      { label: "Foundations · papers, research, theory", value: "aier/foundations" }
+      { label: t('rss.manager.categories.options.aier.methodology'), value: "aier/methodology" },
+      { label: t('rss.manager.categories.options.aier.foundations'), value: "aier/foundations" }
     ]
   },
   {
-    label: "Engineer",
+    label: t('rss.manager.categories.groups.engineer'),
     options: [
-      { label: "Ship · data & reliability", value: "engineer/ship" },
-      { label: "Learn · Lessons", value: "engineer/learn/lessons" },
-      { label: "Learn · Wins", value: "engineer/learn/lessons/wins" },
-      { label: "Learn · Failures", value: "engineer/learn/lessons/failures" }
+      { label: t('rss.manager.categories.options.engineer.ship'), value: "engineer/ship" },
+      { label: t('rss.manager.categories.options.engineer.learnLessons'), value: "engineer/learn/lessons" },
+      { label: t('rss.manager.categories.options.engineer.learnWins'), value: "engineer/learn/lessons/wins" },
+      { label: t('rss.manager.categories.options.engineer.learnFailures'), value: "engineer/learn/lessons/failures" }
     ]
   },
   {
-    label: "SRE",
+    label: t('rss.manager.categories.groups.sre'),
     options: [
-      { label: "Release · deployment, infrastructure", value: "srer/release" }
+      { label: t('rss.manager.categories.options.srer.release'), value: "srer/release" }
     ]
   },
   {
-    label: "Product Manager",
+    label: t('rss.manager.categories.groups.producter'),
     options: [
-      { label: "Frameworks · product strategy, growth", value: "producter/frameworks" }
+      { label: t('rss.manager.categories.options.producter.frameworks'), value: "producter/frameworks" }
     ]
   },
   {
-    label: "Curator",
+    label: t('rss.manager.categories.groups.curator'),
     options: [
-      { label: "Templates · knowledge curation", value: "curator/templates" }
+      { label: t('rss.manager.categories.options.curator.templates'), value: "curator/templates" }
     ]
   },
   {
-    label: "Leader",
+    label: t('rss.manager.categories.groups.leader'),
     options: [
-      { label: "Tech Leadership · team, culture, scaling", value: "leader/leadership" },
-      { label: "Architecture · system design, patterns", value: "leader/architecture" }
+      { label: t('rss.manager.categories.options.leader.leadership'), value: "leader/leadership" },
+      { label: t('rss.manager.categories.options.leader.architecture'), value: "leader/architecture" }
     ]
   }
-];
+]);
 
 // ═══════════════════════════════════════════════
 // Seeds
@@ -967,7 +972,7 @@ function openSeedDialog(row?: RssSeedDocument) {
 }
 
 async function saveSeed() {
-  if (!seedForm.url.trim()) { ElMessage.warning("Feed URL is required"); return; }
+  if (!seedForm.url.trim()) { ElMessage.warning(t('rss.manager.seeds.save.urlRequired')); return; }
   seedSaving.value = true;
   try {
     const patch: Partial<RssSeedDocument> & { url: string } = {
@@ -981,17 +986,17 @@ async function saveSeed() {
 
     if (editingSeed.value?.key) {
       await updateSeed(editingSeed.value.key, patch);
-      ElMessage.success("Source updated");
+      ElMessage.success(t('rss.manager.seeds.save.updateOk'));
     } else {
       const key = `seed_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       await createSeed({ key, ...patch });
-      ElMessage.success("Source added");
+      ElMessage.success(t('rss.manager.seeds.save.addOk'));
     }
     seedDialogVisible.value = false;
     await loadSeeds();
     if (activeTab.value === "seeds") loadSeedArticleCounts();
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to save source");
+    ElMessage.error(errorMessage(e) || t('rss.manager.seeds.save.fail'));
   } finally {
     seedSaving.value = false;
   }
@@ -1001,11 +1006,11 @@ async function removeSeed(row: RssSeedDocument) {
   if (!row.key) return;
   try {
     await deleteSeed(row.key);
-    ElMessage.success("Source removed");
+    ElMessage.success(t('rss.manager.seeds.remove.ok'));
     await loadSeeds();
     if (activeTab.value === "seeds") loadSeedArticleCounts();
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to remove source");
+    ElMessage.error(errorMessage(e) || t('rss.manager.seeds.remove.fail'));
   }
 }
 
@@ -1016,9 +1021,9 @@ async function toggleSeed(row: RssSeedDocument) {
     const next = row.enabled === false;
     await updateSeed(row.key, { enabled: next });
     row.enabled = next;
-    ElMessage.success(next ? "Source enabled" : "Source paused");
+    ElMessage.success(next ? t('rss.manager.seeds.toggle.enabled') : t('rss.manager.seeds.toggle.disabled'));
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to toggle source");
+    ElMessage.error(errorMessage(e) || t('rss.manager.seeds.toggle.fail'));
   } finally {
     seedToggling.value = "";
   }
@@ -1030,11 +1035,11 @@ async function parseOneFeed(row: RssSeedDocument) {
     const res = await parseFeed(row.url, row.name);
     const d = res.data;
     parseTimes[row.url] = Date.now();
-    ElMessage.success(`Parsed: ${d.saved_count || 0} new, ${d.updated_count || 0} updated`);
+    ElMessage.success(t('rss.manager.seeds.parseOne.ok', { saved: d.saved_count || 0, updated: d.updated_count || 0 }));
     await loadItems();
     loadTodayCount();
   } catch (e) {
-    const msg = errorMessage(e) || "Parse failed";
+    const msg = errorMessage(e) || t('rss.manager.seeds.parseOne.fail');
     ElMessage.error(msg);
   } finally {
     parsingSeed.value = "";
@@ -1046,13 +1051,13 @@ async function parseAllFeeds() {
   try {
     const res = await parseAllEnabledFeeds();
     const d = res.data;
-    ElMessage.success(`${d.total_sources} sources: ${d.success_count} ok, ${d.failed_count} failed`);
+    ElMessage.success(t('rss.manager.seeds.parseAll.ok', { total: d.total_sources, ok: d.success_count, fail: d.failed_count }));
     const now = Date.now();
     for (const s of seeds.value) { if (s.enabled !== false) parseTimes[s.url] = now; }
     await loadItems();
     loadTodayCount();
   } catch (e) {
-    const msg = errorMessage(e) || "Batch parse failed";
+    const msg = errorMessage(e) || t('rss.manager.seeds.parseAll.fail');
     ElMessage.error(msg);
   } finally {
     parseAllLoading.value = false;
@@ -1099,7 +1104,7 @@ async function loadSeeds() {
       const added = await ensureExampleSeeds(list);
       if (added.length) {
         seeds.value = [...list, ...added];
-        ElMessage.success(`Added ${added.length} new feed sources`);
+        ElMessage.success(t('rss.manager.seeds.added', { n: added.length }));
       }
     } else if (!loadBool(SEEDS_SEEDED_KEY, false)) {
       const seeded = await seedExampleSeeds();
@@ -1132,19 +1137,19 @@ const quickParseLoading = ref(false);
 const quickParseForm = reactive({ url: "", name: "" });
 
 async function doQuickParse() {
-  if (!quickParseForm.url.trim()) { ElMessage.warning("URL is required"); return; }
+  if (!quickParseForm.url.trim()) { ElMessage.warning(t('rss.manager.seeds.quickParse.urlRequired')); return; }
   quickParseLoading.value = true;
   try {
     const res = await parseFeed(quickParseForm.url.trim(), quickParseForm.name.trim() || undefined);
     const d = res.data;
-    ElMessage.success(`Parsed: ${d.saved_count || 0} new, ${d.updated_count || 0} updated`);
+    ElMessage.success(t('rss.manager.seeds.quickParse.ok', { saved: d.saved_count || 0, updated: d.updated_count || 0 }));
     quickParseVisible.value = false;
     quickParseForm.url = "";
     quickParseForm.name = "";
     await loadItems();
     loadTodayCount();
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Quick parse failed");
+    ElMessage.error(errorMessage(e) || t('rss.manager.seeds.quickParse.fail'));
   } finally {
     quickParseLoading.value = false;
   }
@@ -1305,7 +1310,7 @@ async function exportItems() {
   try {
     const res = await getRssList(buildItemParams(1, 10000));
     const list = res.data?.list ?? [];
-    if (!list.length) { ElMessage.info("No articles to export."); return; }
+    if (!list.length) { ElMessage.info(t('rss.manager.items.export.noData')); return; }
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const headers = ["title", "link", "source_name", "author", "category_path", "published", "summary"];
     const rows = list.map(i => headers.map(h => esc(i[h as keyof RssItemDocument])).join(","));
@@ -1317,9 +1322,9 @@ async function exportItems() {
     a.download = `rss-articles-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    ElMessage.success(`Exported ${list.length} articles`);
+    ElMessage.success(t('rss.manager.items.export.ok', { n: list.length }));
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to export articles");
+    ElMessage.error(errorMessage(e) || t('rss.manager.items.export.fail'));
   } finally { exportingItems.value = false; }
 }
 
@@ -1352,11 +1357,11 @@ async function removeItem(row: RssItemDocument) {
   if (!row.key) return;
   try {
     await deleteRssItem(row.key);
-    ElMessage.success("Article deleted");
+    ElMessage.success(t('rss.manager.items.delete.ok'));
     await loadItems();
     loadTodayCount();
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to delete article");
+    ElMessage.error(errorMessage(e) || t('rss.manager.items.delete.fail'));
   }
 }
 
@@ -1364,11 +1369,11 @@ async function removeBriefingItem(row: RssItemDocument) {
   if (!row.key) return;
   try {
     await deleteRssItem(row.key);
-    ElMessage.success("Article deleted");
+    ElMessage.success(t('rss.manager.items.delete.ok'));
     await loadBriefing();
     loadTodayCount();
   } catch (e) {
-    ElMessage.error(errorMessage(e) || "Failed to delete article");
+    ElMessage.error(errorMessage(e) || t('rss.manager.items.delete.fail'));
   }
 }
 
@@ -1376,9 +1381,9 @@ async function batchDelete() {
   if (selectedItems.value.length === 0) return;
   try {
     await ElMessageBox.confirm(
-      `Delete ${selectedItems.value.length} articles?`,
-      "Batch Delete",
-      { confirmButtonText: "Delete", cancelButtonText: "Cancel", type: "warning" }
+      t('rss.manager.items.batch.confirm', { n: selectedItems.value.length }),
+      t('rss.manager.items.batch.title'),
+      { confirmButtonText: t('rss.manager.items.batch.deleteBtn'), cancelButtonText: t('rss.manager.common.cancel'), type: "warning" }
     );
   } catch { return; }
   let deleted = 0;
@@ -1386,7 +1391,7 @@ async function batchDelete() {
     if (!item.key) continue;
     try { await deleteRssItem(item.key); deleted++; } catch { /* skip */ }
   }
-  ElMessage.success(`Deleted ${deleted} articles`);
+  ElMessage.success(t('rss.manager.items.batch.ok', { n: deleted }));
   await loadItems();
   loadTodayCount();
 }
@@ -1405,9 +1410,9 @@ const briefingDate = ref(new Date());
 const briefingDateLabel = computed(() => {
   const d = briefingDate.value;
   const today = new Date();
-  const isToday = d.toDateString() === today.toDateString();
-  const dateStr = d.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
-  return isToday ? `今日 · ${dateStr}` : dateStr;
+  const isTodayVal = d.toDateString() === today.toDateString();
+  const dateStr = d.toLocaleDateString(localeTag.value, { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+  return isTodayVal ? t('rss.manager.briefing.todayLabel', { date: dateStr }) : dateStr;
 });
 
 const isToday = computed(() => {
@@ -1468,11 +1473,13 @@ const briefingGroups = computed<BriefingGroup[]>(() => {
   const byCategory = briefingGroupBy.value === "category";
   const groups = new Map<string, BriefingGroup>();
   for (const item of filteredBriefingItems.value) {
-    const key = byCategory ? (item.category_path || "Uncategorized") : (item.source_name || "Unknown");
+    const uncategorized = t('rss.manager.categories.uncategorized');
+    const unknownSource = t('rss.manager.categories.unknownSource');
+    const key = byCategory ? (item.category_path || uncategorized) : (item.source_name || unknownSource);
     if (!groups.has(key)) {
       groups.set(key, {
         key,
-        label: byCategory ? (subCategory(item.category_path) || "Uncategorized") : key,
+        label: byCategory ? (subCategory(item.category_path) || uncategorized) : key,
         icon: byCategory ? "📁" : "📡",
         color: byCategory ? roleColor(item.category_path) : undefined,
         items: []
@@ -1493,15 +1500,17 @@ const CHART_COLORS = ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3
 /** Category distribution donut of today's briefing. */
 const briefingCategoryOption = computed<ECOption>(() => {
   const counts = new Map<string, number>();
+  const uncategorized = t('rss.manager.categories.uncategorized');
   for (const item of briefingItems.value) {
-    const key = item.category_path || "Uncategorized";
+    const key = item.category_path || uncategorized;
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   const data = [...counts.entries()]
     .map(([key, value]) => ({ name: subCategory(key) || key, value, itemStyle: { color: roleColor(key) } }))
     .sort((a, b) => b.value - a.value);
+  const articlePct = (p: any) => `${p.name}: ${p.value} (${p.percent}%)`;
   return {
-    tooltip: { trigger: "item", formatter: (p: any) => `${p.name}: ${p.value} articles (${p.percent}%)` },
+    tooltip: { trigger: "item", formatter: articlePct },
     legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10 }, type: "scroll" },
     series: [{
       type: "pie", radius: ["45%", "70%"], center: ["58%", "50%"],
@@ -1515,8 +1524,9 @@ const briefingCategoryOption = computed<ECOption>(() => {
 /** Top sources bar of today's briefing. */
 const briefingSourceOption = computed<ECOption>(() => {
   const counts = new Map<string, number>();
+  const unknownSource = t('rss.manager.categories.unknownSource');
   for (const item of briefingItems.value) {
-    const label = item.source_name || "Unknown";
+    const label = item.source_name || unknownSource;
     counts.set(label, (counts.get(label) ?? 0) + 1);
   }
   const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).reverse();
@@ -1597,9 +1607,9 @@ const briefingCoverage = computed(() => {
   }
   const pct = (n: number) => Math.round((n / total) * 100);
   return [
-    { key: "summary", label: "With summary", count: withSummary, pct: pct(withSummary) },
-    { key: "author", label: "With author", count: withAuthor, pct: pct(withAuthor) },
-    { key: "category", label: "Categorized", count: categorized, pct: pct(categorized) }
+    { key: "summary", label: t('rss.manager.briefing.coverage.withSummary'), count: withSummary, pct: pct(withSummary) },
+    { key: "author", label: t('rss.manager.briefing.coverage.withAuthor'), count: withAuthor, pct: pct(withAuthor) },
+    { key: "category", label: t('rss.manager.briefing.coverage.categorized'), count: categorized, pct: pct(categorized) }
   ];
 });
 
@@ -1701,7 +1711,7 @@ function formatDate(raw?: string): string {
   try {
     const d = new Date(raw);
     if (isNaN(d.getTime())) return raw.slice(0, 10);
-    return d.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" });
+    return d.toLocaleDateString(localeTag.value, { year: "numeric", month: "2-digit", day: "2-digit" });
   } catch { return raw.slice(0, 10); }
 }
 
@@ -1711,25 +1721,25 @@ function formatRelativeTime(raw?: string): string {
     const d = new Date(raw);
     if (isNaN(d.getTime())) return raw.slice(0, 10);
     const diff = Date.now() - d.getTime();
-    if (diff < 60000) return "just now";
-    if (diff < 3600000) return `${Math.round(diff / 60000)}m ago`;
-    if (diff < 86400000) return `${Math.round(diff / 3600000)}h ago`;
-    if (diff < 604800000) return `${Math.round(diff / 86400000)}d ago`;
-    return d.toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" });
+    if (diff < 60000) return t('rss.manager.time.justNow');
+    if (diff < 3600000) return t('rss.manager.time.minutesAgo', { n: Math.round(diff / 60000) });
+    if (diff < 86400000) return t('rss.manager.time.hoursAgo', { n: Math.round(diff / 3600000) });
+    if (diff < 604800000) return t('rss.manager.time.daysAgo', { n: Math.round(diff / 86400000) });
+    return d.toLocaleDateString(localeTag.value, { month: "2-digit", day: "2-digit" });
   } catch { return raw.slice(0, 10); }
 }
 
 function formatTime(d: Date): string {
-  return d.toLocaleString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  return d.toLocaleString(localeTag.value, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function formatTimeAgo(ts?: number): string {
   if (!ts) return "-";
   const diff = Date.now() - ts;
-  if (diff < 60000) return "just now";
-  if (diff < 3600000) return `${Math.round(diff / 60000)}m ago`;
-  if (diff < 86400000) return `${Math.round(diff / 3600000)}h ago`;
-  return `${Math.round(diff / 86400000)}d ago`;
+  if (diff < 60000) return t('rss.manager.time.justNow');
+  if (diff < 3600000) return t('rss.manager.time.minutesAgo', { n: Math.round(diff / 60000) });
+  if (diff < 86400000) return t('rss.manager.time.hoursAgo', { n: Math.round(diff / 3600000) });
+  return t('rss.manager.time.daysAgo', { n: Math.round(diff / 86400000) });
 }
 
 function formatInterval(seconds: number): string {

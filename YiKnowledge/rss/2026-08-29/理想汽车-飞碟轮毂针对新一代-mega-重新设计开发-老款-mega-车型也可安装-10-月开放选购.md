@@ -1,0 +1,14 @@
+---
+title: 理想汽车：飞碟轮毂针对新一代 MEGA 重新设计开发，老款 MEGA 车型也可安装、10 月开放选购
+tags:
+- IT之家
+category: life/lifestyle
+created: '2026-08-29'
+source: https://www.ithome.com/0/995/894.htm
+type: rss
+source_name: IT之家
+source_url: https://www.ithome.com/rss/
+published: Sat, 29 Aug 2026 04:19:12 GMT
+---
+
+<p>IT之家 8 月 29 日消息，理想汽车昨日发文<a href="https://www.ithome.com/0/995/601.htm" target="_blank">预热新一代 MEGA 车型</a>，新车将配备专属的<strong>白色飞碟轮毂</strong>。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/8ef79f9b-c606-4a1c-a217-54f03d83b8c2.jpg" /></p><p>理想汽车随后发布答网友问，公布了新一代理想 MEGA 的更多细节。</p><p>官方表示，<strong>这款飞碟轮毂是针对新一代理想 MEGA 重新设计开发的，但也可以安装在所有 24 款、25 款理想 MEGA 车型的原装轮毂上</strong>，更换的操作也非常简单快捷。<strong>将于今年 10 月在理想商城面向所有理想 MEGA 用户开放选购渠道</strong>。需要特别说明的是，老款理想 MEGA 在更换飞碟轮毂后，轮胎补气操作方式将与新一代理想 MEGA 存在差异，届时请以官方使用说明为准，仔细了解后进行选购。</p><p>IT之家附其他“答网友问”内容：</p><p><strong>新一代理想 MEGA 的“客厅主灯”真亮啊，能调节亮度和色温吗？</strong></p><blockquote><p>作为“家”里的主灯，新一代理想 MEGA Home Light 支持根据不同使用场景便捷切换亮度。我们在主灯的触感开关上设置了两个亮度档位：</p><ul class=" list-paddingleft-2"><li><p><strong>第一档-最大亮度</strong>：呈现最明亮的车舱空间、最明亮的客厅，适用于家人围坐的大客厅模式，也适合车内休闲娱乐、陪伴孩子或者偶尔办公开会；</p></li><li><p><strong>第二档-氛围亮度</strong>：亮度调整至最亮档位的八分之一，呈现优雅精致的氛围感，光线柔和而不刺眼，即使在零重力躺姿下也能保持舒适观感，适合车内小憩或闭目养神。</p></li></ul><p>在色温方面，我们参考家居灯光设计理念，选用 3500K 暖白光作为固定色温。作为移动的家、移动的客厅，太白的色温无法烘托温暖、太黄的则显得过于黯然，就像我们给自己的家里挑选灯光一样，3500K 正是最契合起居室氛围的色温，恰到好处地营造出温馨宜人的空间感受。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/7283b933-0ec8-486d-b3b9-34a3890fe25b.gif" /></p></blockquote><p><strong>主灯一圈中间星星点点的是什么？</strong></p><blockquote><p>这是我们给“家”里增添的全新装饰元素，也可以视作是 Home Light 客厅主灯的第三个档位：<strong>星河档</strong>。</p><p>该设计采用 TPO 透光表皮技术，点亮时是家中的星河点缀，营造浪漫灵动的氛围；熄灭时则完全隐藏于皮质包覆之内，实现视觉上的无缝融合。因此，无论星河点亮熄灭，手指摸上去都是温润的触感。</p></blockquote><p><strong>这次看到了新的大桌板，厂长李想的视频里也展示了三种形态，这个设计有什么用？</strong></p><blockquote><p>我们将新一代大桌板命名为“悬浮组合桌板”，并提供三种实用形态 —— 大餐桌、小边几及“半桌”状态，旨在覆盖更多家庭用车场景，让桌板的使用更加灵活便捷。</p><ul class=" list-paddingleft-2"><li><p><strong>大餐桌</strong>：呈现最大使用面积，是大客厅模式中的点睛之笔，适合全家围坐用餐或互动；</p></li><li><p><strong>小边几</strong>：专为正坐场景设计，占用空间小，可长期置于车舱内，如同家中精致的小茶几；</p></li><li><p><strong>“半桌”状态</strong>：大餐桌由两片折叠组合桌板与小边几拼接而成，拆装灵活。用户可以选择只安装其中一片，组装出中间状态，同样可稳定使用。</p></li></ul><p>这套悬浮组合桌板也可以直接适配于 25 款理想 MEGA Home。我们将于今年 10 月在理想商城面向 25 款理想 MEGA Home 用户提供购买渠道。</p><p>更多关于悬浮组合桌板的使用方法，敬请期待后续发布会的详细揭晓。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/a7f1c212-0711-4464-b3a5-39f9be31f258.gif" /></p></blockquote><p><strong>我看到二排沙发上有腰枕了，会随车赠送吗？</strong></p><blockquote><p>是的，新一代理想 MEGA 将标配专属腰枕，无需额外购买，随车附赠。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/93845fd7-ebfb-4510-b8bf-18c82305c5a8.gif" /></p></blockquote>

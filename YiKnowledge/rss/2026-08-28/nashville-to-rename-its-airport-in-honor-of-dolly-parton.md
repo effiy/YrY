@@ -1,0 +1,17 @@
+---
+title: Nashville to rename its airport in honor of Dolly Parton
+tags:
+- The A.V. Club
+category: life/entertainment
+created: '2026-08-29'
+source: https://www.avclub.com/nashville-to-rename-its-airport-in-honor-of-dolly-parton
+type: rss
+source_name: The A.V. Club
+source_url: https://www.avclub.com/rss
+published: Fri, 28 Aug 2026 18:03:41 -0400
+author: William Hughes
+---
+
+<img src="https://img.pastemagazine.com/wp-content/avuploads/2025/10/08093420/7b403b002f6f1390ca7b4899b428a034.jpg" /><p>As far as tributes to fallen heroes go, naming an airport after a late celebrity has always seemed like a bit of a mixed blessing to us. (That is, the number of people who&#8217;ve muttered &#8220;Oh, go fuck yourself&#8221; about John Wayne and JFK have probably only gone up in the decades since their deaths, courtesy of their attachment to these huge pieces of frequently inconvenient civic infrastructure.) Still, it <em>is&nbsp;</em>a pretty big gesture—you only get so many airports, after all—one that Nashville is getting ready to extend to one of its most beloved daughters. Tennessee governor Bill Lee <a href="https://www.wsmv.com/2026/08/28/gov-bill-lee-bna-announce-plan-name-nashville-airport-honor-dolly-parton/">announced plans today</a> to follow through on <a href="https://www.avclub.com/dolly-parton-unreleased-song-time-capsule">the request of a petition that caught quick and immediate fire earlier this week</a>, in the immediate aftermath of <a href="https://www.avclub.com/dolly-parton-dies-age-80">Dolly Parton&#8217;s death</a>, to rename Nashville International Airport after the Queen Of Country.</p><!-- RevContent --> <div id="revcontent-hidden"> <!-- revisit -->
+<p>&#8220;Dolly Parton’s extraordinary life is forever woven into the fabric of our state,&#8221; Lee said in a statement about the plans. &#8220;At a place where Tennessee welcomes the world, it is fitting that Nashville International Airport would bear the name of our state’s favorite daughter.&#8221;</p><!-- inlinecontent_1 --> </p><!-- admarker --> 
+<p>Parton was both born and died in Tennessee, having spent much of her life in the meantime intimately entwined with Nashville&#8217;s country music scene. The tribute—which will have to go through approvals of Nashville&#8217;s airport authority before becoming official, not that we expect that to be a huge roadblock given how beloved Parton was and is—is just one of many that have been inspired by Parton&#8217;s life over the last week, from numerous heartfelt social media posts to both <a href="https://www.google.com/goto?url=CAEShgEB6zswFSHX7o0oEzCnB1uHvON4pLOpMou3msnJT1_Da7BT_v5YzISUt_-UsYQoRwA3HnHz0Aah8LYJJ9UAZ-mxKqJ5TBBcpAUIW1M_rNHw43ENVnrC0QMDz9qNFIHJUp5VF6OhWU27QsgqVeHmDoAJBmFaNFsM_cXXwdm5BYLJ3tWe3WTfgg">AMC</a> and Regal Theaters putting her movies back into their cinemas. (With <a href="https://www.prnewswire.com/news-releases/regal-honors-dolly-parton-with-screenings-benefiting-imagination-library-302862783.html">Regal&#8217;s promotion</a>, aimed at theaters across Tennessee this week and then nationwide next week, sending all of its proceeds for showings of <em>Steel Magnolias </em>and <em>The Best Little Whorehouse In Texas</em> to Dolly Parton&#8217;s Imagination Library, the literacy program Parton founded back in 1995.)&nbsp;</p><!-- inlinecontent_2 --> </p><!-- inlinecontent_2 --> </p>

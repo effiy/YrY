@@ -1,0 +1,14 @@
+---
+title: ATK 推出梵塔 NOTHING68 磁轴键盘：空气悬挂 GASKET 结构、8KHz 回报率，798.15 元起
+tags:
+- IT之家
+category: life/lifestyle
+created: '2026-08-29'
+source: https://www.ithome.com/0/995/899.htm
+type: rss
+source_name: IT之家
+source_url: https://www.ithome.com/rss/
+published: Sat, 29 Aug 2026 04:46:32 GMT
+---
+
+<p>IT之家 8 月 29 日消息，ATK 现已在京东上架一款梵塔 NOTHING68 磁轴键盘，提供秩序白、暗轨黑与樱雾粉三种配色，可选两种轴体，IT之家整理价格如下：</p><ul class="medium-size list-paddingleft-2"><li><p>摄政王轴：798.15 元</p></li><li><p>银摄政王轴：899.3 元</p></li></ul><dir><a contenteditable="false" href="https://u.jd.com/k19czQN" target="_blank"><span class="card main-site"><span class="card-logo"><img src="https://img14.360buyimg.com/pop/jfs/t1/515687/30/363/81660/6a8e528cF82211abe/0083320320c07b98.jpg" /></span><span class="card-info"><span class="card-title"><span class="mall-data">京东</span><span class="card-name"> ATK 梵塔 NOTHING68 磁轴键盘</span></span><span class="card-abstract"></span><span class="card-controls"><span class="price"> 798.15 元起</span><span class="card-btn-deep">直达链接</span></span></span></span></a></dir><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/ddad9368-1300-4fd0-8bdc-18fe1501adf8.png?x-bce-process=image/format,f_auto" /></p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/5b821119-5eea-42bb-98c3-2408d3d8602a.png?x-bce-process=image/format,f_auto" /></p><p>该键盘采用半透明 PC 上盖与喷漆 ABS 下盖，侧面设有夹层式金属装饰结构，背板由钢化玻璃开窗与铝合金拼接而成。其中秩序白、樱雾粉配色款搭载高透顶雾 PC 键帽，暗轨黑款则采用 UV 手感漆五面雾透 PC 键帽。机身为下灯位设计，配备波浪纹造型的六颗环绕式灯组，且各区域光效支持独立调节功能。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/5d5b98fb-5930-403c-841f-4201b040e640.png?x-bce-process=image/format,f_auto" /></p><p>该键盘采用空气悬挂 GASKET 结构，结合悬浮支撑内胆与弹簧硅胶双重缓震设计。机身填充层包含井上 PORON 夹心棉、IXPE 轴下垫、PET 声优垫、PORON 轴座棉以及 PORON 底棉。定位板方面根据不同版本提供 6 系铝合金与 FR4 沉金两种规格选项。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/ab8a70a6-22d3-4f18-b5c8-273c6cd473dc.png?x-bce-process=image/format,f_auto" /></p><p>该键盘可选标准摄政王轴与银摄政王轴，两者均内置 N52 磁铁与 PA12 尼龙材质轴心。前者轴体行程为 3.5mm、触发力度 30gf；后者行程为 3.2mm、触发力度 35gf。键盘电路采用数模分离设计，灯光与霍尔传感器由独立电路供电。系统还支持特定游戏状态的光效联动与音乐律动模式。</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/67986ba5-863b-4394-ae73-eade2c1674b4.png?x-bce-process=image/format,f_auto" /></p><p>性能规格上，该键盘回报率达到 8kHz，RT 调节范围在 0.001mm 至 3.2mm 之间，全段调节精度为 0.001mm。其全键扫描率为 600kHz，通道扫描率达 4696kHz。在三核同步控制方案的运行下，按键的全链路触发延迟为 0.22ms，释放延迟为 0.28ms，整体传输延迟为 0.08ms。</p><p>IT之家附产品参数：</p><p style="text-align: center;"><img class="no-alt-img" src="https://img.ithome.com/newsuploadfiles/2026/8/8649853c-3dbe-4cca-948f-3419d3d00e0d.png?x-bce-process=image/format,f_auto" /></p>
