@@ -1,0 +1,17 @@
+---
+title: 'Sound Off: ''Coyote vs. Acme'' is Out in Theaters - What Did You Think?'
+tags:
+- FirstShowing
+category: life/movie
+created: '2026-08-29'
+source: https://www.firstshowing.net/2026/sound-off-coyote-vs-acme-is-out-in-theaters-what-did-you-think/
+type: rss
+source_name: FirstShowing
+source_url: https://www.firstshowing.net/feed/
+published: Fri, 28 Aug 2026 21:42:08 +0000
+author: Alex Billington
+---
+
+<div class="image" style="text-align: center;"><a href="https://www.firstshowing.net/2026/sound-off-coyote-vs-acme-is-out-in-theaters-what-did-you-think/"><img alt="Coyote vs. Acme Sound Off" height="168" src="https://media2.firstshowing.net/firstshowing/img18/coyotevscamefinalsoundoffbitsr1.jpg" width="350" /></a></div>
+
+<strong>Now that you've seen it, what did you think?</strong> &#128165; <em>"These companies think they can do whatever they want. We're sick of it!"</em> Fight the power! Playing in theaters worldwide is <strong><em>Coyote vs. Acme</em></strong>, the movie that Warner Bros was planning to <a href="https://www.ign.com/articles/warner-bros-reportedly-set-to-shelve-and-delete-coyote-vs-acme-film-once-and-for-all" rel="noopener nofollow " target="_blank">delete</a> & then never show anyone (still unbelievable?!), which was <a href="https://deadline.com/2025/03/coyote-vs-acme-warner-bros-sale-complete-ketchup-1236354552/" rel="noopener nofollow " target="_blank">rescued by</a> Ketchup Entertainment. After years in development, years of legal battles (how meta), and an extra year of final post-production & <a href="https://www.firstshowing.net/2026/quick-new-promo-trailer-for-will-fortes-coyote-vs-acme-comedy/" title="Quick New Promo Trailer for Will Forte's 'Coyote vs Acme' Comedy">marketing prep</a>, it's finally here for all of us to enjoy on the big screen. Is it totally worth the wait? Was everyone making a big stink about it right? How did this movie turn out? Directed by comedy filmmaker <strong>Dave Green</strong>, <em>Coyote vs. Acme</em> is the tale of what happens when Looney Tunes character Coyote decides to sue the Acme Corporation for selling him defunct & dangerous products to try to capture the Roadrunner. He hires small town billboard lawyer Kevin Avery, played by <strong>Will Forte</strong>, to confront the corporation and get them make better products. Just like <em>Space Jam</em> and <em>Who Framed Roger Rabbit</em> before it, <a href="https://www.firstshowing.net/2026/delightfully-brilliant-trailer-for-coyote-vs-acme-will-forte/" title="Delightfully Clever Full Trailer for 'Coyote vs Acme' Starring Will Forte"><em>Coyote vs. Acme</em></a> is a clever live-action + cartoon hybrid movie combining cartoon antics interacting with real human beings. Made by Warner Bros Animation, the studio <a href="https://deadline.com/2023/11/coyote-vs-acme-shelved-warner-bros-discovery-writeoff-david-zaslav-1235598676/" rel="noopener nofollow " target="_blank">tried to shelve it</a> indefinitely – until it was successfully rescued & revived. And now we get to experience it <em>all</em> of its glory. Your thoughts on the movie?&nbsp;//&nbsp;<a href="https://www.firstshowing.net/2026/sound-off-coyote-vs-acme-is-out-in-theaters-what-did-you-think/">Continue Reading &rsaquo;</a>

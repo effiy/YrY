@@ -1,0 +1,19 @@
+---
+title: 'The Witcher 3: Wild Hunt Remastered Is a Free, Huge Upgrade Out September
+  29'
+tags:
+- Game Informer
+category: life/game
+created: '2026-08-29'
+source: https://gameinformer.com/2026/08/25/the-witcher-3-wild-hunt-remastered-is-a-free-huge-upgrade-out-september-29
+type: rss
+source_name: Game Informer
+source_url: https://www.gameinformer.com/rss.xml
+published: Tue, 25 Aug 2026 15:23:00 CDT
+author: Charles Harte
+---
+
+<p><img alt="Game Informer" class="image-style-body-default" height="450" src="https://gameinformer.com/sites/default/files/styles/body_default/public/2026/08/25/c1351c62/witcher03.jpg.webp" width="800" /></p>
+
+
+      <p>It's uncontroversial to call The Witcher 3: Wild Hunt <a href="https://gameinformer.com/games/the_witcher_3_wild_hunt/b/playstation4/archive/2015/05/12/the-witcher-3-wild-hunt-review-game-informer.aspx">one of the most beloved games of all time</a>, but since it came out over 11 years ago, it's beginning to look a little dated, <a href="https://gameinformer.com/2022/11/14/update-the-witcher-3s-new-gen-update-arrives-next-month">even with a next-gen update dropping in 2022</a>. With a new DLC expansion on the way, many gamers are likely to jump back into the base game to refresh their memories ahead of the new content, and today, CD Projekt Red surprised us with an announcement. The Witcher 3: Wild Hunt Remastered is a free, massive upgrade coming out next month. Check out the reveal trailer, featuring overhauled graphics and mechanics, below.</p>&nbsp;<p>In addition to a general graphical facelift, The Witcher 3: Remastered features "enhanced combat" with new finisher animations and new effects for Witcher signs, "improved traversal and movement," with modified mantling and climbing mechanics, "enhanced monster behaviors," a new skill tree, an expanded photo mode, and transmogrification, which allows you to pick the stats of one item while visually equipping another item. The trailer also includes a quick scrolling list of other new features, but to save you the trouble of pause-buffering, here's everything listed:</p><ul><li>Cross Platform Mod Support</li><li>Immersive Meditation</li><li>Refined Animations</li><li>New Quest Tracking</li><li>UI Improvements</li><li>Looting Rework</li><li>Refreshed Motion Blur</li><li>New Accessibility Features</li><li>Updated Textures</li><li>Foliage Shading Rework</li><li>Tutorial Modernization</li><li>HDR Improvements</li><li>GTAO</li><li>Improved Menu Navigation</li><li>Ray Tracing Improvements</li><li>Global Lighting Rework</li><li>New Shading Model</li><li>Subsurface scattering</li><li>New Tone Mapper</li><li>PS5 Pro Support</li><li>Xbox Play Anywhere Support</li><li>Nintendo Switch 2 Exclusive Features</li><li>NVIDIA DLSS 4.5</li><li>AMD FSR 4</li><li>Intel XESS 2.0</li><li>Path Tracing on PC</li><li>Ray Reconstruction on PC</li><li>Raytraced Hair</li><li>Native DX12</li><li>Rendering Parallelization</li></ul><p>The Remastered game also includes both previously released expansions, Hearts of Stone and Blood and Wine. What's especially crazy about this, however, is that the upgrade is free for all owners of The Witcher 3: Wild Hunt (though Switch 1 is notably absent from the platform listings I've found online), and any players who don't own the DLC already can download those packs for free as well. The free upgrade drops September 29, five weeks from today, on PS5, Xbox Series X/S, Switch 2, and PC.</p><p>For more Witcher, I've got great news for you: <a href="https://gameinformer.com/2026/08/24/the-witcher-iv-launches-in-2028-cd-projekt-red-joint-ceo-confirms">The Witcher IV, starring Geralt's daughter Ciri, will launch in 2028</a>.</p>

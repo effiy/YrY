@@ -1,0 +1,32 @@
+---
+title: '‘Adults’ Season 2 Review: The Kids Are Mostly Alright'
+tags:
+- Slant Magazine
+category: life/movie
+created: '2026-08-29'
+source: https://www.slantmagazine.com/tv/adults-season-two-review/
+type: rss
+source_name: Slant Magazine
+source_url: https://www.slantmagazine.com/feed/
+published: Thu, 27 Aug 2026 16:00:00 +0000
+author: Michael Savio
+---
+
+<p><img alt="Adults, Season 2" class="attachment-thumbnail-large size-thumbnail-large wp-post-image" height="480" src="https://www.slantmagazine.com/wp-content/uploads/2026/08/adults-720x480.jpg" width="720" /></p><p>Last year offered three viable contenders for the next best Gen-Z comedy: HBO’s <a href="/tv/i-love-la-review-rachel-sennott-josh-hutcherson/"><em>I Love LA</em></a>, Amazon’s <a href="/interviews/benito-skinner-wally-baram-interview-overcompensating/"><em>Overcompensating</em></a>, and FX’s <em>Adults</em>. In their inaugural seasons, none of them suggested era-defining pieces of scripture à la <em>Girls</em>, but <em>Adults</em>, the first of the three to debut its second season, has started to find its groove as a winsome hangout comedy. </p>
+<p>In the vein of yesteryear’s low-concept sitcoms, <em>Adults</em>’s formula—five friends living together in Queens fumble through their mid-20s—remains both simple and pliable, allowing for varied B plots and character link-ups. Unlike so many “prestige” comedies that have emerged in the streaming era, there are no sweeping satirical ambitions, no complex mythologies, and no distracting melodrama—just rapid-fire jokes, simmering romantic arcs, and plenty of hijinks.</p>
+
+<p>It’s refreshing when a modern TV comedy is focused on, well, comedy. Whereas season one’s antics at times awkwardly brushed up against Substack fodder (from the pitfalls of performative activism to the lingering effects of the Me Too era), season two’s feel more lived-in and specific to being a confused twentysomething rather than being a confused twentysomething <em>right now</em>. </p>
+
+<p>In the third episode, “Talia,” a needle-phobic Issa (Amita Rao) enlists nice-guy Samir (Malik Elassal) to trick her into taking her IVF shots, resulting in increasingly slapstick altercations. In another, “Raccoon,” the gang decides to collectively drop acid and watch <a href="/film/the-last-airbender/"><em>The Last Airbender</em></a>—then, right before they start to trip, the titular critter crawls across the coffee table. </p>
+
+<p>Creators Ben Kronengold and Rebecca Shaw have an ear for the precise rhythms that make a joke land, even if the already-heightened screwball situations occasionally overplay their hand. A harebrained mission to normalize using the c-word in a corporate environment runs out of steam fast, and when Samir and Paul Baker (Jack Innanen) are forced to room together and can’t find their “solo time,” it’s hard not to notice that this easily solvable conflict is just an excuse for a funny but ultimately facile scene at a sperm donation clinic later on. </p>
+<p>A complete disavowal of the confines of realism would do <em>Adults</em> wonders, as the few instances where it scratches its more absurdist impulses suggest a loopier and more assured show. In the season premiere’s cold open, the camera dashes around the house to quickly catch us up to speed with the housemates, and Issa explains to boyfriend Paul Baker (Jack Innanen), “It’s season two, Paul Baker. We’re doing a oner.” In “Talia,” a studio audience applause track plays the moment guest star Raven Symoné enters the frame, to which Anton (Owen Thiele) looks around and asks aloud, “What the fuck was that?”</p>
+
+
+<p>These meta flourishes help propel the show to a level beyond its been-there-done-that premise. As a character played by Zosia Mamet asks the bubbly yet insecure Billie (Lucy Freyer), “You think you’re the first people to be young and adorable in New York?” <em>Adults</em> may not possess the alchemic magic of its forbears, but its promising second season suggests that—much like its quintet of lovable idiots—maybe the best version of itself has yet to come.</p>
+<div class="docent_acf_display_credits" id="credits">
+
+<div id="starRatingDocent"><strong>Score:&nbsp;</strong> <svg height="28" viewBox="0 0 500 500" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m250 50.3 49.6 152.6H460l-129.8 94.2 49.6 152.6L250 355.4l-129.8 94.3 49.6-152.6L40 202.9h160.4z" fill="#0A75BA" stroke="#FFFFFF" stroke-width="1"></path></svg><svg height="28" viewBox="0 0 500 500" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m250 50.3 49.6 152.6H460l-129.8 94.2 49.6 152.6L250 355.4l-129.8 94.3 49.6-152.6L40 202.9h160.4z" fill="#0A75BA" stroke="#FFFFFF" stroke-width="1"></path></svg><svg height="28" viewBox="0 0 500 500" width="28" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad"><stop offset="50%" stop-color="#0A75BA"><stop offset="50%" stop-color="#D3D2D2"></linearGradient></defs><path d="m250 50.3 49.6 152.6H460l-129.8 94.2 49.6 152.6L250 355.4l-129.8 94.3 49.6-152.6L40 202.9h160.4z" fill="url(#grad)" stroke-width="1"></svg><svg height="28" viewBox="0 0 500 500" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m250 50.3 49.6 152.6H460l-129.8 94.2 49.6 152.6L250 355.4l-129.8 94.3 49.6-152.6L40 202.9h160.4z" fill="#D3D2D2" stroke="#D3D2D2" stroke-width="1"></path></svg>
+</div> <!-- end starRatingDocent Div -->&nbsp;<strong>Cast:</strong> Malik Elassal, Lucy Freyer, Jack Innanen, Amita Rao, Owen Thiele &nbsp;<strong>Network:</strong> FX </div>
+<div class="donate"><strong>If you can, please consider supporting <em>Slant Magazine</em>.</strong><br /><br />Since 2001, we've brought you uncompromising, candid takes on the world of film, music, television, video games, theater, and more. Independently owned and operated publications like <em>Slant</em> have been hit hard in recent years, but we’re committed to keeping our content free and accessible—meaning no paywalls or fees.<br /><br />If you like what we do, please consider subscribing to our <a href="https://www.patreon.com/slant">Patreon</a> or making a <a href="https://www.paypal.com/donate/?hosted_button_id=PF6LWWCK87X5E">donation</a>.</div>
+<p>The post <a href="https://www.slantmagazine.com/tv/adults-season-two-review/">‘Adults’ Season 2 Review: The Kids Are Mostly Alright</a> appeared first on <a href="https://www.slantmagazine.com">Slant Magazine</a>.</p>

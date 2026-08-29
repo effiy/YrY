@@ -1,0 +1,71 @@
+---
+title: The Best Switch Visual Novels and Adventure Games in 2024 – From Fata Morgana
+  and VA-11 Hall-A to Famicom Detective Club and Gnosia
+tags:
+- TouchArcade
+category: life/game
+created: '2026-08-29'
+source: https://toucharcade.com/2024/09/04/best-switch-visual-novels-adventure-games-2024/
+type: rss
+source_name: TouchArcade
+source_url: https://toucharcade.com/feed/
+published: Wed, 04 Sep 2024 23:38:08 +0000
+author: Mikhail Madnani
+---
+
+<p>After tackling <a href="https://toucharcade.com/2024/07/23/best-switch-party-games/">the best party games on Switch in 2024</a>, the recent release of Emio &#8211; The Smiling Man: Famicom Detective Club being as amazing as it is pushed me to write about what I consider the best visual novels and adventure games on Switch to play right now. I&#8217;ve included both because some games are pure visual novels while some are adventure games (and not visual novels). This list has quite a few games from across regions and release years, and I hope you find something you end up loving here. As usual, this list is in no particular order.</p>
+<h3><strong>Emio – The Smiling Man: Famicom Detective Club ($49.99) + Famicom Detective Club: The Two-Case Collection</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328666" height="2160" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/best-visual-novels-on-switch-adventure-games-2024-emio-fdc.jpg" width="3840" /></p>
+<p>When Nintendo not only remade both Famicom Detective Club games back in 2021, I couldn&#8217;t believe it. They were amazing adventure games, and my only complaint really was the lack of a physical release back then. Fast forward to 2024 and Nintendo has released Emio – The Smiling Man: Famicom Detective Club physically and digitally as a brand-new entry in the series, and I&#8217;ve been floored playing it. Not only does it feel like a true series entry which might be a negative to some, but this might be one of the most lavish productions I&#8217;ve seen in a game like this ever. I don&#8217;t want to get into spoilers, but the ending is shockingly good and it really justifies its M rating. I definitely didn&#8217;t expect to have a new Famicom Detective Club game in 2024 on my top games of the year list, but Nintendo managed to do that with Emio – The Smiling Man: Famicom Detective Club. Download the demo now.</p>
+<p>If you&#8217;d rather play the first two games before Emio, grab the Famicom Detective Club: The Two-Case Collection. If you are ok with some old school design and gameplay for adventure games, you will adore these. </p>
+<h3><strong>VA-11 Hall-A: Cyberpunk Bartender Action ($14.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-322510" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/04/va11halla-cyberpunk-bartender-action-best-switch-indies-of-all-time-list.jpg" width="1350" /></p>
+<p>If you&#8217;ve been reading the few &#8220;best Switch games" lists I&#8217;ve been doing this year, you&#8217;ve seen me feature VA-11 Hall-A: Cyberpunk Bartender Action twice before already, but as you know, I&#8217;m not going to pass up an opportunity to write about one of my favorite games of all time. VA-11 Hall-A: Cyberpunk Bartender Action is notable for its story, music, aesthetic, and most-importantly the characters. Having played it multiple times over the years on every system, it also feels right at home on Switch, and is a game I recommend to everyone literally. I don&#8217;t care if you like point and click adventure games or not. Go ahead and mix drinks and then change some lives.</p>
+<h3><strong>The House in Fata Morgana: Dreams of the Revenants Edition ($39.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328711" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/fata-morgana-switch-wallpaper.jpg" width="1350" /></p>
+<p>The House in Fata Morgana: Dreams of the Revenants Edition is the definitive edition of one of my favorite stories in any medium. It includes the original game and much more to deliver a stunning version of a masterpiece in storytelling. This one is a pure visual novel, and I&#8217;m glad that after its many releases, it found a lot of success on Switch, where it plays best. If you want to play something that will stay with you for a long time, this gothic horror experience will do much more. It also happens to have some of the most incredible music ever.</p>
+<h3><strong>Coffee Talk Episode 1+2 ($12.99 + $14.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328712" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/coffee-talk.jpg" width="1350" /></p>
+<p>Ok this one is cheating since the games are sold separately on the eShop and the physical releases I imported from Japan are also separate, but since there&#8217;s a bundle of both games sold in North America on Switch, I&#8217;ve included both Coffee Talk games as one entry here. I love them both, and while they didn&#8217;t hit the same highs as VA-11 Hall-A, Coffee Talk perfectly satiated what I wanted from a game set in a coffee shop, and delivered a very relaxing experience with a great story. If you enjoy coffee and listening to interesting people with great pixel art and music, this is for you.</p>
+<h3><strong>Type Moon&#8217;s visual novels: Tsukihime, Fate/stay night, and Mahoyo (Variable)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-325903" height="2160" src="//cdn.toucharcade.com/wp-content/uploads/2024/07/tsukihime-switch-review-mahoyo.jpg" width="3840" /></p>
+<p>This is another entry where I&#8217;m cheating. I wasn&#8217;t sure if I wanted to include just Tsukihime or Witch on the Holy Night (Mahoyo), but then the recent release of Fate/stay night Remastered made things even harder. Instead of worrying too much, I&#8217;ve included all three as essential visual novels in this article on Switch. They are all very long but very good. If you&#8217;ve wanted to sample a classic visual novel, go with Fate/stay night, but I recommend Tsukihime&#8217;s remake on Switch to everyone. Witch on the Holy Night is probably the game to play after these two in terms of quality. </p>
+<h3><strong>PARANORMASIGHT: The Seven Mysteries of Honjo ($19.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-320220" height="1440" src="//cdn.toucharcade.com/wp-content/uploads/2024/03/paranormasight-iphone-switch-steam-deck-ipad-discount-price-anniversary.jpg" width="2560" /></p>
+<p>Square Enix&#8217;s PARANORMASIGHT: The Seven Mysteries of Honjo reminds me of Nintendo&#8217;s Emio in a way that I&#8217;m surprised it even exists, let alone turned out this good. I went into it with no expectations, but was blown away by the narrative, its delivery, and even some wall breaking that I enjoyed quite a bit early on. Square Enix released one of the best mystery adventure games I&#8217;ve played with amazing characters, great art, and interesting mechanics here, and it is worth your time if you want a fantastic new horror adventure game.</p>
+<h3><strong>Gnosia ($24.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328713" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/gnosia-2.jpg" width="1350" /></p>
+<p>People call Gnosia a sci-fi social deduction RPG, but it is more of an adventure and visual novel hybrid for me. Your aim here is identifying the Gnosia among a group using information you gather and then vote to put the Gnosia into cold sleep. You and your crew both improve over time, and aside from some RNG issues to get two specific outcomes, Gnosia was a fantastic experience. I liked it so much on Switch that I bought the physical release on both Switch and PS5 in addition to getting it on Steam. This one might not be for everyone, but it remains one of the nicest surprises in the genre.</p>
+<h3><strong>Steins;Gate Series (Variable)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328714" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/steins-gate-elite.jpg" width="1350" /></p>
+<p>Spike Chunsoft&#8217;s Switch releases of the Steins;Gate series, especially Steins;Gate Elite, are as important as Fate/stay night when it comes to introducing newcomers to visual novels to the genre. While I still hope the publisher brings over the original version of Steins;Gate, Steins;Gate Elite is an easy recommendation for those who watch anime and want to get into a great visual novel. The Steins;Gate games are must plays only after you experience the original story in Steins;Gate Elite. I&#8217;ve cheated here as well by including multiple games, but my list my rules. </p>
+<h3><strong>AI: THE SOMNIUM FILES and nirvanA Initiative (Variable)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328715" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/ai-somnium-files.jpg" width="1350" /></p>
+<p>AI: THE SOMNIUM FILES and nirvanA Initiative from Spike Chunsoft brought Zero Escape creator Kotaro Uchikoshi and No More Heroes character designer Yusuke Kozaki together for an incredible set of two adventure games that honestly feel too good to be true when it comes to the budget behind them with the quality they delivered on story, music, and characters. While a lot of folks lament the lack of Zero Escape on Switch, I think the two AI: THE SOMNIUM FILES games are absolutely worth experiencing at full price, and gems of the Switch library. Don&#8217;t make us wait too long for a new game in the series please. </p>
+<h3><strong>NEEDY STREAMER OVERLOAD ($19.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328716" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/needy-streamer-overload.jpg" width="1350" /></p>
+<p>When it comes to adventure games or visual novels, I&#8217;m often recommended games where a friend will say &#8220;trust me and just play it but don&#8217;t look up anything about it". One such game was NEEDY STREAMER OVERLOAD when I first played it on PC. It is an adventure game with multiple endings that can flip flop between disturbing horror and wholesome moments. It revolves around the daily life of a young girl trying to be the best streamer. I liked this one enough to pre-order the Switch limited edition from Japan, and I&#8217;m glad I did so. It is unforgettable.</p>
+<h3><strong>Ace Attorney Series (Variable)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-283019" height="720" src="//cdn.toucharcade.com/wp-content/uploads/2021/07/thegreataceattorneychronicles.jpg" width="1280" /></p>
+<p>Capcom has now brought the entire Ace Attorney series to Switch with the Phoenix Wright Ace Attorney Trilogy (1,2,3), Apollo Justice Trilogy (4,5,6), The Great Ace Attorney Chronicles (1+2 of those), and the two Ace Attorney Investigations games in this week&#8217;s Ace Attorney Investigations Collection release. I would say there are no excuses now, but this adventure game series is beloved for a reason and it has spawned a fanbase that has lasted for years since the DS debut in the West. If you are new to the series, I recommend The Great Ace Attorney Chronicles as the best entry point even above the original trilogy which feels dated in ways. Either way, you can now play the entire series on one handheld, and I love that.</p>
+<h3><strong>Spirit Hunter: Death Mark, NG, and Death Mark II (Variable)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-318882" height="1013" src="//cdn.toucharcade.com/wp-content/uploads/2024/02/spirit-hunter-death-mark-2-switch-review-main.jpg" width="1800" /></p>
+<p>Another series rather than a single game? Yes. Aksys Games and Experience Inc&#8217;s Spirit Hunter trilogy is now fully available on Switch, and it manages to blend horror adventure and visual novel elements with one of the most striking art styles I&#8217;ve ever seen. It is a bit harder to recommend this series given how grotesque some of the designs are, but I don&#8217;t think I&#8217;ll ever forget some of the images I&#8217;ve seen while playing the Spirit Hunter games with their excellent localizations and stories. I hope we see a new entry in the next few years.</p>
+<h3><strong>13 Sentinels: Aegis Rim ($59.99)</h3>
+<p></strong></p>
+<p><img alt="" class="aligncenter size-full wp-image-328710" height="759" src="//cdn.toucharcade.com/wp-content/uploads/2024/09/13-sentinels-wallpaper-2024.jpg" width="1350" /></p>
+<p>13 Sentinels: Aegis Rim isn&#8217;t a pure adventure game, but one that has real-time strategy battles. I usually try and include a fantastic game at the end and the double whammy of not being a full adventure game and also being one of the best games I&#8217;ve played in a decade has me ending this feature on Vanillaware and Atlus&#8217; sci-fi masterpiece 13 Sentinels: Aegis Rim. I first played this on PS4 and enjoyed replaying it from start to finish on Switch thanks to the OLED screen in handheld mode. Regardless of where you play it, you need to experience 13 Sentinels: Aegis Rim. </p>
+<p>If you made it this far, you&#8217;ve realized that this isn&#8217;t a top 10 but more, and the games are ones I recommend playing at full price. I didn&#8217;t want to cut out something I like a lot to hit an arbitrary number of games featured and that&#8217;s why I even included some full series here instead of just individual games. That&#8217;s my list of the best visual novels and adventure games on Switch to play in 2024. If you have a game you think I should&#8217;ve included, please let me know in the comments below. I&#8217;m always on the lookout for more amazing stories in two of my favorite genres that feel perfect on Switch. As always, thanks for reading!</p>
+<p>Note: I&#8217;m working on a separate list of otome games since there are too many good ones in that subgenre. </p>

@@ -1,0 +1,17 @@
+---
+title: Bari Weiss has some pretty hard numbers to hit when 60 Minutes comes back
+tags:
+- The A.V. Club
+category: life/entertainment
+created: '2026-08-29'
+source: https://www.avclub.com/bari-weiss-60-minutes-hard-numbers-to-hit-10-million
+type: rss
+source_name: The A.V. Club
+source_url: https://www.avclub.com/rss
+published: Wed, 26 Aug 2026 19:31:11 -0400
+author: William Hughes
+---
+
+<img src="https://img.pastemagazine.com/wp-content/avuploads/2025/09/03225838/bari-weiss-feature.jpg" /><p>It&#8217;s a credit to the work of decades&#8217; worth of journalists, producers, factcheckers, reporters, hosts, writers, and, admittedly, just a touch of handy self-mythologizing, that CBS News&#8217; <em>60 Minutes&nbsp;</em>is only rarely viewed through the lens of being a ratings juggernaut. It is one, though, in case that wasn&#8217;t clear: One of the most-watched shows in network primetime, for a longer run than literally any other series you might care to name. But the news magazine&#8217;s journalistic accolades sometimes obscure the fact that it&#8217;s held its prime Sunday night network real estate for more than 50 years at this point <em>because</em> people watch it—a fact that&#8217;s reportedly in some measure of doubt as the series gears up to come back for its first season since Bari Weiss made her big, drastic takeover of its parent organization.</p><!-- RevContent --> <div id="revcontent-hidden"> <!-- revisit --><!-- admarker --> 
+<p>Weiss&#8217; oversight at&nbsp;<em>60 Minutes&nbsp;</em>has been tumultuous, to say the least—to the point that <a href="https://www.status.news/p/60-minutes-bari-weiss-bill-whitaker-nick-bilton-premiere">the same&nbsp;<em>Status&nbsp;</em>article</a> mentioning the new benchmarks she needs to hit also mentions that staffers have come to refer to the day when <a href="https://www.avclub.com/60-minutes-fired-sharyn-afonsi-tanya-simon-hires-nick-bilton">multiple members of the show&#8217;s team were recently laid off</a> as &#8220;Black Thursday.&#8221; (Followed, presumably, by <a href="https://www.avclub.com/scott-pelley-60-minutes-nick-bilton-bari-weiss-staff-meeting">&#8220;Whatever Color It Is When Scott Pelley Rips The Boss You Just Installed Over Him A New One In Front Of Everybody Monday.&#8221;</a>) Per&nbsp;<em>Status</em>, those concerns are still hanging heavy over&nbsp;<em>60 Minutes</em>, including in a recent &#8220;off-the-record&#8221; dinner held for staff where host Bill Whitaker reportedly spoke about his discomfort with staying on at the show after so many high-profile departures.&nbsp;</p><!-- inlinecontent_1 --> </p>
+<p>Interestingly, though, it sounds like Weiss&#8217; bosses at Paramount have their own, more numerical worries about the series, which is reportedly behind its usual blistering pace of story production ahead of its return on September 13. Fair or not, a &#8220;veteran television news executive&#8221; quoted in the <em>Status&nbsp;</em>piece reportedly said that high-level execs at Paramount are extremely fixated on comparing the performance of Weiss (and, more directly, new <em>60 Minutes&nbsp;</em>executive producer Nick Bilton) against the show&#8217;s numbers for its premiere last year, which drew 10.03 million viewers. &#8220;It&#8217;s 10.03M or bust,&#8221; the executive continued of the show&#8217;s upcoming premiere. &#8220;If they fall short, they&#8217;re cooked.&#8221;</p><!-- inlinecontent_2 --> </p><!-- inlinecontent_2 --> </p>

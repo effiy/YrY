@@ -1,0 +1,43 @@
+---
+title: Kim Zolciak's Son KJ Is 'Doing the Best He Can' in Detention Center
+tags:
+- Us Weekly
+category: life/entertainment
+created: '2026-08-29'
+source: https://www.usmagazine.com/celebrity-news/news/kim-zolciaks-son-kjs-structured-routine-at-detention-center/
+type: rss
+source_name: Us Weekly
+source_url: https://www.usmagazine.com/feed/
+published: Fri, 28 Aug 2026 20:10:11 +0000
+author: Justin Harp
+---
+
+<p><a href="https://www.usmagazine.com/celebrities/kim-zolciak/"><strong>Kim Zolciak</strong></a> and <a href="https://www.usmagazine.com/celebrities/kroy-biermann/"><strong>Kroy Biermann</strong></a>’s 15-year-old son, <strong>Kroy “KJ” Biermann Jr.</strong>, is following a heavily structured routine at an Atlanta youth detention center following his recent arrest for alleged sodomy and sexual assault, <em>Us</em> has learned.</p>
+<p>KJ is currently being held at Atlanta’s Metro Regional Youth Detention Center ahead of a preliminary hearing on September 8. He has been accused of aggravated sodomy and aggravated sexual assault by a minor female who <em>Us</em> has decided not to publicly name for the sake of her privacy.</p><div class="mb1-wrapper" id="starter">
+						<div class="htlad-mb1" id="mb1-static"></div>
+						<div class="htlad-leader2" id="leader2-inline-static"></div>
+					</div>
+<p>A source confirmed to <em>Us</em> that Metro Regional Youth Detention Center is essentially a holding center so KJ spends much of the day in school and doing homework.</p>
+<p>“He’s doing the best he can at the moment. He does want to go home. He calls his mom every day,” the insider shared with <em>Us</em>. “Kim can’t wait until he gets home and is praying to god this is over soon.</p>
+<p><a href="https://www.usmagazine.com/celebrity-news/news/kim-zolciaks-sons-arrest-for-sexual-assault-what-to-know/" target="_blank">What to Know About Kim Zolciak's Son KJ's Arrest for Sexual Assault</a></p>
+<p>Per <strong>Glenn Allen</strong>, director of communications for the Georgia Department of Juvenile Justice, the usual day for inmates begins with mandatory morning hygiene, followed by breakfast and education sessions.</p>
+<p>“Youth at our detention centers follow a daily schedule that provides structure, accountability, education, and chances for positive growth,” Allen told Us on Wednesday, August 27. “A typical day starts with waking up, cleaning rooms, personal hygiene, and breakfast. Next, youth participate in educational programs in the morning.”</p>
+<p>Throughout the day, inmates have a variety of meal options, including hard-boiled egg or a filled pastry for breakfast as well as chili dogs, pizza and riblet sandwiches for lunch. For dinner, inmates can choose between sriracha chicken with spring rolls, country-fried steak, Salisbury steak with gravy and lemon-pepper wings, among other options, per <a href="https://pagesix.com/2026/08/26/celebrity-news/inside-kj-biermanns-life-behind-bars-at-youth-jail-for-sodomy-and-sexual-battery-arrest/"><em>Page Six</em></a>.</p>
+<p>“After lunch, they continue with classroom instruction in the afternoon. The rest of the day usually includes recreation, dinner, and individual/group counseling sessions that focus on treatment, life skills, behavior, or personal development. Youth end the evening with personal hygiene and preparing for bedtime,” Allen told <em>Us</em>. “While schedules may vary by facility, programming needs, and security, each day is arranged to maintain a safe, structured environment that supports education and rehabilitation.”</p>
+<p>Inmates are also provided time to attend worship services, visitation sessions, creative arts lessons and skill-learning classes.</p>
+<p>KJ has been held at the youth detention center following his Monday, August 17, arrest in Alpharetta, Georgia.</p>
+<p>The minor female victim alleged that KJ groped her, exposed his genitals and put them into her mouth without her consent in a coed sauna at Lifetime Fitness gym in Georgia on April 23.</p>
+<p><a href="https://www.usmagazine.com/celebrity-news/news/police-report-reveals-details-of-kj-biermann-alleged-assault/">A police report</a> obtained by <em>Us</em> indicated that the minor female underwent a medical test and the results found no evidence of male DNA in her mouth or vagina.</p>
+<figure class="wp-caption alignnone" id="attachment_4419880" style="width: 900px;"><img alt="Kim Zolciak and Kroy Biermanns Son KJs Structured Routine at Youth Detention Center Revealed 1" class="size-large wp-image-4419880" height="675" src="https://www.usmagazine.com/wp-content/uploads/2026/08/Kim-Zolciak-and-Kroy-Biermanns-Son-KJs-Structured-Routine-at-Youth-Detention-Center-Revealed-1-e1787856351339.jpg?w=900" width="900" /><figcaption class="wp-caption-text"><span class="caption">KJ Biermann</span> <span class="credit">Courtesy Instagram / Kim Zolciak</span></figcaption></figure>
+<p>KJ’s mom, <em>RHOA</em> alum Zolciak, called the accusations against KJ “reckless and deeply troubling” in a statement on Friday, August 21, <a href="https://www.usmagazine.com/celebrity-news/news/kim-zolciak-breaks-silence-on-sons-sexual-assault-arrest/">breaking her silence</a> following her son’s arrest.</p>
+<p>“[KJ] categorically denies ever being involved with this woman or engaging in the conduct she has alleged,” Zolciak told <em>Us</em>. “My son voluntarily took a polygraph examination regarding these allegations and passed. Additionally, an examination was conducted, and no DNA belonging to my son was found.”</p>
+<p>She went on, “False accusations can have devastating consequences not only for the person being accused, but also for genuine survivors of sexual assault and abuse. Every legitimate allegation deserves to be taken seriously and investigated based on the facts and evidence. At the same time, no one should be publicly condemned based solely on an accusation.”</p>
+<p>“We remain confident that the facts and evidence will establish the truth, and we ask that people allow the proper process to take its course rather than spreading unproven allegations,” Zolciak concluded.</p>
+<p>KJ’s lawyer <strong>Jason Sheffield</strong> also <a href="https://www.usmagazine.com/celebrity-news/news/kim-zolciaks-son-kj-biermanns-lawyer-addresses-arrest/">spoke out last Friday</a> to insist that his client was “innocent” of any wrongdoing.</p>
+<p>“First and foremost, this is not the kind of information that should be for public dissemination. These are juveniles,” Sheffield told Us. “Secondly, my client is 100 percent innocent and tried to present evidence to the arresting officer, including a passed polygraph by a notable and respected sex offender polygrapher.”</p>
+<p>The lawyer went on to say, “Additionally, the officer’s report notes the GBI [Georgia Bureau of Investigation] found no male DNA on or inside the areas the alleged victim claimed she was assaulted. Had the officer sat down with me, I feel certain she would’ve never made an arrest.”</p>
+<p><a href="https://www.usmagazine.com/celebrity-news/news/alexia-nepolas-son-supports-kim-zolciaks-son-after-arrest/" target="_blank">Alexia Nepola's Son Throws Support Behind Kim Zolciak's Son After Arrest</a></p>
+<p>Sheffield claimed that the “false allegations” were actually a “desperate cry for attention” caused by “my client’s past rejection of the alleged victim’s unwanted advances.”</p>
+<p>“The fact that he’s been arrested and is being held without bond is a tragedy. He is not only presumed innocent but is, in fact, innocent,” the attorney added. “I will work tirelessly to demonstrate to the District Attorney’s office the mean-spirited nature of these false allegations and to bring a close to this matter as quickly as possible. I’m asking the public not to presume the truth of these allegations and to give the families on both sides their space and privacy.”</p>
+<p>KJ is one of Zolciak and <a href="https://www.usmagazine.com/celebrity-news/news/kim-zolciak-and-kroy-biermann-spotted-after-son-kjs-arrest/">her estranged husband Kroy Sr.</a>’s six children. Zolciak and Kroy Sr. share KJ, 15, Kash, 14 and twins Kaia and Kane, 12. Kroy Sr. adopted <strong>Brielle Biermann</strong> and <strong>Ariana Biermann</strong>, Zolciak’s daughters from a previous relationship.</p>
+<p><em>If you or someone you know has been sexually assaulted, contact the <a href="https://rainn.org/" rel="noopener" target="_blank">National Sexual Assault Hotline</a> at 1-800-656-HOPE (4673).</em></p>

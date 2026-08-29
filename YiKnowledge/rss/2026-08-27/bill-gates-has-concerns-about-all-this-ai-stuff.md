@@ -1,0 +1,17 @@
+---
+title: Bill Gates has concerns about all this AI stuff
+tags:
+- The A.V. Club
+category: life/entertainment
+created: '2026-08-29'
+source: https://www.avclub.com/bill-gates-ai-blog-post
+type: rss
+source_name: The A.V. Club
+source_url: https://www.avclub.com/rss
+published: Thu, 27 Aug 2026 09:41:01 -0400
+author: Drew Gillis
+---
+
+<img src="https://img.pastemagazine.com/wp-content/avuploads/2026/08/27093621/MixCollage-27-Aug-2026-09-35-AM-6127.jpg" /><p><span style="font-weight: 400;">For years, regular, non-extremely-wealthy people have been sounding alarms about the dangers AI might have to the economy, </span><a href="https://www.avclub.com/jason-kelce-liquid-death-data-center"><span style="font-weight: 400;">the environment</span></a><span style="font-weight: 400;">, and humanity in general. But now </span><a href="https://www.avclub.com/rosie-odonnell-bill-gates-autism-test-amy-poehler"><span style="font-weight: 400;">Bill Gates is talking about it</span></a><span style="font-weight: 400;">, and he thinks more needs to be done. Thank you, Mr. Gates! Finally, a wealthy person has written a nearly 6,000-word blog post ruminating on a major world issue. &#8220;AI will either be the greatest equalizer ever invented, or the worst source of injustice. The challenge is monumental,&#8221; Gates writes. &#8220;Unfortunately, right now we are not preparing for it. I don’t see evidence that leaders, experts, and communities are confronting the challenges adequately. There is no plan to ease the entry into the AI era.&#8221; And, before you ask, Gates clarifies that &#8220;my views on AI are not motivated by the potential to make money for myself.&#8221;&nbsp;</span></p><!-- RevContent --> <div id="revcontent-hidden"> <!-- revisit --><!-- admarker --> 
+<p><span style="font-weight: 400;">So what does Gates think we should do? In fairness, he seems to have pretty decent ideas (even if he is ultimately pro-AI-but-with-regulation). He correctly identifies the danger AI poses to the job market, to national security, and to children&#8217;s development. He believes &#8220;we’ll set aside certain things for only people to do,&#8221; which he dubs &#8220;Human Reserved&#8221; domains. However, Gates admits that he&#8217;s not totally sure how to enforce this, or anything else, really. &#8220;It is great that some AI companies are proposing solutions to challenges raised by their own technology, but we should not expect them to lead the charge,&#8221; he writes. &#8220;Some of the issues are outside their area of expertise, and in a democratic society it’s not their role to decide these things.&#8221;&nbsp;</span></p><!-- inlinecontent_1 --> </p>
+<p><span style="font-weight: 400;">&#8220;You have a chance to act now, before unemployment rises sharply, communities are hurting, and public trust has eroded,&#8221; Gates writes towards the end in his &#8220;message to leaders&#8221; section. &#8220;You can make sure AI benefits everyone. And you can work with other governments to meet this national and global challenge.&#8221; Not to sound like one of the defeatists that Gates references elsewhere in the story, but the idea of the current United States government doing this is, well… It&#8217;s a lovely idea. You can read the whole </span><a href="https://www.gatesnotes.com/a-turbulent-ai-era-and-critical-choices-to-make"><span style="font-weight: 400;">post here</span></a><span style="font-weight: 400;">.&nbsp;</span></p><!-- inlinecontent_2 --> </p><!-- inlinecontent_2 --> </p>
