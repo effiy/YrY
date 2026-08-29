@@ -10,6 +10,8 @@ from domain.knowledge.scanner import (
     read_knowledge_file,
     list_stories,
     read_story_markdown,
+    list_bugs,
+    read_bug_markdown,
 )
 from domain.knowledge.writer import (
     write_entry_markdown,
@@ -29,6 +31,8 @@ __all__ = [
     "read_knowledge_file",
     "list_stories",
     "read_story_markdown",
+    "list_bugs",
+    "read_bug_markdown",
     "write_entry_markdown",
     "entry_exists",
     "read_entry_frontmatter",

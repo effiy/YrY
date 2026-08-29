@@ -6,6 +6,8 @@ routes mirroring the file routes' style:
   - /knowledge-read          → single file body + parsed frontmatter
   - /knowledge-stories       → list story.md entries under engineer/learn/projects/
   - /knowledge-story-read    → read a specific story's story.md
+  - /knowledge-bugs          → list bug markdowns under projects/*/bugs/{date}/{type}/
+  - /knowledge-bug-read      → read a single bug's BugDocument + BugContent
   - /knowledge-sync          → trigger a full disk → DB reconciliation
   - /knowledge-files         → read metadata from DB mirror (no disk scan)
   - /knowledge-export        → zip a knowledge directory and stream the download
@@ -23,6 +25,8 @@ from domain.knowledge import (
     read_knowledge_file,
     list_stories,
     read_story_markdown,
+    list_bugs,
+    read_bug_markdown,
     sync_knowledge_full,
     list_knowledge_files,
     write_entry_markdown,
@@ -34,6 +38,8 @@ from models.schemas import (
     KnowledgeScanRequest,
     KnowledgeStoryReadRequest,
     KnowledgeStoriesRequest,
+    KnowledgeBugsRequest,
+    KnowledgeBugReadRequest,
     KnowledgeFilesRequest,
     KnowledgeWriteRequest,
     KnowledgeDeleteRequest,
@@ -67,6 +73,30 @@ async def knowledge_stories_route(request: KnowledgeStoriesRequest):
 @router.post("/knowledge-story-read", operation_id="knowledge_story_read")
 async def knowledge_story_read_route(request: KnowledgeStoryReadRequest):
     data = read_story_markdown(request.project, request.story_name)
+    return success(data=data)
+
+
+@router.post("/knowledge-bugs", operation_id="knowledge_bugs")
+async def knowledge_bugs_route(request: KnowledgeBugsRequest):
+    """List bugs directly from disk markdown under projects/{project}/bugs/.
+
+    Each bug's ``BugDocument`` fields (title / severity / status / contentPath / …)
+    are parsed from the YAML frontmatter. The list is rendered entirely from
+    disk — no MongoDB lookup. Results are sorted by ``updatedAt`` desc.
+    """
+    data = list_bugs(project=request.project)
+    return success(data=data)
+
+
+@router.post("/knowledge-bug-read", operation_id="knowledge_bug_read")
+async def knowledge_bug_read_route(request: KnowledgeBugReadRequest):
+    """Read a single bug file → BugDocument + BugContent.
+
+    The frontmatter yields the metadata (bug key, severity, status, …) while
+    the body sections (Description, Steps to Reproduce, …) are parsed into
+    the structured BugContent dict used by the bug detail and edit drawers.
+    """
+    data = read_bug_markdown(request.content_path)
     return success(data=data)
 
 

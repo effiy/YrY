@@ -486,6 +486,61 @@ export interface KnowledgeStoriesResponse {
   stories: KnowledgeStoryEntry[];
 }
 
+/** One bug markdown entry returned by /knowledge-bugs.
+ *
+ *  The frontmatter is coerced into the same shape as the MongoDB BugDocument,
+ *  so callers don't need to distinguish DB-vs-disk sources.
+ */
+export interface KnowledgeBugEntry {
+  key: string;
+  title: string;
+  project: string;
+  project_key?: string;
+  issue_key?: string;
+  module: string;
+  iteration?: string;
+  defectUrl?: string;
+  severity: "critical" | "major" | "minor" | "trivial";
+  priority: "p0" | "p1" | "p2" | "p3";
+  status: "open" | "in_progress" | "resolved" | "closed" | "rejected" | "reopened";
+  type: "functional" | "performance" | "ui" | "security" | "compatibility" | "regression" | "data" | "other";
+  frequency: "always" | "sometimes" | "rarely" | "once" | "unable";
+  assignee: string;
+  reporter: string;
+  environment: string;
+  affectedVersion: string;
+  fixedVersion: string;
+  tags: string[];
+  dueDate: number | null;
+  description?: string;
+  /** Relative YiKnowledge path, e.g. "projects/yivad/bugs/2026-08-21/logic/issue-detail-comment.md". */
+  contentPath: string;
+  createdAt: number;
+  updatedAt: number;
+  resolvedAt: number | null;
+  closedAt: number | null;
+}
+
+export interface KnowledgeBugsResponse {
+  bugs: KnowledgeBugEntry[];
+  total: number;
+}
+
+/** Structured long-form body parsed from a bug's markdown file. */
+export interface KnowledgeBugContent {
+  description: string;
+  stepsToReproduce: string[];
+  expectedResult: string;
+  actualResult: string;
+  causeProblem?: string;
+  solution?: string;
+}
+
+export interface KnowledgeBugReadResponse {
+  bug: KnowledgeBugEntry;
+  content: KnowledgeBugContent;
+}
+
 // ── Dashboard health ──
 
 export interface DashboardServerStatus {

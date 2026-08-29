@@ -1,16 +1,18 @@
 /**
- * Knowledge base service — wraps the four YiAi knowledge endpoints.
+ * Knowledge base service — wraps the YiAi knowledge endpoints.
  *
  * YiAi scans ``~/YiKnowledge`` (markdown + YAML frontmatter) and returns
- * metadata for the code review sidebar, plus story.md content for the story detail
- * drawer. All endpoints are direct REST (not the RPC envelope) to mirror
- * fileService.
+ * metadata for the code review sidebar, plus story.md and bug.md content for
+ * the detail drawers. All endpoints are direct REST (not the RPC envelope) to
+ * mirror fileService.
  */
 import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiweb";
 import type {
   KnowledgeReadResponse,
   KnowledgeScanResponse,
   KnowledgeStoriesResponse,
+  KnowledgeBugsResponse,
+  KnowledgeBugReadResponse,
   KnowledgeFilesResponse,
   YiAiEnvelope
 } from "@/api/interface/yiweb";
@@ -56,6 +58,25 @@ export function listKnowledgeStories(project?: string): Promise<KnowledgeStories
 /** Read a specific story's story.md. */
 export function readKnowledgeStory(project: string, storyName: string): Promise<KnowledgeReadResponse> {
   return postJson<KnowledgeReadResponse>("/knowledge-story-read", { project, story_name: storyName });
+}
+
+/** List bug markdowns under projects/{project}/bugs/{date}/{type}/ — pass project to filter.
+ *
+ *  The YiAi scanner walks the YiKnowledge tree and parses each file's YAML frontmatter,
+ *  returning the same BugDocument shape the MongoDB collection used. So callers get a
+ *  drop-in replacement for `getBugList` without touching the store/view layer.
+ */
+export function listKnowledgeBugs(project?: string): Promise<KnowledgeBugsResponse> {
+  return postJson<KnowledgeBugsResponse>("/knowledge-bugs", { project });
+}
+
+/** Read a single bug file → { bug: BugDocument, content: BugContent } via its contentPath.
+ *
+ *  Drop-in replacement for the previous two-step dance of `getBug(key)` +
+ *  `readBugContent(contentPath)` — now one round-trip and purely disk-backed.
+ */
+export function readKnowledgeBug(contentPath: string): Promise<KnowledgeBugReadResponse> {
+  return postJson<KnowledgeBugReadResponse>("/knowledge-bug-read", { content_path: contentPath });
 }
 
 export interface KnowledgeSyncResponse {

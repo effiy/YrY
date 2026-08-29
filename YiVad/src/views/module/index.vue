@@ -1030,7 +1030,6 @@ watch(filterDateStr, () => { loadData(); });
   flex-direction: column;
   gap: 2px;
   max-height: 200px;
-  overflow-y: auto;
 }
 .module-card__issue-row {
   display: flex;

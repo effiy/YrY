@@ -589,13 +589,12 @@ const rules: FormRules = {
 const columns: ColumnProps<BugDocument>[] = [
   { type: "selection", width: 50 },
   { type: "index", label: "#", width: 60 },
-  { prop: "title", label: "Title", minWidth: 320 },
+  { prop: "title", label: "Title", minWidth: 460 },
   { prop: "severity", label: "Severity", width: 100 },
   { prop: "priority", label: "Priority", width: 90 },
   { prop: "status", label: "Status", width: 110 },
   { prop: "type", label: "Type", width: 110 },
   { prop: "project", label: "Project", width: 120 },
-  { prop: "issue_key", label: "Issue", width: 140 },
   { prop: "module", label: "Module", width: 110 },
   { prop: "assignee", label: "Assignee", width: 100 },
   { prop: "reporter", label: "Reporter", width: 100 },
@@ -668,7 +667,7 @@ async function fetchBugs(params: any) {
 
 async function openEdit(bug: BugDocument) {
   let content = null;
-  try { if (bug.contentPath) content = await readBugContent(bug.contentPath); } catch { /* use empty */ }
+  try { if (bug.contentPath) content = await readBugContent(bug); } catch { /* use empty */ }
   store.openEditDialog(bug, content);
 }
 
@@ -682,7 +681,7 @@ async function openTitlePreview(bug: BugDocument) {
       content = res.content || "";
     } catch {
       try {
-        const c = await readBugContent(filePath);
+        const c = await readBugContent(bug);
         content = c.description || "";
       } catch { /* use empty */ }
     }

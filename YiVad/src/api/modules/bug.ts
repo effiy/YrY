@@ -1,14 +1,27 @@
 /**
- * Bug management — metadata in MongoDB (bugs collection), long-form body in
- * a markdown file under YiKnowledge/projects/{project}/bugs/{date}/{type}/{key}.md.
+ * Bug management — the **source of truth** is now the YiKnowledge markdown tree
+ * at ``projects/{project}/bugs/{date}/{type}/{key}.md``.
  *
- * Split mirrors the RSS pattern (see YiAi's domain/rss/feed.py + domain/
- * knowledge/writer.py): the DB doc stays lean for cheap queries, while the
- * description / steps / expected / actual live on disk as structured markdown
- * so they're searchable by YiKnowledge's scanner and editable as files.
+ * - Listing (``getBugList``) and single-document reads (``getBug``) pull from
+ *   disk via the knowledge REST endpoints. Frontmatter provides every field
+ *   previously stored in the MongoDB ``bugs`` collection, so callers see the
+ *   same ``BugDocument`` shape.
+ * - Create / Update / Delete still **dual-write** to MongoDB for backwards
+ *   compatibility with the search indexer and other consumers that directly
+ *   query the ``bugs`` collection. The markdown file is always written first,
+ *   and its relative ``contentPath`` is copied onto the MongoDB doc.
+ *
+ * This mirrors the RSS pattern (see YiAi's ``domain/rss/feed.py`` +
+ * ``domain/knowledge/writer.py``): the DB doc stays lean for cheap queries,
+ * while the long-form body lives on disk as structured markdown so it's
+ * searchable by YiKnowledge's scanner and editable as files.
+ *
+ * Legacy migration note: bugs that only exist in MongoDB (no markdown file)
+ * are transparently surfaced by the ``getBugList`` fallback branch so the
+ * transition is zero-downtime.
  */
 import { callService, queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
-import { readKnowledgeFile } from "./knowledgeService";
+import { readKnowledgeFile, listKnowledgeBugs, readKnowledgeBug } from "./knowledgeService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiweb";
 
 const CNAME = "bugs";
@@ -29,6 +42,30 @@ const BUG_TYPE_DIR: Record<string, string> = {
 function contentPathFor(projectKey: string, date: string, type: string, key: string): string {
   const typeDir = BUG_TYPE_DIR[type] || "other";
   return `projects/${projectKey}/bugs/${date}/${typeDir}/${key}.md`;
+}
+
+/** Normalize a bug's contentPath to the canonical ``projects/{project_key}/bugs/...`` layout.
+ *
+ * Legacy MongoDB documents written before the disk-as-truth migration stored paths
+ * without the ``projects/<project_key>/`` prefix. Reading those raw strings through
+ * :func:`readKnowledgeFile` would look for a file under a non-existent ``YiKnowledge/bugs/``
+ * subtree and fail with DATA_NOT_FOUND. Here we reconstruct the correct path using
+ * the bug's own ``project_key`` / ``type`` / ``createdAt`` fields so the read
+ * transparently succeeds even when the DB doc carries the legacy shape.
+ */
+function normalizeContentPath(bug: Partial<BugDocument> & Pick<BugDocument, "key">, raw: string): string {
+  const p = String(raw || "").trim();
+  if (!p) return p;
+  if (p.startsWith("projects/")) return p;
+  const projectKey = (bug.project_key || "unknown").toLowerCase();
+  const type = (bug.type || "other") as string;
+  const date = new Date((bug as BugDocument).createdAt || Date.now()).toISOString().slice(0, 10);
+  if (p.startsWith("bugs/")) {
+    // legacy: bugs/{date}/{typeDir}/{key}.md
+    const tail = p.slice("bugs/".length);
+    return `projects/${projectKey}/bugs/${tail}`;
+  }
+  return contentPathFor(projectKey, date, type, bug.key || String(raw));
 }
 
 // ── Types ──
@@ -261,10 +298,27 @@ async function writeBugContent(key: string, bug: BugDocument, content: BugConten
   return relPath;
 }
 
-/** Read the markdown body and parse it back into structured content. */
-export async function readBugContent(contentPath: string): Promise<BugContent> {
+/** Read the markdown body and parse it back into structured content.
+ *
+ * Accepts either the raw bug document (preferred — used to normalize legacy
+ * contentPath that lacks the ``projects/<project_key>/`` prefix) or a plain
+ * content-path string (for backwards compatibility with callers that haven't
+ * been updated to pass the full doc yet).
+ */
+export async function readBugContent(input: BugDocument | string): Promise<BugContent> {
+  let cp: string;
+  if (typeof input === "string") {
+    cp = input;
+    if (cp && !cp.startsWith("projects/")) {
+      // Best-effort guess when no bug-context is available. Legacy path lives
+      // under yivad by default because that project was the first to seed bugs.
+      cp = cp.startsWith("bugs/") ? `projects/yivad/${cp}` : contentPathFor("yivad", new Date().toISOString().slice(0, 10), "other", cp);
+    }
+  } else {
+    cp = normalizeContentPath(input, input.contentPath || "");
+  }
   try {
-    const file = await readKnowledgeFile(contentPath);
+    const file = await readKnowledgeFile(cp);
     return parseMarkdownBody(file.content || "");
   } catch {
     return { description: "", stepsToReproduce: [], expectedResult: "", actualResult: "" };
@@ -272,11 +326,20 @@ export async function readBugContent(contentPath: string): Promise<BugContent> {
 }
 
 /** Delete the markdown body file (best-effort). */
-async function deleteBugContent(contentPath: string): Promise<void> {
-  if (!contentPath) return;
+async function deleteBugContent(bugOrPath: BugDocument | { key: string; contentPath?: string; project_key?: string; type?: BugType; createdAt?: number } | string): Promise<void> {
+  let cp: string;
+  if (typeof bugOrPath === "string") {
+    cp = bugOrPath;
+    if (cp && !cp.startsWith("projects/")) {
+      cp = cp.startsWith("bugs/") ? `projects/yivad/${cp}` : cp;
+    }
+  } else {
+    cp = normalizeContentPath(bugOrPath as BugDocument, bugOrPath.contentPath || "");
+  }
+  if (!cp) return;
   try {
     await callService("services.knowledge.knowledge_service", "delete_entry_markdown", {
-      rel_path: contentPath
+      rel_path: cp
     });
   } catch {
     // best-effort
@@ -285,49 +348,122 @@ async function deleteBugContent(contentPath: string): Promise<void> {
 
 // ── API ──
 
+/** In-memory filter over a disk-sourced bug list — mirrors the MongoDB filters
+ *  previously applied on the YiAi side. Keeps the ProTable + sidebar filters
+ *  working without changing the view/store layer. */
+function applyBugFilters(list: BugDocument[], params: BugListParams): BugDocument[] {
+  const search = (params.search ?? params.title ?? "").toString().trim().toLowerCase();
+  return list.filter(b => {
+    if (search) {
+      const haystack = `${b.title ?? ""} ${b.module ?? ""}`.toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    if (params.project && b.project !== params.project) return false;
+    if (params.project_key && b.project_key !== params.project_key) return false;
+    if (params.issue_key && b.issue_key !== params.issue_key) return false;
+    if (params.module && !(b.module || "").toLowerCase().includes(params.module.toLowerCase())) return false;
+    if (params.iteration && !(b.iteration || "").toLowerCase().includes(params.iteration.toLowerCase())) return false;
+    if (params.severity && b.severity !== params.severity) return false;
+    if (params.priority && b.priority !== params.priority) return false;
+    if (params.status && b.status !== params.status) return false;
+    if (params.type && b.type !== params.type) return false;
+    if (params.assignee && !(b.assignee || "").toLowerCase().includes(params.assignee.toLowerCase())) return false;
+    if (params.reporter && !(b.reporter || "").toLowerCase().includes(params.reporter.toLowerCase())) return false;
+    if ((params as any).stale !== undefined) {
+      const cutoff = Date.now() - ((params as any).stale as number) * 86400000;
+      if (!b.updatedAt || b.updatedAt >= cutoff) return false;
+      if (b.status === "closed" || b.status === "resolved") return false;
+    }
+    if (params.createdAtStart !== undefined || params.createdAtEnd !== undefined) {
+      const c = b.createdAt ?? 0;
+      if (params.createdAtStart !== undefined && c < params.createdAtStart) return false;
+      if (params.createdAtEnd !== undefined && c > params.createdAtEnd) return false;
+    }
+    return true;
+  });
+}
+
 export async function getBugList(
   params: BugListParams = {}
 ): Promise<YiAiEnvelope<QueryDocumentsData<BugDocument> & { pageNum: number; pageSize: number }>> {
-  const filter: Record<string, any> = {};
-  const search = params.search ?? params.title;
-  if (search) {
-    const rx = { $regex: search, $options: "i" };
-    filter.$or = [{ title: rx }, { module: rx }];
-  }
-  if (params.project) filter.project = params.project;
-  if (params.project_key) filter.project_key = params.project_key;
-  if (params.issue_key) filter.issue_key = params.issue_key;
-  if (params.module) filter.module = { $regex: params.module, $options: "i" };
-  if (params.iteration) filter.iteration = { $regex: params.iteration, $options: "i" };
-  if (params.severity) filter.severity = params.severity;
-  if (params.priority) filter.priority = params.priority;
-  if (params.status) filter.status = params.status;
-  if (params.type) filter.type = params.type;
-  if (params.assignee) filter.assignee = { $regex: params.assignee, $options: "i" };
-  if (params.reporter) filter.reporter = { $regex: params.reporter, $options: "i" };
-  if (params.createdAtStart !== undefined || params.createdAtEnd !== undefined) {
-    const created: Record<string, number> = {};
-    if (params.createdAtStart !== undefined) created.$gte = params.createdAtStart;
-    if (params.createdAtEnd !== undefined) created.$lte = params.createdAtEnd;
-    filter.createdAt = created;
-  }
-
   const pageNum = params.pageNum ?? 1;
   const pageSize = params.pageSize ?? 10;
 
-  const res = await queryDocuments<BugDocument>({
-    cname: CNAME,
-    filter: Object.keys(filter).length > 0 ? filter : undefined,
-    pageNum,
-    pageSize,
-    orderBy: "updatedAt",
-    orderType: "desc"
-  });
-  if (res.code !== 0) throw new Error(res.message || "Failed to load bugs");
+  // 1) Primary path: scan disk markdown files via the /knowledge-bugs endpoint
+  let diskList: BugDocument[] = [];
+  try {
+    const diskRes = await listKnowledgeBugs(params.project_key || undefined);
+    diskList = ((diskRes?.bugs as unknown as BugDocument[]) || []).slice();
+  } catch (e) {
+    // Best-effort — fall back silently to MongoDB below
+  }
+
+  // 2) MongoDB fallback — keeps legacy bugs visible until they're migrated to
+  //    the disk tree, and acts as a safety net if the disk scanner errors.
+  let mongoList: BugDocument[] = [];
+  try {
+    const mongoFilter: Record<string, any> = {};
+    const search = params.search ?? params.title;
+    if (search) {
+      const rx = { $regex: search, $options: "i" };
+      mongoFilter.$or = [{ title: rx }, { module: rx }];
+    }
+    if (params.project) mongoFilter.project = params.project;
+    if (params.project_key) mongoFilter.project_key = params.project_key;
+    if (params.issue_key) mongoFilter.issue_key = params.issue_key;
+    if (params.module) mongoFilter.module = { $regex: params.module, $options: "i" };
+    if (params.iteration) mongoFilter.iteration = { $regex: params.iteration, $options: "i" };
+    if (params.severity) mongoFilter.severity = params.severity;
+    if (params.priority) mongoFilter.priority = params.priority;
+    if (params.status) mongoFilter.status = params.status;
+    if (params.type) mongoFilter.type = params.type;
+    if (params.assignee) mongoFilter.assignee = { $regex: params.assignee, $options: "i" };
+    if (params.reporter) mongoFilter.reporter = { $regex: params.reporter, $options: "i" };
+    if (params.createdAtStart !== undefined || params.createdAtEnd !== undefined) {
+      const created: Record<string, number> = {};
+      if (params.createdAtStart !== undefined) created.$gte = params.createdAtStart;
+      if (params.createdAtEnd !== undefined) created.$lte = params.createdAtEnd;
+      mongoFilter.createdAt = created;
+    }
+    const mongoRes = await queryDocuments<BugDocument>({
+      cname: CNAME,
+      filter: Object.keys(mongoFilter).length > 0 ? mongoFilter : undefined,
+      pageNum: 1,
+      pageSize: 10000,
+      orderBy: "updatedAt",
+      orderType: "desc"
+    });
+    if (mongoRes.code === 0) mongoList = (mongoRes.data?.list ?? []) as BugDocument[];
+  } catch { /* use disk only */ }
+
+  // 3) Merge — disk wins on conflict (key-deduplicated). Mongo legacy docs have
+  //    their contentPath normalized first so the rest of the pipeline can pass
+  //    the doc to readBugContent() without DATA_NOT_FOUND errors.
+  const byKey = new Map<string, BugDocument>();
+  for (const b of mongoList) {
+    const fixed: BugDocument = {
+      ...b,
+      contentPath: normalizeContentPath(b, b.contentPath || "")
+    };
+    byKey.set(b.key, fixed);
+  }
+  for (const b of diskList) byKey.set(b.key, b);
+  const merged = Array.from(byKey.values());
+  merged.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
+
+  // 4) Apply the rest of the filters + slice the current page. The disk list
+  //    is already filtered by project above; the rest is universal.
+  const filtered = applyBugFilters(merged, params);
+  const total = filtered.length;
+  const start = Math.max(0, (pageNum - 1) * pageSize);
+  const page = filtered.slice(start, start + pageSize);
+
   return {
-    ...res,
+    code: 0,
+    message: "",
     data: {
-      ...(res.data as QueryDocumentsData<BugDocument>),
+      list: page,
+      total,
       pageNum,
       pageSize
     } as any
@@ -335,9 +471,18 @@ export async function getBugList(
 }
 
 export async function getBug(key: string): Promise<BugDocument | null> {
+  // Try disk first — scan all bugs to find the key (the contentPath alone isn't
+  // derivable from the bug key alone; the scanner walks it for us).
+  try {
+    const all = await listKnowledgeBugs();
+    const match = (all?.bugs as unknown as BugDocument[] ?? []).find(b => b.key === key);
+    if (match) return match;
+  } catch { /* fall through */ }
   const res = await queryDocuments<BugDocument>({ cname: CNAME, filter: { key }, limit: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load bug");
-  return res.data?.list?.[0] ?? null;
+  const doc = res.data?.list?.[0] ?? null;
+  if (doc) doc.contentPath = normalizeContentPath(doc, doc.contentPath || "");
+  return doc;
 }
 
 export async function createBug(
@@ -383,7 +528,7 @@ export async function updateBug(
     const current = await getBug(key);
     if (current) {
       const merged = { ...current, ...meta, updatedAt: now } as BugDocument;
-      const body = content ?? await readBugContent(current.contentPath);
+      const body = content ?? await readBugContent(current);
       const newPath = await writeBugContent(key, merged, body);
       payload.contentPath = newPath;
     }
@@ -394,6 +539,6 @@ export async function updateBug(
 export async function deleteBug(key: string): Promise<YiAiEnvelope> {
   // Fetch metadata first so we know which markdown file to remove
   const bug = await getBug(key);
-  if (bug?.contentPath) await deleteBugContent(bug.contentPath);
+  if (bug) await deleteBugContent(bug);
   return deleteDocument(CNAME, key);
 }

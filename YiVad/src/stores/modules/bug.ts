@@ -102,7 +102,7 @@ export const useBugStore = defineStore("yivad-bug", () => {
       const bug = await getBug(key);
       selectedBug.value = bug;
       if (bug?.contentPath) {
-        selectedBugContent.value = await readBugContent(bug.contentPath);
+        selectedBugContent.value = await readBugContent(bug);
       } else {
         selectedBugContent.value = {
           description: "",

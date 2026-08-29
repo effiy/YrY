@@ -177,6 +177,24 @@ class KnowledgeStoryReadRequest(BaseModel):
     project: str = Field(..., description="Project name (e.g. YiVad)")
     story_name: str = Field(..., description="Story directory name (semantic, e.g. ai-chat-function)")
 
+class KnowledgeBugsRequest(BaseModel):
+    """List bug markdown entries under projects/{project}/bugs/{date}/{type}/.
+
+    The returned list carries the full ``BugDocument`` fields (title, severity,
+    status, contentPath, …) parsed from each file's YAML frontmatter — no
+    MongoDB lookup is required.
+    """
+    project: Optional[str] = Field(default=None, description="Limit to one project (case-insensitive match on the directory name under projects/). Empty = all projects.")
+
+class KnowledgeBugReadRequest(BaseModel):
+    """Read a single bug markdown file by its relative contentPath.
+
+    Returns both the ``BugDocument`` metadata (parsed frontmatter) plus the
+    structured ``BugContent`` body (description / steps / expected / actual /
+    cause / solution).
+    """
+    content_path: str = Field(..., description="Relative YiKnowledge path, e.g. projects/yivad/bugs/2026-08-21/logic/issue-detail-comment.md")
+
 class KnowledgeFilesRequest(BaseModel):
     """Read metadata from the DB mirror (no disk scan)."""
     category: Optional[str] = Field(default=None, description="Filter by top-level role directory (producter/leader/engineer/.../brd/static/__root__).")
