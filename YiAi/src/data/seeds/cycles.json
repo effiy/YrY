@@ -1,0 +1,74 @@
+[
+  {
+    "key": "yivad-c1",
+    "project_key": "yivad",
+    "name": "2026-Q3 · Dashboard Hardening",
+    "goal": "Component extraction (ProTable) + Vitest groundwork.",
+    "start_date": "2026-08-08",
+    "end_date": "2026-09-15",
+    "status": "active",
+    "issue_keys": ["yivad-3", "yivad-6"],
+    "created_at": "2026-08-08T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yivad-c2",
+    "project_key": "yivad",
+    "name": "2026-Q3 · Agent + RAG",
+    "goal": "Ship aiChat port, Rsbuild migration, knowledge/RAG, and agent mode.",
+    "start_date": "2026-07-26",
+    "end_date": "2026-08-08",
+    "status": "completed",
+    "issue_keys": ["yivad-1", "yivad-2", "yivad-4", "yivad-5"],
+    "created_at": "2026-07-26T00:00:00.000Z",
+    "updated_at": "2026-08-08T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-c1",
+    "project_key": "yiai",
+    "name": "2026-Q3 · Agent Loop + BRD",
+    "goal": "BRD agent + multi-provider LLM + pytest coverage.",
+    "start_date": "2026-08-03",
+    "end_date": "2026-09-30",
+    "status": "active",
+    "issue_keys": ["yiai-1", "yiai-2", "yiai-3"],
+    "created_at": "2026-08-03T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-c2",
+    "project_key": "yiai",
+    "name": "2026-Q3 · RAG + Knowledge",
+    "goal": "Ship RAG module and knowledge watcher.",
+    "start_date": "2026-07-29",
+    "end_date": "2026-07-31",
+    "status": "completed",
+    "issue_keys": ["yiai-4", "yiai-5"],
+    "created_at": "2026-07-29T00:00:00.000Z",
+    "updated_at": "2026-07-31T00:00:00.000Z"
+  },
+  {
+    "key": "yipet-c1",
+    "project_key": "yipet",
+    "name": "2026-Q3 · Extension Hardening",
+    "goal": "Stack migration, Biome, chat box, and the agent-mode port.",
+    "start_date": "2026-07-27",
+    "end_date": "2026-09-30",
+    "status": "active",
+    "issue_keys": ["yipet-1", "yipet-2", "yipet-3", "yipet-4"],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge-c1",
+    "project_key": "yiknowledge",
+    "name": "2026-Q3 · Governance",
+    "goal": "Governance pipeline + readiness checklist.",
+    "start_date": "2026-08-06",
+    "end_date": "2026-08-31",
+    "status": "active",
+    "issue_keys": ["yiknowledge-1", "yiknowledge-2"],
+    "created_at": "2026-08-06T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

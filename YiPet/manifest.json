@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "version": "1.2.0",
+  "default_locale": "en",
+  "description": "__MSG_extDescription__",
+  "permissions": ["storage", "tabs", "scripting", "webRequest"],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:10086/*"
+  ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["assets/bootstrap.js"],
+    "run_at": "document_end"
+  }],
+  "background": {
+    "service_worker": "assets/background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_extDefaultTitle__"
+  },
+  "commands": {
+    "toggle-pet": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "__MSG_cmdTogglePet__"
+    },
+    "open-chat": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "__MSG_cmdOpenChat__"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [{
+    "resources": [
+      "assets/icons/icon.png",
+      "assets/images/*/icon.png",
+      "assets/images/*/run/*.png",
+      "assets/bootstrap.js",
+      "assets/chat.js",
+      "cdn/**/*.js",
+      "cdn/**/*.css",
+      "cdn/**/*.html",
+      "cdn/**/*.json",
+      "cdn/**/*.svg",
+      "cdn/**/*.ttf",
+      "cdn/**/*.woff",
+      "cdn/**/*.woff2",
+      "cdn/**/*.eot",
+      "cdn/**/*.png",
+      "cdn/**/*.jpg",
+      "cdn/**/*.ico"
+    ],
+    "matches": ["<all_urls>"]
+  }]
+}

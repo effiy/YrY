@@ -1,0 +1,48 @@
+[
+  {
+    "key": "dict_role_1",
+    "id": "1",
+    "name": "System Admin",
+    "children": [
+      { "key": "dict_role_1-1", "id": "1-1", "name": "Super Admin" },
+      { "key": "dict_role_1-2", "id": "1-2", "name": "Operations Admin" }
+    ]
+  },
+  {
+    "key": "dict_role_2",
+    "id": "2",
+    "name": "Product Manager",
+    "children": [
+      { "key": "dict_role_2-1", "id": "2-1", "name": "Senior PM" },
+      { "key": "dict_role_2-2", "id": "2-2", "name": "Associate PM" }
+    ]
+  },
+  {
+    "key": "dict_role_3",
+    "id": "3",
+    "name": "Engineer",
+    "children": [
+      { "key": "dict_role_3-1", "id": "3-1", "name": "Senior Engineer" },
+      { "key": "dict_role_3-2", "id": "3-2", "name": "Engineer" },
+      { "key": "dict_role_3-3", "id": "3-3", "name": "Junior Engineer" }
+    ]
+  },
+  {
+    "key": "dict_role_4",
+    "id": "4",
+    "name": "Designer",
+    "children": [
+      { "key": "dict_role_4-1", "id": "4-1", "name": "Senior Designer" },
+      { "key": "dict_role_4-2", "id": "4-2", "name": "Designer" }
+    ]
+  },
+  {
+    "key": "dict_role_5",
+    "id": "5",
+    "name": "QA",
+    "children": [
+      { "key": "dict_role_5-1", "id": "5-1", "name": "Senior QA" },
+      { "key": "dict_role_5-2", "id": "5-2", "name": "QA Engineer" }
+    ]
+  }
+]

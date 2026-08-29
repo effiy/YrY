@@ -1,0 +1,1082 @@
+[
+  {
+    "key": "menu_home",
+    "path": "/home/index",
+    "name": "home",
+    "component": "/home/index",
+    "redirect": "",
+    "meta": {
+      "icon": "HomeFilled",
+      "title": "Home",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": true,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 0
+  },
+  {
+    "key": "menu_system",
+    "path": "/system",
+    "name": "system",
+    "component": "",
+    "redirect": "/system/menuMange",
+    "meta": {
+      "icon": "Tools",
+      "title": "System Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 8
+  },
+  {
+    "key": "menu_systemMenuMange",
+    "path": "/system/menuMange",
+    "name": "systemMenuMange",
+    "component": "/system/menuMange/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Menu Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 0
+  },
+  {
+    "key": "menu_systemAccountManage",
+    "path": "/system/accountManage",
+    "name": "systemAccountManage",
+    "component": "/system/accountManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Account Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 1
+  },
+  {
+    "key": "menu_systemRoleManage",
+    "path": "/system/roleManage",
+    "name": "systemRoleManage",
+    "component": "/system/roleManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Role Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 2
+  },
+  {
+    "key": "menu_systemDepartmentManage",
+    "path": "/system/departmentManage",
+    "name": "systemDepartmentManage",
+    "component": "/system/departmentManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Department Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 3
+  },
+  {
+    "key": "menu_systemDictManage",
+    "path": "/system/dictManage",
+    "name": "systemDictManage",
+    "component": "/system/dictManage/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Dictionary Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 4
+  },
+  {
+    "key": "menu_systemSystemLog",
+    "path": "/system/systemLog",
+    "name": "systemSystemLog",
+    "component": "/system/systemLog/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "System Logs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 5
+  },
+  {
+    "key": "menu_systemTimingTask",
+    "path": "/system/timingTask",
+    "name": "systemTimingTask",
+    "component": "/system/timingTask/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "Scheduled Tasks",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/system",
+    "order": 6
+  },
+  {
+    "key": "menu_dashboard",
+    "path": "/dashboard",
+    "name": "dashboard",
+    "component": "",
+    "redirect": "/dashboard/knowledgeBase",
+    "meta": {
+      "icon": "Odometer",
+      "title": "Dashboard",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 9
+  },
+  {
+    "key": "menu_dashKnowledgeBase",
+    "path": "/dashboard/knowledgeBase",
+    "name": "dashKnowledgeBase",
+    "component": "/dashboard/knowledgeBase/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Reading",
+      "title": "Knowledge Base",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 3
+  },
+  {
+    "key": "menu_dashRssContent",
+    "path": "/dashboard/rssContent",
+    "name": "dashRssContent",
+    "component": "/dashboard/rssContent/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Notebook",
+      "title": "RSS Content",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/dashboard",
+    "order": 7
+  },
+  {
+    "key": "menu_about",
+    "path": "/about",
+    "name": "about",
+    "component": "/about/index",
+    "redirect": "",
+    "meta": {
+      "icon": "InfoFilled",
+      "title": "About",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 10
+  },
+  {
+    "key": "menu_aboutYiai",
+    "path": "/about/yiai",
+    "name": "aboutYiai",
+    "component": "/about/yiai/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiAi",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 0
+  },
+  {
+    "key": "menu_aboutYipet",
+    "path": "/about/yipet",
+    "name": "aboutYipet",
+    "component": "/about/yipet/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiPet",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 1
+  },
+  {
+    "key": "menu_aboutYivad",
+    "path": "/about/yivad",
+    "name": "aboutYivad",
+    "component": "/about/yivad/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Menu",
+      "title": "YiVad",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/about",
+    "order": 2
+  },
+  {
+    "key": "menu_aiChat",
+    "path": "/aiChat",
+    "name": "aiChat",
+    "component": "/aiChat/index",
+    "redirect": "",
+    "meta": {
+      "icon": "ChatDotRound",
+      "title": "AI Chat",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 20
+  },
+  {
+    "key": "menu_knowledge",
+    "path": "/knowledge",
+    "name": "knowledge",
+    "component": "",
+    "redirect": "/knowledge/aier",
+    "meta": {
+      "icon": "Reading",
+      "title": "Knowledge",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 21
+  },
+  {
+    "key": "menu_knowledgeAier",
+    "path": "/knowledge/aier",
+    "name": "knowledgeAier",
+    "component": "/knowledge/aier/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Cpu",
+      "title": "AI Engineer",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 0
+  },
+  {
+    "key": "menu_knowledgeCurator",
+    "path": "/knowledge/curator",
+    "name": "knowledgeCurator",
+    "component": "/knowledge/curator/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Collection",
+      "title": "Curator",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 1
+  },
+  {
+    "key": "menu_knowledgeEngineer",
+    "path": "/knowledge/engineer",
+    "name": "knowledgeEngineer",
+    "component": "/knowledge/engineer/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Setting",
+      "title": "Engineer",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 2
+  },
+  {
+    "key": "menu_knowledgeExecutiver",
+    "path": "/knowledge/executiver",
+    "name": "knowledgeExecutiver",
+    "component": "/knowledge/executiver/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Medal",
+      "title": "Executive",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 3
+  },
+  {
+    "key": "menu_knowledgeGoals",
+    "path": "/knowledge/goals",
+    "name": "knowledgeGoals",
+    "component": "/knowledge/goals/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Aim",
+      "title": "Goals & Objectives",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 4
+  },
+  {
+    "key": "menu_knowledgeLeader",
+    "path": "/knowledge/leader",
+    "name": "knowledgeLeader",
+    "component": "/knowledge/leader/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Star",
+      "title": "Tech Lead",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 5
+  },
+  {
+    "key": "menu_knowledgeMetrics",
+    "path": "/knowledge/metrics",
+    "name": "knowledgeMetrics",
+    "component": "/knowledge/metrics/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Odometer",
+      "title": "Metrics & KPIs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 6
+  },
+  {
+    "key": "menu_knowledgePipeline",
+    "path": "/knowledge/pipeline",
+    "name": "knowledgePipeline",
+    "component": "/knowledge/pipeline/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Guide",
+      "title": "Pipeline",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 7
+  },
+  {
+    "key": "menu_knowledgeProducter",
+    "path": "/knowledge/producter",
+    "name": "knowledgeProducter",
+    "component": "/knowledge/producter/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Present",
+      "title": "Product Manager",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 8
+  },
+  {
+    "key": "menu_knowledgeResume",
+    "path": "/knowledge/resume",
+    "name": "knowledgeResume",
+    "component": "/knowledge/resume/index",
+    "redirect": "",
+    "meta": {
+      "icon": "UserFilled",
+      "title": "Resume",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 9
+  },
+  {
+    "key": "menu_knowledgeSkills",
+    "path": "/knowledge/skills",
+    "name": "knowledgeSkills",
+    "component": "/knowledge/skills/index",
+    "redirect": "",
+    "meta": {
+      "icon": "MagicStick",
+      "title": "Skills",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 10
+  },
+  {
+    "key": "menu_knowledgeSrer",
+    "path": "/knowledge/srer",
+    "name": "knowledgeSrer",
+    "component": "/knowledge/srer/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Warning",
+      "title": "SRE",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/knowledge",
+    "order": 11
+  },
+  {
+    "key": "menu_pm",
+    "path": "/pm",
+    "name": "pm",
+    "component": "",
+    "redirect": "/project",
+    "meta": {
+      "icon": "Folder",
+      "title": "Project Management",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 11
+  },
+  {
+    "key": "menu_project",
+    "path": "/project",
+    "name": "project",
+    "component": "/project/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Folder",
+      "title": "Projects",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 0
+  },
+  {
+    "key": "menu_issue",
+    "path": "/issue",
+    "name": "issue",
+    "component": "/issue/index",
+    "redirect": "",
+    "meta": {
+      "icon": "List",
+      "title": "Issues",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 1
+  },
+  {
+    "key": "menu_cycle",
+    "path": "/cycle",
+    "name": "cycle",
+    "component": "/cycle/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Refresh",
+      "title": "Cycles",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 2
+  },
+  {
+    "key": "menu_sprintPlanning",
+    "path": "/sprintPlanning",
+    "name": "sprintPlanning",
+    "component": "/sprintPlanning/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Calendar",
+      "title": "Sprint Planning",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 3
+  },
+  {
+    "key": "menu_kanban",
+    "path": "/kanban",
+    "name": "kanban",
+    "component": "/kanban/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Grid",
+      "title": "Kanban",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 4
+  },
+  {
+    "key": "menu_gantt",
+    "path": "/gantt",
+    "name": "gantt",
+    "component": "/gantt/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Histogram",
+      "title": "Gantt",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 5
+  },
+  {
+    "key": "menu_roadmap",
+    "path": "/roadmap",
+    "name": "roadmap",
+    "component": "/roadmap/index",
+    "redirect": "",
+    "meta": {
+      "icon": "MapLocation",
+      "title": "Roadmap",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 6
+  },
+  {
+    "key": "menu_release",
+    "path": "/release",
+    "name": "release",
+    "component": "/release/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Promotion",
+      "title": "Releases",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 7
+  },
+  {
+    "key": "menu_module",
+    "path": "/module",
+    "name": "module",
+    "component": "/module/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Box",
+      "title": "Modules",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 8
+  },
+  {
+    "key": "menu_page",
+    "path": "/page",
+    "name": "page",
+    "component": "/page/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Document",
+      "title": "Pages",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/pm",
+    "order": 9
+  },
+  {
+    "key": "menu_monitor",
+    "path": "/monitor",
+    "name": "monitor",
+    "component": "",
+    "redirect": "/activity",
+    "meta": {
+      "icon": "DataLine",
+      "title": "Monitor",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 12
+  },
+  {
+    "key": "menu_activity",
+    "path": "/activity",
+    "name": "activity",
+    "component": "/activity/index",
+    "redirect": "",
+    "meta": {
+      "icon": "DataLine",
+      "title": "Activity",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/monitor",
+    "order": 0
+  },
+  {
+    "key": "menu_analytics",
+    "path": "/analytics",
+    "name": "analytics",
+    "component": "/analytics/index",
+    "redirect": "",
+    "meta": {
+      "icon": "TrendCharts",
+      "title": "Analytics",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/monitor",
+    "order": 1
+  },
+  {
+    "key": "menu_bug",
+    "path": "/bug",
+    "name": "bug",
+    "component": "/bug/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Warning",
+      "title": "Bugs",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/monitor",
+    "order": 2
+  },
+  {
+    "key": "menu_config",
+    "path": "/config",
+    "name": "config",
+    "component": "",
+    "redirect": "/settings",
+    "meta": {
+      "icon": "Setting",
+      "title": "Settings",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 13
+  },
+  {
+    "key": "menu_settings",
+    "path": "/settings",
+    "name": "settings",
+    "component": "/settings/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Setting",
+      "title": "Settings",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 0
+  },
+  {
+    "key": "menu_customStatus",
+    "path": "/customStatus",
+    "name": "customStatus",
+    "component": "/customStatus/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Flag",
+      "title": "Custom Status",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 1
+  },
+  {
+    "key": "menu_customView",
+    "path": "/customView",
+    "name": "customView",
+    "component": "/customView/index",
+    "redirect": "",
+    "meta": {
+      "icon": "View",
+      "title": "Custom Views",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 2
+  },
+  {
+    "key": "menu_apiToken",
+    "path": "/apiToken",
+    "name": "apiToken",
+    "component": "/apiToken/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Key",
+      "title": "API Tokens",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 3
+  },
+  {
+    "key": "menu_integration",
+    "path": "/integration",
+    "name": "integration",
+    "component": "/integration/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Connection",
+      "title": "Integrations",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 4
+  },
+  {
+    "key": "menu_invite",
+    "path": "/invite",
+    "name": "invite",
+    "component": "/invite/index",
+    "redirect": "",
+    "meta": {
+      "icon": "User",
+      "title": "Invites",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 5
+  },
+  {
+    "key": "menu_import",
+    "path": "/import",
+    "name": "import",
+    "component": "/import/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Upload",
+      "title": "Import",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 6
+  },
+  {
+    "key": "menu_trash",
+    "path": "/trash",
+    "name": "trash",
+    "component": "/trash/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Delete",
+      "title": "Trash",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": "/config",
+    "order": 7
+  },
+  {
+    "key": "menu_favorites",
+    "path": "/favorites",
+    "name": "favorites",
+    "component": "/favorites/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Star",
+      "title": "Favorites",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 14
+  },
+  {
+    "key": "menu_inbox",
+    "path": "/inbox",
+    "name": "inbox",
+    "component": "/inbox/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Message",
+      "title": "Inbox",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 15
+  },
+  {
+    "key": "menu_search",
+    "path": "/search",
+    "name": "search",
+    "component": "/search/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Search",
+      "title": "Search",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 16
+  },
+  {
+    "key": "menu_label",
+    "path": "/label",
+    "name": "label",
+    "component": "/label/index",
+    "redirect": "",
+    "meta": {
+      "icon": "PriceTag",
+      "title": "Labels",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 17
+  },
+  {
+    "key": "menu_timeReport",
+    "path": "/timeReport",
+    "name": "timeReport",
+    "component": "/timeReport/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Timer",
+      "title": "Time Report",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 18
+  },
+  {
+    "key": "menu_projectSettings",
+    "path": "/projectSettings",
+    "name": "projectSettings",
+    "component": "/projectSettings/index",
+    "redirect": "",
+    "meta": {
+      "icon": "Tools",
+      "title": "Project Settings",
+      "isLink": "",
+      "isHide": false,
+      "isFull": false,
+      "isAffix": false,
+      "isKeepAlive": true
+    },
+    "parent": null,
+    "order": 19
+  }
+]

@@ -1,0 +1,115 @@
+{
+  "skill_name": "yry-tools-github",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create an issue titled 'Login redirect fails on Safari' in owner/repo.",
+      "expected_output": "Runs get_me, searches for duplicates, then creates the issue.",
+      "files": [],
+      "expectations": [
+        "Runs get_me first to confirm identity",
+        "Searches for duplicate issues before creating",
+        "Creates the issue with the supplied title"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review PR #42 in owner/repo.",
+      "expected_output": "Runs the 3-step PR review workflow on the pull request.",
+      "files": [],
+      "expectations": [
+        "Follows the 3-step PR review workflow",
+        "Returns review comments",
+        "Uses minimal_output when details aren't needed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Merge PR #42 after checks pass.",
+      "expected_output": "Merges the PR via the GitHub API.",
+      "files": [],
+      "expectations": [
+        "Verifies checks / status before merge",
+        "Uses the merge tool scoped to the authenticated user",
+        "Surfaces 403/404 if permission denied"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Search the GitHub codebase for references to DEPRECATED_API.",
+      "expected_output": "Runs code search across the org/repo for the query.",
+      "files": [],
+      "expectations": [
+        "Uses the code search tool",
+        "Returns paginated results (5-10 per page recommended)",
+        "Respects minimal_output when details aren't needed"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "List the latest releases of owner/repo.",
+      "expected_output": "Lists releases, including latest and get-by-tag where requested.",
+      "files": [],
+      "expectations": [
+        "Uses the release inspection tools",
+        "Returns release titles/tags",
+        "Paginates appropriately"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Scan this diff for leaked credentials before I commit.",
+      "expected_output": "Runs secret scanning against the diff and flags any credentials/API keys/tokens.",
+      "files": [],
+      "expectations": [
+        "Proactively scans diff/file contents for credentials",
+        "Flags API keys, passwords, tokens",
+        "Blocks or warns before commit"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Get Copilot review on PR #42.",
+      "expected_output": "Requests Copilot review on the PR, with manual fallback if unavailable.",
+      "files": [],
+      "expectations": [
+        "Invokes Copilot review via the API",
+        "Surfaces the error and suggests manual review if unavailable",
+        "Does not bypass GitHub permissions"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Who am I authenticated as on GitHub?",
+      "expected_output": "Runs get_me and returns the authenticated user.",
+      "files": [],
+      "expectations": [
+        "Calls get_me first",
+        "Confirms identity and permissions",
+        "Used as the safety-first prelude to other operations"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "I hit a rate limit listing issues — what now?",
+      "expected_output": "Surfaces rate limit info and suggests waiting or reducing perPage.",
+      "files": [],
+      "expectations": [
+        "Detects rate limit hit",
+        "Surfaces rate limit info",
+        "Suggests reducing perPage or waiting"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Update the README in owner/repo with this new content.",
+      "expected_output": "Fetches the file (gets SHA), then updates via the file CRUD tool.",
+      "files": [],
+      "expectations": [
+        "Calls get_file_contents first to retrieve the SHA",
+        "Errors instructing to fetch SHA first if missing",
+        "Updates the file via the GitHub API, not local filesystem"
+      ]
+    }
+  ]
+}

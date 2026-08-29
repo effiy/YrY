@@ -1,0 +1,56 @@
+---
+title: YiVad Development Standards
+tags: [yivad, standards, conventions, frontend]
+category: engineer/learn/projects/yivad
+created: 2026-08-21
+updated: 2026-08-21
+source: internal
+type: reference
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [engineer]
+benefit: "Quick reference to YiVad coding conventions and patterns"
+related:
+  - ./README.md
+  - ./architecture.md
+  - ./functional-modules.md
+---
+
+# YiVad Development Standards
+
+> Full standards in [README.md](./README.md) and [CLAUDE.md](../../../../YiVad/CLAUDE.md). Quick reference below.
+
+## Naming
+
+- **Components**: PascalCase (`ProTable.vue`, `ChatInput.vue`)
+- **Composables**: camelCase (`useTable.ts`, `useTheme.ts`)
+- **Stores**: camelCase (`aiChat.ts`, `globalStore.ts`)
+- **API modules**: camelCase (`dataService.ts`, `chatService.ts`)
+
+## Canonical patterns
+
+| Pattern | Rule |
+|---------|------|
+| ProTable | Canonical table component — never use raw `el-table` |
+| `v-auth` | Button-level permissions — never use `v-if` with auth state |
+| `RequestHttp` | All HTTP calls go through this — never import `axios` directly |
+| RPC envelope | `{module_name, method_name, parameters}` via `callService` |
+
+## RPC field contracts
+
+| Correct | Wrong | Context |
+|---------|-------|---------|
+| `filter` | `query` | `data_service.query_documents` |
+| `target_file` | `path` | `fileService.readFile/writeFile` |
+
+## SSE `onDone` guard
+
+Always check `!aborted && !error` before side effects in SSE `onDone` handlers.
+
+## Build & lint
+
+- **Build**: Rsbuild 1 with `RSBUILD_ENV_*` prefix (no `VITE_` references)
+- **Lint**: ESLint 10 + Prettier 3 + Stylelint 17
+- **Type check**: `vue-tsc --noEmit --skipLibCheck`
+- **Commit**: Conventional commits via commitlint + cz-git

@@ -1,0 +1,80 @@
+[
+  {
+    "key": "yivad-m1",
+    "project_key": "yivad",
+    "name": "Frontend Dashboard",
+    "description": "ProTable-driven admin dashboard with dynamic routing and button-level permissions.",
+    "status": "in_progress",
+    "lead": "Chengliang Yi",
+    "issue_keys": ["yivad-3"],
+    "start_date": "2026-07-27",
+    "due_date": "2026-09-15",
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yivad-m2",
+    "project_key": "yivad",
+    "name": "Agent Mode",
+    "description": "pi Loop agent mode in the aiChat surface.",
+    "status": "completed",
+    "lead": "Chengliang Yi",
+    "issue_keys": ["yivad-5"],
+    "start_date": "2026-08-05",
+    "due_date": "2026-08-08",
+    "created_at": "2026-08-05T00:00:00.000Z",
+    "updated_at": "2026-08-08T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-m1",
+    "project_key": "yiai",
+    "name": "Agent Loop",
+    "description": "Backend agent loop with confirmation gate, turn budget, and model escalation.",
+    "status": "in_progress",
+    "lead": "Chengliang Yi",
+    "issue_keys": ["yiai-1", "yiai-2"],
+    "start_date": "2026-08-03",
+    "due_date": "2026-09-30",
+    "created_at": "2026-08-03T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai-m2",
+    "project_key": "yiai",
+    "name": "RAG Module",
+    "description": "Retrieval-augmented generation on llama_index.",
+    "status": "completed",
+    "lead": "Chengliang Yi",
+    "issue_keys": ["yiai-4"],
+    "start_date": "2026-07-29",
+    "due_date": "2026-07-31",
+    "created_at": "2026-07-29T00:00:00.000Z",
+    "updated_at": "2026-07-31T00:00:00.000Z"
+  },
+  {
+    "key": "yipet-m1",
+    "project_key": "yipet",
+    "name": "Chat Window",
+    "description": "Extension chat window with multi-role chat, knowledge grounding, and sessions.",
+    "status": "completed",
+    "lead": "Chengliang Yi",
+    "issue_keys": ["yipet-1", "yipet-3"],
+    "start_date": "2026-07-27",
+    "due_date": "2026-08-05",
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge-m1",
+    "project_key": "yiknowledge",
+    "name": "Knowledge Governance",
+    "description": "Pipeline stages, readiness checklist, and curation lifecycle.",
+    "status": "in_progress",
+    "lead": "Curator",
+    "issue_keys": ["yiknowledge-1"],
+    "start_date": "2026-08-06",
+    "due_date": "2026-08-31",
+    "created_at": "2026-08-06T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

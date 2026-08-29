@@ -1,0 +1,53 @@
+[
+  {
+    "key": "dict_dept_1",
+    "id": "1",
+    "name": "R&D Center",
+    "children": [
+      { "key": "dict_dept_1-1", "id": "1-1", "name": "Frontend Group", "children": [
+        { "key": "dict_dept_1-1-1", "id": "1-1-1", "name": "Web Frontend Team" },
+        { "key": "dict_dept_1-1-2", "id": "1-1-2", "name": "Mobile Frontend Team" }
+      ]},
+      { "key": "dict_dept_1-2", "id": "1-2", "name": "Backend Group", "children": [
+        { "key": "dict_dept_1-2-1", "id": "1-2-1", "name": "API Team" },
+        { "key": "dict_dept_1-2-2", "id": "1-2-2", "name": "Infra Team" }
+      ]}
+    ]
+  },
+  {
+    "key": "dict_dept_2",
+    "id": "2",
+    "name": "Product Center",
+    "children": [
+      { "key": "dict_dept_2-1", "id": "2-1", "name": "Product Management" },
+      { "key": "dict_dept_2-2", "id": "2-2", "name": "UX Design" }
+    ]
+  },
+  {
+    "key": "dict_dept_3",
+    "id": "3",
+    "name": "Operations Center",
+    "children": [
+      { "key": "dict_dept_3-1", "id": "3-1", "name": "Customer Success" },
+      { "key": "dict_dept_3-2", "id": "3-2", "name": "Marketing" }
+    ]
+  },
+  {
+    "key": "dict_dept_4",
+    "id": "4",
+    "name": "QA Center",
+    "children": [
+      { "key": "dict_dept_4-1", "id": "4-1", "name": "Test Engineering" },
+      { "key": "dict_dept_4-2", "id": "4-2", "name": "Automation Group" }
+    ]
+  },
+  {
+    "key": "dict_dept_5",
+    "id": "5",
+    "name": "Admin",
+    "children": [
+      { "key": "dict_dept_5-1", "id": "5-1", "name": "HR" },
+      { "key": "dict_dept_5-2", "id": "5-2", "name": "Finance" }
+    ]
+  }
+]

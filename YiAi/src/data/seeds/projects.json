@@ -1,0 +1,52 @@
+[
+  {
+    "key": "yivad",
+    "name": "YiVad",
+    "identifier": "YIVAD",
+    "description": "Vue 3.5 管理后台，ProTable 驱动、四种布局模式、动态路由、按钮级权限。\n\n📊 ProTable 标准表格模式\n🎨 四种布局模式 (vertical/classic/transverse/columns)\n🔐 按钮级权限 v-auth 指令\n🗺️ 动态路由，后端菜单 API\n🌐 统一 RPC 协议通信\n🤖 AI 聊天 + Agent 工具调用\n📈 ECharts 6 图表可视化\n🌙 暗黑模式 / 国际化 (zh + en)",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" },
+      { "user_id": "admin", "username": "Admin", "role": "admin" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yiai",
+    "name": "YiAi",
+    "identifier": "YIAI",
+    "description": "FastAPI 后端服务，Yi 家族所有应用的数据中枢。\n\n🤖 AI 聊天 (Ollama 多模型) + Agent 工具调用\n🔍 RAG 混合检索 (向量 + BM25 + LLM 重排序)\n📁 文件管理 (磁盘 + MongoDB 双写)\n📡 RSS 聚合 · 企微消息推送\n🔄 Agent 循环 (确认门控、拒绝记忆、模型切换)\n🧠 知识库扫描 (YiKnowledge → 向量索引)",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-21T00:00:00.000Z"
+  },
+  {
+    "key": "yipet",
+    "name": "YiPet",
+    "identifier": "YIPET",
+    "description": "Chrome MV3 浏览器扩展，将互动宠物注入任意页面。\n\n🐾 浮动宠物精灵 (overlay DOM 渲染)\n💬 多角色 AI 聊天 (SSE 流式)\n🔗 跨项目桥接 (YiPet → YiVad 一键跳转)\n🎨 皮肤中心 (角色/颜色/模型选择)\n📚 知识库接地 + RAG 检索\n🐛 Bug 报告 (MongoDB + YiKnowledge 双写)",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-05T00:00:00.000Z"
+  },
+  {
+    "key": "yiknowledge",
+    "name": "YiKnowledge",
+    "identifier": "YKB",
+    "description": "Markdown 知识库，7 个角色目录 · 4 个流水线阶段。\n\n📋 YAML Frontmatter 规范 (9 个必填字段)\n🔄 知识生命周期 (inbox → triage → active → reference → archive)\n🤖 AI 检索 (YiAi RAG 数据源)\n📐 3 个跨领域索引 (SECURITY / COLLABORATION / ENGINEERING)\n📝 内容模板 (PRD / ADR / 复盘)\n🗂️ 7 角色 × 4 阶段软件交付流水线",
+    "status": "active",
+    "members": [
+      { "user_id": "chengliang-yi", "username": "Chengliang Yi", "role": "owner" },
+      { "user_id": "curator", "username": "Curator", "role": "member" }
+    ],
+    "created_at": "2026-07-27T00:00:00.000Z",
+    "updated_at": "2026-08-07T00:00:00.000Z"
+  }
+]

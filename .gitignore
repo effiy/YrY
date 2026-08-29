@@ -1,0 +1,58 @@
+# compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+node_modules/
+dist/
+dist-ssr/
+build/
+out/
+*.egg-info/
+.eggs/
+
+# runtime
+.env
+.env.*
+!.env.example
+*.local
+static/
+data/rag_store/
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# test/coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+.nyc_output/
+test-results/
+playwright-report/
+
+# misc
+.cache/
+.parcel-cache/
+.turbo/
+*.pem
+*.crx
+*.zip
+.husky/_

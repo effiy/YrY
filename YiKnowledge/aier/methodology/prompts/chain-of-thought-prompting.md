@@ -1,0 +1,173 @@
+---
+title: Chain-of-Thought Prompting Patterns
+aliases: [chain-of-thought, cot-prompting, reasoning-prompt, cot-patterns]
+tags: [prompt, chain-of-thought, reasoning, cot, methodology]
+category: aier/methodology/prompts
+created: 2026-08-24
+updated: 2026-08-24
+source: internal
+type: prompt
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [aier, engineer]
+benefit: "Engineers apply the right CoT pattern for complex reasoning tasks — from zero-shot to self-consistency"
+acceptance_criteria:
+  - "4 CoT patterns: zero-shot, few-shot, structured, self-consistency"
+  - "each pattern has a when-to-use guide and example"
+  - "includes YrY-relevant examples"
+related:
+  - ./README.md
+  - ./code-review-prompt.md
+  - ./agent-tool-use-prompt.md
+  - ../prompt-engineering.md
+---
+
+# Chain-of-Thought Prompting Patterns
+
+> **When to use:** For tasks that require multi-step reasoning — debugging, architecture decisions, code generation, data analysis. CoT improves accuracy by 20-50% on complex tasks.
+
+## Pattern 1: Zero-Shot CoT
+
+Add `Let's think step by step.` to the end of any prompt.
+
+### When to use
+Quick improvement for any reasoning task. No examples needed.
+
+### Example
+```
+Why is YiAi returning 422 for file write requests from YiVad?
+
+Let's think step by step.
+```
+
+**Expected output:** The model walks through: YiVad sends `path` → YiAi expects `target_file` → parameter name mismatch → 422.
+
+## Pattern 2: Few-Shot CoT
+
+Provide 2-3 examples of the reasoning process before the actual question.
+
+### When to use
+When zero-shot isn't reliable, or when you need a specific reasoning format.
+
+### Example
+```
+Example 1:
+Q: Why is `query_documents` returning empty results when called from YiPet?
+A: Let me trace the call:
+1. YiPet sends `query: {status: "active"}` to data_service.query_documents
+2. Backend's _build_filter looks for `filter` parameter, not `query`
+3. `query` is silently ignored; filter is empty
+4. MongoDB query has no filter → returns all documents
+Wait — if filter is empty, it should return ALL documents, not empty.
+5. Check pagination: pageSize defaults to 10, pageNum defaults to 1
+6. If there are no documents at all, returns empty list
+Answer: The `query` parameter is silently ignored. Use `filter` instead of `query`.
+
+Example 2:
+Q: Why is the knowledge watcher not detecting file changes on macOS?
+A: Let me trace the watcher setup:
+1. watcher.py uses apscheduler to poll every 5 seconds
+2. On macOS, the initial implementation tried to use FSEvents
+3. FSEvents on macOS has a known bug: silently drops events on network drives
+4. The watcher was switched to polling (apscheduler) as a workaround
+Answer: macOS FSEvents silently drops events. The watcher uses polling (5s interval) instead.
+
+Now answer this:
+Q: {{question}}
+```
+
+## Pattern 3: Structured CoT
+
+Define a specific reasoning structure the model must follow.
+
+### When to use
+When the reasoning needs to be verifiable, or when you need to extract intermediate steps.
+
+### Example (Debugging)
+```
+Diagnose the following bug. Follow this structure:
+
+## 1. Symptom
+What is the observed behavior?
+
+## 2. Reproduction
+What are the exact steps to reproduce?
+
+## 3. Hypothesis
+What is the most likely cause? (State your confidence: High/Medium/Low)
+
+## 4. Verification
+How would you verify this hypothesis? What would you check?
+
+## 5. Fix
+What's the minimal fix? (Include code if applicable)
+
+## Bug Report
+{{bug_description}}
+```
+
+### Example (Architecture Decision)
+```
+Evaluate the following architecture decision. Follow this structure:
+
+## Context
+What problem are we solving?
+
+## Options
+List 2-3 options with pros/cons.
+
+## Tradeoff Analysis
+What do we gain? What do we lose?
+
+## Recommendation
+Which option and why? (State confidence)
+
+## Decision
+{{decision_context}}
+```
+
+## Pattern 4: Self-Consistency
+
+Run the same prompt 3-5 times with temperature > 0. Pick the most common answer.
+
+### When to use
+When accuracy is critical and you can afford multiple API calls. Best for math, logic, and debugging.
+
+### Implementation
+```python
+def self_consistent_answer(prompt, n=5, temperature=0.7):
+    answers = []
+    for _ in range(n):
+        response = llm.chat(prompt, temperature=temperature)
+        answers.append(extract_final_answer(response))
+    
+    # Return the most common answer
+    from collections import Counter
+    return Counter(answers).most_common(1)[0][0]
+```
+
+### When NOT to use
+- Cost-sensitive applications (5x the API calls)
+- Latency-sensitive applications (5x the wait time)
+- Simple tasks where zero-shot CoT is sufficient
+
+## Choosing the Right Pattern
+
+```
+Task complexity
+├─ Simple (single step) → No CoT needed
+├─ Moderate (2-3 steps) → Zero-shot CoT ("Let's think step by step")
+├─ Complex (4-6 steps) → Few-shot CoT (2-3 examples)
+├─ Very complex (7+ steps) → Structured CoT (defined reasoning structure)
+└─ Critical (must be right) → Self-consistency (3-5 runs, majority vote)
+```
+
+## Anti-patterns
+
+| Anti-pattern | Why it fails | Fix |
+|---|---|---|
+| CoT for simple tasks | Overhead with no benefit; slower responses | Use CoT only when the task requires multi-step reasoning |
+| Self-consistency with temperature=0 | All runs return the same answer; no diversity | Use temperature ≥ 0.5 for self-consistency |
+| Few-shot examples that don't match the task | Model copies the wrong reasoning pattern | Use examples from the same domain and reasoning type |
+| Structured CoT without verification | Model follows the structure but produces wrong reasoning | Verify intermediate steps; don't trust the structure alone |

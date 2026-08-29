@@ -1,0 +1,7 @@
+[
+  { "key": "dict_status_1", "userLabel": "Active", "userValue": 1, "sort": 1 },
+  { "key": "dict_status_2", "userLabel": "Pending Training", "userValue": 2, "sort": 2 },
+  { "key": "dict_status_3", "userLabel": "Pending Onboarding", "userValue": 3, "sort": 3 },
+  { "key": "dict_status_4", "userLabel": "Resigned", "userValue": 4, "sort": 4 },
+  { "key": "dict_status_5", "userLabel": "Retired", "userValue": 5, "sort": 5 }
+]
