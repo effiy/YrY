@@ -9,24 +9,13 @@
         <h2 class="issue-list__header-title">RSS Content</h2>
         <p class="issue-list__header-desc">Aggregated articles from configured feeds</p>
       </div>
-      <div class="issue-list__header-pills">
-        <div class="issue-list__header-pill issue-list__header-pill--clickable" @click="clearAllFilters">
-          <span class="issue-list__header-pill-val">{{ rssData?.total ?? 0 }}</span>
-          <span class="issue-list__header-pill-lbl">Total</span>
-        </div>
-        <div class="issue-list__header-pill">
-          <span class="issue-list__header-pill-val">{{ rssData?.sources.length ?? 0 }}</span>
-          <span class="issue-list__header-pill-lbl">Sources</span>
-        </div>
-        <div class="issue-list__header-pill">
-          <span class="issue-list__header-pill-val">{{ rssData?.categories.length ?? 0 }}</span>
-          <span class="issue-list__header-pill-lbl">Categories</span>
-        </div>
-        <div class="issue-list__header-pill issue-list__header-pill--accent">
-          <span class="issue-list__header-pill-val">{{ bodyMissingPct }}%</span>
-          <span class="issue-list__header-pill-lbl">No Body</span>
-        </div>
-      </div>
+      <StatPills
+        :total="rssData?.total ?? 0"
+        :sources-count="rssData?.sources.length ?? 0"
+        :categories-count="rssData?.categories.length ?? 0"
+        :body-missing-pct="bodyMissingPct"
+        @clear-all="clearAllFilters"
+      />
       <div class="issue-list__header-right">
         <HeroDateNav
           :filter-date="filterDate"
@@ -70,41 +59,13 @@
     </div>
 
     <div class="issue-list__body">
-      <div class="issue-list__sidebar">
-        <div class="issue-list__sidebar-view">
-          <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="table"><el-icon><Grid /></el-icon></el-radio-button>
-            <el-radio-button value="card"><el-icon><Postcard /></el-icon></el-radio-button>
-            <el-radio-button value="list"><el-icon><List /></el-icon></el-radio-button>
-          </el-radio-group>
-        </div>
-        <div class="issue-list__sidebar-section">
-          <div class="issue-list__sidebar-section-header">
-            <span class="issue-list__sidebar-section-label">Sources</span>
-            <span class="issue-list__sidebar-section-hint">{{ rssData?.sources.length ?? 0 }}</span>
-          </div>
-          <div class="issue-list__sidebar-section-body issue-list__sidebar-list">
-            <div
-              v-for="s in rssData?.sources ?? []"
-              :key="s.name"
-              class="issue-list__sidebar-list-item"
-              :class="{ 'is-active': isSourceActive(s.name) }"
-              @click="toggleSource(s.name)"
-            >
-              <span class="issue-list__sidebar-list-dot" :style="{ background: sourceColor(s.name) }" />
-              <span class="issue-list__sidebar-list-label">{{ s.name }}</span>
-              <span class="issue-list__sidebar-list-count">{{ s.count }}</span>
-            </div>
-            <div
-              v-if="sourceFilter.length"
-              class="issue-list__sidebar-list-clear"
-              @click="clearSourceFilter"
-            >
-              Clear selection
-            </div>
-          </div>
-        </div>
-      </div>
+      <RssSidebar
+        v-model:view-mode="viewMode"
+        :sources="rssData?.sources ?? []"
+        :source-filter="sourceFilter"
+        @toggle-source="toggleSource"
+        @clear-source-filter="clearSourceFilter"
+      />
       <div class="issue-list__main">
         <div class="articles-box card">
           <div class="articles-header">
@@ -132,62 +93,60 @@
 
           <!-- Table View -->
           <template v-if="viewMode === 'table'">
-            <el-table
-              v-loading="listLoading"
+            <ProTable
+              ref="proTable"
+              :columns="columns"
               :data="articles"
+              :pagination="false"
+              :border="false"
+              :tool-button="false"
               stripe
               size="small"
-              empty-text="No articles match the current filters"
+              v-loading="listLoading"
               @sort-change="onSortChange"
             >
-              <el-table-column label="Title" min-width="320" show-overflow-tooltip>
-                <template #default="{ row }">
-                  <span class="article-title" @click="openDetail(row as RssItemDocument)">{{ row.title }}</span>
+              <template #title="scope">
+                <span class="article-title" @click="openDetail(scope.row as RssItemDocument)">{{ scope.row.title }}</span>
+              </template>
+              <template #source_name="scope">
+                <span class="source-badge" :style="{ background: sourceColor(scope.row.source_name) }">{{ scope.row.source_name }}</span>
+              </template>
+              <template #category_path="scope">
+                <el-tag v-if="scope.row.category_path" size="small" class="chip-chip" @click="setCategoryFilter(scope.row.category_path)">{{ scope.row.category_path }}</el-tag>
+                <span v-else class="cell-muted">—</span>
+              </template>
+              <template #tags="scope">
+                <template v-if="scope.row.tags?.length">
+                  <el-tag
+                    v-for="t in (scope.row.tags || []).slice(0, 3)"
+                    :key="t"
+                    size="small"
+                    effect="plain"
+                    class="tag-chip"
+                    @click="setTagFilter(t)"
+                  >
+                    {{ t }}
+                  </el-tag>
                 </template>
-              </el-table-column>
-              <el-table-column label="Source" width="160" show-overflow-tooltip>
-                <template #default="{ row }">
-                  <span class="source-badge" :style="{ background: sourceColor(row.source_name) }">{{ row.source_name }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="Category" width="180" show-overflow-tooltip>
-                <template #default="{ row }">
-                  <el-tag v-if="row.category_path" size="small" class="chip-chip" @click="setCategoryFilter(row.category_path)">{{ row.category_path }}</el-tag>
-                  <span v-else class="cell-muted">—</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="Tags" width="200">
-                <template #default="{ row }">
-                  <template v-if="row.tags?.length">
-                    <el-tag
-                      v-for="t in (row.tags || []).slice(0, 3)"
-                      :key="t"
-                      size="small"
-                      effect="plain"
-                      class="tag-chip"
-                      @click="setTagFilter(t)"
-                    >
-                      {{ t }}
-                    </el-tag>
-                  </template>
-                  <span v-else class="cell-muted">—</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="Published" width="120" prop="published_parsed" sortable="custom">
-                <template #default="{ row }">
-                  <span class="cell-date">{{ formatDate(row.published) }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column width="100" align="right">
-                <template #default="{ row }">
-                  <el-tooltip content="Open original" placement="top">
-                    <el-button size="small" text @click="openOriginal(row as RssItemDocument)">
-                      <el-icon><TopRight /></el-icon>
-                    </el-button>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-            </el-table>
+                <span v-else class="cell-muted">—</span>
+              </template>
+              <template #published_parsed="scope">
+                <span class="cell-date">{{ formatDate(scope.row.published) }}</span>
+              </template>
+              <template #operation="scope">
+                <el-tooltip content="Open original" placement="top">
+                  <el-button size="small" text @click="openOriginal(scope.row as RssItemDocument)">
+                    <el-icon><TopRight /></el-icon>
+                  </el-button>
+                </el-tooltip>
+              </template>
+              <template #empty>
+                <div class="table-empty">
+                  <img src="@/assets/images/notData.png" alt="notData" />
+                  <div>No articles match the current filters</div>
+                </div>
+              </template>
+            </ProTable>
           </template>
 
           <!-- Card View -->
@@ -286,9 +245,6 @@ import {
   Reading,
   Search,
   TopRight,
-  Grid,
-  Postcard,
-  List,
   User
 } from "@element-plus/icons-vue";
 import { getRssStats } from "@/api/modules/dashboard";
@@ -300,12 +256,26 @@ import { ECOption } from "@/components/ECharts/config";
 import type { ECElementEvent } from "echarts/core";
 import ECharts from "@/components/ECharts/index.vue";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
-import { KnowledgePreviewDialog } from "@/components";
+import { KnowledgePreviewDialog, ProTable } from "@/components";
+import type { ColumnProps } from "@/components";
+import StatPills from "./components/StatPills.vue";
+import RssSidebar from "./components/RssSidebar.vue";
 import type { KnowledgeMeta } from "@/api/interface/yiweb";
 
 const rssData = ref<RssStatsData | null>(null);
 const loading = ref(true);
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+const proTable = ref<InstanceType<typeof ProTable> | null>(null);
+
+const columns: ColumnProps<RssItemDocument>[] = [
+  { prop: "title", label: "Title", minWidth: 320 },
+  { prop: "source_name", label: "Source", width: 160, showOverflowTooltip: true },
+  { prop: "category_path", label: "Category", width: 180, showOverflowTooltip: true },
+  { prop: "tags", label: "Tags", width: 200 },
+  { prop: "published_parsed", label: "Published", width: 120, sortable: "custom" },
+  { prop: "operation", label: "Actions", width: 100, align: "right", fixed: "right", isSetting: false }
+];
 
 // ── View mode ──
 const viewMode = ref<"table" | "card" | "list">("table");
