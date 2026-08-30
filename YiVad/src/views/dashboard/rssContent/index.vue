@@ -1,33 +1,31 @@
 <template>
   <div class="rss-content-box" v-loading="loading">
-    <!-- Header Card -->
-    <div class="issue-list__header rss-header">
-      <div class="issue-list__header-icon icon-gradient--primary">
-        <el-icon><Reading /></el-icon>
-      </div>
-      <div class="issue-list__header-text">
-        <h2 class="issue-list__header-title">RSS Content</h2>
-        <p class="issue-list__header-desc">Aggregated articles from configured feeds</p>
-      </div>
-      <StatPills
-        :total="rssData?.total ?? 0"
-        :sources-count="rssData?.sources.length ?? 0"
-        :categories-count="rssData?.categories.length ?? 0"
-        :body-missing-pct="bodyMissingPct"
-        @clear-all="clearAllFilters"
-      />
-      <div class="issue-list__header-right">
-        <HeroDateNav
-          :filter-date="filterDate"
-          :label="filterDateLabel"
-          :is-today="isFilterToday"
-          @prev="goToPrevDay"
-          @next="goToNextDay"
-          @today="goToFilterToday"
-          @clear="clearFilterDate"
+    <PageHeaderCard
+      :icon="Reading"
+      icon-bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      title="RSS Content"
+      description="Aggregated articles from configured feeds"
+      :pills="[]"
+      sticky
+      :show-date-nav="true"
+      :filter-date="filterDate"
+      :filter-date-label="filterDateLabel"
+      :is-filter-today="isFilterToday"
+      @prev="goToPrevDay"
+      @next="goToNextDay"
+      @today="goToFilterToday"
+      @clear="clearFilterDate"
+    >
+      <template #pills>
+        <StatPills
+          :total="rssData?.total ?? 0"
+          :sources-count="rssData?.sources.length ?? 0"
+          :categories-count="rssData?.categories.length ?? 0"
+          :body-missing-pct="bodyMissingPct"
+          @clear-all="clearAllFilters"
         />
-      </div>
-    </div>
+      </template>
+    </PageHeaderCard>
 
     <!-- Analytics Charts -->
     <div class="issue-list__charts rss-charts">
@@ -251,8 +249,7 @@ import type { RssStatsData } from "@/api/interface/yiweb";
 import { ECOption } from "@/components/ECharts/config";
 import type { ECElementEvent } from "echarts/core";
 import ECharts from "@/components/ECharts/index.vue";
-import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
-import { KnowledgePreviewDialog, ProTable } from "@/components";
+import { KnowledgePreviewDialog, ProTable, PageHeaderCard } from "@/components";
 import type { ColumnProps } from "@/components";
 import StatPills from "./components/StatPills.vue";
 import RssSidebar from "./components/RssSidebar.vue";

@@ -7,9 +7,8 @@
 // ── Page wrapper (borrowed from issue-list) ──
 
 .rss-content-box {
-  --sticky-header-top: 16px;
-  --sticky-header-h: 78px;
-  --sticky-sidebar-top: calc(var(--sticky-header-top) + var(--sticky-header-h) + 18px);
+  --sticky-header-h: 72px;
+  --sticky-sidebar-top: calc(var(--sticky-header-h) + 14px);
   --dot-color: #909399;
   --badge-bg: #5470c6;
   --badge-shadow: rgba(84, 112, 198, 0.25);
