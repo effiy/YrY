@@ -236,7 +236,7 @@
 </template>
 
 <script setup lang="ts" name="rssContent">
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import {
   Reading,
   Search,
@@ -260,7 +260,6 @@ import type { KnowledgeMeta } from "@/api/interface/yiweb";
 
 const rssData = ref<RssStatsData | null>(null);
 const loading = ref(true);
-let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
 const proTable = ref<InstanceType<typeof ProTable> | null>(null);
 
@@ -696,12 +695,6 @@ function formatDate(val?: string): string {
 onMounted(() => {
   fetchStats();
   loadArticles();
-  refreshTimer = setInterval(fetchStats, 60_000);
-});
-
-onBeforeUnmount(() => {
-  if (refreshTimer) clearInterval(refreshTimer);
-  if (searchTimer) clearTimeout(searchTimer);
 });
 </script>
 
