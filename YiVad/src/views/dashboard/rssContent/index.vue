@@ -5,8 +5,6 @@
       icon-bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
       title="RSS Content"
       description="Aggregated articles from configured feeds"
-      :pills="[]"
-      sticky
       :show-date-nav="true"
       :filter-date="filterDate"
       :filter-date-label="filterDateLabel"
