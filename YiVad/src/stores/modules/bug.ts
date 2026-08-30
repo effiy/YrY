@@ -220,15 +220,22 @@ export const useBugStore = defineStore("yivad-bug", () => {
   async function handleDelete(bug: BugDocument) {
     try {
       await ElMessageBox.confirm(`Delete bug "${bug.title}"?`, "Confirm", { type: "warning" });
+    } catch (e: any) {
+      if (e === "cancel" || e === "close") return;
+      throw e;
+    }
+    try {
       await deleteBug(bug.key);
       ElMessage.success("Deleted");
+      bugs.value = bugs.value.filter(b => b.key !== bug.key);
+      total.value = bugs.value.length;
       if (selectedBug.value?.key === bug.key) {
         selectedBug.value = null;
         selectedBugContent.value = null;
       }
     } catch (e: any) {
-      if (e === "cancel" || e === "close") return;
       ElMessage.error(e?.message || "Delete failed");
+      fetchBugs();
     }
   }
 

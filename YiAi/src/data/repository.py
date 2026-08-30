@@ -23,6 +23,15 @@ _BUG_TYPE_DIR: Dict[str, str] = {
     "other": "other",
 }
 
+_ISSUE_TYPE_DIR: Dict[str, str] = {
+    "bug": "bug",
+    "task": "task",
+    "feature": "feature",
+    "improvement": "improvement",
+    "requirement": "requirement",
+    "other": "other",
+}
+
 # --- Private Helpers ---
 
 def _validate_collection_name(collection_name: Optional[str]) -> str:
@@ -661,6 +670,39 @@ async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning(f"Bug markdown file not found or failed to delete: {content_path}")
         except Exception as e:
             logger.warning(f"Failed to delete bug markdown for key={doc_id}: {e}")
+    elif collection_name == "issues":
+        try:
+            content_path = existing_doc.get("contentPath") or existing_doc.get("content_path") or existing_doc.get("file_path") or ""
+            if not content_path:
+                project_key = (existing_doc.get("project_key") or existing_doc.get("project") or "unknown").lower()
+                issue_type = existing_doc.get("issue_type") or "other"
+                type_dir = _ISSUE_TYPE_DIR.get(issue_type, "other")
+                date_source = (
+                    existing_doc.get("created")
+                    or existing_doc.get("start_date")
+                    or existing_doc.get("created_at")
+                    or existing_doc.get("createdAt")
+                )
+                date_str = None
+                if date_source:
+                    ds_str = str(date_source)[:10]
+                    if len(ds_str) == 10 and ds_str[4] == "-" and ds_str[7] == "-":
+                        date_str = ds_str
+                    elif isinstance(date_source, (int, float)) or (isinstance(date_source, str) and date_source.isdigit()):
+                        try:
+                            date_str = datetime.fromtimestamp(int(date_source) / 1000).strftime("%Y-%m-%d")
+                        except (ValueError, OSError):
+                            pass
+                if not date_str:
+                    date_str = datetime.now().strftime("%Y-%m-%d")
+                content_path = f"projects/{project_key}/issues/{date_str}/{type_dir}/{doc_id}.md"
+            deleted_file = delete_entry_markdown(content_path)
+            if deleted_file:
+                logger.info(f"Deleted issue markdown file: {content_path}")
+            else:
+                logger.warning(f"Issue markdown file not found or failed to delete: {content_path}")
+        except Exception as e:
+            logger.warning(f"Failed to delete issue markdown for key={doc_id}: {e}")
 
     result = await collection.delete_one({'key': doc_id})
 

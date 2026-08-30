@@ -40,7 +40,13 @@ export const useIssueStore = defineStore("issue", () => {
   }
 
   async function removeIssue(key: string, project_key?: string) {
-    await deleteIssue(key);
+    try {
+      await deleteIssue(key);
+      issues.value = issues.value.filter(i => i.key !== key);
+      total.value = issues.value.length;
+    } catch {
+      // fall back to a full reload below
+    }
     if (currentIssue.value?.key === key) {
       currentIssue.value = null;
     }
