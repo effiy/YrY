@@ -6,10 +6,22 @@ from typing import Dict, Any, List, Optional
 from bson import ObjectId
 
 from data.database import db
+from domain.knowledge.writer import delete_entry_markdown
 from shared.config import settings
 from shared.utils import get_current_time, is_valid_date, is_number
 
 logger = logging.getLogger(__name__)
+
+_BUG_TYPE_DIR: Dict[str, str] = {
+    "functional": "logic",
+    "performance": "performance",
+    "ui": "style",
+    "security": "security",
+    "compatibility": "compatibility",
+    "regression": "regression",
+    "data": "data",
+    "other": "other",
+}
 
 # --- Private Helpers ---
 
@@ -621,6 +633,34 @@ async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
     collection = db.db[collection_name]
+
+    existing_doc = await collection.find_one({'key': doc_id})
+    if not existing_doc:
+        raise ValueError(f"Data with ID {doc_id} not found")
+
+    if collection_name == "bugs":
+        try:
+            content_path = existing_doc.get("contentPath") or existing_doc.get("content_path") or ""
+            if not content_path:
+                project_key = (existing_doc.get("project_key") or existing_doc.get("project") or "unknown").lower()
+                bug_type = existing_doc.get("type") or "other"
+                type_dir = _BUG_TYPE_DIR.get(bug_type, "other")
+                created_at_ms = existing_doc.get("createdAt") or existing_doc.get("created_time") or existing_doc.get("createdTime")
+                if created_at_ms:
+                    try:
+                        date_str = datetime.fromtimestamp(int(created_at_ms) / 1000).strftime("%Y-%m-%d")
+                    except (ValueError, OSError):
+                        date_str = datetime.now().strftime("%Y-%m-%d")
+                else:
+                    date_str = datetime.now().strftime("%Y-%m-%d")
+                content_path = f"projects/{project_key}/bugs/{date_str}/{type_dir}/{doc_id}.md"
+            deleted_file = delete_entry_markdown(content_path)
+            if deleted_file:
+                logger.info(f"Deleted bug markdown file: {content_path}")
+            else:
+                logger.warning(f"Bug markdown file not found or failed to delete: {content_path}")
+        except Exception as e:
+            logger.warning(f"Failed to delete bug markdown for key={doc_id}: {e}")
 
     result = await collection.delete_one({'key': doc_id})
 

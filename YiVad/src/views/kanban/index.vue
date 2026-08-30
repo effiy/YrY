@@ -433,14 +433,21 @@ async function ctxDelete() {
       t("kanban.createDialog.deleteConfirm.okText"),
       { type: "warning" }
     );
+  } catch {
+    return;
+  }
+  try {
     if (isBug(item)) {
       await deleteBug(item.key);
     } else {
       await deleteIssue(item.key);
     }
     ElMessage.success(t("kanban.createDialog.deleteConfirm.success"));
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Delete failed");
+  } finally {
     loadBoard();
-  } catch { /* cancelled */ }
+  }
 }
 
 async function quickChangeStatus(item: KanbanColumnItem, newStatus: IssueStatus) {

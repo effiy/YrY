@@ -633,8 +633,12 @@ export async function updateBug(
 }
 
 export async function deleteBug(key: string): Promise<YiAiEnvelope> {
-  // Fetch metadata first so we know which markdown file to remove
-  const bug = await getBug(key);
-  if (bug) await deleteBugContent(bug);
+  try {
+    const bug = await getBug(key);
+    if (bug) await deleteBugContent(bug);
+  } catch {
+    // best-effort: backend delete_document also cleans up the markdown file
+    // via the double-write logic, so a failure here must not abort the DB delete.
+  }
   return deleteDocument(CNAME, key);
 }
