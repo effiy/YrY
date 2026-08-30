@@ -1,25 +1,27 @@
 <template>
   <div class="pl">
-    <header class="pl-head">
-      <div class="pl-head-left">
-        <h1 class="pl-title">Projects</h1>
+    <PageHeaderCard
+      :icon="Tickets"
+      icon-bg="linear-gradient(135deg, #409eff, #1d4ed8)"
+      title="Projects"
+      description="Track projects, cycles, and delivery across the workspace"
+      :pills="headerPills"
+      :show-date-nav="true"
+      :filter-date="filterDate"
+      :filter-date-label="filterDateLabel"
+      :is-filter-today="isFilterToday"
+      @prev="goToPrevDay"
+      @next="goToNextDay"
+      @today="goToFilterToday"
+      @clear="clearFilterDate"
+    >
+      <template #title-tags>
         <el-tag size="small" type="info" round>{{ countLabel }}</el-tag>
         <el-tag v-if="filterDate" size="small" type="warning" round effect="dark">
           {{ filterDateLabel }}
         </el-tag>
-      </div>
-      <div class="pl-head-right">
-        <HeroDateNav
-          :filter-date="filterDate"
-          :label="filterDateLabel"
-          :is-today="isFilterToday"
-          @prev="goToPrevDay"
-          @next="goToNextDay"
-          @today="goToFilterToday"
-          @clear="clearFilterDate"
-        />
-      </div>
-    </header>
+      </template>
+    </PageHeaderCard>
 
     <ProjectStatTiles :tiles="tiles" :date-label="filterDate ? filterDateLabel : ''" @select="onTileSelect" />
 
@@ -268,7 +270,8 @@ import ProjectFilterPills from "./components/ProjectFilterPills.vue";
 import ProjectCard from "./components/ProjectCard.vue";
 import ProjectRow from "./components/ProjectRow.vue";
 import DemoGalleryDialog from "./components/DemoGalleryDialog.vue";
-import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
+import type { HeaderPill } from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 
 const router = useRouter();
@@ -495,6 +498,24 @@ function onTileSelect(key: string) {
       break;
   }
 }
+
+const headerPills = computed<HeaderPill[]>(() => {
+  const all = allRollup.value;
+  const completion = all.issues ? Math.round((all.done / all.issues) * 100) : 0;
+  return [
+    { value: projects.value.length, label: "Projects" },
+    { value: all.issues, label: "Issues" },
+    { value: all.open, label: "Open" },
+    {
+      value: completion,
+      suffix: "%",
+      label: "Progress",
+      accent: true,
+      accentColor: "var(--el-color-primary-light-9)",
+      accentValueColor: "var(--el-color-primary)"
+    }
+  ];
+});
 
 // ── Markdown descriptions, rendered once per data change ──────────────────
 const descHtmlMap = computed(() => {
@@ -756,45 +777,11 @@ watch(projects, list => {
 <style scoped lang="scss">
 .pl {
   height: calc(100vh - 146px);
-  padding: 0 24px 24px;
+  padding: 24px;
   overflow: auto;
   background: var(--el-bg-color-page);
 }
 
-/* Sticky header — clean, minimal, with the date nav visually integrated. */
-.pl-head {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 24px;
-  margin: 0 -24px 14px;
-  background: linear-gradient(
-    180deg,
-    var(--el-bg-color-page) 60%,
-    color-mix(in srgb, var(--el-bg-color-page) 92%, transparent) 100%
-  );
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  backdrop-filter: blur(12px);
-}
-.pl-head-left {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.pl-head-right {
-  display: flex;
-  align-items: center;
-}
-.pl-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-}
 .pl-updated {
   font-size: 11px;
   font-variant-numeric: tabular-nums;

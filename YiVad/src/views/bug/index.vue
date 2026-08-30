@@ -1,44 +1,20 @@
 <template>
   <div class="bug-list">
-    <!-- Header Card -->
-    <div v-if="!props.projectKey" class="bug-list__header">
-      <div class="bug-list__header-icon">
-        <el-icon><WarningFilled /></el-icon>
-      </div>
-      <div class="bug-list__header-text">
-        <h2 class="bug-list__header-title">Bugs</h2>
-        <p class="bug-list__header-desc">Track defects across projects and releases</p>
-      </div>
-      <div class="bug-list__header-pills">
-        <div class="bug-list__header-pill">
-          <span class="bug-list__header-pill-val">{{ bugStats.total }}</span>
-          <span class="bug-list__header-pill-lbl">Total</span>
-        </div>
-        <div class="bug-list__header-pill">
-          <span class="bug-list__header-pill-val">{{ bugStats.open }}</span>
-          <span class="bug-list__header-pill-lbl">Open</span>
-        </div>
-        <div class="bug-list__header-pill">
-          <span class="bug-list__header-pill-val">{{ bugStats.resolved }}</span>
-          <span class="bug-list__header-pill-lbl">Resolved</span>
-        </div>
-        <div class="bug-list__header-pill bug-list__header-pill--accent">
-          <span class="bug-list__header-pill-val">{{ resolutionPct }}%</span>
-          <span class="bug-list__header-pill-lbl">Resolution</span>
-        </div>
-      </div>
-      <div v-if="!props.filterDate" class="bug-list__header-right">
-        <HeroDateNav
-          :filter-date="filterDate"
-          :label="filterDateLabel"
-          :is-today="isFilterToday"
-          @prev="goToPrevDay"
-          @next="goToNextDay"
-          @today="goToFilterToday"
-          @clear="clearFilterDate"
-        />
-      </div>
-    </div>
+    <PageHeaderCard
+      v-if="!props.projectKey"
+      :icon="WarningFilled"
+      title="Bugs"
+      description="Track defects across projects and releases"
+      :pills="headerPills"
+      :show-date-nav="!props.filterDate"
+      :filter-date="filterDate"
+      :filter-date-label="filterDateLabel"
+      :is-filter-today="isFilterToday"
+      @prev="goToPrevDay"
+      @next="goToNextDay"
+      @today="goToFilterToday"
+      @clear="clearFilterDate"
+    />
 
     <!-- Charts -->
     <div v-if="!props.projectKey" class="bug-list__charts">
@@ -500,7 +476,8 @@ import ProTable from "@/components/ProTable/index.vue";
 import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interface";
 import ECharts from "@/components/ECharts/index.vue";
 import type { ECOption } from "@/components/ECharts/config";
-import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
+import type { HeaderPill } from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 
@@ -531,6 +508,13 @@ const resolutionPct = computed(() => {
   if (!bugStats.value.total) return 0;
   return Math.round(((bugStats.value.resolved + bugStats.value.closed) / bugStats.value.total) * 100);
 });
+
+const headerPills = computed<HeaderPill[]>(() => [
+  { value: bugStats.value.total, label: "Total" },
+  { value: bugStats.value.open, label: "Open" },
+  { value: bugStats.value.resolved, label: "Resolved" },
+  { value: resolutionPct.value, suffix: "%", label: "Resolution", accent: true }
+]);
 
 const cardBugs = computed(() => {
   const start = (cardPage.value - 1) * cardPageSize;
@@ -865,39 +849,7 @@ function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" 
 .bug-list {
   padding: 24px;
   background: var(--el-bg-color-page);
-
-  &__header {
-    display: flex; align-items: center; gap: 16px;
-    padding: 16px 20px; margin-bottom: 20px;
-    background: var(--el-bg-color);
-    border: 1px solid var(--el-border-color-lighter);
-    border-radius: 12px;
-  }
-  &__header-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px; border-radius: 10px;
-    font-size: 22px; color: #fff;
-    background: linear-gradient(135deg, #f56c6c, #dc2626);
-    flex-shrink: 0;
-  }
-  &__header-text { min-width: 0; flex: 1; }
-  &__header-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3; }
-  &__header-desc { margin: 2px 0 0; font-size: 12px; color: var(--el-text-color-secondary); }
-  &__header-pills { display: flex; gap: 10px; flex-shrink: 0; }
-  &__header-pill {
-    display: flex; flex-direction: column; align-items: center; gap: 1px;
-    padding: 6px 16px; border-radius: 8px; background: var(--el-fill-color-light); min-width: 64px;
-    &--accent { background: var(--el-color-danger-light-9); }
-  }
-  &__header-pill-val { font-size: 18px; font-weight: 700; line-height: 1.1; font-family: DIN, sans-serif; }
-  &__header-pill--accent &__header-pill-val { color: var(--el-color-danger); }
-  &__header-pill-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: var(--el-text-color-secondary); }
-  &__header-right {
-    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-    :deep(.ho__hero-date-nav) { margin: 0; }
-  }
-
-  }
+}
 
 // ── Charts ──
 .bug-list__charts {

@@ -24,6 +24,7 @@ export { default as MarkdownPreview } from './MarkdownPreview/index.vue';
 export { default as MarkdownToolbar } from './MarkdownToolbar/MarkdownToolbar.vue';
 export { default as MermaidViewer } from './MermaidViewer/MermaidViewer.vue';
 export { default as OkrRecommendPanel } from './OkrRecommend/OkrRecommendPanel.vue';
+export { default as PageHeaderCard } from './PageHeaderCard/PageHeaderCard.vue';
 export { default as ProTable } from './ProTable/index.vue';
 export { default as RagSources } from './RagSources/RagSources.vue';
 export { default as ScoreBar } from './ScoreBar/index.vue';
@@ -45,3 +46,4 @@ export { showFullScreenLoading, tryHideFullScreenLoading } from './Loading/fullS
 export { type ECOption } from './ECharts/config';
 export { type ColumnProps, type ProTableInstance, type HeaderRenderScope, type RenderScope, type TypeProps } from './ProTable/interface';
 export { type BreakPoint, type Responsive } from './Grid/interface';
+export { type HeaderPill } from './PageHeaderCard/PageHeaderCard.vue';
