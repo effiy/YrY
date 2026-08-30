@@ -1,39 +1,54 @@
 <template>
   <div class="harness-overview">
-    <!-- ═══ Hero + Pipeline (merged row) ═══ -->
-    <section class="ho__hero">
-      <div class="ho__hero-body">
-        <HeroStats
-          :loading="loading"
-          :role-counts="roleCounts"
-          :bug-count="bugCount"
-          :filter-date="filterDate"
-          :filter-date-label="filterDateLabel"
-          :is-filter-today="isFilterToday"
-          @prev="goToPrevDay"
-          @next="goToNextDay"
-          @today="goToFilterToday"
-          @clear="clearFilterDate"
-        />
-      </div>
-    </section>
+    <PageHeaderCard
+      :icon="DataBoard"
+      :icon-bg="HEADER_ICON_BG"
+      :title="t('home.title')"
+      :description="t('home.heroDesc')"
+      :show-date-nav="true"
+      :filter-date="filterDate"
+      :filter-date-label="filterDateLabel"
+      :is-filter-today="isFilterToday"
+      @prev="goToPrevDay"
+      @next="goToNextDay"
+      @today="goToFilterToday"
+      @clear="clearFilterDate"
+    >
+      <template #pills>
+        <div class="phc__pills">
+          <div
+            class="phc__pill"
+            :class="{ 'is-loading': loading }"
+            @click="router.push('/issue')"
+          >
+            <span class="phc__pill-val">{{ roleCounts.all ?? 0 }}</span>
+            <span class="phc__pill-lbl">{{ t('home.stats.tasks') }}</span>
+          </div>
+          <div
+            class="phc__pill phc__pill--accent"
+            :class="{ 'is-loading': loading }"
+            @click="router.push('/issue?priority=urgent')"
+          >
+            <span class="phc__pill-val">{{ roleCounts.p0 ?? 0 }}</span>
+            <span class="phc__pill-lbl">{{ t('home.stats.p0') }}</span>
+          </div>
+          <div
+            class="phc__pill"
+            :class="{ 'is-loading': loading }"
+            @click="router.push('/bug')"
+          >
+            <span class="phc__pill-val">{{ stats.bugCount }}</span>
+            <span class="phc__pill-lbl">{{ t('home.stats.bugs') }}</span>
+          </div>
+        </div>
+      </template>
+    </PageHeaderCard>
 
     <div class="ho__body">
-      <!-- ═══ Quick Nav ═══ -->
       <section class="ho__section">
-        <QuickNav
-          :counts="{
-            requirementCount,
-            totalIssues,
-            bugCount,
-            totalModules,
-            chatSessionCount,
-            knowledgeFileCount
-          }"
-        />
+        <QuickNav :counts="stats" />
       </section>
 
-      <!-- ═══ OKR Panel ═══ -->
       <section class="ho__section">
         <OkrRecommendPanel :roles="selectedRoles" :projects="selectedProjects" :filter-date="filterDate" @update:counts="onCountsUpdate" />
       </section>
@@ -42,52 +57,74 @@
 </template>
 
 <script setup lang="ts" name="home">
-import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { DataBoard } from "@element-plus/icons-vue";
 import OkrRecommendPanel from "@/components/OkrRecommend/OkrRecommendPanel.vue";
-import HeroStats from "./HeroStats.vue";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import QuickNav from "./QuickNav.vue";
 import { useProjectStore } from "@/stores/modules/project";
 import { queryDocuments } from "@/api/modules/dataService";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import dayjs from "dayjs";
 
+const { t } = useI18n();
 const route = useRoute();
+const router = useRouter();
 const projectStore = useProjectStore();
 
-// ── Date filter (shared with OkrRecommendPanel) ──
+const COLLECTION_PAGE_SIZE = 1 as const;
+const HEADER_ICON_BG = "linear-gradient(135deg,var(--el-color-primary),#6366f1)";
+
+interface StatCollectionItem {
+  key: "bugCount" | "requirementCount" | "totalIssues" | "totalModules" | "knowledgeFileCount" | "chatSessionCount";
+  cname: string;
+  extraFilter?: Record<string, any>;
+  ignoreDate?: boolean;
+}
+
+const STAT_COLLECTIONS: StatCollectionItem[] = [
+  { key: "bugCount", cname: "bugs" },
+  { key: "requirementCount", cname: "issues", extraFilter: { issue_type: "requirement" } },
+  { key: "totalIssues", cname: "issues" },
+  { key: "totalModules", cname: "modules" },
+  { key: "knowledgeFileCount", cname: "knowledge_files", ignoreDate: true },
+  { key: "chatSessionCount", cname: "sessions", ignoreDate: true },
+];
+
+type StatKey = StatCollectionItem["key"];
+
 const filterDate = ref<Date | null>(null);
-const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
+const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, dateRange, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
 
 const selectedRoles = ref<string[]>([]);
 const roleCounts = ref<Record<string, number>>({});
 const selectedProjects = ref<string[]>([]);
-const bugCount = ref(0);
-const totalIssues = ref(0);
-const totalModules = ref(0);
-const requirementCount = ref(0);
-const knowledgeFileCount = ref(0);
-const chatSessionCount = ref(0);
 const loading = ref(false);
+
+const stats = reactive<Record<StatKey, number>>({
+  bugCount: 0,
+  requirementCount: 0,
+  totalIssues: 0,
+  totalModules: 0,
+  knowledgeFileCount: 0,
+  chatSessionCount: 0,
+});
 
 async function loadCounts() {
   try {
     loading.value = true;
-    const dateFilter = filterDateStr.value ? { updated_at: { $gte: filterDateStr.value, $lt: dayjs(filterDateStr.value).add(1, "day").format("YYYY-MM-DD") } } : {};
-    const [bugsRes, issuesRes, allIssuesRes, modulesRes, knowledgeRes, sessionsRes] = await Promise.all([
-      queryDocuments<any>({ cname: "bugs", filter: dateFilter, pageSize: 1 }),
-      queryDocuments<any>({ cname: "issues", filter: { ...dateFilter, issue_type: "requirement" }, pageSize: 1 }),
-      queryDocuments<any>({ cname: "issues", filter: dateFilter, pageSize: 1 }),
-      queryDocuments<any>({ cname: "modules", filter: dateFilter, pageSize: 1 }),
-      queryDocuments<any>({ cname: "knowledge_files", filter: {}, pageSize: 1 }),
-      queryDocuments<any>({ cname: "sessions", filter: {}, pageSize: 1 }),
-    ]);
-    bugCount.value = bugsRes.data?.total ?? 0;
-    totalIssues.value = allIssuesRes.data?.total ?? 0;
-    totalModules.value = modulesRes.data?.total ?? 0;
-    requirementCount.value = issuesRes.data?.total ?? 0;
-    knowledgeFileCount.value = knowledgeRes.data?.total ?? 0;
-    chatSessionCount.value = sessionsRes.data?.total ?? 0;
+    const sharedDateRange = dateRange.value;
+    const requests = STAT_COLLECTIONS.map(({ cname, extraFilter, ignoreDate }) => {
+      const filter = ignoreDate
+        ? { ...(extraFilter ?? {}) }
+        : { ...sharedDateRange, ...(extraFilter ?? {}) };
+      return queryDocuments<any>({ cname, filter, pageSize: COLLECTION_PAGE_SIZE });
+    });
+    const results = await Promise.all(requests);
+    STAT_COLLECTIONS.forEach(({ key }, idx) => {
+      stats[key] = results[idx].data?.total ?? 0;
+    });
   } catch {
     // keep defaults
   } finally {
@@ -95,12 +132,10 @@ async function loadCounts() {
   }
 }
 
-// ── OKR counts — also update stat cards with role breakdown ──
 function onCountsUpdate(counts: Record<string, number>) {
   roleCounts.value = counts;
 }
 
-// ── Query sync ───────────────────────────────────
 function syncProjectFromQuery() {
   const q = route.query.project;
   if (typeof q === "string" && q.trim()) {
@@ -125,66 +160,150 @@ watch(filterDateStr, () => {
 .harness-overview {
   box-sizing: border-box;
   min-height: 100%;
+  padding: var(--page-gutter);
   background: var(--el-bg-color-page);
 }
 
-// ── Hero ─────────────────────────────────────
-.ho__hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 8px 24px;
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary-light-9) 0%,
-    var(--el-bg-color-page) 50%,
-    var(--el-fill-color-light) 100%
-  );
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: -50px;
-    right: -30px;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: var(--el-color-primary-light-7);
-    opacity: 0.15;
-    pointer-events: none;
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -30px;
-    left: 8%;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--el-color-primary-light-8);
-    opacity: 0.12;
-    pointer-events: none;
-  }
-}
-
-// ── Body ─────────────────────────────────────
 .ho__body {
-  padding: 16px 24px 20px;
+  margin-top: var(--space-md);
 }
 
 .ho__section {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
 
   &:last-child {
     margin-bottom: 0;
   }
 }
 
-// ── Responsive ───────────────────────────────
+.phc__pills {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.phc__pill {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--el-fill-color-light);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-1px);
+    background: var(--el-fill-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  &--accent {
+    background: var(--el-color-danger-light-9);
+
+    &:hover {
+      background: var(--el-color-danger-light-8);
+    }
+
+    .phc__pill-val {
+      color: var(--el-color-danger);
+    }
+  }
+
+  &.is-loading {
+    pointer-events: none;
+
+    .phc__pill-val {
+      visibility: hidden;
+      position: relative;
+      min-width: 2.5em;
+
+      &::after {
+        content: "";
+        visibility: visible;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 0.9em;
+        max-width: 48px;
+        transform: translate(-50%, -50%);
+        border-radius: var(--radius-xs);
+        background: linear-gradient(
+          90deg,
+          var(--el-fill-color-light) 0%,
+          var(--el-fill-color) 50%,
+          var(--el-fill-color-light) 100%
+        );
+        background-size: 200% 100%;
+        animation: phc-skeleton-shine 1.2s ease-in-out infinite;
+      }
+    }
+
+    .phc__pill-lbl {
+      opacity: 0.55;
+    }
+  }
+}
+
+.phc__pill-val {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+  font-family: DIN, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--el-text-color-primary);
+  text-align: center;
+}
+
+.phc__pill-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes phc-skeleton-shine {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 @media (max-width: 640px) {
-  .ho__hero { padding: 10px 16px; }
-  .ho__body { padding: 12px 16px 16px; }
+  .harness-overview {
+    padding: var(--page-gutter-narrow);
+  }
+  .ho__body {
+    margin-top: var(--space-sm);
+  }
+  .ho__section {
+    margin-bottom: var(--space-sm);
+  }
+  .phc__pills {
+    width: 100%;
+  }
+  .phc__pill {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--space-sm);
+  }
 }
 </style>

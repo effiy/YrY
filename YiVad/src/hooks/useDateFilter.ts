@@ -27,6 +27,13 @@ export function useDateFilter(filterDate: Ref<Date | null>) {
     filterDate.value ? dayjs(filterDate.value).format('YYYY-MM-DD') : ''
   );
 
+  const dateRange = computed<Record<string, any>>(() => {
+    if (!filterDateStr.value) return {};
+    const start = filterDateStr.value;
+    const end = dayjs(start).add(1, 'day').format('YYYY-MM-DD');
+    return { updated_at: { $gte: start, $lt: end } };
+  });
+
   function goToPrevDay() {
     const d = filterDate.value ? new Date(filterDate.value) : new Date();
     d.setDate(d.getDate() - 1);
@@ -58,5 +65,5 @@ export function useDateFilter(filterDate: Ref<Date | null>) {
     return '';
   }
 
-  return { label, isToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate, dueRelative };
+  return { label, isToday, filterDateStr, dateRange, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate, dueRelative };
 }

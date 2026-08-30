@@ -1,3 +1,32 @@
+/* ── YiVad Design Tokens (semantic, no numeric tiers in names) ── */
+:root {
+  /* Spacing — named by role, not by size */
+  --space-xxs: 2px;
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-xxl: 48px;
+
+  /* Page gutters — outer content padding */
+  --page-gutter:        var(--space-lg);
+  --page-gutter-narrow: var(--space-md);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --transition-instant: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:    0.2s  cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:    0.3s  cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:    0.5s  cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* flex */
 .flx-center {
   display: flex;
