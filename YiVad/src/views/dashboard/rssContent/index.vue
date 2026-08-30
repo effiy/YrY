@@ -611,14 +611,6 @@ async function openDetail(row: RssItemDocument) {
     await nextTick();
     if (!previewDlg.value) return;
   }
-  if (row.file_path) {
-    try {
-      previewDlg.value.open(row.file_path);
-    } catch {
-      /* ignore */
-    }
-    return;
-  }
   const summary = stripHtml(row.summary || "");
   const contentParts: string[] = [];
   contentParts.push(`# ${row.title || "Untitled"}`);

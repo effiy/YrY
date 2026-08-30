@@ -14,7 +14,7 @@ import {
   VisualMapComponent,
   RadarComponent
 } from "echarts/components";
-import { LabelLayout, UniversalTransition } from "echarts/features";
+import { LabelLayout, LegacyGridContainLabel, UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 import type {
   BarSeriesOption,
@@ -77,6 +77,7 @@ echarts.use([
   TreemapChart,
   HeatmapChart,
   LabelLayout,
+  LegacyGridContainLabel,
   UniversalTransition,
   CanvasRenderer
 ]);

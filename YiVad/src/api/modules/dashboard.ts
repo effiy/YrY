@@ -13,7 +13,7 @@ export interface RssStatsParams {
 }
 
 export function getRssStats(params?: RssStatsParams): Promise<{ code: number; message: string; data: RssStatsData }> {
-  return http.get("/dashboard/rss-stats", { params }) as any;
+  return http.get("/dashboard/rss-stats", params ?? {}) as any;
 }
 
 export function getKnowledgeStats(): Promise<{ code: number; message: string; data: KnowledgeStatsData }> {
