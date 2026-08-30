@@ -182,7 +182,7 @@ function togglePriorityFilter(val: IssuePriority) {
   loadBoard();
 }
 
-const totalEntries = ref(0);
+const totalEntries = computed(() => columns.reduce((sum, col) => sum + col.issues.length, 0));
 const urgentCount = computed(() => columns.reduce((sum, col) => sum + col.issues.filter(i => isUrgent(i)).length, 0));
 const overdueCount = computed(() => columns.reduce((sum, col) => sum + col.overdueCount, 0));
 const doneCount = computed(() => columns.find(c => c.status === "done")?.issues.length ?? 0);
@@ -507,7 +507,6 @@ async function loadBoard() {
     }
 
     const all: KanbanColumnItem[] = [...issues, ...bugs];
-    totalEntries.value = all.length;
 
     for (const col of columns) {
       col.issues = all.filter(i => getColumnStatus(i) === col.status);
