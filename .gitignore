@@ -10,6 +10,7 @@ build/
 out/
 *.egg-info/
 .eggs/
+rss/
 
 # runtime
 .env

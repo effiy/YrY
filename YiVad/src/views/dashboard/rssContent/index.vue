@@ -292,7 +292,8 @@ import {
   User
 } from "@element-plus/icons-vue";
 import { getRssStats } from "@/api/modules/dashboard";
-import { getRssList, type RssItemDocument } from "@/api/modules/rssService";
+import { getRssList, updateRssItem, type RssItemDocument } from "@/api/modules/rssService";
+import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import type { RssStatsData } from "@/api/interface/yiweb";
 import { ECOption } from "@/components/ECharts/config";
@@ -605,12 +606,7 @@ async function fetchStats() {
 
 // ── Detail preview ──
 
-async function openDetail(row: RssItemDocument) {
-  if (!row) return;
-  if (!previewDlg.value) {
-    await nextTick();
-    if (!previewDlg.value) return;
-  }
+function buildFallbackContent(row: RssItemDocument): string {
   const summary = stripHtml(row.summary || "");
   const contentParts: string[] = [];
   contentParts.push(`# ${row.title || "Untitled"}`);
@@ -638,13 +634,59 @@ async function openDetail(row: RssItemDocument) {
     contentParts.push("");
   }
   contentParts.push("> *No body file available — metadata-only record.*");
+  return contentParts.join("\n");
+}
+
+async function patchRssItemLocally(key: string, patch: Partial<RssItemDocument>) {
+  const patchAll = (list: RssItemDocument[]) => {
+    for (const it of list) {
+      if (it.key === key) Object.assign(it, patch);
+    }
+  };
+  patchAll(articles.value);
+  patchAll(cardArticlesAll.value);
+}
+
+async function openDetail(row: RssItemDocument) {
+  if (!row) return;
+  if (!previewDlg.value) {
+    await nextTick();
+    if (!previewDlg.value) return;
+  }
+  const filePath = row.file_path;
+  let content = "";
+  let fileLoaded = false;
+  let actualPath = filePath || "";
+  if (filePath && !row.body_missing) {
+    try {
+      const res = await readKnowledgeFile(filePath);
+      content = res.content || "";
+      fileLoaded = !!content;
+    } catch {
+      fileLoaded = false;
+      if (row.key) {
+        const patch: Partial<RssItemDocument> = { file_path: undefined, body_missing: true };
+        updateRssItem(row.key, patch).catch(() => { /* ignore */ });
+        patchRssItemLocally(row.key, patch);
+      }
+      actualPath = "";
+    }
+  }
+  if (!fileLoaded) {
+    content = buildFallbackContent(row);
+  }
   const meta: KnowledgeMeta = {
     type: "rss-article",
     tags: row.tags || [],
     roles: row.category_path ? [row.category_path.split("/")[0]] : []
   };
   try {
-    previewDlg.value.openRaw({ title: row.title || "Untitled", content: contentParts.join("\n"), meta });
+    previewDlg.value.openFile({
+      path: actualPath,
+      title: row.title || "Untitled",
+      content,
+      onSave: async (_newContent: string) => { /* read-only preview */ }
+    });
   } catch {
     /* ignore */
   }
