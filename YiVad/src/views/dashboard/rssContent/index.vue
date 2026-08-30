@@ -109,7 +109,7 @@
                 <span class="article-title" @click="openDetail(scope.row as RssItemDocument)">{{ scope.row.title }}</span>
               </template>
               <template #source_name="scope">
-                <span class="source-badge" :style="{ background: sourceColor(scope.row.source_name) }">{{ scope.row.source_name }}</span>
+                <span class="source-badge" :style="sourceBadgeStyle(scope.row.source_name)">{{ scope.row.source_name }}</span>
               </template>
               <template #category_path="scope">
                 <el-tag v-if="scope.row.category_path" size="small" class="chip-chip" @click="setCategoryFilter(scope.row.category_path)">{{ scope.row.category_path }}</el-tag>
@@ -159,7 +159,7 @@
                 @click="openDetail(article)"
               >
                 <div class="issue-card__head">
-                  <span class="issue-card__dot" :style="{ background: sourceColor(article.source_name) }" />
+                  <span class="issue-card__dot" :style="sourceDotStyle(article.source_name)" />
                   <code class="issue-card__key" :title="article.source_name">{{ article.source_name }}</code>
                   <div class="issue-card__head-right">
                     <el-tag v-if="article.category_path" size="small" effect="plain" class="chip-chip">{{ article.category_path.split('/').pop() }}</el-tag>
@@ -168,16 +168,12 @@
                 <h3 class="issue-card__title">{{ article.title }}</h3>
                 <p v-if="article.summary" class="issue-card__desc">{{ truncateSummary(article.summary) }}</p>
                 <div class="issue-card__meta">
-                  <span class="source-badge" :style="{ background: sourceColor(article.source_name) }">{{ article.source_name }}</span>
                   <span v-if="article.author" class="issue-card__assignee">
                     <el-icon><User /></el-icon> {{ article.author }}
                   </span>
                   <span v-if="article.published" class="issue-card__due">
                     {{ formatDate(article.published) }}
                   </span>
-                </div>
-                <div v-if="article.tags?.length" class="issue-card__labels">
-                  <el-tag v-for="t in (article.tags || []).slice(0, 4)" :key="t" size="small" round effect="plain" class="tag-chip">{{ t }}</el-tag>
                 </div>
               </div>
             </div>
@@ -201,7 +197,7 @@
                 class="issue-list-view__row"
                 @click="openDetail(article)"
               >
-                <span class="issue-list-view__dot" :style="{ background: sourceColor(article.source_name) }" />
+                <span class="issue-list-view__dot" :style="sourceDotStyle(article.source_name)" />
                 <code class="issue-list-view__key" :title="article.source_name">{{ truncateSource(article.source_name) }}</code>
                 <span class="issue-list-view__title">{{ article.title }}</span>
                 <el-tag v-if="article.category_path" size="small" effect="plain" class="chip-chip">{{ article.category_path.split('/').pop() }}</el-tag>
@@ -355,6 +351,18 @@ function hashColor(name: string): string {
 
 function sourceColor(name: string): string {
   return sourceColorMap.value[name] ?? hashColor(name || "unknown");
+}
+
+function sourceDotStyle(name: string): Record<string, string> {
+  return { "--dot-color": sourceColor(name) } as Record<string, string>;
+}
+
+function sourceBadgeStyle(name: string): Record<string, string> {
+  const color = sourceColor(name);
+  return {
+    "--badge-bg": color,
+    "--badge-shadow": `${color}40`
+  } as Record<string, string>;
 }
 
 // ── Stat card derived values ──
