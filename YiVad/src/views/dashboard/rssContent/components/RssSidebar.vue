@@ -112,7 +112,7 @@ function clearSourceFilter() {
   border-radius: 14px;
   padding: 12px;
   border: 1px solid var(--el-border-color-lighter);
-  max-height: 100%;
+  max-height: inherit;
   display: flex;
   flex-direction: column;
   gap: 0;
