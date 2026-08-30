@@ -264,7 +264,7 @@ const loading = ref(true);
 const proTable = ref<InstanceType<typeof ProTable> | null>(null);
 
 const columns: ColumnProps<RssItemDocument>[] = [
-  { prop: "title", label: "Title", minWidth: 320 },
+  { prop: "title", label: "Title", minWidth: 360, showOverflowTooltip: false },
   { prop: "source_name", label: "Source", width: 160, showOverflowTooltip: true },
   { prop: "category_path", label: "Category", width: 180, showOverflowTooltip: true },
   { prop: "tags", label: "Tags", width: 200 },
