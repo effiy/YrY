@@ -15,7 +15,7 @@ import type { KnowledgeMeta } from "@/api/interface/yiweb";
 import KnowledgeChatPanel from "@/views/aiChat/components/KnowledgeChatPanel.vue";
 import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip/KnowledgeMetaStrip.vue";
 import KnowledgeTocSidebar from "./KnowledgeTocSidebar.vue";
-import KnowledgeToolbar from "./KnowledgeToolbar.vue";
+import KnowledgeToolbar, { type KbMode } from "./KnowledgeToolbar.vue";
 
 const { renderWithHtml } = useMarkdown();
 const { openInAiChat } = useAiChatBridge();
@@ -36,7 +36,7 @@ const rawContent = ref("");
 /** Working draft — shown in the editor (edit/split modes). */
 const editContent = ref("");
 
-const mode = ref<"preview" | "edit" | "split">("preview");
+const mode = ref<KbMode>("preview");
 
 /** Chat panel toggle — when on, the body splits left (preview/edit) + right (chat). */
 const showChat = ref(false);
@@ -589,6 +589,11 @@ function resetTranslation() {
   }
 }
 
+function onToolbarModeChange(value: KbMode) {
+  const VALID: readonly KbMode[] = ['preview', 'edit', 'split'];
+  mode.value = VALID.includes(value) ? value : 'preview';
+}
+
 defineExpose({ open, openRaw, openFile });
 </script>
 
@@ -617,7 +622,7 @@ defineExpose({ open, openRaw, openFile });
       :reading-item-exists="readingItemExists"
       :adding-to-reading-list="addingToReadingList"
       :nav-history-length="navHistory.length"
-      @update:mode="mode = $event"
+      @update:mode="onToolbarModeChange"
       @go-back="goBack"
       @translate-to="translateTo"
       @reset-translation="resetTranslation"

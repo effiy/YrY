@@ -276,9 +276,12 @@ async def rss_stats(start: Optional[int] = None, end: Optional[int] = None):
             ts_str = str(ts).strip()
             if not ts_str:
                 return None
-            if ts_str.isdigit():
-                i = int(ts_str)
-                return i * 1000 if len(ts_str) <= 10 else i
+            # Numeric string — strip fractional parts first so "1724900000.5"
+            # and "1724900000000.0" both parse correctly.
+            _head = ts_str.split(".")[0]
+            if _head.lstrip("-").isdigit():
+                i = int(_head)
+                return i * 1000 if len(_head.lstrip("-")) <= 10 else i
             for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
                 try:
                     return int(datetime.strptime(ts_str, fmt).replace(tzinfo=tz.utc).timestamp() * 1000)

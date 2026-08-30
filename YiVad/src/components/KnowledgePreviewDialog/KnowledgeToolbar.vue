@@ -7,9 +7,11 @@ import {
   ArrowLeft, ChatDotRound, Close, Download, FolderOpened, Reading,
 } from '@element-plus/icons-vue';
 
+export type KbMode = 'preview' | 'edit' | 'split';
+
 defineProps<{
   currentPath: string;
-  mode: string;
+  mode: KbMode;
   showChat: boolean;
   loading: boolean;
   hasContent: boolean;
@@ -23,7 +25,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:mode': [value: string];
+  'update:mode': [value: KbMode];
   goBack: [];
   translateTo: [lang: 'zh' | 'en', bilingual?: boolean];
   resetTranslation: [];
@@ -35,6 +37,14 @@ const emit = defineEmits<{
   toggleChat: [];
   close: [];
 }>();
+
+const VALID_MODES: readonly KbMode[] = ['preview', 'edit', 'split'];
+
+function onModeChange(value: unknown) {
+  const str = typeof value === 'string' ? value : String(value ?? 'preview');
+  const next = VALID_MODES.includes(str as KbMode) ? (str as KbMode) : 'preview';
+  emit('update:mode', next);
+}
 </script>
 
 <template>
@@ -51,7 +61,7 @@ const emit = defineEmits<{
       </el-button>
       <span class="kpd-path" :title="currentPath">{{ currentPath }}</span>
     </div>
-    <el-radio-group :model-value="mode" size="small" :disabled="showChat" @update:model-value="emit('update:mode', $event)">
+    <el-radio-group :model-value="mode" size="small" :disabled="showChat" @update:model-value="onModeChange">
       <el-radio-button value="edit">Edit</el-radio-button>
       <el-radio-button value="split">Split</el-radio-button>
       <el-radio-button value="preview">Preview</el-radio-button>

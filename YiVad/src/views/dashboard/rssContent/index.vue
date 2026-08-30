@@ -281,7 +281,7 @@
 </template>
 
 <script setup lang="ts" name="rssContent">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import {
   Reading,
   Search,
@@ -304,7 +304,6 @@ import type { KnowledgeMeta } from "@/api/interface/yiweb";
 
 const rssData = ref<RssStatsData | null>(null);
 const loading = ref(true);
-const lastUpdated = ref("");
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
 // ── View mode ──
@@ -429,36 +428,6 @@ const categoryBarOption = computed<ECOption>(() => {
   };
 });
 
-const timelineOption = computed<ECOption>(() => {
-  const data = rssData.value?.timeline ?? [];
-  const counts = data.map(d => d.count);
-  const ma = counts.map((_, i) => (i < 2 ? null : Math.round((counts[i - 2] + counts[i - 1] + counts[i]) / 3)));
-  return {
-    tooltip: { trigger: "axis" },
-    legend: { data: ["Articles", "3-Mo Trend"], top: 0, textStyle: { fontSize: 9 } },
-    grid: { left: "3%", right: "4%", bottom: "3%", top: "18%", containLabel: true },
-    xAxis: { type: "category", data: data.map(d => d.month), axisLabel: { fontSize: 9 } },
-    yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
-    series: [{
-      name: "Articles",
-      type: "line",
-      data: counts,
-      smooth: true,
-      lineStyle: { color: "#5470c6", width: 3 },
-      itemStyle: { color: "#5470c6" },
-      areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(84,112,198,0.3)" }, { offset: 1, color: "rgba(84,112,198,0.05)" }] } }
-    }, {
-      name: "3-Mo Trend",
-      type: "line",
-      data: ma,
-      smooth: true,
-      lineStyle: { color: "#ee6666", width: 2, type: "dashed" },
-      itemStyle: { color: "#ee6666" },
-      symbol: "none",
-    }]
-  };
-});
-
 // ── Active filter pills ──
 
 interface ActiveFilter {
@@ -497,21 +466,6 @@ function onCategoryChartClick(e: ECElementEvent) {
   if (categoryFilter.value === name) categoryFilter.value = "";
   else categoryFilter.value = name;
   resetAndLoad();
-}
-
-function onTimelineChartClick(e: ECElementEvent) {
-  const name = e.name as string;
-  if (!name || !/^\d{4}-\d{2}$/.test(name)) return;
-  if (monthRange.value && monthLabel(monthRange.value.start) === name) monthRange.value = null;
-  else { monthRange.value = monthToRange(name); filterDate.value = null; }
-  resetAndLoad();
-}
-
-function monthToRange(month: string): { start: number; end: number } {
-  const [y, m] = month.split("-").map(Number);
-  const start = new Date(y, m - 1, 1).getTime();
-  const end = new Date(y, m, 0, 23, 59, 59, 999).getTime();
-  return { start, end };
 }
 
 // ── Filter helpers ──
@@ -642,7 +596,6 @@ async function fetchStats() {
     const { start, end } = currentDateRange();
     const res = await getRssStats({ start, end });
     rssData.value = res.data;
-    lastUpdated.value = new Date().toLocaleTimeString();
   } catch {
     /* keep last good data */
   } finally {
@@ -652,10 +605,18 @@ async function fetchStats() {
 
 // ── Detail preview ──
 
-function openDetail(row: RssItemDocument) {
-  if (!previewDlg.value) return;
+async function openDetail(row: RssItemDocument) {
+  if (!row) return;
+  if (!previewDlg.value) {
+    await nextTick();
+    if (!previewDlg.value) return;
+  }
   if (row.file_path) {
-    previewDlg.value.open(row.file_path);
+    try {
+      previewDlg.value.open(row.file_path);
+    } catch {
+      /* ignore */
+    }
     return;
   }
   const summary = stripHtml(row.summary || "");
@@ -690,7 +651,11 @@ function openDetail(row: RssItemDocument) {
     tags: row.tags || [],
     roles: row.category_path ? [row.category_path.split("/")[0]] : []
   };
-  previewDlg.value.openRaw({ title: row.title || "Untitled", content: contentParts.join("\n"), meta });
+  try {
+    previewDlg.value.openRaw({ title: row.title || "Untitled", content: contentParts.join("\n"), meta });
+  } catch {
+    /* ignore */
+  }
 }
 
 function openOriginal(row?: RssItemDocument | null) {

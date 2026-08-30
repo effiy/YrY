@@ -131,8 +131,80 @@ def _handle_string_search_filter(key: str, value: Any, filter_dict: Dict[str, An
         filter_dict[key] = re.compile(f'.*{re.escape(value)}.*', re.IGNORECASE)
     return True
 
+def _parse_ms_ts(value: Any) -> Optional[int]:
+    """Best-effort conversion to a millisecond-precision epoch timestamp.
+
+    The RSS corpus has historically used a mix of second-precision numeric
+    timestamps, millisecond-precision numeric timestamps, numeric strings,
+    ISO date strings, and ``createdTime``/``published`` free-form fields.
+    Normalising at the repository layer lets callers pass plain ``int``
+    ranges (e.g. from YiVad's date-nav component) without worrying about
+    the per-document schema drift.
+    """
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        i = int(value)
+        # Treat <= 10 digits as epoch seconds, >= 13 as epoch ms. 11/12-digit
+        # values (millennia / 10k years) are extremely unlikely and treated
+        # as milliseconds to match the dominant pipeline output.
+        return i * 1000 if len(str(abs(i))) <= 10 else i
+    ts_str = str(value).strip()
+    if not ts_str:
+        return None
+    if ts_str.isdigit():
+        i = int(ts_str)
+        return i * 1000 if len(ts_str) <= 10 else i
+    try:
+        from datetime import timezone as _tz
+    except Exception:  # pragma: no cover - timezone is always importable
+        return None
+    for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+        try:
+            return int(datetime.strptime(ts_str, fmt).replace(tzinfo=_tz.utc).timestamp() * 1000)
+        except ValueError:
+            continue
+    try:
+        return int(datetime.fromisoformat(ts_str.replace("Z", "+00:00")).timestamp() * 1000)
+    except Exception:
+        return None
+
+
+def _apply_rss_date_filters(
+    query_params: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Extract RSS-specific ``publishedStart`` / ``publishedEnd`` params and
+    return ``{"start_ms": Optional[int], "end_ms": Optional[int]}`` so the
+    caller can apply Python-level filtering after the Mongo read.
+
+    The generic Mongo filter path cannot be used here because the RSS corpus
+    has a mix of ``int`` / ``str`` / ISO-date values in
+    ``published_parsed`` / ``createdTime`` / ``published``, and MongoDB
+    compares strings and numbers as distinct types (e.g. the document
+    ``{"published_parsed": "1724900000000"}`` would never match the query
+    ``{"published_parsed": {"$gte": 1724800000000}}``). Doing the comparison
+    in Python with :func:`_parse_ms_ts` normalises every document first.
+    """
+    if not ("publishedStart" in query_params or "publishedEnd" in query_params):
+        return None
+    start_ms = _parse_ms_ts(query_params.pop("publishedStart", None))
+    end_ms = _parse_ms_ts(query_params.pop("publishedEnd", None))
+    return {"start_ms": start_ms, "end_ms": end_ms}
+
+
+def _rss_doc_published_ms(doc: Dict[str, Any]) -> Optional[int]:
+    """Normalise a single RSS document to its epoch-ms published timestamp,
+    trying the same fields and fallbacks as the dashboard stats endpoint.
+    """
+    for key in ("published_parsed", "createdTime", "published"):
+        ts = _parse_ms_ts(doc.get(key))
+        if ts is not None:
+            return ts
+    return None
+
+
 def _build_filter(query_params: Dict[str, Any]) -> Dict[str, Any]:
-    filter_dict = {}
+    filter_dict: Dict[str, Any] = {}
 
     for key, value in query_params.items():
         if not value:
@@ -230,8 +302,12 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     sort_param = query_params.pop('orderBy', 'timestamp' if collection_name == 'apis' else 'order')
     sort_order = -1 if query_params.pop('orderType', 'asc').lower() == 'desc' else 1
 
+    rss_date_range: Optional[Dict[str, Any]] = None
+    if collection_name == "rss":
+        rss_date_range = _apply_rss_date_filters(query_params)
     filter_dict = _build_filter(query_params)
-    logger.info(f"Querying collection: {collection_name}, Filter: {filter_dict}")
+
+    logger.info(f"Querying collection: {collection_name}, Filter: {filter_dict}, rssDateRange: {rss_date_range}")
     sort_list = _build_sort_list(sort_param, sort_order)
 
     projection = {'_id': 0}
@@ -261,13 +337,37 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
 
     collection = db.db[collection_name]
 
-    cursor = collection.find(filter_dict, projection) \
-        .sort(sort_list) \
-        .skip((page_num - 1) * page_size) \
-        .limit(page_size)
+    if rss_date_range is not None:
+        # RSS date-range filter: the standard find() filter cannot correctly
+        # compare numeric bounds against a string-typed ``published_parsed``
+        # column (historic schema drift in the corpus). Skip Mongo-level
+        # skip/limit, read all matched docs into memory, apply the date filter
+        # in Python with :func:`_rss_doc_published_ms`, then manually slice.
+        start_ms = rss_date_range.get("start_ms")
+        end_ms = rss_date_range.get("end_ms")
+        cursor = collection.find(filter_dict, projection).sort(sort_list)
+        all_docs: List[Dict[str, Any]] = []
+        async for doc in cursor:
+            ts = _rss_doc_published_ms(doc)
+            if ts is None:
+                continue
+            if start_ms is not None and ts < start_ms:
+                continue
+            if end_ms is not None and ts > end_ms:
+                continue
+            all_docs.append(doc)
+        total = len(all_docs)
+        start_idx = (page_num - 1) * page_size
+        end_idx = start_idx + page_size
+        data = all_docs[start_idx:end_idx]
+    else:
+        cursor = collection.find(filter_dict, projection) \
+            .sort(sort_list) \
+            .skip((page_num - 1) * page_size) \
+            .limit(page_size)
 
-    data = [doc async for doc in cursor]
-    total = await collection.count_documents(filter_dict)
+        data = [doc async for doc in cursor]
+        total = await collection.count_documents(filter_dict)
     total_pages = (total + page_size - 1) // page_size
 
     # Ensure every returned document has a key field

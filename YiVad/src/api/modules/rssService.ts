@@ -126,22 +126,19 @@ export async function getRssList(
   if (params.category_path) filter.category_path = params.category_path;
   if (params.categoryPrefix) filter.category_path = { $regex: `^${params.categoryPrefix}(/|$)`, $options: "i" };
   if (params.tags?.length) filter.tags = { $in: params.tags };
-  if (params.publishedStart !== undefined || params.publishedEnd !== undefined) {
-    const pub: Record<string, number> = {};
-    if (params.publishedStart !== undefined) pub.$gte = params.publishedStart;
-    if (params.publishedEnd !== undefined) pub.$lte = params.publishedEnd;
-    filter.published_parsed = pub;
-  }
   const pageNum = params.pageNum ?? 1;
   const pageSize = params.pageSize ?? 10;
-  const res = await queryDocuments<RssItemDocument>({
+  const payload: Record<string, any> = {
     cname: RSS_COLLECTION,
-    filter: Object.keys(filter).length > 0 ? filter : undefined,
     pageNum,
     pageSize,
     orderBy: params.orderBy || "updatedTime",
     orderType: params.orderType || "desc"
-  });
+  };
+  if (Object.keys(filter).length > 0) payload.filter = filter;
+  if (params.publishedStart !== undefined) payload.publishedStart = params.publishedStart;
+  if (params.publishedEnd !== undefined) payload.publishedEnd = params.publishedEnd;
+  const res = await queryDocuments<RssItemDocument>(payload as any);
   if (res.code !== 0) throw new Error(res.message || "Failed to load RSS items");
   return {
     ...res,
