@@ -67,7 +67,3 @@ YrY/
 ├── YiPet/          # Chrome MV3 扩展
 └── YiKnowledge/    # Markdown 知识库
 ```
-
-## 许可证
-
-专有软件。保留所有权利。
