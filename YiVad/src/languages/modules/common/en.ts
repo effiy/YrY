@@ -47,7 +47,17 @@ export default {
     download: "Download",
     clear: "Clear",
     send: "Send",
-    stop: "Stop"
+    stop: "Stop",
+  },
+  dateFilter: {
+    all: "All",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    yesterday: "Yesterday",
+    dueOverdue: "{n} day(s) overdue",
+    dueToday: "Due today",
+    dueTomorrow: "Due tomorrow",
+    dueInDays: "Due in {n} day(s)",
   },
   menu: {
     title: "Menu List",

@@ -200,7 +200,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch, nextTick } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 import { Calendar, Clock, Document, Edit, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { readProjectFile } from "@/api/modules/fileService";
@@ -208,7 +210,7 @@ import { getIssueList } from "@/api/modules/issueService";
 import { getModuleList } from "@/api/modules/moduleService";
 import { getBugList } from "@/api/modules/bug";
 import type { BugDocument } from "@/api/modules/bug";
-import type { Issue } from "@/api/modules/issueService";
+import type { Issue, IssueStatus } from "@/api/modules/issueService";
 import type { Module } from "@/api/modules/moduleService";
 import type { Project } from "@/api/modules/projectService";
 import { formatRelativeTime, formatDate } from "@/utils/datetime";
@@ -223,6 +225,9 @@ import {
 } from "@/views/project/types";
 import { STATUS_COLORS } from "@/views/project/constants";
 import { activityColor, priorityColor } from "@/views/project/composables/useProjectStats";
+
+const { t } = useI18n();
+const CLOSED_ISSUE_STATUSES: ReadonlySet<IssueStatus> = new Set(["done", "cancelled"]);
 
 const props = defineProps<{
   project: Project;
@@ -251,6 +256,7 @@ const overviewStats = reactive<OverviewStats>({
   inProgressIssues: 0,
   overdueIssues: 0,
   totalModules: 0,
+  totalRequirements: 0,
   totalBugs: 0,
   totalDocs: 0
 });
@@ -309,8 +315,11 @@ async function openDocPreview(doc: DocItem) {
     try {
       const content = await readProjectFile(props.project.key, "CLAUDE.md");
       props.previewDlgRef?.openRaw({ title: "CLAUDE.md", content });
-    } catch {
-      /* ignore */
+    } catch (err) {
+      // #region debug-point D:claude-fail-silent
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"D",location:"DetailOverview.vue:320",msg:"[DEBUG] CLAUDE.md load failed, ElMessage.warning shown to user",data:{projectKey:props.project?.key,error:String(err)},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      ElMessage.warning(t('project.docs.loadError'));
     }
     return;
   }
@@ -325,12 +334,36 @@ const issueTitleMap = computed(() => {
 });
 
 const issueProgressMap = computed(() => {
-  return new Map<string, { done: number; total: number }>();
+  const progress = new Map<string, { done: number; total: number }>();
+  const issueStatusById = new Map<string, IssueStatus>();
+  for (const issue of props.allIssues) issueStatusById.set(issue.key, issue.status);
+  for (const issue of props.allIssues) {
+    const parentKey = issue.parent_key;
+    if (!parentKey) continue;
+    let entry = progress.get(parentKey);
+    if (!entry) { entry = { done: 0, total: 0 }; progress.set(parentKey, entry); }
+    entry.total += 1;
+    if (CLOSED_ISSUE_STATUSES.has(issueStatusById.get(issue.key) || (issue.status as any))) entry.done += 1;
+  }
+  // #region debug-point A:progress-map-empty
+  fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"A",location:"DetailOverview.vue:351",msg:"[DEBUG] issueProgressMap populated from parent_key links",data:{mapSize:progress.size,keys:[...progress.keys()],entries:[...progress.entries()].map(([k,v])=>({k,...v})),allIssuesLen:props.allIssues?.length||0},ts:Date.now()})}).catch(()=>{});
+  // #endregion
+  return progress;
 });
 
 async function loadWithTimeout<T>(promise: Promise<T>, ms = 10_000): Promise<T> {
-  const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Request timeout")), ms));
-  return Promise.race([promise, timeout]);
+  let timeoutId: any = null;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      // #region debug-point C:timeout-no-cleanup
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"C",location:"DetailOverview.vue:364",msg:"[DEBUG] loadWithTimeout triggered; finally block will clear timer",data:{timeoutMs:ms},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      reject(new Error("Request timeout"));
+    }, ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
 }
 
 async function loadData() {
@@ -368,6 +401,7 @@ async function loadOverviewStats() {
     const now = new Date().toISOString().slice(0, 10);
     overviewStats.overdueIssues = issues.filter(i => i.due_date && i.due_date < now && i.status !== "done").length;
     overviewStats.totalModules = date ? modules.filter(m => (m.due_date || "").slice(0, 10) === date).length : modules.length;
+    overviewStats.totalRequirements = issues.filter(i => i.issue_type === "requirement").length;
     overviewStats.totalBugs = date
       ? bugs.filter(b => {
           const d = new Date(b.createdAt).toISOString().slice(0, 10);
@@ -375,9 +409,25 @@ async function loadOverviewStats() {
         }).length
       : bugs.length;
 
+    const key = props.project?.key || "";
+    const docPrefix = `projects/${key}/文档/`;
+    overviewStats.totalDocs = props.knowledgeFiles.filter(f => f.path.startsWith(docPrefix) && f.path.endsWith(".md")).length;
+
+    const allIssueByKey = new Map<string, Issue>();
+    for (const issue of all) allIssueByKey.set(issue.key, issue);
+
     const merged: ModuleSummary[] = [];
     for (const mod of modules.slice(0, 5)) {
-      const entry = issueProgressMap.value.get(mod.key);
+      const modKeys = mod.issue_keys || [];
+      const fallbackEntry: { done: number; total: number } = { done: 0, total: 0 };
+      for (const k of modKeys) {
+        const issue = allIssueByKey.get(k);
+        if (!issue) continue;
+        fallbackEntry.total += 1;
+        if (CLOSED_ISSUE_STATUSES.has(issue.status as any)) fallbackEntry.done += 1;
+      }
+      const parentEntry = issueProgressMap.value.get(mod.key);
+      const entry: { done: number; total: number } = parentEntry && parentEntry.total > fallbackEntry.total ? parentEntry : fallbackEntry;
       merged.push({
         id: mod.key,
         name: mod.name,
@@ -391,7 +441,7 @@ async function loadOverviewStats() {
         done: entry?.done || 0,
         total: entry?.total || 0,
         pct: entry?.total ? Math.round((entry.done / entry.total) * 100) : 0,
-        issueKeys: mod.issue_keys || []
+        issueKeys: modKeys
       });
     }
     merged.sort((a, b) => b.total - a.total);
@@ -441,6 +491,9 @@ async function loadOverviewStats() {
     });
     activity.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     overviewActivity.value = activity.slice(0, 10);
+    // #region debug-point A+E:stats-after-load
+    fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"A",location:"DetailOverview.vue:508",msg:"[DEBUG] Post-fix: after loadOverviewStats check module progress and stats totals",data:{modules:merged.map(m=>({id:m.id,done:m.done,total:m.total,pct:m.pct,issueKeysLen:m.issueKeys.length})),totalDocs:overviewStats.totalDocs,totalRequirements:overviewStats.totalRequirements,totalIssues:overviewStats.totalIssues,totalModules:overviewStats.totalModules,totalBugs:overviewStats.totalBugs},ts:Date.now()})}).catch(()=>{});
+    // #endregion
   } catch {
     /* ignore */
   }
@@ -498,6 +551,16 @@ watch(
     dataLoaded.value = false;
     loadData();
   }
+);
+
+watch(
+  () => props.knowledgeFiles,
+  (list) => {
+    const key = props.project?.key || "";
+    const prefix = `projects/${key}/文档/`;
+    overviewStats.totalDocs = list.filter(f => f.path.startsWith(prefix) && f.path.endsWith(".md")).length;
+  },
+  { deep: false }
 );
 </script>
 

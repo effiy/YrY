@@ -47,7 +47,17 @@ export default {
     download: "下载",
     clear: "清空",
     send: "发送",
-    stop: "停止"
+    stop: "停止",
+  },
+  dateFilter: {
+    all: "全部",
+    today: "今天",
+    tomorrow: "明天",
+    yesterday: "昨天",
+    dueOverdue: "逾期 {n} 天",
+    dueToday: "今天截止",
+    dueTomorrow: "明天截止",
+    dueInDays: "{n} 天后截止",
   },
   menu: {
     title: "菜单列表",

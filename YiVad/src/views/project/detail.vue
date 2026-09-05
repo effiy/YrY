@@ -19,31 +19,31 @@
           <template #label>
             <span class="project-detail__tab-label">{{ $t("project.detail.tabs.issues") }}</span>
           </template>
-          <IssueList v-if="visitedTabs.has('issues')" :project-key="project.key" :filter-date="filterDate" filter-issue-type="requirement" />
+          <IssueList v-if="visitedTabs.includes('issues')" :project-key="project.key" :filter-date="filterDate" filter-issue-type="requirement" />
         </el-tab-pane>
         <el-tab-pane name="modules">
           <template #label>
             <span class="project-detail__tab-label">{{ $t("project.detail.tabs.modules") }}</span>
           </template>
-          <ModuleList v-if="visitedTabs.has('modules')" :project-key="project.key" :filter-date="filterDate" />
+          <ModuleList v-if="visitedTabs.includes('modules')" :project-key="project.key" :filter-date="filterDate" />
         </el-tab-pane>
         <el-tab-pane name="docs">
           <template #label>
             <span class="project-detail__tab-label">{{ $t("project.detail.tabs.docs") }}<span class="project-detail__tab-count">{{ docCount }}</span></span>
           </template>
-          <DetailDocs v-if="visitedTabs.has('docs')" :project="project" :knowledge-files="knowledgeFiles" :preview-dlg-ref="previewDlgRef" />
+          <DetailDocs v-if="visitedTabs.includes('docs')" :project="project" :knowledge-files="knowledgeFiles" :preview-dlg-ref="previewDlgRef" />
         </el-tab-pane>
         <el-tab-pane name="bugs">
           <template #label>
             <span class="project-detail__tab-label">{{ $t("project.detail.tabs.bugs") }}</span>
           </template>
-          <BugList v-if="visitedTabs.has('bugs')" :project-key="project.key" :filter-date="filterDate" />
+          <BugList v-if="visitedTabs.includes('bugs')" :project-key="project.key" :filter-date="filterDate" />
         </el-tab-pane>
         <el-tab-pane name="members">
           <template #label>
             <span class="project-detail__tab-label">{{ $t("project.detail.tabs.members") }}<span class="project-detail__tab-count">{{ project.members.length }}</span></span>
           </template>
-          <DetailMembers v-if="visitedTabs.has('members')" :project="project" @update:members="onMembersUpdate" />
+          <DetailMembers v-if="visitedTabs.includes('members')" :project="project" @update:members="onMembersUpdate" />
         </el-tab-pane>
       </el-tabs>
 
@@ -97,8 +97,14 @@ const filterDate = ref<Date | null>(null);
 const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
 
 const activeTab = ref("overview");
-const visitedTabs = ref(new Set<string>(["overview"]));
+const visitedTabs = ref<string[]>(["overview"]);
 const TAB_NAMES = ["overview", "issues", "modules", "docs", "bugs", "members"];
+
+function markTabVisited(tab: string) {
+  if (TAB_NAMES.includes(tab) && !visitedTabs.value.includes(tab)) {
+    visitedTabs.value = [...visitedTabs.value, tab];
+  }
+}
 
 const docCount = computed(() => {
   const key = project.value?.key || "";
@@ -128,9 +134,7 @@ function onMembersUpdate(members: ProjectMember[]) {
 }
 
 watch(activeTab, (tab) => {
-  if (TAB_NAMES.includes(tab)) {
-    visitedTabs.value.add(tab);
-  }
+  markTabVisited(tab);
 });
 
 useKeyboardShortcuts([
@@ -145,14 +149,25 @@ useKeyboardShortcuts([
 
 onMounted(async () => {
   const key = route.params.key as string;
-  if (key) { pageStore.reset(); await store.fetchProject(key); }
-  loading.value = false;
+  if (!key) {
+    loading.value = false;
+    router.replace("/project");
+    return;
+  }
+  pageStore.reset();
+  try {
+    await store.fetchProject(key);
+  } catch {
+    loading.value = false;
+    return;
+  }
   const tab = route.query.tab;
   if (typeof tab === "string" && TAB_NAMES.includes(tab)) {
     activeTab.value = tab;
-    visitedTabs.value.add(tab);
+    markTabVisited(tab);
   }
   await Promise.all([loadKnowledgeFiles(), loadAllIssues()]);
+  loading.value = false;
 });
 </script>
 

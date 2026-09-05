@@ -3,18 +3,41 @@
  * Provides date navigation, labels, relative dates, and a YYYY-MM-DD string for API queries.
  */
 import { computed, type Ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
 
 export function useDateFilter(filterDate: Ref<Date | null>) {
+  const { t } = useI18n();
+
   const label = computed(() => {
     const d = filterDate.value;
-    if (!d) return '全部';
+    if (!d) {
+      // #region debug-point B:label-all
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:18",msg:"[DEBUG] label computed via i18n t(dateFilter.all)",data:{filterDate:null,locale:t('dateFilter.all')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.all');
+    }
     const today = new Date();
-    if (d.toDateString() === today.toDateString()) return '今天';
+    if (d.toDateString() === today.toDateString()) {
+      // #region debug-point B:label-today
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:28",msg:"[DEBUG] label computed via i18n t(dateFilter.today)",data:{filterDate:d.toISOString(),locale:t('dateFilter.today')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.today');
+    }
     const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-    if (d.toDateString() === tomorrow.toDateString()) return '明天';
+    if (d.toDateString() === tomorrow.toDateString()) {
+      // #region debug-point B:label-tomorrow
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:38",msg:"[DEBUG] label computed via i18n t(dateFilter.tomorrow)",data:{filterDate:d.toISOString(),locale:t('dateFilter.tomorrow')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.tomorrow');
+    }
     const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-    if (d.toDateString() === yesterday.toDateString()) return '昨天';
+    if (d.toDateString() === yesterday.toDateString()) {
+      // #region debug-point B:label-yesterday
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:48",msg:"[DEBUG] label computed via i18n t(dateFilter.yesterday)",data:{filterDate:d.toISOString(),locale:t('dateFilter.yesterday')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.yesterday');
+    }
     return dayjs(d).format('M/D ddd');
   });
 
@@ -58,10 +81,31 @@ export function useDateFilter(filterDate: Ref<Date | null>) {
     if (!d.isValid()) return '';
     const today = dayjs().startOf('day');
     const diff = d.diff(today, 'day');
-    if (diff < 0) return `逾期 ${Math.abs(diff)} 天`;
-    if (diff === 0) return '今天截止';
-    if (diff === 1) return '明天截止';
-    if (diff <= 3) return `${diff} 天后截止`;
+    if (diff < 0) {
+      const n = Math.abs(diff);
+      // #region debug-point B:due-overdue
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:97",msg:"[DEBUG] dueRelative via i18n t(dateFilter.dueOverdue)",data:{dueDate,diff,locale:t('dateFilter.dueOverdue',{n})},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.dueOverdue', { n });
+    }
+    if (diff === 0) {
+      // #region debug-point B:due-today
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:107",msg:"[DEBUG] dueRelative via i18n t(dateFilter.dueToday)",data:{dueDate,diff,locale:t('dateFilter.dueToday')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.dueToday');
+    }
+    if (diff === 1) {
+      // #region debug-point B:due-tomorrow
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:117",msg:"[DEBUG] dueRelative via i18n t(dateFilter.dueTomorrow)",data:{dueDate,diff,locale:t('dateFilter.dueTomorrow')},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.dueTomorrow');
+    }
+    if (diff <= 3) {
+      // #region debug-point B:due-days
+      fetch("http://127.0.0.1:7777/event",{method:"POST",body:JSON.stringify({sessionId:"project-detail-bugs",runId:"post",hypothesisId:"B",location:"useDateFilter.ts:127",msg:"[DEBUG] dueRelative via i18n t(dateFilter.dueInDays)",data:{dueDate,diff,locale:t('dateFilter.dueInDays',{n:diff})},ts:Date.now()})}).catch(()=>{});
+      // #endregion
+      return t('dateFilter.dueInDays', { n: diff });
+    }
     return '';
   }
 
