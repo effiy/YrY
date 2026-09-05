@@ -71,6 +71,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElTreeSelect: typeof import('element-plus/es')['ElTreeSelect']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     EntityBreadcrumb: typeof import('./../components/EntityBreadcrumb/EntityBreadcrumb.vue')['default']
     GoalCell: typeof import('./../components/OkrRecommend/fields/GoalCell.vue')['default']
