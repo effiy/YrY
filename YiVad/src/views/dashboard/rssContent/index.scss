@@ -8,15 +8,12 @@
 
 .rss-content-box {
   --sticky-header-h: 72px;
-  --sticky-sidebar-top: calc(var(--sticky-header-h) + 12px);
+  --sticky-sidebar-top: calc(var(--sticky-header-h) + 14px);
   --dot-color: #909399;
   --badge-bg: #5470c6;
   --badge-shadow: rgba(84, 112, 198, 0.25);
   padding: 24px;
   background: var(--el-bg-color-page);
-  :deep(.page-header-card--sticky) {
-    z-index: 20;
-  }
 }
 
 // ── Header Card ──
@@ -208,8 +205,15 @@
   position: sticky;
   top: var(--sticky-sidebar-top);
   align-self: flex-start;
+  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--el-border-color-lighter);
   z-index: 10;
   max-height: calc(100vh - var(--sticky-sidebar-top) - 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 // ── Sidebar Section ──
