@@ -17,14 +17,6 @@
   "popupSizeUnit": { "message": "px" },
   "popupVersion": { "message": "v$VERSION$", "placeholders": { "version": { "content": "$1", "example": "1.1.2" } } },
   "popupLanguageLabel": { "message": "Language" },
-  "popupSubtitle": { "message": "你浏览器里的温柔 AI 伴侣" },
-  "popupPreviewTitle": { "message": "实时预览" },
-  "popupModelLabel": { "message": "模型" },
-  "popupReset": { "message": "重置" },
-  "popupSectionAppearance": { "message": "外观" },
-  "popupSectionPreferences": { "message": "偏好" },
-  "popupSwitchHint": { "message": "在当前标签页显示/隐藏宠物" },
-  "popupModelHint": { "message": "用于聊天回复的 AI 模型" },
 
   "popupStatusConnecting": { "message": "Connecting…" },
   "popupStatusReady": { "message": "Ready" },
@@ -37,7 +29,6 @@
   "notifySizeUpdated": { "message": "Size Updated" },
   "notifyRoleChanged": { "message": "Role Changed: $ROLE$", "placeholders": { "role": { "content": "$1", "example": "Doctor" } } },
   "notifyColorSet": { "message": "Color Theme Set" },
-  "notifyModelUpdated": { "message": "模型已更新" },
   "notifyLanguageChanged": { "message": "Language switched to English" },
 
   "errorOperationFailed": { "message": "Operation Failed" },
