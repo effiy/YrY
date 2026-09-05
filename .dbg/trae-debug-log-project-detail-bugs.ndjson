@@ -1,3 +1,0 @@
-{"sessionId": "project-detail-bugs", "runId": "post", "hypothesisId": "B", "location": "useDateFilter.ts:18", "msg": "[DEBUG] label computed via i18n t(dateFilter.all)", "data": {"filterDate": null, "locale": "All"}, "ts": 1788610159456}
-{"sessionId": "project-detail-bugs", "runId": "post", "hypothesisId": "B", "location": "useDateFilter.ts:18", "msg": "[DEBUG] label computed via i18n t(dateFilter.all)", "data": {"filterDate": null, "locale": "All"}, "ts": 1788610161198}
-{"sessionId": "project-detail-bugs", "runId": "post", "hypothesisId": "B", "location": "useDateFilter.ts:28", "msg": "[DEBUG] label computed via i18n t(dateFilter.today)", "data": {"filterDate": "2026-09-05T12:09:26.775Z", "locale": "Today"}, "ts": 1788610166775}
