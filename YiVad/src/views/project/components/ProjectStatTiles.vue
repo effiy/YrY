@@ -110,6 +110,9 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
     box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
     transform: translateY(-1px);
   }
+  &:active {
+    transform: scale(0.97);
+  }
 }
 .pst-tile--on {
   border-color: var(--el-color-primary);
@@ -174,10 +177,6 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
 .pst-tile--progress {
   border-left-color: #3ba272;
   .pst-icon { background: linear-gradient(135deg, #3ba272, #2c8159); }
-}
-.pst-tile--cycles {
-  border-left-color: #73c0de;
-  .pst-icon { background: linear-gradient(135deg, #73c0de, #5ab1ef); }
 }
 .pst-tile--risk {
   border-left-color: #ee6666;

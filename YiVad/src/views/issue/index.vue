@@ -356,7 +356,7 @@
               v-for="issue in cardIssues"
               :key="issue.key"
               class="issue-card"
-              @click="goDetail(issue.key)"
+              @click="openPreview(issue)"
             >
               <div class="issue-card__head">
                 <span class="issue-card__dot" :style="{ background: statusColor(issue.status) }" />
@@ -401,7 +401,7 @@
               v-for="issue in cardIssues"
               :key="issue.key"
               class="issue-list-view__row"
-              @click="goDetail(issue.key)"
+              @click="openPreview(issue)"
             >
               <span class="issue-list-view__dot" :style="{ background: statusColor(issue.status) }" />
               <code class="issue-list-view__key">{{ issue.key }}</code>
@@ -558,7 +558,8 @@ import {
   REVIEW_STATUS_MAP,
   ISSUE_STATUS_TAG_MAP,
   ISSUE_TYPE_TAG_MAP,
-  typeLabel
+  typeLabel,
+  getIssueFilePath
 } from "@/api/modules/issueService";
 import type {
   Issue,
@@ -584,6 +585,7 @@ import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { goalRoleMap, allGoalsMap } from "@/views/knowledge/executiver/okrData";
+import { useRequirements } from "@/views/project/composables/useRequirements";
 
 const props = defineProps<{ projectKey?: string; filterIssueType?: string; excludeIssueType?: string; filterDate?: Date | null }>();
 
@@ -596,6 +598,9 @@ const previewDlgRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(nu
 const quickFilter = ref("");
 const labelFilter = ref("");
 const goalFilter = ref("");
+
+// ── Requirement data from knowledge files (canonical source) ──
+const { items: reqItems, loading: reqLoading, fetch: fetchRequirements, updateItem: updateReqItem } = useRequirements();
 const filters = reactive<{ status: string; priority: string; issue_type: string; assignee: string }>({
   status: "",
   priority: "",
@@ -652,6 +657,8 @@ const recentlyViewed = ref<Issue[]>([]);
 const openCount = computed(() => stats.todo + stats.in_progress + stats.in_review);
 const completionPct = computed(() => (stats.total ? Math.round((stats.done / stats.total) * 100) : 0));
 async function loadStats() {
+  // Requirement data comes from knowledge files — handled by the reqItems watcher
+  if (props.filterIssueType === "requirement") return;
   try {
     const params: any = { project_key: props.projectKey || undefined, pageSize: 1000 };
     if (props.filterIssueType) params.issue_type = props.filterIssueType;
@@ -856,7 +863,7 @@ function trackRecent(issue: Issue) {
   recentlyViewed.value = [issue, ...recentlyViewed.value.filter(r => r.key !== issue.key)].slice(0, 8);
 }
 
-// ── Cross-entity name maps (project / cycle / release chips) ────────────────
+// ── Cross-entity name maps (project chips) ────────────────
 const projectNameByKey = ref<Map<string, string>>(new Map());
 const modulesByIssueKey = ref<Map<string, Module[]>>(new Map());
 
@@ -1056,29 +1063,22 @@ const rules: FormRules = {
 const columns = computed<ColumnProps<Issue>[]>(() => {
   if (props.filterIssueType === "requirement") {
     const cols: ColumnProps<Issue>[] = [
-      { prop: "key", label: "Key", width: 130 },
+      { prop: "key", label: "Month", width: 100 },
       { prop: "title", label: "Title", minWidth: 240 },
-      { prop: "description", label: "Description", minWidth: 300, render: (scope: any) => {
-        const text = scope.row.description || "";
-        const plain = text.replace(/#{1,6}\s/g, "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/`/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/>\s/g, "").replace(/[-*+]\s/g, "").replace(/\n+/g, " ").trim();
-        return plain.length > 200 ? plain.slice(0, 200) + "..." : plain;
+      { prop: "status", label: "Status", width: 100 },
+      { prop: "priority", label: "Priority", width: 90 },
+      { prop: "assignee", label: "Owner", width: 100 },
+      { prop: "estimate_points", label: "Est.", width: 70, render: (scope: any) => {
+        const pts = scope.row.estimate_points;
+        return pts ? `${pts}d` : "—";
       } },
-      { prop: "status", label: "Status", width: 110 },
-      { prop: "priority", label: "Priority", width: 92 },
-      { prop: "assignee", label: "Assignee", width: 100 },
-      { prop: "module", label: "Module", width: 120 },
-      { prop: "source", label: "Source", width: 105 },
-      { prop: "due_date", label: "Due", width: 120 },
-      { prop: "labels", label: "Labels", width: 150 },
-      { prop: "created_at", label: "Created", width: 120 },
-      { prop: "updated_at", label: "Updated", width: 120 },
       { prop: "operation", label: "Actions", width: 190, fixed: "right" }
     ];
     return cols;
   }
   const cols: ColumnProps<Issue>[] = [
     { type: "selection", width: 50 },
-    { prop: "key", label: "Key", width: 100 },
+    { prop: "key", label: "Key", width: 120 },
     { prop: "title", label: "Title", minWidth: 220 },
     { prop: "issue_type", label: "Type", width: 105 },
     { prop: "priority", label: "Priority", width: 92 },
@@ -1140,6 +1140,28 @@ const dialog = reactive({
 
 async function fetchIssues(params: any) {
   const { pageNum, pageSize, ...searchParams } = params;
+
+  // ── Requirement type: use knowledge files as canonical source ──
+  if (props.filterIssueType === "requirement") {
+    // Ensure requirements are loaded (may not be ready on initial ProTable mount)
+    if (reqItems.value.length === 0 && props.projectKey) {
+      if (!reqLoading.value) {
+        await fetchRequirements(props.projectKey);
+      } else {
+        // Wait for the in-flight fetch to complete
+        await new Promise<void>(resolve => {
+          const stop = watch(reqLoading, (v) => { if (!v) { stop(); resolve(); } });
+        });
+      }
+    }
+    const list = buildReqIssues();
+    const filtered = applyReqFilters(list, searchParams);
+    const total = filtered.length;
+    const start = (pageNum - 1) * pageSize;
+    const paged = filtered.slice(start, start + pageSize);
+    return { data: { list: paged, total, pageNum, pageSize, totalPages: Math.ceil(total / pageSize) } };
+  }
+
   const merged: any = { pageNum, pageSize, project_key: props.projectKey, ...searchParams };
   // Title column search is a "search" filter on the backend (regex over title+description).
   if (merged.title) {
@@ -1191,12 +1213,28 @@ async function fetchIssues(params: any) {
   }
 
   const res = await getIssueList(merged);
-  const list = res.data?.list ?? [];
-  const total = res.data?.total ?? 0;
+  let list = (res.data?.list ?? []) as Issue[];
+  let total = res.data?.total ?? 0;
+
+  // Merge requirement data from knowledge files (canonical source)
+  if (props.projectKey && reqItems.value.length > 0) {
+    const reqIssues = buildReqIssues();
+    const reqKeySet = new Set(reqIssues.map(r => r.key));
+    // Replace API requirement issues with knowledge file data
+    list = list.filter(i => i.issue_type !== "requirement" || !reqKeySet.has(i.key));
+    // Add requirement items not already in the API list
+    for (const ri of reqIssues) {
+      if (!list.find(i => i.key === ri.key)) {
+        list.unshift(ri);
+      }
+    }
+    total = res.data?.total ?? 0;
+  }
+
   // Keep the store in sync so CSV/JSON export have data to export.
   store.issues = list;
   store.total = total;
-  return res;
+  return { data: { list, total, pageNum: merged.pageNum, pageSize: merged.pageSize } };
 }
 
 function openCreate() {
@@ -1239,9 +1277,35 @@ function openEdit(issue: Issue) {
   dialog.visible = true;
 }
 
+async function syncKnowledgeFileIfNeeded() {
+  const editedIssue = allIssues.value.find(i => i.key === dialog.editKey);
+  if (!editedIssue?.kb_file_path) return;
+  // Update in-memory data immediately so the table reflects changes
+  const statusCn = mapReqStatusReverse(dialog.form.status);
+  const priorityCn = mapReqPriorityReverse(dialog.form.priority);
+  updateReqItem(editedIssue.kb_file_path, {
+    status: statusCn,
+    priority: priorityCn,
+    assignee: dialog.form.assignee || ""
+  });
+  // Persist to knowledge file (best-effort, non-blocking for UI)
+  readKnowledgeFile(editedIssue.kb_file_path).then(res => {
+    const updatedMeta = { ...res.meta };
+    updatedMeta.status = statusCn;
+    updatedMeta.priority = priorityCn;
+    if (dialog.form.assignee !== undefined) updatedMeta.owner = dialog.form.assignee;
+    return writeKnowledgeFile(editedIssue.kb_file_path!, res.content, updatedMeta);
+  }).catch(e => {
+    console.error("Failed to sync knowledge file:", e);
+  });
+}
+
 async function submit() {
-  const valid = await formRef.value?.validate().catch(() => false);
-  if (!valid) return;
+  try {
+    await formRef.value?.validate();
+  } catch {
+    return;
+  }
   dialog.submitting = true;
   try {
     if (dialog.isEdit) {
@@ -1259,6 +1323,8 @@ async function submit() {
         acceptance_criteria: dialog.form.acceptance_criteria || undefined
       });
       ElMessage.success("Issue updated");
+      // Sync knowledge file frontmatter for requirement-type issues
+      await syncKnowledgeFileIfNeeded();
     } else {
       const key = `ISS-${Date.now().toString(36).toUpperCase()}`;
       await store.addIssue({
@@ -1282,6 +1348,8 @@ async function submit() {
     }
     dialog.visible = false;
     refreshTable();
+  } catch (e) {
+    ElMessage.error((e as Error).message || "Failed to save issue");
   } finally {
     dialog.submitting = false;
   }
@@ -1391,16 +1459,7 @@ function goDetail(key: string) {
 
 async function openPreview(issue: Issue) {
   trackRecent(issue);
-  const date = issue.due_date || issue.created_at || new Date().toISOString();
-  const yearMonth = date.slice(0, 7);
-  const fileName = (issue as any).kb_slug || issue.title
-    .toLowerCase()
-    .replace(/[→+(),]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  const filePath = issue.issue_type === "requirement"
-    ? `projects/${issue.project_key}/requires/${yearMonth}/index.md`
-    : `projects/${issue.project_key}/requires/${yearMonth}/${fileName}.md`;
+  const filePath = getIssueFilePath(issue);
 
   const defaultContent = [
     `# ${issue.title}`,
@@ -1418,7 +1477,7 @@ async function openPreview(issue: Issue) {
     `| Review | ${issue.review_status ? reviewLabel(issue.review_status as ReviewStatus) : "—"} |`,
     `| Estimate | ${issue.estimate_points != null ? issue.estimate_points + " pts" : "—"} |`,
     issue.labels?.length ? `| Labels | ${issue.labels.join(", ")} |` : "",
-    issue.description ? `\n---\n\n${issue.description}` : ""
+    issue.description ? `\n${issue.description}` : ""
   ].filter(Boolean).join("\n");
 
   let content = defaultContent;
@@ -1427,6 +1486,10 @@ async function openPreview(issue: Issue) {
     if (res.content) content = res.content;
   } catch {
     try { await writeKnowledgeFile(filePath, defaultContent); } catch { /* best effort */ }
+    // Persist the file path so the detail page can find it
+    if (!issue.kb_file_path) {
+      try { await store.editIssue(issue.key, { kb_file_path: filePath } as any); issue.kb_file_path = filePath; } catch { /* best effort */ }
+    }
   }
 
   previewDlgRef.value?.openFile({
@@ -1471,16 +1534,6 @@ function priorityColor(p: IssuePriority) {
 function typeTagType(t: IssueType): TagType {
   return ISSUE_TYPE_TAG_MAP[t] || "info";
 }
-function typeColor(t: IssueType): string {
-  const map: Record<IssueType, string> = {
-    bug: "#ee6666",
-    task: "#5470c6",
-    feature: "#91cc75",
-    improvement: "#fac858",
-    requirement: "#9a60b4"
-  };
-  return map[t] || "#909399";
-}
 function sourceLabel(s: IssueSource) {
   return ISSUE_SOURCE_MAP[s] || s;
 }
@@ -1492,18 +1545,135 @@ function reviewTagType(s: ReviewStatus): TagType {
   return m[s] || "info";
 }
 
+// ── Requirement status/priority mappers (Chinese markdown → Issue enum) ──
+function mapReqStatus(s: string): IssueStatus {
+  const m: Record<string, IssueStatus> = {
+    "待开始": "todo",
+    "进行中": "in_progress",
+    "已完成": "done",
+    "待排期": "backlog",
+    "已取消": "cancelled",
+    "待评审": "in_review"
+  };
+  return m[s] || "todo";
+}
+function mapReqPriority(p: string): IssuePriority {
+  const m: Record<string, IssuePriority> = {
+    "紧急": "urgent",
+    "高": "high",
+    "中": "medium",
+    "低": "low"
+  };
+  return m[p] || "medium";
+}
+function mapReqStatusReverse(s: string): string {
+  const m: Record<string, string> = {
+    "done": "已完成",
+    "in_progress": "进行中",
+    "cancelled": "已取消",
+    "in_review": "待评审",
+    "backlog": "待排期",
+    "todo": "待开始"
+  };
+  return m[s] || "待开始";
+}
+function mapReqPriorityReverse(p: string): string {
+  const m: Record<string, string> = {
+    "urgent": "紧急",
+    "high": "高",
+    "medium": "中",
+    "low": "低"
+  };
+  return m[p] || "中";
+}
+
+function formatReqMonth(m: string): string {
+  if (m.length === 6) return `${m.slice(0, 4)}-${m.slice(4)}`;
+  return m;
+}
+
+function buildReqIssues(): Issue[] {
+  return reqItems.value.map(r => ({
+    key: formatReqMonth(r.prd_month),
+    project_key: props.projectKey || "",
+    sequence_id: 0,
+    title: r.title,
+    description: "",
+    status: mapReqStatus(r.status),
+    priority: mapReqPriority(r.priority),
+    issue_type: "requirement" as IssueType,
+    assignee: r.assignee || undefined,
+    labels: [] as string[],
+    estimate_points: r.estimate_frontend || undefined,
+    start_date: "",
+    due_date: "",
+    source: "internal" as IssueSource,
+    review_status: "approved" as ReviewStatus,
+    goal_id: "",
+    kb_file_path: r.path,
+    created_at: "",
+    updated_at: ""
+  }));
+}
+
+function applyReqFilters(list: Issue[], searchParams: any): Issue[] {
+  let filtered = list;
+  const search = (searchText.value || searchParams.title || "").trim().toLowerCase();
+  if (search) {
+    filtered = filtered.filter(i =>
+      i.title.toLowerCase().includes(search) ||
+      (i.assignee || "").toLowerCase().includes(search) ||
+      (i.key || "").toLowerCase().includes(search)
+    );
+  }
+  if (filters.status) {
+    const statuses = filters.status.split(",");
+    filtered = filtered.filter(i => statuses.includes(i.status));
+  }
+  if (filters.priority) {
+    const priorities = filters.priority.split(",");
+    filtered = filtered.filter(i => priorities.includes(i.priority));
+  }
+  if (filters.assignee) {
+    filtered = filtered.filter(i => i.assignee === filters.assignee);
+  }
+  return filtered;
+}
+
 onMounted(async () => {
   const initialLabel = route.query.label;
   if (typeof initialLabel === "string" && initialLabel) labelFilter.value = initialLabel;
   const initialGoal = route.query.goal;
   if (typeof initialGoal === "string" && initialGoal) goalFilter.value = initialGoal;
   await Promise.all([loadStats(), loadNames()]);
+  if (props.projectKey) {
+    await fetchRequirements(props.projectKey);
+  }
 });
 
 watch(filterDateStr, () => {
   loadStats();
   refreshTable();
 });
+
+// Sync requirement data from knowledge files for requirement-only view
+watch(reqItems, (_items) => {
+  if (props.filterIssueType !== "requirement") return;
+  const mapped = buildReqIssues();
+  allIssues.value = mapped;
+  cardIssuesAll.value = mapped;
+  const s = { total: 0, todo: 0, in_progress: 0, in_review: 0, done: 0, backlog: 0, cancelled: 0 };
+  for (const i of mapped) {
+    s.total++;
+    if (i.status === "todo") s.todo++;
+    else if (i.status === "in_progress") s.in_progress++;
+    else if (i.status === "in_review") s.in_review++;
+    else if (i.status === "done") s.done++;
+    else if (i.status === "backlog") s.backlog++;
+    else if (i.status === "cancelled") s.cancelled++;
+  }
+  Object.assign(stats, s);
+}, { immediate: true });
 </script>
 
 <style scoped lang="scss">

@@ -60,8 +60,6 @@
               <template #dropdown>
                 <el-dropdown-item :icon="CopyDocument" @click="cloneIssue">Clone</el-dropdown-item>
                 <el-dropdown-item :icon="Switch" @click="openMove">Move to Project</el-dropdown-item>
-                <el-dropdown-item :icon="Calendar" @click="openAssignCycle">Assign to Cycle</el-dropdown-item>
-                <el-dropdown-item :icon="Box" @click="openAssignRelease">Add to Release</el-dropdown-item>
                 <el-dropdown-item :icon="Delete" divided @click="handleDelete">Delete</el-dropdown-item>
               </template>
             </el-dropdown>
@@ -223,22 +221,6 @@
                   </el-button>
                 </span>
               </div>
-              <div v-if="linkedCycle" class="id-sb-row">
-                <span class="id-sb-row__label">Cycle</span>
-                <span class="id-sb-row__value">
-                  <el-button link size="small" type="warning" @click="router.push(`/cycle/${linkedCycle.key}`)">
-                    {{ linkedCycle.name }}
-                  </el-button>
-                </span>
-              </div>
-              <div v-if="linkedRelease" class="id-sb-row">
-                <span class="id-sb-row__label">Release</span>
-                <span class="id-sb-row__value">
-                  <el-button link size="small" type="success" @click="router.push(`/release/${linkedRelease.key}`)">
-                    {{ linkedRelease.version }}
-                  </el-button>
-                </span>
-              </div>
               <div v-if="issue.goal_id && goalRoleMap[issue.goal_id]" class="id-sb-row">
                 <span class="id-sb-row__label">Goal</span>
                 <span class="id-sb-row__value">
@@ -347,24 +329,12 @@
           </div>
 
           <!-- Linked Items -->
-          <div v-if="linkedCycles.length || linkedModules.length || linkedReleases.length || linkedBugs.length" class="id-sb-group">
+          <div v-if="linkedModules.length || linkedBugs.length" class="id-sb-group">
             <div class="id-sb-group__title">
               <el-icon><Connection /></el-icon>
               <span>Linked Items</span>
             </div>
             <div class="id-sb-group__body">
-              <div v-if="linkedCycles.length" class="id-sb-dep">
-                <span class="id-sb-dep__label">Cycle</span>
-                <div class="id-sb-dep__tags">
-                  <el-tag
-                    v-for="c in linkedCycles"
-                    :key="c.key"
-                    size="small"
-                    type="warning"
-                    @click="router.push(`/cycle/${c.key}`)"
-                  >{{ c.name }}</el-tag>
-                </div>
-              </div>
               <div v-if="linkedModules.length" class="id-sb-dep">
                 <span class="id-sb-dep__label">Module</span>
                 <div class="id-sb-dep__tags">
@@ -374,18 +344,6 @@
                     size="small"
                     @click="router.push(`/module/${m.key}`)"
                   >{{ m.name }}</el-tag>
-                </div>
-              </div>
-              <div v-if="linkedReleases.length" class="id-sb-dep">
-                <span class="id-sb-dep__label">Release</span>
-                <div class="id-sb-dep__tags">
-                  <el-tag
-                    v-for="r in linkedReleases"
-                    :key="r.key"
-                    size="small"
-                    type="success"
-                    @click="router.push(`/release/${r.key}`)"
-                  >{{ r.version }}</el-tag>
                 </div>
               </div>
               <div v-if="linkedBugs.length" class="id-sb-dep">
@@ -595,10 +553,9 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  Box, Calendar, Connection, Edit, Delete, Plus,
-  Upload, Document, MoreFilled, CopyDocument,
-  Switch, Link, List,
-  User, PriceTag, InfoFilled, Top, FullScreen, Rank, Close, FolderOpened
+  Box, Calendar, Connection, Edit, Delete,
+  Document, MoreFilled, CopyDocument,
+  Switch, User, PriceTag, InfoFilled, FullScreen, Rank, Close, FolderOpened
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
@@ -606,20 +563,16 @@ import { useIssueStore } from "@/stores/modules/issue";
 import {
   ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP, ISSUE_TYPE_MAP, ISSUE_SOURCE_MAP, REVIEW_STATUS_MAP,
   ISSUE_STATUS_TAG_MAP, ISSUE_TYPE_TAG_MAP,
-  getIssueList
+  getIssueList, getIssueFilePath
 } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType, IssueSource, ReviewStatus, TagType } from "@/api/modules/issueService";
 
-import { formatDate, formatRelativeTime } from "@/utils/datetime";
+import { formatRelativeTime } from "@/utils/datetime";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useMarkdown } from "@/hooks/useMarkdown";
-import { getCycleList } from "@/api/modules/cycleService";
 import { getModuleList } from "@/api/modules/moduleService";
-import { getReleaseList } from "@/api/modules/releaseService";
 import { getProjectList } from "@/api/modules/projectService";
-import type { Cycle } from "@/api/modules/cycleService";
 import type { Module } from "@/api/modules/moduleService";
-import type { Release } from "@/api/modules/releaseService";
 import type { Project } from "@/api/modules/projectService";
 import { getBugList } from "@/api/modules/bug";
 import type { BugDocument } from "@/api/modules/bug";
@@ -734,21 +687,11 @@ function closePreview() {
 }
 
 // Cross-linking
-const linkedCycles = ref<Cycle[]>([]);
 const linkedModules = ref<Module[]>([]);
-const linkedReleases = ref<Release[]>([]);
 const linkedBugs = ref<BugDocument[]>([]);
 const projectName = ref("");
 
-const linkedCycle = computed(() => {
-  if (!issue.value?.cycle_key) return null;
-  return linkedCycles.value.find(c => c.key === issue.value!.cycle_key) || null;
-});
 
-const linkedRelease = computed(() => {
-  if (!issue.value?.release_key) return null;
-  return linkedReleases.value.find(r => r.key === issue.value!.release_key) || null;
-});
 
 
 const isOverdue = computed(() => {
@@ -761,20 +704,14 @@ const isOverdue = computed(() => {
 async function loadLinked() {
   if (!issue.value) return;
   try {
-    const [cycleRes, moduleRes, releaseRes, projectRes, bugRes] = await Promise.all([
-      getCycleList({ project_key: issue.value.project_key, pageSize: 200 }),
+    const [moduleRes, projectRes, bugRes] = await Promise.all([
       getModuleList({ project_key: issue.value.project_key, pageSize: 200 }),
-      getReleaseList({ project_key: issue.value.project_key, pageSize: 200 }),
       getProjectList({ pageSize: 500 }),
-      getBugList({ issue_key: issue.value.key, pageSize: 100 })
+      getBugList({ issue_key: issue.value.key, pageSize: 100 }),
     ]);
-    const cycles = (cycleRes.data?.list as Cycle[]) ?? [];
     const modules = (moduleRes.data?.list as Module[]) ?? [];
-    const releases = (releaseRes.data?.list as Release[]) ?? [];
     const projects = (projectRes.data?.list as Project[]) ?? [];
-    linkedCycles.value = cycles.filter(c => c.issue_keys?.includes(issue.value!.key));
     linkedModules.value = modules.filter(m => m.issue_keys?.includes(issue.value!.key));
-    linkedReleases.value = releases.filter(r => r.issue_keys?.includes(issue.value!.key));
     linkedBugs.value = (bugRes.data?.list as BugDocument[]) ?? [];
     projectName.value = projects.find(p => p.key === issue.value!.project_key)?.name || issue.value!.project_key;
   } catch { /* ignore */ }
@@ -791,12 +728,7 @@ const descContent = ref("");
 const descFilePath = computed(() => {
   const i = issue.value;
   if (!i) return "";
-  const date = i.due_date || i.created_at || "";
-  const yearMonth = date.slice(0, 7);
-  const fileName = (i as any).kb_slug || i.title.toLowerCase().replace(/[→+(),]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return i.issue_type === "requirement"
-    ? `projects/${i.project_key}/requires/${yearMonth}/index.md`
-    : `projects/${i.project_key}/requires/${yearMonth}/${fileName}.md`;
+  return getIssueFilePath(i);
 });
 const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
 
@@ -807,7 +739,10 @@ async function loadDescFile() {
     const res = await readKnowledgeFile(descFilePath.value);
     descContent.value = res.content || issue.value?.description || "";
   } catch {
-    descContent.value = issue.value?.description || "";
+    // File doesn't exist yet — auto-create it with issue description as default content
+    const defaultContent = issue.value?.description || `# ${issue.value?.title || ""}\n`;
+    try { await writeKnowledgeFile(descFilePath.value, defaultContent); } catch { /* best effort */ }
+    descContent.value = defaultContent;
   }
 }
 
@@ -893,9 +828,34 @@ function openEdit() {
   editDialog.visible = true;
 }
 
+function mapReqStatusReverse(s: string): string {
+  const m: Record<string, string> = {
+    "done": "已完成",
+    "in_progress": "进行中",
+    "cancelled": "已取消",
+    "in_review": "待评审",
+    "backlog": "待排期",
+    "todo": "待开始"
+  };
+  return m[s] || "待开始";
+}
+function mapReqPriorityReverse(p: string): string {
+  const m: Record<string, string> = {
+    "urgent": "紧急",
+    "high": "高",
+    "medium": "中",
+    "low": "低"
+  };
+  return m[p] || "中";
+}
+
 async function submitEdit() {
-  const valid = await editFormRef.value?.validate().catch(() => false);
-  if (!valid || !issue.value) return;
+  if (!issue.value) return;
+  try {
+    await editFormRef.value?.validate();
+  } catch {
+    return;
+  }
   editDialog.submitting = true;
   try {
     await store.editIssue(issue.value.key, {
@@ -914,7 +874,20 @@ async function submitEdit() {
       time_estimate: editDialog.form.time_estimate
     } as any);
     ElMessage.success("Issue updated");
+    // Sync knowledge file frontmatter for requirement-type issues
+    if (issue.value.kb_file_path) {
+      try {
+        const res = await readKnowledgeFile(issue.value.kb_file_path);
+        const updatedMeta = { ...res.meta };
+        if (editDialog.form.status) updatedMeta.status = mapReqStatusReverse(editDialog.form.status);
+        if (editDialog.form.priority) updatedMeta.priority = mapReqPriorityReverse(editDialog.form.priority);
+        if (editDialog.form.assignee !== undefined) updatedMeta.owner = editDialog.form.assignee;
+        await writeKnowledgeFile(issue.value.kb_file_path, res.content, updatedMeta);
+      } catch { /* best-effort */ }
+    }
     editDialog.visible = false;
+  } catch (e) {
+    ElMessage.error((e as Error).message || "Failed to update issue");
   } finally {
     editDialog.submitting = false;
   }
@@ -972,32 +945,6 @@ async function openMove() {
     await store.editIssue(issue.value!.key, { project_key: value });
     ElMessage.success(`Issue moved to "${value}"`);
     router.push(`/project/${value}`);
-  }).catch(() => {});
-}
-
-async function openAssignCycle() {
-  if (!issue.value) return;
-  ElMessageBox.prompt("Enter cycle key to assign this issue to", "Assign to Cycle", {
-    confirmButtonText: "Assign",
-    inputPlaceholder: "Cycle key"
-  }).then(async ({ value }) => {
-    if (!value) return;
-    await store.editIssue(issue.value!.key, { cycle_key: value });
-    ElMessage.success(`Issue assigned to cycle "${value}"`);
-    if (issue.value!.cycle_key) store.fetchIssue(issue.value!.key);
-  }).catch(() => {});
-}
-
-async function openAssignRelease() {
-  if (!issue.value) return;
-  ElMessageBox.prompt("Enter release key to add this issue to", "Add to Release", {
-    confirmButtonText: "Add",
-    inputPlaceholder: "Release key"
-  }).then(async ({ value }) => {
-    if (!value) return;
-    await store.editIssue(issue.value!.key, { release_key: value });
-    ElMessage.success(`Issue added to release "${value}"`);
-    if (issue.value!.release_key) store.fetchIssue(issue.value!.key);
   }).catch(() => {});
 }
 

@@ -1,5 +1,5 @@
 ---
-title: Executiver
+title: 高管
 tags: [leaf, executiver, strategy, industry, roadmap, reading-list]
 category: executiver
 created: 2026-08-06
@@ -11,172 +11,172 @@ status: stable
 lifecycle: active
 review_cycle: quarterly
 roles: [executiver]
-benefit: "Executives find strategy frameworks, industry intelligence, roadmaps, and learning resources organized by domain"
+benefit: "高管可以按领域找到战略框架、行业情报、路线图和学习资源"
 acceptance_criteria:
-  - "4 subdirectories: strategy, industry, roadmap, reading-list"
-  - "Each subdirectory has a README with categorized file listings"
-  - "Max 3 directory levels"
+  - "4 个子目录：strategy、industry、roadmap、reading-list"
+  - "每个子目录有 README 及分类文件列表"
+  - "最多 3 级目录深度"
 related:
   - ./INDEX.md
   - ../INDEX.md
   - ../producter/strategy/
 ---
 
-# Executiver
+# 高管
 
-> **Pipeline layer: Business Strategy (cross-cutting)** — Provides `Business strategy` input chip to Stage 1 (Requirements). Spans the entire pipeline.
+> **流水线层级：业务战略（横切）** — 为阶段 1（需求）提供 `Business strategy` 输入芯片。贯穿整个流水线。
 >
-> **As an** executiver, **I want to** find business strategy frameworks, industry intelligence, and organizational planning guides, **so that** I can make informed strategic decisions.
+> **作为**高管，**我想要**找到业务战略框架、行业情报和组织规划指南，**以便**做出明智的战略决策。
 >
-> Executiver provides BUSINESS context. It does not define product strategy (→ [producter/](../producter/)), make technical decisions (→ [leader/](../leader/)), or implement anything (→ [engineer/](../engineer/)).
+> Executiver 提供业务上下文。Executiver 不定义产品战略（→ [producter/](../producter/)）、不做技术决策（→ [leader/](../leader/)）、不实施任何东西（→ [engineer/](../engineer/)）。
 
 ## Pipeline chip contract
 
 | Chip | Type | Description | Knowledge area |
 |---|---|---|---|
-| `market-intel` | Output → | Market trends, competitor landscape, industry reports | [industry/](./industry/) |
-| `org-strategy` | Output → | Business strategy frameworks, org design, competitive positioning | [strategy/](./strategy/) |
-| `reading-list` | Output → | Curated executive readings with distilled insights | [reading-list/](./reading-list/) |
+| `market-intel` | Output → | 市场趋势、竞争格局、行业报告 | [industry/](./industry/) |
+| `org-strategy` | Output → | 业务战略框架、组织设计、竞争定位 | [strategy/](./strategy/) |
+| `reading-list` | Output → | 精选高管阅读材料及提炼洞察 | [reading-list/](./reading-list/) |
 
-## Scope
+## 范围
 
-### In scope (executiver OWNS)
+### 范围内（executiver 负责）
 
-**`market-intel` chip:**
-- Market trend analysis and semi-annual retrospectives → [industry/market-trends/](./industry/market-trends/)
-- Competitor analysis and landscape mapping → [industry/competitors/](./industry/competitors/)
-- Third-party industry report summaries (Gartner, McKinsey, a16z, CAICT, IDC) → [industry/reports/](./industry/reports/)
+**`market-intel` 芯片：**
+- 市场趋势分析和半年度回顾 → [industry/market-trends/](./industry/market-trends/)
+- 竞争对手分析和格局地图 → [industry/competitors/](./industry/competitors/)
+- 第三方行业报告摘要（Gartner、McKinsey、a16z、CAICT、IDC） → [industry/reports/](./industry/reports/)
 
-**`org-strategy` chip:**
-- Business and corporate strategy frameworks (Porter, Blue Ocean, VRIO, SWOT) → [strategy/](./strategy/)
-- Business model design and value proposition → [strategy/business-model-canvas.md](./strategy/business-model-canvas.md)
-- Organizational roadmap and strategic planning (annual, quarterly, OKR) → [roadmap/](./roadmap/)
-- Headcount and budget planning → [roadmap/headcount-budget-planning.md](./roadmap/headcount-budget-planning.md)
-- Regulatory compliance and data retention strategy → [strategy/handle-a-regulatory-change.md](./strategy/handle-a-regulatory-change.md)
+**`org-strategy` 芯片：**
+- 业务和企业战略框架（Porter、Blue Ocean、VRIO、SWOT） → [strategy/](./strategy/)
+- 商业模式设计和价值主张 → [strategy/business-model-canvas.md](./strategy/business-model-canvas.md)
+- 组织路线图和战略规划（年度、季度、OKR） → [roadmap/](./roadmap/)
+- 人员编制和预算规划 → [roadmap/headcount-budget-planning.md](./roadmap/headcount-budget-planning.md)
+- 监管合规和数据留存策略 → [strategy/handle-a-regulatory-change.md](./strategy/handle-a-regulatory-change.md)
 
-**`reading-list` chip:**
-- Monthly curated reading list with rolling updates → [reading-list/reading-list.md](./reading-list/reading-list.md)
-- Executive book notes with actionable takeaways → [reading-list/reading-note-high-output-management.md](./reading-list/reading-note-high-output-management.md)
+**`reading-list` 芯片：**
+- 月度精选阅读清单，滚动更新 → [reading-list/reading-list.md](./reading-list/reading-list.md)
+- 高管读书笔记，含可操作收获 → [reading-list/reading-note-high-output-management.md](./reading-list/reading-note-high-output-management.md)
 
-### Out of scope (delegated to other roles)
+### 范围外（委托给其他角色）
 
-- Product strategy and positioning → **[producter/strategy/](../producter/strategy/)**
-- Product roadmap (what features when) → **[producter/strategy/](../producter/strategy/)**
-- Technical roadmap (what tech when) → **[leader/roadmap/](../leader/roadmap/)**
-- PM frameworks and discovery tools → **[producter/](../producter/)**
-- Architecture decisions → **[leader/decisions/](../leader/decisions/)**
-- Implementation patterns → **[engineer/](../engineer/)**
-- Incident response → **[srer/](../srer/)**
-- KB governance → **[curator/](../curator/)**
+- 产品战略和定位 → **[producter/strategy/](../producter/strategy/)**
+- 产品路线图（什么功能何时上线） → **[producter/strategy/](../producter/strategy/)**
+- 技术路线图（什么技术何时采用） → **[leader/roadmap/](../leader/roadmap/)**
+- PM 框架和发现工具 → **[producter/](../producter/)**
+- 架构决策 → **[leader/decisions/](../leader/decisions/)**
+- 实现模式 → **[engineer/](../engineer/)**
+- 事故响应 → **[srer/](../srer/)**
+- 知识库治理 → **[curator/](../curator/)**
 
-## Decision rules for boundary cases
+## 边界情况决策规则
 
-| When content involves... | Route to | Because |
+| 当内容涉及... | Route to | Because |
 |---|---|---|
-| Market trend analysis | [executiver/industry/](./industry/) | Business intelligence |
-| Product competitive analysis | [producter/strategy/](../producter/strategy/) | Product-level analysis |
-| Corporate strategy framework | [executiver/strategy/](./strategy/) | Business strategy |
-| Product positioning strategy | [producter/strategy/](../producter/strategy/) | Product strategy |
-| Organizational roadmap (business goals) | [executiver/roadmap/](./roadmap/) | Business planning |
-| Technical roadmap (tech milestones) | [leader/roadmap/](../leader/roadmap/) | Technical planning |
-| Industry report summary | [executiver/industry/reports/](./industry/reports/) | Business intelligence |
-| Competitor feature comparison | [producter/strategy/](../producter/strategy/) | Product analysis |
-| Org structure and team topology | [executiver/strategy/](./strategy/) | Organizational design |
-| Team workflow and process | [engineer/run/](../engineer/run/) | Engineering operations |
-| Regulatory compliance strategy | [executiver/strategy/](./strategy/) | Business risk management |
-| Data compliance implementation | [engineer/quality/](../engineer/quality/) | Engineering execution |
-| Budget and headcount planning | [executiver/roadmap/](./roadmap/) | Business planning |
-| Hiring and team growth | [leader/roadmap/](../leader/roadmap/) | Technical leadership |
+| 市场趋势分析 | [executiver/industry/](./industry/) | 业务情报 |
+| 产品竞争分析 | [producter/strategy/](../producter/strategy/) | 产品级分析 |
+| 企业战略框架 | [executiver/strategy/](./strategy/) | 业务战略 |
+| 产品定位策略 | [producter/strategy/](../producter/strategy/) | 产品战略 |
+| 组织路线图（业务目标） | [executiver/roadmap/](./roadmap/) | 业务规划 |
+| 技术路线图（技术里程碑） | [leader/roadmap/](../leader/roadmap/) | 技术规划 |
+| 行业报告摘要 | [executiver/industry/reports/](./industry/reports/) | 业务情报 |
+| 竞争对手功能对比 | [producter/strategy/](../producter/strategy/) | 产品分析 |
+| 组织结构和团队拓扑 | [executiver/strategy/](./strategy/) | 组织设计 |
+| 团队工作流和流程 | [engineer/run/](../engineer/run/) | 工程运营 |
+| 监管合规策略 | [executiver/strategy/](./strategy/) | 业务风险管理 |
+| 数据合规实施 | [engineer/quality/](../engineer/quality/) | 工程执行 |
+| 预算和人员编制规划 | [executiver/roadmap/](./roadmap/) | 业务规划 |
+| 招聘和团队增长 | [leader/roadmap/](../leader/roadmap/) | 技术领导力 |
 
-## Domains
+## 领域
 
 | Domain | Solves | Content |
 |---|---|---|
-| [strategy/](./strategy/) | How do I define and communicate business strategy? | 14 files: strategy frameworks (Porter, Blue Ocean, VRIO, SWOT), business model canvas, value proposition, product strategy instances, regulatory compliance |
-| [industry/](./industry/) | What's happening in the market and with competitors? | 19 files: competitor analysis (LLM vendors, SaaS, regional), market trends (H1 retrospective, emerging sectors), industry reports (Gartner, McKinsey, a16z, CAICT, IDC) |
-| [roadmap/](./roadmap/) | What's our organizational plan and direction? | 5 files: annual strategic planning, quarterly business review, OKR tracking, headcount/budget planning |
-| [reading-list/](./reading-list/) | What should I read to stay informed? | 4 files: monthly reading list, reading notes, book summaries |
-| [./okr/2026-Q3/](./okr/2026-Q3/) | What are our Q3 goals and metrics? | 14 files: 3 goals, 5 metrics, 11 KR evidence files |
+| [strategy/](./strategy/) | 如何定义和传达业务战略？ | 14 个文件：战略框架（Porter、Blue Ocean、VRIO、SWOT）、商业模式画布、价值主张、产品战略实例、监管合规 |
+| [industry/](./industry/) | 市场和竞争对手在发生什么？ | 19 个文件：竞争对手分析（LLM 供应商、SaaS、区域）、市场趋势（H1 回顾、新兴领域）、行业报告（Gartner、McKinsey、a16z、CAICT、IDC） |
+| [roadmap/](./roadmap/) | 我们的组织规划和发展方向是什么？ | 5 个文件：年度战略规划、季度业务评审、OKR 追踪、人员编制/预算规划 |
+| [reading-list/](./reading-list/) | 我应该读什么来保持信息灵通？ | 4 个文件：月度阅读清单、读书笔记、书籍摘要 |
+| [./okr/2026-Q3/](./okr/2026-Q3/) | 我们的 Q3 目标和指标是什么？ | 14 个文件：3 个目标、5 个指标、11 个 KR 证据文件 |
 
-## Quick reference
+## 快速参考
 
-### Strategy frameworks
+### 战略框架
 
-| I want to... | Go to |
+| 我想要... | 去这里 |
 |---|---|
-| Define product strategy | [strategy/product-strategy-framework.md](./strategy/product-strategy-framework.md) |
-| Design a business model | [strategy/business-model-canvas.md](./strategy/business-model-canvas.md) |
-| Analyze competitive forces | [strategy/porter-five-forces.md](./strategy/porter-five-forces.md) |
-| Find blue ocean opportunities | [strategy/blue-ocean.md](./strategy/blue-ocean.md) |
-| Assess internal capabilities (VRIO) | [strategy/vrio-framework.md](./strategy/vrio-framework.md) |
-| Run a SWOT analysis | [strategy/swot-analysis.md](./strategy/swot-analysis.md) |
-| Map customer value | [strategy/value-proposition-canvas.md](./strategy/value-proposition-canvas.md) |
-| Plan second-curve growth | [strategy/second-curve.md](./strategy/second-curve.md) |
-| Design a product roadmap (Now/Next/Later) | [strategy/now-next-later-roadmap.md](./strategy/now-next-later-roadmap.md) |
-| See our AI platform strategy instance | [strategy/product-strategy-instance.md](./strategy/product-strategy-instance.md) |
+| 定义产品战略 | [strategy/product-strategy-framework.md](./strategy/product-strategy-framework.md) |
+| 设计商业模式 | [strategy/business-model-canvas.md](./strategy/business-model-canvas.md) |
+| 分析竞争力量 | [strategy/porter-five-forces.md](./strategy/porter-five-forces.md) |
+| 发现蓝海机会 | [strategy/blue-ocean.md](./strategy/blue-ocean.md) |
+| 评估内部能力（VRIO） | [strategy/vrio-framework.md](./strategy/vrio-framework.md) |
+| 进行 SWOT 分析 | [strategy/swot-analysis.md](./strategy/swot-analysis.md) |
+| 绘制客户价值 | [strategy/value-proposition-canvas.md](./strategy/value-proposition-canvas.md) |
+| 规划第二曲线增长 | [strategy/second-curve.md](./strategy/second-curve.md) |
+| 设计产品路线图（Now/Next/Later） | [strategy/now-next-later-roadmap.md](./strategy/now-next-later-roadmap.md) |
+| 查看我们的 AI 平台战略实例 | [strategy/product-strategy-instance.md](./strategy/product-strategy-instance.md) |
 
-### Industry intelligence
+### 行业情报
 
-| I want to... | Go to |
+| 我想要... | 去这里 |
 |---|---|
-| Analyze competitors | [industry/competitors/competitor-analysis.md](./industry/competitors/competitor-analysis.md) |
-| Map LLM vendor landscape | [industry/competitors/llm-vendor-landscape.md](./industry/competitors/llm-vendor-landscape.md) |
-| Track SaaS top players | [industry/competitors/saas-top-players.md](./industry/competitors/saas-top-players.md) |
-| Review regional competitors | [industry/competitors/regional-competitors.md](./industry/competitors/regional-competitors.md) |
-| Analyze AI BRD competitors | [industry/competitors/ai-brd-competitors.md](./industry/competitors/ai-brd-competitors.md) |
-| Read H1 2026 AI market trends | [industry/market-trends/ai-market-trend-first-half.md](./industry/market-trends/ai-market-trend-first-half.md) |
-| Run a half-year retrospective | [industry/market-trends/half-year-retrospective.md](./industry/market-trends/half-year-retrospective.md) |
-| Track emerging sectors | [industry/market-trends/emerging-sector-tracking.md](./industry/market-trends/emerging-sector-tracking.md) |
-| Observe regional markets | [industry/market-trends/regional-market-observation.md](./industry/market-trends/regional-market-observation.md) |
-| Read Gartner AI Hype Cycle | [industry/reports/gartner-ai-hype-cycle.md](./industry/reports/gartner-ai-hype-cycle.md) |
-| Read McKinsey AI report | [industry/reports/mckinsey-ai-report.md](./industry/reports/mckinsey-ai-report.md) |
-| Read a16z AI outlook | [industry/reports/a16z-ai-outlook.md](./industry/reports/a16z-ai-outlook.md) |
-| Read CAICT AI whitepaper | [industry/reports/caict-ai-whitepaper.md](./industry/reports/caict-ai-whitepaper.md) |
-| Read IDC customer service report | [industry/reports/idc-customer-service.md](./industry/reports/idc-customer-service.md) |
-| Read AI industry report | [industry/reports/ai-industry-report.md](./industry/reports/ai-industry-report.md) |
+| 分析竞争对手 | [industry/competitors/competitor-analysis.md](./industry/competitors/competitor-analysis.md) |
+| 绘制 LLM 供应商格局 | [industry/competitors/llm-vendor-landscape.md](./industry/competitors/llm-vendor-landscape.md) |
+| 追踪 SaaS 头部玩家 | [industry/competitors/saas-top-players.md](./industry/competitors/saas-top-players.md) |
+| 查看区域竞争对手 | [industry/competitors/regional-competitors.md](./industry/competitors/regional-competitors.md) |
+| 分析 AI BRD 竞品 | [industry/competitors/ai-brd-competitors.md](./industry/competitors/ai-brd-competitors.md) |
+| 阅读 2026 年上半年 AI 市场趋势 | [industry/market-trends/ai-market-trend-first-half.md](./industry/market-trends/ai-market-trend-first-half.md) |
+| 进行半年度回顾 | [industry/market-trends/half-year-retrospective.md](./industry/market-trends/half-year-retrospective.md) |
+| 追踪新兴领域 | [industry/market-trends/emerging-sector-tracking.md](./industry/market-trends/emerging-sector-tracking.md) |
+| 观察区域市场 | [industry/market-trends/regional-market-observation.md](./industry/market-trends/regional-market-observation.md) |
+| 阅读 Gartner AI 技术成熟度曲线 | [industry/reports/gartner-ai-hype-cycle.md](./industry/reports/gartner-ai-hype-cycle.md) |
+| 阅读 McKinsey AI 报告 | [industry/reports/mckinsey-ai-report.md](./industry/reports/mckinsey-ai-report.md) |
+| 阅读 a16z AI 展望 | [industry/reports/a16z-ai-outlook.md](./industry/reports/a16z-ai-outlook.md) |
+| 阅读 CAICT AI 白皮书 | [industry/reports/caict-ai-whitepaper.md](./industry/reports/caict-ai-whitepaper.md) |
+| 阅读 IDC 客服报告 | [industry/reports/idc-customer-service.md](./industry/reports/idc-customer-service.md) |
+| 阅读 AI 行业报告 | [industry/reports/ai-industry-report.md](./industry/reports/ai-industry-report.md) |
 
-### Organizational planning
+### 组织规划
 
-| I want to... | Go to |
+| 我想要... | 去这里 |
 |---|---|
-| Run annual strategic planning | [roadmap/annual-strategic-planning.md](./roadmap/annual-strategic-planning.md) |
-| Run a quarterly business review | [roadmap/quarterly-business-review.md](./roadmap/quarterly-business-review.md) |
-| Set up org-level OKR tracking | [roadmap/org-okr-tracking.md](./roadmap/org-okr-tracking.md) |
-| Plan headcount and budget | [roadmap/headcount-budget-planning.md](./roadmap/headcount-budget-planning.md) |
+| 进行年度战略规划 | [roadmap/annual-strategic-planning.md](./roadmap/annual-strategic-planning.md) |
+| 进行季度业务评审 | [roadmap/quarterly-business-review.md](./roadmap/quarterly-business-review.md) |
+| 建立组织级 OKR 追踪 | [roadmap/org-okr-tracking.md](./roadmap/org-okr-tracking.md) |
+| 规划人员编制和预算 | [roadmap/headcount-budget-planning.md](./roadmap/headcount-budget-planning.md) |
 
-### Learning resources
+### 学习资源
 
-| I want to... | Go to |
+| 我想要... | 去这里 |
 |---|---|
-| Browse the monthly reading list | [reading-list/reading-list.md](./reading-list/reading-list.md) |
-| Use the reading notes template | [reading-list/reading-notes.md](./reading-list/reading-notes.md) |
-| Read High Output Management notes | [reading-list/reading-note-high-output-management.md](./reading-list/reading-note-high-output-management.md) |
+| 浏览月度阅读清单 | [reading-list/reading-list.md](./reading-list/reading-list.md) |
+| 使用读书笔记模板 | [reading-list/reading-notes.md](./reading-list/reading-notes.md) |
+| 阅读《High Output Management》笔记 | [reading-list/reading-note-high-output-management.md](./reading-list/reading-note-high-output-management.md) |
 
-### Compliance & risk
+### 合规与风险
 
-| I want to... | Go to |
+| 我想要... | 去这里 |
 |---|---|
-| Handle a regulatory change | [strategy/handle-a-regulatory-change.md](./strategy/handle-a-regulatory-change.md) |
-| Plan data compliance strategy | [strategy/handle-data-compliance.md](./strategy/handle-data-compliance.md) |
-| Run a data retention review | [strategy/do-a-data-retention-review.md](./strategy/do-a-data-retention-review.md) |
+| 处理监管变更 | [strategy/handle-a-regulatory-change.md](./strategy/handle-a-regulatory-change.md) |
+| 规划数据合规策略 | [strategy/handle-data-compliance.md](./strategy/handle-data-compliance.md) |
+| 进行数据留存审查 | [strategy/do-a-data-retention-review.md](./strategy/do-a-data-retention-review.md) |
 
-## Cross-references
+## 交叉引用
 
-### Delegated to other roles
-- [../producter/strategy/](../producter/strategy/) — Product strategy and competitive positioning
-- [../leader/roadmap/](../leader/roadmap/) — Technical roadmap and engineering planning
-- [../leader/decisions/](../leader/decisions/) — Architecture decisions
-- [../engineer/](../engineer/) — Implementation and engineering practices
-- [../srer/](../srer/) — Incident response and operational excellence
+### 委托给其他角色
+- [../producter/strategy/](../producter/strategy/) — 产品战略和竞争定位
+- [../leader/roadmap/](../leader/roadmap/) — 技术路线图和工程规划
+- [../leader/decisions/](../leader/decisions/) — 架构决策
+- [../engineer/](../engineer/) — 实施和工程实践
+- [../srer/](../srer/) — 事故响应和运维卓越
 
-### Scenario entries (other roles → executiver)
-- [../engineer/run/understand-competitors.md](../engineer/run/understand-competitors.md) — Engineers learning competitor analysis
-- [../aier/ml/find-ai-deployment-cases.md](../aier/ml/find-ai-deployment-cases.md) — AI engineers finding deployment cases
-- [../curator/diagrams/knowledge-map.md](../curator/diagrams/knowledge-map.md) — Knowledge map of the entire library
+### 场景入口（其他角色 → executiver）
+- [../engineer/run/understand-competitors.md](../engineer/run/understand-competitors.md) — 工程师学习竞争对手分析
+- [../aier/机器学习/find-ai-deployment-cases.md](../aier/机器学习/find-ai-deployment-cases.md) — AI 工程师寻找部署案例
+- [../curator/diagrams/knowledge-map.md](../curator/diagrams/knowledge-map.md) — 整个知识库的知识地图
 
-### Governance
-- [../curator/governance/inbox.md](../curator/governance/inbox.md) — New content enters via inbox before categorization
-- [../MEMORY.md](../MEMORY.md) — Library-wide archiving principles and YAML spec
+### 治理
+- [../curator/治理/inbox.md](../curator/治理/inbox.md) — 新内容通过 inbox 进入后再分类
+- [../MEMORY.md](../MEMORY.md) — 知识库全局归档原则和 YAML 规范
 
 ## Pipeline flow
 
@@ -198,15 +198,15 @@ engineer/ (Stage 3: Design+Build)
 srer/ (Stage 4+5: Quality+Release + Operate+Learn)
 ```
 
-### Key cross-stage links
-- [business-model-canvas.md](./strategy/business-model-canvas.md) → [../producter/discovery/write-a-prd.md](../producter/discovery/write-a-prd.md) — Strategy feeds into PRDs
-- [product-strategy-framework.md](./strategy/product-strategy-framework.md) → [../producter/strategy/ai-customer-service-cases.md](../producter/strategy/ai-customer-service-cases.md) — Strategy drives product cases
-- [competitor-analysis.md](./industry/competitors/competitor-analysis.md) → [../leader/architecture/tl-tech-selection-llm-provider.md](../leader/architecture/tl-tech-selection-llm-provider.md) — Market intel informs tech selection
-- [org-okr-tracking.md](./roadmap/org-okr-tracking.md) → [../leader/roadmap/define-an-slo.md](../leader/roadmap/define-an-slo.md) — Business OKRs cascade to technical SLOs
-- [headcount-budget-planning.md](./roadmap/headcount-budget-planning.md) → [../leader/capacity/run-a-finops-review.md](../leader/capacity/run-a-finops-review.md) — Budget planning drives FinOps
+### 关键跨阶段链接
+- [business-model-canvas.md](./strategy/business-model-canvas.md) → [../producter/discovery/write-a-prd.md](../producter/discovery/write-a-prd.md) — 战略输入到 PRD
+- [product-strategy-framework.md](./strategy/product-strategy-framework.md) → [../producter/strategy/ai-customer-service-cases.md](../producter/strategy/ai-customer-service-cases.md) — 战略驱动产品案例
+- [competitor-analysis.md](./industry/competitors/competitor-analysis.md) → [../leader/架构/tl-tech-selection-llm-provider.md](../leader/架构/tl-tech-selection-llm-provider.md) — 市场情报影响技术选型
+- [org-okr-tracking.md](./roadmap/org-okr-tracking.md) → [../leader/roadmap/define-an-slo.md](../leader/roadmap/define-an-slo.md) — 业务 OKR 级联到技术 SLO
+- [headcount-budget-planning.md](./roadmap/headcount-budget-planning.md) → [../leader/capacity/run-a-finops-review.md](../leader/capacity/run-a-finops-review.md) — 预算规划驱动 FinOps
 
-## Maintenance
+## 维护
 
-- **Monthly**: scan [industry/](./industry/) `last_verified` timestamps; entries older than 6 months → mark `status: deprecated`
-- **Quarterly**: review all strategy frameworks for relevance; update [reading-list](./reading-list/) with new publications
-- **Semi-annual**: run [half-year-retrospective.md](./industry/market-trends/half-year-retrospective.md) and archive stale market observations
+- **每月**：扫描 [industry/](./industry/) 的 `last_verified` 时间戳；超过 6 个月的条目 → 标记 `status: deprecated`
+- **每季度**：审查所有战略框架的相关性；用新出版物更新 [reading-list](./reading-list/)
+- **每半年**：执行 [half-year-retrospective.md](./industry/market-trends/half-year-retrospective.md) 并归档过时的市场观察

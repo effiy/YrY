@@ -20,7 +20,7 @@ related:
   - ./README.md
   - ./user-journey.md
   - ./directory-blueprint.md
-  - ../governance/governance.md
+  - ../治理/governance.md
 ---
 
 # Knowledge Map — What Knowledge Exists
@@ -48,7 +48,7 @@ related:
 | YiAi agent loop internals | Ruiyi | High | Agent bugs take days to fix | Documented in CLAUDE.md recent changes |
 | YiVad ProTable patterns | Ruiyi | Medium | New YiVad features take longer | Partially documented in engineer/ |
 | YiPet dual-world injection | Ruiyi | High | MV3 boundary bugs unexplained | Documented in YiPet CLAUDE.md |
-| Ollama model selection rationale | Ruiyi | Medium | Wrong model chosen for new features | Partially in aier/platform/ |
+| Ollama model selection rationale | Ruiyi | Medium | Wrong model chosen for new features | Partially in aier/平台/ |
 | MongoDB schema design | Ruiyi | Medium | Schema changes cause regressions | In code (models/) but not reasoned about |
 
 ## Knowledge Gaps (identified but not yet documented)

@@ -12,10 +12,10 @@ lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [aier]
-benefit: "AI engineers find AI-specific knowledge: foundations, methodology, platform, and ML"
+benefit: "AI 工程师查找 AI 专属知识：基础、方法、平台和 ML"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "cross-references to related leaves and parent INDEX are present"
+  - "叶子目录的范围有清晰边界"
+  - "存在到相关叶子和父级 INDEX 的交叉引用"
 related:
   - ./INDEX.md
   - ../INDEX.md
@@ -23,52 +23,52 @@ related:
 
 # AI Engineer
 
-> **Pipeline layer: AI Enablement (cross-cutting)** — Accelerates every pipeline stage with AI-specific knowledge.
+> **流水线层：AI 赋能（跨领域）** — 用 AI 专属知识加速每个流水线阶段。
 >
-> **As an** AI engineer, **I want to** navigate AI foundations, methodology, platform, and ML resources, **so that** I can build effective AI systems.
+> **作为** AI 工程师，**我希望**浏览 AI 基础、方法、平台和 ML 资源，**以便**构建高效的 AI 系统。
 >
-> Aier is AI-specific. It does not cover general software engineering (→ [engineer/](../engineer/)), architecture decisions (→ [leader/](../leader/)), or production operations (→ [srer/](../srer/)).
+> Aier 是 AI 专属的。不覆盖通用软件工程（→ [engineer/](../engineer/)）、架构决策（→ [leader/](../leader/)）或生产运维（→ [srer/](../srer/)）。
 
-## Subdirectories
+## 子目录
 
-| Domain | Content |
+| 域 | 内容 |
 |---|---|
-| [foundations/](./foundations/) | AI/ML theory: transformers, attention, MoE, RLHF, quantization |
-| [methodology/](./methodology/) | Prompt engineering, RAG patterns, agent architecture, evaluation, safety |
-| [methodology/prompts/](./methodology/prompts/) | Prompt templates: agent tool use, code review, SQL generation |
-| [platform/](./platform/) | AI platform: LLM comparison, inference engines, vector DBs, AI gateway |
-| [ml/](./ml/) | ML ops: model deployment, evaluation infrastructure |
+| [基础/](./基础/) | AI/ML 理论：transformer、attention、MoE、RLHF、量化 |
+| [方法/](./方法/) | 提示词工程、RAG 模式、Agent 架构、评估、安全 |
+| [方法/提示词/](./方法/提示词/) | 提示词模板：Agent 工具调用、代码审查、SQL 生成 |
+| [平台/](./平台/) | AI 平台：LLM 对比、推理引擎、向量数据库、AI 网关 |
+| [机器学习/](./机器学习/) | ML 运维：模型部署、评估基础设施 |
 
-## Core viewpoints
+## 核心观点
 
-- **AI knowledge is cross-cutting, not a pipeline stage** — aier accelerates every stage; it doesn't sit between stages
-- **Theory informs practice** — foundations (Transformer, Attention, MoE) underpin methodology (RAG, agents) and platform choices
-- **Evaluation is the production gate** — two-loop eval (auto + human) is mandatory before any AI feature reaches production
-- **Prompts are code** — prompt templates live in version control, follow the same review cycle as code
-- **Platform decisions are revisited quarterly** — LLM providers, inference engines, and vector DBs evolve fast
+- **AI 知识是跨领域的，不是流水线阶段** — aier 加速每个阶段，不处于阶段之间
+- **理论指导实践** — 基础（Transformer、Attention、MoE）支撑方法（RAG、Agent）和平台选择
+- **评估是生产环境守门人** — 任何 AI 功能上线前必须通过双循环评估（自动 + 人工）
+- **提示词即代码** — 提示词模板存放在版本控制中，遵循与代码相同的评审周期
+- **平台决策每季度重审** — LLM 提供商、推理引擎和向量数据库演进迅速
 
-## Scope
+## 范围
 
-### In scope (aier OWNS)
-- AI/ML theory and model architecture
-- Prompt engineering and prompt templates
-- RAG design patterns and architectures
-- Agent architecture and tool-use patterns
-- LLM evaluation methodology and red-teaming
-- AI platform and inference infrastructure
-- ML ops and model deployment
+### 在范围内（aier 拥有）
+- AI/ML 理论和模型架构
+- 提示词工程和提示词模板
+- RAG 设计模式和架构
+- Agent 架构和工具使用模式
+- LLM 评估方法论和红队测试
+- AI 平台和推理基础设施
+- ML 运维和模型部署
 
-### Out of scope (delegated to other roles)
-- General database design and migrations → [engineer/ship/](../engineer/ship/)
-- General API design and system architecture → [engineer/build/](../engineer/build/)
-- AI product requirements → [producter/discovery/](../producter/discovery/)
-- AI architecture decisions (ADRs) → [leader/decisions/](../leader/decisions/)
-- AI service incident response → [srer/incident-response/](../srer/incident-response/)
-- General code quality and testing → [engineer/ship/](../engineer/ship/)
+### 超出范围（委托给其他角色）
+- 通用数据库设计和迁移 → [engineer/ship/](../engineer/ship/)
+- 通用 API 设计和系统架构 → [engineer/build/](../engineer/build/)
+- AI 产品需求 → [producter/discovery/](../producter/discovery/)
+- AI 架构决策（ADR） → [leader/decisions/](../leader/decisions/)
+- AI 服务事件响应 → [srer/incident-response/](../srer/incident-response/)
+- 通用代码质量和测试 → [engineer/ship/](../engineer/ship/)
 
-## Cross-role references
+## 跨角色引用
 
-- [INDEX.md](./INDEX.md) — Full file listing for this category
-- [../engineer/build/](../engineer/build/) — Engineering tools and patterns
-- [../leader/decisions/yiai/](../leader/decisions/yiai/) — YiAi ADRs
-- [../srer/observability/](../srer/observability/) — Production observability
+- [INDEX.md](./INDEX.md) — 此分类的完整文件列表
+- [../engineer/build/](../engineer/build/) — 工程工具和模式
+- [../leader/decisions/yiai/](../leader/decisions/yiai/) — YiAi ADR
+- [../srer/observability/](../srer/observability/) — 生产可观测性

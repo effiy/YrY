@@ -19,8 +19,8 @@ acceptance_criteria:
 related:
   - ./README.md
   - ./knowledge-map.md
-  - ../governance/governance.md
-  - ../governance/readiness-checklist.md
+  - ../治理/governance.md
+  - ../治理/readiness-checklist.md
 ---
 
 # Knowledge Dashboard Index
@@ -37,7 +37,7 @@ related:
 | srer/ files | 20 | 8 | ↑↑ | 25-30 |
 | aier/ files | 26 | 12 | ↑↑ | 25-30 |
 | Templates (curator/templates/) | 11 | 0 | ↑↑ | 11-15 |
-| Prompt templates (aier/prompts/) | 8 | 0 | ↑↑ | 8-12 |
+| Prompt templates (aier/提示词/) | 8 | 0 | ↑↑ | 8-12 |
 
 **Status:** All role directories are above minimum thresholds. Growth is healthy.
 
@@ -88,8 +88,8 @@ done
 | API design | ✓ Covered | engineer/build/implement-an-api.md | — |
 | RPC protocol | ✓ Covered | engineer/build/implement-cross-project-rpc-call.md | — |
 | SSE streaming | ✓ Covered | engineer/build/implement-sse-streaming.md | — |
-| RAG patterns | ✓ Covered | aier/foundations/rag-patterns.md | — |
-| Agent architecture | ✓ Covered | aier/methodology/agent-architecture-patterns.md | — |
+| RAG patterns | ✓ Covered | aier/基础/RAG设计模式.md | — |
+| Agent architecture | ✓ Covered | aier/方法/智能体架构模式.md | — |
 | Incident response | ✓ Covered | srer/incident-response/ | — |
 | Observability | ✓ Covered | srer/observability/ | — |
 | Release management | ✓ Covered | srer/release/ | — |

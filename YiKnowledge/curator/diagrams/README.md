@@ -18,26 +18,26 @@ acceptance_criteria:
   - "Diagrams updated quarterly or after structural changes"
 related:
   - ../INDEX.md
-  - ../governance/governance.md
+  - ../治理/governance.md
   - ../../INDEX.md
 ---
 
-# Knowledge Curator — Diagrams
+# Knowledge Curator — 图表
 
-> **As a** knowledge curator, **I want to** maintain the 4 canonical diagrams, **so that** the knowledge base topology and health are always visible.
+> **作为**知识 curator，**我希望**维护 4 张规范图，**以便**知识库的拓扑和健康状况始终可见。
 
-## The 4 diagrams
+## 4 张图
 
-Draw these 4 diagrams before extending the knowledge base:
+在扩展知识库之前绘制这 4 张图：
 
-| Diagram | File | Question answered |
+| 图 | 文件 | 回答的问题 |
 |---|---|---|
-| Knowledge map | [knowledge-map.md](./knowledge-map.md) | What knowledge exists? Explicit vs. tacit? Holders and consumers? |
-| User-journey map | [user-journey.md](./user-journey.md) | Where is the knowledge? How does it flow? Where are the breakpoints? |
-| Directory blueprint | [directory-blueprint.md](./directory-blueprint.md) | How do users find things at a glance? Role × problem domain, max 3 levels |
-| Dashboard index | [dashboard-index.md](./dashboard-index.md) | What dashboards exist? Where are they? |
+| 知识地图 | [knowledge-map.md](./knowledge-map.md) | 存在哪些知识？显性 vs 隐性？持有者和消费者？ |
+| 用户旅程图 | [user-journey.md](./user-journey.md) | 知识在哪里？如何流动？断点在哪里？ |
+| 目录蓝图 | [directory-blueprint.md](./directory-blueprint.md) | 用户如何一目了然地找到东西？角色 × 问题域，最多 3 层 |
+| 仪表盘索引 | [dashboard-index.md](./dashboard-index.md) | 存在哪些仪表盘？它们在哪里？ |
 
-## Cross-references
+## 交叉引用
 
-- [../governance/governance.md](../governance/governance.md) — Governance flow (the 4th diagram in the original set)
-- [../../INDEX.md](../../INDEX.md) — Full-library TOC
+- [../治理/governance.md](../治理/governance.md) — 治理流程（原始集合中的第 4 张图）
+- [../../INDEX.md](../../INDEX.md) — 全库目录

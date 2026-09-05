@@ -61,11 +61,11 @@ Subtle pitfalls that caused real bugs. **Hard requirement**: add within 24h of h
 
 ## Bugs (缺陷分析)
 
-Detailed bug analyses with root cause and fix.
+Detailed bug analyses with root cause and fix. Bugs are now tracked per-project under `projects/<project>/bugs/`.
 
-| File | Description |
+| Project | Bug tracker |
 |---|---|
-| [bugs/bug_topicdetail_meta_validation_20260801.md](./bugs/bug_topicdetail_meta_validation_20260801.md) | TopicDetail 元数据校验缺陷 |
+| YiVad | [../../../projects/yivad/bugs/](../../../projects/yivad/bugs/) |
 
 ## Cross-references
 

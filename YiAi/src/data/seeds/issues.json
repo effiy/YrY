@@ -63,7 +63,7 @@
     "release_key": "yivad-r2",
     "goal_id": "eng-001",
     "created_at": "2026-08-08T00:00:00.000Z",
-    "updated_at": "2026-08-21T00:00:00.000Z"
+    "updated_at": "2026-08-31T00:00:00.000Z"
   },
   {
     "key": "yivad-4",
@@ -124,6 +124,7 @@
     "due_date": "2026-09-15",
     "estimate_points": 5,
     "source": "internal",
+    "review_status": "pending",
     "cycle_key": "yivad-c1",
     "release_key": "yivad-r2",
     "goal_id": "sre-001",
@@ -463,6 +464,8 @@
     "estimate_points": 8,
     "source": "compliance",
     "review_status": "in_review",
+    "cycle_key": "yivad-c1",
+    "release_key": "yivad-r2",
     "goal_id": "exec-002",
     "created_at": "2026-08-22T00:00:00.000Z",
     "updated_at": "2026-08-22T00:00:00.000Z"
@@ -478,8 +481,11 @@
     "issue_type": "requirement",
     "assignee": "Chengliang Yi",
     "labels": ["requirement", "backend", "security"],
+    "due_date": "2026-09-30",
     "estimate_points": 8,
     "source": "compliance",
+    "review_status": "pending",
+    "cycle_key": "yiai-c1",
     "goal_id": "exec-002",
     "created_at": "2026-08-22T00:00:00.000Z",
     "updated_at": "2026-08-22T00:00:00.000Z"
@@ -495,8 +501,10 @@
     "issue_type": "requirement",
     "assignee": "Chengliang Yi",
     "labels": ["requirement", "security"],
+    "due_date": "2026-09-30",
     "estimate_points": 5,
     "source": "compliance",
+    "cycle_key": "yipet-c1",
     "goal_id": "exec-002",
     "created_at": "2026-08-22T00:00:00.000Z",
     "updated_at": "2026-08-22T00:00:00.000Z"

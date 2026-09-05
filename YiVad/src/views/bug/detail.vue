@@ -48,18 +48,6 @@
               {{ issueTitle(store.selectedBug.issue_key) }}
             </el-button>
           </div>
-          <div class="bug-detail__field" v-if="linkedCycle">
-            <span class="bug-detail__field-label">Cycle</span>
-            <el-button link type="primary" class="bug-detail__field-value" @click="router.push(`/cycle/${linkedCycle.key}`)">
-              <el-icon><Calendar /></el-icon> {{ linkedCycle.name }}
-            </el-button>
-          </div>
-          <div class="bug-detail__field" v-if="linkedRelease">
-            <span class="bug-detail__field-label">Release</span>
-            <el-button link type="success" class="bug-detail__field-value" @click="router.push(`/release/${linkedRelease.key}`)">
-              <el-icon><Box /></el-icon> {{ linkedRelease.version }}
-            </el-button>
-          </div>
           <div class="bug-detail__field" v-if="linkedModule">
             <span class="bug-detail__field-label">Module</span>
             <el-button link type="primary" class="bug-detail__field-value" @click="router.push(`/module/${linkedModule.key}`)">
@@ -115,44 +103,12 @@
             </span>
           </div>
           </div>
-          <div v-if="linkedIssue || linkedCycle || linkedRelease || linkedModule" class="bug-detail__props" style="margin-top: 12px">
+          <div v-if="linkedModule" class="bug-detail__props" style="margin-top: 12px">
             <div class="bug-detail__field">
-              <span class="bug-detail__field-label">Linked Entities</span>
-            </div>
-            <div v-if="linkedIssue" class="bug-detail__field">
-              <div class="bug-detail__link-row">
-                <el-icon><WarningFilled /></el-icon>
-                <el-button link type="warning" class="bug-detail__field-value" @click="goIssue(linkedIssue.key)">
-                  {{ linkedIssue.title }}
-                </el-button>
-                <el-tag :type="linkedIssue.status === 'done' ? 'success' : 'info'" size="small">{{ linkedIssue.status }}</el-tag>
-              </div>
-            </div>
-            <div v-if="linkedCycle" class="bug-detail__field">
-              <div class="bug-detail__link-row">
-                <el-icon><Calendar /></el-icon>
-                <el-button link type="primary" class="bug-detail__field-value" @click="router.push(`/cycle/${linkedCycle.key}`)">
-                  {{ linkedCycle.name }}
-                </el-button>
-                <el-tag :type="linkedCycle.status === 'active' ? 'primary' : 'info'" size="small">{{ linkedCycle.status }}</el-tag>
-              </div>
-            </div>
-            <div v-if="linkedRelease" class="bug-detail__field">
-              <div class="bug-detail__link-row">
-                <el-icon><Box /></el-icon>
-                <el-button link type="success" class="bug-detail__field-value" @click="router.push(`/release/${linkedRelease.key}`)">
-                  {{ linkedRelease.version }}
-                </el-button>
-                <el-tag :type="linkedRelease.status === 'released' ? 'success' : 'info'" size="small">{{ linkedRelease.status }}</el-tag>
-              </div>
-            </div>
-            <div v-if="linkedModule" class="bug-detail__field">
-              <div class="bug-detail__link-row">
-                <el-icon><Grid /></el-icon>
-                <el-button link type="primary" class="bug-detail__field-value" @click="router.push(`/module/${linkedModule.key}`)">
-                  {{ linkedModule.name }}
-                </el-button>
-              </div>
+              <span class="bug-detail__field-label">Module</span>
+              <el-button link type="primary" class="bug-detail__field-value" @click="router.push(`/module/${linkedModule.key}`)">
+                <el-icon><Folder /></el-icon> {{ linkedModule.name }}
+              </el-button>
             </div>
           </div>
         </div>
@@ -216,19 +172,15 @@
 <script setup lang="ts" name="bugDetail">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, Link, WarningFilled, Calendar, Box, Grid } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, Link, WarningFilled, Box, Grid } from "@element-plus/icons-vue";
 import { EntityBreadcrumb } from "@/components";
 import { useBugStore } from "@/stores/modules/bug";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
 import type { BugSeverity, BugPriority, BugStatus } from "@/api/modules/bug";
 import { getIssueList } from "@/api/modules/issueService";
-import { getCycleList } from "@/api/modules/cycleService";
-import { getReleaseList } from "@/api/modules/releaseService";
 import { getModuleList } from "@/api/modules/moduleService";
 import type { Issue } from "@/api/modules/issueService";
-import type { Cycle } from "@/api/modules/cycleService";
-import type { Release } from "@/api/modules/releaseService";
 import type { Module } from "@/api/modules/moduleService";
 
 const route = useRoute();
@@ -243,37 +195,18 @@ const projects = computed(() => projectStore.projects);
 const issues = computed(() => issueStore.issues);
 
 const linkedIssue = ref<Issue | null>(null);
-const linkedCycle = ref<Cycle | null>(null);
-const linkedRelease = ref<Release | null>(null);
 const linkedModule = ref<Module | null>(null);
 
 async function loadLinkedEntities() {
   const bug = store.selectedBug;
   if (!bug?.issue_key) return;
   try {
-    const [issueRes, cycleRes, releaseRes, moduleRes] = await Promise.all([
+    const [issueRes, moduleRes] = await Promise.all([
       getIssueList({ pageSize: 500 }),
-      getCycleList({ pageSize: 200 }),
-      getReleaseList({ pageSize: 200 }),
       getModuleList({ pageSize: 500 })
     ]);
     const allIssues = (issueRes.data?.list as Issue[]) ?? [];
-    const allCycles = (cycleRes.data?.list as Cycle[]) ?? [];
-    const allReleases = (releaseRes.data?.list as Release[]) ?? [];
     const allModules = (moduleRes.data?.list as Module[]) ?? [];
-
-    const issue = allIssues.find(i => i.key === bug.issue_key);
-    if (issue) {
-      linkedIssue.value = issue;
-      if (issue.cycle_key) {
-        linkedCycle.value = allCycles.find(c => c.key === issue.cycle_key) || null;
-      }
-      if (issue.release_key) {
-        linkedRelease.value = allReleases.find(r => r.key === issue.release_key) || null;
-      }
-      // Find module that contains this issue via module.issue_keys
-      linkedModule.value = allModules.find(m => (m.issue_keys || []).includes(issue.key)) || null;
-    }
   } catch { /* best-effort */ }
 }
 

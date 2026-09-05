@@ -112,10 +112,10 @@ YiKnowledge/
 ├── aier/                    # 跨角色层: AI 赋能 (AI Enablement)
 │   ├── README.md
 │   ├── INDEX.md
-│   ├── foundations/         # AI 基础
-│   ├── methodology/         # AI 方法论 (RAG, Agent, Prompt, 评估)
-│   ├── platform/            # AI 平台 (Vector DB, Embedding, LLM)
-│   └── ml/                  # 传统 ML
+│   ├── 基础/         # AI 基础
+│   ├── 方法/         # AI 方法论 (RAG, Agent, Prompt, 评估)
+│   ├── 平台/            # AI 平台 (Vector DB, Embedding, LLM)
+│   └── 机器学习/                  # 传统 ML
 ├── curator/                 # 治理层: 知识库维护 (Knowledge Governance)
 │   ├── README.md
 │   ├── INDEX.md
@@ -357,7 +357,7 @@ rg -L "^tags:" YiKnowledge/**/*.md
 | 知识地图 | [curator/diagrams/knowledge-map.md](../../curator/diagrams/knowledge-map.md) | 有哪些知识？显性 vs 隐性？持有者和消费者？ |
 | 用户旅程图 | [curator/diagrams/user-journey.md](../../curator/diagrams/user-journey.md) | 知识在哪里？如何流动？断点在哪里？ |
 | 目录蓝图 | [curator/diagrams/directory-blueprint.md](../../curator/diagrams/directory-blueprint.md) | 用户如何快速找到内容？ |
-| 治理流程 | [curator/governance/governance.md](../../curator/governance/governance.md) | 谁维护？多频繁？ |
+| 治理流程 | [curator/治理/governance.md](../../curator/治理/governance.md) | 谁维护？多频繁？ |
 
 ---
 
@@ -392,6 +392,6 @@ rag:
 | `README.md` | 知识库概述 + 流水线架构 |
 | `INDEX.md` | 全库导航索引 (7 角色 + 4 领域索引) |
 | `MEMORY.md` | 规则手册 (命名规范, frontmatter 规范, 检索策略) |
-| `curator/governance/readiness-checklist.md` | 就绪检查清单 |
-| `curator/governance/governance.md` | 治理流程 |
+| `curator/治理/readiness-checklist.md` | 就绪检查清单 |
+| `curator/治理/governance.md` | 治理流程 |
 | `curator/templates/` | 文档模板 (PRD, ADR, 复盘) |

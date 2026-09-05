@@ -25,10 +25,10 @@ related:
 | Document | Purpose |
 |---|---|
 | [README.md](./README.md) | Project card — architecture, data flow, domain language, anti-patterns, recent changes |
-| [architecture.md](./architecture.md) | Architecture overview — tech stack, layer boundaries, degradation strategy |
-| [dev-standards.md](./dev-standards.md) | Development standards — coding conventions, ProTable, SSE, RPC field contract |
-| [functional-modules.md](./functional-modules.md) | Module inventory — 20+ view domains, 18 API modules, 11 stores |
-| [pipeline-closed-loop.md](./pipeline-closed-loop.md) | Requirements-to-deployment page flow, data models, stage mapping |
+| [architecture.md](./架构设计.md) | Architecture overview — tech stack, layer boundaries, degradation strategy |
+| [dev-standards.md](./开发规范.md) | Development standards — coding conventions, ProTable, SSE, RPC field contract |
+| [functional-modules.md](./功能模块.md) | Module inventory — 20+ view domains, 18 API modules, 11 stores |
+| [pipeline-closed-loop.md](./流水线闭环.md) | Requirements-to-deployment page flow, data models, stage mapping |
 
 ## Stories
 

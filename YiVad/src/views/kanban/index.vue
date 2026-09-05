@@ -58,12 +58,10 @@
           <KanbanCard
             :item="toKanbanItemSource(element)"
             :project-name="projectName(getProjectKey(element))"
-            :release-name="releaseName(getReleaseKey(element))"
             @click="goDetail(element)"
             @title-click="openPreview(element)"
             @goal-click="goGoal(getGoalId(element))"
             @project-click="goProject(getProjectKey(element))"
-            @release-click="goRelease(getReleaseKey(element))"
             @contextmenu="(e: MouseEvent) => openContextMenu(e, element)"
           />
         </template>
@@ -97,8 +95,6 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { useIssueStore } from "@/stores/modules/issue";
 import { useProjectStore } from "@/stores/modules/project";
 import { useBugStore } from "@/stores/modules/bug";
-import { getReleaseList } from "@/api/modules/releaseService";
-import type { Release } from "@/api/modules/releaseService";
 import {
   getIssueList, updateIssue, deleteIssue,
   ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP
@@ -284,9 +280,6 @@ function isIssue(item: KanbanColumnItem): item is Issue {
 
 function getProjectKey(item: KanbanColumnItem): string {
   return isBug(item) ? (item.project_key || "") : item.project_key;
-}
-function getReleaseKey(item: KanbanColumnItem): string {
-  return isBug(item) ? "" : (item.release_key || "");
 }
 function getGoalId(item: KanbanColumnItem): string {
   return isBug(item) ? "" : (item.goal_id || "");
@@ -572,17 +565,12 @@ function goGoal(goalId: string) {
 }
 
 const projectNameByKey = ref<Map<string, string>>(new Map());
-const releaseNameByKey = ref<Map<string, string>>(new Map());
 function projectName(key: string) { return projectNameByKey.value.get(key) || key; }
-function releaseName(key: string) { return releaseNameByKey.value.get(key) || key; }
 function goProject(key: string) { if (key) router.push(`/project/${key}`); }
-function goRelease(key: string) { if (key) router.push(`/release/${key}`); }
 
 async function loadNames() {
   try {
     projectNameByKey.value = new Map(projectStore.projects.map(p => [p.key, p.name]));
-    const relRes = await getReleaseList({ pageSize: 200 });
-    releaseNameByKey.value = new Map(((relRes.data?.list as Release[]) ?? []).map(r => [r.key, r.version]));
   } catch { /* best-effort */ }
 }
 

@@ -11,11 +11,11 @@ status: stable
 lifecycle: active
 review_cycle: monthly
 roles: [srer, engineer, leader]
-benefit: "SREs and engineers find release procedures, hotfix workflows, and rollback drills in one place"
+benefit: "SRE 和工程师在一个地方找到发布流程、热修复工作流和回滚演练"
 acceptance_criteria:
-  - "Release procedures: standard, canary, hotfix"
-  - "Rollback drill documented"
-  - "Release freeze policy present"
+  - "发布流程：标准、金丝雀、热修复"
+  - "回滚演练已文档化"
+  - "存在发布冻结策略"
 related:
   - ../INDEX.md
   - ../../INDEX.md
@@ -24,20 +24,20 @@ related:
 
 # Release Management
 
-> **As an** oncall SRE, **I want to** find release procedures and rollback workflows, **so that** I can ship safely and recover quickly from bad deployments.
+> **作为** oncall SRE，**我希望**找到发布流程和回滚工作流，**以便**安全上线并从不良部署中快速恢复。
 
-## Release procedures
+## 发布流程
 
-| Procedure | File | Description |
+| 流程 | 文件 | 描述 |
 |---|---|---|
-| Standard release | [release.md](./release.md) | Regular release workflow |
-| Canary release | [canary-release.md](./canary-release.md) | Gradual rollout with traffic shifting |
-| Hotfix release | [hotfix-release.md](./hotfix-release.md) | Emergency fix workflow |
-| Release freeze | [release-freeze.md](./release-freeze.md) | Freeze policy and exceptions |
-| Rollback drill | [rollback-drill.md](./rollback-drill.md) | Scheduled rollback practice |
+| 标准发布 | [release.md](./release.md) | 常规发布工作流 |
+| 金丝雀发布 | [canary-release.md](./canary-release.md) | 带流量切换的渐进式上线 |
+| 热修复发布 | [hotfix-release.md](./hotfix-release.md) | 紧急修复工作流 |
+| 发布冻结 | [release-freeze.md](./release-freeze.md) | 冻结策略和例外 |
+| 回滚演练 | [rollback-drill.md](./rollback-drill.md) | 定期回滚练习 |
 
-## Cross-references
+## 交叉引用
 
-- [../../engineer/infrastructure/](../../engineer/infrastructure/) — CI/CD, feature flags, canary deployment patterns
-- [../../srer/release/release.md](../../srer/release/release.md) — Release shipping process
-- [../incident-response/](../incident-response/) — Incident response procedures
+- [../../engineer/infrastructure/](../../engineer/infrastructure/) — CI/CD、feature flags、金丝雀部署模式
+- [../../srer/release/release.md](../../srer/release/release.md) — 发布上线流程
+- [../incident-response/](../incident-response/) — 事件响应流程

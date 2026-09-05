@@ -24,75 +24,75 @@ related:
   - ../../run/review-lessons.md
 ---
 
-# success case study / Wins
+# 成功案例研究 / Wins
 
-> **As a** engineer, **I want to** understand and apply success case study / wins, **so that** successful outcomes can be reproduced consistently.
+> **作为** engineer，**我希望**理解并应用成功案例研究，**以便**成功结果可以被持续复制。
 
-> Success case studies of product release, technology implementation, and process optimization. Includes reusable experience and quantitative outcomes.
+> 产品发布、技术实施和流程优化的成功案例。包含可复用经验和量化成果。
 
-## Included scope
+## 包含范围
 
-- product release success case studies (with reusable experience)
-- technology implementation success (architecture selection, performance optimization)
-- process optimization success (efficiency improvement, collaboration improvement)
-- quarterly high-value accumulation selection
+- 产品发布成功案例研究（含可复用经验）
+- 技术实施成功案例（架构选型、性能优化）
+- 流程优化成功案例（效率提升、协作改进）
+- 季度高价值积累评选
 
-## file type and naming
+## 文件类型与命名
 
-- `*-win.md`: single-point success case study
-- `*-summary.md`: collection of success case studies on a topic
-- Naming uses English kebab-case
+- `*-win.md`：单点成功案例研究
+- `*-summary.md`：某主题成功案例合集
+- 命名使用英文 kebab-case
 
-## Already included
+## 已包含
 
-| file | content | status |
+| 文件 | 内容 | 状态 |
 |---|---|---|
-| [yivad-aicr-phase-port.md](win-yivad-aicr-phase-port.md) | YiVad aicr 7-stage port methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-brd-agent-launch.md](win-yiai-brd-agent-launch.md) | YiAi BRD agent launch (authoring time -79%)  | active |
-| [yipet-stack-migration-win.md](win-yipet-stack-migration.md) | YiPet stack migration (React 15->18.3 + Bootstrap->AntD + ESLint->Biome; lint -91%)  | active |
-| [yry-vite-to-rsbuild-migration-win.md](win-yry-vite-to-rsbuild-migration.md) | YrY Vite->Rsbuild migration (dev 90s->8s / HMR 12%->0.5%)  | active |
-| [yiai-rag-hybrid-retrieval-win.md](win-yiai-rag-hybrid-retrieval.md) | YiAi RAG hybrid retrieval (QueryFusionRetriever + LLMRerank + inline citation + scope)  | active |
-| [yivad-leaf-view-leaves-ssot-win.md](win-yivad-leaf-view-leaves-ssot.md) | YiVad leaf view layer 28 leaves SSOT methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-supply-chain-hardening-win.md](win-yiai-supply-chain-hardening.md) | YiAi supply-chain hardening methodology (STALE — not landed; reference architecture)  | reference |
-| [yivad-vitest-phase-one-win.md](win-yivad-vitest-phase-one.md) | YiVad Vitest Phase 1 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-llm-phase-two-win.md](win-yiai-llm-phase-two.md) | YiAi LLM Phase 2 methodology (STALE — not landed; reference architecture)  | reference |
-| [yivad-vitest-phase-two-win.md](win-yivad-vitest-phase-two.md) | YiVad Vitest Phase 2 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-llm-phase-three-win.md](win-yiai-llm-phase-three.md) | YiAi LLM Phase 3 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-llm-phase-four-win.md](win-yiai-llm-phase-four.md) | YiAi LLM Phase 4 methodology (STALE — not landed; reference architecture)  | reference |
-| [yivad-vitest-phase-three-win.md](win-yivad-vitest-phase-three.md) | YiVad Vitest Phase 3 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-llm-phase-five-win.md](win-yiai-llm-phase-five.md) | YiAi LLM Phase 5 methodology (STALE — not landed; reference architecture)  | reference |
-| [yivad-vitest-phase-four-win.md](win-yivad-vitest-phase-four.md) | YiVad Vitest Phase 4 methodology (STALE — not landed; reference architecture)  | reference |
-| [yipet-aicr-phase-one-win.md](win-yipet-aicr-phase-one.md) | YiPet aicr Phase 1 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-knowledge-watcher-win.md](win-yiai-knowledge-watcher.md) | YiAi Knowledge Watcher implementation (apscheduler 30s polling + SHA-256 incremental hash + 30s debounce + 3-failure exponential backoff + dead-letter queue + full-volume rebuild Sunday 02:00 fallback + bypass macOS FSEvents; 0 incident; latency < 60s)  | active |
-| [yivad-shared-client-vendor-win.md](win-yivad-shared-client-vendor.md) | YiVad shared client vendor methodology (STALE — not landed; reference architecture)  | reference |
-| [yipet-aicr-phase-two-win.md](win-yipet-aicr-phase-two.md) | YiPet aicr Phase 2 methodology (STALE — not landed; reference architecture)  | reference |
-| [yipet-aicr-phase-three-win.md](win-yipet-aicr-phase-three.md) | YiPet aicr Phase 3 methodology (STALE — not landed; reference architecture)  | reference |
-| [yipet-aicr-phase-four-win.md](win-yipet-aicr-phase-four.md) | YiPet aicr Phase 4 methodology (STALE — not landed; reference architecture)  | reference |
-| [yipet-aicr-phase-five-win.md](win-yipet-aicr-phase-five.md) | YiPet aicr Phase 5 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-pytest-phase-one-win.md](win-yiai-pytest-phase-one.md) | YiAi pytest Phase 1 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-pytest-phase-two-win.md](win-yiai-pytest-phase-two.md) | YiAi pytest Phase 2 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-pytest-phase-three-win.md](win-yiai-pytest-phase-three.md) | YiAi pytest Phase 3 methodology (STALE — not landed; reference architecture)  | reference |
-| [yiai-pytest-phase-four-win.md](win-yiai-pytest-phase-four.md) | YiAi pytest Phase 4 methodology (STALE — not landed; reference architecture)  | reference |
+| [yivad-aicr-phase-port.md](win-yivad-aicr-phase-port.md) | YiVad aicr 7 阶段移植方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-brd-agent-launch.md](win-yiai-brd-agent-launch.md) | YiAi BRD agent 上线（撰写时间 -79%） | active |
+| [yipet-stack-migration-win.md](win-yipet-stack-migration.md) | YiPet 技术栈迁移（React 15->18.3 + Bootstrap->AntD + ESLint->Biome；lint -91%） | active |
+| [yry-vite-to-rsbuild-migration-win.md](win-yry-vite-to-rsbuild-migration.md) | YrY Vite->Rsbuild 迁移（dev 90s->8s / HMR 12%->0.5%） | active |
+| [yiai-rag-hybrid-retrieval-win.md](win-yiai-rag-hybrid-retrieval.md) | YiAi RAG 混合检索（QueryFusionRetriever + LLMRerank + 行内引用 + scope） | active |
+| [yivad-leaf-view-leaves-ssot-win.md](win-yivad-leaf-view-leaves-ssot.md) | YiVad 叶子视图层 28 叶子 SSOT 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-supply-chain-hardening-win.md](win-yiai-supply-chain-hardening.md) | YiAi 供应链加固方法论（STALE — 未落地；参考架构） | reference |
+| [yivad-vitest-phase-one-win.md](win-yivad-vitest-phase-one.md) | YiVad Vitest Phase 1 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-llm-phase-two-win.md](win-yiai-llm-phase-two.md) | YiAi LLM Phase 2 方法论（STALE — 未落地；参考架构） | reference |
+| [yivad-vitest-phase-two-win.md](win-yivad-vitest-phase-two.md) | YiVad Vitest Phase 2 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-llm-phase-three-win.md](win-yiai-llm-phase-three.md) | YiAi LLM Phase 3 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-llm-phase-four-win.md](win-yiai-llm-phase-four.md) | YiAi LLM Phase 4 方法论（STALE — 未落地；参考架构） | reference |
+| [yivad-vitest-phase-three-win.md](win-yivad-vitest-phase-three.md) | YiVad Vitest Phase 3 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-llm-phase-five-win.md](win-yiai-llm-phase-five.md) | YiAi LLM Phase 5 方法论（STALE — 未落地；参考架构） | reference |
+| [yivad-vitest-phase-four-win.md](win-yivad-vitest-phase-four.md) | YiVad Vitest Phase 4 方法论（STALE — 未落地；参考架构） | reference |
+| [yipet-aicr-phase-one-win.md](win-yipet-aicr-phase-one.md) | YiPet aicr Phase 1 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-knowledge-watcher-win.md](win-yiai-knowledge-watcher.md) | YiAi Knowledge Watcher 实现（apscheduler 30s 轮询 + SHA-256 增量哈希 + 30s 防抖 + 3 次失败指数退避 + 死信队列 + 周日 02:00 全量重建兜底 + 绕过 macOS FSEvents；0 事故；延迟 < 60s） | active |
+| [yivad-shared-client-vendor-win.md](win-yivad-shared-client-vendor.md) | YiVad 共享客户端 vendor 方法论（STALE — 未落地；参考架构） | reference |
+| [yipet-aicr-phase-two-win.md](win-yipet-aicr-phase-two.md) | YiPet aicr Phase 2 方法论（STALE — 未落地；参考架构） | reference |
+| [yipet-aicr-phase-three-win.md](win-yipet-aicr-phase-three.md) | YiPet aicr Phase 3 方法论（STALE — 未落地；参考架构） | reference |
+| [yipet-aicr-phase-four-win.md](win-yipet-aicr-phase-four.md) | YiPet aicr Phase 4 方法论（STALE — 未落地；参考架构） | reference |
+| [yipet-aicr-phase-five-win.md](win-yipet-aicr-phase-five.md) | YiPet aicr Phase 5 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-pytest-phase-one-win.md](win-yiai-pytest-phase-one.md) | YiAi pytest Phase 1 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-pytest-phase-two-win.md](win-yiai-pytest-phase-two.md) | YiAi pytest Phase 2 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-pytest-phase-three-win.md](win-yiai-pytest-phase-three.md) | YiAi pytest Phase 3 方法论（STALE — 未落地；参考架构） | reference |
+| [yiai-pytest-phase-four-win.md](win-yiai-pytest-phase-four.md) | YiAi pytest Phase 4 方法论（STALE — 未落地；参考架构） | reference |
 
-## To be included
+## 待包含
 
-- AI launch case study
-- performance optimization success case study
-- process improvement success case study
+- AI 上线案例研究
+- 性能优化成功案例研究
+- 流程改进成功案例研究
 
-## Recommended writing structure
+## 推荐写作结构
 
-1. background (business scenario, target)
-2. solution (tech stack, architecture, process)
-3. key success factors
-4. quantitative outcomes
-5. reusable experience
-6. subsequent evolution
+1. 背景（业务场景、目标）
+2. 方案（技术栈、架构、流程）
+3. 关键成功因素
+4. 量化成果
+5. 可复用经验
+6. 后续演进
 
-## Related leaf
+## 相关叶子
 
-- [../failures/](.) — failure comparison
-- [../gotchas/](.) — pitfall comparison
-- [../../../producter/delivery/retrospective-meeting.md](../../producter/delivery/retrospective-meeting.md) — retrospective meeting
-- [../../../curator/templates/retrospective.md](../../producter/delivery/retrospective.md) — retrospective template
-- [../../processes/review-lessons.md](../process/review-lessons.md) — scenario entry
+- [../failures/](.) — 失败案例对比
+- [../gotchas/](.) — 踩坑记录对比
+- [../../../producter/delivery/retrospective-meeting.md](../../producter/delivery/retrospective-meeting.md) — 复盘会议
+- [../../../curator/templates/retrospective.md](../../producter/delivery/retrospective.md) — 复盘模板
+- [../../processes/review-lessons.md](../process/review-lessons.md) — 场景入口

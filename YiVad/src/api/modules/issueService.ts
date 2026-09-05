@@ -99,9 +99,8 @@ export interface Issue {
   source?: IssueSource;
   acceptance_criteria?: string;
   review_status?: ReviewStatus;
-  cycle_key?: string;
-  release_key?: string;
   goal_id?: string;
+  kb_file_path?: string;
   attachments?: Array<{ name: string; url: string; size: number; uploaded_at: string }>;
   created_at: string;
   updated_at: string;
@@ -132,8 +131,11 @@ export function getIssueList(params: IssueQueryParams) {
   if (project_key) filter.project_key = project_key;
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
-  if (issue_type) filter.issue_type = issue_type;
-  if (exclude_issue_type) filter.issue_type = { $ne: exclude_issue_type };
+  if (issue_type) {
+    filter.issue_type = issue_type;
+  } else if (exclude_issue_type) {
+    filter.issue_type = { $ne: exclude_issue_type };
+  }
   if (assignee) filter.assignee = assignee;
   if (goal_id) filter.goal_id = goal_id;
   if (labels) filter.labels = { $regex: labels, $options: "i" };
@@ -184,4 +186,28 @@ export function updateIssue(key: string, data: Partial<Issue>) {
 
 export function deleteIssue(key: string) {
   return deleteDocument(COLLECTION, key);
+}
+
+/**
+ * Derive the knowledge-file path for an issue.
+ * Prefers kb_file_path if stored, otherwise derives from key date + title.
+ * The path is relative to the YiKnowledge root.
+ */
+export function getIssueFilePath(issue: { key: string; project_key: string; title: string; issue_type: IssueType; kb_file_path?: string; due_date?: string; start_date?: string; created_at?: string }): string {
+  if (issue.kb_file_path) return issue.kb_file_path;
+
+  const keyDate = issue.key.match(/(\d{4}-\d{2})/)?.[1];
+  const date = keyDate || issue.due_date || issue.start_date || issue.created_at || new Date().toISOString();
+  const yearMonth = date.slice(0, 7);
+
+  if (issue.issue_type === "requirement") {
+    return `projects/${issue.project_key}/requires/${yearMonth}/需求文档.md`;
+  }
+
+  const fileName = issue.title
+    .replace(/[→+(),]/g, "")
+    .replace(/[^a-zA-Z0-9\u4e00-\u9fff]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+  return `projects/${issue.project_key}/requires/${yearMonth}/${fileName}.md`;
 }

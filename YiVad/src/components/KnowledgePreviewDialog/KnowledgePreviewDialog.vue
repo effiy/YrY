@@ -10,7 +10,6 @@ import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeSe
 import { createReadingItem, getReadingList } from "@/api/modules/readingListService";
 
 const emit = defineEmits<{ closed: [] }>();
-import { streamChat } from "@/api/modules/chatService";
 import type { KnowledgeMeta } from "@/api/interface/yiweb";
 import KnowledgeChatPanel from "@/views/aiChat/components/KnowledgeChatPanel.vue";
 import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip/KnowledgeMetaStrip.vue";
@@ -43,12 +42,6 @@ const showChat = ref(false);
 
 /** Navigation history for internal-link clicks inside the preview. */
 const navHistory = ref<string[]>([]);
-
-/** Translation state */
-const translating = ref(false);
-const translationAbort = ref<(() => void) | null>(null);
-/** Backup of the original content before translation — used to restore via "Show Original". */
-const originalContent = ref("");
 
 /** Reading list — add current file to the reading list. */
 const addingToReadingList = ref(false);
@@ -241,9 +234,6 @@ function loadDoc(path: string) {
   title.value = (path.split("/").pop() || path).replace(/\.md$/, "");
   mode.value = "preview";
   showChat.value = false;
-  translationAbort.value?.();
-  translationAbort.value = null;
-  originalContent.value = "";
   loading.value = true;
   rawContent.value = "";
   editContent.value = "";
@@ -277,9 +267,6 @@ function openRaw(p: { title: string; content: string; meta?: KnowledgeMeta }) {
   title.value = p.title;
   mode.value = "preview";
   showChat.value = false;
-  translationAbort.value?.();
-  translationAbort.value = null;
-  originalContent.value = "";
   loading.value = false;
   rawContent.value = p.content;
   editContent.value = "";
@@ -303,9 +290,6 @@ function openFile(opts: {
   title.value = opts.title || (opts.path.split("/").pop() || opts.path).replace(/\.md$/, "");
   mode.value = "preview";
   showChat.value = false;
-  translationAbort.value?.();
-  translationAbort.value = null;
-  originalContent.value = "";
   loading.value = false;
   rawContent.value = opts.content;
   editContent.value = "";
@@ -319,9 +303,6 @@ function close() {
   visible.value = false;
   mode.value = "preview";
   showChat.value = false;
-  translationAbort.value?.();
-  translationAbort.value = null;
-  originalContent.value = "";
   _saveFileFn.value = null;
   emit("closed");
 }
@@ -544,51 +525,6 @@ function downloadFile() {
   URL.revokeObjectURL(url);
 }
 
-async function translateTo(targetLang: "zh" | "en", bilingual = false) {
-  if (translating.value || !rawContent.value) return;
-
-  const langName = targetLang === "zh" ? "Simplified Chinese" : "English";
-  const source = rawContent.value;
-  translating.value = true;
-  let buffer = "";
-
-  const { abort } = streamChat(
-    {
-      model: "qwen3.5:4b",
-      messages: [{ type: "user", message: source, timestamp: Date.now() }],
-      system: `You are a professional translator. Translate the following markdown content to ${langName}. Preserve all markdown formatting, code blocks, links, and structure exactly. Only output the translated content, nothing else.`
-    },
-    (chunk) => {
-      buffer += chunk;
-      rawContent.value = bilingual ? source + "\n\n---\n\n" + buffer : buffer;
-    },
-    () => {
-      originalContent.value = source;
-      rawContent.value = bilingual ? source + "\n\n---\n\n" + buffer : buffer;
-      translating.value = false;
-      translationAbort.value = null;
-    },
-    (err) => {
-      rawContent.value = source;
-      translating.value = false;
-      translationAbort.value = null;
-      originalContent.value = "";
-      ElMessage.error(err?.message || "Translation failed");
-    }
-  );
-
-  translationAbort.value = abort;
-}
-
-function resetTranslation() {
-  translationAbort.value?.();
-  translationAbort.value = null;
-  if (originalContent.value) {
-    rawContent.value = originalContent.value;
-    originalContent.value = "";
-  }
-}
-
 function onToolbarModeChange(value: KbMode) {
   const VALID: readonly KbMode[] = ['preview', 'edit', 'split'];
   mode.value = VALID.includes(value) ? value : 'preview';
@@ -615,8 +551,6 @@ defineExpose({ open, openRaw, openFile });
       :show-chat="showChat"
       :loading="loading"
       :has-content="!!rawContent"
-      :translating="translating"
-      :original-content="originalContent"
       :saving="saving"
       :source-route="sourceRoute"
       :reading-item-exists="readingItemExists"
@@ -624,14 +558,13 @@ defineExpose({ open, openRaw, openFile });
       :nav-history-length="navHistory.length"
       @update:mode="onToolbarModeChange"
       @go-back="goBack"
-      @translate-to="translateTo"
-      @reset-translation="resetTranslation"
       @cancel-edit="cancelEdit"
       @save="save"
       @open-in-source-page="openInSourcePage"
       @download-file="downloadFile"
       @add-to-reading-list="addToReadingList"
       @toggle-chat="toggleChat"
+      @refresh="loadDoc(currentPath)"
       @close="close"
     />
 
@@ -776,28 +709,6 @@ defineExpose({ open, openRaw, openFile });
   display: flex;
   gap: 4px;
   align-items: center;
-}
-
-.kpd-translating {
-  font-size: 12px;
-  color: var(--el-color-primary);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  &::before {
-    content: "";
-    width: 12px;
-    height: 12px;
-    border: 2px solid var(--el-color-primary-light-5);
-    border-top-color: var(--el-color-primary);
-    border-radius: 50%;
-    animation: kpd-spin 0.6s linear infinite;
-  }
-}
-
-@keyframes kpd-spin {
-  to { transform: rotate(360deg); }
 }
 
 .kpd-loading {

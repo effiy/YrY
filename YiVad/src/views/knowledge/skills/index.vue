@@ -264,7 +264,7 @@
           </el-table>
         </template>
         <el-pagination
-          v-if="viewMode === 'table' && paginatedTotal > cardPageSize"
+          v-if="paginatedTotal > cardPageSize"
           class="skills__pager"
           layout="prev, pager, next"
           :page-size="cardPageSize"
@@ -306,10 +306,10 @@
                   class="skills-card-item__file-row"
                   @click.stop="openFile(f.path)"
                 >
-                  <span class="skills-card-item__file-accent" :style="{ background: fileAccentColor(f) }" />
-                  <span class="skills-card-item__file-icon">{{ fileIcon(f) }}</span>
+                  <span class="skills-card-item__file-accent" :style="{ background: fileTypeInfo(f).accent }" />
+                  <span class="skills-card-item__file-icon">{{ fileTypeInfo(f).icon }}</span>
                   <span class="skills-card-item__file-name">{{ f.name }}</span>
-                  <span class="skills-card-item__file-type">{{ fileTypeLabel(f) }}</span>
+                  <span class="skills-card-item__file-type">{{ fileTypeInfo(f).label }}</span>
                 </div>
                 <div v-if="skillFiles[skill.id].length > 4" class="skills-card-item__file-more">
                   +{{ skillFiles[skill.id].length - 4 }} more files
@@ -318,15 +318,6 @@
             </div>
           </div>
         </template>
-        <el-pagination
-          v-if="viewMode === 'card' && paginatedTotal > cardPageSize"
-          class="skills__pager"
-          layout="prev, pager, next"
-          :page-size="cardPageSize"
-          :total="paginatedTotal"
-          :current-page="cardPage"
-          @current-change="onCardPage"
-        />
 
         <!-- List View -->
         <template v-else-if="viewMode === 'list'">
@@ -347,15 +338,6 @@
             </div>
           </div>
         </template>
-        <el-pagination
-          v-if="viewMode === 'list' && paginatedTotal > cardPageSize"
-          class="skills__pager"
-          layout="prev, pager, next"
-          :page-size="cardPageSize"
-          :total="paginatedTotal"
-          :current-page="cardPage"
-          @current-change="onCardPage"
-        />
 
         <div v-if="!loading && filteredSkills.length === 0" class="skills__empty">
           <el-empty description="No skills match your search" />
@@ -376,7 +358,7 @@ import type { KnowledgeFileEntry } from "@/api/interface/yiweb";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import type { ECOption } from "@/components/ECharts/config";
-import { categories } from "./constants";
+import { categories, skills as staticSkills } from "./constants";
 import type { SkillDef } from "./constants";
 
 const router = useRouter();
@@ -392,46 +374,10 @@ const viewMode = ref<"card" | "list" | "table">("card");
 const cardPage = ref(1);
 const cardPageSize = 20;
 
-// ── Display mapping: skill dir name → { icon, display category } ──
-const SKILL_DISPLAY: Record<string, { icon: string; category: string }> = {
-  "vue": { icon: "🟢", category: "frontend" },
-  "vite": { icon: "⚡", category: "frontend" },
-  "h5": { icon: "📱", category: "frontend" },
-  "ui-ux": { icon: "🎨", category: "frontend" },
-  "chrome": { icon: "🧩", category: "frontend" },
-  "tauri": { icon: "🦀", category: "frontend" },
-  "fastapi": { icon: "🐍", category: "backend" },
-  "nodejs": { icon: "💚", category: "backend" },
-  "nginx": { icon: "🌐", category: "backend" },
-  "public-api": { icon: "🔌", category: "backend" },
-  "git": { icon: "📦", category: "platform" },
-  "github": { icon: "🐙", category: "platform" },
-  "npm": { icon: "📦", category: "platform" },
-  "lighthouse": { icon: "🔦", category: "platform" },
-  "tmux": { icon: "🖥️", category: "platform" },
-  "agile-defect": { icon: "🐛", category: "platform" },
-  "git-worktree": { icon: "🌿", category: "platform" },
-  "skill-creator": { icon: "🛠️", category: "ai" },
-  "rui-init": { icon: "🚀", category: "ai" },
-  "import": { icon: "📥", category: "ai" },
-  "gen-brd": { icon: "📋", category: "ai" },
-  "mermaid": { icon: "📊", category: "ai" },
-  "research": { icon: "🔍", category: "ai" },
-  "code-review": { icon: "✅", category: "ai" },
-  "brainstorm": { icon: "💡", category: "ai" },
-  "diagnose": { icon: "🔬", category: "ai" },
-  "domain-modeling": { icon: "🧠", category: "ai" },
-  "execute-plan": { icon: "🎯", category: "ai" },
-  "handoff": { icon: "🤝", category: "ai" },
-  "prototype": { icon: "🖼️", category: "ai" },
-  "subagent-dev": { icon: "🤖", category: "ai" },
-  "tdd": { icon: "🧪", category: "ai" },
-  "wayfinder": { icon: "🧭", category: "ai" },
-  "write-plan": { icon: "📝", category: "ai" },
-  "market-research": { icon: "🔍", category: "business" },
-  "code-quality-research": { icon: "✅", category: "business" },
-  "business-strategy": { icon: "📈", category: "business" },
-};
+// Display mapping built from static skill registry (source of truth)
+const skillDisplayMap = new Map(
+  staticSkills.map(s => [s.id, { icon: s.icon, category: s.category }])
+);
 
 // ── Dynamic skills from directory ──
 const skills = ref<SkillDef[]>([]);
@@ -576,13 +522,12 @@ const attention = computed(() => ({
 
 function applyAttentionFilter(type: "nodesc" | "deprecated" | "nofiles") {
   clearAllFilters();
-  if (type === "nodesc") {
-    searchText.value = "";
-  } else if (type === "deprecated") {
+  if (type === "deprecated") {
     activeLifecycle.value = "deprecated";
   } else if (type === "nofiles") {
-    showNoFiles.value = !showNoFiles.value;
+    showNoFiles.value = true;
   }
+  // "nodesc" keeps all filters cleared — skills without descriptions show naturally
 }
 
 const lifecycles = computed(() => {
@@ -686,18 +631,21 @@ function applyInvocableFilter() {
   invocableOnly.value = !invocableOnly.value;
   activeCategory.value = "";
   activeLifecycle.value = "";
+  cardPage.value = 1;
 }
 
 function toggleCategory(catId: string) {
   activeCategory.value = activeCategory.value === catId ? "" : catId;
   activeLifecycle.value = "";
   invocableOnly.value = false;
+  cardPage.value = 1;
 }
 
 function toggleLifecycle(lc: string) {
   activeLifecycle.value = activeLifecycle.value === lc ? "" : lc;
   activeCategory.value = "";
   invocableOnly.value = false;
+  cardPage.value = 1;
 }
 
 function clearAllFilters() {
@@ -706,10 +654,7 @@ function clearAllFilters() {
   activeLifecycle.value = "";
   invocableOnly.value = false;
   showNoFiles.value = false;
-}
-
-function lifecycleClass(lc: string) {
-  return `skills__card-tag--${lc}`;
+  cardPage.value = 1;
 }
 
 function lifecycleColor(lc: string): string {
@@ -744,17 +689,25 @@ function openFile(path: string) {
   previewDlgRef.value?.open(path);
 }
 
-function fileIcon(f: KnowledgeFileEntry): string {
+const FILE_TYPE_INFO: Record<string, { icon: string; accent: string; label: string }> = {
+  "skill.md": { icon: "⭐", accent: "#f59e0b", label: "Skill" },
+  ".md": { icon: "📄", accent: "#409eff", label: "" },
+  ".mjs": { icon: "📜", accent: "#7c3aed", label: "" },
+  ".js": { icon: "📜", accent: "#7c3aed", label: "" },
+  ".ts": { icon: "🔷", accent: "#7c3aed", label: "" },
+  ".json": { icon: "📋", accent: "#10b981", label: "" },
+};
+
+function fileTypeInfo(f: KnowledgeFileEntry) {
   const n = f.name.toLowerCase();
-  if (n === "skill.md") return "⭐";
-  if (n.endsWith(".md")) return "📄";
-  if (n.endsWith(".mjs") || n.endsWith(".js")) return "📜";
-  if (n.endsWith(".json")) return "📋";
-  if (n.endsWith(".ts")) return "🔷";
-  return "📁";
+  if (FILE_TYPE_INFO[n]) return FILE_TYPE_INFO[n];
+  for (const [ext, info] of Object.entries(FILE_TYPE_INFO)) {
+    if (ext.startsWith(".") && n.endsWith(ext)) return info;
+  }
+  return { icon: "📁", accent: "#909399", label: fileRoleLabel(f) };
 }
 
-function fileTypeLabel(f: KnowledgeFileEntry): string {
+function fileRoleLabel(f: KnowledgeFileEntry): string {
   const path = f.path.toLowerCase();
   if (path.includes("/agents/")) return "Agent";
   if (path.includes("/commands/")) return "Cmd";
@@ -763,17 +716,7 @@ function fileTypeLabel(f: KnowledgeFileEntry): string {
   if (path.includes("/steps/")) return "Step";
   if (path.includes("/templates/")) return "Tpl";
   if (path.includes("/lib/")) return "Lib";
-  if (f.name.toLowerCase() === "skill.md") return "Skill";
   return "";
-}
-
-function fileAccentColor(f: KnowledgeFileEntry): string {
-  const n = f.name.toLowerCase();
-  if (n === "skill.md") return "#f59e0b";
-  if (n.endsWith(".md")) return "#409eff";
-  if (n.endsWith(".mjs") || n.endsWith(".js") || n.endsWith(".ts")) return "#7c3aed";
-  if (n.endsWith(".json")) return "#10b981";
-  return "#909399";
 }
 
 // ── Load skills from YiKnowledge/skills/ directory ──
@@ -805,7 +748,7 @@ async function loadSkills() {
 
       const skillMd = files.find(f => f.name.toLowerCase() === "skill.md");
       const meta = (skillMd?.meta ?? {}) as Record<string, unknown>;
-      const display = SKILL_DISPLAY[skillId] ?? { icon: "📄", category: "ai" };
+      const display = skillDisplayMap.get(skillId) ?? { icon: "📄", category: "ai" };
 
       skillsList.push({
         id: skillId,
@@ -829,14 +772,9 @@ async function loadSkills() {
   }
 }
 
-// ── Server-side agent capabilities ──
-onMounted(() => {
-  loadSkills();
-});
+onMounted(loadSkills);
 
-watch([activeCategory, activeLifecycle, invocableOnly, showNoFiles, searchText], () => {
-  cardPage.value = 1;
-});
+watch(searchText, () => { cardPage.value = 1; });
 </script>
 
 <style scoped lang="scss">

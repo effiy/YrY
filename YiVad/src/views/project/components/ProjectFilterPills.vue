@@ -73,6 +73,10 @@ const emit = defineEmits<{
   border: 1px solid;
   border-radius: 12px;
   transition: all 0.15s;
+  &:hover {
+    filter: brightness(0.92);
+    .pfp-close { opacity: 1; }
+  }
 }
 .pfp-dim {
   font-size: 10px;
@@ -89,8 +93,11 @@ const emit = defineEmits<{
   flex-shrink: 0;
   color: var(--el-text-color-secondary);
   cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
   &:hover {
     color: var(--el-color-danger);
+    opacity: 1;
   }
 }
 .pfp-count {

@@ -35,7 +35,6 @@ const groups = [
       { key: "G I", desc: "Go to Issues" },
       { key: "G P", desc: "Go to Projects" },
       { key: "G K", desc: "Go to Kanban" },
-      { key: "G C", desc: "Go to Cycles" },
       { key: "G A", desc: "Go to Analytics" }
     ]
   },

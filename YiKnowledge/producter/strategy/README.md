@@ -1,5 +1,5 @@
 ---
-title: Case Studies / Industry Use Cases
+title: 案例研究 / 行业用例
 aliases: [use-cases-leaf-readme, use-cases-readme, industry-cases]
 tags: [leaf, industry, use-cases]
 category: producter/strategy
@@ -12,61 +12,61 @@ lifecycle: reference
 status: stable
 review_cycle: monthly
 roles: [producter, aier]
-benefit: "PMs can understand and apply case studies / industry use cases with clear guidance, actionable steps, and known anti-patterns"
+benefit: "PM 可以通过清晰的指导、可操作的步骤和已知的反模式来理解和应用案例研究 / 行业用例"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - cross-references to related leaves and parent INDEX are present
+  - "叶子目录范围边界清晰"
+  - "文件清单表完整，包含一句话描述"
+  - 包含与相关叶子目录和父级 INDEX 的交叉引用
 related:
-  - ../../aier/methodology/README.md
+  - ../../aier/方法/README.md
   - ../../engineer/learn/projects/yiai/README.md
-  - ../../aier/ml/find-ai-deployment-cases.md
-  - ../../curator/governance/tacit-knowledge-backlog.md
+  - ../../aier/机器学习/find-ai-deployment-cases.md
+  - ../../curator/治理/tacit-knowledge-backlog.md
   - ../../executiver/industry/
 ---
 
-# Case Studies / Industry Use Cases
+# 案例研究 / 行业用例
 
-> **As a** product manager, **I want to** understand and apply case studies / industry use cases, **so that** I can I can apply proven patterns and lessons to our products.
+> **作为**产品经理，**我想要**理解并应用案例研究 / 行业用例，**以便**将经过验证的模式和经验教训应用到我们的产品中。
 
-> AI and product implementation case study research. **Currently a tacit knowledge gap** — customer industry insight (each item focuses on the customer's business model) has not yet been accumulated (reference [T008](../../curator/governance/tacit-knowledge-backlog.md)).
+> AI 和产品实施案例研究。**当前为隐性知识缺口** — 客户行业洞察（每个条目聚焦客户的业务模式）尚未积累（参见 [T008](../../curator/治理/tacit-knowledge-backlog.md)）。
 
-## Included scope
+## 收录范围
 
-- AI customer service implementation case study
-- AI after-sales implementation case study (Related YiAi)
-- RAG + Agent enterprise implementation case study
-- Customer industry insight (focus on customer business model)
-- Case study research template
+- AI 客服实施案例研究
+- AI 售后实施案例研究（关联 YiAi）
+- RAG + Agent 企业实施案例研究
+- 客户行业洞察（聚焦客户业务模式）
+- 案例研究调研模板
 
-## file type and naming
+## 文件类型与命名
 
-- `*-summary.md` / `*-cases.md`: Case study summary (background + solution + effect + lessons)
-- `*-original.md`: original document
-- `case-study-template.md`: Case study research template
+- `*-summary.md` / `*-cases.md`：案例研究摘要（背景 + 方案 + 效果 + 经验教训）
+- `*-original.md`：原始文档
+- `case-study-template.md`：案例研究调研模板
 
-## Already included
+## 已收录
 
 | file | content | status |
 |---|---|---|
-| [ai-customer-service-cases.md](./ai-customer-service-cases.md) | AI customer service implementation case study | active |
-| [ai-after-sales-cases.md](./ai-after-sales-cases.md) | AI after-sales implementation case study (Related YiAi) | active |
-| [case-study.md](./case-study.md) | Case study research template | reference |
-| [overseas-brd-case-study.md](./overseas-brd-case-study.md) | Overseas after-sales BRD agent case study — architecture, evaluation results, compliance workflow, production lessons | active |
-| [rag-agent-case-study.md](./rag-agent-case-study.md) | RAG + Agent enterprise implementation case study — hybrid search, evaluation framework, agent loop patterns | active |
-| [customer-industry-insight.md](./customer-industry-insight.md) | Customer industry insight methodology — interview framework, competitive intelligence, Porter's Five Forces, PESTLE | active |
+| [ai-customer-service-cases.md](./ai-customer-service-cases.md) | AI 客服实施案例研究 | active |
+| [ai-after-sales-cases.md](./ai-after-sales-cases.md) | AI 售后实施案例研究（关联 YiAi） | active |
+| [case-study.md](./case-study.md) | 案例研究调研模板 | reference |
+| [overseas-brd-case-study.md](./overseas-brd-case-study.md) | 海外售后 BRD agent 案例研究 — 架构、评估结果、合规流程、生产经验 | active |
+| [rag-agent-case-study.md](./rag-agent-case-study.md) | RAG + Agent 企业实施案例研究 — 混合搜索、评估框架、agent loop 模式 | active |
+| [customer-industry-insight.md](./customer-industry-insight.md) | 客户行业洞察方法论 — 访谈框架、竞争情报、Porter 五力模型、PESTLE | active |
 
-## Recommended writing structure
+## 推荐撰写结构
 
-1. background (customer business, pain points)
-2. solution (tech stack, architecture, process)
-3. effect (quantitative metric)
-4. lessons and takeaways
-5. source and verification date
+1. 背景（客户业务、痛点）
+2. 方案（技术栈、架构、流程）
+3. 效果（量化指标）
+4. 经验教训与收获
+5. 来源与验证日期
 
-## Related leaf
+## 相关叶子目录
 
-- [../../aier/methodology](../../aier/methodology) — AI methodology
-- [../../engineer/learn/projects/yiai](../../engineer/learn/projects/yiai) — YiAi implementation
-- [../../aier/ml/find-ai-deployment-cases.md](../../aier/ml/find-ai-deployment-cases.md) — scenario entry
-- [../../curator/governance/tacit-knowledge-backlog.md](../../curator/governance/tacit-knowledge-backlog.md) — customer insight T001/T008
+- [../../aier/方法](../../aier/方法) — AI 方法论
+- [../../engineer/learn/projects/yiai](../../engineer/learn/projects/yiai) — YiAi 实施
+- [../../aier/机器学习/find-ai-deployment-cases.md](../../aier/机器学习/find-ai-deployment-cases.md) — 场景入口
+- [../../curator/治理/tacit-knowledge-backlog.md](../../curator/治理/tacit-knowledge-backlog.md) — 客户洞察 T001/T008

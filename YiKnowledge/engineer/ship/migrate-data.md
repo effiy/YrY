@@ -111,7 +111,7 @@ import time
 start = time.time()
 # ... migration loop ...
 elapsed = time.time() - start
-print(f"Migration completed in {elapsed:.1f}s ({migrated/elapsed:.1f} docs/s)")
+print(f"Migration completed in {elapsed:.1f}s ({migrated/elapsed:.1f} 文档/s)")
 ```
 
 ### 2.3 Watch for errors

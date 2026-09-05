@@ -21,80 +21,80 @@ related:
   - [INDEX.md](./INDEX.md)
   - [COLLABORATION.md](./COLLABORATION.md)
   - [diagrams/](./diagrams/)
-  - [governance/](./governance/)
+  - [governance/](./治理/)
   - [templates/](./templates/)
   - [archive/](./archive/)
   - [../README.md](../README.md)
   - [../MEMORY.md](../MEMORY.md)
 ---
 
-# Knowledge Curator — Lifecycle view layer
+# Knowledge Curator — 生命周期视图层
 
-> **Pipeline layer: Knowledge Governance (cross-cutting)** — Maintains the KB structure that all pipeline stages rely on. Spans the entire pipeline.
+> **Pipeline 层：Knowledge Governance（横切关注）** — 维护所有 pipeline 阶段依赖的 KB 结构。横跨整个 pipeline。
 >
-> **As a** knowledge curator, **I want to** maintain the knowledge base with clear governance, **so that** content is discoverable and well-maintained.
+> **作为**知识 curator，**我希望**以清晰的治理方式维护知识库，**以便**内容可被发现且维护良好。
 >
-> Curator is a **META role**. It maintains the KB structure itself — it does NOT create domain content. Domain content belongs to the role directories ([engineer/](../engineer/), [leader/](../leader/), [producter/](../producter/), [aier/](../aier/), [srer/](../srer/), [executiver/](../executiver/)).
+> Curator 是一个**META 角色**。它维护 KB 本身的结构——不创建领域内容。领域内容属于角色目录（[engineer/](../engineer/)、[leader/](../leader/)、[producter/](../producter/)、[aier/](../aier/)、[srer/](../srer/)、[executiver/](../executiver/)）。
 
-## Quick navigation
+## 快速导航
 
-| Resource | Description |
+| 资源 | 描述 |
 |---|---|
-| [INDEX.md](./INDEX.md) | Curator role index — subdirectory map, file counts, governance lifecycle |
-| [COLLABORATION.md](./COLLABORATION.md) | Cross-role collaboration domain index (team process, meetings, onboarding, PM) |
-| [governance/](./governance/) ([README](./governance/README.md)) | KB lifecycle, inbox/triage, readiness checklist, tacit backlog — 9 files |
-| [diagrams/](./diagrams/) ([README](./diagrams/README.md)) | 4 canonical diagrams: knowledge-map, user-journey, directory-blueprint, dashboard-index — 4 files |
-| [templates/](./templates/) ([README](./templates/README.md)) | Reusable templates: knowledge leaf, ADR, PRD, BRD, tech design, meetings, etc. — 15 files |
-| [archive/](./archive/) ([README](./archive/README.md)) | Deprecated file index and archival procedures — 2 files |
+| [INDEX.md](./INDEX.md) | Curator 角色索引——子目录映射、文件计数、治理生命周期 |
+| [COLLABORATION.md](./COLLABORATION.md) | 跨角色协作领域索引（团队流程、会议、onboarding、PM） |
+| [governance/](./治理/) ([README](./治理/README.md)) | KB 生命周期、inbox/triage、准备清单、隐性知识 backlog——9 个文件 |
+| [diagrams/](./diagrams/) ([README](./diagrams/README.md)) | 4 张规范图：knowledge-map、user-journey、directory-blueprint、dashboard-index——4 个文件 |
+| [templates/](./templates/) ([README](./templates/README.md)) | 可复用模板：知识叶子、ADR、PRD、BRD、技术设计、会议等——15 个文件 |
+| [archive/](./archive/) ([README](./archive/README.md)) | 已废弃文件索引及归档流程——2 个文件 |
 
-## Scope
+## 范围
 
-### In scope (curator OWNS)
-- **KB governance**: lifecycle management, inbox/triage workflow
-- **Content quality**: frontmatter validation, freshness checks, deprecation
-- **4 diagrams**: [knowledge map](./diagrams/knowledge-map.md), [user-journey](./diagrams/user-journey.md), [directory blueprint](./diagrams/directory-blueprint.md), [governance flow](./governance/governance.md)
-- **Templates**: [knowledge leaf](./templates/knowledge-leaf.md), [ADR](./templates/adr-template.md), [PRD](./templates/prd.md), [tech design](./templates/tech-design.md), [BRD](./templates/brd.md), etc.
-- **Archive management**: deprecated file tracking and cleanup via [archive.md](./archive/archive.md)
-- **Cross-cutting domain indexes**: [SECURITY](../engineer/SECURITY.md), [COLLABORATION](./COLLABORATION.md), [ENGINEERING](../engineer/ENGINEERING.md)
-- **Operations cadence**: weekly/monthly/quarterly/yearly reviews (see [governance.md](./governance/governance.md))
+### 范围内（curator 拥有）
+- **KB 治理**：生命周期管理、inbox/triage 工作流
+- **内容质量**：frontmatter 校验、新鲜度检查、废弃
+- **4 张图**：[knowledge map](./diagrams/knowledge-map.md)、[user-journey](./diagrams/user-journey.md)、[directory blueprint](./diagrams/directory-blueprint.md)、[governance flow](./治理/governance.md)
+- **模板**：[knowledge leaf](./templates/knowledge-leaf.md)、[ADR](./templates/adr-template.md)、[PRD](./templates/prd.md)、[tech design](./templates/tech-design.md)、[BRD](./templates/brd.md) 等
+- **Archive 管理**：通过 [archive.md](./archive/archive.md) 跟踪和清理已废弃文件
+- **横切领域索引**：[SECURITY](../engineer/SECURITY.md)、[COLLABORATION](./COLLABORATION.md)、[ENGINEERING](../engineer/ENGINEERING.md)
+- **运营节奏**：周/月/季度/年度审查（参见 [governance.md](./治理/governance.md)）
 
-### Out of scope (curator does NOT create)
-- Any domain content — architecture, development, AI, PM, SRE, strategy, etc.
-- If the content answers "how do I do X?" → belongs in a role directory, not curator/
-- Curator only creates content ABOUT the KB itself (governance, diagrams, templates)
+### 范围外（curator 不创建）
+- 任何领域内容——架构、开发、AI、PM、SRE、战略等
+- 如果内容回答的是"我如何做 X？"→ 属于角色目录，而非 curator/
+- Curator 仅创建关于 KB 本身的内容（治理、图表、模板）
 
-## Decision rules for boundary cases
+## 边界情况决策规则
 
-| When content involves... | Route to | Because |
+| 当内容涉及... | 路由到 | 原因 |
 |---|---|---|
-| How to write a good knowledge leaf | [curator/templates/](./templates/) | KB meta-content |
-| How to design an API | [engineer/build/](../engineer/build/) | Domain content |
-| KB review process | [curator/governance/](./governance/) | KB operations |
-| Code review process | [engineer/ship/](../engineer/ship/) | Domain content |
-| Frontmatter specification | [curator/governance/](./governance/) | KB standards |
-| API specification format | [engineer/build/](../engineer/build/) | Domain content |
-| KB directory structure | [curator/diagrams/](./diagrams/) | KB architecture |
-| System architecture | [engineer/build/](../engineer/build/) | Domain content |
-| Deprecation policy for KB files | [curator/governance/](./governance/) | KB lifecycle |
-| Deprecation policy for APIs | [engineer/build/](../engineer/build/) | Domain content |
+| 如何写好知识叶子 | [curator/templates/](./templates/) | KB 元内容 |
+| 如何设计 API | [engineer/build/](../engineer/build/) | 领域内容 |
+| KB 审查流程 | [curator/治理/](./治理/) | KB 运营 |
+| 代码审查流程 | [engineer/ship/](../engineer/ship/) | 领域内容 |
+| Frontmatter 规范 | [curator/治理/](./治理/) | KB 标准 |
+| API 规范格式 | [engineer/build/](../engineer/build/) | 领域内容 |
+| KB 目录结构 | [curator/diagrams/](./diagrams/) | KB 架构 |
+| 系统架构 | [engineer/build/](../engineer/build/) | 领域内容 |
+| KB 文件废弃策略 | [curator/治理/](./治理/) | KB 生命周期 |
+| API 废弃策略 | [engineer/build/](../engineer/build/) | 领域内容 |
 
-### Curator as the KB's "engineer + sre + leader"
+### Curator 作为 KB 的"engineer + sre + leader"
 
-Curator does for the KB what other roles do for the product:
-- **Structure** (like [engineer/build/](../engineer/build/)) — directory blueprint, naming conventions
-- **Quality** (like [engineer/ship/](../engineer/ship/)) — frontmatter validation, [readiness checklist](./governance/readiness-checklist.md)
-- **Operations** (like [srer/](../srer/)) — inbox/triage workflow, review cadence
-- **Decisions** (like [leader/](../leader/)) — governance rules, deprecation policy
+Curator 为 KB 做的事，就像其他角色为产品做的事：
+- **结构**（类似 [engineer/build/](../engineer/build/)）——目录蓝图、命名规范
+- **质量**（类似 [engineer/ship/](../engineer/ship/)）——frontmatter 校验、[准备清单](./治理/readiness-checklist.md)
+- **运营**（类似 [srer/](../srer/)）——inbox/triage 工作流、审查节奏
+- **决策**（类似 [leader/](../leader/)）——治理规则、废弃策略
 
-But curator applies these ONLY to the KB itself, never to the product.
+但 curator 仅将这些应用于 KB 本身，而非产品。
 
-## Pipeline flow
+## Pipeline 流程
 
 ```
-┌── curator/ (Knowledge Governance — cross-cutting) ──┐
-│  Output: kb-lifecycle, kb-templates, kb-diagrams      │
-└──────────────────────────────────────────────────────┘
-    │ serves all pipeline stages
+┌── curator/（Knowledge Governance——横切）──┐
+│  输出：kb-lifecycle、kb-templates、kb-diagrams  │
+└──────────────────────────────────────────────┘
+    │ 服务于所有 pipeline 阶段
     ▼
 producter/ ──→ leader/ ──→ engineer/ ──→ srer/
     ↑            ↑            ↑            ↑
@@ -102,135 +102,135 @@ producter/ ──→ leader/ ──→ engineer/ ──→ srer/
     └────────────┴────────────┴────────────┘
 ```
 
-Curator sits **above** the pipeline, providing templates, governance, and structure to every stage. It does not participate in the stage flow itself — it enables it.
+Curator 位于 pipeline **之上**，为每个阶段提供模板、治理和结构。它不参与阶段流程本身——它使流程成为可能。
 
-## Summary
+## 总结
 
-- This directory does not participate in topical classification; it only carries lifecycle / 4 diagrams / operations mechanism views, overlaid on semantic categories
-- PARA mapping: Projects=`engineer/learn/projects/`, Areas=7 role directories, Archives=`archive/`
-- lifecycle field flow: `inbox → triage → active → reference → archive`
-- Each of the 4 diagrams is its own file: [knowledge-map](./diagrams/knowledge-map.md) / [user-journey](./diagrams/user-journey.md) / [directory-blueprint](./diagrams/directory-blueprint.md) / [governance](./governance/governance.md)
-- Serves both humans and the YiAi BRD Agent: frontmatter `lifecycle`/`related`/`tacit`/`tags`/`category` are key signals for cross-directory RAG recall
+- 此目录不参与主题分类；仅承载生命周期 / 4 张图 / 运营机制视图，叠加在语义分类之上
+- PARA 映射：Projects=`engineer/learn/projects/`、Areas=7 个角色目录、Archives=`archive/`
+- lifecycle 字段流转：`inbox → triage → active → reference → archive`
+- 4 张图各自独立文件：[knowledge-map](./diagrams/knowledge-map.md) / [user-journey](./diagrams/user-journey.md) / [directory-blueprint](./diagrams/directory-blueprint.md) / [governance](./治理/governance.md)
+- 同时服务于人类和 YiAi BRD Agent：frontmatter 的 `lifecycle`/`related`/`tacit`/`tags`/`category` 是跨目录 RAG 召回的关键信号
 
-## Core viewpoints
+## 核心观点
 
-- **View layer independent of semantic classification** — the 7 role directories stay unchanged; this directory only adds perspectives, avoiding rewrites of existing content
-- **lifecycle field is the single signal of flow** — both AI and humans rely on it to judge which stage a file is in, deciding whether to recall / refine / archive
-- **The knowledge map never goes out of date** — AI consumes structured knowledge, garbage in garbage out; explicit + tacit dual inventory is the only moat in the AI era
+- **视图层独立于语义分类**——7 个角色目录保持不变；此目录仅增加视角，避免重写已有内容
+- **lifecycle 字段是流转的唯一信号**——AI 和人类都依赖它来判断文件处于哪个阶段，决定是否召回/精炼/归档
+- **知识地图永不过时**——AI 消费结构化知识，垃圾进垃圾出；显性+隐性双库存是 AI 时代唯一的护城河
 
-## Quick start for new curators
+## 新 curator 快速入门
 
-1. Read the [governance flow](./governance/governance.md) — understand the 4-role, 3-cadence model
-2. Review the [4 diagrams](./diagrams/) — build a mental model of the KB topology
-3. Run the [readiness checklist](./governance/readiness-checklist.md) — 10-question gate before any KB change
-4. Check [inbox.md](./governance/inbox.md) and [triage.md](./governance/triage.md) — process incoming content
-5. Use [templates/](./templates/) when creating new files — start from [knowledge-leaf.md](./templates/knowledge-leaf.md)
+1. 阅读 [governance flow](./治理/governance.md)——理解 4 角色、3 节奏模型
+2. 审查 [4 张图](./diagrams/)——建立 KB 拓扑的思维模型
+3. 运行 [准备清单](./治理/readiness-checklist.md)——任何 KB 变更前的 10 题门禁
+4. 检查 [inbox.md](./治理/inbox.md) 和 [triage.md](./治理/triage.md)——处理 incoming 内容
+5. 创建新文件时使用 [templates/](./templates/)——从 [knowledge-leaf.md](./templates/knowledge-leaf.md) 开始
 
-## Key info
+## 关键信息
 
-### PARA / lifecycle mapping
+### PARA / lifecycle 映射
 
-| PARA concept | YiKnowledge mapping | Notes |
+| PARA 概念 | YiKnowledge 映射 | 备注 |
 |---|---|---|
-| Projects | [engineer/learn/projects/](../engineer/learn/projects/) | Active projects with clear goals and deadlines |
-| Areas | 7 role directories | Responsibility domains under continuous maintenance |
-| Resources | [aier/skills/](../aier/skills/), [curator/templates/](./templates/) | Reusable resources (skills, prompts, templates) |
-| Archives | [curator/archive/](./archive/) | Completed or no longer active content |
+| Projects | [engineer/learn/projects/](../engineer/learn/projects/) | 有明确目标和截止日期的活跃项目 |
+| Areas | 7 个角色目录 | 持续维护的职责领域 |
+| Resources | [aier/skills/](../aier/skills/)、[curator/templates/](./templates/) | 可复用资源（skills、prompts、templates） |
+| Archives | [curator/archive/](./archive/) | 已完成或不再活跃的内容 |
 
-### lifecycle field flow
+### lifecycle 字段流转
 
 ```
 inbox → triage → active → reference → archive
 ```
 
-| State | Meaning | Typical files | Managed in |
+| 状态 | 含义 | 典型文件 | 管理位置 |
 |---|---|---|---|
-| `inbox` | Just captured raw source, unclassified and unrefined | Raw captures, links, notes | [inbox.md](./governance/inbox.md) |
-| `triage` | Classified into the correct leaf, pending summary | Classified but unsummarized | [triage.md](./governance/triage.md) |
-| `active` | Summarised and referenced | Most `*-summary.md` | Role directories |
-| `reference` | Stable methodology/templates, rarely changed | `*-template.md`, methodology files | [templates/](./templates/) |
-| `archive` | Deprecated or superseded | Old versions, obsolete content | [archive.md](./archive/archive.md) |
+| `inbox` | 刚捕获的原始来源，未分类未精炼 | 原始捕获、链接、笔记 | [inbox.md](./治理/inbox.md) |
+| `triage` | 已分类到正确叶子，待总结 | 已分类但未总结 | [triage.md](./治理/triage.md) |
+| `active` | 已总结并引用 | 大多数 `*-summary.md` | 角色目录 |
+| `reference` | 稳定的方法/模板，很少变更 | `*-template.md`、方法论文件 | [templates/](./templates/) |
+| `archive` | 已废弃或被取代 | 旧版本、过时内容 | [archive.md](./archive/archive.md) |
 
-### 4 diagrams in practice
+### 4 张图实践
 
-| Diagram | File | Question answered | Sub-README |
+| 图 | 文件 | 回答的问题 | 子 README |
 |---|---|---|---|
-| Knowledge map | [knowledge-map.md](./diagrams/knowledge-map.md) | What knowledge exists? Explicit vs. tacit? | [diagrams/](./diagrams/) |
-| User-journey map | [user-journey.md](./diagrams/user-journey.md) | Where is the knowledge? Where are breakpoints? | [diagrams/](./diagrams/) |
-| Directory blueprint | [directory-blueprint.md](./diagrams/directory-blueprint.md) | How do users find things at a glance? | [diagrams/](./diagrams/) |
-| Governance flow | [governance.md](./governance/governance.md) | Who maintains? How often? 4 roles, 3 cadences | [governance/](./governance/) |
+| 知识地图 | [knowledge-map.md](./diagrams/knowledge-map.md) | 存在哪些知识？显性 vs 隐性？ | [diagrams/](./diagrams/) |
+| 用户旅程图 | [user-journey.md](./diagrams/user-journey.md) | 知识在哪里？断点在哪里？ | [diagrams/](./diagrams/) |
+| 目录蓝图 | [directory-blueprint.md](./diagrams/directory-blueprint.md) | 用户如何一目了然地找到东西？ | [diagrams/](./diagrams/) |
+| 治理流程 | [governance.md](./治理/governance.md) | 谁维护？多久一次？4 角色、3 节奏 | [governance/](./治理/) |
 
-### Catch-all directory and scenario entries
+### 总入口和场景入口
 
-| Entry point | Purpose |
+| 入口 | 用途 |
 |---|---|
-| [inbox.md](./governance/inbox.md) | Catch-all — knowledge transit station for raw captures |
-| [triage.md](./governance/triage.md) | Pending-refinement queue — classified but not yet summarized |
-| [archive.md](./archive/archive.md) | Archive index — registry of deprecated files |
+| [inbox.md](./治理/inbox.md) | 总入口——原始捕获的知识中转站 |
+| [triage.md](./治理/triage.md) | 待精炼队列——已分类但尚未总结 |
+| [archive.md](./archive/archive.md) | 归档索引——已废弃文件登记表 |
 
-## Operations cadence
+## 运营节奏
 
-| Cadence | Action | Governed by |
+| 节奏 | 操作 | 治理依据 |
 |---|---|---|
-| **Weekly** | Process inbox → triage, classify new content | [governance.md](./governance/governance.md) |
-| **Monthly** | Review [review-log.md](./governance/review-log.md), check freshness labels | [governance.md](./governance/governance.md) |
-| **Quarterly** | Scan 4 diagrams for staleness, review [tacit-knowledge-backlog.md](./governance/tacit-knowledge-backlog.md) | [governance.md](./governance/governance.md) |
-| **Yearly** | Scan [archive.md](./archive/archive.md) for physical cleanup, full KB audit | [governance.md](./governance/governance.md) |
+| **每周** | 处理 inbox → triage，分类新内容 | [governance.md](./治理/governance.md) |
+| **每月** | 审查 [review-log.md](./治理/review-log.md)，检查新鲜度标签 | [governance.md](./治理/governance.md) |
+| **每季度** | 扫描 4 张图是否过时，审查 [tacit-knowledge-backlog.md](./治理/tacit-knowledge-backlog.md) | [governance.md](./治理/governance.md) |
+| **每年** | 扫描 [archive.md](./archive/archive.md) 进行物理清理，全面 KB 审计 | [governance.md](./治理/governance.md) |
 
-## Cross-cutting domain indexes
+## 横切领域索引
 
-Curator maintains 3 domain indexes that aggregate content across all role directories:
+Curator 维护 3 个领域索引，聚合所有角色目录中的内容：
 
-| Domain index | Aggregates | Answers |
+| 领域索引 | 聚合内容 | 回答 |
 |---|---|---|
-| [SECURITY.md](../engineer/SECURITY.md) | Supply chain, appsec, risk, incident response, compliance | Where is all security content? |
-| [COLLABORATION.md](./COLLABORATION.md) | Team process, meetings, knowledge sharing, onboarding, PM | Where is all collaboration content? |
-| [ENGINEERING.md](../engineer/ENGINEERING.md) | Architecture, quality, data, tools, lessons | Where is all engineering content? |
+| [SECURITY.md](../engineer/SECURITY.md) | 供应链、应用安全、风险、事件响应、合规 | 所有安全内容在哪里？ |
+| [COLLABORATION.md](./COLLABORATION.md) | 团队流程、会议、知识分享、onboarding、PM | 所有协作内容在哪里？ |
+| [ENGINEERING.md](../engineer/ENGINEERING.md) | 架构、质量、数据、工具、经验教训 | 所有工程内容在哪里？ |
 
-## Key cross-stage links
+## 关键跨阶段链接
 
-### Templates → role directories
+### 模板 → 角色目录
 
-| Template | Consumed by |
+| 模板 | 消费者 |
 |---|---|
-| [knowledge-leaf.md](./templates/knowledge-leaf.md) | [write-a-prd.md](../producter/discovery/write-a-prd.md), [design-architecture-decision.md](../leader/architecture/design-architecture-decision.md), [implement-an-api.md](../engineer/build/implement-an-api.md) |
-| [adr-template.md](./templates/adr-template.md) | [design-architecture-decision.md](../leader/architecture/design-architecture-decision.md) |
+| [knowledge-leaf.md](./templates/knowledge-leaf.md) | [write-a-prd.md](../producter/discovery/write-a-prd.md)、[design-architecture-decision.md](../leader/架构/design-architecture-decision.md)、[implement-an-api.md](../engineer/build/implement-an-api.md) |
+| [adr-template.md](./templates/adr-template.md) | [design-architecture-decision.md](../leader/架构/design-architecture-decision.md) |
 | [prd.md](./templates/prd.md) | [producter/discovery/prd/](../producter/discovery/prd/) |
 | [brd.md](./templates/brd.md) | [executiver/strategy/](../executiver/strategy/) |
 | [tech-design.md](./templates/tech-design.md) | [engineer/build/](../engineer/build/) |
 
-### Governance → role directories
+### 治理 → 角色目录
 
-| Governance file | Drives |
+| 治理文件 | 驱动 |
 |---|---|
-| [evolve-the-knowledge-base.md](./governance/evolve-the-knowledge-base.md) | [knowledge-contributor-charter.md](../engineer/run/knowledge-contributor-charter.md) |
-| [readiness-checklist.md](./governance/readiness-checklist.md) | Pre-launch gate for all new KB content |
-| [review-log.md](./governance/review-log.md) | Content review tracking |
-| [tacit-knowledge-backlog.md](./governance/tacit-knowledge-backlog.md) | Tacit knowledge capture |
+| [evolve-the-knowledge-base.md](./治理/evolve-the-knowledge-base.md) | [knowledge-contributor-charter.md](../engineer/run/knowledge-contributor-charter.md) |
+| [readiness-checklist.md](./治理/readiness-checklist.md) | 所有新 KB 内容的上线前门禁 |
+| [review-log.md](./治理/review-log.md) | 内容审查跟踪 |
+| [tacit-knowledge-backlog.md](./治理/tacit-knowledge-backlog.md) | 隐性知识捕获 |
 
-### SOP references
+### SOP 参考
 
-- Knowledge review SOP: [../engineer/run/knowledge-review.md](../engineer/run/knowledge-review.md)
-- Deprecation policy: [../engineer/run/knowledge-deprecation-policy.md](../engineer/run/knowledge-deprecation-policy.md)
+- 知识审查 SOP：[../engineer/run/knowledge-review.md](../engineer/run/knowledge-review.md)
+- 废弃策略：[../engineer/run/knowledge-deprecation-policy.md](../engineer/run/knowledge-deprecation-policy.md)
 
-## Action recommendations
+## 行动建议
 
-1. New content lands in [inbox.md](./governance/inbox.md) first, frontmatter `lifecycle: inbox`
-2. During weekly review, classify into the correct leaf and change to `lifecycle: triage`, register in [triage.md](./governance/triage.md)
-3. After writing the summary, change to `lifecycle: active`; the original source becomes `lifecycle: reference`
-4. Quarterly review: scan the 4 diagrams and [tacit-knowledge-backlog.md](./governance/tacit-knowledge-backlog.md); yearly: scan [archive.md](./archive/archive.md) for physical cleanup
+1. 新内容首先进入 [inbox.md](./治理/inbox.md)，frontmatter `lifecycle: inbox`
+2. 每周审查时，分类到正确叶子并将 `lifecycle` 改为 `triage`，注册到 [triage.md](./治理/triage.md)
+3. 完成总结后，将 `lifecycle` 改为 `active`；原始来源变为 `lifecycle: reference`
+4. 季度审查：扫描 4 张图和 [tacit-knowledge-backlog.md](./治理/tacit-knowledge-backlog.md)；年度审查：扫描 [archive.md](./archive/archive.md) 进行物理清理
 
-## Anti-patterns / common misuse
+## 反模式 / 常见误用
 
-- **Treating this directory as topical classification** — consequence: overlaps with the 7 role directories, polluting the directory structure. Fix: use the [decision rules](#decision-rules-for-boundary-cases) table above.
-- **New files missing lifecycle field** — consequence: weak AI recall signal, operations cannot batch-filter unrefined content. Fix: run the [readiness checklist](./governance/readiness-checklist.md) before publishing.
-- **Drawing the 4 diagrams and never reviewing** — consequence: the knowledge map goes stale, breakpoints accumulate into knowledge loss. Fix: follow the [operations cadence](#operations-cadence) schedule.
-- **Creating domain content in curator/** — consequence: content is invisible to its intended role audience. Fix: always place domain content in the correct role directory; use the [role boundary decision tree](../README.md#role-boundary-quick-reference).
-- **Skipping the inbox → triage → active flow** — consequence: unclassified content accumulates, discoverability degrades. Fix: process [inbox.md](./governance/inbox.md) weekly.
+- **将此目录当作主题分类**——后果：与 7 个角色目录重叠，污染目录结构。修复：使用上方的[决策规则](#边界情况决策规则)表。
+- **新文件缺少 lifecycle 字段**——后果：AI 召回信号弱，运营无法批量过滤未精炼内容。修复：发布前运行[准备清单](./治理/readiness-checklist.md)。
+- **画了 4 张图但从不审查**——后果：知识地图过时，断点累积成知识丢失。修复：遵循[运营节奏](#运营节奏)时间表。
+- **在 curator/ 中创建领域内容**——后果：内容对其目标角色受众不可见。修复：始终将领域内容放在正确的角色目录中；使用[角色边界决策树](../README.md#role-boundary-quick-reference)。
+- **跳过 inbox → triage → active 流程**——后果：未分类内容堆积，可发现性降低。修复：每周处理 [inbox.md](./治理/inbox.md)。
 
-## Related
+## 相关
 
-- **Curator sub-READMES**: [governance/](./governance/README.md) · [diagrams/](./diagrams/README.md) · [templates/](./templates/README.md) · [archive/](./archive/README.md)
-- **Curator indexes**: [INDEX.md](./INDEX.md) · [COLLABORATION.md](./COLLABORATION.md)
-- **Upstream**: [../README.md](../README.md) (top-level pipeline overview) · [../MEMORY.md](../MEMORY.md) (KB rulebook) · [../INDEX.md](../INDEX.md) (full-library index)
-- **4 diagrams**: [knowledge-map.md](./diagrams/knowledge-map.md) · [user-journey.md](./diagrams/user-journey.md) · [directory-blueprint.md](./diagrams/directory-blueprint.md) · [governance.md](./governance/governance.md)
+- **Curator 子 README**：[governance/](./治理/README.md) · [diagrams/](./diagrams/README.md) · [templates/](./templates/README.md) · [archive/](./archive/README.md)
+- **Curator 索引**：[INDEX.md](./INDEX.md) · [COLLABORATION.md](./COLLABORATION.md)
+- **上游**：[../README.md](../README.md)（顶层 pipeline 概览）· [../MEMORY.md](../MEMORY.md)（KB 规则手册）· [../INDEX.md](../INDEX.md)（全库索引）
+- **4 张图**：[knowledge-map.md](./diagrams/knowledge-map.md) · [user-journey.md](./diagrams/user-journey.md) · [directory-blueprint.md](./diagrams/directory-blueprint.md) · [governance.md](./治理/governance.md)

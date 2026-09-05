@@ -9,7 +9,7 @@ status: done
 roles: [curator, aier, engineer]
 ---
 
-# 🔁 loop-002 闭环报告
+# loop-002 闭环报告
 
 > 北极星：**AI 从需求到上线全流程自闭环**。
 > 本文件是第二条闭环 loop-002 的收尾报告，聚焦模板复用规范化与三要素编排映射。
@@ -35,15 +35,15 @@ roles: [curator, aier, engineer]
 
 | 角色 | Goal | 结果 |
 |---|---|---|
-| curator | 模板复用规范化 | ✅ INDEX 更新为 8 阶段 + 3 新模板 + frontmatter 规范扩展 |
-| aier | 三要素编排清单落盘 | ✅ 7 角色 skill/agent/mcp 映射覆盖 + 可复现性验证 |
-| engineer | 类型安全基线 | ✅ 23 错误清零 + 维持 0 错误基线 |
+| curator | 模板复用规范化 | INDEX 更新为 8 阶段 + 3 新模板 + frontmatter 规范扩展 |
+| aier | 三要素编排清单落盘 | 7 角色 skill/agent/mcp 映射覆盖 + 可复现性验证 |
+| engineer | 类型安全基线 | 23 错误清零 + 维持 0 错误基线 |
 
 ## 硬数据
 
 - **3/3** 目标达成。
 - **23 → 0** vue-tsc 既有类型错误清零。
-- **3** 个新模板（code-review/deployment/retrospective）+ **1** 个 INDEX 更新。
+- **3** 个新模板（code-review/部署/retrospective）+ **1** 个 INDEX 更新。
 - **8/8** 阶段记录齐全。
 - **typecheck + build 门禁通过**，`pnpm type:check` 0 错误。
 - **闭环完成数 = 2 / 3**。

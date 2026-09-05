@@ -17,8 +17,8 @@ acceptance_criteria:
   - "archive is the single source of truth for removed content"
 related:
   - ./README.md
-  - ../governance/governance.md
-  - ../governance/readiness-checklist.md
+  - ../治理/governance.md
+  - ../治理/readiness-checklist.md
 ---
 
 # Archive Index

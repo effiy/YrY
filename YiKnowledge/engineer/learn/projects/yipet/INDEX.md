@@ -25,9 +25,9 @@ related:
 | Document | Purpose |
 |---|---|
 | [README.md](./README.md) | Project card — architecture, dual-world boundary, API layer, anti-patterns, recent changes |
-| [architecture.md](./architecture.md) | Architecture overview — dual-world boundary, four-tier API, CDN injection |
-| [dev-standards.md](./dev-standards.md) | Development standards — coding conventions, build config, API layer standards |
-| [functional-modules.md](./functional-modules.md) | Module inventory — popup, chat, content, API, shared modules |
+| [architecture.md](./架构设计.md) | Architecture overview — dual-world boundary, four-tier API, CDN injection |
+| [dev-standards.md](./开发规范.md) | Development standards — coding conventions, build config, API layer standards |
+| [functional-modules.md](./功能模块.md) | Module inventory — popup, chat, content, API, shared modules |
 
 ## Stories
 

@@ -7,16 +7,8 @@
           <span class="roadmap__head-stat-label">{{ t("roadmap.total") }}</span>
         </div>
         <div class="roadmap__head-stat">
-          <span class="roadmap__head-stat-value is-cycle">{{ kindCounts.cycle }}</span>
-          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.cycles") }}</span>
-        </div>
-        <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-module">{{ kindCounts.module }}</span>
           <span class="roadmap__head-stat-label">{{ t("roadmap.kind.modules") }}</span>
-        </div>
-        <div class="roadmap__head-stat">
-          <span class="roadmap__head-stat-value is-release">{{ kindCounts.release }}</span>
-          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.releases") }}</span>
         </div>
         <div class="roadmap__head-stat">
           <span class="roadmap__head-stat-value is-done">{{ overallProgress.pct }}%</span>
@@ -64,9 +56,7 @@
     </div>
 
     <div class="roadmap__stats" v-if="totalItems > 0">
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('cycle') + '%', background: '#409eff' }" :title="`${t('roadmap.kind.cycles')}: ${kindCounts.cycle}`" />
       <div class="roadmap__stat-segment" :style="{ width: kindPct('module') + '%', background: '#9b59b6' }" :title="`${t('roadmap.kind.modules')}: ${kindCounts.module}`" />
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('release') + '%', background: '#20c997' }" :title="`${t('roadmap.kind.releases')}: ${kindCounts.release}`" />
     </div>
 
     <div v-loading="loading" class="roadmap__board">
@@ -163,18 +153,7 @@
             <el-icon><CopyDocument /></el-icon>{{ t("roadmap.ctxMenu.copyId") }}
           </div>
           <div class="roadmap-ctxmenu__divider" />
-          <template v-if="contextMenu.item.kind === 'cycle'">
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('upcoming')">
-              <el-icon><Clock /></el-icon>{{ t("roadmap.ctxMenu.markUpcoming") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('active')">
-              <el-icon><VideoPlay /></el-icon>{{ t("roadmap.ctxMenu.markActive") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
-              <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
-            </div>
-          </template>
-          <template v-else-if="contextMenu.item.kind === 'module'">
+          <template v-if="contextMenu.item.kind === 'module'">
             <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
               <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
             </div>
@@ -186,17 +165,6 @@
             </div>
             <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('cancelled')">
               <el-icon><CircleClose /></el-icon>{{ t("roadmap.ctxMenu.markCancelled") }}
-            </div>
-          </template>
-          <template v-else-if="contextMenu.item.kind === 'release'">
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
-              <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
-              <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('released')">
-              <el-icon><Promotion /></el-icon>{{ t("roadmap.ctxMenu.markReleased") }}
             </div>
           </template>
           <div class="roadmap-ctxmenu__divider" />
@@ -218,23 +186,17 @@ import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import { Search, Folder, User, Sort, Clock, View, Document, CopyDocument, VideoPlay, CircleCheck, Calendar, Loading, CircleClose, Promotion, Delete } from "@element-plus/icons-vue";
-import { useCycleStore } from "@/stores/modules/cycle";
+import { Search, Folder, User, Sort, Clock, View, Document, CopyDocument, VideoPlay, CircleCheck, Calendar, Loading, CircleClose, Delete } from "@element-plus/icons-vue";
 import { useModuleStore } from "@/stores/modules/module";
-import { useReleaseStore } from "@/stores/modules/release";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
-import { CYCLE_STATUS_MAP, type CycleStatus } from "@/api/modules/cycleService";
 import { MODULE_STATUS_MAP, type ModuleStatus } from "@/api/modules/moduleService";
-import { RELEASE_STATUS_MAP, type ReleaseStatus } from "@/api/modules/releaseService";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 
 const { t } = useI18n();
 const router = useRouter();
-const cycleStore = useCycleStore();
 const moduleStore = useModuleStore();
-const releaseStore = useReleaseStore();
 const projectStore = useProjectStore();
 const issueStore = useIssueStore();
 
@@ -250,12 +212,10 @@ function onSearchInput() {
   searchTimer = setTimeout(() => loadData(), 250);
 }
 
-type RoadmapKind = "cycle" | "module" | "release";
+type RoadmapKind = "module";
 const kindFilter = ref(new Set<RoadmapKind>());
 const kindOptions = computed<{ value: RoadmapKind; label: string }[]>(() => [
-  { value: "cycle", label: t("roadmap.kind.cycles") },
   { value: "module", label: t("roadmap.kind.modules") },
-  { value: "release", label: t("roadmap.kind.releases") }
 ]);
 function toggleKind(val: RoadmapKind) {
   if (kindFilter.value.has(val)) kindFilter.value.delete(val);
@@ -307,40 +267,24 @@ const COL_HEADER_STYLES = [
 ];
 
 const KIND_LABEL = computed<Record<RoadmapKind, string>>(() => ({
-  cycle: t("roadmap.kind.cycleLabel"),
   module: t("roadmap.kind.moduleLabel"),
-  release: t("roadmap.kind.releaseLabel")
 }));
 
 const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: string }>> = {
-  cycle: {
-    upcoming: { tag: "info", color: "#909399" },
-    active: { tag: "primary", color: "#409eff" },
-    completed: { tag: "success", color: "#67c23a" }
-  },
   module: {
     planned: { tag: "info", color: "#909399" },
     in_progress: { tag: "warning", color: "#e6a23c" },
     completed: { tag: "success", color: "#67c23a" },
     cancelled: { tag: "danger", color: "#f56c6c" }
   },
-  release: {
-    planned: { tag: "info", color: "#909399" },
-    in_progress: { tag: "warning", color: "#e6a23c" },
-    released: { tag: "success", color: "#67c23a" }
-  }
 };
 
 const FINAL_STATUS: Record<RoadmapKind, Set<string>> = {
-  cycle: new Set(["completed"]),
   module: new Set(["completed", "cancelled"]),
-  release: new Set(["released"])
 };
 
 const STATUS_LABEL: Record<RoadmapKind, Record<string, string>> = {
-  cycle: CYCLE_STATUS_MAP,
   module: MODULE_STATUS_MAP,
-  release: RELEASE_STATUS_MAP
 };
 
 const columns = ref<RoadmapColumn[]>([]);
@@ -378,7 +322,7 @@ const filteredColumns = computed(() => {
 
 const totalItems = computed(() => filteredItems.value.length);
 const kindCounts = computed(() => {
-  const counts: Record<RoadmapKind, number> = { cycle: 0, module: 0, release: 0 };
+  const counts: Record<RoadmapKind, number> = { module: 0 };
   allItems.value.forEach(i => { counts[i.kind]++; });
   return counts;
 });
@@ -497,9 +441,7 @@ async function loadData() {
     if (projectFilter.value) params.project_key = projectFilter.value;
 
     await Promise.all([
-      cycleStore.fetchCycles(params),
       moduleStore.fetchModules(params),
-      releaseStore.fetchReleases(params),
       issueStore.fetchIssues({ pageSize: 1000 })
     ]);
 
@@ -509,29 +451,6 @@ async function loadData() {
     const items: RoadmapItem[] = [];
     const dateTarget = filterDateStr.value;
     const kindLabelMap = KIND_LABEL.value;
-
-    cycleStore.cycles.forEach(c => {
-      if (dateTarget && !inDateRange(c.start_date, c.end_date, dateTarget)) return;
-      const status = c.status ?? "upcoming";
-      const meta = STATUS_META.cycle[status] ?? { tag: "info" as TagType, color: "#909399" };
-      items.push({
-        id: c.key,
-        name: c.name,
-        kind: "cycle",
-        kindLabel: kindLabelMap.cycle,
-        status,
-        statusLabel: STATUS_LABEL.cycle[status] ?? status,
-        tagType: meta.tag,
-        color: meta.color,
-        dates: `${fmtDate(c.start_date)} → ${fmtDate(c.end_date)}`,
-        sortDate: c.start_date ?? "",
-        startDate: c.start_date,
-        endDate: c.end_date,
-        detail: c.goal,
-        link: `/cycle/${c.key}`,
-        ...progressOf(c.issue_keys ?? [], issueStatus)
-      });
-    });
 
     moduleStore.modules.forEach(m => {
       if (dateTarget && !inDateRange(m.start_date ?? "", m.due_date ?? "", dateTarget)) return;
@@ -554,30 +473,6 @@ async function loadData() {
         lead: m.lead,
         link: `/module/${m.key}`,
         ...progressOf(m.issue_keys ?? [], issueStatus)
-      });
-    });
-
-    releaseStore.releases.forEach(r => {
-      const date = r.release_date ?? r.target_date;
-      if (dateTarget && date && date < dateTarget) return;
-      const status = r.status ?? "planned";
-      const meta = STATUS_META.release[status] ?? { tag: "info" as TagType, color: "#909399" };
-      items.push({
-        id: r.key,
-        name: r.name,
-        kind: "release",
-        kindLabel: kindLabelMap.release,
-        status,
-        statusLabel: STATUS_LABEL.release[status] ?? status,
-        tagType: meta.tag,
-        color: meta.color,
-        dates: fmtDate(date),
-        sortDate: date ?? "",
-        startDate: date ?? "",
-        endDate: date ?? "",
-        detail: r.notes,
-        link: `/release/${r.key}`,
-        ...progressOf(r.issue_keys ?? [], issueStatus)
       });
     });
 
@@ -668,7 +563,7 @@ async function ctxCopyId() {
   }
 }
 
-type RoadmapStatus = CycleStatus | ModuleStatus | ReleaseStatus;
+type RoadmapStatus = ModuleStatus;
 
 async function ctxQuickStatus(status: RoadmapStatus) {
   const item = contextMenu.item;
@@ -676,15 +571,9 @@ async function ctxQuickStatus(status: RoadmapStatus) {
   if (!item) return;
   try {
     let statusLabel: string = status as string;
-    if (item.kind === "cycle") {
-      await cycleStore.editCycle(item.id, { status: status as CycleStatus });
-      statusLabel = CYCLE_STATUS_MAP[status as CycleStatus] || status;
-    } else if (item.kind === "module") {
+    if (item.kind === "module") {
       await moduleStore.editModule(item.id, { status: status as ModuleStatus });
       statusLabel = MODULE_STATUS_MAP[status as ModuleStatus] || status;
-    } else if (item.kind === "release") {
-      await releaseStore.editRelease(item.id, { status: status as ReleaseStatus });
-      statusLabel = RELEASE_STATUS_MAP[status as ReleaseStatus] || status;
     }
     ElMessage.success(t("roadmap.messages.statusChanged", { name: item.name, status: statusLabel }));
     loadData();
@@ -704,12 +593,8 @@ async function ctxDelete() {
       { type: "warning" }
     );
     const projectKey = item.id.split("-")[0];
-    if (item.kind === "cycle") {
-      await cycleStore.removeCycle(item.id, projectKey);
-    } else if (item.kind === "module") {
+    if (item.kind === "module") {
       await moduleStore.removeModule(item.id, projectKey);
-    } else if (item.kind === "release") {
-      await releaseStore.removeRelease(item.id, projectKey);
     }
     ElMessage.success(t("roadmap.messages.deleted", { name: item.name }));
     loadData();
@@ -791,9 +676,7 @@ watch(filterDateStr, () => { loadData(); });
   color: var(--el-text-color-primary);
   font-variant-numeric: tabular-nums;
 
-  &.is-cycle { color: #409eff; }
-  &.is-module { color: #9b59b6; }
-  &.is-release { color: #20c997; }
+  &  &.is-module { color: #9b59b6; }
   &.is-done { color: var(--el-color-success); }
 }
 
@@ -1006,9 +889,7 @@ watch(filterDateStr, () => { loadData(); });
   letter-spacing: 0.3px;
   flex-shrink: 0;
   line-height: 1.7;
-  &--cycle { color: #409eff; background: rgba(64, 158, 255, 0.12); }
-  &--module { color: #9b59b6; background: rgba(155, 89, 182, 0.12); }
-  &--release { color: #20c997; background: rgba(32, 201, 151, 0.12); }
+  &  --module { color: #9b59b6; background: rgba(155, 89, 182, 0.12); }
 }
 
 .roadmap__item-status {

@@ -523,7 +523,15 @@ async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
 
     existing_doc = await collection.find_one(query_filter)
     if not existing_doc:
-        raise ValueError(f"Data matching {query_label} not found")
+        # Upsert: insert the full data as a new document
+        insert_data = data.copy()
+        insert_data.pop('_id', None)
+        insert_data['createdTime'] = get_current_time()
+        insert_data['updatedTime'] = get_current_time()
+        if collection_name == 'sessions':
+            insert_data.pop('pageContent', None)
+        await collection.insert_one(insert_data)
+        return {'query': query_filter, 'created': True}
 
     # Remove non-updatable fields
     update_data = data.copy()

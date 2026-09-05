@@ -232,83 +232,6 @@
       ]
     },
     {
-      "key": "menu_about",
-      "path": "/about",
-      "name": "about",
-      "component": "/about/index",
-      "redirect": "",
-      "meta": {
-        "icon": "InfoFilled",
-        "title": "About",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 10,
-      "children": [
-        {
-          "key": "menu_aboutYiai",
-          "path": "/about/yiai",
-          "name": "aboutYiai",
-          "component": "/about/yiai/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiAi",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_aboutYipet",
-          "path": "/about/yipet",
-          "name": "aboutYipet",
-          "component": "/about/yipet/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiPet",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_aboutYivad",
-          "path": "/about/yivad",
-          "name": "aboutYivad",
-          "component": "/about/yivad/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Menu",
-            "title": "YiVad",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/about",
-          "order": 2,
-          "children": []
-        }
-      ]
-    },
-    {
       "key": "menu_pm",
       "path": "/pm",
       "name": "pm",
@@ -362,44 +285,6 @@
           },
           "parent": "/pm",
           "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_cycle",
-          "path": "/cycle",
-          "name": "cycle",
-          "component": "/cycle/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Refresh",
-            "title": "Cycles",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/pm",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_sprintPlanning",
-          "path": "/sprintPlanning",
-          "name": "sprintPlanning",
-          "component": "/sprintPlanning/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Calendar",
-            "title": "Sprint Planning",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/pm",
-          "order": 3,
           "children": []
         },
         {
@@ -460,25 +345,6 @@
           "children": []
         },
         {
-          "key": "menu_release",
-          "path": "/release",
-          "name": "release",
-          "component": "/release/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Promotion",
-            "title": "Releases",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/pm",
-          "order": 7,
-          "children": []
-        },
-        {
           "key": "menu_module",
           "path": "/module",
           "name": "module",
@@ -514,83 +380,6 @@
           },
           "parent": "/pm",
           "order": 9,
-          "children": []
-        }
-      ]
-    },
-    {
-      "key": "menu_monitor",
-      "path": "/monitor",
-      "name": "monitor",
-      "component": "",
-      "redirect": "/activity",
-      "meta": {
-        "icon": "DataLine",
-        "title": "Monitor",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 12,
-      "children": [
-        {
-          "key": "menu_activity",
-          "path": "/activity",
-          "name": "activity",
-          "component": "/activity/index",
-          "redirect": "",
-          "meta": {
-            "icon": "DataLine",
-            "title": "Activity",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/monitor",
-          "order": 0,
-          "children": []
-        },
-        {
-          "key": "menu_analytics",
-          "path": "/analytics",
-          "name": "analytics",
-          "component": "/analytics/index",
-          "redirect": "",
-          "meta": {
-            "icon": "TrendCharts",
-            "title": "Analytics",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/monitor",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_bug",
-          "path": "/bug",
-          "name": "bug",
-          "component": "/bug/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Warning",
-            "title": "Bugs",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/monitor",
-          "order": 2,
           "children": []
         }
       ]
@@ -633,101 +422,6 @@
           "children": []
         },
         {
-          "key": "menu_customStatus",
-          "path": "/customStatus",
-          "name": "customStatus",
-          "component": "/customStatus/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Flag",
-            "title": "Custom Status",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 1,
-          "children": []
-        },
-        {
-          "key": "menu_customView",
-          "path": "/customView",
-          "name": "customView",
-          "component": "/customView/index",
-          "redirect": "",
-          "meta": {
-            "icon": "View",
-            "title": "Custom Views",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 2,
-          "children": []
-        },
-        {
-          "key": "menu_apiToken",
-          "path": "/apiToken",
-          "name": "apiToken",
-          "component": "/apiToken/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Key",
-            "title": "API Tokens",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 3,
-          "children": []
-        },
-        {
-          "key": "menu_integration",
-          "path": "/integration",
-          "name": "integration",
-          "component": "/integration/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Connection",
-            "title": "Integrations",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 4,
-          "children": []
-        },
-        {
-          "key": "menu_invite",
-          "path": "/invite",
-          "name": "invite",
-          "component": "/invite/index",
-          "redirect": "",
-          "meta": {
-            "icon": "User",
-            "title": "Invites",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 5,
-          "children": []
-        },
-        {
           "key": "menu_import",
           "path": "/import",
           "name": "import",
@@ -745,65 +439,8 @@
           "parent": "/config",
           "order": 6,
           "children": []
-        },
-        {
-          "key": "menu_trash",
-          "path": "/trash",
-          "name": "trash",
-          "component": "/trash/index",
-          "redirect": "",
-          "meta": {
-            "icon": "Delete",
-            "title": "Trash",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          },
-          "parent": "/config",
-          "order": 7,
-          "children": []
         }
       ]
-    },
-    {
-      "key": "menu_favorites",
-      "path": "/favorites",
-      "name": "favorites",
-      "component": "/favorites/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Star",
-        "title": "Favorites",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 14,
-      "children": []
-    },
-    {
-      "key": "menu_inbox",
-      "path": "/inbox",
-      "name": "inbox",
-      "component": "/inbox/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Message",
-        "title": "Inbox",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 15,
-      "children": []
     },
     {
       "key": "menu_search",
@@ -822,63 +459,6 @@
       },
       "parent": null,
       "order": 16,
-      "children": []
-    },
-    {
-      "key": "menu_label",
-      "path": "/label",
-      "name": "label",
-      "component": "/label/index",
-      "redirect": "",
-      "meta": {
-        "icon": "PriceTag",
-        "title": "Labels",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 17,
-      "children": []
-    },
-    {
-      "key": "menu_timeReport",
-      "path": "/timeReport",
-      "name": "timeReport",
-      "component": "/timeReport/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Timer",
-        "title": "Time Report",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 18,
-      "children": []
-    },
-    {
-      "key": "menu_projectSettings",
-      "path": "/projectSettings",
-      "name": "projectSettings",
-      "component": "/projectSettings/index",
-      "redirect": "",
-      "meta": {
-        "icon": "Tools",
-        "title": "Project Settings",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "parent": null,
-      "order": 19,
       "children": []
     },
     {
@@ -1138,7 +718,6 @@
             "title": "SRE",
             "isLink": "",
             "isHide": false,
-            "isFull": false,
             "isAffix": false,
             "isKeepAlive": true
           },

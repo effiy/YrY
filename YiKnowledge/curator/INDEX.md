@@ -27,7 +27,7 @@ related:
 
 | Domain | Content |
 |---|---|
-| [governance/](./governance/) | KB lifecycle, inbox/triage, readiness checklists |
+| [governance/](./治理/) | KB lifecycle, inbox/triage, readiness checklists |
 | [diagrams/](./diagrams/) | Knowledge maps, user journeys, directory blueprints |
 | [archive/](./archive/) | Deprecated files index |
 | [templates/](./templates/) | Knowledge leaf, ADR, PRD, tech design, meeting notes templates |

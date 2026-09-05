@@ -19,7 +19,6 @@ export default {
       projects: "Projects",
       activeRoles: "Active Roles",
       bugs: "Bugs",
-      releases: "Releases",
       noData: "--"
     },
 
@@ -29,15 +28,12 @@ export default {
       roadmap: { label: "Roadmap", desc: "Product roadmap overview" },
       project: { label: "Projects", desc: "Project overview & management" },
       issue: { label: "Issues", desc: "Task & requirement tracking" },
-      cycle: { label: "Cycles", desc: "Dev iterations & cycles" },
-      release: { label: "Releases", desc: "Version release management" },
-      bug: { label: "Bugs", desc: "Bug tracking & resolution" },
+            bug: { label: "Bugs", desc: "Bug tracking & resolution" },
       module: { label: "Modules", desc: "System module architecture" },
       search: { label: "Search", desc: "Cross-project search" },
       aiChat: { label: "AI Chat", desc: "Agent-powered assistant" },
       knowledge: { label: "Knowledge", desc: "Team knowledge base" },
       rag: { label: "RAG", desc: "AI-enhanced retrieval" },
-      analytics: { label: "Analytics", desc: "Stats & reports" },
       skills: { label: "Skills", desc: "Skills management" },
       rss: { label: "RSS", desc: "RSS subscriptions" }
     },
@@ -92,24 +88,17 @@ export default {
       created: "created",
       updated: "updated",
       issue: "Issue",
-      bug: "Bug",
-      release: "Release",
-      cycle: "Cycle"
+      bug: "Bug"
     },
 
     pipeline: {
       title: "Delivery Pipeline",
       requirements: "Requirements",
-      activeCycles: "Active Cycles",
       inProgress: "In Progress",
-      pendingReleases: "Pending Releases",
-      released: "Released",
       stages: {
         req: "Req",
-        cycle: "Cycle",
         dev: "Dev",
-        release: "Release",
-        done: "Done"
+          done: "Done"
       }
     },
 
@@ -118,11 +107,7 @@ export default {
       issue: "New Issue",
       issueDesc: "Create task or requirement",
       bug: "Report Bug",
-      bugDesc: "Report a defect or issue",
-      cycle: "New Cycle",
-      cycleDesc: "Start a dev iteration",
-      release: "New Release",
-      releaseDesc: "Plan a release version"
+      bugDesc: "Report a defect or issue"
     },
 
     aiRecommend: {

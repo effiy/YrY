@@ -24,37 +24,37 @@ related:
   - ./INDEX.md
 ---
 
-# Learn — Lessons & Projects
+# Learn — 经验教训与项目
 
-> **As an** engineer, **I want to** learn from past experience and access project-specific docs, **so that** I can avoid repeating mistakes and understand project context.
+> **作为** engineer，**我希望**从过去的经验中学习并访问项目特定文档，**以便**避免重复错误并理解项目上下文。
 
-LEARN is the fourth phase of the engineer pipeline — capture what worked and what didn't, and keep project-specific knowledge organized.
+LEARN 是 engineer pipeline 的第四个阶段——记录哪些有效、哪些无效，并保持项目特定知识有序。
 
-## Subdirectories
+## 子目录
 
-| Directory | Contents |
+| 目录 | 内容 |
 |---|---|
-| [lessons/](./lessons/) | Wins, failures, and gotchas from real projects |
-| [projects/](./projects/) | Project-specific business and engineering documentation |
+| [lessons/](./lessons/) | 来自真实项目的成功、失败和踩坑记录 |
+| [projects/](./projects/) | 项目特定的业务和工程文档 |
 
-## Lessons at a glance
+## 经验教训一览
 
-| Category | Description |
+| 类别 | 描述 |
 |---|---|
-| [lessons/wins/](./lessons/wins/) | Success cases and reusable experience |
-| [lessons/failures/](./lessons/failures/) | Failure cases and retrospectives |
-| [lessons/gotchas/](./lessons/gotchas/) | Engineering pitfalls and notes |
+| [lessons/wins/](./lessons/wins/) | 成功案例与可复用经验 |
+| [lessons/failures/](./lessons/failures/) | 失败案例与复盘 |
+| [lessons/gotchas/](./lessons/gotchas/) | 工程踩坑记录与注意事项 |
 
-## Projects at a glance
+## 项目一览
 
-| Project | Description |
+| 项目 | 描述 |
 |---|---|
-| [projects/yiai/](./projects/yiai/) | AI + BRD agent (FastAPI backend, port 10086) |
-| [projects/yipet/](./projects/yipet/) | Browser extension + desktop app (Chrome MV3) |
-| [projects/yivad/](./projects/yivad/) | Main Web app (Vue 3.5 + Rsbuild 1, port 8848) |
+| [projects/yiai/](./projects/yiai/) | AI + BRD agent（FastAPI 后端，端口 10086） |
+| [projects/yipet/](./projects/yipet/) | 浏览器扩展 + 桌面应用（Chrome MV3） |
+| [projects/yivad/](./projects/yivad/) | 主 Web 应用（Vue 3.5 + Rsbuild 1，端口 8848） |
 
-## Cross-references
+## 交叉引用
 
-- [../build/](../build/) — Architecture and design patterns
-- [../ship/](../ship/) — Quality, security, data, reliability
-- [../run/](../run/) — Team workflows, onboarding, and collaboration
+- [../build/](../build/) — 架构与设计模式
+- [../ship/](../ship/) — 质量、安全、数据、可靠性
+- [../run/](../run/) — 团队工作流、onboarding 与协作

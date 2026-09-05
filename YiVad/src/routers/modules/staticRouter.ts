@@ -14,12 +14,6 @@ export const staticRouter: RouteRecordRaw[] = [
     redirect: HOME_URL
   },
   {
-    path: "/welcome",
-    name: "welcome",
-    component: () => import("@/views/welcome/index.vue"),
-    meta: { title: "Welcome" }
-  },
-  {
     path: LOGIN_URL,
     name: "login",
     component: () => import("@/views/login/index.vue"),
@@ -199,22 +193,10 @@ export const staticRouter: RouteRecordRaw[] = [
         meta: { title: "Issue Detail", activeMenu: "/issue" }
       },
       {
-        path: "/cycle/:key",
-        name: "cycleDetail",
-        component: () => import("@/views/cycle/detail.vue"),
-        meta: { title: "Cycle Detail", activeMenu: "/project" }
-      },
-      {
         path: "/module/:key",
         name: "moduleDetail",
         component: () => import("@/views/module/detail.vue"),
         meta: { title: "Module Detail", activeMenu: "/project" }
-      },
-      {
-        path: "/release/:key",
-        name: "releaseDetail",
-        component: () => import("@/views/release/detail.vue"),
-        meta: { title: "Release Detail", activeMenu: "/release" }
       },
       // ── Bug Management ──────────────────────────────────────────
       {

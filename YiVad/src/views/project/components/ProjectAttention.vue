@@ -32,7 +32,7 @@
 <script setup lang="ts" name="ProjectAttention">
 import { computed } from "vue";
 import { CircleCheckFilled, WarningFilled } from "@element-plus/icons-vue";
-import { RISK_META, RISK_ORDER, type RiskKey } from "../composables/useProjectInsights";
+import { RISK_META, RISK_ORDER, type RiskKey } from "../types";
 
 const props = defineProps<{
   counts: Record<RiskKey, number>;

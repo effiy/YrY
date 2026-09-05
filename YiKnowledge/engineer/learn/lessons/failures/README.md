@@ -24,59 +24,59 @@ related:
   - ../../../leader/risk/write-a-postmortem.md
 ---
 
-# Failure case study / Failures
+# 失败案例研究 / Failures
 
-> **As a** engineer, **I want to** understand and apply failure case study / failures, **so that** failures are analyzed and prevented from recurring.
+> **作为** engineer，**我希望**理解并应用失败案例研究，**以便**分析失败并防止其再次发生。
 
-> Failure cases of product release, technology implementation, process incidents and lessons. Retrospective reports use blameless writing style.
+> 产品发布、技术实施、流程事故的失败案例与经验教训。复盘报告使用 blameless 写作风格。
 
-## Included scope
+## 包含范围
 
-- Product release failure case studies
-- Technology implementation incidents (downtime, data leak, performance rollback)
-- Process incidents (review missing, rollback failure)
-- Retrospective reports and improvement actions
-- Single-point bug retrospectives (`bugs/` sub-category)
+- 产品发布失败案例研究
+- 技术实施事故（宕机、数据泄露、性能回退）
+- 流程事故（审查遗漏、回滚失败）
+- 复盘报告与改进行动
+- 单点 bug 复盘（`bugs/` 子分类）
 
-## File type and naming
+## 文件类型与命名
 
-- `{event-name}-failure-summary.md`: failure case study summary
-- `{event-name}-postmortem.md`: retrospective report (blameless)
-- `bugs/bug_{YYYYMMDD}_{slug}.md`: single-point bug retrospective
-- Naming uses English kebab-case
+- `{event-name}-failure-summary.md`：失败案例研究总结
+- `{event-name}-postmortem.md`：复盘报告（blameless）
+- `bugs/bug_{YYYYMMDD}_{slug}.md`：单点 bug 复盘
+- 命名使用英文 kebab-case
 
-## Already included
+## 已包含
 
-| File | Content | Status |
+| 文件 | 内容 | 状态 |
 |---|---|---|
-| [ai-product-launch-lessons-summary.md](failure-ai-product-launch-lessons.md) | AI product release failure case studies and lessons (5 cases + red team checklist)  | active |
-| [incident-postmortem-summary.md](failure-incident-postmortem.md) | Incident retrospective summary (blameless culture + 5-Why + action tracking)  | active |
-| [incident-postmortem-template.md](failure-incident-postmortem.md) | Incident retrospective template (ten-section fillable form)  | reference |
-| [bugs/bug-metaschemas-sed-deletion.md](bug-bug-metaschemas-sed-deletion.md) | sed chain operation covers metaColumns array declaration | active |
-| [bugs/bug-topicdetail-meta-validation.md](bug-bug-topicdetail-meta-validation.md) | TopicDetailPage form model and validation path disconnected | active |
+| [ai-product-launch-lessons-summary.md](failure-ai-product-launch-lessons.md) | AI 产品发布失败案例与经验教训（5 个案例 + red team 检查清单） | active |
+| [incident-postmortem-summary.md](failure-incident-postmortem.md) | 事故复盘总结（blameless 文化 + 5-Why + 行动跟踪） | active |
+| [incident-postmortem-template.md](failure-incident-postmortem.md) | 事故复盘模板（十段可填写表格） | reference |
+| [bugs/bug-metaschemas-sed-deletion.md](bug-bug-metaschemas-sed-deletion.md) | sed 链式操作覆盖 metaColumns 数组声明 | active |
+| [bugs/bug-topicdetail-meta-validation.md](bug-bug-topicdetail-meta-validation.md) | TopicDetailPage 表单模型与验证路径断开 | active |
 
-## To be included
+## 待包含
 
-- Release incidents caused by insufficient red-team testing
-- Hallucination incident retrospective
-- Data flow broken-link incidents
-- Cross-timezone collaboration failure release incidents
-- Rollback case studies caused by missing review
+- 因 red-team 测试不足导致的发布事故
+- 幻觉事故复盘
+- 数据流断链事故
+- 跨时区协作失败发布事故
+- 因审查遗漏导致的回滚案例研究
 
-## Recommended writing structure
+## 推荐写作结构
 
-1. Incident overview (time, impact scope, severity)
-2. Timeline
-3. Root cause analysis (5 Why, fishbone diagram)
-4. Lesson extraction
-5. Improvement actions and responsible parties
-6. Follow-up tracking and validation
+1. 事故概述（时间、影响范围、严重程度）
+2. 时间线
+3. 根因分析（5 Why、鱼骨图）
+4. 经验教训提取
+5. 改进行动与负责人
+6. 后续跟踪与验证
 
-## Related leaf
+## 相关叶子
 
-- [../gotchas/](.) — engineering pitfalls (small-grained)
-- [../wins/](.) — success case study comparison
-- [../../processes/incident-response.md](../process/incident-response.md) — incident response process
-- [../../../srer/release/hotfix-release.md](../../srer/release/hotfix-release.md) — hotfix process
-- [../../strategies/check-engineering-gotchas.md](../process/check-engineering-gotchas.md) — scenario entry
-- [../../processes/review-lessons.md](../process/review-lessons.md) — scenario entry
+- [../gotchas/](.) — 工程踩坑记录（小粒度）
+- [../wins/](.) — 成功案例研究对比
+- [../../processes/incident-response.md](../process/incident-response.md) — 事件响应流程
+- [../../../srer/release/hotfix-release.md](../../srer/release/hotfix-release.md) — hotfix 流程
+- [../../strategies/check-engineering-gotchas.md](../process/check-engineering-gotchas.md) — 场景入口
+- [../../processes/review-lessons.md](../process/review-lessons.md) — 场景入口

@@ -43,7 +43,6 @@ export const useIssueStore = defineStore("issue", () => {
     try {
       await deleteIssue(key);
       issues.value = issues.value.filter(i => i.key !== key);
-      total.value = issues.value.length;
     } catch {
       // fall back to a full reload below
     }
@@ -72,7 +71,6 @@ export const useIssueStore = defineStore("issue", () => {
   async function bulkDelete(keys: string[]) {
     await Promise.all(keys.map(key => deleteIssue(key)));
     issues.value = issues.value.filter(i => !keys.includes(i.key));
-    total.value = issues.value.length;
   }
 
   return {

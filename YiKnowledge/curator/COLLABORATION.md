@@ -36,7 +36,7 @@ Cross-role aggregation of team collaboration, process, meetings, and knowledge-s
 | Directory | Role | Description |
 |---|---|---|
 | [../engineer/run/](../engineer/run/) | engineer | Knowledge audit, contributor charter, review, transfer |
-| [./governance/](./governance/) | curator | KB lifecycle, inbox, triage, readiness checklist |
+| [./治理/](./治理/) | curator | KB lifecycle, inbox, triage, readiness checklist |
 
 ## Onboarding & handoffs
 

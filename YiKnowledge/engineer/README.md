@@ -25,46 +25,46 @@ related:
 
 # Engineer
 
-> **Pipeline stage 3: Design + Build** — Engineer IMPLEMENTS. It does not make architecture decisions (→ [leader/](../leader/)), define product requirements (→ [producter/](../producter/)), or operate production (→ [srer/](../srer/)).
+> **Pipeline 阶段 3：设计 + 构建** — Engineer 负责**实现**。不做架构决策（→ [leader/](../leader/)）、不定义产品需求（→ [producter/](../producter/)）、不运维生产环境（→ [srer/](../srer/)）。
 
-## Problem domains
+## 问题域
 
-| Phase | Domain | Solves |
+| 阶段 | 领域 | 解决的问题 |
 |---|---|---|
-| BUILD | [build/](./build/) | How do I design and set up this system? |
-| SHIP | [ship/](./ship/) | How do I test, secure, persist, and make it resilient? |
-| RUN | [run/](./run/) | How do we work together and onboard? |
-| LEARN | [learn/](./learn/) | Lessons learned and project-specific docs |
+| BUILD | [build/](./build/) | 如何设计和搭建此系统？ |
+| SHIP | [ship/](./ship/) | 如何测试、加固、持久化并使其具有韧性？ |
+| RUN | [run/](./run/) | 我们如何协作和 onboarding？ |
+| LEARN | [learn/](./learn/) | 经验教训和项目特定文档 |
 
-## Scope
+## 范围
 
-### In scope (engineer OWNS)
-- System design, API design, dev tools, DX → [build/](./build/)
-- Code quality, testing, security, data, resilience, observability → [ship/](./ship/)
-- Team workflows, onboarding, cross-cutting scenarios → [run/](./run/)
-- Wins, failures, gotchas, project-specific docs → [learn/](./learn/)
+### 范围内（engineer 拥有）
+- 系统设计、API 设计、开发工具、DX → [build/](./build/)
+- 代码质量、测试、安全、数据、韧性、可观测性 → [ship/](./ship/)
+- 团队工作流、onboarding、横切场景 → [run/](./run/)
+- 成功案例、失败案例、踩坑记录、项目特定文档 → [learn/](./learn/)
 
-### Out of scope (delegated to other roles)
-- Architecture decisions with tradeoffs → [leader/decisions/](../leader/decisions/)
-- Tech selection evaluations → [leader/architecture/](../leader/architecture/)
-- Incident response procedures → [srer/incident-response/](../srer/incident-response/)
-- AI theory and foundations → [aier/foundations/](../aier/foundations/)
-- Product requirements and PRDs → [producter/discovery/](../producter/discovery/)
-- KB governance and structure → [curator/governance/](../curator/governance/)
+### 范围外（委托给其他角色）
+- 带权衡的架构决策 → [leader/decisions/](../leader/decisions/)
+- 技术选型评估 → [leader/架构/](../leader/架构/)
+- 事件响应流程 → [srer/incident-response/](../srer/incident-response/)
+- AI 理论与基础 → [aier/基础/](../aier/基础/)
+- 产品需求与 PRD → [producter/discovery/](../producter/discovery/)
+- KB 治理与结构 → [curator/治理/](../curator/治理/)
 
-## Core viewpoints
+## 核心观点
 
-- **Problem-domain first** — content is organized by the problem you're solving (Build → Ship → Run → Learn)
-- **Implement, don't decide** — engineer/ documents how to build; leader/ documents why we chose that approach
-- **Lessons are first-class artifacts** — every win, failure, and gotcha is worth capturing
+- **问题域优先** — 内容按你正在解决的问题组织（Build → Ship → Run → Learn）
+- **实现，而非决策** — engineer/ 记录如何构建；leader/ 记录为何选择该方案
+- **经验教训是第一类产物** — 每次成功、失败和踩坑都值得记录
 
-## Cross-role references
+## 跨角色引用
 
-- [../leader/](../leader/) — Architecture decisions, capacity, risk, roadmap
-- [../aier/](../aier/) — AI foundations, methodology, platform
-- [../producter/](../producter/) — PM frameworks, discovery, delivery
-- [../srer/](../srer/) — Incident response, observability, release
-- [../projects/](../projects/) — Project operational artifacts (bugs, issues, demos)
-- [./ENGINEERING.md](./ENGINEERING.md) — Cross-role engineering domain index
-- [./SECURITY.md](./SECURITY.md) — Cross-role security domain index
-- [./learn/INDEX.md](./learn/INDEX.md) — Learn phase index (lessons + projects)
+- [../leader/](../leader/) — 架构决策、容量、风险、路线图
+- [../aier/](../aier/) — AI 基础、方法论、平台
+- [../producter/](../producter/) — PM 框架、发现、交付
+- [../srer/](../srer/) — 事件响应、可观测性、发布
+- [../projects/](../projects/) — 项目运营产物（bugs、issues、demos）
+- [./ENGINEERING.md](./ENGINEERING.md) — 跨角色工程领域索引
+- [./SECURITY.md](./SECURITY.md) — 跨角色安全领域索引
+- [./learn/INDEX.md](./learn/INDEX.md) — Learn 阶段索引（经验教训 + 项目）

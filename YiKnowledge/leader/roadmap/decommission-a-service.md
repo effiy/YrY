@@ -16,7 +16,7 @@ benefit: "Safely decommission a service with a structured migration, cutover, an
 related:
   - ./deprecate-a-feature.md
   - ./manage-tech-debt.md
-  - ../architecture/README.md
+  - ../架构/README.md
   - ../README.md
   - ../INDEX.md
 ---

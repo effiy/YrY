@@ -28,7 +28,7 @@ export function getIssueHistory(issue_key: string) {
 
 export function recordChange(data: Omit<IssueChange, "key">) {
   return createDocument<IssueChange>(COLLECTION, {
-    key: `HIST-${Date.now().toString(36).toUpperCase()}`,
+    key: `HIST-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
     ...data
   });
 }

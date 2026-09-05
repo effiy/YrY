@@ -84,15 +84,6 @@
         >
           <el-icon><Folder /></el-icon><span class="kanban-card__chip-text">{{ projectName }}</span>
         </button>
-        <button
-          v-if="display.releaseKey"
-          type="button"
-          class="kanban-card__chip kanban-card__chip--release"
-          :title="releaseName || display.releaseKey"
-          @click.stop="$emit('release-click')"
-        >
-          <el-icon><Box /></el-icon><span class="kanban-card__chip-text">{{ releaseName || display.releaseKey }}</span>
-        </button>
         <span
           v-for="label in display.labels"
           :key="label"
@@ -106,7 +97,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { User, Clock, Folder, Box, Flag, Timer } from "@element-plus/icons-vue";
+import { User, Clock, Folder, Flag, Timer } from "@element-plus/icons-vue";
 import { formatDate } from "@/utils/datetime";
 import {
   ISSUE_PRIORITY_MAP, ISSUE_TYPE_TAG_MAP,
@@ -130,7 +121,6 @@ const props = defineProps<{
   /** @deprecated Use `item` instead. Kept for backward-compat with existing callers. */
   issue?: Issue;
   projectName?: string;
-  releaseName?: string;
 }>();
 
 defineEmits<{
@@ -138,7 +128,6 @@ defineEmits<{
   (e: "title-click"): void;
   (e: "goal-click"): void;
   (e: "project-click"): void;
-  (e: "release-click"): void;
   (e: "contextmenu", event: MouseEvent): void;
 }>();
 
@@ -208,7 +197,6 @@ const display = computed(() => {
       assignee: bug.assignee,
       goalId: "" as string,
       projectKey: bug.project_key || "",
-      releaseKey: "" as string,
       labels: bug.tags || []
     };
   }
@@ -226,7 +214,6 @@ const display = computed(() => {
     assignee: issue.assignee,
     goalId: issue.goal_id || "",
     projectKey: issue.project_key,
-    releaseKey: issue.release_key || "",
     labels: issue.labels
   };
 });
@@ -249,7 +236,6 @@ const hasChipsOrLabels = computed(() => {
   const d = display.value;
   return !!(
     (d.projectKey && props.projectName) ||
-    d.releaseKey ||
     (d.labels && d.labels.length > 0)
   );
 });
@@ -529,7 +515,7 @@ function goalLabel(goalId: string): string { return allGoalsMap[goalId]?.title |
   98% { transform: rotate(8deg); }
 }
 
-// ── Tags row (project / release / labels) ──
+// ── Tags row (project / labels) ──
 .kanban-card__tags {
   display: flex;
   flex-wrap: wrap;
@@ -538,7 +524,7 @@ function goalLabel(goalId: string): string { return allGoalsMap[goalId]?.title |
   min-width: 0;
 }
 
-// ── Chips (project / release) ──
+// ── Chips (project) ──
 .kanban-card__chip {
   display: inline-flex;
   align-items: center;
@@ -585,11 +571,6 @@ function goalLabel(goalId: string): string { return allGoalsMap[goalId]?.title |
     &:hover { background: rgba(84, 112, 198, 0.22); }
   }
 
-  &--release {
-    color: #4fa92e;
-    background: rgba(103, 194, 58, 0.14);
-    &:hover { background: rgba(103, 194, 58, 0.22); }
-  }
 }
 
 // ── Label chips ──

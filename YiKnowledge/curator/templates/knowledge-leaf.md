@@ -19,7 +19,7 @@ acceptance_criteria:
 related:
   - ./README.md
   - ./INDEX.md
-  - ../governance/readiness-checklist.md
+  - ../治理/readiness-checklist.md
 ---
 
 # Knowledge Leaf Template

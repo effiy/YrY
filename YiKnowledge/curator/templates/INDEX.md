@@ -28,5 +28,5 @@ related:
 | Category | Location |
 |---|---|
 | Templates (PRD, ADR, tech design, retrospective, etc.) | [./](./) |
-| Prompts (AI prompt templates) | [../../aier/methodology/prompts/](../../aier/methodology/prompts/) |
+| Prompts (AI prompt templates) | [../../aier/方法/提示词/](../../aier/方法/提示词/) |
 | Reading list | [../../executiver/reading-list/](../../executiver/reading-list/) |

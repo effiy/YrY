@@ -3,8 +3,8 @@
     <PageHeaderCard
       :icon="Tickets"
       icon-bg="linear-gradient(135deg, #409eff, #1d4ed8)"
-      title="Projects"
-      description="Track projects, cycles, and delivery across the workspace"
+      :title="$t('project.list.title')"
+      :description="$t('project.list.description')"
       :pills="headerPills"
       :show-date-nav="true"
       :filter-date="filterDate"
@@ -27,8 +27,8 @@
 
     <div v-if="filterDate" class="pl-date-banner">
       <el-icon><Calendar /></el-icon>
-      <span>Showing issues due on <strong>{{ filterDateLabel }}</strong> — stats, charts, and risk flags reflect only this date</span>
-      <el-button size="small" text type="primary" @click="clearFilterDate">Clear date filter</el-button>
+      <span>{{ $t('project.list.dateBanner.showing', { date: filterDateLabel }) }}</span>
+      <el-button size="small" text type="primary" @click="clearFilterDate">{{ $t('project.list.dateBanner.clear') }}</el-button>
     </div>
 
     <ProjectAnalytics
@@ -72,16 +72,16 @@
         class="pl-search"
         size="small"
         clearable
-        placeholder="Search projects… (Ctrl+K)"
+        :placeholder="$t('project.list.searchPlaceholder')"
         :prefix-icon="Search"
       />
       <div class="pl-sort-group">
         <el-select v-model="sortBy" class="pl-sort" size="small">
-          <el-option label="Recently updated" value="updated" />
-          <el-option label="Name" value="name" />
-          <el-option label="Most issues" value="issues" />
-          <el-option label="Most done" value="done" />
-          <el-option label="Most at risk" value="risk" />
+          <el-option :label="$t('project.list.sortBy.updated')" value="updated" />
+          <el-option :label="$t('project.list.sortBy.name')" value="name" />
+          <el-option :label="$t('project.list.sortBy.issues')" value="issues" />
+          <el-option :label="$t('project.list.sortBy.done')" value="done" />
+          <el-option :label="$t('project.list.sortBy.risk')" value="risk" />
         </el-select>
         <el-button
           class="pl-sort-dir"
@@ -92,25 +92,24 @@
         />
       </div>
       <el-select v-model="statusFilter" class="pl-status" size="small">
-        <el-option label="All statuses" value="" />
-        <el-option label="Active" value="active" />
-        <el-option label="Archived" value="archived" />
+        <el-option :label="$t('project.list.statusFilter.all')" value="" />
+        <el-option :label="$t('project.list.statusFilter.active')" value="active" />
+        <el-option :label="$t('project.list.statusFilter.archived')" value="archived" />
       </el-select>
-      <el-button :type="showStarredOnly ? 'warning' : ''" size="small" :icon="Star" @click="showStarredOnly = !showStarredOnly">
-        Starred
+      <el-button :type="showStarredOnly ? 'warning' : ''" size="small" :icon="Star" :title="$t('project.list.starTooltip')" @click="showStarredOnly = !showStarredOnly">
+        {{ $t('project.list.starred') }}
       </el-button>
       <div class="pl-toolbar-right">
-        <span v-if="lastUpdated" class="pl-updated">Updated {{ lastUpdated }}</span>
-        <el-button size="small" :icon="Refresh" :loading="loading" title="Reload all data" @click="refreshAll" />
+        <span v-if="lastUpdated" class="pl-updated">{{ $t('project.list.updated', { time: lastUpdated }) }}</span>
+        <el-button size="small" :icon="Refresh" :loading="loading" :title="$t('project.list.refresh')" @click="refreshAll" />
         <el-button
           size="small"
           :icon="Download"
           :disabled="!displayedProjects.length"
-          title="Export the visible projects"
+          :title="$t('project.list.export')"
           @click="exportCSV"
         />
-        <el-button size="small" :icon="Collection" @click="demosVisible = true">Demos</el-button>
-        <el-button type="primary" size="small" :icon="Plus" @click="openCreate">New Project</el-button>
+        <el-button type="primary" size="small" :icon="Plus" @click="openCreate">{{ $t('project.list.newProject') }}</el-button>
         <el-radio-group v-model="viewMode" size="small">
           <el-radio-button value="grid"
             ><el-icon><Grid /></el-icon
@@ -184,13 +183,13 @@
 
       <!-- Two-tier empty state: nothing exists yet vs. nothing matches. -->
       <div v-else-if="!loading && !projects.length" class="pl-empty">
-        <el-empty description="No projects yet">
-          <el-button type="primary" @click="openCreate">Create your first project</el-button>
+        <el-empty :description="$t('project.list.empty.noProjects')">
+          <el-button type="primary" @click="openCreate">{{ $t('project.list.empty.createFirst') }}</el-button>
         </el-empty>
       </div>
       <div v-else-if="!loading" class="pl-empty">
         <el-empty :description="emptyDescription">
-          <el-button size="small" @click="resetView">Clear filters</el-button>
+          <el-button size="small" @click="resetView">{{ $t('project.list.empty.clearFilters') }}</el-button>
         </el-empty>
       </div>
     </div>
@@ -198,39 +197,38 @@
     <!-- Batch bar — archive/restore only; bulk delete is intentionally absent. -->
     <Transition name="pl-batch">
       <div v-if="selectedKeys.size" class="pl-batch">
-        <span class="pl-batch-count">{{ selectedKeys.size }} selected</span>
-        <el-button size="small" type="warning" plain @click="setStatus([...selectedKeys], 'archived')">Archive</el-button>
-        <el-button size="small" type="success" plain @click="setStatus([...selectedKeys], 'active')">Restore</el-button>
-        <el-button size="small" text @click="selectedKeys.clear()">Clear</el-button>
+        <span class="pl-batch-count">{{ $t('project.list.batch.selected', { n: selectedKeys.size }) }}</span>
+        <el-button size="small" type="warning" plain @click="setStatus([...selectedKeys], 'archived')">{{ $t('project.list.batch.archive') }}</el-button>
+        <el-button size="small" type="success" plain @click="setStatus([...selectedKeys], 'active')">{{ $t('project.list.batch.restore') }}</el-button>
+        <el-button size="small" text @click="selectedKeys.clear()">{{ $t('project.list.batch.clear') }}</el-button>
       </div>
     </Transition>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.isEdit ? 'Edit Project' : 'New Project'" width="560px" destroy-on-close>
+    <el-dialog v-model="dialog.visible" :title="dialog.isEdit ? $t('project.dialog.editTitle') : $t('project.dialog.createTitle')" width="560px" destroy-on-close>
       <el-form ref="formRef" :model="dialog.form" :rules="rules" label-width="100px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="dialog.form.name" placeholder="Project name" maxlength="80" show-word-limit />
+        <el-form-item :label="$t('project.dialog.name')" prop="name">
+          <el-input v-model="dialog.form.name" :placeholder="$t('project.dialog.namePlaceholder')" maxlength="80" show-word-limit />
         </el-form-item>
-        <el-form-item label="Identifier" prop="identifier">
-          <el-input v-model="dialog.form.identifier" placeholder="e.g. PLANE" maxlength="12" />
+        <el-form-item :label="$t('project.dialog.identifier')" prop="identifier">
+          <el-input v-model="dialog.form.identifier" :placeholder="$t('project.dialog.identifierPlaceholder')" maxlength="12" />
         </el-form-item>
-        <el-form-item label="Description">
-          <el-input v-model="dialog.form.description" type="textarea" :rows="3" placeholder="Project description" />
+        <el-form-item :label="$t('project.dialog.description')">
+          <el-input v-model="dialog.form.description" type="textarea" :rows="3" :placeholder="$t('project.dialog.descriptionPlaceholder')" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item :label="$t('project.dialog.status')">
           <el-radio-group v-model="dialog.form.status">
-            <el-radio value="active">Active</el-radio>
-            <el-radio value="archived">Archived</el-radio>
+            <el-radio value="active">{{ $t('project.dialog.statusActive') }}</el-radio>
+            <el-radio value="archived">{{ $t('project.dialog.statusArchived') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialog.visible = false">Cancel</el-button>
-        <el-button type="primary" :loading="dialog.submitting" @click="submit">Save</el-button>
+        <el-button @click="dialog.visible = false">{{ $t('project.dialog.cancel') }}</el-button>
+        <el-button type="primary" :loading="dialog.submitting" @click="submit">{{ $t('project.dialog.save') }}</el-button>
       </template>
     </el-dialog>
 
-    <DemoGalleryDialog v-model="demosVisible" @created="onDemoCreated" />
-  </div>
+      </div>
 </template>
 
 <script setup lang="ts" name="projectList">
@@ -238,7 +236,6 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue"
 import { useRouter } from "vue-router";
 import {
   Calendar,
-  Collection,
   Document,
   Download,
   Grid,
@@ -269,12 +266,14 @@ import ProjectAttention from "./components/ProjectAttention.vue";
 import ProjectFilterPills from "./components/ProjectFilterPills.vue";
 import ProjectCard from "./components/ProjectCard.vue";
 import ProjectRow from "./components/ProjectRow.vue";
-import DemoGalleryDialog from "./components/DemoGalleryDialog.vue";
 import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import type { HeaderPill } from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 
+import { useI18n } from "vue-i18n";
+
 const router = useRouter();
+const { t } = useI18n();
 const store = useProjectStore();
 const { render: renderMarkdown } = useMarkdown();
 
@@ -328,7 +327,6 @@ watch(analyticsExpanded, v => saveBool(PREF.analytics, v));
 
 const searchText = ref("");
 const searchRef = ref<{ focus: () => void }>();
-const demosVisible = ref(false);
 
 const formRef = ref<FormInstance>();
 const starredKeys = ref<Set<string>>(new Set(JSON.parse(localStorage.getItem("starred_projects") || "[]")));
@@ -400,18 +398,9 @@ const topProjects = computed(() =>
 
 const criticalCount = computed(() => projects.value.filter(p => healthFor(p.key) === "poor").length);
 
-const countLabel = computed(() => {
-  const total = projects.value.length;
-  const shown = displayedProjects.value.length;
-  const base = shown === total ? `${total} projects` : `${shown} of ${total} projects`;
-  return filterDate.value ? `${base} · ${filterDateLabel.value}` : base;
-});
+const countLabel = computed(() => t("project.list.countLabel", { shown: displayedProjects.value.length, total: projects.value.length }));
 
-const emptyDescription = computed(() => {
-  const parts = ["No projects match the current filters"];
-  if (filterDate.value) parts.push(`due on ${filterDateLabel.value}`);
-  return parts.join(" · ");
-});
+const emptyDescription = computed(() => t("project.list.empty.noMatch"));
 
 // ── KPI tiles: always describe the whole dataset and act as filter entries.
 const tiles = computed<StatTile[]>(() => {
@@ -421,8 +410,8 @@ const tiles = computed<StatTile[]>(() => {
     {
       key: "issues",
       value: all.issues,
-      label: "Issues",
-      sub: `${all.done} done`,
+      label: t("project.stats.issues"),
+      sub: t("project.stats.done", { n: all.done }),
       hint: "Open the issue list",
       icon: Tickets,
       variant: "issues",
@@ -431,8 +420,8 @@ const tiles = computed<StatTile[]>(() => {
     {
       key: "open",
       value: all.open,
-      label: "Open",
-      sub: all.overdue ? `${all.overdue} overdue` : "none overdue",
+      label: t("project.stats.open"),
+      sub: all.overdue ? t("project.stats.overdue", { n: all.overdue }) : t("project.stats.noneOverdue"),
       hint: "Open the issue list",
       icon: Document,
       variant: "open",
@@ -442,26 +431,16 @@ const tiles = computed<StatTile[]>(() => {
       key: "progress",
       value: completion,
       suffix: "%",
-      label: "Completed",
-      sub: `${all.done} of ${all.issues}`,
+      label: t("project.stats.completed"),
+      sub: `${all.done} ${t("project.stats.of")} ${all.issues}`,
       icon: TrendCharts,
       variant: "progress"
     },
     {
-      key: "cycles",
-      value: all.activeCycles,
-      label: "Active Cycles",
-      sub: `${all.activeCycles} of ${all.cycles}`,
-      hint: "Open cycles",
-      icon: Calendar,
-      variant: "cycles",
-      clickable: true
-    },
-    {
       key: "bugs",
       value: all.totalBugs,
-      label: "Bugs",
-      sub: `${all.totalBugs} total`,
+      label: t("project.stats.bugs"),
+      sub: t("project.stats.total", { n: all.totalBugs }),
       hint: "Open bugs",
       icon: Warning,
       variant: "bugs",
@@ -470,8 +449,8 @@ const tiles = computed<StatTile[]>(() => {
     {
       key: "risk",
       value: flaggedCount.value,
-      label: "At risk",
-      sub: criticalCount.value ? `${criticalCount.value} critical` : "none critical",
+      label: t("project.stats.atRisk"),
+      sub: criticalCount.value ? t("project.stats.critical", { n: criticalCount.value }) : t("project.stats.noneCritical"),
       hint: "Filter to projects failing a health check",
       icon: WarningFilled,
       variant: "risk",
@@ -490,9 +469,6 @@ function onTileSelect(key: string) {
     case "open":
       router.push("/issue");
       break;
-    case "cycles":
-      router.push("/cycle");
-      break;
     case "bugs":
       router.push("/bug");
       break;
@@ -503,13 +479,13 @@ const headerPills = computed<HeaderPill[]>(() => {
   const all = allRollup.value;
   const completion = all.issues ? Math.round((all.done / all.issues) * 100) : 0;
   return [
-    { value: projects.value.length, label: "Projects" },
-    { value: all.issues, label: "Issues" },
-    { value: all.open, label: "Open" },
+    { value: projects.value.length, label: t("project.list.title") },
+    { value: all.issues, label: t("project.stats.issues") },
+    { value: all.open, label: t("project.stats.open") },
     {
       value: completion,
       suffix: "%",
-      label: "Progress",
+      label: t("project.stats.completed"),
       accent: true,
       accentColor: "var(--el-color-primary-light-9)",
       accentValueColor: "var(--el-color-primary)"
@@ -565,12 +541,13 @@ async function setStatus(keys: string[], status: "active" | "archived") {
   const byKey = new Map(projects.value.map(p => [p.key, p]));
   const targets = keys.filter(k => byKey.get(k)?.status !== status);
   if (!targets.length) {
-    ElMessage.info(status === "archived" ? "Already archived" : "Already active");
+    ElMessage.info(status === "archived" ? t("project.list.alreadyArchived") : t("project.list.alreadyActive"));
     return;
   }
-  const verb = status === "archived" ? "Archive" : "Restore";
+  const verb = status === "archived" ? t("project.list.batch.archive") : t("project.list.batch.restore");
   if (targets.length > 1) {
-    const ok = await ElMessageBox.confirm(`${verb} ${targets.length} projects?`, `${verb} projects`, {
+    const confirmMsg = status === "archived" ? t("project.list.archiveConfirm", { n: targets.length }) : t("project.list.restoreConfirm", { n: targets.length });
+    const ok = await ElMessageBox.confirm(confirmMsg, verb, {
       type: "warning"
     }).catch(() => false);
     if (!ok) return;
@@ -579,15 +556,15 @@ async function setStatus(keys: string[], status: "active" | "archived") {
   selectedKeys.value = new Set();
   await refreshAll();
   ElMessage.success(
-    `${targets.length} project${targets.length > 1 ? "s" : ""} ${status === "archived" ? "archived" : "restored"}`
+    status === "archived" ? t("project.list.archiveSuccess", { n: targets.length }) : t("project.list.restoreSuccess", { n: targets.length })
   );
 }
 
 const rules: FormRules = {
-  name: [{ required: true, message: "Project name is required", trigger: "blur" }],
+  name: [{ required: true, message: t("project.dialog.nameRequired"), trigger: "blur" }],
   identifier: [
-    { required: true, message: "Identifier is required", trigger: "blur" },
-    { pattern: /^[A-Z][A-Z0-9_]{0,11}$/, message: "Uppercase letters, digits, underscores only", trigger: "blur" }
+    { required: true, message: t("project.dialog.identifierRequired"), trigger: "blur" },
+    { pattern: /^[A-Z][A-Z0-9_]{0,11}$/, message: t("project.dialog.identifierPattern"), trigger: "blur" }
   ]
 };
 
@@ -641,7 +618,7 @@ async function submit() {
         description: dialog.form.description,
         status: dialog.form.status
       });
-      ElMessage.success("Project updated");
+      ElMessage.success(t("project.dialog.updateSuccess"));
     } else {
       await createProject({
         key: dialog.form.identifier.toLowerCase() + "-" + Date.now().toString(36),
@@ -652,7 +629,7 @@ async function submit() {
         members: [{ user_id: "admin", username: "Admin", role: "owner" }],
         cover_image: dialog.form.cover_image
       });
-      ElMessage.success("Project created");
+      ElMessage.success(t("project.dialog.createSuccess"));
     }
     dialog.visible = false;
     await refreshAll();
@@ -666,16 +643,16 @@ function goDetail(key: string) {
   router.push(`/project/${key}`);
 }
 
-function goTab(key: string, tab: "issues" | "cycles" | "releases" | "members" | "bugs") {
+function goTab(key: string, tab: "issues" | "members" | "bugs" | "modules") {
   router.push({ path: `/project/${key}`, query: { tab } });
 }
 
 async function copyIdentifier(project: Project) {
   try {
     await navigator.clipboard.writeText(project.identifier);
-    ElMessage.success(`Copied ${project.identifier}`);
+    ElMessage.success(t("project.dialog.copied", { identifier: project.identifier }));
   } catch {
-    ElMessage.warning("Clipboard unavailable");
+    ElMessage.warning(t("project.dialog.clipboardUnavailable"));
   }
 }
 
@@ -683,11 +660,6 @@ function resetView() {
   clearAllFilters();
   searchText.value = "";
   showStarredOnly.value = false;
-}
-
-function onDemoCreated(projectKey: string) {
-  refreshAll();
-  router.push(`/project/${projectKey}`);
 }
 
 const CSV_HEADERS = [
@@ -701,11 +673,7 @@ const CSV_HEADERS = [
   "open",
   "overdue",
   "completion_pct",
-  "cycles",
-  "active_cycles",
-  "releases",
-  "pending_releases",
-  "health",
+    "health",
   "risks",
   "updated_at"
 ];
@@ -724,10 +692,6 @@ function exportCSV() {
       String(s.open),
       String(s.overdue),
       String(completionPct(p.key)),
-      String(s.cycles),
-      String(s.activeCycles),
-      String(s.releases),
-      String(s.pendingReleases),
       healthFor(p.key),
       risksFor(p.key).join(" | "),
       p.updated_at || ""
@@ -743,7 +707,7 @@ function exportCSV() {
   a.download = `projects-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  ElMessage.success(`Exported ${rows.length} project${rows.length === 1 ? "" : "s"}`);
+  ElMessage.success(t("project.list.exportSuccess", { n: rows.length }));
 }
 
 function onKeydown(e: KeyboardEvent) {

@@ -1,5 +1,5 @@
 ---
-title: YiKnowledge personal knowledge base overview
+title: YiKnowledge 个人知识库概览
 tags:
 - knowledge-base
 - index
@@ -17,380 +17,377 @@ lifecycle: active
 review_cycle: quarterly
 roles:
 - curator
-benefit: New readers see the full software delivery pipeline at a glance and locate
-  content by stage × role
+benefit: 新读者可一目了然地了解完整的软件交付流水线，并按阶段 x 角色定位内容
 acceptance_criteria:
-- core ideas are clearly stated and distinguishable from source material
-- actionable recommendations are given, not just information
-- anti-patterns or when-not-to-use are identified
+- 核心观点清晰陈述，且能与原始资料明确区分
+- 提供可操作的建议，而非仅提供信息
+- 识别出反模式或不应使用的场景
 related:
 - ./INDEX.md
-- ./curator/governance/user-story-migration-plan.md
+- ./curator/治理/user-story-migration-plan.md
 - ./curator/diagrams/directory-blueprint.md
 ---
 
-# YiKnowledge — The Requirements-to-Production Knowledge Pipeline
+# YiKnowledge —— 从需求到生产的知识流水线
 
-YiKnowledge is a personal knowledge base organized around the **software delivery pipeline**. Seven role directories span the full journey from requirements to production — each role owns a stage, each stage crystallizes a class of knowledge.
+YiKnowledge 是一个围绕**软件交付流水线**组织的个人知识库。七个角色目录贯穿从需求到生产的完整旅程 —— 每个角色拥有一个阶段，每个阶段结晶出一类知识。
 
-> Not just "organized by role" — organized by the **causal chain of software delivery**. From `executiver`'s *why build it*, to `producter`'s *what to build*, to `leader`'s *which way to build*, to `engineer`'s *how to build*, to `srer`'s *how to run it*. Knowledge lives in exactly one place per stage; cross-role discovery happens via frontmatter `roles:` and domain indexes, never by duplicating content.
+> 不仅仅是"按角色组织"—— 而是按**软件交付的因果链**组织。从 `executiver` 的*为什么做*，到 `producter` 的*做什么*，到 `leader` 的*走哪条路*，到 `engineer` 的*怎么做*，再到 `srer` 的*怎么跑*。知识在每个阶段只存在于唯一位置；跨角色发现通过 frontmatter `roles:` 和领域索引实现，绝不通过复制内容。
 
-## Pipeline overview
+## 流水线概览
 
 ```
-Business Strategy Layer (spans the entire pipeline)
+业务战略层（贯穿整个流水线）
 ─────────────────────────────────────────────────────────────────────────────
   executiver/strategy/   executiver/industry/   executiver/roadmap/
-  "Why this business"    "What's happening in   "What are the org goals"
-                          the market"
+  "为什么做这个业务"        "市场正在发生什么"          "组织目标是什么"
 
-Software Delivery Pipeline — 5 stages, input → output chip flow
+软件交付流水线 —— 5 个阶段，输入 → 输出芯片流转
 ─────────────────────────────────────────────────────────────────────────────
-  Requirements     Decisions        Design+Build      Quality+Release    Operate+Learn
+  需求             决策              设计+构建          质量+发布           运营+学习
   ────────────     ─────────        ────────────      ───────────────    ─────────────
   producter/       leader/           engineer/         srer/              srer/
   │                │                 │                 │                  │
   INPUT:           INPUT:            INPUT:            INPUT:             INPUT:
-  Business         PRDs              ADRs              Working            Running
-  strategy         Requirements      PRDs              software           services
+  业务              PRD               ADR               可运行的           运行中的
+  战略              需求               PRD               软件              服务
   │                │                 │                 │                  │
   OUTPUT:          OUTPUT:           OUTPUT:           OUTPUT:            OUTPUT:
-  PRDs             ADRs              Architecture      Release            SLO compliance
-  user stories     tech selections   patterns          procedures         Postmortems
-  priorities       capacity plans    Dev practices     Incident           Lessons learned
-                   │                 Quality &         response
-                   │                 security          Observability
-                   │                 Data & reliability
-                   │                 Lessons learned
-                   │                 │                 │                  │
-  "What"           "Which way"       "How"             "How to ship"      "How to run
-                                                                           & learn"
+  PRD              ADR               架构模式           发布                SLO 合规
+  用户故事          技术选型           开发实践           流程               事后复盘
+  优先级            容量规划           质量与             事件响应            经验教训
+                    │                 安全              可观测性
+                    │                 数据与可靠性
+                    │                 经验教训
+                    │                 │                 │                  │
+  "做什么"          "走哪条路"         "怎么做"           "怎么交付"          "怎么运维
+                                                                            与学习"
 
-AI Enablement Layer (spans the entire pipeline)
+AI 赋能层（贯穿整个流水线）
 ─────────────────────────────────────────────────────────────────────────────
-  aier/foundations/   aier/methodology/   aier/platform/   aier/ml/
-  "How AI accelerates every stage"
+  aier/基础/   aier/方法/   aier/平台/   aier/机器学习/
+  "AI 如何加速每个阶段"
 
-Knowledge Governance Layer (meta-layer)
+知识治理层（元层）
 ─────────────────────────────────────────────────────────────────────────────
-  curator/governance/   curator/diagrams/   curator/archive/   curator/templates/
-  "How the KB itself is maintained and evolved"
+  curator/治理/   curator/diagrams/   curator/archive/   curator/templates/
+  "知识库本身如何维护和演进"
 ```
 
-## Pipeline stages
+## 流水线阶段
 
-### Stage 1: Requirements — Define what to build
+### 阶段 1：需求 —— 定义要构建什么
 
-**Owner: [producter/](./producter/README.md)** | Pipeline stage 1/5
+**负责人：[producter/](./producter/README.md)** | 流水线阶段 1/5
 
-**Input chips** (from upstream):
-- **Business strategy** — Market intelligence, competitive landscape, org-level goals from [executiver/](./executiver/README.md)
+**输入芯片**（来自上游）：
+- **业务战略** —— 来自 [executiver/](./executiver/README.md) 的市场情报、竞争格局、组织级目标
 
-**Output chips** (deliverables):
-- **PRDs** — Product Requirement Documents: what to build, for whom, and how to measure success
-- **user stories** — User stories and JTBD narratives: the user's perspective on feature value
-- **priorities** — Prioritization frameworks (RICE/ICE) and north-star metric definitions
+**输出芯片**（交付物）：
+- **PRD** —— 产品需求文档：构建什么、为谁构建、如何衡量成功
+- **用户故事** —— 用户故事和 JTBD 叙事：从用户视角看待功能价值
+- **优先级** —— 优先级框架（RICE/ICE）和北极星指标定义
 
-Before writing any code, clarify what problem to solve, for whom, and how to measure success.
+在编写任何代码之前，先明确要解决什么问题、为谁解决、以及如何衡量成功。
 
-| When you need to... | Chip | Go here |
+| 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| Write a PRD | `prds` | [producter/discovery/prd/](./producter/discovery/prd/) |
-| Define user stories / JTBD | `user-stories` | [producter/frameworks/jobs-to-be-done.md](./producter/frameworks/jobs-to-be-done.md) |
-| Prioritize features (RICE/ICE) | `priorities` | [producter/frameworks/rice-ice-prioritization.md](./producter/frameworks/rice-ice-prioritization.md) |
-| Define a north-star metric | `priorities` | [producter/discovery/metrics/north-star-metric.md](./producter/discovery/metrics/north-star-metric.md) |
-| Do user research | `user-stories` | [producter/frameworks/do-user-research.md](./producter/frameworks/do-user-research.md) |
-| Run a sprint | `priorities` | [producter/delivery/run-a-sprint.md](./producter/delivery/run-a-sprint.md) |
+| 编写 PRD | `prds` | [producter/discovery/prd/](./producter/discovery/prd/) |
+| 定义用户故事 / JTBD | `user-stories` | [producter/frameworks/jobs-to-be-done.md](./producter/frameworks/jobs-to-be-done.md) |
+| 排定功能优先级（RICE/ICE） | `priorities` | [producter/frameworks/rice-ice-prioritization.md](./producter/frameworks/rice-ice-prioritization.md) |
+| 定义北极星指标 | `priorities` | [producter/discovery/metrics/north-star-metric.md](./producter/discovery/metrics/north-star-metric.md) |
+| 进行用户研究 | `user-stories` | [producter/frameworks/do-user-research.md](./producter/frameworks/do-user-research.md) |
+| 运行一个 Sprint | `priorities` | [producter/delivery/run-a-sprint.md](./producter/delivery/run-a-sprint.md) |
 
-**Upstream input**: [executiver/strategy/](./executiver/strategy/) defines business strategy and competitive positioning; [executiver/industry/](./executiver/industry/) provides market intelligence. These are *context* for requirements, not requirements themselves.
+**上游输入**：[executiver/strategy/](./executiver/strategy/) 定义业务战略和竞争定位；[executiver/industry/](./executiver/industry/) 提供市场情报。这些是需求的*上下文*，而非需求本身。
 
-**Boundary rule**: producter defines *what feature to build*, not *how to implement it* (→ engineer/) or *which technology to use* (→ leader/).
+**边界规则**：producter 定义*要构建什么功能*，而非*如何实现*（→ engineer/）或*使用什么技术*（→ leader/）。
 
-### Stage 2: Decisions — Choose the technical direction
+### 阶段 2：决策 —— 选择技术方向
 
-**Owner: [leader/](./leader/README.md)** | Pipeline stage 2/5
+**负责人：[leader/](./leader/README.md)** | 流水线阶段 2/5
 
-**Input chips** (from upstream):
-- **PRDs** — Product Requirement Documents from [producter/](./producter/README.md) — the feature definitions to make decisions about
-- **requirements** — Functional and non-functional requirements that constrain technical decisions
+**输入芯片**（来自上游）：
+- **PRD** —— 来自 [producter/](./producter/README.md) 的产品需求文档 —— 需要做出决策的功能定义
+- **需求** —— 约束技术决策的功能性和非功能性需求
 
-**Output chips** (deliverables):
-- **ADRs** — Architecture Decision Records: Context/Decision/Consequences for every significant technical choice
-- **tech selections** — Technology stack evaluations, comparison matrices, and selection rationale
-- **capacity plans** — Capacity planning, FinOps reviews, and infrastructure sizing decisions
+**输出芯片**（交付物）：
+- **ADR** —— 架构决策记录：每个重要技术选择的上下文/决策/后果
+- **技术选型** —— 技术栈评估、对比矩阵和选型理由
+- **容量规划** —— 容量规划、FinOps 评审和基础设施规模决策
 
-Once requirements are clear, the leader makes technical decisions — which architecture, which stack, how much capacity, where the risks are.
+需求明确后，leader 做出技术决策 —— 什么架构、什么技术栈、多少容量、风险在哪里。
 
-| When you need to... | Chip | Go here |
+| 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| Write an architecture decision (ADR) | `adrs` | [leader/architecture/design-architecture-decision.md](./leader/architecture/design-architecture-decision.md) |
-| Evaluate a technology choice | `tech-selections` | [leader/roadmap/do-a-tech-selection.md](./leader/roadmap/do-a-tech-selection.md) |
-| Plan capacity / FinOps | `capacity-plans` | [leader/capacity/run-a-finops-review.md](./leader/capacity/run-a-finops-review.md) |
-| Manage tech debt | `tech-selections` | [leader/roadmap/manage-tech-debt.md](./leader/roadmap/manage-tech-debt.md) |
-| Assess launch risks | `adrs` | [leader/risk/](./leader/risk/) |
-| Browse existing ADRs | `adrs` | [leader/decisions/](./leader/decisions/) — organized by project subdirectory |
+| 编写架构决策（ADR） | `adrs` | [leader/架构/design-architecture-decision.md](./leader/架构/design-architecture-decision.md) |
+| 评估技术选型 | `tech-selections` | [leader/roadmap/do-a-tech-selection.md](./leader/roadmap/do-a-tech-selection.md) |
+| 规划容量 / FinOps | `capacity-plans` | [leader/capacity/run-a-finops-review.md](./leader/capacity/run-a-finops-review.md) |
+| 管理技术债务 | `tech-selections` | [leader/roadmap/manage-tech-debt.md](./leader/roadmap/manage-tech-debt.md) |
+| 评估上线风险 | `adrs` | [leader/risk/](./leader/risk/) |
+| 浏览已有 ADR | `adrs` | [leader/decisions/](./leader/decisions/) —— 按项目子目录组织 |
 
-**Boundary rule**: leader makes *decisions with tradeoffs*, not *implementation patterns* (→ engineer/build/) or *operational procedures* (→ srer/). The key distinction: **decision = why we chose A over B** (leader/), **pattern = how to implement A** (engineer/).
+**边界规则**：leader 做出*带权衡的决策*，而非*实现模式*（→ engineer/build/）或*运维流程*（→ srer/）。关键区分：**决策 = 为什么选 A 而非 B**（leader/），**模式 = 如何实现 A**（engineer/）。
 
-### Stage 3: Design + Build — Turn decisions into code
+### 阶段 3：设计 + 构建 —— 将决策转化为代码
 
-**Owner: [engineer/](./engineer/README.md)** | Pipeline stage 3/5
+**负责人：[engineer/](./engineer/README.md)** | 流水线阶段 3/5
 
-**Input chips** (from upstream):
-- **ADRs** — Architecture Decision Records from [leader/](./leader/README.md) — the technical direction to implement
-- **PRDs** — Product Requirement Documents from [producter/](./producter/README.md) — the feature specifications to build
+**输入芯片**（来自上游）：
+- **ADR** —— 来自 [leader/](./leader/README.md) 的架构决策记录 —— 需要实现的技术方向
+- **PRD** —— 来自 [producter/](./producter/README.md) 的产品需求文档 —— 需要构建的功能规格
 
-**Output chips** (deliverables):
-- **Architecture patterns** — Implementation-level patterns: CQRS, Saga, Event-Driven, API Gateway, BFF
-- **Dev practices** — Development practices, tooling, DX improvements, and dependency management
-- **Quality & security** — Code quality standards, security hardening, testing strategies, and supply-chain audits
-- **Data & reliability** — Data patterns (migrations, caching, pipelines) and reliability patterns (retry, backpressure, idempotency)
-- **Lessons learned** — Wins, failures, gotchas, and bugs: field notes from real implementation experience
+**输出芯片**（交付物）：
+- **架构模式** —— 实现级模式：CQRS、Saga、事件驱动、API Gateway、BFF
+- **开发实践** —— 开发实践、工具链、DX 改进和依赖管理
+- **质量与安全** —— 代码质量标准、安全加固、测试策略和供应链审计
+- **数据与可靠性** —— 数据模式（迁移、缓存、流水线）和可靠性模式（重试、背压、幂等）
+- **经验教训** —— 成功、失败、陷阱和 Bug：来自真实实现经验的现场笔记
 
-The longest stage in the pipeline, spanning BUILD → SHIP. Eight subdirectories organized by problem domain:
+流水线中最长的阶段，横跨 BUILD → SHIP。按问题域组织的八个子目录：
 
 ```
 BUILD                           SHIP
-├─ architecture/ (39 files)      ├─ quality-security/ (27 files)
-│  System design, API design,     │  Testing, security hardening,
-│  event-driven, design           │  supply chain, code review,
-│  patterns, BFF, CQRS, Saga      │  chaos engineering, threat
-│                                 │  modeling, zero trust
-├─ development/ (28 files)       │
-│  Dev tools, DX, dependency      ├─ data/ (13 files)
-│  management, project            │  Databases, migrations, caching,
-│  scaffolding, editor config     │  data pipelines, Outbox,
-│                                 │  read replicas, connection pools
-│                                 │
-                                  └─ reliability/ (13 files)
-                                     Resilience, observability,
-                                     rate limiting, scaling,
-                                     retry/backoff, timeouts, idempotency
+├─ architecture/（39 个文件）      ├─ quality-security/（27 个文件）
+│  系统设计、API 设计、              │  测试、安全加固、
+│  事件驱动、设计                     │  供应链、代码审查、
+│  模式、BFF、CQRS、Saga            │  混沌工程、威胁建模、
+│                                  │  零信任
+├─ development/（28 个文件）        │
+│  开发工具、DX、依赖                 ├─ data/（13 个文件）
+│  管理、项目                         │  数据库、迁移、缓存、
+│  脚手架、编辑器配置                 │  数据流水线、Outbox、
+│                                  │  读写分离、连接池
+│                                  │
+                                    └─ reliability/（13 个文件）
+                                       弹性、可观测性、
+                                       限流、扩缩容、
+                                       重试/退避、超时、幂等
 ```
 
-| When you need to... | Chip | Go here |
+| 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| Design an API | `architecture-patterns` | [engineer/build/implement-an-api.md](./engineer/build/implement-an-api.md) |
-| Design a data model | `data-reliability` | [engineer/ship/](./engineer/ship/) |
-| Harden the supply chain | `quality-security` | [engineer/ship/harden-supply-chain.md](./engineer/ship/harden-supply-chain.md) |
-| Set up testing infrastructure | `dev-practices` | [engineer/build/set-up-testing-infrastructure.md](./engineer/build/set-up-testing-infrastructure.md) |
-| Do a code review | `quality-security` | [engineer/ship/](./engineer/ship/) |
-| Review past lessons | `lessons` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
-| Share a client across projects | `dev-practices` | [engineer/build/share-client-across-projects.md](./engineer/build/share-client-across-projects.md) |
+| 设计 API | `architecture-patterns` | [engineer/build/implement-an-api.md](./engineer/build/implement-an-api.md) |
+| 设计数据模型 | `data-reliability` | [engineer/ship/](./engineer/ship/) |
+| 加固供应链 | `quality-security` | [engineer/ship/harden-supply-chain.md](./engineer/ship/harden-supply-chain.md) |
+| 搭建测试基础设施 | `dev-practices` | [engineer/build/set-up-testing-infrastructure.md](./engineer/build/set-up-testing-infrastructure.md) |
+| 进行代码审查 | `quality-security` | [engineer/ship/](./engineer/ship/) |
+| 回顾过往经验 | `lessons` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
+| 跨项目共享客户端 | `dev-practices` | [engineer/build/share-client-across-projects.md](./engineer/build/share-client-across-projects.md) |
 
-**Boundary rule**: engineer is the *implementation layer* — it does not substitute for leader's decisions. If an architecture-level issue surfaces during implementation → go back to leader/ and write an ADR; don't "decide on the side" inside engineer/.
+**边界规则**：engineer 是*实现层* —— 不能替代 leader 的决策。如果实现过程中出现架构级问题 → 回到 leader/ 编写 ADR；不要在 engineer/ 内部"顺便做决定"。
 
-### Stage 4: Quality + Release — Ship safely
+### 阶段 4：质量 + 发布 —— 安全交付
 
-**Owner: [srer/release/](./srer/release/) + [engineer/ship/](./engineer/ship/)** | Pipeline stage 4/5
+**负责人：[srer/release/](./srer/release/) + [engineer/ship/](./engineer/ship/)** | 流水线阶段 4/5
 
-**Input chips** (from upstream):
-- **Working software** — Implementation artifacts from [engineer/](./engineer/README.md) — code that has passed design and build quality gates
+**输入芯片**（来自上游）：
+- **可运行的软件** —— 来自 [engineer/](./engineer/README.md) 的实现产物 —— 已通过设计和构建质量关卡的代码
 
-**Output chips** (deliverables):
-- **Release procedures** — Release, rollback, canary, and hotfix procedures: how code reaches production safely
-- **Incident response** — Incident response procedures, on-call handover, and blameless postmortem templates
-- **Observability** — Monitoring, alerting, dashboards, SLO/SLI definitions, and observability triad
+**输出芯片**（交付物）：
+- **发布流程** —— 发布、回滚、金丝雀和热修复流程：代码如何安全地到达生产环境
+- **事件响应** —— 事件响应流程、值班交接和免责事后复盘模板
+- **可观测性** —— 监控、告警、仪表盘、SLO/SLI 定义和可观测性三元组
 
-Code is written, but shipping is not the finish line. This stage ensures code passes quality gates, security audits, release procedures, and rollback rehearsals.
+代码写完了，但交付不是终点。本阶段确保代码通过质量关卡、安全审计、发布流程和回滚演练。
 
-| When you need to... | Chip | Go here |
+| 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| Ship a release | `release-procedures` | [srer/release/release.md](./srer/release/release.md) |
-| Execute a rollback | `release-procedures` | [srer/release/rollback-drill.md](./srer/release/rollback-drill.md) |
-| Run a canary release | `release-procedures` | [srer/release/canary-release.md](./srer/release/canary-release.md) |
-| Respond to an incident | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/respond-to-an-incident.md) |
-| Set up observability | `observability` | [srer/observability/set-up-observability.md](./srer/observability/set-up-observability.md) |
-| Do a security audit | `quality-security` | [engineer/ship/](./engineer/ship/) |
-| Run performance/load tests | `quality-security` | [engineer/ship/](./engineer/ship/) |
+| 执行发布 | `release-procedures` | [srer/release/release.md](./srer/release/release.md) |
+| 执行回滚 | `release-procedures` | [srer/release/rollback-drill.md](./srer/release/rollback-drill.md) |
+| 运行金丝雀发布 | `release-procedures` | [srer/release/canary-release.md](./srer/release/canary-release.md) |
+| 响应事件 | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/respond-to-an-incident.md) |
+| 搭建可观测性 | `observability` | [srer/observability/set-up-observability.md](./srer/observability/set-up-observability.md) |
+| 进行安全审计 | `quality-security` | [engineer/ship/](./engineer/ship/) |
+| 运行性能/负载测试 | `quality-security` | [engineer/ship/](./engineer/ship/) |
 
-**Boundary rule**: srer/release/ owns *release process and coordination*; engineer/ship/ owns *the technical patterns used for release* (canary implementation, feature flags). Process vs. implementation.
+**边界规则**：srer/release/ 拥有*发布流程和协调*；engineer/ship/ 拥有*发布所用的技术模式*（金丝雀实现、功能开关）。流程 vs. 实现。
 
-### Stage 5: Operate + Learn — Keep running and learn from experience
+### 阶段 5：运营 + 学习 —— 保持运行并从中学习
 
-**Owner: [srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/)** | Pipeline stage 5/5
+**负责人：[srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/)** | 流水线阶段 5/5
 
-**Input chips** (from upstream):
-- **Running services** — Services running in production: the live system that observability monitors and incidents affect
+**输入芯片**（来自上游）：
+- **运行中的服务** —— 在生产环境中运行的服务：可观测性监控的、事件影响的真实系统
 
-**Output chips** (deliverables):
-- **SLO compliance** — SLO compliance tracking, error budget management, and availability reporting
-- **Postmortems** — Blameless postmortems with root cause analysis, action items, and timeline reconstruction
-- **Lessons learned** — Operational lessons: wins to replicate, failures to learn from, and gotchas to avoid
+**输出芯片**（交付物）：
+- **SLO 合规** —— SLO 合规追踪、错误预算管理和可用性报告
+- **事后复盘** —— 免责事后复盘，包含根因分析、行动项和时间线重建
+- **经验教训** —— 运维经验：值得复制的成功、需要学习的失败和应该避免的陷阱
 
-After launch, srer handles observability and incident response; engineer captures lessons from both successes and failures.
+上线之后，srer 处理可观测性和事件响应；engineer 从成功和失败中捕获经验教训。
 
 ```
 RUN                             LEARN
-├─ srer/observability/ (13)     ├─ engineer/learn/lessons/ (52)
-│  Monitoring, alerting,         │  wins/ (success patterns)
-│  dashboards, SLOs,             │  failures/ (failure postmortems)
-│  observability triad           │  gotchas/ (pitfalls)
-│                                │  bugs/ (defect analyses)
-├─ srer/incident-response/ (17)  │
-│  Incident response procedures, ├─ engineer/run/ (66)
-│  on-call handover, blameless   │  Team collaboration, knowledge
-│  postmortems, after-action     │  sharing, retrospectives,
-│                                │  onboarding, iteration PM handbook
-├─ srer/release/ (6)
-│  Release, rollback, hotfix
+├─ srer/observability/（13）      ├─ engineer/learn/lessons/（52）
+│  监控、告警、                      │  wins/（成功模式）
+│  仪表盘、SLO、                     │  failures/（失败复盘）
+│  可观测性三元组                    │  gotchas/（陷阱）
+│                                  │  bugs/（缺陷分析）
+├─ srer/incident-response/（17）    │
+│  事件响应流程、                    ├─ engineer/run/（66）
+│  值班交接、免责                     │  团队协作、知识
+│  事后复盘、行动后                   │  分享、回顾、
+│                                  │  入职、迭代 PM 手册
+├─ srer/release/（6）
+│  发布、回滚、热修复
 ```
 
-| When you need to... | Chip | Go here |
+| 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| Respond to a production incident | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/respond-to-an-incident.md) |
-| Set up observability | `observability` | [srer/observability/set-up-observability.md](./srer/observability/set-up-observability.md) |
-| Write a postmortem | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/write-a-postmortem.md) |
-| Track SLO/SLI compliance | `slo-compliance` | [srer/observability/](./srer/observability/) |
-| Check known gotchas | `lessons-learned` | [engineer/run/check-engineering-gotchas.md](./engineer/run/check-engineering-gotchas.md) |
-| Review past lessons | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
-| Onboard a new team member | `lessons-learned` | [engineer/run/onboarding/](./engineer/run/onboarding/) |
+| 响应生产事件 | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/respond-to-an-incident.md) |
+| 搭建可观测性 | `observability` | [srer/observability/set-up-observability.md](./srer/observability/set-up-observability.md) |
+| 编写事后复盘 | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/write-a-postmortem.md) |
+| 追踪 SLO/SLI 合规 | `slo-compliance` | [srer/observability/](./srer/observability/) |
+| 查看已知陷阱 | `lessons-learned` | [engineer/run/check-engineering-gotchas.md](./engineer/run/check-engineering-gotchas.md) |
+| 回顾过往经验 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
+| 为新成员入职 | `lessons-learned` | [engineer/run/onboarding/](./engineer/run/onboarding/) |
 
-**Boundary rule**: *before* an incident → leader/risk/ (risk assessment); *during* an incident → srer/incident-response/ (response procedures); *after* an incident → leader/risk/ (postmortem methodology), srer/incident-response/ (specific postmortem records).
+**边界规则**：事件*发生前* → leader/risk/（风险评估）；事件*发生时* → srer/incident-response/（响应流程）；事件*发生后* → leader/risk/（复盘方法论），srer/incident-response/（具体复盘记录）。
 
-## Three layers spanning the entire pipeline
+## 贯穿整个流水线的三个层
 
-### Business Strategy Layer — Why we build
+### 业务战略层 —— 为什么做
 
-**Owner: [executiver/](./executiver/README.md)** — provides business context for every pipeline stage.
+**负责人：[executiver/](./executiver/README.md)** —— 为每个流水线阶段提供业务上下文。
 
-| Subdirectory | Answers | Consumed by |
+| 子目录 | 回答 | 被谁消费 |
 |---|---|---|
-| [strategy/](./executiver/strategy/) | Corporate strategy, org design, SWOT | producter (requirements) |
-| [industry/](./executiver/industry/) | Market trends, competitor analysis, reports | producter, leader (product/tech decisions) |
-| [roadmap/](./executiver/roadmap/) | Org-level goals and milestones | leader (tech roadmap alignment) |
-| [reading-list/](./executiver/reading-list/) | Executive learning resources | All roles |
+| [strategy/](./executiver/strategy/) | 企业战略、组织设计、SWOT | producter（需求） |
+| [industry/](./executiver/industry/) | 市场趋势、竞品分析、报告 | producter、leader（产品/技术决策） |
+| [roadmap/](./executiver/roadmap/) | 组织级目标和里程碑 | leader（技术路线对齐） |
+| [reading-list/](./executiver/reading-list/) | 高管学习资源 | 所有角色 |
 
-### AI Enablement Layer — How AI accelerates every stage
+### AI 赋能层 —— AI 如何加速每个阶段
 
-**Owner: [aier/](./aier/README.md)** — AI is not a separate pipeline stage; it permeates every stage as an accelerator.
+**负责人：[aier/](./aier/README.md)** —— AI 不是独立的流水线阶段；它作为加速器渗透到每个阶段。
 
-| Subdirectory | Answers | Embedding stage |
+| 子目录 | 回答 | 嵌入阶段 |
 |---|---|---|
-| [foundations/](./aier/foundations/) | AI fundamentals and theory | Design (understanding AI capability boundaries) |
-| [methodology/](./aier/methodology/) | RAG patterns, LLM evaluation, Agent architecture | Build (AI feature implementation) |
-| [platform/](./aier/platform/) | Vector DB selection, embedding model selection | Design + Build (AI infrastructure) |
-| [ml/](./aier/ml/) | Traditional ML patterns | Build (non-LLM ML needs) |
+| [基础/](./aier/基础/) | AI 基础与理论 | 设计（理解 AI 能力边界） |
+| [方法/](./aier/方法/) | RAG 模式、LLM 评估、Agent 架构 | 构建（AI 功能实现） |
+| [平台/](./aier/平台/) | 向量数据库选型、Embedding 模型选型 | 设计 + 构建（AI 基础设施） |
+| [机器学习/](./aier/机器学习/) | 传统 ML 模式 | 构建（非 LLM 的 ML 需求） |
 
-**Boundary rule**: general-purpose databases, caching, pipelines → engineer/ship/.
+**边界规则**：通用数据库、缓存、数据流水线 → engineer/ship/。
 
-### Knowledge Governance Layer — Who maintains the KB
+### 知识治理层 —— 谁来维护知识库
 
-**Owner: [curator/](./curator/README.md)** — meta-layer. Produces no domain knowledge; maintains the KB's structure and health.
+**负责人：[curator/](./curator/README.md)** —— 元层。不产生领域知识；维护知识库的结构和健康。
 
-| Subdirectory | Responsibility |
+| 子目录 | 职责 |
 |---|---|
-| [governance/](./curator/governance/) | Knowledge lifecycle, classification standards, readiness checklist |
-| [diagrams/](./curator/diagrams/) | Knowledge map, user journey, directory blueprint |
-| [archive/](./curator/archive/) | Index of deprecated content |
-| [templates/](./curator/templates/) | Templates for knowledge leaves, ADRs, BRDs, etc. |
+| [governance/](./curator/治理/) | 知识生命周期、分类标准、就绪检查清单 |
+| [diagrams/](./curator/diagrams/) | 知识地图、用户旅程、目录蓝图 |
+| [archive/](./curator/archive/) | 已弃用内容索引 |
+| [templates/](./curator/templates/) | 知识叶子、ADR、BRD 等模板 |
 
-## Role responsibility chain
+## 角色责任链
 
-Roles in the pipeline are not peers — they have a clear upstream/downstream relationship:
+流水线中的角色并非平级 —— 它们有明确的上游/下游关系：
 
 ```
 executiver ──→ producter ──→ leader ──→ engineer ──→ srer
-  (why)         (what)       (which)     (how)       (run)
+  （为什么）      （做什么）      （走哪条路）    （怎么做）      （怎么跑）
 
-  Business       Product      Tech        Impl        Ops
-  strategy       requirements decisions   patterns    procedures
+  业务            产品            技术            实现            运维
+  战略            需求            决策            模式            流程
 ```
 
-- Each role produces only the knowledge its *downstream role* needs
-- An upstream change should trigger a review of the corresponding downstream content
-- Don't "casually" make a leader-level decision inside engineer/, or settle a tech stack inside producter/
+- 每个角色只生产其*下游角色*所需的知识
+- 上游变更应触发对相应下游内容的审查
+- 不要在 engineer/ 内部"随意"做出 leader 级别的决策，也不要在 producter/ 内部敲定技术栈
 
-## Role boundary quick reference
+## 角色边界快速参考
 
-When content could belong to multiple roles, use this decision tree (mirrors the Pipeline page's decision tree):
+当内容可能属于多个角色时，使用以下决策树（与流水线页面的决策树一致）：
 
 ```
-Is this content about...
-├─ Business strategy, market, competitors? ──→ executiver/
-├─ Product requirements, user stories, priorities? ──→ producter/
-├─ Technical decisions, architecture choices, ADRs? ──→ leader/
-├─ Implementation patterns, dev tools, code? ──→ engineer/
-├─ Release procedures, monitoring, incident response? ──→ srer/
-├─ AI/ML-specific theory and practice? ──→ aier/
-└─ The KB's own structure and rules? ──→ curator/
+内容是否关于...
+├─ 业务战略、市场、竞品？ ──→ executiver/
+├─ 产品需求、用户故事、优先级？ ──→ producter/
+├─ 技术决策、架构选择、ADR？ ──→ leader/
+├─ 实现模式、开发工具、代码？ ──→ engineer/
+├─ 发布流程、监控、事件响应？ ──→ srer/
+├─ AI/ML 特定理论和实践？ ──→ aier/
+└─ 知识库自身的结构和规则？ ──→ curator/
 ```
 
-**High-frequency boundary conflicts**:
+**高频边界冲突**：
 
-| Conflict | Owner | Reason |
+| 冲突 | 归属 | 原因 |
 |---|---|---|
-| Architecture decision vs. architecture pattern | leader/ | Decision = why A over B, with tradeoffs and consequences |
-| Security hardening vs. security strategy | engineer/ | Hardening = how to implement (code level); strategy = risk assessment (leader/risk/) |
-| Incident response vs. risk prevention | srer/ → during, leader/ → before | Timeline distinction: before / during / after |
-| Product roadmap vs. technical roadmap | producter/ → features, leader/ → tech | What features vs. what technology |
-| Data engineering vs. AI data | engineer/ → general, aier/ → AI-specific | Databases, caching vs. datasets, embeddings |
+| 架构决策 vs. 架构模式 | leader/ | 决策 = 为什么选 A 而非 B，包含权衡和后果 |
+| 安全加固 vs. 安全策略 | engineer/ | 加固 = 如何实现（代码层面）；策略 = 风险评估（leader/risk/） |
+| 事件响应 vs. 风险预防 | srer/ → 发生时，leader/ → 发生前 | 时间线区分：发生前 / 发生时 / 发生后 |
+| 产品路线图 vs. 技术路线图 | producter/ → 功能，leader/ → 技术 | 什么功能 vs. 什么技术 |
+| 数据工程 vs. AI 数据 | engineer/ → 通用，aier/ → AI 特定 | 数据库、缓存 vs. 数据集、Embedding |
 
-## Chip-level cross-reference (pipeline__stage-flow-chip)
+## 芯片级交叉引用（pipeline__stage-flow-chip）
 
-Each pipeline stage has **input chips** (consumed from upstream) and **output chips** (produced for downstream). The chips form the contract between stages:
+每个流水线阶段都有**输入芯片**（从上游消费）和**输出芯片**（为下游生产）。芯片构成了阶段之间的契约：
 
-| Stage | Input chips | Output chips | Role |
+| 阶段 | 输入芯片 | 输出芯片 | 角色 |
 |---|---|---|---|
-| 1. Requirements | Business strategy | PRDs, user stories, priorities | [producter/](./producter/README.md) |
-| 2. Decisions | PRDs, requirements | ADRs, tech selections, capacity plans | [leader/](./leader/README.md) |
-| 3. Design + Build | ADRs, PRDs | Architecture patterns, Dev practices, Quality & security, Data & reliability, Lessons learned | [engineer/](./engineer/README.md) |
-| 4. Quality + Release | Working software | Release procedures, Incident response, Observability | [srer/](./srer/README.md) |
-| 5. Operate + Learn | Running services | SLO compliance, Postmortems, Lessons learned | [srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/) |
+| 1. 需求 | 业务战略 | PRD、用户故事、优先级 | [producter/](./producter/README.md) |
+| 2. 决策 | PRD、需求 | ADR、技术选型、容量规划 | [leader/](./leader/README.md) |
+| 3. 设计 + 构建 | ADR、PRD | 架构模式、开发实践、质量与安全、数据与可靠性、经验教训 | [engineer/](./engineer/README.md) |
+| 4. 质量 + 发布 | 可运行的软件 | 发布流程、事件响应、可观测性 | [srer/](./srer/README.md) |
+| 5. 运营 + 学习 | 运行中的服务 | SLO 合规、事后复盘、经验教训 | [srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/) |
 
-> Each chip maps to keyword-based file filtering in the Pipeline UI (`/pipeline/:stageId/:itemId`). Clicking a chip filters the stage's knowledge files by the chip's keywords.
+> 每个芯片在流水线 UI（`/pipeline/:stageId/:itemId`）中对应基于关键词的文件过滤。点击芯片会按芯片的关键词过滤该阶段的知识文件。
 
-## Design principles
+## 设计原则
 
-1. **Role-first, boundary-clear** — Every piece of knowledge belongs to exactly one role directory. Multi-role coverage uses frontmatter `roles:`, never content duplication.
-2. **Descriptive hyphenated filenames** — Verb-phrase slugs, hyphens only. Underscores and digits are forbidden.
-3. **Dual-copy for external knowledge** — `*-original.md` (source) + `*-summary.md` (synthesis), never a blended hybrid.
-4. **YAML frontmatter required** — `title` / `tags` / `category` / `created` / `updated` / `source` / `type` / `roles` / `benefit` / `acceptance_criteria` are recall signals.
-5. **Unified body structure** — Summary / Core viewpoints / Key information / Action recommendations / Anti-patterns / Related links.
-6. **Freshness labeling** — External content requires `last_verified` + `review_cycle`; unverified for 6 months is marked `status: deprecated`.
-7. **Max 3 directory levels** — `role/problem-domain/file.md`; no nested sub-sub-directories.
+1. **角色优先，边界清晰** —— 每一条知识只属于一个角色目录。多角色覆盖使用 frontmatter `roles:`，绝不复制内容。
+2. **描述性连字符文件名** —— 动词短语式 slug，仅使用连字符。禁止使用下划线和数字。
+3. **外部知识双副本** —— `*-original.md`（源文件）+ `*-summary.md`（综合），绝不混合。
+4. **YAML frontmatter 必填** —— `title` / `tags` / `category` / `created` / `updated` / `source` / `type` / `roles` / `benefit` / `acceptance_criteria` 是召回信号。
+5. **统一正文结构** —— 摘要 / 核心观点 / 关键信息 / 行动建议 / 反模式 / 相关链接。
+6. **时效性标注** —— 外部内容需要 `last_verified` + `review_cycle`；超过 6 个月未验证则标记为 `status: deprecated`。
+7. **最多 3 级目录** —— `role/problem-domain/file.md`；不允许嵌套子子目录。
 
-## 3 cross-cutting domain indexes
+## 3 个跨领域索引
 
-Beyond the 7 role directories, 3 domain indexes aggregate content across roles by topic:
+除了 7 个角色目录，还有 3 个领域索引按主题跨角色聚合内容：
 
-| Domain index | Aggregates | Answers |
+| 领域索引 | 聚合内容 | 回答 |
 |---|---|---|
-| [SECURITY.md](./engineer/SECURITY.md) | Supply chain, appsec, risk, incident response, compliance | Where is all security content across roles? |
-| [COLLABORATION.md](./curator/COLLABORATION.md) | Team process, meetings, knowledge sharing, onboarding, PM | Where is all collaboration content across roles? |
-| [ENGINEERING.md](./engineer/ENGINEERING.md) | Architecture, quality, data, tools, lessons | Where is all engineering content across roles? |
+| [SECURITY.md](./engineer/SECURITY.md) | 供应链、应用安全、风险、事件响应、合规 | 所有安全相关内容在哪里？ |
+| [COLLABORATION.md](./curator/COLLABORATION.md) | 团队流程、会议、知识共享、入职、PM | 所有协作相关内容在哪里？ |
+| [ENGINEERING.md](./engineer/ENGINEERING.md) | 架构、质量、数据、工具、经验教训 | 所有工程相关内容在哪里？ |
 
-## 4 architecture diagrams
+## 4 张架构图
 
-Draw these 4 diagrams before extending the KB:
+在扩展知识库之前，先绘制这 4 张图：
 
-| Diagram | Location | Answers |
+| 图 | 位置 | 回答 |
 |---|---|---|
-| Knowledge map | [curator/diagrams/knowledge-map.md](./curator/diagrams/knowledge-map.md) | What knowledge exists? Explicit vs. tacit? Holders and consumers? |
-| User-journey map | [curator/diagrams/user-journey.md](./curator/diagrams/user-journey.md) | Where is the knowledge? How does it flow? Where are the breakpoints? |
-| Directory blueprint | [curator/diagrams/directory-blueprint.md](./curator/diagrams/directory-blueprint.md) | How do users find things at a glance? Role × problem domain, max 3 levels |
-| Governance flow | [curator/governance/governance.md](./curator/governance/governance.md) | Who maintains? How often? 4 roles, 3 cadences |
+| 知识地图 | [curator/diagrams/knowledge-map.md](./curator/diagrams/knowledge-map.md) | 存在哪些知识？显性 vs. 隐性？持有者和消费者？ |
+| 用户旅程图 | [curator/diagrams/user-journey.md](./curator/diagrams/user-journey.md) | 知识在哪里？如何流动？断点在哪里？ |
+| 目录蓝图 | [curator/diagrams/directory-blueprint.md](./curator/diagrams/directory-blueprint.md) | 用户如何一目了然地找到内容？角色 × 问题域，最多 3 级 |
+| 治理流程 | [curator/治理/governance.md](./curator/治理/governance.md) | 谁维护？多久一次？4 个角色，3 种节奏 |
 
-Run the [readiness checklist](./curator/governance/readiness-checklist.md) 10-question gate before extending.
+在扩展之前运行[就绪检查清单](./curator/治理/readiness-checklist.md)的 10 个问题关卡。
 
-## Navigation strategy
+## 导航策略
 
-**By pipeline stage** (recommended) — Start from the stage you're in and go to the corresponding role directory. If you're unsure which stage, use the role decision tree above.
+**按流水线阶段**（推荐）—— 从你所在的阶段开始，前往对应的角色目录。如果不确定是哪个阶段，使用上面的角色决策树。
 
-**By domain index** — Cross-stage topics (security, AI, collaboration, engineering) start from one of the 4 domain indexes.
+**按领域索引** —— 跨阶段主题（安全、AI、协作、工程）从 4 个领域索引之一开始。
 
-**By demo** — Start from a complete example project in [projects/](./projects/) → `<project>/demos/` when you need a populated reference (instantiable in YiVad Project Management).
+**按 Demo** —— 从 [projects/](./projects/) → `<project>/demos/` 中的完整示例项目开始，当你需要一个可实例化的参考（可在 YiVad 项目管理中实例化）。
 
-**By project** — Start from [projects/](./projects/) ([README](./projects/README.md) | [INDEX](./projects/INDEX.md)) for project-specific bugs, issues, docs, and demos across all 4 projects.
+**按项目** —— 从 [projects/](./projects/)（[README](./projects/README.md) | [INDEX](./projects/INDEX.md)）开始，查看所有 4 个项目的特定 Bug、问题、文档和 Demo。
 
-**By filename grep** — `rg "^tags:.*keyword" YiKnowledge -l` for quick filtering.
+**按文件名 grep** —— `rg "^tags:.*keyword" YiKnowledge -l` 进行快速过滤。
 
-**By frontmatter scan** — `head -15 file.md` to read YAML metadata, judge relevance before reading the full file.
+**按 frontmatter 扫描** —— `head -15 file.md` 读取 YAML 元数据，在阅读完整文件之前判断相关性。
 
-## Positioning in the AI era
+## AI 时代的定位
 
-YiKnowledge serves both humans and AI (the YiAi BRD Agent's RAG data source):
+YiKnowledge 同时服务于人类和 AI（YiAi BRD Agent 的 RAG 数据源）：
 
-- **Human view** — 7 role directories × problem-domain subdirectories, reach any content within 2 hops. The pipeline narrative lets newcomers build a mental model quickly.
-- **AI view** — Frontmatter `roles` / `benefit` / `acceptance_criteria` / `lifecycle` / `related` / `tags` / `category` are RAG recall signals. Structured knowledge is far more AI-consumable than scattered documents.
-- **The knowledge map never goes stale** — AI consumes structured knowledge; garbage in, garbage out. Maintaining the KB is maintaining the AI's cognitive boundary.
+- **人类视角** —— 7 个角色目录 × 问题域子目录，2 跳内触达任何内容。流水线叙事让新人快速建立心智模型。
+- **AI 视角** —— Frontmatter 中的 `roles` / `benefit` / `acceptance_criteria` / `lifecycle` / `related` / `tags` / `category` 是 RAG 召回信号。结构化的知识远比零散的文档更易于 AI 消费。
+- **知识地图永不过时** —— AI 消费结构化知识；垃圾进，垃圾出。维护知识库就是维护 AI 的认知边界。

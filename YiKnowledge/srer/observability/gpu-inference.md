@@ -19,8 +19,8 @@ acceptance_criteria:
 related:
   - ./README.md
   - ./capacity-and-cost.md
-  - ../../aier/platform/llm-comparison.md
-  - ../../aier/foundations/llm-fundamentals.md
+  - ../../aier/平台/大模型对比.md
+  - ../../aier/基础/大模型基础.md
 ---
 
 # GPU Inference — Ollama Performance

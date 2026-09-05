@@ -30,8 +30,8 @@ Cross-role aggregation of architecture, development, quality, deployment, data, 
 
 | Directory | Role | Description |
 |---|---|---|
-| [architecture/](./architecture/) | engineer | API design, system design, design patterns |
-| [../leader/architecture/](../leader/architecture/) | leader | Tech selection, maturity models |
+| [architecture/](./架构/) | engineer | API design, system design, design patterns |
+| [../leader/架构/](../leader/架构/) | leader | Tech selection, maturity models |
 | [../leader/decisions/](../leader/decisions/) | leader | ADRs across YiAi, YiVad, YiPet, FDE |
 
 ## Development & tools

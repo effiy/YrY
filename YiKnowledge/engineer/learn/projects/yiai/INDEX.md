@@ -25,9 +25,9 @@ related:
 | Document | Purpose |
 |---|---|
 | [README.md](./README.md) | Project card — architecture, core viewpoints, anti-patterns, recent changes |
-| [architecture.md](./architecture.md) | Architecture overview — tech stack, module boundary, data flow, degradation |
-| [dev-standards.md](./dev-standards.md) | Development standards — naming, layering, RPC field contract, SSE, config |
-| [functional-modules.md](./functional-modules.md) | Module inventory — 10 domains, 7 services, 13 routes, data, shared, models |
+| [architecture.md](./架构设计.md) | Architecture overview — tech stack, module boundary, data flow, degradation |
+| [dev-standards.md](./开发规范.md) | Development standards — naming, layering, RPC field contract, SSE, config |
+| [functional-modules.md](./功能模块.md) | Module inventory — 10 domains, 7 services, 13 routes, data, shared, models |
 
 ## Stories
 

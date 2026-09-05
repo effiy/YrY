@@ -75,4 +75,4 @@ related:
 - [../wins/](.) — success contrast
 - [../../processes/incident-response.md](../process/incident-response.md) — incident process
 - [../../strategies/check-engineering-gotchas.md](../process/check-engineering-gotchas.md) — scenario entry
-- [../../../curator/governance/tacit-knowledge-backlog.md](../../curator/governance/tacit-knowledge-backlog.md) — tacit knowledge backlog
+- [../../../curator/治理/tacit-knowledge-backlog.md](../../curator/治理/tacit-knowledge-backlog.md) — tacit knowledge backlog

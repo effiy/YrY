@@ -13,7 +13,7 @@ roles: [leader, engineer]
 benefit: "Understand the dual-world architecture decision for Chrome MV3"
 related:
   - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/architecture.md
+  - ../../../engineer/learn/projects/yipet/架构设计.md
 ---
 
 # ADR: YiPet Chrome MV3 Dual-World Boundary

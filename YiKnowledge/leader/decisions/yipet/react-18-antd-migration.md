@@ -13,7 +13,7 @@ roles: [leader, engineer]
 benefit: "Understand the React 15→18 + Bootstrap→Ant Design 5 migration decision and its consequences"
 related:
   - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/architecture.md
+  - ../../../engineer/learn/projects/yipet/架构设计.md
   - ./biome-lint-format.md
 ---
 

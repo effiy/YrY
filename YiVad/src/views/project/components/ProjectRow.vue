@@ -41,13 +41,7 @@
       <button type="button" class="pr-count" title="Issues" @click.stop="emit('tab', 'issues')">
         <el-icon><Tickets /></el-icon>{{ stats.issues }}
       </button>
-      <button type="button" class="pr-count" title="Cycles" @click.stop="emit('tab', 'cycles')">
-        <el-icon><Calendar /></el-icon>{{ stats.cycles }}
-      </button>
-      <button type="button" class="pr-count" title="Releases" @click.stop="emit('tab', 'releases')">
-        <el-icon><Promotion /></el-icon>{{ stats.releases }}
-      </button>
-      <button type="button" class="pr-count" title="Bugs" @click.stop="emit('tab', 'bugs')">
+            <button type="button" class="pr-count" title="Bugs" @click.stop="emit('tab', 'bugs')">
         <el-icon><WarningFilled /></el-icon>{{ stats.totalBugs }}
       </button>
     </div>
@@ -90,10 +84,11 @@
 
 <script setup lang="ts" name="ProjectRow">
 import { computed } from "vue";
-import { Calendar, MoreFilled, Promotion, Star, Tickets, WarningFilled } from "@element-plus/icons-vue";
+import { Calendar, MoreFilled, Star, Tickets, WarningFilled } from "@element-plus/icons-vue";
 import { formatRelativeTime } from "@/utils/datetime";
 import type { Project } from "@/api/modules/projectService";
-import { RISK_META, type HealthLevel, type ProjectStats, type RiskKey } from "../composables/useProjectInsights";
+import { RISK_META, type HealthLevel, type ProjectStats, type RiskKey } from "../types";
+import { HEALTH_COLORS } from "../constants";
 
 const props = defineProps<{
   project: Project;
@@ -113,10 +108,8 @@ const emit = defineEmits<{
   (e: "toggle-select"): void;
   (e: "copy-id"): void;
   (e: "filter-risk", risk: RiskKey): void;
-  (e: "tab", tab: "issues" | "cycles" | "releases" | "members" | "bugs"): void;
+  (e: "tab", tab: "issues" | "members" | "bugs" | "modules"): void;
 }>();
-
-const HEALTH_COLORS: Record<HealthLevel, string> = { good: "#67c23a", warn: "#e6a23c", poor: "#f56c6c" };
 
 const healthHint = computed(() =>
   props.risks.length ? props.risks.map(r => RISK_META[r].label).join(", ") : "Healthy — no checks failing"

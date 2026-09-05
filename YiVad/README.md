@@ -1,159 +1,159 @@
 # YiVad
 
-> Open-source admin management framework built with Vue 3.5, TypeScript 6, Rsbuild 1, Pinia 4, and Element Plus 2.14. Provides a powerful ProTable component for declarative table configuration, plus dynamic routing, button-level permission control, four layout modes, and a full hooks / directives / composables library.
+> 基于 Vue 3.5、TypeScript 6、Rsbuild 1、Pinia 4 和 Element Plus 2.14 构建的开源后台管理框架。提供强大的 ProTable 组件用于声明式表格配置，外加动态路由、按钮级权限控制、四种布局模式，以及完整的 hooks / directives / composables 库。
 
-> **Onboarding** → `YiKnowledge/projects/YiVad/onboarding.md` (8 sections: setup / workflow / known-pitfalls / Day-1 task)
-
----
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Module Boundaries](#module-boundaries)
-- [Data Flow](#data-flow)
-- [Installation & Usage](#installation--usage)
-- [Directory Structure](#directory-structure)
-- [Browser Support](#browser-support)
-- [Domain Language](#domain-language)
-- [Recent Changes](#recent-changes)
+> **入门指南** → `YiKnowledge/projects/YiVad/onboarding.md`（8 个部分：环境搭建 / 工作流 / 已知陷阱 / 首日任务）
 
 ---
 
-## Introduction
+## 目录
 
-YiVad is an open-source admin management framework built with Vue 3.5, TypeScript 6, Rsbuild 1, Pinia 4, and Element Plus 2.14. The project provides a powerful ProTable component that greatly improves development efficiency, along with commonly used components, hooks, directives, dynamic routing, button-level permission control, four layout modes, KeepAlive caching, and full i18n (zh + en).
-
-It is the admin dashboard member of the Yi family — companion to **YiAi** (FastAPI backend) and **YiPet** (Chrome MV3 extension).
-
----
-
-## Features
-
-- **Vue 3.5 + TypeScript 6**, single-file components with `<script setup>`.
-- **Rsbuild 1 build tooling** with Sass, TSX syntax, CORS proxy, and SVG icon sprites.
-- **Pinia 4** state management with `pinia-plugin-persistedstate` for localStorage sync.
-- **Full Axios wrapper** in TypeScript — request interception, cancellation, common request encapsulation, error mapping.
-- **ProTable** component built on Element Plus — table pages driven entirely by column configuration.
-- **Element Plus 2.14** — size switching, multi-theme, dark mode, i18n.
-- **Dynamic route permission guards** with Vue Router 5 — lazy loading + button-level permission control.
-- **Page caching via KeepAlive** with multi-level nested route support.
-- **Custom directives** — `v-auth`, `v-copy`, `v-watermark`, `v-drag`, `v-throttle`, `v-debounce`, `v-longpress`.
-- **Unified code formatting** with ESLint 10 + Prettier 3 + Stylelint 17.
-- **Standardized commits** with husky 9, lint-staged 17, commitlint 21, cz-git + czg.
-- **Browser support**: Chrome, Edge, Firefox, Safari (last 2 versions). IE is no longer supported.
+- [介绍](#介绍)
+- [特性](#特性)
+- [架构](#架构)
+- [模块边界](#模块边界)
+- [数据流](#数据流)
+- [安装与使用](#安装与使用)
+- [目录结构](#目录结构)
+- [浏览器支持](#浏览器支持)
+- [领域语言](#领域语言)
+- [最近变更](#最近变更)
 
 ---
 
-## Architecture
+## 介绍
 
-YiVad advances along the **componentization** axis: extract reusable components, composables, shared UI primitives; define clear props/events APIs; eliminate duplicated markup.
+YiVad 是一个基于 Vue 3.5、TypeScript 6、Rsbuild 1、Pinia 4 和 Element Plus 2.14 构建的开源后台管理框架。项目提供了强大的 ProTable 组件，极大提升开发效率，同时包含常用组件、hooks、指令、动态路由、按钮级权限控制、四种布局模式、KeepAlive 缓存以及完整的 i18n（中文 + 英文）。
+
+它是 Yi 家族的管理后台成员 — 与 **YiAi**（FastAPI 后端）和 **YiPet**（Chrome MV3 扩展）协同工作。
+
+---
+
+## 特性
+
+- **Vue 3.5 + TypeScript 6**，单文件组件使用 `<script setup>`。
+- **Rsbuild 1 构建工具**，支持 Sass、TSX 语法、CORS 代理和 SVG 图标精灵。
+- **Pinia 4** 状态管理，搭配 `pinia-plugin-persistedstate` 实现 localStorage 同步。
+- **完整的 Axios 封装**使用 TypeScript — 请求拦截、取消请求、通用请求封装、错误映射。
+- **ProTable** 组件基于 Element Plus 构建 — 表格页面完全由列配置驱动。
+- **Element Plus 2.14** — 尺寸切换、多主题、暗黑模式、i18n。
+- **动态路由权限守卫**，使用 Vue Router 5 — 懒加载 + 按钮级权限控制。
+- **通过 KeepAlive 实现页面缓存**，支持多级嵌套路由。
+- **自定义指令** — `v-auth`、`v-copy`、`v-watermark`、`v-drag`、`v-throttle`、`v-debounce`、`v-longpress`。
+- **统一代码格式化**，使用 ESLint 10 + Prettier 3 + Stylelint 17。
+- **规范化提交**，使用 husky 9、lint-staged 17、commitlint 21、cz-git + czg。
+- **浏览器支持**：Chrome、Edge、Firefox、Safari（最近 2 个版本）。不再支持 IE。
+
+---
+
+## 架构
+
+YiVad 沿**组件化**轴前进：提取可复用组件、composables、共享 UI 原语；定义清晰的 props/events API；消除重复的标记代码。
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Layout (4 Modes)                                         │
+│  布局（4 种模式）                                         │
 │  vertical · classic · transverse · columns               │
-│  Switchable dynamically via globalStore.layout           │
+│  通过 globalStore.layout 动态切换                         │
 └──────────────────────┬───────────────────────────────────┘
-                       │ mounts pages into
+                       │ 将页面挂载到
                        ▼
 ┌──────────────────────────────────────────────────────────┐
-│  Router (Dynamic)                                        │
-│  Vue Router 5 (hash mode) · routes from backend menu API│
-│  Falls back to src/assets/json/authMenuList.json         │
-│  Guards: beforeEach → permission check → 401 → login    │
+│  路由（动态）                                             │
+│  Vue Router 5（hash 模式）· 路由来自后端菜单 API          │
+│  回退到 src/assets/json/authMenuList.json                │
+│  守卫：beforeEach → 权限检查 → 401 → 登录                │
 └──────────────────────┬───────────────────────────────────┘
-                       │ renders
+                       │ 渲染
                        ▼
 ┌──────────────────────────────────────────────────────────┐
-│  ProTable (Columns Config)                               │
-│  Declarative table: search · pagination · sorting       │
-│  Driven by ColumnProps[] (no repetitive table markup)   │
+│  ProTable（列配置）                                       │
+│  声明式表格：搜索 · 分页 · 排序                           │
+│  由 ColumnProps[] 驱动（无需重复的表格标记代码）           │
 └──────────────────────┬───────────────────────────────────┘
-                       │ gated by
+                       │ 由
                        ▼
 ┌──────────────────────────────────────────────────────────┐
-│  Auth (v-auth Directive)                                │
-│  Button-level visibility via permission string list     │
-│  Decoupled from route guards — operation-level control  │
+│  权限（v-auth 指令）                                     │
+│  通过权限字符串列表实现按钮级可见性                       │
+│  与路由守卫解耦 — 操作级控制                              │
 └──────────────────────┬───────────────────────────────────┘
-                       │ HTTP via RequestHttp
+                       │ 通过 RequestHttp 进行 HTTP 请求
                        ▼
 ┌──────────────────────────────────────────────────────────┐
-│  YiAi Backend (FastAPI :10086)                           │
-│  RPC envelope: {module_name, method_name, parameters}   │
-│  data_service · chat_service · /read-file · /write-file │
+│  YiAi 后端（FastAPI :10086）                              │
+│  RPC 信封：{module_name, method_name, parameters}        │
+│  data_service · chat_service · /read-file · /write-file  │
 └──────────────────────────────────────────────────────────┘
 ```
 
-### Cross-Cutting Concerns
+### 横切关注点
 
-- **HTTP layer** — Axios `RequestHttp` wrapper with interceptors, cancellation, and `checkStatus` error mapping (`src/api/`).
-- **State layer** — Pinia stores (`global`, `user`, `auth`, `tabs`, `keepAlive`, plus per-feature stores: `aiChat`, `aicr/*`) with persistence (`src/stores/`).
-- **Hooks** — composables (`useTable`, `useTheme`, `useAuthButtons`, `useSelection`, etc.) in `src/hooks/`.
-- **Directives** — custom directives in `src/directives/modules/`, registered via `src/directives/index.ts`.
-- **i18n** — Vue-i18n 11 with `zh-CN` + `en` locale files in `src/languages/`.
+- **HTTP 层** — Axios `RequestHttp` 封装，含拦截器、取消请求和 `checkStatus` 错误映射（`src/api/`）。
+- **状态层** — Pinia stores（`global`、`user`、`auth`、`tabs`、`keepAlive`，以及按功能划分的 stores：`aiChat`、`aicr/*`），支持持久化（`src/stores/`）。
+- **Hooks** — composables（`useTable`、`useTheme`、`useAuthButtons`、`useSelection` 等），位于 `src/hooks/`。
+- **指令** — 自定义指令，位于 `src/directives/modules/`，通过 `src/directives/index.ts` 注册。
+- **i18n** — Vue-i18n 11，`zh-CN` + `en` 语言文件位于 `src/languages/`。
 
 ---
 
-## Module Boundaries
+## 模块边界
 
-### Frontend layers (top-down)
+### 前端分层（自上而下）
 
-| Layer | Public API |
+| 层 | 公共 API |
 |---|---|
-| `src/views/` | Page components organized by feature domain. Each page imports from `@/components`, `@/hooks`, `@/stores`, `@/api/modules`. |
-| `src/layouts/` | Four layout modes (vertical, classic, transverse, columns) — share Header / Menu / Footer / Tabs components. Don't fork per layout. |
-| `src/components/` | Reusable components: `ProTable/`, `ECharts/`, `Upload/`, `WangEditor/`, `SearchForm/`, etc. ProTable is the canonical table — don't use raw `el-table`. |
-| `src/hooks/` | Composables: `useTable`, `useTheme`, `useAuthButtons`, `useSelection`, etc. Name file same as composable (`useTable.ts`). |
-| `src/stores/` | Pinia setup-function stores. Stores may import from `@/api/modules` and `@/hooks` but MUST NOT import `axios` directly. |
-| `src/api/modules/` | Domain service functions (`sessions.ts`, `chatService.ts`, `dataService.ts`, `fileService.ts`, `faqService.ts`, `weChatService.ts`, ...). The public API surface for stores and views. |
-| `src/api/index.ts` | `RequestHttp` class — Axios wrapper with interceptors, cancellation, error mapping. Modules call `http.post(...)`; nothing else imports axios. |
-| `src/directives/` | `v-auth`, `v-copy`, `v-watermark`, `v-drag`, `v-debounce`, `v-throttle`, `v-longpress`. Register via `src/directives/index.ts`. |
-| `src/routers/` | Hash-mode Vue Router 5 with dynamic routes from backend menu API. Guards in `src/routers/beforeEach.ts`. |
+| `src/views/` | 按功能域组织的页面组件。每个页面从 `@/components`、`@/hooks`、`@/stores`、`@/api/modules` 导入。 |
+| `src/layouts/` | 四种布局模式（vertical、classic、transverse、columns）— 共享 Header / Menu / Footer / Tabs 组件。不要按布局分别复刻。 |
+| `src/components/` | 可复用组件：`ProTable/`、`ECharts/`、`Upload/`、`WangEditor/`、`SearchForm/` 等。ProTable 是标准表格 — 不要使用原始的 `el-table`。 |
+| `src/hooks/` | Composables：`useTable`、`useTheme`、`useAuthButtons`、`useSelection` 等。文件名与 composable 同名（如 `useTable.ts`）。 |
+| `src/stores/` | Pinia setup-function 语法的 stores。Store 可以从 `@/api/modules` 和 `@/hooks` 导入，但**严禁**直接导入 `axios`。 |
+| `src/api/modules/` | 领域服务函数（`sessions.ts`、`chatService.ts`、`dataService.ts`、`fileService.ts`、`faqService.ts`、`weChatService.ts` 等）。面向 stores 和 views 的公共 API 层面。 |
+| `src/api/index.ts` | `RequestHttp` 类 — Axios 封装，含拦截器、取消请求、错误映射。模块调用 `http.post(...)`；其他任何地方不得直接导入 axios。 |
+| `src/directives/` | `v-auth`、`v-copy`、`v-watermark`、`v-drag`、`v-debounce`、`v-throttle`、`v-longpress`。通过 `src/directives/index.ts` 注册。 |
+| `src/routers/` | Hash 模式 Vue Router 5，基于后端菜单 API 的动态路由。守卫在 `src/routers/beforeEach.ts`。 |
 
-### Cross-project protocol (YiVad ↔ YiAi)
+### 跨项目协议（YiVad ↔ YiAi）
 
-| Operation | Contract |
+| 操作 | 契约 |
 |---|---|
-| RPC envelope | `{ module_name, method_name, parameters }` POSTed to `/` |
-| `data_service.query_documents` | `parameters: { cname, filter?: dict, pageNum?, pageSize?, limit?, orderBy?, orderType? }`. **`filter`, not `query`.** |
-| `data_service.create_document` / `update_document` / `delete_document` | `{ cname, key, data }` (create/update) or `{ cname, key }` (delete) |
-| Chat (SSE) | `streamChat({model, messages, system?, images?})` via `services.ai.chat_service.chat` |
-| `/read-file`, `/write-file` | Field name is `target_file` (not `path`) |
+| RPC 信封 | `{ module_name, method_name, parameters }` POST 到 `/` |
+| `data_service.query_documents` | `parameters: { cname, filter?: dict, pageNum?, pageSize?, limit?, orderBy?, orderType? }`。**`filter`，而非 `query`。** |
+| `data_service.create_document` / `update_document` / `delete_document` | `{ cname, key, data }`（创建/更新）或 `{ cname, key }`（删除）|
+| Chat (SSE) | `streamChat({model, messages, system?, images?})` 通过 `services.ai.chat_service.chat` |
+| `/read-file`、`/write-file` | 字段名为 `target_file`（而非 `path`）|
 | `/upload-image-to-oss` | `{ data_url, filename, directory }` |
-| `/knowledge/*` | Knowledge-base scan / read / write / metadata CRUD |
-| `/rag/*` | RAG query (one-shot) + RAG chat (SSE) + per-file variants; `scope` filters by `file_path` substring |
+| `/knowledge/*` | 知识库扫描 / 读取 / 写入 / 元数据 CRUD |
+| `/rag/*` | RAG 查询（单次）+ RAG 对话（SSE）+ 按文件变体；`scope` 按 `file_path` 子串过滤 |
 
 ---
 
-## Data Flow
+## 数据流
 
-### Table fetch (ProTable)
+### 表格获取（ProTable）
 
 ```
-View component defines columns + requestApi
+View 组件定义 columns + requestApi
    │
    ▼
-ProTable renders SearchForm from column.search configs
-   │ on search/pagination: requestApi({ pageNum, pageSize, ...filters })
+ProTable 从 column.search 配置渲染 SearchForm
+   │ 搜索/分页时：requestApi({ pageNum, pageSize, ...filters })
    ▼
 api/modules/<domain>.ts → callService("services.database.data_service",
                                       "query_documents",
                                       { cname, filter, pageNum, pageSize })
    │ http.post("", {module_name, method_name, parameters})
    ▼
-RequestHttp interceptor: attach X-Token, transform response, checkStatus on error
+RequestHttp 拦截器：附加 X-Token，转换响应，出错时 checkStatus
    │
    ▼ fetch POST http://localhost:10086/
 YiAi data_service.query_documents
    ▼ repository.query_documents → _build_filter → MongoDB find().sort().skip().limit()
    ▼ { list: [...], total, pageNum, pageSize, totalPages }
-ProTable receives { list, total } → renders rows + Pagination
+ProTable 接收 { list, total } → 渲染行 + Pagination
 ```
 
-### Chat (SSE streaming)
+### 对话（SSE 流式）
 
 ```
 aiChat store / aicr chat store — sendMessage / regenerateMessageAt / resendMessageAt
@@ -168,74 +168,74 @@ YiAi FastAPI → StreamingResponse(text/event-stream)
    yields: data: {"data": {"message": "..."}}\n\n
    ends:   data: {"done": true}\n\n
    ▼
-streamChat parses SSE line-by-line, calls onChunk(text) / onDone() / onError(err)
+streamChat 逐行解析 SSE，调用 onChunk(text) / onDone() / onError(err)
    ▼
-Store appends deltas to the in-flight pet message; on abort, marks aborted=true
-   on done: upsertSession(...) + autoForwardToWeCom(streamed) [skipped if aborted]
+Store 将增量追加到进行中的 pet 消息；中止时标记 aborted=true
+   on done: upsertSession(...) + autoForwardToWeCom(streamed) [中止时跳过]
 ```
 
-### File read/write
+### 文件读写
 
 ```
 View → fileService.readFile(path)
    ▼ fetch POST /read-file  body: { target_file: path }
-   ▼ YiAi read_file → disk (primary) + MongoDB (fallback) → { content }
+   ▼ YiAi read_file → 磁盘（主）+ MongoDB（回退）→ { content }
 View → fileService.writeFile(path, content)
    ▼ fetch POST /write-file  body: { target_file: path, content }
-   ▼ YiAi write_file → disk + MongoDB upsert → success
+   ▼ YiAi write_file → 磁盘 + MongoDB upsert → 成功
 ```
 
 ---
 
-## Installation & Usage
+## 安装与使用
 
-### Install
+### 安装
 
 ```bash
 pnpm install
 ```
 
-### Run
+### 运行
 
 ```bash
-pnpm dev      # Start dev server with HMR
-pnpm serve    # Alias for dev
+pnpm dev      # 启动开发服务器，支持 HMR
+pnpm serve    # dev 的别名
 ```
 
-### Build
+### 构建
 
 ```bash
-# Development environment
+# 开发环境
 pnpm build:dev
 
-# Test environment
+# 测试环境
 pnpm build:test
 
-# Production environment
+# 生产环境
 pnpm build:pro
 ```
 
-### Lint
+### 代码检查
 
 ```bash
-# ESLint code check
+# ESLint 代码检查
 pnpm lint:eslint
 
-# Prettier code formatting
+# Prettier 代码格式化
 pnpm lint:prettier
 
-# Stylelint style formatting
+# Stylelint 样式格式化
 pnpm lint:stylelint
 ```
 
-### Commit
+### 提交
 
 ```bash
-# Commit code (automatically runs lint:lint-staged before committing)
+# 提交代码（提交前自动运行 lint:lint-staged）
 pnpm commit
 ```
 
-### Type Check
+### 类型检查
 
 ```bash
 pnpm type:check   # vue-tsc --noEmit --skipLibCheck
@@ -243,153 +243,153 @@ pnpm type:check   # vue-tsc --noEmit --skipLibCheck
 
 ---
 
-## Directory Structure
+## 目录结构
 
 ```text
 YiVad
-├─ .husky                  # husky config files
-├─ .vscode                 # VSCode recommended config
-├─ build                   # Rsbuild config options (svg-sprite, views-glob, proxy)
-├─ public                  # Static assets (this folder is not bundled)
+├─ .husky                  # husky 配置文件
+├─ .vscode                 # VSCode 推荐配置
+├─ build                   # Rsbuild 配置选项（svg-sprite、views-glob、代理）
+├─ public                  # 静态资源（此文件夹不被打包）
 ├─ src
-│  ├─ api                  # API interface management (RequestHttp + modules)
-│  ├─ assets               # Static assets (fonts, icons, images, mock JSON)
-│  ├─ components           # Global components (ProTable, ECharts, Upload, WangEditor)
-│  ├─ config               # Global config (HOME_URL, DEFAULT_PRIMARY, route whitelist)
-│  ├─ directives           # Global directives (auth, copy, debounce, throttle, drag, longpress, watermark)
-│  ├─ enums                # Common enumerations (HTTP status, request methods, content types)
-│  ├─ hooks                # Common hooks (useTable, useTheme, useAuthButtons, useSelection)
-│  ├─ languages            # i18n internationalization (zh-CN + en)
-│  ├─ layouts              # Layout modules (vertical, classic, transverse, columns)
-│  ├─ routers             # Route management (dynamic routes, guards, menu-to-route mapping)
-│  ├─ stores              # Pinia stores (global, user, auth, tabs, keepAlive, aiChat, aicr/*)
-│  ├─ styles              # Global styles (SCSS, Element overrides, theme variables)
-│  ├─ typings             # Global TypeScript declarations
-│  ├─ utils               # Utility functions (color, menu tree ops, localStorage)
-│  ├─ views               # All project pages (organized by feature domain)
-│  │  ├─ about            #   About family pages (yivad, yiai, yipet subpages)
-│  │  ├─ aiChat           #   AI chat page (ported from YiWeb sessionChat)
-│  │  ├─ aicr             #   AI code review page (ported from YiWeb aicr; KnowledgeTree bridge)
-│  │  ├─ bug              #   Bug list + detail (per YiKnowledge bug-logging-protocol)
-│  │  ├─ knowledge        #   Knowledge-base browser (CategoryList + Detail + MarkdownView)
+│  ├─ api                  # API 接口管理（RequestHttp + 模块）
+│  ├─ assets               # 静态资源（字体、图标、图片、mock JSON）
+│  ├─ components           # 全局组件（ProTable、ECharts、Upload、WangEditor）
+│  ├─ config               # 全局配置（HOME_URL、DEFAULT_PRIMARY、路由白名单）
+│  ├─ directives           # 全局指令（auth、copy、debounce、throttle、drag、longpress、watermark）
+│  ├─ enums                # 通用枚举（HTTP 状态码、请求方法、内容类型）
+│  ├─ hooks                # 通用 hooks（useTable、useTheme、useAuthButtons、useSelection）
+│  ├─ languages            # i18n 国际化（中文 + 英文）
+│  ├─ layouts              # 布局模块（vertical、classic、transverse、columns）
+│  ├─ routers             # 路由管理（动态路由、守卫、菜单到路由映射）
+│  ├─ stores              # Pinia stores（global、user、auth、tabs、keepAlive、aiChat、aicr/*）
+│  ├─ styles              # 全局样式（SCSS、Element 覆盖、主题变量）
+│  ├─ typings             # 全局 TypeScript 声明
+│  ├─ utils               # 工具函数（颜色、菜单树操作、localStorage）
+│  ├─ views               # 所有项目页面（按功能域组织）
+│  │  ├─ about            #   关于家族页面（yivad、yiai、yipet 子页面）
+│  │  ├─ aiChat           #   AI 聊天页面（从 YiWeb sessionChat 移植）
+│  │  ├─ aicr             #   AI 代码审查页面（从 YiWeb aicr 移植；KnowledgeTree 桥接）
+│  │  ├─ bug              #   Bug 列表 + 详情（按 YiKnowledge bug-logging-protocol）
+│  │  ├─ knowledge        #   知识库浏览器（CategoryList + Detail + MarkdownView）
 │  │  ├─ assembly, auth, dashboard, dataScreen, echarts, form,
 │  │  │  home, link, login, menu, proTable, story, system
-│  ├─ App.vue             # Root component
-│  ├─ main.ts             # Entry file
-│  └─ rsbuild-env.d.ts    # TypeScript declaration for Rsbuild client types
-├─ .editorconfig           # Unified editor coding style config
-├─ .env                    # Rsbuild common config
-├─ .env.development        # Development environment config
-├─ .env.production         # Production environment config
-├─ .env.test               # Test environment config
-├─ .eslintignore           # Ignore ESLint checks
-├─ .eslintrc.cjs           # ESLint config file
-├─ .gitignore              # Ignore git commits
-├─ .prettierignore         # Ignore Prettier formatting
-├─ .prettierrc.cjs         # Prettier config
-├─ .stylelintignore        # Ignore stylelint formatting
-├─ .stylelintrc.cjs        # stylelint config
-├─ CHANGELOG.md            # Project changelog
-├─ commitlint.config.cjs   # Git commit convention config
-├─ index.html              # Entry HTML
-├─ LICENSE                 # Open source license
-├─ lint-staged.config.cjs  # lint-staged config
-├─ package-lock.json       # Dependency version lock
-├─ package.json            # Dependency management
-├─ postcss.config.cjs      # PostCSS config
-├─ README.md               # README introduction
-├─ tsconfig.json           # TypeScript global config
-└─ rsbuild.config.ts      # Rsbuild global config
+│  ├─ App.vue             # 根组件
+│  ├─ main.ts             # 入口文件
+│  └─ rsbuild-env.d.ts    # Rsbuild 客户端类型的 TypeScript 声明
+├─ .editorconfig           # 统一编辑器编码风格配置
+├─ .env                    # Rsbuild 通用配置
+├─ .env.development        # 开发环境配置
+├─ .env.production         # 生产环境配置
+├─ .env.test               # 测试环境配置
+├─ .eslintignore           # 忽略 ESLint 检查
+├─ .eslintrc.cjs           # ESLint 配置文件
+├─ .gitignore              # 忽略 git 提交
+├─ .prettierignore         # 忽略 Prettier 格式化
+├─ .prettierrc.cjs         # Prettier 配置
+├─ .stylelintignore        # 忽略 stylelint 格式化
+├─ .stylelintrc.cjs        # stylelint 配置
+├─ CHANGELOG.md            # 项目变更日志
+├─ commitlint.config.cjs   # Git 提交规范配置
+├─ index.html              # 入口 HTML
+├─ LICENSE                 # 开源许可证
+├─ lint-staged.config.cjs  # lint-staged 配置
+├─ package-lock.json       # 依赖版本锁定
+├─ package.json            # 依赖管理
+├─ postcss.config.cjs      # PostCSS 配置
+├─ README.md               # README 介绍
+├─ tsconfig.json           # TypeScript 全局配置
+└─ rsbuild.config.ts      # Rsbuild 全局配置
 ```
 
 ---
 
-## Browser Support
+## 浏览器支持
 
-- For local development, the latest version of Chrome is recommended — [Download](https://www.google.com/intl/zh-CN/chrome/).
-- Production supports modern browsers only. IE is no longer supported. For more details, see [Can I Use ES Module](https://caniuse.com/?search=ESModule).
+- 本地开发推荐使用最新版 Chrome — [下载](https://www.google.com/intl/zh-CN/chrome/)。
+- 生产环境仅支持现代浏览器。不再支持 IE。详细信息请参见 [Can I Use ES Module](https://caniuse.com/?search=ESModule)。
 
 | IE | Edge | Firefox | Chrome | Safari |
 | :---: | :---: | :---: | :---: | :---: |
-| not supported | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
+| 不支持 | 最近 2 个版本 | 最近 2 个版本 | 最近 2 个版本 | 最近 2 个版本 |
 
 ---
 
-## Domain Language
+## 领域语言
 
-YiVad is a domain model for admin management systems, built around three core concepts: **menu permission**, **dynamic routing**, and **component configuration**.
+YiVad 是面向后台管理系统的领域模型，围绕三个核心概念构建：**菜单权限**、**动态路由**和**组件配置**。
 
-### Terminology
+### 术语
 
-- **ProTable** — A declarative table component built on Element Plus `el-table`, driven by a `columns` configuration array for table rendering, search, pagination, and sorting, eliminating repetitive table template code.
-- **Dynamic Router** — A mechanism that fetches the permission menu tree from the backend menu API, flattens it, and registers routes at runtime via `router.addRoute()`. Unlike static routes, dynamic routes are visible only based on the user's permissions.
-- **AuthButton** — A permission model that controls page button visibility via the `v-auth` directive. Button permission lists are fetched from the backend API, decoupled from page routes, and support fine-grained operation-level permission control.
-- **Pinia Store Persist** — A mechanism that uses `pinia-plugin-persistedstate` to automatically sync Pinia store state to `localStorage`, ensuring user state (token, theme, tabs) is preserved after page refresh.
-- **Layout Mode** — YiVad supports four layout modes: `vertical` (sidebar), `classic` (classic), `transverse` (top navigation), `columns` (split), switchable dynamically via `globalStore.layout`.
-- **RPC envelope** — The `{module_name, method_name, parameters}` request shape used for every cross-project call to the YiAi backend's execution endpoint.
-- **`filter` (not `query`)** — The Mongo-filter parameter name in `data_service.query_documents`. The backend's `_build_filter` reads `filter`, not `query`. YiVad had been sending `query` in earlier versions and getting empty results.
-- **`target_file` (not `path`)** — The file-path field name for `/read-file` and `/write-file`. YiVad's `fileService.readFile/writeFile` had been sending `path` and getting 422s.
+- **ProTable** — 基于 Element Plus `el-table` 构建的声明式表格组件，由 `columns` 配置数组驱动，实现表格渲染、搜索、分页和排序，消除重复的表格模板代码。
+- **Dynamic Router** — 一种从后端菜单 API 获取权限菜单树、将其扁平化并在运行时通过 `router.addRoute()` 注册路由的机制。与静态路由不同，动态路由仅根据用户权限可见。
+- **AuthButton** — 一种通过 `v-auth` 指令控制页面按钮可见性的权限模型。按钮权限列表从后端 API 获取，与页面路由解耦，支持细粒度的操作级权限控制。
+- **Pinia Store Persist** — 一种使用 `pinia-plugin-persistedstate` 将 Pinia store 状态自动同步到 `localStorage` 的机制，确保用户状态（token、主题、标签页）在页面刷新后保留。
+- **Layout Mode** — YiVad 支持四种布局模式：`vertical`（侧边栏）、`classic`（经典）、`transverse`（顶部导航）、`columns`（分栏），可通过 `globalStore.layout` 动态切换。
+- **RPC 信封** — 每次跨项目调用 YiAi 后端执行端点时使用的 `{module_name, method_name, parameters}` 请求格式。
+- **`filter`（而非 `query`）** — `data_service.query_documents` 中的 Mongo 过滤器参数名。后端的 `_build_filter` 读取的是 `filter`，而非 `query`。YiVad 在早期版本中曾发送 `query` 导致返回空结果。
+- **`target_file`（而非 `path`）** — `/read-file` 和 `/write-file` 的文件路径字段名。YiVad 的 `fileService.readFile/writeFile` 曾发送 `path` 导致 422 错误。
 
-### Term Relationships
+### 术语关系
 
-- **Dynamic Router** depends on permission data from **AuthButton** to determine which menus are visible.
-- **ProTable** relies on the `useTable` hook to handle pagination and data fetching.
-- **Pinia Store Persist** applies to the `global`, `user`, and `tabs` stores.
-- **Layout Mode** consumes theme and layout configuration from `globalStore`.
-- All data operations go through the **RPC envelope** to YiAi's execution engine or the dedicated `/read-file`, `/write-file`, `/upload-image-to-oss` endpoints.
+- **Dynamic Router** 依赖 **AuthButton** 的权限数据来确定哪些菜单可见。
+- **ProTable** 依赖 `useTable` hook 来处理分页和数据获取。
+- **Pinia Store Persist** 应用于 `global`、`user` 和 `tabs` stores。
+- **Layout Mode** 消费 `globalStore` 中的主题和布局配置。
+- 所有数据操作通过 **RPC 信封**到达 YiAi 的执行引擎或专用的 `/read-file`、`/write-file`、`/upload-image-to-oss` 端点。
 
-### Example Conversations
+### 示例对话
 
-> **User:** I want to add an edit button to the "User Management" page, but only the admin role should see it.
+> **用户：** 我想在"用户管理"页面添加一个编辑按钮，但只有 admin 角色才能看到。
 >
-> **System:** Add the `v-auth="'user:edit'"` directive to the button. The backend returns the current role's button permission list via the `authButtonList` API. If `user:edit` is not in the list, the button will be automatically hidden.
+> **系统：** 在按钮上添加 `v-auth="'user:edit'"` 指令。后端通过 `authButtonList` API 返回当前角色的按钮权限列表。如果 `user:edit` 不在列表中，按钮将自动隐藏。
 
-> **User:** How do I add a new page to the sidebar menu?
+> **用户：** 如何在侧边栏菜单中添加新页面？
 >
-> **System:** Create the page component under `src/views/`, then configure the menu item (path, name, component path) in the backend menu management API. The frontend uses **dynamic routing** to automatically fetch and register routes after login. If the backend is unavailable, you can add menu items directly in `src/assets/json/authMenuList.json`.
+> **系统：** 在 `src/views/` 下创建页面组件，然后在后端菜单管理 API 中配置菜单项（path、name、component 路径）。前端使用**动态路由**在登录后自动获取并注册路由。如果后端不可用，可以直接在 `src/assets/json/authMenuList.json` 中添加菜单项。
 
-### Disambiguation Markers
+### 区分标记
 
-| Term | Easily Confused Concept |
+| 术语 | 容易混淆的概念 |
 |------|---------------|
-| **ProTable** | Not Element Plus's `el-table`; ProTable is a full table solution with search, pagination, and column configuration |
-| **Dynamic Router** | Not Vue Router's lazy loading (`() => import()`) or nested routes (children); dynamic routing specifically refers to runtime route registration based on permissions |
-| **AuthButton** | Not a route guard (`beforeEach`); route guards control page-level access, while AuthButton controls button-level visibility within a page |
-| **Persist** | Not the browser's `localStorage` API; refers to the Pinia plugin's automatic bidirectional sync mechanism |
-| **Layout Mode** | Not CSS layout or Element Plus's `el-row/el-col` grid; it is page-level framework structure switching |
-| **`filter`** | Not `query` (the backend's `query_documents` only recognises `filter`); not the Mongo `$filter` aggregation stage |
-| **`target_file`** | Not `path` — the backend's Pydantic model `FileReadRequest`/`FileWriteRequest` requires `target_file` |
+| **ProTable** | 不是 Element Plus 的 `el-table`；ProTable 是一个完整的表格解决方案，包含搜索、分页和列配置 |
+| **Dynamic Router** | 不是 Vue Router 的懒加载（`() => import()`）或嵌套路由（children）；动态路由特指基于权限的运行时路由注册 |
+| **AuthButton** | 不是路由守卫（`beforeEach`）；路由守卫控制页面级访问，而 AuthButton 控制页面内按钮级可见性 |
+| **Persist** | 不是浏览器的 `localStorage` API；指的是 Pinia 插件的自动双向同步机制 |
+| **Layout Mode** | 不是 CSS 布局或 Element Plus 的 `el-row/el-col` 网格；是页面级框架结构切换 |
+| **`filter`** | 不是 `query`（后端的 `query_documents` 只识别 `filter`）；也不是 Mongo 的 `$filter` 聚合阶段 |
+| **`target_file`** | 不是 `path` — 后端的 Pydantic 模型 `FileReadRequest`/`FileWriteRequest` 要求的是 `target_file` |
 
 ---
 
-## Recent Changes
+## 最近变更
 
-### 2026-07-31 — Knowledge + RAG + Bug pages
+### 2026-07-31 — Knowledge + RAG + Bug 页面
 
-- **`src/views/knowledge/`**: New page — browses the YiKnowledge markdown tree (CategoryList + Detail + MarkdownView). Calls `/knowledge/*` endpoints to list categories, read files, and surface metadata.
-- **`src/views/aicr/components/KnowledgeTree.vue`**: Bridges YiKnowledge metadata into the aicr FileTree — surfaces story.md / lessons / methodology for the file under review.
-- **`src/views/story/`**: Story detail page now displays `story.md` content via the same MarkdownView, with navigation to the aicr review when a story has been code-reviewed.
-- **`src/views/bug/`**: Bug list + detail page — `/bug` backend (per `YiKnowledge/projects/YrY/bug-logging-protocol.md`) backed by MongoDB `bugs` collection.
-- **`src/api/modules/`**: Added `knowledgeService.ts` and `ragService.ts` (RAG chat uses the existing SSE parser).
+- **`src/views/knowledge/`**：新增页面 — 浏览 YiKnowledge markdown 树（CategoryList + Detail + MarkdownView）。调用 `/knowledge/*` 端点列出分类、读取文件并展示元数据。
+- **`src/views/aicr/components/KnowledgeTree.vue`**：将 YiKnowledge 元数据桥接到 aicr FileTree — 为正在审查的文件展示 story.md / lessons / methodology。
+- **`src/views/story/`**：故事详情页现在通过相同的 MarkdownView 显示 `story.md` 内容，当故事已被代码审查时提供导航到 aicr 审查的入口。
+- **`src/views/bug/`**：Bug 列表 + 详情页 — `/bug` 后端（按 `YiKnowledge/projects/YrY/bug-logging-protocol.md`），由 MongoDB `bugs` 集合支持。
+- **`src/api/modules/`**：添加了 `knowledgeService.ts` 和 `ragService.ts`（RAG 对话使用现有的 SSE 解析器）。
 
-### 2026-07-30 — Sidebar parity + RSS → YiKnowledge offload
+### 2026-07-30 — 侧边栏对齐 + RSS → YiKnowledge 卸载
 
-- **Sidebar parity**: ChatSidebar (`aiChat`), ConversationSidebar (`aicr`), and FileTree (`aicr`) all aligned to a FileTree baseline — favorites + batch operations + hover action row + inline rename.
-- **RSS offload**: RSS body content moved to YiKnowledge markdown under `YiKnowledge/{category}`; MongoDB now stores metadata only (`category_path` + `file_path`).
+- **侧边栏对齐**：ChatSidebar（`aiChat`）、ConversationSidebar（`aicr`）和 FileTree（`aicr`）均对齐到 FileTree 基线 — 收藏 + 批量操作 + 悬停操作行 + 内联重命名。
+- **RSS 卸载**：RSS 正文内容移至 `YiKnowledge/{category}` 下的 YiKnowledge markdown；MongoDB 现在仅存储元数据（`category_path` + `file_path`）。
 
-### 2026-07-28 — Bug fixes
+### 2026-07-28 — Bug 修复
 
-- **`src/api/modules/fileService.ts`**: `readFile` and `writeFile` were sending `{ path }` but YiAi's `/read-file` and `/write-file` endpoints require `target_file` (Pydantic `FileReadRequest` / `FileWriteRequest`). Every call would 422. Fixed both to send `{ target_file: path, content }`.
-- **`src/stores/modules/aicr/chat.ts`**: On SSE `onDone`, the store now checks `!lastPet?.aborted && !lastPet?.error` before calling `autoForwardToRobots(streamed)`. Previously, if the user aborted mid-stream, partial content would still auto-forward to WeCom robots. Matches the `aiChat.ts` port pattern.
+- **`src/api/modules/fileService.ts`**：`readFile` 和 `writeFile` 发送的是 `{ path }`，但 YiAi 的 `/read-file` 和 `/write-file` 端点要求 `target_file`（Pydantic `FileReadRequest` / `FileWriteRequest`）。每次调用都会 422。已修复两者，发送 `{ target_file: path, content }`。
+- **`src/stores/modules/aicr/chat.ts`**：在 SSE `onDone` 时，store 现在在调用 `autoForwardToRobots(streamed)` 之前检查 `!lastPet?.aborted && !lastPet?.error`。此前，如果用户在中途中止，部分内容仍会自动转发到 WeCom 机器人。与 `aiChat.ts` 移植模式保持一致。
 
-### 2026-07-28 — Vite → Rsbuild migration
+### 2026-07-28 — Vite → Rsbuild 迁移
 
-- Migrated from Vite 8 to **Rsbuild 1**. Env prefix is now `RSBUILD_ENV_*` (no more `VITE_` leaks). `svg-sprite` + `views-glob` custom plugins replicate dropped Vite features.
+- 从 Vite 8 迁移到 **Rsbuild 1**。环境变量前缀现为 `RSBUILD_ENV_*`（不再有 `VITE_` 泄漏）。`svg-sprite` + `views-glob` 自定义插件复现了被移除的 Vite 功能。
 
-### 2026-07-27 — aiChat port (from YiWeb)
+### 2026-07-27 — aiChat 移植（来自 YiWeb）
 
-- Ported YiWeb's `sessionChat` page. Per-message actions (regenerate / retry / resend / delete / edit), `streamingType`, `aborted` flag, `scrollTick` throttle. Fixed `index.vue` `useResizable` scaffold bug.
+- 移植了 YiWeb 的 `sessionChat` 页面。每条消息操作（重新生成/重试/重新发送/删除/编辑）、`streamingType`、`aborted` 标志、`scrollTick` 节流。修复了 `index.vue` `useResizable` 脚手架 bug。
 
-### 2026-07-27 — aicr port (from YiWeb)
+### 2026-07-27 — aicr 移植（来自 YiWeb）
 
-- Ported YiWeb's `aicr` page end-to-end: 9 Pinia stores (`aicr/chat`, `sessions`, `faqs`, `fileTree`, `filters`, `modals`, `models`, `ui`, `weChat`) + 8 modal components + cards/graph views + full `CodeViewer`/`ChatPanel` parity. Build OK.
+- 端到端移植了 YiWeb 的 `aicr` 页面：9 个 Pinia stores（`aicr/chat`、`sessions`、`faqs`、`fileTree`、`filters`、`modals`、`models`、`ui`、`weChat`）+ 8 个模态组件 + 卡片/图表视图 + 完整的 `CodeViewer`/`ChatPanel` 对等。构建通过。

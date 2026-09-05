@@ -1,5 +1,5 @@
 ---
-title: user experience / UX
+title: 用户体验 / UX
 tags: [leaf, product, ux]
 category: producter/discovery/ux
 created: 2026-08-03
@@ -11,40 +11,40 @@ lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [producter]
-benefit: "PMs can understand and apply user experience / ux with clear frameworks, actionable recommendations, and anti-pattern awareness"
+benefit: "PM 可以通过清晰的框架、可操作的建议和反模式意识来理解和应用用户体验 / UX"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - "cross-references to related leaves and parent INDEX are present"
+  - "叶子目录范围边界清晰"
+  - "文件清单表完整，包含一句话描述"
+  - "包含与相关叶子目录和父级 INDEX 的交叉引用"
 related:
  - ../../../engineer/learn/lessons/learn-pm-frameworks.md
  - ../metrics/README.md
  - ../../frameworks/README.md
 ---
 
-# user experience / UX
+# 用户体验 / UX
 
-> **As a** product manager, **I want to** discover user needs and validate product decisions, **so that** we build the right things for the right reasons.
+> **作为**产品经理，**我想要**发现用户需求并验证产品决策，**以便**我们为正确的理由构建正确的东西。
 
-Collects UX research, design principles, usability QA results.
+汇集 UX 研究、设计原则、可用性 QA 结果。
 
-## Collection scope
+## 收录范围
 
-- UX research summary
-- design principles (Nielsen 10 heuristics etc)
-- usability QA report
-- AI product UX patterns
-- cross-cultural UX
-- visual walkthrough records
+- UX 研究摘要
+- 设计原则（Nielsen 10 项启发式原则等）
+- 可用性 QA 报告
+- AI 产品 UX 模式
+- 跨文化 UX
+- 视觉走查记录
 
-## File type and naming
+## 文件类型与命名
 
-- `*-summary.md`: UX research summary
-- `*-test.md`: usability QA report
-- `*-review.md`: visual walkthrough
-- naming uses English kebab-case
+- `*-summary.md`：UX 研究摘要
+- `*-test.md`：可用性 QA 报告
+- `*-review.md`：视觉走查
+- 命名使用英文 kebab-case
 
-## Frontmatter Template
+## Frontmatter 模板
 
 ```yaml
 ---
@@ -64,31 +64,31 @@ related:
 ---
 ```
 
-## Writing recommended structure
+## 推荐撰写结构
 
-1. research target
-2. method (interview / usability QA / data analysis)
-3. key discovery
-4. design suggestion
-5. follow-up tracking
-6. related metrics
+1. 研究目标
+2. 方法（访谈 / 可用性 QA / 数据分析）
+3. 关键发现
+4. 设计建议
+5. 后续跟踪
+6. 相关指标
 
-## Already collected
+## 已收录
 
-- `spritesheet-summary.md` — Snowgraph summary
-- `after-sales-pad-visual-review-summary.md` — after-sales PAD visual walkthrough table (7.21)
-- `ai-product-ux-patterns-summary.md` — AI product UX patterns (stream output / thinking display / tool call transparency)
-- `nielsen-heuristics-summary.md` — Nielsen 10 heuristics assessment
-- `cross-cultural-ux-summary.md` — cross-cultural UX design
-- `mobile-usability.md` — Mobile usability best practices
-- `accessibility.md` — Web accessibility standards
-- `information-architecture.md` — Information architecture design
-- `micro-interaction.md` — Micro-interaction design
+- `spritesheet-summary.md` — 雪碧图摘要
+- `after-sales-pad-visual-review-summary.md` — 售后 PAD 视觉走查表（7.21）
+- `ai-product-ux-patterns-summary.md` — AI 产品 UX 模式（流式输出 / 思考展示 / 工具调用透明）
+- `nielsen-heuristics-summary.md` — Nielsen 10 项启发式原则评估
+- `cross-cultural-ux-summary.md` — 跨文化 UX 设计
+- `mobile-usability.md` — 移动端可用性最佳实践
+- `accessibility.md` — Web 无障碍标准
+- `information-architecture.md` — 信息架构设计
+- `micro-interaction.md` — 微交互设计
 
-## Related leaf
+## 相关叶子目录
 
-- [../metrics/](../metrics/) — UX Measurement (CSAT / task completion rate)
-- [../../../executiver/strategy](../../../executiver/strategy) — strategy alignment
-- [../../frameworks](../../frameworks) — PM framework
-- [../../../curator/templates/usability-test-report.md](../../../curator/templates/usability-test-report.md) — usability QA template
-- [../../../engineer/learn/lessons/learn-pm-frameworks.md](../../../engineer/learn/lessons/learn-pm-frameworks.md) — scenario entry
+- [../metrics/](../metrics/) — UX 度量（CSAT / 任务完成率）
+- [../../../executiver/strategy](../../../executiver/strategy) — 战略对齐
+- [../../frameworks](../../frameworks) — PM 框架
+- [../../../curator/templates/usability-test-report.md](../../../curator/templates/usability-test-report.md) — 可用性 QA 模板
+- [../../../engineer/learn/lessons/learn-pm-frameworks.md](../../../engineer/learn/lessons/learn-pm-frameworks.md) — 场景入口

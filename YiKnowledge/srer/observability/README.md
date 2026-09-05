@@ -11,40 +11,40 @@ lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [srer, leader]
-benefit: "SREs find observability patterns, monitoring setup, and infrastructure guides in one place"
+benefit: "SRE 在一个地方找到可观测性模式、监控配置和基础设施指南"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - cross-references to related leaves and parent INDEX are present
+  - "叶子目录的范围有清晰边界"
+  - "文件清单表完整，包含一行描述"
+  - 存在到相关叶子和父级 INDEX 的交叉引用
 related:
   - ../../engineer/run/check-engineering-gotchas.md
-  - ../../aier/platform/README.md
+  - ../../aier/平台/README.md
   - ../../README.md
 ---
 
 # Observability Directory
 
-> **As an** oncall SRE, **I want to** find observability patterns, monitoring setup guides, and infrastructure documentation, **so that** I can keep systems observable and reliable.
+> **作为** oncall SRE，**我希望**找到可观测性模式、监控配置指南和基础设施文档，**以便**保持系统可观测和可靠。
 
-Covers infrastructure, ops, deployment, tech debt, capacity and cost related summaries.
+覆盖基础设施、运维、部署、技术债务、容量和成本相关的摘要。
 
-## Included scope
+## 包含范围
 
-- Tech debt inventory (Fowler four quadrants + interest assessment)
-- Capacity and cost (FinOps)
-- Containerization and orchestration (Docker / Kubernetes)
-- CI/CD (GitHub Actions / GitLab CI)
-- Observability triad (Logging / Metrics / Tracing)
-- Reverse proxy (Nginx / Caddy)
-- GPU inference service deployment
+- 技术债务清单（Fowler 四象限 + 利息评估）
+- 容量和成本（FinOps）
+- 容器化和编排（Docker / Kubernetes）
+- CI/CD（GitHub Actions / GitLab CI）
+- 可观测性三大支柱（日志 / 指标 / 链路追踪）
+- 反向代理（Nginx / Caddy）
+- GPU 推理服务部署
 
-## File type and naming
+## 文件类型和命名
 
-- `*-summary.md`: summary of a topic
-- `*-template.md`: reusable template
-- Naming uses English kebab-case
+- `*-summary.md`：主题摘要
+- `*-template.md`：可复用模板
+- 命名使用英文 kebab-case
 
-## Frontmatter Template
+## Frontmatter 模板
 
 ```yaml
 ---
@@ -66,34 +66,34 @@ related:
 ---
 ```
 
-## Recommended writing structure
+## 推荐撰写结构
 
-1. Background and question definition
-2. Core concepts
-3. Mainstream solution comparison
-4. Deployment and ops key points
-5. Anti-patterns and pitfalls
-6. This team's implementation status
+1. 背景和问题定义
+2. 核心概念
+3. 主流方案对比
+4. 部署和运维要点
+5. 反模式和陷阱
+6. 本团队实施现状
 
-## Already included
+## 已包含
 
-- `tech-debt-inventory-template.md` — tech debt inventory template (by domain category + interest assessment + quarterly payoff priority)
-- `tech-debt-inventory-summary.md` — tech debt inventory summary (Fowler four quadrants + interest assessment)
-- `capacity-and-cost-template.md` — capacity and cost template (FinOps, includes resource utilization / scale-up threshold / per-request cost / quarterly optimization items)
-- `capacity-and-cost-summary.md` — capacity and cost summary (FinOps methodology)
-- `docker-kubernetes.md` — Docker and Kubernetes observability
-- `cicd.md` — CI/CD pipeline design and observability
-- `observability-triad.md` — Logs, metrics, traces — the three pillars
-- `reverse-proxy.md` — Reverse proxy patterns
-- `containerized-deployment.md` — Containerized deployment strategies
-- `gpu-inference.md` — GPU inference deployment
-- `private-vs-public-cloud.md` — Private vs public cloud deployment
+- `tech-debt-inventory-template.md` — 技术债务清单模板（按域分类 + 利息评估 + 季度偿还优先级）
+- `tech-debt-inventory-summary.md` — 技术债务清单摘要（Fowler 四象限 + 利息评估）
+- `capacity-and-cost-template.md` — 容量和成本模板（FinOps，包含资源利用率/扩容阈值/单次请求成本/季度优化项）
+- `capacity-and-cost-summary.md` — 容量和成本摘要（FinOps 方法论）
+- `docker-kubernetes.md` — Docker 和 Kubernetes 可观测性
+- `cicd.md` — CI/CD 流水线设计和可观测性
+- `observability-triad.md` — 日志、指标、链路追踪 — 三大支柱
+- `reverse-proxy.md` — 反向代理模式
+- `containerized-deployment.md` — 容器化部署策略
+- `gpu-inference.md` — GPU 推理部署
+- `private-vs-public-cloud.md` — 私有云 vs 公有云部署
 
-## Related leaf
+## 相关叶子
 
-- [../../aier/platform](../../aier/platform) — AI Platform
-- [../../aier/data](../../aier/data) — data
-- [../../engineer/processes](../../engineer/run/README.md) — ops process
-- [../../engineer/ship/capacity-planning.md](../../engineer/ship/capacity-planning.md) — capacity assessment
-- [../../engineer/ship/quarterly-tech-debt.md](../../engineer/ship/quarterly-tech-debt.md) — quarterly tech debt
-- [../../engineer/run/check-engineering-gotchas.md](../../engineer/run/check-engineering-gotchas.md) — scenario entry
+- [../../aier/平台](../../aier/平台) — AI 平台
+- [../../aier/data](../../aier/data) — 数据
+- [../../engineer/processes](../../engineer/run/README.md) — 运维流程
+- [../../engineer/ship/capacity-planning.md](../../engineer/ship/capacity-planning.md) — 容量评估
+- [../../engineer/ship/quarterly-tech-debt.md](../../engineer/ship/quarterly-tech-debt.md) — 季度技术债务
+- [../../engineer/run/check-engineering-gotchas.md](../../engineer/run/check-engineering-gotchas.md) — 场景入口

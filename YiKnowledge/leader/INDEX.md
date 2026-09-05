@@ -27,7 +27,7 @@ related:
 
 | Domain | Content |
 |---|---|
-| [architecture/](./architecture/) | Architecture patterns, tech selection evaluations, maturity models |
+| [architecture/](./架构/) | Architecture patterns, tech selection evaluations, maturity models |
 | [decisions/](./decisions/) | ADRs for YiAi, YiVad, YiPet, FDE |
 | [capacity/](./capacity/) | Capacity & cost tracking, dependency audits |
 | [risk/](./risk/) | Risk register, outage communication, postmortem methodology |

@@ -16,7 +16,7 @@ benefit: "Run structured proof-of-concept spikes to validate technical assumptio
 related:
   - ./do-a-tech-selection.md
   - ./plan-tech-roadmap.md
-  - ../architecture/README.md
+  - ../架构/README.md
   - ../README.md
   - ../INDEX.md
 ---

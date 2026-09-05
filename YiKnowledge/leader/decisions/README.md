@@ -1,5 +1,5 @@
 ---
-title: Tech Lead — Decisions (ADRs)
+title: 技术负责人 — 决策 (ADR)
 tags: [leaf, leader, adr, decisions, architecture]
 category: leader/decisions
 created: 2026-08-06
@@ -11,38 +11,38 @@ status: stable
 lifecycle: active
 review_cycle: quarterly
 roles: [leader, engineer]
-benefit: "Tech leads find all project-level Architecture Decision Records organized by project"
+benefit: "技术负责人可以按项目找到所有项目级架构决策记录"
 acceptance_criteria:
-  - "ADRs organized by project (YiAi, YiVad, YiPet, FDE)"
-  - "Cross-project ADR dashboard accessible"
-  - "Each ADR follows the 12-section template"
+  - "ADR 按项目组织（YiAi、YiVad、YiPet、FDE）"
+  - "跨项目 ADR 仪表盘可访问"
+  - "每个 ADR 遵循 12 节模板"
 related:
   - ../INDEX.md
-  - ../architecture/design-architecture-decision.md
+  - ../架构/design-architecture-decision.md
   - ../../engineer/build/
 ---
 
-# Tech Lead — Decisions (ADRs)
+# 技术负责人 — 决策 (ADR)
 
-> **As a** tech lead, **I want to** find all project-level Architecture Decision Records, **so that** I can understand why past decisions were made and make consistent future ones.
+> **作为**技术负责人，**我想要**找到所有项目级架构决策记录，**以便**理解过去决策的原因并做出前后一致的未来决策。
 
-## Projects
+## 项目
 
 | Project | ADRs | Key decisions |
 |---|---|---|
-| [yiai/](./yiai/) | 6 | BRD agent launch, LLM multi-provider routing, RAG eval infra, pytest, knowledge watcher |
-| [yivad/](./yivad/) | 3 | AiCR phase port, Vitest introduction and rollout |
-| [yipet/](./yipet/) | 3 | Biome lint/format, AiCR port, Chrome MV3 dual-world boundary |
-| [fde/](./fde/) | 4 | Air-gap first, Delta as contract, enterprise RAG hybrid search, two-loop eval |
+| [yiai/](./yiai/) | 6 | BRD agent 启动、LLM 多供应商路由、RAG 评估基础设施、pytest、知识监听器 |
+| [yivad/](./yivad/) | 3 | AiCR 阶段移植、Vitest 引入和推出 |
+| [yipet/](./yipet/) | 3 | Biome lint/format、AiCR 移植、Chrome MV3 双世界边界 |
+| [fde/](./fde/) | 4 | Air-gap 优先、Delta 作为契约、企业 RAG 混合搜索、双循环评估 |
 
-## Cross-project
+## 跨项目
 
 | File | Description |
 |---|---|
-| [dashboard-architecture-decisions.md](./dashboard-architecture-decisions.md) | ADR status dashboard across all projects |
-| [stack-migration-sequencing.md](./stack-migration-sequencing.md) | Multi-project stack migration sequencing |
+| [dashboard-architecture-decisions.md](./dashboard-architecture-decisions.md) | 所有项目的 ADR 状态仪表盘 |
+| [stack-migration-sequencing.md](./stack-migration-sequencing.md) | 多项目技术栈迁移排序 |
 
-## Cross-references
+## 交叉引用
 
-- [../architecture/design-architecture-decision.md](../architecture/design-architecture-decision.md) — ADR framework and template
-- [../../engineer/build/](../../engineer/build/) — System design patterns
+- [../架构/design-architecture-decision.md](../架构/design-architecture-decision.md) — ADR 框架和模板
+- [../../engineer/build/](../../engineer/build/) — 系统设计模式

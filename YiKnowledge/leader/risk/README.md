@@ -1,5 +1,5 @@
 ---
-title: Tech Lead — Risk Management
+title: 技术负责人 — 风险管理
 tags: [leaf, leader, risk, postmortem, outage, register]
 category: leader/risk
 created: 2026-08-06
@@ -11,42 +11,42 @@ status: stable
 lifecycle: active
 review_cycle: quarterly
 roles: [leader, srer]
-benefit: "Tech leads find risk register, postmortem methodology, and outage communication procedures in one place"
+benefit: "技术负责人可以在一个地方找到风险登记册、事后复盘方法论和故障沟通流程"
 acceptance_criteria:
-  - "Risk register with tracked risks documented"
-  - "Postmortem writing methodology present"
-  - "Outage communication procedures included"
+  - "风险登记册包含已追踪的风险"
+  - "事后复盘撰写方法论存在"
+  - "故障沟通流程已包含"
 related:
   - ../INDEX.md
   - ../../srer/incident-response/
   - ../../engineer/SECURITY.md
 ---
 
-# Tech Lead — Risk Management
+# 技术负责人 — 风险管理
 
-> **As a** tech lead, **I want to** find risk management frameworks and incident communication procedures, **so that** I can identify, track, and mitigate risks before they become incidents.
+> **作为**技术负责人，**我想要**找到风险管理框架和事故沟通流程，**以便**在风险演变为事故之前识别、追踪和缓解风险。
 
-## Risk register
-
-| File | Description |
-|---|---|
-| [tl-risk-register-single-provider-llm-lock-in.md](./tl-risk-register-single-provider-llm-lock-in.md) | Single-provider LLM lock-in risk |
-| [manage-dependency-risk.md](./manage-dependency-risk.md) | Dependency risk identification, assessment, and mitigation framework |
-
-## Postmortems & outages
+## 风险登记册
 
 | File | Description |
 |---|---|
-| [write-a-postmortem.md](./write-a-postmortem.md) | Postmortem writing methodology |
-| [handle-an-outage-communication.md](./handle-an-outage-communication.md) | Outage communication procedure |
+| [tl-risk-register-single-provider-llm-lock-in.md](./tl-risk-register-single-provider-llm-lock-in.md) | 单一供应商 LLM 锁定风险 |
+| [manage-dependency-risk.md](./manage-dependency-risk.md) | 依赖风险识别、评估和缓解框架 |
 
-## Dashboard
+## 事后复盘与故障
 
 | File | Description |
 |---|---|
-| [dashboard-risk-management.md](./dashboard-risk-management.md) | Risk management dashboard |
+| [write-a-postmortem.md](./write-a-postmortem.md) | 事后复盘撰写方法论 |
+| [handle-an-outage-communication.md](./handle-an-outage-communication.md) | 故障沟通流程 |
 
-## Cross-references
+## 仪表盘
 
-- [../../srer/incident-response/](../../srer/incident-response/) — Incident response procedures
-- [../../engineer/SECURITY.md](../../engineer/SECURITY.md) — Security domain index
+| File | Description |
+|---|---|
+| [dashboard-risk-management.md](./dashboard-risk-management.md) | 风险管理仪表盘 |
+
+## 交叉引用
+
+- [../../srer/incident-response/](../../srer/incident-response/) — 事故响应流程
+- [../../engineer/SECURITY.md](../../engineer/SECURITY.md) — 安全领域索引

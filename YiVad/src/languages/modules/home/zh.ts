@@ -19,7 +19,6 @@ export default {
       projects: "项目",
       activeRoles: "活跃角色",
       bugs: "缺陷",
-      releases: "发布",
       noData: "--"
     },
 
@@ -29,15 +28,12 @@ export default {
       roadmap: { label: "路线图", desc: "产品路线图概览" },
       project: { label: "项目", desc: "项目管理与概览" },
       issue: { label: "Issue", desc: "任务与需求追踪" },
-      cycle: { label: "周期", desc: "开发迭代与周期" },
-      release: { label: "发布", desc: "版本发布管理" },
-      bug: { label: "缺陷", desc: "Bug 追踪与修复" },
+            bug: { label: "缺陷", desc: "Bug 追踪与修复" },
       module: { label: "模块", desc: "系统模块架构" },
       search: { label: "全局搜索", desc: "跨项目搜索实体" },
       aiChat: { label: "AI 对话", desc: "Agent 驱动的智能助手" },
       knowledge: { label: "知识库", desc: "团队知识管理" },
       rag: { label: "RAG 检索", desc: "AI 增强检索问答" },
-      analytics: { label: "分析", desc: "数据统计与报表" },
       skills: { label: "技能", desc: "技能管理" },
       rss: { label: "RSS", desc: "RSS 订阅内容" }
     },
@@ -92,23 +88,16 @@ export default {
       created: "创建了",
       updated: "更新了",
       issue: "Issue",
-      bug: "Bug",
-      release: "Release",
-      cycle: "Cycle"
+      bug: "Bug"
     },
 
     pipeline: {
       title: "交付流水线",
       requirements: "需求",
-      activeCycles: "活跃周期",
       inProgress: "进行中",
-      pendingReleases: "待发布",
-      released: "已发布",
       stages: {
         req: "需求",
-        cycle: "周期",
         dev: "开发",
-        release: "发布",
         done: "完成"
       }
     },
@@ -118,11 +107,7 @@ export default {
       issue: "新建 Issue",
       issueDesc: "创建任务或需求",
       bug: "提交 Bug",
-      bugDesc: "报告缺陷或问题",
-      cycle: "新建周期",
-      cycleDesc: "启动开发迭代",
-      release: "新建发布",
-      releaseDesc: "规划发布版本"
+      bugDesc: "报告缺陷或问题"
     },
 
     aiRecommend: {

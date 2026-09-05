@@ -1,5 +1,5 @@
 ---
-title: Product Metrics / Product Metrics
+title: 产品指标 / Product Metrics
 tags: [leaf, product, metrics]
 category: producter/discovery/metrics
 created: 2026-08-03
@@ -11,38 +11,38 @@ lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [producter, executiver]
-benefit: "PMs can understand and apply product metrics / product metrics with clear frameworks, actionable recommendations, and anti-pattern awareness"
+benefit: "PM 可以通过清晰的框架、可操作的建议和反模式意识来理解和应用产品指标"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - cross-references to related leaves and parent INDEX are present
+  - "叶子目录范围边界清晰"
+  - "文件清单表完整，包含一句话描述"
+  - 包含与相关叶子目录和父级 INDEX 的交叉引用
 related:
   - ../../../engineer/learn/lessons/learn-pm-frameworks.md
   - ../../../executiver/strategy/README.md
   - ../../frameworks/heart-aarrr-metrics.md
 ---
 
-# Product Metrics / Product Metrics
+# 产品指标 / Product Metrics
 
-"> **As a** product manager, **I want to** discover user needs and validate product decisions, **so that** we build the right things for the right reasons.
+> **作为**产品经理，**我想要**发现用户需求并验证产品决策，**以便**我们为正确的理由构建正确的东西。
 
-Includes the product metric system, monitoring standards, and North-star metric. 
+包含产品指标体系、监控标准和北极星指标。
 
-## Included scope
+## 收录范围
 
-- North-star metric
-- AI product specific metrics (hallucination rate, confidence, tool call success rate) 
-- Retention and churn
-- AARRR pirate metrics
-- DORA engineering efficiency
+- 北极星指标
+- AI 产品特定指标（幻觉率、置信度、工具调用成功率）
+- 留存与流失
+- AARRR 海盗指标
+- DORA 工程效率
 
-## file type and naming
+## 文件类型与命名
 
-- `*-summary.md`: summary of a metric system
-- `*-template.md`: metric definition template
-- Naming uses English kebab-case
+- `*-summary.md`：指标体系的摘要
+- `*-template.md`：指标定义模板
+- 命名使用英文 kebab-case
 
-## Frontmatter Template
+## Frontmatter 模板
 
 ```yaml
 ---
@@ -62,29 +62,29 @@ related:
 ---
 ```
 
-## Recommended writing structure
+## 推荐撰写结构
 
-1. Metric definition (formula / computation logic) 
-2. Collection method (instrumentation / log / lookup) 
-3. Health threshold (green / yellow / red) 
-4. Exception handling process
-5. Related metrics (leading / lagging) 
-6. Current value and target for this product
+1. 指标定义（公式 / 计算逻辑）
+2. 采集方法（埋点 / 日志 / 查询）
+3. 健康阈值（绿色 / 黄色 / 红色）
+4. 异常处理流程
+5. 相关指标（先行 / 滞后）
+6. 本产品当前值及目标值
 
-## Already included
+## 已收录
 
-- `north-star-metric-summary.md` — North-star metric
-- `ai-product-metrics-summary.md` — AI product specific metrics (hallucination rate / confidence / tool call success rate) 
-- `retention-and-churn-summary.md` — retention and churn metrics
-- `aarrr-metrics.md` — AARRR pirate metrics: stage-by-stage metrics, AI product adaptations
-- `dora-metrics.md` — DORA engineering efficiency metrics: four key metrics, Elite/High/Medium/Low benchmarks, capability drivers
-- `nps-csat.md` — NPS and CSAT methodology: survey design, closing-the-loop process, AI product considerations
-- `funnel-conversion.md` — Funnel conversion analysis: AIDA model, drop-off diagnosis, CRO experimentation framework
+- `north-star-metric-summary.md` — 北极星指标
+- `ai-product-metrics-summary.md` — AI 产品特定指标（幻觉率 / 置信度 / 工具调用成功率）
+- `retention-and-churn-summary.md` — 留存与流失指标
+- `aarrr-metrics.md` — AARRR 海盗指标：各阶段指标、AI 产品适配
+- `dora-metrics.md` — DORA 工程效率指标：四项关键指标、Elite/High/Medium/Low 基准、能力驱动因素
+- `nps-csat.md` — NPS 和 CSAT 方法论：问卷设计、闭环流程、AI 产品考量
+- `funnel-conversion.md` — 漏斗转化分析：AIDA 模型、流失诊断、CRO 实验框架
 
-## Related leaf
+## 相关叶子目录
 
-- [../../../executiver/strategy](../../../executiver/strategy) — strategy alignment
-- [../ux/](../ux/) — UX Measurement
+- [../../../executiver/strategy](../../../executiver/strategy) — 战略对齐
+- [../ux/](../ux/) — UX 度量
 - [../../frameworks](../../frameworks) — HEART / AARRR
 - [../../../engineer/run/engineering-productivity-metrics.md](../../../engineer/run/engineering-productivity-metrics.md) — DORA
-- [../../../engineer/learn/lessons/learn-pm-frameworks.md](../../../engineer/learn/lessons/learn-pm-frameworks.md) — scenario entry
+- [../../../engineer/learn/lessons/learn-pm-frameworks.md](../../../engineer/learn/lessons/learn-pm-frameworks.md) — 场景入口

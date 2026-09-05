@@ -5,15 +5,9 @@ export default {
     done: "Done",
     kind: {
       label: "Kind",
-      cycle: "Sprint",
-      cycles: "Sprints",
-      cycleLabel: "Sprint",
       module: "Epic",
       modules: "Epics",
-      moduleLabel: "Epic",
-      release: "Milestone",
-      releases: "Milestones",
-      releaseLabel: "Milestone"
+      moduleLabel: "Epic"
     },
     sort: {
       byDate: "By Date",
@@ -38,7 +32,6 @@ export default {
       markPlanned: "Mark Planned",
       markInProgress: "Mark In Progress",
       markCancelled: "Mark Cancelled",
-      markReleased: "Mark Released",
       delete: "Delete"
     },
     messages: {

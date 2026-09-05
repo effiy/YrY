@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 import { useUserStore } from "@/stores/modules/user";
 import { useAuthStore } from "@/stores/modules/auth";
-import { LOGIN_URL, ROUTER_WHITE_LIST, WELCOME_URL } from "@/config";
+import { LOGIN_URL, ROUTER_WHITE_LIST } from "@/config";
 import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
 import { staticRouter, errorRouter } from "@/routers/modules/staticRouter";
 import NProgress from "@/config/nprogress";
@@ -61,8 +61,8 @@ router.beforeEach(async (to, from) => {
   const title = import.meta.env.RSBUILD_ENV_GLOB_APP_TITLE;
   document.title = to.meta.title ? `${to.meta.title} - ${title}` : title;
 
-  // 3. Check if accessing login/welcome page: if token exists go to home, otherwise reset routes
-  if (to.path.toLocaleLowerCase() === LOGIN_URL || to.path.toLocaleLowerCase() === WELCOME_URL) {
+  // 3. Check if accessing login page: if token exists go to home, otherwise reset routes
+  if (to.path.toLocaleLowerCase() === LOGIN_URL) {
     if (userStore.token) return from.fullPath;
     resetRouter();
     return;
@@ -71,8 +71,8 @@ router.beforeEach(async (to, from) => {
   // 4. Check if the target page is in the route whitelist (static routes); allow directly if so
   if (ROUTER_WHITE_LIST.includes(to.path)) return;
 
-  // 5. Check if token exists; redirect to welcome page if not
-  if (!userStore.token) return { path: WELCOME_URL, replace: true };
+  // 5. Check if token exists; redirect to login page if not
+  if (!userStore.token) return { path: LOGIN_URL, replace: true };
 
   // 6. If no menu list, re-request menu list and add dynamic routes
   if (!authStore.authMenuListGet.length) {

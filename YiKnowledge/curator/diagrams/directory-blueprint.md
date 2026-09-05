@@ -79,10 +79,10 @@ YiKnowledge/
 | **srer** | incident-response/ | Incident procedures, postmortems, on-call | 6 |
 | | observability/ | Monitoring, CI/CD, capacity, infra | 8 |
 | | release/ | Release, canary, hotfix, rollback | 6 |
-| **aier** | foundations/ | LLM basics, RAG patterns | 3 |
-| | methodology/ | Agent architecture, prompt engineering, eval | 8 |
-| | platform/ | LLM comparison, vector DB, embedding models | 4 |
-| | ml/ | Traditional ML patterns | 2 |
+| **aier** | 基础/ | LLM basics, RAG patterns | 3 |
+| | 方法/ | Agent architecture, prompt engineering, eval | 8 |
+| | 平台/ | LLM comparison, vector DB, embedding models | 4 |
+| | 机器学习/ | Traditional ML patterns | 2 |
 | **curator** | governance/ | Lifecycle, readiness checklist, standards | 5 |
 | | diagrams/ | Knowledge map, journey, blueprint | 5 |
 | | templates/ | PRD, ADR, tech design, retrospective | 13 |
@@ -107,10 +107,10 @@ Hop 2: Problem domain (e.g., engineer/build/)
 | Implement an API | engineer/build/implement-an-api.md |
 | Set up observability | srer/observability/set-up-observability.md |
 | Respond to an incident | srer/incident-response/respond-to-an-incident.md |
-| Choose an LLM | aier/foundations/llm-fundamentals.md |
+| Choose an LLM | aier/基础/大模型基础.md |
 | Run a sprint | producter/delivery/run-a-sprint.md |
 | Do user research | producter/frameworks/do-user-research.md |
-| Review code with AI | aier/methodology/prompts/code-review-prompt.md |
+| Review code with AI | aier/方法/提示词/代码审查.md |
 | Write a postmortem | leader/risk/write-a-postmortem.md |
 | Review infrastructure costs | leader/capacity/run-a-finops-review.md |
 | Start a new project | demos/INDEX.md |

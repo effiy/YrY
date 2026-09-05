@@ -1,75 +1,73 @@
-# YrY Monorepo
+# YrY 单体仓库
 
-> Monorepo with 3 applications + 1 knowledge base — a full-stack AI-powered development platform.
+> 包含 3 个应用 + 1 个知识库的单体仓库——一个全栈 AI 驱动的开发平台。
 
-## Features
+## 特性
 
-- **YiVad** — Vue 3.5 admin dashboard with ProTable, dynamic routing, and button-level permissions
-- **YiAi** — FastAPI backend with AI chat (Ollama), RAG (llama_index), file management, and RSS aggregation
-- **YiPet** — Chrome MV3 extension that injects an interactive AI companion into any page
-- **YiKnowledge** — Markdown knowledge base serving both humans and AI (RAG data source)
+- **YiVad** — Vue 3.5 管理后台，具备 ProTable、动态路由和按钮级权限
+- **YiAi** — FastAPI 后端，具备 AI 聊天（Ollama）、RAG（llama_index）、文件管理和 RSS 聚合
+- **YiPet** — Chrome MV3 扩展，向任意页面注入交互式 AI 伴侣
+- **YiKnowledge** — Markdown 知识库，同时服务于人类和 AI（RAG 数据源）
 
-## Quick Start
+## 快速开始
 
 ```bash
-# 1. Start YiAi backend (port 10086)
+# 1. 启动 YiAi 后端（端口 10086）
 cd YiAi && python main.py
 
-# 2. Start YiVad frontend (port 8848)
+# 2. 启动 YiVad 前端（端口 8848）
 cd YiVad && pnpm dev
 
-# 3. Build and load YiPet extension
+# 3. 构建并加载 YiPet 扩展
 cd YiPet && npm run build
-# Load dist/ as unpacked extension in Chrome
+# 在 Chrome 中以解压扩展的形式加载 dist/
 ```
 
-## Architecture
+## 架构
 
 ```
-YiPet (browser) ──fetch──→ YiAi (FastAPI :10086) ←──fetch── YiVad (SPA :8848)
+YiPet（浏览器）──fetch──→ YiAi（FastAPI :10086）←──fetch── YiVad（SPA :8848）
      │                          │
      │ chrome.storage           │ MongoDB · Ollama · llama_index
      │                          │
-     └── YiKnowledge ←──knowledge watcher (apscheduler)──┤
+     └── YiKnowledge ←──知识监视器（apscheduler）──┤
 ```
 
-All frontend apps communicate with YiAi through a unified RPC envelope: `{module_name, method_name, parameters}`.
+所有前端应用通过统一的 RPC 信封与 YiAi 通信：`{module_name, method_name, parameters}`。
 
-## Configuration
+## 配置
 
-| Variable | Project | Default |
+| 变量 | 项目 | 默认值 |
 |----------|---------|---------|
 | `RSBUILD_API_BASE` | YiPet, YiVad | `http://localhost:10086` |
-| YiAi port | YiAi | `10086` |
-| YiVad dev port | YiVad | `8848` |
+| YiAi 端口 | YiAi | `10086` |
+| YiVad 开发端口 | YiVad | `8848` |
 
-## Development
+## 开发
 
 ```bash
-# Conventional commits enforced by commitlint
-pnpm commit  # YiVad — launches cz-git
-npm run commit  # YiPet — launches cz-git
+# Conventional Commits 由 commitlint 强制执行
+pnpm commit  # YiVad——启动 cz-git
+npm run commit  # YiPet——启动 cz-git
 ```
 
-### Cross-project changes
+### 跨项目修改
 
-1. Read both project CLAUDE.md files
-2. Verify RPC parameter names (`filter` not `query`, `target_file` not `path`)
-3. Test both sides
-4. Update YiKnowledge if new patterns emerge
+1. 阅读两个项目的 CLAUDE.md 文件
+2. 验证 RPC 参数名称（`filter` 而非 `query`，`target_file` 而非 `path`）
+3. 测试双方
+4. 如果有新的模式出现，更新 YiKnowledge
 
-## Project Structure
+## 项目结构
 
 ```
 YrY/
-├── YiVad/          # Vue 3.5 admin dashboard
-├── YiAi/           # FastAPI backend
-├── YiPet/          # Chrome MV3 extension
-├── YiKnowledge/    # Markdown knowledge base
-├── rs.h5/          # H5 mobile project
-└── rs.ui/          # UI component library
+├── YiVad/          # Vue 3.5 管理后台
+├── YiAi/           # FastAPI 后端
+├── YiPet/          # Chrome MV3 扩展
+└── YiKnowledge/    # Markdown 知识库
 ```
 
-## License
+## 许可证
 
-Proprietary. All rights reserved.
+专有软件。保留所有权利。

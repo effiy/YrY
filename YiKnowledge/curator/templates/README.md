@@ -30,63 +30,63 @@ related:
   - ./prd.md
   - ./brd.md
   - ../../engineer/build/find-templates-and-prompts.md
-  - ../../aier/methodology/prompts/README.md
+  - ../../aier/方法/提示词/README.md
 ---
 
-# template / Templates
+# template / 模板
 
-> **As a** knowledge curator, **I want to** find the right template quickly, **so that** I can create consistent, well-structured knowledge entries. 
+> **作为**知识 curator，**我希望**快速找到合适的模板，**以便**创建一致、结构良好的知识条目。
 
-> Collects reusable documentation templates: PRD, BRD, technical design, retrospective, user research, ADR, etc. All template leaves follow the `knowledge-leaf-template.md` seven-section structure; the body contains "template body + field explanation + usage advice + anti-patterns". 
+> 收集可复用的文档模板：PRD、BRD、技术设计、复盘、用户研究、ADR 等。所有模板叶子遵循 `knowledge-leaf-template.md` 七段结构；正文包含"模板正文 + 字段说明 + 使用建议 + 反模式"。
 
-## Scope
+## 范围
 
-- Requirements documentation (PRD / BRD) 
-- Technical design, selection evaluation, architecture decision (ADR) 
-- Retrospective and review
-- User research and usability testing
-- Meeting notes, 1on1
+- 需求文档（PRD / BRD）
+- 技术设计、选型评估、架构决策（ADR）
+- 复盘与审查
+- 用户研究与可用性测试
+- 会议记录、1on1
 
-## Included
+## 已包含
 
-### Template (copy and fill in directly) 
+### 模板（直接复制填写）
 
-| file | One-liner |
+| 文件 | 一句话描述 |
 |---|---|
-| [knowledge-leaf-template.md](./knowledge-leaf.md) | Unified template for all leaves in the library (SSOT, do not modify)  |
-| [tech-design-template.md](./tech-design.md) | Technical design (business / architecture / detail / non-functional)  |
-| [retrospective-template.md](./retrospective.md) | retrospective (Keep / Problem / 5-Why / Action)  |
-| [meeting-notes-template.md](./meeting-notes.md) | Meeting notes (agenda / decisions / action items)  |
-| [one-on-one-template.md](./one-on-one.md) | 1on1 (employee-led + two-way feedback)  |
-| [user-research-interview-template.md](./user-research-interview.md) | Semi-structured user research interview outline |
-| [usability-test-report-template.md](./usability-test-report.md) | Usability test report |
-| [prd.md](./prd.md) | Product requirements documentation |
-| [brd.md](./brd.md) | Business requirements documentation |
-| [adr-template.md](./adr.md) | Architecture decision record form |
-| [tech-selection-evaluation-template.md](./tech-selection-evaluation.md) | Tech selection evaluation form |
+| [knowledge-leaf-template.md](./knowledge-leaf.md) | 库中所有叶子的统一模板（SSOT，请勿修改） |
+| [tech-design-template.md](./tech-design.md) | 技术设计（业务/架构/详细/非功能性） |
+| [retrospective-template.md](./retrospective.md) | 复盘（Keep / Problem / 5-Why / Action） |
+| [meeting-notes-template.md](./meeting-notes.md) | 会议记录（议程/决策/行动项） |
+| [one-on-one-template.md](./one-on-one.md) | 1on1（员工主导 + 双向反馈） |
+| [user-research-interview-template.md](./user-research-interview.md) | 半结构化用户研究访谈提纲 |
+| [usability-test-report-template.md](./usability-test-report.md) | 可用性测试报告 |
+| [prd.md](./prd.md) | 产品需求文档 |
+| [brd.md](./brd.md) | 业务需求文档 |
+| [adr-template.md](./adr.md) | 架构决策记录表 |
+| [tech-selection-evaluation-template.md](./tech-selection-evaluation.md) | 技术选型评估表 |
 
-### Summary (methodology) 
+### 总结（方法论）
 
-| file | One-liner |
+| 文件 | 一句话描述 |
 |---|---|
-| [adr-summary.md](./adr.md) | What ADR is, when to write it, how to write it well |
-| [tech-selection-evaluation-summary.md](./tech-selection-evaluation.md) | Selection methodology and trade-offs |
+| [adr-summary.md](./adr.md) | ADR 是什么、何时写、如何写好 |
+| [tech-selection-evaluation-summary.md](./tech-selection-evaluation.md) | 选型方法论与权衡 |
 
-## Recommended structure
+## 推荐结构
 
-Each template leaf should contain: 
+每个模板叶子应包含：
 
-1. **Summary**: One sentence explaining when to use this template
-2. **Template body**: Markdown + placeholders (code blocks) 
-3. **Field explanation**: Field name, required, normative table
-4. **Usage advice**: Filling conventions, supporting prompts, upstream/downstream documentation
-5. **Anti-patterns**: Common misuses and fixes
-6. **Related**: Related templates, prompts, processes
+1. **Summary**：一句话说明何时使用此模板
+2. **模板正文**：Markdown + 占位符（代码块）
+3. **字段说明**：字段名、是否必填、规范表
+4. **使用建议**：填写规范、配套 prompt、上下游文档
+5. **反模式**：常见误用及修复方法
+6. **Related**：相关模板、prompt、流程
 
-## Related leaves
+## 相关叶子
 
-- [../../aier/methodology/prompts](../../aier/methodology/prompts) — Supporting prompts
-- [../../producter/discovery/prd](../../producter/discovery/prd) — PRD instance
-- [../../producter/delivery](../../producter/delivery) — Meeting template instance
-- [../../engineer/learn/lessons/failures/incident-postmortem.md](../../engineer/learn/lessons/failure-incident-postmortem.md) — Incident retrospective template
-- [../../engineer/build/find-templates-and-prompts.md](../../engineer/build/find-templates-and-prompts.md) — Scenario entry
+- [../../aier/方法/提示词](../../aier/方法/提示词) — 配套 prompt
+- [../../producter/discovery/prd](../../producter/discovery/prd) — PRD 实例
+- [../../producter/delivery](../../producter/delivery) — 会议模板实例
+- [../../engineer/learn/lessons/failures/incident-postmortem.md](../../engineer/learn/lessons/failure-incident-postmortem.md) — 事故复盘模板
+- [../../engineer/build/find-templates-and-prompts.md](../../engineer/build/find-templates-and-prompts.md) — 场景入口

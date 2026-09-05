@@ -192,30 +192,6 @@
                   <el-button link size="small" type="primary" @click="router.push(`/project/${mod.project_key}`)">{{ projectName }}</el-button>
                 </span>
               </div>
-              <div v-if="linkedCycles.length" class="md-sb-dep">
-                <span class="md-sb-dep__label">Cycle</span>
-                <div class="md-sb-dep__tags">
-                  <el-tag
-                    v-for="c in linkedCycles"
-                    :key="c.key"
-                    size="small"
-                    type="warning"
-                    @click="router.push(`/cycle/${c.key}`)"
-                  >{{ c.name }}</el-tag>
-                </div>
-              </div>
-              <div v-if="linkedReleases.length" class="md-sb-dep">
-                <span class="md-sb-dep__label">Release</span>
-                <div class="md-sb-dep__tags">
-                  <el-tag
-                    v-for="r in linkedReleases"
-                    :key="r.key"
-                    size="small"
-                    type="success"
-                    @click="router.push(`/release/${r.key}`)"
-                  >{{ r.version }}</el-tag>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -355,10 +331,6 @@ import { getIssueList, issueStatusLabel, typeLabel, issueTypeTag } from "@/api/m
 import type { Issue } from "@/api/modules/issueService";
 import { getProjectList } from "@/api/modules/projectService";
 import type { Project } from "@/api/modules/projectService";
-import { getCycleList } from "@/api/modules/cycleService";
-import type { Cycle } from "@/api/modules/cycleService";
-import { getReleaseList } from "@/api/modules/releaseService";
-import type { Release } from "@/api/modules/releaseService";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { formatDate, formatRelativeTime } from "@/utils/datetime";
@@ -373,8 +345,6 @@ const mod = computed(() => store.currentModule);
 const issues = ref<Issue[]>([]);
 const editFormRef = ref<FormInstance>();
 const projectName = ref("");
-const linkedCycles = ref<Cycle[]>([]);
-const linkedReleases = ref<Release[]>([]);
 
 const rules: FormRules = {
   name: [{ required: true, message: "Name is required", trigger: "blur" }]
@@ -605,20 +575,6 @@ async function loadIssues() {
   } catch { /* ignore */ }
 }
 
-async function loadLinkedCyclesReleases() {
-  if (!mod.value?.project_key) return;
-  const issueKeys = new Set(mod.value.issue_keys ?? []);
-  if (!issueKeys.size) return;
-  try {
-    const [cycleRes, releaseRes] = await Promise.all([
-      getCycleList({ project_key: mod.value.project_key, pageSize: 200 }),
-      getReleaseList({ project_key: mod.value.project_key, pageSize: 200 })
-    ]);
-    linkedCycles.value = ((cycleRes.data?.list as Cycle[]) ?? []).filter(c => (c.issue_keys || []).some(k => issueKeys.has(k)));
-    linkedReleases.value = ((releaseRes.data?.list as Release[]) ?? []).filter(r => (r.issue_keys || []).some(k => issueKeys.has(k)));
-  } catch { /* ignore */ }
-}
-
 function goBack() {
   if (mod.value?.project_key) router.push(`/project/${mod.value.project_key}`);
   else router.push("/module");
@@ -643,7 +599,7 @@ onMounted(async () => {
   const key = route.params.key as string;
   if (key) {
     await store.fetchModule(key);
-    await Promise.all([loadIssues(), loadProjectName(), loadLinkedCyclesReleases(), loadDescFile()]);
+    await Promise.all([loadIssues(), loadProjectName()]);
   }
   loading.value = false;
   window.addEventListener("scroll", onScroll, { passive: true });

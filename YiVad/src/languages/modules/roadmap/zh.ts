@@ -5,15 +5,9 @@ export default {
     done: "已完成",
     kind: {
       label: "类型",
-      cycle: "冲刺",
-      cycles: "冲刺",
-      cycleLabel: "Sprint",
       module: "史诗",
       modules: "史诗",
-      moduleLabel: "Epic",
-      release: "里程碑",
-      releases: "里程碑",
-      releaseLabel: "Milestone"
+      moduleLabel: "Epic"
     },
     sort: {
       byDate: "按日期",
@@ -38,7 +32,6 @@ export default {
       markPlanned: "标记为已规划",
       markInProgress: "标记为进行中",
       markCancelled: "标记为已取消",
-      markReleased: "标记为已发布",
       delete: "删除"
     },
     messages: {

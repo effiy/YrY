@@ -16,7 +16,7 @@ benefit: "Evaluate and select technologies systematically using weighted criteri
 related:
   - ./do-a-proof-of-concept.md
   - ./plan-tech-roadmap.md
-  - ../architecture/README.md
+  - ../架构/README.md
   - ../decisions/README.md
   - ../README.md
   - ../INDEX.md

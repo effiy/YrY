@@ -90,6 +90,6 @@ A manager's output is the output of their organization under their influence —
 | Managerial leverage concept | `../roadmap/org-okr-tracking.md` — link OKR tracking to leverage measurement | 🔄 |
 | Decision-making framework (6 questions) | `../strategy/now-next-later-roadmap.md` — add decision-rights section to roadmap process | ✅ |
 | Task-relevant maturity model | `../roadmap/quarterly-business-review.md` — add TRM discussion to QBR agenda | 🔄 |
-| Meeting typology (process vs. mission) | `../../curator/governance/README.md` — add meeting governance to lifecycle cadence | ✅ |
+| Meeting typology (process vs. mission) | `../../curator/治理/README.md` — add meeting governance to lifecycle cadence | ✅ |
 | Training as highest-leverage activity | `../roadmap/headcount-budget-planning.md` — include training budget justification | 🔄 |
 | Performance review as leverage | `../../leader/roadmap/` — link to performance review process | 🔄 |

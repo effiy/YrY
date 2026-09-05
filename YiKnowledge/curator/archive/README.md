@@ -17,28 +17,28 @@ acceptance_criteria:
   - "Deprecation policy linked"
 related:
   - ../INDEX.md
-  - ../governance/governance.md
+  - ../治理/governance.md
   - ../../engineer/run/knowledge-deprecation-policy.md
 ---
 
-# Knowledge Curator — Archive
+# Knowledge Curator — 归档
 
-> **As a** knowledge curator, **I want to** find archived and deprecated content, **so that** I can reference historical material without cluttering active directories.
+> **作为**知识 curator，**我希望**找到已归档和废弃的内容，**以便**在不污染活跃目录的情况下参考历史材料。
 
-## Archive contents
+## 归档内容
 
-| File | Description |
+| 文件 | 描述 |
 |---|---|
-| [archive.md](./archive.md) | Archive index — registry of deprecated files |
+| [archive.md](./archive.md) | 归档索引——已废弃文件登记表 |
 
-## When to archive
+## 何时归档
 
-1. File is superseded by a newer version
-2. File has been unverified for 6+ months (`status: deprecated`)
-3. Content is no longer relevant to active projects
-4. Move file here, then update [archive.md](./archive.md) with the deprecation record
+1. 文件被新版本取代
+2. 文件超过 6 个月未验证（`status: deprecated`）
+3. 内容不再与活跃项目相关
+4. 将文件移至此目录，然后更新 [archive.md](./archive.md) 添加废弃记录
 
-## Cross-references
+## 交叉引用
 
-- [../governance/governance.md](../governance/governance.md) — Governance flow and lifecycle rules
-- [../../engineer/run/knowledge-deprecation-policy.md](../../engineer/run/knowledge-deprecation-policy.md) — Deprecation policy
+- [../治理/governance.md](../治理/governance.md) — 治理流程和生命周期规则
+- [../../engineer/run/knowledge-deprecation-policy.md](../../engineer/run/knowledge-deprecation-policy.md) — 废弃策略

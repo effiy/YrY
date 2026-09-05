@@ -15,7 +15,7 @@ benefit: "Engineers track and prioritize tech debt across Yi family projects"
 related:
   - ./README.md
   - ../../leader/roadmap/manage-tech-debt.md
-  - ../../leader/architecture/tl-tech-debt-yivad-no-test-framework.md
+  - ../../leader/架构/tl-tech-debt-yivad-no-test-framework.md
 ---
 
 # Quarterly Tech Debt Review

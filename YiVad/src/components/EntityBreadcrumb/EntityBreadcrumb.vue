@@ -17,10 +17,8 @@
 
 <script setup lang="ts" name="EntityBreadcrumb">
 import { computed, ref, watch } from "vue";
-import { ArrowRight, Folder, Calendar, Box, Tickets, WarningFilled, Grid } from "@element-plus/icons-vue";
+import { ArrowRight, Folder, Box, Tickets, WarningFilled, Grid } from "@element-plus/icons-vue";
 import { getProjectList } from "@/api/modules/projectService";
-import { getCycleList } from "@/api/modules/cycleService";
-import { getReleaseList } from "@/api/modules/releaseService";
 
 export interface BreadcrumbSegment {
   key: string;
@@ -32,8 +30,6 @@ export interface BreadcrumbSegment {
 
 const props = defineProps<{
   projectKey?: string;
-  cycleKey?: string;
-  releaseKey?: string;
   currentLabel: string;
   currentIcon?: any;
   currentLink?: string;
@@ -45,13 +41,9 @@ interface EntityInfo {
 }
 
 const project = ref<EntityInfo | null>(null);
-const cycle = ref<EntityInfo | null>(null);
-const release = ref<EntityInfo | null>(null);
 
 const ICONS: Record<string, any> = {
   project: Folder,
-  cycle: Calendar,
-  release: Box,
   issue: Tickets,
   bug: WarningFilled,
   module: Grid,
@@ -67,36 +59,15 @@ async function fetchProject(key: string) {
   } catch { /* ignore */ }
 }
 
-async function fetchCycle(key: string) {
-  if (!key) return;
-  try {
-    const res = await getCycleList({ pageSize: 500 });
-    const cycles = (res.data?.list as any[]) ?? [];
-    const found = cycles.find((c: any) => c.key === key);
-    if (found) cycle.value = { key, name: found.name };
-  } catch { /* ignore */ }
-}
-
-async function fetchRelease(key: string) {
-  if (!key) return;
-  try {
-    const res = await getReleaseList({ pageSize: 500 });
-    const releases = (res.data?.list as any[]) ?? [];
-    const found = releases.find((r: any) => r.key === key);
-    if (found) release.value = { key, name: found.name };
-  } catch { /* ignore */ }
-}
 
 function loadAll() {
   if (props.projectKey) fetchProject(props.projectKey);
-  if (props.cycleKey) fetchCycle(props.cycleKey);
-  if (props.releaseKey) fetchRelease(props.releaseKey);
-}
+  }
 
 loadAll();
 
 watch(
-  () => [props.projectKey, props.cycleKey, props.releaseKey],
+  () => [props.projectKey],
   () => loadAll()
 );
 
@@ -109,26 +80,6 @@ const segments = computed<BreadcrumbSegment[]>(() => {
       label: project.value.name,
       link: `/project/${project.value.key}`,
       icon: ICONS.project,
-      clickable: true,
-    });
-  }
-
-  if (cycle.value) {
-    result.push({
-      key: cycle.value.key,
-      label: cycle.value.name,
-      link: `/cycle/${cycle.value.key}`,
-      icon: ICONS.cycle,
-      clickable: true,
-    });
-  }
-
-  if (release.value) {
-    result.push({
-      key: release.value.key,
-      label: release.value.name,
-      link: `/release/${release.value.key}`,
-      icon: ICONS.release,
       clickable: true,
     });
   }

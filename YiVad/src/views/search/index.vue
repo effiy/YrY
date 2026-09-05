@@ -18,7 +18,7 @@
             ref="inputRef"
             v-model="query"
             class="search-page__input"
-            placeholder="Search across issues, projects, cycles, bugs, pages..."
+            placeholder="Search across issues, projects, bugs, pages..."
             @input="onInput"
             @focus="onInputFocus"
             @blur="onInputBlur"
@@ -227,17 +227,13 @@ import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from
 import { useRouter, useRoute } from "vue-router";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import { Search, CircleClose, Close, ArrowRight, Clock, Plus, Tickets, Folder, Calendar, Box, WarningFilled, Document, Collection, Promotion } from "@element-plus/icons-vue";
+import { Search, CircleClose, Close, ArrowRight, Clock, Plus, Tickets, Folder, Calendar, Box, WarningFilled, Document, Collection } from "@element-plus/icons-vue";
 import { getIssueList, ISSUE_STATUS_MAP, ISSUE_TYPE_MAP, ISSUE_PRIORITY_MAP, issueStatusTag, issueTypeTag } from "@/api/modules/issueService";
 import type { Issue, IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
-import { getCycleList, CYCLE_STATUS_MAP } from "@/api/modules/cycleService";
-import type { Cycle, CycleStatus } from "@/api/modules/cycleService";
 import { getModuleList, MODULE_STATUS_MAP } from "@/api/modules/moduleService";
 import type { Module, ModuleStatus } from "@/api/modules/moduleService";
 import { getPageList } from "@/api/modules/pageService";
 import type { Page } from "@/api/modules/pageService";
-import { getReleaseList, RELEASE_STATUS_MAP } from "@/api/modules/releaseService";
-import type { Release, ReleaseStatus } from "@/api/modules/releaseService";
 import { getBugList } from "@/api/modules/bug";
 import type { BugDocument, BugSeverity, BugStatus } from "@/api/modules/bug";
 import { useProjectStore } from "@/stores/modules/project";
@@ -366,8 +362,6 @@ function searchRecent(q: string) {
 const typeFilters = [
   { key: "issue", label: "Issues", icon: Tickets },
   { key: "project", label: "Projects", icon: Folder },
-  { key: "cycle", label: "Cycles", icon: Calendar },
-  { key: "release", label: "Releases", icon: Promotion },
   { key: "module", label: "Modules", icon: Collection },
   { key: "bug", label: "Bugs", icon: WarningFilled },
   { key: "page", label: "Pages", icon: Document },
@@ -376,30 +370,23 @@ const typeFilters = [
 const quickLinks = [
   { label: "Issues", icon: Tickets, path: "/issue" },
   { label: "Projects", icon: Folder, path: "/project" },
-  { label: "Cycles", icon: Calendar, path: "/cycle" },
   { label: "Kanban", icon: Box, path: "/kanban" },
   { label: "Pages", icon: Document, path: "/page" },
   { label: "Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "Releases", icon: Promotion, path: "/release" },
   { label: "Modules", icon: Collection, path: "/module" },
 ];
 
 const noResultsActions = [
   { label: "New Issue", icon: Plus, path: "/issue" },
   { label: "New Bug", icon: Plus, path: "/bug" },
-  { label: "New Cycle", icon: Plus, path: "/cycle" },
-  { label: "New Release", icon: Plus, path: "/release" },
   { label: "Open Issues", icon: Tickets, path: "/issue" },
   { label: "Open Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "Open Cycles", icon: Calendar, path: "/cycle" },
   { label: "Open Pages", icon: Document, path: "/page" },
 ];
 
 const groupConfigs: Record<string, { label: string; icon: any; color: string }> = {
   issue: { label: "Issues", icon: Tickets, color: "#409eff" },
   project: { label: "Projects", icon: Folder, color: "#5470c6" },
-  cycle: { label: "Cycles", icon: Calendar, color: "#e6a23c" },
-  release: { label: "Releases", icon: Promotion, color: "#67c23a" },
   module: { label: "Modules", icon: Collection, color: "#9b59b6" },
   bug: { label: "Bugs", icon: WarningFilled, color: "#f56c6c" },
   page: { label: "Pages", icon: Document, color: "#909399" },
@@ -424,12 +411,6 @@ const BUG_SEVERITY_TAG: Record<BugSeverity, Badge["type"]> = {
 const BUG_STATUS_TAG: Record<BugStatus, Badge["type"]> = {
   open: "danger", in_progress: "warning", resolved: "success", closed: "info", rejected: "danger", reopened: "warning",
 };
-const CYCLE_STATUS_TAG: Record<CycleStatus, Badge["type"]> = {
-  upcoming: "info", active: "primary", completed: "success",
-};
-const RELEASE_STATUS_TAG: Record<ReleaseStatus, Badge["type"]> = {
-  planned: "info", in_progress: "warning", released: "success",
-};
 const MODULE_STATUS_TAG: Record<ModuleStatus, Badge["type"]> = {
   planned: "info", in_progress: "primary", completed: "success", cancelled: "danger",
 };
@@ -450,13 +431,7 @@ function bugBadges(b: BugDocument): Badge[] {
   return badges;
 }
 
-function cycleBadges(c: Cycle): Badge[] {
-  return c.status ? [{ label: CYCLE_STATUS_MAP[c.status] || c.status, type: CYCLE_STATUS_TAG[c.status] }] : [];
-}
 
-function releaseBadges(r: Release): Badge[] {
-  return r.status ? [{ label: RELEASE_STATUS_MAP[r.status] || r.status, type: RELEASE_STATUS_TAG[r.status] }] : [];
-}
 
 function moduleBadges(m: Module): Badge[] {
   return m.status ? [{ label: MODULE_STATUS_MAP[m.status] || m.status, type: MODULE_STATUS_TAG[m.status] }] : [];
@@ -524,7 +499,7 @@ const typeCounts = computed(() => {
 const distribution = computed(() => {
   const total = filteredResults.value.length;
   if (!total) return [];
-  return ["issue", "project", "cycle", "release", "module", "bug", "page"]
+  return ["issue", "project", "module", "bug", "page"]
     .map(type => ({ type, count: typeCounts.value[type] || 0 }))
     .filter(s => s.count > 0)
     .map(s => {
@@ -535,7 +510,7 @@ const distribution = computed(() => {
 
 function classifyType(id: string): string {
   const prefix = id.split("-")[0].toLowerCase();
-  const map: Record<string, string> = { iss: "issue", proj: "project", cyc: "cycle", rel: "release", mod: "module", bug: "bug", pag: "page" };
+  const map: Record<string, string> = { iss: "issue", proj: "project", mod: "module", bug: "bug", pag: "page" };
   return map[prefix] || "page";
 }
 
@@ -546,7 +521,7 @@ const resultGroups = computed<ResultGroup[]>(() => {
     (groups[type] ||= []).push(item);
   });
 
-  return ["issue", "project", "cycle", "release", "module", "bug", "page"]
+  return ["issue", "project", "module", "bug", "page"]
     .map(type => ({ ...groupConfigs[type], type, items: groups[type] || [] }))
     .filter(g => {
       if (activeTypeFilter.value && g.type !== activeTypeFilter.value) return false;
@@ -644,20 +619,6 @@ async function doSearch() {
     if (seq !== searchSeq) return;
 
     try {
-      const cycleRes = await getCycleList({ search: q, pageSize: 30 });
-      if (seq !== searchSeq) return;
-      (cycleRes.data?.list as Cycle[] ?? []).forEach(c => {
-        results.push({
-          id: `cyc-${c.key}`, title: c.name,
-          subtitle: [c.start_date ? `${c.start_date} → ${c.end_date}` : "", c.issue_keys?.length ? `${c.issue_keys.length} issues` : ""].filter(Boolean).join(" · "),
-          detail: c.goal, project: c.project_key, link: `/cycle/${c.key}`,
-          badges: cycleBadges(c), date: relativeTime(c.updated_at), _idx: 0, _ts: new Date(c.updated_at).getTime(),
-        });
-      });
-    } catch { /* ignore */ }
-    if (seq !== searchSeq) return;
-
-    try {
       const modRes = await getModuleList({ pageSize: 50 });
       if (seq !== searchSeq) return;
       (modRes.data?.list as Module[] ?? [])
@@ -686,18 +647,6 @@ async function doSearch() {
     } catch { /* ignore */ }
     if (seq !== searchSeq) return;
 
-    try {
-      const relRes = await getReleaseList({ search: q, pageSize: 30 });
-      if (seq !== searchSeq) return;
-      (relRes.data?.list as Release[] ?? []).forEach(r => {
-        results.push({
-          id: `rel-${r.key}`, title: r.version,
-          subtitle: [r.name, r.target_date ? `Target: ${r.target_date}` : "", r.issue_keys?.length ? `${r.issue_keys.length} issues` : ""].filter(Boolean).join(" · "),
-          detail: r.notes, project: r.project_key, link: `/release/${r.key}`,
-          badges: releaseBadges(r), date: relativeTime(r.updated_at), _idx: 0, _ts: new Date(r.updated_at).getTime(),
-        });
-      });
-    } catch { /* ignore */ }
     if (seq !== searchSeq) return;
 
     try {

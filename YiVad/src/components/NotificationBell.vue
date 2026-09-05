@@ -41,13 +41,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { Bell, Loading, Tickets, Calendar, Promotion, ChatDotRound } from "@element-plus/icons-vue";
+import { Bell, Loading, Tickets, ChatDotRound } from "@element-plus/icons-vue";
 import { useIssueStore } from "@/stores/modules/issue";
-import { useCycleStore } from "@/stores/modules/cycle";
 
 const router = useRouter();
 const issueStore = useIssueStore();
-const cycleStore = useCycleStore();
 
 const popoverVisible = ref(false);
 const loading = ref(false);
@@ -58,10 +56,7 @@ const unreadCount = ref(0);
 async function loadNotifications() {
   loading.value = true;
   try {
-    await Promise.all([
-      issueStore.fetchIssues({ pageSize: 50, orderBy: "updated_at", orderType: "desc" }),
-      cycleStore.fetchCycles({ pageSize: 20 })
-    ]);
+    await issueStore.fetchIssues({ pageSize: 50, orderBy: "updated_at", orderType: "desc" });
 
     const items: typeof notifications.value = [];
 
@@ -72,17 +67,6 @@ async function loadNotifications() {
         text: `${i.title} — ${i.status}`,
         time: i.updated_at,
         link: `/issue/${i.key}`,
-        read: false
-      });
-    });
-
-    cycleStore.cycles.filter(c => c.status === "active").forEach(c => {
-      items.push({
-        id: c.key,
-        type: "cycle",
-        text: `Active cycle: ${c.name} (${c.issue_keys?.length || 0} issues)`,
-        time: c.updated_at,
-        link: `/cycle`,
         read: false
       });
     });
@@ -107,12 +91,12 @@ function clearAll() {
 }
 
 function iconFor(type: string) {
-  const m: Record<string, any> = { issue: Tickets, bug: Tickets, cycle: Calendar, release: Promotion };
+  const m: Record<string, any> = { issue: Tickets, bug: Tickets };
   return m[type] || ChatDotRound;
 }
 
 function iconColor(type: string) {
-  const m: Record<string, string> = { issue: "#409eff", bug: "#f56c6c", cycle: "#67c23a", release: "#e6a23c" };
+  const m: Record<string, string> = { issue: "#409eff", bug: "#f56c6c" };
   return m[type] || "#909399";
 }
 

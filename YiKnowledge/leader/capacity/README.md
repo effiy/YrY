@@ -1,5 +1,5 @@
 ---
-title: Tech Lead — Capacity & Cost
+title: 技术负责人 — 容量与成本
 tags: [leaf, leader, capacity, cost, dependency-audit, storage]
 category: leader/capacity
 created: 2026-08-06
@@ -11,43 +11,43 @@ status: stable
 lifecycle: active
 review_cycle: quarterly
 roles: [leader, srer]
-benefit: "Tech leads find capacity planning, cost tracking, and dependency audit reports in one place"
+benefit: "技术负责人可以在一个地方找到容量规划、成本追踪和依赖审计报告"
 acceptance_criteria:
-  - "Capacity and cost trend reports documented"
-  - "Dependency audit reports present"
-  - "OSS storage planning included"
+  - "容量和成本趋势报告已记录"
+  - "依赖审计报告存在"
+  - "OSS 存储规划已包含"
 related:
   - ../INDEX.md
   - ../roadmap/do-a-capacity-plan.md
   - ../../engineer/build/reduce-cost.md
 ---
 
-# Tech Lead — Capacity & Cost
+# 技术负责人 — 容量与成本
 
-> **As a** tech lead, **I want to** find capacity planning and cost tracking reports, **so that** I can manage infrastructure spend and prevent resource bottlenecks.
+> **作为**技术负责人，**我想要**找到容量规划和成本追踪报告，**以便**管理基础设施支出并防止资源瓶颈。
 
-## Capacity & cost
-
-| File | Description |
-|---|---|
-| [tl-capacity-cost-2026-08-trend.md](./tl-capacity-cost-2026-08-trend.md) | Capacity cost trend analysis |
-| [tl-capacity-cost-2026-q4-prediction.md](./tl-capacity-cost-2026-q4-prediction.md) | Q4 2026 cost prediction |
-| [tl-capacity-cost-yiai-yivad-yipet-2026-06.md](./tl-capacity-cost-yiai-yivad-yipet-2026-06.md) | Per-project cost breakdown |
-| [tl-capacity-plan-oss-storage-2026-q3.md](./tl-capacity-plan-oss-storage-2026-q3.md) | OSS storage capacity plan |
-
-## Dependency audits
+## 容量与成本
 
 | File | Description |
 |---|---|
-| [tl-dependency-audit-yipet-npm-2026-08.md](./tl-dependency-audit-yipet-npm-2026-08.md) | YiPet npm dependency audit |
+| [tl-capacity-cost-2026-08-trend.md](./tl-capacity-cost-2026-08-trend.md) | 容量成本趋势分析 |
+| [tl-capacity-cost-2026-q4-prediction.md](./tl-capacity-cost-2026-q4-prediction.md) | 2026 年 Q4 成本预测 |
+| [tl-capacity-cost-yiai-yivad-yipet-2026-06.md](./tl-capacity-cost-yiai-yivad-yipet-2026-06.md) | 各项目成本分解 |
+| [tl-capacity-plan-oss-storage-2026-q3.md](./tl-capacity-plan-oss-storage-2026-q3.md) | OSS 存储容量规划 |
 
-## Dashboard
+## 依赖审计
 
 | File | Description |
 |---|---|
-| [dashboard-engineering-capacity.md](./dashboard-engineering-capacity.md) | Engineering capacity dashboard |
+| [tl-dependency-audit-yipet-npm-2026-08.md](./tl-dependency-audit-yipet-npm-2026-08.md) | YiPet npm 依赖审计 |
 
-## Cross-references
+## 仪表盘
 
-- [../roadmap/do-a-capacity-plan.md](../roadmap/do-a-capacity-plan.md) — Capacity planning process
-- [../../engineer/build/reduce-cost.md](../../engineer/build/reduce-cost.md) — Cost optimization
+| File | Description |
+|---|---|
+| [dashboard-engineering-capacity.md](./dashboard-engineering-capacity.md) | 工程容量仪表盘 |
+
+## 交叉引用
+
+- [../roadmap/do-a-capacity-plan.md](../roadmap/do-a-capacity-plan.md) — 容量规划流程
+- [../../engineer/build/reduce-cost.md](../../engineer/build/reduce-cost.md) — 成本优化

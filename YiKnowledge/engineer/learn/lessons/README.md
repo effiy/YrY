@@ -28,40 +28,40 @@ related:
   - ../../../projects/
 ---
 
-# Lessons
+# 经验教训
 
-> **As an** engineer, **I want to** learn from past wins, failures, and gotchas, **so that** I can avoid repeating mistakes and replicate success.
+> **作为** engineer，**我希望**从过去的成功、失败和踩坑中学习，**以便**避免重复错误并复制成功。
 
-> Top-level entry for product, technology, and process lessons: successes, failures, gotchas, and bugs.
+> 产品、技术和流程经验教训的顶层入口：成功、失败、踩坑和 bug。
 
-## Subdirectories
+## 子目录
 
-| Leaf | Contents |
+| 叶子 | 内容 |
 |---|---|
-| [wins/](./wins/) | Success cases and reusable experience |
-| [failures/](./failures/) | Failure cases and retrospectives |
-| [gotchas/](./gotchas/) | Engineering pitfalls and notes |
-| [bugs/](./bugs/) | Bug tracking and resolution notes |
+| [wins/](./wins/) | 成功案例与可复用经验 |
+| [failures/](./failures/) | 失败案例与复盘 |
+| [gotchas/](./gotchas/) | 工程踩坑记录与注意事项 |
+| [bugs/](./bugs/) | Bug 跟踪与解决记录 |
 
-## Archiving principles
+## 归档原则
 
-- Retrospective reports use **blameless postmortem** writing
-- Quantify impact scope and severity
-- Every lesson must be traceable to a specific event or evidence
-- Improvement actions need an owner and a follow-up date
-- Gotchas added within 24h of hitting them (hard requirement, see [../../run/knowledge-contributor-charter.md](../../run/knowledge-contributor-charter.md))
+- 复盘报告使用 **blameless postmortem** 写法
+- 量化影响范围和严重程度
+- 每条经验教训必须可追溯到具体事件或证据
+- 改进行动需要有负责人和跟进日期
+- 踩坑记录在遇到后 24 小时内添加（硬性要求，参见 [../../run/knowledge-contributor-charter.md](../../run/knowledge-contributor-charter.md)）
 
-## Frequently referenced
+## 常被引用
 
-- [gotchas/macos-fsevents-silent-drop.md](./gotchas/gotcha-macos-fsevents-silent-drop.md) — macOS FSEvents silently drops events
-- [gotchas/vite-to-rsbuild-migration.md](./gotchas/gotcha-vite-to-rsbuild-migration.md) — Vite → Rsbuild migration gotchas
-- [failures/incident-postmortem.md](./failures/failure-incident-postmortem.md) — Incident retrospective summary
-- [failures/ai-product-launch-lessons.md](./failures/failure-ai-product-launch-lessons.md) — AI product launch failure cases
-- [wins/yiai-brd-agent-launch.md](./wins/win-yiai-brd-agent-launch.md) — YiAi BRD agent launch
-- [dashboard-lessons-learned.md](./dashboard-lessons-learned.md) — Lessons learned dashboard
+- [gotchas/macos-fsevents-silent-drop.md](./gotchas/gotcha-macos-fsevents-silent-drop.md) — macOS FSEvents 静默丢弃事件
+- [gotchas/vite-to-rsbuild-migration.md](./gotchas/gotcha-vite-to-rsbuild-migration.md) — Vite → Rsbuild 迁移踩坑记录
+- [failures/incident-postmortem.md](./failures/failure-incident-postmortem.md) — 事故复盘总结
+- [failures/ai-product-launch-lessons.md](./failures/failure-ai-product-launch-lessons.md) — AI 产品上线失败案例
+- [wins/yiai-brd-agent-launch.md](./wins/win-yiai-brd-agent-launch.md) — YiAi BRD agent 上线
+- [dashboard-lessons-learned.md](./dashboard-lessons-learned.md) — 经验教训仪表盘
 
-## Related
+## 相关
 
-- [INDEX.md](./INDEX.md) — Index for this category
-- [../../run/check-engineering-gotchas.md](../../run/check-engineering-gotchas.md) — scenario entry: engineering gotchas
-- [../../run/review-lessons.md](../../run/review-lessons.md) — scenario entry: retrospectives and lessons
+- [INDEX.md](./INDEX.md) — 此分类的索引
+- [../../run/check-engineering-gotchas.md](../../run/check-engineering-gotchas.md) — 场景入口：工程踩坑记录
+- [../../run/review-lessons.md](../../run/review-lessons.md) — 场景入口：复盘与经验教训

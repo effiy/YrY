@@ -24,26 +24,26 @@ related:
   - ../learn/
 ---
 
-# Ship — Quality, Security, Data & Reliability
+# Ship — 质量、安全、数据与可靠性
 
-> **As an** engineer, **I want to** find quality, security, data, and reliability patterns, **so that** I can ship robust, secure, and resilient systems.
+> **作为** engineer，**我希望**找到质量、安全、数据和可靠性模式，**以便**交付健壮、安全且具有韧性的系统。
 
-SHIP is the second phase of the engineer pipeline — ensure the system is safe, tested, and production-ready before deployment.
+SHIP 是 engineer pipeline 的第二个阶段——确保系统安全、经过测试，并在部署前做好生产准备。
 
-## What belongs here
+## 此处应包含的内容
 
-- Supply chain security and dependency hardening
-- Application security (secrets, audit logging, zero-trust)
-- Database migration and data persistence patterns
-- Resilience patterns (retry, timeout, circuit breaker, backpressure)
-- Observability and distributed tracing
-- Traffic management (rate limiting, load shedding, scaling)
+- 供应链安全与依赖加固
+- 应用安全（密钥、审计日志、零信任）
+- 数据库迁移与数据持久化模式
+- 韧性模式（重试、超时、熔断器、背压）
+- 可观测性与分布式追踪
+- 流量管理（限流、负载削减、扩缩容）
 
-## Cross-references
+## 交叉引用
 
-- [../build/](../build/) — Architecture and design patterns
-- [../run/](../run/) — Team workflows and onboarding
-- [../learn/](../learn/) — Lessons learned and project-specific docs
-- [../SECURITY.md](../SECURITY.md) — Cross-role security domain index
-- [../../leader/risk/](../../leader/risk/) — Risk register and postmortems
-- [../../srer/observability/](../../srer/observability/) — Monitoring, alerting, SLO
+- [../build/](../build/) — 架构与设计模式
+- [../run/](../run/) — 团队工作流与 onboarding
+- [../learn/](../learn/) — 经验教训与项目特定文档
+- [../SECURITY.md](../SECURITY.md) — 跨角色安全领域索引
+- [../../leader/risk/](../../leader/risk/) — 风险登记册与复盘
+- [../../srer/observability/](../../srer/observability/) — 监控、告警、SLO

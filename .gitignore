@@ -6,7 +6,6 @@ __pycache__/
 node_modules/
 dist/
 dist-ssr/
-build/
 out/
 *.egg-info/
 .eggs/

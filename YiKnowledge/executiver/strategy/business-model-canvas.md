@@ -103,7 +103,7 @@ These are the core of the canvas. Use [Value Proposition Canvas](./value-proposi
 - Cross-reference with [VRIO](./vrio-framework.md) to identify which resources are strategic
 
 **Key Activities** — What must you do exceptionally well?
-- Production, problem-solving, platform/network management?
+- Production, problem-solving, 平台/network management?
 - These are the activities that make the business model work
 
 **Key Partnerships** — Who do you rely on?

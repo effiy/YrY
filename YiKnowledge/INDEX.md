@@ -50,7 +50,7 @@ related:
 
 | Directory | Purpose |
 |---|---|
-| [projects/](./projects/) | 项目知识中心 — 4 个项目的 bugs/issues/docs/demos（[README](./projects/README.md) \| [INDEX](./projects/INDEX.md)） |
+| [projects/](./projects/) | 项目知识中心 — 4 个项目的 bugs/issues/文档/demos（[README](./projects/README.md) \| [INDEX](./projects/INDEX.md)） |
 | [curator/templates/](./curator/templates/) | 文档模板（PRD / ADR / 复盘 等） |
 | [skills/](./skills/) | Claude Code skills（[README](./skills/README.md)） |
 | [engineer/projects/](./engineer/projects/) | 项目参考文档（YiVad, YiAi, YiPet, YiKnowledge） |

@@ -18,8 +18,8 @@ acceptance_criteria:
   - "YrY-relevant applications identified"
 related:
   - ./README.md
-  - ../../aier/methodology/agent-architecture-patterns.md
-  - ../../aier/foundations/rag-patterns.md
+  - ../../aier/方法/智能体架构模式.md
+  - ../../aier/基础/RAG设计模式.md
   - ../../executiver/strategy/product-strategy-framework.md
 ---
 

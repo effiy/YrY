@@ -128,7 +128,6 @@ const quickNavGroups = computed(() => [
     items: [
       { icon: "🤖", label: t("home.quickNavItems.aiChat.label"), path: "/aiChat", count: props.counts.chatSessionCount },
       { icon: "📚", label: t("home.quickNavItems.knowledge.label"), key: "knowledge", path: "/knowledge", count: props.counts.knowledgeFileCount },
-      { icon: "📊", label: t("home.quickNavItems.analytics.label"), path: "/analytics" },
     ]
   },
 ]);

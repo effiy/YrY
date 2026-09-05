@@ -34,7 +34,7 @@ loop-001 跑通了首条「AI 从需求到上线」自闭环，建立了 8 类�
 
 ### 范围（In Scope）
 
-- 更新 `loop/INDEX.md` 目录结构与 frontmatter 规范（补充 3 个新阶段：code-review/deployment/retrospective）。
+- 更新 `loop/INDEX.md` 目录结构与 frontmatter 规范（补充 3 个新阶段：code-review/部署/retrospective）。
 - 创建 `loop/_templates/` 03/06/08 三类新模板。
 - 沉淀 7 角色三要素编排清单到 KB。
 - 清零 23 个 vue-tsc 类型错误（knowledgeBase 17 + rag 4 + proTable 1 + menuMange 1）。

@@ -21,7 +21,7 @@ related:
   - ./knowledge-leaf.md
   - ./tech-design.md
   - ../../leader/decisions/
-  - ../../leader/architecture/design-architecture-decision.md
+  - ../../leader/架构/design-architecture-decision.md
 ---
 
 # ADR Template — Architecture Decision Record

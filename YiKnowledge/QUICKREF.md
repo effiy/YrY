@@ -40,10 +40,10 @@ related:
 | Implement retry with backoff | [engineer/ship/retry-with-backoff.md](engineer/ship/retry-with-backoff.md) |
 | Migrate data safely | [engineer/ship/migrate-data.md](engineer/ship/migrate-data.md) |
 | Check known gotchas | [engineer/learn/lessons/gotchas/](engineer/learn/lessons/gotchas/) |
-| See a real bug | [engineer/learn/lessons/bugs/](engineer/learn/lessons/bugs/) |
-| Learn YiAi architecture | [engineer/learn/projects/yiai/architecture.md](engineer/learn/projects/yiai/architecture.md) |
-| Learn YiVad architecture | [engineer/learn/projects/yivad/architecture.md](engineer/learn/projects/yivad/architecture.md) |
-| Learn YiPet architecture | [engineer/learn/projects/yipet/architecture.md](engineer/learn/projects/yipet/architecture.md) |
+| See a real bug | [projects/yivad/bugs/](projects/yivad/bugs/) |
+| Learn YiAi architecture | [engineer/learn/projects/yiai/架构设计.md](engineer/learn/projects/yiai/架构设计.md) |
+| Learn YiVad architecture | [engineer/learn/projects/yivad/架构设计.md](engineer/learn/projects/yivad/架构设计.md) |
+| Learn YiPet architecture | [engineer/learn/projects/yipet/架构设计.md](engineer/learn/projects/yipet/架构设计.md) |
 
 ## Leader — How to Decide
 
@@ -97,20 +97,20 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Choose an LLM | [aier/foundations/llm-fundamentals.md](aier/foundations/llm-fundamentals.md) |
-| Understand RAG patterns | [aier/foundations/rag-patterns.md](aier/foundations/rag-patterns.md) |
-| Choose a vector DB | [aier/platform/vector-db-selection.md](aier/platform/vector-db-selection.md) |
-| Choose an embedding model | [aier/platform/embedding-model-selection.md](aier/platform/embedding-model-selection.md) |
-| Design an agent | [aier/methodology/agent-architecture-patterns.md](aier/methodology/agent-architecture-patterns.md) |
-| Evaluate an LLM | [aier/methodology/llm-evaluation.md](aier/methodology/llm-evaluation.md) |
-| Evaluate an agent | [aier/methodology/agent-evaluation.md](aier/methodology/agent-evaluation.md) |
-| Write a prompt | [aier/methodology/prompt-engineering.md](aier/methodology/prompt-engineering.md) |
-| Review code with AI | [aier/methodology/prompts/code-review-prompt.md](aier/methodology/prompts/code-review-prompt.md) |
-| Use RAG prompt | [aier/methodology/prompts/rag-system-prompt.md](aier/methodology/prompts/rag-system-prompt.md) |
-| Use agent tool prompt | [aier/methodology/prompts/agent-tool-use-prompt.md](aier/methodology/prompts/agent-tool-use-prompt.md) |
-| Generate a BRD with AI | [aier/methodology/prompts/brd-generation-prompt.md](aier/methodology/prompts/brd-generation-prompt.md) |
-| Apply chain-of-thought | [aier/methodology/prompts/chain-of-thought-prompting.md](aier/methodology/prompts/chain-of-thought-prompting.md) |
-| Use traditional ML | [aier/ml/traditional-ml-patterns.md](aier/ml/traditional-ml-patterns.md) |
+| Choose an LLM | [aier/基础/大模型基础.md](aier/基础/大模型基础.md) |
+| Understand RAG patterns | [aier/基础/RAG设计模式.md](aier/基础/RAG设计模式.md) |
+| Choose a vector DB | [aier/平台/向量数据库选择.md](aier/平台/向量数据库选择.md) |
+| Choose an embedding model | [aier/平台/嵌入模型选择.md](aier/平台/嵌入模型选择.md) |
+| Design an agent | [aier/方法/智能体架构模式.md](aier/方法/智能体架构模式.md) |
+| Evaluate an LLM | [aier/方法/大模型评估.md](aier/方法/大模型评估.md) |
+| Evaluate an agent | [aier/方法/智能体评估.md](aier/方法/智能体评估.md) |
+| Write a prompt | [aier/方法/提示词工程.md](aier/方法/提示词工程.md) |
+| Review code with AI | [aier/方法/提示词/代码审查.md](aier/方法/提示词/代码审查.md) |
+| Use RAG prompt | [aier/方法/提示词/RAG系统.md](aier/方法/提示词/RAG系统.md) |
+| Use agent tool prompt | [aier/方法/提示词/智能体工具调用.md](aier/方法/提示词/智能体工具调用.md) |
+| Generate a BRD with AI | [aier/方法/提示词/BRD生成.md](aier/方法/提示词/BRD生成.md) |
+| Apply chain-of-thought | [aier/方法/提示词/思维链.md](aier/方法/提示词/思维链.md) |
+| Use traditional ML | [aier/机器学习/传统机器学习模式.md](aier/机器学习/传统机器学习模式.md) |
 
 ## Executive — Business Strategy
 
@@ -128,7 +128,7 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Create a new knowledge file | [curator/governance/readiness-checklist.md](curator/governance/readiness-checklist.md) |
+| Create a new knowledge file | [curator/治理/readiness-checklist.md](curator/治理/readiness-checklist.md) |
 | Use a template | [curator/templates/](curator/templates/) |
 | Check knowledge base health | [curator/diagrams/dashboard-index.md](curator/diagrams/dashboard-index.md) |
 | See the directory blueprint | [curator/diagrams/directory-blueprint.md](curator/diagrams/directory-blueprint.md) |

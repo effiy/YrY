@@ -8,7 +8,7 @@
             ref="inputRef"
             v-model="query"
             class="cmd-palette__input"
-            placeholder="Search issues, projects, cycles, pages... or type a command"
+            placeholder="Search issues, projects, pages... or type a command"
             @keydown="onKeydown"
           />
           <kbd class="cmd-palette__kbd">Esc</kbd>
@@ -65,7 +65,7 @@
 <script setup lang="ts" name="commandPalette">
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { Search, Plus, Tickets, Grid, Folder, Calendar, Document, DataAnalysis } from "@element-plus/icons-vue";
+import { Search, Plus, Tickets, Grid, Folder, Calendar, Document } from "@element-plus/icons-vue";
 import { getIssueList } from "@/api/modules/issueService";
 import { useProjectStore } from "@/stores/modules/project";
 import type { Issue } from "@/api/modules/issueService";
@@ -92,9 +92,7 @@ const quickActions = [
   { id: "new-issue", title: "Create New Issue", shortcut: "N I", color: "#409eff", icon: Plus, action: () => router.push("/issue") },
   { id: "new-project", title: "Create New Project", shortcut: "N P", color: "#67c23a", icon: Folder, action: () => router.push("/project") },
   { id: "kanban", title: "Open Kanban Board", shortcut: "K", color: "#e6a23c", icon: Grid, action: () => router.push("/kanban") },
-  { id: "cycles", title: "Go to Cycles", shortcut: "C", color: "#9b59b6", icon: Calendar, action: () => router.push("/cycle") },
-  { id: "pages", title: "Go to Pages", shortcut: "P", color: "#909399", icon: Document, action: () => router.push("/page") },
-  { id: "analytics", title: "Open Analytics", shortcut: "A", color: "#f56c6c", icon: DataAnalysis, action: () => router.push("/analytics") },
+    { id: "pages", title: "Go to Pages", shortcut: "P", color: "#909399", icon: Document, action: () => router.push("/page") },
   { id: "search", title: "Global Search", shortcut: "S", color: "#409eff", icon: Search, action: () => router.push("/search") }
 ].map((a, i) => ({ ...a, _idx: i }));
 

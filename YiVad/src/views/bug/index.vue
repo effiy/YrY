@@ -4,7 +4,7 @@
       v-if="!props.projectKey"
       :icon="WarningFilled"
       title="Bugs"
-      description="Track defects across projects and releases"
+      description="Track defects across projects"
       :pills="headerPills"
       :show-date-nav="!props.filterDate"
       :filter-date="filterDate"

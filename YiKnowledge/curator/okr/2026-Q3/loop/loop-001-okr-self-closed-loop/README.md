@@ -9,7 +9,7 @@ status: done
 roles: [executiver, producter, leader, engineer, srer, aier, curator]
 ---
 
-# 🔁 loop-001 闭环报告
+# loop-001 闭环报告
 
 > 北极星：**AI 从需求到上线全流程自闭环**。
 > 本文件是首条闭环 loop-001 的收尾报告，汇总 7 角色各自在闭环中的产出与结果。
@@ -35,13 +35,13 @@ roles: [executiver, producter, leader, engineer, srer, aier, curator]
 
 | 角色 | Goal | 结果 |
 |---|---|---|
-| executiver | AI 全流程自闭环 / 对齐与审批 | ✅ 北极星定义 + 7 角色 OKR 100% 对齐 + 主持复盘 |
-| producter | 需求评审可闭环 | ✅ PRD + 验收标准 + WSJF 落知识库 |
-| leader | 技术评审与代码审查可闭环 | ✅ 3 ADR 决策可回溯 + 5 维度代码审查通过 |
-| engineer | 编码调试自闭环 / 构建健康度清零 | ✅ 0 新增类型错误 + 清零 23 个既有错误 |
-| srer | 测试 / 部署 / 上线自闭环 | ✅ 门禁通过 + 测试报告 + 部署执行 + 上线记录 |
-| aier | 编排三要素落地 | ✅ 7 角色 skill/agent/mcp 映射覆盖 |
-| curator | 流程记录知识化 | ✅ 8 模板 + 整合索引 + frontmatter 合规 |
+| executiver | AI 全流程自闭环 / 对齐与审批 | 北极星定义 + 7 角色 OKR 100% 对齐 + 主持复盘 |
+| producter | 需求评审可闭环 | PRD + 验收标准 + WSJF 落知识库 |
+| leader | 技术评审与代码审查可闭环 | 3 ADR 决策可回溯 + 5 维度代码审查通过 |
+| engineer | 编码调试自闭环 / 构建健康度清零 | 0 新增类型错误 + 清零 23 个既有错误 |
+| srer | 测试 / 部署 / 上线自闭环 | 门禁通过 + 测试报告 + 部署执行 + 上线记录 |
+| aier | 编排三要素落地 | 7 角色 skill/agent/mcp 映射覆盖 |
+| curator | 流程记录知识化 | 8 模板 + 整合索引 + frontmatter 合规 |
 
 ## 硬数据
 

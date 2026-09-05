@@ -1,5 +1,5 @@
 ---
-title: meeting / Meetings
+title: 会议 / Meetings
 tags: [leaf, work, meetings]
 category: producter/delivery
 created: 2026-08-03
@@ -11,37 +11,37 @@ lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [producter, leader]
-benefit: "PMs find the right meeting format for each delivery phase, ensuring meetings drive decisions not just status updates"
+benefit: "PM 可以找到每个交付阶段合适的会议形式，确保会议驱动决策而非仅仅是状态更新"
 acceptance_criteria:
-  - "scope of the leaf directory is clearly bounded"
-  - "file inventory table is complete with one-liner descriptions"
-  - cross-references to related leaves and parent INDEX are present
+  - "叶子目录范围边界清晰"
+  - "文件清单表完整，包含一句话描述"
+  - 包含与相关叶子目录和父级 INDEX 的交叉引用
 related:
   - ../../engineer/run/review-lessons.md
   - ../../curator/templates/meeting-notes.md
   - ../../engineer/run/sprint-retrospective.md
 ---
 
-# meeting / Meetings
+# 会议 / Meetings
 
-> **As a** product manager, **I want to** run effective meetings and delivery processes, **so that** the team stays aligned and ships predictably.
+> **作为**产品经理，**我想要**召开高效的会议并运行交付流程，**以便**团队保持对齐并按时交付。
 
-Collects meeting templates, meeting-notes standards, and meeting-efficiency principles.
+汇集会议模板、会议记录标准和会议效率原则。
 
-## Included scope
+## 收录范围
 
-- weekly meeting / review meeting / retrospective meeting / 1on1
-- meeting-notes standards
-- meeting-efficiency principles
-- async meetings
+- 周会 / 评审会 / 回顾会 / 1on1
+- 会议记录标准
+- 会议效率原则
+- 异步会议
 
-## file type and naming
+## 文件类型与命名
 
-- `*-template.md`: meeting templates
-- `*-summary.md`: organization summaries for a class of meetings
-- Naming uses English kebab-case
+- `*-template.md`：会议模板
+- `*-summary.md`：一类会议的组织总结
+- 命名使用英文 kebab-case
 
-## Frontmatter Template
+## Frontmatter 模板
 
 ```yaml
 ---
@@ -61,33 +61,33 @@ related:
 ---
 ```
 
-## Recommended writing structure (meeting template)
+## 推荐撰写结构（会议模板）
 
-1. Meeting objectives
-2. Participants and roles
-3. Agenda (including time allocation)
-4. Input materials
-5. Outputs (decisions / Action Items / Parking Lot)
-6. Follow-up tracking
+1. 会议目标
+2. 参与人与角色
+3. 议程（含时间分配）
+4. 输入材料
+5. 产出（决策 / 行动项 / Parking Lot）
+6. 后续跟踪
 
-## Already included
+## 已收录
 
-- `weekly-meeting-template.md` — weekly meeting template
-- `review-meeting-template.md` — review meeting template
-- `retrospective-meeting-template.md` — retrospective meeting template
-- `weekly-report-sample.md` — weekly report sample (2026 week 31): this week's implementation / next week's plan / blockers / cross-project links / risks
-- `daily-report-sample.md` — daily report sample (2026-08-01 Friday): today's completed / PR quick look / next-day plan / blockers / risk radar
-- `retrospective-sample.md` — retrospective sample (2026 week 31): Keep / Drop / Try + accumulated outputs + key event timeline
-- `one-on-one.md` — 1on1 template with manager's guide, skip-level guide, coaching question bank, and cadence recommendations
-- `meeting-efficiency.md` — meeting efficiency principles: classification, hygiene checklist, cost calculator, async-first decision tree
-- `async-meeting.md` — async meeting patterns: written proposals, async standups, ADRs, channel selection, team transition roadmap
-- `quarterly-planning.md` — quarterly planning meeting template: capacity planning, commitment vs. forecast, dependency management, anti-portfolio
+- `weekly-meeting-template.md` — 周会模板
+- `review-meeting-template.md` — 评审会模板
+- `retrospective-meeting-template.md` — 回顾会模板
+- `weekly-report-sample.md` — 周报示例（2026 年第 31 周）：本周完成 / 下周计划 / 阻塞项 / 跨项目链接 / 风险
+- `daily-report-sample.md` — 日报示例（2026-08-01 周五）：今日完成 / PR 速览 / 明日计划 / 阻塞项 / 风险雷达
+- `retrospective-sample.md` — 回顾示例（2026 年第 31 周）：Keep / Drop / Try + 累积产出 + 关键事件时间线
+- `one-on-one.md` — 1on1 模板，含管理者指南、skip-level 指南、教练问题库和频率建议
+- `meeting-efficiency.md` — 会议效率原则：分类、卫生检查清单、成本计算器、异步优先决策树
+- `async-meeting.md` — 异步会议模式：书面提案、异步站会、ADR、渠道选择、团队过渡路线图
+- `quarterly-planning.md` — 季度规划会议模板：容量规划、承诺 vs 预测、依赖管理、反组合
 
-## Related leaf
+## 相关叶子目录
 
-- [../processes/](.) — meeting companion processes
-- [../../engineer/collaboration-process](../../engineer/run/README.md) — collaboration principles
-- [../../curator/templates/meeting-notes.md](../../curator/templates/meeting-notes.md) — notes template
-- [../../curator/templates/one-on-one.md](../../curator/templates/one-on-one.md) — 1on1 template
-- [../../engineer/run/sprint-retrospective.md](../../engineer/run/sprint-retrospective.md) — sprint review template
-- [../../engineer/run/review-lessons.md](../../engineer/run/review-lessons.md) — scenario entry
+- [../processes/](.) — 会议配套流程
+- [../../engineer/collaboration-process](../../engineer/run/README.md) — 协作原则
+- [../../curator/templates/meeting-notes.md](../../curator/templates/meeting-notes.md) — 会议记录模板
+- [../../curator/templates/one-on-one.md](../../curator/templates/one-on-one.md) — 1on1 模板
+- [../../engineer/run/sprint-retrospective.md](../../engineer/run/sprint-retrospective.md) — Sprint 回顾模板
+- [../../engineer/run/review-lessons.md](../../engineer/run/review-lessons.md) — 场景入口

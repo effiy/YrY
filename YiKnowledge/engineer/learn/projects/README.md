@@ -24,48 +24,48 @@ related:
   - ../../run/onboarding/handoff-project.md
 ---
 
-# projects/ — project business and engineering documentation
+# projects/ — 项目业务与工程文档
 
-"> **As a** engineer, **I want to** understand and apply projects/ directory explanation, **so that** I can I understand the context and decisions behind each codebase.
+> **作为** engineer，**我希望**理解并应用 projects/ 目录说明，**以便**理解每个代码库背后的上下文和决策。
 
-> Each project co-locates two classes of content: business requirements (stories/) and engineering documentation (engineering/), threaded together by onboarding.md as the ramp-up path. 
+> 每个项目汇集两类内容：业务需求（stories/）和工程文档（engineering/），由 onboarding.md 作为入门路径串联起来。
 
-## Directory structure
+## 目录结构
 
 ```
 projects/
-  README.md                       # this file: classification + stories/engineering split
-  INDEX.md                        # project index table (leaf overview + key subpaths)
+  README.md                       # 本文件：分类 + stories/engineering 拆分
+  INDEX.md                        # 项目索引表（叶子概览 + 关键子路径）
   {project-name}/
-    README.md                     # project card: positioning, tech stack, subdirectories
-    onboarding.md                 # newer onboarding (8 fixed sections)
-    stories/                      # business content (BRD-driven Story/Scene)
+    README.md                     # 项目卡片：定位、技术栈、子目录
+    onboarding.md                 # 新人 onboarding（8 个固定章节）
+    stories/                      # 业务内容（BRD 驱动的 Story/Scene）
       {story-name}/
         story.md
         {scene-name}/scene.md
-    engineering/                  # engineering doc mirror (CLAUDE.md / README.md / CHANGELOG.md)
+    engineering/                  # 工程文档镜像（CLAUDE.md / README.md / CHANGELOG.md）
       claude.md
       readme.md
-      changelog.md                # only some projects
+      changelog.md                # 仅部分项目
 ```
 
-## stories/ vs engineering/ split
+## stories/ vs engineering/ 拆分
 
-| Dimension | stories/ | engineering/ |
+| 维度 | stories/ | engineering/ |
 |---|---|---|
-| Content driver | BRD / user story | architecture and conventions |
-| Data relation | DB stores metadata (key, status, etc.); files store rich text | file-system self-contained |
-| Update frequency | Iterates with requirements | Evolves with architecture |
-| Source | Co-maintained by business and PM | Mirror of project root files |
+| 内容驱动 | BRD / 用户故事 | 架构与规范 |
+| 数据关系 | DB 存储元数据（key、status 等）；文件存储富文本 | 文件系统自包含 |
+| 更新频率 | 随需求迭代 | 随架构演进 |
+| 来源 | 业务与 PM 共同维护 | 项目根目录文件镜像 |
 
-## Design principles (stories/) 
+## 设计原则（stories/）
 
-- **DB stores metadata**: `key`, `name`, `status`, `priority`, `assignee`, `startDate`, `dueDate`, `completedAt`, `sprint`, `scheduleStatus`, `createdAt`, `updatedAt` and other management fields stored in DB
-- **File system stores content**: `description`, `background`, `acceptance`, `scenarios[].steps`, `scenarios[].trigger`, all BRD chapters and other rich text content stored in Markdown files
-- **Relation**: The `project` field in DB records corresponds to file-system `projects/{project-name}/`; Story directory name is the semantic identifier
-- **Progressive read**: Files start with YAML frontmatter, supports reading 15 lines for metadata first, confirm relevance, then read full text
+- **DB 存储元数据**：`key`、`name`、`status`、`priority`、`assignee`、`startDate`、`dueDate`、`completedAt`、`sprint`、`scheduleStatus`、`createdAt`、`updatedAt` 等管理字段存储在 DB 中
+- **文件系统存储内容**：`description`、`background`、`acceptance`、`scenarios[].steps`、`scenarios[].trigger`、所有 BRD 章节等富文本内容存储在 Markdown 文件中
+- **关联关系**：DB 记录中的 `project` 字段对应文件系统 `projects/{project-name}/`；Story 目录名即语义标识符
+- **渐进式阅读**：文件以 YAML frontmatter 开头，支持先读取 15 行获取元数据，确认相关性后再读取全文
 
-## story.md template
+## story.md 模板
 
 ```markdown
 ---
@@ -104,7 +104,7 @@ updatedAt: 1700000000000
 ### Approval records
 ```
 
-## scene.md template
+## scene.md 模板
 
 ```markdown
 ---
@@ -136,16 +136,16 @@ updatedAt: 1700000000000
 - filePath: src/views/foo.vue, fileName: foo.vue
 ```
 
-## engineering/ sync convention
+## engineering/ 同步规范
 
-`engineering/` `claude.md` / `readme.md` / `changelog.md` are mirror copies of the **project root** same-named files, used for centralized lookup within YiKnowledge. The original files are still maintained in each project root directory. 
+`engineering/` 中的 `claude.md` / `readme.md` / `changelog.md` 是**项目根目录**同名文件的镜像副本，用于在 YiKnowledge 内集中查阅。原始文件仍由各项目根目录维护。
 
-After modifying the project root `CLAUDE.md` / `README.md` / `CHANGELOG.md`, manually `cp` sync into this directory, or auto-sync via a project-level hook. 
+修改项目根目录的 `CLAUDE.md` / `README.md` / `CHANGELOG.md` 后，手动 `cp` 同步到本目录，或通过项目级 hook 自动同步。
 
-## Project list
+## 项目列表
 
-- [YiAi](yiai) — AI + BRD agent (FastAPI backend, port 10086) 
-- [YiPet](yipet) — browser extension + desktop app (Chrome MV3, React 18 + Ant Design 5) 
-- [YiVad](yivad) — main control web app (Vue 3.5 + Rsbuild 1, port 8848) 
+- [YiAi](yiai) — AI + BRD agent（FastAPI 后端，端口 10086）
+- [YiPet](yipet) — 浏览器扩展 + 桌面应用（Chrome MV3、React 18 + Ant Design 5）
+- [YiVad](yivad) — 主控 Web 应用（Vue 3.5 + Rsbuild 1，端口 8848）
 
-For detailed subpaths see [INDEX.md](./INDEX.md). To add a new project card, create `{project-name}/README.md` in this directory and register it in INDEX.md. 
+详细子路径参见 [INDEX.md](./INDEX.md)。添加新项目卡片时，在此目录创建 `{project-name}/README.md` 并在 INDEX.md 中注册。

@@ -27,11 +27,11 @@ related:
 
 | Domain | Content |
 |---|---|
-| [foundations/](./foundations/) | AI/ML theory: transformers, attention, RAG, multimodal |
-| [methodology/](./methodology/) | Prompt engineering, evaluation, agent patterns, RAG design |
-| [methodology/prompts/](./methodology/prompts/) | Prompt templates |
-| [platform/](./platform/) | AI deployment platforms, inference engines, vector DBs |
-| [ml/](./ml/) | ML ops, evaluation, model deployment |
+| [基础/](./基础/) | AI/ML theory: transformers, attention, RAG, multimodal |
+| [方法/](./方法/) | Prompt engineering, evaluation, agent patterns, RAG design |
+| [方法/提示词/](./方法/提示词/) | Prompt templates |
+| [平台/](./平台/) | AI deployment platforms, inference engines, vector DBs |
+| [机器学习/](./机器学习/) | ML ops, evaluation, model deployment |
 
 ## Cross-role references
 

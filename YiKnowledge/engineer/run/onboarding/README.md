@@ -23,31 +23,31 @@ related:
   - ../../engineer/process/
 ---
 
-# Onboarding Guides Directory
+# Onboarding 指南目录
 
-> **As a** new hire, **I want to** find my project's onboarding path and Day-1 checklist, **so that** I can ramp up quickly and start contributing.
+> **作为**新人，**我希望**找到我所在项目的 onboarding 路径和 Day-1 检查清单，**以便**快速上手并开始贡献。
 
-## Per-project onboarding
+## 按项目 onboarding
 
-| Project | File | Stack |
+| 项目 | 文件 | 技术栈 |
 |---|---|---|
-| YiAi | [yiai/onboarding.md](./yiai/onboarding.md) | Python, FastAPI, MongoDB, LLM |
-| YiVad | [yivad/onboarding.md](./yivad/onboarding.md) | Vue 3, TypeScript, Rsbuild |
-| YiPet | [yipet/onboarding.md](./yipet/onboarding.md) | React 18, Chrome MV3, Ant Design |
+| YiAi | [yiai/onboarding.md](./yiai/onboarding.md) | Python、FastAPI、MongoDB、LLM |
+| YiVad | [yivad/onboarding.md](./yivad/onboarding.md) | Vue 3、TypeScript、Rsbuild |
+| YiPet | [yipet/onboarding.md](./yipet/onboarding.md) | React 18、Chrome MV3、Ant Design |
 
-## General onboarding
+## 通用 onboarding
 
-| Task | File | Description |
+| 任务 | 文件 | 描述 |
 |---|---|---|
-| Day-1 checklist | [onboarding-checklist.md](./onboarding-checklist.md) | First-day task list |
-| New engineer guide | [onboard-as-a-new-engineer.md](./onboard-as-a-new-engineer.md) | Engineering onboarding path |
-| SaaS tenant setup | [onboard-a-new-saas-tenant.md](./onboard-a-new-saas-tenant.md) | New tenant provisioning |
-| Contribute to KB | [contribute-to-the-knowledge-base.md](./contribute-to-the-knowledge-base.md) | Knowledge base contribution guide |
-| Project handoff | [handoff-project.md](./handoff-project.md) | Handoff process and checklist |
-| Template | [template.md](./template.md) | Onboarding doc template |
+| Day-1 检查清单 | [onboarding-checklist.md](./onboarding-checklist.md) | 第一天任务列表 |
+| 新工程师指南 | [onboard-as-a-new-engineer.md](./onboard-as-a-new-engineer.md) | 工程 onboarding 路径 |
+| SaaS 租户设置 | [onboard-a-new-saas-tenant.md](./onboard-a-new-saas-tenant.md) | 新租户开通 |
+| 贡献到 KB | [contribute-to-the-knowledge-base.md](./contribute-to-the-knowledge-base.md) | 知识库贡献指南 |
+| 项目交接 | [handoff-project.md](./handoff-project.md) | 交接流程与检查清单 |
+| 模板 | [template.md](./template.md) | Onboarding 文档模板 |
 
-## Cross-references
+## 交叉引用
 
-- [../../run/](../../run/) — Team collaboration patterns
-- [../../learn/lessons/](../../learn/lessons/) — Wins, failures, gotchas to learn from
-- [../../curator/COLLABORATION.md](../../curator/COLLABORATION.md) — Collaboration domain index
+- [../../run/](../../run/) — 团队协作模式
+- [../../learn/lessons/](../../learn/lessons/) — 可学习的成功、失败与踩坑记录
+- [../../curator/COLLABORATION.md](../../curator/COLLABORATION.md) — 协作领域索引

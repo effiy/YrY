@@ -129,7 +129,7 @@ define-an-slo.md → manage-tech-debt.md
 |---|---|
 | [../INDEX.md](../INDEX.md) | Parent role index — all leader subdirectories |
 | [../README.md](../README.md) | Leader role overview |
-| [../architecture/](../architecture/) | Architecture patterns — referenced in tech selection |
+| [../架构/](../架构/) | Architecture patterns — referenced in tech selection |
 | [../decisions/](../decisions/) | ADRs — where tech selection decisions are documented |
 | [../risk/](../risk/) | Risk management — incident postmortems feed into tech debt |
 

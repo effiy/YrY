@@ -63,6 +63,7 @@ export interface UserDocument {
   status: number;
   avatar: string;
   photo?: any[];
+  roles?: string[];
   createdTime: string;
   updatedTime: string;
   children?: UserDocument[];

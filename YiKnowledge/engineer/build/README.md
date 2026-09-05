@@ -26,33 +26,33 @@ related:
   - ../learn/
 ---
 
-# Build — Architecture & Development
+# Build — 架构与开发
 
-> **As an** engineer, **I want to** find architecture and development references, **so that** I can design and build systems efficiently.
+> **作为** engineer，**我希望**找到架构和开发参考，**以便**高效地设计和构建系统。
 
-BUILD is the first phase of the engineer pipeline — design the system, choose the approach, and set up the foundation before writing code.
+BUILD 是 engineer pipeline 的第一个阶段——设计系统、选择方案，并在编写代码之前打好基础。
 
-## Existing content
+## 现有内容
 
-| File | Description |
+| 文件 | 描述 |
 |---|---|
-| [cross-project-rpc-protocol.md](./cross-project-rpc-protocol.md) | RPC envelope, parameter name contracts, known bug patterns — single source of truth for all cross-project calls |
-| [implement-cross-project-rpc-call.md](./implement-cross-project-rpc-call.md) | Step-by-step guide for adding new RPC calls across YiVad/YiPet → YiAi |
-| [implement-sse-streaming.md](./implement-sse-streaming.md) | SSE streaming implementation guide for AI chat, with abort handling and timeout management |
+| [cross-project-rpc-protocol.md](./cross-project-rpc-protocol.md) | RPC 信封、参数名契约、已知 bug 模式——所有跨项目调用的单一事实来源 |
+| [implement-cross-project-rpc-call.md](./implement-cross-project-rpc-call.md) | 跨 YiVad/YiPet → YiAi 添加新 RPC 调用的分步指南 |
+| [implement-sse-streaming.md](./implement-sse-streaming.md) | AI 聊天的 SSE 流式实现指南，含中止处理和超时管理 |
 
-## What belongs here
+## 此处应包含的内容
 
-- System architecture patterns and design decisions
-- API design contracts (REST, RPC, SSE, events)
-- Data modeling and schema design
-- Project bootstrapping and tooling setup
-- Dependency management and tech stack guidance
-- Developer experience and productivity
+- 系统架构模式与设计决策
+- API 设计契约（REST、RPC、SSE、事件）
+- 数据建模与 schema 设计
+- 项目启动与工具链设置
+- 依赖管理与技术栈指南
+- 开发者体验与生产力
 
-## Cross-references
+## 交叉引用
 
-- [../ship/](../ship/) — Quality, security, data, resilience, observability
-- [../run/](../run/) — Team workflows, onboarding, cross-cutting scenarios
-- [../learn/](../learn/) — Lessons learned and project-specific docs
-- [../../leader/architecture/](../../leader/architecture/) — Tech selection and maturity models
-- [../../leader/decisions/](../../leader/decisions/) — Architecture Decision Records
+- [../ship/](../ship/) — 质量、安全、数据、韧性、可观测性
+- [../run/](../run/) — 团队工作流、onboarding、横切场景
+- [../learn/](../learn/) — 经验教训与项目特定文档
+- [../../leader/架构/](../../leader/架构/) — 技术选型与成熟度模型
+- [../../leader/decisions/](../../leader/decisions/) — 架构决策记录

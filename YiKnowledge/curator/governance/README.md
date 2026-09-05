@@ -22,35 +22,35 @@ related:
   - ../../INDEX.md
 ---
 
-# Knowledge Curator — Governance
+# Knowledge Curator — 治理
 
-> **As a** knowledge curator, **I want to** find governance procedures and lifecycle management guides, **so that** I can maintain a healthy and well-organized knowledge base.
+> **作为**知识 curator，**我希望**找到治理流程和生命周期管理指南，**以便**维护一个健康且组织良好的知识库。
 
-## Core governance
+## 核心治理
 
-| File | Description |
+| 文件 | 描述 |
 |---|---|
-| [governance.md](./governance.md) | Governance flow: 4 roles, 3 cadences |
-| [evolve-the-knowledge-base.md](./evolve-the-knowledge-base.md) | KB evolution process |
-| [user-story-migration-plan.md](./user-story-migration-plan.md) | 14→19→11 role migration history |
+| [governance.md](./governance.md) | 治理流程：4 角色、3 节奏 |
+| [evolve-the-knowledge-base.md](./evolve-the-knowledge-base.md) | KB 演进流程 |
+| [user-story-migration-plan.md](./user-story-migration-plan.md) | 14→19→11 角色迁移历史 |
 
-## Lifecycle management
+## 生命周期管理
 
-| File | Description |
+| 文件 | 描述 |
 |---|---|
-| [inbox.md](./inbox.md) | Catch-all for unclassified content |
-| [triage.md](./triage.md) | Classified-but-not-yet-summarised queue |
-| [review-log.md](./review-log.md) | Content review log |
-| [tacit-knowledge-backlog.md](./tacit-knowledge-backlog.md) | Tacit knowledge capture backlog |
+| [inbox.md](./inbox.md) | 未分类内容总入口 |
+| [triage.md](./triage.md) | 已分类但尚未总结的队列 |
+| [review-log.md](./review-log.md) | 内容审查日志 |
+| [tacit-knowledge-backlog.md](./tacit-knowledge-backlog.md) | 隐性知识捕获 backlog |
 
-## Quality gates
+## 质量门禁
 
-| File | Description |
+| 文件 | 描述 |
 |---|---|
-| [readiness-checklist.md](./readiness-checklist.md) | 10-question pre-launch gate |
-| [dashboard-knowledge-health.md](./dashboard-knowledge-health.md) | Knowledge health dashboard |
+| [readiness-checklist.md](./readiness-checklist.md) | 10 题上线前门禁 |
+| [dashboard-knowledge-health.md](./dashboard-knowledge-health.md) | 知识健康仪表盘 |
 
-## Cross-references
+## 交叉引用
 
-- [../diagrams/](../diagrams/) — 4 diagrams: knowledge-map, user-journey, directory-blueprint, dashboard
-- [../archive/](../archive/) — Archived and deprecated content
+- [../diagrams/](../diagrams/) — 4 张图：knowledge-map、user-journey、directory-blueprint、dashboard
+- [../archive/](../archive/) — 已归档和废弃的内容

@@ -13,7 +13,7 @@ roles: [leader, engineer]
 benefit: "Understand the four-tier API layer architecture and why it was chosen over simpler alternatives"
 related:
   - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/architecture.md
+  - ../../../engineer/learn/projects/yipet/架构设计.md
 ---
 
 # ADR: YiPet Four-Tier API Layer Design

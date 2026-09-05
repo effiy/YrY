@@ -26,7 +26,7 @@ acceptance_criteria:
 related:
 - ./reading-notes.md
 - ./reading-note-high-output-management.md
-- ../../curator/governance/README.md
+- ../../curator/治理/README.md
 ---
 
 # 2026 Monthly Reading List

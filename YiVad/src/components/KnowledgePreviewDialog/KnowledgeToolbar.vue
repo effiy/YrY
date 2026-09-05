@@ -4,7 +4,7 @@
  * Extracted from KnowledgePreviewDialog.vue: nav, mode switch, actions.
  */
 import {
-  ArrowLeft, ChatDotRound, Close, Download, FolderOpened, Reading,
+  ArrowLeft, ChatDotRound, Close, Download, FolderOpened, Reading, Refresh,
 } from '@element-plus/icons-vue';
 
 export type KbMode = 'preview' | 'edit' | 'split';
@@ -15,8 +15,6 @@ defineProps<{
   showChat: boolean;
   loading: boolean;
   hasContent: boolean;
-  translating: boolean;
-  originalContent: string;
   saving: boolean;
   sourceRoute: any;
   readingItemExists: boolean;
@@ -27,14 +25,13 @@ defineProps<{
 const emit = defineEmits<{
   'update:mode': [value: KbMode];
   goBack: [];
-  translateTo: [lang: 'zh' | 'en', bilingual?: boolean];
-  resetTranslation: [];
   cancelEdit: [];
   save: [];
   openInSourcePage: [];
   downloadFile: [];
   addToReadingList: [];
   toggleChat: [];
+  refresh: [];
   close: [];
 }>();
 
@@ -67,24 +64,11 @@ function onModeChange(value: unknown) {
       <el-radio-button value="preview">Preview</el-radio-button>
     </el-radio-group>
     <div class="kpd-actions">
-      <template v-if="mode === 'preview' && !loading && hasContent">
-        <span v-if="translating" class="kpd-translating">Translating...</span>
-        <template v-if="!translating && !originalContent">
-          <el-button size="small" text @click="emit('translateTo', 'zh')">译中</el-button>
-          <el-button size="small" text @click="emit('translateTo', 'en')">译英</el-button>
-          <el-button size="small" text @click="emit('translateTo', 'zh', true)">中英双语</el-button>
-        </template>
-        <el-button
-          v-if="!translating && originalContent"
-          size="small"
-          text
-          @click="emit('resetTranslation')"
-        >Show Original</el-button>
-      </template>
       <el-button v-if="mode === 'edit' || mode === 'split'" size="small" text @click="emit('cancelEdit')">Cancel</el-button>
       <el-button v-if="mode === 'edit' || mode === 'split'" type="primary" size="small" :loading="saving" @click="emit('save')">Save</el-button>
       <el-button v-if="sourceRoute" size="small" text :icon="FolderOpened" title="Open in source page" @click="emit('openInSourcePage')" />
       <el-button size="small" text :icon="Download" title="Download file" @click="emit('downloadFile')" />
+      <el-button size="small" text :icon="Refresh" :loading="loading" title="Refresh" @click="emit('refresh')" />
       <el-button
         size="small" text
         :type="readingItemExists ? 'primary' : 'default'"
