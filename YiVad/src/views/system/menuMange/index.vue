@@ -45,8 +45,8 @@
       </template>
       <!-- Operations -->
       <template #operation="scope">
-        <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)">Edit</el-button>
-        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)">Delete</el-button>
+        <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)"></el-button>
+        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)"></el-button>
       </template>
     </ProTable>
 
@@ -366,7 +366,7 @@ const columns: ColumnProps[] = [
   { prop: "redirect", label: "Redirect", width: 180 },
   { prop: "order", label: "Order", width: 70 },
   { prop: "parent", label: "Parent Menu", width: 180 },
-  { prop: "meta.isHide", label: "Visibility", width: 80 },
+  { prop: "meta.isHide", label: "Visibility", width: 100 },
   { prop: "operation", label: "Operations", width: 180, fixed: "right" }
 ];
 </script>
