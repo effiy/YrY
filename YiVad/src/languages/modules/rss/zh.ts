@@ -97,7 +97,7 @@ export default {
       discussBatch: "在 aiChat 中讨论 {n}",
       summarizeInAiChat: "在 aiChat 中汇总",
       summarizeBatch: "汇总 {n} 篇到 aiChat",
-      batchTruncateHint: "选中条目超过 8 条，仅前 8 条已注入以符合上下文上限。",
+      batchTruncateHint: "选中条目超过 8 条，仅前 {n} 条已注入以符合上下文上限。",
       viewDetail: "查看详情",
       openSource: "打开源链接",
       reparseFeed: "重新解析该源",

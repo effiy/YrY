@@ -27,11 +27,11 @@
         <div class="upload-handle" @click.stop>
           <div class="handle-icon" @click="handlePictureCardPreview(file)">
             <el-icon><ZoomIn /></el-icon>
-            <span>View</span>
+            <span>{{ t('common.view') }}</span>
           </div>
           <div v-if="!self_disabled" class="handle-icon" @click="handleRemove(file)">
             <el-icon><Delete /></el-icon>
-            <span>Delete</span>
+            <span>{{ t('common.delete') }}</span>
           </div>
         </div>
       </template>
@@ -45,10 +45,13 @@
 
 <script setup lang="ts" name="UploadImgs">
 import { ref, computed, inject, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { Plus } from "@element-plus/icons-vue";
 import { uploadImg } from "@/api/modules/upload";
 import type { UploadProps, UploadFile, UploadUserFile, UploadRequestOptions } from "element-plus";
 import { ElNotification, formContextKey, formItemContextKey } from "element-plus";
+
+const { t } = useI18n();
 
 interface UploadFileProps {
   fileList: UploadUserFile[];
@@ -103,15 +106,15 @@ const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
   const imgType = props.fileType.includes(rawFile.type as File.ImageMimeType);
   if (!imgType)
     ElNotification({
-      title: "Notice",
-      message: "Uploaded image does not match the required format!",
+      title: t("upload.imageFormatMismatchTitle"),
+      message: t("upload.imageFormatMismatch"),
       type: "warning"
     });
   if (!imgSize)
     setTimeout(() => {
       ElNotification({
-        title: "Notice",
-        message: `Image size cannot exceed ${props.fileSize}M!`,
+        title: t("upload.imageSizeExceededTitle"),
+        message: t("upload.imageSizeExceeded", { size: props.fileSize }),
         type: "warning"
       });
     }, 0);
@@ -146,11 +149,10 @@ const uploadSuccess = (response: { fileUrl: string } | undefined, uploadFile: Up
   if (!response) return;
   uploadFile.url = response.fileUrl;
   emit("update:fileList", _fileList.value);
-  // Call el-form internal validation method (auto-validate)
   formItemContext?.prop && formContext?.validateField([formItemContext.prop as string]);
   ElNotification({
-    title: "Notice",
-    message: "Image uploaded successfully!",
+    title: t("upload.imageUploadSuccessTitle"),
+    message: t("upload.imageUploadSuccess"),
     type: "success"
   });
 };
@@ -169,8 +171,8 @@ const handleRemove = (file: UploadFile) => {
  * */
 const uploadError = () => {
   ElNotification({
-    title: "Notice",
-    message: "Image upload failed, please re-upload!",
+    title: t("upload.imageUploadErrorTitle"),
+    message: t("upload.imageUploadError"),
     type: "error"
   });
 };
@@ -180,8 +182,8 @@ const uploadError = () => {
  * */
 const handleExceed = () => {
   ElNotification({
-    title: "Notice",
-    message: `You can only upload up to ${props.limit} images, please remove some before uploading!`,
+    title: t("upload.imageCountExceededTitle"),
+    message: t("upload.imageCountExceeded", { limit: props.limit }),
     type: "warning"
   });
 };

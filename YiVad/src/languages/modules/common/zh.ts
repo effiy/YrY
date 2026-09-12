@@ -24,7 +24,18 @@ export default {
     exitFullScreen: "退出全屏",
     personalData: "个人资料",
     changePassword: "修改密码",
-    logout: "退出登录"
+    logout: "退出登录",
+    languageOptions: {
+      zh: "简体中文",
+      en: "English"
+    }
+  },
+  greeting: {
+    morning: "早上好 ⛅",
+    afternoon1: "下午好 🌞",
+    afternoon2: "下午好 🌞",
+    evening: "晚上好 🌛",
+    night: "夜深了 🌛"
   },
   common: {
     view: "查看",
@@ -63,9 +74,18 @@ export default {
     operation: "操作",
     enabled: "已启用",
     disabled: "已禁用",
+    operationSuccess: "操作成功",
     operationFailed: "操作失败",
-    deleteConfirm: "确定删除用户「{name}」吗？",
+    createSuccess: "创建成功",
+    updateSuccess: "更新成功",
     deleteSuccess: "删除成功",
+    saveSuccess: "保存成功",
+    archiveSuccess: "归档成功",
+    restoreSuccess: "恢复成功",
+    confirmDelete: "确认删除？",
+    confirmArchive: "确认归档？",
+    confirmRestore: "确认恢复？",
+    deleteConfirm: "确定删除用户「{name}」吗？",
     batchDeleteConfirm: "确定删除选中的 {count} 个用户吗？",
     batchDeleteSuccess: "批量删除成功",
     roleAssignSuccess: "角色分配成功",
@@ -82,6 +102,27 @@ export default {
     partialSaveFailed: "部分任务保存到知识库失败",
     deleteItemConfirm: "确认删除该条目？",
     deleteActionFailed: "删除操作失败",
+  },
+  upload: {
+    sizeExceededTitle: "提示",
+    sizeExceeded: "文件大小不能超过 {maxSize}MB",
+    countExceededTitle: "提示",
+    countExceeded: "最多上传 {maxCount} 个文件",
+    imageFormatMismatchTitle: "提示",
+    imageFormatMismatch: "上传的图片格式不符合要求！",
+    imageSizeExceededTitle: "提示",
+    imageSizeExceeded: "图片大小不能超过 {size}M！",
+    imageUploadSuccessTitle: "提示",
+    imageUploadSuccess: "图片上传成功！",
+    imageUploadErrorTitle: "提示",
+    imageUploadError: "图片上传失败，请重新上传！",
+    imageCountExceededTitle: "提示",
+    imageCountExceeded: "最多只能上传 {limit} 张图片，请先删除部分后再上传！",
+    dragDropHint: "将文件拖到此处，或<em>点击上传</em>",
+    dragDropHintPlain: "将文件拖到此处，或点击上传",
+    acceptHintAll: "所有文件类型",
+    acceptHint: "支持 {accept}，单文件不超过 {maxSize}MB",
+    uploadingFileLabel: "文件 {name}"
   },
   dateFilter: {
     all: "全部",

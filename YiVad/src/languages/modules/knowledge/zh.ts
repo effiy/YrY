@@ -2,13 +2,97 @@ export default {
   knowledge: {
     pipeline: {
       title: "软件交付流水线",
-      subtitle: "七个角色，四个阶段，一个因果链——从为什么要构建到如何运行。每个阶段都有明确的输入→输出契约：上游角色产出的产物供下游角色消费。",
+      subtitle: "七个角色，四个阶段，一个因果链——从为什么构建，到如何运行。每个阶段都有清晰的输入 → 输出契约：上游角色产出的产物供下游角色消费。",
       files: "{n} 个文件",
       stages: {
         why: "为什么",
-        what: "什么",
-        how: "如何",
+        what: "做什么",
+        how: "如何做",
         run: "运行",
+      },
+      layers: {
+        business: "业务战略",
+        ai: "AI 赋能",
+        governance: "知识治理",
+      },
+      stagesDetail: {
+        requirements: {
+          name: "需求",
+          role: "产品经理",
+          description: "定义要构建什么、为谁构建、以及如何衡量成功——在任何代码编写之前。",
+          boundary: "producter 定义「需要构建什么功能」，而不是「如何实现它」（→ engineer/）或「选择何种技术」（→ leader/）。",
+        },
+        decisions: {
+          name: "决策",
+          role: "技术负责人",
+          description: "把技术决策显性化。每一个选择都是一份 ADR：背景、决策、后果——为什么选 A 而不是 B。",
+          boundary: "leader 在权衡中做出决策，但不落地具体实现模式（→ engineer/architecture/）。决策 = 为什么 A 胜 B；模式 = 如何落地 A。",
+        },
+        "design-build": {
+          name: "设计 + 构建",
+          role: "工程师",
+          description: "把决策转化为可运行的软件。八个子目录覆盖完整的 BUILD → SHIP 周期。",
+          boundary: "engineer 是「实现层」——它不能替代 leader 的决策。如果在实现中浮现架构级问题 → 回 leader/ 写 ADR，不要在 engineer/ 内部自行拍板。",
+        },
+        "quality-release": {
+          name: "交付 + 运维",
+          role: "SRE + 工程师/复盘/教训",
+          description: "安全交付并保持运行。质量门禁、发布流程、可观测性、事件响应，以及来自成功与失败的经验教训。",
+          boundary: "srer/release/ 拥有「发布流程与协调」；engineer/reliability/ 拥有「用于发布的技术模式」（灰度实现、特性开关）。流程 vs 实现。",
+        },
+        businessDetail: {
+          label: "业务战略",
+          role: "战略执行者",
+          desc: "为什么做此业务 · 市场洞察 · 组织目标 · 行业趋势 · 路线图",
+          description:
+            "定义驱动每一个下游决策的战略背景。业务战略提供市场情报、竞争格局和组织目标，它们塑造产品需求、技术决策和运维优先级。没有清晰的业务基础，产品与工程团队会迷失方向。",
+          boundary:
+            "executiver/ 设定组织级的「为什么」和「做什么」——市场定位、战略目标、资源分配。它不定义「如何构建」（→ engineer/）或「优先做哪些特性」（→ producter/）。战略告知方向；执行决定细节。",
+        },
+        aiDetail: {
+          label: "AI 赋能",
+          role: "AI 工程师",
+          desc: "AI 如何加速每一个阶段——基础、方法论、平台、数据、机器学习、技能",
+          description:
+            "AI 赋能是水平加速层，放大流水线的每一个阶段。从基础理论（Transformer、向量嵌入）到工程方法论（Prompt 设计、RAG、Agent），再到平台基础设施（模型服务、推理优化），本层确保 AI 能力不成为瓶颈，而是跨组织的倍增器。",
+          boundary:
+            "aier/ 提供 AI 的「理论、方法论与平台」——即 AI 的 HOW。它不拥有产品决策（→ producter/）、技术架构选择（→ leader/）或实现模式（→ engineer/）。AI 是工具；用它构建什么属于垂直各阶段。",
+        },
+        governanceDetail: {
+          label: "知识治理",
+          role: "知识管理者",
+          desc: "知识库自身如何维护——生命周期、图表、模板、归档、治理",
+          description:
+            "知识治理确保知识库本身长期保持健康、一致、可用。它定义每条知识产物的生命周期——从草稿经过评审到稳定或归档——并提供让知识生产可复制、可扩展的模板、图表与流程。",
+          boundary:
+            "curator/ 拥有知识库的「结构与健康」——生命周期策略、模板、目录设计、治理规则。它不拥有任何具体领域的内容（内容属于各角色目录）。Curator 是图书管理员；每个角色是作者。",
+        },
+      },
+      flowItems: {
+        inputs: "输入",
+        outputs: "输出",
+      },
+      decision: {
+        title: "角色职责决策树",
+        subtitle: "不确定某个问题属于哪个角色？沿着决策路径走一遍。",
+        rules: {
+          business: "业务战略、市场、竞争对手？",
+          product: "产品需求、用户故事、优先级？",
+          leader: "技术决策、架构选择、ADR？",
+          engineer: "实现模式、开发工具、代码？",
+          sre: "发布流程、监控、事件响应？",
+          ai: "AI/ML 相关的理论与实践？",
+          curator: "知识库自身的结构与规则？",
+        },
+        roles: {
+          executiver: "战略执行者",
+          producter: "产品经理",
+          leader: "技术负责人",
+          engineer: "工程师",
+          srer: "SRE",
+          aier: "AI 工程师",
+          curator: "知识管理者",
+        },
       },
     },
     role: {

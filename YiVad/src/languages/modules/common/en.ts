@@ -24,7 +24,18 @@ export default {
     exitFullScreen: "Exit Full Screen",
     personalData: "Personal Data",
     changePassword: "Change Password",
-    logout: "Logout"
+    logout: "Logout",
+    languageOptions: {
+      zh: "Simplified Chinese",
+      en: "English"
+    }
+  },
+  greeting: {
+    morning: "Good morning ⛅",
+    afternoon1: "Good afternoon 🌞",
+    afternoon2: "Good afternoon 🌞",
+    evening: "Good evening 🌛",
+    night: "Good night 🌛"
   },
   common: {
     view: "View",
@@ -63,9 +74,18 @@ export default {
     operation: "Actions",
     enabled: "Enabled",
     disabled: "Disabled",
+    operationSuccess: "Operation successful",
     operationFailed: "Operation failed",
-    deleteConfirm: "Delete user \"{name}\"?",
+    createSuccess: "Created successfully",
+    updateSuccess: "Updated successfully",
     deleteSuccess: "Deleted successfully",
+    saveSuccess: "Saved successfully",
+    archiveSuccess: "Archived successfully",
+    restoreSuccess: "Restored successfully",
+    confirmDelete: "Confirm deletion?",
+    confirmArchive: "Confirm archive?",
+    confirmRestore: "Confirm restore?",
+    deleteConfirm: 'Delete user "{name}"?',
     batchDeleteConfirm: "Delete {count} selected users?",
     batchDeleteSuccess: "Batch delete successful",
     roleAssignSuccess: "Role assigned successfully",
@@ -82,6 +102,27 @@ export default {
     partialSaveFailed: "Some tasks failed to save to knowledge base",
     deleteItemConfirm: "Delete this entry?",
     deleteActionFailed: "Failed to delete",
+  },
+  upload: {
+    sizeExceededTitle: "Notice",
+    sizeExceeded: "File size must not exceed {maxSize}MB",
+    countExceededTitle: "Notice",
+    countExceeded: "At most {maxCount} files can be uploaded",
+    imageFormatMismatchTitle: "Notice",
+    imageFormatMismatch: "Uploaded image does not match the required format!",
+    imageSizeExceededTitle: "Notice",
+    imageSizeExceeded: "Image size cannot exceed {size}M!",
+    imageUploadSuccessTitle: "Notice",
+    imageUploadSuccess: "Image uploaded successfully!",
+    imageUploadErrorTitle: "Notice",
+    imageUploadError: "Image upload failed, please re-upload!",
+    imageCountExceededTitle: "Notice",
+    imageCountExceeded: "You can only upload up to {limit} images, please remove some before uploading!",
+    dragDropHint: "Drop files here, or <em>click to upload</em>",
+    dragDropHintPlain: "Drop files here, or click to upload",
+    acceptHintAll: "all file types",
+    acceptHint: "{accept} supported, each file up to {maxSize}MB",
+    uploadingFileLabel: "File {name}"
   },
   dateFilter: {
     all: "All",

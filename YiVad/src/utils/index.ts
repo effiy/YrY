@@ -54,32 +54,32 @@ export function randomNum(min: number, max: number): number {
 }
 
 /**
- * @description Get greeting based on current time
- * @returns {String}
+ * 根据当前时段返回「问候语」对应的 locale 键。
+ *
+ * ⚠️ 调用方必须通过 `t(getTimeState())` 渲染，不要直接显示返回值。
+ * 对应键定义在 languages/modules/common/* → greeting: morning / afternoon1 / afternoon2 / evening / night
+ *
+ * @returns i18n key 字符串
  */
 export function getTimeState() {
-  let timeNow = new Date();
-  let hours = timeNow.getHours();
-  if (hours >= 6 && hours <= 10) return `Good morning ⛅`;
-  if (hours >= 10 && hours <= 14) return `Good afternoon 🌞`;
-  if (hours >= 14 && hours <= 18) return `Good afternoon 🌞`;
-  if (hours >= 18 && hours <= 24) return `Good evening 🌛`;
-  if (hours >= 0 && hours <= 6) return `Good night 🌛`;
+  const hours = new Date().getHours();
+  if (hours >= 6 && hours < 12) return "greeting.morning";
+  if (hours < 14) return "greeting.afternoon1";
+  if (hours < 18) return "greeting.afternoon2";
+  if (hours < 24) return "greeting.evening";
+  return "greeting.night";
 }
 
 /**
- * @description Get browser default language
- * @returns {String}
+ * @description 获取浏览器默认语言（归一化为 "zh" 或 "en"）
+ * @returns {String} "zh" | "en"
  */
 export function getBrowserLang() {
-  let browserLang = navigator.language ? navigator.language : navigator.browserLanguage;
-  let defaultBrowserLang = "";
-  if (["cn", "zh", "zh-cn"].includes(browserLang.toLowerCase())) {
-    defaultBrowserLang = "zh";
-  } else {
-    defaultBrowserLang = "en";
-  }
-  return defaultBrowserLang;
+  const browserLang =
+    (typeof navigator !== "undefined" && (navigator.language || (navigator as any).browserLanguage)) || "en";
+  const key = String(browserLang).toLowerCase().replace("_", "-");
+  if (key.startsWith("zh") || key === "cn") return "zh";
+  return "en";
 }
 
 /**

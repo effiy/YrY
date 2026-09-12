@@ -1,3 +1,16 @@
+// 所有 locale 模块的注册入口。
+//
+// 「新增一个模块」的标准 4 步：
+//   1) 新建 modules/<name>/{zh.ts,en.ts}，两个文件都必须：
+//        export default { <name>: { ... 完全相同的对象结构 ... } }
+//   2) 在本文件顶部 import 两个文件：
+//        import zhXxx from "./<name>/zh"; import enXxx from "./<name>/en";
+//   3) 在下方 messages.zh 中展开 ...zhXxx
+//   4) 在下方 messages.en 中同步展开 ...enXxx
+//
+// 完整规范与常见陷阱：YiKnowledge/projects/yivad/workflows/开发规范/08-规范-国际化规范.md
+// PRD：YiKnowledge/projects/yivad/prds/2026-09/85-prd-多语言专项优化与补充.md
+// 校验脚本：YiVad/scripts/check-i18n-locales.mjs 或 pnpm i18n:check
 import zhCommon from "./common/zh";
 import enCommon from "./common/en";
 import zhAichat from "./aichat/zh";

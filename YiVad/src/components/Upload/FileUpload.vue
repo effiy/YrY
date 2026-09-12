@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import type { UploadProps, UploadUserFile, UploadRequestOptions } from "element-plus";
 import { ElNotification } from "element-plus";
+import { UploadFilled } from "@element-plus/icons-vue";
+
+const { t } = useI18n();
 
 interface UploadChunk {
   fileHash: string;
@@ -43,13 +47,21 @@ function fileKey(file: File): string {
 const beforeUpload: UploadProps["beforeUpload"] = (rawFile) => {
   const sizeOk = rawFile.size / 1024 / 1024 <= props.maxSize;
   if (!sizeOk) {
-    ElNotification({ title: "提示", message: `文件大小不能超过 ${props.maxSize}MB`, type: "warning" });
+    ElNotification({
+      title: t("upload.sizeExceededTitle"),
+      message: t("upload.sizeExceeded", { maxSize: props.maxSize }),
+      type: "warning"
+    });
   }
   return sizeOk;
 };
 
 const handleExceed: UploadProps["onExceed"] = () => {
-  ElNotification({ title: "提示", message: `最多上传 ${props.maxCount} 个文件`, type: "warning" });
+  ElNotification({
+    title: t("upload.countExceededTitle"),
+    message: t("upload.countExceeded", { maxCount: props.maxCount }),
+    type: "warning"
+  });
 };
 
 /**
@@ -57,14 +69,12 @@ const handleExceed: UploadProps["onExceed"] = () => {
  * Falls back to a simple name+size+lastModified hash for very large files.
  */
 async function computeFileHash(file: File): Promise<string> {
-  // For files under 50MB, use subtle crypto
   if (file.size < 50 * 1024 * 1024) {
     const buffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
-  // Fallback: name + size + lastModified
   return `${file.name}-${file.size}-${file.lastModified}`;
 }
 
@@ -76,10 +86,8 @@ async function handleHttpUpload(options: UploadRequestOptions) {
 
   try {
     if (props.chunkSize > 0 && file.size > props.chunkSize * 1024 * 1024) {
-      // Chunked upload
       await uploadChunked(file, options);
     } else {
-      // Simple upload
       const formData = new FormData();
       formData.append("file", file);
       const api = props.uploadApi;
@@ -108,7 +116,6 @@ async function uploadChunked(file: File, options: UploadRequestOptions) {
     const end = Math.min(start + chunkSizeBytes, file.size);
     const blob = file.slice(start, end);
 
-    // Convert blob to base64
     const base64 = await new Promise<string>((resolve) => {
       const reader = new FileReader();
       reader.onload = () => resolve((reader.result as string).split(",")[1]);
@@ -143,6 +150,11 @@ const handleError = (error: any, file: UploadUserFile) => {
 };
 
 const remainingCount = computed(() => props.maxCount - _fileList.value.length);
+
+const dropzoneHint = computed(() => {
+  const accept = props.accept === "*" ? t("upload.acceptHintAll") : props.accept;
+  return t("upload.acceptHint", { accept, maxSize: props.maxSize });
+});
 </script>
 
 <template>
@@ -164,21 +176,22 @@ const remainingCount = computed(() => props.maxCount - _fileList.value.length);
     >
       <div class="file-upload__dropzone">
         <el-icon :size="36"><UploadFilled /></el-icon>
-        <p class="file-upload__text">将文件拖到此处，或<em>点击上传</em></p>
+        <p class="file-upload__text" v-html="t('upload.dragDropHint')" />
         <p class="file-upload__hint">
-          支持 {{ accept === '*' ? '所有文件类型' : accept }}，单文件不超过 {{ maxSize }}MB
+          {{ dropzoneHint }}
         </p>
       </div>
     </el-upload>
 
-    <!-- Progress overlay for current uploads -->
     <div v-if="uploading" class="file-upload__progress">
       <div
         v-for="(progress, uid) in uploadProgress"
         :key="uid"
         class="file-upload__progress-item"
       >
-        <span class="file-upload__progress-name">文件 {{ uid.slice(0, 8) }}...</span>
+        <span class="file-upload__progress-name">
+          {{ t("upload.uploadingFileLabel", { name: uid.slice(0, 8) + '...' }) }}
+        </span>
         <el-progress :percentage="progress" :stroke-width="4" />
       </div>
     </div>
@@ -197,7 +210,7 @@ const remainingCount = computed(() => props.maxCount - _fileList.value.length);
     margin: 8px 0 4px;
     font-size: 14px;
 
-    em {
+    :deep(em) {
       font-style: normal;
       color: var(--el-color-primary);
     }

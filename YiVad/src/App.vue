@@ -19,6 +19,7 @@ import MermaidViewer from "@/components/MermaidViewer/MermaidViewer.vue";
 import { setupMermaidThemeWatcher } from "@/hooks/useMarkdown";
 import en from "element-plus/es/locale/lang/en";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
+import { normalizeLocale } from "@/languages";
 
 const globalStore = useGlobalStore();
 
@@ -37,11 +38,14 @@ onMounted(() => {
   globalStore.setGlobalState("language", language as LanguageType);
 });
 
-// element language
+// element language (同时跟随 i18n.locale.value，保证切换即时生效)
 const locale = computed(() => {
-  if (globalStore.language == "zh") return zhCn;
-  if (globalStore.language == "en") return en;
-  return getBrowserLang() == "zh" ? zhCn : en;
+  const currentLang = normalizeLocale(
+    (i18n.locale.value as string) ||
+    (globalStore.language as string) ||
+    (getBrowserLang() as string)
+  );
+  return currentLang === "zh" ? zhCn : en;
 });
 
 // element assemblySize

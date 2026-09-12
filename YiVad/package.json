@@ -22,6 +22,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "i18n:check": "node scripts/check-i18n-locales.mjs",
+    "i18n:check:detail": "node scripts/check-i18n-locales.mjs --detail",
     "commit": "git add -A && czg && git push"
   },
   "dependencies": {

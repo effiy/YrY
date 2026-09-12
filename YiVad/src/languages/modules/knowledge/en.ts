@@ -10,6 +10,98 @@ export default {
         how: "How",
         run: "Run",
       },
+      layers: {
+        business: "Business Strategy",
+        ai: "AI Enablement",
+        governance: "Knowledge Governance",
+      },
+      stagesDetail: {
+        requirements: {
+          name: "Requirements",
+          role: "producter/",
+          description:
+            "Define what to build, for whom, and how to measure success — before any code is written.",
+          boundary:
+            "producter defines WHAT feature to build, not HOW to implement it (→ engineer/) or WHICH technology to use (→ leader/).",
+        },
+        decisions: {
+          name: "Decisions",
+          role: "leader/",
+          description:
+            "Make technical decisions explicit. Every choice is an ADR: Context, Decision, Consequences — why A over B.",
+          boundary:
+            "leader makes DECISIONS with tradeoffs, not IMPLEMENTATION patterns (→ engineer/architecture/). Decision = why A over B. Pattern = how to implement A.",
+        },
+        "design-build": {
+          name: "Design + Build",
+          role: "engineer/",
+          description:
+            "Turn decisions into working software. Eight subdirectories covering the full BUILD → SHIP cycle.",
+          boundary:
+            "engineer is the IMPLEMENTATION layer — it does not substitute for leader's decisions. If an architecture-level issue surfaces during implementation → go back to leader/ and write an ADR; don't decide on the side inside engineer/.",
+        },
+        "quality-release": {
+          name: "Ship + Operate",
+          role: "srer/ + engineer/learn/lessons/",
+          description:
+            "Ship safely and keep running. Quality gates, release procedures, observability, incident response, and lessons from wins and failures.",
+          boundary:
+            "srer/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation.",
+        },
+        businessDetail: {
+          label: "Business Strategy",
+          role: "executiver/",
+          desc: "Why this business · Market intelligence · Org goals · Industry trends · Roadmap",
+          description:
+            "Define the strategic context that drives every downstream decision. Business Strategy provides the market intelligence, competitive landscape, and organizational goals that shape product requirements, technical decisions, and operational priorities. Without a clear business foundation, product and engineering teams operate without direction.",
+          boundary:
+            "executiver/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ producter/). Strategy informs; execution decides.",
+        },
+        aiDetail: {
+          label: "AI Enablement",
+          role: "aier/",
+          desc: "How AI accelerates every stage — foundations, methodology, platform, data, ML, skills",
+          description:
+            "AI Enablement is the horizontal acceleration layer that amplifies every stage of the pipeline. From foundational theory (transformers, embeddings) to engineering methodology (prompt design, RAG, agents) to platform infrastructure (model serving, inference optimization), this layer ensures AI capability is not a bottleneck but a multiplier across the organization.",
+          boundary:
+            "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ producter/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages.",
+        },
+        governanceDetail: {
+          label: "Knowledge Governance",
+          role: "curator/",
+          desc: "How the KB itself is maintained — lifecycle, diagrams, templates, archive, governance",
+          description:
+            "Knowledge Governance ensures the knowledge base itself remains healthy, consistent, and useful over time. It defines the lifecycle of every knowledge artifact — from draft through review to stable or archival — and provides the templates, diagrams, and processes that make knowledge creation repeatable and scalable across all roles.",
+          boundary:
+            "curator/ owns the STRUCTURE and HEALTH of the knowledge base — lifecycle policies, templates, directory design, and governance rules. It does not own the CONTENT of any specific domain (that belongs to each role's directory). Curator is the librarian; each role is the author.",
+        },
+      },
+      flowItems: {
+        inputs: "Inputs",
+        outputs: "Outputs",
+      },
+      decision: {
+        title: "Role Boundary Decision Tree",
+        subtitle: "Not sure which role owns a question? Follow the decision path.",
+        rules: {
+          business: "Business strategy, market, competitors?",
+          product: "Product requirements, user stories, priorities?",
+          leader: "Technical decisions, architecture choices, ADRs?",
+          engineer: "Implementation patterns, dev tools, code?",
+          sre: "Release procedures, monitoring, incident response?",
+          ai: "AI/ML-specific theory and practice?",
+          curator: "The KB's own structure and rules?",
+        },
+        roles: {
+          executiver: "executiver/",
+          producter: "producter/",
+          leader: "leader/",
+          engineer: "engineer/",
+          srer: "srer/",
+          aier: "aier/",
+          curator: "curator/",
+        },
+      },
     },
     role: {
       executiver: "Executive",

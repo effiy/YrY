@@ -19,15 +19,15 @@
         <div class="upload-handle" @click.stop>
           <div v-if="!self_disabled" class="handle-icon" @click="editImg">
             <el-icon><Edit /></el-icon>
-            <span>Edit</span>
+            <span>{{ t('common.edit') }}</span>
           </div>
           <div class="handle-icon" @click="imgViewVisible = true">
             <el-icon><ZoomIn /></el-icon>
-            <span>View</span>
+            <span>{{ t('common.view') }}</span>
           </div>
           <div v-if="!self_disabled" class="handle-icon" @click="deleteImg">
             <el-icon><Delete /></el-icon>
-            <span>Delete</span>
+            <span>{{ t('common.delete') }}</span>
           </div>
         </div>
       </template>
@@ -49,10 +49,13 @@
 
 <script setup lang="ts" name="UploadImg">
 import { ref, computed, inject } from "vue";
+import { useI18n } from "vue-i18n";
 import { generateUUID } from "@/utils";
 import { uploadImg } from "@/api/modules/upload";
 import { ElNotification, formContextKey, formItemContextKey } from "element-plus";
 import type { UploadProps, UploadRequestOptions } from "element-plus";
+
+const { t } = useI18n();
 
 interface UploadFileProps {
   imageUrl: string; // Image URL ==> required
@@ -137,15 +140,15 @@ const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
   const imgType = props.fileType.includes(rawFile.type as File.ImageMimeType);
   if (!imgType)
     ElNotification({
-      title: "Notice",
-      message: "Uploaded image does not match the required format!",
+      title: t("upload.imageFormatMismatchTitle"),
+      message: t("upload.imageFormatMismatch"),
       type: "warning"
     });
   if (!imgSize)
     setTimeout(() => {
       ElNotification({
-        title: "Notice",
-        message: `Image size cannot exceed ${props.fileSize}M!`,
+        title: t("upload.imageSizeExceededTitle"),
+        message: t("upload.imageSizeExceeded", { size: props.fileSize }),
         type: "warning"
       });
     }, 0);
@@ -157,8 +160,8 @@ const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
  * */
 const uploadSuccess = () => {
   ElNotification({
-    title: "Notice",
-    message: "Image uploaded successfully!",
+    title: t("upload.imageUploadSuccessTitle"),
+    message: t("upload.imageUploadSuccess"),
     type: "success"
   });
 };
@@ -168,8 +171,8 @@ const uploadSuccess = () => {
  * */
 const uploadError = () => {
   ElNotification({
-    title: "Notice",
-    message: "Image upload failed, please re-upload!",
+    title: t("upload.imageUploadErrorTitle"),
+    message: t("upload.imageUploadError"),
     type: "error"
   });
 };
