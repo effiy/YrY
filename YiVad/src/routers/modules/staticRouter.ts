@@ -4,9 +4,10 @@ import { HOME_URL, LOGIN_URL } from "@/config";
 /**
  * staticRouter (static routes)
  *
- * Static routes are the skeleton: login, layout, RAG pages,
- * pipeline
- * Everything else comes from the dynamic menu tree.
+ * Static routes are the skeleton only: "/", login, layout wrapper.
+ * Everything else — including Pipeline, Projects, Project Detail —
+ * is registered dynamically from the interface menu tree
+ * (GET /api/auth/menu/list + fall back authMenuList.json).
  */
 export const staticRouter: RouteRecordRaw[] = [
   {
@@ -26,15 +27,7 @@ export const staticRouter: RouteRecordRaw[] = [
     name: "layout",
     component: () => import("@/layouts/index.vue"),
     redirect: HOME_URL,
-    children: [
-      // ── Pipeline overview ────────────────────────────────────────
-      {
-        path: "/pipeline",
-        name: "pipeline",
-        component: () => import("@/views/knowledge/pipeline/index.vue"),
-        meta: { title: "Pipeline", icon: "Guide", isKeepAlive: true }
-      }
-    ]
+    children: []
   }
 ];
 

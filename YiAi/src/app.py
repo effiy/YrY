@@ -60,15 +60,15 @@ _SEED_SPECS: list[tuple[str, str, str]] = [
 
 
 async def _seed_collection_if_empty(cname: str, fname: str, lookup_field: str) -> None:
-    """Seed a collection from a bundled JSON file when the collection is empty."""
-    try:
-        count = await db.db[cname].count_documents({})
-        if count > 0:
-            return
-    except Exception:
-        logger.warning(f"Failed to check collection count for {cname}, skipping seed", exc_info=True)
-        return
+    """Seed a collection from a bundled JSON file.
 
+    Previously this skipped non-empty collections entirely — which meant new
+    seed entries (e.g. newly added routes like /project/:key) were never
+    written to an already-populated database. Now we always upsert every
+    document by its lookup_field so additions and edits to seeds are
+    reflected after restart, without ever deleting user-created documents
+    that do not exist in the seed file.
+    """
     path = _SEED_DIR / fname
     if not path.exists():
         logger.warning(f"Seed file not found: {path}")
@@ -80,14 +80,17 @@ async def _seed_collection_if_empty(cname: str, fname: str, lookup_field: str) -
     if not docs:
         return
 
+    upserted = 0
     for doc in docs:
         if lookup_field not in doc:
             logger.warning(f"  skip doc without '{lookup_field}' in {fname}: {doc}")
             continue
-        await db.db[cname].replace_one(
+        result = await db.db[cname].replace_one(
             {lookup_field: doc[lookup_field]}, doc, upsert=True
         )
-    logger.info(f"Seeded {len(docs)} docs into '{cname}' from {fname}")
+        if result.upserted_id is not None or result.modified_count > 0:
+            upserted += 1
+    logger.info(f"Seeded '{cname}': {upserted}/{len(docs)} docs upserted from {fname}")
 
 
 async def _seed_all_if_empty() -> None:
