@@ -6,6 +6,7 @@ declare namespace Menu {
     component?: string | (() => Promise<unknown>);
     redirect?: string;
     meta: MetaProps;
+    order?: number;
     children?: MenuOptions[];
   }
   interface MetaProps {

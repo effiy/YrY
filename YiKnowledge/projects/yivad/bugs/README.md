@@ -3,7 +3,7 @@ title: 缺陷索引
 tags: [yivad, bug, index]
 category: projects/yivad/bugs
 created: 2026-08-01
-updated: 2026-09-11
+updated: 2026-09-12
 source: YiVad
 type: bug-index
 status: active
@@ -117,13 +117,14 @@ open → analyzing → in_progress → resolved → verified → closed
 | 2026-09 | 45 | [未使用 effectScope/onScopeDispose 清理 composable 副作用](./2026-09/代码质量/36-质量-未使用的effectScope生命周期.md) | trivial | p3 | code-quality | hooks/ | open | 2026-09-09 |
 | 2026-09 | 77 | [unplugin 插件版本可能过时](./2026-09/代码质量/68-质量-unplugin版本可能过时.md) | trivial | p3 | code-quality | package.json | open | 2026-09-09 |
 | 2026-09 | 78 | [README.md 预览不全—文件路径解析失败](./2026-09/数据/22-数据-README文件路径解析失败导致预览不全.md) | major | p1 | data | views/project/components/DetailOverview.vue | resolved | 2026-09-10 |
+| 2026-09 | 79 | [侧边栏菜单显示顺序未按 menuMange 中的 order 字段排序](./2026-09/路由权限/01-路由-菜单未按order字段排序.md) | minor | p1 | router | utils, stores/typings | resolved | 2026-09-12 |
 
 ## 分类统计
 
 | 严重度 | 数量 | 缺陷 |
 |--------|------|------|
 | major | 5 | #6, #10, #11, #12, #78 |
-| minor | 24 | #1, #2, #3, #5, #7, #8, #9, #13, #14, #15, #16, #17, #19, #20, #21, #23, #24, #25, #26, #27, #28, #29, #31, #34 |
+| minor | 25 | #1, #2, #3, #5, #7, #8, #9, #13, #14, #15, #16, #17, #19, #20, #21, #23, #24, #25, #26, #27, #28, #29, #31, #34, #79 |
 | trivial | 6 | #4, #18, #22, #30, #32, #33 |
 
 | 分类 | 数量 | 缺陷 |
@@ -131,6 +132,7 @@ open → analyzing → in_progress → resolved → verified → closed
 | template | 1 | #1 |
 | code-quality | 22 | #2, #11, #12, #13, #14, #16, #17, #18, #19, #20, #21, #22, #23, #24, #25, #26, #27, #28, #29, #30, #31, #32 |
 | data | 10 | #3, #4, #5, #6, #7, #8, #9, #10, #15, #78 |
+| router | 1 | #79 |
 
 ## 常见缺陷模式
 

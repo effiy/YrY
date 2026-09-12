@@ -118,7 +118,8 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
 }
 
 /**
- * @description Recursively sort menu tree children by meta.title alphabetically (A-Z, locale-aware).
+ * @description Recursively sort menu tree children by `order` field (ascending),
+ * falling back to meta.title alphabetically (A-Z, locale-aware) when orders are equal or undefined.
  * Returns a new sorted tree — does not mutate the original.
  * @param {Array} nodes Menu tree nodes
  * @returns {Array}
@@ -127,7 +128,12 @@ export function sortMenuTree(nodes: any[]): any[] {
   if (!nodes?.length) return [];
   return [...nodes]
     .map(node => (node.children?.length ? { ...node, children: sortMenuTree(node.children) } : node))
-    .sort((a, b) => (a.meta?.title ?? "").localeCompare(b.meta?.title ?? "", "zh-CN-u-kf-lower"));
+    .sort((a, b) => {
+      const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+      const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.meta?.title ?? "").localeCompare(b.meta?.title ?? "", "zh-CN-u-kf-lower");
+    });
 }
 
 /**
