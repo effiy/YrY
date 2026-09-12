@@ -8,3 +8,4 @@
 export * from './datetime';
 export * from './env';
 export * from './log';
+export * from './url';

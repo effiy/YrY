@@ -16,6 +16,7 @@ import type {
 import { DEFAULT_MODEL } from '../constants';
 import type { ChatState, Message, SessionItem } from '../types';
 import { createApiServices } from '@/api';
+import { redactUrlCredentials } from '@/utils/url';
 import { useChatWindow } from './useChatWindow';
 
 export type { ChatState, Message, SessionItem };
@@ -39,7 +40,9 @@ function notify(message: string, type: NotifyType = 'info') {
 function readPageInfo() {
   return {
     title: document.title || '',
-    url: window.location.href || '',
+    // Single capture point — every persisted URL (session record, from: tag,
+    // knowledge frontmatter) flows from here, so credentials are stripped once.
+    url: redactUrlCredentials(window.location.href || ''),
     iconUrl: (document.querySelector('link[rel*="icon"]') as HTMLLinkElement)?.href || '',
   };
 }
