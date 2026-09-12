@@ -1,0 +1,26 @@
+/* Print styles for table and data views */
+@media print {
+  .el-aside,
+  .el-header,
+  .el-tabs__header,
+  .table-header,
+  .el-pagination,
+  .table-toolbar,
+  .row-selection-bar,
+  .filter-panel,
+  .view-switcher,
+  .batch-toolbar,
+  .el-button,
+  .el-drawer,
+  .export-menu { display: none !important; }
+
+  .el-table {
+    width: 100% !important;
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+  }
+
+  .el-table__body-wrapper { overflow: visible !important; max-height: none !important; }
+  .el-table .cell { white-space: normal !important; }
+  .virtual-table-body { contain: none !important; height: auto !important; }
+}

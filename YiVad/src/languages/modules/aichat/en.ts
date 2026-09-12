@@ -1,0 +1,31 @@
+export default {
+  aiChat: {
+    title: "AI Chat",
+    newConversation: "New conversation",
+    newConversationPrompt: "Enter a title (optional)",
+    newConversationDefault: "New chat",
+    create: "Create",
+    rename: "Rename conversation",
+    renamePrompt: "Enter a new title",
+    save: "Save",
+    delete: "Delete",
+    deleteConfirm: 'Delete conversation "{name}"?',
+    confirm: "Delete",
+    cancel: "Cancel",
+    placeholder: "Your question (Enter to send, Shift+Enter for newline)",
+    placeholderStreaming: "Generating…",
+    send: "Send",
+    stop: "Stop",
+    copy: "Copy",
+    copied: "Copied",
+    like: "Like",
+    dislike: "Dislike",
+    loading: "Loading…",
+    loadFailed: "Failed to load",
+    selectOrCreate: "Select or create a conversation",
+    searchPlaceholder: "Search conversations…",
+    noConversations: "No conversations",
+    generateFailed: "Generation failed",
+    suggestTitle: "Suggested:"
+  }
+};

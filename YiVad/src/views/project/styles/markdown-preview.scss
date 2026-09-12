@@ -1,0 +1,89 @@
+// Markdown preview mixin — shared by DetailOverview and DetailDocs.
+// Currently not used via @use + @include due to Rsbuild SCSS limitation
+// where @/ path aliases fail in non-scoped style blocks.
+// When the Rsbuild SCSS config is fixed, consumers can switch from
+// :deep() inline styles to @use + @include.
+@mixin markdown-preview {
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 1em 0 0.5em;
+  }
+  h1 {
+    font-size: 1.5em;
+  }
+  h2 {
+    font-size: 1.3em;
+  }
+  h3 {
+    font-size: 1.15em;
+  }
+  p {
+    margin: 0.5em 0;
+  }
+  pre {
+    padding: 12px;
+    overflow-x: auto;
+    font-size: 13px;
+    background: var(--el-fill-color);
+    border-radius: 6px;
+    code {
+      padding: 0;
+      background: none;
+    }
+  }
+  code {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.9em;
+  }
+  blockquote {
+    padding: 4px 12px;
+    margin: 0.5em 0;
+    color: var(--el-text-color-secondary);
+    border-left: 3px solid var(--el-color-primary-light-5);
+  }
+  table {
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    padding: 6px 12px;
+    border: 1px solid var(--el-border-color-lighter);
+  }
+  th {
+    font-weight: 600;
+    background: var(--el-fill-color-light);
+  }
+  ul,
+  ol {
+    padding-left: 22px;
+    margin: 0.5em 0;
+  }
+  li {
+    margin-bottom: 2px;
+  }
+  a {
+    color: var(--el-color-primary);
+  }
+  hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
+  img {
+    max-width: 100%;
+  }
+  pre.mermaid {
+    all: unset;
+    display: block;
+    margin: 12px 0;
+    overflow-x: auto;
+    svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+  }
+}

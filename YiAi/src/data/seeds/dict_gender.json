@@ -1,0 +1,5 @@
+[
+  { "key": "dict_gender_0", "genderLabel": "Unknown", "genderValue": 0, "sort": 0 },
+  { "key": "dict_gender_1", "genderLabel": "Male", "genderValue": 1, "sort": 1 },
+  { "key": "dict_gender_2", "genderLabel": "Female", "genderValue": 2, "sort": 2 }
+]

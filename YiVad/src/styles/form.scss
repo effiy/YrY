@@ -1,0 +1,87 @@
+// Form global styles
+// Import this in your form pages or add to global styles
+
+.form-system {
+  // --- Validation states ---
+  .is-validating .el-input__inner {
+    border-color: var(--el-color-warning);
+  }
+
+  .is-invalid .el-input__inner,
+  .is-invalid .el-textarea__inner,
+  .is-invalid .el-select .el-input__inner {
+    border-color: var(--el-color-danger);
+  }
+
+  .is-valid.touched .el-input__inner {
+    border-color: var(--el-color-success);
+  }
+
+  // --- Readonly fields ---
+  .is-readonly {
+    .el-input__inner,
+    .el-textarea__inner {
+      background-color: var(--el-fill-color-light);
+      cursor: default;
+    }
+  }
+
+  // --- Required star ---
+  .is-conditionally-required .el-form-item__label::before {
+    content: '*';
+    color: var(--el-color-warning);
+    margin-right: 4px;
+  }
+
+  // --- Draft indicator ---
+  .form-draft-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+
+    &.saved { color: var(--el-color-success); background: var(--el-color-success-light-9); }
+    &.saving { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
+    &.unsaved { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
+  }
+
+  // --- Field dependency animation ---
+  .field-enter-active,
+  .field-leave-active {
+    transition: all 0.25s ease;
+  }
+
+  .field-enter-from,
+  .field-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  // --- Offline banner ---
+  .offline-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+
+    &.offline {
+      background: var(--el-color-warning-light-9);
+      color: var(--el-color-warning);
+    }
+
+    &.syncing {
+      background: var(--el-color-primary-light-9);
+      color: var(--el-color-primary);
+    }
+
+    &.synced {
+      background: var(--el-color-success-light-9);
+      color: var(--el-color-success);
+    }
+  }
+}

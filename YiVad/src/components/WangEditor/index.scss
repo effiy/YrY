@@ -1,0 +1,28 @@
+/* Rich text component validation error style */
+.is-error {
+  .editor-box {
+    border-color: var(--el-color-danger);
+    .editor-toolbar {
+      border-bottom-color: var(--el-color-danger);
+    }
+  }
+}
+
+/* Rich text component disabled style */
+.editor-disabled {
+  cursor: not-allowed !important;
+}
+
+/* Rich text component style */
+.editor-box {
+  /* Prevent rich text editor from overlapping tabs when fullscreen */
+  z-index: 2;
+  width: 100%;
+  border: 1px solid var(--el-border-color-darker);
+  .editor-toolbar {
+    border-bottom: 1px solid var(--el-border-color-darker);
+  }
+  .editor-content {
+    overflow-y: hidden;
+  }
+}

@@ -1,0 +1,12 @@
+[
+  { "key": "label-bug", "name": "Bug", "color": "#f56c6c", "description": "Defect or incorrect behavior", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-feature", "name": "Feature", "color": "#67c23a", "description": "New functionality", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-improvement", "name": "Improvement", "color": "#e6a23c", "description": "Enhancement to existing behavior", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-task", "name": "Task", "color": "#409eff", "description": "General work item", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-requirement", "name": "Requirement", "color": "#909399", "description": "Product requirement", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-frontend", "name": "Frontend", "color": "#409eff", "description": "UI / client-side work", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-backend", "name": "Backend", "color": "#722ed1", "description": "Server-side work", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-documentation", "name": "Documentation", "color": "#13c2c2", "description": "Docs and knowledge base", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-security", "name": "Security", "color": "#f56c6c", "description": "Security hardening", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" },
+  { "key": "label-high-priority", "name": "High Priority", "color": "#f56c6c", "description": "Needs immediate attention", "created_at": "2026-07-27T00:00:00.000Z", "updated_at": "2026-07-27T00:00:00.000Z" }
+]

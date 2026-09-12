@@ -1,0 +1,42 @@
+/*
+ * Indigo Violet Theme (Index 1) — YiPet design tokens.
+ * Deep indigo-purple gradient with cooler undertones.
+ */
+
+:root {
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: #818cf8;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+  --primary-rgb: 99, 102, 241;
+  --primary-alpha: rgba(99, 102, 241, 0.1);
+
+  --accent: #818cf8;
+  --accent-rgb: 129, 140, 248;
+  --accent-gradient: linear-gradient(135deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
+
+  --bg-primary: #11132b;
+  --bg-secondary: #1a1c3d;
+  --bg-tertiary: #2a2d5c;
+  --bg-elevated: rgba(26, 28, 61, 0.9);
+  --bg-gradient: linear-gradient(135deg, #11132b 0%, #1a1c3d 25%, #2a2d5c 50%, #3b3e78 75%, #4f52a0 100%);
+
+  --text-primary: #f3f2ff;
+  --text-secondary: #d2d0e8;
+  --text-accent: #a5b4fc;
+  --link-color: #a5b4fc;
+  --placeholder-color: rgba(210, 208, 232, 0.5);
+
+  --border-secondary: rgba(129, 140, 248, 0.3);
+  --border-focus: #818cf8;
+
+  --button-bg: #6366f1;
+  --button-hover: #4f46e5;
+  --button-text: #ffffff;
+  --input-bg: #181730;
+  --input-border: rgba(129, 140, 248, 0.2);
+  --selection-bg: rgba(99, 102, 241, 0.3);
+
+  --green: var(--primary);
+}

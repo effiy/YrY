@@ -1,0 +1,90 @@
+import * as echarts from "echarts/core";
+import { BarChart, LineChart, LinesChart, PieChart, ScatterChart, RadarChart, GaugeChart, TreemapChart, HeatmapChart, FunnelChart } from "echarts/charts";
+import {
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  DatasetComponent,
+  TransformComponent,
+  LegendComponent,
+  PolarComponent,
+  GeoComponent,
+  ToolboxComponent,
+  DataZoomComponent,
+  VisualMapComponent,
+  RadarComponent
+} from "echarts/components";
+import { LabelLayout, LegacyGridContainLabel, UniversalTransition } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
+import type {
+  BarSeriesOption,
+  LineSeriesOption,
+  LinesSeriesOption,
+  PieSeriesOption,
+  ScatterSeriesOption,
+  RadarSeriesOption,
+  GaugeSeriesOption,
+  TreemapSeriesOption,
+  HeatmapSeriesOption,
+  FunnelSeriesOption,
+  CustomSeriesOption,
+} from "echarts/charts";
+import type {
+  TitleComponentOption,
+  TooltipComponentOption,
+  GridComponentOption,
+  DatasetComponentOption,
+  VisualMapComponentOption
+} from "echarts/components";
+import type { ComposeOption } from "echarts/core";
+import "echarts-liquidfill";
+
+export type ECOption = ComposeOption<
+  | BarSeriesOption
+  | LineSeriesOption
+  | LinesSeriesOption
+  | PieSeriesOption
+  | RadarSeriesOption
+  | GaugeSeriesOption
+  | TreemapSeriesOption
+  | HeatmapSeriesOption
+  | FunnelSeriesOption
+  | CustomSeriesOption
+  | TitleComponentOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | DatasetComponentOption
+  | VisualMapComponentOption
+  | ScatterSeriesOption
+>;
+
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  DatasetComponent,
+  TransformComponent,
+  LegendComponent,
+  PolarComponent,
+  GeoComponent,
+  ToolboxComponent,
+  DataZoomComponent,
+  VisualMapComponent,
+  RadarComponent,
+  BarChart,
+  LineChart,
+  LinesChart,
+  PieChart,
+  ScatterChart,
+  RadarChart,
+  GaugeChart,
+  TreemapChart,
+  HeatmapChart,
+  FunnelChart,
+  LabelLayout,
+  LegacyGridContainLabel,
+  UniversalTransition,
+  CanvasRenderer
+]);
+
+export default echarts;

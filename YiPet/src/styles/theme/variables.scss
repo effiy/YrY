@@ -1,0 +1,40 @@
+/** Theme color variables — mirrors YiVad's theme system */
+
+// Primary
+$primary-color: var(--el-color-primary);
+$primary-light-3: var(--el-color-primary-light-3);
+$primary-light-5: var(--el-color-primary-light-5);
+$primary-light-7: var(--el-color-primary-light-7);
+$primary-light-9: var(--el-color-primary-light-9);
+$primary-dark-2: var(--el-color-primary-dark-2);
+
+// Success / Warning / Danger / Info
+$success-color: var(--el-color-success);
+$warning-color: var(--el-color-warning);
+$danger-color: var(--el-color-danger);
+$info-color: var(--el-color-info);
+
+// Background
+$bg-color: var(--el-bg-color);
+$bg-color-overlay: var(--el-bg-color-overlay);
+
+// Text
+$text-color-primary: var(--el-text-color-primary);
+$text-color-regular: var(--el-text-color-regular);
+$text-color-secondary: var(--el-text-color-secondary);
+$text-color-placeholder: var(--el-text-color-placeholder);
+
+// Border
+$border-color: var(--el-border-color);
+$border-color-light: var(--el-border-color-light);
+$border-color-lighter: var(--el-border-color-lighter);
+$border-color-extra-light: var(--el-border-color-extra-light);
+$border-radius-base: var(--el-border-radius-base);
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-base: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;

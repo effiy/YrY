@@ -1,0 +1,25 @@
+.skeleton-bar {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--el-fill-color) 25%, var(--el-fill-color-light) 50%, var(--el-fill-color) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-table,
+.skeleton-list,
+.skeleton-card {
+  width: 100%;
+  will-change: background-position;
+}
+
+.find-highlight {
+  background-color: #ffd54f;
+  padding: 1px 2px;
+  border-radius: 2px;
+  color: #333;
+}

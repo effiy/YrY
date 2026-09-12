@@ -1,0 +1,11 @@
+"""Database collection name constants."""
+
+SESSIONS = "sessions"
+RSS = "rss"
+CHAT_RECORDS = "chat_records"
+PET_DATA_SYNC = "pet_data_sync"
+SEEDS = "seeds"
+OSS_FILE_TAGS = "oss_file_tags"
+OSS_FILE_INFO = "oss_file_info"
+STATE_RECORDS = "state_records"
+AI_CODING_HISTORY = "ai_coding_history"

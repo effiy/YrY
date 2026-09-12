@@ -1,0 +1,42 @@
+/*
+ * Quantum Sunset Theme (Index 4) — YiPet design tokens.
+ * Warm amber-pink-purple gradient evoking a vibrant sunset sky.
+ */
+
+:root {
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --primary-light: #fbbf24;
+  --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #a855f7 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #d97706 0%, #db2777 50%, #9333ea 100%);
+  --primary-rgb: 245, 158, 11;
+  --primary-alpha: rgba(245, 158, 11, 0.1);
+
+  --accent: #fbbf24;
+  --accent-rgb: 251, 191, 36;
+  --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+
+  --bg-primary: #1a140a;
+  --bg-secondary: #281e0e;
+  --bg-tertiary: #3d2e14;
+  --bg-elevated: rgba(40, 30, 14, 0.9);
+  --bg-gradient: linear-gradient(135deg, #1a140a 0%, #281e0e 25%, #3d2e14 50%, #5c401a 75%, #855e22 100%);
+
+  --text-primary: #fdf8f0;
+  --text-secondary: #e8dcc8;
+  --text-accent: #fcd34d;
+  --link-color: #fcd34d;
+  --placeholder-color: rgba(232, 220, 200, 0.5);
+
+  --border-secondary: rgba(251, 191, 36, 0.3);
+  --border-focus: #fbbf24;
+
+  --button-bg: #f59e0b;
+  --button-hover: #d97706;
+  --button-text: #1a140a;
+  --input-bg: #1f180e;
+  --input-border: rgba(251, 191, 36, 0.2);
+  --selection-bg: rgba(245, 158, 11, 0.3);
+
+  --green: var(--primary);
+}

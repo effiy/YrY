@@ -1,0 +1,33 @@
+// RSS Content dashboard — page-level layout styles only.
+// Component-specific styles live in their respective scoped <style> blocks.
+
+.rss-content-box {
+  --sticky-header-h: 72px;
+  --sticky-sidebar-top: calc(var(--sticky-header-h) + 14px);
+  padding: 24px;
+  background: var(--el-bg-color-page);
+}
+
+// ── Filter Pills ──
+.issue-list__pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.issue-list__pills-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+// ── Body / Main layout ──
+.issue-list__body {
+  display: flex;
+  gap: 24px;
+}
+.issue-list__main {
+  flex: 1;
+  min-width: 0;
+}

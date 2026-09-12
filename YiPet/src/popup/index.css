@@ -1,0 +1,82 @@
+/* YiPet Popup — base layout for Element Plus UI. */
+
+html,
+body {
+  width: 420px;
+  max-height: 600px;
+  margin: 0;
+}
+
+body {
+  overflow-y: auto;
+  background: var(--bg-primary, #13122a);
+}
+
+/* Subtle dot pattern overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(167, 139, 250, 0.07) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+.popup-layout {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.popup-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.popup-card {
+  background: var(--bg-secondary, #1e1a3b);
+  transition: border-color 0.25s ease;
+}
+
+.popup-card .el-card__header {
+  border-bottom: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
+}
+
+.popup-footer {
+  padding: 0 !important;
+  background: var(--bg-secondary, #1e1a3b) !important;
+  border-top: 1px solid var(--border-secondary, rgba(167, 139, 250, 0.3));
+}
+
+/* Custom scrollbar */
+body::-webkit-scrollbar {
+  width: 5px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--border-secondary, rgba(167, 139, 250, 0.3));
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--border-focus, #a78bfa);
+}
+
+/* Smooth scrollbar for Firefox */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-secondary, rgba(167, 139, 250, 0.3)) transparent;
+}

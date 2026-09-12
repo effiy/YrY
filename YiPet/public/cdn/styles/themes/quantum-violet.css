@@ -1,0 +1,53 @@
+/*
+ * Quantum Violet Theme (Index 0) — YiPet design tokens.
+ * Purple-amber-pink gradient palette.  Override this file to
+ * switch the extension's entire visual identity.
+ *
+ * Variables defined: Brand · Accent · Backgrounds · Text ·
+ *                    Borders · Interactive
+ */
+
+:root {
+  /* ── Brand ───────────────────────────────────────────── */
+  --primary: #667eea;
+  --primary-hover: #5a67d8;
+  --primary-light: #818cf8;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #5a67d8 0%, #6b46c1 50%, #d946ef 100%);
+  --primary-rgb: 102, 126, 234;
+  --primary-alpha: rgba(102, 126, 234, 0.1);
+
+  /* ── Accent ──────────────────────────────────────────── */
+  --accent: #a78bfa;
+  --accent-rgb: 167, 139, 250;
+  --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
+
+  /* ── Backgrounds ─────────────────────────────────────── */
+  --bg-primary: #13122a;
+  --bg-secondary: #1e1a3b;
+  --bg-tertiary: #312d55;
+  --bg-elevated: rgba(30, 26, 59, 0.9);
+  --bg-gradient: linear-gradient(135deg, #13122a 0%, #1e1a3b 25%, #312d55 50%, #3d3870 75%, #5b5290 100%);
+
+  /* ── Text ────────────────────────────────────────────── */
+  --text-primary: #f5f3ff;
+  --text-secondary: #d4d0e8;
+  --text-accent: #c4b5fd;
+  --link-color: #c4b5fd;
+  --placeholder-color: rgba(212, 208, 232, 0.5);
+
+  /* ── Borders ─────────────────────────────────────────── */
+  --border-secondary: rgba(167, 139, 250, 0.3);
+  --border-focus: #a78bfa;
+
+  /* ── Interactive ─────────────────────────────────────── */
+  --button-bg: #667eea;
+  --button-hover: #5a67d8;
+  --button-text: #ffffff;
+  --input-bg: #1a1835;
+  --input-border: rgba(167, 139, 250, 0.2);
+  --selection-bg: rgba(102, 126, 234, 0.3);
+
+  /* ── Alias ───────────────────────────────────────────── */
+  --green: var(--primary);
+}

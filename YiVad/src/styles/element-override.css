@@ -1,0 +1,73 @@
+/* ── Element Plus CSS Variable Mapping ── */
+/* Maps YiVad semantic tokens to Element Plus's own CSS variable system. */
+/* Element Plus 2.x uses CSS variables for theming — these overrides flow */
+/* into all El* components automatically. */
+
+/* Light (default) */
+:root,
+[data-theme="light"] {
+  --el-color-primary: var(--el-color-primary);
+  --el-color-primary-light-3: var(--el-color-primary-light-3);
+  --el-color-primary-light-5: var(--el-color-primary-light-5);
+  --el-color-primary-light-7: var(--el-color-primary-light-7);
+  --el-color-primary-light-8: var(--el-color-primary-light-8);
+  --el-color-primary-light-9: var(--el-color-primary-light-9);
+  --el-color-primary-dark-2: var(--el-color-primary-dark-2);
+
+  --el-color-success: var(--el-color-success);
+  --el-color-warning: var(--el-color-warning);
+  --el-color-danger: var(--el-color-danger);
+
+  --el-bg-color: var(--color-bg-container);
+  --el-bg-color-page: var(--color-bg-page);
+  --el-bg-color-overlay: var(--color-bg-elevated);
+
+  --el-text-color-primary: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-secondary);
+  --el-text-color-secondary: var(--color-text-tertiary);
+  --el-text-color-placeholder: var(--color-text-disabled);
+
+  --el-border-color: var(--color-border-base);
+  --el-border-color-light: var(--color-border-base);
+  --el-border-color-lighter: var(--color-border-base);
+  --el-border-color-extra-light: var(--color-border-base);
+
+  --el-fill-color: var(--color-surface-secondary);
+  --el-fill-color-light: var(--color-surface-secondary);
+  --el-fill-color-lighter: var(--color-surface-secondary);
+  --el-fill-color-blank: var(--color-bg-container);
+}
+
+/* Dark */
+[data-theme="dark"] {
+  --el-color-primary: var(--el-color-primary);
+  --el-color-primary-light-3: var(--el-color-primary-light-3);
+  --el-color-primary-light-5: var(--el-color-primary-light-5);
+  --el-color-primary-light-7: var(--el-color-primary-light-7);
+  --el-color-primary-light-8: var(--el-color-primary-light-8);
+  --el-color-primary-light-9: var(--el-color-primary-light-9);
+  --el-color-primary-dark-2: var(--el-color-primary-dark-2);
+
+  --el-color-success: var(--el-color-success);
+  --el-color-warning: var(--el-color-warning);
+  --el-color-danger: var(--el-color-danger);
+
+  --el-bg-color: var(--color-bg-container);
+  --el-bg-color-page: var(--color-bg-page);
+  --el-bg-color-overlay: var(--color-bg-elevated);
+
+  --el-text-color-primary: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-secondary);
+  --el-text-color-secondary: var(--color-text-tertiary);
+  --el-text-color-placeholder: var(--color-text-disabled);
+
+  --el-border-color: var(--color-border-base);
+  --el-border-color-light: var(--color-border-base);
+  --el-border-color-lighter: var(--color-border-base);
+  --el-border-color-extra-light: var(--color-border-base);
+
+  --el-fill-color: var(--color-surface-secondary);
+  --el-fill-color-light: var(--color-surface-secondary);
+  --el-fill-color-lighter: var(--color-surface-secondary);
+  --el-fill-color-blank: var(--color-bg-container);
+}

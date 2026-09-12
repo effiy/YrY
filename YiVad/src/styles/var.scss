@@ -1,0 +1,13 @@
+/* global css variable */
+$primary-color: var(--el-color-primary);
+
+/* z-index scale — use these tokens instead of ad-hoc values */
+$z-dropdown: 100;
+$z-sticky: 200;
+$z-overlay: 300;
+$z-modal: 400;
+$z-popover: 500;
+$z-tooltip: 600;
+$z-command-palette: 700;
+$z-fullscreen: 800;
+$z-max: 9999;

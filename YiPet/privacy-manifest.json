@@ -1,0 +1,28 @@
+{
+  "data_collection": {
+    "chrome_storage": {
+      "purpose": "存储用户偏好设置（角色、皮肤、模型选择）和会话缓存（聊天历史本地副本）",
+      "data_type": "用户配置、会话元数据、提示词历史",
+      "retention": "本地存储，卸载扩展时自动清除",
+      "shared_with": "无"
+    },
+    "network": {
+      "purpose": "与 YiAi 后端通信以提供 AI 聊天和知识库检索功能",
+      "endpoints": ["http://localhost:10086（开发环境）"],
+      "data_transmitted": "用户消息、页面上下文（可选）、知识库查询",
+      "encryption": "开发环境 HTTP，生产环境 HTTPS"
+    },
+    "page_content": {
+      "purpose": "Content script 可读取当前页面内容以提供上下文感知的 AI 回答",
+      "data_type": "页面标题、URL、正文文本（用户主动触发时发送）",
+      "retention": "不持久化页面内容本身，仅作为会话消息的一部分传输",
+      "shared_with": "无"
+    }
+  },
+  "permissions_justification": {
+    "storage": "保存用户偏好设置（角色、皮肤、模型）和会话缓存（聊天历史本地副本）",
+    "scripting": "向页面注入宠物 UI 组件（浮动宠物覆盖层 + 聊天窗口）",
+    "host_permissions": "访问 YiAi 后端 API 端点（localhost:10086），用于 AI 聊天、数据持久化和知识库检索",
+    "content_scripts_matches_all_urls": "宠物 UI 需注入到任意页面以提供一致的交互体验。Content script 仅注入 UI 组件，不自动收集页面数据"
+  }
+}
