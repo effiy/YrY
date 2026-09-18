@@ -1759,8 +1759,20 @@
       "body": {
         "code": 200,
         "data": {
-          "useProTable": ["add", "batchAdd", "export", "batchDelete", "status"],
-          "authButton": ["add", "edit", "delete", "import", "export"]
+          "useProTable": [
+            "add",
+            "batchAdd",
+            "export",
+            "batchDelete",
+            "status"
+          ],
+          "authButton": [
+            "add",
+            "edit",
+            "delete",
+            "import",
+            "export"
+          ]
         },
         "msg": "成功"
       }
@@ -1778,8 +1790,17 @@
       "body": {
         "code": 200,
         "data": {
-          "useProTable": ["add", "batchDelete"],
-          "authButton": ["add", "edit", "delete", "import", "export"]
+          "useProTable": [
+            "add",
+            "batchDelete"
+          ],
+          "authButton": [
+            "add",
+            "edit",
+            "delete",
+            "import",
+            "export"
+          ]
         },
         "msg": "成功"
       }
