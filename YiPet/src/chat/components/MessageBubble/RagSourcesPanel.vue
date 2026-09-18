@@ -42,7 +42,7 @@ const emit = defineEmits<{
           <span
             v-if="sourceIsContextFile(src.path)"
             class="mb-sources__ctx-badge"
-            :title="sourceIsContextFile(path) ? t('chatSessionContextFile') : undefined"
+            :title="sourceIsContextFile(src.path) ? t('chatSessionContextFile') : undefined"
           >ctx</span>
           <span class="mb-sources__score-bar">
             <span

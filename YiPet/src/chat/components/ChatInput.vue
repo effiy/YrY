@@ -16,11 +16,17 @@ import QuickButtons from './QuickButtons.vue';
 import FileMentionDropdown from './FileMentionDropdown.vue';
 
 const MAX_DRAFT_IMAGES = 4;
+const URL_RE = /^https?:\/\/[^\s"'<>]+$/i;
+const DRAFT_KEY = 'yipet:input-draft:v1';
 
 const store = useChatStore();
 const s = store.state;
 
-const disabled = computed(() => s.isProcessing);
+function _safeCompute<T>(fn: () => T, fallback: T) {
+  return computed(() => { try { return fn(); } catch { return fallback; } });
+}
+
+const disabled = _safeCompute(() => !!s.isProcessing, false);
 const draftImages = computed(() => s.draftImages || []);
 
 // ── Streaming status bar (mirrors YiVad aiChat) ──
@@ -44,46 +50,63 @@ watch(
 );
 onUnmounted(() => { if (elapsedTimer) clearInterval(elapsedTimer); });
 
-const streamingElapsed = computed(() => {
+const streamingElapsed = _safeCompute(() => {
   if (!s.isProcessing) return '';
   const ms = elapsedMs.value;
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(1)}s`;
-});
+}, '');
 
-const streamingChars = computed(() => {
+const streamingChars = _safeCompute(() => {
   if (!s.isProcessing) return '';
-  const len = s.messages.at(-1)?.content?.length ?? 0;
+  const len = s.messages[s.messages.length - 1]?.content?.length ?? 0;
   if (!len) return '';
   if (len < 1000) return `${len}c`;
   return `${(len / 1000).toFixed(1)}kc`;
-});
+}, '');
 
-const streamingPhaseLabel = computed(() => {
+const streamingSpeed = _safeCompute(() => {
+  if (!s.isProcessing) return '';
+  const ms = elapsedMs.value;
+  if (ms < 500) return '';
+  const len = s.messages[s.messages.length - 1]?.content?.length ?? 0;
+  if (!len) return '';
+  const cps = Math.round(len / (ms / 1000));
+  if (cps < 1000) return `${cps} c/s`;
+  return `${(cps / 1000).toFixed(1)}k c/s`;
+}, '');
+
+const streamingPhaseLabel = _safeCompute(() => {
   if (!s.isProcessing) return '';
   if (s.streamingPhase === 'preparing') return 'Preparing';
   if (s.streamingPhase === 'retrieving') return 'Retrieving';
   if (s.streamingPhase === 'thinking') return 'Thinking';
   if (s.streamingPhase === 'streaming') return 'Generating';
   return 'Processing';
-});
+}, '');
 
 // ── Phase-aware placeholder (mirrors YiVad aiChat) ──
-const placeholder = computed(() => {
-  if (inputValue.value.startsWith('/')) return '/compact /clear /retry /stop /new /export — type a command';
-  if (s.streamingPhase === 'fetching') return 'Fetching context...';
-  if (s.streamingPhase === 'preparing') return 'Preparing...';
-  if (s.streamingPhase === 'retrieving') return s.knowledgeGrounded ? 'RAG · Searching knowledge base...' : 'Retrieving knowledge...';
-  if (s.streamingPhase === 'thinking') return s.knowledgeGrounded && s.ragScope ? 'RAG · Thinking...' : 'AI is thinking...';
-  if (s.streamingPhase === 'streaming') return s.knowledgeGrounded && s.ragScope ? 'RAG · Generating response...' : 'AI is responding...';
-  if (s.webSearchEnabled && s.isProcessing) return 'Searching the web...';
-  if (s.knowledgeGrounded && s.ragScope) {
-    const ctxCount = (s.sessions.find(x => x.id === s.currentSessionId)?.tags ?? [])
-      .filter((t: string) => t.startsWith('ctx:')).length;
-    return `RAG mode · ${ctxCount} file(s) in context — Ask anything...`;
-  }
-  return 'Ask anything... (Enter to send, Shift+Enter for newline)';
-});
+const placeholder = _safeCompute(() => {
+  try {
+    if ((inputValue.value || '').startsWith('/')) return '/compact /clear /retry /stop /new /export — type a command';
+    if (s.streamingPhase === 'fetching') return 'Fetching context...';
+    if (s.streamingPhase === 'preparing') return 'Preparing...';
+    if (s.streamingPhase === 'retrieving') return s.knowledgeGrounded ? 'RAG · Searching knowledge base...' : 'Retrieving knowledge...';
+    if (s.streamingPhase === 'thinking') return s.knowledgeGrounded && s.ragScope ? 'RAG · Thinking...' : 'AI is thinking...';
+    if (s.streamingPhase === 'streaming') return s.knowledgeGrounded && s.ragScope ? 'RAG · Generating response...' : 'AI is responding...';
+    if (s.webSearchEnabled && s.isProcessing) return 'Searching the web...';
+    const tags = (s.sessions as any)?.find?.((x:any) => x && x.id === s.currentSessionId)?.tags ?? [];
+    const ctxCount = Array.isArray(tags) ? tags.filter((t:any) => typeof t === 'string' && t.startsWith('ctx:')).length : 0;
+    if (s.knowledgeGrounded && s.webSearchEnabled) {
+      return ctxCount ? `RAG + Web · ${ctxCount} file(s) — Ask anything...` : 'RAG + Web · Ask anything...';
+    }
+    if (s.webSearchEnabled) return 'Web search on — Ask anything...';
+    if (s.knowledgeGrounded && s.ragScope) {
+      return `RAG mode · ${ctxCount} file(s) in context — Ask anything...`;
+    }
+    return 'Ask anything... (Enter to send, Shift+Enter for newline)';
+  } catch { return 'Ask anything... (Enter to send, Shift+Enter for newline)'; }
+}, 'Ask anything... (Enter to send, Shift+Enter for newline)');
 
 const inputValue = ref('');
 const isComposing = ref(false);
@@ -93,13 +116,13 @@ const historyIdxRef = ref(-1);
 const preHistoryInputRef = ref('');
 
 // ── Can send: user has text, images, and is not currently sending ──
-const canSend = computed(() => {
+const canSend = _safeCompute(() => {
   if (s.isProcessing) return false;
-  return inputValue.value.trim().length > 0 || draftImages.value.length > 0;
-});
+  return (inputValue.value || '').trim().length > 0 || (draftImages.value?.length ?? 0) > 0;
+}, false);
 
-const charCount = computed(() => inputValue.value.length);
-const tokenEstimate = computed(() => Math.ceil(charCount.value / 4));
+const charCount = _safeCompute(() => (inputValue.value || '').length, 0);
+const tokenEstimate = _safeCompute(() => Math.ceil(charCount.value / 4), 0);
 
 // @-mention detection
 const mentionQuery = ref('');
@@ -135,12 +158,116 @@ function updateMention() {
 
 watch(inputValue, updateMention);
 
+const SLASH_COMMANDS: Array<{ name: string; short: string; hint: string; icon: string; kind: 'action' | 'session' | 'debug' }> = [
+  { name: '/new',      short: 'New chat',        hint: 'Create a fresh session',   icon: '＋', kind: 'session' },
+  { name: '/clear',    short: 'Clear chat',      hint: 'Empty current session',   icon: '🗑', kind: 'action'  },
+  { name: '/retry',    short: 'Retry last',      hint: 'Re-run last assistant turn', icon: '↺', kind: 'action' },
+  { name: '/compact',  short: 'Compact context', hint: 'Summarize long conversation', icon: '✂', kind: 'action'  },
+  { name: '/stop',     short: 'Stop stream',     hint: 'Abort current generation', icon: '⏹', kind: 'action'  },
+  { name: '/export',   short: 'Export MD',       hint: 'Save session as Markdown', icon: '↓', kind: 'session' },
+  { name: '/help',     short: 'Commands list',   hint: 'Show all / commands',      icon: '?', kind: 'debug'   },
+];
+const slashVisible = ref(false);
+const slashQuery = ref('');
+const slashAtIdx = ref(-1);
+const slashActive = ref(0);
+
+watch(inputValue, v => {
+  const firstLineStart = v.match(/^\s*/)?.[0].length ?? 0;
+  if (v.startsWith('/', firstLineStart) && !v.slice(firstLineStart).includes(' ')) {
+    slashAtIdx.value = firstLineStart;
+    slashQuery.value = v.slice(firstLineStart);
+    slashActive.value = 0;
+    mentionVisible.value = false;
+    slashVisible.value = slashMatches.value.length > 0;
+  } else {
+    slashVisible.value = false;
+    slashQuery.value = '';
+    slashAtIdx.value = -1;
+  }
+});
+
+const slashMatches = _safeCompute(() => {
+  try {
+    const q = (slashQuery.value || '').toLowerCase().replace(/^\//, '');
+    if (!q) return SLASH_COMMANDS.slice();
+    return SLASH_COMMANDS.filter(c => {
+      const n = c.name.slice(1).toLowerCase();
+      const sh = c.short.toLowerCase();
+      return n.startsWith(q) || sh.includes(q) || c.hint.toLowerCase().includes(q);
+    });
+  } catch { return SLASH_COMMANDS.slice(); }
+}, SLASH_COMMANDS.slice());
+
+function applySlash(name: string) {
+  const prefix = inputValue.value.slice(0, slashAtIdx.value);
+  const remain = inputValue.value.slice(slashAtIdx.value + slashQuery.value.length);
+  inputValue.value = (prefix + name + remain);
+  slashVisible.value = false;
+  slashQuery.value = '';
+  slashAtIdx.value = -1;
+  nextTick(() => {
+    if (['/clear','/new','/retry','/compact','/export','/stop'].includes(name)) send();
+    else {
+      const ta = document.querySelector('#yipet-chat-window .el-textarea__inner') as HTMLTextAreaElement | null;
+      ta?.focus();
+    }
+  });
+}
+
+let preFetchTimer: ReturnType<typeof setTimeout> | undefined;
+watch(
+  inputValue,
+  (val) => {
+    clearTimeout(preFetchTimer);
+    if (!s.webSearchEnabled || s.isProcessing) {
+      if (!s.webSearchEnabled) s.webSearchResults = [];
+      return;
+    }
+    const q = val.trim();
+    if (!q || q.length < 4) return;
+    preFetchTimer = setTimeout(async () => {
+      try {
+        s.lastSearchQuery = q;
+        const t0 = Date.now();
+        try {
+          const tool = store.getTool?.('web_search');
+          if (tool && tool.enabled !== false) {
+            const r = await store.executeTool?.('web_search', { query: q, topK: 8, topImages: 4 });
+            if (r) {
+              const data: any = (r as any).content || (r as any).result || r;
+              const items = Array.isArray(data) ? data : (data.results || data.items || []);
+              const imgs = Array.isArray(data.images) ? data.images : [];
+              if (items.length) s.webSearchResults = items;
+              if (imgs.length) s.webSearchImages = imgs;
+            }
+          }
+        } catch { /* best-effort — no web search service */ }
+        s.searchTimingMs = Date.now() - t0;
+      } catch { /* ignore best-effort */ }
+    }, 600);
+  }
+);
+onBeforeUnmount(() => { clearTimeout(preFetchTimer); });
+
 // Sync template from QuickButtons
 watch(() => s.inputTemplate, (val) => {
   if (val && val !== lastTemplateRef.value) {
     lastTemplateRef.value = val;
     inputValue.value = val;
   }
+});
+
+let _draftT: ReturnType<typeof setTimeout> | undefined;
+watch([inputValue, () => s.draftImages?.length ?? 0, () => s.currentSessionId], () => {
+  clearTimeout(_draftT);
+  _draftT = setTimeout(() => {
+    const payload = JSON.stringify({ sid: s.currentSessionId, text: inputValue.value, imgs: s.draftImages?.length ?? 0, ts: Date.now() });
+    try { window.localStorage?.setItem(DRAFT_KEY, payload); } catch {}
+    if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
+      try { chrome.storage.local.set({ [DRAFT_KEY]: inputValue.value }); } catch {}
+    }
+  }, 500);
 });
 
 function slashKeyHandler(e: KeyboardEvent) {
@@ -155,7 +282,22 @@ function slashKeyHandler(e: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', slashKeyHandler);
+  try {
+    const raw = typeof chrome !== 'undefined' && chrome.storage?.local ? null : null;
+    let restore = (txt: string | undefined) => {
+      if (txt && !inputValue.value) { inputValue.value = txt; lastTemplateRef.value = txt; }
+    };
+    const fromLs = typeof window !== 'undefined' ? window.localStorage?.getItem(DRAFT_KEY) : null;
+    if (typeof chrome !== 'undefined' && chrome.storage?.local?.get) {
+      chrome.storage.local.get([DRAFT_KEY], (r) => { restore((r as any)?.[DRAFT_KEY] || fromLs || undefined); nextTick(() => focusTa()); });
+    } else if (fromLs) { restore(fromLs); nextTick(() => focusTa()); }
+    else nextTick(() => focusTa());
+  } catch { nextTick(() => focusTa()); }
 });
+function focusTa() {
+  const ta = document.querySelector('#yipet-chat-window .el-textarea__inner') as HTMLTextAreaElement | null;
+  if (ta && !ta.value) ta.focus();
+}
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', slashKeyHandler);
@@ -170,6 +312,10 @@ function send() {
   historyIdxRef.value = -1;
   store.sendMessage(text, imgs);
   inputValue.value = '';
+  try { window.localStorage?.removeItem(DRAFT_KEY); } catch {}
+  if (typeof chrome !== 'undefined' && chrome.storage?.local?.remove) {
+    try { chrome.storage.local.remove([DRAFT_KEY]); } catch {}
+  }
   lastTemplateRef.value = '';
   historyIdxRef.value = -1;
   // Auto-focus after send
@@ -179,13 +325,29 @@ function send() {
   });
 }
 
-function onMentionSelect(path: string) {
+async function onMentionSelect(path: string) {
   if (mentionAtIdx.value < 0) return;
   const before = inputValue.value.slice(0, mentionAtIdx.value);
   const after = inputValue.value.slice(mentionAtIdx.value + 1 + mentionQuery.value.length);
   inputValue.value = (before + after).trim();
-  store.setRagScopeFromNode(path, true);
-  if (!s.knowledgeGrounded) store.toggleKnowledgeGrounded();
+  mentionVisible.value = false;
+  mentionQuery.value = '';
+  mentionAtIdx.value = -1;
+  try {
+    const fileData = await store.readKnowledgeFile?.(path);
+    const content = typeof fileData === 'string'
+      ? fileData
+      : (fileData as any)?.content || '';
+    if (content) {
+      await store.applyContextChange?.(path, content);
+    } else {
+      await store.addContextFile?.(path);
+    }
+  } catch {
+    await store.addContextFile?.(path);
+  }
+  store.setRagScopeFromNode?.(path, true);
+  if (!s.knowledgeGrounded) store.toggleKnowledgeGrounded?.();
 }
 
 function onMentionClose() {
@@ -215,6 +377,19 @@ function onKeyDown(e: KeyboardEvent) {
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
       return;
+    }
+  }
+
+  if (slashVisible.value && slashMatches.value.length) {
+    const n = slashMatches.value.length;
+    if (e.key === 'Escape') { e.preventDefault(); slashVisible.value = false; return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); slashActive.value = (slashActive.value + 1) % n; return; }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); slashActive.value = (slashActive.value - 1 + n) % n; return; }
+    if (e.key === 'Enter' && !e.shiftKey && !((e as KeyboardEvent).isComposing || isComposing.value)) {
+      e.preventDefault(); applySlash(slashMatches.value[slashActive.value].name); return;
+    }
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault(); applySlash(slashMatches.value[slashActive.value].name); return;
     }
   }
 
@@ -310,6 +485,18 @@ function onPaste(e: ClipboardEvent) {
   for (let i = 0; i < items.length; i++) {
     if (items[i].type.startsWith('image/')) imageItems.push(items[i]);
   }
+  const plainText = e.clipboardData?.getData('text/plain');
+  if (plainText && URL_RE.test(plainText.trim())) {
+    const url = plainText.trim();
+    e.preventDefault();
+    store.addContextFile?.(url)
+      .then(() => {
+        inputValue.value = (inputValue.value + ' ').replace(/\s+$/, ' ');
+        ElMessage({ message: `URL attached: ${url.length > 40 ? url.slice(0,40)+'…' : url}`, type: 'success', duration: 1600, showClose: false });
+      })
+      .catch(() => { inputValue.value += plainText; });
+    return;
+  }
   if (imageItems.length === 0) return;
   e.preventDefault();
   const remaining = MAX_DRAFT_IMAGES - draftImages.value.length;
@@ -377,11 +564,16 @@ function onDrop(e: DragEvent) {
     reader.readAsDataURL(file);
   });
 }
+
+if (typeof window !== 'undefined') {
+  try { (window as any).__yipet_ci_ok = true; } catch {}
+}
 </script>
 
 <template>
   <div
     class="ci-input"
+    style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 1 !important; width: 100% !important; box-sizing: border-box !important;"
     @dragenter="onDragEnter"
     @dragleave="onDragLeave"
     @dragover="onDragOver"
@@ -400,6 +592,7 @@ function onDrop(e: DragEvent) {
         <span class="ci-status-phase">{{ streamingPhaseLabel }}</span>
         <span class="ci-status-time">{{ streamingElapsed }}</span>
         <span v-if="streamingChars" class="ci-status-chars">{{ streamingChars }}</span>
+        <span v-if="streamingSpeed" class="ci-status-speed">{{ streamingSpeed }}</span>
         <button class="ci-status-stop" @click="store.stopSending()">Stop</button>
       </div>
     </transition>
@@ -411,7 +604,7 @@ function onDrop(e: DragEvent) {
       @clear="store.clearDraftImages?.()"
     />
 
-    <QuickButtons />
+    <QuickButtons v-show="true" />
 
     <div class="ci-row">
       <div class="ci-textarea-wrap">
@@ -421,10 +614,27 @@ function onDrop(e: DragEvent) {
           @close="onMentionClose"
           @select="onMentionSelect"
         />
+        <div v-if="slashVisible && slashMatches.length" class="ci-slash-dropdown">
+          <div class="ci-slash-title">Slash commands · {{ slashMatches.length }}</div>
+          <div
+            v-for="(c, i) in slashMatches"
+            :key="c.name"
+            class="ci-slash-item"
+            :class="{ 'is-active': i === slashActive }"
+            @click="applySlash(c.name)"
+          >
+            <span class="ci-slash-icon" :class="`kind-${c.kind}`">{{ c.icon }}</span>
+            <span class="ci-slash-main">
+              <span class="ci-slash-name"><code>{{ c.name }}</code></span>
+              <span class="ci-slash-short">{{ c.short }}</span>
+            </span>
+            <span class="ci-slash-hint">{{ c.hint }}</span>
+          </div>
+        </div>
         <el-input
           v-model="inputValue"
           type="textarea"
-          :autosize="{ minRows: 1, maxRows: 6 }"
+          :autosize="{ minRows: 1, maxRows: 12 }"
           :placeholder="placeholder"
           :disabled="disabled"
           resize="none"
@@ -477,19 +687,27 @@ function onDrop(e: DragEvent) {
 
 <style lang="scss" scoped>
 .ci-input {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   gap: 6px;
   padding: 8px 12px 12px;
   background: #141228;
   border-top: 1px solid rgba(99, 102, 241, 0.2);
   position: relative;
+  flex-shrink: 0 !important;
+  min-height: 160px !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  z-index: 3;
 
   @supports (backdrop-filter: blur(1px)) {
-    background: color-mix(in srgb, #141228 88%, transparent);
-    border-top-color: transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: color-mix(in srgb, #141228 92%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 }
 
@@ -530,6 +748,14 @@ function onDrop(e: DragEvent) {
   font-variant-numeric: tabular-nums;
   color: #d4d0e8;
   opacity: 0.7;
+}
+.ci-status-speed {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #c7d2fe;
+  opacity: 0.75;
+  font-weight: 600;
 }
 .ci-status-stop {
   margin-left: auto;
@@ -600,6 +826,9 @@ function onDrop(e: DragEvent) {
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 8px;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  min-height: 52px;
+  box-sizing: border-box;
+  flex-shrink: 0;
   &:focus-within {
     border-color: rgba(99, 102, 241, 0.5);
     box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.12);
@@ -618,11 +847,59 @@ function onDrop(e: DragEvent) {
   border: none;
   box-shadow: none;
   color: #f5f3ff;
-  &::placeholder { color: #d4d0e8; }
+  transition: height .12s ease, padding .12s ease;
+  &::placeholder { color: #d4d0e8; transition: opacity .15s; }
   &:focus { box-shadow: none; }
+  &:focus::placeholder { opacity: .6; }
 }
 
 .ci-file-input { display: none; }
+
+.ci-slash-dropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0; right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 120;
+  background: #1a1738;
+  border: 1px solid rgba(99,102,241,.35);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.02) inset;
+  animation: ci-slash-in .14s ease-out;
+}
+@keyframes ci-slash-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.ci-slash-title {
+  padding: 4px 8px 6px; font-size: 10px; font-weight: 600;
+  color: var(--primary-light,#818cf8); text-transform: uppercase; letter-spacing: .08em;
+  border-bottom: 1px dashed rgba(99,102,241,.15);
+  margin-bottom: 4px;
+}
+.ci-slash-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; border-radius: 6px; cursor: pointer;
+  transition: all .1s;
+  &:hover, &.is-active {
+    background: rgba(99,102,241,.15);
+  }
+  &.is-active { outline: 1px solid rgba(99,102,241,.35); }
+}
+.ci-slash-icon {
+  width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(99,102,241,.12); border-radius: 6px; font-size: 14px;
+  &.kind-action  { background: rgba(59,130,246,.12); color: #60a5fa; }
+  &.kind-session { background: rgba(168,85,247,.14); color: #c084fc; }
+  &.kind-debug   { background: rgba(234,179,8,.14);  color: #facc15; }
+}
+.ci-slash-main { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.ci-slash-name code {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 12px; font-weight: 700; color: var(--primary-light,#818cf8);
+  background: rgba(99,102,241,.12); padding: 1px 6px; border-radius: 3px;
+}
+.ci-slash-short { font-size: 11px; color: #f5f3ff; margin-top: 2px; }
+.ci-slash-hint { font-size: 11px; color: #d4d0e8; opacity: .75; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .ci-send-btn {
   flex-shrink: 0;

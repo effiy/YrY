@@ -10,20 +10,30 @@ import type { QuickButton } from '../constants';
 const store = useChatStore();
 const s = store.state;
 
-const chip = computed(() => store.pageContextChip?.());
+const chip = computed(() => {
+  try {
+    const fn = (store as any).pageContextChip;
+    return typeof fn === 'function' ? fn() : null;
+  } catch { return null; }
+});
 
 function onClick(b: QuickButton) {
-  if (s.isProcessing) return;
-  if (b.template) {
-    s.inputTemplate = b.content;
-    return;
-  }
-  store.sendMessage(b.content);
+  try {
+    if (s.isProcessing) return;
+    if (b?.template) {
+      s.inputTemplate = b.content || '';
+      return;
+    }
+    store.sendMessage?.(b.content || '');
+  } catch {}
 }
 </script>
 
 <template>
-  <div class="qb-row">
+  <div
+    class="qb-row"
+    style="display: flex !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; min-height: 28px; flex-shrink: 0 !important;"
+  >
     <span
       v-if="chip"
       class="qb-chip qb-chip--context"
@@ -55,12 +65,19 @@ function onClick(b: QuickButton) {
 
 <style lang="scss" scoped>
 .qb-row {
-  display: flex;
+  display: flex !important;
   flex-wrap: nowrap;
   gap: 6px;
-  padding: 4px 0;
+  align-items: center;
+  width: 100%;
+  min-height: 28px;
+  flex-shrink: 0;
+  padding: 2px 4px;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
+  visibility: visible !important;
+  opacity: 1 !important;
 
   &::-webkit-scrollbar { display: none; }
 }

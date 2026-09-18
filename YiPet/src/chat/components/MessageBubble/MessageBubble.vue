@@ -234,7 +234,101 @@ watch(() => msg.streaming, (was) => {
   setTimeout(() => { justCompleted.value = false; }, 1500);
 });
 
-const tokenEstimate = computed(() => Math.ceil((msg.content || '').length / 4));
+const CHARS_PER_TOKEN = 4;
+const tokenEstimate = computed(() => {
+  const content = props.message.content || '';
+  return Math.max(1, Math.ceil(content.length / CHARS_PER_TOKEN));
+});
+
+const messagesAll = computed(() => s.messages);
+const prevRoleMessage = computed(() => {
+  const all = messagesAll.value;
+  if (!all?.length) return null;
+  const idx = all.findIndex(m => m.timestamp === props.message.timestamp);
+  if (idx <= 0) return null;
+  for (let j = idx - 1; j >= 0; j--) {
+    if (all[j] && all[j].type === props.message.type) return all[j];
+  }
+  return null;
+});
+const prevRoleTokenEstimate = computed(() => {
+  const pm = prevRoleMessage.value;
+  if (!pm) return 0;
+  return Math.max(0, Math.ceil((pm.content || '').length / CHARS_PER_TOKEN));
+});
+const tokenTrend = computed(() => {
+  const prev = prevRoleTokenEstimate.value;
+  const cur = tokenEstimate.value;
+  const delta = cur - prev;
+  if (prev === 0 || delta === 0) return { arrow: '→', delta: 0, sign: '±', cls: 'mb-tokens-trend--flat' };
+  if (delta > 0) return { arrow: '↑', delta, sign: '+', cls: 'mb-tokens-trend--up' };
+  return { arrow: '↓', delta: -delta, sign: '-', cls: 'mb-tokens-trend--down' };
+});
+function scrollToPrevRoleMessage() {
+  const pm = prevRoleMessage.value;
+  if (!pm) return;
+  const el = document.querySelector<HTMLElement>(`[data-msg-ts="${pm.timestamp}"]`);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.add('mb-bubble--flash');
+  setTimeout(() => el.classList.remove('mb-bubble--flash'), 1200);
+}
+
+const charWordLineStats = computed(() => {
+  const content = props.message.content || '';
+  const chars = content.length;
+  const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const lines = content ? content.split('\n').length : 0;
+  const toks = tokenEstimate.value;
+  return `${chars} chars · ${words} words · ${lines} lines · ~${toks} tokens`;
+});
+
+function gradePct(g: string | undefined): number {
+  switch ((g || '').toUpperCase()) {
+    case 'A': return 92;
+    case 'B': return 74;
+    case 'C': return 52;
+    case 'D': return 28;
+    default: return 0;
+  }
+}
+function gradeRing(g: string | undefined) {
+  const pct = gradePct(g);
+  const R = 8; const C = 2 * Math.PI * R;
+  return { R, C, off: C - (pct / 100) * C, pct };
+}
+function toolProgressPct(ms: number | undefined): number {
+  if (ms == null) return 0;
+  const v = Math.min(100, Math.round((ms / 10000) * 100));
+  return Math.max(2, v);
+}
+function toolSpeedClass(ms: number | undefined): string {
+  if (ms == null) return 'is-idle';
+  if (ms > 5000) return 'is-slow';
+  if (ms > 2000) return 'is-mid';
+  return 'is-fast';
+}
+function toolSpeedLabel(ms: number | undefined): string {
+  if (ms == null) return 'pending';
+  if (ms > 5000) return 'slow';
+  if (ms > 2000) return 'mid';
+  if (ms < 300)  return 'fast';
+  return 'ok';
+}
+
+function formatDuration(ms: number): string {
+  if (!ms || ms < 1) return '0ms';
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+function stringifyTruncated(obj: Record<string, unknown>, max = 80): string {
+  try {
+    const s = JSON.stringify(obj);
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  } catch {
+    return String(obj).slice(0, max);
+  }
+}
 
 const relativeTime = computed(() => {
   try {
@@ -297,49 +391,60 @@ const thinkingLabel = computed(() => {
   return `Thinking${dots}`;
 });
 
-// ── Long error / content collapse (mirrors YiVad aiChat) ──
-
 const ERROR_COLLAPSE_THRESHOLD = 200;
 const CONTENT_COLLAPSE_THRESHOLD = 400;
-const EXPANDED_ERRORS_KEY = 'yipet.chat.expandedErrors';
-const EXPANDED_CONTENTS_KEY = 'yipet.chat.expandedContents';
 
-function loadExpandedSet(key: string): Set<string> {
+const errorCollapsedKey = computed(() => props.message.timestamp
+  ? `yipet:err:${props.message.timestamp}` : '');
+const errorCollapsed = ref(true);
+function toggleErrorCollapsed() {
+  errorCollapsed.value = !errorCollapsed.value;
   try {
-    const raw = sessionStorage.getItem(key);
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? new Set(arr.filter((x: unknown) => typeof x === 'string')) : new Set();
-  } catch { return new Set(); }
+    if (errorCollapsedKey.value) sessionStorage.setItem(errorCollapsedKey.value, errorCollapsed.value ? '1' : '0');
+  } catch { /* ignore */ }
 }
-function persistExpandedSet(key: string, set: Set<string>): void {
-  try { sessionStorage.setItem(key, JSON.stringify([...set])); } catch { /* ignore */ }
+try {
+  if (errorCollapsedKey.value) {
+    const v = sessionStorage.getItem(errorCollapsedKey.value);
+    if (v === '0') errorCollapsed.value = false;
+  }
+} catch { /* ignore */ }
+
+const shouldCollapseError = computed(() => {
+  const err = props.message.content || '';
+  return props.message.error && err.length > ERROR_COLLAPSE_THRESHOLD && errorCollapsed.value;
+});
+const errorDisplay = computed(() => {
+  const err = props.message.content || '';
+  if (!props.message.error) return err;
+  return shouldCollapseError.value ? err.slice(0, ERROR_COLLAPSE_THRESHOLD) + '…' : err;
+});
+
+const contentCollapsedKey = computed(() => props.message.timestamp
+  ? `yipet:content:${props.message.timestamp}` : '');
+const contentCollapsed = ref(true);
+function toggleContentCollapsed() {
+  contentCollapsed.value = !contentCollapsed.value;
+  try {
+    if (contentCollapsedKey.value) sessionStorage.setItem(contentCollapsedKey.value, contentCollapsed.value ? '1' : '0');
+  } catch { /* ignore */ }
 }
-function expandKey(idx: number): string {
-  return `${msg.timestamp ?? 'no-ts'}:${idx}`;
-}
-const expandedErrors = ref<Set<string>>(loadExpandedSet(EXPANDED_ERRORS_KEY));
-const expandedContents = ref<Set<string>>(loadExpandedSet(EXPANDED_CONTENTS_KEY));
-function toggleErrorExpand(idx: number): void {
-  const next = new Set(expandedErrors.value);
-  const k = expandKey(idx);
-  if (next.has(k)) next.delete(k);
-  else next.add(k);
-  expandedErrors.value = next;
-  persistExpandedSet(EXPANDED_ERRORS_KEY, next);
-}
-function isErrorLong(err: string): boolean { return err.length > ERROR_COLLAPSE_THRESHOLD; }
-function isErrorExpanded(idx: number): boolean { return expandedErrors.value.has(expandKey(idx)); }
-function toggleContentExpand(idx: number): void {
-  const next = new Set(expandedContents.value);
-  const k = expandKey(idx);
-  if (next.has(k)) next.delete(k);
-  else next.add(k);
-  expandedContents.value = next;
-  persistExpandedSet(EXPANDED_CONTENTS_KEY, next);
-}
-function isContentLong(s: string): boolean { return s.length > CONTENT_COLLAPSE_THRESHOLD; }
-function isContentExpanded(idx: number): boolean { return expandedContents.value.has(expandKey(idx)); }
+try {
+  if (contentCollapsedKey.value) {
+    const v = sessionStorage.getItem(contentCollapsedKey.value);
+    if (v === '0') contentCollapsed.value = false;
+  }
+} catch { /* ignore */ }
+
+const shouldCollapseContent = computed(() => {
+  const c = props.message.content || '';
+  return props.message.type === 'pet' && !props.message.streaming && !props.message.error && c.length > CONTENT_COLLAPSE_THRESHOLD && contentCollapsed.value;
+});
+const contentDisplay = computed(() => {
+  const c = props.message.content || '';
+  if (props.message.type !== 'pet' || props.message.streaming || props.message.error) return c;
+  return shouldCollapseContent.value ? c.slice(0, CONTENT_COLLAPSE_THRESHOLD) + '…' : c;
+});
 
 // ── Image lightbox ──
 const lightboxSrc = ref('');
@@ -377,6 +482,7 @@ const tokensPerSec = computed(() => {
       'mb-bubble--completed': justCompleted,
     }"
     :data-chat-idx="String(index)"
+    :data-msg-ts="String(msg.timestamp)"
   >
     <!-- Avatar for pet messages -->
     <div class="mb-content">
@@ -425,13 +531,41 @@ const tokensPerSec = computed(() => {
           ref="markdownRef"
           class="mb-markdown markdown-content"
           :class="{ 'mb-markdown--streaming': streaming }"
-          v-html="isUser ? markdownHtml : (streaming ? streamingHtml : citedHtml)"
+          v-html="isUser ? renderMarkdown(msg.content || '') : (streaming ? streamingHtml : (msg.error ? renderMarkdown(errorDisplay) : (shouldCollapseContent ? renderMarkdown(contentDisplay) : citedHtml)))"
           @mouseup="!isUser && onMarkdownMouseUp"
           @click="onMarkdownClick"
         />
         <span v-if="streaming" class="mb-caret" aria-hidden="true" />
         <span v-if="tokensPerSec && streaming" class="mb-speed">{{ tokensPerSec }} tok/s</span>
         <div v-if="streaming && !isUser" class="mb-stream-fade" />
+        <button
+          v-if="msg.error && shouldCollapseError"
+          class="mb-collapse-btn"
+          @click="toggleErrorCollapsed"
+        >
+          Expand error ({{ (msg.content || '').length }} chars)
+        </button>
+        <button
+          v-if="msg.error && !shouldCollapseError && (msg.content || '').length > ERROR_COLLAPSE_THRESHOLD"
+          class="mb-collapse-btn"
+          @click="toggleErrorCollapsed"
+        >
+          Collapse
+        </button>
+        <button
+          v-if="!isUser && !streaming && !msg.error && shouldCollapseContent"
+          class="mb-collapse-btn"
+          @click="toggleContentCollapsed"
+        >
+          Read more ({{ (msg.content || '').length }} chars)
+        </button>
+        <button
+          v-if="!isUser && !streaming && !msg.error && !shouldCollapseContent && (msg.content || '').length > CONTENT_COLLAPSE_THRESHOLD"
+          class="mb-collapse-btn"
+          @click="toggleContentCollapsed"
+        >
+          Collapse
+        </button>
       </div>
 
       <!-- Error/aborted tags -->
@@ -446,6 +580,32 @@ const tokensPerSec = computed(() => {
         :first-token-latency-ms="msg.firstTokenLatencyMs"
         :format-latency="formatLatency"
       />
+      <span v-if="msg.retrievalGrade" class="mb-ret-grade-wrap" :title="`Retrieval grade ${msg.retrievalGrade}`">
+        <svg viewBox="0 0 20 20" class="mb-ret-ring">
+          <circle cx="10" cy="10" r="8" class="mb-ret-ring-bg" />
+          <circle cx="10" cy="10" :r="gradeRing(msg.retrievalGrade).R"
+            class="mb-ret-ring-fg" :class="`grade-${msg.retrievalGrade}`"
+            stroke-dasharray="100 100" :stroke-dashoffset="gradeRing(msg.retrievalGrade).off" />
+        </svg>
+        <span class="mb-ret-grade-letter">{{ msg.retrievalGrade }}</span>
+        <span v-if="msg.ragContentSummary" class="mb-ret-sum" :title="msg.ragContentSummary">{{ msg.ragContentSummary }}</span>
+      </span>
+
+      <!-- Token estimate and trend -->
+      <div v-if="props.message.type === 'pet' && !props.message.streaming" class="mb-tokens">
+        <span class="mb-tokens-count" :title="charWordLineStats">
+          ~{{ tokenEstimate }} tok
+        </span>
+        <span
+          v-if="prevRoleMessage"
+          class="mb-tokens-trend"
+          :class="tokenTrend.cls"
+          :title="`${tokenTrend.sign}${tokenTrend.delta} vs previous ${props.message.type} message · click to jump`"
+          @click="scrollToPrevRoleMessage"
+        >
+          {{ tokenTrend.arrow }} {{ tokenTrend.sign }}{{ tokenTrend.delta }}
+        </span>
+      </div>
 
       <!-- RAG sources (per-message or last-pet fallback, mirrors YiVad RagSources) -->
       <RagSourcesPanel
@@ -460,6 +620,52 @@ const tokensPerSec = computed(() => {
         @toggle-expand="toggleSourceExpand"
         @source-ref="(i, el) => { if (el) sourceRefs[i] = el; }"
       />
+
+      <!-- Tool calls timeline (Pi-inspired) -->
+      <div v-if="props.message.type === 'pet' && props.message.toolCalls?.length" class="mb-tool-timeline">
+        <div class="mb-tool-timeline-label">Tools</div>
+        <div class="mb-tool-calls">
+          <div
+            v-for="(tc, i) in props.message.toolCalls"
+            :key="`${tc.name}-${i}`"
+            class="mb-tool-call"
+          >
+            <div class="mb-tool-call-header">
+              <span class="mb-tool-call-name">{{ tc.label }}</span>
+              <span v-if="tc.durationMs" class="mb-tool-call-duration">
+                {{ formatDuration(tc.durationMs) }}
+              </span>
+              <span
+                v-if="tc.durationMs && tc.durationMs > 2000"
+                class="mb-tool-call-slow"
+                :class="{ 'mb-tool-call-slow--very': tc.durationMs > 5000 }"
+              >
+                {{ tc.durationMs > 5000 ? 'very slow' : 'slow' }}
+              </span>
+              <span v-if="tc.error" class="mb-tool-call-error">err</span>
+            </div>
+            <div v-if="tc.durationMs != null" class="mb-tool-prog">
+              <div class="mb-tool-prog-bar" :class="toolSpeedClass(tc.durationMs)" :style="`width:${toolProgressPct(tc.durationMs)}%`" />
+              <span class="mb-tool-prog-label">{{ toolSpeedLabel(tc.durationMs) }}</span>
+            </div>
+            <div v-if="tc.args" class="mb-tool-call-args">
+              {{ stringifyTruncated(tc.args, 80) }}
+            </div>
+            <div v-if="tc.content" class="mb-tool-call-content">
+              <details>
+                <summary>Result ({{ tc.content.length }} chars)</summary>
+                <pre>{{ tc.content.slice(0, 1200) }}{{ tc.content.length > 1200 ? '…' : '' }}</pre>
+              </details>
+            </div>
+            <div v-if="tc.error" class="mb-tool-call-errstack">
+              <details>
+                <summary>Error</summary>
+                <pre>{{ tc.error }}</pre>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Web search results (mirrors YiVad aiChat) -->
       <!-- Web search indicator (mirrors YiVad aiChat) -->
@@ -1320,4 +1526,189 @@ const tokensPerSec = computed(() => {
     color: #818cf8;
   }
 }
+
+.mb-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+}
+
+.mb-tokens {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding-top: 4px;
+  font-size: 10px;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #9ca3af;
+}
+.mb-tokens-trend {
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 3px;
+  transition: background .15s;
+  user-select: none;
+}
+.mb-tokens-trend:hover { background: rgba(99,102,241,.15); }
+.mb-tokens-trend--flat { color: #9ca3af; }
+.mb-tokens-trend--up { color: #f87171; }
+.mb-tokens-trend--down { color: #34d399; }
+
+.mb-bubble--flash {
+  animation: mb-flash 1.2s ease-out;
+}
+@keyframes mb-flash {
+  0% { box-shadow: 0 0 0 3px rgba(99,102,241,.6); background: rgba(99,102,241,.12); }
+  100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); background: transparent; }
+}
+
+.mb-tool-timeline { margin-top: 8px; }
+.mb-tool-timeline-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #818cf8;
+  margin-bottom: 4px;
+}
+.mb-tool-calls { display: flex; flex-direction: column; gap: 4px; }
+.mb-tool-call {
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(99,102,241,.05);
+}
+.mb-tool-call-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.mb-tool-call-name {
+  font-weight: 600;
+  color: #c7d2fe;
+}
+.mb-tool-call-duration {
+  font-family: 'SF Mono', monospace;
+  font-size: 10px;
+  color: #94a3b8;
+}
+.mb-tool-call-slow {
+  font-size: 10px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(251,191,36,.15);
+  color: #fbbf24;
+  font-weight: 600;
+}
+.mb-tool-call-slow--very {
+  background: rgba(239,68,68,.15);
+  color: #ef4444;
+}
+.mb-tool-call-error {
+  font-size: 10px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(239,68,68,.15);
+  color: #ef4444;
+  font-weight: 600;
+}
+.mb-tool-call-args {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 3px;
+  font-family: 'SF Mono', monospace;
+}
+.mb-tool-call-content { margin-top: 4px; }
+.mb-tool-call-content summary { cursor: pointer; font-size: 10px; color: #94a3b8; }
+.mb-tool-call-content pre {
+  font-size: 10px;
+  padding: 4px 6px;
+  background: rgba(0,0,0,.3);
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-top: 3px;
+  color: #d1d5db;
+}
+.mb-tool-call-errstack { margin-top: 4px; }
+.mb-tool-call-errstack summary { cursor: pointer; font-size: 10px; color: #fca5a5; }
+.mb-tool-call-errstack pre {
+  font-size: 10px;
+  padding: 4px 6px;
+  background: rgba(239,68,68,.08);
+  color: #fecaca;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-top: 3px;
+}
+
+.mb-ret-grade-wrap {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px 2px 4px; border-radius: 999px;
+  background: rgba(var(--primary-rgb,99,102,241),.06);
+  border: 1px solid rgba(var(--primary-rgb,99,102,241),.18);
+}
+.mb-ret-ring { width: 20px; height: 20px; transform: rotate(-90deg); }
+.mb-ret-ring-bg { fill: none; stroke: rgba(99,102,241,.15); stroke-width: 2; }
+.mb-ret-ring-fg {
+  fill: none; stroke-width: 2.5; stroke-linecap: round;
+  transition: stroke-dashoffset .4s ease;
+  &.grade-A { stroke: #22c55e; }
+  &.grade-B { stroke: #3b82f6; }
+  &.grade-C { stroke: #eab308; }
+  &.grade-D { stroke: #ef4444; }
+}
+.mb-ret-grade-letter {
+  font-family: 'SF Mono', monospace; font-size: 11px; font-weight: 800;
+  width: 14px; color: #f5f3ff;
+}
+.mb-ret-sum {
+  font-size: 11px; color: #d4d0e8; opacity: .85;
+  max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.mb-tool-prog {
+  margin-top: 4px; display: flex; align-items: center; gap: 8px;
+  position: relative;
+  height: 14px;
+}
+.mb-tool-prog::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 3px;
+  height: 4px; border-radius: 2px; background: rgba(99,102,241,.12);
+}
+.mb-tool-prog-bar {
+  position: relative;
+  top: 0;
+  height: 4px;
+  border-radius: 2px;
+  transition: width .35s ease, background .2s;
+  z-index: 1;
+  &.is-fast { background: linear-gradient(90deg,#22c55e,#86efac); }
+  &.is-mid  { background: linear-gradient(90deg,#eab308,#fde047); }
+  &.is-slow { background: linear-gradient(90deg,#ef4444,#fca5a5); }
+  &.is-idle { background: rgba(99,102,241,.25); }
+}
+.mb-tool-prog-label {
+  flex-shrink: 0; margin-left: auto;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.mb-tool-prog:has(.is-fast) .mb-tool-prog-label { color: #22c55e; }
+.mb-tool-prog:has(.is-mid)  .mb-tool-prog-label { color: #eab308; }
+.mb-tool-prog:has(.is-slow) .mb-tool-prog-label { color: #ef4444; }
+.mb-tool-prog:has(.is-idle) .mb-tool-prog-label { color: #818cf8; opacity: .7; }
 </style>

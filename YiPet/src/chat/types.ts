@@ -26,6 +26,74 @@ export interface WebSearchResult {
   title: string;
   url: string;
   snippet: string;
+  quality?: number;
+  date?: string;
+}
+
+/** Web image result — parallel-fetched by backend, displayed as thumbnails. */
+export interface WebImageResult {
+  title: string;
+  imageUrl: string;
+  thumbnailUrl: string;
+  sourceUrl: string;
+  width?: number;
+  height?: number;
+}
+
+// ── Tool Call (Pi-inspired per-message tool timeline) ────────────────────
+
+export interface ToolCall {
+  name: string;
+  label: string;
+  args?: Record<string, unknown>;
+  content?: string;
+  error?: string;
+  durationMs?: number;
+}
+
+/** Transient tool event fired during pre-stream execution — later coalesced into
+ *  Message.toolCalls on the pet message. */
+export interface ToolEvent {
+  name: string;
+  phase: "start" | "end";
+  label: string;
+  args?: Record<string, unknown>;
+  content?: string;
+  error?: string;
+  durationMs?: number;
+  timestamp: number;
+}
+
+// ── Context Changes (ctx: tag sections + undo history) ────────────────────────
+
+export interface ContextChangeEntry {
+  path: string;
+  previousContent: string;
+  previousPageContent: string;
+  previousTags: string[];
+  timestamp: number;
+}
+
+// ── Conversation Compaction ──────────────────────────────────────────────
+
+export interface CompactionEntry {
+  sessionKey: string;
+  timestamp: number;
+  before: number;
+  after: number;
+  saved: number;
+}
+
+// ── Conversation Tree (nested branch visualisation) ───────────────────────────
+
+export interface ConversationTreeNode {
+  key: string;
+  timestamp: number;
+  label: string;
+  type: "user" | "pet" | "branch-root";
+  parentKey: string | null;
+  children: ConversationTreeNode[];
+  collapsed?: boolean;
 }
 
 // ── Page Info ─────────────────────────────────────────────────────────────
@@ -58,6 +126,16 @@ export interface Message {
   firstTokenLatencyMs?: number;
   /** Whether this message used web search grounding. */
   searchGrounded?: boolean;
+  /** Web search results for this turn — displayed alongside the message. */
+  searchResults?: WebSearchResult[];
+  /** Web search image results — parallel-fetched by backend, displayed as thumbnails. */
+  searchImages?: WebImageResult[];
+  /** Tool calls fired during this turn (Pi-inspired: per-message tool timeline). */
+  toolCalls?: ToolCall[];
+  /** RAG retrieval grade A/B/C/D — from backend's retrieval scoring. */
+  retrievalGrade?: 'A' | 'B' | 'C' | 'D';
+  /** RAG summary (top source title + file count) for quick glance. */
+  ragContentSummary?: string;
 }
 
 /** RAG provenance metadata surfaced per pet message. */
@@ -204,10 +282,11 @@ export interface ChatState {
   ragCategoriesLoading: boolean;
   /** Selected category filter — empty string means "all". */
   knowledgeCategoryFilter: string;
-  /** RAG options — hybrid (BM25+vector), rerank, citation injection. */
+  /** RAG options — hybrid (BM25+vector), rerank, citation injection, hyde. */
   ragHybrid: boolean;
   ragRerank: boolean;
   ragCitations: boolean;
+  ragHyde: boolean;
   /** RAG chat mode (condense_plus_context / condense_question / context / simple). */
   ragChatMode: string;
   /** Number of query rewrites for multi-query retrieval. */
@@ -216,6 +295,14 @@ export interface ChatState {
   ragTags: string[];
   /** Web search toggle — when enabled, appends web results to the LLM context. */
   webSearchEnabled: boolean;
+  /** Web search image results (latest turn). */
+  webSearchImages: WebImageResult[];
+  /** True while web search is in flight. */
+  webSearching: boolean;
+  /** Elapsed ms for the most recent web search. */
+  searchTimingMs: number;
+  /** Refined query that was actually searched. */
+  lastSearchQuery: string;
   /** Currently selected model (e.g. "qwen3.5", "qwen3-coder"). */
   selectedModel: string;
   /** Available model list from the backend. */
@@ -282,6 +369,23 @@ export interface ChatState {
   thinkingStartTs: number | null;
   /** Web search results surfaced on user messages. */
   webSearchResults: WebSearchResult[];
+  /** Transient tool events fired during pre-stream execution; later coalesced
+   *  into the pet message's `toolCalls` array. */
+  toolEvents: ToolEvent[];
+  /** LlamaIndex analysis panel visibility. */
+  llamaIndexVisible: boolean;
+  /** Context editor (ctx: file sections) popover visibility. */
+  contextEditorVisible: boolean;
+  /** Draft text for the context editor — modified before `undo`/`apply`. */
+  contextEditorDraft: string;
+  /** Context panel browse vs edit mode switch: true = adding new sections. */
+  contextPanelNewMode: boolean;
+  /** General purpose Set of selected keys (tree browse, batch multi-select). */
+  selectedKeys: Set<string>;
+  /** Context change undo history (most recent first). */
+  contextChangeHistory: ContextChangeEntry[];
+  /** Long-conversation compaction log — most recent last. */
+  compactionLog: CompactionEntry[];
   /** Monotonic counter bumped during streaming to trigger auto-scroll. */
   scrollTick: number;
   /** Per-timestamp copy feedback state — '' or 'copied'. */
@@ -303,6 +407,11 @@ export interface ChatState {
   promptHistory: string[];
   /** Whether the prompt-history popover is open (toolbar button). */
   promptHistoryVisible: boolean;
+  /** FAQ documents fetched from backend for the current role/project. Empty
+   *  until first loadFaq() call. */
+  faqs: Array<{ id?: string; title?: string; prompt?: string; tags?: string[] }>;
+  /** True while the FAQ list is being (re)loaded. */
+  faqLoading: boolean;
   ws: WindowState;
   isDragging: boolean;
   isResizing: boolean;

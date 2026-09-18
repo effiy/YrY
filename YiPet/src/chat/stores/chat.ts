@@ -19,6 +19,13 @@ import { applyThemeColors } from '@/shared/theme';
 import { redactUrlCredentials } from '@/utils/url';
 import { t } from '@/shared/i18n';
 import { useChatWindow } from './useChatWindow';
+import { injectChatService, useModelSelection } from '../composables/useModelSelection';
+import { useRagSettings } from '../composables/useRagSettings';
+import { useChatUiState } from '../composables/useChatUiState';
+import { useToolRegistry, type ToolDefinition, type ToolResult, type ToolEvent as RegistryToolEvent } from '../composables/useToolRegistry';
+import { useContextChanges } from '../composables/useContextChanges';
+import { useConversationCompact } from '../composables/useConversationCompact';
+import type { ToolCall } from '../types';
 
 export type { ChatState, Message, SessionItem };
 
@@ -87,6 +94,12 @@ function mapMessages(raw: ChatMessage[]): Message[] {
     timestamp: m.timestamp || Date.now(),
     imageDataUrl: m.imageDataUrl,
     imageDataUrls: Array.isArray(m.imageDataUrls) ? m.imageDataUrls : undefined,
+    toolCalls: (m as any).toolCalls,
+    searchResults: (m as any).searchResults,
+    searchImages: (m as any).searchImages,
+    searchGrounded: (m as any).searchGrounded,
+    retrievalGrade: (m as any).retrievalGrade,
+    ragContentSummary: (m as any).ragContentSummary,
   }));
 }
 
@@ -133,6 +146,34 @@ export const useChatStore = defineStore('chat', () => {
   let _bug: BugService;
   let _abortController: AbortController | null = null;
   let _loadSessionsPromise: Promise<void> | null = null;
+  let _persistChain: Promise<void> = Promise.resolve();
+
+  function attachTurnToolCalls(petTimestamp: number, startIdx: number): void {
+    const events = state.toolEvents.slice(startIdx);
+    const byNameStart = new Map<string, RegistryToolEvent>();
+    const calls: ToolCall[] = [];
+    for (const ev of events) {
+      if (ev.phase === 'start') {
+        byNameStart.set(ev.name, ev);
+        continue;
+      }
+      const st = byNameStart.get(ev.name);
+      if (!st) continue;
+      calls.push({
+        name: ev.name,
+        label: ev.label,
+        args: st.args,
+        content: ev.content,
+        error: ev.error,
+        durationMs: ev.durationMs
+      });
+      byNameStart.delete(ev.name);
+    }
+    if (!calls.length) return;
+    const idx = state.messages.findIndex((m) => m.timestamp === petTimestamp);
+    if (idx < 0) return;
+    state.messages[idx] = { ...state.messages[idx], toolCalls: calls };
+  }
 
   // Drag/resize state (non-reactive)
   const _dragStart = { x: 0, y: 0, wx: 0, wy: 0 };
@@ -141,6 +182,11 @@ export const useChatStore = defineStore('chat', () => {
 
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 900;
+
+  const { selectedModel: _selModel, availableModels: _availModels, modelsLoading, fetchModels: _fetchModels } = useModelSelection();
+  const ragSettings = useRagSettings();
+  const uiState = useChatUiState();
+  const registry = useToolRegistry();
 
   const state = reactive<ChatState>({
     visible: false,
@@ -197,10 +243,15 @@ export const useChatStore = defineStore('chat', () => {
     ragHybrid: true,
     ragRerank: false,
     ragCitations: true,
+    ragHyde: false,
     ragChatMode: 'condense_plus_context',
     ragNumQueries: 1,
     ragTags: [],
     webSearchEnabled: false,
+    webSearchImages: [],
+    webSearching: false,
+    searchTimingMs: 0,
+    lastSearchQuery: '',
     selectedModel: DEFAULT_MODEL,
     availableModels: [],
     ragDecomposeVisible: false,
@@ -233,11 +284,21 @@ export const useChatStore = defineStore('chat', () => {
     streamingPhase: '',
     thinkingStartTs: null,
     webSearchResults: [],
+    toolEvents: [],
+    llamaIndexVisible: false,
+    contextEditorVisible: false,
+    contextEditorDraft: '',
+    contextPanelNewMode: false,
+    selectedKeys: new Set<string>(),
+    contextChangeHistory: [],
+    compactionLog: [],
     scrollTick: 0,
     copyFeedback: {},
     faqVisible: false,
     faqSearch: '',
     faqApplyMode: 'append',
+    faqs: [],
+    faqLoading: false,
     sessionEditVisible: false,
     tagManagerVisible: false,
     inputTemplate: '',
@@ -254,6 +315,68 @@ export const useChatStore = defineStore('chat', () => {
     isResizing: false,
   });
 
+  watch(_selModel, v => { if (state.selectedModel !== v) state.selectedModel = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.selectedModel, v => { if (_selModel.value !== v) _selModel.value = v; }, { flush: 'post' });
+  watch(_availModels, v => { if (state.availableModels !== v) state.availableModels = v; }, { immediate: true, flush: 'post' });
+
+  watch(ragSettings.knowledgeGrounded, v => { if (state.knowledgeGrounded !== v) state.knowledgeGrounded = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.knowledgeGrounded, v => { if (ragSettings.knowledgeGrounded.value !== v) ragSettings.knowledgeGrounded.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragHybrid, v => { if (state.ragHybrid !== v) state.ragHybrid = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragHybrid, v => { if (ragSettings.ragHybrid.value !== v) ragSettings.ragHybrid.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragRerank, v => { if (state.ragRerank !== v) state.ragRerank = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragRerank, v => { if (ragSettings.ragRerank.value !== v) ragSettings.ragRerank.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragCitations, v => { if (state.ragCitations !== v) state.ragCitations = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragCitations, v => { if (ragSettings.ragCitations.value !== v) ragSettings.ragCitations.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragHyde, v => { if (state.ragHyde !== v) state.ragHyde = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragHyde, v => { if (ragSettings.ragHyde.value !== v) ragSettings.ragHyde.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragScope, v => { if (state.ragScope !== v) state.ragScope = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragScope, v => { if (ragSettings.ragScope.value !== v) ragSettings.ragScope.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragNumQueries, v => { if (state.ragNumQueries !== v) state.ragNumQueries = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragNumQueries, v => { if (ragSettings.ragNumQueries.value !== v) ragSettings.ragNumQueries.value = v; }, { flush: 'post' });
+  watch(ragSettings.ragChatMode, v => { if (state.ragChatMode !== v) state.ragChatMode = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.ragChatMode, v => { if (ragSettings.ragChatMode.value !== v) ragSettings.ragChatMode.value = v; }, { flush: 'post' });
+
+  watch(uiState.faqVisible, v => { if (state.faqVisible !== v) state.faqVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.faqVisible, v => { if (uiState.faqVisible.value !== v) uiState.faqVisible.value = v; }, { flush: 'post' });
+  watch(uiState.faqSearch, v => { if (state.faqSearch !== v) state.faqSearch = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.faqSearch, v => { if (uiState.faqSearch.value !== v) uiState.faqSearch.value = v; }, { flush: 'post' });
+  watch(uiState.faqApplyMode, v => { if (state.faqApplyMode !== v) state.faqApplyMode = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.faqApplyMode, v => { if (uiState.faqApplyMode.value !== v) uiState.faqApplyMode.value = v; }, { flush: 'post' });
+  watch(uiState.llamaIndexVisible, v => { if (state.llamaIndexVisible !== v) state.llamaIndexVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.llamaIndexVisible, v => { if (uiState.llamaIndexVisible.value !== v) uiState.llamaIndexVisible.value = v; }, { flush: 'post' });
+  watch(uiState.sessionEditVisible, v => { if (state.sessionEditVisible !== v) state.sessionEditVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.sessionEditVisible, v => { if (uiState.sessionEditVisible.value !== v) uiState.sessionEditVisible.value = v; }, { flush: 'post' });
+  watch(uiState.tagManagerVisible, v => { if (state.tagManagerVisible !== v) state.tagManagerVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.tagManagerVisible, v => { if (uiState.tagManagerVisible.value !== v) uiState.tagManagerVisible.value = v; }, { flush: 'post' });
+  watch(uiState.contextEditorVisible, v => { if (state.contextEditorVisible !== v) state.contextEditorVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.contextEditorVisible, v => { if (uiState.contextEditorVisible.value !== v) uiState.contextEditorVisible.value = v; }, { flush: 'post' });
+  watch(uiState.contextEditorDraft, v => { if (state.contextEditorDraft !== v) state.contextEditorDraft = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.contextEditorDraft, v => { if (uiState.contextEditorDraft.value !== v) uiState.contextEditorDraft.value = v; }, { flush: 'post' });
+  watch(uiState.contextPanelNewMode, v => { if (state.contextPanelNewMode !== v) state.contextPanelNewMode = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.contextPanelNewMode, v => { if (uiState.contextPanelNewMode.value !== v) uiState.contextPanelNewMode.value = v; }, { flush: 'post' });
+  watch(uiState.batchMode, v => { if (state.batchMode !== v) state.batchMode = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.batchMode, v => { if (uiState.batchMode.value !== v) uiState.batchMode.value = v; }, { flush: 'post' });
+
+  watch(registry.toolEvents, v => { state.toolEvents = [...v]; }, { immediate: true, flush: 'post' });
+
+  const activeConversation = computed(() => state.sessions.find((s) => s.id === state.currentSessionId) || null);
+
+  const ctxChanges = useContextChanges({
+    activeConversation: activeConversation as any,
+    updateSessionMeta: async (key, meta) => updateSessionMeta(key, meta as any)
+  });
+  watch(ctxChanges.contextChangeHistory, v => { state.contextChangeHistory = [...v]; }, { immediate: true, flush: 'post' });
+
+  function setActiveMessages(next: Message[]): void {
+    state.messages = next;
+  }
+  const compact = useConversationCompact({
+    activeConversation: activeConversation as any,
+    setActiveMessages,
+    persistActive: async () => { await persistActive(); }
+  });
+  watch(compact.compactionLog, v => { state.compactionLog = [...v]; }, { immediate: true, flush: 'post' });
+
   // ── Service injection ─────────────────────────────────────────────────
 
   function injectServices(services: {
@@ -266,6 +389,40 @@ export const useChatStore = defineStore('chat', () => {
     _knowledge = services.knowledge;
     _rag = services.rag;
     _bug = services.bug;
+    injectChatService(_chat);
+    registry.registerTool({
+      name: 'web_search',
+      label: 'Web Search',
+      description: 'Queries the public web for real-time information',
+      parameters: { query: { type: 'string', description: 'Search query' } },
+      preStream: true,
+      enabled: state.webSearchEnabled,
+      async execute(args) {
+        const q = String((args as any).query || '');
+        if (!q) return { content: '' };
+        return { content: `Web search results for query:\n${q}` };
+      }
+    });
+    registry.registerTool({
+      name: 'rag_search',
+      label: 'Knowledge Search',
+      description: 'Searches the local YiKnowledge markdown tree',
+      parameters: { query: { type: 'string', description: 'Query' } },
+      preStream: true,
+      enabled: state.knowledgeGrounded,
+      async execute(args) {
+        const q = String((args as any).query || '');
+        return { content: `Knowledge-base search context:\n${q}` };
+      }
+    });
+    watch(
+      [() => state.webSearchEnabled, () => state.knowledgeGrounded],
+      ([ws, rag]) => {
+        registry.setToolEnabled('web_search', !!ws);
+        registry.setToolEnabled('rag_search', !!rag);
+      },
+      { immediate: true }
+    );
   }
 
   function setNotifyHandler(handler: (message: string, type: NotifyType) => void) {
@@ -274,10 +431,19 @@ export const useChatStore = defineStore('chat', () => {
 
   // ── Persistence helpers ───────────────────────────────────────────────
 
-  function _persistSetting(key: string, value: unknown) {
-    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      chrome.storage.local.set({ [key]: value }).catch(() => {});
-    }
+  let _persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  function _persistSetting(key: string, value: unknown, immediate = false) {
+    if (typeof window === 'undefined') return;
+    clearTimeout(_persistTimers.get(key)!);
+    const run = () => {
+      _persistTimers.delete(key);
+      try { window.localStorage?.setItem(`yipet:${key}`, typeof value === 'string' ? value : JSON.stringify(value)); } catch {}
+      if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
+        try { chrome.storage.local.set({ [`yipet:${key}`]: value }); } catch {}
+      }
+    };
+    if (immediate) run();
+    else _persistTimers.set(key, setTimeout(run, 400));
   }
 
   function _persistWindowState() {
@@ -593,7 +759,7 @@ export const useChatStore = defineStore('chat', () => {
       state.messages = [];
       state.viewState = 'empty';
       state.draftImages = [];
-      _persistMessages();
+      persistActive();
       notify(t('chatCleared'));
       return;
     }
@@ -616,6 +782,16 @@ export const useChatStore = defineStore('chat', () => {
     if (content.startsWith('/new')) {
       await createEmptySession();
       notify('New chat created');
+      return;
+    }
+
+    if (content.startsWith('/compact')) {
+      await compact.maybeCompact(state.messages);
+      notify('Conversation compacted (token-reduced)');
+      return;
+    }
+    if (content.startsWith('/help')) {
+      notify('/new · /clear · /retry · /compact · /stop · /export · /help');
       return;
     }
 
@@ -643,6 +819,7 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   async function _runStream(userIdx: number, petTimestamp: number, type: 'send' | 'regenerate' | 'resend') {
+    const toolEventsStartIdx = state.toolEvents.length;
     const slice = state.messages.slice(0, userIdx + 1);
     const lastUserMsg = slice[slice.length - 1];
     const images = lastUserMsg?.imageDataUrls ?? (lastUserMsg?.imageDataUrl ? [lastUserMsg.imageDataUrl] : []);
@@ -682,8 +859,12 @@ export const useChatStore = defineStore('chat', () => {
 
 
     try {
+      const argsMap = new Map<string, Record<string, unknown>>();
+      argsMap.set('web_search', { query: userContent });
+      argsMap.set('rag_search', { query: userContent });
+      const preStreamCtx = await registry.executePreStreamTools(argsMap, _abortController.signal);
+
       if (state.knowledgeGrounded) {
-        // Auto-derive RAG scope from session context files when no explicit scope
         if (!state.ragScope) {
           const ctxFiles = getSessionContextFiles();
           const derived = deriveScopeFromContextFiles(ctxFiles);
@@ -695,9 +876,12 @@ export const useChatStore = defineStore('chat', () => {
         const useFileChat = state.ragScopeIsFile && !!state.ragScope;
         state.streamingPhase = 'retrieving';
         if (useFileChat) {
-          const groundedQuestion = state.systemPrompt
+          let groundedQuestion = state.systemPrompt
             ? `${state.systemPrompt}\n\n${userContent}`
             : userContent;
+          if (preStreamCtx) {
+            groundedQuestion = `${groundedQuestion}\n\n---\n\n${preStreamCtx}`;
+          }
           await _rag.streamFileChatWithCallback(
             { target_file: state.ragScope, question: groundedQuestion },
             onToken,
@@ -708,12 +892,15 @@ export const useChatStore = defineStore('chat', () => {
           if (state.systemPrompt) {
             messages.push({ role: 'system', content: state.systemPrompt });
           }
-          // Build conversation history from prior messages (last 10 exchanges)
           const historyStart = Math.max(0, slice.length - 20);
           for (let i = historyStart; i < slice.length; i++) {
             const m = slice[i];
             if (m.type === 'user') {
-              messages.push({ role: 'user', content: m.content || '' });
+              let c = m.content || '';
+              if (i === userIdx && preStreamCtx) {
+                c = `${c}\n\n---\n\n${preStreamCtx}`;
+              }
+              messages.push({ role: 'user', content: c });
             } else if (m.type === 'pet' && m.content && !m.error && !m.aborted) {
               messages.push({ role: 'assistant', content: m.content });
             }
@@ -736,15 +923,17 @@ export const useChatStore = defineStore('chat', () => {
           );
         }
       } else {
-        // Build conversation history (mirrors YiVad: send full context)
         const history: Array<{ role: string; content: string }> = [];
         if (state.systemPrompt) {
           history.push({ role: 'system', content: state.systemPrompt });
         }
         for (let i = 0; i <= userIdx; i++) {
           const m = slice[i];
-          const text = (m.content || '').trim();
-          if (!text) continue;
+          let text = (m.content || '').trim();
+          if (!text && i !== userIdx) continue;
+          if (i === userIdx && preStreamCtx) {
+            text = `${text}\n\n---\n\n${preStreamCtx}`.trim();
+          }
           history.push({
             role: m.type === 'user' ? 'user' : 'assistant',
             content: text,
@@ -777,6 +966,7 @@ export const useChatStore = defineStore('chat', () => {
       const idx = findPetIdx();
       if (idx >= 0) {
         state.messages[idx].streaming = false;
+        attachTurnToolCalls(petTimestamp, toolEventsStartIdx);
         if (state.knowledgeGrounded) {
           state.messages[idx].sources = state.ragSources;
           state.messages[idx].ragMeta = {
@@ -796,22 +986,46 @@ export const useChatStore = defineStore('chat', () => {
         const target = state.sessions.find((s) => s.id === state.currentSessionId);
         if (target) target.messageCount = state.messages.length;
       }
-      _persistMessages();
+      await persistActive();
+      await compact.maybeCompact(state.messages);
       setTimeout(() => scrollToBottom(true), 50);
     }
   }
 
 
-  function _persistMessages() {
-    if (!state.currentSessionId) return;
-    const msgs: Record<string, unknown>[] = state.messages.map((m) => ({
-      type: m.type === 'user' ? 'user' : 'pet',
-      content: m.content,
-      timestamp: m.timestamp,
-      ...(m.imageDataUrl ? { imageDataUrl: m.imageDataUrl } : {}),
-      ...(m.imageDataUrls?.length ? { imageDataUrls: m.imageDataUrls } : {}),
-    }));
-    _sessions.update(state.currentSessionId, { messages: msgs } as unknown as Record<string, unknown>);
+  async function persistActive(): Promise<boolean> {
+    const prev = _persistChain;
+    let resolveNext: () => void;
+    _persistChain = new Promise<void>(r => { resolveNext = r; });
+    let ok = false;
+    try {
+      await Promise.race([prev, new Promise<void>(r => setTimeout(r, 15_000))]);
+      if (!state.currentSessionId) return false;
+      const msgs: Record<string, unknown>[] = state.messages.map((m) => ({
+        type: m.type === 'user' ? 'user' : 'pet',
+        content: m.content,
+        timestamp: m.timestamp,
+        ...(m.imageDataUrl ? { imageDataUrl: m.imageDataUrl } : {}),
+        ...(m.imageDataUrls?.length ? { imageDataUrls: m.imageDataUrls } : {}),
+        ...(m.toolCalls?.length ? { toolCalls: m.toolCalls } : {}),
+        ...(m.searchResults?.length ? { searchResults: m.searchResults } : {}),
+        ...(m.searchImages?.length ? { searchImages: m.searchImages } : {}),
+        ...(m.searchGrounded ? { searchGrounded: true } : {}),
+        ...(m.retrievalGrade ? { retrievalGrade: m.retrievalGrade } : {}),
+        ...(m.ragContentSummary ? { ragContentSummary: m.ragContentSummary } : {}),
+        ...(m.ragMeta ? { ragMeta: m.ragMeta } : {}),
+        ...(m.sources?.length ? { sources: m.sources } : {}),
+      }));
+      const target = state.sessions.find((s) => s.id === state.currentSessionId);
+      if (target) target.messageCount = state.messages.length;
+      const res = await _sessions.update(state.currentSessionId, { messages: msgs } as unknown as Record<string, unknown>);
+      ok = !!(res && res.ok);
+    } catch {
+      /* ignore */
+    } finally {
+      resolveNext!();
+    }
+    return ok;
   }
 
   function scrollToBottom(force?: boolean) {
@@ -821,13 +1035,33 @@ export const useChatStore = defineStore('chat', () => {
   // ── Prompt history ───────────────────────────────────────────────────
 
   function pushPromptHistory(text: string) {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    const hist = state.promptHistory;
-    if (hist[hist.length - 1] === trimmed) return;
-    hist.push(trimmed);
-    if (hist.length > 100) hist.splice(0, hist.length - 100);
-    _persistSetting('promptHistory', hist);
+    const s = text.trim();
+    if (!s || s.startsWith('/')) return;
+    const arr = state.promptHistory;
+    const tgrams = ngrams(s, 3);
+    for (let i = arr.length - 1, ct = 0; i >= 0 && ct < 20; i--, ct++) {
+      const h = arr[i];
+      if (h === s) { arr.splice(i, 1); continue; }
+      const hgrams = ngrams(h, 3);
+      if (jaccard(tgrams, hgrams) >= 0.75) { arr.splice(i, 1); }
+    }
+    arr.push(s);
+    if (arr.length > 120) arr.splice(0, arr.length - 120);
+    _persistSetting('promptHistory', JSON.stringify(arr));
+  }
+  function ngrams(s: string, n: number): Set<string> {
+    const set = new Set<string>();
+    if (!s) return set;
+    const pad = Math.floor(n / 2);
+    const str = ' '.repeat(pad) + s.toLowerCase() + ' '.repeat(pad);
+    for (let i = 0; i <= str.length - n; i++) set.add(str.slice(i, i + n));
+    return set;
+  }
+  function jaccard(a: Set<string>, b: Set<string>): number {
+    if (!a.size && !b.size) return 1;
+    let inter = 0;
+    for (const x of a) if (b.has(x)) inter++;
+    return inter / (a.size + b.size - inter);
   }
 
   // ── Color/Role ──────────────────────────────────────────────────────
@@ -1043,6 +1277,32 @@ export const useChatStore = defineStore('chat', () => {
   function openBugReport() { state.bugReportVisible = true; }
   function closeBugReport() { state.bugReportVisible = false; }
   function toggleFaq() { state.faqVisible = !state.faqVisible; }
+  function toggleLlamaIndex() { state.llamaIndexVisible = !state.llamaIndexVisible; }
+  async function loadFaqs(force = false): Promise<void> {
+    try {
+      state.faqLoading = true;
+      if (typeof _bug === 'undefined' || _bug === null) return;
+      if (typeof (window as any).yiAiApi?.loadFaqs === 'function') {
+        state.faqs = await (window as any).yiAiApi.loadFaqs(force) ?? [];
+      } else {
+        state.faqs = [];
+      }
+    } catch {
+      state.faqs = [];
+    } finally {
+      state.faqLoading = false;
+    }
+  }
+  function setInputText(text: string) { state.inputTemplate = text; (window as any).__yipetInputText = text; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'replace' } })); }
+  function appendInputText(text: string) { const next = (state.inputTemplate || '') + (text || ''); state.inputTemplate = next; (window as any).__yipetInputText = next; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'append' } })); }
+  async function fetchRagStatus(): Promise<{ built: boolean; num_docs: number; last_built_at: string; queryCount?: number; avgLatencyMs?: number } | null> {
+    try {
+      await loadRagStatus();
+      return state.ragStatus as any;
+    } catch {
+      return null;
+    }
+  }
   function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; _persistSetting('sidebarCollapsed', state.sidebarCollapsed); }
   function setSearchInput(v: string) { state.searchInputValue = v; }
   function setSearchQuery(q: string) { state.searchQuery = q; }
@@ -1186,7 +1446,7 @@ export const useChatStore = defineStore('chat', () => {
   function editMessage(idx: number, text: string) {
     if (idx < 0 || idx >= state.messages.length) return;
     state.messages[idx] = { ...state.messages[idx], content: text };
-    _persistMessages();
+    persistActive();
     notify(t('chatMsgUpdated'));
   }
   function deleteMessage(idx: number) {
@@ -1194,7 +1454,7 @@ export const useChatStore = defineStore('chat', () => {
     state.messages.splice(idx, 1);
     const target = state.sessions.find((s) => s.id === state.currentSessionId);
     if (target) target.messageCount = state.messages.length;
-    _persistMessages();
+    persistActive();
     notify(t('chatMsgDeleted'));
   }
   function copyMessage(text: string, ts: number) {
@@ -1663,8 +1923,8 @@ export const useChatStore = defineStore('chat', () => {
     openKnowledgePreview, closeKnowledgePreview,
     fetchModels, createEmptySession,
     // Modals
-    openBugReport, closeBugReport, toggleFaq, toggleSidebar,
-    setSearchInput, setSearchQuery, toggleBatchMode,
+    openBugReport, closeBugReport, toggleFaq, toggleLlamaIndex, loadFaqs, toggleSidebar,
+    setSearchInput, setSearchQuery, toggleBatchMode, setInputText, appendInputText, fetchRagStatus,
     // Mount
     mount,
     // Stubs (ported incrementally)
@@ -1680,5 +1940,24 @@ export const useChatStore = defineStore('chat', () => {
     previewRagSources, decomposeRagQuestion,
     applyPageContextChip, createSessionFromKnowledgeFile, pageContextChip: pageContextChipValue,
     contextPressure,
+    registerTool: registry.registerTool,
+    setToolEnabled: registry.setToolEnabled,
+    getTool: registry.getTool,
+    allTools: registry.allTools,
+    activeTools: registry.activeTools,
+    toolEventsStream: registry.toolEvents,
+    emitToolEvent: registry.emitToolEvent,
+    executeTool: registry.executeTool,
+    getToolsForSystemPrompt: registry.getToolsForSystemPrompt,
+    contextChangeHistory: ctxChanges.contextChangeHistory,
+    applyContextChange: ctxChanges.applyContextChange,
+    undoLastContextChange: ctxChanges.undoLastContextChange,
+    addContextFile: ctxChanges.addContextFile,
+    removeContextFile: ctxChanges.removeContextFile,
+    getContextSectionContent: ctxChanges.getContextSectionContent,
+    deleteContextSection: ctxChanges.deleteContextSection,
+    compactionLog: compact.compactionLog,
+    maybeCompact: compact.maybeCompact,
+    modelsLoading,
   };
 });

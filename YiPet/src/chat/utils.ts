@@ -35,9 +35,10 @@ function detectLang(code: string): string {
   return '';
 }
 
-renderer.code = function (code: { text: string; lang?: string; escaped?: boolean }): string {
+renderer.code = function (code: { text: string; lang?: string; escaped?: boolean; type?: string; raw?: string }): string {
   const lang = code.lang || detectLang(code.text);
-  const html = origCode(code);
+  const normalized: any = { type: code.type || 'code', raw: code.raw ?? code.text, text: code.text, lang, escaped: code.escaped };
+  const html = origCode(normalized);
   if (!lang) return html;
   return `<div class="code-block-wrapper" data-lang="${lang}">
     <div class="code-block-header"><span class="code-block-lang">${lang}</span></div>

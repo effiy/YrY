@@ -4,7 +4,7 @@
  * Mirrors YiVad AiChatBox: inline chat header, light theme, clean layout.
  */
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Search, Check } from '@element-plus/icons-vue';
+import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Search, Check, DataBoard } from '@element-plus/icons-vue';
 import { useChatStore } from '../stores/chat';
 import { keyboardRegistry } from '@/shared/shortcuts';
 import ChatHeader from './ChatHeader.vue';
@@ -24,6 +24,7 @@ import SessionEditDialog from './SessionEditDialog.vue';
 import SessionSummaryDialog from './SessionSummaryDialog.vue';
 import TagManagerDialog from './TagManagerDialog.vue';
 import WeChatSettingsModal from './WeChatSettingsModal.vue';
+import LlamaIndexPanel from './LlamaIndexPanel/index.vue';
 
 const RESIZE_HANDLES = ['n', 's', 'w', 'e', 'se', 'sw', 'ne', 'nw'] as const;
 
@@ -61,6 +62,26 @@ const currentSession = computed(() =>
 const contextFileCount = computed(() => {
   const tags = currentSession.value?.tags ?? [];
   return tags.filter((t: string) => typeof t === 'string' && t.startsWith('ctx:')).length;
+});
+
+const perf = computed(() => {
+  const msgs = s.messages ?? [];
+  let totalChars = 0, totalTok = 0, petTok = 0, usrTok = 0, turns = 0;
+  for (const m of msgs) {
+    const c = (m.content || '').length;
+    const t = Math.ceil(c / 4);
+    totalChars += c; totalTok += t;
+    if (m.type === 'pet') { petTok += t; turns++; }
+    else usrTok += t;
+  }
+  const costUsd = ((usrTok * 3) + (petTok * 10)) / 1_000_000;
+  const rate = totalTok && turns ? Math.round(totalTok / Math.max(1, turns)) : 0;
+  return {
+    totalTok, petTok, usrTok, turns,
+    rate,
+    costText: costUsd >= 0.01 ? `$${costUsd.toFixed(2)}` : costUsd >= 0.0001 ? `${(costUsd*100).toFixed(2)}¢` : '<0.01¢',
+    perTurn: rate ? `${rate} t/t` : '0',
+  };
 });
 
 // Auto-scroll on new messages
@@ -225,7 +246,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Inline chat header bar (mirrors YiVad ai-chat-box__chat-hdr) -->
-        <div v-if="store.state.activeConversation || currentSession" class="yipet-chat-hdr">
+        <div v-if="currentSession" class="yipet-chat-hdr">
           <div class="yipet-chat-hdr-left">
             <el-button
               v-if="!s.sidebarCollapsed"
@@ -309,6 +330,22 @@ onUnmounted(() => {
             <el-button size="small" text title="New chat" @click="store.createEmptySession?.()">
               <el-icon><Plus /></el-icon>
             </el-button>
+            <el-tooltip
+              placement="bottom"
+              :content="`${perf.totalTok} tok (user ${perf.usrTok} + assistant ${perf.petTok}) · ${perf.turns} turns · est. ${perf.costText}`"
+            >
+              <span class="perf-pill">
+                <svg viewBox="0 0 14 14" class="perf-pill-spark"><path d="M1 11 L4 7 L6 9 L10 3 L13 5" stroke-width="1.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="perf-pill-tok">{{ perf.totalTok }}t</span>
+                <span class="perf-pill-sep">·</span>
+                <span class="perf-pill-rate">{{ perf.perTurn }}</span>
+                <span class="perf-pill-sep">·</span>
+                <span class="perf-pill-cost">{{ perf.costText }}</span>
+              </span>
+            </el-tooltip>
+            <el-button size="small" text title="RAG Console" @click="store.toggleLlamaIndex?.()">
+              <el-icon><DataBoard /></el-icon>
+            </el-button>
             <el-button size="small" text title="Export as HTML" @click="store.exportConversationHtml?.()">
               <el-icon><Download /></el-icon>
             </el-button>
@@ -316,7 +353,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Messages area -->
-        <div id="yipet-chat-messages" role="log" aria-live="polite">
+        <div id="yipet-chat-messages" role="log" aria-live="polite" class="yipet-chat-messages-wrap">
           <ChatMessages
             :messages="s.messages"
             :view-state="s.viewState"
@@ -327,7 +364,7 @@ onUnmounted(() => {
 
         <!-- Input area -->
         <div class="yipet-chat-input-wrap">
-          <ChatInput />
+          <ChatInput v-show="true" />
         </div>
       </div>
     </div>
@@ -337,6 +374,7 @@ onUnmounted(() => {
     <SessionEditDialog />
     <TagManagerDialog />
     <FaqDialog />
+    <LlamaIndexPanel @close="store.toggleLlamaIndex?.()" />
     <KnowledgePreviewDialog />
     <SaveToKnowledgeDialog />
     <RagSourcesPreviewDialog />
@@ -404,6 +442,7 @@ onUnmounted(() => {
   flex-direction: column;
   background: #141228;
   position: relative;
+  overflow: hidden !important;
 }
 
 // Sidebar
@@ -525,18 +564,41 @@ onUnmounted(() => {
 }
 
 // Messages area
-#yipet-chat-messages {
+#yipet-chat-messages,
+.yipet-chat-messages-wrap {
   flex: 1 1 0;
   min-height: 0;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #13122a;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,102,241,.35) transparent;
+}
+#yipet-chat-messages::-webkit-scrollbar,
+.yipet-chat-messages-wrap::-webkit-scrollbar { width: 6px; }
+#yipet-chat-messages::-webkit-scrollbar-thumb,
+.yipet-chat-messages-wrap::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,.35);
+  border-radius: 3px;
 }
 
 // Input wrap
 .yipet-chat-input-wrap {
-  flex: 0 0 auto;
+  flex: 0 0 auto !important;
+  min-height: 160px !important;
+  height: auto !important;
+  max-height: 60vh;
+  overflow: visible !important;
+  background: #141228;
+  border-top: 1px solid rgba(99,102,241,.22);
+  z-index: 10 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+  position: relative;
 }
 
 // Resize handles (keep dark for contrast against any page)
@@ -604,6 +666,24 @@ onUnmounted(() => {
   .yipet-chat-hdr { gap: 4px; padding: 6px 8px; }
   .yipet-chat-hdr-title { max-width: 140px; font-size: 12px; }
 }
+
+.perf-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 24px; padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(34,197,94,.08);
+  border: 1px solid rgba(34,197,94,.22);
+  color: #86efac; font-size: 11px; font-weight: 500;
+  font-family: 'SF Mono', monospace;
+  cursor: default;
+  transition: all .15s;
+  &:hover { background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.35); }
+}
+.perf-pill-spark { width: 14px; height: 14px; color: #22c55e; }
+.perf-pill-tok { color: #bbf7d0; font-weight: 700; }
+.perf-pill-sep { opacity: .5; color: #86efac; }
+.perf-pill-rate { color: #4ade80; }
+.perf-pill-cost { color: #22c55e; font-weight: 600; }
 </style>
 
 <style lang="scss">

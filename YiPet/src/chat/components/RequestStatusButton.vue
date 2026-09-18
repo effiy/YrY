@@ -33,7 +33,7 @@ const label = computed(() => (props.sending ? 'Stop' : 'Idle'));
     :title="title"
     :aria-label="title"
     :disabled="!sending && disabled"
-    @click="emit('stop')"
+    @click="$emit('stop')"
   >
     <el-icon :size="14" class="rs-icon"><VideoPause /></el-icon>
     <span class="rs-label">{{ label }}</span>
