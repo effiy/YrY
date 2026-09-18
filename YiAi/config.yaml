@@ -138,6 +138,7 @@ observer:
 ollama:
   url: "http://localhost:11434"
   auth: ""
+  chat_model: "qwen3.5:latest"
   chat_timeout: 600
   num_ctx: 4096          # context window size (tokens)
   num_predict: 2048      # max output tokens
@@ -162,8 +163,8 @@ ai_provider: "ollama"
 # RAG (llama_index) Configuration
 rag:
   embed_model: "nomic-embed-text"
-  llm_model: "qwen2.5:latest"
-  hyde_model: "qwen2.5-coder:3b"     # same fast model for HyDE
+  llm_model: "qwen3.5:latest"
+  hyde_model: "qwen3-coder:latest"     # same fast model for HyDE
   persist_dir: "./data/rag_store"
   top_k: 6
   chunk_size: 2048

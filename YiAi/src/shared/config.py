@@ -147,6 +147,7 @@ class Settings(BaseSettings):
     # Ollama
     ollama_url: str = Field("http://localhost:11434", validation_alias="ollama_url")
     ollama_auth: str = Field("", validation_alias="ollama_auth")
+    ollama_chat_model: str = Field("qwen3.5:latest", validation_alias="ollama_chat_model")
     ollama_chat_timeout: int = Field(600, validation_alias="ollama_chat_timeout")
     ollama_num_ctx: int = Field(16384, validation_alias="ollama_num_ctx")
     ollama_num_predict: int = Field(8192, validation_alias="ollama_num_predict")
@@ -166,8 +167,8 @@ class Settings(BaseSettings):
 
     # RAG (llama_index)
     rag_embed_model: str = Field("nomic-embed-text", validation_alias="rag_embed_model")
-    rag_llm_model: str = Field("qwen2.5:latest", validation_alias="rag_llm_model")
-    rag_hyde_model: str = Field("qwen2.5-coder:3b", validation_alias="rag_hyde_model")
+    rag_llm_model: str = Field("qwen3.5:latest", validation_alias="rag_llm_model")
+    rag_hyde_model: str = Field("qwen3-coder:latest", validation_alias="rag_hyde_model")
     rag_persist_dir: str = Field("./data/rag_store", validation_alias="rag_persist_dir")
     rag_top_k: int = Field(6, validation_alias="rag_top_k")
     rag_chunk_size: int = Field(2048, validation_alias="rag_chunk_size")

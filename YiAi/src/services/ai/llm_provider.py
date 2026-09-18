@@ -138,7 +138,7 @@ class OllamaProvider(LLMProvider):
 
     Config keys (from config.yaml / env):
         - ``ollama_url`` / ``OLLAMA_URL``
-        - ``ollama_chat_model`` (default: qwen2.5)
+        - ``ollama_chat_model`` (default: qwen3.5:latest)
         - ``ollama_embed_model`` (default: nomic-embed-text)
     """
 
@@ -149,7 +149,7 @@ class OllamaProvider(LLMProvider):
         embed_model: str | None = None,
     ):
         self._base_url = (base_url or settings.ollama_url).rstrip("/")
-        self._chat_model = chat_model or getattr(settings, "ollama_chat_model", "qwen2.5")
+        self._chat_model = chat_model or getattr(settings, "ollama_chat_model", "qwen3.5:latest")
         self._embed_model = embed_model or getattr(settings, "ollama_embed_model", "nomic-embed-text")
 
     @property

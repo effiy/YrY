@@ -126,7 +126,7 @@ export interface RagStatusResponse {
 export interface RagIndexInfo extends RagStatusResponse {
   /** Embedding model name (e.g. nomic-embed-text). */
   embed_model?: string;
-  /** LLM model used for chat (e.g. qwen2.5). */
+  /** LLM model used for chat (e.g. qwen3.5). */
   llm_model?: string;
   /** Chunk size in tokens. */
   chunk_size?: number;

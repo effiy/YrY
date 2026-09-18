@@ -120,7 +120,7 @@ export const CHAT_EXAMPLE_PROMPTS = [
 
 export const INDEX_INFO_DEFAULTS = {
   embed_model: "nomic-embed-text",
-  llm_model: "qwen2.5",
+  llm_model: "qwen3.5",
   chunk_size: 500,
   chunk_overlap: 50,
   hybrid_retrieval: true,

@@ -42,7 +42,7 @@ export const INDEX_INFO_FIELDS: IndexInfoField[] = [
     key: "llm_model",
     label: "Chat LLM",
     format: "tag",
-    tagMap: { "qwen2.5": { label: "qwen2.5", type: "info" } }
+    tagMap: { "qwen3.5": { label: "qwen3.5", type: "info" } }
   },
   { key: "chunk_size", label: "Chunk Size" },
   { key: "chunk_overlap", label: "Overlap" },

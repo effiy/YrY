@@ -5,6 +5,8 @@
 
   "cmdTogglePet": { "message": "Toggle pet show/hide" },
   "cmdOpenChat": { "message": "Open chat window" },
+  "cmdScreenshot": { "message": "Take a screenshot" },
+  "cmdToggleMute": { "message": "Toggle sound on/off" },
 
   "popupTitle": { "message": "Gentle Companion" },
   "popupSwitchLabel": { "message": "Show Pet" },
