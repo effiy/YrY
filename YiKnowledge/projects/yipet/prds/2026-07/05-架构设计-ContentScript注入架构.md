@@ -17,6 +17,9 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [05-prd-task-ContentScript注入架构]
+related_tests: [05-prd-test-ContentScript注入架构]
 ---
 
 # YP-07-05: Content Script 注入架构 — Shadow DOM 隔离 + 生命周期管理 + 页面兼容

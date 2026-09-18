@@ -3,7 +3,7 @@ title: YiKnowledge 规则手册与命名约定
 tags: [knowledge-base, rules, naming, frontmatter]
 category: root
 created: 2026-01-01
-updated: 2026-09-10
+updated: 2026-09-18
 source: internal
 type: summary
 status: stable
@@ -11,7 +11,7 @@ lifecycle: active
 review_cycle: quarterly
 roles: [curator]
 benefit: 知识库规则、Frontmatter 规范和命名约定的唯一权威来源
-last_verified: 2026-09-10
+last_verified: 2026-09-18
 related:
   - ./README.md
   - ./INDEX.md
@@ -48,7 +48,7 @@ YiKnowledge/
 
 | 角色 | 核心问题 | 典型文件示例 |
 |---|---|---|
-| engineer/ | 如何实现？ | [engineer/build/implement-an-api.md](./engineer/build/implement-an-api.md) —— API 实现模式 |
+| engineer/ | 如何实现？ | [engineer/build/05-构建-API设计模式.md](./engineer/build/05-构建-API设计模式.md) —— API 实现模式 |
 | leader/ | 如何决策？ | [leader/architecture/01-架构-架构决策设计.md](./leader/architecture/01-架构-架构决策设计.md) —— 架构决策记录 |
 | producter/ | 构建什么产品？ | [producter/discovery/01-发现-编写PRD.md](./producter/discovery/01-发现-编写PRD.md) —— PRD 编写指南 |
 | aier/ | 如何使用 AI？ | [aier/methods/](./aier/methods/) —— RAG 模式、Agent 架构 |

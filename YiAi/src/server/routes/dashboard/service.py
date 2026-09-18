@@ -1,6 +1,6 @@
 """Dashboard service stats — RPC call performance metrics."""
-import logging
 from collections import defaultdict
+import logging
 
 from fastapi import APIRouter
 from pydantic import BaseModel

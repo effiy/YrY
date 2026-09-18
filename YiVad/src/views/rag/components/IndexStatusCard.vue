@@ -16,7 +16,9 @@ defineProps<{
   <el-card shadow="hover" class="isc-card">
     <template #header>
       <div class="isc-header">
-        <span><el-icon><DataBoard /></el-icon> Index Status</span>
+        <span
+          ><el-icon><DataBoard /></el-icon> Index Status</span
+        >
         <el-tag :type="status.built ? 'success' : 'warning'" size="small" effect="dark">
           {{ status.built ? "HEALTHY" : "NOT BUILT" }}
         </el-tag>
@@ -29,7 +31,9 @@ defineProps<{
       </div>
       <div class="isc-row">
         <span class="isc-label">Last Built</span>
-        <span class="isc-value isc-value--time">{{ status.last_built_at ? formatTimestamp(status.last_built_at) : "Never" }}</span>
+        <span class="isc-value isc-value--time">{{
+          status.last_built_at ? formatTimestamp(status.last_built_at) : "Never"
+        }}</span>
       </div>
       <div class="isc-row">
         <span class="isc-label">Persist Directory</span>
@@ -47,8 +51,8 @@ defineProps<{
 .isc-card {
   .isc-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
   .isc-body {
     display: flex;
@@ -58,29 +62,34 @@ defineProps<{
 }
 .isc-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   font-size: 13px;
   line-height: 1.8;
-  &--error { color: var(--el-color-danger); }
+  &--error {
+    color: var(--el-color-danger);
+  }
 }
 .isc-label {
-  color: var(--el-text-color-secondary);
   flex-shrink: 0;
   margin-right: 12px;
+  color: var(--el-text-color-secondary);
 }
 .isc-value {
-  text-align: right;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  &--time { font-size: 12px; color: var(--el-text-color-regular); }
+  text-align: right;
+  &--time {
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+  }
   &--path {
-    font-size: 11px;
-    font-family: monospace;
-    color: var(--el-text-color-secondary);
     max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
     white-space: nowrap;
   }
 }

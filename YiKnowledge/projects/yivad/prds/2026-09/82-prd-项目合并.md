@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并"
 tags: [需求文档, 项目合并, 冲突解决, 合并预览, 数据映射, 合并历史]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并
 
 > 需求编号：YV-09-228 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/82-prd-task-项目合并.md)，验证方案见 [测试方案](../../tests/2026-09/82-prd-test-项目合并.md)。
 > 依赖：YV-09-226（项目克隆复制）、YV-09-119（项目对比视图）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -60,6 +83,7 @@ YiVad 管理中，团队有时会因组织调整或项目重组需要将两个�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前项目合并能力
@@ -116,6 +140,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：合并策略
@@ -170,6 +195,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 项目合并页面布局
@@ -250,6 +276,7 @@ stateDiagram-v2
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 改动总览
@@ -426,6 +453,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -443,6 +471,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：MergeConfigPanel
@@ -496,6 +525,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -507,6 +537,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -522,6 +553,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么选择源→目标合并而非双向合并？
@@ -542,6 +574,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -565,6 +598,7 @@ function validateMergeConfig(config: MergeConfig): string[] {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] MergeConfigPanel 验证源项目和目标项目不能相同

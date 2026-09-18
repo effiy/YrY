@@ -1,41 +1,29 @@
 ---
 doc_type: module
 prd_task_id: "YP-09-81"
-title: "YP-09-81: Content Script WebRTC 实时协作 — 点对点多用户宠物互动与状态同步 — 开发任务"
-status: 已完成
-priority: P2
+title: "YP-09-81: WebRTC 实时协作 — 开发方案"
+status: 待开始
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-estimate_frontend: 2.0
 source_prd: "88-架构设计-WebRTC实时协作.md"
 ---
 
-# YP-09-81: Content Script WebRTC 实时协作 — 点对点多用户宠物互动与状态同步 — 开发任务
+# YP-09-81: WebRTC 实时协作 — 开发方案
 
-> 来源 PRD：[88-架构设计-WebRTC实时协作.md](../../prds/2026-09/88-架构设计-WebRTC实时协作.md)
-> 需求编号：YP-09-81 · 优先级：P2 · 人天：2.0d
-> 类型：架构 · 状态：已完成
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
-## 实施路线图
+> 需求编号：YP-09-81 · 状态：待开始
 
-### 阶段一：核心实现（约 1.0d）
+## P2P 协作
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+WebRTC DataChannel 实现点对点会话共享。
 
-### 阶段二：完善与收尾（约 1.0d）
-
-| 步骤 | 任务 | 产出 |
-|------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 功能 | API |
+|------|-----|
+| 信令 | YiAi WebSocket |
+| 数据通道 | RTCDataChannel |
+| 光标同步 | 实时位置广播 |
+| 编辑冲突 | CRDT/OT 算法 |

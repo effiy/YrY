@@ -1,38 +1,55 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-96"
-title: "YV-09-96: 代码审查集成 — GitHub/GitLab PR 集成、审查自动化与审查时间分析 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-96: 代码审查集成 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "44-prd-代码审查集成.md"
 ---
 
-# YV-09-96: 代码审查集成 — GitHub/GitLab PR 集成、审查自动化与审查时间分析 — 开发任务
+# YV-09-96: 代码审查集成 — 开发方案
 
-> 来源 PRD：[44-prd-代码审查集成.md](../prds/2026-09/44-prd-代码审查集成.md)
-> 需求编号：YV-09-96 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-96 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + PR Service | `types/pr.ts`, `services/prService.ts` | 类型检查通过 | 0.03 |
-| 2 | PR Card 组件 | `PrCard.vue` | mock 数据渲染正确 | 0.05 |
-| 3 | PR List 容器 | `PrList.vue` | 多 PR 列表渲染 + 空状态 | 0.03 |
-| 4 | 审查检查清单组件 | `ReviewChecklist.vue` | 检查项勾选/取消正常 | 0.05 |
-| 5 | 审查时间分析图表 | `ReviewAnalytics.vue` | ECharts 图表正确渲染 | 0.05 |
-| 6 | Issue 详情页集成 | `detail.vue` | PR 卡片显示在 Issue 详情 | 0.05 |
-| 7 | 边界情况 + 加载状态 | 全模块 | 空数据/加载/错误状态处理 | 0.02 |
-| 8 | 调试 + 菜单入口 | 路由/菜单 | 审查分析页面可访问 | 0.02 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+与 Git 平台集成，在 Issue/Bug 详情页展示关联的 PR/Commit 列表和审查状态。
+
+### 关联展示
+
+| 关联类型 | 展示内容 |
+|---------|---------|
+| Pull Request | 标题/状态(open/merged)/作者/时间 |
+| Commit | 消息/hash/作者/时间 |
+| Review | 审查者/状态(approved/changes)/评论数 |
+
+> 依赖 GitHub/GitLab API 集成。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

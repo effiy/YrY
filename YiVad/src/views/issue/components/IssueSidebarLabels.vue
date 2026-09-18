@@ -17,7 +17,7 @@
             allow-create
             default-first-option
             placeholder="Add labels"
-            style="width:100%"
+            style="width: 100%"
             size="small"
           />
         </div>
@@ -27,16 +27,11 @@
         </div>
       </template>
       <div v-else-if="issue.labels?.length" class="id-sb-labels">
-        <el-tag
-          v-for="label in issue.labels"
-          :key="label"
-          size="small"
-          round
-          class="id-sb-label"
-          @click="goLabel(label)"
-        >{{ label }}</el-tag>
+        <el-tag v-for="label in issue.labels" :key="label" size="small" round class="id-sb-label" @click="goLabel(label)">{{
+          label
+        }}</el-tag>
       </div>
-      <div v-else class="id-sb-row__value--empty" style="padding:4px 0;font-size:12px">No labels</div>
+      <div v-else class="id-sb-row__value--empty" style="padding: 4px 0; font-size: 12px">No labels</div>
     </div>
   </div>
 </template>
@@ -68,7 +63,9 @@ async function save() {
     await store.editIssue(props.issue.key, { labels: labelsEdit.value } as any);
     ElMessage.success("Labels updated");
     editing.value = false;
-  } finally { saving.value = false; }
+  } finally {
+    saving.value = false;
+  }
 }
 
 function goLabel(name: string) {

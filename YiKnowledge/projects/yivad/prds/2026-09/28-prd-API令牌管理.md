@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: API 令牌管理
 tags:
 - API
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -31,7 +34,39 @@ source_okr: [yivad-003]
 # API 令牌管理
 
 > 需求编号：YV-09-60 · 优先级：P2 · 人天：0.3d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/28-prd-task-API令牌管理.md)，验证方案见 [测试方案](../../tests/2026-09/28-prd-test-API令牌管理.md)。
 > 依赖：需 YiAi 后端提供令牌 CRUD 端点（`services.auth.token_service`）和令牌认证中间件
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 令牌管理页面 | 参见 §令牌管理页面 |
+| FR-2 | 令牌创建对话框 | 参见 §令牌创建对话框 |
+| FR-3 | 令牌列表组件 | 参见 §令牌列表组件 |
+| FR-4 | 令牌 RPC 接口 | 参见 §令牌 RPC 接口 |
+| FR-5 | 令牌 Store | 参见 §令牌 Store |
 
 ## 改动总览
 
@@ -105,6 +140,7 @@ YiVad 当前仅支持 Session Cookie / JWT Token 认证（通过登录页面获�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前认证方式
@@ -151,6 +187,7 @@ YiVad 当前仅支持 Session Cookie / JWT Token 认证（通过登录页面获�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：令牌存储方案
@@ -199,6 +236,7 @@ YiVad 当前仅支持 Session Cookie / JWT Token 认证（通过登录页面获�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 令牌管理系统架构
@@ -279,6 +317,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 令牌管理页面
@@ -1060,6 +1099,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1076,6 +1116,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario: 创建令牌并复制
@@ -1143,6 +1184,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1154,6 +1196,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1170,6 +1213,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 令牌仅存储哈希，明文仅创建时展示
@@ -1202,6 +1246,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1225,6 +1270,7 @@ export const useTokenStore = defineStore('token', () => {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `ApiTokenManager.vue` 页面布局正确，令牌列表和详情抽屉功能正常

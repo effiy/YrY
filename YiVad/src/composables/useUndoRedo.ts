@@ -68,6 +68,6 @@ export function useUndoRedo(config: Partial<CommandManagerConfig> = {}) {
     commitTransaction,
     rollbackTransaction,
     getHistory,
-    clearHistory,
+    clearHistory
   };
 }

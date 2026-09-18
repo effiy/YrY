@@ -1,33 +1,59 @@
 <template>
-  <section v-for="dir in subdirs" :key="dir.id" class="role-card-view__section" :ref="(el) => { if (el) sectionRefs[dir.id] = el as HTMLElement; }">
+  <section
+    v-for="dir in subdirs"
+    :key="dir.id"
+    class="role-card-view__section"
+    :ref="
+      el => {
+        if (el) sectionRefs[dir.id] = el as HTMLElement;
+      }
+    "
+  >
     <h2 class="role-card-view__section-title" :style="{ borderLeftColor: dir.color }" @click="$emit('toggleSection', dir.id)">
       <span class="role-card-view__section-arrow" :class="{ collapsed: collapsedSections.has(dir.id) }">▸</span>
       {{ dir.icon }} {{ dir.label }}
     </h2>
     <p class="role-card-view__section-desc">{{ dir.desc }}</p>
     <template v-if="!collapsedSections.has(dir.id)">
-    <div class="role-card-view__grid">
-      <el-card v-for="file in filesByDir[dir.id]" :key="file.path" class="role-card-view__card" shadow="hover" @click="$emit('open', file)">
-        <el-button class="role-card-view__card-delete" text type="danger" size="small" :icon="Delete" @click.stop="$emit('delete', file)" />
-        <div class="role-card-view__card-head">
-          <span class="role-card-view__card-icon">{{ fileIcon(file) }}</span>
-          <div class="role-card-view__card-title-area">
-            <h3 class="role-card-view__card-name">{{ file.meta?.title || file.name }}</h3>
-            <span class="role-card-view__card-path">{{ filePathHint(file) }}</span>
+      <div class="role-card-view__grid">
+        <el-card
+          v-for="file in filesByDir[dir.id]"
+          :key="file.path"
+          class="role-card-view__card"
+          shadow="hover"
+          @click="$emit('open', file)"
+        >
+          <el-button
+            class="role-card-view__card-delete"
+            text
+            type="danger"
+            size="small"
+            :icon="Delete"
+            @click.stop="$emit('delete', file)"
+          />
+          <div class="role-card-view__card-head">
+            <span class="role-card-view__card-icon">{{ fileIcon(file) }}</span>
+            <div class="role-card-view__card-title-area">
+              <h3 class="role-card-view__card-name">{{ file.meta?.title || file.name }}</h3>
+              <span class="role-card-view__card-path">{{ filePathHint(file) }}</span>
+            </div>
           </div>
-        </div>
-        <p v-if="file.meta?.benefit" class="role-card-view__card-benefit">💡 {{ file.meta.benefit }}</p>
-        <p class="role-card-view__card-desc">{{ cardDescription(file) }}</p>
-        <div class="role-card-view__card-meta">
-          <el-tag v-if="file.meta?.type" :type="typeTagType(file.meta.type)" size="small">{{ file.meta.type }}</el-tag>
-          <el-tag v-if="file.meta?.status" :type="statusTagType(file.meta.status)" size="small">{{ file.meta.status }}</el-tag>
-          <el-tag v-if="file.meta?.lifecycle" :type="lifecycleTagType(file.meta.lifecycle)" size="small">{{ file.meta.lifecycle }}</el-tag>
-          <el-tag v-if="file.meta?.review_cycle" :type="reviewCycleTagType(file.meta.review_cycle)" size="small">{{ file.meta.review_cycle }}</el-tag>
-          <span class="role-card-view__card-size">{{ formatSize(file.size) }}</span>
-        </div>
-      </el-card>
-    </div>
-    <div v-if="!filesByDir[dir.id]?.length" class="role-card-view__empty-dir"><span>No files found in this area.</span></div>
+          <p v-if="file.meta?.benefit" class="role-card-view__card-benefit">💡 {{ file.meta.benefit }}</p>
+          <p class="role-card-view__card-desc">{{ cardDescription(file) }}</p>
+          <div class="role-card-view__card-meta">
+            <el-tag v-if="file.meta?.type" :type="typeTagType(file.meta.type)" size="small">{{ file.meta.type }}</el-tag>
+            <el-tag v-if="file.meta?.status" :type="statusTagType(file.meta.status)" size="small">{{ file.meta.status }}</el-tag>
+            <el-tag v-if="file.meta?.lifecycle" :type="lifecycleTagType(file.meta.lifecycle)" size="small">{{
+              file.meta.lifecycle
+            }}</el-tag>
+            <el-tag v-if="file.meta?.review_cycle" :type="reviewCycleTagType(file.meta.review_cycle)" size="small">{{
+              file.meta.review_cycle
+            }}</el-tag>
+            <span class="role-card-view__card-size">{{ formatSize(file.size) }}</span>
+          </div>
+        </el-card>
+      </div>
+      <div v-if="!filesByDir[dir.id]?.length" class="role-card-view__empty-dir"><span>No files found in this area.</span></div>
     </template>
   </section>
 </template>
@@ -38,7 +64,11 @@ import { Delete } from "@element-plus/icons-vue";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 
 interface Subdir {
-  id: string; icon: string; label: string; color: string; desc: string;
+  id: string;
+  icon: string;
+  label: string;
+  color: string;
+  desc: string;
 }
 
 const props = defineProps<{
@@ -58,7 +88,11 @@ defineEmits<{
 const sectionRefs: Record<string, HTMLElement> = {};
 
 const STRUCTURAL_TAGS = new Set([
-  "leaf", "index", "moc", "summary", "template",
+  "leaf",
+  "index",
+  "moc",
+  "summary",
+  "template",
   props.category,
   ...props.subdirs.map(d => d.id),
   ...props.structuralTags
@@ -122,21 +156,136 @@ function formatSize(bytes: number): string {
 </script>
 
 <style scoped lang="scss">
-.role-card-view__section { margin-bottom: 20px; }
-.role-card-view__section-title { margin: 0 0 2px; padding-left: 10px; border-left: 3px solid var(--el-color-primary); font-size: 15px; font-weight: 600; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 4px; &:hover { opacity: 0.8; } }
-.role-card-view__section-arrow { font-size: 12px; transition: transform 0.2s; display: inline-block; &.collapsed { transform: rotate(0deg); } &:not(.collapsed) { transform: rotate(90deg); } }
-.role-card-view__section-desc { margin: 0 0 10px; padding-left: 13px; font-size: 12px; color: var(--el-text-color-secondary); }
-.role-card-view__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
-.role-card-view__card { border-radius: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; &:hover { transform: translateY(-2px); } :deep(.el-card__body) { padding: 14px; } }
-.role-card-view__card-delete { position: absolute; top: 6px; right: 6px; opacity: 0; transition: opacity 0.2s; .role-card-view__card:hover & { opacity: 1; } }
-.role-card-view__card-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-.role-card-view__card-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-.role-card-view__card-title-area { min-width: 0; }
-.role-card-view__card-name { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.3; word-break: break-word; }
-.role-card-view__card-path { display: block; margin-top: 2px; font-size: 11px; font-family: monospace; color: var(--el-text-color-placeholder); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.role-card-view__card-benefit { margin: 0 0 4px; font-size: 12px; line-height: 1.5; color: var(--el-color-warning); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.role-card-view__card-desc { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--el-text-color-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.role-card-view__card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.role-card-view__card-size { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder); }
-.role-card-view__empty-dir { padding: 24px; text-align: center; font-size: 13px; color: var(--el-text-color-secondary); }
+.role-card-view__section {
+  margin-bottom: 20px;
+}
+.role-card-view__section-title {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding-left: 10px;
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  border-left: 3px solid var(--el-color-primary);
+  &:hover {
+    opacity: 0.8;
+  }
+}
+.role-card-view__section-arrow {
+  display: inline-block;
+  font-size: 12px;
+  transition: transform 0.2s;
+  &.collapsed {
+    transform: rotate(0deg);
+  }
+  &:not(.collapsed) {
+    transform: rotate(90deg);
+  }
+}
+.role-card-view__section-desc {
+  padding-left: 13px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.role-card-view__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+}
+.role-card-view__card {
+  position: relative;
+  cursor: pointer;
+  border-radius: 10px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  &:hover {
+    transform: translateY(-2px);
+  }
+  :deep(.el-card__body) {
+    padding: 14px;
+  }
+}
+.role-card-view__card-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  .role-card-view__card:hover & {
+    opacity: 1;
+  }
+}
+.role-card-view__card-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+.role-card-view__card-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 20px;
+}
+.role-card-view__card-title-area {
+  min-width: 0;
+}
+.role-card-view__card-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+}
+.role-card-view__card-path {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+}
+.role-card-view__card-benefit {
+  display: -webkit-box;
+  margin: 0 0 4px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-color-warning);
+  -webkit-box-orient: vertical;
+}
+.role-card-view__card-desc {
+  display: -webkit-box;
+  margin: 0 0 8px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
+}
+.role-card-view__card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.role-card-view__card-size {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-placeholder);
+}
+.role-card-view__empty-dir {
+  padding: 24px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+}
 </style>

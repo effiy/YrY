@@ -4,9 +4,9 @@ YiAi MCP Server — exposes YiAi's core capabilities as MCP tools.
 Mounted to the FastAPI app at /mcp, this enables Claude (via Claude Code)
 to interact with YiAi's backend services when working on YiPet or YiVad.
 """
-import logging
-import functools
 import asyncio
+import functools
+import logging
 
 from mcp.server.fastmcp import FastMCP
 
@@ -138,6 +138,7 @@ async def query_collection(
 ) -> str:
     """Query a MongoDB collection and return results as formatted JSON string."""
     import json
+
     from data.database import db
 
     try:

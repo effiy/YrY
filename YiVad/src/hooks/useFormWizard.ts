@@ -26,7 +26,7 @@ export const useFormWizard = (options: UseFormWizardOptions) => {
 
   /** Active (visible) steps after evaluating conditions */
   const activeSteps = computed(() => {
-    return steps.filter((step) => {
+    return steps.filter(step => {
       if (!step.condition) return true;
       return step.condition(formData.value);
     });
@@ -94,6 +94,6 @@ export const useFormWizard = (options: UseFormWizardOptions) => {
     prevStep,
     completeCurrentStep,
     reset,
-    restoreState,
+    restoreState
   };
 };

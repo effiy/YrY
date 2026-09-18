@@ -74,7 +74,7 @@ const props = withDefaults(defineProps<Props>(), {
   showToolbar: true,
   exportable: true,
   fullscreenable: true,
-  refreshable: true,
+  refreshable: true
 });
 
 defineEmits<{
@@ -121,39 +121,34 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .chart-container {
-  background: var(--el-bg-color);
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid var(--el-border-color-lighter);
   display: flex;
   flex-direction: column;
   min-height: 200px;
-
+  padding: 16px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
   &:fullscreen {
     padding: 24px;
     background: var(--el-bg-color);
   }
-
   &__header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
   }
-
   &__title {
     font-size: 14px;
     font-weight: 600;
     color: var(--el-text-color-primary);
   }
-
   &__body {
+    position: relative;
     flex: 1;
     min-height: 0;
-    position: relative;
   }
-
   &__state {
     display: flex;
     align-items: center;
@@ -161,51 +156,72 @@ onBeforeUnmount(() => {
     height: 100%;
     min-height: 160px;
   }
-
   &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 8px;
     padding: 0 16px 16px;
-
     .skeleton-bar {
       height: 12px;
-      background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+      background: linear-gradient(
+        90deg,
+        var(--el-fill-color-light) 25%,
+        var(--el-fill-color) 50%,
+        var(--el-fill-color-light) 75%
+      );
       background-size: 200% 100%;
-      animation: skeleton-shimmer 1.5s infinite;
       border-radius: 4px;
+      animation: skeleton-shimmer 1.5s infinite;
     }
+
     @keyframes skeleton-shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
     }
   }
-
-  &__error, &__empty {
+  &__error,
+  &__empty {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     color: var(--el-text-color-secondary);
-
-    p { margin: 0; font-size: 13px; }
+    p {
+      margin: 0;
+      font-size: 13px;
+    }
   }
-
-  &__error .el-icon { color: var(--el-color-danger); }
-  &__empty .el-icon { color: var(--el-text-color-placeholder); }
-
+  &__error .el-icon {
+    color: var(--el-color-danger);
+  }
+  &__empty .el-icon {
+    color: var(--el-text-color-placeholder);
+  }
   &__content {
     width: 100%;
     min-height: 160px;
   }
 }
-
-.skeleton-bar--1 { width: 40%; }
-.skeleton-bar--2 { width: 65%; }
-.skeleton-bar--3 { width: 50%; }
-.skeleton-bar--4 { width: 75%; }
-.skeleton-bar--5 { width: 55%; }
+.skeleton-bar--1 {
+  width: 40%;
+}
+.skeleton-bar--2 {
+  width: 65%;
+}
+.skeleton-bar--3 {
+  width: 50%;
+}
+.skeleton-bar--4 {
+  width: 75%;
+}
+.skeleton-bar--5 {
+  width: 55%;
+}
 </style>

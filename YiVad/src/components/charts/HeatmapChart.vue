@@ -23,7 +23,12 @@ const chartOption = computed<ECOption>(() => {
     return {
       tooltip: { position: "top" as const },
       grid: { left: "15%", right: "5%", top: "3%", bottom: "15%" },
-      xAxis: { type: "category" as const, data: props.data.xAxis, splitArea: { show: true }, axisLabel: { fontSize: 10, rotate: 45 } },
+      xAxis: {
+        type: "category" as const,
+        data: props.data.xAxis,
+        splitArea: { show: true },
+        axisLabel: { fontSize: 10, rotate: 45 }
+      },
       yAxis: { type: "category" as const, data: props.data.yAxis, splitArea: { show: true }, axisLabel: { fontSize: 10 } },
       visualMap: {
         min: props.data.min ?? 0,
@@ -31,15 +36,17 @@ const chartOption = computed<ECOption>(() => {
         calculable: true,
         orient: "horizontal" as const,
         left: "center",
-        bottom: 0,
+        bottom: 0
       },
-      series: [{
-        type: "heatmap" as const,
-        data: props.data.data,
-        label: { show: false },
-        emphasis: { itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)" } },
-      }],
-      ...props.options,
+      series: [
+        {
+          type: "heatmap" as const,
+          data: props.data.data,
+          label: { show: false },
+          emphasis: { itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.5)" } }
+        }
+      ],
+      ...props.options
     };
   }
   return (props.options as ECOption) ?? {};

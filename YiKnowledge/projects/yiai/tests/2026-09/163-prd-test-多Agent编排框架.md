@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-157"
 source_prds: ["163-需求-多Agent编排框架"]
 source_modules: []
+source_okr: [yiai-003]
 ---
 # YA-09-157: 多 Agent 编排框架 — Supervisor + Worker 角色分工 + 消息总线 + 黑板模式 + 人机协同 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[163-需求-多Agent编排框架.md](../../prds/2026-09/163-需求-多Agent编排框架.md)
 > 提取日期：2026-09-11

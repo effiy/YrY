@@ -23,7 +23,9 @@ export default [
       ".husky",
       ".local",
       "/bin",
-      "/src/mock/*",
+      "src/mock/*",
+      "src/assets/mock/**",
+      "src/typings/*.d.ts",
       "stats.html"
     ]
   },

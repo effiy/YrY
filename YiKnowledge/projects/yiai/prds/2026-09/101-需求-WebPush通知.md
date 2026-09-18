@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-97: 服务端 Web Push 通知 — 基于 VAPID 的浏览器推送与服务端事件桥接"
 tags: [需求文档, Web Push, VAPID, 浏览器推送, Service Worker, 通知, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yiai-001]
+related_modules: [101-prd-task-WebPush通知]
+related_tests: [101-prd-test-WebPush通知]
 ---
 
 # YA-09-97: Web Push 通知 — VAPID 浏览器推送与事件桥接
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-97 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-21（Webhook 事件通知）
@@ -61,6 +69,7 @@ YiAi 当前的通知渠道仅有企业微信（wework），但实际使用中存
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前通知架构
@@ -118,6 +127,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：推送协议 — VAPID vs FCM vs 自定义 WebSocket
@@ -156,6 +166,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 架构图
@@ -241,6 +252,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增 `src/services/webpush_service.py`
@@ -492,6 +504,7 @@ event_emitter = EventEmitter()
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 描述 | 文件 | 验证 | 人天 |
@@ -506,6 +519,7 @@ event_emitter = EventEmitter()
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 基准测试
@@ -529,6 +543,7 @@ event_emitter = EventEmitter()
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：用户订阅推送
@@ -588,6 +603,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -601,6 +617,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 回滚时间 |
@@ -612,6 +629,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：VAPID vs FCM
@@ -634,6 +652,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 指标
@@ -665,6 +684,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 | 要求 | 实现 |
@@ -677,6 +697,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] Web Push 通知通过 Service Worker `push` 事件
@@ -694,6 +715,7 @@ AND 返回 success=5, failed=0, expired=0
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

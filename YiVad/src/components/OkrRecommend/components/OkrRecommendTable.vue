@@ -27,7 +27,7 @@ defineProps<{
   projectLabel: (project: string) => string;
 }>();
 
-const columnFilters = defineModel<Record<string, string>>('columnFilters', { required: true });
+const columnFilters = defineModel<Record<string, string>>("columnFilters", { required: true });
 
 const emit = defineEmits<{
   openPreview: [row: TableRow];
@@ -113,10 +113,14 @@ const emit = defineEmits<{
   display: flex;
   flex-direction: column;
   gap: 4px;
-  span { font-size: 12px; line-height: 1.3; }
-  .el-input { width: 100%; }
+  span {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .el-input {
+    width: 100%;
+  }
 }
-
 .okr-cell-task {
   display: flex;
   flex-direction: column;
@@ -127,49 +131,61 @@ const emit = defineEmits<{
   font-weight: 600;
   line-height: 1.4;
   cursor: pointer;
-  &:hover { color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
 .okr-cell-sub {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
-
 .okr-cell-score {
   display: flex;
-  align-items: center;
   gap: 6px;
-  .el-progress { flex: 1; min-width: 40px; }
+  align-items: center;
+  .el-progress {
+    flex: 1;
+    min-width: 40px;
+  }
 }
 .okr-cell-score-val {
+  flex-shrink: 0;
+  font-family: monospace;
   font-size: 13px;
   font-weight: 700;
-  font-family: monospace;
-  flex-shrink: 0;
-  &.is-danger { color: var(--el-color-danger); }
-  &.is-warning { color: var(--el-color-warning); }
-  &.is-primary { color: var(--el-color-primary); }
-  &.is-info { color: var(--el-color-info); }
-  &.is-success { color: var(--el-color-success); }
+  &.is-danger {
+    color: var(--el-color-danger);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+  }
+  &.is-primary {
+    color: var(--el-color-primary);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+  }
+  &.is-success {
+    color: var(--el-color-success);
+  }
 }
-
 .okr-cell-reason {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 .okr-cell-reason-text {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.okr-cell-none {
-  color: var(--el-text-color-placeholder);
+  -webkit-line-clamp: 2;
   font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
+}
+.okr-cell-none {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 </style>

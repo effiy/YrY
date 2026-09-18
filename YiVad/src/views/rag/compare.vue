@@ -3,7 +3,10 @@
     <header class="rag-page-header">
       <div>
         <h1>RAG vs Baseline Comparison</h1>
-        <p>Submit the same question to both the RAG pipeline (YiKnowledge-grounded) and the plain LLM (no retrieval). Compare quality, sourcing, and hallucination side by side.</p>
+        <p>
+          Submit the same question to both the RAG pipeline (YiKnowledge-grounded) and the plain LLM (no retrieval). Compare
+          quality, sourcing, and hallucination side by side.
+        </p>
       </div>
     </header>
 
@@ -18,19 +21,29 @@
           @keyup.enter.ctrl="runCompare"
           :disabled="compareRunning"
         />
-        <div class="rag-query-hint">
-          <kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> compare
-        </div>
+        <div class="rag-query-hint"><kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> compare</div>
         <div class="rag-query-controls">
           <div class="rag-query-params">
             <span class="rag-param-label">Scope:</span>
-            <el-input v-model="compareScope" placeholder="Full KB" size="small" clearable class="rag-scope-input" :disabled="compareRunning" />
+            <el-input
+              v-model="compareScope"
+              placeholder="Full KB"
+              size="small"
+              clearable
+              class="rag-scope-input"
+              :disabled="compareRunning"
+            />
           </div>
           <div class="rag-query-actions">
             <el-button v-if="compareRunning" type="danger" plain size="small" @click="stopCompare">
               <el-icon><Close /></el-icon> Stop
             </el-button>
-            <el-button type="primary" :loading="compareRunning" @click="runCompare" :disabled="!compareInput.trim() || compareRunning">
+            <el-button
+              type="primary"
+              :loading="compareRunning"
+              @click="runCompare"
+              :disabled="!compareInput.trim() || compareRunning"
+            >
               <el-icon><Switch /></el-icon> {{ compareRunning ? "Comparing…" : "Compare" }}
             </el-button>
             <el-button text size="small" @click="clearCompare" :disabled="compareRunning">Clear</el-button>
@@ -73,7 +86,8 @@
                 :icon="ChatDotRound"
                 title="Discuss this RAG answer in aiChat"
                 @click="discussRagInAiChat"
-              >aiChat</el-button>
+                >aiChat</el-button
+              >
             </div>
           </div>
         </template>
@@ -111,7 +125,8 @@
                 :icon="ChatDotRound"
                 title="Discuss this baseline answer in aiChat"
                 @click="discussBaselineInAiChat"
-              >aiChat</el-button>
+                >aiChat</el-button
+              >
             </div>
           </div>
         </template>
@@ -132,12 +147,16 @@
     <!-- Comparison Summary -->
     <el-card v-if="compareRagAnswer && comparePlainAnswer" shadow="hover" class="rag-section">
       <template #header>
-        <span><el-icon><DataAnalysis /></el-icon> Comparison Metrics</span>
+        <span
+          ><el-icon><DataAnalysis /></el-icon> Comparison Metrics</span
+        >
       </template>
       <el-descriptions :column="3" border size="small">
         <el-descriptions-item label="RAG Response Length">{{ compareRagAnswer.length }} chars</el-descriptions-item>
         <el-descriptions-item label="Baseline Response Length">{{ comparePlainAnswer.length }} chars</el-descriptions-item>
-        <el-descriptions-item label="Length Ratio">{{ (compareRagAnswer.length / Math.max(1, comparePlainAnswer.length)).toFixed(2) }}x</el-descriptions-item>
+        <el-descriptions-item label="Length Ratio"
+          >{{ (compareRagAnswer.length / Math.max(1, comparePlainAnswer.length)).toFixed(2) }}x</el-descriptions-item
+        >
         <el-descriptions-item label="RAG Sources Used">{{ compareRagSources.length }}</el-descriptions-item>
         <el-descriptions-item label="Best Source Score">
           <span class="compare-score" :style="{ color: scoreColor(bestRagSourceScore) }">
@@ -244,7 +263,7 @@ let plainAbort: (() => void) | null = null;
 
 const bestRagSourceScore = computed(() => {
   if (!compareRagSources.value.length) return 0;
-  return Math.max(...compareRagSources.value.map((s) => s.score ?? 0));
+  return Math.max(...compareRagSources.value.map(s => s.score ?? 0));
 });
 
 async function runCompare() {
@@ -266,18 +285,42 @@ async function runCompare() {
   ragAbort = streamRagChat(
     { messages: ollamaMessages, scope: compareScope.value || undefined },
     {
-      onChunk: (t) => { compareRagAnswer.value += t; },
-      onSources: (s) => { compareRagSources.value = s; },
-      onDone: () => { compareRagStreaming.value = false; ragAbort = null; if (!comparePlainStreaming.value) compareRunning.value = false; },
-      onError: (e) => { compareRagStreaming.value = false; compareRagError.value = e.message; ragAbort = null; if (!comparePlainStreaming.value) compareRunning.value = false; },
+      onChunk: t => {
+        compareRagAnswer.value += t;
+      },
+      onSources: s => {
+        compareRagSources.value = s;
+      },
+      onDone: () => {
+        compareRagStreaming.value = false;
+        ragAbort = null;
+        if (!comparePlainStreaming.value) compareRunning.value = false;
+      },
+      onError: e => {
+        compareRagStreaming.value = false;
+        compareRagError.value = e.message;
+        ragAbort = null;
+        if (!comparePlainStreaming.value) compareRunning.value = false;
+      }
     }
   ).abort;
 
   plainAbort = streamChat(
     { messages: chatShape },
-    (t) => { comparePlainAnswer.value += t; },
-    () => { comparePlainStreaming.value = false; plainAbort = null; if (!compareRagStreaming.value) compareRunning.value = false; },
-    (e) => { comparePlainStreaming.value = false; comparePlainError.value = e.message; plainAbort = null; if (!compareRagStreaming.value) compareRunning.value = false; }
+    t => {
+      comparePlainAnswer.value += t;
+    },
+    () => {
+      comparePlainStreaming.value = false;
+      plainAbort = null;
+      if (!compareRagStreaming.value) compareRunning.value = false;
+    },
+    e => {
+      comparePlainStreaming.value = false;
+      comparePlainError.value = e.message;
+      plainAbort = null;
+      if (!compareRagStreaming.value) compareRunning.value = false;
+    }
   ).abort;
 }
 
@@ -313,110 +356,102 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@use "./styles/shared.scss";
-
+@use "./styles/shared";
 .rag-query-hint {
   margin-top: 6px;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
   text-align: right;
 }
-
 .compare-results {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-
 .compare-panel {
   min-height: 200px;
-
   .panel-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
+    justify-content: space-between;
   }
-
   .panel-label {
+    margin-left: 8px;
     font-size: 13px;
     color: var(--el-text-color-secondary);
-    margin-left: 8px;
   }
-
   .panel-meta {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
   }
-
   .streaming-badge {
+    display: flex;
+    gap: 4px;
+    align-items: center;
     font-size: 12px;
     color: var(--el-color-primary);
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
-
-  .panel-error { margin-bottom: 8px; }
-
+  .panel-error {
+    margin-bottom: 8px;
+  }
   .panel-answer {
     font-size: 14px;
     line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
     color: var(--el-text-color-primary);
-
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
     :deep(.citation) {
-      color: var(--el-color-primary);
-      font-weight: 600;
       font-size: 11px;
+      font-weight: 600;
       vertical-align: super;
+      color: var(--el-color-primary);
     }
   }
-
-  .panel-waiting, .panel-empty {
+  .panel-waiting,
+  .panel-empty {
     font-size: 13px;
-    color: var(--el-text-color-placeholder);
     font-style: italic;
+    color: var(--el-text-color-placeholder);
   }
-
   .panel-note {
-    margin-top: 12px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
     padding-top: 8px;
-    border-top: 1px solid var(--el-border-color-lighter);
+    margin-top: 12px;
     font-size: 12px;
     color: var(--el-color-warning);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .panel-sources {
-    margin-top: 12px;
-    padding-top: 8px;
     border-top: 1px solid var(--el-border-color-lighter);
   }
-
+  .panel-sources {
+    padding-top: 8px;
+    margin-top: 12px;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
   .sources-title {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 6px;
     font-size: 12px;
     font-weight: 600;
     color: var(--el-text-color-secondary);
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
 }
-
-.text-danger { color: var(--el-color-danger); font-weight: 500; }
-.text-success { color: var(--el-color-success); font-weight: 500; }
-
+.text-danger {
+  font-weight: 500;
+  color: var(--el-color-danger);
+}
+.text-success {
+  font-weight: 500;
+  color: var(--el-color-success);
+}
 .rag-scope-input {
   width: 180px;
 }
-
 .compare-score {
   font-weight: 600;
 }

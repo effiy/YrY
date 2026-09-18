@@ -24,15 +24,30 @@ interface KeyResult {
 }
 
 interface GoalItem {
-  id: string; icon: string; title: string; status: string;
-  description: string; period: string; owner: string; project: string;
+  id: string;
+  icon: string;
+  title: string;
+  status: string;
+  description: string;
+  period: string;
+  owner: string;
+  project: string;
   keyResults: KeyResult[];
 }
 
 interface MetricItem {
-  id: string; icon: string; name: string; category: string; framework: string;
-  description: string; current: number; target: number; baseline: number;
-  unit: string; trend: string; progress: number;
+  id: string;
+  icon: string;
+  name: string;
+  category: string;
+  framework: string;
+  description: string;
+  current: number;
+  target: number;
+  baseline: number;
+  unit: string;
+  trend: string;
+  progress: number;
 }
 
 interface DailyRoleData {
@@ -58,8 +73,13 @@ interface WeeklyRoleData {
 }
 
 interface RoleMeta {
-  id: string; name: string; icon: string; dir: string;
-  description: string; projects: string[]; categories: string[];
+  id: string;
+  name: string;
+  icon: string;
+  dir: string;
+  description: string;
+  projects: string[];
+  categories: string[];
 }
 
 /** Metadata context — when provided from API, overrides static imports. */
@@ -380,7 +400,13 @@ function formatHistory(history?: OkrTaskItem[]): string {
 }
 
 /** 单条重生成提示语：为指定角色重新推荐一条任务（替代已失效的旧任务，要求与之不同）。 */
-export function buildSingleItemPrompt(listType: OkrListType, roleId: string, excludeTitle: string, history?: OkrTaskItem[], ctx?: OkrMetadataContext): string {
+export function buildSingleItemPrompt(
+  listType: OkrListType,
+  roleId: string,
+  excludeTitle: string,
+  history?: OkrTaskItem[],
+  ctx?: OkrMetadataContext
+): string {
   const ctx2 = formatRoleDetail(roleId, ctx);
   const label = rd(ctx)[roleId]?.name ?? roleId;
   const today = dayjs().format("YYYY-MM-DD");
@@ -426,9 +452,15 @@ ${detail}`;
 
 /** 为某清单整体生成推荐任务：scope="all" 覆盖全部角色，否则仅指定角色。
  *  与 buildSingleItemPrompt 的 focus/due 口径一致，仅多角色 + 多条数。 */
-export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPerRole = 2, history?: OkrTaskItem[], ctx?: OkrMetadataContext): string {
+export function buildListPrompt(
+  listType: OkrListType,
+  scope: OkrScope,
+  countPerRole = 2,
+  history?: OkrTaskItem[],
+  ctx?: OkrMetadataContext
+): string {
   const roles = scope === "all" ? Object.keys(rd(ctx)) : [scope];
-  const label = scope === "all" ? "各角色" : rd(ctx)[scope]?.name ?? scope;
+  const label = scope === "all" ? "各角色" : (rd(ctx)[scope]?.name ?? scope);
   const icon = LIST_TYPES.find(l => l.key === listType)?.icon ?? "";
   const today = dayjs().format("YYYY-MM-DD");
   const weekStart = dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD");
@@ -442,7 +474,10 @@ export function buildListPrompt(listType: OkrListType, scope: OkrScope, countPer
         : "聚焦逾期/临期 Action Item、今日 Top3、进度 < 40% 的 Key Result 推进动作";
   const due = listType === "daily" ? `dueDate 取今天（${today}）或明天` : `dueDate 落在本周（${weekStart} ~ ${weekEnd}）`;
 
-  const detail = roles.map(r => formatRoleDetail(r, ctx)).filter(Boolean).join("\n\n");
+  const detail = roles
+    .map(r => formatRoleDetail(r, ctx))
+    .filter(Boolean)
+    .join("\n\n");
 
   let prompt = `请基于以下 OKR 上下文，为「${label}」推荐${icon}清单（每角色 ${countPerRole} 条）：
 - ${focus}。
@@ -471,7 +506,13 @@ function roleMeta(roleId: string, ctx?: OkrMetadataContext) {
 }
 
 /** 把模型返回的原始对象规整成 OkrTaskItem。 */
-function normalizeItem(raw: unknown, scope: OkrScope, index: number, listType?: OkrListType, ctx?: OkrMetadataContext): OkrTaskItem | null {
+function normalizeItem(
+  raw: unknown,
+  scope: OkrScope,
+  index: number,
+  listType?: OkrListType,
+  ctx?: OkrMetadataContext
+): OkrTaskItem | null {
   if (!raw || typeof raw !== "object") return null;
   const o = raw as Record<string, unknown>;
   const title = String(o.title ?? "").trim();
@@ -539,7 +580,12 @@ function extractJsonArray(text: string): unknown[] | null {
 }
 
 /** 解析模型返回的推荐结果；解析失败返回空数组。 */
-export function parseRecommendation(raw: string, scope: OkrScope, listType?: OkrListType, ctx?: OkrMetadataContext): OkrTaskItem[] {
+export function parseRecommendation(
+  raw: string,
+  scope: OkrScope,
+  listType?: OkrListType,
+  ctx?: OkrMetadataContext
+): OkrTaskItem[] {
   const arr = extractJsonArray(raw);
   if (!arr) return [];
   return arr
@@ -639,7 +685,11 @@ export interface OkrActionItem extends OkrTaskItem {
 }
 
 /** 从 okr-action 的 frontmatter 重建表格行；无 title 视为无效返回 null。 */
-export function actionItemFromMeta(meta: Record<string, unknown>, fallbackId: string, ctx?: OkrMetadataContext): OkrActionItem | null {
+export function actionItemFromMeta(
+  meta: Record<string, unknown>,
+  fallbackId: string,
+  ctx?: OkrMetadataContext
+): OkrActionItem | null {
   const title = typeof meta.title === "string" ? meta.title : "";
   if (!title) return null;
   const role = typeof meta.role === "string" ? meta.role : "";

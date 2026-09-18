@@ -30,7 +30,8 @@ const emit = defineEmits<{
         :class="{ 'is-done': group.stageMap[sk]?.status === 'done', 'is-filled': !!group.stageMap[sk] }"
         :title="group.stageMap[sk] ? `${stageIcon(sk)} ${stageLabel(sk)} — ${group.stageMap[sk]!.title}` : stageLabel(sk)"
         @click="group.stageMap[sk] && emit('openRecord', group.stageMap[sk]!.path)"
-      >{{ stageIcon(sk) }}</span>
+        >{{ stageIcon(sk) }}</span
+      >
     </div>
   </div>
 </template>
@@ -42,25 +43,27 @@ const emit = defineEmits<{
   gap: 4px;
 }
 .okr-rec__process-loop-id {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9);
-  padding: 2px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  line-height: 1.4;
+  width: fit-content;
   max-width: 220px;
+  padding: 2px 8px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--el-color-primary);
   white-space: nowrap;
-  width: fit-content;
-  &:hover { background: var(--el-color-primary-light-7); }
+  cursor: pointer;
+  background: var(--el-color-primary-light-9);
+  border-radius: 3px;
+  &:hover {
+    background: var(--el-color-primary-light-7);
+  }
 }
 .okr-rec__process-stages {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
 }
 .okr-rec__process-stage {
   display: inline-flex;
@@ -69,14 +72,29 @@ const emit = defineEmits<{
   width: 22px;
   height: 22px;
   font-size: 12px;
-  border-radius: 4px;
-  background: var(--el-fill-color);
-  opacity: 0.35;
   cursor: default;
-  transition: opacity 0.15s, background 0.15s;
-  &.is-filled { opacity: 0.7; cursor: pointer; }
-  &.is-done { opacity: 1; background: var(--el-color-success-light-9); cursor: pointer; }
-  &.is-filled:hover { opacity: 1; background: var(--el-fill-color-light); }
-  &.is-done:hover { opacity: 1; background: var(--el-color-success-light-8); }
+  background: var(--el-fill-color);
+  border-radius: 4px;
+  opacity: 0.35;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+  &.is-filled {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  &.is-done {
+    cursor: pointer;
+    background: var(--el-color-success-light-9);
+    opacity: 1;
+  }
+  &.is-filled:hover {
+    background: var(--el-fill-color-light);
+    opacity: 1;
+  }
+  &.is-done:hover {
+    background: var(--el-color-success-light-8);
+    opacity: 1;
+  }
 }
 </style>

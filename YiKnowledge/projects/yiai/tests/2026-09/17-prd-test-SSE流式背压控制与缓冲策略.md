@@ -1,49 +1,43 @@
 ---
 doc_type: test
-title: "YA-09-13: SSE 流式传输背压控制与缓冲策略 — 生产环境可靠性增强 — 测试规格"
-status: 待开始
+title: "YA-09-17: SSE 流式背压控制 — 测试规格"
+status: 已完成
 priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-prd_task_id: "YA-09-13"
+prd_task_id: "YA-09-17"
 source_prds: ["17-需求-SSE流式背压控制与缓冲策略"]
-source_modules: []
+source_modules: ["17-prd-task-SSE流式背压控制与缓冲策略"]
+source_okr: [yiai-001]
 ---
-# YA-09-13: SSE 流式传输背压控制与缓冲策略 — 生产环境可靠性增强 — 测试规格
+
+# YA-09-17: SSE 流式背压控制 — 测试规格
 
 > 来源 PRD：[17-需求-SSE流式背压控制与缓冲策略.md](../../prds/2026-09/17-需求-SSE流式背压控制与缓冲策略.md)
-> 提取日期：2026-09-11
 
 ---
 
-## 测试场景
+## 一、单元测试
 
-### 功能验证
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-BP-01 | 慢客户端 → Queue 缓冲 | token 生成 > 消费 → Queue 堆积，无 token 丢失 |
+| UT-BP-02 | Queue 满 → 丢弃旧 token | Queue 1000 → 新 token 替换最旧 |
+| UT-BP-03 | 客户端断开 → 生成器停止 | SSE 连接关闭 → `asyncio.CancelledError` |
+| UT-BP-04 | 超时 30s → 关闭连接 | 无 token 生成 > 30s → 关闭 SSE |
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+---
 
-### 边界测试
+## 二、缺陷分级
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 级别 | 示例 |
+|------|------|
+| S1 — 严重 | 慢客户端导致服务端 OOM |
+| S2 — 一般 | 客户端断开后 LLM 仍在生成 |
 
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

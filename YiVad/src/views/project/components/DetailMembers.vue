@@ -28,7 +28,12 @@
     <el-dialog v-model="dialog.visible" :title="$t('project.members.addTitle')" width="420px" destroy-on-close>
       <el-form label-width="90px">
         <el-form-item :label="$t('project.members.username')">
-          <el-input v-model="dialog.username" :placeholder="$t('project.members.usernamePlaceholder')" maxlength="40" @keyup.enter="submitAddMember" />
+          <el-input
+            v-model="dialog.username"
+            :placeholder="$t('project.members.usernamePlaceholder')"
+            maxlength="40"
+            @keyup.enter="submitAddMember"
+          />
         </el-form-item>
         <el-form-item :label="$t('project.members.role')">
           <el-select v-model="dialog.role" style="width: 100%">
@@ -40,8 +45,10 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialog.visible = false">{{ $t('project.members.cancel') }}</el-button>
-        <el-button type="primary" :loading="dialog.submitting" @click="submitAddMember">{{ $t('project.members.add') }}</el-button>
+        <el-button @click="dialog.visible = false">{{ $t("project.members.cancel") }}</el-button>
+        <el-button type="primary" :loading="dialog.submitting" @click="submitAddMember">{{
+          $t("project.members.add")
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -107,8 +114,8 @@ async function handleRemove(m: ProjectMember) {
 <style scoped lang="scss">
 .dm-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
 }
 .dm-count {
@@ -122,15 +129,15 @@ async function handleRemove(m: ProjectMember) {
 }
 .dm-item {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding: 10px 12px;
-  border-radius: 8px;
   background: var(--el-fill-color-lighter);
+  border-radius: 8px;
 }
 .dm-info {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
 }
@@ -138,10 +145,10 @@ async function handleRemove(m: ProjectMember) {
   font-weight: 500;
 }
 .dm-id {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
   white-space: nowrap;
 }
 </style>

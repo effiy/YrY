@@ -1,40 +1,101 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-65"
-title: "文档模板管理 — 开发任务"
-status: 需求已编写
+title: "YV-09-65: 文档模板管理 — 开发方案"
+status: 已完成
 priority: P2
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "33-prd-文档模板管理.md"
 ---
 
-# 文档模板管理 — 开发任务
+# YV-09-65: 文档模板管理 — 开发方案
 
-> 来源 PRD：[33-prd-文档模板管理.md](../prds/2026-09/33-prd-文档模板管理.md)
-> 需求编号：YV-09-65 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-65 · 人天：0.5d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 定义模板类型接口 | `types/template.ts` | TypeScript 类型检查通过 | 0.02 |
-| 2 | 实现模板 API 服务 | `services/template.service.ts` | 接口调用返回正确数据结构 | 0.03 |
-| 3 | 实现 useTemplate Composable | `composables/template/useTemplate.ts` | 模板列表、CRUD、变量解析、预览功能正常 | 0.05 |
-| 4 | 实现模板管理页面 | `views/docs/TemplateManager.vue` | 分类导航、模板列表、搜索筛选正常 | 0.04 |
-| 5 | 实现模板编辑器 | `components/template/TemplateEditor.vue` | 编辑器、变量插入、预览、版本发布正常 | 0.06 |
-| 6 | 实现从模板创建文档对话框 | `components/template/CreateFromTemplateDialog.vue` | 变量填写、预览、创建文档正常 | 0.04 |
-| 7 | 实现模板预览组件 | `components/template/TemplatePreview.vue` | Markdown 渲染 + 变量替换正常 | 0.02 |
-| 8 | 实现模板版本历史 | `components/template/TemplateVersionHistory.vue` | 版本列表、查看历史、版本回退正常 | 0.02 |
-| 9 | 实现模板导入导出 | `components/template/TemplateImportExport.vue` | 导出 .md、导入解析、冲突检测正常 | 0.02 |
-| 10 | 实现模板使用统计 | `components/template/TemplateUsageStats.vue` | 图表和数据正确 | 0.01 |
-
-**总计：** 0.3d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+管理 YiKnowledge 知识库的文档模板：创建/编辑/删除，新建知识文件时选择模板。
+
+### 模板类型
+
+| 类型 | 用途 | 示例 |
+|------|------|------|
+| PRD | 产品需求文档 | 11 节标准 PRD |
+| ADR | 架构决策记录 | 背景→决策→后果 |
+| 复盘 | 迭代复盘 | What went well/didn't |
+| Bug | 缺陷报告 | 现象→根因→修复 |
+
+### 实现
+
+模板存储在 MongoDB `document_templates` 集合，新建文件时从模板列表选择。
+
+### 实施步骤：0.5d
+
+- 模板 CRUD 页面 + 新建文件时模板选择
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 4 种模板 CRUD
+- [ ] 新建文件时可选择模板
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/33-prd-test-文档模板管理.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

@@ -93,8 +93,8 @@ const allClear = computed(() => order.every(r => !props.counts[r]));
   cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
-  border-radius: 9px;
   border-top: 3px solid var(--risk-color);
+  border-radius: 9px;
   transition:
     transform 0.15s,
     box-shadow 0.15s;
@@ -121,7 +121,6 @@ const allClear = computed(() => order.every(r => !props.counts[r]));
 .pat-card--zero {
   cursor: default;
   border-color: var(--el-border-color-lighter);
-  border-top-color: var(--el-border-color-lighter);
   opacity: 0.5;
   .pat-card-count {
     color: var(--el-text-color-placeholder);

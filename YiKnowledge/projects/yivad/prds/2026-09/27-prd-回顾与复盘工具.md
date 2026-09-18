@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 回顾与复盘工具
 tags:
 - 回顾
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -31,7 +34,27 @@ source_okr: [yivad-003]
 # 回顾与复盘工具
 
 > 需求编号：YV-09-57 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/27-prd-task-回顾与复盘工具.md)，验证方案见 [测试方案](../../tests/2026-09/27-prd-test-回顾与复盘工具.md)。
 > 依赖：YiAi 回顾服务（`services.retrospective.retro_service`）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 改动总览
 
@@ -113,6 +136,7 @@ YiVad 当前缺乏结构化的回顾与复盘工具。团队在 Sprint 或项目
 | 5 | **无计时控制** -- 讨论环节超时，回顾效率低 | **中** | 回顾会议拖沓，占用过多时间 |
 | 6 | **无历史回顾** -- 无法查看历史回顾和重复出现的行动项 | **中** | 无法追踪团队改进趋势 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前回顾能力矩阵
@@ -155,6 +179,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 回顾看板列布局
@@ -198,6 +223,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -295,6 +321,7 @@ Retrospective
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 回顾类型定义
@@ -1131,6 +1158,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1155,6 +1183,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 创建回顾并选择模板
@@ -1189,6 +1218,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1201,6 +1231,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1218,6 +1249,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 采用模板驱动列布局
@@ -1250,6 +1282,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1275,6 +1308,7 @@ export const retroService = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/retrospective.ts` 中所有类型定义完整，3 种模板预设正确

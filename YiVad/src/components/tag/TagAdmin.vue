@@ -42,14 +42,14 @@
           <el-input v-model="tagForm.category" placeholder="可选" />
         </el-form-item>
         <el-form-item label="父标签">
-          <el-select v-model="tagForm.parent_id" clearable placeholder="无" style="width:100%">
+          <el-select v-model="tagForm.parent_id" clearable placeholder="无" style="width: 100%">
             <el-option v-for="t in tags" :key="t.key" :label="t.name" :value="t.key" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSave">{{ editingTag ? '保存' : '创建' }}</el-button>
+        <el-button type="primary" @click="handleSave">{{ editingTag ? "保存" : "创建" }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -70,7 +70,7 @@ const tagForm = reactive({
   name: "",
   color: "#409eff",
   category: "",
-  parent_id: undefined as string | undefined,
+  parent_id: undefined as string | undefined
 });
 
 const tagGroups = computed(() => {
@@ -156,21 +156,68 @@ onMounted(async () => {
   try {
     const res = await getTagUsageStats();
     stats.value = res.data as TagUsageStats;
-  } catch { /* non-critical */ }
+  } catch {
+    /* non-critical */
+  }
 });
 </script>
 
 <style scoped lang="scss">
-.tag-admin { padding: 8px 0; }
-.tag-admin__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.tag-admin__actions { display: flex; gap: 8px; }
-.tag-admin__stats { font-size: 13px; color: var(--el-text-color-secondary); margin-bottom: 12px; display: flex; gap: 16px; }
-.tag-admin__warn { color: var(--el-color-warning); }
-.tag-group { margin-bottom: 16px; }
-.tag-group__header { font-size: 13px; font-weight: 500; color: var(--el-text-color-secondary); margin-bottom: 4px; padding: 0 4px; }
-.tag-row { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--el-border-color-lighter); }
-.tag-row__dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-.tag-row__name { flex: 1; }
-.tag-row__count { color: var(--el-text-color-secondary); font-size: 12px; }
-.tag-row__actions { display: flex; gap: 2px; }
+.tag-admin {
+  padding: 8px 0;
+}
+.tag-admin__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.tag-admin__actions {
+  display: flex;
+  gap: 8px;
+}
+.tag-admin__stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+.tag-admin__warn {
+  color: var(--el-color-warning);
+}
+.tag-group {
+  margin-bottom: 16px;
+}
+.tag-group__header {
+  padding: 0 4px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
+.tag-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.tag-row__dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.tag-row__name {
+  flex: 1;
+}
+.tag-row__count {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.tag-row__actions {
+  display: flex;
+  gap: 2px;
+}
 </style>

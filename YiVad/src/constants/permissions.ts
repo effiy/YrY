@@ -41,7 +41,7 @@ export const PERMISSIONS = {
 
   // Audit log
   AUDIT_VIEW: "audit:view",
-  AUDIT_EXPORT: "audit:export",
+  AUDIT_EXPORT: "audit:export"
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -62,8 +62,8 @@ export const PERMISSION_MODULES: PermissionModule[] = [
       { code: "project:view", label: "查看项目" },
       { code: "project:create", label: "新建项目" },
       { code: "project:edit", label: "编辑项目" },
-      { code: "project:delete", label: "删除项目" },
-    ],
+      { code: "project:delete", label: "删除项目" }
+    ]
   },
   {
     module: "knowledge",
@@ -72,47 +72,43 @@ export const PERMISSION_MODULES: PermissionModule[] = [
       { code: "knowledge:view", label: "查看知识库" },
       { code: "knowledge:create", label: "新建文档" },
       { code: "knowledge:edit", label: "编辑文档" },
-      { code: "knowledge:delete", label: "删除文档" },
-    ],
+      { code: "knowledge:delete", label: "删除文档" }
+    ]
   },
   {
     module: "data",
     label: "数据服务",
     permissions: [
       { code: "data:view", label: "查看数据" },
-      { code: "data:export", label: "导出数据" },
-    ],
+      { code: "data:export", label: "导出数据" }
+    ]
   },
   {
     module: "chat",
     label: "AI 对话",
     permissions: [
       { code: "chat:view", label: "使用对话" },
-      { code: "chat:create", label: "新建会话" },
-    ],
+      { code: "chat:create", label: "新建会话" }
+    ]
   },
   {
     module: "user",
     label: "用户管理",
-    permissions: [
-      { code: "user:manage", label: "管理用户" },
-    ],
+    permissions: [{ code: "user:manage", label: "管理用户" }]
   },
   {
     module: "role",
     label: "角色管理",
-    permissions: [
-      { code: "role:manage", label: "管理角色" },
-    ],
+    permissions: [{ code: "role:manage", label: "管理角色" }]
   },
   {
     module: "audit",
     label: "审计日志",
     permissions: [
       { code: "audit:view", label: "查看审计日志" },
-      { code: "audit:export", label: "导出审计日志" },
-    ],
-  },
+      { code: "audit:export", label: "导出审计日志" }
+    ]
+  }
 ];
 
 // ── Default role permission matrix ──
@@ -121,36 +117,46 @@ export type RoleKey = "admin" | "engineer" | "producter" | "analyst" | "viewer";
 
 export const DEFAULT_ROLE_PERMISSIONS: Record<RoleKey, PermissionCode[]> = {
   admin: [
-    "project:view", "project:create", "project:edit", "project:delete",
-    "knowledge:view", "knowledge:create", "knowledge:edit", "knowledge:delete",
-    "data:view", "data:export",
-    "chat:view", "chat:create",
+    "project:view",
+    "project:create",
+    "project:edit",
+    "project:delete",
+    "knowledge:view",
+    "knowledge:create",
+    "knowledge:edit",
+    "knowledge:delete",
+    "data:view",
+    "data:export",
+    "chat:view",
+    "chat:create",
     "user:manage",
     "role:manage",
-    "audit:view", "audit:export",
+    "audit:view",
+    "audit:export"
   ],
   engineer: [
-    "project:view", "project:create", "project:edit",
-    "knowledge:view", "knowledge:create", "knowledge:edit",
-    "data:view", "data:export",
-    "chat:view", "chat:create",
+    "project:view",
+    "project:create",
+    "project:edit",
+    "knowledge:view",
+    "knowledge:create",
+    "knowledge:edit",
+    "data:view",
+    "data:export",
+    "chat:view",
+    "chat:create"
   ],
   producter: [
-    "project:view", "project:create", "project:edit",
-    "knowledge:view", "knowledge:create", "knowledge:edit",
-    "data:view",
-    "chat:view", "chat:create",
-  ],
-  analyst: [
     "project:view",
+    "project:create",
+    "project:edit",
     "knowledge:view",
-    "data:view", "data:export",
-    "chat:view", "chat:create",
-  ],
-  viewer: [
-    "project:view",
-    "knowledge:view",
+    "knowledge:create",
+    "knowledge:edit",
     "data:view",
-    "chat:view", "chat:create",
+    "chat:view",
+    "chat:create"
   ],
+  analyst: ["project:view", "knowledge:view", "data:view", "data:export", "chat:view", "chat:create"],
+  viewer: ["project:view", "knowledge:view", "data:view", "chat:view", "chat:create"]
 };

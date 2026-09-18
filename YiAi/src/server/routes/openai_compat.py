@@ -9,11 +9,12 @@ Endpoints:
 """
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 import json
 import logging
 import time
+from typing import Any, Dict, List, Optional
 import uuid
-from typing import Any, AsyncIterator, Dict, List, Optional
 
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
@@ -25,11 +26,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1")
 
 
-def _openai_tool_to_ollama(tools: Optional[List[Dict[str, Any]]]) -> Optional[List[Dict[str, Any]]]:
+def _openai_tool_to_ollama(tools: list[dict[str, Any]] | None) -> list[dict[str, Any]] | None:
     """Convert OpenAI-format tool definitions to Ollama format."""
     if not tools:
         return None
-    result: List[Dict[str, Any]] = []
+    result: list[dict[str, Any]] = []
     for t in tools:
         if t.get("type") == "function" and "function" in t:
             func = t["function"]
@@ -44,11 +45,11 @@ def _openai_tool_to_ollama(tools: Optional[List[Dict[str, Any]]]) -> Optional[Li
     return result or None
 
 
-def _openai_tool_call_to_ollama(tool_calls: Any) -> Optional[List[Dict[str, Any]]]:
+def _openai_tool_call_to_ollama(tool_calls: Any) -> list[dict[str, Any]] | None:
     """Convert OpenAI-format tool call delta to Ollama format."""
     if not tool_calls:
         return None
-    result: List[Dict[str, Any]] = []
+    result: list[dict[str, Any]] = []
     for tc in tool_calls:
         result.append({
             "id": getattr(tc, "id", "") or tc.get("id", ""),
@@ -61,9 +62,9 @@ def _openai_tool_call_to_ollama(tool_calls: Any) -> Optional[List[Dict[str, Any]
     return result
 
 
-def _parse_openai_messages(body: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _parse_openai_messages(body: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract messages from an OpenAI-format request body."""
-    messages: List[Dict[str, Any]] = []
+    messages: list[dict[str, Any]] = []
     for m in body.get("messages", []) or []:
         role = m.get("role", "user")
         content = m.get("content", "")
@@ -76,15 +77,15 @@ def _parse_openai_messages(body: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _build_sse_chunk(
-    delta: Optional[Dict[str, Any]] = None,
-    finish_reason: Optional[str] = None,
-    usage: Optional[Dict[str, int]] = None,
+    delta: dict[str, Any] | None = None,
+    finish_reason: str | None = None,
+    usage: dict[str, int] | None = None,
     model: str = "",
     chunk_id: str = "",
     created: int = 0,
 ) -> bytes:
     """Build an OpenAI-format SSE chunk."""
-    chunk: Dict[str, Any] = {
+    chunk: dict[str, Any] = {
         "id": chunk_id or f"chatcmpl-{uuid.uuid4().hex[:12]}",
         "object": "chat.completion.chunk",
         "created": created or int(time.time()),
@@ -246,26 +247,25 @@ async def list_models():
     """
     import aiohttp
 
-    models: List[Dict[str, Any]] = []
+    models: list[dict[str, Any]] = []
     provider = settings.ai_provider or "ollama"
 
     if provider == "ollama":
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{settings.ollama_url}/api/tags",
-                    timeout=aiohttp.ClientTimeout(total=5),
-                ) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        for m in data.get("models", []) or []:
-                            name = m.get("name", "") if isinstance(m, dict) else str(m)
-                            models.append({
-                                "id": name,
-                                "object": "model",
-                                "created": int(time.time()),
-                                "owned_by": "ollama",
-                            })
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{settings.ollama_url}/api/tags",
+                timeout=aiohttp.ClientTimeout(total=5),
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    for m in data.get("models", []) or []:
+                        name = m.get("name", "") if isinstance(m, dict) else str(m)
+                        models.append({
+                            "id": name,
+                            "object": "model",
+                            "created": int(time.time()),
+                            "owned_by": "ollama",
+                        })
         except Exception as e:
             logger.warning(f"Failed to query Ollama models: {e}")
 

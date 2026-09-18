@@ -32,12 +32,6 @@ export interface QueryDocumentsData<T = any> {
 export interface QueryDocumentsParams {
   cname: string;
   filter?: Record<string, any>;
-  // NOTE: `tags` and `search` are silently ignored by the YiAi backend
-  // (query_documents only honors `filter`). They remain in the type to avoid
-  // breaking existing callers, but should not be relied on — use `filter`.
-  tags?: string[];
-  search?: string;
-  limit?: number;
   pageNum?: number;
   pageSize?: number;
   orderBy?: string;
@@ -88,7 +82,6 @@ export interface ChatStreamChunk {
 export interface ChatMessage {
   type: "user" | "pet" | "followup";
   message: string;
-  content?: string;
   timestamp: number;
   imageDataUrls?: string[];
   error?: boolean;
@@ -115,6 +108,12 @@ export interface ChatMessage {
   firstTokenLatencyMs?: number;
   /** Web search context injected alongside this user message. */
   searchContext?: string;
+  /** Web search results for this specific turn — displayed alongside the message. */
+  searchResults?: import("@/api/modules/searchService").WebSearchResult[];
+  /** Web search image results — parallel-fetched by backend, displayed as thumbnails. */
+  searchImages?: import("@/api/modules/searchService").WebImageResult[];
+  /** True when this message's response used web search grounding. */
+  searchGrounded?: boolean;
   /** Tool calls fired during this turn (Pi-inspired: per-message tool timeline).
    *  Populated by sendMessage/resendMessage from useToolRegistry events. */
   toolCalls?: Array<{
@@ -127,97 +126,6 @@ export interface ChatMessage {
     /** Duration in milliseconds. */
     durationMs?: number;
   }>;
-}
-
-// ── Chat Entry Model (Pi-inspired rich session entries) ──
-
-/**
- * Discriminated union of entry types in a chat session.
- * Inspired by Pi's SessionEntry model: each entry carries a `type` and
- * type-specific payload fields, enabling tool calls, file operations,
- * and model changes to be first-class parts of the conversation history.
- *
- * Backward compat: old `ChatMessage` objects are normalized to `ChatEntry`
- * on load — `{type:"user"|"pet", message}` → `{entryType:"message", role, message}`.
- */
-export type ChatEntryType =
-  | "message"
-  | "tool_call"
-  | "tool_result"
-  | "context_edit"
-  | "model_change";
-
-export interface ChatEntry {
-  /** Entry discriminator */
-  entryType: ChatEntryType;
-  timestamp: number;
-
-  // ── message entries ──
-  /** "user" | "assistant" — who sent this message */
-  role?: "user" | "assistant";
-  /** Message text (markdown) */
-  message?: string;
-  /** Data URLs for vision-language models */
-  imageDataUrls?: string[];
-  /** RAG citation sources */
-  sources?: import("@/api/interface/rag").RagSource[];
-  /** Web search context attached to this user message */
-  searchContext?: string;
-
-  // ── tool_call / tool_result entries ──
-  /** Name of the tool being called */
-  toolName?: string;
-  /** Arguments passed to the tool (JSON-serializable) */
-  toolArgs?: Record<string, unknown>;
-  /** Result content from the tool execution */
-  toolResult?: string;
-  /** Structured metadata from tool execution */
-  toolDetails?: Record<string, unknown>;
-
-  // ── context_edit entries ──
-  /** File path that was edited */
-  filePath?: string;
-  /** Previous content (for undo) */
-  previousContent?: string;
-
-  // ── model_change entries ──
-  /** New model ID after switching */
-  modelId?: string;
-
-  // ── status flags ──
-  /** True if this entry represents an error state */
-  error?: boolean;
-  /** True if generation was aborted mid-stream */
-  aborted?: boolean;
-}
-
-/**
- * Normalize a legacy ChatMessage or a ChatEntry into a ChatEntry.
- * Ensures backward compatibility when loading old sessions.
- */
-export function normalizeEntry(raw: ChatMessage | ChatEntry | Record<string, unknown>): ChatEntry {
-  // Already a ChatEntry?
-  if (raw && typeof raw === "object" && "entryType" in raw) {
-    return raw as ChatEntry;
-  }
-  // Legacy ChatMessage → ChatEntry
-  const msg = raw as ChatMessage;
-  return {
-    entryType: "message",
-    timestamp: msg.timestamp ?? 0,
-    role: msg.type === "user" ? "user" : "assistant",
-    message: msg.message ?? (msg as { content?: string }).content ?? "",
-    imageDataUrls: msg.imageDataUrls,
-    sources: msg.sources,
-    searchContext: msg.searchContext,
-    error: msg.error,
-    aborted: msg.aborted,
-  };
-}
-
-/** Convert ChatEntry[] from legacy ChatMessage[] */
-export function normalizeEntries(raw: (ChatMessage | ChatEntry)[]): ChatEntry[] {
-  return raw.map(normalizeEntry);
 }
 
 // ── Project zip upload (client-side parse + per-file write) ──
@@ -741,7 +649,7 @@ export interface KnowledgeRoleStats {
 }
 
 export interface KnowledgeDataQuality {
-  total: number;  // number of markdown files (only .md files can have frontmatter)
+  total: number; // number of markdown files (only .md files can have frontmatter)
   no_status: number;
   no_type: number;
   no_lifecycle: number;
@@ -941,4 +849,3 @@ export interface PerformanceData {
   memory: MemoryInfo;
   process: ProcessInfo;
 }
-

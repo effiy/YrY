@@ -1,41 +1,71 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-124"
-title: "YA-09-124: 服务端请求熔断自动恢复通知 — 断路器关闭后的服务恢复确认与通知推送 — 开发任务"
+prd_task_id: "YA-09-59"
+title: "YA-09-59: 断路器恢复通知 — 状态变更 + 企微推送 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "132-需求-断路器恢复通知.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-124: 服务端请求熔断自动恢复通知 — 断路器关闭后的服务恢复确认与通知推送 — 开发任务
+# YA-09-59: 断路器恢复通知 — 状态变更 + 企微推送 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[132-需求-断路器恢复通知.md](../../prds/2026-09/132-需求-断路器恢复通知.md)
-> 需求编号：YA-09-124 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-59 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+在 [YA-09-20 自愈恢复](./93-prd-task-自愈恢复机制.md) 的健康状态机基础上，增加断路器状态变更的通知推送——打开/半开/关闭时通过企微通知相关人员。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class CircuitBreaker:
+    STATES = ["CLOSED", "OPEN", "HALF_OPEN"]
 
-| 步骤 | 任务 | 产出 |
+    def transition(self, new_state: str):
+        old = self.state
+        self.state = new_state
+        self._notify(old, new_state)
+
+    def _notify(self, old: str, new: str):
+        msg = f"断路器: {old} → {new}"
+        if old == "CLOSED" and new == "OPEN":
+            msg += f"\n连续失败 {self.failure_count} 次"
+        elif new == "CLOSED":
+            msg += "\n服务已恢复"
+
+        asyncio.create_task(send_wework_message(msg))
+```
+
+### 通知规则
+
+| 状态变更 | 通知方式 | 级别 |
+|---------|---------|------|
+| CLOSED → OPEN | 企微 @all | 紧急 |
+| OPEN → HALF_OPEN | 企微 | 警告 |
+| HALF_OPEN → CLOSED | 企微 | 信息 |
+| HALF_OPEN → OPEN | 企微 | 警告 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | CircuitBreaker 通知集成 | 状态变更触发企微消息 | 0.25 |
+| 2 | 通知去重 + 冷却期 + 测试 | 不重复推送相同状态 | 0.25 |
+
+**合计：0.5d**。

@@ -22,19 +22,21 @@ const chartOption = computed<ECOption>(() => {
   if (props.data) {
     return {
       tooltip: { formatter: "{b}: {c}" },
-      series: [{
-        type: "treemap" as const,
-        data: props.data as unknown as Record<string, unknown>[],
-        roam: false,
-        label: { show: true, fontSize: 11 },
-        upperLabel: { show: true, height: 28 },
-        itemStyle: { borderColor: "#fff", borderWidth: 1, gapWidth: 1 },
-        levels: [
-          { itemStyle: { borderColor: "#555", borderWidth: 4, gapWidth: 1 }, upperLabel: { show: true } },
-          { colorSaturation: [0.3, 0.6], itemStyle: { borderColorSaturation: 0.7, gapWidth: 1, borderWidth: 1 } },
-        ],
-      }],
-      ...props.options,
+      series: [
+        {
+          type: "treemap" as const,
+          data: props.data as unknown as Record<string, unknown>[],
+          roam: false,
+          label: { show: true, fontSize: 11 },
+          upperLabel: { show: true, height: 28 },
+          itemStyle: { borderColor: "#fff", borderWidth: 1, gapWidth: 1 },
+          levels: [
+            { itemStyle: { borderColor: "#555", borderWidth: 4, gapWidth: 1 }, upperLabel: { show: true } },
+            { colorSaturation: [0.3, 0.6], itemStyle: { borderColorSaturation: 0.7, gapWidth: 1, borderWidth: 1 } }
+          ]
+        }
+      ],
+      ...props.options
     };
   }
   return (props.options as ECOption) ?? {};

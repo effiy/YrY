@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-22: 聊天窗口 Markdown 渲染安全 — XSS 防护与内容净化策略"
 tags: [需求文档, Markdown, XSS防护, 内容净化, 安全, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,14 +20,20 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [29-prd-task-Markdown渲染安全]
+related_tests: [29-prd-test-Markdown渲染安全]
 ---
 
 # YP-09-22: 聊天窗口 Markdown 渲染安全 — XSS 防护与内容净化策略
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-22 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
 ---
 
+<a id="sec-1"></a>
 ## 一、背景
 
 ### 1.1 问题陈述
@@ -59,6 +68,7 @@ YiPet 聊天窗口使用 `marked` 库将 AI 回复和用户消息从 Markdown �
 
 ---
 
+<a id="sec-2"></a>
 ## 二、现状分析
 
 ### 2.1 当前实现状态
@@ -118,6 +128,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、设计决策
 
 ### 3.1 D-01：Markdown 渲染库选择
@@ -153,6 +164,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 Before/After 对比
@@ -194,6 +206,7 @@ graph LR
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 安全渲染管道
@@ -391,6 +404,7 @@ const renderedContent = computed(() => {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 | 步骤 | 任务 | 文件 | 验证方法 | 人天 |
@@ -407,6 +421,7 @@ const renderedContent = computed(() => {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 基准测试
@@ -437,6 +452,7 @@ const renderedContent = computed(() => {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 ### 8.1 安全测试用例
@@ -496,6 +512,7 @@ THEN 所有 script 标签被移除
 
 ---
 
+<a id="sec-9"></a>
 ## 九、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -508,6 +525,7 @@ THEN 所有 script 标签被移除
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 |
@@ -518,6 +536,7 @@ THEN 所有 script 标签被移除
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 ### D-01: marked + DOMPurify 双层防护
@@ -546,6 +565,7 @@ THEN 所有 script 标签被移除
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 ### 12.1 指标
@@ -566,6 +586,7 @@ console.error('[YiPet:Markdown] Render failed: %o', error);
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、安全合规
 
 ### 13.1 Chrome MV3 安全要求
@@ -586,6 +607,7 @@ console.error('[YiPet:Markdown] Render failed: %o', error);
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、代码审查检查清单
 
 - [ ] `marked` 配置 `html: false`，禁止 HTML 标签透传
@@ -601,6 +623,7 @@ console.error('[YiPet:Markdown] Render failed: %o', error);
 
 ---
 
+<a id="sec-15"></a>
 ## 十五、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

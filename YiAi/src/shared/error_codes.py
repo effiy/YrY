@@ -2,9 +2,11 @@
 - Business error codes use 4-digit grouping: 1xxx for client errors, 5xxx for server errors
 - Uses enum to manage all error codes
 """
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+
 from fastapi import status as http_status
+
 
 @dataclass(frozen=True)
 class ErrorInfo:

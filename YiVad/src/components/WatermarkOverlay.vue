@@ -1,12 +1,5 @@
 <template>
-  <div
-    v-if="isEnabled"
-    ref="overlayRef"
-    class="watermark-overlay"
-    :style="overlayStyle"
-    aria-hidden="true"
-    role="presentation"
-  />
+  <div v-if="isEnabled" ref="overlayRef" class="watermark-overlay" :style="overlayStyle" aria-hidden="true" role="presentation" />
 </template>
 
 <script setup lang="ts">
@@ -28,9 +21,9 @@ onMounted(() => {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 9999;
   width: 100%;
   height: 100%;
-  z-index: 9999;
   pointer-events: none;
   user-select: none;
 }

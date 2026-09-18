@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 import type { SessionDocument } from "@/api/interface/yiAi";
 
-interface ContextChangeEntry {
+export interface ContextChangeEntry {
   path: string;
   previousContent: string;
   previousPageContent: string;
@@ -72,9 +72,7 @@ export function useContextChanges(deps: ContextChangesDeps) {
 
     const previousPageContent = current;
     const previousTags = [...(s.tags ?? [])];
-    const previousSectionContent = existingIdx >= 0
-      ? getContextSectionContent(normalized)
-      : "";
+    const previousSectionContent = existingIdx >= 0 ? getContextSectionContent(normalized) : "";
     const histEntry: ContextChangeEntry = {
       path: normalized,
       previousContent: previousSectionContent,
@@ -82,10 +80,7 @@ export function useContextChanges(deps: ContextChangesDeps) {
       previousTags,
       timestamp: Date.now()
     };
-    contextChangeHistory.value = [
-      histEntry,
-      ...contextChangeHistory.value
-    ].slice(0, MAX_CHANGE_HISTORY);
+    contextChangeHistory.value = [histEntry, ...contextChangeHistory.value].slice(0, MAX_CHANGE_HISTORY);
 
     if (!trimmedContent) {
       if (existingIdx < 0) return;
@@ -128,10 +123,7 @@ export function useContextChanges(deps: ContextChangesDeps) {
     if (idx < 0) return;
 
     const entry = contextChangeHistory.value[idx];
-    contextChangeHistory.value = [
-      ...contextChangeHistory.value.slice(0, idx),
-      ...contextChangeHistory.value.slice(idx + 1)
-    ];
+    contextChangeHistory.value = [...contextChangeHistory.value.slice(0, idx), ...contextChangeHistory.value.slice(idx + 1)];
     await deps.updateSessionMeta(s.key, {
       pageContent: entry.previousPageContent,
       tags: entry.previousTags
@@ -147,7 +139,13 @@ export function useContextChanges(deps: ContextChangesDeps) {
     const tags = [...(s.tags ?? [])];
     if (tags.includes(ctxTag)) return;
     contextChangeHistory.value = [
-      { path: normalized, previousContent: "", previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
+      {
+        path: normalized,
+        previousContent: "",
+        previousPageContent: s.pageContent || "",
+        previousTags: [...(s.tags ?? [])],
+        timestamp: Date.now()
+      },
       ...contextChangeHistory.value
     ].slice(0, MAX_CHANGE_HISTORY);
     tags.push(ctxTag);
@@ -165,7 +163,13 @@ export function useContextChanges(deps: ContextChangesDeps) {
       return;
     }
     contextChangeHistory.value = [
-      { path: normalized, previousContent: getContextSectionContent(normalized), previousPageContent: s.pageContent || "", previousTags: [...(s.tags ?? [])], timestamp: Date.now() },
+      {
+        path: normalized,
+        previousContent: getContextSectionContent(normalized),
+        previousPageContent: s.pageContent || "",
+        previousTags: [...(s.tags ?? [])],
+        timestamp: Date.now()
+      },
       ...contextChangeHistory.value
     ].slice(0, MAX_CHANGE_HISTORY);
     await applyContextChange(normalized, "");
@@ -179,6 +183,6 @@ export function useContextChanges(deps: ContextChangesDeps) {
     undoLastContextChange,
     addContextFile,
     removeContextFile,
-    getContextSectionContent,
+    getContextSectionContent
   };
 }

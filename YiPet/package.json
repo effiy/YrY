@@ -2,7 +2,10 @@
   "name": "yipet",
   "version": "1.2.0",
   "private": true,
+  "description": "YiPet — Gentle Companion Chrome MV3 extension with AI chat, multi-role support, and cross-project bridge to YiVad",
+  "license": "MIT",
   "type": "module",
+  "packageManager": "npm@11.6.2",
   "scripts": {
     "dev": "npm run build:cdn && (rsbuild build --mode development --watch & rsbuild build --mode production --watch --config rsbuild.config.chat.ts & rsbuild build --mode development --watch --config rsbuild.config.bootstrap.ts)",
     "build": "npm run build:cdn && rsbuild build && npm run build:chat && npm run build:bootstrap",
@@ -17,10 +20,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "lint": "npm run lint:eslint && npm run lint:prettier && npm run lint:stylelint",
     "lint:eslint": "eslint --fix --ext .js,.ts,.vue ./src",
     "lint:prettier": "prettier --write \"src/**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint --cache --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "lint:lint-staged": "lint-staged",
+    "check": "npm run typecheck && npm run lint && npm test",
     "prepare": "husky install",
     "commit": "git add -A && czg && git push"
   },
@@ -78,7 +83,7 @@
     "vue-tsc": "^3.3.8"
   },
   "engines": {
-    "node": ">=16.18.0"
+    "node": ">=18.0.0"
   },
   "browserslist": {
     "production": [

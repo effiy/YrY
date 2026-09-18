@@ -8,7 +8,7 @@ const MODULE = "services.milestone.milestone_service";
 
 export function listMilestones(projectKey: string) {
   return callService<{ list: Milestone[] }>(MODULE, "list_milestones", {
-    project_key: projectKey,
+    project_key: projectKey
   });
 }
 

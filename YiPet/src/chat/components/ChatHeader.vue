@@ -1,19 +1,19 @@
 <script setup lang="ts">
 /**
  * YiPet Chat — ChatHeader (Vue 3 SFC)
- * Uses Element Plus icons matching YiVad aiChat's header style.
+ * Minimal drag bar: title, streaming indicator, fullscreen, close.
+ * Model selector, new chat, export moved to inline chat header in ChatWindow.
  */
-import { Operation, FullScreen, Close } from '@element-plus/icons-vue';
+import { FullScreen, Close } from '@element-plus/icons-vue';
 
 defineProps<{
   title: string;
-  role: string;
-  roleImageUrl: string;
+  isProcessing: boolean;
+  streamingPhase: string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   close: [];
-  toggleSidebar: [];
   toggleFullscreen: [];
   headerMouseDown: [e: MouseEvent];
 }>();
@@ -24,45 +24,24 @@ defineEmits<{
     class="yipet-chat-header"
     role="banner"
     title="Drag to move | Double-click for fullscreen"
-    @mousedown="$emit('headerMouseDown', $event)"
-    @dblclick="$emit('toggleFullscreen')"
+    @mousedown="emit('headerMouseDown', $event)"
+    @dblclick="emit('toggleFullscreen')"
   >
     <div class="header-left">
-      <el-button
-        circle
-        size="small"
-        :icon="Operation"
-        title="Toggle sidebar"
-        aria-label="Toggle sidebar"
-        @click="$emit('toggleSidebar')"
-      />
-      <img
-        v-if="roleImageUrl"
-        class="header-avatar"
-        :src="roleImageUrl"
-        :alt="role"
-        :title="role"
-      />
       <span class="header-title">{{ title }}</span>
+      <span v-if="isProcessing" class="header-streaming">
+        <span class="header-streaming-dot" />
+        <span class="header-streaming-label">{{
+          streamingPhase === 'retrieving' ? 'Retrieving...' :
+          streamingPhase === 'thinking' ? 'Thinking...' :
+          streamingPhase === 'streaming' ? 'Writing...' :
+          'Processing...'
+        }}</span>
+      </span>
     </div>
-    <div class="header-buttons">
-      <el-button
-        circle
-        size="small"
-        :icon="FullScreen"
-        title="Fullscreen"
-        aria-label="Fullscreen"
-        @click="$emit('toggleFullscreen')"
-      />
-      <el-button
-        circle
-        size="small"
-        :icon="Close"
-        class="header-btn--danger"
-        title="Close"
-        aria-label="Close chat window"
-        @click="$emit('close')"
-      />
+    <div class="header-right">
+      <el-button circle size="small" :icon="FullScreen" title="Fullscreen" @click="emit('toggleFullscreen')" />
+      <el-button circle size="small" :icon="Close" class="header-btn--danger" title="Close" @click="emit('close')" />
     </div>
   </div>
 </template>
@@ -72,18 +51,12 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 6px 12px;
   cursor: move;
   user-select: none;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-rgb, 99, 102, 241), 0.22) 0%,
-    var(--bg-secondary, rgba(30, 26, 59, 0.9)) 60%
-  );
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25);
-  color: var(--text-primary, #f5f3ff);
+  background: var(--el-bg-color, #ffffff);
+  border-bottom: 1px solid var(--el-border-color-lighter, #ebeef5);
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -94,48 +67,74 @@ defineEmits<{
   min-width: 0;
 }
 
-.header-avatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: contain;
-  flex: none;
-  border: 2px solid rgba(var(--primary-rgb, 99, 102, 241), 0.5);
-  box-shadow: 0 0 10px rgba(var(--primary-rgb, 99, 102, 241), 0.4);
-}
-
 .header-title {
   font-size: 13px;
   font-weight: 600;
-  flex: 1;
-  min-width: 0;
+  color: var(--el-text-color-primary, #303133);
+  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.header-buttons {
+.header-streaming {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--el-color-primary, #409eff);
+  background: var(--el-color-primary-light-9, #ecf5ff);
+  border: 1px solid var(--el-color-primary-light-7, #c6e2ff);
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.header-streaming-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--el-color-primary, #409eff);
+  animation: hdr-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes hdr-dot-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.header-streaming-label {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2px;
+}
+
+.header-right {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
 }
 
-// Header button overrides — transparent bg, dark theme
 :deep(.el-button.is-circle) {
   --el-button-bg-color: transparent;
   --el-button-border-color: transparent;
-  --el-button-text-color: var(--text-secondary, #d4d0e8);
-  --el-button-hover-bg-color: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  --el-button-hover-border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.35);
-  --el-button-hover-text-color: var(--text-primary, #f5f3ff);
+  --el-button-text-color: var(--el-text-color-secondary, #909399);
+  --el-button-hover-bg-color: var(--el-fill-color-light, #f5f7fa);
+  --el-button-hover-border-color: var(--el-border-color, #dcdfe6);
+  --el-button-hover-text-color: var(--el-text-color-primary, #303133);
   width: 28px;
   height: 28px;
-  transition: all 0.15s;
 }
 
 .header-btn--danger:deep(.el-button.is-circle) {
-  --el-button-hover-bg-color: rgba(255, 77, 79, 0.15);
-  --el-button-hover-border-color: rgba(255, 77, 79, 0.35);
-  --el-button-hover-text-color: #ff4d4f;
+  --el-button-hover-bg-color: rgba(245, 108, 108, 0.1);
+  --el-button-hover-text-color: #f56c6c;
+}
+
+@media (max-width: 480px) {
+  .header-title { max-width: 100px; font-size: 12px; }
 }
 </style>

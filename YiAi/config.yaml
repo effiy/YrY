@@ -2,7 +2,7 @@
 server:
   host: "0.0.0.0"
   port: 10086
-  reload: true
+  reload: false
 
 # Uvicorn Settings
 uvicorn:
@@ -139,6 +139,9 @@ ollama:
   url: "http://localhost:11434"
   auth: ""
   chat_timeout: 600
+  num_ctx: 4096          # context window size (tokens)
+  num_predict: 2048      # max output tokens
+  temperature: 0.3       # lower = more deterministic/factual
 
 # DeepSeek Configuration (OpenAI-compatible API)
 deepseek:
@@ -159,11 +162,12 @@ ai_provider: "ollama"
 # RAG (llama_index) Configuration
 rag:
   embed_model: "nomic-embed-text"
-  llm_model: "qwen3.5:4b"
+  llm_model: "qwen2.5:latest"
+  hyde_model: "qwen2.5-coder:3b"     # same fast model for HyDE
   persist_dir: "./data/rag_store"
-  top_k: 3
-  chunk_size: 512
-  chunk_overlap: 40
+  top_k: 6
+  chunk_size: 2048
+  chunk_overlap: 200
   auto_rebuild_enabled: true
   auto_rebuild_debounce_seconds: 30
   hybrid_retrieval_enabled: true
@@ -172,18 +176,20 @@ rag:
   # Sentence window retrieval — parses docs into sentences, embeds each sentence,
   # then expands context around matching sentences at query time. Produces
   # richer context than fixed-size chunking for the same embedding cost.
-  sentence_window_enabled: true
+  sentence_window_enabled: false  # disabled for faster indexing — each sentence is embedded separately
   sentence_window_size: 3    # sentences before/after the match to include
-  chat_timeout: 180
-  llm_request_timeout: 120
-  num_predict: 512           # max tokens for RAG chat responses
+  chat_timeout: 300
+  llm_request_timeout: 60
+  num_predict: 768           # max tokens for RAG chat (~60s on 7B)
   temperature: 0.0            # temperature for RAG (factual answers)
   # Context builder — how retrieved chunks and history are assembled into the LLM prompt.
-  context_chunks: 4        # number of top retrieved chunks to include
-  snippet_chars: 600       # max characters per chunk snippet
-  history_msgs: 6          # max history messages to include
-  history_chars: 500       # max characters per history message
-  hyde_enabled: true        # HyDE — generate hypothetical answer for retrieval query
+  context_chunks: 4        # number of top retrieved chunks to include (balanced for speed)
+  snippet_chars: 1500      # max characters per chunk snippet (balanced for speed)
+  history_msgs: 4          # max history messages to include
+  history_chars: 300       # max characters per history message
+  hyde_enabled: false      # HyDE — adds latency, enable only when retrieval quality is priority
+  num_queries: 1           # QueryFusionRetriever LLM query variants (1=no expansion, 3=balanced, 5=thorough)
+  exclude_dirs: ["rss", "projects"]     # skip during index build — add back later via /rag-build
 
 # Logging Configuration
 logging:

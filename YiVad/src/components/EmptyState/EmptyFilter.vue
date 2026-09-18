@@ -1,5 +1,10 @@
 <template>
-  <EmptyState title="No data matching filters" description="Try adjusting your filter conditions." :action-text="'Reset filters'" @action="$emit('reset')">
+  <EmptyState
+    title="No data matching filters"
+    description="Try adjusting your filter conditions."
+    :action-text="'Reset filters'"
+    @action="$emit('reset')"
+  >
     <template #illustration>
       <el-icon :size="64" color="var(--el-text-color-disabled)"><Filter /></el-icon>
     </template>

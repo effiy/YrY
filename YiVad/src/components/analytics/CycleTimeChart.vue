@@ -23,7 +23,7 @@ const option = computed<ECOption>(() => ({
   series: [
     { name: "P50", data: props.data.map(d => d.p50), type: "line" as const, smooth: true, color: "#67c23a" },
     { name: "P80", data: props.data.map(d => d.p80), type: "line" as const, smooth: true, color: "#e6a23c" },
-    { name: "P95", data: props.data.map(d => d.p95), type: "line" as const, smooth: true, color: "#f56c6c" },
-  ],
+    { name: "P95", data: props.data.map(d => d.p95), type: "line" as const, smooth: true, color: "#f56c6c" }
+  ]
 }));
 </script>

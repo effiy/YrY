@@ -23,6 +23,9 @@ review_status: 待评审
 issue_type: 功能
 roles:
 - engineer
+source_okr: [yiai-003]
+related_modules: [12-prd-task-MCP协议服务]
+related_tests: [12-prd-test-MCP协议服务]
 ---
 
 # MCP 协议服务 — FastMCP 工具代理与 Claude Code 集成

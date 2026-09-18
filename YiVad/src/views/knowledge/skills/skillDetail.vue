@@ -7,7 +7,9 @@
           <div class="sd-skel-line sd-skel-line--short" />
           <div class="sd-skel-line sd-skel-line--long" />
           <div class="sd-skel-row">
-            <div class="sd-skel-tag" /><div class="sd-skel-tag" /><div class="sd-skel-tag" />
+            <div class="sd-skel-tag" />
+            <div class="sd-skel-tag" />
+            <div class="sd-skel-tag" />
           </div>
         </div>
         <div class="sd-skel-body">
@@ -35,7 +37,7 @@
       <div class="sd-header" :style="{ borderLeftColor: accentColor }">
         <div class="sd-header__top">
           <div class="sd-header__left">
-            <el-button text :icon="ArrowLeft" @click="$router.push('/skills')">Skills</el-button>
+            <el-button text :icon="ArrowLeft" @click="$router.push('/knowledge/skills')">Skills</el-button>
             <h1 class="sd-header__title">
               <span class="sd-header__icon">{{ skillDef?.icon || "📄" }}</span>
               {{ skillDef?.title || skillId }}
@@ -43,7 +45,11 @@
             <code class="sd-header__handle">/{{ skillDef?.name || skillId }}</code>
             <el-tag
               v-if="categoryInfo"
-              :style="{ background: categoryInfo.color + '18', borderColor: categoryInfo.color + '40', color: categoryInfo.color }"
+              :style="{
+                background: categoryInfo.color + '18',
+                borderColor: categoryInfo.color + '40',
+                color: categoryInfo.color
+              }"
               size="small"
             >
               {{ categoryInfo.label }}
@@ -88,12 +94,7 @@
             </div>
             <div class="sd-card__body sd-card__body--flush">
               <div v-if="filteredFiles.length" class="sd-files">
-                <div
-                  v-for="row in filteredFiles"
-                  :key="row.path"
-                  class="sd-file"
-                  @click="openDetail(row)"
-                >
+                <div v-for="row in filteredFiles" :key="row.path" class="sd-file" @click="openDetail(row)">
                   <div class="sd-file__accent" :style="{ background: fileAccentColor(row) }" />
                   <div class="sd-file__main">
                     <div class="sd-file__head">
@@ -122,7 +123,7 @@
               </div>
               <div v-else class="sd-empty">
                 <el-icon class="sd-empty__icon"><FolderOpened /></el-icon>
-                <p class="sd-empty__text">{{ searchText ? 'No files match your search' : 'No files in this skill' }}</p>
+                <p class="sd-empty__text">{{ searchText ? "No files match your search" : "No files in this skill" }}</p>
               </div>
             </div>
           </div>
@@ -145,7 +146,7 @@
               </div>
               <div class="sd-sb-row">
                 <span class="sd-sb-row__label">Category</span>
-                <span class="sd-sb-row__value" :style="{ color: accentColor }">{{ categoryInfo?.label || '—' }}</span>
+                <span class="sd-sb-row__value" :style="{ color: accentColor }">{{ categoryInfo?.label || "—" }}</span>
               </div>
               <div class="sd-sb-row">
                 <span class="sd-sb-row__label">Files</span>
@@ -164,19 +165,23 @@
               <div class="sd-sb-row">
                 <span class="sd-sb-row__label">Status</span>
                 <span class="sd-sb-row__value">
-                  <el-tag :type="statusTagType(skillDef?.status || '')" size="small">{{ skillDef?.status || '—' }}</el-tag>
+                  <el-tag :type="statusTagType(skillDef?.status || '')" size="small">{{ skillDef?.status || "—" }}</el-tag>
                 </span>
               </div>
               <div class="sd-sb-row">
                 <span class="sd-sb-row__label">Lifecycle</span>
                 <span class="sd-sb-row__value">
-                  <el-tag :type="lifecycleTagType(skillDef?.lifecycle || '')" size="small">{{ skillDef?.lifecycle || '—' }}</el-tag>
+                  <el-tag :type="lifecycleTagType(skillDef?.lifecycle || '')" size="small">{{
+                    skillDef?.lifecycle || "—"
+                  }}</el-tag>
                 </span>
               </div>
               <div class="sd-sb-row">
                 <span class="sd-sb-row__label">Invocable</span>
                 <span class="sd-sb-row__value">
-                  <el-tag :type="skillDef?.user_invocable ? 'success' : 'info'" size="small">{{ skillDef?.user_invocable ? 'Yes' : 'No' }}</el-tag>
+                  <el-tag :type="skillDef?.user_invocable ? 'success' : 'info'" size="small">{{
+                    skillDef?.user_invocable ? "Yes" : "No"
+                  }}</el-tag>
                 </span>
               </div>
             </div>
@@ -256,7 +261,19 @@
 <script setup lang="ts" name="skillDetail">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { ArrowLeft, Search, Delete, Download, FolderOpened, InfoFilled, Clock, Collection, FullScreen, Rank, Upload } from "@element-plus/icons-vue";
+import {
+  ArrowLeft,
+  Search,
+  Delete,
+  Download,
+  FolderOpened,
+  InfoFilled,
+  Clock,
+  Collection,
+  FullScreen,
+  Rank,
+  Upload
+} from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { readKnowledgeFile, scanKnowledge, deleteKnowledgeFile, exportKnowledgeDir } from "@/api/modules/knowledgeService";
 import type { KnowledgeMeta, KnowledgeFileEntry } from "@/api/interface/yiAi";
@@ -299,7 +316,9 @@ const downloading = ref(false);
 
 const hasMeta = computed(() => {
   const m = meta.value;
-  return Boolean(m.status || m.lifecycle || m.review_cycle || m.type || m.roles?.length || m.tags?.length || m.created || m.updated);
+  return Boolean(
+    m.status || m.lifecycle || m.review_cycle || m.type || m.roles?.length || m.tags?.length || m.created || m.updated
+  );
 });
 
 const totalSize = computed(() => {
@@ -401,11 +420,11 @@ function openDetail(row: KnowledgeFileEntry) {
 
 async function handleDelete(row: KnowledgeFileEntry) {
   try {
-    await ElMessageBox.confirm(
-      `Delete "${row.path}"? This action cannot be undone.`,
-      "Confirm Delete",
-      { confirmButtonText: "Delete", cancelButtonText: "Cancel", type: "warning" }
-    );
+    await ElMessageBox.confirm(`Delete "${row.path}"? This action cannot be undone.`, "Confirm Delete", {
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      type: "warning"
+    });
   } catch {
     return;
   }
@@ -434,21 +453,23 @@ async function loadFiles() {
   loading.value = true;
   try {
     const skillPath = `skills/${skillId.value}/SKILL.md`;
-    readKnowledgeFile(skillPath).then(res => {
-      const m = (res.meta || {}) as Record<string, unknown>;
-      skillDef.value = {
-        title: (m.title as string) || skillId.value,
-        name: (m.name as string) || skillId.value,
-        description: (m.description as string) || "",
-        lifecycle: (m.lifecycle as string) || "active",
-        user_invocable: m.user_invocable === true || m.user_invocable === "true",
-        status: (m.status as string) || "stable",
-        icon: "📄",
-        category: "ai",
-      };
-      meta.value = res.meta || {};
-      descContent.value = res.content || "";
-    }).catch(() => {});
+    readKnowledgeFile(skillPath)
+      .then(res => {
+        const m = (res.meta || {}) as Record<string, unknown>;
+        skillDef.value = {
+          title: (m.title as string) || skillId.value,
+          name: (m.name as string) || skillId.value,
+          description: (m.description as string) || "",
+          lifecycle: (m.lifecycle as string) || "active",
+          user_invocable: m.user_invocable === true || m.user_invocable === "true",
+          status: (m.status as string) || "stable",
+          icon: "📄",
+          category: "ai"
+        };
+        meta.value = res.meta || {};
+        descContent.value = res.content || "";
+      })
+      .catch(() => {});
 
     const res = await scanKnowledge(`skills/${skillId.value}`);
     allFiles.value = res.categories?.[0]?.files ?? [];
@@ -463,7 +484,10 @@ async function loadFiles() {
 function handleKeydown(e: KeyboardEvent) {
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-  if (e.key === "f" || e.key === "F") { e.preventDefault(); focusMode.value = !focusMode.value; }
+  if (e.key === "f" || e.key === "F") {
+    e.preventDefault();
+    focusMode.value = !focusMode.value;
+  }
 }
 
 // ── Sticky Bar ──
@@ -495,100 +519,170 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .sd-page {
-  padding: 24px;
   min-height: calc(100vh - 95px);
-  background: var(--el-bg-color-page);
+  padding: 24px;
   outline: none;
+  background: var(--el-bg-color-page);
 }
 
 // ── Skeleton ──
-.sd-skel { animation: sd-fade-in 0.3s ease; }
+.sd-skel {
+  animation: sd-fade-in 0.3s ease;
+}
 .sd-skel-header {
+  padding: 24px;
+  margin-bottom: 20px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
 }
 .sd-skel-line {
   height: 14px;
-  border-radius: 4px;
+  margin-bottom: 10px;
   background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
   background-size: 200% 100%;
+  border-radius: 4px;
   animation: sd-shimmer 1.5s infinite;
-  margin-bottom: 10px;
-  &--short { width: 30%; }
-  &--med { width: 55%; }
-  &--long { width: 80%; }
+  &--short {
+    width: 30%;
+  }
+  &--med {
+    width: 55%;
+  }
+  &--long {
+    width: 80%;
+  }
 }
 .sd-skel-tag {
   display: inline-block;
   width: 60px;
   height: 22px;
-  border-radius: 4px;
+  margin-right: 8px;
   background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
   background-size: 200% 100%;
+  border-radius: 4px;
   animation: sd-shimmer 1.5s infinite;
-  margin-right: 8px;
 }
-.sd-skel-row { display: flex; gap: 8px; }
-.sd-skel-body { display: flex; gap: 20px; }
-.sd-skel-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
-.sd-skel-sidebar { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
-.sd-skel-card { background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter); border-radius: 10px; padding: 16px; }
-@keyframes sd-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes sd-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.sd-skel-row {
+  display: flex;
+  gap: 8px;
+}
+.sd-skel-body {
+  display: flex;
+  gap: 20px;
+}
+.sd-skel-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+}
+.sd-skel-sidebar {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+}
+.sd-skel-card {
+  padding: 16px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+
+@keyframes sd-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes sd-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 // ── Header ──
 .sd-header {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 20px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-left: 4px solid var(--el-color-primary);
+  border-radius: 12px;
 }
-.sd-header__top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.sd-header__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
 .sd-header__left {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 .sd-header__title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
-.sd-header__icon { font-size: 22px; flex-shrink: 0; }
+.sd-header__icon {
+  flex-shrink: 0;
+  font-size: 22px;
+}
 .sd-header__handle {
+  padding: 1px 8px;
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 12px;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  padding: 1px 8px;
   border-radius: 4px;
 }
-.sd-header__actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.sd-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+}
 
 // ── Body ──
-.sd-body { display: flex; gap: 20px; align-items: flex-start; }
-.sd-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.sd-body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.sd-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
 
 // ── Cards ──
 .sd-card {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .sd-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -596,35 +690,70 @@ onUnmounted(() => {
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-.sd-card__icon { font-size: 16px; color: var(--el-color-primary); }
-.sd-card__head-right { margin-left: auto; display: flex; align-items: center; }
-.sd-card__head-hint { font-size: 12px; font-weight: 400; color: var(--el-text-color-secondary); }
-.sd-card__body { padding: 16px; }
-.sd-card__body--flush { padding: 0; }
+.sd-card__icon {
+  font-size: 16px;
+  color: var(--el-color-primary);
+}
+.sd-card__head-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.sd-card__head-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
+}
+.sd-card__body {
+  padding: 16px;
+}
+.sd-card__body--flush {
+  padding: 0;
+}
 
 // ── Empty States ──
 .sd-empty {
-  text-align: center;
   padding: 24px 16px;
-  &__icon { font-size: 28px; color: var(--el-text-color-placeholder); margin-bottom: 8px; }
-  &__text { margin: 0; font-size: 13px; font-weight: 500; color: var(--el-text-color-secondary); }
-  &__hint { margin: 4px 0 0; font-size: 12px; color: var(--el-text-color-placeholder); }
+  text-align: center;
+  &__icon {
+    margin-bottom: 8px;
+    font-size: 28px;
+    color: var(--el-text-color-placeholder);
+  }
+  &__text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--el-text-color-secondary);
+  }
+  &__hint {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
 }
 
 // ── Files ──
-.sd-files { display: flex; flex-direction: column; }
+.sd-files {
+  display: flex;
+  flex-direction: column;
+}
 .sd-file {
   display: flex;
   gap: 0;
   cursor: pointer;
-  transition: background 0.12s;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  &:last-child { border-bottom: none; }
-  &:hover { background: var(--el-fill-color-lighter); }
+  transition: background 0.12s;
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
 }
 .sd-file__accent {
-  width: 3px;
   flex-shrink: 0;
+  width: 3px;
 }
 .sd-file__main {
   flex: 1;
@@ -633,112 +762,137 @@ onUnmounted(() => {
 }
 .sd-file__head {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-bottom: 4px;
 }
-.sd-file__icon { font-size: 15px; flex-shrink: 0; }
+.sd-file__icon {
+  flex-shrink: 0;
+  font-size: 15px;
+}
 .sd-file__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
 }
 .sd-file__size {
+  flex-shrink: 0;
+  font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
-  font-family: monospace;
-  flex-shrink: 0;
 }
 .sd-file__foot {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 .sd-file__path {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
 }
-.sd-file__meta { flex-shrink: 0; }
+.sd-file__meta {
+  flex-shrink: 0;
+}
 .sd-file__date {
+  flex-shrink: 0;
+  font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  font-family: monospace;
-  flex-shrink: 0;
 }
 .sd-file__delete {
   flex-shrink: 0;
   opacity: 0;
   transition: opacity 0.12s;
-  .sd-file:hover & { opacity: 1; }
+  .sd-file:hover & {
+    opacity: 1;
+  }
 }
 
 // ── Sidebar ──
 .sd-sidebar {
-  width: 280px;
-  flex-shrink: 0;
   position: sticky;
   top: 20px;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 12px;
+  width: 280px;
 }
 .sd-sb-group {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .sd-sb-group__title {
   display: flex;
-  align-items: center;
   gap: 7px;
+  align-items: center;
   padding: 10px 14px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
-  .el-icon { font-size: 13px; }
+  .el-icon {
+    font-size: 13px;
+  }
 }
-.sd-sb-group__body { padding: 8px 14px; }
+.sd-sb-group__body {
+  padding: 8px 14px;
+}
 .sd-sb-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 6px 0;
   font-size: 13px;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
-.sd-sb-row__label { color: var(--el-text-color-secondary); font-weight: 500; flex-shrink: 0; }
+.sd-sb-row__label {
+  flex-shrink: 0;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
 .sd-sb-row__value {
   text-align: right;
-  &--muted { font-size: 12px; color: var(--el-text-color-placeholder); }
+  &--muted {
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
 }
 .sd-sb-row__handle {
+  padding: 1px 6px;
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 11px;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  padding: 1px 6px;
   border-radius: 3px;
 }
-.sd-sb-dep { margin-bottom: 8px; &:last-child { margin-bottom: 0; } }
+.sd-sb-dep {
+  margin-bottom: 8px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
 .sd-sb-dep__label {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
   display: block;
   margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 .sd-sb-dep__tags {
   display: flex;
@@ -747,22 +901,26 @@ onUnmounted(() => {
 }
 
 // ── Focus Mode ──
-.sd-sidebar--hidden { display: none; }
+.sd-sidebar--hidden {
+  display: none;
+}
 
 // ── Sticky Bottom Bar ──
 .sd-sticky-bar {
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   z-index: 100;
+  padding: 10px 24px;
   background: var(--el-bg-color);
   border-top: 1px solid var(--el-border-color);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-  padding: 10px 24px;
+  box-shadow: 0 -4px 20px rgb(0 0 0 / 8%);
   transform: translateY(100%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  &--visible { transform: translateY(0); }
+  &--visible {
+    transform: translateY(0);
+  }
 }
 .sd-sticky-bar__inner {
   display: flex;
@@ -771,61 +929,91 @@ onUnmounted(() => {
   max-width: 1400px;
   margin: 0 auto;
 }
-.sd-sticky-bar__left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.sd-sticky-bar__icon { font-size: 16px; flex-shrink: 0; }
+.sd-sticky-bar__left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+.sd-sticky-bar__icon {
+  flex-shrink: 0;
+  font-size: 16px;
+}
 .sd-sticky-bar__title {
-  font-size: 14px;
-  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
 }
 .sd-sticky-bar__handle {
+  flex-shrink: 0;
+  padding: 1px 6px;
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 11px;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  padding: 1px 6px;
   border-radius: 3px;
-  flex-shrink: 0;
 }
 .sd-sticky-bar__count {
+  flex-shrink: 0;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  flex-shrink: 0;
 }
-.sd-sticky-bar__actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.sd-sticky-bar__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+}
 
 // ── Print Styles ──
 @media print {
   .sd-page {
-    padding: 0;
     height: auto;
+    padding: 0;
     overflow: visible;
-    background: #fff;
+    background: #ffffff;
   }
-  .sd-header__actions { display: none; }
-  .sd-sidebar { display: none; }
-  .sd-sticky-bar { display: none; }
+  .sd-header__actions {
+    display: none;
+  }
+  .sd-sidebar {
+    display: none;
+  }
+  .sd-sticky-bar {
+    display: none;
+  }
   .sd-header {
-    border: none;
-    border-left: none;
     padding: 0 0 16px;
     margin-bottom: 16px;
-    border-bottom: 2px solid #000;
-    border-radius: 0;
-  }
-  .sd-header__title { font-size: 18px; }
-  .sd-card {
     border: none;
+    border-bottom: 2px solid #000000;
+    border-left: none;
     border-radius: 0;
-    border-bottom: 1px solid #eee;
-    break-inside: avoid;
-    margin-bottom: 12px;
   }
-  .sd-card__head { background: transparent; border-bottom: 1px solid #eee; }
-  .sd-card__body { padding: 12px 0; }
-  .sd-body { display: block; }
-  .sd-main { max-width: 100%; }
+  .sd-header__title {
+    font-size: 18px;
+  }
+  .sd-card {
+    margin-bottom: 12px;
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+    border-radius: 0;
+    break-inside: avoid;
+  }
+  .sd-card__head {
+    background: transparent;
+    border-bottom: 1px solid #eeeeee;
+  }
+  .sd-card__body {
+    padding: 12px 0;
+  }
+  .sd-body {
+    display: block;
+  }
+  .sd-main {
+    max-width: 100%;
+  }
 }
 </style>

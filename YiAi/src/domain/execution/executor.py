@@ -1,14 +1,16 @@
 """Controlled Module Executor
 - Validate whitelist, parse parameters, invoke target functions synchronously or asynchronously
 - Integrates Observer sandbox and reentrancy guard
+- Caches imported function references to avoid repeated importlib calls
 """
-import importlib
 import asyncio
-import logging
-import json
+import importlib
 import inspect
+import json
+import logging
 import time
-from typing import Dict, Any, Optional, Union
+from typing import Any, Dict, Optional, Union
+
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
@@ -21,6 +23,12 @@ allowlist = settings.module_allowlist
 if isinstance(allowlist, str):
     allowlist = [x.strip() for x in allowlist.split(',') if x.strip()]
 EXEC_ALLOWLIST = set(allowlist)
+
+# Cache for imported function references — avoids repeated importlib.import_module
+# on every RPC call. The same (module_path, function_name) pair is resolved once
+# and reused. Python's sys.modules already caches the module object; this cache
+# skips the getattr lookup as well.
+_FUNC_CACHE: dict[tuple[str, str], Any] = {}
 
 # Lazy import to avoid circular dependency at module load time
 _recorder = None
@@ -47,7 +55,7 @@ def _get_guard():
             logger.warning(f"ReentrancyGuard not available: {e}")
     return _guard
 
-def parse_parameters(parameters: Union[Dict[str, Any], str]) -> Dict[str, Any]:
+def parse_parameters(parameters: dict[str, Any] | str) -> dict[str, Any]:
     """
     Parse parameters, supports dict or JSON string
 
@@ -70,74 +78,6 @@ def parse_parameters(parameters: Union[Dict[str, Any], str]) -> Dict[str, Any]:
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Parameters must be a JSON object")
     return parsed
 
-async def run_script(script_path: str, timeout: int = 300) -> Dict[str, Any]:
-    """
-    Execute Python script
-
-    Args:
-        script_path: Script path
-        timeout: Timeout in seconds
-
-    Returns:
-        Execution result
-    """
-    try:
-        logger.info(f"Starting script execution: {script_path}")
-
-        # Execute script using asyncio.create_subprocess_exec
-        process = await asyncio.create_subprocess_exec(
-            'python3',
-            script_path,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-
-        # Wait for execution to complete with timeout
-        try:
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(),
-                timeout=timeout
-            )
-        except asyncio.TimeoutError:
-            process.kill()
-            await process.wait()
-            raise BusinessException(
-                ErrorCode.INTERNAL_ERROR,
-                message=f"Script execution timeout ({timeout}s)"
-            ) from None
-
-        # Decode output
-        stdout_text = stdout.decode('utf-8') if stdout else ''
-        stderr_text = stderr.decode('utf-8') if stderr else ''
-
-        logger.info(f"Script execution complete, return code: {process.returncode}")
-
-        if process.returncode != 0:
-            logger.error(f"Script execution failed: {stderr_text}")
-            return {
-                'success': False,
-                'message': f'Script execution failed (return code: {process.returncode})',
-                'stdout': stdout_text,
-                'stderr': stderr_text,
-                'returncode': process.returncode
-            }
-
-        return {
-            'success': True,
-            'message': 'Script execution successful',
-            'stdout': stdout_text,
-            'stderr': stderr_text,
-            'returncode': process.returncode
-        }
-
-    except Exception as e:
-        logger.error(f"Script execution failed: {e!s}", exc_info=True)
-        return {
-            'success': False,
-            'message': f'Script execution failed: {e!s}',
-            'error': str(e)
-        }
-
 async def _run_function(target_function, parameters_dict):
     """Execute target function within Observer sandbox context"""
     if settings.observer_sandbox_enabled:
@@ -155,7 +95,7 @@ async def _run_function(target_function, parameters_dict):
         return target_function(parameters_dict)
 
 
-def _acquire_guard() -> Optional[Any]:
+def _acquire_guard() -> Any | None:
     """Acquire reentrancy guard token, raise if depth limit exceeded"""
     guard = _get_guard()
     if guard is None:
@@ -170,7 +110,7 @@ def _acquire_guard() -> Optional[Any]:
     return _reentrancy_depth.set(depth + 1)
 
 
-def _release_guard(token: Optional[Any]) -> None:
+def _release_guard(token: Any | None) -> None:
     """Release reentrancy guard token"""
     if token is not None:
         from observer.guard import _reentrancy_depth
@@ -187,14 +127,24 @@ def _check_whitelist(module_path: str, function_name: str) -> None:
 
 
 def _import_target_function(module_path: str, function_name: str):
-    """Dynamically import target module and return function object"""
+    """Dynamically import target module and return function object.
+
+    Results are cached in ``_FUNC_CACHE`` so repeated RPC calls to the same
+    module+function skip the importlib+getattr overhead entirely.
+    """
+    cache_key = (module_path, function_name)
+    if cache_key in _FUNC_CACHE:
+        return _FUNC_CACHE[cache_key]
+
     # PR3: log every RPC dispatch so we can collect the real module_name
     # strings callers use, then deprecate the services.* shim. See
     # docs/arch/scene-06-componentization-or-modularization (PR3).
     logger.info("RPC dispatch: module=%s function=%s", module_path, function_name)
     try:
         module = importlib.import_module(module_path)
-        return getattr(module, function_name)
+        func = getattr(module, function_name)
+        _FUNC_CACHE[cache_key] = func
+        return func
     except (ImportError, AttributeError) as e:
         logger.error(f"Module import error: {e!s}")
         raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"Module or function not found: {e!s}") from e
@@ -222,7 +172,7 @@ def _record_execution(
         logger.error(f"SkillRecorder failed: {rec_err}")
 
 
-async def execute_module(module_path: str, function_name: str, parameters: Union[Dict[str, Any], str]) -> Any:
+async def execute_module(module_path: str, function_name: str, parameters: dict[str, Any] | str) -> Any:
     """Execute target module/function, integrates Observer sandbox and reentrancy guard"""
     token = _acquire_guard()
     try:

@@ -12,10 +12,12 @@ Endpoints:
   POST /mcp/call           → invoke a tool by name with JSON arguments
 """
 import logging
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from shared.response import success, fail
+
 from shared.error_codes import ErrorCode
+from shared.response import fail, success
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -111,7 +113,7 @@ def _extract_content(item, out: list[str]) -> None:
         if d:
             out.append(str(d))
             return
-    except Exception:
+    except (AttributeError, TypeError):
         logger.debug("Failed to convert MCP result, using str fallback", exc_info=True)
 
 
@@ -121,8 +123,8 @@ def _jsonable(obj):
     try:
         if hasattr(obj, "model_dump"):
             return obj.model_dump()
-        if isinstance(obj, (list, dict, str, int, float, bool)) or obj is None:
+        if isinstance(obj, list | dict | str | int | float | bool) or obj is None:
             return obj
         return json.loads(json.dumps(obj, default=str))
-    except Exception:
+    except (TypeError, json.JSONDecodeError):
         return None

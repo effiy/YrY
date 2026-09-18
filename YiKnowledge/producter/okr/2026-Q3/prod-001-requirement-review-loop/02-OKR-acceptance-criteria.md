@@ -1,13 +1,27 @@
 ---
+title: "Prod M02 验收标准完备率"
+tags: [okr, metric, producter, acceptance-criteria]
+category: producter/okr
+created: 2026-08-21
+updated: 2026-09-15
+source: internal
+type: report
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [producter]
+benefit: "追踪 PRD 中验收标准可被测试门禁直接判定的需求占比"
 type: okr-metric
 id: prod-m02
 name: 验收标准完备率
-category: 验收标准
+okr_category: 验收标准
 framework: OKR
 trend: up
 progress: 100
-title: Prod M02 验收标准完备率
-updated: 2026-09-10---
+related:
+  - ../../../discovery/01-发现-编写PRD.md
+  - ../../../frameworks/05-框架-OKR设计摘要.md
+---
 
 # 验收标准完备率
 

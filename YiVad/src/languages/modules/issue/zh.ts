@@ -19,57 +19,57 @@ export default {
       bulkAssignTitle: "批量分配",
       bulkAssignPrompt: "请输入负责人姓名",
       bulkAssignConfirm: "分配",
-      bulkAssignSuccess: "已将 {count} 个 Issue 分配给 \"{assignee}\"",
+      bulkAssignSuccess: '已将 {count} 个 Issue 分配给 "{assignee}"',
       quickFilter: {
         my: "我的 Issue",
         open: "待处理",
         high: "高优先级",
         week: "本周截止",
-        done: "最近完成",
+        done: "最近完成"
       },
       viewMode: {
         table: "表格",
         card: "卡片",
-        list: "列表",
+        list: "列表"
       },
       empty: {
         noIssues: "暂无 Issue",
-        noMatch: "无匹配结果",
-      },
+        noMatch: "无匹配结果"
+      }
     },
     status: {
       backlog: "待排期",
       todo: "待办",
       in_progress: "进行中",
       in_review: "评审中",
-      done: "已完成",
+      done: "已完成"
     },
     priority: {
       urgent: "紧急",
       high: "高",
       medium: "中",
       low: "低",
-      none: "无",
+      none: "无"
     },
     type: {
       bug: "Bug",
       task: "任务",
       feature: "功能",
       improvement: "改进",
-      requirement: "需求",
+      requirement: "需求"
     },
     source: {
       customer: "客户",
       internal: "内部",
       market: "市场",
       compliance: "合规",
-      other: "其他",
+      other: "其他"
     },
     review: {
       pending: "待审核",
       approved: "已通过",
       rejected: "已拒绝",
-      in_review: "审核中",
+      in_review: "审核中"
     },
     table: {
       month: "月份",
@@ -87,20 +87,21 @@ export default {
       project: "项目",
       module: "模块",
       goal: "目标",
+      linkedOkr: "关联 OKR",
       assignee: "负责人",
       start: "开始",
       due: "截止",
       created: "创建",
       updated: "更新",
       actions: "操作",
-      est: "预估",
+      est: "预估"
     },
     detail: {
       parentIssue: "父 Issue",
       notFound: "Issue 未找到",
       notFoundSub: "此 Issue 不存在或已被删除。",
       backToIssues: "返回 Issue 列表",
-      overridden: "被覆盖",
+      overridden: "被覆盖"
     },
     dialog: {
       createTitle: "新建 Issue",
@@ -134,7 +135,7 @@ export default {
         basic: "基本信息",
         content: "内容",
         assignment: "分配",
-        schedule: "排期与追踪",
+        schedule: "排期与追踪"
       },
       cancel: "取消",
       save: "保存",
@@ -143,12 +144,12 @@ export default {
       updateSuccess: "Issue 已更新",
       deleteSuccess: "Issue 已删除",
       cloneSuccess: "Issue 已克隆",
-      deleteConfirm: "确认删除 Issue \"{title}\"？",
-      deleteWithFileConfirm: "确认删除 Issue \"{title}\"？关联知识库文件 {path} 将一并删除。",
+      deleteConfirm: '确认删除 Issue "{title}"？',
+      deleteWithFileConfirm: '确认删除 Issue "{title}"？关联知识库文件 {path} 将一并删除。',
       deleteTitle: "删除 Issue",
-      deletePrdConfirm: "确认删除需求文档 \"{title}\"？知识库文件 {path} 将被删除，并影响 RAG 索引与 OKR 引用。",
+      deletePrdConfirm: '确认删除需求文档 "{title}"？知识库文件 {path} 将被删除，并影响 RAG 索引与 OKR 引用。',
       deletePrdTitle: "删除需求文档",
-      delete: "删除",
+      delete: "删除"
     },
     message: {
       copied: "已复制 {key}",
@@ -157,7 +158,7 @@ export default {
       moveTitle: "移动 Issue",
       move: "移动",
       moveTarget: "目标项目 Key",
-      moveSuccess: "Issue 已移至 \"{project}\"",
+      moveSuccess: 'Issue 已移至 "{project}"'
     },
     sidebar: {
       total: "总计",
@@ -173,13 +174,13 @@ export default {
       labels: "标签",
       dependencies: "依赖",
       linkedItems: "关联项",
-      metadata: "元数据",
+      metadata: "元数据"
     },
     error: {
       loadFailed: "加载 Issue 失败",
       updateFailed: "更新 Issue 失败",
       deleteFailed: "删除失败",
-      fileCleanupFailed: "Issue 已删除，但知识库文件未能删除：{path}",
-    },
-  },
+      fileCleanupFailed: "Issue 已删除，但知识库文件未能删除：{path}"
+    }
+  }
 };

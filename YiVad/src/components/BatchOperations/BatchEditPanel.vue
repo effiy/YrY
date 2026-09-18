@@ -4,7 +4,12 @@
       <div v-for="field in fields" :key="field.key" class="batch-edit__field">
         <label>{{ field.label }}</label>
         <el-input v-if="field.type === 'text'" v-model="edits[field.key]" :placeholder="`New value for ${field.label}`" />
-        <el-select v-else-if="field.type === 'select'" v-model="edits[field.key]" :placeholder="`Select ${field.label}`" clearable>
+        <el-select
+          v-else-if="field.type === 'select'"
+          v-model="edits[field.key]"
+          :placeholder="`Select ${field.label}`"
+          clearable
+        >
           <el-option v-for="o in field.options" :key="o.value" :label="o.label" :value="o.value" />
         </el-select>
         <el-input-number v-else-if="field.type === 'number'" v-model="edits[field.key]" />
@@ -21,7 +26,12 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 
-interface EditField { key: string; label: string; type: "text" | "select" | "number" | "date"; options?: { label: string; value: any }[] }
+interface EditField {
+  key: string;
+  label: string;
+  type: "text" | "select" | "number" | "date";
+  options?: { label: string; value: any }[];
+}
 
 defineProps<{ count: number; fields: EditField[] }>();
 const emit = defineEmits<{ confirm: [edits: Record<string, any>] }>();
@@ -29,12 +39,27 @@ const emit = defineEmits<{ confirm: [edits: Record<string, any>] }>();
 const visible = ref(false);
 const edits = reactive<Record<string, any>>({});
 
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm", { ...edits }); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm", { ...edits });
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
-.batch-edit__field { margin-bottom: 16px; label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; } }
+.batch-edit__field {
+  margin-bottom: 16px;
+  label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
 </style>

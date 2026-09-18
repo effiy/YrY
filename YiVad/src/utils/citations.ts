@@ -42,7 +42,9 @@ export function injectCitations(html: string, sourceCount: number): string {
  *  `RagSources`-shaped ref. Reads `data-cite-idx` off the closest
  *  `.cite-chip` ancestor of the click target and calls `focusSource`
  *  on the provided ref. No-op when the click didn't hit a chip. */
-export function makeCitationClickHandler(getRef: () => { focusSource?: (idx: number) => void } | null | undefined): (e: MouseEvent) => void {
+export function makeCitationClickHandler(
+  getRef: () => { focusSource?: (idx: number) => void } | null | undefined
+): (e: MouseEvent) => void {
   return (e: MouseEvent) => {
     const chip = (e.target as HTMLElement).closest<HTMLElement>(".cite-chip");
     if (!chip) return;

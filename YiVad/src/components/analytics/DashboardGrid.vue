@@ -1,11 +1,6 @@
 <template>
   <div ref="gridRef" class="dashboard-grid">
-    <div
-      v-for="card in cards"
-      :key="card.key"
-      class="dashboard-grid__item"
-      :style="itemStyle(card)"
-    >
+    <div v-for="card in cards" :key="card.key" class="dashboard-grid__item" :style="itemStyle(card)">
       <slot :name="card.key" :card="card" />
     </div>
   </div>
@@ -21,7 +16,7 @@ const gridRef = ref<HTMLDivElement>();
 function itemStyle(card: T) {
   return {
     gridColumn: `${card.x + 1} / span ${card.w}`,
-    gridRow: `${card.y + 1} / span ${card.h}`,
+    gridRow: `${card.y + 1} / span ${card.h}`
   };
 }
 </script>
@@ -32,6 +27,8 @@ function itemStyle(card: T) {
   grid-template-columns: repeat(12, 1fr);
   grid-auto-rows: minmax(120px, auto);
   gap: 16px;
-  &__item { min-height: 0; }
+  &__item {
+    min-height: 0;
+  }
 }
 </style>

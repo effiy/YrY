@@ -103,108 +103,94 @@ const emit = defineEmits<{
     border-bottom: 1px solid var(--el-border-color-lighter);
     backdrop-filter: blur(12px);
     .page-header-card__inner {
+      padding: 14px 24px;
+      margin: 0;
       background: transparent;
       border: none;
-      margin: 0;
-      padding: 14px 24px;
     }
   }
-
   &__inner {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 16px;
+    align-items: center;
     padding: 16px 20px;
     margin-bottom: 20px;
     background: var(--el-bg-color);
     border: 1px solid var(--el-border-color-lighter);
     border-radius: 12px;
-    flex-wrap: wrap;
   }
-
   &__icon {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 44px;
     height: 44px;
+    color: #ffffff;
     border-radius: 10px;
-    color: #fff;
-    flex-shrink: 0;
   }
-
   &__text {
-    min-width: 0;
     flex: 1;
+    min-width: 0;
   }
-
   &__title-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
   }
-
   &__title {
     margin: 0;
     font-size: 18px;
     font-weight: 700;
     line-height: 1.3;
   }
-
   &__desc {
     margin: 2px 0 0;
     font-size: 12px;
     color: var(--el-text-color-secondary);
   }
-
   &__pills {
     display: flex;
-    gap: 10px;
     flex-shrink: 0;
     flex-wrap: wrap;
+    gap: 10px;
   }
-
   &__pill {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 1px;
-    padding: 6px 16px;
-    border-radius: 8px;
-    background: var(--el-fill-color-light);
+    align-items: center;
     min-width: 64px;
-
+    padding: 6px 16px;
+    background: var(--el-fill-color-light);
+    border-radius: 8px;
     &--accent {
       background: var(--el-color-danger-light-9);
     }
   }
-
   &__pill-val {
+    font-family: DIN, sans-serif;
     font-size: 18px;
     font-weight: 700;
     line-height: 1.1;
-    font-family: DIN, sans-serif;
-
     .page-header-card__pill--accent & {
       color: var(--el-color-danger);
     }
   }
-
   &__pill-lbl {
     font-size: 10px;
     font-weight: 600;
+    color: var(--el-text-color-secondary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    color: var(--el-text-color-secondary);
   }
-
   &__right {
     display: flex;
-    align-items: center;
-    gap: 8px;
     flex-shrink: 0;
-
+    gap: 8px;
+    align-items: center;
     :deep(.ho__hero-date-nav) {
       margin: 0;
     }

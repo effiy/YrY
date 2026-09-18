@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YI-07-07"
 source_prds: ["07-需求-企业微信消息推送"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # 企业微信机器人消息推送集成 — 测试规格
 

@@ -27,11 +27,11 @@
         <div class="upload-handle" @click.stop>
           <div class="handle-icon" @click="handlePictureCardPreview(file)">
             <el-icon><ZoomIn /></el-icon>
-            <span>{{ t('common.view') }}</span>
+            <span>{{ t("common.view") }}</span>
           </div>
           <div v-if="!self_disabled" class="handle-icon" @click="handleRemove(file)">
             <el-icon><Delete /></el-icon>
-            <span>{{ t('common.delete') }}</span>
+            <span>{{ t("common.delete") }}</span>
           </div>
         </div>
       </template>
@@ -54,7 +54,7 @@ import { ElNotification, formContextKey, formItemContextKey } from "element-plus
 const { t } = useI18n();
 
 interface UploadFileProps {
-  fileList: UploadUserFile[];
+  fileList?: UploadUserFile[];
   api?: (params: any) => Promise<any>; // Upload image API method, usually the same API across the project, can be imported directly in the component ==> optional
   drag?: boolean; // Whether to support drag upload ==> optional (default true)
   disabled?: boolean; // Whether to disable upload component ==> optional (default false)

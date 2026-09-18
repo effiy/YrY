@@ -10,26 +10,26 @@ import { ref, computed, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useToolRegistry } from "@/hooks/useToolRegistry";
 import { useConversationTree } from "@/hooks/useConversationTree";
-import { useContextChangePrompt } from "@/hooks/useContextChangePrompt";
 import { useContextChanges } from "@/hooks/useContextChanges";
 import { registerAiChatTools } from "@/hooks/useAiChatTools";
 import { useSlashCommands } from "@/hooks/useSlashCommands";
-import { useRagSettings } from "@/views/aiChat/composables/useRagSettings";
-import { useChatUiState } from "@/views/aiChat/composables/useChatUiState";
-import { useToolExecution } from "@/views/aiChat/composables/useToolExecution";
-import { useConversationCompact } from "@/views/aiChat/composables/useConversationCompact";
-import { usePromptTemplates } from "@/views/aiChat/composables/usePromptTemplates";
-import { useModelSelection } from "@/views/aiChat/composables/useModelSelection";
-import { getSessions, getSession, upsertSession, deleteSession } from "@/api/modules/sessions";
+import { useRagSettings } from "@/views/ai-chat/composables/useRagSettings";
+import { useChatUiState } from "@/views/ai-chat/composables/useChatUiState";
+import { useToolExecution } from "@/views/ai-chat/composables/useToolExecution";
+import { useConversationCompact } from "@/views/ai-chat/composables/useConversationCompact";
+import { usePromptTemplates } from "@/views/ai-chat/composables/usePromptTemplates";
+import { useModelSelection } from "@/views/ai-chat/composables/useModelSelection";
+import { getSessions, getSession, upsertSession, updateSession, deleteSession } from "@/api/modules/sessions";
 import { streamChat } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { queryDocuments } from "@/api/modules/dataService";
 import { loadRobots, sendWeChatMessage } from "@/api/modules/weChatService";
-import type { WebSearchResult } from "@/api/modules/searchService";
+import { getStorageQuota } from "@/utils/storage";
+import type { WebSearchResult, WebImageResult } from "@/api/modules/searchService";
 import type { SessionDocument, ChatMessage, FaqDocument } from "@/api/interface/yiAi";
 import type { RagSource, RagStreamHandlers } from "@/api/interface/rag";
-import type { AiChatFeedbackRating, AiChatStreamingType } from "@/views/aiChat/types";
-import { DEFAULT_MODEL } from "@/views/aiChat/constants";
+import type { AiChatStreamingType } from "@/views/ai-chat/types";
+import { DEFAULT_MODEL } from "@/views/ai-chat/constants";
 
 import { loadBool, saveBool } from "@/utils/storage";
 import { newKey, readFileAsDataUrl, normalizeSession } from "@/utils/chatNormalizers";
@@ -37,7 +37,7 @@ import { newKey, readFileAsDataUrl, normalizeSession } from "@/utils/chatNormali
 const STORAGE_ACTIVE_KEY = "aiChat.activeKey";
 const STORAGE_WEB_KEY = "aiChat.webSearchEnabled";
 const MAX_DRAFT_IMAGES = 4;
-const SCROLL_THROTTLE_MS = 120;
+const SCROLL_THROTTLE_MS = 80;
 
 export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const conversations = ref<SessionDocument[]>([]);
@@ -53,29 +53,41 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   const toolAbortController = ref<AbortController | null>(null);
   const streamingTargetTimestamp = ref<number | null>(null);
   const streamingType = ref<AiChatStreamingType>("");
+  /** Timestamp (Date.now()) when the current stream entered "thinking" phase.
+   *  Reset to null when streaming ends. PetMessage uses this to show elapsed time. */
+  const thinkingStartTs = ref<number | null>(null);
 
   // ── Streaming phase (Pi-inspired: turn_start/message_start/message_end) ──
   // Tracks the current phase of the AI interaction for richer UI feedback.
-  type StreamingPhase = "idle" | "fetching" | "thinking" | "retrieving" | "streaming" | "done";
+  type StreamingPhase = "idle" | "fetching" | "preparing" | "thinking" | "retrieving" | "streaming" | "done";
   const streamingPhase = ref<StreamingPhase>("idle");
 
   const scrollTick = ref(0);
   const copyFeedback = ref<Record<string, string>>({});
-  const feedback = ref<Record<number, AiChatFeedbackRating>>({});
   const draftImages = ref<string[]>([]);
   const faqs = ref<FaqDocument[]>([]);
   const faqLoading = ref(false);
   let faqLoaded = false;
+  const conversationsLoaded = ref(false);
 
   // RAG toggle — user-controlled. Persisted to localStorage via useRagSettings.
-  const { ragEnabled, ragHybrid, ragRerank, ragCitations, ragNumQueries, ragChatMode, ragCategory, ragTags } = useRagSettings();
+  const { ragEnabled, ragHybrid, ragRerank, ragCitations, ragHyde, ragScope, ragNumQueries, ragChatMode } = useRagSettings();
 
   // UI state — extracted to useChatUiState composable.
   const {
-    faqVisible, faqSearch, faqApplyMode,
-    weChatVisible, tagManagerVisible, llamaIndexVisible,
-    sessionEditVisible, contextEditorVisible, contextEditorDraft,
-    contextPanelNewMode, batchMode, selectedKeys, clearSelection,
+    faqVisible,
+    faqSearch,
+    faqApplyMode,
+    weChatVisible,
+    tagManagerVisible,
+    llamaIndexVisible,
+    sessionEditVisible,
+    contextEditorVisible,
+    contextEditorDraft,
+    contextPanelNewMode,
+    batchMode,
+    selectedKeys,
+    clearSelection
   } = useChatUiState();
 
   // Model selection — extracted to useModelSelection composable.
@@ -84,42 +96,56 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // Prompt templates — extracted to usePromptTemplates composable.
   const { promptTemplates, addTemplate, removeTemplate, applyTemplate } = usePromptTemplates();
 
-  // Web search toggle — user-controlled. Persisted to localStorage.
-  const webSearchEnabled = ref(loadBool(STORAGE_WEB_KEY, false));
+  // Web search toggle — defaults off every session.
+  const webSearchEnabled = ref(false);
 
   // Results from the most recent web search (displayed in the message bubble).
   const webSearchResults = ref<WebSearchResult[]>([]);
 
+  // Image results from the most recent web search.
+  const webSearchImages = ref<WebImageResult[]>([]);
+
   // True while web search API call is in-flight.
   const webSearching = ref(false);
 
+  // Search timing for the most recent web search (ms).
+  const searchTimingMs = ref(0);
+
+  // The refined query that was actually searched (for display in results header).
+  const lastSearchQuery = ref("");
+
   // ── Tool Registry (Pi-inspired pluggable tools) ──
-  const { tools: _tools, toolEvents, activeTools, allTools, registerTool, setToolEnabled, executeTool, getToolsForSystemPrompt } = useToolRegistry();
+  const {
+    tools: _tools,
+    toolEvents,
+    activeTools,
+    allTools,
+    registerTool,
+    setToolEnabled,
+    executeTool,
+    getToolsForSystemPrompt
+  } = useToolRegistry();
 
   const { searchQuery, expandedFolders, toggleFolder, conversationTree, filteredConversationTree, isStreaming } =
     useConversationTree({ conversations, sending, streamingTargetTimestamp });
 
-  const { contextChangeSystemPrompt } = useContextChangePrompt(activeConversation);
-
-  // True when the active conversation has ctx:-tagged files (can use RAG).
-  const ragActive = computed(() => {
-    const tags = activeConversation.value?.tags ?? [];
-    return tags.some(t => typeof t === "string" && t.startsWith("ctx:"));
-  });
+  // True when RAG is enabled by the user — no longer requires ctx: tags.
+  // RAG toggle alone is sufficient to activate knowledge-base-grounded chat.
+  const ragActive = computed(() => ragEnabled.value);
 
   // Auto-sync tool enabled states with store toggles (Pi pattern: tools are
   // reactive to session state, not separate manual toggles).
-  watch([ragEnabled, ragActive, webSearchEnabled], () => {
-    setToolEnabled("web_search", webSearchEnabled.value);
-    setToolEnabled("web_fetch", webSearchEnabled.value);
-    setToolEnabled("rag_search", ragEnabled.value && ragActive.value);
-    setToolEnabled("context_edit", ragActive.value);
-    saveBool(STORAGE_WEB_KEY, webSearchEnabled.value);
-  }, { immediate: true });
+  watch(
+    [ragEnabled, ragActive, webSearchEnabled],
+    () => {
+      setToolEnabled("web_search", webSearchEnabled.value);
+      setToolEnabled("web_fetch", webSearchEnabled.value);
+      setToolEnabled("rag_search", ragEnabled.value && ragActive.value);
+      setToolEnabled("context_edit", ragActive.value);
+    },
+    { immediate: true }
+  );
 
-  // Backward-compat aliases
-  const knowledgeMode = computed(() => ragEnabled.value && ragActive.value);
-  const contextSwitchEnabled = computed(() => ragEnabled.value);
   // Transient per-message system prompt — set by callers (e.g. story's
   // file-preview chat passes the file content as context) and consumed by
   // runStream on the next send. Not persisted: file content changes between
@@ -145,6 +171,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   }
 
   async function loadConversations() {
+    if (loading.value) return;
     loading.value = true;
     error.value = null;
     try {
@@ -167,6 +194,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       error.value = e instanceof Error ? e.message : "Failed to load conversations";
     } finally {
       loading.value = false;
+      conversationsLoaded.value = true;
     }
   }
 
@@ -308,13 +336,16 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   ) {
     const target = conversations.value.find(c => c.key === key);
     if (!target) return;
-    const patch = { ...target, ...meta, updatedAt: Date.now() };
+    const updatedAt = Date.now();
     try {
-      await upsertSession(patch);
+      await updateSession(key, { ...meta, updatedAt });
+      const isActive = activeConversation.value?.key === key;
+      // Use live messages from activeConversation (if active) — conversations.value
+      // lags behind during streaming and would roll back streamed content.
+      const liveMessages = isActive ? activeConversation.value!.messages : target.messages;
+      const patch = { ...target, ...meta, messages: liveMessages, updatedAt };
       conversations.value = conversations.value.map(c => (c.key === key ? patch : c));
-      if (activeConversation.value?.key === key) {
-        activeConversation.value = patch;
-      }
+      if (isActive) activeConversation.value = patch;
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : "Failed to update session";
     }
@@ -452,10 +483,14 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     return text.replace(/[&<>"']/g, c => map[c] || c);
   }
 
-  const { contextChangeHistory, applyContextChange, deleteContextSection,
-          undoLastContextChange, addContextFile, removeContextFile,
-          getContextSectionContent } =
-    useContextChanges({ activeConversation, updateSessionMeta });
+  const {
+    contextChangeHistory,
+    applyContextChange,
+    undoLastContextChange,
+    addContextFile,
+    removeContextFile,
+    getContextSectionContent
+  } = useContextChanges({ activeConversation, updateSessionMeta });
 
   function openSessionEdit() {
     if (!activeConversation.value) return;
@@ -493,11 +528,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeContextEditor();
   }
 
-  async function saveContextToKnowledge(
-    path: string,
-    content: string,
-    metadata?: Record<string, unknown>
-  ) {
+  async function saveContextToKnowledge(path?: string, content?: string, metadata?: Record<string, unknown>) {
+    if (!path || !content) return;
     const { writeKnowledgeFile } = await import("@/api/modules/knowledgeService");
     const result = await writeKnowledgeFile(path, content, metadata);
     return result;
@@ -506,10 +538,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   registerAiChatTools({
     registerTool,
     webSearchResults,
-    applyContextChange,
-    addContextFile,
-    removeContextFile,
-    saveContextToKnowledge,
+    webSearchImages
   });
 
   function openTagManager() {
@@ -563,9 +592,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     await updateSessionMeta(s.key, { tags: next });
   }
 
-  // RAG is auto — no user toggle. setContextSwitchEnabled kept for backward compat as no-op.
-  function setContextSwitchEnabled(_v: boolean) { /* no-op: RAG auto-detected from conversation ctx: files */ }
-
   function setSystemPrompt(text: string) {
     systemPrompt.value = (text || "").trim();
   }
@@ -596,9 +622,17 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   }
 
   function setActiveMessages(updater: (msgs: ChatMessage[]) => ChatMessage[]) {
-    if (!activeConversation.value) return;
+    if (!activeConversation.value) {
+      console.warn("[setActiveMessages] EARLY RETURN — activeConversation is null!");
+      return;
+    }
+    const beforeLen = activeConversation.value.messages?.length ?? 0;
+    const beforePetMsg =
+      activeConversation.value.messages?.find(m => m.timestamp === streamingTargetTimestamp.value)?.message?.length ?? 0;
     const next = updater(activeConversation.value.messages ?? []);
     activeConversation.value = { ...activeConversation.value, messages: next };
+    const afterPetMsg = next.find(m => m.timestamp === streamingTargetTimestamp.value)?.message?.length ?? 0;
+    console.log(`[setActiveMessages] msgs ${beforeLen}→${next.length}, pet msg len ${beforePetMsg}→${afterPetMsg}`);
   }
 
   // Chain persisting calls so a fire-and-forget persist (e.g. from onDone) can't
@@ -617,19 +651,29 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     try {
       const waitStart = Date.now();
       // Guard against a stalled chain — resolve after 15s regardless
-      await Promise.race([
-        prev,
-        new Promise<void>(r => setTimeout(r, 15_000))
-      ]);
+      await Promise.race([prev, new Promise<void>(r => setTimeout(r, 15_000))]);
       const waitMs = Date.now() - waitStart;
       if (!activeConversation.value) return false;
       const msgs = activeConversation.value.messages;
       const key = activeConversation.value.key;
       const now = Date.now();
-      await upsertSession({ key, messages: msgs, updatedAt: now });
-      conversations.value = conversations.value.map(c =>
-        c.key === key ? { ...c, updatedAt: now, messages: msgs } : c
-      );
+      await updateSession(key, { messages: msgs, updatedAt: now });
+      conversations.value = conversations.value.map(c => (c.key === key ? { ...c, updatedAt: now, messages: msgs } : c));
+
+      // ── Storage quota monitor (TD-04 early warning) ─────────────────
+      // Check localStorage usage every 10th persist to avoid overhead.
+      // When approaching the 5MB limit, log a warning so the team can
+      // trigger the IndexedDB migration before users experience errors.
+      if (Math.random() < 0.1) {
+        const q = getStorageQuota();
+        if (q.level === "critical") {
+          console.warn(
+            `[aiChat] localStorage at ${(q.usageRatio * 100).toFixed(1)}% — ` +
+              `IndexedDB migration (TD-04) should be triggered. ` +
+              `${(q.usedBytes / 1024).toFixed(1)}KB / ${(q.estimatedLimit / 1024).toFixed(0)}KB`
+          );
+        }
+      }
     } catch (e: unknown) {
       console.error("[aiChat] persistActive failed:", e instanceof Error ? e.message : String(e));
       ElMessage.error("Failed to save messages");
@@ -640,15 +684,124 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     return true;
   }
 
-  // ── Compaction (extracted to composable) ──
+  // ── Shared helpers (used by sendMessage + resendMessage) ──────────────
+
+  /**
+   * Load context file contents for the active session. Returns empty string
+   * if no ctx: tags or cached pageContent already available.
+   * Extracted from runStream so it can run in parallel with web search.
+   */
+  async function loadContextText(): Promise<string> {
+    const session = activeConversation.value;
+    if (!session) return "";
+    let contextText = (session.pageContent || "").trim();
+    if (contextText) return contextText;
+    const ctxTags = (session.tags ?? []).filter((t: string) => t.startsWith("ctx:"));
+    if (!ctxTags.length) return "";
+    const { readKnowledgeFile } = await import("@/api/modules/knowledgeService");
+    const results = await Promise.allSettled(ctxTags.map(t => readKnowledgeFile(t.slice(4)).catch(() => null)));
+    const sections: string[] = [];
+    results.forEach((r, i) => {
+      if (r.status === "fulfilled" && r.value) {
+        const content = (r.value as any)?.content || "";
+        if (content) sections.push(`## ${ctxTags[i].slice(4)}\n\n${content}`);
+      }
+    });
+    if (sections.length) {
+      contextText = sections.join("\n\n---\n\n");
+      updateSessionMeta(session.key, { pageContent: contextText });
+    }
+    return contextText;
+  }
+
+  /**
+   * Inject late-arriving search results as a follow-up exchange after the
+   * initial stream completes, so the LLM can ground its answer in real data.
+   * `insertAt` is the index where followupMsg will land (= current msg count).
+   */
+  async function _injectLateSearch(
+    pendingSearch: Promise<{ context: string; results: WebSearchResult[]; timingMs: number } | null>,
+    insertAt: number,
+    streamType: AiChatStreamingType
+  ): Promise<void> {
+    const late = await pendingSearch;
+    if (!late?.context || !late.results.length) return;
+    searchTimingMs.value = late.timingMs;
+
+    // In RAG mode: attach results to the existing response rather than
+    // triggering a redundant follow-up exchange. The RAG engine already
+    // generated a knowledge-base-grounded answer; appending search results
+    // lets the user review them and ask a follow-up if desired.
+    if (ragEnabled.value && ragActive.value) {
+      setActiveMessages(msgs => {
+        const lastPet = [...msgs].reverse().find(m => m.type === "pet");
+        if (!lastPet) return msgs;
+        const idx = msgs.indexOf(lastPet);
+        const next = [...msgs];
+        next[idx] = {
+          ...next[idx],
+          searchResults: [...late.results],
+          ...(webSearchImages.value.length ? { searchImages: [...webSearchImages.value] } : {}),
+          searchGrounded: true
+        };
+        return next;
+      });
+      return;
+    }
+
+    const now = Date.now();
+    const um: ChatMessage = { type: "user", message: late.context, timestamp: now };
+    const pm: ChatMessage = { type: "pet", message: "", timestamp: now + 1 };
+    setActiveMessages(msgs => [...msgs, um, pm]);
+    setActiveMessages(msgs => {
+      const idx = msgs.findIndex(m => m.timestamp === pm.timestamp);
+      if (idx < 0) return msgs;
+      const next = [...msgs];
+      next[idx] = {
+        ...next[idx],
+        searchResults: [...late.results],
+        ...(webSearchImages.value.length ? { searchImages: [...webSearchImages.value] } : {})
+      };
+      return next;
+    });
+    const contextText = await loadContextText();
+    await runStream(insertAt, pm.timestamp, streamType, "", contextText);
+  }
+
+  /** Attach web search results to a specific pet message for per-turn display. */
+  function _attachSearchResults(petTimestamp: number): void {
+    if (!lastSearchQuery.value && !webSearchResults.value.length) return;
+    setActiveMessages(msgs => {
+      const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+      if (idx < 0) return msgs;
+      const next = [...msgs];
+      next[idx] = {
+        ...next[idx],
+        searchResults: [...webSearchResults.value],
+        ...(webSearchImages.value.length ? { searchImages: [...webSearchImages.value] } : {})
+      };
+      return next;
+    });
+  }
+
+  // ── end shared helpers ─────────────────────────────────────────────────
   const { compactionLog, lastCompaction, maybeCompact } = useConversationCompact({
-    activeConversation, setActiveMessages, persistActive,
+    activeConversation,
+    setActiveMessages,
+    persistActive
   });
 
   // ── Tool execution (extracted to composable) ──
-  const { executePreStreamTools, launchBackgroundSearch } = useToolExecution({
-    webSearchEnabled, webSearchResults, webSearching, streamingPhase,
-    executeTool, setActiveMessages, activeConversation, persistActive, runStream,
+  const { executePreStreamTools, preFetchSearch } = useToolExecution({
+    webSearchEnabled,
+    webSearchResults,
+    webSearching,
+    streamingPhase,
+    executeTool,
+    setActiveMessages,
+    activeConversation,
+    persistActive,
+    runStream
   });
 
   /**
@@ -673,7 +826,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
           args: s.args,
           content: e.content,
           error: e.error,
-          durationMs: e.durationMs,
+          durationMs: e.durationMs
         });
         starts.delete(e.name);
       }
@@ -684,7 +837,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         name: s.name,
         label: s.label,
         args: s.args,
-        content: "(running)",
+        content: "(running)"
       });
     }
     if (!calls.length) return;
@@ -705,19 +858,27 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
     if (!content && !hasImages && !sending.value) return;
 
+    // Clear previous search results — each turn gets fresh results
+    webSearchResults.value = [];
+    webSearchImages.value = [];
+    searchTimingMs.value = 0;
+    lastSearchQuery.value = "";
+
     if (sending.value) return;
 
     // ── Check for slash commands ────────────────────────────────────
     if (content.startsWith("/") && !hasImages) {
       const handled = await handleCommand(content);
-      if (handled) { input.value = ""; return; }
+      if (handled) {
+        input.value = "";
+        return;
+      }
     }
     if (!activeConversation.value) {
       await createConversation();
     }
     if (!activeConversation.value) return;
 
-    // Store the query for potential web search
     const userQuery = content;
 
     const now = Date.now();
@@ -734,82 +895,33 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     input.value = "";
     draftImages.value = [];
 
-    // Pi-inspired: snapshot toolEvents length so we can attach the calls
-    // fired during this turn to the pet message (per-message tool timeline).
     const toolEventsStartIdx = toolEvents.value.length;
 
-    // ── Tool execution (Pi-inspired pipeline, extracted to composable) ──
+    // ── Tool execution + context loading (awaited — search context must
+    // be ready before streaming so the LLM can ground its answer) ─────
     const toolSignal = new AbortController();
     toolAbortController.value = toolSignal;
 
-    const initialSearchContext = await executePreStreamTools(userQuery, toolSignal.signal, now);
+    const [toolResult, contextText] = await Promise.all([
+      executePreStreamTools(userQuery, toolSignal.signal, now),
+      loadContextText()
+    ]);
+    const { initialContext, searchQuery, timingMs, pendingSearch } = toolResult;
 
-    // Start streaming (with initialSearchContext if URLs were in the message)
-    const streamPromise = runStream(prevLen, petMsg.timestamp, "send", initialSearchContext);
+    if (searchQuery) lastSearchQuery.value = searchQuery;
+    if (timingMs > 0) searchTimingMs.value = timingMs;
 
-    launchBackgroundSearch(userQuery, toolSignal.signal, streamPromise);
+    // Start streaming with search context when available (deadline: 500ms)
+    await runStream(prevLen, petMsg.timestamp, "send", initialContext, contextText);
 
-    await streamPromise;
+    // Post-stream search injection — late-arriving results trigger a
+    // follow-up exchange so the LLM can ground its answer in real data.
+    await _injectLateSearch(pendingSearch, prevLen + 2, "send");
 
     // ── Attach per-message tool calls (Pi-inspired: tool timeline) ──
     attachTurnToolCalls(petMsg.timestamp, toolEventsStartIdx);
 
-    // ── Auto-detect KB save intent (Pi-inspired post-processing) ─────────
-    // When the user asks to save content to the knowledge base but the AI
-    // didn't use a knowledge:save block, auto-wrap the response so the user
-    // can save it with one click via the ContextChangeCard.
-    const kbIntent = detectKBIntent(userQuery);
-    if (kbIntent) {
-      const petIdx = activeConversation.value?.messages?.findIndex(
-        m => m.timestamp === petMsg.timestamp
-      ) ?? -1;
-      if (petIdx >= 0) {
-        const petMsg2 = activeConversation.value!.messages![petIdx];
-        const petText = petMsg2.message ?? "";
-        // Only auto-wrap if the AI didn't already use knowledge:save
-        if (petText && !/```knowledge:save/.test(petText)) {
-          const wrapped = autoWrapKnowledgeBlock(petText, kbIntent.path);
-          setActiveMessages(msgs => {
-            const next = [...msgs];
-            next[petIdx] = { ...next[petIdx], message: wrapped };
-            return next;
-          });
-          await persistActive();
-        }
-      }
-    }
-  }
-
-  // ── KB intent detection ───────────────────────────────────────────────
-
-  /** Patterns that indicate the user wants to save content to the knowledge base. */
-  const KB_INTENT_RE = /(save(?:s|d)?\s+(?:to|into|in)\s+(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base)|(?:put|place|store|write|save)\s+(?:it\s+)?(?:in(?:to)?|to)?\s*(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base)|(?:generate|create)\s+.*?(?:and\s+)?(?:save|put|place|store|write)\s+(?:it\s+)?(?:in(?:to)?|to)?\s*(?:the\s+)?(?:knowledge|kb|yiknowledge|knowledge\s*base))/i;
-
-  function detectKBIntent(userMessage: string): { path: string } | null {
-    if (!userMessage || !KB_INTENT_RE.test(userMessage)) return null;
-    // Extract a suggested path from the user message
-    const path = suggestKBPath(userMessage);
-    return { path };
-  }
-
-  /** Suggest a KB file path from the user's message content. */
-  function suggestKBPath(userMessage: string): string {
-    const text = userMessage.trim();
-    // Try to extract a descriptive name
-    const reportMatch = text.match(/(\w+(?:[\w-]+)*)\s*(?:report|analysis|document|note|guide|manual|doc)/i);
-    if (reportMatch) {
-      const name = reportMatch[1].replace(/\s+/g, "-").toLowerCase();
-      return `reports/${name}.md`;
-    }
-    // Default: use date-based path
-    const date = new Date().toISOString().slice(0, 10);
-    return `notes/ai-generated-${date}.md`;
-  }
-
-  /** Wrap AI-generated content in a knowledge:save block. */
-  function autoWrapKnowledgeBlock(content: string, path: string): string {
-    const cleaned = content.trim();
-    return `\`\`\`knowledge:save ${path}\n${cleaned}\n\`\`\``;
+    _attachSearchResults(petMsg.timestamp);
   }
 
   /**
@@ -818,31 +930,49 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
    * streamed chunks into the pet message identified by `petTimestamp`.
    * Mirrors YiWeb `sessionChatContextChatMethods.streaming.js`.
    */
-  async function runStream(upToIdxInclusive: number, petTimestamp: number, type: AiChatStreamingType, searchContext = "") {
+  async function runStream(upToIdxInclusive: number, petTimestamp: number, type: AiChatStreamingType, searchContext = "", contextText = "") {
     if (!activeConversation.value) return;
     const session = activeConversation.value;
     const slice = (session.messages ?? []).slice(0, upToIdxInclusive + 1);
-    const aiMessages = slice
+    let aiMessages = slice
       .filter(m => m.type === "user" || (m.type === "pet" && !!m.message))
       .map(m => ({ type: m.type, message: m.message, timestamp: m.timestamp }));
 
-    const useRag = ragEnabled.value && ragActive.value;
-    const contextText = useRag ? (session.pageContent || "").trim() : "";
-    if (contextText) {
-      aiMessages.unshift({
-        type: "user",
-        message: contextText,
-        timestamp: (petTimestamp || Date.now()) - 2
-      });
+    // ── Context trimming — keep only recent messages within ~6K tokens ──
+    // Long conversations bloat the prompt, slow inference, and dilute accuracy.
+    // Walk backwards from the last message, keep messages until we hit the limit.
+    const MAX_CONTEXT_CHARS = 24_000; // ~6K tokens at 4 chars/token
+    let totalChars = 0;
+    const trimmed: typeof aiMessages = [];
+    for (let i = aiMessages.length - 1; i >= 0; i--) {
+      const msgChars = (aiMessages[i].message?.length ?? 0) + (searchContext.length || 0);
+      if (totalChars + msgChars > MAX_CONTEXT_CHARS && trimmed.length >= 2) break;
+      totalChars += msgChars;
+      trimmed.unshift(aiMessages[i]);
+    }
+    aiMessages = trimmed;
+
+    // Inject context text into the last user message
+    if (contextText && aiMessages.length > 0) {
+      const last = aiMessages[aiMessages.length - 1];
+      if (last.type === "user") {
+        const ref = contextText
+          .split("\n\n---\n\n")
+          .filter(Boolean)
+          .map(s => s.replace(/^## /, "").trim())
+          .join("\n\n");
+        last.message = `${last.message}\n\n---\nReference files:\n\n${ref}`;
+      }
     }
 
-    // Web search context: prepend as system-level context (injected as a user
-    // message so the LLM sees it as factual context, not instructions).
+    // Mark pet message as search-grounded when search context is present
     if (searchContext) {
-      aiMessages.unshift({
-        type: "user",
-        message: searchContext,
-        timestamp: (petTimestamp || Date.now()) - 3
+      setActiveMessages(msgs => {
+        const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
+        if (idx < 0) return msgs;
+        const next = [...msgs];
+        next[idx] = { ...next[idx], searchGrounded: true };
+        return next;
       });
     }
 
@@ -857,19 +987,31 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     streamingTargetTimestamp.value = petTimestamp;
     streamingType.value = type;
     streamingPhase.value = "thinking";
+    thinkingStartTs.value = Date.now();
+
+    // Promise that resolves when the stream finishes (onDone/onError).
+    // `sendMessage` awaits this so subsequent steps (attachTurnToolCalls,
+    // persistActive) run AFTER the full reply is in the pet message — not
+    // immediately after runStream's synchronous body completes.
+    let resolveStream!: () => void;
+    const streamFinished = new Promise<void>(resolve => {
+      resolveStream = resolve;
+    });
 
     const onPhase = (phase: string) => {
       // Only honour phase frames while still pre-stream. Once the first
       // chunk arrives, onChunk flips to "streaming" and phase frames are
       // no-op (the backend still emits them but they'd be misleading).
-      if (streamingPhase.value !== "thinking" && streamingPhase.value !== "retrieving") return;
+      if (streamingPhase.value !== "thinking" && streamingPhase.value !== "retrieving" && streamingPhase.value !== "preparing") return;
       if (phase === "retrieving") streamingPhase.value = "retrieving";
+      else if (phase === "preparing") streamingPhase.value = "preparing";
     };
     const onChunk = (chunk: string) => {
-      if (streamingPhase.value === "thinking" || streamingPhase.value === "retrieving") streamingPhase.value = "streaming";
-      // Snapshot time-to-first-token on the first chunk — proxy for
-      // retrieval + condense + synthesis latency in RAG turns. Client-side
-      // measurement avoids a backend emit frame + clock-skew issues.
+      if (streamingPhase.value === "thinking" || streamingPhase.value === "retrieving" || streamingPhase.value === "preparing") streamingPhase.value = "streaming";
+      // Direct per-token update — no batching for maximum streaming visibility.
+      // The async httpx backend streams at native speed; Vue reactivity + markdown
+      // render cache keep this smooth even at 50+ tokens/s.
+      streamed += chunk;
       if (!firstTokenAt) {
         firstTokenAt = Date.now();
         const latencyMs = firstTokenAt - streamStartAt;
@@ -881,7 +1023,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
           return next;
         });
       }
-      streamed += chunk;
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
         if (idx < 0) return msgs;
@@ -905,10 +1046,12 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       });
     };
     const onDone = () => {
+      console.log("[aiChat onDone] called. streamed len:", streamed.length, "petTs:", petTimestamp);
       sending.value = false;
       streamingTargetTimestamp.value = null;
       streamingType.value = "";
       streamingPhase.value = "idle";
+      thinkingStartTs.value = null;
       abortController.value = null;
       persistActive();
       const idx = activeConversation.value?.messages?.findIndex(m => m.timestamp === petTimestamp) ?? -1;
@@ -919,12 +1062,15 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
 
       // ── Compaction check (Pi-inspired) ────────────────────────────
       maybeCompact();
+      resolveStream();
     };
     const onError = (err: Error) => {
+      console.warn("[aiChat onError] called. err:", err.message, "streamed len:", streamed.length, "petTs:", petTimestamp);
       sending.value = false;
       streamingTargetTimestamp.value = null;
       streamingType.value = "";
       streamingPhase.value = "idle";
+      thinkingStartTs.value = null;
       abortController.value = null;
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -938,34 +1084,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
         return next;
       });
       persistActive();
+      resolveStream();
     };
 
     let abort: () => void;
     if (ragEnabled.value && ragActive.value) {
-      // RAG mode — scope to the conversation's ctx:-tagged files.
-      const ctxPaths = (session.tags ?? [])
-        .filter(t => typeof t === "string" && t.startsWith("ctx:"))
-        .map(t => (t as string).slice(4));
-      let scope: string | undefined;
-      if (ctxPaths.length === 1) {
-        scope = ctxPaths[0];
-      } else if (ctxPaths.length > 1) {
-        // Find common directory prefix across all ctx paths
-        const parts = ctxPaths.map(p => p.split("/"));
-        const minLen = Math.min(...parts.map(p => p.length));
-        const common: string[] = [];
-        for (let i = 0; i < minLen; i++) {
-          if (parts.every(p => p[i] === parts[0][i])) common.push(parts[0][i]);
-          else break;
-        }
-        scope = common.join("/") || undefined;
-      }
-
+      // RAG mode — search knowledge base with optional web search context.
+      // When web search is also enabled and results are available, inject them
+      // as a system message so the LLM can cross-reference knowledge base
+      // sources with real-time web data.
       const ragMessages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [];
-      // Inject context-editing instructions as a system message so the AI knows
-      // it can propose context file changes (BUG 1 fix — was only sent in non-RAG mode).
-      if (contextChangeSystemPrompt.value) {
-        ragMessages.push({ role: "system", content: contextChangeSystemPrompt.value });
+      if (searchContext && webSearchEnabled.value) {
+        ragMessages.push({
+          role: "system",
+          content:
+            searchContext +
+            "\n\n---\n" +
+            "Cite KB excerpts as [N], web sources as [title](url). " +
+            "Distinguish sources: 'KB [1] shows...' vs 'Web [title](url) reports...'. " +
+            "If KB and web conflict, prefer more recent information."
+        });
       }
       ragMessages.push(
         ...aiMessages
@@ -973,21 +1111,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
           .map(m => ({ role: m.type === "user" ? ("user" as const) : ("assistant" as const), content: m.message }))
       );
       const handlers: RagStreamHandlers = { onChunk, onSources, onPhase, onDone, onError };
-      // num_queries only honored when hybrid on + no scope (matches backend
-      // QueryFusionRetriever gating in domain/rag/engine.py).
-      const numQueries = ragHybrid.value && !scope ? ragNumQueries.value : undefined;
-      // Snapshot the RAG config used for this turn — badged on the pet
-      // message as provenance so the user can tell which llama_index engine
-      // mode + overrides produced each answer.
       const ragMeta = {
-        chatMode: ragChatMode.value,
+        chatMode: ragChatMode.value as "condense" | "condense_plus_context" | "context" | "simple",
         hybrid: ragHybrid.value,
         rerank: ragRerank.value,
         citations: ragCitations.value,
-        numQueries: numQueries ?? ragNumQueries.value,
-        scope,
-        category: ragCategory.value || undefined,
-        tags: ragTags.value.length ? [...ragTags.value] : undefined
+        hyde: ragHyde.value,
+        ...(searchContext && webSearchEnabled.value ? { webSearch: true } : {})
       };
       setActiveMessages(msgs => {
         const idx = msgs.findIndex(m => m.timestamp === petTimestamp);
@@ -999,14 +1129,13 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       abort = streamRagChat(
         {
           messages: ragMessages,
-          scope,
           hybrid: ragHybrid.value,
           rerank: ragRerank.value,
           citations: ragCitations.value,
-          ...(numQueries != null ? { num_queries: numQueries } : {}),
-          chat_mode: ragChatMode.value,
-          ...(ragCategory.value ? { category: ragCategory.value } : {}),
-          ...(ragTags.value.length ? { tags: [...ragTags.value] } : {})
+          hyde_enabled: ragHyde.value,
+          chat_mode: ragChatMode.value as "condense" | "condense_plus_context" | "context" | "simple",
+          ...(ragScope.value ? { scope: ragScope.value } : {}),
+          ...(ragNumQueries.value > 0 ? { num_queries: ragNumQueries.value } : {})
         },
         handlers
       ).abort;
@@ -1014,14 +1143,31 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
       // Build combined system prompt: caller-provided systemPrompt (e.g. file preview)
       // + context-editing instructions when the session has context files.
       // + tool descriptions (Pi-inspired: tell the LLM what tools are available).
-      // + web search pending note when search is running in background.
+      // + web search results injected as SYSTEM context (authoritative, not conversation).
+      const defaultSystem =
+        "You are a professional AI assistant. Be concise, accurate, and helpful. " +
+        "Use markdown for structure. Prefer facts over speculation. " +
+        "When uncertain, acknowledge the limits of your knowledge.";
       const toolPrompt = getToolsForSystemPrompt();
-      const webSearchPendingNote = (webSearchEnabled.value && !searchContext)
-        ? "Note: A web search has been initiated for the user's query. Results are being fetched and will be provided to you in a follow-up message. In your current response, briefly acknowledge the query and indicate that you're checking the latest information from the web."
-        : "";
-      const sysParts = [systemPrompt.value, contextChangeSystemPrompt.value, toolPrompt, webSearchPendingNote]
-        .map(s => s.trim())
-        .filter(Boolean);
+      const searchSystemNote =
+        webSearchEnabled.value && searchContext
+          ? [
+              "## Authoritative Context (Web Search Results)",
+              "The following is real-time information from web search. " +
+                "You MUST base your response on these facts. " +
+                "Do NOT say you lack real-time access — the data is provided below.",
+              "",
+              searchContext,
+              "",
+              "Citation rules:",
+              "- Cite sources as numbered links: `[1](url)`, `[2](url)`.",
+              "- Place citations directly after each claim they support.",
+              "- If the search results fully answer the question, respond based on them.",
+              "- Only if results are truly insufficient, explain what's missing."
+            ].join("\n")
+          : "";
+      const sysParts = [systemPrompt.value || defaultSystem, toolPrompt, searchSystemNote]
+        .map(s => s.trim()).filter(Boolean);
       const system = sysParts.length ? sysParts.join("\n\n") : undefined;
       const result = streamChat(
         {
@@ -1038,6 +1184,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     }
 
     abortController.value = { abort };
+    await streamFinished;
   }
 
   function stopSending() {
@@ -1046,6 +1193,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     toolAbortController.value?.abort();
     sending.value = false;
     streamingPhase.value = "idle";
+    thinkingStartTs.value = null;
     streamingTargetTimestamp.value = null;
     streamingType.value = "";
     abortController.value = null;
@@ -1108,7 +1256,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     };
     activeConversation.value = { ...s, messages: resetMessages, updatedAt: now };
     scrollTick.value++;
-    await runStream(userIdx, petTimestamp, "regenerate");
+    const contextText = await loadContextText();
+    await runStream(userIdx, petTimestamp, "regenerate", "", contextText);
   }
 
   /**
@@ -1133,6 +1282,25 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (!pet || (!pet.error && !pet.aborted)) return;
 
     await regenerateMessage(petIdx);
+  }
+
+  /** Deepen the current search: force web search on and re-run the last user message. */
+  async function deepenSearch() {
+    if (sending.value) return;
+    const s = activeConversation.value;
+    if (!s) return;
+    const messages = Array.isArray(s.messages) ? s.messages : [];
+    // Find last user message
+    let userIdx = -1;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i] && messages[i].type === "user") {
+        userIdx = i;
+        break;
+      }
+    }
+    if (userIdx < 0) return;
+    webSearchEnabled.value = true;
+    await resendMessage(userIdx);
   }
 
   /**
@@ -1160,42 +1328,29 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     activeConversation.value = { ...s, messages: nextMessages, updatedAt: now };
     scrollTick.value++;
 
-    // ── Tool execution (Pi-inspired, extracted to composable) ──────────
+    // ── Tool execution + context loading (awaited) ─────
     const toolSignal = new AbortController();
     toolAbortController.value = toolSignal;
-    // Snapshot for per-message tool timeline (mirrors sendMessage).
     const toolEventsStartIdx = toolEvents.value.length;
 
-    const initialSearchContext = await executePreStreamTools(text, toolSignal.signal, userTimestamp);
+    const [toolResult, contextText] = await Promise.all([
+      executePreStreamTools(text, toolSignal.signal, userTimestamp),
+      loadContextText()
+    ]);
+    const { initialContext, searchQuery, timingMs, pendingSearch } = toolResult;
 
-    const streamPromise = runStream(i, insertedPet.timestamp, "resend", initialSearchContext);
+    if (searchQuery) lastSearchQuery.value = searchQuery;
+    if (timingMs > 0) searchTimingMs.value = timingMs;
 
-    launchBackgroundSearch(text, toolSignal.signal, streamPromise);
-    await streamPromise;
+    await runStream(i, insertedPet.timestamp, "resend", initialContext, contextText);
+
+    // Post-stream search injection
+    await _injectLateSearch(pendingSearch, activeConversation.value?.messages?.length ?? 0, "resend");
 
     // ── Attach per-message tool calls (Pi-inspired: tool timeline) ──
     attachTurnToolCalls(insertedPet.timestamp, toolEventsStartIdx);
 
-    // ── Auto-detect KB save intent for resend ──────────────────────────
-    const kbIntent2 = detectKBIntent(text);
-    if (kbIntent2) {
-      const petIdx2 = activeConversation.value?.messages?.findIndex(
-        m => m.timestamp === insertedPet.timestamp
-      ) ?? -1;
-      if (petIdx2 >= 0) {
-        const petMsg2 = activeConversation.value!.messages![petIdx2];
-        const petText2 = petMsg2.message ?? "";
-        if (petText2 && !/```knowledge:save/.test(petText2)) {
-          const wrapped = autoWrapKnowledgeBlock(petText2, kbIntent2.path);
-          setActiveMessages(msgs => {
-            const next = [...msgs];
-            next[petIdx2] = { ...next[petIdx2], message: wrapped };
-            return next;
-          });
-          await persistActive();
-        }
-      }
-    }
+    _attachSearchResults(insertedPet.timestamp);
   }
 
   /** Delete a single message from the active conversation. */
@@ -1243,11 +1398,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     });
   }
 
-  function submitFeedback(timestamp: number, rating: AiChatFeedbackRating) {
-    const current = feedback.value[timestamp];
-    feedback.value = { ...feedback.value, [timestamp]: current === rating ? null : rating };
-  }
-
   function clearInput() {
     input.value = "";
     draftImages.value = [];
@@ -1286,7 +1436,7 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     if (faqLoaded && !force) return;
     faqLoading.value = true;
     try {
-      const res = await queryDocuments<FaqDocument>({ cname: "faqs", limit: 100000 });
+      const res = await queryDocuments<FaqDocument>({ cname: "faqs", pageSize: 100000 });
       if (res.code !== 0) throw new Error(res.message || "Failed to load FAQs");
       const list = res.data?.list ?? [];
       list.sort((a, b) => (a.order ?? a.createdAt ?? 0) - (b.order ?? b.createdAt ?? 0));
@@ -1338,7 +1488,8 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     const totalChars = s.messages.reduce((sum, m) => sum + (m.message?.length ?? 0), 0);
     const estimatedTokens = Math.ceil(totalChars / CHARS_PER_TOKEN);
     const pct = Math.round((estimatedTokens / CONTEXT_WINDOW) * 100);
-    const level = pct > 90 ? "critical" as const : pct > 70 ? "high" as const : pct > 40 ? "mid" as const : "low" as const;
+    const level =
+      pct > 90 ? ("critical" as const) : pct > 70 ? ("high" as const) : pct > 40 ? ("mid" as const) : ("low" as const);
     return { level, estimatedTokens, pct };
   });
 
@@ -1347,8 +1498,26 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
   // usePromptTemplates is already initialized above.
 
   const { handleCommand } = useSlashCommands({
-    activeConversation, sending, input, allTools, setActiveMessages, persistActive,
-    createConversation, executeTool, maybeCompact, stopSending, retryLastMessage, renameConversation, exportConversation, exportConversationHtml, conversations, selectConversation, promptTemplates, addTemplate, removeTemplate, applyTemplate,
+    activeConversation,
+    sending,
+    input,
+    allTools,
+    setActiveMessages,
+    persistActive,
+    createConversation,
+    executeTool,
+    maybeCompact,
+    stopSending,
+    retryLastMessage,
+    renameConversation,
+    exportConversation,
+    exportConversationHtml,
+    conversations,
+    selectConversation,
+    promptTemplates,
+    addTemplate,
+    removeTemplate,
+    applyTemplate
   });
 
   return {
@@ -1356,15 +1525,16 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     conversations,
     activeConversation,
     loading,
+    conversationsLoaded,
     error,
     input,
     sending,
     streamingTargetTimestamp,
     streamingType,
     streamingPhase,
+    thinkingStartTs,
     scrollTick,
     copyFeedback,
-    feedback,
     draftImages,
     faqs,
     faqVisible,
@@ -1376,20 +1546,21 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     contextEditorDraft,
     tagManagerVisible,
     contextPanelNewMode,
-    knowledgeMode,
-    contextSwitchEnabled,
     ragEnabled,
     ragActive,
     ragHybrid,
     ragRerank,
     ragCitations,
+    ragHyde,
+    ragScope,
     ragNumQueries,
     ragChatMode,
-    ragCategory,
-    ragTags,
     webSearchEnabled,
     webSearchResults,
+    webSearchImages,
     webSearching,
+    searchTimingMs,
+    lastSearchQuery,
     weChatVisible,
     batchMode,
     selectedKeys,
@@ -1418,13 +1589,11 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     closeContextEditor,
     saveContextEditorContent,
     applyContextChange,
-    deleteContextSection,
     getContextSectionContent,
     contextChangeHistory,
     undoLastContextChange,
     addContextFile,
     removeContextFile,
-    contextChangeSystemPrompt,
     enterNewContextMode,
     exitNewContextMode,
     toggleTagManager,
@@ -1438,7 +1607,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     toggleLlamaIndex,
     addTag,
     removeTag,
-    setContextSwitchEnabled,
     setSystemPrompt,
     systemPrompt,
     deleteConversation,
@@ -1446,11 +1614,12 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     stopSending,
     regenerateMessage,
     retryLastMessage,
+    deepenSearch,
+    preFetchSearch,
     resendMessage,
     deleteMessage,
     editMessage,
     copyMessage,
-    submitFeedback,
     clearInput,
     addDraftImageFiles,
     removeDraftImage,
@@ -1484,6 +1653,6 @@ export const useAiChatStore = defineStore("yivad-aiChat", () => {
     promptTemplates,
     addTemplate,
     removeTemplate,
-    applyTemplate,
+    applyTemplate
   };
 });

@@ -1,39 +1,57 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-129"
-title: "YV-09-129: 功能实现-外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-129: 外部集成日志 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "59-prd-外部集成日志.md"
 ---
 
-# YV-09-129: 功能实现-外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志 — 开发任务
+# YV-09-129: 外部集成日志 — 开发方案
 
-> 来源 PRD：[59-prd-外部集成日志.md](../prds/2026-09/59-prd-外部集成日志.md)
-> 需求编号：YV-09-129 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-129 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + API 服务 | `types/integrationLog.ts`, `services/integrationLogService.ts` | 类型检查通过 | 0.03 |
-| 2 | useIntegrationLog 状态管理 | `composables/useIntegrationLog.ts` | 查询+筛选+分页+轮询 | 0.04 |
-| 3 | LogFilter + LogList | `LogFilter.vue`, `LogList.vue` | 筛选功能+列表渲染 | 0.05 |
-| 4 | LogDetail 详情面板 | `LogDetail.vue` | 请求/响应双栏+脱敏切换 | 0.05 |
-| 5 | IntegrationStats 仪表盘 | `IntegrationStats.vue` | 统计图表+速率监控 | 0.05 |
-| 6 | WebhookDeliveryLog 投递日志 | `WebhookDeliveryLog.vue` | 投递列表+状态+重试 | 0.03 |
-| 7 | IntegrationLogs 主页面 | `IntegrationLogs.vue` | 完整布局 | 0.03 |
-| 8 | 路由 + 菜单配置 | `routes.ts` | 页面可访问 | 0.01 |
-| 9 | 轮询+性能优化 | 复用已有组件 | 30秒轮询正确 | 0.01 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+记录所有外部集成（GitHub/Jira/Slack/Webhook）的调用日志：请求/响应/状态/耗时。
+
+### 日志字段
+
+| 字段 | 说明 |
+|------|------|
+| 集成名 | GitHub / Jira / Slack |
+| 操作 | 具体 API 调用 |
+| 状态 | success / failed |
+| 耗时 | 响应时间 ms |
+| 请求/响应 | 脱敏后的请求体和响应体 |
+
+> 低优先级。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

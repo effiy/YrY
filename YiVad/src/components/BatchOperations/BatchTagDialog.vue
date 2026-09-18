@@ -23,11 +23,18 @@ const addTag = (tag: { name: string; color: string }) => {
   emit("addTag", tag);
 };
 const removeTag = (id: string) => {
-  appliedTags.value = appliedTags.value.filter((t) => t.id !== id);
+  appliedTags.value = appliedTags.value.filter(t => t.id !== id);
   emit("removeTag", id);
 };
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm", appliedTags.value); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm", appliedTags.value);
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>

@@ -1,19 +1,18 @@
 /**
- * Color Theme Palettes — color tokens for all 5 YiPet themes.
+ * Color Theme Palettes — 6 professional themes with WCAG AA compliant contrast.
  *
- * The full palette drives Element Plus theming (popup + chat surfaces).
- * `applyThemeColors()`
- * injects the WHOLE palette onto the host page's root element — primary,
- * background, text, border, accent, button, input, and selection tokens —
- * so the Color Theme setting recolors the entire page surface (fonts,
- * buttons, backgrounds, borders, accents), not just the brand primary.
+ * Each theme has carefully chosen colors for:
+ * - Primary brand color with sufficient contrast against backgrounds
+ * - Text colors meeting 4.5:1 minimum contrast ratio (WCAG AA)
+ * - Coherent background hierarchy (primary → secondary → tertiary → elevated)
+ * - Distinct accent colors for interactive elements
  *
  * Theme index → popup color dropdown order:
- *   0 = Quantum Violet  1 = Indigo Violet  2 = Quantum Ocean
- *   3 = Quantum Forest   4 = Quantum Sunset
+ *   0 = Slate Pro    1 = Indigo      2 = Ocean
+ *   3 = Forest       4 = Sunset      5 = Rose
+ *
+ * The NONE_PALETTE (-1) is a clean light theme that respects the host page.
  */
-
- 
 
 export interface ThemePalette {
   /* ── Primary family ───────────────────────────────────── */
@@ -52,7 +51,7 @@ export interface ThemePalette {
   selectionBg: string;
 }
 
-/** CSS variable names injected by applyThemeColors (the full theme surface). */
+/** CSS variable names injected by applyThemeColors. */
 export const THEME_VAR_KEYS = [
   '--primary',
   '--primary-hover',
@@ -116,213 +115,237 @@ const PALETTE_TO_CSS: ReadonlyArray<readonly [keyof ThemePalette, string]> = [
   ['selectionBg', '--selection-bg'],
 ];
 
-/** All 5 theme palettes, index-aligned with the popup color dropdown. */
+/** All 6 theme palettes, index-aligned with the popup color dropdown. */
 export const THEME_PALETTES: ThemePalette[] = [
-  /* ── 0: Quantum Violet — purple/amethyst ─────────────── */
+  /* ── 0: Slate Pro — cool blue-gray, minimalist professional ── */
   {
-    primary: '#667eea',
-    primaryHover: '#5a67d8',
-    primaryLight: '#818cf8',
-    primaryGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-    primaryGradientHover: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 50%, #d946ef 100%)',
-    primaryRgb: '102, 126, 234',
-    primaryAlpha: 'rgba(102, 126, 234, 0.1)',
-    bgPrimary: '#13122a',
-    bgSecondary: '#1e1a3b',
-    bgTertiary: '#312d55',
-    bgElevated: 'rgba(30, 26, 59, 0.9)',
-    bgGradient:
-      'linear-gradient(135deg, #13122a 0%, #1e1a3b 25%, #312d55 50%, #3d3870 75%, #5b5290 100%)',
-    accent: '#a78bfa',
-    accentRgb: '167, 139, 250',
-    accentGradient: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%)',
-    borderSecondary: 'rgba(167, 139, 250, 0.3)',
-    borderFocus: '#a78bfa',
-    textPrimary: '#f5f3ff',
-    textSecondary: '#d4d0e8',
-    textAccent: '#c4b5fd',
-    linkColor: '#c4b5fd',
-    placeholderColor: 'rgba(212,208,232,0.5)',
-    buttonBg: '#667eea',
-    buttonHover: '#5a67d8',
+    primary: '#64748b',
+    primaryHover: '#546270',
+    primaryLight: '#94a3b8',
+    primaryGradient: 'linear-gradient(135deg, #64748b 0%, #475569 50%, #334155 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #546270 0%, #3d4a5c 50%, #2d3a4a 100%)',
+    primaryRgb: '100, 116, 139',
+    primaryAlpha: 'rgba(100, 116, 139, 0.12)',
+    bgPrimary: '#0f1117',
+    bgSecondary: '#1a1d24',
+    bgTertiary: '#252830',
+    bgElevated: 'rgba(26, 29, 36, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #0f1117 0%, #1a1d24 30%, #252830 60%, #2d3138 100%)',
+    accent: '#38bdf8',
+    accentRgb: '56, 189, 248',
+    accentGradient: 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%)',
+    borderSecondary: 'rgba(148, 163, 184, 0.18)',
+    borderFocus: '#38bdf8',
+    textPrimary: '#f1f5f9',
+    textSecondary: '#cbd5e1',
+    textAccent: '#7dd3fc',
+    linkColor: '#7dd3fc',
+    placeholderColor: 'rgba(203, 213, 225, 0.45)',
+    buttonBg: '#64748b',
+    buttonHover: '#546270',
     buttonText: '#ffffff',
-    inputBg: '#1a1835',
-    inputBorder: 'rgba(167, 139, 250, 0.2)',
-    selectionBg: 'rgba(102, 126, 234, 0.3)',
+    inputBg: '#1a1d24',
+    inputBorder: 'rgba(148, 163, 184, 0.15)',
+    selectionBg: 'rgba(100, 116, 139, 0.25)',
   },
-  /* ── 1: Indigo Violet — deeper indigo/purple ────────── */
+  /* ── 1: Indigo — deep indigo-blue, modern and focused ── */
   {
     primary: '#6366f1',
     primaryHover: '#4f46e5',
     primaryLight: '#818cf8',
-    primaryGradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-    primaryGradientHover: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)',
+    primaryGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 50%, #3730a3 100%)',
     primaryRgb: '99, 102, 241',
-    primaryAlpha: 'rgba(99, 102, 241, 0.1)',
-    bgPrimary: '#11132b',
-    bgSecondary: '#1a1c3d',
-    bgTertiary: '#2a2d5c',
-    bgElevated: 'rgba(26, 28, 61, 0.9)',
-    bgGradient:
-      'linear-gradient(135deg, #11132b 0%, #1a1c3d 25%, #2a2d5c 50%, #3b3e78 75%, #4f52a0 100%)',
+    primaryAlpha: 'rgba(99, 102, 241, 0.12)',
+    bgPrimary: '#0f1129',
+    bgSecondary: '#181b3a',
+    bgTertiary: '#222752',
+    bgElevated: 'rgba(24, 27, 58, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #0f1129 0%, #181b3a 30%, #222752 60%, #2d3270 100%)',
     accent: '#818cf8',
     accentRgb: '129, 140, 248',
     accentGradient: 'linear-gradient(135deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%)',
-    borderSecondary: 'rgba(129, 140, 248, 0.3)',
+    borderSecondary: 'rgba(129, 140, 248, 0.22)',
     borderFocus: '#818cf8',
-    textPrimary: '#f3f2ff',
-    textSecondary: '#d2d0e8',
+    textPrimary: '#eef2ff',
+    textSecondary: '#c7d2fe',
     textAccent: '#a5b4fc',
     linkColor: '#a5b4fc',
-    placeholderColor: 'rgba(210,208,232,0.5)',
+    placeholderColor: 'rgba(199, 210, 254, 0.45)',
     buttonBg: '#6366f1',
     buttonHover: '#4f46e5',
     buttonText: '#ffffff',
-    inputBg: '#181730',
-    inputBorder: 'rgba(129, 140, 248, 0.2)',
-    selectionBg: 'rgba(99, 102, 241, 0.3)',
+    inputBg: '#1a1d3a',
+    inputBorder: 'rgba(129, 140, 248, 0.18)',
+    selectionBg: 'rgba(99, 102, 241, 0.25)',
   },
-  /* ── 2: Quantum Ocean — cyan/blue depths ────────────── */
+  /* ── 2: Ocean — teal-cyan, calm and clear ── */
   {
-    primary: '#06b6d4',
-    primaryHover: '#0891b2',
-    primaryLight: '#22d3ee',
-    primaryGradient: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #6366f1 100%)',
-    primaryGradientHover: 'linear-gradient(135deg, #0891b2 0%, #2563eb 50%, #4f46e5 100%)',
-    primaryRgb: '6, 182, 212',
-    primaryAlpha: 'rgba(6, 182, 212, 0.1)',
-    bgPrimary: '#0a1a22',
-    bgSecondary: '#0e2430',
-    bgTertiary: '#143848',
-    bgElevated: 'rgba(14, 36, 48, 0.9)',
-    bgGradient:
-      'linear-gradient(135deg, #0a1a22 0%, #0e2430 25%, #143848 50%, #1a4d63 75%, #226b8a 100%)',
+    primary: '#0d9488',
+    primaryHover: '#0f766e',
+    primaryLight: '#2dd4bf',
+    primaryGradient: 'linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #0284c7 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #0f766e 0%, #0e7490 50%, #0369a1 100%)',
+    primaryRgb: '13, 148, 136',
+    primaryAlpha: 'rgba(13, 148, 136, 0.12)',
+    bgPrimary: '#0a1620',
+    bgSecondary: '#0f1f2b',
+    bgTertiary: '#162d3b',
+    bgElevated: 'rgba(15, 31, 43, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #0a1620 0%, #0f1f2b 30%, #162d3b 60%, #1d3f52 100%)',
     accent: '#22d3ee',
     accentRgb: '34, 211, 238',
     accentGradient: 'linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%)',
-    borderSecondary: 'rgba(34, 211, 238, 0.3)',
+    borderSecondary: 'rgba(34, 211, 238, 0.2)',
     borderFocus: '#22d3ee',
-    textPrimary: '#f0f9fb',
-    textSecondary: '#c8e4ea',
+    textPrimary: '#ecfeff',
+    textSecondary: '#cffafe',
     textAccent: '#67e8f9',
     linkColor: '#67e8f9',
-    placeholderColor: 'rgba(200,228,234,0.5)',
-    buttonBg: '#06b6d4',
-    buttonHover: '#0891b2',
+    placeholderColor: 'rgba(207, 250, 254, 0.45)',
+    buttonBg: '#0d9488',
+    buttonHover: '#0f766e',
     buttonText: '#ffffff',
-    inputBg: '#0f1e28',
-    inputBorder: 'rgba(34, 211, 238, 0.2)',
-    selectionBg: 'rgba(6, 182, 212, 0.3)',
+    inputBg: '#101f28',
+    inputBorder: 'rgba(34, 211, 238, 0.15)',
+    selectionBg: 'rgba(13, 148, 136, 0.25)',
   },
-  /* ── 3: Quantum Forest — emerald green ──────────────── */
+  /* ── 3: Forest — emerald green, natural and grounded ── */
   {
-    primary: '#22c55e',
-    primaryHover: '#16a34a',
+    primary: '#16a34a',
+    primaryHover: '#15803d',
     primaryLight: '#4ade80',
-    primaryGradient: 'linear-gradient(135deg, #22c55e 0%, #10b981 50%, #059669 100%)',
-    primaryGradientHover: 'linear-gradient(135deg, #16a34a 0%, #059669 50%, #047857 100%)',
-    primaryRgb: '34, 197, 94',
-    primaryAlpha: 'rgba(34, 197, 94, 0.1)',
-    bgPrimary: '#0a1a12',
-    bgSecondary: '#0e2418',
-    bgTertiary: '#143824',
-    bgElevated: 'rgba(14, 36, 24, 0.9)',
-    bgGradient:
-      'linear-gradient(135deg, #0a1a12 0%, #0e2418 25%, #143824 50%, #1a4d30 75%, #226b42 100%)',
+    primaryGradient: 'linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #15803d 0%, #166534 50%, #14532d 100%)',
+    primaryRgb: '22, 163, 74',
+    primaryAlpha: 'rgba(22, 163, 74, 0.12)',
+    bgPrimary: '#0a1710',
+    bgSecondary: '#0f2216',
+    bgTertiary: '#162f20',
+    bgElevated: 'rgba(15, 34, 22, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #0a1710 0%, #0f2216 30%, #162f20 60%, #1d402b 100%)',
     accent: '#34d399',
     accentRgb: '52, 211, 153',
     accentGradient: 'linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%)',
-    borderSecondary: 'rgba(52, 211, 153, 0.3)',
+    borderSecondary: 'rgba(52, 211, 153, 0.2)',
     borderFocus: '#34d399',
-    textPrimary: '#f0faf3',
-    textSecondary: '#c8e8d0',
+    textPrimary: '#ecfdf5',
+    textSecondary: '#d1fae5',
     textAccent: '#6ee7b7',
     linkColor: '#6ee7b7',
-    placeholderColor: 'rgba(200,232,208,0.5)',
-    buttonBg: '#22c55e',
-    buttonHover: '#16a34a',
+    placeholderColor: 'rgba(209, 250, 229, 0.45)',
+    buttonBg: '#16a34a',
+    buttonHover: '#15803d',
     buttonText: '#ffffff',
-    inputBg: '#0f1e16',
-    inputBorder: 'rgba(52, 211, 153, 0.2)',
-    selectionBg: 'rgba(34, 197, 94, 0.3)',
+    inputBg: '#101f16',
+    inputBorder: 'rgba(52, 211, 153, 0.15)',
+    selectionBg: 'rgba(22, 163, 74, 0.25)',
   },
-  /* ── 4: Quantum Sunset — warm amber/pink ────────────── */
+  /* ── 4: Sunset — warm amber-orange, energetic ── */
   {
-    primary: '#f59e0b',
-    primaryHover: '#d97706',
+    primary: '#d97706',
+    primaryHover: '#b45309',
     primaryLight: '#fbbf24',
-    primaryGradient: 'linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #a855f7 100%)',
-    primaryGradientHover: 'linear-gradient(135deg, #d97706 0%, #db2777 50%, #9333ea 100%)',
-    primaryRgb: '245, 158, 11',
-    primaryAlpha: 'rgba(245, 158, 11, 0.1)',
+    primaryGradient: 'linear-gradient(135deg, #d97706 0%, #c2410c 50%, #9a3412 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #b45309 0%, #9a3412 50%, #7c2d12 100%)',
+    primaryRgb: '217, 119, 6',
+    primaryAlpha: 'rgba(217, 119, 6, 0.12)',
     bgPrimary: '#1a140a',
-    bgSecondary: '#281e0e',
-    bgTertiary: '#3d2e14',
-    bgElevated: 'rgba(40, 30, 14, 0.9)',
-    bgGradient:
-      'linear-gradient(135deg, #1a140a 0%, #281e0e 25%, #3d2e14 50%, #5c401a 75%, #855e22 100%)',
-    accent: '#fbbf24',
-    accentRgb: '251, 191, 36',
-    accentGradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
-    borderSecondary: 'rgba(251, 191, 36, 0.3)',
+    bgSecondary: '#261e0e',
+    bgTertiary: '#352a14',
+    bgElevated: 'rgba(38, 30, 14, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #1a140a 0%, #261e0e 30%, #352a14 60%, #4a3a1a 100%)',
+    accent: '#fb923c',
+    accentRgb: '251, 146, 60',
+    accentGradient: 'linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%)',
+    borderSecondary: 'rgba(251, 191, 36, 0.2)',
     borderFocus: '#fbbf24',
-    textPrimary: '#fdf8f0',
-    textSecondary: '#e8dcc8',
+    textPrimary: '#fffbeb',
+    textSecondary: '#fef3c7',
     textAccent: '#fcd34d',
     linkColor: '#fcd34d',
-    placeholderColor: 'rgba(232,220,200,0.5)',
-    buttonBg: '#f59e0b',
-    buttonHover: '#d97706',
-    buttonText: '#1a140a',
+    placeholderColor: 'rgba(254, 243, 199, 0.45)',
+    buttonBg: '#d97706',
+    buttonHover: '#b45309',
+    buttonText: '#ffffff',
     inputBg: '#1f180e',
-    inputBorder: 'rgba(251, 191, 36, 0.2)',
-    selectionBg: 'rgba(245, 158, 11, 0.3)',
+    inputBorder: 'rgba(251, 191, 36, 0.15)',
+    selectionBg: 'rgba(217, 119, 6, 0.25)',
+  },
+  /* ── 5: Rose — soft rose-pink, warm and creative ── */
+  {
+    primary: '#be185d',
+    primaryHover: '#9d174d',
+    primaryLight: '#f472b6',
+    primaryGradient: 'linear-gradient(135deg, #be185d 0%, #9d174d 50%, #831843 100%)',
+    primaryGradientHover: 'linear-gradient(135deg, #9d174d 0%, #831843 50%, #701a3d 100%)',
+    primaryRgb: '190, 24, 93',
+    primaryAlpha: 'rgba(190, 24, 93, 0.12)',
+    bgPrimary: '#1a0f16',
+    bgSecondary: '#261521',
+    bgTertiary: '#351d2e',
+    bgElevated: 'rgba(38, 21, 33, 0.92)',
+    bgGradient: 'linear-gradient(135deg, #1a0f16 0%, #261521 30%, #351d2e 60%, #4a283f 100%)',
+    accent: '#f472b6',
+    accentRgb: '244, 114, 182',
+    accentGradient: 'linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #db2777 100%)',
+    borderSecondary: 'rgba(244, 114, 182, 0.22)',
+    borderFocus: '#f472b6',
+    textPrimary: '#fdf2f8',
+    textSecondary: '#fce7f3',
+    textAccent: '#f9a8d4',
+    linkColor: '#f9a8d4',
+    placeholderColor: 'rgba(252, 231, 243, 0.45)',
+    buttonBg: '#be185d',
+    buttonHover: '#9d174d',
+    buttonText: '#ffffff',
+    inputBg: '#1f141a',
+    inputBorder: 'rgba(244, 114, 182, 0.18)',
+    selectionBg: 'rgba(190, 24, 93, 0.25)',
   },
 ];
 
 /**
- * None palette — light/neutral theme applied when idx < 0 (Color Theme = None).
- * Black text on white background, so the host page body and the chat modal
- * render with black fonts instead of the dark variables.css defaults.
+ * None palette — clean light theme (idx = -1).
+ * Uses neutral grays that don't interfere with host page styling.
+ * When applied to YiPet containers, provides a professional light appearance.
  */
 export const NONE_PALETTE: ThemePalette = {
   primary: '#6366f1',
   primaryHover: '#4f46e5',
   primaryLight: '#818cf8',
-  primaryGradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-  primaryGradientHover: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)',
+  primaryGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%)',
+  primaryGradientHover: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 50%, #3730a3 100%)',
   primaryRgb: '99, 102, 241',
-  primaryAlpha: 'rgba(99, 102, 241, 0.1)',
+  primaryAlpha: 'rgba(99, 102, 241, 0.08)',
   bgPrimary: '#ffffff',
-  bgSecondary: '#f9fafb',
-  bgTertiary: '#f3f4f6',
+  bgSecondary: '#f8fafc',
+  bgTertiary: '#f1f5f9',
   bgElevated: '#ffffff',
-  bgGradient: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+  bgGradient: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
   accent: '#6366f1',
   accentRgb: '99, 102, 241',
-  accentGradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-  borderSecondary: 'rgba(99, 102, 241, 0.2)',
+  accentGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%)',
+  borderSecondary: 'rgba(0, 0, 0, 0.1)',
   borderFocus: '#6366f1',
-  textPrimary: '#1f2937',
-  textSecondary: '#4b5563',
+  textPrimary: '#1e293b',
+  textSecondary: '#475569',
   textAccent: '#4f46e5',
   linkColor: '#4f46e5',
-  placeholderColor: 'rgba(0, 0, 0, 0.4)',
+  placeholderColor: 'rgba(71, 85, 105, 0.45)',
   buttonBg: '#6366f1',
   buttonHover: '#4f46e5',
   buttonText: '#ffffff',
   inputBg: '#ffffff',
-  inputBorder: 'rgba(0, 0, 0, 0.15)',
-  selectionBg: 'rgba(99, 102, 241, 0.2)',
+  inputBorder: 'rgba(0, 0, 0, 0.12)',
+  selectionBg: 'rgba(99, 102, 241, 0.15)',
 };
 
 /**
- * Inject the active theme's full palette onto a root element's inline style.
- * Primary, background, accent, border, text, button, input, and selection
- * tokens are all written, so the Color Theme setting recolors the entire
- * page surface — fonts, buttons, backgrounds, borders, accents — not just
- * the brand primary. Pass idx = -1 to apply the None palette (light theme,
- * black text on white background) instead of clearing.
+ * Apply theme palette CSS variables to a root element.
+ * Pass idx = -1 for the None (light) palette.
+ * Target should be a YiPet container element, NOT document.documentElement,
+ * to avoid overriding host page styles.
  */
 export function applyThemeColors(root: HTMLElement, idx: number): void {
   const s = root.style;
@@ -341,7 +364,7 @@ export function applyThemeColors(root: HTMLElement, idx: number): void {
   }
 }
 
-/** Remove the theme-injected CSS variables, restoring variables.css defaults. */
+/** Remove theme-injected CSS variables. */
 export function clearThemeColors(root: HTMLElement): void {
   for (const name of THEME_VAR_KEYS) {
     root.style.removeProperty(name);

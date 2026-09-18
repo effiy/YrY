@@ -2,7 +2,8 @@ import { ElMessage } from "element-plus";
 import type { Ref } from "vue";
 import type { SessionDocument, ChatMessage } from "@/api/interface/yiAi";
 import type { ToolDefinition, ToolResult } from "@/hooks/useToolRegistry";
-import { DEFAULT_MODEL } from "@/views/aiChat/constants";
+import type { McpServerConfig } from "@/views/ai-chat/mcpServers";
+import { DEFAULT_MODEL } from "@/views/ai-chat/constants";
 import { getErrorMessage } from "@/utils/errorHandler";
 
 export interface SlashCommandDeps {
@@ -57,7 +58,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
       case "skills": {
         if (!deps.activeConversation.value) await deps.createConversation();
         if (!deps.activeConversation.value) return true;
-        const { MCP_SERVERS } = await import("@/views/aiChat/mcpServers");
+        const { MCP_SERVERS } = (await import("@/views/ai-chat/mcpServers")) as { MCP_SERVERS: McpServerConfig[] };
         const tools = (deps.allTools.value ?? []).map(t => {
           const state = t.enabled === false ? "off" : "on";
           const pre = t.preStream ? " · pre" : "";
@@ -76,7 +77,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           "### MCP Servers",
           ...(mcp.length ? mcp : ["_(none configured)_"]),
           "",
-          "Toggle tools via the RAG / Web pills in the toolbar. Open the Tools icon for the live Skills panel + MCP health probe.",
+          "Toggle tools via the RAG / Web pills in the toolbar. Open the Tools icon for the live Skills panel + MCP health probe."
         ].join("\n");
         const ts = Date.now();
         const skillMsg: ChatMessage = { type: "pet", message: body, timestamp: ts };
@@ -87,7 +88,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
       case "mcp": {
         if (!deps.activeConversation.value) await deps.createConversation();
         if (!deps.activeConversation.value) return true;
-        const { MCP_SERVERS } = await import("@/views/aiChat/mcpServers");
+        const { MCP_SERVERS } = (await import("@/views/ai-chat/mcpServers")) as { MCP_SERVERS: McpServerConfig[] };
         const targets = MCP_SERVERS.filter(s => s.browserReachable && s.url);
         const localOnly = MCP_SERVERS.filter(s => !s.browserReachable);
         const lines: string[] = ["## MCP Health Probe", ""];
@@ -102,33 +103,34 @@ export function useSlashCommands(deps: SlashCommandDeps) {
         deps.setActiveMessages(m => [...m, placeholder]);
         await deps.persistActive();
         const results: string[] = [];
-        await Promise.all(targets.map(async (s) => {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 3000);
-          const t0 = performance.now();
-          try {
-            const res = await fetch(s.url!, { method: "GET", signal: ctrl.signal });
-            const ms = Math.round(performance.now() - t0);
-            const ok = res.ok || res.status < 500;
-            results.push(`- **${s.name}** ${ok ? "✓" : "✗"} — HTTP ${res.status} · ${ms}ms`);
-          } catch (err: unknown) {
-            const ms = Math.round(performance.now() - t0);
-            const msg = err?.name === "AbortError" ? "timeout (3s)" : (err instanceof Error ? err.message : "unreachable");
-            results.push(`- **${s.name}** ✗ — ${msg}${ms ? ` · ${ms}ms` : ""}`);
-          } finally {
-            clearTimeout(timer);
-          }
-        }));
+        await Promise.all(
+          targets.map(async s => {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 3000);
+            const t0 = performance.now();
+            try {
+              const res = await fetch(s.url!, { method: "GET", signal: ctrl.signal });
+              const ms = Math.round(performance.now() - t0);
+              const ok = res.ok || res.status < 500;
+              results.push(`- **${s.name}** ${ok ? "✓" : "✗"} — HTTP ${res.status} · ${ms}ms`);
+            } catch (err: unknown) {
+              const ms = Math.round(performance.now() - t0);
+              const isAbort = typeof err === "object" && err !== null && "name" in err && (err as Error).name === "AbortError";
+              const msg = isAbort ? "timeout (3s)" : err instanceof Error ? err.message : "unreachable";
+              results.push(`- **${s.name}** ✗ — ${msg}${ms ? ` · ${ms}ms` : ""}`);
+            } finally {
+              clearTimeout(timer);
+            }
+          })
+        );
         const finalLines = [
           "## MCP Health Probe",
           "",
           ...(localOnly.length
-            ? ["### Local-only (stdio, not browser-reachable)",
-                ...localOnly.map(s => `- **${s.name}**: ${s.description}`),
-                ""]
+            ? ["### Local-only (stdio, not browser-reachable)", ...localOnly.map(s => `- **${s.name}**: ${s.description}`), ""]
             : []),
           "### HTTP probes",
-          ...results,
+          ...results
         ];
         deps.setActiveMessages(m => {
           const idx = m.findIndex(x => x.timestamp === placeholderTs);
@@ -156,11 +158,14 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             } catch (e: unknown) {
               mcpList = [`  - _(failed to list: ${getErrorMessage(e)})_`];
             }
-            deps.setActiveMessages(m => [...m, {
-              type: "pet",
-              message: `**Usage:** \`/test mcp.<name> [key=value ...]\`\n\n**MCP tools:**\n${mcpList.join("\n")}`,
-              timestamp: listTs,
-            }]);
+            deps.setActiveMessages(m => [
+              ...m,
+              {
+                type: "pet",
+                message: `**Usage:** \`/test mcp.<name> [key=value ...]\`\n\n**MCP tools:**\n${mcpList.join("\n")}`,
+                timestamp: listTs
+              }
+            ]);
             await deps.persistActive();
             return true;
           }
@@ -174,19 +179,21 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             argObj[k] = /^\d+$/.test(v) ? Number(v) : v;
           }
           const probeTs = Date.now();
-          deps.setActiveMessages(m => [...m, {
-            type: "pet",
-            message: `**Testing MCP \`${mcpName}\`** with args \`${JSON.stringify(argObj)}\`…`,
-            timestamp: probeTs,
-          }]);
+          deps.setActiveMessages(m => [
+            ...m,
+            {
+              type: "pet",
+              message: `**Testing MCP \`${mcpName}\`** with args \`${JSON.stringify(argObj)}\`…`,
+              timestamp: probeTs
+            }
+          ]);
           await deps.persistActive();
           try {
             const { callMcpTool } = await import("@/api/modules/mcpService");
             const result = await callMcpTool(mcpName, argObj);
             const content = (result?.content ?? "").trim();
-            const truncated = content.length > 1500
-              ? content.slice(0, 1500) + `\n\n_…truncated (${content.length - 1500} more chars)_`
-              : content;
+            const truncated =
+              content.length > 1500 ? content.slice(0, 1500) + `\n\n_…truncated (${content.length - 1500} more chars)_` : content;
             const body = `**MCP \`${mcpName}\` result:**\n\n\`\`\`\n${truncated || "(empty)"}\n\`\`\``;
             deps.setActiveMessages(m => {
               const idx = m.findIndex(x => x.timestamp === probeTs);
@@ -210,9 +217,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           return true;
         }
         if (!toolName || toolName === "mcp") {
-          const list = (deps.allTools.value ?? [])
-            .map(t => `  - \`${t.name}\`: ${t.label}`)
-            .join("\n");
+          const list = (deps.allTools.value ?? []).map(t => `  - \`${t.name}\`: ${t.label}`).join("\n");
           let mcpList: string[] = [];
           try {
             const { listMcpTools } = await import("@/api/modules/mcpService");
@@ -222,22 +227,28 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             mcpList = [`  - _(MCP /mcp/tools unreachable: ${getErrorMessage(e)})_`];
           }
           const usageTs = Date.now();
-          deps.setActiveMessages(m => [...m, {
-            type: "pet",
-            message: `**Usage:** \`/test <tool_name> [key=value ...]\`\n\n**Built-in tools:**\n${list || "_(none)_"}\n\n**MCP tools:**\n${mcpList.join("\n") || "_(none)_"}\n\nUse \`/test mcp.<name> <args>\` to invoke an MCP server tool.`,
-            timestamp: usageTs,
-          }]);
+          deps.setActiveMessages(m => [
+            ...m,
+            {
+              type: "pet",
+              message: `**Usage:** \`/test <tool_name> [key=value ...]\`\n\n**Built-in tools:**\n${list || "_(none)_"}\n\n**MCP tools:**\n${mcpList.join("\n") || "_(none)_"}\n\nUse \`/test mcp.<name> <args>\` to invoke an MCP server tool.`,
+              timestamp: usageTs
+            }
+          ]);
           await deps.persistActive();
           return true;
         }
         const tool = (deps.allTools.value ?? []).find(t => t.name === toolName);
         if (!tool) {
           const errTs = Date.now();
-          deps.setActiveMessages(m => [...m, {
-            type: "pet",
-            message: `Unknown tool: \`${toolName}\`. Type \`/test\` (no args) to list registered tools.`,
-            timestamp: errTs,
-          }]);
+          deps.setActiveMessages(m => [
+            ...m,
+            {
+              type: "pet",
+              message: `Unknown tool: \`${toolName}\`. Type \`/test\` (no args) to list registered tools.`,
+              timestamp: errTs
+            }
+          ]);
           await deps.persistActive();
           return true;
         }
@@ -251,19 +262,21 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           argObj2[k] = /^\d+$/.test(v) ? Number(v) : v;
         }
         const probeTs2 = Date.now();
-        deps.setActiveMessages(m => [...m, {
-          type: "pet",
-          message: `**Testing \`${toolName}\`** with args \`${JSON.stringify(argObj2)}\`…`,
-          timestamp: probeTs2,
-        }]);
+        deps.setActiveMessages(m => [
+          ...m,
+          {
+            type: "pet",
+            message: `**Testing \`${toolName}\`** with args \`${JSON.stringify(argObj2)}\`…`,
+            timestamp: probeTs2
+          }
+        ]);
         await deps.persistActive();
         try {
           const result = await deps.executeTool(toolName, argObj2);
           const content = (result?.content ?? "").trim();
           const error = result?.error;
-          const truncated = content.length > 1500
-            ? content.slice(0, 1500) + `\n\n_…truncated (${content.length - 1500} more chars)_`
-            : content;
+          const truncated =
+            content.length > 1500 ? content.slice(0, 1500) + `\n\n_…truncated (${content.length - 1500} more chars)_` : content;
           const body = error
             ? `**\`${toolName}\` failed:** ${error}${truncated ? `\n\n\`\`\`\n${truncated}\n\`\`\`` : ""}`
             : `**\`${toolName}\` result:**\n\n\`\`\`\n${truncated || "(empty)"}\n\`\`\``;
@@ -353,14 +366,14 @@ export function useSlashCommands(deps: SlashCommandDeps) {
                 try {
                   const r = await readKnowledgeFile(it.file_path);
                   b = r?.content || "";
-                } catch { b = ""; }
+                } catch {
+                  b = "";
+                }
               }
               if (!b) b = `_(No body available — see source.)_\n\nSource: ${it.link}`;
               bodies.push(`### ${it.title || "(untitled)"}\n\n_${it.published || "—"}_ · ${it.link || ""}\n\n${b}`);
             }
-            const summary = picked
-              .map(r => `- **${r.title || "(untitled)"}** · _${r.published || "—"}_`)
-              .join("\n");
+            const summary = picked.map(r => `- **${r.title || "(untitled)"}** · _${r.published || "—"}_`).join("\n");
             const pageContent = `# Summarize RSS feed: ${source}\n\nBased on the ${picked.length} RSS items below, write a concise summary (~300 words) covering the key points.\n\n---\n\n## Items\n\n${summary}\n\n---\n\n${bodies.join("\n\n---\n\n")}`;
             const ctxPaths = picked.map(r => r.file_path).filter((p): p is string => !!p);
             const tags = ["rss", "rss-summary", `rss:${source}`, ...ctxPaths.map(p => `ctx:${p}`)];
@@ -379,9 +392,8 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             return true;
           }
           const q = argQuery.toLowerCase();
-          const match = items.find(it =>
-            (it.title || "").toLowerCase().includes(q) ||
-            (it.source_name || "").toLowerCase().includes(q)
+          const match = items.find(
+            it => (it.title || "").toLowerCase().includes(q) || (it.source_name || "").toLowerCase().includes(q)
           );
           if (!match) {
             deps.setActiveMessages(m => {
@@ -399,7 +411,9 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             try {
               const r = await readKnowledgeFile(match.file_path);
               body = r?.content || "";
-            } catch { body = ""; }
+            } catch {
+              body = "";
+            }
           }
           if (!body) body = `_(No body available — see source.)_\n\nSource: ${match.link}`;
           deps.setActiveMessages(m => {
@@ -472,7 +486,10 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           const list = deps.promptTemplates.value;
           if (!list.length) {
             const ts = Date.now();
-            deps.setActiveMessages(m => [...m, { type: "pet", message: "_No saved templates. Use `/template add <name> <content>` to create one._", timestamp: ts }]);
+            deps.setActiveMessages(m => [
+              ...m,
+              { type: "pet", message: "_No saved templates. Use `/template add <name> <content>` to create one._", timestamp: ts }
+            ]);
             await deps.persistActive();
             return true;
           }
@@ -481,7 +498,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             "",
             ...list.map(t => `- **${t.name}**: \`${t.content.length > 60 ? t.content.slice(0, 60) + "…" : t.content}\``),
             "",
-            `Use \`/template <name> [arg1 arg2 ...]\` to apply. \`$1\`, \`$2\`, etc. in the template are replaced with the arguments.`,
+            `Use \`/template <name> [arg1 arg2 ...]\` to apply. \`$1\`, \`$2\`, etc. in the template are replaced with the arguments.`
           ];
           const ts = Date.now();
           deps.setActiveMessages(m => [...m, { type: "pet", message: lines.join("\n"), timestamp: ts }]);
@@ -541,7 +558,10 @@ export function useSlashCommands(deps: SlashCommandDeps) {
       }
       case "session": {
         const s = deps.activeConversation.value;
-        if (!s) { ElMessage.warning("No active session"); return true; }
+        if (!s) {
+          ElMessage.warning("No active session");
+          return true;
+        }
         const msgs = s.messages ?? [];
         const totalChars = msgs.reduce((sum, m) => sum + (m.message?.length ?? 0), 0);
         const userMsgs = msgs.filter(m => m.type === "user").length;
@@ -562,7 +582,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           `| Tool Calls | ${toolCalls} |`,
           `| Est. Tokens | ~${Math.ceil(totalChars / 4)} |`,
           `| Context Files | ${(s.tags ?? []).filter(t => t.startsWith("ctx:")).length} |`,
-          `| Tags | ${(s.tags ?? []).filter(t => !t.startsWith("ctx:")).join(", ") || "—"} |`,
+          `| Tags | ${(s.tags ?? []).filter(t => !t.startsWith("ctx:")).join(", ") || "—"} |`
         ].join("\n");
         const ts = Date.now();
         deps.setActiveMessages(m => [...m, { type: "pet", message: info, timestamp: ts }]);
@@ -594,7 +614,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
             const updated = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : "";
             const msgCount = (c.messages ?? []).length;
             return `${i + 1}. ${marker}**${title}** · ${msgCount} msgs · ${updated}`;
-          }),
+          })
         ];
         // If user specified a number, switch to that session
         const num = parseInt(args.trim(), 10);
@@ -642,7 +662,7 @@ export function useSlashCommands(deps: SlashCommandDeps) {
           "| `/test <tool>` | Test a tool directly |",
           "| `/rss` | Browse RSS items |",
           "| `/template [list|add|rm|name]` | Manage prompt templates |",
-          "| `/hotkeys` | Show this help |",
+          "| `/hotkeys` | Show this help |"
         ].join("\n");
         const ts = Date.now();
         deps.setActiveMessages(m => [...m, { type: "pet", message: keys, timestamp: ts }]);

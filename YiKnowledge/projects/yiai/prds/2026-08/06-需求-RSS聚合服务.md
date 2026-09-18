@@ -17,6 +17,9 @@ estimate_backend: 2.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [06-prd-task-RSS聚合服务]
+related_tests: [06-prd-test-RSS聚合服务]
 ---
 
 # YA-08-06: RSS 聚合服务 — Feed 调度 + 内容提取 + 定时更新

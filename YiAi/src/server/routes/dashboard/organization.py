@@ -1,6 +1,6 @@
 """Dashboard organization stats — users, roles, departments."""
-import logging
 from collections import Counter
+import logging
 
 from fastapi import APIRouter
 from pydantic import BaseModel

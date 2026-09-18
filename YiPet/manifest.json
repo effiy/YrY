@@ -37,6 +37,20 @@
         "mac": "Command+Shift+X"
       },
       "description": "__MSG_cmdOpenChat__"
+    },
+    "screenshot": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "__MSG_cmdScreenshot__"
+    },
+    "toggle-mute": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+M",
+        "mac": "Command+Shift+M"
+      },
+      "description": "__MSG_cmdToggleMute__"
     }
   },
   "icons": {

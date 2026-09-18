@@ -8,9 +8,9 @@ one-time token exchange mechanism.
 See: YP-09-09 跨项目桥接可靠性增强
 """
 
+from dataclasses import dataclass, field
 import secrets
 import time
-from dataclasses import dataclass, field
 
 
 @dataclass

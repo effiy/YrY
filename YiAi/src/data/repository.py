@@ -1,18 +1,25 @@
+from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 import logging
 import re
+from typing import Any, Dict, List, Optional
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Dict, Any, List, Optional
+
 from bson import ObjectId
 
 from data.database import db
 from domain.knowledge.writer import delete_entry_markdown
+from shared.cache_keys import CACHE_TTL
 from shared.config import settings
-from shared.utils import get_current_time, is_valid_date, is_number
+from shared.utils import get_current_time, is_number, is_valid_date
 
 logger = logging.getLogger(__name__)
 
-_BUG_TYPE_DIR: Dict[str, str] = {
+# Query timeout (ms) — prevents slow queries from holding connections.
+# Default 30s; overridable via config.yaml: mongodb.query_timeout_ms
+_QUERY_MAX_TIME_MS: int = getattr(settings, 'mongodb_query_timeout_ms', 30000)
+
+_BUG_TYPE_DIR: dict[str, str] = {
     "functional": "logic",
     "performance": "performance",
     "ui": "style",
@@ -23,7 +30,7 @@ _BUG_TYPE_DIR: Dict[str, str] = {
     "other": "other",
 }
 
-_ISSUE_TYPE_DIR: Dict[str, str] = {
+_ISSUE_TYPE_DIR: dict[str, str] = {
     "bug": "bug",
     "task": "task",
     "feature": "feature",
@@ -34,12 +41,12 @@ _ISSUE_TYPE_DIR: Dict[str, str] = {
 
 # --- Private Helpers ---
 
-def _validate_collection_name(collection_name: Optional[str]) -> str:
+def _validate_collection_name(collection_name: str | None) -> str:
     if not collection_name:
         raise ValueError("Collection name (collection_name) must be provided")
     return collection_name
 
-def _build_published_date_filter(start_date: str, end_date: str) -> Dict[str, Any]:
+def _build_published_date_filter(start_date: str, end_date: str) -> dict[str, Any]:
     try:
         start_dt = datetime.strptime(start_date, '%Y-%m-%d')
         end_dt = datetime.strptime(end_date, '%Y-%m-%d')
@@ -81,7 +88,7 @@ def _build_published_date_filter(start_date: str, end_date: str) -> Dict[str, An
     except ValueError:
         return {}
 
-def _handle_iso_date_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
+def _handle_iso_date_filter(key: str, value: Any, filter_dict: dict[str, Any]) -> bool:
     """Handle isoDate special filter logic"""
     if key != 'isoDate' or not isinstance(value, str):
         return False
@@ -104,9 +111,9 @@ def _handle_iso_date_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -
         return True
     return False
 
-def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
+def _handle_range_or_list_filter(key: str, value: Any, filter_dict: dict[str, Any]) -> bool:
     """Handle range query or list query"""
-    if not (hasattr(value, '__iter__') and not isinstance(value, (str, bytes, dict))):
+    if not (hasattr(value, '__iter__') and not isinstance(value, str | bytes | dict)):
         return False
 
     value_list = list(value) if not isinstance(value, list) else value
@@ -129,7 +136,13 @@ def _handle_range_or_list_filter(key: str, value: Any, filter_dict: Dict[str, An
         filter_dict[key] = {'$in': value_list}
     return True
 
-def _handle_string_search_filter(key: str, value: Any, filter_dict: Dict[str, Any]) -> bool:
+# Cache compiled regex patterns — string search is the hottest path in query_documents
+@lru_cache(maxsize=512)
+def _compile_regex(pattern: str) -> re.Pattern:
+    return re.compile(pattern, re.IGNORECASE)
+
+
+def _handle_string_search_filter(key: str, value: Any, filter_dict: dict[str, Any]) -> bool:
     """Handle string fuzzy search"""
     if not isinstance(value, str):
         return False
@@ -139,19 +152,19 @@ def _handle_string_search_filter(key: str, value: Any, filter_dict: Dict[str, An
         if search_terms:
             if '$or' in filter_dict:
                 filter_dict['$or'].extend([
-                    {key: re.compile(f'.*{re.escape(term)}.*', re.IGNORECASE)}
+                    {key: _compile_regex(f'.*{re.escape(term)}.*')}
                     for term in search_terms
                 ])
             else:
                 filter_dict['$or'] = [
-                    {key: re.compile(f'.*{re.escape(term)}.*', re.IGNORECASE)}
+                    {key: _compile_regex(f'.*{re.escape(term)}.*')}
                     for term in search_terms
                 ]
     else:
-        filter_dict[key] = re.compile(f'.*{re.escape(value)}.*', re.IGNORECASE)
+        filter_dict[key] = _compile_regex(f'.*{re.escape(value)}.*')
     return True
 
-def _parse_ms_ts(value: Any) -> Optional[int]:
+def _parse_ms_ts(value: Any) -> int | None:
     """Best-effort conversion to a millisecond-precision epoch timestamp.
 
     The RSS corpus has historically used a mix of second-precision numeric
@@ -163,7 +176,7 @@ def _parse_ms_ts(value: Any) -> Optional[int]:
     """
     if value is None:
         return None
-    if isinstance(value, (int, float)):
+    if isinstance(value, int | float):
         i = int(value)
         # Treat <= 10 digits as epoch seconds, >= 13 as epoch ms. 11/12-digit
         # values (millennia / 10k years) are extremely unlikely and treated
@@ -175,24 +188,20 @@ def _parse_ms_ts(value: Any) -> Optional[int]:
     if ts_str.isdigit():
         i = int(ts_str)
         return i * 1000 if len(ts_str) <= 10 else i
-    try:
-        from datetime import timezone as _tz
-    except Exception:  # pragma: no cover - timezone is always importable
-        return None
     for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
         try:
-            return int(datetime.strptime(ts_str, fmt).replace(tzinfo=_tz.utc).timestamp() * 1000)
+            return int(datetime.strptime(ts_str, fmt).replace(tzinfo=timezone.utc).timestamp() * 1000)
         except ValueError:
             continue
     try:
         return int(datetime.fromisoformat(ts_str.replace("Z", "+00:00")).timestamp() * 1000)
-    except Exception:
+    except (ValueError, OverflowError, OSError):
         return None
 
 
 def _apply_rss_date_filters(
-    query_params: Dict[str, Any],
-) -> Optional[Dict[str, Any]]:
+    query_params: dict[str, Any],
+) -> dict[str, Any] | None:
     """Extract RSS-specific ``publishedStart`` / ``publishedEnd`` params and
     return ``{"start_ms": Optional[int], "end_ms": Optional[int]}`` so the
     caller can apply Python-level filtering after the Mongo read.
@@ -212,7 +221,7 @@ def _apply_rss_date_filters(
     return {"start_ms": start_ms, "end_ms": end_ms}
 
 
-def _rss_doc_published_ms(doc: Dict[str, Any]) -> Optional[int]:
+def _rss_doc_published_ms(doc: dict[str, Any]) -> int | None:
     """Normalise a single RSS document to its epoch-ms published timestamp,
     trying the same fields and fallbacks as the dashboard stats endpoint.
     """
@@ -227,8 +236,8 @@ def _rss_doc_published_ms(doc: Dict[str, Any]) -> Optional[int]:
 _DENIED_OPERATORS = frozenset({"$where", "$function", "$accumulator", "$query"})
 
 
-def _build_filter(query_params: Dict[str, Any]) -> Dict[str, Any]:
-    filter_dict: Dict[str, Any] = {}
+def _build_filter(query_params: dict[str, Any]) -> dict[str, Any]:
+    filter_dict: dict[str, Any] = {}
 
     for key, value in query_params.items():
         if not value:
@@ -263,28 +272,25 @@ def _build_filter(query_params: Dict[str, Any]) -> Dict[str, Any]:
         if _handle_string_search_filter(key, value, filter_dict):
             continue
 
-        if isinstance(value, (int, float, bool)):
+        if isinstance(value, int | float | bool):
             filter_dict[key] = value
 
     return filter_dict
 
-def _build_sort_list(sort_param: str, sort_order: int) -> List[tuple]:
-    sort_list = []
+def _build_sort_list(sort_param: str, sort_order: int) -> list[tuple]:
+    """Build MongoDB sort list — single key by default, tiebreaker only for 'order'.
+
+    MongoDB compound sorts require compound indexes to avoid in-memory sort.
+    Keeping a single sort key ensures index usage. Only 'order' gets an
+    'updatedTime' tiebreaker since items with equal order are common.
+    """
     if sort_param == 'order':
-        sort_list.append(('order', 1))
-    else:
-        sort_list.append((sort_param, sort_order))
-
-    if sort_param != 'updatedTime':
-        sort_list.append(('updatedTime', -1))
-    if sort_param != 'createdTime':
-        sort_list.append(('createdTime', -1))
-
-    return sort_list
+        return [('order', 1), ('updatedTime', -1)]
+    return [(sort_param, sort_order)]
 
 # --- Public Service Methods ---
 
-async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
+async def query_documents(params: dict[str, Any]) -> dict[str, Any]:
     # Support cname and collection_name
     collection_name = params.get('collection_name') or params.get('cname')
     if not collection_name:
@@ -299,23 +305,6 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     if filter_param and isinstance(filter_param, dict):
         # Merge filter content into query_params
         query_params.update(filter_param)
-
-    # Compatibility with old parameters
-    try:
-        if 'limit' in query_params and 'pageSize' not in query_params:
-            query_params['pageSize'] = int(query_params.pop('limit'))
-        else:
-            query_params.pop('limit', None)
-    except (ValueError, TypeError):
-        query_params.pop('limit', None)
-
-    try:
-        if 'page' in query_params and 'pageNum' not in query_params:
-            query_params['pageNum'] = int(query_params.pop('page'))
-        else:
-            query_params.pop('page', None)
-    except (ValueError, TypeError):
-        query_params.pop('page', None)
 
     await db.initialize()
     collection_name = _validate_collection_name(collection_name)
@@ -332,7 +321,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     sort_param = query_params.pop('orderBy', 'timestamp' if collection_name == 'apis' else 'order')
     sort_order = -1 if query_params.pop('orderType', 'asc').lower() == 'desc' else 1
 
-    rss_date_range: Optional[Dict[str, Any]] = None
+    rss_date_range: dict[str, Any] | None = None
     if collection_name == "rss":
         rss_date_range = _apply_rss_date_filters(query_params)
     filter_dict = _build_filter(query_params)
@@ -376,7 +365,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
         start_ms = rss_date_range.get("start_ms")
         end_ms = rss_date_range.get("end_ms")
         cursor = collection.find(filter_dict, projection).sort(sort_list)
-        all_docs: List[Dict[str, Any]] = []
+        all_docs: list[dict[str, Any]] = []
         async for doc in cursor:
             ts = _rss_doc_published_ms(doc)
             if ts is None:
@@ -391,13 +380,40 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
         end_idx = start_idx + page_size
         data = all_docs[start_idx:end_idx]
     else:
-        cursor = collection.find(filter_dict, projection) \
-            .sort(sort_list) \
-            .skip((page_num - 1) * page_size) \
-            .limit(page_size)
-
-        data = [doc async for doc in cursor]
-        total = await collection.count_documents(filter_dict)
+        # Use $facet to fetch data + total in a single DB round-trip.
+        # Previously this was two separate calls (find + count_documents).
+        sort_dict = {k: v for k, v in sort_list}
+        pipeline: list[dict[str, Any]] = [{"$match": filter_dict}]
+        # Only add $sort if there are sort fields (empty dict errors on some Mongo versions)
+        if sort_dict:
+            pipeline.append({"$sort": sort_dict})
+        pipeline.append({
+            "$facet": {
+                "data": [
+                    {"$skip": (page_num - 1) * page_size},
+                    {"$limit": page_size},
+                    {"$project": projection},
+                ],
+                "total": [{"$count": "count"}],
+            }
+        })
+        try:
+            cursor = collection.aggregate(pipeline, maxTimeMS=_QUERY_MAX_TIME_MS)
+            results = await cursor.to_list(length=1)
+            if results:
+                data = results[0].get("data", [])
+                total_counts = results[0].get("total", [])
+                total = total_counts[0]["count"] if total_counts else 0
+            else:
+                data, total = [], 0
+        except Exception as e:
+            logger.warning(f"$facet query failed, falling back to find+count: {e}")
+            cursor = collection.find(filter_dict, projection).sort(sort_list) \
+                .skip((page_num - 1) * page_size) \
+                .limit(page_size) \
+                .max_time_ms(_QUERY_MAX_TIME_MS)
+            data = [doc async for doc in cursor]
+            total = await collection.count_documents(filter_dict, maxTimeMS=_QUERY_MAX_TIME_MS)
     total_pages = (total + page_size - 1) // page_size
 
     # Ensure every returned document has a key field
@@ -418,7 +434,7 @@ async def query_documents(params: Dict[str, Any]) -> Dict[str, Any]:
         'totalPages': total_pages
     }
 
-async def get_document_detail(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_document_detail(params: dict[str, Any]) -> dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     doc_id = params.get('id')
 
@@ -432,14 +448,25 @@ async def get_document_detail(params: Dict[str, Any]) -> Dict[str, Any]:
         projection['pageContent'] = 0
     if collection_name == 'users':
         projection['password'] = 0
-    document = await collection.find_one({'key': doc_id}, projection)
 
-    if not document:
-        raise ValueError(f"Data with ID {doc_id} not found")
+    # Cache single-document reads (short TTL — invalidated on writes via data_service)
+    from shared.cache import cache
+    cache_key = f"data:doc:{collection_name}:{doc_id}"
 
-    return document
+    async def _fetch():
+        doc = await collection.find_one({'key': doc_id}, projection)
+        if not doc:
+            raise ValueError(f"Data with ID {doc_id} not found")
+        return doc
 
-async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
+    try:
+        return await cache.get_or_set(cache_key, _fetch, ttl=CACHE_TTL.get("data:document", 60))
+    except ValueError:
+        raise
+    except Exception:
+        return await _fetch()
+
+async def create_document(params: dict[str, Any]) -> dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     data = params.get('data')
 
@@ -500,7 +527,7 @@ async def create_document(params: Dict[str, Any]) -> Dict[str, Any]:
 
     return {'key': data_copy['key']}
 
-async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
+async def update_document(params: dict[str, Any]) -> dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     data = params.get('data')
     file_path = params.get('file_path')
@@ -556,7 +583,7 @@ async def update_document(params: Dict[str, Any]) -> Dict[str, Any]:
 
     return {'query': query_filter, 'updated': True}
 
-async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
+async def upsert_document(params: dict[str, Any]) -> dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     filter_doc = params.get('filter')
     update_doc = params.get('update')
@@ -573,7 +600,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
     collection = db.db[collection_name]
 
     # Ensure update_doc contains atomic operators
-    if not any(k.startswith('$') for k in update_doc.keys()):
+    if not any(k.startswith('$') for k in update_doc):
         # If no operator, assume $set
         update_doc = {'$set': update_doc}
 
@@ -605,7 +632,7 @@ async def upsert_document(params: Dict[str, Any]) -> Dict[str, Any]:
         "upserted_id": str(result.upserted_id) if result.upserted_id else None
     }
 
-async def count_documents(params: Dict[str, Any]) -> Dict[str, Any]:
+async def count_documents(params: dict[str, Any]) -> dict[str, Any]:
     """Count documents in a collection, optionally grouped by a field.
 
     Args:
@@ -645,7 +672,7 @@ async def count_documents(params: Dict[str, Any]) -> Dict[str, Any]:
     return {'count': total}
 
 
-async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
+async def delete_document(params: dict[str, Any]) -> dict[str, Any]:
     collection_name = params.get('collection_name') or params.get('cname')
     doc_id = params.get('key') or params.get('id')
 
@@ -701,7 +728,7 @@ async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
                     ds_str = str(date_source)[:10]
                     if len(ds_str) == 10 and ds_str[4] == "-" and ds_str[7] == "-":
                         date_str = ds_str
-                    elif isinstance(date_source, (int, float)) or (isinstance(date_source, str) and date_source.isdigit()):
+                    elif isinstance(date_source, int | float) or (isinstance(date_source, str) and date_source.isdigit()):
                         try:
                             date_str = datetime.fromtimestamp(int(date_source) / 1000).strftime("%Y-%m-%d")
                         except (ValueError, OSError):
@@ -724,7 +751,7 @@ async def delete_document(params: Dict[str, Any]) -> Dict[str, Any]:
     return {'key': doc_id, 'deleted': True}
 
 
-async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
+async def list_story_task_dirs(params: dict[str, Any]) -> dict[str, Any]:
     """Query all story task directory listings under the story task panel in the sessions collection
 
     Iterate sessions collection, extract documents with projectName + storyName,
@@ -746,13 +773,13 @@ async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
     page_size = min(8000, max(1, int(params.get('pageSize', params.get('page_size', 2000)))))
     project_filter = params.get('project_name', params.get('projectName'))
 
-    match_stage: Dict[str, Any] = {
+    match_stage: dict[str, Any] = {
         'projectName': {'$exists': True, '$nin': [None, '']},
     }
     if project_filter:
         match_stage['projectName'] = project_filter
 
-    pipeline: List[Dict[str, Any]] = [
+    pipeline: list[dict[str, Any]] = [
         {'$match': match_stage},
         {
             '$group': {
@@ -769,7 +796,7 @@ async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
         {'$limit': page_size},
     ]
 
-    cursor = collection.aggregate(pipeline)
+    cursor = collection.aggregate(pipeline, maxTimeMS=_QUERY_MAX_TIME_MS)
     raw = [doc async for doc in cursor]
 
     dirs = []
@@ -785,7 +812,7 @@ async def list_story_task_dirs(params: Dict[str, Any]) -> Dict[str, Any]:
         })
 
     # count total via a lightweight aggregation
-    count_pipeline: List[Dict[str, Any]] = [
+    count_pipeline: list[dict[str, Any]] = [
         {'$match': match_stage},
         {'$group': {'_id': {'projectName': '$projectName', 'storyName': '$storyName'}}},
         {'$count': 'total'},

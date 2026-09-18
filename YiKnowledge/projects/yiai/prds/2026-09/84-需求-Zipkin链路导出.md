@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-80: 服务端端到端请求链路追踪与性能分析 — OpenTelemetry Zipkin 导出集成"
 tags: [需求文档, OpenTelemetry, Zipkin, 链路追踪, 性能分析, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,15 +20,21 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer]
+source_okr: [yiai-001]
+related_modules: [84-prd-task-Zipkin链路导出]
+related_tests: [84-prd-test-Zipkin链路导出]
 ---
 
 # YA-09-80: 端到端链路追踪 — OpenTelemetry Zipkin 导出
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-80 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-29（分布式链路追踪）
 
 ---
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -68,6 +77,7 @@ YA-09-29 已实现基于 OpenTelemetry 的分布式链路追踪基础设施，�
 
 ---
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前追踪架构
@@ -121,6 +131,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策记录
@@ -186,6 +197,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -275,6 +287,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 代码改动
@@ -472,6 +485,7 @@ class DataRepository:
 
 ---
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 ### 6.1 有序步骤
@@ -515,6 +529,7 @@ open http://localhost:9411
 
 ---
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 ### 7.1 基准测试
@@ -540,6 +555,7 @@ open http://localhost:9411
 
 ---
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -586,6 +602,7 @@ open http://localhost:9411
 
 ---
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 ### 9.1 风险矩阵
@@ -601,6 +618,7 @@ open http://localhost:9411
 
 ---
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚操作 | 回滚时间 | 数据影响 |
@@ -625,6 +643,7 @@ pkill -f "python main.py" && python main.py
 
 ---
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 ### D-01: Zipkin 作为追踪后端
@@ -649,6 +668,7 @@ pkill -f "python main.py" && python main.py
 
 ---
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 ### 12.1 指标
@@ -697,6 +717,7 @@ logger.error("[Tracing] Span 队列已满，丢弃新 Span", extra={
 
 ---
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 ### 13.1 安全要求
@@ -710,6 +731,7 @@ logger.error("[Tracing] Span 队列已满，丢弃新 Span", extra={
 
 ---
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] Zipkin 兼容格式导出 trace 数据（`ZipkinExporter` + `BatchSpanProcessor`）

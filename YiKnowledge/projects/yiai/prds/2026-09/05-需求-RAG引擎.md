@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-01: RAG 引擎稳定性修复 — 增量索引修复 + Embedding 维度校验"
 tags: [需求文档, RAG, 稳定性, 增量索引, Embedding, llama_index, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P0
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer, aier]
+source_okr: [yiai-001]
+related_modules: [05-prd-task-RAG引擎]
+related_tests: [05-prd-test-RAG引擎]
 ---
 
 # YA-09-01: RAG 引擎稳定性修复 — 增量索引修复 + Embedding 维度校验
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-01 · 优先级：P0 · 人天：3.0d · 状态：已完成
 > 依赖：无
@@ -36,6 +44,7 @@ RAG 引擎是 YiAi 的核心检索组件，负责将 YiKnowledge 知识库文件
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 缺陷详情
@@ -110,6 +119,7 @@ Embedding 模型切换后:
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：增量索引修复 — 逐个插入 vs 批量 API 兼容
@@ -150,6 +160,7 @@ Embedding 模型切换后:
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 增量索引修复前后对比
@@ -188,6 +199,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 增量索引修复
@@ -314,6 +326,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -332,6 +345,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 增量索引性能对比
@@ -390,6 +404,7 @@ flowchart LR
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### Requirement: 增量索引修复
@@ -442,6 +457,7 @@ flowchart LR
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -453,6 +469,7 @@ flowchart LR
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 | 风险 |
@@ -464,6 +481,7 @@ flowchart LR
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择逐个 `insert(doc)` 而非寻找批量 API 替代方案？
@@ -480,6 +498,7 @@ flowchart LR
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、当前架构 vs 目标架构
 
 ### 改造前后对比
@@ -519,6 +538,7 @@ graph TD
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] `insert_documents` 调用已全部替换为 `insert(doc)`
@@ -534,6 +554,7 @@ graph TD
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、相关缺陷
 
 - [VectorStoreIndex.insert_documents 方法不存在](../../bugs/rag/vectorstore-insert-documents-method-not-found-20260907.md)
@@ -541,6 +562,7 @@ graph TD
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -555,6 +577,7 @@ graph TD
 
 ---
 
+<a id="sec-15"></a>
 ## 十五、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |

@@ -33,10 +33,9 @@ defineSlots<{
 <style scoped lang="scss">
 .form-field-dependency {
   &.is-disabled {
-    opacity: 0.6;
     pointer-events: none;
+    opacity: 0.6;
   }
-
   &__inner {
     width: 100%;
   }

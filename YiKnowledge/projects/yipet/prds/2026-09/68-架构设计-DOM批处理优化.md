@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-61: Content Script DOM 操作批处理优化 — 批量写入与布局抖动消除"
 tags: [需求文档, Content Script, DOM优化, 批处理, 布局抖动, 性能, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [68-prd-task-DOM批处理优化]
+related_tests: [68-prd-test-DOM批处理优化]
 ---
 
 # YP-09-61: Content Script DOM 批处理与布局抖动消除 — FastDOM 模式
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-61 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YP-09-10（ContentScript 性能剖析）
@@ -42,6 +50,7 @@ FastDOM 是一种成熟的 DOM 批处理模式——将读操作和写操作分�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 Layout Thrashing 示例
@@ -88,6 +97,7 @@ function updatePetPosition(x: number, y: number) {
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：FastDOM 实现方式 — 自实现 vs 使用 fastdom 库 vs 使用 scheduler.yield
@@ -120,6 +130,7 @@ function updatePetPosition(x: number, y: number) {
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 修复后数据流
@@ -158,6 +169,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新建文件
@@ -331,6 +343,7 @@ function updatePetPosition(x: number, y: number) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 描述 | 文件 | 验证方法 | 人天 |
@@ -345,6 +358,7 @@ function updatePetPosition(x: number, y: number) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 布局重计算次数对比
@@ -366,6 +380,7 @@ function updatePetPosition(x: number, y: number) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### GIVEN/WHEN/THEN 场景
@@ -411,6 +426,7 @@ THEN 不应影响下一帧的批处理
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | # | 风险 | 概率 | 影响 | 缓解措施 |
@@ -422,6 +438,7 @@ THEN 不应影响下一帧的批处理
 
 ---
 
+<a id="sec-9"></a>
 ## 九、代码审查检查清单
 
 - [ ] FastDOM 读写队列分离（读优先，写在后）
@@ -435,6 +452,7 @@ THEN 不应影响下一帧的批处理
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |
@@ -446,6 +464,7 @@ THEN 不应影响下一帧的批处理
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -460,6 +479,7 @@ THEN 不应影响下一帧的批处理
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 | 指标 | 采集方式 | 告警阈值 | 说明 |

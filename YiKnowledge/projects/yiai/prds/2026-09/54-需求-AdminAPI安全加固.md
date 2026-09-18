@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-50: 服务 Admin API 安全加固 — 运维端点 Token 认证与审计日志"
 tags: [需求文档, Admin API, 安全加固, Token认证, 审计, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yiai-001]
+related_modules: [54-prd-task-AdminAPI安全加固]
+related_tests: [54-prd-test-AdminAPI安全加固]
 ---
 
 # YA-09-50: 服务 Admin API 安全加固 — 运维端点认证与审计
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-50 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-05（审计日志）、YA-09-16（健康检查）、YA-09-33（性能剖析）、YA-09-42（异步任务队列）
@@ -57,6 +65,7 @@ YiAi 当前暴露了多个运维管理端点，包括 CPU Profiling（`/admin/pr
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前运维端点清单
@@ -109,6 +118,7 @@ flowchart LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：Admin 认证方式 — JWT 扩展 vs 独立 Token vs API Key
@@ -151,6 +161,7 @@ flowchart LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后认证流程
@@ -195,6 +206,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -297,6 +309,7 @@ pipeline.register('AdminAuth', Priority.SECURITY, AdminAuthMiddleware)
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证方法 | 人天 |
@@ -311,6 +324,7 @@ pipeline.register('AdminAuth', Priority.SECURITY, AdminAuthMiddleware)
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 认证开销基准
@@ -333,6 +347,7 @@ pipeline.register('AdminAuth', Priority.SECURITY, AdminAuthMiddleware)
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：公开端点无需认证
@@ -396,6 +411,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -408,6 +424,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 影响范围 |
@@ -419,6 +436,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：Admin Token 使用独立 Header 而非 Bearer Token
@@ -453,6 +471,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 11.1 指标
@@ -482,6 +501,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 | 要求 | 实现方式 | 状态 |
@@ -496,6 +516,7 @@ AND 均返回正确的验证结果
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] Admin API 端点需 X-Admin-Token Header 认证

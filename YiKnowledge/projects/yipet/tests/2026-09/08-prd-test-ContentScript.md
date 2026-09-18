@@ -1,49 +1,46 @@
 ---
 doc_type: test
-title: "Content Script 稳定性修复 — SPA 路由检测与保活 — 测试规格"
-status: 待开始
+title: "YP-09-01: Content Script 稳定性 — 测试用例"
+status: 已完成
 priority: P0
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-09-01"
 source_prds: ["08-稳定性-ContentScript"]
-source_modules: []
----
-# Content Script 稳定性修复 — SPA 路由检测与保活 — 测试规格
-
-> 来源 PRD：[08-稳定性-ContentScript.md](../../prds/2026-09/08-稳定性-ContentScript.md)
-> 提取日期：2026-09-11
-
+source_modules: ["08-prd-task-ContentScript"]
+source_okr: [yipet-004]
 ---
 
-## 测试场景
+# YP-09-01: Content Script 稳定性 — 测试用例
 
-### 功能验证
+## 一、单元测试
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-CS-01 | SPA pushState → Pet 重新注入 | URL 变化 → MutationObserver 触发 → Pet 可见 |
+| UT-CS-02 | popstate (后退) → Pet 保持 | 浏览器后退 → Pet 仍在页面 |
+| UT-CS-03 | 注入重试 1 次成功 | 第 1 次失败 → 500ms 后成功 |
+| UT-CS-04 | 注入重试 3 次全部失败 | 3 次后放弃 + error 日志 |
+| UT-CS-05 | Shadow DOM 样式隔离 | Pet CSS 不影响宿主页面样式 |
+| UT-CS-06 | 点击事件不冒泡 | Pet 内部 click → 宿主 `document.click` 不触发 |
 
-### 边界测试
+## 二、集成测试
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 编号 | 场景 | 预期 |
+|------|------|------|
+| IT-CS-01 | React SPA 路由切换 | `/page1` → `/page2` → Pet 持续存在 |
+| IT-CS-02 | Vue SPA 路由切换 | hash 模式 → Pet 持续存在 |
+| IT-CS-03 | 页面硬刷新 | F5 → Content Script 重新注入成功 |
 
-### 异常测试
+## 三、出口准则
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
+- [ ] P0 用例 100% 通过
+- [ ] React/Vue/Angular SPA 路由兼容测试通过
+- [ ] Shadow DOM 无样式泄露
 
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

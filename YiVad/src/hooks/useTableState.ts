@@ -19,7 +19,7 @@ export function useTableState(storageKey: string, defaults: Partial<TableState> 
     pageSize: defaults.pageSize ?? 50,
     sortField: defaults.sortField,
     sortOrder: defaults.sortOrder,
-    filters: defaults.filters ?? {},
+    filters: defaults.filters ?? {}
   });
 
   function loadFromUrl(): Partial<TableState> {
@@ -36,7 +36,9 @@ export function useTableState(storageKey: string, defaults: Partial<TableState> 
     try {
       const saved = localStorage.getItem(`yivad-state-${storageKey}`);
       return saved ? JSON.parse(saved) : {};
-    } catch { return {}; }
+    } catch {
+      return {};
+    }
   }
 
   function persist() {
@@ -53,11 +55,17 @@ export function useTableState(storageKey: string, defaults: Partial<TableState> 
   // Sync to URL on change
   watch(
     () => ({ pageNum: state.pageNum, pageSize: state.pageSize, sortField: state.sortField, sortOrder: state.sortOrder }),
-    (val) => {
-      const q: Record<string, string> = { ...route.query as Record<string, string> };
-      if (val.pageNum > 1) q.page = String(val.pageNum); else delete q.page;
-      if (val.sortField) { q.sortField = val.sortField; q.sortOrder = val.sortOrder ?? "asc"; }
-      else { delete q.sortField; delete q.sortOrder; }
+    val => {
+      const q: Record<string, string> = { ...(route.query as Record<string, string>) };
+      if (val.pageNum > 1) q.page = String(val.pageNum);
+      else delete q.page;
+      if (val.sortField) {
+        q.sortField = val.sortField;
+        q.sortOrder = val.sortOrder ?? "asc";
+      } else {
+        delete q.sortField;
+        delete q.sortOrder;
+      }
       router.replace({ query: q }).catch(() => {});
     },
     { deep: true }

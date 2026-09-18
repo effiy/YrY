@@ -3,6 +3,8 @@ import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 const rootDir = __dirname;
 
@@ -12,6 +14,10 @@ export default defineConfig({
     vueJsx(),
     AutoImport({
       imports: ["vue", "vue-router", "pinia"],
+      resolvers: [ElementPlusResolver({ importStyle: false })],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver({ importStyle: false })],
     }),
   ],
   test: {

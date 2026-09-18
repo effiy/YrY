@@ -1,5 +1,16 @@
 import * as echarts from "echarts/core";
-import { BarChart, LineChart, LinesChart, PieChart, ScatterChart, RadarChart, GaugeChart, TreemapChart, HeatmapChart, FunnelChart } from "echarts/charts";
+import {
+  BarChart,
+  LineChart,
+  LinesChart,
+  PieChart,
+  ScatterChart,
+  RadarChart,
+  GaugeChart,
+  TreemapChart,
+  HeatmapChart,
+  FunnelChart
+} from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
@@ -27,7 +38,7 @@ import type {
   TreemapSeriesOption,
   HeatmapSeriesOption,
   FunnelSeriesOption,
-  CustomSeriesOption,
+  CustomSeriesOption
 } from "echarts/charts";
 import type {
   TitleComponentOption,

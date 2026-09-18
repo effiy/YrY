@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-105"
 source_prds: ["113-需求-全链路TraceID透传"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-105: 服务端请求上下文追踪 — 全链路 TraceID 在日志/数据库/消息队列中的透传 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[113-需求-全链路TraceID透传.md](../../prds/2026-09/113-需求-全链路TraceID透传.md)
 > 提取日期：2026-09-11

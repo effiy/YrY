@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-141: 色彩对比度审计 — 自动化色彩对比度审计、扫描UI元素WCAG合规性、对比度问题报告含严重级别、推荐可访问颜色替代、回归检查"
 tags: [需求文档, 色彩对比度, WCAG, 可访问性, 自动审计, 颜色替代, 回归检查, 功能实现]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-141: 色彩对比度审计 — 自动化色彩对比度审计、扫描UI元素WCAG合规性、对比度问题报告含严重级别、推荐可访问颜色替代、回归检查
 
 > 需求编号：YV-09-141 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/71-prd-task-色彩对比度审计.md)，验证方案见 [测试方案](../../tests/2026-09/71-prd-test-色彩对比度审计.md)。
 > 依赖：YV-09-138（自定义主题编辑器——用户自定义主题可能产生对比度问题）、YV-09-26（主题系统与暗色模式——深浅模式切换需审计对比度）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -62,6 +85,7 @@ YiVad 管理后台的色彩对比度直接影响所有用户的可读性——�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前对比度关注度
@@ -123,6 +147,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 2.1 方案对比：审计引擎实现方式
@@ -158,6 +183,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 色彩对比度审计系统架构
@@ -344,6 +370,7 @@ function recommendAccessibleColor(
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 YiVad 前端 — ContrastAuditEngine
@@ -574,6 +601,7 @@ export const contrastAuditEngine = new ContrastAuditEngine();
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -590,6 +618,7 @@ export const contrastAuditEngine = new ContrastAuditEngine();
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：审计引擎扫描检测违规
@@ -652,6 +681,7 @@ export const contrastAuditEngine = new ContrastAuditEngine();
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -664,6 +694,7 @@ export const contrastAuditEngine = new ContrastAuditEngine();
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -674,6 +705,7 @@ export const contrastAuditEngine = new ContrastAuditEngine();
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么审计引擎遍历所有文本节点而非仅检查已知选择器？
@@ -694,6 +726,7 @@ Axe-core CI 集成在无头浏览器中运行——无法获取用户自定义�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -719,6 +752,7 @@ Axe-core CI 集成在无头浏览器中运行——无法获取用户自定义�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] relativeLuminance 实现与 WCAG 公式完全一致

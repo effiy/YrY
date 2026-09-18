@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-92: 服务端请求重放保护增强 — 基于 Merkle Tree 的请求批次完整性验证"
 tags: [需求文档, Merkle Tree, 重放保护, 批次验证, 完整性, 安全, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,15 +20,21 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [96-prd-task-Merkle批量完整性]
+related_tests: [96-prd-test-Merkle批量完整性]
 ---
 
 # YA-09-92: 请求批次完整性验证 — Merkle Tree 防篡改批量请求
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-92 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-85（请求签名验证）
 
 ---
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -67,6 +76,7 @@ roles: [engineer]
 
 ---
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前批量请求处理
@@ -97,6 +107,7 @@ YiAi 当前批量请求
 
 ---
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策记录
@@ -128,6 +139,7 @@ YiAi 当前批量请求
 
 ---
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -191,6 +203,7 @@ graph TD
 
 ---
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 代码改动
@@ -527,6 +540,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -541,6 +555,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 | 文档数 | 建树时间 | 验证时间 | 增量更新时间 | Merkle Proof 验证 |
@@ -551,6 +566,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -593,6 +609,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -603,6 +620,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚操作 | 回滚时间 | 数据影响 |
@@ -612,6 +630,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 ### D-01: SHA-256 作为哈希算法
@@ -634,6 +653,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 | 指标名称 | 类型 | 说明 |
@@ -645,6 +665,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 | 要求 | 实现 | 验证 |
@@ -655,6 +676,7 @@ class BatchVerifier:
 
 ---
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] Merkle 树批量验证：构建树 → 根哈希对比 → 定位不一致文档

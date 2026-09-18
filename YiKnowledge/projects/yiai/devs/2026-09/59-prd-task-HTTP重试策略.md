@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "59-需求-HTTP重试策略.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-55: 服务端请求重试与指数退避 — HTTP 客户端重试策略与断路器集成 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[59-需求-HTTP重试策略.md](../../prds/2026-09/59-需求-HTTP重试策略.md)
 > 需求编号：YA-09-55 · 优先级：P2 · 人天：0.5d

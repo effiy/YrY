@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-50"
 source_prds: ["54-需求-AdminAPI安全加固"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-50: 服务 Admin API 安全加固 — 运维端点 Token 认证与审计日志 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[54-需求-AdminAPI安全加固.md](../../prds/2026-09/54-需求-AdminAPI安全加固.md)
 > 提取日期：2026-09-11

@@ -43,6 +43,46 @@ export default {
     confirm: {
       deleteTitle: "删除确认",
       deleteMessage: "确定要删除 {kindLabel}「{name}」吗？"
+    },
+    loading: "加载路线图数据…",
+    loadFailed: "路线图数据加载失败",
+    timeline: {
+      zoomIn: "放大",
+      zoomOut: "缩小",
+      fitAll: "适应全部",
+      today: "今天",
+      months: "{n} 月",
+      quarters: "{n} 季度",
+      years: "{n} 年"
+    },
+    status: {
+      planned: "已规划",
+      upcoming: "即将开始",
+      active: "进行中",
+      completed: "已完成",
+      cancelled: "已取消",
+      onHold: "暂停",
+      atRisk: "有风险",
+      delayed: "已延期"
+    },
+    filters: {
+      status: "状态",
+      kind: "类型",
+      assignee: "负责人",
+      dateRange: "时间范围",
+      clearAll: "清除全部"
+    },
+    detail: {
+      title: "路线图条目详情",
+      notFound: "条目未找到",
+      description: "描述",
+      status: "状态",
+      startDate: "开始日期",
+      endDate: "结束日期",
+      progress: "进度",
+      assignee: "负责人",
+      dependencies: "依赖关系",
+      relatedItems: "关联项"
     }
   }
 };

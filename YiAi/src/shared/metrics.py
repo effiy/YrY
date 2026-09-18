@@ -10,7 +10,7 @@ import time
 logger = logging.getLogger(__name__)
 
 try:
-    from prometheus_client import Counter, Histogram, Gauge, Info, generate_latest, REGISTRY
+    from prometheus_client import REGISTRY, Counter, Gauge, Histogram, Info, generate_latest
     _METRICS_ENABLED = True
 except ImportError:
     _METRICS_ENABLED = False
@@ -29,7 +29,8 @@ except ImportError:
 
     Counter = Histogram = Gauge = _NoopMetricFactory
     Info = _NoopMetricFactory
-    generate_latest = lambda registry=None: b""
+    def generate_latest(registry=None):
+        return b""
     REGISTRY = None
 
 

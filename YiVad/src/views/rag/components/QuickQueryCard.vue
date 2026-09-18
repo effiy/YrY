@@ -24,22 +24,13 @@ async function run() {
 <template>
   <el-card shadow="hover">
     <template #header>
-      <span><el-icon><Opportunity /></el-icon> Quick Query</span>
+      <span
+        ><el-icon><Opportunity /></el-icon> Quick Query</span
+      >
     </template>
     <div class="qqc-body">
-      <el-input
-        v-model="question"
-        placeholder="Ask a quick question..."
-        @keyup.enter.ctrl="run"
-        :disabled="disabled"
-      />
-      <el-button
-        type="primary"
-        :loading="querying"
-        @click="run"
-        :disabled="disabled || !question.trim()"
-        class="qqc-run-btn"
-      >
+      <el-input v-model="question" placeholder="Ask a quick question..." @keyup.enter.ctrl="run" :disabled="disabled" />
+      <el-button type="primary" :loading="querying" @click="run" :disabled="disabled || !question.trim()" class="qqc-run-btn">
         {{ querying ? "Retrieving..." : "Search Knowledge Base" }}
       </el-button>
       <div v-if="sources.length" class="qqc-results">
@@ -65,15 +56,15 @@ async function run() {
   flex-direction: column;
 }
 .qqc-run-btn {
-  margin-top: 12px;
   width: 100%;
+  margin-top: 12px;
 }
 .qqc-results {
   margin-top: 12px;
   &__title {
+    margin-bottom: 8px;
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 8px;
     color: var(--el-text-color-primary);
   }
   &__best {
@@ -84,26 +75,28 @@ async function run() {
 .qqc-result {
   padding: 8px 0;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
   &__header {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-bottom: 4px;
   }
   &__path {
-    font-size: 12px;
-    color: var(--el-color-primary);
-    font-family: monospace;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--el-color-primary);
     white-space: nowrap;
   }
   &__text {
     margin: 0;
     font-size: 12px;
-    color: var(--el-text-color-secondary);
     line-height: 1.5;
+    color: var(--el-text-color-secondary);
   }
 }
 </style>

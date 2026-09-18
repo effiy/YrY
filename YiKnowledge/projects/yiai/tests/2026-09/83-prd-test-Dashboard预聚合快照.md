@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-79"
 source_prds: ["83-需求-Dashboard预聚合快照"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-79: 服务端 Dashboard 数据预聚合 — 定时计算快照替代实时查询 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[83-需求-Dashboard预聚合快照.md](../../prds/2026-09/83-需求-Dashboard预聚合快照.md)
 > 提取日期：2026-09-11

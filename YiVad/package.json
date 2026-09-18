@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@9.1.4",
   "description": "YiVad admin dashboard",
   "license": "MIT",
   "scripts": {
@@ -13,10 +14,13 @@
     "build:pro": "vue-tsc && rsbuild build --mode production",
     "type:check": "vue-tsc --noEmit --skipLibCheck",
     "preview": "pnpm build:dev && rsbuild preview",
+    "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
     "lint:eslint": "eslint --fix --ext .js,.ts,.vue ./src",
     "lint:prettier": "prettier --write \"src/**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint --cache --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "lint:lint-staged": "lint-staged",
+    "check": "pnpm type:check && pnpm lint && pnpm test",
+    "clean": "rm -rf dist node_modules/.cache",
     "prepare": "husky install",
     "release": "standard-version",
     "test": "vitest run",
@@ -111,7 +115,7 @@
     "vue-tsc": "^3.3.8"
   },
   "engines": {
-    "node": ">=16.18.0"
+    "node": ">=18.0.0"
   },
   "browserslist": {
     "production": [

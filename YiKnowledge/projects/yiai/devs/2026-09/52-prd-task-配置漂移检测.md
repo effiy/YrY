@@ -1,41 +1,64 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-48"
-title: "YA-09-48: 服务配置漂移检测 — 运行时配置与期望状态的差异告警 — 开发任务"
+prd_task_id: "YA-09-104"
+title: "YA-09-104: 配置漂移检测 — 运行时 vs 期望状态差异告警 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "52-需求-配置漂移检测.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-48: 服务配置漂移检测 — 运行时配置与期望状态的差异告警 — 开发任务
+# YA-09-104: 配置漂移检测 — 运行时 vs 期望状态差异告警 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[52-需求-配置漂移检测.md](../../prds/2026-09/52-需求-配置漂移检测.md)
-> 需求编号：YA-09-48 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-104 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+热更新配置后，运行时配置可能与 Git 中的 `config.yaml` 不一致（漂移）。定期对比并告警。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+async def detect_config_drift():
+    git_config = yaml.safe_load(subprocess.check_output(["git", "show", "HEAD:config.yaml"]))
+    runtime_config = settings.model_dump()
 
-| 步骤 | 任务 | 产出 |
+    drift = deep_diff(git_config, runtime_config)
+    if drift:
+        logger.warning(f"Config drift detected: {drift}")
+        await send_wework(f"检测到 {len(drift)} 个配置漂移:\n{json.dumps(drift, indent=2)}")
+    return drift
+```
+
+### 检测范围
+
+| 配置 | 可漂移 | 说明 |
+|------|--------|------|
+| `rag.top_k` | 是 | Admin 热更新后可能忘记提交 |
+| `server.port` | 否 | 需重启生效 |
+| `llm.model` | 是 | 热更新友好 |
+| `mongo.url` | 否 | 需重启生效 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | deep_diff + Git 对比 | 漂移配置被检测 | 0.25 |
+| 2 | 定时检查 + 企微告警 + 测试 | 漂移超过 1h 未提交则通知 | 0.25 |
+
+**合计：0.5d**。

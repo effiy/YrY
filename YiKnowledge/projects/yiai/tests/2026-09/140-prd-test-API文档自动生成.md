@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-134"
 source_prds: ["140-需求-API文档自动生成"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-134: API 文档自动生成 — OpenAPI 文档自动生成 + Pydantic Schema 展示 + RPC 端点目录 + 交互式控制台 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[140-需求-API文档自动生成.md](../../prds/2026-09/140-需求-API文档自动生成.md)
 > 提取日期：2026-09-11

@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YP-08-01"
 source_prds: ["00-需求-需求总览"]
 source_modules: []
+source_okr: [yipet-001]
 ---
 # YiPet 八月迭代 — 聊天功能开发 / 跨项目桥接 / 安全合规 / IPC 通信架构 — 测试规格
 

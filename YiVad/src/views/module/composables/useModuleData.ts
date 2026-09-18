@@ -8,11 +8,7 @@ import { getProjectList } from "@/api/modules/projectService";
 import type { Project } from "@/api/modules/projectService";
 import type { HeaderPill } from "@/components";
 
-export function useModuleData(options: {
-  projectKey?: string;
-  filterDateStr: Ref<string>;
-  isPropDate: boolean;
-}) {
+export function useModuleData(options: { projectKey?: string; filterDateStr: Ref<string>; isPropDate: boolean }) {
   const store = useModuleStore();
   const loading = ref(false);
   const error = ref<string | null>(null);
@@ -56,9 +52,7 @@ export function useModuleData(options: {
     const overdue = store.modules.filter(
       m => m.status === "in_progress" && m.due_date && new Date(m.due_date).getTime() < now
     ).length;
-    const empty = store.modules.filter(
-      m => !(m.issue_keys?.length) && m.status !== "completed" && m.status !== "cancelled"
-    ).length;
+    const empty = store.modules.filter(m => !m.issue_keys?.length && m.status !== "completed" && m.status !== "cancelled").length;
     const stalled = store.modules.filter(
       m => m.status === "in_progress" && (m.issue_keys?.length || 0) > 0 && progressPct(m) === 0
     ).length;
@@ -75,11 +69,15 @@ export function useModuleData(options: {
     return fields.map(f => ({ ...f, pct: total ? Math.round((f.filled / total) * 100) : 0 }));
   });
 
-  function issueCount(mod: Module): number { return mod.issue_keys?.length || 0; }
+  function issueCount(mod: Module): number {
+    return mod.issue_keys?.length || 0;
+  }
 
   function doneCount(mod: Module): number {
     let done = 0;
-    for (const k of mod.issue_keys || []) { if (issueMap.value.get(k)?.status === "done") done++; }
+    for (const k of mod.issue_keys || []) {
+      if (issueMap.value.get(k)?.status === "done") done++;
+    }
     return done;
   }
 
@@ -95,14 +93,18 @@ export function useModuleData(options: {
     try {
       const res = await getIssueList({ filter: { key: { $in: issueKeys } }, pageSize: issueKeys.length } as any);
       issueMap.value = new Map(((res.data?.list as Issue[]) ?? []).map(i => [i.key, i]));
-    } catch { /* best-effort */ }
+    } catch {
+      /* best-effort */
+    }
   }
 
   async function loadProjects() {
     try {
       const res = await getProjectList({ pageSize: 500 });
       projects.value = ((res.data?.list as Project[]) ?? []).map(p => ({ key: p.key, name: p.name }));
-    } catch { /* best-effort */ }
+    } catch {
+      /* best-effort */
+    }
   }
 
   function buildDateFilter(dateStr: string): Record<string, any> {

@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-184"
 source_prds: ["189-需求-多模型路由与fallback"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-184: 多模型路由与 Fallback — 多模型健康路由、成本优化路由、延迟优化路由与 Fallback 告警 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[189-需求-多模型路由与fallback.md](../../prds/2026-09/189-需求-多模型路由与fallback.md)
 > 提取日期：2026-09-11

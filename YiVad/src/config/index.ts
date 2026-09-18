@@ -10,7 +10,7 @@ export const LOGIN_URL: string = "/login";
 export const DEFAULT_PRIMARY: string = "#009688";
 
 // Route whitelist (routes existing in staticRouter.ts)
-export const ROUTER_WHITE_LIST: string[] = ["/500"];
+export const ROUTER_WHITE_LIST: string[] = ["/500", "/404", "/403"];
 
 // AMap key
 export const AMAP_MAP_KEY: string = "";

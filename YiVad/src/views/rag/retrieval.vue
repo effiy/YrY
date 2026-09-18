@@ -18,9 +18,7 @@
           placeholder="Enter a query to retrieve semantically similar chunks from the knowledge base…"
           @keyup.enter.ctrl="runQuery"
         />
-        <div class="rag-query-hint">
-          <kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> retrieve
-        </div>
+        <div class="rag-query-hint"><kbd>/</kbd> focus · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> retrieve</div>
         <div class="rag-query-controls">
           <div class="rag-query-params">
             <span class="rag-param-label">Top-K</span>
@@ -51,11 +49,12 @@
     <el-card v-if="sources.length" shadow="hover" class="rag-section">
       <template #header>
         <div class="results-header">
-          <span><el-icon><List /></el-icon> Retrieved Chunks ({{ sources.length }})</span>
+          <span
+            ><el-icon><List /></el-icon> Retrieved Chunks ({{ sources.length }})</span
+          >
           <span class="results-summary">
-            Best: <strong>{{ scoreLabel(best) }}</strong>
-            &nbsp;|&nbsp; Avg: <strong>{{ scoreLabel(avg) }}</strong>
-            &nbsp;|&nbsp; Latency: <strong>{{ lastLatency }}ms</strong>
+            Best: <strong>{{ scoreLabel(best) }}</strong> &nbsp;|&nbsp; Avg: <strong>{{ scoreLabel(avg) }}</strong> &nbsp;|&nbsp;
+            Latency: <strong>{{ lastLatency }}ms</strong>
           </span>
         </div>
       </template>
@@ -85,12 +84,7 @@
         </el-table-column>
         <el-table-column label="Category" width="130" align="center">
           <template #default="{ row }">
-            <el-tag
-              v-if="row.metadata?.category"
-              size="small"
-              :type="categoryTagType(row.metadata.category)"
-              effect="light"
-            >
+            <el-tag v-if="row.metadata?.category" size="small" :type="categoryTagType(row.metadata.category)" effect="light">
               {{ row.metadata.category }}
             </el-tag>
             <span v-else class="rag-text-muted">—</span>
@@ -114,9 +108,7 @@
         </el-table-column>
         <el-table-column label="Actions" width="160" align="center" fixed="right">
           <template #default="{ row, $index }">
-            <el-button text type="primary" size="small" @click.stop="showDetail(row as RagSource, $index)">
-              Inspect
-            </el-button>
+            <el-button text type="primary" size="small" @click.stop="showDetail(row as RagSource, $index)"> Inspect </el-button>
             <el-button
               text
               size="small"
@@ -157,12 +149,7 @@
     </el-card>
 
     <!-- Source Detail Drawer -->
-    <el-drawer
-      v-model="drawerVisible"
-      :title="`Source Detail — #${detailIndex + 1}`"
-      size="560px"
-      direction="rtl"
-    >
+    <el-drawer v-model="drawerVisible" :title="`Source Detail — #${detailIndex + 1}`" size="560px" direction="rtl">
       <SourceDetail v-if="detailSource" :source="detailSource" :index="detailIndex" />
     </el-drawer>
   </div>
@@ -177,10 +164,7 @@ import { useRagQuery } from "@/views/rag/composables/useRagQuery";
 import { useRagKeyboard } from "@/views/rag/composables/useRagKeyboard";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
-import {
-  scoreLabel, bestScore, avgScore,
-  stripSourcePrefix, categoryTagType, truncateText
-} from "@/views/rag/constants";
+import { scoreLabel, bestScore, avgScore, stripSourcePrefix, categoryTagType, truncateText } from "@/views/rag/constants";
 import ScoreBar from "@/components/ScoreBar/index.vue";
 import SourceDetail from "./components/SourceDetail.vue";
 import ScoreDistributionChart from "./components/ScoreDistributionChart.vue";
@@ -258,68 +242,60 @@ function clearQuery() {
 </script>
 
 <style scoped lang="scss">
-@use "./styles/shared.scss";
-
+@use "./styles/shared";
 .rag-query-hint {
   margin-top: 6px;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
   text-align: right;
 }
-
 .results-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+  justify-content: space-between;
 }
-
 .results-summary {
   font-size: 13px;
   color: var(--el-text-color-secondary);
-
   strong {
-    color: var(--el-text-color-primary);
     font-variant-numeric: tabular-nums;
+    color: var(--el-text-color-primary);
   }
 }
-
 .file-col {
   display: flex;
-  align-items: center;
   gap: 6px;
-
+  align-items: center;
   &__path {
-    font-size: 12px;
-    font-family: monospace;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: monospace;
+    font-size: 12px;
     white-space: nowrap;
   }
 }
-
 .chunk-preview {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
   line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
-
 .empty-tips {
-  text-align: left;
   max-width: 400px;
   margin: 0 auto;
-
-  p { margin: 0 0 8px; }
+  text-align: left;
+  p {
+    margin: 0 0 8px;
+  }
   ul {
-    margin: 0;
     padding-left: 20px;
+    margin: 0;
     font-size: 13px;
-    color: var(--el-text-color-secondary);
     line-height: 1.8;
+    color: var(--el-text-color-secondary);
   }
 }
-
 .rag-scope-input {
   width: 180px;
 }

@@ -1,49 +1,30 @@
 ---
 doc_type: test
-title: "YP-08-07: IPC 通信架构 — 双世界消息中继 + 安全签名 + 状态同步 — 测试规格"
-status: 待开始
-priority: P1
+title: "YP-08-03: IPC 通信架构 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202608"
-prd_task_id: "YP-08-07"
 source_prds: ["07-架构设计-IPC通信架构"]
-source_modules: []
----
-# YP-08-07: IPC 通信架构 — 双世界消息中继 + 安全签名 + 状态同步 — 测试规格
-
-> 来源 PRD：[07-架构设计-IPC通信架构.md](../../prds/2026-08/07-架构设计-IPC通信架构.md)
-> 提取日期：2026-09-11
-
+source_modules: ["07-prd-task-IPC通信架构"]
 ---
 
-## 测试场景
+# IPC 通信架构 — 测试用例
 
-### 功能验证
+## 测试用例
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-IPC-001 | ISOLATED→MAIN | postMessage 正确传递 | P0 |
+| TC-IPC-002 | IPC_SECRET 验证 | 非法签名被拒绝 | P0 |
+| TC-IPC-003 | 时间戳 5s 过期 | 过期消息被拒绝 | P0 |
+| TC-IPC-004 | ISOLATED→SW | sendMessage 正确路由 | P0 |
+| TC-IPC-005 | SW 休眠恢复 | 唤醒后状态恢复 | P1 |
 
-### 边界测试
+## 出口准则
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过

@@ -4,7 +4,9 @@
       <el-icon class="chp-header__icon"><Monitor /></el-icon>
       <span class="chp-header__label">{{ $t("project.health.title") }}</span>
       <span class="chp-header__right">
-        <span v-if="report" class="chp-header__time">{{ $t("project.health.analyzedAt", { time: formatTime(report.analyzed_at) }) }}</span>
+        <span v-if="report" class="chp-header__time">{{
+          $t("project.health.analyzedAt", { time: formatTime(report.analyzed_at) })
+        }}</span>
         <el-button link size="small" :icon="Refresh" @click.stop="analyze" :loading="loading" />
         <el-icon :class="{ 'is-collapsed': collapsed }" class="chp-header__arrow"><ArrowDown /></el-icon>
       </span>
@@ -42,7 +44,9 @@
             <span class="chp-row__value" :class="`chp-row__value--${getLevel(report.scale.max_file.lines, [300, 600])}`">
               {{ report.scale.max_file.lines }} {{ $t("project.health.lines") }}
             </span>
-            <span class="chp-row__detail" :title="report.scale.max_file.path">{{ report.scale.max_file.path.split("/").pop() }}</span>
+            <span class="chp-row__detail" :title="report.scale.max_file.path">{{
+              report.scale.max_file.path.split("/").pop()
+            }}</span>
           </div>
           <div class="chp-row">
             <span class="chp-row__label">{{ $t("project.health.avgLines") }}</span>
@@ -189,165 +193,161 @@ function openAlertFile(file: string | null) {
 
 <style scoped lang="scss">
 .chp-root {
-  border-top: 1px solid var(--el-border-color-lighter);
-  margin-top: 12px;
   padding-top: 8px;
+  margin-top: 12px;
+  border-top: 1px solid var(--el-border-color-lighter);
 }
-
 .chp-header {
   display: flex;
-  align-items: center;
   gap: 6px;
-  cursor: pointer;
-  user-select: none;
+  align-items: center;
   padding: 4px 0;
   color: var(--el-text-color-regular);
-  &:hover { color: var(--el-color-primary); }
+  cursor: pointer;
+  user-select: none;
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
-
 .chp-header__icon {
   font-size: 14px;
 }
-
 .chp-header__label {
+  flex: 1;
   font-size: 13px;
   font-weight: 500;
-  flex: 1;
 }
-
 .chp-header__right {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
 }
-
 .chp-header__time {
   max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .chp-header__arrow {
   font-size: 12px;
   transition: transform 0.2s;
-  &.is-collapsed { transform: rotate(-90deg); }
+  &.is-collapsed {
+    transform: rotate(-90deg);
+  }
 }
-
 .chp-body {
-  padding: 4px 0 0 0;
+  padding: 4px 0 0;
 }
-
 .chp-section {
   margin-bottom: 8px;
 }
-
 .chp-section__head {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  margin-bottom: 4px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
-  margin-bottom: 4px;
 }
-
 .chp-section__icon {
   font-size: 12px;
 }
-
 .chp-row {
   display: flex;
   align-items: center;
   padding: 2px 0;
   font-size: 12px;
 }
-
 .chp-row__label {
-  color: var(--el-text-color-placeholder);
-  min-width: 56px;
   flex-shrink: 0;
-}
-
-.chp-row__value {
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-
-  &--good { color: var(--el-color-success); }
-  &--warn { color: var(--el-color-warning); }
-  &--danger { color: var(--el-color-danger); }
-}
-
-.chp-row__detail {
-  margin-left: 6px;
-  font-size: 11px;
+  min-width: 56px;
   color: var(--el-text-color-placeholder);
+}
+.chp-row__value {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  &--good {
+    color: var(--el-color-success);
+  }
+  &--warn {
+    color: var(--el-color-warning);
+  }
+  &--danger {
+    color: var(--el-color-danger);
+  }
+}
+.chp-row__detail {
   max-width: 100px;
+  margin-left: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
   white-space: nowrap;
 }
-
 .chp-error {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 12px 0;
 }
-
 .chp-error__text {
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-
 .chp-empty {
   display: flex;
   justify-content: center;
   padding: 12px 0;
 }
-
 .chp-alerts {
-  margin-top: 8px;
   padding-top: 8px;
+  margin-top: 8px;
   border-top: 1px solid var(--el-border-color-lighter);
 }
-
 .chp-alerts__title {
+  margin-bottom: 4px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  margin-bottom: 4px;
 }
-
 .chp-alert {
   display: flex;
   gap: 6px;
   padding: 4px 0;
   cursor: default;
   border-radius: 4px;
-  &--danger { .chp-alert__msg { color: var(--el-color-danger); } }
-  &--warn { .chp-alert__msg { color: var(--el-color-warning); } }
-  &[data-clickable] { cursor: pointer; }
+  &--danger {
+    .chp-alert__msg {
+      color: var(--el-color-danger);
+    }
+  }
+  &--warn {
+    .chp-alert__msg {
+      color: var(--el-color-warning);
+    }
+  }
+  &[data-clickable] {
+    cursor: pointer;
+  }
 }
-
 .chp-alert__icon {
-  font-size: 12px;
   flex-shrink: 0;
   margin-top: 1px;
+  font-size: 12px;
 }
-
 .chp-alert__msg {
   font-size: 11px;
   line-height: 1.4;
 }
-
 .chp-alert__sug {
   font-size: 10px;
-  color: var(--el-text-color-placeholder);
   line-height: 1.3;
+  color: var(--el-text-color-placeholder);
 }
 </style>

@@ -1,41 +1,60 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-294"
-title: "YA-09-294: LLM输出格式化校验 — JSON Schema验证与自动修复 — 开发任务"
+prd_task_id: "YA-09-153"
+title: "YA-09-153: LLM 输出格式化校验 — JSON Schema 验证 + 自动修复 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0
+estimate_frontend: 0.5
 source_prd: "231-需求-LLM输出格式化校验.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-294: LLM输出格式化校验 — JSON Schema验证与自动修复 — 开发任务
+# YA-09-153: LLM 输出格式化校验 — JSON Schema 验证 + 自动修复 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[231-需求-LLM输出格式化校验.md](../../prds/2026-09/231-需求-LLM输出格式化校验.md)
-> 需求编号：YA-09-294 · 优先级：P2 · 人天：0d
-> 类型：功能 · 状态：需求已编写
+> 需求编号：YA-09-153 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 2.0d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+LLM function calling 返回的 JSON 可能格式错误（多余逗号、未闭合引号）。jsonschema 验证 + regex 自动修复 + 重试。
 
-### 阶段二：完善与收尾（约 1.0d）
+```python
+import jsonschema, json, re
 
-| 步骤 | 任务 | 产出 |
+def validate_and_fix(raw: str, schema: dict) -> dict:
+    # 1. 尝试直接解析
+    try: data = json.loads(extract_json(raw))
+    except json.JSONDecodeError: data = auto_fix(raw)
+    # 2. Schema 验证
+    jsonschema.validate(data, schema)
+    return data
+
+def auto_fix(raw: str) -> dict:
+    raw = re.sub(r',(\s*[}\]])', r'\1', raw)  # 移除尾部逗号
+    raw = re.sub(r'```json|```', '', raw)      # 移除 markdown 标记
+    return json.loads(raw)
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | jsonschema 验证 + 自动修复 | 格式错误 JSON 被修复 | 0.25 |
+| 2 | 重试 + 降级 + 测试 | 3 次修复失败返回原始文本 | 0.25 |
+
+**合计：0.5d**。

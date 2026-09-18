@@ -29,7 +29,7 @@ const emit = defineEmits<{
         :class="{
           'is-active': index === currentStepIndex,
           'is-completed': completedSteps.has(index),
-          'is-clickable': completedSteps.has(index) || index <= currentStepIndex,
+          'is-clickable': completedSteps.has(index) || index <= currentStepIndex
         }"
         @click="completedSteps.has(index) || index <= currentStepIndex ? emit('go-to', index) : undefined"
       >
@@ -54,15 +54,9 @@ const emit = defineEmits<{
 
     <!-- Actions -->
     <div class="form-wizard__actions">
-      <el-button v-if="!isFirstStep" @click="emit('prev')">
-        上一步
-      </el-button>
-      <el-button v-if="!isLastStep" type="primary" @click="emit('next')">
-        下一步
-      </el-button>
-      <el-button v-if="isLastStep" type="primary" @click="emit('submit')">
-        提交
-      </el-button>
+      <el-button v-if="!isFirstStep" @click="emit('prev')"> 上一步 </el-button>
+      <el-button v-if="!isLastStep" type="primary" @click="emit('next')"> 下一步 </el-button>
+      <el-button v-if="isLastStep" type="primary" @click="emit('submit')"> 提交 </el-button>
     </div>
   </div>
 </template>
@@ -74,91 +68,83 @@ const emit = defineEmits<{
     gap: 0;
     margin-bottom: 16px;
   }
-
   &__step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    padding: 12px 16px;
     position: relative;
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 16px;
     cursor: default;
-
     &::after {
-      content: '';
       position: absolute;
       top: 50%;
       right: 0;
+      z-index: 0;
       width: 100%;
       height: 2px;
+      content: "";
       background: var(--el-border-color);
-      z-index: 0;
     }
-
-    &:last-child::after { display: none; }
-
+    &:last-child::after {
+      display: none;
+    }
     &.is-completed::after {
       background: var(--el-color-primary);
     }
-
     &.is-clickable {
       cursor: pointer;
     }
   }
-
   &__step-indicator {
+    z-index: 1;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 28px;
     height: 28px;
-    border-radius: 50%;
-    background: var(--el-fill-color);
-    color: var(--el-text-color-secondary);
     font-size: 13px;
     font-weight: 600;
-    z-index: 1;
-    flex-shrink: 0;
-
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    border-radius: 50%;
     .is-active & {
+      color: #ffffff;
       background: var(--el-color-primary);
-      color: #fff;
     }
-
     .is-completed & {
+      color: #ffffff;
       background: var(--el-color-success);
-      color: #fff;
     }
   }
-
   &__step-content {
     z-index: 1;
     display: flex;
     flex-direction: column;
   }
-
   &__step-title {
     font-size: 14px;
     font-weight: 500;
     color: var(--el-text-color-regular);
-
-    .is-active & { color: var(--el-color-primary); }
-    .is-completed & { color: var(--el-color-success); }
+    .is-active & {
+      color: var(--el-color-primary);
+    }
+    .is-completed & {
+      color: var(--el-color-success);
+    }
   }
-
   &__step-desc {
     font-size: 12px;
     color: var(--el-text-color-secondary);
   }
-
   &__body {
     padding: 24px 0;
   }
-
   &__actions {
     display: flex;
-    justify-content: flex-end;
     gap: 8px;
+    justify-content: flex-end;
     padding-top: 16px;
     border-top: 1px solid var(--el-border-color-lighter);
   }

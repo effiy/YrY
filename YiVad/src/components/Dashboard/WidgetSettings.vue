@@ -70,17 +70,20 @@ const localConfig = ref<WidgetConfig>({
   dataSource: "static",
   refreshInterval: 0,
   chartType: "line-chart",
-  rpc: { moduleName: "", methodName: "" },
+  rpc: { moduleName: "", methodName: "" }
 });
 
-watch(() => props.modelValue, (v) => {
-  visible.value = v;
-  if (v && props.widget) {
-    localConfig.value = { ...props.widget };
+watch(
+  () => props.modelValue,
+  v => {
+    visible.value = v;
+    if (v && props.widget) {
+      localConfig.value = { ...props.widget };
+    }
   }
-});
+);
 
-watch(visible, (v) => emit("update:modelValue", v));
+watch(visible, v => emit("update:modelValue", v));
 
 function save() {
   emit("save", { ...localConfig.value });
@@ -89,5 +92,8 @@ function save() {
 </script>
 
 <style scoped lang="scss">
-.tip { font-size: 11px; color: var(--el-text-color-secondary); }
+.tip {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
 </style>

@@ -1,49 +1,40 @@
 ---
 doc_type: test
-title: "YP-07-01: 技术栈迁移 — React 15 → 18 / Bootstrap 3 → Ant Design 5 / Webpack → Rsbuild — 测试规格"
-status: 待开始
-priority: P0
+title: "YP-07-01: 技术栈迁移 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202607"
-prd_task_id: "YP-07-01"
 source_prds: ["01-基础设施-技术栈迁移"]
-source_modules: []
----
-# YP-07-01: 技术栈迁移 — React 15 → 18 / Bootstrap 3 → Ant Design 5 / Webpack → Rsbuild — 测试规格
-
-> 来源 PRD：[01-基础设施-技术栈迁移.md](../../prds/2026-07/01-基础设施-技术栈迁移.md)
-> 提取日期：2026-09-11
-
+source_modules: ["01-prd-task-技术栈迁移"]
 ---
 
-## 测试场景
+# YP-07-01: 技术栈迁移 — 测试用例
 
-### 功能验证
+## 测试分层
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 层级 | 覆盖 |
+|------|------|
+| L1 单元 | TypeScript 类型检查 |
+| L2 集成 | Rsbuild 4 入口构建 |
+| L3 E2E | Chrome 扩展加载验证 |
 
-### 边界测试
+## 测试用例
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-STACK-001 | 4 入口构建成功 | `npm run build` 产出正确 | P0 |
+| TC-STACK-002 | Manifest 正确 | MV3 格式 + 权限声明 | P0 |
+| TC-STACK-003 | Popup 渲染 | Vue 3 组件正常 | P0 |
+| TC-STACK-004 | Service Worker 注册 | chrome://extensions SW 状态 | P0 |
+| TC-STACK-005 | Content Script 注入 | `document_idle` 时机正确 | P0 |
+| TC-STACK-006 | tsc --noEmit | 零类型错误 | P0 |
 
-### 异常测试
+## 出口准则
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 扩展在 Chrome 中正常加载

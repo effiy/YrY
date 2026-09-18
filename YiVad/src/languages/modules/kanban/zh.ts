@@ -60,6 +60,42 @@ export default {
       priorityChanged: "'{name}' 优先级 → {priority}",
       statusChanged: "'{name}' 状态 → {status}",
       movedTo: "'{name}' 已移动至 {status}"
+    },
+    loading: "加载看板数据…",
+    loadFailed: "看板数据加载失败",
+    swimlane: {
+      title: "泳道",
+      none: "无泳道",
+      byAssignee: "按负责人",
+      byPriority: "按优先级",
+      byType: "按类型",
+      byProject: "按项目",
+      byLabel: "按标签"
+    },
+    wip: {
+      title: "在制品限制",
+      limit: "限制 {current}/{max}",
+      exceeded: "超出在制品限制",
+      column: "列限制"
+    },
+    columnManager: {
+      title: "列管理",
+      addColumn: "添加列",
+      editColumn: "编辑列",
+      deleteColumn: "删除列",
+      deleteConfirm: "确认删除列「{name}」？列中的 Issue 将移至「待办」。",
+      name: "列名称",
+      namePlaceholder: "列名称",
+      nameRequired: "列名称不能为空",
+      colorLabel: "列颜色",
+      wipLimit: "WIP 限制",
+      wipLimitHint: "留空表示不限",
+      save: "保存",
+      reset: "恢复默认列"
+    },
+    viewMode: {
+      board: "看板",
+      table: "表格"
     }
   }
 };

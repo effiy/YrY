@@ -22,7 +22,7 @@ const PRIORITY_ORDER: Record<NotificationPriority, number> = {
   urgent: 0,
   high: 1,
   medium: 2,
-  low: 3,
+  low: 3
 };
 
 const MAX_CACHED = 100;
@@ -33,17 +33,15 @@ export const useNotificationStore = defineStore("notification", () => {
     system: true,
     user_action: true,
     ai: true,
-    error: true,
+    error: true
   });
   const quietHours = ref({ enabled: false, start: "22:00", end: "08:00" });
   const browserPermission = ref(typeof Notification !== "undefined" && Notification.permission === "granted");
 
-  const unreadCount = computed(() => notifications.value.filter((n) => !n.read).length);
+  const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
 
   const unreadNotifications = computed(() =>
-    notifications.value
-      .filter((n) => !n.read)
-      .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
+    notifications.value.filter(n => !n.read).sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
   );
 
   const notificationsByType = computed(() => {
@@ -51,14 +49,14 @@ export const useNotificationStore = defineStore("notification", () => {
       system: [],
       user_action: [],
       ai: [],
-      error: [],
+      error: []
     };
-    notifications.value.forEach((n) => groups[n.type]?.push(n));
+    notifications.value.forEach(n => groups[n.type]?.push(n));
     return groups;
   });
 
   function addNotification(notification: Notification): void {
-    if (notifications.value.some((n) => n.id === notification.id)) return;
+    if (notifications.value.some(n => n.id === notification.id)) return;
     if (!preferences.value[notification.type]) return;
     if (isInQuietHours()) return;
 
@@ -73,20 +71,20 @@ export const useNotificationStore = defineStore("notification", () => {
   }
 
   function markAsRead(id: string): void {
-    const n = notifications.value.find((n) => n.id === id);
+    const n = notifications.value.find(n => n.id === id);
     if (n) n.read = true;
   }
 
   function markAllAsRead(): void {
-    notifications.value.forEach((n) => (n.read = true));
+    notifications.value.forEach(n => (n.read = true));
   }
 
   function removeNotification(id: string): void {
-    notifications.value = notifications.value.filter((n) => n.id !== id);
+    notifications.value = notifications.value.filter(n => n.id !== id);
   }
 
   function clearByType(type: NotificationType): void {
-    notifications.value = notifications.value.filter((n) => n.type !== type);
+    notifications.value = notifications.value.filter(n => n.type !== type);
   }
 
   function setNotifications(list: Notification[]): void {
@@ -110,7 +108,7 @@ export const useNotificationStore = defineStore("notification", () => {
     new Notification(notification.title, {
       body: notification.message,
       icon: "/favicon.ico",
-      tag: notification.id,
+      tag: notification.id
     });
   }
 
@@ -129,7 +127,9 @@ export const useNotificationStore = defineStore("notification", () => {
         if (stored.preferences) preferences.value = stored.preferences;
         if (stored.quietHours) quietHours.value = stored.quietHours;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   function savePreferences(): void {
@@ -157,6 +157,6 @@ export const useNotificationStore = defineStore("notification", () => {
     setNotifications,
     requestBrowserPermission,
     loadPreferences,
-    savePreferences,
+    savePreferences
   };
 });

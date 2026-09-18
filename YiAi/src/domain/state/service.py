@@ -32,11 +32,11 @@ class StateStoreService:
 
     async def query(
         self,
-        record_type: Optional[str] = None,
-        tags: Optional[list[str]] = None,
-        title_contains: Optional[str] = None,
-        created_after: Optional[str] = None,
-        created_before: Optional[str] = None,
+        record_type: str | None = None,
+        tags: list[str] | None = None,
+        title_contains: str | None = None,
+        created_after: str | None = None,
+        created_before: str | None = None,
         page_num: int = 1,
         page_size: int = 2000,
     ) -> dict:
@@ -67,7 +67,7 @@ class StateStoreService:
             "pageSize": page_size,
         }
 
-    async def get(self, key: str) -> Optional[dict]:
+    async def get(self, key: str) -> dict | None:
         col = await self._collection()
         return await col.find_one({"key": key}, {"_id": 0})
 

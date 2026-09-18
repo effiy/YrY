@@ -17,8 +17,11 @@
           <span class="rag-page-header__pill-val">{{ queryHistory.length }}</span>
           <span class="rag-page-header__pill-lbl">Queries</span>
         </div>
-        <div class="rag-page-header__pill" :class="{ 'rag-page-header__pill--built': status.built, 'rag-page-header__pill--empty': !status.built }">
-          <span class="rag-page-header__pill-val">{{ status.built ? 'Ready' : 'Empty' }}</span>
+        <div
+          class="rag-page-header__pill"
+          :class="{ 'rag-page-header__pill--built': status.built, 'rag-page-header__pill--empty': !status.built }"
+        >
+          <span class="rag-page-header__pill-val">{{ status.built ? "Ready" : "Empty" }}</span>
           <span class="rag-page-header__pill-lbl">Index</span>
         </div>
       </div>
@@ -59,7 +62,7 @@
           <div class="rag-sb-group__body">
             <div class="rag-sb-row">
               <span class="rag-sb-row__label">Status</span>
-              <el-tag :type="status.built ? 'success' : 'warning'" size="small">{{ status.built ? 'Healthy' : 'Empty' }}</el-tag>
+              <el-tag :type="status.built ? 'success' : 'warning'" size="small">{{ status.built ? "Healthy" : "Empty" }}</el-tag>
             </div>
             <div class="rag-sb-row">
               <span class="rag-sb-row__label">Documents</span>
@@ -67,7 +70,9 @@
             </div>
             <div class="rag-sb-row">
               <span class="rag-sb-row__label">Last Built</span>
-              <span class="rag-sb-row__value rag-sb-row__value--muted">{{ status.last_built_at ? formatTimestamp(status.last_built_at) : 'Never' }}</span>
+              <span class="rag-sb-row__value rag-sb-row__value--muted">{{
+                status.last_built_at ? formatTimestamp(status.last_built_at) : "Never"
+              }}</span>
             </div>
           </div>
         </div>
@@ -97,7 +102,9 @@
           <el-card shadow="hover">
             <template #header>
               <div class="rag-card-header">
-                <span class="rag-card-header__title"><el-icon><Timer /></el-icon> Recent Queries</span>
+                <span class="rag-card-header__title"
+                  ><el-icon><Timer /></el-icon> Recent Queries</span
+                >
                 <el-button v-if="queryHistory.length" text type="primary" size="small" @click="$router.push('/rag/history')">
                   View All ({{ queryHistory.length }}) <el-icon class="el-icon--right"><ArrowRight /></el-icon>
                 </el-button>
@@ -172,9 +179,7 @@ import { RefreshRight, Timer, Reading, Notebook, ArrowRight, Search, ChatDotRoun
 import { ragStatus } from "@/api/modules/ragService";
 import { useRagStore } from "@/stores/modules/rag";
 import { getErrorMessage } from "@/utils/errorHandler";
-import {
-  bestScore as scoreBest, formatTimestamp, formatRelativeTime, INDEX_INFO_DEFAULTS
-} from "@/views/rag/constants";
+import { bestScore as scoreBest, formatTimestamp, formatRelativeTime, INDEX_INFO_DEFAULTS } from "@/views/rag/constants";
 import ScoreBar from "@/components/ScoreBar/index.vue";
 import IndexStatusCard from "./components/IndexStatusCard.vue";
 import QuickQueryCard from "./components/QuickQueryCard.vue";
@@ -222,110 +227,113 @@ async function rebuildIndex() {
 </script>
 
 <style scoped lang="scss">
-@use "./styles/shared.scss";
-
+@use "./styles/shared";
 .rag-page {
   max-width: none;
   background: var(--el-bg-color-page);
 }
-
 .rag-page__body {
   display: flex;
   gap: 24px;
   align-items: flex-start;
 }
-
 .rag-page__main {
   flex: 1;
   min-width: 0;
 }
-
 .rag-page__sidebar {
-  width: 220px;
-  flex-shrink: 0;
   position: sticky;
   top: 24px;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 12px;
+  width: 220px;
 }
-
 .rag-sb-group {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
-
 .rag-sb-group__title {
   padding: 10px 14px;
   font-size: 11px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .rag-sb-group__body {
   padding: 4px;
 }
-
 .rag-sb-link {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   width: 100%;
   padding: 8px 10px;
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
   border: none;
   border-radius: 6px;
-  background: transparent;
-  color: var(--el-text-color-primary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.12s, color 0.12s;
-  text-align: left;
-
-  .el-icon { font-size: 14px; color: var(--el-text-color-secondary); flex-shrink: 0; }
-  &:hover { background: var(--el-color-primary-light-9); color: var(--el-color-primary); .el-icon { color: var(--el-color-primary); } }
+  transition:
+    background 0.12s,
+    color 0.12s;
+  .el-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+  }
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    .el-icon {
+      color: var(--el-color-primary);
+    }
+  }
 }
-
 .rag-sb-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 6px 10px;
   font-size: 13px;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
-
 .rag-sb-row__label {
-  color: var(--el-text-color-secondary);
   font-weight: 500;
+  color: var(--el-text-color-secondary);
 }
-
 .rag-sb-row__value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  &--muted { font-size: 11px; font-weight: 400; color: var(--el-text-color-placeholder); }
+  &--muted {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--el-text-color-placeholder);
+  }
 }
-
 .rag-card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 8px;
-
+  align-items: center;
+  justify-content: space-between;
   &__title {
     display: inline-flex;
-    align-items: center;
     gap: 6px;
+    align-items: center;
     font-size: 14px;
     font-weight: 600;
   }
 }
-
 .rag-time-relative {
   font-size: 12px;
   font-variant-numeric: tabular-nums;

@@ -1,49 +1,23 @@
 ---
 doc_type: test
-title: "YP-09-28: Content Script 注入时机优化 — document_idle 策略与时序控制 — 测试规格"
-status: 待开始
-priority: P2
+title: "注入时机优化 — 测试用例"
+status: 已完成
+priority: 中
 owner: 陈铭
-roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-prd_task_id: "YP-09-28"
-source_prds: ["35-架构设计-注入时机优化"]
-source_modules: []
----
-# YP-09-28: Content Script 注入时机优化 — document_idle 策略与时序控制 — 测试规格
-
-> 来源 PRD：[35-架构设计-注入时机优化.md](../../prds/2026-09/35-架构设计-注入时机优化.md)
-> 提取日期：2026-09-11
-
+source_prds: ["35-性能-注入时机优化"]
+source_modules: ["35-prd-task-注入时机优化"]
 ---
 
-## 测试场景
+# 注入时机优化 — 测试用例
 
-### 功能验证
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
-
-### 边界测试
-
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-TIM01 | CSS 先于 JS | document_start 注入 CSS 避免闪烁 | P0 |
+| TC-TIM02 | 脚本在 end 注入 | DOM 就绪后注入 JS | P1 |
+| TC-TIM03 | Pet 懒渲染 | 用户可见时才渲染 | P1 |

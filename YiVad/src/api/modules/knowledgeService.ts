@@ -17,47 +17,55 @@ import type {
   YiAiEnvelope
 } from "@/api/interface/yiAi";
 
-async function postJson<T>(path: string, body: Record<string, unknown>): Promise<T> {
+async function postJson<T>(path: string, body: Record<string, unknown>, timeoutMs = 30_000): Promise<T> {
   const url = buildYiAiUrl(path);
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: yiAiAuthHeaders(),
-    body: JSON.stringify(body)
-  });
-  if (!resp.ok) {
-    throw new Error(`Knowledge request failed: ${path} HTTP ${resp.status}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: yiAiAuthHeaders(),
+      body: JSON.stringify(body),
+      signal: controller.signal
+    });
+    if (!resp.ok) {
+      throw new Error(`Knowledge request failed: ${path} HTTP ${resp.status}`);
+    }
+    const data = (await resp.json()) as YiAiEnvelope<T>;
+    if (data.code !== 0) {
+      throw new Error(data.message || `Knowledge request failed: ${path}`);
+    }
+    return data.data;
+  } finally {
+    clearTimeout(timer);
   }
-  const data = (await resp.json()) as YiAiEnvelope<T>;
-  if (data.code !== 0) {
-    throw new Error(data.message || `Knowledge request failed: ${path}`);
-  }
-  return data.data;
 }
 
 /** Read metadata from the DB mirror (no disk scan). Much faster than scanKnowledge
  *  when the watcher has populated the knowledge_files collection. */
 export function listKnowledgeFiles(category?: string): Promise<KnowledgeFilesResponse> {
-  return postJson<KnowledgeFilesResponse>("/knowledge-files", { category });
+  return postJson<KnowledgeFilesResponse>("/knowledge-files", { category }, 10_000);
 }
 
-/** Scan the full knowledge tree, or one top-level category if `category` is set. */
+/** Scan the full knowledge tree, or one top-level category if `category` is set.
+ *  This is a disk scan and may be slow for large knowledge repos. */
 export function scanKnowledge(category?: string): Promise<KnowledgeScanResponse> {
-  return postJson<KnowledgeScanResponse>("/knowledge-scan", { category });
+  return postJson<KnowledgeScanResponse>("/knowledge-scan", { category }, 15_000);
 }
 
 /** Read a single knowledge markdown file (path + parsed frontmatter + body). */
 export function readKnowledgeFile(targetFile: string): Promise<KnowledgeReadResponse> {
-  return postJson<KnowledgeReadResponse>("/knowledge-read", { target_file: targetFile });
+  return postJson<KnowledgeReadResponse>("/knowledge-read", { target_file: targetFile }, 10_000);
 }
 
 /** List story.md entries under engineer/learn/projects/{project}/ — pass project to filter. */
 export function listKnowledgeStories(project?: string): Promise<KnowledgeStoriesResponse> {
-  return postJson<KnowledgeStoriesResponse>("/knowledge-stories", { project });
+  return postJson<KnowledgeStoriesResponse>("/knowledge-stories", { project }, 10_000);
 }
 
 /** Read a specific story's story.md. */
 export function readKnowledgeStory(project: string, storyName: string): Promise<KnowledgeReadResponse> {
-  return postJson<KnowledgeReadResponse>("/knowledge-story-read", { project, story_name: storyName });
+  return postJson<KnowledgeReadResponse>("/knowledge-story-read", { project, story_name: storyName }, 10_000);
 }
 
 /** List bug markdowns under projects/{project}/bugs/{date}/{type}/ — pass project to filter.
@@ -67,7 +75,7 @@ export function readKnowledgeStory(project: string, storyName: string): Promise<
  *  drop-in replacement for `getBugList` without touching the store/view layer.
  */
 export function listKnowledgeBugs(project?: string): Promise<KnowledgeBugsResponse> {
-  return postJson<KnowledgeBugsResponse>("/knowledge-bugs", { project });
+  return postJson<KnowledgeBugsResponse>("/knowledge-bugs", { project }, 10_000);
 }
 
 /** Read a single bug file → { bug: BugDocument, content: BugContent } via its contentPath.
@@ -76,7 +84,7 @@ export function listKnowledgeBugs(project?: string): Promise<KnowledgeBugsRespon
  *  `readBugContent(contentPath)` — now one round-trip and purely disk-backed.
  */
 export function readKnowledgeBug(contentPath: string): Promise<KnowledgeBugReadResponse> {
-  return postJson<KnowledgeBugReadResponse>("/knowledge-bug-read", { content_path: contentPath });
+  return postJson<KnowledgeBugReadResponse>("/knowledge-bug-read", { content_path: contentPath }, 10_000);
 }
 
 export interface KnowledgeSyncResponse {

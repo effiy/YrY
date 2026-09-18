@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-156: Prompt 压缩与优化服务 — 智能上下文压缩 + 关键信息保留 + 长对话优化"
 tags: [需求文档, 功能实现, Prompt压缩, 上下文管理, Token优化, LLM, 对话摘要, 语义保留]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [162-prd-task-Prompt压缩与优化服务]
+related_tests: [162-prd-test-Prompt压缩与优化服务]
 ---
 
 # YA-09-156: Prompt 压缩与优化服务 — 智能上下文压缩 + 关键信息保留 + 长对话优化
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-156 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-09（上下文压缩服务）· 前置需求：YA-09-09
@@ -61,6 +69,7 @@ YA-09-09（上下文压缩服务）已实现基础的对话截断策略，但缺
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前上下文压缩流程
@@ -96,6 +105,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：压缩方式 — 提取式摘要 vs 生成式摘要 vs 混合
@@ -141,6 +151,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 智能压缩流程
@@ -194,6 +205,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 内容分类器
@@ -536,6 +548,7 @@ class CompressionQualityEvaluator:
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 验证 | 人天 |
@@ -552,6 +565,7 @@ class CompressionQualityEvaluator:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：内容分类正确性
@@ -592,6 +606,7 @@ class CompressionQualityEvaluator:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -604,6 +619,7 @@ class CompressionQualityEvaluator:
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 |
@@ -615,6 +631,7 @@ class CompressionQualityEvaluator:
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么使用小模型做摘要而不是主模型？
@@ -635,6 +652,7 @@ YA-09-09 的 Compaction Service 负责基础的消息截断（按消息数/Token
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 | 指标 | 类型 | 说明 |
@@ -658,6 +676,7 @@ YA-09-09 的 Compaction Service 负责基础的消息截断（按消息数/Token
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] ContentClassifier 正确识别所有 5 种内容类型

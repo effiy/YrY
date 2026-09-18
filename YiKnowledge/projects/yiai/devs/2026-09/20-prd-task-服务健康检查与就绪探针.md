@@ -1,41 +1,73 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-16"
-title: "YA-09-16: 服务健康检查与就绪探针 — 生产部署可观测性增强 — 开发任务"
+prd_task_id: "YA-09-12"
+title: "YA-09-12: 服务健康检查与就绪探针 — K8s 部署可观测性 — 开发方案"
 status: 需求已编写
-priority: P2
+priority: P1
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "20-需求-服务健康检查与就绪探针.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-16: 服务健康检查与就绪探针 — 生产部署可观测性增强 — 开发任务
+# YA-09-12: 服务健康检查与就绪探针 — K8s 部署可观测性 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[20-需求-服务健康检查与就绪探针.md](../../prds/2026-09/20-需求-服务健康检查与就绪探针.md)
-> 需求编号：YA-09-16 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-12 · 优先级：P1 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+提供 K8s 标准的 liveness/readiness/startup 探针端点。
 
-### 阶段二：完善与收尾（约 0.2d）
+### 端点设计
 
-| 步骤 | 任务 | 产出 |
+| 端点 | 用途 | 检查内容 | K8s 配置 |
+|------|------|---------|---------|
+| `/health/live` | Liveness | 进程存活 | `initialDelaySeconds: 5, periodSeconds: 10` |
+| `/health/ready` | Readiness | MongoDB + Ollama 连通 | `initialDelaySeconds: 10, periodSeconds: 5` |
+| `/health/startup` | Startup | 所有依赖就绪 | `failureThreshold: 30, periodSeconds: 10` |
+
+### Readiness 检查
+
+```python
+@router.get("/health/ready")
+async def readiness():
+    checks = {
+        "mongodb": await db.ping(),
+        "ollama": await check_ollama(),
+    }
+    healthy = all(checks.values())
+    return {"status": "ready" if healthy else "not_ready", "checks": checks}
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | `/health/live` + `/health/ready` | K8s 探针正常调度 | 0.5 |
+| 2 | `/health/startup` + 依赖检查 | 所有依赖就绪后才接收流量 | 0.25 |
+| 3 | Metrics 端点 `/health/metrics` | Prometheus 可抓取 | 0.25 |
+
+**合计：1.0d**。
+
+---
+
+<a id="sec-3"></a>
+## 三、关联模块
+
+- 关联：[YA-08-07 Dashboard](../2026-08/07-prd-task-Dashboard健康聚合API.md)
+- 下游：[K8s 部署配置](../../../YiAi/)

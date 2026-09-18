@@ -1,12 +1,6 @@
-const CONTINUATION_PREFIXES = [
-  "继续", "接着",
-  "continue", "go on", "keep going",
-];
+const CONTINUATION_PREFIXES = ["继续", "接着", "continue", "go on", "keep going"];
 
-const CONTINUATION_BARE = new Set([
-  "继续", "继续吧", "接着来", "接着",
-  "continue", "go on", "keep going",
-]);
+const CONTINUATION_BARE = new Set(["继续", "继续吧", "接着来", "接着", "continue", "go on", "keep going"]);
 
 export function isContinuationMessage(text: string): boolean {
   const trimmed = text.trim();

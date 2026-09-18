@@ -36,7 +36,7 @@ const props = withDefaults(
     barWidth: 50,
     strokeWidth: 6,
     showLabel: true,
-    textOnly: false,
+    textOnly: false
   }
 );
 
@@ -62,14 +62,12 @@ const label = computed(() => scoreLabel(props.score));
 <style scoped lang="scss">
 .score-bar {
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   vertical-align: middle;
-
   &--text-only {
     gap: 0;
   }
-
   &__label {
     font-size: 12px;
     font-weight: 600;

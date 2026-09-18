@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
-const props = withDefaults(defineProps<{
-  width?: number;
-  height?: number;
-  penColor?: string;
-  penWidth?: number;
-  backgroundColor?: string;
-}>(), {
-  width: 500,
-  height: 200,
-  penColor: "#000000",
-  penWidth: 2,
-  backgroundColor: "#ffffff",
-});
+const props = withDefaults(
+  defineProps<{
+    width?: number;
+    height?: number;
+    penColor?: string;
+    penWidth?: number;
+    backgroundColor?: string;
+  }>(),
+  {
+    width: 500,
+    height: 200,
+    penColor: "#000000",
+    penWidth: 2,
+    backgroundColor: "#ffffff"
+  }
+);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
@@ -32,7 +35,7 @@ function getPos(e: MouseEvent): { x: number; y: number } {
   const rect = canvas.getBoundingClientRect();
   return {
     x: (e.clientX - rect.left) * (canvas.width / rect.width),
-    y: (e.clientY - rect.top) * (canvas.height / rect.height),
+    y: (e.clientY - rect.top) * (canvas.height / rect.height)
   };
 }
 
@@ -132,23 +135,20 @@ onMounted(() => {
 <style scoped lang="scss">
 .signature-pad {
   &__canvas {
+    cursor: crosshair;
     border: 1px solid var(--el-border-color);
     border-radius: 6px;
-    cursor: crosshair;
   }
-
   &__actions {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-top: 8px;
   }
-
   &__status {
     margin-left: auto;
     font-size: 13px;
     color: var(--el-text-color-secondary);
-
     &.signed {
       color: var(--el-color-success);
     }

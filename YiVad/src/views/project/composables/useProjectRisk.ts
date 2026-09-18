@@ -26,7 +26,10 @@ export function useProjectRisk(
     const map = new Map<string, RiskKey[]>();
     for (const p of projects.value) {
       const s = statsByKey.value.get(p.key);
-      if (!s) { map.set(p.key, []); continue; }
+      if (!s) {
+        map.set(p.key, []);
+        continue;
+      }
       const risks: RiskKey[] = [];
 
       const dateIssues = filterDateStr?.value

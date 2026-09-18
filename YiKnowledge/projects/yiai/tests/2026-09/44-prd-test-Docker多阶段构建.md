@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-40"
 source_prds: ["44-需求-Docker多阶段构建"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-40: 服务容器化构建优化 — 多阶段 Dockerfile 与镜像体积缩减 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[44-需求-Docker多阶段构建.md](../../prds/2026-09/44-需求-Docker多阶段构建.md)
 > 提取日期：2026-09-11

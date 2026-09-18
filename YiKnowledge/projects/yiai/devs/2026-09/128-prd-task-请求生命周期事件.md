@@ -1,41 +1,59 @@
 ---
 doc_type: module
 prd_task_id: "YA-09-120"
-title: "YA-09-120: 服务端请求处理全流程生命周期事件系统 — 请求到达/路由/处理/响应的钩子扩展点 — 开发任务"
+title: "YA-09-120: 请求生命周期事件 — 钩子扩展点 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "128-需求-请求生命周期事件.md"
+source_okr: [yiai-003]
 ---
 
-# YA-09-120: 服务端请求处理全流程生命周期事件系统 — 请求到达/路由/处理/响应的钩子扩展点 — 开发任务
+# YA-09-120: 请求生命周期事件 — 钩子扩展点 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[128-需求-请求生命周期事件.md](../../prds/2026-09/128-需求-请求生命周期事件.md)
-> 需求编号：YA-09-120 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-120 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+FastAPI 事件系统：`@app.on_event("startup")` / 中间件。扩展为完整的请求生命周期钩子——`request_received` → `routed` → `before_handler` → `after_handler` → `response_sent`。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class LifecycleHooks:
+    hooks: dict[str, list[Callable]] = defaultdict(list)
 
-| 步骤 | 任务 | 产出 |
+    @classmethod
+    def on(cls, event: str):
+        def decorator(fn): cls.hooks[event].append(fn); return fn
+        return decorator
+
+@LifecycleHooks.on("request_received")
+async def log_request(request): ...
+
+@LifecycleHooks.on("response_sent")
+async def update_metrics(request, response): ...
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 5 事件 + 钩子注册 | 各阶段钩子正确触发 | 0.25 |
+| 2 | 集成测试 | 事件顺序正确 | 0.25 |
+
+**合计：0.5d**。

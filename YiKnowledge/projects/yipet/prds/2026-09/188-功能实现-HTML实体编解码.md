@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-181: HTML实体编解码 — 所有命名实体支持、数字实体转换（十进制/十六进制）、批量编解码、结果复制、安全HTML预览"
 tags: [需求文档, HTML实体, 编解码, 命名实体, 数字实体, XSS防护, 安全预览, 开发者工具]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.2
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yipet-004]
+related_modules: [188-prd-task-HTML实体编解码]
+related_tests: [188-prd-test-HTML实体编解码]
 ---
 
 # YP-09-181: HTML实体编解码 — 所有命名实体支持、数字实体转换（十进制/十六进制）、批量编解码、结果复制、安全HTML预览
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-181 · 优先级：P2 · 人天：0.2d · 状态：需求已编写
 > 依赖：无
@@ -60,6 +68,7 @@ HTML 实体编解码是前端开发和内容处理中的高频基础操作。开
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 HTML 实体处理流程
@@ -110,6 +119,7 @@ HTML 实体编解码是前端开发和内容处理中的高频基础操作。开
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：实体映射表来源 — 硬编码常用实体 vs 完整 HTML5 规范 vs 按需加载
@@ -163,6 +173,7 @@ HTML 实体编解码是前端开发和内容处理中的高频基础操作。开
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 HTML 实体工具系统架构
@@ -233,6 +244,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 完整 HTML 实体映射表
@@ -510,6 +522,7 @@ export class SafePreview {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -527,6 +540,7 @@ export class SafePreview {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：基本 HTML 特殊字符编码
@@ -578,6 +592,7 @@ export class SafePreview {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -590,6 +605,7 @@ export class SafePreview {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -601,6 +617,7 @@ export class SafePreview {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么使用完整的 2231 个 HTML5 命名实体而非仅常用实体？
@@ -621,6 +638,7 @@ iframe sandbox（不含 allow-scripts）阻止脚本执行，DOMPurify 清洗 HT
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -644,6 +662,7 @@ iframe sandbox（不含 allow-scripts）阻止脚本执行，DOMPurify 清洗 HT
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 编码器支持三种模式（命名/十进制/十六进制）

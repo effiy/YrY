@@ -1,8 +1,10 @@
 <script setup lang="ts">
 /**
  * YiPet Chat — RequestStatusButton (Vue 3 SFC)
+ * Mirrors YiVad aiChat: VideoPause icon, pulse animation, pill styling.
  */
 import { computed } from 'vue';
+import { VideoPause } from '@element-plus/icons-vue';
 
 const props = defineProps<{
   sending: boolean;
@@ -27,13 +29,13 @@ const label = computed(() => (props.sending ? 'Stop' : 'Idle'));
   <button
     type="button"
     class="rs-btn"
-    :class="sending ? 'rs-btn--active' : 'rs-btn--idle'"
+    :class="{ 'rs-btn--active': sending, 'rs-btn--idle': !sending }"
     :title="title"
     :aria-label="title"
     :disabled="!sending && disabled"
-    @click="$emit('stop')"
+    @click="emit('stop')"
   >
-    <span class="rs-icon">⏸</span>
+    <el-icon :size="14" class="rs-icon"><VideoPause /></el-icon>
     <span class="rs-label">{{ label }}</span>
   </button>
 </template>
@@ -41,30 +43,56 @@ const label = computed(() => (props.sending ? 'Stop' : 'Idle'));
 <style lang="scss" scoped>
 .rs-btn {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border-radius: 6px;
-  border: 1px solid transparent;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
+  user-select: none;
+  background: transparent;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.2);
+  border-radius: 14px;
+  color: var(--text-secondary, #d4d0e8);
   transition: all 0.15s;
-
-  &--idle {
-    background: transparent;
-    color: var(--text-secondary, #d4d0e8);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-  }
-
-  &--active {
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-    color: var(--primary-light, #818cf8);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.4);
-  }
-
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
-.rs-icon { font-size: 14px; }
-.rs-label { font-weight: 500; }
+.rs-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.rs-btn--idle {
+  color: var(--text-secondary, #d4d0e8);
+  &:hover {
+    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.35);
+    color: var(--text-primary, #f5f3ff);
+  }
+}
+
+.rs-btn--active {
+  color: var(--el-color-danger, #ff4d4f);
+  background: rgba(255, 77, 79, 0.12);
+  border-color: rgba(255, 77, 79, 0.4);
+  animation: rs-pulse 1.4s ease-in-out infinite;
+
+  &:hover {
+    background: rgba(255, 77, 79, 0.2);
+    border-color: rgba(255, 77, 79, 0.6);
+  }
+}
+
+@keyframes rs-pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.rs-icon {
+  flex-shrink: 0;
+}
+
+.rs-label {
+  line-height: 1;
+}
 </style>

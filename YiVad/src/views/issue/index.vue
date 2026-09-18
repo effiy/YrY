@@ -71,11 +71,19 @@
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="bulkChangeStatus(scope, 'todo')">{{ $t("issue.list.setStatusTodo") }}</el-dropdown-item>
-                    <el-dropdown-item @click="bulkChangeStatus(scope, 'in_progress')">{{ $t("issue.list.setStatusInProgress") }}</el-dropdown-item>
-                    <el-dropdown-item @click="bulkChangeStatus(scope, 'done')">{{ $t("issue.list.setStatusDone") }}</el-dropdown-item>
+                    <el-dropdown-item @click="bulkChangeStatus(scope, 'todo')">{{
+                      $t("issue.list.setStatusTodo")
+                    }}</el-dropdown-item>
+                    <el-dropdown-item @click="bulkChangeStatus(scope, 'in_progress')">{{
+                      $t("issue.list.setStatusInProgress")
+                    }}</el-dropdown-item>
+                    <el-dropdown-item @click="bulkChangeStatus(scope, 'done')">{{
+                      $t("issue.list.setStatusDone")
+                    }}</el-dropdown-item>
                     <el-dropdown-item divided @click="openBatchAssign(scope)">{{ $t("issue.list.assignTo") }}</el-dropdown-item>
-                    <el-dropdown-item divided @click="batchDelete(scope.selectedListIds)">{{ $t("issue.list.deleteSelected") }}</el-dropdown-item>
+                    <el-dropdown-item divided @click="batchDelete(scope.selectedListIds)">{{
+                      $t("issue.list.deleteSelected")
+                    }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -83,13 +91,25 @@
             <template #titleHeader>
               <div class="issue-list__col-head">
                 <span>{{ $t("issue.table.title") }}</span>
-                <el-input v-model="searchText" size="small" :placeholder="$t('issue.list.search')" clearable @change="refreshTable" />
+                <el-input
+                  v-model="searchText"
+                  size="small"
+                  :placeholder="$t('issue.list.search')"
+                  clearable
+                  @change="refreshTable"
+                />
               </div>
             </template>
             <template #keyHeader>
               <div class="issue-list__col-head">
                 <span>{{ $t("issue.table.key") }}</span>
-                <el-input v-model="keySearchText" size="small" :placeholder="$t('issue.table.key') + '…'" clearable @change="refreshTable" />
+                <el-input
+                  v-model="keySearchText"
+                  size="small"
+                  :placeholder="$t('issue.table.key') + '…'"
+                  clearable
+                  @change="refreshTable"
+                />
               </div>
             </template>
             <template #key="scope">
@@ -127,27 +147,41 @@
             <template #labelsHeader>
               <div class="issue-list__col-head">
                 <span>{{ $t("issue.table.labels") }}</span>
-                <el-input v-model="labelSearchText" size="small" :placeholder="$t('issue.table.labels') + '…'" clearable @change="refreshTable" />
+                <el-input
+                  v-model="labelSearchText"
+                  size="small"
+                  :placeholder="$t('issue.table.labels') + '…'"
+                  clearable
+                  @change="refreshTable"
+                />
               </div>
             </template>
             <template #labels="scope">
-              <div v-if="scope.row.labels?.length" :class="props.filterIssueType === 'requirement' ? 'issue-list__okr-labels' : 'issue-list__labels'">
+              <div
+                v-if="scope.row.labels?.length"
+                :class="props.filterIssueType === 'requirement' ? 'issue-list__okr-labels' : 'issue-list__labels'"
+              >
                 <template v-if="props.filterIssueType === 'requirement'">
                   <button
                     v-for="l in scope.row.labels"
                     :key="l"
                     type="button"
                     class="issue-list__okr-chip"
-                    :title="allGoalsMap[l] ? `${allGoalsMap[l].description}
-Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
+                    :title="goalDisplayMeta(l).tooltip"
                     @click="openOkrFile(l)"
                   >
                     <span class="issue-list__okr-row">
-                      <span class="issue-list__okr-icon">{{ allGoalsMap[l]?.icon || "🎯" }}</span>
-                      <span class="issue-list__okr-title">{{ allGoalsMap[l]?.title || okrFileName(l) }}</span>
+                      <span class="issue-list__okr-icon">{{ goalDisplayMeta(l).icon }}</span>
+                      <span class="issue-list__okr-title">{{ goalDisplayMeta(l).title }}</span>
                     </span>
                     <span class="issue-list__okr-row issue-list__okr-meta">
-                      <el-tag v-if="allGoalsMap[l]?.status" size="small" effect="light" :type="allGoalsMap[l]?.status === 'active' ? 'success' : allGoalsMap[l]?.status === 'planned' ? 'warning' : allGoalsMap[l]?.status === 'blocked' ? 'danger' : 'info'">{{ allGoalsMap[l].status }}</el-tag>
+                      <el-tag
+                        v-if="goalDisplayMeta(l).statusTag"
+                        size="small"
+                        effect="light"
+                        :type="goalDisplayMeta(l).statusTagType"
+                        >{{ goalDisplayMeta(l).statusTag }}</el-tag
+                      >
                       <code class="issue-list__okr-id">{{ l }}</code>
                     </span>
                   </button>
@@ -191,7 +225,13 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
             <template #assigneeHeader>
               <div class="issue-list__col-head">
                 <span>{{ $t("issue.table.assignee") }}</span>
-                <el-input v-model="assigneeSearchText" size="small" :placeholder="$t('issue.dialog.assigneePlaceholder')" clearable @change="refreshTable" />
+                <el-input
+                  v-model="assigneeSearchText"
+                  size="small"
+                  :placeholder="$t('issue.dialog.assigneePlaceholder')"
+                  clearable
+                  @change="refreshTable"
+                />
               </div>
             </template>
             <template #source="scope">
@@ -259,7 +299,12 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
                 <el-button type="primary" link :icon="ViewIcon" @click="openPreview(scope.row)"></el-button>
               </el-tooltip>
               <el-tooltip :content="$t('common.edit')" placement="top">
-                <el-button type="primary" link :icon="EditIcon" @click="openEdit(scope.row)"></el-button>
+                <el-button
+                  type="primary"
+                  link
+                  :icon="EditIcon"
+                  @click="props.filterIssueType === 'requirement' ? openPrdEdit(scope.row) : openEdit(scope.row)"
+                ></el-button>
               </el-tooltip>
               <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
@@ -276,18 +321,17 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
 
         <template v-else-if="viewMode === 'card'">
           <div class="issue-grid">
-            <div
-              v-for="issue in cardIssues"
-              :key="issue.key"
-              class="issue-card"
-              @click="openPreview(issue)"
-            >
+            <div v-for="issue in cardIssues" :key="issue.key" class="issue-card" @click="openPreview(issue)">
               <div class="issue-card__head">
                 <span class="issue-card__dot" :style="{ background: statusColor(issue.status) }" />
                 <code class="issue-card__key">{{ issue.key }}</code>
                 <div class="issue-card__head-right">
-                  <el-tag :type="priorityTagType(issue.priority)" size="small" effect="plain">{{ priorityLabel(issue.priority) }}</el-tag>
-                  <el-tag :type="typeTagType(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
+                  <el-tag :type="priorityTagType(issue.priority)" size="small" effect="plain">{{
+                    priorityLabel(issue.priority)
+                  }}</el-tag>
+                  <el-tag :type="typeTagType(issue.issue_type)" size="small" effect="plain">{{
+                    typeLabel(issue.issue_type)
+                  }}</el-tag>
                 </div>
               </div>
               <h3 class="issue-card__title">{{ issue.title }}</h3>
@@ -311,20 +355,19 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
 
         <template v-else>
           <div class="issue-list-view">
-            <div
-              v-for="issue in cardIssues"
-              :key="issue.key"
-              class="issue-list-view__row"
-              @click="openPreview(issue)"
-            >
+            <div v-for="issue in cardIssues" :key="issue.key" class="issue-list-view__row" @click="openPreview(issue)">
               <span class="issue-list-view__dot" :style="{ background: statusColor(issue.status) }" />
               <code class="issue-list-view__key">{{ issue.key }}</code>
               <span class="issue-list-view__title">{{ issue.title }}</span>
               <el-tag :type="typeTagType(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
-              <el-tag :type="priorityTagType(issue.priority)" size="small" effect="plain">{{ priorityLabel(issue.priority) }}</el-tag>
+              <el-tag :type="priorityTagType(issue.priority)" size="small" effect="plain">{{
+                priorityLabel(issue.priority)
+              }}</el-tag>
               <el-tag :type="statusTagType(issue.status)" size="small">{{ statusLabel(issue.status) }}</el-tag>
               <span v-if="issue.assignee" class="issue-list-view__assignee">{{ issue.assignee }}</span>
-              <span v-if="issue.due_date" class="issue-list-view__due" :class="dueClass(issue)">{{ formatDate(issue.due_date) }}</span>
+              <span v-if="issue.due_date" class="issue-list-view__due" :class="dueClass(issue)">{{
+                formatDate(issue.due_date)
+              }}</span>
             </div>
           </div>
         </template>
@@ -341,7 +384,12 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
       </div>
     </div>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.isEdit ? $t('issue.dialog.editTitle') : $t('issue.dialog.createTitle')" width="640px" destroy-on-close>
+    <el-dialog
+      v-model="dialog.visible"
+      :title="dialog.isEdit ? $t('issue.dialog.editTitle') : $t('issue.dialog.createTitle')"
+      width="640px"
+      destroy-on-close
+    >
       <el-form ref="formRef" :model="dialog.form" :rules="rules" label-width="100px">
         <el-form-item label="Title" prop="title">
           <el-input v-model="dialog.form.title" placeholder="Issue title" maxlength="200" show-word-limit />
@@ -437,6 +485,89 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
       </template>
     </el-dialog>
 
+    <!-- ═══ PRD Edit Dialog (requirement items only) ═══ -->
+    <el-dialog v-model="prdDialog.visible" title="编辑 PRD 需求" width="560px" destroy-on-close>
+      <div v-loading="prdDialog.loading" class="prd-dialog">
+        <el-form :model="prdDialog.form" label-width="100px">
+          <el-form-item label="标题">
+            <el-input :model-value="prdDialog.form.title" disabled />
+          </el-form-item>
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="状态">
+                <el-select v-model="prdDialog.form.status" style="width: 100%">
+                  <el-option v-for="s in PRD_STATUS_OPTIONS" :key="s" :label="s" :value="s" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="优先级">
+                <el-select v-model="prdDialog.form.priority" style="width: 100%">
+                  <el-option v-for="p in PRD_PRIORITY_OPTIONS" :key="p" :label="p" :value="p" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="负责人">
+                <el-input v-model="prdDialog.form.owner" placeholder="Owner" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="前端人天">
+                <el-input-number v-model="prdDialog.form.estimateFrontend" :min="0" :precision="1" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+
+        <el-divider style="margin: 16px 0" />
+
+        <div class="prd-dialog__section">
+          <div class="prd-dialog__section-head">
+            <span class="prd-dialog__section-title">开发任务</span>
+            <span class="prd-dialog__section-count">{{ prdDialog.devLinks.length }}</span>
+          </div>
+          <div v-if="prdDialog.devLinks.length" class="prd-dialog__links">
+            <div v-for="link in prdDialog.devLinks" :key="link.path" class="prd-dialog__link-row">
+              <el-button link type="primary" class="prd-dialog__link-name" @click="openDocLink(link.path)">{{
+                link.title
+              }}</el-button>
+              <el-button link type="danger" size="small" @click="removePrdLink(link, 'dev')">
+                <el-icon><Close /></el-icon>
+              </el-button>
+            </div>
+          </div>
+          <span v-else class="issue-list__muted">暂无关联开发任务</span>
+        </div>
+
+        <el-divider style="margin: 12px 0" />
+
+        <div class="prd-dialog__section">
+          <div class="prd-dialog__section-head">
+            <span class="prd-dialog__section-title">测试用例</span>
+            <span class="prd-dialog__section-count">{{ prdDialog.testLinks.length }}</span>
+          </div>
+          <div v-if="prdDialog.testLinks.length" class="prd-dialog__links">
+            <div v-for="link in prdDialog.testLinks" :key="link.path" class="prd-dialog__link-row">
+              <el-button link type="primary" class="prd-dialog__link-name" @click="openDocLink(link.path)">{{
+                link.title
+              }}</el-button>
+              <el-button link type="danger" size="small" @click="removePrdLink(link, 'test')">
+                <el-icon><Close /></el-icon>
+              </el-button>
+            </div>
+          </div>
+          <span v-else class="issue-list__muted">暂无关联测试用例</span>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="prdDialog.visible = false">Cancel</el-button>
+        <el-button type="primary" :loading="prdDialog.submitting" @click="submitPrdEdit">保存</el-button>
+      </template>
+    </el-dialog>
+
     <KnowledgePreviewDialog ref="previewDlgRef" />
   </div>
 </template>
@@ -445,24 +576,12 @@ Owner: ${allGoalsMap[l].owner} · ${allGoalsMap[l].period}` : ''"
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import {
-  Delete as DeleteIcon,
-  View as ViewIcon,
-  Edit as EditIcon,
-  ArrowDown,
-  Tickets
-} from "@element-plus/icons-vue";
+import { Delete as DeleteIcon, View as ViewIcon, Edit as EditIcon, ArrowDown, Tickets, Close } from "@element-plus/icons-vue";
 import { User as UserIcon } from "@element-plus/icons-vue";
 import type { Component } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance } from "element-plus";
-import {
-  CircleCheckFilled,
-  Clock,
-  User,
-  Link,
-  Loading
-} from "@element-plus/icons-vue";
+import { CircleCheckFilled, Clock, User, Link, Loading } from "@element-plus/icons-vue";
 import { useIssueStore } from "@/stores/modules/issue";
 import {
   getIssueList,
@@ -491,22 +610,23 @@ import type { ColumnProps, ProTableInstance } from "@/components";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { deleteKnowledgeFile, readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
-import { goalRoleMap, allGoalsMap } from "@/views/knowledge/executiver/okrData";
-import { useRequirements } from "@/views/project/composables/useRequirements";
+import { goalRoleMap, allGoalsMap } from "@/views/knowledge/executive/okrData";
+import { useRequirements, type LinkedDocInfo } from "@/views/project/composables/useRequirements";
 import IssueSidebar from "./components/IssueSidebar.vue";
 import IssueAnalyticsCharts from "./components/IssueAnalyticsCharts.vue";
 import IssueRecentlyViewed from "./components/IssueRecentlyViewed.vue";
-import {
-  useIssueStats,
-  STATUS_COLOR,
-  buildReqIssues
-} from "./composables/useIssueStats";
+import { useIssueStats, STATUS_COLOR, buildReqIssues } from "./composables/useIssueStats";
 import { useIssueCharts } from "./composables/useIssueCharts";
 import { useIssueDialog, type IssueForm } from "./composables/useIssueDialog";
 import { useIssueExport } from "./composables/useIssueExport";
 import { useIssueBulkOps } from "./composables/useIssueBulkOps";
 
-const props = defineProps<{ projectKey?: string; filterIssueType?: string; excludeIssueType?: string; filterDate?: Date | null }>();
+const props = defineProps<{
+  projectKey?: string;
+  filterIssueType?: string;
+  excludeIssueType?: string;
+  filterDate?: Date | null;
+}>();
 
 const router = useRouter();
 const route = useRoute();
@@ -546,7 +666,9 @@ const cardIssues = computed(() => {
   return cardIssuesAll.value.slice(start, start + cardPageSize);
 });
 const cardTotal = computed(() => cardIssuesAll.value.length);
-function onCardPage(p: number) { cardPage.value = p; }
+function onCardPage(p: number) {
+  cardPage.value = p;
+}
 
 function formatMonth(iso: string): string {
   if (!iso) return "-";
@@ -556,10 +678,14 @@ function formatMonth(iso: string): string {
 function truncateDesc(text: string): string {
   const plain = text
     .replace(/#{1,6}\s/g, "")
-    .replace(/\*\*/g, "").replace(/\*/g, "").replace(/`/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "")
+    .replace(/`/g, "")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/>\s/g, "").replace(/[-*+]\s/g, "")
-    .replace(/\n+/g, " ").trim();
+    .replace(/>\s/g, "")
+    .replace(/[-*+]\s/g, "")
+    .replace(/\n+/g, " ")
+    .trim();
   return plain.length > 160 ? plain.slice(0, 160) + "..." : plain;
 }
 
@@ -576,9 +702,19 @@ function dueClass(issue: Issue): string {
 const _filterDate = ref<Date | null>(null);
 const filterDate = computed({
   get: () => (props.filterDate !== undefined ? props.filterDate : _filterDate.value),
-  set: (v) => { _filterDate.value = v; }
+  set: v => {
+    _filterDate.value = v;
+  }
 });
-const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
+const {
+  label: filterDateLabel,
+  isToday: isFilterToday,
+  filterDateStr,
+  goToPrevDay,
+  goToNextDay,
+  goToFilterToday,
+  clearFilterDate
+} = useDateFilter(filterDate);
 
 const {
   allIssues,
@@ -602,37 +738,138 @@ const {
   projectName
 } = useIssueStats(props, { filterDateStr, reqItems, reqLoading, fetchRequirements });
 
-const {
-  statusDonutOption,
-  priorityBarOption,
-  typeBarOption,
-  assigneeBarOption,
-  trendOption
-} = useIssueCharts({ statusDist, priorityDist, typeDist, assigneeDist, createdByDay });
+const { statusDonutOption, priorityBarOption, typeBarOption, assigneeBarOption, trendOption } = useIssueCharts({
+  statusDist,
+  priorityDist,
+  typeDist,
+  assigneeDist,
+  createdByDay
+});
 
-function statusColor(s: IssueStatus) { return STATUS_COLOR[s] || "#909399"; }
+function statusColor(s: IssueStatus) {
+  return STATUS_COLOR[s] || "#909399";
+}
 
-const overviewStats = computed<Array<{ icon: Component; iconBg: string; value: number; label: string; onClick?: () => void }>>(() => [
-  { icon: Tickets, iconBg: "linear-gradient(135deg,#5470c6,#4460b0)", value: stats.total, label: "Total", onClick: () => router.push("/issue") },
-  { icon: Loading, iconBg: "linear-gradient(135deg,#5ab1ef,#3a90d0)", value: openCount.value, label: "Open", onClick: () => applyAttentionFilter("unassigned") },
-  { icon: Link, iconBg: "linear-gradient(135deg,#e6a23c,#d49520)", value: stats.in_review, label: "In Review" },
-  { icon: CircleCheckFilled, iconBg: "linear-gradient(135deg,#91cc75,#7ab85e)", value: stats.done, label: "Done" }
-]);
+const overviewStats = computed<Array<{ icon: Component; iconBg: string; value: number; label: string; onClick?: () => void }>>(
+  () => [
+    {
+      icon: Tickets,
+      iconBg: "linear-gradient(135deg,#5470c6,#4460b0)",
+      value: stats.total,
+      label: "Total",
+      onClick: () => router.push("/issue")
+    },
+    {
+      icon: Loading,
+      iconBg: "linear-gradient(135deg,#5ab1ef,#3a90d0)",
+      value: openCount.value,
+      label: "Open",
+      onClick: () => applyAttentionFilter("unassigned")
+    },
+    { icon: Link, iconBg: "linear-gradient(135deg,#e6a23c,#d49520)", value: stats.in_review, label: "In Review" },
+    { icon: CircleCheckFilled, iconBg: "linear-gradient(135deg,#91cc75,#7ab85e)", value: stats.done, label: "Done" }
+  ]
+);
 
-const attentionStats = computed<Array<{ icon: Component; value: number; label: string; accentClass: string; onClick?: () => void }>>(() => [
-  { icon: Clock, value: attention.value.overdue, label: "Overdue", accentClass: "issue-list__sidebar-card--overdue", onClick: () => applyAttentionFilter("overdue") },
-  { icon: User, value: attention.value.unassigned, label: "Unassigned", accentClass: "issue-list__sidebar-card--unassigned", onClick: () => applyAttentionFilter("unassigned") },
-  { icon: Link, value: attention.value.blocked, label: "Blocked", accentClass: "issue-list__sidebar-card--blocked", onClick: () => applyAttentionFilter("blocked") }
+const attentionStats = computed<
+  Array<{ icon: Component; value: number; label: string; accentClass: string; onClick?: () => void }>
+>(() => [
+  {
+    icon: Clock,
+    value: attention.value.overdue,
+    label: "Overdue",
+    accentClass: "issue-list__sidebar-card--overdue",
+    onClick: () => applyAttentionFilter("overdue")
+  },
+  {
+    icon: User,
+    value: attention.value.unassigned,
+    label: "Unassigned",
+    accentClass: "issue-list__sidebar-card--unassigned",
+    onClick: () => applyAttentionFilter("unassigned")
+  },
+  {
+    icon: Link,
+    value: attention.value.blocked,
+    label: "Blocked",
+    accentClass: "issue-list__sidebar-card--blocked",
+    onClick: () => applyAttentionFilter("blocked")
+  }
 ]);
 
 function goGoal(goalId: string) {
   const role = goalRoleMap[goalId];
-  if (role) router.push(`/executiver/okr/${role}?goal=${goalId}`);
+  if (role) router.push(`/knowledge/executive/okr?role=${role}&goal=${goalId}`);
 }
 const goalLabel = (goalId: string) => allGoalsMap[goalId]?.title || goalId;
 
 function okrFileName(goalId: string): string {
   return okrFileMap.value.get(goalId)?.title || goalId;
+}
+
+/** Merge role-level allGoalsMap with project-level okrFileMap for unified OKR chip display. */
+interface GoalDisplayMeta {
+  icon: string;
+  title: string;
+  statusTag: string;
+  statusTagType: "success" | "warning" | "info" | "primary" | "danger" | undefined;
+  tooltip: string;
+}
+const projectGoalMetaCache = computed<Map<string, GoalDisplayMeta>>(() => {
+  const map = new Map<string, GoalDisplayMeta>();
+  // Role-level goals from okrData.ts
+  for (const [id, g] of Object.entries(allGoalsMap)) {
+    const statusTagType = (
+      g.status === "active" || g.status === "completed"
+        ? "success"
+        : g.status === "planned" || g.status === "in_progress"
+          ? "warning"
+          : g.status === "blocked"
+            ? "danger"
+            : "info"
+    ) as GoalDisplayMeta["statusTagType"];
+    map.set(id, {
+      icon: g.icon,
+      title: g.title,
+      statusTag: g.status,
+      statusTagType,
+      tooltip: `${g.description}\nOwner: ${g.owner} · ${g.period}`
+    });
+  }
+  // Project-level goals from OKR file frontmatter
+  for (const [id, info] of okrFileMap.value.entries()) {
+    if (map.has(id)) continue; // role-level takes priority
+    const pctLabel = info.progress ? ` · ${info.progress}%` : "";
+    const statusTagType = (
+      info.status === "completed"
+        ? "success"
+        : info.status === "in_progress"
+          ? "warning"
+          : info.status === "blocked"
+            ? "danger"
+            : "info"
+    ) as GoalDisplayMeta["statusTagType"];
+    map.set(id, {
+      icon: "🎯",
+      title: info.title || id,
+      statusTag: info.status || "",
+      statusTagType,
+      tooltip: `${info.title || id}${pctLabel}\n${info.period || ""}${info.owner ? ` · ${info.owner}` : ""}`
+    });
+  }
+  return map;
+});
+
+function goalDisplayMeta(goalId: string): GoalDisplayMeta {
+  return (
+    projectGoalMetaCache.value.get(goalId) || {
+      icon: "🎯",
+      title: okrFileName(goalId),
+      statusTag: "",
+      statusTagType: "info",
+      tooltip: goalId
+    }
+  );
 }
 
 function openOkrFile(goalId: string) {
@@ -658,8 +895,12 @@ function dueCell(row: Issue): { text: string; cls: string } {
   return { text: formatDate(row.due_date), cls: "" };
 }
 
-const goProject = (key: string) => { if (key) router.push(`/project/${key}`); };
-const goModule = (key: string) => { if (key) router.push(`/module/${key}`); };
+const goProject = (key: string) => {
+  if (key) router.push(`/project/${key}`);
+};
+const goModule = (key: string) => {
+  if (key) router.push(`/module/${key}`);
+};
 
 const quickFilters = [
   { key: "my", label: "My Issues" },
@@ -669,7 +910,9 @@ const quickFilters = [
   { key: "done", label: "Recently Done" }
 ];
 
-function refreshTable() { proTable.value?.getTableList(); }
+function refreshTable() {
+  proTable.value?.getTableList();
+}
 function applyQuickFilter(key: string) {
   quickFilter.value = key === quickFilter.value ? "" : key;
   refreshTable();
@@ -688,35 +931,91 @@ function onChartClick(dim: "status" | "priority" | "issue_type" | "assignee", e:
   refreshTable();
 }
 
-interface Pill { id: string; label: string; clear: () => void; }
+interface Pill {
+  id: string;
+  label: string;
+  clear: () => void;
+}
 const activePills = computed<Pill[]>(() => {
   const builders: Array<() => Pill | null> = [
-    () => quickFilter.value
-      ? { id: "qf", label: quickFilters.find(q => q.key === quickFilter.value)?.label || quickFilter.value, clear: () => { quickFilter.value = ""; } }
-      : null,
-    () => filters.status
-      ? { id: "status", label: `Status: ${ISSUE_STATUS_MAP[filters.status as IssueStatus] || filters.status}`, clear: () => { filters.status = ""; } }
-      : null,
-    () => filters.priority
-      ? { id: "priority", label: `Priority: ${ISSUE_PRIORITY_MAP[filters.priority as IssuePriority] || filters.priority}`, clear: () => { filters.priority = ""; } }
-      : null,
-    () => filters.issue_type
-      ? { id: "type", label: `Type: ${ISSUE_TYPE_MAP[filters.issue_type as IssueType] || filters.issue_type}`, clear: () => { filters.issue_type = ""; } }
-      : null,
-    () => filters.assignee
-      ? { id: "assignee", label: `Assignee: ${filters.assignee}`, clear: () => { filters.assignee = ""; } }
-      : null,
-    () => labelFilter.value
-      ? { id: "label", label: `Label: ${labelFilter.value}`, clear: () => { labelFilter.value = ""; } }
-      : null,
-    () => goalFilter.value
-      ? { id: "goal", label: `Goal: ${goalLabel(goalFilter.value)}`, clear: () => { goalFilter.value = ""; } }
-      : null
+    () =>
+      quickFilter.value
+        ? {
+            id: "qf",
+            label: quickFilters.find(q => q.key === quickFilter.value)?.label || quickFilter.value,
+            clear: () => {
+              quickFilter.value = "";
+            }
+          }
+        : null,
+    () =>
+      filters.status
+        ? {
+            id: "status",
+            label: `Status: ${ISSUE_STATUS_MAP[filters.status as IssueStatus] || filters.status}`,
+            clear: () => {
+              filters.status = "";
+            }
+          }
+        : null,
+    () =>
+      filters.priority
+        ? {
+            id: "priority",
+            label: `Priority: ${ISSUE_PRIORITY_MAP[filters.priority as IssuePriority] || filters.priority}`,
+            clear: () => {
+              filters.priority = "";
+            }
+          }
+        : null,
+    () =>
+      filters.issue_type
+        ? {
+            id: "type",
+            label: `Type: ${ISSUE_TYPE_MAP[filters.issue_type as IssueType] || filters.issue_type}`,
+            clear: () => {
+              filters.issue_type = "";
+            }
+          }
+        : null,
+    () =>
+      filters.assignee
+        ? {
+            id: "assignee",
+            label: `Assignee: ${filters.assignee}`,
+            clear: () => {
+              filters.assignee = "";
+            }
+          }
+        : null,
+    () =>
+      labelFilter.value
+        ? {
+            id: "label",
+            label: `Label: ${labelFilter.value}`,
+            clear: () => {
+              labelFilter.value = "";
+            }
+          }
+        : null,
+    () =>
+      goalFilter.value
+        ? {
+            id: "goal",
+            label: `Goal: ${goalLabel(goalFilter.value)}`,
+            clear: () => {
+              goalFilter.value = "";
+            }
+          }
+        : null
   ];
   return builders.map(b => b()).filter(Boolean) as Pill[];
 });
 
-function removePill(p: Pill) { p.clear(); refreshTable(); }
+function removePill(p: Pill) {
+  p.clear();
+  refreshTable();
+}
 
 function clearAllFilters() {
   quickFilter.value = "";
@@ -747,7 +1046,7 @@ const columns = computed<ColumnProps<Issue>[]>(() => {
     return [
       { prop: "key", label: t("issue.table.month"), width: 100 },
       { prop: "title", label: t("issue.table.title"), minWidth: 240 },
-      { prop: "labels", label: "关联 OKR", width: 280 },
+      { prop: "labels", label: t("issue.table.linkedOkr"), width: 280 },
       { prop: "dev_tasks", label: t("issue.table.devTask"), width: 120 },
       { prop: "tests", label: t("issue.table.test"), width: 120 },
       { prop: "status", label: t("issue.table.status"), width: 100 },
@@ -780,24 +1079,109 @@ const columns = computed<ColumnProps<Issue>[]>(() => {
   return [...coreCols, ...(props.projectKey ? [] : [projectCol]), ...tailCols];
 });
 
-const MAP_REQ_STATUS_REV: Record<string, string> = {
-  done: "已完成", in_progress: "进行中", cancelled: "已取消", in_review: "待评审", backlog: "待排期", todo: "待开始"
-};
-const MAP_REQ_PRIORITY_REV: Record<string, string> = {
-  urgent: "紧急", high: "高", medium: "中", low: "低"
-};
-const mapReqStatusReverse = (s: string) => MAP_REQ_STATUS_REV[s] || "待开始";
-const mapReqPriorityReverse = (p: string) => MAP_REQ_PRIORITY_REV[p] || "中";
+// ── PRD edit state (requirement items use a dedicated dialog) ──
+const PRD_STATUS_OPTIONS = ["已完成", "进行中", "未开始", "部分完成", "已取消", "待评审", "待排期"];
+const PRD_PRIORITY_OPTIONS = ["P0", "P1", "P2", "P3"];
+
+const prdDialog = reactive({
+  visible: false,
+  loading: false,
+  submitting: false,
+  filePath: "",
+  form: { title: "", status: "进行中", priority: "P1", owner: "", estimateFrontend: 0 },
+  devLinks: [] as LinkedDocInfo[],
+  testLinks: [] as LinkedDocInfo[]
+});
+
+async function openPrdEdit(row: Issue) {
+  const filePath = (row as any).kb_file_path;
+  if (!filePath) return;
+  prdDialog.filePath = filePath;
+  prdDialog.loading = true;
+  prdDialog.form = { title: "", status: "进行中", priority: "P1", owner: "", estimateFrontend: 0 };
+  prdDialog.devLinks = [];
+  prdDialog.testLinks = [];
+  try {
+    const res = await readKnowledgeFile(filePath);
+    const meta = res.meta || {};
+    prdDialog.form.title = (meta.title as string) || row.title || "";
+    prdDialog.form.status = (meta.status as string) || "进行中";
+    prdDialog.form.priority = (meta.priority as string) || "P1";
+    prdDialog.form.owner = (meta.owner as string) || "";
+    prdDialog.form.estimateFrontend = (meta.estimate_frontend as number) || 0;
+    const links = linksForPrd(filePath);
+    prdDialog.devLinks = [...links.dev];
+    prdDialog.testLinks = [...links.tests];
+  } catch {
+    prdDialog.form.title = row.title || "";
+    ElMessage.warning("无法读取 PRD 文件，部分信息可能不完整");
+  } finally {
+    prdDialog.loading = false;
+  }
+  prdDialog.visible = true;
+}
+
+async function removePrdLink(link: LinkedDocInfo, type: "dev" | "test") {
+  const label = type === "dev" ? "开发任务" : "测试用例";
+  try {
+    await ElMessageBox.confirm(`确定要取消关联${label}「${link.title}」吗？此操作会修改对应文档的 frontmatter。`, "取消关联", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    });
+  } catch {
+    return;
+  }
+  try {
+    const res = await readKnowledgeFile(link.path);
+    const meta = { ...res.meta };
+    if (type === "dev") {
+      delete meta.source_prd;
+    } else {
+      const prds = (Array.isArray(meta.source_prds) ? meta.source_prds : []) as string[];
+      const prdBasename = prdDialog.filePath.split("/").pop() || "";
+      meta.source_prds = prds.filter((p: string) => p !== prdBasename && p !== prdDialog.filePath);
+    }
+    await writeKnowledgeFile(link.path, res.content, meta);
+    if (type === "dev") {
+      prdDialog.devLinks = prdDialog.devLinks.filter(l => l.path !== link.path);
+    } else {
+      prdDialog.testLinks = prdDialog.testLinks.filter(l => l.path !== link.path);
+    }
+    if (props.projectKey) await fetchRequirements(props.projectKey);
+    refreshTable();
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : "移除关联失败");
+  }
+}
+
+async function submitPrdEdit() {
+  prdDialog.submitting = true;
+  try {
+    const res = await readKnowledgeFile(prdDialog.filePath);
+    const updatedMeta = {
+      ...res.meta,
+      status: prdDialog.form.status,
+      priority: prdDialog.form.priority,
+      owner: prdDialog.form.owner,
+      estimate_frontend: prdDialog.form.estimateFrontend
+    };
+    await writeKnowledgeFile(prdDialog.filePath, res.content, updatedMeta);
+    prdDialog.visible = false;
+    if (props.projectKey) await fetchRequirements(props.projectKey);
+    ElMessage.success("PRD 更新成功");
+    refreshTable();
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : "保存失败");
+  } finally {
+    prdDialog.submitting = false;
+  }
+}
 
 const { dialog, rules, openEdit, submit } = useIssueDialog(props, {
   store,
   formRef,
   allIssues,
-  mapReqStatusReverse,
-  mapReqPriorityReverse,
-  updateReqItem,
-  readKnowledgeFile,
-  writeKnowledgeFile,
   refreshTable
 });
 
@@ -886,17 +1270,26 @@ async function openPreview(issue: Issue) {
     ["Estimate", issue.estimate_points != null ? issue.estimate_points + " pts" : "—"]
   ];
   if (issue.labels?.length) rows.push(["Labels", issue.labels.join(", ")]);
-  const header = `# ${issue.title}\n\n| Field | Value |\n|-------|-------|\n` +
-    rows.map(([k, v]) => `| ${k} | ${v} |`).join("\n");
+  const header =
+    `# ${issue.title}\n\n| Field | Value |\n|-------|-------|\n` + rows.map(([k, v]) => `| ${k} | ${v} |`).join("\n");
   const defaultContent = header + (issue.description ? `\n\n${issue.description}` : "");
   let content = defaultContent;
   try {
     const res = await readKnowledgeFile(filePath);
     if (res.content) content = res.content;
   } catch {
-    try { await writeKnowledgeFile(filePath, defaultContent); } catch { /* best effort */ }
+    try {
+      await writeKnowledgeFile(filePath, defaultContent);
+    } catch {
+      /* best effort */
+    }
     if (!(issue as any).kb_file_path) {
-      try { await store.editIssue(issue.key, { kb_file_path: filePath } as any); (issue as any).kb_file_path = filePath; } catch { /* best effort */ }
+      try {
+        await store.editIssue(issue.key, { kb_file_path: filePath } as any);
+        (issue as any).kb_file_path = filePath;
+      } catch {
+        /* best effort */
+      }
     }
   }
   previewDlgRef.value?.openFile({
@@ -922,7 +1315,13 @@ const statusLabel = (status: IssueStatus) => ISSUE_STATUS_MAP[status] || status;
 const priorityLabel = (p: IssuePriority) => ISSUE_PRIORITY_MAP[p] || p;
 const statusTagType = (status: IssueStatus): TagType => ISSUE_STATUS_TAG_MAP[status] || "info";
 function priorityColor(p: IssuePriority) {
-  const map: Record<IssuePriority, string> = { urgent: "#f56c6c", high: "#e6a23c", medium: "#409eff", low: "#909399", none: "#c0c4cc" };
+  const map: Record<IssuePriority, string> = {
+    urgent: "#f56c6c",
+    high: "#e6a23c",
+    medium: "#409eff",
+    low: "#909399",
+    none: "#c0c4cc"
+  };
   return map[p] || "#909399";
 }
 const typeTagType = (t: IssueType): TagType => ISSUE_TYPE_TAG_MAP[t] || "info";
@@ -937,13 +1336,9 @@ function applyReqFilters(list: Issue[], searchParams: any): Issue[] {
   let filtered = list;
   const search = (searchText.value || searchParams.title || "").trim().toLowerCase();
   if (search) {
-    filtered = filtered.filter(i =>
-      i.title.toLowerCase().includes(search) ||
-      (i.key || "").toLowerCase().includes(search)
-    );
+    filtered = filtered.filter(i => i.title.toLowerCase().includes(search) || (i.key || "").toLowerCase().includes(search));
   }
-  const multiMatch = (value: string, filter: string) =>
-    !filter || filter.split(",").includes(value);
+  const multiMatch = (value: string, filter: string) => !filter || filter.split(",").includes(value);
   if (filters.status) filtered = filtered.filter(i => multiMatch(i.status, filters.status));
   return filtered;
 }
@@ -955,13 +1350,21 @@ async function waitForRequirementsIfNeeded(projectKey: string) {
     return;
   }
   await new Promise<void>(resolve => {
-    const stop = watch(reqLoading, (v) => { if (!v) { stop(); resolve(); } });
+    const stop = watch(reqLoading, v => {
+      if (!v) {
+        stop();
+        resolve();
+      }
+    });
   });
 }
 
 function buildApiParams(pageNum: number, pageSize: number, searchParams: Record<string, any>): Record<string, any> {
   const merged: Record<string, any> = { pageNum, pageSize, project_key: props.projectKey, ...searchParams };
-  if (merged.title) { merged.search = merged.title; delete merged.title; }
+  if (merged.title) {
+    merged.search = merged.title;
+    delete merged.title;
+  }
   if (searchText.value) merged.search = searchText.value;
   if (keySearchText.value) merged.key = keySearchText.value;
   if (assigneeSearchText.value) merged.assignee = assigneeSearchText.value;
@@ -989,11 +1392,23 @@ function applyQuickFilters(merged: Record<string, any>) {
   const today = new Date().toISOString().slice(0, 10);
   const weekEnd = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
   switch (quickFilter.value) {
-    case "my": merged.assignee = "admin"; break;
-    case "open": merged.status = "todo,in_progress"; break;
-    case "high": merged.priority = "urgent,high"; break;
-    case "week": merged.due_date_start = today; merged.due_date_end = weekEnd; break;
-    case "done": merged.status = "done"; merged.orderBy = "updated_at"; break;
+    case "my":
+      merged.assignee = "admin";
+      break;
+    case "open":
+      merged.status = "todo,in_progress";
+      break;
+    case "high":
+      merged.priority = "urgent,high";
+      break;
+    case "week":
+      merged.due_date_start = today;
+      merged.due_date_end = weekEnd;
+      break;
+    case "done":
+      merged.status = "done";
+      merged.orderBy = "updated_at";
+      break;
   }
 }
 
@@ -1050,10 +1465,16 @@ onMounted(async () => {
   if (props.projectKey) await fetchRequirements(props.projectKey);
 });
 
-watch(filterDateStr, () => { loadStats(); refreshTable(); });
+watch(filterDateStr, () => {
+  loadStats();
+  refreshTable();
+});
 watch(reqItems, syncRequirementStats, { immediate: true });
 
-void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
+void exportCSV;
+void exportJSON;
+void refresh;
+void applyQuickFilter;
 </script>
 
 <style scoped lang="scss">
@@ -1065,20 +1486,20 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
 // ── Quick Filter chips row ──
 .issue-list__pills {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 6px;
+  align-items: center;
   padding: 8px 12px;
   margin-bottom: 16px;
-  border-radius: 8px;
   background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
 .issue-list__pills-label {
+  margin-right: 2px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  margin-right: 2px;
 }
 
 // ── Body layout ──
@@ -1090,10 +1511,10 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
 .issue-list__main {
   flex: 1;
   min-width: 0;
+  padding: 14px 16px 16px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  padding: 14px 16px 16px;
 }
 
 // ── Column header helpers ──
@@ -1109,30 +1530,37 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
 
 // ── Table cell helpers ──
 .issue-list__key {
+  padding: 2px 6px;
   font-family: monospace;
   font-size: 12px;
-  padding: 2px 6px;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  user-select: all;
   background: var(--el-fill-color-lighter);
   border-radius: 4px;
-  cursor: pointer;
-  color: var(--el-text-color-primary);
-  user-select: all;
 }
-
 .issue-list__month {
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--el-text-color-secondary);
 }
 .issue-list__title {
-  font-weight: 500;
-  font-size: 13px;
-  text-align: left;
   padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
 }
-.issue-list__muted { color: var(--el-text-color-placeholder); font-size: 12px; }
-.issue-list__labels { display: flex; flex-wrap: wrap; gap: 3px; max-width: 140px; }
+.issue-list__muted {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+}
+.issue-list__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: 140px;
+}
 
 // ── Linked docs (PRD table: dev task / test spec) ──
 .issue-list__doc-links {
@@ -1144,20 +1572,20 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
 .issue-list__doc-chip {
   max-width: 100%;
   padding: 2px 8px;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 4px;
-  background: var(--el-bg-color-page);
-  color: var(--el-color-primary);
-  font-size: 12px;
-  text-align: left;
-  cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-color-primary);
+  text-align: left;
   white-space: nowrap;
+  cursor: pointer;
+  background: var(--el-bg-color-page);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 4px;
   transition: all 0.15s;
   &:hover {
-    border-color: var(--el-color-primary);
     background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary);
   }
 }
 
@@ -1174,92 +1602,105 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
   gap: 3px;
   width: 100%;
   padding: 4px 8px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--el-bg-color-page);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
-  background: var(--el-bg-color-page);
-  cursor: pointer;
   transition: all 0.15s;
-  text-align: left;
   &:hover {
-    border-color: var(--el-color-primary);
     background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary);
   }
 }
 .issue-list__okr-row {
   display: flex;
-  align-items: center;
   gap: 5px;
+  align-items: center;
 }
 .issue-list__okr-meta {
   padding-left: 19px;
 }
 .issue-list__okr-icon {
-  font-size: 14px;
   flex-shrink: 0;
+  font-size: 14px;
   line-height: 1;
 }
 .issue-list__okr-title {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .issue-list__okr-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: monospace;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .issue-list__points {
+  padding: 1px 7px;
+  font-family: DIN, sans-serif;
+  font-size: 11px;
   font-weight: 700;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  padding: 1px 7px;
   border-radius: 10px;
-  font-size: 11px;
-  font-family: DIN, sans-serif;
 }
 .issue-list__source {
-  font-size: 12px;
   padding: 1px 7px;
+  font-size: 12px;
+  color: var(--el-text-color-primary);
   background: var(--el-fill-color-light);
   border-radius: 4px;
-  color: var(--el-text-color-primary);
 }
-.issue-list__updated { font-size: 12px; color: var(--el-text-color-secondary); }
-.issue-list__start { font-size: 12px; color: var(--el-text-color-secondary); }
-.issue-list__due--overdue { color: var(--el-color-danger); font-weight: 600; }
-.issue-list__due--soon { color: var(--el-color-warning); font-weight: 600; }
-
+.issue-list__updated {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.issue-list__start {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.issue-list__due--overdue {
+  font-weight: 600;
+  color: var(--el-color-danger);
+}
+.issue-list__due--soon {
+  font-weight: 600;
+  color: var(--el-color-warning);
+}
 .issue-list__link-chip {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  font-size: 12px;
-  border-radius: 999px;
-  border: 1px solid var(--el-border-color);
-  background: var(--el-bg-color-page);
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  transition: all 0.15s;
+  align-items: center;
   max-width: 110px;
+  padding: 2px 8px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-text-color-primary);
   white-space: nowrap;
+  cursor: pointer;
+  background: var(--el-bg-color-page);
+  border: 1px solid var(--el-border-color);
+  border-radius: 999px;
+  transition: all 0.15s;
   &:hover {
-    border-color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
     color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary);
   }
 }
-.issue-list__link-chip--goal { max-width: 140px; }
+.issue-list__link-chip--goal {
+  max-width: 140px;
+}
 .issue-list__modules {
   display: flex;
   flex-direction: column;
@@ -1277,85 +1718,93 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
   flex-direction: column;
   gap: 10px;
   padding: 14px;
+  cursor: pointer;
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  background: var(--el-bg-color);
-  cursor: pointer;
   transition: all 0.15s;
   &:hover {
     border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 6%);
     transform: translateY(-1px);
   }
 }
 .issue-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 .issue-card__dot {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .issue-card__key {
+  padding: 1px 5px;
   font-family: monospace;
   font-size: 11px;
-  padding: 1px 5px;
+  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-radius: 4px;
-  color: var(--el-text-color-secondary);
 }
 .issue-card__head-right {
-  margin-left: auto;
   display: flex;
   gap: 4px;
+  margin-left: auto;
 }
 .issue-card__title {
+  display: -webkit-box;
   margin: 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 14px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
+  color: var(--el-text-color-primary);
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .issue-card__desc {
-  margin: 0;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
   max-height: 54px;
+  margin: 0;
   overflow: hidden;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
 .issue-card__meta {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
+  align-items: center;
+  padding-top: 8px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  padding-top: 8px;
   border-top: 1px solid var(--el-border-color-lighter);
 }
-.issue-card__assignee { display: inline-flex; align-items: center; gap: 3px; }
+.issue-card__assignee {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
 .issue-card__pts {
-  font-weight: 700;
+  padding: 1px 6px;
   font-family: DIN, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  padding: 1px 6px;
   border-radius: 10px;
-  font-size: 11px;
 }
 .issue-card__due--overdue {
-  color: var(--el-color-danger);
   font-weight: 600;
+  color: var(--el-color-danger);
 }
-.issue-card__labels { display: flex; flex-wrap: wrap; gap: 4px; }
+.issue-card__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 .issue-grid__pager {
   display: flex;
   justify-content: center;
@@ -1370,53 +1819,101 @@ void exportCSV; void exportJSON; void refresh; void applyQuickFilter;
 }
 .issue-list-view__row {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 10px 12px;
-  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid transparent;
-  cursor: pointer;
-  font-size: 13px;
+  border-radius: 8px;
   transition: all 0.1s;
   &:hover {
-    border-color: var(--el-color-primary-light-5);
     background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
   }
 }
 .issue-list-view__dot {
+  flex-shrink: 0;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .issue-list-view__key {
+  min-width: 80px;
   font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  min-width: 80px;
 }
 .issue-list-view__title {
   flex: 1;
   min-width: 0;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
   white-space: nowrap;
 }
 .issue-list-view__assignee {
+  min-width: 80px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  min-width: 80px;
 }
 .issue-list-view__due {
+  min-width: 90px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  min-width: 90px;
 }
 .issue-list-view__due--overdue {
-  color: var(--el-color-danger);
   font-weight: 600;
+  color: var(--el-color-danger);
+}
+
+// ── PRD edit dialog ──
+.prd-dialog {
+  min-height: 120px;
+}
+.prd-dialog__section {
+  margin-bottom: 4px;
+}
+.prd-dialog__section-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.prd-dialog__section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.prd-dialog__section-count {
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 10px;
+}
+.prd-dialog__links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.prd-dialog__link-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--el-bg-color-page);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+}
+.prd-dialog__link-name {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+  font-size: 13px;
 }
 </style>

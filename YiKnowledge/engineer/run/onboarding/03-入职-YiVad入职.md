@@ -123,4 +123,6 @@ pnpm type:check # vue-tsc --noEmit --skipLibCheck
 - [YiVad 工程文档](../../learn/projects/yivad/01-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiVad CLAUDE.md](../../../../YiVad/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
 - [跨项目 RPC 协议](../../build/cross-project-rpc-protocol.md) —— YiVad 与 YiAi 之间的完整 API 契约
-- [YiVad 流水线闭环](../../learn/projects/yivad/04-项目-流水线闭环.md) —— PM 模块的需求到部署完整流程
+- [开发工作流指南](../../run/02-运行-开发工作流.md) —— 日常开发流程与常见问题
+- [Git 工作流指南](../../run/03-运行-Git工作流.md) —— 分支策略与提交规范
+- [调试排错指南](../../build/06-构建-调试排错指南.md) —— 系统化诊断方法论

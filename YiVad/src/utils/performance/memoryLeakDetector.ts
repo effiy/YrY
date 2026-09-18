@@ -29,7 +29,7 @@ function collectSample(): void {
     timestamp: Date.now(),
     usedJSHeapSize: memory.usedJSHeapSize,
     totalJSHeapSize: memory.totalJSHeapSize,
-    jsHeapSizeLimit: memory.jsHeapSizeLimit,
+    jsHeapSizeLimit: memory.jsHeapSizeLimit
   });
   if (samples.length > MAX_SAMPLES) samples.shift();
 
@@ -62,14 +62,17 @@ function detectLeak(): MemoryLeakAlert | null {
       message: `Memory growth detected: ${(growthRate * 100).toFixed(1)}% increase`,
       currentSize: current,
       baselineSize: baseline,
-      growthRate,
+      growthRate
     };
   }
   return null;
 }
 
 export function stopMemoryMonitoring(): void {
-  if (sampleTimer) { clearInterval(sampleTimer); sampleTimer = null; }
+  if (sampleTimer) {
+    clearInterval(sampleTimer);
+    sampleTimer = null;
+  }
 }
 
 export function getMemorySamples(): MemorySample[] {

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-118: 服务端请求资源隔离 — 基于 cgroups v2 的进程级 CPU/内存硬限制与 QoS 保障"
 tags: [需求文档, 资源隔离, cgroups, CPU限制, 内存限制, QoS, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer]
+source_okr: [yiai-001]
+related_modules: [126-prd-task-cgroups资源隔离]
+related_tests: [126-prd-test-cgroups资源隔离]
 ---
 
 # YA-09-118: 请求资源隔离 — cgroups v2 进程级 CPU/内存硬限制与 QoS
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-118 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
@@ -52,6 +60,7 @@ cgroups v2（Control Groups v2）是 Linux 内核提供的进程资源隔离机�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前资源管理方式
@@ -96,6 +105,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：隔离方式 — K8s limits vs 手动 cgroups v2 vs Docker limits
@@ -138,6 +148,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 资源隔离层次
@@ -365,6 +376,7 @@ def _read_int(path: str) -> int:
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -402,6 +414,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -417,6 +430,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 CPU throttle 影响
@@ -438,6 +452,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### Requirement: cgroup 状态读取
@@ -471,6 +486,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -482,6 +498,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -492,6 +509,7 @@ YiAi/tests/shared/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么内存硬限制 4GB 而非 2GB 或 8GB？
@@ -508,6 +526,7 @@ cgroups v1 使用多层级目录结构（每个控制器独立目录），配置
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 11.1 指标
@@ -540,6 +559,7 @@ logger.error(f'[Cgroup] OOM event detected!')
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] cgroups v2 限制 CPU/memory——防止 OOM 扩散
@@ -553,6 +573,7 @@ logger.error(f'[Cgroup] OOM event detected!')
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

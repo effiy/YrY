@@ -14,12 +14,43 @@ export default {
     projectFilter: "项目",
 
     stats: {
-      tasks: "推荐任务",
+      tasks: "活跃任务",
       p0: "P0 优先",
       projects: "项目",
       activeRoles: "活跃角色",
-      bugs: "缺陷",
-      noData: "--"
+      bugs: "未关闭缺陷",
+      noData: "--",
+      activeIssues: "活跃",
+      openBugs: "缺陷",
+      todo: "待办",
+      backlog: "积压",
+      done: "已完成",
+      knowledgeFiles: "文档",
+      chatSessions: "对话",
+      completionRate: "完成率 {n}%",
+      overdueCount: "⚠️ {n} 逾期",
+      blockedCount: "🚫 {n} 阻塞",
+      tasksTooltip: "所有未完成的任务（排除已完成/已取消）",
+      bugsTooltip: "所有未关闭的缺陷（排除已解决/已关闭/已拒绝）",
+      knowledgeTooltip: "知识库中所有角色的 Markdown 文档总数",
+      chatTooltip: "AI 对话会话总数",
+      refresh: "刷新",
+      justNow: "刚刚",
+      ago: "前",
+      issueDistribution: "任务状态分布",
+      bugDistribution: "缺陷状态分布",
+      recentActivity: "最近动态",
+      total: "总计",
+      issue: "任务",
+      bug: "缺陷",
+      noActivity: "暂无动态",
+      completed: "已完成",
+      resolved: "已解决",
+      dueThisWeek: "本周待办",
+      noDueItems: "本周无待办项",
+      inProgress: "进行中",
+      workload: "团队负载",
+      recentlyCompleted: "最近完成"
     },
 
     error: {
@@ -33,7 +64,7 @@ export default {
       roadmap: { label: "路线图", desc: "产品路线图概览" },
       project: { label: "项目", desc: "项目管理与概览" },
       issue: { label: "Issue", desc: "任务与需求追踪" },
-            bug: { label: "缺陷", desc: "Bug 追踪与修复" },
+      bug: { label: "缺陷", desc: "Bug 追踪与修复" },
       module: { label: "模块", desc: "系统模块架构" },
       search: { label: "全局搜索", desc: "跨项目搜索实体" },
       aiChat: { label: "AI 对话", desc: "Agent 驱动的智能助手" },
@@ -183,6 +214,96 @@ export default {
       regen: "重生成",
       regenSuccess: "已重生成",
       regenFailed: "重生成失败"
+    },
+    yesterday: {
+      title: "昨日回顾",
+      doneIssues: "已完成任务",
+      resolvedBugs: "已解决缺陷",
+      created: "变更",
+      issuesCreated: "活跃任务",
+      bugsCreated: "新增缺陷",
+      filesUpdated: "知识更新",
+      empty: "昨日无活动",
+      emptyHint: "完成一些任务后这里会显示摘要"
+    },
+    today: {
+      title: "今日焦点",
+      dueToday: "今日截止",
+      inProgress: "进行中",
+      overdue: "已逾期",
+      noDue: "今日无截止项",
+      noInProgress: "暂无进行中任务",
+      viewIssue: "查看任务"
+    },
+    focusTabs: {
+      all: "全部",
+      wip: "进行中",
+      todo: "待办",
+      overdue: "逾期",
+      empty: {
+        all: "无活跃项",
+        in_progress: "暂无进行中任务 — 从积压中选取一个",
+        todo: "无待办项",
+        overdue: "无逾期项"
+      }
+    },
+    tomorrow: {
+      title: "明日计划",
+      dueTomorrow: "明日截止",
+      pendingReview: "待审核",
+      noDue: "明日无截止项",
+      noReview: "无待审核项"
+    },
+    recentImportant: {
+      title: "近期要事",
+      knowledgeBugs: "知识库缺陷",
+      knowledgeHealth: "知识库健康",
+      recentFiles: "最近更新",
+      totalFiles: "共 {n} 个文件",
+      maturity: "成熟度",
+      distribution: "覆盖分布",
+      unavailable: "不可用",
+      apiUnavailable: "知识 API 不可用 — 启动 YiAi 以启用",
+      noBugs: "无最近缺陷",
+      noFiles: "无最近更新",
+      viewKnowledge: "查看知识库"
+    },
+    issueSeverity: {
+      critical: "严重",
+      major: "重要",
+      minor: "次要",
+      trivial: "轻微"
+    },
+    suggested: {
+      title: "建议",
+      backlogTriage: "{n} 个积压项需要处理",
+      blockedItems: "{n} 个阻塞项需要注意",
+      awaitingReview: "{n} 个项等待审核",
+      reviewGaps: "查看知识缺口",
+      createFromTemplate: "从模板创建 Issue"
+    },
+    due: {
+      today: "今天",
+      tomorrow: "明天"
+    },
+    future: {
+      title: "未来展望",
+      upcoming: "即将到期",
+      blocked: "阻塞项",
+      gaps: "知识缺口",
+      noUpcoming: "未来 30 天无到期项",
+      noBlocked: "无阻塞项",
+      noGaps: "无已知缺口",
+      daysLeft: "剩余 {n} 天",
+      viewAll: "查看全部"
+    },
+    loading: {
+      stats: "加载统计数据…",
+      projects: "加载项目数据…",
+      activity: "加载动态数据…",
+      pipeline: "加载流水线数据…",
+      recommendations: "生成推荐中…",
+      initial: "正在加载首页…"
     }
   }
 };

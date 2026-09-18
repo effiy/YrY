@@ -19,57 +19,57 @@ export default {
       bulkAssignTitle: "Batch Assign",
       bulkAssignPrompt: "Enter assignee name",
       bulkAssignConfirm: "Assign",
-      bulkAssignSuccess: "{count} issues assigned to \"{assignee}\"",
+      bulkAssignSuccess: '{count} issues assigned to "{assignee}"',
       quickFilter: {
         my: "My Issues",
         open: "Open",
         high: "High Priority",
         week: "Due This Week",
-        done: "Recently Done",
+        done: "Recently Done"
       },
       viewMode: {
         table: "Table",
         card: "Card",
-        list: "List",
+        list: "List"
       },
       empty: {
         noIssues: "No issues",
-        noMatch: "No matching issues",
-      },
+        noMatch: "No matching issues"
+      }
     },
     status: {
       backlog: "Backlog",
       todo: "Todo",
       in_progress: "In Progress",
       in_review: "In Review",
-      done: "Done",
+      done: "Done"
     },
     priority: {
       urgent: "Urgent",
       high: "High",
       medium: "Medium",
       low: "Low",
-      none: "None",
+      none: "None"
     },
     type: {
       bug: "Bug",
       task: "Task",
       feature: "Feature",
       improvement: "Improvement",
-      requirement: "Requirement",
+      requirement: "Requirement"
     },
     source: {
       customer: "Customer",
       internal: "Internal",
       market: "Market",
       compliance: "Compliance",
-      other: "Other",
+      other: "Other"
     },
     review: {
       pending: "Pending",
       approved: "Approved",
       rejected: "Rejected",
-      in_review: "In Review",
+      in_review: "In Review"
     },
     table: {
       month: "Month",
@@ -87,20 +87,21 @@ export default {
       project: "Project",
       module: "Module",
       goal: "Goal",
+      linkedOkr: "Linked OKR",
       assignee: "Assignee",
       start: "Start",
       due: "Due",
       created: "Created",
       updated: "Updated",
       actions: "Actions",
-      est: "Est.",
+      est: "Est."
     },
     detail: {
       parentIssue: "Parent Issue",
       notFound: "Issue not found",
       notFoundSub: "This issue doesn't exist or was deleted.",
       backToIssues: "Back to Issues",
-      overridden: "Overridden",
+      overridden: "Overridden"
     },
     dialog: {
       createTitle: "New Issue",
@@ -134,7 +135,7 @@ export default {
         basic: "Basic",
         content: "Content",
         assignment: "Assignment",
-        schedule: "Schedule & Tracking",
+        schedule: "Schedule & Tracking"
       },
       cancel: "Cancel",
       save: "Save",
@@ -143,12 +144,13 @@ export default {
       updateSuccess: "Issue updated",
       deleteSuccess: "Issue deleted",
       cloneSuccess: "Issue cloned",
-      deleteConfirm: "Delete issue \"{title}\"?",
-      deleteWithFileConfirm: "Delete issue \"{title}\"? The linked knowledge file {path} will be removed as well.",
+      deleteConfirm: 'Delete issue "{title}"?',
+      deleteWithFileConfirm: 'Delete issue "{title}"? The linked knowledge file {path} will be removed as well.',
       deleteTitle: "Delete Issue",
-      deletePrdConfirm: "Delete requirement document \"{title}\"? The knowledge file {path} will be removed, affecting the RAG index and OKR references.",
+      deletePrdConfirm:
+        'Delete requirement document "{title}"? The knowledge file {path} will be removed, affecting the RAG index and OKR references.',
       deletePrdTitle: "Delete Requirement Document",
-      delete: "Delete",
+      delete: "Delete"
     },
     message: {
       copied: "Copied {key}",
@@ -157,7 +159,7 @@ export default {
       moveTitle: "Move Issue",
       move: "Move",
       moveTarget: "Target project key",
-      moveSuccess: "Issue moved to \"{project}\"",
+      moveSuccess: 'Issue moved to "{project}"'
     },
     sidebar: {
       total: "Total",
@@ -173,13 +175,13 @@ export default {
       labels: "Labels",
       dependencies: "Dependencies",
       linkedItems: "Linked Items",
-      metadata: "Metadata",
+      metadata: "Metadata"
     },
     error: {
       loadFailed: "Failed to load issue",
       updateFailed: "Failed to update issue",
       deleteFailed: "Delete failed",
-      fileCleanupFailed: "Issue deleted, but the knowledge file could not be removed: {path}",
-    },
-  },
+      fileCleanupFailed: "Issue deleted, but the knowledge file could not be removed: {path}"
+    }
+  }
 };

@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-156"
 source_prds: ["162-需求-Prompt压缩与优化服务"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-156: Prompt 压缩与优化服务 — 智能上下文压缩 + 关键信息保留 + 长对话优化 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[162-需求-Prompt压缩与优化服务.md](../../prds/2026-09/162-需求-Prompt压缩与优化服务.md)
 > 提取日期：2026-09-11

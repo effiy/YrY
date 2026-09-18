@@ -3,21 +3,32 @@ title: 多语言（i18n）专项优化与补充
 tags: [yivad, prd, i18n, vue-i18n, 国际化, L10N]
 category: projects/yivad/prds
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-14
 source: YiVad
 type: prd
-status: active
+doc_type: prd
+status: 进行中
+implementation_progress: 部分实现，详见开发方案
+implementation_updated: '2026-09-15'
 project: YiVad
 project_key: yivad
+project_id: yivad
 module: i18n
-priority: p1
+priority: P1
 effort: m
+prd_task_id: "YV-09-85"
+estimate_frontend: 1.5
+prd_month: "202609"
+owner: ""
+source_okr: []
 ---
 
 # PRD：多语言（i18n）专项优化与补充
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 统一规范 **vue-i18n 11.x** 在 YiVad 项目中的落地：补全缺失的文档、修复硬编码文本、提升语言切换的一致性与运行时体验，建立从「新增键」到「CI 校验」的完整闭环。
 
+<a id="sec-0"></a>
 ## 0. 背景与问题
 
 ### 0.1 现状
@@ -45,6 +56,7 @@ YiVad 使用 vue-i18n 11.x 作为国际化框架，已拆分 `src/languages/modu
 - **运行时一致**：语言切换后，Tab、下拉、动态标题、Breadcrumb、ElConfigProvider 全部即时响应，无需刷新
 - **防退化**：建立开发期警告 + 静态结构校验两步防线，回归用例覆盖语言切换场景
 
+<a id="sec-1"></a>
 ## 1. 范围
 
 ### In Scope（本次交付）
@@ -66,6 +78,7 @@ YiVad 使用 vue-i18n 11.x 作为国际化框架，已拆分 `src/languages/modu
 - 后端返回文案 翻译（前端枚举 lookup 方案在 FAQ 提及，不做具体字段）
 - 按 locale 分包懒加载 — 当前模块数 < 25，打包体积可接受，未来超过阈值在 PRD 中追加提案
 
+<a id="sec-2"></a>
 ## 2. 用户故事
 
 ```
@@ -82,6 +95,7 @@ I want PR 审查时能快速判断 i18n 是否做对
 So that 国际化不再是 review 中的大段重复评论
 ```
 
+<a id="sec-3"></a>
 ## 3. 功能需求
 
 ### FR-01 文档体系
@@ -156,6 +170,7 @@ ElMessageBox.*("[\u4e00-\u9fa5]
 
 **验收**：IDE 中打开两个文件，顶部能看到指向文档的超链接。
 
+<a id="sec-4"></a>
 ## 4. 非功能需求
 
 ### NFR-01 性能
@@ -176,6 +191,7 @@ ElMessageBox.*("[\u4e00-\u9fa5]
 - 新增键 2 步且有文档可查
 - 代码审查 checklist 中的国际化条目 ≤ 5 条但覆盖关键风险
 
+<a id="sec-5"></a>
 ## 5. 风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解 |
@@ -185,6 +201,7 @@ ElMessageBox.*("[\u4e00-\u9fa5]
 | 校验脚本假阳性 / 假阴性 | 低 | 中 | 用已知故意破坏的 locale 做单测，覆盖：缺键、占位符不一致、键名 typo 三类 |
 | 文档写完无人看 | 高 | 中 | PR 模板 + Code Review checklist 强制引用；新人 Onboarding 第一步读国际化规范 |
 
+<a id="sec-6"></a>
 ## 6. 验收标准（UAT）
 
 | ID | 场景 | 步骤 | 期望 |
@@ -197,6 +214,7 @@ ElMessageBox.*("[\u4e00-\u9fa5]
 | UAT-06 | 文档可达 | 1) 打开 YiVad 项目 README 2) 点击「添加国际化文本」链接 | 跳转到 `08-规范-国际化规范.md` 且能正常打开 |
 | UAT-07 | 新增键不会漏 | 1) 在 zh.ts 加键 `project._test.foo` 2) 运行校验脚本 | 脚本 FAIL 并列出 en 缺失的路径 |
 
+<a id="sec-7"></a>
 ## 7. 需求追踪矩阵
 
 | PRD 条目 | 对应 Dev 条目 | 对应 Test 用例 |
@@ -211,6 +229,7 @@ ElMessageBox.*("[\u4e00-\u9fa5]
 
 ---
 
+<a id="sec-8"></a>
 ## 8. 变更记录
 
 | 日期 | 版本 | 变更 |

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-18: Agent 工具链插件化架构 — 工具注册与动态发现机制"
 tags: [需求文档, Agent, 工具链, 插件化, 注册发现, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [22-prd-task-Agent工具链插件化]
+related_tests: [22-prd-test-Agent工具链插件化]
 ---
 
 # YA-09-18: Agent 工具链插件化架构 — 工具注册与动态发现
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-18 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 > 依赖：YA-09-03（Agent 可靠性）
@@ -42,6 +50,7 @@ Agent 工具当前通过硬编码字典注册：`TOOLS = {'search_knowledge': ..
 
 ---
 
+<a id="sec-1"></a>
 ## 一、目标架构
 
 ```python
@@ -156,6 +165,7 @@ async def search_knowledge(query: str, top_k: int = 5,
 
 ---
 
+<a id="sec-2"></a>
 ## 二、测试规格
 
 #### Scenario: 装饰器注册工具
@@ -184,6 +194,7 @@ async def search_knowledge(query: str, top_k: int = 5,
 
 ---
 
+<a id="sec-3"></a>
 ## 三、代码审查检查清单
 
 - [ ] 每个工具独立一个 `.py` 文件，在 `tools/` 目录下
@@ -197,6 +208,7 @@ async def search_knowledge(query: str, top_k: int = 5,
 
 ---
 
+<a id="sec-5"></a>
 ## 五、边缘场景处理
 
 ### 5.1 工具模块导入失败
@@ -251,6 +263,7 @@ async def search_knowledge(query: str, top_k: int = 5,
 
 ---
 
+<a id="sec-6"></a>
 ## 六、代码实现附录
 
 ### 6.1 完整 ToolRegistry 实现
@@ -570,6 +583,7 @@ def get_available_tools(categories: list[str] | None = None) -> list[dict]:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 工具注册性能
@@ -594,6 +608,7 @@ def get_available_tools(categories: list[str] | None = None) -> list[dict]:
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 #### Scenario: 装饰器注册工具
@@ -637,6 +652,7 @@ def get_available_tools(categories: list[str] | None = None) -> list[dict]:
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回归问题
 
 | # | 预测问题 | 原因 | 验证方法 |
@@ -650,6 +666,7 @@ def get_available_tools(categories: list[str] | None = None) -> list[dict]:
 
 ---
 
+<a id="sec-10"></a>
 ## 十、代码审查检查清单
 
 - [ ] 每个工具独立一个 `.py` 文件，在 `tools/` 目录下
@@ -667,6 +684,7 @@ def get_available_tools(categories: list[str] | None = None) -> list[dict]:
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |

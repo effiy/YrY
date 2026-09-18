@@ -31,9 +31,21 @@ const option = computed<ECOption | null>(() => {
     xAxis: { type: "category" as const, data: props.dates, axisLabel: { rotate: 30 } },
     yAxis: { type: "value" as const, name: "剩余工作量" },
     series: [
-      { name: "理想进度", type: "line", data: idealLine, lineStyle: { type: "dashed" as const, color: "#909399" }, itemStyle: { color: "#909399" } },
-      { name: "实际进度", type: "line", data: props.remaining, areaStyle: { opacity: 0.15, color: "#409eff" }, itemStyle: { color: "#409eff" } },
-    ],
+      {
+        name: "理想进度",
+        type: "line",
+        data: idealLine,
+        lineStyle: { type: "dashed" as const, color: "#909399" },
+        itemStyle: { color: "#909399" }
+      },
+      {
+        name: "实际进度",
+        type: "line",
+        data: props.remaining,
+        areaStyle: { opacity: 0.15, color: "#409eff" },
+        itemStyle: { color: "#409eff" }
+      }
+    ]
   } as ECOption;
 });
 </script>

@@ -7,6 +7,10 @@
  * Theme colours come from .claude/skills/mermaid via the mermaidThemes config
  * module — 15 themes, dark/light adaptive. Rendered SVGs are content-hash
  * cached to avoid re-rendering identical diagrams across regenerations.
+ *
+ * Markdown parse cache: marked.parse() results are cached by escaped-input
+ * key to avoid re-parsing identical content during streaming. Cache is
+ * capped at 200 entries with LRU eviction.
  */
 import DOMPurify from "dompurify";
 import { marked } from "marked";
@@ -21,6 +25,41 @@ marked.setOptions({
   breaks: true,
   gfm: true
 });
+
+/**
+ * LRU-bounded markdown parse cache.
+ * During SSE streaming, identical escaped-input prefixes are re-parsed
+ * on every token frame (50-100/s). Caching avoids the ~15ms parse cost
+ * for content that hasn't changed since the last frame.
+ *
+ * Sized for ~200 cached entries — covers the last ~4s of streaming at
+ * 50 token/s (with some reuse across overlapping frames).
+ */
+const PARSE_CACHE_MAX = 200;
+const mdParseCache = new Map<string, string>();
+
+function getCachedMarkdown(key: string): string | undefined {
+  const hit = mdParseCache.get(key);
+  if (hit !== undefined) {
+    // LRU: delete + re-insert to move to end (most-recently-used)
+    mdParseCache.delete(key);
+    mdParseCache.set(key, hit);
+  }
+  return hit;
+}
+
+function setCachedMarkdown(key: string, html: string): void {
+  if (mdParseCache.size >= PARSE_CACHE_MAX) {
+    // Evict oldest (first inserted)
+    const oldest = mdParseCache.keys().next().value;
+    if (oldest !== undefined) mdParseCache.delete(oldest);
+  }
+  mdParseCache.set(key, html);
+}
+
+export function clearMarkdownCache(): void {
+  mdParseCache.clear();
+}
 
 /** Lazily-initialized mermaid instance — loaded on first runMermaid() call. */
 let mermaidPromise: Promise<typeof import("mermaid").default | null> | null = null;
@@ -42,7 +81,7 @@ function getMermaid(): Promise<typeof import("mermaid").default | null> | null {
           theme,
           securityLevel: "loose",
           suppressErrorRendering: true,
-          themeVariables,
+          themeVariables
         });
         return mermaid;
       })
@@ -65,7 +104,7 @@ export function setupMermaidThemeWatcher(): void {
   const globalStore = useGlobalStore();
   watch(
     () => globalStore.isDark,
-    (isDark) => {
+    isDark => {
       if (currentMermaidInstance) {
         const { themeVariables } = getMermaidThemeConfig(isDark);
         currentMermaidInstance.initialize({
@@ -73,11 +112,11 @@ export function setupMermaidThemeWatcher(): void {
           theme: "base",
           securityLevel: "loose",
           suppressErrorRendering: true,
-          themeVariables,
+          themeVariables
         });
       }
       clearMermaidCache();
-    },
+    }
   );
 }
 
@@ -114,7 +153,10 @@ function sanitizeMermaidCode(code: string): string {
     // Em/en dash → hyphen (safe for labels)
     .replace(/[–—]/g, "-")
     // Zero-width and other invisible Unicode that trips parsers
-    .replace(/\u200B/g, "").replace(/\u200C/g, "").replace(/\u200D/g, "").replace(/\uFEFF/g, "")
+    .replace(/\u200B/g, "")
+    .replace(/\u200C/g, "")
+    .replace(/\u200D/g, "")
+    .replace(/\uFEFF/g, "")
     // Normalize line endings
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n");
@@ -125,10 +167,7 @@ function sanitizeMermaidCode(code: string): string {
   // When the graph direction and the first node are crammed on the same
   // line the parser may misinterpret the first node.  Split them.
   // e.g. "graph LR  A[Start]" → "graph LR\nA[Start]"
-  sanitized = sanitized.replace(
-    /^(graph|flowchart)\s+(TB|TD|BT|RL|LR)\s{2,}/m,
-    "$1 $2\n",
-  );
+  sanitized = sanitized.replace(/^(graph|flowchart)\s+(TB|TD|BT|RL|LR)\s{2,}/m, "$1 $2\n");
 
   return sanitized;
 }
@@ -139,9 +178,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
   const mermaid = await getMermaid();
   if (!mermaid) return;
 
-  const elements = container
-    ? Array.from(container.querySelectorAll<HTMLElement>("pre.mermaid"))
-    : undefined;
+  const elements = container ? Array.from(container.querySelectorAll<HTMLElement>("pre.mermaid")) : undefined;
 
   if (elements !== undefined && elements.length === 0) return;
 
@@ -158,7 +195,9 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
       if (b64) {
         try {
           code = decodeURIComponent(escape(atob(b64)));
-        } catch { /* fallback to raw textContent */ }
+        } catch {
+          /* fallback to raw textContent */
+        }
       }
       if (!code.trim()) continue;
 
@@ -190,11 +229,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
           `<div style="font-size:11px;opacity:.7;margin-top:4px;word-break:break-all;">${preview}...</div>` +
           `<div style="font-size:10px;opacity:.5;margin-top:2px;">${msg}</div>` +
           `</div>`;
-        console.warn(
-          `[runMermaid] #${i + 1}/${elements.length} parse FAILED:`,
-          preview,
-          msg,
-        );
+        console.warn(`[runMermaid] #${i + 1}/${elements.length} parse FAILED:`, preview, msg);
         continue;
       }
 
@@ -217,11 +252,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
           `<div style="font-size:11px;opacity:.7;margin-top:4px;word-break:break-all;">${preview}...</div>` +
           `<div style="font-size:10px;opacity:.5;margin-top:2px;">${msg}</div>` +
           `</div>`;
-        console.warn(
-          `[runMermaid] #${i + 1}/${elements.length} render FAILED:`,
-          preview,
-          msg,
-        );
+        console.warn(`[runMermaid] #${i + 1}/${elements.length} render FAILED:`, preview, msg);
       }
     }
   } else {
@@ -229,10 +260,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
     try {
       await mermaid.run();
     } catch (err) {
-      console.warn(
-        "[runMermaid] Mermaid run failed:",
-        err instanceof Error ? err.message : err,
-      );
+      console.warn("[runMermaid] Mermaid run failed:", err instanceof Error ? err.message : err);
     }
   }
 
@@ -243,10 +271,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
     try {
       useMermaidViewer().enhanceContainer(container);
     } catch (err) {
-      console.warn(
-        "[runMermaid] enhance failed:",
-        err instanceof Error ? err.message : err,
-      );
+      console.warn("[runMermaid] enhance failed:", err instanceof Error ? err.message : err);
     }
   }
 }
@@ -257,12 +282,75 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
  */
 function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ["h1", "h2", "h3", "h4", "h5", "h6", "p", "br", "hr", "ul", "ol", "li", "a", "img",
-      "strong", "em", "b", "i", "u", "s", "del", "code", "pre", "blockquote", "table", "thead", "tbody",
-      "tr", "th", "td", "caption", "colgroup", "col", "span", "div", "sup", "sub", "dl", "dt", "dd",
-      "input", "details", "summary", "figure", "figcaption", "kbd", "mark", "abbr", "small"],
-    ALLOWED_ATTR: ["href", "src", "alt", "title", "class", "id", "target", "rel", "width", "height",
-      "colspan", "rowspan", "type", "checked", "disabled", "open"],
+    ALLOWED_TAGS: [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "br",
+      "hr",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "img",
+      "strong",
+      "em",
+      "b",
+      "i",
+      "u",
+      "s",
+      "del",
+      "code",
+      "pre",
+      "blockquote",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "th",
+      "td",
+      "caption",
+      "colgroup",
+      "col",
+      "span",
+      "div",
+      "sup",
+      "sub",
+      "dl",
+      "dt",
+      "dd",
+      "input",
+      "details",
+      "summary",
+      "figure",
+      "figcaption",
+      "kbd",
+      "mark",
+      "abbr",
+      "small"
+    ],
+    ALLOWED_ATTR: [
+      "href",
+      "src",
+      "alt",
+      "title",
+      "class",
+      "id",
+      "target",
+      "rel",
+      "width",
+      "height",
+      "colspan",
+      "rowspan",
+      "type",
+      "checked",
+      "disabled",
+      "open"
+    ],
     ALLOW_DATA_ATTR: false
   });
 }
@@ -273,23 +361,20 @@ function sanitizeHtml(html: string): string {
  * so mermaid can parse it directly.
  */
 function wrapMermaidBlocks(html: string): string {
-  return html.replace(
-    /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
-    (_match, code) => {
-      // Decode HTML entities back to the raw mermaid source.
-      // ORDER MATTERS: &amp; must be decoded FIRST so that double-encoded
-      // sequences (&amp;lt; → &lt;) can then be decoded by the &lt;/&gt; steps.
-      // This handles both renderWithHtml (no pre-escape) and render (pre-escapes <).
-      const decoded = code
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"');
-      // btoa can throw on non-Latin1; use the UTF-8 safe pattern
-      const b64 = btoa(unescape(encodeURIComponent(decoded)));
-      return `<pre class="mermaid" data-mermaid-b64="${b64}"></pre>`;
-    }
-  );
+  return html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, (_match, code) => {
+    // Decode HTML entities back to the raw mermaid source.
+    // ORDER MATTERS: &amp; must be decoded FIRST so that double-encoded
+    // sequences (&amp;lt; → &lt;) can then be decoded by the &lt;/&gt; steps.
+    // This handles both renderWithHtml (no pre-escape) and render (pre-escapes <).
+    const decoded = code
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"');
+    // btoa can throw on non-Latin1; use the UTF-8 safe pattern
+    const b64 = btoa(unescape(encodeURIComponent(decoded)));
+    return `<pre class="mermaid" data-mermaid-b64="${b64}"></pre>`;
+  });
 }
 
 /**
@@ -307,9 +392,16 @@ export function useMarkdown() {
     if (!md) return "";
     try {
       const escaped = md.replace(/</g, "&lt;");
+
+      // ── Cache check ────────────────────────────────────────────────
+      const cacheKey = escaped;
+      const cached = getCachedMarkdown(cacheKey);
+      if (cached !== undefined) return cached;
+
       const safe = escaped.replace(/]\s*\((javascript:|vbscript:)[^)]*\)/gi, "](#)");
       let html = marked.parse(safe) as string;
       html = wrapMermaidBlocks(html);
+      setCachedMarkdown(cacheKey, html);
       return html;
     } catch {
       const escaped = md.replace(/</g, "&lt;").replace(/>/g, "&gt;");

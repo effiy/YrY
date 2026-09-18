@@ -1,12 +1,5 @@
 <template>
-  <el-popover
-    :visible="visible"
-    placement="bottom-end"
-    :width="400"
-    trigger="click"
-    @show="handleOpen"
-    @hide="visible = false"
-  >
+  <el-popover :visible="visible" placement="bottom-end" :width="400" trigger="click" @show="handleOpen" @hide="visible = false">
     <template #reference>
       <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0">
         <el-button :icon="Bell" text @click="visible = !visible" />
@@ -17,12 +10,8 @@
       <div class="notif-panel__head">
         <span class="notif-panel__title">通知</span>
         <div class="notif-panel__actions">
-          <el-button v-if="unreadCount > 0" text size="small" type="primary" @click="handleMarkAllRead">
-            全部已读
-          </el-button>
-          <el-button text size="small" @click="handleViewAll">
-            查看全部
-          </el-button>
+          <el-button v-if="unreadCount > 0" text size="small" type="primary" @click="handleMarkAllRead"> 全部已读 </el-button>
+          <el-button text size="small" @click="handleViewAll"> 查看全部 </el-button>
         </div>
       </div>
 
@@ -53,13 +42,7 @@
               <div class="notif-item__msg">{{ n.message }}</div>
               <div class="notif-item__time">{{ formatTime(n.createdAt) }}</div>
             </div>
-            <el-button
-              :icon="Close"
-              text
-              size="small"
-              class="notif-item__dismiss"
-              @click.stop="store.removeNotification(n.id)"
-            />
+            <el-button :icon="Close" text size="small" class="notif-item__dismiss" @click.stop="store.removeNotification(n.id)" />
           </div>
         </template>
         <el-empty v-else description="暂无通知" :image-size="60" />
@@ -88,13 +71,14 @@ const counts = computed(() => ({
   system: store.notificationsByType.system.length,
   user_action: store.notificationsByType.user_action.length,
   ai: store.notificationsByType.ai.length,
-  error: store.notificationsByType.error.length,
+  error: store.notificationsByType.error.length
 }));
 
 const filteredList = computed(() => {
-  const source = activeFilter.value === "all"
-    ? store.unreadNotifications
-    : store.unreadNotifications.filter((n) => n.type === activeFilter.value);
+  const source =
+    activeFilter.value === "all"
+      ? store.unreadNotifications
+      : store.unreadNotifications.filter(n => n.type === activeFilter.value);
   return source.slice(0, 10);
 });
 
@@ -110,7 +94,7 @@ function handleMarkAllRead(): void {
 
 function handleViewAll(): void {
   visible.value = false;
-  router.push("/notifications");
+  router.push("/notification");
 }
 
 function handleOpen(): void {
@@ -122,14 +106,14 @@ const TYPE_ICONS: Record<string, any> = {
   system: Setting,
   user_action: User,
   ai: Cpu,
-  error: Warning,
+  error: Warning
 };
 
 const TYPE_COLORS: Record<string, string> = {
   system: "#409eff",
   user_action: "#67c23a",
   ai: "#e6a23c",
-  error: "#f56c6c",
+  error: "#f56c6c"
 };
 
 function iconFor(type: string) {
@@ -156,46 +140,38 @@ function formatTime(iso: string): string {
 .notif-panel {
   margin: -12px;
 }
-
 .notif-panel__head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px 8px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .notif-panel__title {
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 600;
 }
-
 .notif-panel__actions {
   display: flex;
   gap: 4px;
 }
-
 .notif-panel__filter {
   padding: 8px 16px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-
   :deep(.el-radio-group) {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
   }
-
   :deep(.el-radio-button__inner) {
     padding: 4px 10px;
     font-size: 12px;
   }
 }
-
 .notif-panel__list {
   max-height: 420px;
   overflow-y: auto;
 }
-
 .notif-item {
   display: flex;
   gap: 10px;
@@ -203,58 +179,56 @@ function formatTime(iso: string): string {
   cursor: pointer;
   border-bottom: 1px solid var(--el-border-color-extra-light);
   transition: background 0.2s;
-
-  &:hover { background: var(--el-fill-color-light); }
-
-  &--unread { background: var(--el-color-primary-light-9); }
-
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
+  &--unread {
+    background: var(--el-color-primary-light-9);
+  }
   &__icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
     margin-top: 2px;
+    color: #ffffff;
+    border-radius: 50%;
   }
-
   &__body {
     flex: 1;
     min-width: 0;
   }
-
   &__title {
     font-size: 13px;
     font-weight: 500;
     line-height: 1.4;
   }
-
   &__msg {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-    line-height: 1.4;
-    margin-top: 2px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    margin-top: 2px;
     overflow: hidden;
+    -webkit-line-clamp: 2;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--el-text-color-secondary);
+    -webkit-box-orient: vertical;
   }
-
   &__time {
+    margin-top: 4px;
     font-size: 11px;
     color: var(--el-text-color-placeholder);
-    margin-top: 4px;
   }
-
   &__dismiss {
+    flex-shrink: 0;
+    align-self: flex-start;
     padding: 0;
     opacity: 0;
     transition: opacity 0.2s;
-    flex-shrink: 0;
-    align-self: flex-start;
-    .notif-item:hover & { opacity: 1; }
+    .notif-item:hover & {
+      opacity: 1;
+    }
   }
 }
 </style>

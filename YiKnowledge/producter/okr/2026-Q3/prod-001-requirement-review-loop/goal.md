@@ -1,13 +1,26 @@
 ---
-type: okr-goal
+title: "需求评审可闭环"
+tags: [okr, goal, producter, requirement-review, yi-ai]
+category: producter/okr
+created: 2026-08-21
+updated: 2026-09-15
+source: internal
+type: decision
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [producter]
+benefit: "YiAi 需求评审从口头对齐演进为标准化、可追溯、可验证的流程"
+okr_type: okr-goal
 id: prod-001
-title: 需求评审可闭环
-status: active
 period: 2026 Q3
 owner: PM YiAi
 project: YiAi
 progress: 100
-updated: 2026-09-10---
+related:
+  - ../../../discovery/01-发现-编写PRD.md
+  - ../../../frameworks/05-框架-OKR设计摘要.md
+---
 
 # 需求评审可闭环
 

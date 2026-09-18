@@ -1,41 +1,50 @@
 ---
 doc_type: module
-prd_task_id: "YP-08-07"
-title: "YP-08-07: IPC 通信架构 — 双世界消息中继 + 安全签名 + 状态同步 — 开发任务"
+prd_task_id: "YP-08-03"
+title: "YP-08-03: IPC 通信架构增强 — 开发方案"
 status: 已完成
-priority: P1
+priority: P0
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiPet
 project_id: yipet
 prd_month: "202608"
-estimate_frontend: 1.0
 source_prd: "07-架构设计-IPC通信架构.md"
 ---
 
-# YP-08-07: IPC 通信架构 — 双世界消息中继 + 安全签名 + 状态同步 — 开发任务
+# YP-08-03: IPC 通信架构增强 — 开发方案
 
-> 来源 PRD：[07-架构设计-IPC通信架构.md](../../prds/2026-08/07-架构设计-IPC通信架构.md)
-> 需求编号：YP-08-07 · 优先级：P1 · 人天：1.0d
-> 类型：架构 · 状态：已完成
+> 需求编号：YP-08-03 · 优先级：P0
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.5d）
+## 一、方案概述
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+增强 ISOLATED↔MAIN↔Service Worker 三向 IPC 通信：消息类型安全、超时重试、心跳保活。
 
-### 阶段二：完善与收尾（约 0.5d）
+```mermaid
+flowchart LR
+  MAIN["MAIN World"] -->|"postMessage<br/>IPC_SECRET"| ISO["ISOLATED World"]
+  ISO -->|"chrome.runtime.sendMessage"| SW["Service Worker"]
+  SW -->|"chrome.tabs.sendMessage"| ISO
+  ISO -->|"CustomEvent"| MAIN
+```
 
-| 步骤 | 任务 | 产出 |
-|------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+### 增强项
+
+| 增强 | 说明 |
+|------|------|
+| 消息类型安全 | TypeScript 联合类型约束 action+payload |
+| 超时重试 | sendMessage 3s 超时→重试 3 次 |
+| 心跳保活 | SW 每 20s ping 防止空闲终止 |
+| 消息队列 | SW 休眠期间消息排队，唤醒后批量发送 |
+
+### 实施步骤
+
+| 步骤 | 内容 |
+|------|------|
+| 1 | 消息类型系统 (TypeScript 联合类型) |
+| 2 | 超时重试 + 心跳保活 |
+| 3 | 消息队列 + SW 唤醒恢复 |

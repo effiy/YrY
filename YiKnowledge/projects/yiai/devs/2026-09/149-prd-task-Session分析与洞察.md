@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "149-需求-Session分析与洞察.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-143: Session 分析与洞察 — 会话分析 + 自动标签 + 用户参与度 + 异常检测 + 数据导出 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[149-需求-Session分析与洞察.md](../../prds/2026-09/149-需求-Session分析与洞察.md)
 > 需求编号：YA-09-143 · 优先级：P2 · 人天：0.5d

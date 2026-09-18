@@ -28,7 +28,7 @@ function getNetworkContext() {
     userAgent: navigator.userAgent,
     effectiveType: conn?.effectiveType,
     downlink: conn?.downlink,
-    rtt: conn?.rtt,
+    rtt: conn?.rtt
   };
 }
 
@@ -38,7 +38,7 @@ export function bufferMetric(name: string, value: number): void {
     page: window.location.pathname,
     metrics: { [name]: value },
     context: getNetworkContext(),
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
   if (buffer.length >= MAX_BUFFER) flush();
 }
@@ -54,7 +54,7 @@ async function flush(): Promise<void> {
     await http.post("/", {
       module_name: "services.performance.metrics_service",
       method_name: "batch_insert",
-      parameters: { records: batch },
+      parameters: { records: batch }
     });
     retryCount = 0;
   } catch {
@@ -77,17 +77,23 @@ export function startMetricsFlush(): void {
   window.addEventListener("beforeunload", () => {
     const all = [...failedQueue, ...buffer];
     if (all.length > 0) {
-      navigator.sendBeacon("/", JSON.stringify({
-        module_name: "services.performance.metrics_service",
-        method_name: "batch_insert",
-        parameters: { records: all },
-      }));
+      navigator.sendBeacon(
+        "/",
+        JSON.stringify({
+          module_name: "services.performance.metrics_service",
+          method_name: "batch_insert",
+          parameters: { records: all }
+        })
+      );
     }
   });
 }
 
 export function stopMetricsFlush(): void {
-  if (flushTimer) { clearInterval(flushTimer); flushTimer = null; }
+  if (flushTimer) {
+    clearInterval(flushTimer);
+    flushTimer = null;
+  }
   flush();
 }
 

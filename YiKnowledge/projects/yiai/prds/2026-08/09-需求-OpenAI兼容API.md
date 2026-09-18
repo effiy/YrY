@@ -23,6 +23,9 @@ review_status: 待评审
 issue_type: 功能
 roles:
 - engineer
+source_okr: [yiai-002]
+related_modules: [09-prd-task-OpenAI兼容API]
+related_tests: [09-prd-test-OpenAI兼容API]
 ---
 
 # OpenAI 兼容 API — DeepSeek-Harness 风格的多客户端适配层

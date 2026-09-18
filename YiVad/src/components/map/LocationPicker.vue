@@ -5,17 +5,20 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
  * Location picker using Leaflet (OpenStreetMap).
  * Falls back to a manual lat/lng input if Leaflet is not loaded.
  */
-const props = withDefaults(defineProps<{
-  lat?: number;
-  lng?: number;
-  address?: string;
-  radius?: number;
-  readonly?: boolean;
-}>(), {
-  lat: 39.9042,
-  lng: 116.4074,
-  radius: 500,
-});
+const props = withDefaults(
+  defineProps<{
+    lat?: number;
+    lng?: number;
+    address?: string;
+    radius?: number;
+    readonly?: boolean;
+  }>(),
+  {
+    lat: 39.9042,
+    lng: 116.4074,
+    radius: 500
+  }
+);
 
 const emit = defineEmits<{
   (e: "update:lat", value: number): void;
@@ -45,7 +48,7 @@ function emitChange() {
     lat: currentLat.value,
     lng: currentLng.value,
     address: currentAddress.value,
-    radius: currentRadius.value,
+    radius: currentRadius.value
   });
 }
 
@@ -58,7 +61,7 @@ async function initMap() {
 
     mapInstance = L.map(mapContainer.value).setView([currentLat.value, currentLng.value], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
+      attribution: "© OpenStreetMap contributors"
     }).addTo(mapInstance);
 
     markerInstance = L.marker([currentLat.value, currentLng.value], { draggable: !props.readonly }).addTo(mapInstance);
@@ -85,7 +88,7 @@ async function initMap() {
     circleInstance = L.circle([currentLat.value, currentLng.value], {
       radius: currentRadius.value,
       color: "var(--el-color-primary)",
-      fillOpacity: 0.1,
+      fillOpacity: 0.1
     }).addTo(mapInstance);
 
     mapReady.value = true;
@@ -104,9 +107,7 @@ function updateCircle() {
 
 async function reverseGeocode(lat: number, lng: number) {
   try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=zh`
-    );
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=zh`);
     const data = await res.json();
     currentAddress.value = data.display_name || "";
   } catch {
@@ -140,7 +141,7 @@ async function searchAddress() {
 function useCurrentLocation() {
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      pos => {
         currentLat.value = pos.coords.latitude;
         currentLng.value = pos.coords.longitude;
         if (mapInstance && markerInstance) {
@@ -171,13 +172,7 @@ onBeforeUnmount(() => {
   <div class="location-picker">
     <!-- Search & controls -->
     <div class="location-picker__controls">
-      <el-input
-        v-model="searchQuery"
-        placeholder="搜索地址..."
-        size="small"
-        style="width: 240px"
-        @keyup.enter="searchAddress"
-      >
+      <el-input v-model="searchQuery" placeholder="搜索地址..." size="small" style="width: 240px" @keyup.enter="searchAddress">
         <template #append>
           <el-button @click="searchAddress">搜索</el-button>
         </template>
@@ -198,7 +193,12 @@ onBeforeUnmount(() => {
           :step="0.001"
           size="small"
           :disabled="readonly"
-          @change="(v) => { currentLat = v || 0; emitChange(); }"
+          @change="
+            v => {
+              currentLat = v || 0;
+              emitChange();
+            }
+          "
         />
         <span class="location-picker__label">经度</span>
         <el-input-number
@@ -207,7 +207,12 @@ onBeforeUnmount(() => {
           :step="0.001"
           size="small"
           :disabled="readonly"
-          @change="(v) => { currentLng = v || 0; emitChange(); }"
+          @change="
+            v => {
+              currentLng = v || 0;
+              emitChange();
+            }
+          "
         />
       </div>
       <div v-if="currentAddress" class="location-picker__address">
@@ -221,41 +226,36 @@ onBeforeUnmount(() => {
 .location-picker {
   &__controls {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-bottom: 10px;
   }
-
   &__map {
+    z-index: 1;
     width: 100%;
     height: 300px;
-    border-radius: 6px;
-    border: 1px solid var(--el-border-color);
     background: var(--el-fill-color-light);
-    z-index: 1;
+    border: 1px solid var(--el-border-color);
+    border-radius: 6px;
   }
-
   &__info {
     margin-top: 10px;
     font-size: 13px;
   }
-
   &__coord {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
   }
-
   &__label {
+    min-width: 28px;
     font-size: 12px;
     color: var(--el-text-color-secondary);
-    min-width: 28px;
   }
-
   &__address {
     margin-top: 6px;
-    color: var(--el-text-color-secondary);
     font-size: 12px;
+    color: var(--el-text-color-secondary);
   }
 }
 </style>

@@ -20,8 +20,10 @@ export function useKeyboardSortable(
   function moveUp() {
     if (!isActive.value || activeIndex.value <= 0) return;
     const newItems = [...items.value];
-    [newItems[activeIndex.value - 1], newItems[activeIndex.value]] =
-      [newItems[activeIndex.value], newItems[activeIndex.value - 1]];
+    [newItems[activeIndex.value - 1], newItems[activeIndex.value]] = [
+      newItems[activeIndex.value],
+      newItems[activeIndex.value - 1]
+    ];
     activeIndex.value--;
     options.onSort?.(newItems);
   }
@@ -29,8 +31,10 @@ export function useKeyboardSortable(
   function moveDown() {
     if (!isActive.value || activeIndex.value >= items.value.length - 1) return;
     const newItems = [...items.value];
-    [newItems[activeIndex.value], newItems[activeIndex.value + 1]] =
-      [newItems[activeIndex.value + 1], newItems[activeIndex.value]];
+    [newItems[activeIndex.value], newItems[activeIndex.value + 1]] = [
+      newItems[activeIndex.value + 1],
+      newItems[activeIndex.value]
+    ];
     activeIndex.value++;
     options.onSort?.(newItems);
   }

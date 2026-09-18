@@ -19,6 +19,8 @@ acceptance_criteria:
 related:
   - ./README.md
   - ./02-可观测-CICD.md
+  - ./07-可观测-搭建可观测性.md
+  - ./14-可观测-健康检查设计.md
   - ../../engineer/build/
 ---
 

@@ -12,15 +12,27 @@
   .batch-toolbar,
   .el-button,
   .el-drawer,
-  .export-menu { display: none !important; }
-
+  .export-menu {
+    display: none !important;
+  }
   .el-table {
     width: 100% !important;
-    thead { display: table-header-group; }
-    tr { page-break-inside: avoid; }
+    thead {
+      display: table-header-group;
+    }
+    tr {
+      break-inside: avoid;
+    }
   }
-
-  .el-table__body-wrapper { overflow: visible !important; max-height: none !important; }
-  .el-table .cell { white-space: normal !important; }
-  .virtual-table-body { contain: none !important; height: auto !important; }
+  .el-table__body-wrapper {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .el-table .cell {
+    white-space: normal !important;
+  }
+  .virtual-table-body {
+    height: auto !important;
+    contain: none !important;
+  }
 }

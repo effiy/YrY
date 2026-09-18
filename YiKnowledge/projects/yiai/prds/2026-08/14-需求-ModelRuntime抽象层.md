@@ -17,6 +17,9 @@ estimate_backend: 1.5
 review_status: 已评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [14-prd-task-ModelRuntime抽象层]
+related_tests: [14-prd-test-ModelRuntime抽象层]
 ---
 
 # YA-08-15: ModelRuntime 抽象层 — Pi 风格的多 Provider 统一流式接口

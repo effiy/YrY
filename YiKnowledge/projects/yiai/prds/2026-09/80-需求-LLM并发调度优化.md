@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-76: 服务端 LLM 推理并发调度优化 — 动态信号量调整与优先级队列"
 tags: [需求文档, LLM推理, 并发调度, 动态信号量, 优先级队列, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,14 +20,20 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [80-prd-task-LLM并发调度优化]
+related_tests: [80-prd-test-LLM并发调度优化]
 ---
 
 # YA-09-76: LLM 推理并发调度 — 动态信号量与优先级队列
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-76 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
 ---
 
+<a id="sec-1"></a>
 ## 一、背景
 
 ### 1.1 问题描述
@@ -54,6 +63,7 @@ YiAi 使用 `asyncio.Semaphore(3)` 限制 Ollama 的并发推理数（防止 GPU
 
 ---
 
+<a id="sec-2"></a>
 ## 二、现状分析
 
 ### 2.1 当前调度方式
@@ -111,6 +121,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、设计决策
 
 ### D-01: 优先级调度：自定义 Semaphore vs 优先级队列 vs asyncio.Queue
@@ -145,6 +156,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 目标数据流
@@ -192,6 +204,7 @@ PRIORITY = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 新增: YiAi/src/shared/priority_semaphore.py
@@ -417,6 +430,7 @@ async def agent_loop(task):
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证 | 人天 |
@@ -431,6 +445,7 @@ async def agent_loop(task):
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 优先级调度延迟
@@ -460,6 +475,7 @@ async def agent_loop(task):
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 **TC-01: 高优先级先于低优先级获取**
@@ -512,6 +528,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-9"></a>
 ## 九、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -523,6 +540,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回滚策略
 
 | 场景 | 操作 | 影响 |
@@ -535,6 +553,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 | 编号 | 决策 | 理由 | 日期 |
@@ -547,6 +566,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 ### 12.1 指标
@@ -586,6 +606,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、安全合规
 
 | 要求 | 实现 |
@@ -597,6 +618,7 @@ AND 应列出每个任务的优先级和等待时间
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、代码审查检查清单
 
 - [ ] LLM 请求按优先级排队——Agent(10) > RAG(5) > Chat(0) > System(-1)

@@ -23,12 +23,28 @@ const option = computed<ECOption>(() => ({
   grid: { top: 40, right: 16, bottom: 24, left: 48 },
   xAxis: { type: "category" as const, data: props.data.map(d => d.date) },
   yAxis: { type: "value" as const },
-  series: [{
-    data: props.data.map(d => d.value),
-    type: "line" as const,
-    smooth: true,
-    color: props.color,
-    areaStyle: props.area ? { color: { type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: props.color + "33" }, { offset: 1, color: props.color + "05" }] } } : undefined,
-  }],
+  series: [
+    {
+      data: props.data.map(d => d.value),
+      type: "line" as const,
+      smooth: true,
+      color: props.color,
+      areaStyle: props.area
+        ? {
+            color: {
+              type: "linear" as const,
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: props.color + "33" },
+                { offset: 1, color: props.color + "05" }
+              ]
+            }
+          }
+        : undefined
+    }
+  ]
 }));
 </script>

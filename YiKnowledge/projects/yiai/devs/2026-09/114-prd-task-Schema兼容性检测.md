@@ -1,41 +1,68 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-106"
-title: "YA-09-106: 服务端 JSON Schema 演化兼容性检测 — 向后不兼容变更的 CI 自动识别与告警 — 开发任务"
+prd_task_id: "YA-09-56"
+title: "YA-09-56: Schema 兼容性检测 — CI 自动识别破坏性变更 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "114-需求-Schema兼容性检测.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-106: 服务端 JSON Schema 演化兼容性检测 — 向后不兼容变更的 CI 自动识别与告警 — 开发任务
+# YA-09-56: Schema 兼容性检测 — CI 自动识别破坏性变更 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[114-需求-Schema兼容性检测.md](../../prds/2026-09/114-需求-Schema兼容性检测.md)
-> 需求编号：YA-09-106 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-56 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+Pydantic model 变更可能破坏前端——删除字段、修改类型、新增必填字段。CI 中自动对比当前分支与 main 的 schema 差异。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+# 导出当前 schema
+import json
+from pydantic import schema_json_of
 
-| 步骤 | 任务 | 产出 |
+current = {name: schema_json_of(model) for name, model in MODELS.items()}
+with open("schema_current.json", "w") as f:
+    json.dump(current, f, indent=2)
+
+# CI: 对比 main 和当前分支
+diff = compare_schemas("schema_main.json", "schema_current.json")
+```
+
+### 破坏性变更检测
+
+| 变更 | 兼容性 | CI 动作 |
+|------|--------|--------|
+| 新增可选字段 | ✅ 兼容 | — |
+| 新增必填字段 | ❌ 破坏 | 阻断 + 要求确认 |
+| 删除字段 | ❌ 破坏 | 阻断 + 要求确认 |
+| 修改字段类型 | ❌ 破坏 | 阻断 + 要求确认 |
+| 重命名字段 | ❌ 破坏 | 阻断 + 要求确认 |
+| 新增枚举值 | ✅ 兼容 | — |
+| 删除枚举值 | ❌ 破坏 | 阻断 + 要求确认 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | schema 导出 + diff 工具 | 破坏性变更被检测 | 0.5 |
+| 2 | CI 集成 + 报告 + 测试 | PR 中自动评论兼容性报告 | 0.5 |
+
+**合计：1.0d**。

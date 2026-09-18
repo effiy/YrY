@@ -17,6 +17,9 @@ estimate_frontend: 8.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [01-prd-task-GraphQL联邦层]
+related_tests: [01-prd-test-GraphQL联邦层]
 ---
 
 # YA-08-06: GraphQL 联邦层 — Strawberry + Federation / RPC 类型安全网关

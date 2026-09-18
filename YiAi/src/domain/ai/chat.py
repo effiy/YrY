@@ -1,9 +1,12 @@
-import logging
 import asyncio
 import base64
-from typing import Dict, Any, Optional, List
+import binascii
+import logging
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 from ollama import Client
+
 from shared.config import settings
 
 logger = logging.getLogger(__name__)
@@ -30,32 +33,31 @@ def _is_http_url(v: str) -> bool:
     s = (v or "").strip().lower()
     return s.startswith("http://") or s.startswith("https://")
 
-async def _fetch_image_bytes(url: str, *, timeout_seconds: float = 15.0, max_bytes: int = _IMAGE_FETCH_MAX_BYTES) -> Optional[bytes]:
+async def _fetch_image_bytes(url: str, *, timeout_seconds: float = 15.0, max_bytes: int = _IMAGE_FETCH_MAX_BYTES) -> bytes | None:
     u = (url or "").strip()
     if not u:
         return None
     timeout = aiohttp.ClientTimeout(total=timeout_seconds)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.get(u) as resp:
-            if resp.status < 200 or resp.status >= 300:
+    async with aiohttp.ClientSession(timeout=timeout) as session, session.get(u) as resp:
+        if resp.status < 200 or resp.status >= 300:
+            return None
+        ct = (resp.headers.get("Content-Type") or "").lower()
+        if ct and not ct.startswith("image/"):
+            return None
+        buf = bytearray()
+        async for chunk in resp.content.iter_chunked(_IMAGE_FETCH_CHUNK):
+            if not chunk:
+                continue
+            buf.extend(chunk)
+            if len(buf) > max_bytes:
                 return None
-            ct = (resp.headers.get("Content-Type") or "").lower()
-            if ct and not ct.startswith("image/"):
-                return None
-            buf = bytearray()
-            async for chunk in resp.content.iter_chunked(_IMAGE_FETCH_CHUNK):
-                if not chunk:
-                    continue
-                buf.extend(chunk)
-                if len(buf) > max_bytes:
-                    return None
-            return bytes(buf)
+        return bytes(buf)
 
-async def _resolve_images(images: Any) -> List[bytes]:
+async def _resolve_images(images: Any) -> list[bytes]:
     if not isinstance(images, list):
         return []
-    out: List[bytes] = []
-    http_urls: List[str] = []
+    out: list[bytes] = []
+    http_urls: list[str] = []
     for item in images:
         raw = (item or "").strip() if isinstance(item, str) else ""
         if not raw:
@@ -69,27 +71,27 @@ async def _resolve_images(images: Any) -> List[bytes]:
                 raw = raw[comma + 1 :].strip()
         try:
             out.append(base64.b64decode(raw, validate=True))
-        except Exception:
+        except (binascii.Error, ValueError):
             logger.debug("Failed to decode base64 image data, skipping", exc_info=True)
             continue
 
     if http_urls:
         sem = asyncio.Semaphore(_IMAGE_FETCH_SEMAPHORE)
 
-        async def _task(u: str) -> Optional[bytes]:
+        async def _task(u: str) -> bytes | None:
             async with sem:
                 try:
                     return await _fetch_image_bytes(u)
-                except Exception:
+                except (aiohttp.ClientError, asyncio.TimeoutError):
                     return None
 
-        fetched = await asyncio.gather(*[_task(u) for u in http_urls], return_exceptions=False)
-        out.extend([b for b in fetched if isinstance(b, (bytes, bytearray)) and b])
+        fetched = await asyncio.gather(*[_task(u) for u in http_urls], return_exceptions=True)
+        out.extend([b for b in fetched if isinstance(b, bytes | bytearray) and b])
     return out
 
 class OllamaService:
     """Ollama service client wrapper"""
-    def __init__(self, host: Optional[str] = None, auth: Optional[str] = None):
+    def __init__(self, host: str | None = None, auth: str | None = None):
         """
         Initialize Ollama service client
 
@@ -115,9 +117,9 @@ class OllamaService:
                           system_prompt: str = "You are a helpful AI assistant.",
                           user_content: str = "",
                           model_name: str = "qwen3.5:4b",
-                          images: Optional[List[bytes]] = None,
-                          messages: Optional[List[Dict[str, Any]]] = None,
-                          max_retries: int = 2) -> Dict[str, Any]:
+                          images: list[bytes] | None = None,
+                          messages: list[dict[str, Any]] | None = None,
+                          max_retries: int = 2) -> dict[str, Any]:
         """
         Generate AI response
 
@@ -145,7 +147,7 @@ class OllamaService:
                 {"role": "user", "content": user_content, **({"images": images} if images else {})}
             ]
         attempt = 0
-        last_error: Optional[str] = None
+        last_error: str | None = None
         while attempt <= max_retries:
             try:
                 response = client.chat(model=model_name, messages=ollama_messages)
@@ -171,7 +173,7 @@ class OllamaService:
             "model": model_name
         }
 
-    def list_models(self) -> Dict[str, Any]:
+    def list_models(self) -> dict[str, Any]:
         """
         Get list of available models from the Ollama server
 
@@ -206,7 +208,7 @@ class OllamaService:
                 "error": error_msg
             }
 
-async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
+async def chat(params: dict[str, Any]) -> dict[str, Any]:
     """
     Structured chat interface — delegates to ModelRuntime (Pi-inspired).
 
@@ -251,7 +253,7 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
         else:
             user_content = _extract_user_only_text(user_content)
 
-    def _build_ollama_messages() -> List[Dict[str, Any]]:
+    def _build_ollama_messages() -> list[dict[str, Any]]:
         if use_messages:
             msgs = list(raw_messages)
             if system_prompt:
@@ -280,7 +282,7 @@ async def chat(params: Dict[str, Any]) -> Dict[str, Any]:
     )
 
 
-async def list_ollama_models(params: Dict[str, Any] = None) -> Dict[str, Any]:
+async def list_ollama_models(params: dict[str, Any] = None) -> dict[str, Any]:
     """
     Get available Ollama model list (async module function)
 
@@ -332,7 +334,7 @@ _ERROR_PATTERNS = {
 }
 
 
-def classify_error(error: str) -> Dict[str, str]:
+def classify_error(error: str) -> dict[str, str]:
     """Classify a raw error string into a user-friendly message.
 
     Pi-inspired: maps raw provider errors to readable messages so the
@@ -354,7 +356,7 @@ def classify_error(error: str) -> Dict[str, str]:
     return {"type": "unknown", "message": _ERROR_PATTERNS["unknown"]}
 
 
-async def get_model_info(params: Dict[str, Any] = None) -> Dict[str, Any]:
+async def get_model_info(params: dict[str, Any] = None) -> dict[str, Any]:
     """Return available models and provider status for the frontend model selector.
 
     Queries the configured provider for available models and returns their
@@ -362,7 +364,7 @@ async def get_model_info(params: Dict[str, Any] = None) -> Dict[str, Any]:
     model picker shows what each model can do before the user selects it.
     """
     provider = (params or {}).get("provider") or settings.ai_provider or "ollama"
-    info: Dict[str, Any] = {
+    info: dict[str, Any] = {
         "provider": provider,
         "default_model": "",
         "models": [],
@@ -373,26 +375,25 @@ async def get_model_info(params: Dict[str, Any] = None) -> Dict[str, Any]:
         info["default_model"] = settings.rag_llm_model
         try:
             import aiohttp
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{settings.ollama_url}/api/tags",
-                    timeout=aiohttp.ClientTimeout(total=5),
-                ) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        info["status"] = "connected"
-                        for m in data.get("models", []) or []:
-                            name = m.get("name", "") if isinstance(m, dict) else str(m)
-                            details = m.get("details", {}) if isinstance(m, dict) else {}
-                            info["models"].append({
-                                "name": name,
-                                "size": details.get("parameter_size", ""),
-                                "family": details.get("family", ""),
-                                "format": details.get("format", ""),
-                            })
-                    else:
-                        info["status"] = "error"
-                        info["error"] = f"HTTP {resp.status}"
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{settings.ollama_url}/api/tags",
+                timeout=aiohttp.ClientTimeout(total=5),
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    info["status"] = "connected"
+                    for m in data.get("models", []) or []:
+                        name = m.get("name", "") if isinstance(m, dict) else str(m)
+                        details = m.get("details", {}) if isinstance(m, dict) else {}
+                        info["models"].append({
+                            "name": name,
+                            "size": details.get("parameter_size", ""),
+                            "family": details.get("family", ""),
+                            "format": details.get("format", ""),
+                        })
+                else:
+                    info["status"] = "error"
+                    info["error"] = f"HTTP {resp.status}"
         except Exception as e:
             info["status"] = "disconnected"
             info["error"] = str(e)

@@ -10,8 +10,8 @@ tags:
 - projects
 category: producter
 created: '2026-08-06'
-updated: 2026-09-10
-last_verified: '2026-09-10'
+updated: 2026-09-15
+last_verified: '2026-09-15'
 source: internal
 type: summary
 status: stable
@@ -20,11 +20,12 @@ review_cycle: quarterly
 roles:
 - producter
 - engineer
-benefit: "产品经理可以按问题领域找到 PM 框架、发现工具、交付流程和战略指南"
+benefit: "产品经理通过 34 个知识文件覆盖从发现到交付到战略的完整工作流——每个文件包含方法论、YrY 实操案例、可复用模板和常见反模式"
 acceptance_criteria:
-- '5 个问题领域子目录：frameworks、discovery、delivery、strategy、projects'
-- 每个子目录有 README 及分类文件列表
-- 最多 3 级目录深度
+  - '5 个问题领域子目录：frameworks(8)、discovery(7)、delivery(5)、strategy(5)、projects(4)'
+  - '每个子目录有 README 或 INDEX 入口文件'
+  - '所有文件包含完整 frontmatter 和 YrY 实操案例'
+  - '最多 3 级目录深度'
 related:
 - ./INDEX.md
 - ../INDEX.md
@@ -77,12 +78,15 @@ related:
 - [01-发现-编写PRD.md](./discovery/01-发现-编写PRD.md) — PRD 撰写方法论和分步指南
 - [discovery/prd/](./discovery/prd/) — 具体 PRD 实例和可复用模板
 - [frameworks/07-框架-用户故事地图.md](./frameworks/07-框架-用户故事地图.md) — 将 PRD 拆解为可视化用户旅程
+- [discovery/03-发现-用户画像方法.md](./discovery/03-发现-用户画像方法.md) — 原型画像和调研画像的构建方法
 
 **`user-stories` 芯片 — 用户需求理解：**
 - [frameworks/01-框架-用户研究方法.md](./frameworks/01-框架-用户研究方法.md) — 五种用户研究方法及使用时机
+- [discovery/04-发现-用户访谈综合.md](./discovery/04-发现-用户访谈综合.md) — 从原始笔记到洞察的五步综合流程
 - [frameworks/02-框架-JTBD框架摘要.md](./frameworks/02-框架-JTBD框架摘要.md) — Jobs-to-Be-Done 框架核心概念
 - [frameworks/03-框架-Kano模型摘要.md](./frameworks/03-框架-Kano模型摘要.md) — Kano 模型用于功能分类
 - [frameworks/07-框架-用户故事地图.md](./frameworks/07-框架-用户故事地图.md) — 用户故事地图构建方法
+- [frameworks/08-框架-机会解决方案树.md](./frameworks/08-框架-机会解决方案树.md) — 从业务成果到方案实验的结构化发现工具
 - [discovery/ux/01-体验-UX检查清单.md](./discovery/ux/01-体验-UX检查清单.md) — UX 可用性、无障碍、视觉设计检查清单
 
 **`priorities` 芯片 — 优先级与指标体系：**
@@ -90,8 +94,17 @@ related:
 - [frameworks/05-框架-OKR设计摘要.md](./frameworks/05-框架-OKR设计摘要.md) — OKR 设计原则和常见反模式
 - [frameworks/06-框架-RICE-ICE优先级.md](./frameworks/06-框架-RICE-ICE优先级.md) — RICE/ICE 量化评分框架
 - [discovery/metrics/01-指标-北极星指标.md](./discovery/metrics/01-指标-北极星指标.md) — 北极星指标定义与验证方法
+- [discovery/02-发现-数据驱动决策.md](./discovery/02-发现-数据驱动决策.md) — 指标拆解、漏斗分析、A/B 测试、用户分群
 - [delivery/01-交付-运作Sprint.md](./delivery/01-交付-运作Sprint.md) — Sprint 管理五项仪式
-- [strategy/](./strategy/) — 竞争分析、行业案例研究
+- [delivery/02-交付-发布检查清单.md](./delivery/02-交付-发布检查清单.md) — 发布前中后完整验证流程
+- [delivery/03-交付-干系人沟通.md](./delivery/03-交付-干系人沟通.md) — 四类干系人沟通策略与困难对话
+- [delivery/04-交付-Beta测试指南.md](./delivery/04-交付-Beta测试指南.md) — 从内测到开放的 Beta 测试流程
+- [delivery/05-交付-跨项目协作.md](./delivery/05-交付-跨项目协作.md) — 三项目 API 依赖与发布协调
+- [strategy/01-战略-AI客服案例.md](./strategy/01-战略-AI客服案例.md) — AI 产品模式与案例研究
+- [strategy/02-战略-竞品分析方法.md](./strategy/02-战略-竞品分析方法.md) — 功能/战略/生态三层竞品分析
+- [strategy/03-战略-产品路线图设计.md](./strategy/03-战略-产品路线图设计.md) — Now/Next/Later 路线图设计方法
+- [strategy/04-战略-产品市场匹配.md](./strategy/04-战略-产品市场匹配.md) — PMF 验证：Sean Ellis 测试、留存曲线、使用深度
+- [strategy/05-战略-功能采用策略.md](./strategy/05-战略-功能采用策略.md) — 采用漏斗：知晓→理解→尝试→习惯→传播
 - [projects/](./projects/) — 各项目 PM 管理文档
 - [okr/](./okr/) — 季度 OKR 与指标追踪
 
@@ -124,10 +137,10 @@ related:
 
 | 领域 | 解决的问题 | 文件数 | 关键入口 |
 |---|---|---|---|
-| [frameworks/](./frameworks/) | 如何对产品决策进行优先级排序和结构化分析？ | 7+ | [06-RICE-ICE优先级](./frameworks/06-框架-RICE-ICE优先级.md), [02-JTBD框架摘要](./frameworks/02-框架-JTBD框架摘要.md), [03-Kano模型摘要](./frameworks/03-框架-Kano模型摘要.md) |
-| [discovery/](./discovery/) | 如何深入理解用户并准确定义需求？ | 4+ | [01-编写PRD](./discovery/01-发现-编写PRD.md), [metrics/](./discovery/metrics/), [ux/](./discovery/ux/) |
-| [delivery/](./delivery/) | 如何高效运作 Sprint 并按时交付价值？ | 1+ | [01-运作Sprint](./delivery/01-交付-运作Sprint.md) |
-| [strategy/](./strategy/) | 如何在市场中定位产品并借鉴行业案例？ | 1+ | [01-AI客服案例](./strategy/01-战略-AI客服案例.md) |
+| [frameworks/](./frameworks/) | 如何对产品决策进行优先级排序和结构化分析？ | 8+ | [06-RICE-ICE优先级](./frameworks/06-框架-RICE-ICE优先级.md), [02-JTBD框架摘要](./frameworks/02-框架-JTBD框架摘要.md), [08-OST](./frameworks/08-框架-机会解决方案树.md), [03-Kano模型摘要](./frameworks/03-框架-Kano模型摘要.md) |
+| [discovery/](./discovery/) | 如何深入理解用户并准确定义需求？ | 7+ | [01-编写PRD](./discovery/01-发现-编写PRD.md), [02-数据驱动决策](./discovery/02-发现-数据驱动决策.md), [03-用户画像](./discovery/03-发现-用户画像方法.md), [04-访谈综合](./discovery/04-发现-用户访谈综合.md), [metrics/](./discovery/metrics/), [ux/](./discovery/ux/) |
+| [delivery/](./delivery/) | 如何高效交付并协调多个项目？ | 5+ | [01-运作Sprint](./delivery/01-交付-运作Sprint.md), [02-发布检查清单](./delivery/02-交付-发布检查清单.md), [04-Beta测试](./delivery/04-交付-Beta测试指南.md), [05-跨项目协作](./delivery/05-交付-跨项目协作.md) |
+| [strategy/](./strategy/) | 如何在市场中定位产品并推动功能采用？ | 5+ | [01-AI客服案例](./strategy/01-战略-AI客服案例.md), [02-竞品分析](./strategy/02-战略-竞品分析方法.md), [03-路线图设计](./strategy/03-战略-产品路线图设计.md), [04-PMF验证](./strategy/04-战略-产品市场匹配.md), [05-功能采用](./strategy/05-战略-功能采用策略.md) |
 | [projects/](./projects/) | 各项目（YiAi、YiVad、YiPet）PM 管理文档 | 4 | [projects/README](./projects/README.md) |
 | [okr/](./okr/) | 季度目标与关键结果追踪 | 3+ | [okr/2026-Q3/](./okr/2026-Q3/) |
 
@@ -152,6 +165,18 @@ related:
 | 查看 YiVad 项目 PM 文档 | `priorities` | [projects/yivad/01-项目-管理.md](./projects/yivad/01-项目-管理.md) |
 | 查看 YiPet 项目 PM 文档 | `priorities` | [projects/yipet/01-项目-管理.md](./projects/yipet/01-项目-管理.md) |
 | 查看 YiAi 项目 PM 文档 | `priorities` | [projects/yiai/01-项目-管理.md](./projects/yiai/01-项目-管理.md) |
+| 用数据分析驱动产品决策 | `priorities` | [discovery/02-发现-数据驱动决策.md](./discovery/02-发现-数据驱动决策.md) |
+| 分析竞品找到差异化机会 | `priorities` | [strategy/02-战略-竞品分析方法.md](./strategy/02-战略-竞品分析方法.md) |
+| 执行安全的版本发布 | `priorities` | [delivery/02-交付-发布检查清单.md](./delivery/02-交付-发布检查清单.md) |
+| 设计产品路线图 | `priorities` | [strategy/03-战略-产品路线图设计.md](./strategy/03-战略-产品路线图设计.md) |
+| 与干系人有效沟通和管理预期 | `priorities` | [delivery/03-交付-干系人沟通.md](./delivery/03-交付-干系人沟通.md) |
+| 构建用户画像让团队对齐目标用户 | `prds` | [discovery/03-发现-用户画像方法.md](./discovery/03-发现-用户画像方法.md) |
+| 从用户访谈中提炼可行动的洞察 | `user-stories` | [discovery/04-发现-用户访谈综合.md](./discovery/04-发现-用户访谈综合.md) |
+| 验证产品是否达到市场匹配（PMF） | `priorities` | [strategy/04-战略-产品市场匹配.md](./strategy/04-战略-产品市场匹配.md) |
+| 用 OST 结构化发现产品机会 | `user-stories` | [frameworks/08-框架-机会解决方案树.md](./frameworks/08-框架-机会解决方案树.md) |
+| 运营 Beta 测试收集真实用户反馈 | `priorities` | [delivery/04-交付-Beta测试指南.md](./delivery/04-交付-Beta测试指南.md) |
+| 协调 YiAi + YiVad + YiPet 三项目开发 | `priorities` | [delivery/05-交付-跨项目协作.md](./delivery/05-交付-跨项目协作.md) |
+| 推动新功能从发布到被用户真正采用 | `priorities` | [strategy/05-战略-功能采用策略.md](./strategy/05-战略-功能采用策略.md) |
 
 ## 交叉引用
 

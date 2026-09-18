@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作"
 tags: [需求文档, 快捷操作, 工具栏, 用户偏好, 拖拽排序, 快捷键, 前端]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,40 @@ source_okr: [yivad-003]
 # YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作
 
 > 需求编号：YV-09-124 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/56-prd-task-快捷操作配置.md)，验证方案见 [测试方案](../../tests/2026-09/56-prd-test-快捷操作配置.md)。
 > 依赖：YV-09-43（全局快捷键框架）、YV-09-41（批量操作工具栏）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 当前操作入口分布 | 参见 §当前操作入口分布 |
+| FR-2 | 操作流程（现状 vs 目标） | 参见 §操作流程（现状 vs 目标） |
+| FR-3 | 根因矩阵 | 参见 §根因矩阵 |
+| FR-4 | 操作建议流程 | 参见 §操作建议流程 |
+| FR-5 | 核心类型定义 | 参见 §核心类型定义 |
+| FR-6 | 核心 Composable | 参见 §核心 Composable |
 
 ## 背景
 
@@ -59,6 +95,7 @@ YiVad 的每个页面都有 5-15 个操作按钮（新建、导入、导出、�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前操作入口分布
@@ -130,6 +167,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：快捷工具栏位置 — 页面顶部固定 vs 侧边浮动 vs 悬浮球
@@ -183,6 +221,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 快捷操作系统架构
@@ -275,6 +314,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 改动总览
@@ -439,6 +479,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -455,6 +496,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：添加操作到快捷工具栏
@@ -515,6 +557,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -526,6 +569,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -537,6 +581,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选混合频率衰减而非纯频率统计？
@@ -557,6 +602,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -580,6 +626,7 @@ export function useQuickActions(pageScope: string) {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] ActionRegistry: register/unregister 配对——动态注册需要提供 cleanup 函数

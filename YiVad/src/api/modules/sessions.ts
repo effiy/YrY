@@ -8,15 +8,15 @@ import type { SessionDocument, YiAiEnvelope } from "@/api/interface/yiAi";
 const CNAME = "sessions";
 
 /** Load all sessions (or a large batch) */
-export async function getSessions(limit = 100000): Promise<SessionDocument[]> {
-  const res = await queryDocuments<SessionDocument>({ cname: CNAME, limit, pageNum: 1, pageSize: limit });
+export async function getSessions(pageSize = 100000): Promise<SessionDocument[]> {
+  const res = await queryDocuments<SessionDocument>({ cname: CNAME, pageNum: 1, pageSize });
   if (res.code !== 0) throw new Error(res.message || "Failed to load sessions");
   return res.data?.list ?? [];
 }
 
 /** Get a single session by key */
 export async function getSession(key: string): Promise<SessionDocument | null> {
-  const res = await queryDocuments<SessionDocument>({ cname: CNAME, filter: { key }, limit: 1 });
+  const res = await queryDocuments<SessionDocument>({ cname: CNAME, filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to get session");
   return res.data?.list?.[0] ?? null;
 }

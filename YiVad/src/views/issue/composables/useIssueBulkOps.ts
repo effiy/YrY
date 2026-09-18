@@ -4,10 +4,7 @@ import type { useIssueStore } from "@/stores/modules/issue";
 
 const t = (key: string, options?: Record<string, any>) => i18n.global.t(key, options as any);
 
-export function useIssueBulkOps(opts: {
-  store: ReturnType<typeof useIssueStore>;
-  refreshTable: () => void;
-}) {
+export function useIssueBulkOps(opts: { store: ReturnType<typeof useIssueStore>; refreshTable: () => void }) {
   const { store, refreshTable } = opts;
 
   async function batchDelete(ids: (string | number)[]) {
@@ -30,10 +27,7 @@ export function useIssueBulkOps(opts: {
       .catch(() => {});
   }
 
-  async function bulkChangeStatus(
-    scope: { selectedListIds?: (string | number)[] },
-    status: string
-  ) {
+  async function bulkChangeStatus(scope: { selectedListIds?: (string | number)[] }, status: string) {
     const ids = scope.selectedListIds || [];
     if (!ids.length) return;
     for (const id of ids) {

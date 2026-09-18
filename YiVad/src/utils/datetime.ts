@@ -62,8 +62,7 @@ export function formatAbsolute(ts: number | string | Date | undefined | null): s
 export function formatDate(iso: string | undefined | null, opts?: { fallback?: string; variant?: "full" | "short" }): string {
   const fallback = opts?.fallback ?? "-";
   if (!iso) return fallback;
-  const options: Intl.DateTimeFormatOptions = opts?.variant === "short"
-    ? { month: "short", day: "numeric" }
-    : { year: "numeric", month: "short", day: "numeric" };
+  const options: Intl.DateTimeFormatOptions =
+    opts?.variant === "short" ? { month: "short", day: "numeric" } : { year: "numeric", month: "short", day: "numeric" };
   return new Date(iso).toLocaleDateString("zh-CN", options);
 }

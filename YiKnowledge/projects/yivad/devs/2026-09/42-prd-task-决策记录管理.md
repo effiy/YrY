@@ -1,37 +1,66 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-93"
-title: "YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-93: 决策记录管理 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "42-prd-决策记录管理.md"
 ---
 
-# YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化 — 开发任务
+# YV-09-93: 决策记录管理 — 开发方案
 
-> 来源 PRD：[42-prd-决策记录管理.md](../prds/2026-09/42-prd-决策记录管理.md)
-> 需求编号：YV-09-93 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-93 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 操作 | 路径 | 验证 | 人天 |
-|------|------|------|------|------|
-| 1 | 实现 ADR 数据模型和 API | `types/adr.ts` + `api/adr.ts` | CRUD 操作正确 | 0.03 |
-| 2 | 实现 ADR 列表和看板 | `ADRTable.vue` + `ADRKanban.vue` | 状态看板拖拽 | 0.05 |
-| 3 | 实现 ADR 创建编辑器 | `ADRCreationPage.vue` + `ADRMarkdownEditor.vue` | 模板选择和 Markdown 编辑 | 0.06 |
-| 4 | 实现 ADR 详情和关系面板 | `ADRDetailPage.vue` + `ADRRelations.vue` | 取代链和相关 ADR 展示 | 0.04 |
-| 5 | 实现时间线可视化 | `ADRTimeline.vue` | 水平时间轴和关系连线 | 0.04 |
-| 6 | 实现 Markdown 同步 | `adr-export-service.ts` | 导出/导入格式正确 | 0.03 |
-| 7 | 实现搜索和整合 | `ADRSearch.vue` + 路由 + 测试 | 全文搜索和页面可用 | 0.05 |
-
-**总人天：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+ADR (Architecture Decision Record) 管理工具：创建/查看/关联决策记录，与 YiKnowledge 中 `leader/decisions/` 目录同步。
+
+### ADR 结构
+
+```markdown
+# ADR-{NNN}: {决策标题}
+
+## 背景
+{为什么需要做决策}
+
+## 决策
+{选择了什么方案}
+
+## 选项
+| 选项 | 优点 | 缺点 |
+|------|------|------|
+
+## 后果
+{正面/负面后果}
+```
+
+> 当前阶段：低优先级。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

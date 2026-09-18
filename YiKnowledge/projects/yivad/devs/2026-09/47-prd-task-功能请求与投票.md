@@ -1,38 +1,60 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-100"
-title: "YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-100: 功能请求与投票 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "47-prd-功能请求与投票.md"
 ---
 
-# YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪 — 开发任务
+# YV-09-100: 功能请求与投票 — 开发方案
 
-> 来源 PRD：[47-prd-功能请求与投票.md](../prds/2026-09/47-prd-功能请求与投票.md)
-> 需求编号：YV-09-100 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-100 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + Feature Service | `types/featureRequest.ts`, `services/featureService.ts` | 类型检查通过 | 0.04 |
-| 2 | 投票按钮组件 | `VoteButton.vue` | 投票/撤票交互正常 | 0.03 |
-| 3 | 请求卡片组件 | `FRequestCard.vue` | 卡片渲染 + 投票状态 | 0.04 |
-| 4 | 请求创建弹窗 | `FRequestCreate.vue` | 表单验证 + 创建成功 | 0.04 |
-| 5 | 请求详情抽屉 | `FRequestDetail.vue` | 详情展示 + 状态时间线 | 0.05 |
-| 6 | 我的投票面板 | `MyVotes.vue` | 已投票列表 + 剩余票数 | 0.04 |
-| 7 | 功能请求主页面 | `FeatureRequest.vue` | 排名列表 + 筛选排序 | 0.05 |
-| 8 | 路由 + 菜单配置 | `routes.ts`, 菜单 | 页面可访问 | 0.01 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+用户可提交功能请求，其他用户投票，按票数排列优先级。管理员可标记为 planned/in_progress/done。
+
+### 数据模型
+
+```typescript
+interface FeatureRequest {
+  title: string;
+  description: string;
+  votes: number;
+  voters: string[];    // 用户 ID，防重复投票
+  status: "open" | "planned" | "in_progress" | "done" | "declined";
+  linkedIssue?: string; // 关联开发 Issue
+}
+```
+
+> 低优先级。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

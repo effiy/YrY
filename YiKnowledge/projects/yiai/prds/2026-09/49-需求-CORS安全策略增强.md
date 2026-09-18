@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-45: 服务端 CORS 安全策略增强 — 动态 Origin 白名单与凭证管理"
 tags: [需求文档, CORS, 安全, Origin白名单, 凭证管理, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,12 +20,18 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yiai-001]
+related_modules: [49-prd-task-CORS安全策略增强]
+related_tests: [49-prd-test-CORS安全策略增强]
 ---
 
 # YA-09-45: CORS 安全策略增强 — 动态 Origin 白名单与凭证管理
 
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+
 > 需求编号：YA-09-45 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -53,6 +62,7 @@ YiAi 当前 CORS 配置为 `allow_origins=["*"]`，存在以下安全风险：
 | 向后兼容 | 收紧 CORS 可能导致现有前端无法访问 | 中 |
 | 通配符 | `chrome-extension://*` 不是标准 CORS 通配符 | 中 |
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前状态
@@ -105,6 +115,7 @@ sequenceDiagram
 | 无预检缓存 | 每次非简单请求 | 性能浪费 | 低 |
 | 无追踪头暴露 | 持续 | 前端调试困难 | 低 |
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策选项对比
@@ -147,6 +158,7 @@ sequenceDiagram
 | D-03 | 凭证支持 | True | 支持 Token 认证 |
 | D-04 | 追踪头暴露 | X-Request-Id, X-Response-Time-Ms | 前端调试需要 |
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -190,6 +202,7 @@ flowchart LR
 | 安全 vs 便利 | 安全（白名单） | 新增 Origin 需修改配置 |
 | 缓存 vs 实时 | 缓存 3600s | 修改 CORS 后最多等 1 小时 |
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 新增文件
@@ -352,6 +365,7 @@ setup_cors(app)
 | `expose_headers` | 未设置 | 4 个 | 追踪头 |
 | `max_age` | 未设置 | `3600` | 预检缓存 |
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 | 步骤 | 文件 | 操作 | 验证 | 人天 |
@@ -364,6 +378,7 @@ setup_cors(app)
 
 **总人天：0.5d**
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 ### 7.1 基准测试
@@ -381,6 +396,7 @@ setup_cors(app)
 | 内存 | < 1KB | 白名单和正则模式 |
 | CPU | < 0.01% | Origin 校验 |
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -433,6 +449,7 @@ WHEN  服务端在响应中设置 X-Request-Id
 THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 ```
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 | 风险 | 概率 | 影响 | 严重级别 | 缓解措施 | 应急预案 |
@@ -442,6 +459,7 @@ THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 | 正则表达式过于宽松 | 低 | 中 | 中等 | 正则审查，确保最小匹配 | 收紧正则 |
 | Chrome 扩展更新后 ID 变化 | 中 | 中 | 中等 | 使用正则 `[a-z]{32}` 匹配 | YiPet 用户需重新加载扩展 |
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚方法 | 影响范围 | 恢复时间 |
@@ -450,6 +468,7 @@ THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 | CORS 配置导致所有请求失败 | 回退到 `allow_origins=["*"]` | 失去安全增强 | < 30 秒 |
 | 正则匹配异常 | 将动态 Origin 改为静态添加 | 失去自动匹配 | < 2 分钟 |
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 **D-01：选择正则匹配 + 白名单混合策略**
@@ -468,6 +487,7 @@ THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 
 **理由**：YiAi 使用 `X-Token` 头和 JWT 认证，需要 `credentials: 'include'` 在跨域请求中携带 Token。`allow_credentials=True` 要求 `allow_origins` 不能为 `*`，这正是白名单策略的驱动力。
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 ### 12.1 指标
@@ -495,6 +515,7 @@ THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 | CORS 拒绝 | `cors_origin_denied_total > 0` | Warning | 检查是否有合法前端被误拒 |
 | 预检请求过多 | `cors_preflight_total` 每分钟 > 100 | Info | 检查 max_age 是否生效 |
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 | 安全要求 | 实现方式 | 验证方法 |
@@ -505,6 +526,7 @@ THEN  前端 JavaScript 可通过 response.headers.get('X-Request-Id') 读取
 | 凭证安全 | allow_credentials=true 配合精确 Origin | 安全审查 |
 | 无敏感头暴露 | 仅暴露追踪头，不暴露内部头 | 代码审查 |
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] CORS 白名单仅允许已知前端域名（YiVad、YiPet）

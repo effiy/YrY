@@ -4,7 +4,7 @@ aliases: [resources-moc, resources-index, templates]
 tags: [MOC, resources, index, leaf, templates]
 category: curator/templates
 created: 2026-08-03
-updated: 2026-09-10
+updated: 2026-09-15
 last_verified: 2026-09-10
 source: internal
 type: summary
@@ -37,7 +37,7 @@ related:
 2. 复制模板文件到目标角色目录
 3. 替换所有 `{{placeholder}}` 为实际内容
 4. 更新 frontmatter（title、tags、category、日期等）
-5. 执行[就绪检查清单](../governance/readiness-checklist.md) 后再发布
+5. 执行[就绪检查清单](../governance/04-治理-就绪检查清单.md) 后再发布
 
 ## 模板清单
 

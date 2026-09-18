@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-212: HITL-人机协同标注 — 标注流水线、任务创建分配、标注界面、标注者间一致性、质量控制、主动学习采样"
 tags: [需求文档, HITL, 人机协同, 数据标注, 主动学习, 质量控制, NLP]
 category: 项目/后端/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.3
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [212-prd-task-HITL-人机协同标注]
+related_tests: [212-prd-test-HITL-人机协同标注]
 ---
 
 # YA-09-212: HITL-人机协同标注 — 标注流水线、任务分配、标注界面、标注者一致性、质控、主动学习采样
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-212 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
 > 依赖：YA-09-14（RPC 路由基础设施）、MongoDB（标注数据存储）、用户管理服务（YA-09-07）
@@ -60,6 +68,7 @@ roles: [engineer]
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前标注相关能力
@@ -133,6 +142,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：标注类型支持范围 — 仅分类 vs 多类型 vs 可扩展插件
@@ -186,6 +196,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 HITL 标注系统架构
@@ -262,6 +273,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 标注数据模型
@@ -670,6 +682,7 @@ class ActiveSampler:
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -689,6 +702,7 @@ class ActiveSampler:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：创建标注任务并分配样本
@@ -742,6 +756,7 @@ class ActiveSampler:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -754,6 +769,7 @@ class ActiveSampler:
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -764,6 +780,7 @@ class ActiveSampler:
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择 Cohen's Kappa 而非简单的一致率？
@@ -784,6 +801,7 @@ Gold Set 需要专家预先标注标准答案，这是最昂贵的标注环节�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -808,6 +826,7 @@ Gold Set 需要专家预先标注标准答案，这是最昂贵的标注环节�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 标注样本的 content 字段支持灵活结构（不硬编码字段名）

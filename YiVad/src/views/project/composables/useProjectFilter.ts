@@ -64,12 +64,7 @@ export function useProjectFilter(): UseProjectFilterReturn {
   const hasActiveFilter = computed(() => Object.keys(activeFilter.value).length > 0);
   const canUndo = computed(() => filterHistory.value.length > 0);
 
-  function matchesFilter(
-    project: Project,
-    stats: ProjectStats,
-    risks: RiskKey[],
-    health: HealthLevel
-  ): boolean {
+  function matchesFilter(project: Project, stats: ProjectStats, risks: RiskKey[], health: HealthLevel): boolean {
     const f = activeFilter.value;
     if (f.status && project.status !== f.status) return false;
     if (f.project && project.key !== f.project) return false;
@@ -92,5 +87,15 @@ export function useProjectFilter(): UseProjectFilterReturn {
     }))
   );
 
-  return { activeFilter, setFilter, removeFilter, clearAllFilters, undoLastFilter, hasActiveFilter, canUndo, matchesFilter, activeFilterPills };
+  return {
+    activeFilter,
+    setFilter,
+    removeFilter,
+    clearAllFilters,
+    undoLastFilter,
+    hasActiveFilter,
+    canUndo,
+    matchesFilter,
+    activeFilterPills
+  };
 }

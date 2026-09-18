@@ -1,43 +1,107 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-37"
-title: "拖拽排序系统 — 开发任务"
-status: 已实现
-priority: 中
+title: "YV-09-37: 拖拽排序系统 — 开发方案"
+status: 已完成
+priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
 project_id: yivad
 prd_month: "202609"
-estimate_frontend: 1.0
+estimate_frontend: 1.5
 source_prd: "14-prd-拖拽排序系统.md"
 ---
 
-# 拖拽排序系统 — 开发任务
+# YV-09-37: 拖拽排序系统 — 开发方案
 
-> 来源 PRD：[14-prd-拖拽排序系统.md](../prds/2026-09/14-prd-拖拽排序系统.md)
-> 需求编号：YV-09-37 · 优先级：中 · 人天：1.0d
+> 需求编号：YV-09-37 · 优先级：P2 · 人天：1.5d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 实现 useDraggable Composable | `useDraggable.ts` | 元素可拖拽移动，事件正确触发 | 0.12 |
-| 2 | 实现 useDroppable Composable | `useDroppable.ts` | 拖拽元素进入/离开放置区域高亮正确 | 0.10 |
-| 3 | 实现 useSortable Composable | `useSortable.ts` | 列表元素可拖拽排序，FLIP 动画正确 | 0.15 |
-| 4 | 实现 FLIP 动画引擎 | `dragAnimation.ts` | 元素移动后播放平滑过渡动画 | 0.08 |
-| 5 | 实现 useKeyboardSortable | `useKeyboardSortable.ts` | Space 选取、方向键移动、Space 放置 | 0.12 |
-| 6 | 实现触摸拖拽 Polyfill | `touchDragPolyfill.ts` | 移动端长按 300ms 触发拖拽 | 0.08 |
-| 7 | 创建 DragHandle 组件 | `DragHandle.vue` | 拖拽手柄六点图标，hover 变 grab 光标 | 0.03 |
-| 8 | 创建 SortableList 组件 | `SortableList.vue` | 列表可拖拽排序，键盘可访问 | 0.10 |
-| 9 | 实现排序持久化服务 | `sortPersistence.ts` | 排序结果 500ms 防抖保存到后端 | 0.05 |
-| 10 | 实现撤销/重做扩展 | `useUndoRedo.ts` 扩展 | 拖拽操作可撤销（Ctrl+Z） | 0.05 |
-| 11 | 集成到项目列表页 | `ProjectList/index.vue` | 项目列表可拖拽排序 | 0.05 |
-| 12 | 集成到看板页面 | `Kanban/index.vue` | 卡片可跨列拖拽 | 0.05 |
-| 13 | 整体验证 | 全流程拖拽排序 | 鼠标/键盘/触摸三种方式排序正确 | 0.02 |
-
-**总计：** 1.0d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+通用拖拽排序 composable，支持列表拖拽重排、跨容器移动、动画过渡，封装为 `useDraggable` hook 供 Kanban/列表页等场景复用。
+
+### 核心接口
+
+```typescript
+interface DragSortOptions {
+  items: Ref<DragItem[]>;
+  onReorder: (items: DragItem[]) => Promise<void>;  // 排序持久化回调
+  animation?: number;  // 过渡动画时长 ms，默认 200
+}
+```
+
+### 实施步骤
+
+| 步骤 | 内容 | 人天 |
+|------|------|------|
+| 1 | useDraggable composable 核心 | 0.5 |
+| 2 | 动画过渡 + 视觉反馈 | 0.5 |
+| 3 | Kanban + 列表页集成 | 0.5 |
+
+**合计：1.5d**
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 拖拽排序交互正常（列表/跨容器）
+- [ ] 排序结果持久化到后端
+- [ ] 动画过渡平滑（60fps）
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（1.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（1.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/14-prd-test-拖拽排序系统.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

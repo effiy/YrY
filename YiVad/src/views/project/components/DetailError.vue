@@ -1,16 +1,12 @@
 <template>
   <div class="de-root">
-    <el-result
-      icon="error"
-      :title="$t('project.error.loadOverview')"
-      :sub-title="message"
-    >
+    <el-result icon="error" :title="$t('project.error.loadOverview')" :sub-title="message">
       <template #extra>
         <el-button type="primary" @click="$emit('retry')">
-          {{ $t('common.retry') }}
+          {{ $t("common.retry") }}
         </el-button>
         <el-button @click="$router.push('/project')">
-          {{ $t('project.detail.backToProjects') }}
+          {{ $t("project.detail.backToProjects") }}
         </el-button>
       </template>
     </el-result>
@@ -30,8 +26,8 @@ defineEmits<{
 <style scoped lang="scss">
 .de-root {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   min-height: 400px;
   padding: 24px;
 }

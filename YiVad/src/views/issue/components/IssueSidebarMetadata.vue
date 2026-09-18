@@ -7,11 +7,11 @@
     <div class="id-sb-group__body">
       <div class="id-sb-row">
         <span class="id-sb-row__label">Source</span>
-        <span class="id-sb-row__value">{{ issue.source ? ISSUE_SOURCE_MAP[issue.source] : '-' }}</span>
+        <span class="id-sb-row__value">{{ issue.source ? ISSUE_SOURCE_MAP[issue.source] : "-" }}</span>
       </div>
       <div class="id-sb-row">
         <span class="id-sb-row__label">Review</span>
-        <span class="id-sb-row__value">{{ issue.review_status ? REVIEW_STATUS_MAP[issue.review_status] : '-' }}</span>
+        <span class="id-sb-row__value">{{ issue.review_status ? REVIEW_STATUS_MAP[issue.review_status] : "-" }}</span>
       </div>
       <div class="id-sb-row">
         <span class="id-sb-row__label">Created</span>

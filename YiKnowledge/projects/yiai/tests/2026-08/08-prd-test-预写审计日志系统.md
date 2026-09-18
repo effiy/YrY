@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-10"
 source_prds: ["08-需求-预写审计日志系统"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # 预写审计日志系统 — 装饰器驱动的数据变更追踪 — 测试规格
 

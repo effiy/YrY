@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-49"
 source_prds: ["53-需求-ETag缓存验证"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-49: 服务端 ETag 缓存验证 — 条件请求与 304 响应优化重复传输 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[53-需求-ETag缓存验证.md](../../prds/2026-09/53-需求-ETag缓存验证.md)
 > 提取日期：2026-09-11

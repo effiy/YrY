@@ -7,7 +7,7 @@ updated: 2026-09-10
 last_verified: 2026-09-10
 source: https://github.com/deepseek-ai/deepseek-harness
 type: summary
-status: evolving
+status: stable
 lifecycle: reference
 review_cycle: quarterly
 roles: [aier, engineer]

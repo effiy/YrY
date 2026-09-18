@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-85: Content Script Worker 线程池 — Web Worker 后台计算与主线程隔离方案"
 tags: [需求文档, Content Script, Web Worker, 线程池, 主线程隔离, 性能, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 1.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [92-prd-task-WebWorker线程池]
+related_tests: [92-prd-test-WebWorker线程池]
 ---
 
 # YP-09-85: Content Script Web Worker 线程池 — 主线程隔离计算
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-85 · 优先级：P2 · 人天：1.5d · 状态：需求已编写
 > 依赖：YP-09-01（Content Script 稳定性）、YP-09-10（性能剖析）
@@ -52,6 +60,7 @@ YiPet 聊天窗口中有多个计算密集型操作在当前主线程（UI 线�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前主线程计算任务
@@ -100,6 +109,7 @@ Main Thread (UI 线程)
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：Worker 架构 — 单 Worker vs 线程池 vs 动态 Worker
@@ -144,6 +154,7 @@ Main Thread (UI 线程)
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后架构
@@ -339,6 +350,7 @@ self.onmessage = (e: MessageEvent<WorkerMessage>) => {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -386,6 +398,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证方式 | 人天 |
@@ -403,6 +416,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 基准测试
@@ -434,6 +448,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：Markdown 渲染卸载到 Worker
@@ -474,6 +489,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -486,6 +502,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 影响范围 | 恢复时间 |
@@ -496,6 +513,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：固定 3 Worker 线程池
@@ -524,6 +542,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 指标
@@ -554,6 +573,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 ### Chrome MV3 合规
@@ -567,6 +587,7 @@ watch(() => props.content, async (content) => {
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] Worker 线程池固定 3 Worker，通过优先级队列调度

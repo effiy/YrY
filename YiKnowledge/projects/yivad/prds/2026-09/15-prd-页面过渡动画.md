@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 页面过渡动画
 tags:
 - 动画
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -30,7 +33,39 @@ source_okr: [yivad-003]
 # 页面过渡动画
 
 > 需求编号：YV-09-39 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/15-prd-task-页面过渡动画.md)，验证方案见 [测试方案](../../tests/2026-09/15-prd-test-页面过渡动画.md)。
 > 依赖：无（独立功能，可与需求并行开发）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | App.vue 过渡容器 | 参见 §App.vue 过渡容器 |
+| FR-2 | usePageTransition Composable | 参见 §usePageTransition Co |
+| FR-3 | transitions.css 过渡样式 | 参见 §transitions.css 过渡样式 |
+| FR-4 | transitionGuard 路由守卫 | 参见 §transitionGuard 路由守卫 |
+| FR-5 | SharedElementTransition 组件 | 参见 §SharedElementTransit |
 
 ## 改动总览
 
@@ -88,6 +123,7 @@ YiVad 当前页面切换是瞬时完成的，没有任何过渡动画。用户�
 | 4 | **无无障碍适配** -- 动画对部分用户造成不适 | **中** | 前庭功能障碍用户可能因动画感到眩晕 |
 | 5 | **无共享元素过渡** -- 跨页面的相同元素无法平滑过渡 | **低** | 列表项到详情页的过渡缺乏连续性 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前页面切换流程
@@ -120,6 +156,7 @@ YiVad 当前页面切换是瞬时完成的，没有任何过渡动画。用户�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 过渡动画实现方式选型
@@ -171,6 +208,7 @@ declare module "vue-router" {
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -227,6 +265,7 @@ Mode: out-in（先离开再进入，避免两个页面同时可见）
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 App.vue 过渡容器
@@ -598,6 +637,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -615,6 +655,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 单元测试：usePageTransition
@@ -653,6 +694,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -665,6 +707,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -681,6 +724,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 使用 Vue Transition 而非纯 CSS 方案
@@ -713,6 +757,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -736,6 +781,7 @@ const enabled = computed(() => props.enabled !== false && supportsVT.value);
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `transitions.css` 中 5 种过渡动画定义完整，使用 `transform` 和 `opacity`（仅触发 Composite）

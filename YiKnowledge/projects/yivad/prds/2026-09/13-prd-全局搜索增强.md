@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 全局搜索增强
 tags:
 - 搜索
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 已实现
+status: 已完成
+implementation_progress: 已全部实现
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,42 @@ source_okr: [yivad-003]
 # 全局搜索增强
 
 > 需求编号：YV-09-36 · 优先级：P2 · 人天：1.0d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/13-prd-task-全局搜索增强.md)，验证方案见 [测试方案](../../tests/2026-09/13-prd-test-全局搜索增强.md)。
 > 依赖：YiAi 后端搜索端点（需支持跨集合搜索）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 命令面板主组件 | 参见 §命令面板主组件 |
+| FR-2 | 搜索 Composable | 参见 §搜索 Composable |
+| FR-3 | 模糊搜索引擎 | 参见 §模糊搜索引擎 |
+| FR-4 | 搜索结果分组组件 | 参见 §搜索结果分组组件 |
+| FR-5 | 搜索结果项组件 | 参见 §搜索结果项组件 |
+| FR-6 | 搜索历史 Composable | 参见 §搜索历史 Composable |
+| FR-7 | 搜索索引服务 | 参见 §搜索索引服务 |
+| FR-8 | 类型定义 | 参见 §类型定义 |
 
 ## 改动总览
 
@@ -107,6 +145,7 @@ YiVad 当前有基础的全局搜索功能（需求 17），但缺乏命令面�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前搜索流程
@@ -135,6 +174,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 命令面板触发方式选型
@@ -185,6 +225,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -273,6 +314,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 命令面板主组件
@@ -1149,6 +1191,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1171,6 +1214,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：CommandPalette
@@ -1209,6 +1253,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1221,6 +1266,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1237,6 +1283,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 选择 Fuse.js 作为前端模糊搜索引擎
@@ -1269,6 +1316,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1292,6 +1340,7 @@ export interface SearchIndexEntry {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `CommandPalette.vue` 使用 Teleport 挂载到 body，z-index 为 9999

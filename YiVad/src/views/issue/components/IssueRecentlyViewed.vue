@@ -45,45 +45,45 @@ function onClear() {
 <style scoped lang="scss">
 .issue-list__recent {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
   padding: 8px 12px;
   margin-bottom: 16px;
-  border-radius: 8px;
   background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
 .issue-list__recent-label {
+  margin-right: 2px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  margin-right: 2px;
 }
 .issue-list__recent-chip {
   display: inline-flex;
-  align-items: center;
   gap: 5px;
+  align-items: center;
   padding: 2px 9px;
   font-size: 12px;
   color: var(--el-text-color-primary);
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 999px;
-  cursor: pointer;
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
   &:hover {
     border-color: var(--el-color-primary);
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
   }
 }
 .issue-list__recent-dot {
+  flex-shrink: 0;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .issue-list__recent-key {
   font-family: monospace;
@@ -97,14 +97,14 @@ function onClear() {
   white-space: nowrap;
 }
 .issue-list__recent-clear {
+  padding: 4px;
   margin-left: auto;
-  border: none;
-  background: transparent;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
   font-size: 13px;
   line-height: 1;
-  padding: 4px;
+  color: var(--el-text-color-placeholder);
+  cursor: pointer;
+  background: transparent;
+  border: none;
   &:hover {
     color: var(--el-color-danger);
   }

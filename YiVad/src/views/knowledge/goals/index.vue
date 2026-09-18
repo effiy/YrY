@@ -5,12 +5,12 @@
       <el-tag size="small" type="info">{{ goalCount }} objectives · {{ roleCount }} roles</el-tag>
       <div class="goals__nav">
         <el-button size="small" text type="primary" :icon="House" @click="go('/home/index')">Home</el-button>
-        <el-button size="small" text type="primary" :icon="Aim" @click="go('/executiver/okr')">OKR Dashboard</el-button>
+        <el-button size="small" text type="primary" :icon="Aim" @click="go('/knowledge/executive/okr')">OKR Dashboard</el-button>
       </div>
     </div>
 
     <div v-for="role in roles" :key="role.id" class="goals__role">
-      <div class="goals__role-head" @click="go(`/executiver/okr/${role.id}`)">
+      <div class="goals__role-head" @click="go(`/knowledge/executive/okr?role=${role.id}`)">
         <span class="goals__role-icon">{{ role.icon }}</span>
         <span class="goals__role-name">{{ role.name }}</span>
         <span class="goals__role-desc">{{ role.description }}</span>
@@ -23,7 +23,7 @@
           :key="g.id"
           class="goals__card"
           shadow="hover"
-          @click="go(`/executiver/okr/${role.id}?goal=${g.id}`)"
+          @click="go(`/knowledge/executive/okr?role=${role.id}&goal=${g.id}`)"
         >
           <div class="goals__card-top">
             <span class="goals__card-icon">{{ g.icon }}</span>
@@ -52,8 +52,8 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { House, Aim, ArrowRight } from "@element-plus/icons-vue";
-import { ROLE_IDS, rolesData, goalsData } from "@/views/knowledge/executiver/okrData";
-import type { GoalItem } from "@/views/knowledge/executiver/okrData";
+import { ROLE_IDS, rolesData, goalsData } from "@/views/knowledge/executive/okrData";
+import type { GoalItem } from "@/views/knowledge/executive/okrData";
 
 const router = useRouter();
 
@@ -133,10 +133,10 @@ function go(path: string) {
   transition: color 0.15s;
 }
 .goals__role-desc {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
   white-space: nowrap;
 }
 .goals__role-arrow {
@@ -149,10 +149,10 @@ function go(path: string) {
   gap: 12px;
 }
 .goals__card {
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  cursor: pointer;
 }
 .goals__card-top {
   display: flex;
@@ -199,13 +199,13 @@ function go(path: string) {
 }
 .goals__card-avg {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
   margin-top: auto;
   font-size: 12px;
   color: var(--el-text-color-secondary);
   border-top: 1px solid var(--el-border-color-lighter);
-  padding-top: 8px;
   b {
     font-variant-numeric: tabular-nums;
     color: var(--el-text-color-primary);

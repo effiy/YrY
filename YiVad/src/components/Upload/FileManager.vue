@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import type { UploadUserFile } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import FilePreview from "./FilePreview.vue";
@@ -14,14 +14,17 @@ interface FileItem {
   uploadDate: string;
 }
 
-const props = withDefaults(defineProps<{
-  files: FileItem[];
-  viewMode?: "card" | "list";
-  selectable?: boolean;
-}>(), {
-  viewMode: "card",
-  selectable: false,
-});
+const props = withDefaults(
+  defineProps<{
+    files: FileItem[];
+    viewMode?: "card" | "list";
+    selectable?: boolean;
+  }>(),
+  {
+    viewMode: "card",
+    selectable: false
+  }
+);
 
 const emit = defineEmits<{
   (e: "delete", file: FileItem): void;
@@ -35,11 +38,18 @@ const previewVisible = ref(false);
 const previewFile = ref<FileItem | null>(null);
 const selectedIds = ref<Set<string>>(new Set());
 const searchQuery = ref("");
+const localViewMode = ref(props.viewMode);
+watch(
+  () => props.viewMode,
+  v => {
+    localViewMode.value = v;
+  }
+);
 
 const filteredFiles = computed(() => {
   if (!searchQuery.value) return props.files;
   const q = searchQuery.value.toLowerCase();
-  return props.files.filter((f) => f.name.toLowerCase().includes(q) || f.tags.some((t) => t.toLowerCase().includes(q)));
+  return props.files.filter(f => f.name.toLowerCase().includes(q) || f.tags.some(t => t.toLowerCase().includes(q)));
 });
 
 function openPreview(file: FileItem) {
@@ -65,14 +75,8 @@ function formatSize(bytes: number): string {
   <div class="file-manager">
     <!-- Toolbar -->
     <div class="file-manager__toolbar">
-      <el-input
-        v-model="searchQuery"
-        placeholder="搜索文件..."
-        :prefix-icon="Search"
-        clearable
-        style="width: 240px"
-      />
-      <el-radio-group v-model="viewMode" size="small">
+      <el-input v-model="searchQuery" placeholder="搜索文件..." :prefix-icon="Search" clearable style="width: 240px" />
+      <el-radio-group v-model="localViewMode" size="small">
         <el-radio-button value="card">
           <el-icon><Grid /></el-icon>
         </el-radio-button>
@@ -83,7 +87,7 @@ function formatSize(bytes: number): string {
     </div>
 
     <!-- Card view -->
-    <div v-if="viewMode === 'card'" class="file-manager__grid">
+    <div v-if="localViewMode === 'card'" class="file-manager__grid">
       <div
         v-for="file in filteredFiles"
         :key="file.uid"
@@ -150,55 +154,50 @@ function formatSize(bytes: number): string {
     justify-content: space-between;
     margin-bottom: 16px;
   }
-
   &__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 12px;
   }
-
   &__card {
+    overflow: hidden;
     border: 1px solid var(--el-border-color-light);
     border-radius: 8px;
-    overflow: hidden;
     transition: box-shadow 0.2s;
-
-    &:hover { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
-    &.selected { border-color: var(--el-color-primary); }
+    &:hover {
+      box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+    }
+    &.selected {
+      border-color: var(--el-color-primary);
+    }
   }
-
   &__card-preview {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 140px;
-    background: var(--el-fill-color-light);
     cursor: pointer;
-
+    background: var(--el-fill-color-light);
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
   }
-
   &__card-info {
     padding: 8px 10px 4px;
   }
-
   &__card-name {
     display: block;
-    font-size: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
     white-space: nowrap;
   }
-
   &__card-size {
     font-size: 12px;
     color: var(--el-text-color-secondary);
   }
-
   &__card-actions {
     display: flex;
     justify-content: space-between;

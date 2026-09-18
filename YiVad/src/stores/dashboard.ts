@@ -50,15 +50,11 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const dashboards = ref<DashboardConfig[]>(loadDashboards());
   const currentId = ref<string>("");
 
-  const currentDashboard = computed(() =>
-    dashboards.value.find(d => d.id === currentId.value) ?? null
-  );
+  const currentDashboard = computed(() => dashboards.value.find(d => d.id === currentId.value) ?? null);
 
-  const currentWidgets = computed(() =>
-    currentDashboard.value?.widgets ?? []
-  );
+  const currentWidgets = computed(() => currentDashboard.value?.widgets ?? []);
 
-  watch(dashboards, (val) => saveDashboards(val), { deep: true });
+  watch(dashboards, val => saveDashboards(val), { deep: true });
 
   function generateId(): string {
     return `w-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -73,7 +69,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       widgets: [],
       refreshInterval: 60,
       createdAt: now,
-      updatedAt: now,
+      updatedAt: now
     };
     dashboards.value.push(dashboard);
     currentId.value = dashboard.id;
@@ -155,6 +151,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     updateWidget,
     updateWidgetLayout,
     saveLayout,
-    getDashboard,
+    getDashboard
   };
 });

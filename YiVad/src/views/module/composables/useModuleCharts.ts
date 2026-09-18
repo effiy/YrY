@@ -11,9 +11,7 @@ export const STATUS_COLOR: Record<string, string> = {
   cancelled: "#f56c6c"
 };
 
-export function useModuleCharts(deps: {
-  progressPct: (m: any) => number;
-}) {
+export function useModuleCharts(deps: { progressPct: (m: any) => number }) {
   const store = useModuleStore();
 
   const statusDonutOption = computed<ECOption>(() => {
@@ -46,7 +44,14 @@ export function useModuleCharts(deps: {
       grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
       xAxis: { type: "category", data: Object.keys(buckets), axisLabel: { fontSize: 9 } },
       yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
-      series: [{ type: "bar", data: Object.values(buckets), itemStyle: { color: "#5470c6", borderRadius: [3, 3, 0, 0] }, barMaxWidth: 26 }]
+      series: [
+        {
+          type: "bar",
+          data: Object.values(buckets),
+          itemStyle: { color: "#5470c6", borderRadius: [3, 3, 0, 0] },
+          barMaxWidth: 26
+        }
+      ]
     };
   });
 

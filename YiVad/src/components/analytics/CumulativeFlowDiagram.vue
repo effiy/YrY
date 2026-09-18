@@ -28,7 +28,7 @@ const option = computed<ECOption>(() => ({
     stack: "total",
     areaStyle: {},
     color: colors[i],
-    data: props.data.map(d => (d as any)[name.toLowerCase().replace(/ /g, "_")] ?? 0),
-  })),
+    data: props.data.map(d => (d as any)[name.toLowerCase().replace(/ /g, "_")] ?? 0)
+  }))
 }));
 </script>

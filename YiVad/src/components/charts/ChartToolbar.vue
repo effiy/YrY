@@ -34,7 +34,7 @@ defineEmits<{
 <style scoped lang="scss">
 .chart-toolbar {
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
 }
 </style>

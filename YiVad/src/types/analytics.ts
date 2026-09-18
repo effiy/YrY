@@ -121,7 +121,7 @@ export interface ReportComponent {
     metrics?: MetricDef[];
     filter?: Record<string, any>;
   };
-  config?: Record<string, any>;  // chart-specific config
+  config?: Record<string, any>; // chart-specific config
 }
 
 export interface ReportDefinition {

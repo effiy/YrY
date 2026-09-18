@@ -33,7 +33,7 @@ function mapBugFile(f: KnowledgeFileEntry): YiKnowledgeBug {
   const month = hasMonth ? parts[3] : "";
   const category = parts.length >= 5 ? parts[parts.length - 2] : "";
   const meta = f.meta || {};
-  const seq = (f.name.match(/^(\d+)/)?.[1]) || "";
+  const seq = f.name.match(/^(\d+)/)?.[1] || "";
   return {
     title: (meta?.title as string) || f.name.replace(/\.md$/, ""),
     path: f.path,
@@ -46,7 +46,7 @@ function mapBugFile(f: KnowledgeFileEntry): YiKnowledgeBug {
     created: (meta?.created as string) || "",
     updated: (meta?.updated as string) || "",
     source_prd: (meta?.source_prd as string) || "",
-    seq,
+    seq
   };
 }
 
@@ -58,11 +58,7 @@ export function useBugs() {
   function deriveFrom(files: KnowledgeFileEntry[], projectKey: string) {
     const prefixes = BUG_DIRS.map(d => `projects/${projectKey}/${d}/`);
     allItems.value = files
-      .filter(f =>
-        f.path.endsWith(".md") &&
-        f.name !== "README.md" &&
-        prefixes.some(p => f.path.startsWith(p))
-      )
+      .filter(f => f.path.endsWith(".md") && f.name !== "README.md" && prefixes.some(p => f.path.startsWith(p)))
       .map(mapBugFile)
       .sort((a, b) => {
         const monthCmp = (b.prdMonth || "").localeCompare(a.prdMonth || "");

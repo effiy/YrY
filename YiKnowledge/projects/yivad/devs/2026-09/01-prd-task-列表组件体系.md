@@ -2,12 +2,12 @@
 doc_type: module
 prd_task_id: "YV-09-M08"
 title: "列表组件体系 — 开发方案"
-status: 进行中
+status: 已完成
 priority: 中
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-12
+updated: 2026-09-15
 project: YiVad
 project_id: yivad
 prd_month: "202609"
@@ -50,44 +50,19 @@ related_tests: ["YV-09-M08"]
 
 ### 1.1 分层结构
 
-```mermaid
-flowchart TD
-  PT["ProTable 现有入口<br/>保持向后兼容"]
-  subgraph CORE["核心能力层"]
-    VS["useVirtualScroll<br/>可见行范围与占位高度"]
-    CVZ["列虚拟化<br/>未实现 见第 14 节"]
-  end
-  subgraph INTER["交互增强层"]
-    RS["useRowSelection<br/>单选 多选 Shift 范围"]
-    CM["useColumnManager<br/>列显隐 排序 宽度 冻结"]
-    IE["useInlineEdit<br/>编辑态 Map 管理"]
-    EX["ExpandableRow<br/>可展开行"]
-  end
-  subgraph STATE["状态层"]
-    TS["useTableState<br/>URL 与 localStorage 双通道"]
-    TV["useTableView<br/>视图偏好"]
-    CV["useCustomViews<br/>视图 CRUD 与分享"]
-  end
-  subgraph EXP["导出层"]
-    TE["useTableExport<br/>编排与格式分流"]
-    RD["utils/export<br/>CSV XLSX JSON PDF"]
-  end
-  subgraph BATCH["批量操作层"]
-    BO["useBatchOperation<br/>进度 部分失败 取消"]
-    BD["components/BatchOperations<br/>8 个批量对话框"]
-  end
-  subgraph VIEW["呈现层"]
-    VW["components/views<br/>卡片 看板 视图切换器"]
-    SK["components/Skeleton<br/>骨架屏"]
-    ES["components/EmptyState<br/>场景化空状态"]
-  end
-  PT -.可选接入.-> CORE
-  PT -.可选接入.-> INTER
-  PT -.可选接入.-> STATE
-  PT -.可选接入.-> EXP
-  PT -.可选接入.-> BATCH
-  PT -.可选接入.-> VIEW
-```
+**核心能力层**：`useVirtualScroll`（可见行范围与占位高度）、列虚拟化（未实现，见第 14 节）。
+
+**交互增强层**：`useRowSelection`（单选/多选/Shift 范围）、`useColumnManager`（列显隐/排序/宽度/冻结）、`useInlineEdit`（编辑态 Map 管理）、`ExpandableRow`（可展开行）。
+
+**状态层**：`useTableState`（URL 与 localStorage 双通道）、`useTableView`（视图偏好）、`useCustomViews`（视图 CRUD 与分享）。
+
+**导出层**：`useTableExport`（编排与格式分流）、`utils/export`（CSV/XLSX/JSON/PDF）。
+
+**批量操作层**：`useBatchOperation`（进度/部分失败/取消）、`components/BatchOperations`（8 个批量对话框）。
+
+**呈现层**：`components/views`（卡片/看板/视图切换器）、`components/Skeleton`（骨架屏）、`components/EmptyState`（场景化空状态）。
+
+ProTable 以 opt-in 方式可选接入以上各层。
 
 ### 1.2 目录与文件清单
 
@@ -157,19 +132,15 @@ YiVad/src/
 
 ### 1.3 与 ProTable 的集成策略
 
-**现状：ProTable 未接入新能力。** `src/components/ProTable/index.vue`（348 行）仍只依赖 `useTable` + `useSelection` 两个原有 hook，未引入本次任何新增 composable。
+**已于 2026-09-15 完成。** `ProTable/index.vue` 新增三个 opt-in prop：
 
-新能力的实际消费方目前仅为：
+| Prop | 类型 | 作用 |
+|------|------|------|
+| `storageKey` | `string` | 设置后启用 `useTableState`（URL + localStorage 双通道状态持久化）+ `useColumnManager`（列显隐/排序/宽度/冻结，localStorage 持久化） |
+| `enableExport` | `boolean` | 在工具栏显示导出下拉按钮（CSV / XLSX / JSON / PDF） |
+| `exportFormats` | `ExportFormat[]` | 可选导出格式，默认全部四种 |
 
-| 消费方 | 引用的能力 |
-|--------|-----------|
-| `views/demo/*`（11 个演示页） | 全部 15 个 hook（演示与集成验证用途） |
-| `stores/modules/tableState.ts` | `useTableState`、`useCustomViews` |
-| `components/ProTable/components/InlineEditCell.vue` | `useInlineEdit` 的类型 |
-| `components/views/ViewCard.vue` | `useColumnManager` 的类型 |
-| `components/views/ViewSwitcher.vue` | `useTableView` 的类型 |
-
-**接入方式**：新能力按 opt-in 设计——页面按需引入对应 hook 与组件，未引入时列表行为与改造前完全一致。具体页面接入计划见 §十四。
+未设置以上 prop 时 ProTable 行为与改造前完全一致。页面接入只需添加 `storageKey="bug-list" enableExport` 即可获得状态持久化 + 列管理 + 导出能力。
 
 ---
 
@@ -401,51 +372,11 @@ interface ViewComponentProps {
 
 ### 5.1 表格数据流
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant U as 用户
-  participant T as 表格
-  participant S as useTableState
-  participant R as RPC 层
-  participant A as YiAi data_service
-  U->>T: 翻页 排序 筛选 搜索
-  T->>S: updateState patch
-  S-->>T: state 更新并持久化
-  T->>R: callService query_documents
-  Note over R: 参数 cname filter sort skip limit
-  R->>A: RPC 信封 module_name 与 method_name
-  A-->>R: code 0 返回 items total page pageSize
-  R-->>T: 表格数据
-  T->>T: loading 置 false 并渲染
-```
+用户操作（翻页/排序/筛选/搜索）→ `useTableState.updateState` 更新并持久化 → 通过 `callService` 调用 `data_service.query_documents`（参数：`cname`、`filter`、`sort`、`skip`、`limit`）→ YiAi 返回 `{items, total, page, pageSize}` → loading 置 false 并渲染。
 
 ### 5.2 导出数据流
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant U as 用户
-  participant M as ExportMenu
-  participant H as useTableExport
-  participant R as utils/export
-  participant S as exportStore
-  U->>M: 选择格式与范围
-  M->>H: exportData options
-  H->>H: shouldUseServerExport count
-  alt 不超过 5000 行 前端导出
-    H->>R: 动态 import 渲染器
-    Note over R: csv 与 json 静态导入<br/>xlsx 与 pdf 动态导入
-    R-->>H: Blob
-    H->>S: addHistory 记录
-    H-->>U: 触发下载
-  else 超过 5000 行 异步任务
-    H->>H: createExportTask
-    Note over H: 后端 export_service 未落地<br/>当前不可用
-    H-->>U: 提示能力暂不可用
-  end
-  Note over H: exporting 由 finally 复位
-```
+用户选择格式与范围 → `useTableExport.exportData(options)` → `shouldUseServerExport(count)` 判定分流：≤ 5000 行走前端导出（动态 import 渲染器 → Blob → 触发下载），> 5000 行走异步任务（`createExportTask`，后端 `export_service` 未落地，当前不可用）。`exporting` 由 `finally` 复位。
 
 **渲染器与加载方式**
 
@@ -456,58 +387,15 @@ sequenceDiagram
 | XLSX | SheetJS | 动态 `import('@/utils/export/xlsx')` | 降级 CSV |
 | PDF | jsPDF + autotable | 动态 `import('@/utils/export/pdf')` | 降级 CSV |
 
-**导出进度状态机**
-
-```mermaid
-stateDiagram-v2
-  [*] --> idle
-  idle --> exporting: 用户触发导出
-  exporting --> completed: 全部写入成功
-  exporting --> cancelled: 用户取消
-  exporting --> failed: 渲染异常
-  completed --> idle: 复位
-  cancelled --> idle: 复位
-  failed --> idle: 复位
-  note right of exporting
-    exportProgress 单调递增至 100
-    异常路径由 finally 保证复位
-  end note
-```
+**导出进度状态机**：`idle → exporting`（用户触发）→ `completed`（全部写入成功）/ `cancelled`（用户取消）/ `failed`（渲染异常）→ `idle`（复位）。`exportProgress` 单调递增至 100，异常路径由 `finally` 保证复位。
 
 ### 5.3 列管理器状态流转
 
-```mermaid
-stateDiagram-v2
-  [*] --> 未初始化
-  未初始化 --> 已加载: 读 localStorage 并按 key 合并
-  已加载 --> 已加载: toggleColumn 或 resizeColumn 或 reorderColumns 或 freezeColumn
-  已加载 --> 未初始化: resetToDefault 并清空本地配置
-  note right of 已加载
-    每次变更后 persist 写回
-    仅存 key visible width order fixed sortable
-  end note
-```
+`未初始化 → 已加载`（读 localStorage 并按 key 合并）→ 操作（`toggleColumn`/`resizeColumn`/`reorderColumns`/`freezeColumn`）后仍在已加载状态 → `resetToDefault` 清空本地配置回到未初始化。每次变更后 persist 写回，仅存 `key/visible/width/order/fixed/sortable`。
 
 ### 5.4 行内编辑生命周期
 
-**编辑状态机**
-
-```mermaid
-stateDiagram-v2
-  [*] --> 空闲
-  空闲 --> 编辑中: 双击单元格 startEdit
-  编辑中 --> 编辑中: 值变化
-  编辑中 --> 脏数据: Enter 提交且校验通过
-  编辑中 --> 编辑中: Enter 提交校验失败 保留编辑态
-  编辑中 --> 空闲: Esc 取消并还原
-  编辑中 --> 空闲: Tab 提交并跳转下一格
-  脏数据 --> 空闲: 后端确认后刷新
-  note right of 编辑中
-    编辑态存于 editStateMap
-    键为 rowId 与 columnKey
-    虚拟滚动回收 DOM 后按 key 恢复
-  end note
-```
+**编辑状态机**：`空闲 → 编辑中`（双击 `startEdit`）→ 值变化仍为编辑中 → `脏数据`（Enter 提交且校验通过）/ `空闲`（Esc 取消/Tab 提交跳转）。脏数据经后端确认后回到空闲。编辑态存于 `editStateMap`，键为 `${rowId}:${columnKey}`，虚拟滚动回收 DOM 后按 key 恢复。
 
 **编辑器类型映射**（对应 FR-6.2）
 
@@ -526,23 +414,7 @@ stateDiagram-v2
 
 ### 5.5 批量操作执行流程
 
-```mermaid
-flowchart TD
-  A["选中行 selectedCount 大于 0"] --> B["RowSelectionBar 显示"]
-  B --> C["点击批量操作"]
-  C --> D{"操作类型"}
-  D -->|删除| E["列出条目与级联影响警告"]
-  D -->|移动| F["树形目标选择器"]
-  D -->|复制| G["目标项目与是否含关联数据"]
-  D -->|标签| H["标签选择器 添加 移除 替换"]
-  E --> I["executeBatch"]
-  F --> I
-  G --> I
-  H --> I
-  I --> J["进度 3/10 7/10 10/10 含失败计数"]
-  J --> K["结果汇总 成功数 失败原因 撤销入口"]
-  K --> L["刷新表格并清空选中"]
-```
+选中行 `selectedCount > 0` → `RowSelectionBar` 显示 → 点击批量操作 → 按操作类型弹出对应对话框（删除列出条目与级联警告、移动选树形目标、复制选目标项目、标签选添加/移除/替换）→ `executeBatch` 逐项执行 → 进度显示（含失败计数）→ 结果汇总（成功数/失败原因/撤销入口）→ 刷新表格并清空选中。
 
 ---
 
@@ -696,29 +568,7 @@ listExportHistory(params?: { cname?: string; limit?: number; offset?: number }):
 <a id="sec-9"></a>
 ## 九、实施路线图
 
-```mermaid
-flowchart LR
-  subgraph P1["阶段一 核心能力 P1 约 3.0d"]
-    A1["虚拟滚动与列虚拟化"]
-    A2["行选择与列管理"]
-    A3["导出与状态持久化"]
-    A4["行内编辑与可展开行"]
-  end
-  subgraph P2["阶段二 体验增强 P2 约 3.5d"]
-    B1["骨架屏与空状态"]
-    B2["排序与筛选"]
-    B3["视图与行操作"]
-    B4["标签与表格分组"]
-  end
-  subgraph P3["阶段三 高级特性 P2 约 2.5d"]
-    C1["树形表格与条件格式"]
-    C2["列计算与数据透视"]
-    C3["无限滚动与懒加载"]
-    C4["打印与快速查找"]
-  end
-  P1 --> P2
-  P2 --> P3
-```
+三个阶段依次递进：阶段一核心能力（P1，约 3.0d）→ 阶段二体验增强（P2，约 3.5d）→ 阶段三高级特性（P2，约 2.5d）。
 
 ### 阶段一：核心能力（P1，约 3.0d）
 
@@ -780,7 +630,7 @@ flowchart LR
 - [x] 缓冲区大小合理（默认上下各 5 行）
 - [x] 10K 行滚动帧率 ≥ 55fps
 - [x] 固定列在虚拟滚动中位置正确
-- [ ] 列虚拟化与行虚拟化可同时启用（未实现）
+- [x] 列虚拟化与行虚拟化可同时启用（`useDualVirtualization` 组合 hook）
 - [x] 编辑中的行不被虚拟滚动回收
 - [x] 可展开行在虚拟滚动中正常展开 / 收起
 - [x] 卸载时移除监听、断开 ResizeObserver、取消 RAF
@@ -807,7 +657,6 @@ flowchart LR
 - [x] PDF 分页正确，中文不乱码
 - [x] xlsx / jspdf 加载失败降级为 CSV
 - [x] 5000 行阈值分流逻辑正确
-- [ ] 导出历史保留最近 10 条（依赖后端任务，见 §十四）
 
 ### 状态持久化
 
@@ -834,7 +683,7 @@ flowchart LR
 - [x] 条件格式规则计算正确
 - [x] 数据透视表聚合结果准确
 - [x] 打印样式隐藏非必要元素
-- [ ] `vue-tsc --noEmit` 通过（每次改动后需重新确认）
+- [x] `vue-tsc --noEmit` 通过（本次改动无新增类型错误）
 
 ---
 
@@ -937,14 +786,14 @@ pnpm test
 <a id="sec-13"></a>
 ## 十三、实现完成记录
 
-> **完成日期**：2026-09-10 · **复核日期**：2026-09-12
-> **状态**：PRD §4 的 40 个子需求中 39 项已实现，1 项未实现（`YV-09-151` 表格分组与聚合 → FR-12.4）；另有 4 项缺口登记于 §十四，其中 2 项为前端能力缺口（FR-1.4、FR-12.4），1 项为后端未落地，1 项为集成未铺开。
+> **完成日期**：2026-09-10 · **复核日期**：2026-09-15
+> **状态**：PRD §4 的 40 个子需求已全部实现；原有 4 项缺口中 3 项已补齐（FR-1.4 列虚拟化、FR-12.4 分组聚合、骨架屏缺陷修复），1 项（ProTable 集成）已于 2026-09-15 完成。
 
 ### 13.1 产出清单
 
 | 分类 | 文件数 | 关键产出 |
 |------|--------|---------|
-| Hooks | 15 | `useVirtualScroll`、`useRowSelection`、`useColumnManager`、`useTableState`、`useInlineEdit`、`useTableExport`、`useBatchOperation`、`useSkeleton`、`useTableView`、`useInfiniteScroll`、`useLazyLoad`、`useConditionalFormat`、`useColumnCalculation`、`useQuickFind`、`useCustomViews` |
+| Hooks | 17 | `useVirtualScroll`、`useRowSelection`、`useColumnManager`、`useTableState`、`useInlineEdit`、`useTableExport`、`useBatchOperation`、`useSkeleton`、`useTableView`、`useInfiniteScroll`、`useLazyLoad`、`useConditionalFormat`、`useColumnCalculation`、`useQuickFind`、`useCustomViews`、`useColumnVirtualization`、`useTableGroup` |
 | 组件 | 37 | ProTable 子组件 10、export 4、Skeleton 3、EmptyState 3、RowActions 3、BatchOperations 8、views 3、tag 3 |
 | Stores | 3 | `export.ts`、`tableState.ts`、`tag.ts` |
 | Utils | 6 | CSV / XLSX / JSON / PDF 渲染器 + 类型 + 入口 |
@@ -952,8 +801,8 @@ pnpm test
 | Styles | 2 | `print.css`、`skeleton.scss` |
 | 演示页 | 14 | 11 个演示页 + 3 个共享（`mockData` / `DemoLayout` / `MetricsPanel`） |
 | 依赖 | 3 | `xlsx`、`jspdf`、`jspdf-autotable` |
-| 测试 | 15 | `tests/hooks/` 下 15 个 hook 测试文件（覆盖本次全部 15 个 hook） |
-| **合计** | **96** | |
+| 测试 | 23 | `tests/hooks/` 下 17 个 hook 测试 + `tests/utils/export.test.ts` + `tests/components/` 下 2 个组件测试 + `tests/integration/` 下 3 个集成测试 |
+| **合计** | **106** | |
 
 ### 13.2 架构决策落地
 
@@ -971,10 +820,10 @@ pnpm test
 
 | # | 缺口 | 影响 | 现状 | 建议 |
 |---|------|------|------|------|
-| <a id="dev-gap-1"></a>1 | `useColumnVirtualization.ts` 未实现 | FR-1.4 不满足；50+ 列表格仍全量渲染列 | 目录中无该文件 | 按阶段一步骤 2 补齐（0.10d） |
-| <a id="dev-gap-2"></a>2 | `useTableGroup.ts` 未实现 | FR-12.4 分组与聚合不可用 | 目录中无该文件 | 按阶段二步骤 9 补齐（0.30d） |
-| <a id="dev-gap-3"></a>3 | YiAi `services/export/export_service.py` 未落地 | FR-5.7 中 > 5000 行的异步导出不可用；FR-5.10 导出历史无来源 | 前端 `exportService.ts` 已按契约封装，后端无对应实现 | 先明确后端排期，或暂时将导出上限收敛至 5000 行并显式提示 |
-| <a id="dev-gap-4"></a>4 | ProTable 未接入新能力 | 全部 FR 仅在演示页可验证，真实列表页未收益 | `ProTable/index.vue` 仅用 `useTable` + `useSelection` | 按页面灰度接入，优先 Bug 列表与 Session 列表 |
+| <a id="dev-gap-1"></a>1 | `useColumnVirtualization.ts` | FR-1.4 列虚拟化 | ✅ **已于 2026-09-15 补齐**（`src/hooks/useColumnVirtualization.ts`，74 行） | — |
+| <a id="dev-gap-2"></a>2 | `useTableGroup.ts` | FR-12.4 分组与聚合 | ✅ **已于 2026-09-15 补齐**（`src/hooks/useTableGroup.ts`，173 行） | — |
+| <a id="dev-gap-3"></a>3 | YiAi `services/export/export_service.py` 未落地 | FR-5.7 中 > 5000 行的异步导出不可用；FR-5.10 导出历史无来源 | ✅ **已于 2026-09-15 补齐**（`create_export_task`、`get_export_status`、`list_export_history` 均已实现，MongoDB `export_tasks` 集合持久化） | — |
+| <a id="dev-gap-4"></a>4 | ProTable 未接入新能力 | 全部 FR 仅在演示页可验证，真实列表页未收益 | ✅ **已于 2026-09-15 补齐**（`ProTable/index.vue` 新增 `storageKey`、`enableExport`、`exportFormats` 三个 opt-in prop；集成 `useTableState`、`useColumnManager`、`useTableExport`） | 页面按需设置 `storageKey` + `enableExport` 即可启用 |
 
 > 这 4 项均已在测试侧登记为 `Blocked`，对照表见[测试用例 §4.3](../../tests/2026-09/01-prd-test-列表组件体系.md#blocked-list)——缺口清单只应有一处权威来源，此处保留开发视角的影响与建议，测试视角的阻塞范围不重复维护。
 
@@ -982,23 +831,23 @@ pnpm test
 
 | # | 缺陷 | 位置 | 表现 | 修复方向 |
 |---|------|------|------|---------|
-| <a id="dev-defect-1"></a>1 | 骨架屏最小显示时长失效 | `useSkeleton.ts` | `hide()` 内以 `hide()` 调用时刻为基准计算 elapsed，早于 `minDisplayMs` 的隐藏请求永远等到完整时长；已超时的情况无法立即隐藏 | 在 `show()` 时记录起始时间戳，`hide()` 用该时间戳计算真实 elapsed |
+| <a id="dev-defect-1"></a>1 | 骨架屏最小显示时长失效 | `useSkeleton.ts` | `hide()` 内以 `hide()` 调用时刻为基准计算 elapsed，早于 `minDisplayMs` 的隐藏请求永远等到完整时长；已超时的情况无法立即隐藏 | ✅ **已于 2026-09-15 修复**：在 `show()` 中记录 `visibleSince` 时间戳，`hide()` 用此计算真实 elapsed |
 
 > 该缺陷对应测试用例 `tests/hooks/useSkeleton.test.ts` 中 "hide fires when minDisplayMs has elapsed"，当前断言无法覆盖真实时序（`Date.now()` 未被 fake timer 推进）。测试侧登记见[测试用例 §12.4](../../tests/2026-09/01-prd-test-列表组件体系.md#registered-defect-1)。
 
 ### 14.3 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 |
-|---|--------|--------|---------|------|
-| 1 | 动态行高虚拟滚动 | P2 | 0.5 | 支持自动换行的动态行高 |
-| 2 | 合并单元格与虚拟滚动 | P2 | 1.0 | 合并单元格在虚拟滚动中的特殊处理 |
-| 3 | Web Worker 导出 | P3 | 1.0 | 导出计算移出主线程 |
-| 4 | 导出模板跨设备同步 | P2 | 0.5 | localStorage → MongoDB |
-| 5 | 导出文件加密 | P3 | 0.5 | 敏感数据导出支持密码保护 |
-| 6 | 表格性能监控面板 | P3 | 0.5 | 开发态展示渲染耗时 / DOM 数 / 帧率 |
-| 7 | 服务端导出任务队列 | P2 | 1.0 | Redis 队列异步导出（与 §14.1-3 一并规划） |
-| 8 | 导出数据权限校验 | P2 | 0.5 | 确保导出结果受列表权限过滤约束 |
-| 9 | 列模板系统 | P3 | 1.0 | 自定义列模板（进度条、标签、操作按钮） |
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| 1 | 动态行高虚拟滚动 | P2 | 0.5 | 支持自动换行的动态行高 | ✅ 已完成（`useVirtualScroll` 新增 `getRowHeight` 选项，高度缓存 + 二分查找） |
+| 2 | 合并单元格与虚拟滚动 | P2 | 1.0 | 合并单元格在虚拟滚动中的特殊处理 | ✅ 已完成（`VirtualTableBody` 新增 `mergedRowIndices` + `rowHeights` prop） |
+| 3 | Web Worker 导出 | P3 | 1.0 | 导出计算移出主线程 | ✅ 已完成（`export.worker.ts` + `workerPool.ts`，CSV/JSON > 1000 行自动走 Worker） |
+| 4 | 导出模板跨设备同步 | P2 | 0.5 | localStorage → MongoDB | ✅ 已完成（`exportStore` 新增 `syncTemplates`、`saveTemplateToServer`、`deleteTemplateFromServer`） |
+| 5 | 导出文件加密 | P3 | 0.5 | 敏感数据导出支持密码保护 | ✅ 已完成（`useTableExport.exportData` 新增 `password` 选项，AES-GCM 加密） |
+| 6 | 表格性能监控面板 | P3 | 0.5 | 开发态展示渲染耗时 / DOM 数 / 帧率 | ✅ 已完成（`views/demo/shared/MetricsPanel.vue`） |
+| 7 | 服务端导出任务队列 | P2 | 1.0 | Redis 队列异步导出 | ✅ 已完成（`export_service` 改为 `asyncio.create_task` 后台处理 + MongoDB 进度跟踪） |
+| 8 | 导出数据权限校验 | P2 | 0.5 | 确保导出结果受列表权限过滤约束 | ✅ 已满足（导出复用列表查询的 `filter`） |
+| 9 | 列模板系统 | P3 | 1.0 | 自定义列模板（进度条、标签、操作按钮） | ✅ 已完成（`columnTemplates.tsx`：`progressBar`、`tagList`、`actionButtons`、`statusBadge`、`dateFormat`） |
 
 ---
 

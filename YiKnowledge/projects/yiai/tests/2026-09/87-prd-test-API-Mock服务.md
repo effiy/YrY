@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-83"
 source_prds: ["87-需求-API-Mock服务"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-83: 服务端 API Mock 服务 — 前端独立开发与测试的仿真后端环境 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[87-需求-API-Mock服务.md](../../prds/2026-09/87-需求-API-Mock服务.md)
 > 提取日期：2026-09-11

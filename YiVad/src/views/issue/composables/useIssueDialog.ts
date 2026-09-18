@@ -25,11 +25,6 @@ export function useIssueDialog(
     store: ReturnType<typeof useIssueStore>;
     formRef: Ref<FormInstance | undefined>;
     allIssues: Ref<Issue[]>;
-    mapReqStatusReverse: (s: string) => string;
-    mapReqPriorityReverse: (p: string) => string;
-    updateReqItem: (path: string, patch: any) => void;
-    readKnowledgeFile: typeof import("@/api/modules/knowledgeService").readKnowledgeFile;
-    writeKnowledgeFile: typeof import("@/api/modules/knowledgeService").writeKnowledgeFile;
     refreshTable: () => void;
   }
 ) {
@@ -55,7 +50,6 @@ export function useIssueDialog(
     isEdit: false,
     submitting: false,
     editKey: "",
-    kbFilePath: "",
     form: emptyForm(props.projectKey)
   });
 
@@ -69,7 +63,6 @@ export function useIssueDialog(
   function openCreate(): void {
     dialog.isEdit = false;
     dialog.editKey = "";
-    dialog.kbFilePath = "";
     dialog.form = emptyForm(props.projectKey);
     dialog.visible = true;
   }
@@ -77,7 +70,6 @@ export function useIssueDialog(
   function openEdit(issue: Issue): void {
     dialog.isEdit = true;
     dialog.editKey = issue.key;
-    dialog.kbFilePath = (issue as any).kb_file_path || "";
     dialog.form = {
       title: issue.title,
       description: issue.description || "",
@@ -93,27 +85,6 @@ export function useIssueDialog(
       acceptance_criteria: issue.acceptance_criteria || ""
     };
     dialog.visible = true;
-  }
-
-  async function syncKnowledgeFileIfNeeded(): Promise<void> {
-    const filePath = dialog.kbFilePath || (opts.allIssues.value.find(i => i.key === dialog.editKey) as any)?.kb_file_path;
-    if (!filePath) return;
-    const statusCn = opts.mapReqStatusReverse(dialog.form.status);
-    const priorityCn = opts.mapReqPriorityReverse(dialog.form.priority);
-    opts.updateReqItem(filePath, {
-      status: statusCn,
-      priority: priorityCn,
-      assignee: dialog.form.assignee || ""
-    });
-    opts.readKnowledgeFile(filePath).then(res => {
-      const updatedMeta = { ...res.meta };
-      updatedMeta.status = statusCn;
-      updatedMeta.priority = priorityCn;
-      if (dialog.form.assignee !== undefined) updatedMeta.owner = dialog.form.assignee;
-      return opts.writeKnowledgeFile(filePath, res.content, updatedMeta);
-    }).catch(e => {
-      console.error("Failed to sync knowledge file:", e);
-    });
   }
 
   async function submit(): Promise<void> {
@@ -139,32 +110,26 @@ export function useIssueDialog(
       };
 
       if (dialog.isEdit) {
-        if (dialog.kbFilePath) {
-          // Requirement issue: data lives in YiKnowledge markdown file, not the database
-          await syncKnowledgeFileIfNeeded();
-        } else {
-          await opts.store.editIssue(dialog.editKey, {
-            ...commonPayload,
-            source: (commonPayload.source as Issue['source']) || undefined,
-            review_status: (commonPayload.review_status as Issue['review_status']) || undefined,
-            acceptance_criteria: (commonPayload.acceptance_criteria as Issue['acceptance_criteria']) || undefined
-          });
-          await syncKnowledgeFileIfNeeded();
-        }
+        await opts.store.editIssue(dialog.editKey, {
+          ...commonPayload,
+          source: (commonPayload.source as Issue["source"]) || undefined,
+          review_status: (commonPayload.review_status as Issue["review_status"]) || undefined,
+          acceptance_criteria: (commonPayload.acceptance_criteria as Issue["acceptance_criteria"]) || undefined
+        });
         ElMessage.success("Issue updated successfully");
       } else {
         const newIssueKey = `ISS-${Date.now().toString(36).toUpperCase()}`;
         const projectKey = dialog.form.project_key || props.projectKey || "";
-        
+
         await opts.store.addIssue({
           key: newIssueKey,
           project_key: projectKey,
           sequence_id: Date.now(),
           ...commonPayload,
           labels: [],
-          source: (dialog.form.source as Issue['source']) || undefined,
-          review_status: (dialog.form.review_status as Issue['review_status']) || undefined,
-          acceptance_criteria: (dialog.form.acceptance_criteria as Issue['acceptance_criteria']) || undefined
+          source: (dialog.form.source as Issue["source"]) || undefined,
+          review_status: (dialog.form.review_status as Issue["review_status"]) || undefined,
+          acceptance_criteria: (dialog.form.acceptance_criteria as Issue["acceptance_criteria"]) || undefined
         });
         ElMessage.success("Issue created successfully");
       }
@@ -174,7 +139,6 @@ export function useIssueDialog(
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "Failed to save issue";
       ElMessage.error(errorMessage);
-      console.error("Issue submission error:", e);
     } finally {
       dialog.submitting = false;
     }
@@ -186,7 +150,6 @@ export function useIssueDialog(
     emptyForm,
     openCreate,
     openEdit,
-    syncKnowledgeFileIfNeeded,
     submit
   };
 }

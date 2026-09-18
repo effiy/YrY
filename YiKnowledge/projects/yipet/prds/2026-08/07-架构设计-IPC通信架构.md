@@ -17,6 +17,9 @@ estimate_frontend: 1.0
 review_status: 已评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [07-prd-task-IPC通信架构]
+related_tests: [07-prd-test-IPC通信架构]
 ---
 
 # YP-08-07: IPC 通信架构 — 双世界消息中继 + 安全签名 + 状态同步

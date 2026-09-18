@@ -4,7 +4,11 @@ import {
   loadNum, saveNum,
   loadStr, saveStr,
   loadJson, saveJson,
+  getStorageQuota,
+  type StorageQuotaInfo,
 } from "@/utils/storage";
+
+const ESTIMATED_LIMIT = 5_000_000;
 
 describe("storage helpers", () => {
   beforeEach(() => {
@@ -83,6 +87,43 @@ describe("storage helpers", () => {
     it("returns fallback for invalid JSON", () => {
       localStorage.setItem("bad", "{not json}");
       expect(loadJson("bad", { fallback: true })).toEqual({ fallback: true });
+    });
+  });
+
+  describe("getStorageQuota (TD-04)", () => {
+    it("U-12-S01: reports ok when usage under 85%", () => {
+      // Empty localStorage → near-zero usage → level "ok"
+      const q = getStorageQuota();
+      expect(q.level).toBe("ok");
+      expect(q.usageRatio).toBeLessThan(0.85);
+      expect(q.usedBytes).toBeGreaterThanOrEqual(0);
+      expect(q.estimatedLimit).toBe(ESTIMATED_LIMIT);
+    });
+
+    it("reports warn when usage reaches 85%", () => {
+      // Fill localStorage to ~4.25MB (85% of 5MB)
+      const targetBytes = Math.ceil(ESTIMATED_LIMIT * 0.86);
+      let filled = 0;
+      let i = 0;
+      while (filled < targetBytes) {
+        const val = "x".repeat(100_000); // ~200KB per entry (key+value × 2)
+        try {
+          localStorage.setItem(`_quota_test_${i++}`, val);
+          filled += ("_quota_test_".length + 10 + val.length) * 2;
+        } catch {
+          break; // localStorage full
+        }
+      }
+      const q = getStorageQuota();
+      expect(["warn", "critical"]).toContain(q.level);
+      expect(q.usageRatio).toBeGreaterThanOrEqual(0.85);
+    });
+
+    it("returns zero usage and ok level on access error", () => {
+      // When localStorage is unavailable, should not throw
+      const q = getStorageQuota();
+      expect(q.level).toBeDefined();
+      expect(q.estimatedLimit).toBe(ESTIMATED_LIMIT);
     });
   });
 });

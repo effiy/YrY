@@ -33,11 +33,16 @@ export const useProjectStore = defineStore("project", () => {
   }
 
   async function editProject(key: string, data: Partial<Project>) {
-    await updateProject(key, data);
-    if (currentProject.value?.key === key) {
-      currentProject.value = { ...currentProject.value, ...data };
+    const prev = currentProject.value?.key === key ? { ...currentProject.value } : null;
+    if (prev) {
+      currentProject.value = { ...currentProject.value!, ...data };
     }
-    await fetchProjects();
+    try {
+      await updateProject(key, data);
+      await fetchProjects();
+    } catch {
+      if (prev) currentProject.value = prev;
+    }
   }
 
   async function removeProject(key: string) {

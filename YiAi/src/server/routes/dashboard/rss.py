@@ -48,7 +48,7 @@ class RssStatsResponse(BaseModel):
 
 
 @router.get("/rss-stats", operation_id="dashboard_rss_stats")
-async def rss_stats(start: Optional[int] = None, end: Optional[int] = None):
+async def rss_stats(start: int | None = None, end: int | None = None):
     """Return RSS article statistics, optionally filtered by a date range.
 
     ``start`` / ``end`` are millisecond-precision timestamps compared against
@@ -56,20 +56,22 @@ async def rss_stats(start: Optional[int] = None, end: Optional[int] = None):
     missing). Both ends are inclusive.
     """
     try:
-        from data.database import db
         from collections import Counter
-        from datetime import datetime, timezone as tz
+        from datetime import datetime
+        from datetime import timezone as tz
+
+        from data.database import db
 
         await db.initialize()
         collection = db.db[settings.collection_rss]
         cursor = collection.find({}, {"_id": 0})
         articles = await cursor.to_list(length=None)
 
-        def _article_ts(a: dict) -> Optional[int]:
+        def _article_ts(a: dict) -> int | None:
             ts = a.get("published_parsed") or a.get("createdTime") or a.get("published")
             if ts is None:
                 return None
-            if isinstance(ts, (int, float)):
+            if isinstance(ts, int | float):
                 i = int(ts)
                 return i * 1000 if len(str(abs(i))) <= 10 else i
             ts_str = str(ts).strip()
@@ -115,7 +117,8 @@ async def rss_stats(start: Optional[int] = None, end: Optional[int] = None):
                 try:
                     ts_str = str(ts)
                     if ts_str.isdigit() and len(ts_str) >= 13:
-                        from datetime import datetime, timezone as tz2
+                        from datetime import datetime
+                        from datetime import timezone as tz2
                         dt = datetime.fromtimestamp(int(ts_str) / 1000, tz=tz2.utc)
                         month_key = dt.strftime("%Y-%m")
                     elif "T" in ts_str or " " in ts_str:
@@ -180,8 +183,9 @@ class RssSourceHealthResponse(BaseModel):
 async def rss_sources():
     """Return RSS source/seed configuration with article counts."""
     try:
-        from data.database import db
         from collections import Counter
+
+        from data.database import db
 
         await db.initialize()
 

@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-106"
 source_prds: ["114-需求-Schema兼容性检测"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-106: 服务端 JSON Schema 演化兼容性检测 — 向后不兼容变更的 CI 自动识别与告警 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[114-需求-Schema兼容性检测.md](../../prds/2026-09/114-需求-Schema兼容性检测.md)
 > 提取日期：2026-09-11

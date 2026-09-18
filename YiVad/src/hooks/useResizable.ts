@@ -13,13 +13,7 @@
  */
 import { onBeforeUnmount, ref } from "vue";
 
-export function useResizable(
-  initialWidth: number,
-  minWidth = 200,
-  maxWidth = 800,
-  storageKey?: string,
-  invert = false
-) {
+export function useResizable(initialWidth: number, minWidth = 200, maxWidth = 800, storageKey?: string, invert = false) {
   const width = ref(initialWidth);
   const isResizing = ref(false);
 

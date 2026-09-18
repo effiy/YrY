@@ -77,6 +77,30 @@ chrome.commands.onCommand.addListener(async (command) => {
       }
       break;
     }
+    case 'screenshot': {
+      try {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        const tab = tabs[0];
+        if (!tab?.id) return;
+        const msg: PopupToContent = { action: 'screenshot' };
+        await sendMessageWithTimeout(tab.id, msg);
+      } catch {
+        // Content script may not be ready
+      }
+      break;
+    }
+    case 'toggle-mute': {
+      try {
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        const tab = tabs[0];
+        if (!tab?.id) return;
+        const msg: PopupToContent = { action: 'toggleMute' };
+        await sendMessageWithTimeout(tab.id, msg);
+      } catch {
+        // Content script may not be ready
+      }
+      break;
+    }
     default:
       break;
   }

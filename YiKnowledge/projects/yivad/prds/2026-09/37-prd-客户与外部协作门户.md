@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志"
 tags: [需求文档, 客户门户, 外部协作, 权限控制, 文件共享, 品牌化, 活动日志, 前端, API]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志
 
 > 需求编号：YV-09-82 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/37-prd-task-客户与外部协作门户.md)，验证方案见 [测试方案](../../tests/2026-09/37-prd-test-客户与外部协作门户.md)。
 > 依赖：无
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -61,6 +84,7 @@ YiVad 当前仅面向内部团队成员使用，无法让外部客户或协作�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前外部协作流程
@@ -112,6 +136,7 @@ PM 在 YiVad 中创建 Issue
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：外部用户认证 — 独立账号 vs 邀请链接 vs OAuth
@@ -156,6 +181,7 @@ PM 在 YiVad 中创建 Issue
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 客户协作门户架构
@@ -245,6 +271,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 客户数据模型
@@ -443,6 +470,7 @@ export function setupPortalGuard(router: Router): void {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -460,6 +488,7 @@ export function setupPortalGuard(router: Router): void {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：客户登录
@@ -513,6 +542,7 @@ export function setupPortalGuard(router: Router): void {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -525,6 +555,7 @@ export function setupPortalGuard(router: Router): void {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -536,6 +567,7 @@ export function setupPortalGuard(router: Router): void {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择魔法链接而非密码登录？
@@ -556,6 +588,7 @@ YiVad 当前没有集成云存储（OSS/S3），签名 URL 需要额外的云存
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -579,6 +612,7 @@ YiVad 当前没有集成云存储（OSS/S3），签名 URL 需要额外的云存
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 门户路由使用 `/portal/` 前缀隔离

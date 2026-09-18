@@ -40,7 +40,9 @@
           </div>
         </template>
         <template #default="{ row }">
-          <el-tag v-if="row.file.meta?.type" :type="typeTagType(row.file.meta.type)" size="small">{{ row.file.meta.type }}</el-tag>
+          <el-tag v-if="row.file.meta?.type" :type="typeTagType(row.file.meta.type)" size="small">{{
+            row.file.meta.type
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column width="130">
@@ -51,7 +53,9 @@
           </div>
         </template>
         <template #default="{ row }">
-          <el-tag v-if="row.file.meta?.status" :type="statusTagType(row.file.meta.status)" size="small">{{ row.file.meta.status }}</el-tag>
+          <el-tag v-if="row.file.meta?.status" :type="statusTagType(row.file.meta.status)" size="small">{{
+            row.file.meta.status
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column width="140">
@@ -62,7 +66,9 @@
           </div>
         </template>
         <template #default="{ row }">
-          <el-tag v-if="row.file.meta?.lifecycle" :type="lifecycleTagType(row.file.meta.lifecycle)" size="small">{{ row.file.meta.lifecycle }}</el-tag>
+          <el-tag v-if="row.file.meta?.lifecycle" :type="lifecycleTagType(row.file.meta.lifecycle)" size="small">{{
+            row.file.meta.lifecycle
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column width="140">
@@ -73,7 +79,9 @@
           </div>
         </template>
         <template #default="{ row }">
-          <el-tag v-if="row.file.meta?.review_cycle" :type="reviewCycleTagType(row.file.meta.review_cycle)" size="small">{{ row.file.meta.review_cycle }}</el-tag>
+          <el-tag v-if="row.file.meta?.review_cycle" :type="reviewCycleTagType(row.file.meta.review_cycle)" size="small">{{
+            row.file.meta.review_cycle
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Size" width="90" sortable prop="size">
@@ -115,7 +123,7 @@ interface TableFilters {
   review: string;
 }
 
-const filters = defineModel<TableFilters>('filters', { required: true });
+const filters = defineModel<TableFilters>("filters", { required: true });
 
 defineProps<{
   files: FileRow[];
@@ -181,13 +189,60 @@ function formatSize(bytes: number): string {
 </script>
 
 <style scoped lang="scss">
-.role-table-view__th { display: flex; flex-direction: column; gap: 6px; padding: 2px 0; }
-.role-table-view__item { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
-.role-table-view__icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-.role-table-view__title-area { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.role-table-view__title { font-size: 13px; font-weight: 600; color: var(--el-text-color-primary); line-height: 1.3; word-break: break-word; }
-.role-table-view__path { font-size: 11px; font-family: monospace; color: var(--el-text-color-placeholder); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.role-table-view__domain { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
-.role-table-view__size { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder); }
-.role-table-view__empty { padding: 24px; text-align: center; font-size: 13px; color: var(--el-text-color-secondary); }
+.role-table-view__th {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0;
+}
+.role-table-view__item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.role-table-view__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 18px;
+}
+.role-table-view__title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.role-table-view__title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--el-text-color-primary);
+  overflow-wrap: break-word;
+}
+.role-table-view__path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+}
+.role-table-view__domain {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+.role-table-view__size {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-placeholder);
+}
+.role-table-view__empty {
+  padding: 24px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+}
 </style>

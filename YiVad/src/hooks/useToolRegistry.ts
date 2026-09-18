@@ -127,7 +127,7 @@ export function useToolRegistry() {
       "",
       "The following tools run automatically — you do NOT call them directly.",
       "Their results are injected into the conversation before you respond.",
-      "",
+      ""
     ];
 
     for (const tool of list) {
@@ -157,38 +157,42 @@ export function useToolRegistry() {
    * Execute a tool by name and return its result.
    * Returns null if the tool is not registered.
    */
-  async function executeTool(
-    name: string,
-    args: Record<string, unknown>,
-    signal?: AbortSignal,
-  ): Promise<ToolResult | null> {
+  async function executeTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult | null> {
     const tool = tools.value.get(name);
     if (!tool || tool.enabled === false) return null;
 
     const startEvent: ToolEvent = {
-      name, label: tool.label, phase: "start", timestamp: Date.now(),
-      args,
+      name,
+      label: tool.label,
+      phase: "start",
+      timestamp: Date.now(),
+      args
     };
     emitToolEvent(startEvent);
 
     try {
       const result = await tool.execute(args, signal);
       const endEvent: ToolEvent = {
-        name, label: tool.label, phase: "end",
+        name,
+        label: tool.label,
+        phase: "end",
         timestamp: Date.now(),
         error: result.error,
         details: result.details,
         content: (result.content ?? "").slice(0, 500),
-        durationMs: Date.now() - startEvent.timestamp,
+        durationMs: Date.now() - startEvent.timestamp
       };
       emitToolEvent(endEvent);
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const endEvent: ToolEvent = {
-        name, label: tool.label, phase: "end", timestamp: Date.now(),
+        name,
+        label: tool.label,
+        phase: "end",
+        timestamp: Date.now(),
         error: msg,
-        durationMs: Date.now() - startEvent.timestamp,
+        durationMs: Date.now() - startEvent.timestamp
       };
       emitToolEvent(endEvent);
       return { content: "", error: msg };
@@ -198,10 +202,7 @@ export function useToolRegistry() {
   /**
    * Execute multiple pre-stream tools in parallel and return combined context.
    */
-  async function executePreStreamTools(
-    argsMap: Map<string, Record<string, unknown>>,
-    signal?: AbortSignal,
-  ): Promise<string> {
+  async function executePreStreamTools(argsMap: Map<string, Record<string, unknown>>, signal?: AbortSignal): Promise<string> {
     const tasks = preStreamTools.value.map(async tool => {
       const args = argsMap.get(tool.name) ?? {};
       const result = await executeTool(tool.name, args, signal);
@@ -225,6 +226,6 @@ export function useToolRegistry() {
     getTool,
     getToolsForSystemPrompt,
     executeTool,
-    executePreStreamTools,
+    executePreStreamTools
   };
 }

@@ -17,6 +17,9 @@ estimate_frontend: 8.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [02-prd-task-Multi-Provider-LLM]
+related_tests: [02-prd-test-Multi-Provider-LLM]
 ---
 
 # YA-08-02: Multi-Provider LLM — 统一 LLM Provider 抽象层

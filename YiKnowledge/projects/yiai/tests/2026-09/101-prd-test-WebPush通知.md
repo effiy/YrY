@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-97"
 source_prds: ["101-需求-WebPush通知"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-97: 服务端 Web Push 通知 — 基于 VAPID 的浏览器推送与服务端事件桥接 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[101-需求-WebPush通知.md](../../prds/2026-09/101-需求-WebPush通知.md)
 > 提取日期：2026-09-11

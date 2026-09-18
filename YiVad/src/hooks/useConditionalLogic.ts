@@ -2,7 +2,18 @@ import { ref, watch, type Ref } from "vue";
 
 export interface Condition {
   field: string;
-  operator: "equals" | "not_equals" | "contains" | "not_contains" | "greater_than" | "less_than" | "between" | "is_empty" | "is_not_empty" | "starts_with" | "ends_with";
+  operator:
+    | "equals"
+    | "not_equals"
+    | "contains"
+    | "not_contains"
+    | "greater_than"
+    | "less_than"
+    | "between"
+    | "is_empty"
+    | "is_not_empty"
+    | "starts_with"
+    | "ends_with";
   value: any;
 }
 
@@ -79,11 +90,35 @@ export const useConditionalLogic = (options: UseConditionalLogicOptions) => {
     return group.operator === "AND" ? results.every(Boolean) : results.some(Boolean);
   }
 
-  function applyActions(actions: RuleAction[], states: Record<string, { visible: boolean; disabled: boolean; required: boolean; value?: any }>) {
+  function applyActions(
+    actions: RuleAction[],
+    states: Record<string, { visible: boolean; disabled: boolean; required: boolean; value?: any }>,
+    priority: number,
+    propPriority: Record<string, Record<string, number>>
+  ) {
+    const propMap: Record<string, string> = {
+      show: "visible",
+      hide: "visible",
+      enable: "disabled",
+      disable: "disabled",
+      require: "required",
+      optional: "required",
+      set_value: "value"
+    };
+
     for (const action of actions) {
       if (!states[action.target]) {
         states[action.target] = { visible: true, disabled: false, required: false };
+        propPriority[action.target] = {};
       }
+
+      const prop = propMap[action.action];
+      const existingPriority = propPriority[action.target][prop] ?? -Infinity;
+
+      // Only apply if current rule's priority >= the priority that previously set this property
+      if (priority < existingPriority) continue;
+      propPriority[action.target][prop] = priority;
+
       const target = states[action.target];
 
       switch (action.action) {
@@ -115,14 +150,15 @@ export const useConditionalLogic = (options: UseConditionalLogicOptions) => {
 
   function runRules() {
     const states: Record<string, { visible: boolean; disabled: boolean; required: boolean; value?: any }> = {};
+    const propPriority: Record<string, Record<string, number>> = {};
 
-    // Sort by priority descending
+    // Sort by priority descending (high first)
     const sorted = [...rules].sort((a, b) => b.priority - a.priority);
 
     for (const rule of sorted) {
       const conditionMet = evaluateGroup(rule.conditions);
       if (conditionMet) {
-        applyActions(rule.actions, states);
+        applyActions(rule.actions, states, rule.priority, propPriority);
       }
     }
 
@@ -162,6 +198,6 @@ export const useConditionalLogic = (options: UseConditionalLogicOptions) => {
     runRules,
     testRules,
     exportRules,
-    importRules,
+    importRules
   };
 };

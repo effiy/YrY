@@ -12,7 +12,7 @@ from typing import Any, Dict
 from domain.rag import rag_query, rag_status, rebuild_index
 
 
-def query(params: Dict[str, Any]) -> Dict[str, Any]:
+async def query(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point for one-shot retrieval.
 
     ``params``: ``{ question, top_k?, scope? }``. Returns ``{ sources: [...] }``.
@@ -22,16 +22,16 @@ def query(params: Dict[str, Any]) -> Dict[str, Any]:
         return {"sources": []}
     top_k = params.get("top_k")
     scope = params.get("scope")
-    sources = rag_query(question, top_k=top_k, scope=scope)
+    sources = await rag_query(question, top_k=top_k, scope=scope)
     return {"sources": sources}
 
 
-def status(_params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+def status(_params: dict[str, Any] | None = None) -> dict[str, Any]:
     """RPC entry point — returns index build status."""
     return rag_status()
 
 
-def rebuild(_params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+def rebuild(_params: dict[str, Any] | None = None) -> dict[str, Any]:
     """RPC entry point — synchronously rebuild the index.
 
     Callers that can wait should use the ``/rag-build`` route instead, which

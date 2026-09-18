@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-31: 知识库 RAG 检索多语言 Embedding — 中英双语向量优化"
 tags: [需求文档, RAG, Embedding, 多语言, 向量检索, 优化]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-31
 estimate_frontend: 1.0
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [34-prd-task-多语言Embedding优化]
+related_tests: [34-prd-test-多语言Embedding优化]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [aier, engineer]
 ---
 

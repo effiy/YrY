@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-12"
 source_prds: ["10-需求-Web搜索与内容提取"]
 source_modules: []
+source_okr: [yiai-003]
 ---
 # Web 搜索与内容提取服务 — Jina Reader + BeautifulSoup 双层提取管线 — 测试规格
 

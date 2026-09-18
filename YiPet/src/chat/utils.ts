@@ -11,18 +11,83 @@ export {
 
 import { marked } from 'marked';
 
+/** Configure marked renderer for professional code blocks with language labels. */
+const renderer = new marked.Renderer();
+
+// GFM: enable tables, task lists, strikethrough, autolinks
+marked.setOptions({ gfm: true, breaks: false });
+
+const origCode = renderer.code.bind(renderer);
+
+/** Heuristic language detection for bare code blocks (no lang tag). */
+function detectLang(code: string): string {
+  const lines = code.trim().split('\n');
+  const first = lines[0] || '';
+  if (/^(import|export|const|let|var|function|class|interface|type)\s/.test(first)) return 'ts';
+  if (/^(def |class |import |from |print\(|if __name__)/.test(first)) return 'python';
+  if (/^(<template>|<script|<style|<\/)/.test(first)) return 'vue';
+  if (/^[.#][\w-]+\s*\{/.test(first) || /^@\w+/.test(first)) return 'css';
+  if (/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER)\s/i.test(first)) return 'sql';
+  if (/^(package |import |func |type |interface )/.test(first)) return 'go';
+  if (/^\{[^}]*\}$/.test(first.trim())) return 'json';
+  if (/^#!/.test(first)) return 'bash';
+  if (/^(curl|wget|npm|pnpm|yarn|pip|git|docker|cd |ls |mkdir)/.test(first)) return 'bash';
+  return '';
+}
+
+renderer.code = function (code: { text: string; lang?: string; escaped?: boolean }): string {
+  const lang = code.lang || detectLang(code.text);
+  const html = origCode(code);
+  if (!lang) return html;
+  return `<div class="code-block-wrapper" data-lang="${lang}">
+    <div class="code-block-header"><span class="code-block-lang">${lang}</span></div>
+    ${html}
+  </div>`;
+};
+marked.setOptions({ renderer });
+
 /** Render markdown string to HTML. Falls back to plain-text escaping. */
+const EMOJI_MAP: Record<string, string> = {
+  ':smile:': '\u{1F604}', ':laughing:': '\u{1F606}', ':joy:': '\u{1F602}',
+  ':heart:': '\u2764\uFE0F', ':thumbsup:': '\u{1F44D}', ':thumbsdown:': '\u{1F44E}',
+  ':rocket:': '\u{1F680}', ':fire:': '\u{1F525}', ':star:': '\u2B50',
+  ':check:': '\u2705', ':x:': '\u274C', ':warning:': '\u26A0\uFE0F',
+  ':bulb:': '\u{1F4A1}', ':book:': '\u{1F4D6}', ':bug:': '\u{1F41B}',
+  ':wrench:': '\u{1F527}', ':gear:': '\u2699\uFE0F', ':link:': '\u{1F517}',
+  ':mag:': '\u{1F50D}', ':lock:': '\u{1F512}', ':key:': '\u{1F511}',
+  ':info:': '\u2139\uFE0F', ':question:': '\u2753', ':exclamation:': '\u2757',
+  ':100:': '\u{1F4AF}', ':clap:': '\u{1F44F}', ':pray:': '\u{1F64F}',
+  ':eyes:': '\u{1F440}', ':brain:': '\u{1F9E0}', ':zap:': '\u26A1',
+  ':arrow_right:': '\u27A1\uFE0F', ':arrow_down:': '\u2B07\uFE0F',
+  ':speech_balloon:': '\u{1F4AC}', ':hourglass:': '\u231B',
+  ':construction:': '\u{1F6A7}', ':white_check_mark:': '\u2705',
+  ':thinking:': '\u{1F914}', ':tada:': '\u{1F389}', ':package:': '\u{1F4E6}',
+  ':sparkles:': '\u2728', ':memo:': '\u{1F4DD}', ':chart:': '\u{1F4C8}',
+};
+
+function replaceEmoji(text: string): string {
+  return text.replace(/:[a-z0-9_]+:/gi, (m) => EMOJI_MAP[m.toLowerCase()] || m);
+}
+
 export function renderMarkdown(text: string): string {
   if (marked?.parse) {
-    // Escape '<' so raw HTML in AI output / page context is rendered as text,
-    // not interpreted by the browser. Markdown formatting (which doesn't use
-    // '<') still works. marked v15 has no built-in sanitizer.
-    const escaped = text.replace(/</g, '&lt;');
-    // Neutralize dangerous URI schemes in markdown link/image URLs — marked
-    // v15+ has no built-in sanitizer, so `[x](javascript:alert(1))` would
-    // otherwise emit a clickable javascript: href.
-    const safe = escaped.replace(/]\s*\((javascript:|vbscript:)[^)]*\)/gi, '](#)');
-    return wrapMermaidBlocks(marked.parse(safe) as string);
+    // Auto-linkify bare URLs before markdown parsing
+    const withLinks = text.replace(
+      /(?<!["'(<])(https?:\/\/[^\s<>[\]{}|\\^`]+)/g,
+      '<$1>',
+    );
+    // Escape '<' so raw HTML in AI output / page context is rendered as text
+    const escaped = withLinks.replace(/</g, '&lt;');
+    // But restore our auto-linkified URLs (they became `&lt;https://...&gt;`)
+    const restored = escaped.replace(
+      /&lt;(https?:\/\/[^\s<>[\]{}|\\^`]+)&gt;/g,
+      '<$1>',
+    );
+    // Neutralize dangerous URI schemes
+    const safe = restored.replace(/]\s*\((javascript:|vbscript:)[^)]*\)/gi, '](#)');
+    // Render emoji shortcodes
+    const withEmoji = replaceEmoji(safe);
+    return wrapMermaidBlocks(marked.parse(withEmoji) as string);
   }
   return escapeHtml(text).replace(/\n/g, '<br>');
 }
@@ -73,7 +138,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
 
   if (!_mermaidInit) {
     try {
-      mermaid.initialize?.({ startOnLoad: false, securityLevel: 'loose', theme: 'default' });
+      mermaid.initialize?.({ startOnLoad: false, securityLevel: 'loose', theme: 'dark' });
     } catch {
       /* ignore — non-fatal */
     }

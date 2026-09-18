@@ -2,12 +2,30 @@ target-version = "py310"
 line-length = 130
 
 [lint]
-select = ["F", "E9", "W"]
+select = [
+  "F",    # Pyflakes
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "I",    # isort
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "SIM",  # flake8-simplify
+]
 ignore = [
   "E402",  # sys.path manipulation precedes application imports in app.py
-  "E501",  # line length — not a bug
-  "F401",  # unused imports handled case-by-case
+  "E501",  # line length — not a bug, project uses 130
+  "F401",  # unused imports handled case-by-case (re-exports in __init__.py)
+  "B904",  # raise from in except — too noisy for existing code
+  "SIM105", # use contextlib.suppress — stylistic choice
+  "SIM108", # ternary instead of if-else — stylistic choice
+  "UP035", # typing.Dict/List imports — migrated annotations, imports remain
 ]
 
 [lint.per-file-ignores]
-"__init__.py" = ["F401"]
+"__init__.py" = ["F401", "I001"]
+"src/app.py" = ["I001"]
+"src/server/routes/*.py" = ["B008"]  # FastAPI Query/Body in route signatures is standard
+
+[lint.isort]
+force-sort-within-sections = true
+known-first-party = ["shared", "data", "models", "domain", "services", "server"]

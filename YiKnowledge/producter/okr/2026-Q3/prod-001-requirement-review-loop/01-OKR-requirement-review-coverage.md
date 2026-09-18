@@ -1,13 +1,27 @@
 ---
+title: "Prod M01 需求评审覆盖率"
+tags: [okr, metric, producter, requirement-review]
+category: producter/okr
+created: 2026-08-21
+updated: 2026-09-15
+source: internal
+type: report
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [producter]
+benefit: "追踪已排入开发计划的需求中具备完整 PRD + 验收标准 + 优先级评分的需求占比"
 type: okr-metric
 id: prod-m01
 name: 需求评审覆盖率
-category: 需求评审
+okr_category: 需求评审
 framework: OKR
 trend: up
 progress: 100
-title: Prod M01 需求评审覆盖率
-updated: 2026-09-10---
+related:
+  - ../../../discovery/01-发现-编写PRD.md
+  - ../../../discovery/prd/01-需求-PRD模板.md
+---
 
 # 需求评审覆盖率
 

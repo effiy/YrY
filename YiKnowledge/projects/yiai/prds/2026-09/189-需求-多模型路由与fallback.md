@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-184: 多模型路由与 Fallback — 多模型健康路由、成本优化路由、延迟优化路由与 Fallback 告警"
 tags: [需求文档, 多模型, 路由, Fallback, 健康检查, 成本优化, 延迟优化]
 category: 项目/后端/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.3
 review_status: 待评审
 issue_type: 功能实现
 roles: [后端开发]
+source_okr: [yiai-002]
+related_modules: [189-prd-task-多模型路由与fallback]
+related_tests: [189-prd-test-多模型路由与fallback]
 ---
 
 # YA-09-184: 多模型路由与 Fallback — 多模型健康路由、成本优化路由、延迟优化路由与 Fallback 告警
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-184 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
 > 依赖：YA-09-11（ModelRuntime 抽象层）、YA-09-89（自愈恢复机制）
@@ -61,6 +69,7 @@ YiAi 当前主要依赖 Ollama 本地模型，当单一模型不可用或性能�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前模型路由现状
@@ -106,6 +115,7 @@ YiAi 当前主要依赖 Ollama 本地模型，当单一模型不可用或性能�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：路由策略 — 静态配置 vs 动态路由 vs 混合
@@ -159,6 +169,7 @@ YiAi 当前主要依赖 Ollama 本地模型，当单一模型不可用或性能�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 多模型路由系统架构
@@ -251,6 +262,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 模型注册表
@@ -689,6 +701,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -708,6 +721,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：主模型路由
@@ -754,6 +768,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -765,6 +780,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -775,6 +791,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：路由策略
@@ -807,6 +824,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -831,6 +849,7 @@ class ModelRouter:
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 模型注册表包含所有可用模型，信息完整

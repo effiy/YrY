@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-79: Content Script IDB 持久化提案 — 替代 chrome.storage 的大容量本地数据库方案"
 tags: [需求文档, Content Script, IndexedDB, 持久化, 大容量存储, chrome.storage替代, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [86-prd-task-IndexedDB持久化]
+related_tests: [86-prd-test-IndexedDB持久化]
 ---
 
 # YP-09-79: Content Script IndexedDB 大容量持久化 — 替代 chrome.storage
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-79 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YP-09-72（长会话性能优化）、YP-09-53（事件溯源）
@@ -59,6 +67,7 @@ roles: [engineer]
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前存储布局
@@ -116,6 +125,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：存储分层策略 — 全量 IDB vs 混合 vs 全量 chrome.storage
@@ -158,6 +168,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后存储架构
@@ -235,6 +246,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 IDB 数据库 Schema
@@ -462,6 +474,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -479,6 +492,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：自动迁移
@@ -531,6 +545,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -543,6 +558,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 ---
@@ -563,6 +579,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：迁移阈值
@@ -588,6 +605,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -612,6 +630,7 @@ export async function queryFromIDB(store: string, query: unknown): Promise<unkno
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] IndexedDB 用于大容量会话数据（超出 chrome.storage 10MB 限制）

@@ -3,8 +3,8 @@ import asyncio
 import json
 import logging
 import time
-import urllib.request
 from typing import Optional
+import urllib.request
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -32,8 +32,8 @@ class MongoStatus(BaseModel):
 class SchedulerStatus(BaseModel):
     enabled: bool
     type: str
-    interval: Optional[int] = None
-    cron: Optional[dict] = None
+    interval: int | None = None
+    cron: dict | None = None
 
 
 class WatcherStatus(BaseModel):

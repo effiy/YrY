@@ -9,8 +9,9 @@
  *   SSE chunk:  data: {"data": {"message": "..."}}\n\n
  *   SSE end:    data: {"done": true}\n\n
  */
-import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiAi";
+import { buildYiAiStreamUrl, yiAiAuthHeaders } from "@/config/yiAi";
 import { callService } from "./dataService";
+import { readSSEStream } from "@/utils/sse";
 import type { ChatPayload, OllamaModel, OllamaModelListResponse } from "@/api/interface/yiAi";
 
 const CHAT_SERVICE = "services.ai.chat_service";
@@ -31,16 +32,6 @@ function toOllamaMessages(payload: ChatPayload): Array<{ role: string; content: 
       role: m.type === "user" ? "user" : "assistant",
       content: m.message
     }));
-}
-
-/**
- * Extract a text delta from a YiAi SSE payload. YiAi emits
- * `{"data": {"message": "..."}}`; we also tolerate OpenAI-style shapes
- * (`choices[0].delta.content`, `message.content`) for portability.
- */
-function extractDelta(parsed: any): string {
-  if (!parsed || typeof parsed !== "object") return "";
-  return parsed?.data?.message ?? parsed?.message?.content ?? parsed?.choices?.[0]?.delta?.content ?? parsed?.content ?? "";
 }
 
 /**
@@ -72,7 +63,7 @@ export function streamChat(
     }
   };
 
-  const url = buildYiAiUrl("/");
+  const url = buildYiAiStreamUrl("/");
 
   fetch(url, {
     method: "POST",
@@ -82,6 +73,14 @@ export function streamChat(
   })
     .then(async response => {
       clearTimeout(timeoutId);
+      console.log(
+        "[streamChat] response status:",
+        response.status,
+        "content-type:",
+        response.headers.get("content-type"),
+        "hasBody:",
+        !!response.body
+      );
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -90,72 +89,17 @@ export function streamChat(
         throw new Error("No readable stream in response");
       }
 
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        // Keep the last potentially incomplete line in buffer
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed) continue;
-          if (!trimmed.startsWith("data: ")) continue;
-          const data = trimmed.slice(6);
-          if (data === "[DONE]") {
-            onDone();
-            return;
-          }
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed?.error) {
-              onError(new Error(String(parsed.error)));
-              return;
-            }
-            if (parsed?.done === true) {
-              onDone();
-              return;
-            }
-            const content = extractDelta(parsed);
-            if (content) onChunk(content);
-          } catch {
-            // Plain text fallback — emit if non-empty
-            if (data && data !== "[DONE]") onChunk(data);
-          }
-        }
-      }
-      // Flush trailing buffer
-      const tail = buffer.trim();
-      if (tail.startsWith("data: ")) {
-        const data = tail.slice(6);
-        if (data && data !== "[DONE]") {
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed?.error) {
-              onError(new Error(String(parsed.error)));
-              return;
-            }
-            if (parsed?.done !== true) {
-              const content = extractDelta(parsed);
-              if (content) onChunk(content);
-            }
-          } catch {
-            onChunk(data);
-          }
-        }
-      }
-      onDone();
+      await readSSEStream(reader, { onDelta: onChunk, onDone, onError });
     })
     .catch(err => {
       clearTimeout(timeoutId);
       if (err.name === "AbortError") {
         if (timedOut) {
-          onError(new Error(`Request timed out after ${STREAM_TIMEOUT_MS / 1000}s. The AI model may be processing a large request — try with shorter text or retry.`));
+          onError(
+            new Error(
+              `Request timed out after ${STREAM_TIMEOUT_MS / 1000}s. The AI model may be processing a large request — try with shorter text or retry.`
+            )
+          );
         } else {
           onDone();
         }
@@ -178,13 +122,18 @@ export function streamChat(
  * Uses a 120s timeout — AI inference can be slow for large payloads.
  */
 export async function chat(payload: ChatPayload): Promise<string> {
-  const res = await callService<any>(CHAT_SERVICE, "chat", {
-    model: payload.model ?? "qwen3.5:4b",
-    messages: toOllamaMessages(payload),
-    stream: false,
-    ...(payload.system ? { system: payload.system } : {}),
-    ...(payload.images?.length ? { images: payload.images } : {})
-  }, 120_000);
+  const res = await callService<any>(
+    CHAT_SERVICE,
+    "chat",
+    {
+      model: payload.model ?? "qwen3.5:4b",
+      messages: toOllamaMessages(payload),
+      stream: false,
+      ...(payload.system ? { system: payload.system } : {}),
+      ...(payload.images?.length ? { images: payload.images } : {})
+    },
+    120_000
+  );
 
   if (res.code !== 0) {
     throw new Error(res.message || "Chat request failed");

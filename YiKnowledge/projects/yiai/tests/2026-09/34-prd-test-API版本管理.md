@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-30"
 source_prds: ["34-需求-API版本管理"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-30: API 版本管理策略 — URL 路径版本控制与向后兼容协议 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[34-需求-API版本管理.md](../../prds/2026-09/34-需求-API版本管理.md)
 > 提取日期：2026-09-11

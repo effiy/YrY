@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "84-需求-Zipkin链路导出.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-80: 服务端端到端请求链路追踪与性能分析 — OpenTelemetry Zipkin 导出集成 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[84-需求-Zipkin链路导出.md](../../prds/2026-09/84-需求-Zipkin链路导出.md)
 > 需求编号：YA-09-80 · 优先级：P2 · 人天：0.5d

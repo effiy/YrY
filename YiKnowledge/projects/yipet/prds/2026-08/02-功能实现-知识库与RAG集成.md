@@ -17,6 +17,9 @@ estimate_frontend: 6.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [02-prd-task-知识库与RAG集成]
+related_tests: [02-prd-test-知识库与RAG集成]
 ---
 
 # 知识库与 RAG 集成 — 知识树浏览、RAG 聊天、文件预览与子问题分解

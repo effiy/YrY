@@ -51,12 +51,12 @@ describe('locale', () => {
     });
 
     it('returns stored locale when valid', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ user_locale: 'zh_CN' });
+      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'zh_CN' });
       expect(await getUserLocale()).toBe('zh_CN');
     });
 
     it('returns null for invalid locale value', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ user_locale: 'fr' });
+      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'fr' });
       expect(await getUserLocale()).toBeNull();
     });
   });
@@ -71,7 +71,7 @@ describe('locale', () => {
 
   describe('resolveLocale()', () => {
     it('returns user override when set', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ user_locale: 'zh_CN' });
+      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'zh_CN' });
       const result = await resolveLocale();
       expect(result.locale).toBe('zh_CN');
       expect(result.isUserOverride).toBe(true);

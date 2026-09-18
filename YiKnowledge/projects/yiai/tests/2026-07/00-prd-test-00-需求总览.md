@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YI-07-01"
 source_prds: ["00-需求总览"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YiAi 七月迭代 — RAG 检索引擎 / Knowledge Watcher / 模块执行沙箱 / 认证系统 — 测试规格
 

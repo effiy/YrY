@@ -13,9 +13,7 @@ const emit = defineEmits<{ (e: "navigate-related", path: string): void }>();
 
 const benefit = computed<string>(() => (typeof props.meta.benefit === "string" ? props.meta.benefit.trim() : ""));
 
-const tacitStatement = computed<string>(() =>
-  typeof props.meta.tacit === "string" ? props.meta.tacit.trim() : ""
-);
+const tacitStatement = computed<string>(() => (typeof props.meta.tacit === "string" ? props.meta.tacit.trim() : ""));
 
 const criteria = computed<string[]>(() => {
   const c = props.meta.acceptance_criteria;
@@ -26,7 +24,8 @@ const badges = computed<Badge[]>(() => {
   const m = props.meta;
   const out: Badge[] = [];
   if (m.status) out.push({ label: "status", value: String(m.status), tone: m.status === "stable" ? "success" : "info" });
-  if (m.lifecycle) out.push({ label: "lifecycle", value: String(m.lifecycle), tone: m.lifecycle === "active" ? "success" : "warning" });
+  if (m.lifecycle)
+    out.push({ label: "lifecycle", value: String(m.lifecycle), tone: m.lifecycle === "active" ? "success" : "warning" });
   if (m.review_cycle) out.push({ label: "review", value: String(m.review_cycle), tone: "info" });
   if (m.tacit === true) out.push({ label: "tacit", value: "yes", tone: "warning" });
   if (m.type) out.push({ label: "type", value: String(m.type), tone: "info" });
@@ -50,9 +49,7 @@ function resolvePath(href: string): string | null {
   if (/^(https?:|mailto:|tel:|#|data:)/i.test(href)) return null;
   const clean = href.split("#")[0].split("?")[0];
   if (!clean) return null;
-  const base = (props.currentPath || "").includes("/")
-    ? (props.currentPath || "").replace(/\/[^/]*$/, "")
-    : "";
+  const base = (props.currentPath || "").includes("/") ? (props.currentPath || "").replace(/\/[^/]*$/, "") : "";
   const segments = (base + "/" + clean).split("/");
   const resolved: string[] = [];
   for (const seg of segments) {
@@ -110,12 +107,7 @@ defineExpose({ hasAnything });
       <span class="kms-tacit-text">{{ tacitStatement }}</span>
     </p>
     <div class="kms-row">
-      <span
-        v-for="b in badges"
-        :key="b.label + b.value"
-        class="kms-badge"
-        :class="`kms-badge--${b.tone}`"
-      >
+      <span v-for="b in badges" :key="b.label + b.value" class="kms-badge" :class="`kms-badge--${b.tone}`">
         <span class="kms-badge-label">{{ b.label }}</span>
         <span class="kms-badge-value">{{ b.value }}</span>
       </span>
@@ -137,7 +129,8 @@ defineExpose({ hasAnything });
           effect="plain"
           :class="{ 'kms-related--clickable': r.path || r.href }"
           @click="onClickRelated(r)"
-        >{{ r.raw }}</el-tag>
+          >{{ r.raw }}</el-tag
+        >
       </template>
     </div>
     <el-tooltip v-if="criteria.length" effect="dark" placement="bottom" :width="320">
@@ -159,109 +152,109 @@ defineExpose({ hasAnything });
   font-size: 12px;
 }
 .kms-benefit {
-  margin: 0;
-  color: var(--el-text-color-secondary);
-  font-style: italic;
-  font-size: 12px;
-  line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  margin: 0;
   overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
 }
 .kms-tacit {
-  margin: 0;
+  display: -webkit-box;
   padding: 4px 8px;
-  border-left: 3px solid var(--el-color-warning-light-5);
-  background: var(--el-color-warning-light-9);
-  border-radius: 2px;
+  margin: 0;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
   font-size: 12px;
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
+  background: var(--el-color-warning-light-9);
+  border-left: 3px solid var(--el-color-warning-light-5);
+  border-radius: 2px;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .kms-tacit-label {
-  color: var(--el-color-warning-dark-2);
+  margin-right: 6px;
   font-size: 10px;
   font-weight: 600;
+  color: var(--el-color-warning-dark-2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-right: 6px;
 }
 .kms-tacit-text {
-  color: var(--el-text-color-primary);
   font-style: italic;
+  color: var(--el-text-color-primary);
 }
 .kms-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 6px 8px;
+  align-items: center;
 }
 .kms-label {
-  color: var(--el-text-color-secondary);
+  margin-left: 4px;
   font-size: 11px;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-left: 4px;
 }
 .kms-label:first-child {
   margin-left: 0;
 }
 .kms-badge {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   padding: 1px 8px;
-  border-radius: 10px;
   font-size: 11px;
   line-height: 18px;
-  border: 1px solid var(--el-border-color);
   background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 10px;
 }
 .kms-badge-label {
   color: var(--el-text-color-secondary);
 }
 .kms-badge-value {
-  color: var(--el-text-color-primary);
   font-weight: 500;
+  color: var(--el-text-color-primary);
 }
 .kms-badge--success {
-  border-color: var(--el-color-success-light-5);
-  background: var(--el-color-success-light-9);
   color: var(--el-color-success-dark-2);
+  background: var(--el-color-success-light-9);
+  border-color: var(--el-color-success-light-5);
 }
 .kms-badge--warning {
-  border-color: var(--el-color-warning-light-5);
-  background: var(--el-color-warning-light-9);
   color: var(--el-color-warning-dark-2);
+  background: var(--el-color-warning-light-9);
+  border-color: var(--el-color-warning-light-5);
 }
 .kms-badge--info {
-  border-color: var(--el-color-info-light-5);
-  background: var(--el-color-info-light-9);
   color: var(--el-text-color-regular);
+  background: var(--el-color-info-light-9);
+  border-color: var(--el-color-info-light-5);
 }
 .kms-related--clickable {
   cursor: pointer;
 }
 .kms-criteria-link {
   align-self: flex-start;
-  color: var(--el-color-primary);
-  cursor: help;
   font-size: 11px;
+  color: var(--el-color-primary);
   text-decoration: underline dotted;
+  cursor: help;
 }
 .kms-criteria-tip {
-  margin: 0;
-  padding-left: 18px;
   max-height: 240px;
+  padding-left: 18px;
+  margin: 0;
   overflow-y: auto;
 }
 .kms-criteria-tip li {
+  margin-bottom: 2px;
   font-size: 12px;
   line-height: 1.5;
-  margin-bottom: 2px;
 }
 </style>

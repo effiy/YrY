@@ -3,9 +3,11 @@ title: OpenSpec 工作流规范
 tags: [yipet, workflow, openspec, standards, subagent]
 category: projects/yipet/workflows
 created: 2026-09-07
-updated: 2026-09-10
+updated: 2026-09-15
 source: YiPet
 type: workflow
+roles: [engineer]
+benefit: "Claude Code 子代理协作、代码质量门禁、上下文管理策略"
 status: active
 ---
 
@@ -164,11 +166,11 @@ status: active
 
 | 规范 | 文件 | 适用阶段 |
 |------|------|----------|
-| API 规范 | `specs/architecture/api/规范.md` | Design + Apply |
-| 扩展架构规范 | `specs/architecture/extension-arch/规范.md` | Design + Apply |
-| 组件模式规范 | `specs/architecture/component-patterns/规范.md` | Design + Apply |
-| 国际化规范 | `specs/architecture/i18n/规范.md` | Apply + Verify |
-| Chat Store 模式 | `specs/patterns/chat-controller/规范.md` | Design + Apply |
+| API 规范 | [API 架构与规范](./05-规范-API架构与规范.md) | Design + Apply |
+| 扩展架构规范 | [扩展架构](../架构设计/02-架构-扩展架构.md) | Design + Apply |
+| 组件规范 | [组件规范](./09-规范-组件规范.md) | Design + Apply |
+| 国际化规范 | [国际化](./08-规范-国际化.md) | Apply + Verify |
+| Chat Store 模式 | [Chat Store 状态管理](../功能模式/01-模式-ChatStore状态管理.md) | Design + Apply |
 
 ### 强制约束检查
 
@@ -176,6 +178,6 @@ status: active
 - Chrome API 调用区分 ISOLATED 和 MAIN world 执行边界
 - Content Script 和 Service Worker 不共享状态
 - IPC Relay 消息必须通过 IPC_SECRET + 时间戳验证（3 层：来源标记、签名匹配、5 秒过期）
-- 所有文本必须使用国际化（Vue-i18n）
+- 所有文本必须使用国际化（chrome.i18n）
 - 参数名遵守跨项目 RPC 契约（`filter` 而非 `query`，`target_file` 而非 `path`）
 - SSE 流式响应有断连检测和 token 缓冲

@@ -1,49 +1,32 @@
 ---
 doc_type: test
-title: "YP-09-22: 聊天窗口 Markdown 渲染安全 — XSS 防护与内容净化策略 — 测试规格"
-status: 待开始
-priority: P2
+title: "Markdown 渲染安全 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-prd_task_id: "YP-09-22"
-source_prds: ["29-架构设计-Markdown渲染安全"]
-source_modules: []
----
-# YP-09-22: 聊天窗口 Markdown 渲染安全 — XSS 防护与内容净化策略 — 测试规格
-
-> 来源 PRD：[29-架构设计-Markdown渲染安全.md](../../prds/2026-09/29-架构设计-Markdown渲染安全.md)
-> 提取日期：2026-09-11
-
+source_prds: ["29-安全-Markdown渲染安全"]
+source_modules: ["29-prd-task-Markdown渲染安全"]
 ---
 
-## 测试场景
+# Markdown 渲染安全 — 测试用例
 
-### 功能验证
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+## 测试用例
 
-### 边界测试
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-MD01 | script 标签清洗 | `<script>` 被 DOMPurify 移除 | P0 |
+| TC-MD02 | onclick 事件清洗 | 事件处理器被移除 | P0 |
+| TC-MD03 | javascript: URL | ALLOWED_ATTR 白名单拦截 | P0 |
+| TC-MD04 | 正常 Markdown | 加粗/列表/代码块正确渲染 | P0 |
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+## 出口准则
 
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 无 XSS 漏洞

@@ -1,5 +1,7 @@
 <template>
-  <el-tag size="small" type="primary" effect="light" :class="{ 'is-clickable': clickable }" @click="clickable && $emit('open')">{{ label }}</el-tag>
+  <el-tag size="small" type="primary" effect="light" :class="{ 'is-clickable': clickable }" @click="clickable && $emit('open')">{{
+    label
+  }}</el-tag>
 </template>
 
 <script setup lang="ts" name="SkillTag">
@@ -13,6 +15,10 @@ const label = computed(() => skillLabel(props.skill));
 </script>
 
 <style scoped>
-.is-clickable { cursor: pointer; }
-.is-clickable:hover { opacity: 0.8; }
+.is-clickable {
+  cursor: pointer;
+}
+.is-clickable:hover {
+  opacity: 0.8;
+}
 </style>

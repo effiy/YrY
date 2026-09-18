@@ -12,5 +12,8 @@ const overdue = computed(() => isOverdue(props.dueDate));
 </script>
 
 <style scoped lang="scss">
-.due-label--overdue { color: var(--el-color-danger); font-weight: 700; }
+.due-label--overdue {
+  font-weight: 700;
+  color: var(--el-color-danger);
+}
 </style>

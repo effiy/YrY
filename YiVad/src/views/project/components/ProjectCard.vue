@@ -72,7 +72,9 @@
             </template>
             <span v-else class="pc-members-empty">No members</span>
           </div>
-          <span class="pc-date" :title="'Updated ' + formatRelativeTime(project.updated_at)">{{ formatRelativeTime(project.updated_at) }}</span>
+          <span class="pc-date" :title="'Updated ' + formatRelativeTime(project.updated_at)">{{
+            formatRelativeTime(project.updated_at)
+          }}</span>
           <el-dropdown trigger="click" @command="(cmd: string) => handleCommand(cmd)">
             <el-button link size="small" :icon="MoreFilled" class="pc-more" @click.stop />
             <template #dropdown>
@@ -138,10 +140,18 @@ const progressColor = computed(() => {
 
 function handleCommand(cmd: string) {
   switch (cmd) {
-    case "open": emit("open"); break;
-    case "edit": emit("edit"); break;
-    case "archive": emit("archive"); break;
-    case "restore": emit("restore"); break;
+    case "open":
+      emit("open");
+      break;
+    case "edit":
+      emit("edit");
+      break;
+    case "archive":
+      emit("archive");
+      break;
+    case "restore":
+      emit("restore");
+      break;
   }
 }
 
@@ -152,6 +162,7 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
 <style scoped lang="scss">
 .pc-card {
   --status-color: #909399;
+
   display: flex;
   overflow: hidden;
   cursor: pointer;
@@ -162,24 +173,26 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
     transform 0.2s ease,
     box-shadow 0.2s ease,
     border-color 0.2s ease;
-
   &:hover {
     border-color: var(--el-color-primary-light-5);
     box-shadow: 0 8px 30px rgb(0 0 0 / 12%);
     transform: translateY(-3px);
-
-    .pc-accent { width: 8px; }
-    .pc-name { color: var(--el-color-primary); }
+    .pc-accent {
+      width: 8px;
+    }
+    .pc-name {
+      color: var(--el-color-primary);
+    }
   }
 }
-
 .pc-card--selected {
   border-color: var(--el-color-primary);
   box-shadow: inset 0 0 0 1px var(--el-color-primary-light-5);
 }
-
 .pc-card--archived {
-  .pc-name { color: var(--el-text-color-secondary); }
+  .pc-name {
+    color: var(--el-text-color-secondary);
+  }
 }
 
 /* Status color strip — widens on hover */
@@ -189,28 +202,24 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   background: var(--status-color);
   transition: width 0.2s ease;
 }
-
 .pc-body {
-  flex: 1;
-  min-width: 0;
-  padding: 16px;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  padding: 16px;
 }
-
 .pc-header {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .pc-title-row {
   display: flex;
   gap: 4px;
   align-items: center;
 }
-
 .pc-name {
   flex: 1;
   min-width: 0;
@@ -221,29 +230,26 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   white-space: nowrap;
   transition: color 0.2s ease;
 }
-
 .pc-star {
   flex-shrink: 0;
   opacity: 0.35;
   transition:
     opacity 0.15s,
     transform 0.2s ease;
-
   &.is-on,
-  &:hover { opacity: 1; }
-
+  &:hover {
+    opacity: 1;
+  }
   &:active {
     transform: scale(0.85);
   }
 }
-
 .pc-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  flex-wrap: wrap;
 }
-
 .pc-id-chip {
   padding: 1px 6px;
   font-size: 11px;
@@ -254,20 +260,17 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   transition:
     color 0.15s,
     background 0.15s;
-
   &:hover {
     color: var(--el-color-primary);
     background: var(--el-color-primary-light-9);
   }
 }
-
 .pc-risks {
   display: flex;
   gap: 4px;
   align-items: center;
   margin-left: auto;
 }
-
 .pc-risk-chip {
   padding: 0 6px;
   font-size: 10px;
@@ -277,8 +280,9 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   border: 1px solid;
   border-radius: 9px;
   transition: filter 0.15s;
-
-  &:hover { filter: brightness(0.92); }
+  &:hover {
+    filter: brightness(0.92);
+  }
 }
 
 /* Key metrics row */
@@ -287,7 +291,6 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
-
 .pc-metric {
   display: flex;
   flex-direction: column;
@@ -302,31 +305,26 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
     background 0.15s,
     border-color 0.15s,
     transform 0.15s;
-
   &:hover {
     background: var(--el-color-primary-light-9);
     border-color: var(--el-color-primary-light-5);
     transform: translateY(-1px);
   }
-
   &:active {
     transform: scale(0.97);
   }
-
   .el-icon {
     font-size: 14px;
     color: var(--el-text-color-secondary);
   }
 }
-
 .pc-metric-val {
   font-size: 18px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-primary);
   line-height: 1.1;
+  color: var(--el-text-color-primary);
 }
-
 .pc-metric-lbl {
   font-size: 10px;
   font-weight: 500;
@@ -341,59 +339,53 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
   gap: 14px;
   align-items: center;
 }
-
 .pc-progress-ring {
   flex-shrink: 0;
 }
-
 .pc-footer {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 6px;
   min-width: 0;
 }
-
 .pc-members {
   display: flex;
   gap: 4px;
   align-items: center;
   cursor: pointer;
-
   :deep(.el-avatar) {
     font-size: 11px;
     color: var(--el-color-primary);
     background: var(--el-color-primary-light-8);
     border: 2px solid var(--el-bg-color);
-
-    &:not(:first-child) { margin-left: -8px; }
+    &:not(:first-child) {
+      margin-left: -8px;
+    }
   }
 }
-
 .pc-members-more {
   margin-left: 2px;
   font-size: 11px;
   color: var(--el-text-color-secondary);
 }
-
 .pc-members-empty {
   font-size: 11px;
   color: var(--el-text-color-placeholder);
 }
-
 .pc-date {
   font-size: 11px;
   color: var(--el-text-color-placeholder);
 }
-
 .pc-more {
   flex-shrink: 0;
   align-self: flex-end;
   margin-top: -20px;
   opacity: 0;
   transition: opacity 0.2s;
-
   .pc-card:hover &,
-  .pc-card:focus-within & { opacity: 1; }
+  .pc-card:focus-within & {
+    opacity: 1;
+  }
 }
 </style>

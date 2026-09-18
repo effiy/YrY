@@ -357,6 +357,7 @@ YiPet（扩展）──┘      │                 Ollama（自托管）
 | [YiVad/CLAUDE.md](YiVad/CLAUDE.md) | YiVad 项目概况、模块边界、约束、近期变更 |
 | [YiAi/CLAUDE.md](YiAi/CLAUDE.md) | YiAi 项目概况、模块边界、约束、近期变更 |
 | [YiPet/CLAUDE.md](YiPet/CLAUDE.md) | YiPet 项目概况、模块边界、约束、近期变更 |
+| [YiKnowledge/CLAUDE.md](YiKnowledge/CLAUDE.md) | 知识库项目概况、模块边界、frontmatter 规范、文件约定 |
 | [YiKnowledge/README.md](YiKnowledge/README.md) | 知识库流水线概述、角色目录、设计原则 |
 | [YiKnowledge/INDEX.md](YiKnowledge/INDEX.md) | 知识库导航索引 |
 | [YiKnowledge/MEMORY.md](YiKnowledge/MEMORY.md) | 知识库规则手册与命名约定 |

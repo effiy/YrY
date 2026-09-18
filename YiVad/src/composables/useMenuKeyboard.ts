@@ -18,8 +18,7 @@ export function useMenuKeyboard(
         activeIndex.value = Math.min(activeIndex.value + 1, items.value.length - 1);
         while (
           activeIndex.value < items.value.length &&
-          (items.value[activeIndex.value]?.disabled ||
-            items.value[activeIndex.value]?.type === "divider")
+          (items.value[activeIndex.value]?.disabled || items.value[activeIndex.value]?.type === "divider")
         ) {
           activeIndex.value++;
         }
@@ -31,8 +30,7 @@ export function useMenuKeyboard(
         activeIndex.value = Math.max(activeIndex.value - 1, 0);
         while (
           activeIndex.value > 0 &&
-          (items.value[activeIndex.value]?.disabled ||
-            items.value[activeIndex.value]?.type === "divider")
+          (items.value[activeIndex.value]?.disabled || items.value[activeIndex.value]?.type === "divider")
         ) {
           activeIndex.value--;
         }

@@ -3,8 +3,12 @@
     <template #content>
       <div class="goal-cell__tip">
         <p class="goal-cell__tip-desc">{{ goal.description }}</p>
-        <div class="goal-cell__tip-row"><span>Owner</span><b>{{ goal.owner }}</b></div>
-        <div class="goal-cell__tip-row"><span>Project</span><b>{{ goal.project }}</b></div>
+        <div class="goal-cell__tip-row">
+          <span>Owner</span><b>{{ goal.owner }}</b>
+        </div>
+        <div class="goal-cell__tip-row">
+          <span>Project</span><b>{{ goal.project }}</b>
+        </div>
         <div class="goal-cell__tip-krs">
           <div v-for="(kr, i) in goal.keyResults" :key="i" class="goal-cell__tip-kr">
             <span>{{ kr.text }}</span>
@@ -40,7 +44,7 @@
 <script setup lang="ts" name="GoalCell">
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { allGoalsMap, type GoalItem } from "@/views/knowledge/executiver/okrData";
+import { allGoalsMap, type GoalItem } from "@/views/knowledge/executive/okrData";
 
 const props = defineProps<{ role: string; goalId: string; compact?: boolean; goal?: GoalItem | null }>();
 const router = useRouter();
@@ -55,7 +59,7 @@ const avg = computed(() => {
 });
 
 function navigate() {
-  if (props.goalId && props.role) router.push(`/executiver/okr/${props.role}?goal=${props.goalId}`);
+  if (props.goalId && props.role) router.push(`/knowledge/executive/okr?role=${props.role}&goal=${props.goalId}`);
 }
 
 function statusTagType(status: string) {
@@ -71,38 +75,134 @@ function krStatus(pct: number): "success" | "warning" | "exception" | undefined 
 </script>
 
 <style scoped lang="scss">
-.goal-cell { display: flex; flex-direction: column; gap: 4px; line-height: 1.4; }
-.goal-cell__head { display: flex; align-items: center; gap: 6px; cursor: pointer; min-width: 0; }
-.goal-cell__icon { font-size: 14px; flex-shrink: 0; }
-.goal-cell__title {
-  flex: 1; min-width: 0;
-  font-size: 13px; font-weight: 600; color: var(--el-text-color-primary);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  transition: color 0.15s;
-  &:hover { color: var(--el-color-primary); }
+.goal-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.4;
 }
-.goal-cell__meta { display: flex; align-items: center; gap: 6px; }
-.goal-cell__period { font-size: 11px; color: var(--el-text-color-secondary); }
-.goal-cell__id { font-family: monospace; font-size: 11px; color: var(--el-text-color-secondary); }
-.goal-cell__progress { display: flex; align-items: center; gap: 8px; }
-.goal-cell__progress :deep(.el-progress) { flex: 1; }
-.goal-cell__avg { font-size: 11px; color: var(--el-text-color-secondary); min-width: 30px; text-align: right; }
-.goal-cell__missing { font-family: monospace; font-size: 11px; color: var(--el-color-primary); cursor: pointer; &:hover { text-decoration: underline; } }
-
-.goal-cell__compact {
-  display: inline-flex; align-items: center; gap: 5px; cursor: pointer; min-width: 0;
-  .goal-cell__title {
-    flex: none; max-width: 180px;
-    font-size: 12px; font-weight: 500;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    transition: color 0.15s;
-    &:hover { color: var(--el-color-primary); }
+.goal-cell__head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  cursor: pointer;
+}
+.goal-cell__icon {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.goal-cell__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+  transition: color 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
   }
 }
-
-.goal-cell__tip { max-width: 320px; }
-.goal-cell__tip-desc { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--el-text-color-regular); }
-.goal-cell__tip-row { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; margin-bottom: 4px; span { color: var(--el-text-color-secondary); } b { color: var(--el-text-color-primary); font-weight: 500; } }
-.goal-cell__tip-krs { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--el-border-color-lighter); }
-.goal-cell__tip-kr { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; margin-bottom: 4px; span { color: var(--el-text-color-regular); } b { color: var(--el-color-primary); font-weight: 500; } }
+.goal-cell__meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.goal-cell__period {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.goal-cell__id {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.goal-cell__progress {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.goal-cell__progress :deep(.el-progress) {
+  flex: 1;
+}
+.goal-cell__avg {
+  min-width: 30px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  text-align: right;
+}
+.goal-cell__missing {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.goal-cell__compact {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  min-width: 0;
+  cursor: pointer;
+  .goal-cell__title {
+    flex: none;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.15s;
+    &:hover {
+      color: var(--el-color-primary);
+    }
+  }
+}
+.goal-cell__tip {
+  max-width: 320px;
+}
+.goal-cell__tip-desc {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+.goal-cell__tip-row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12px;
+  span {
+    color: var(--el-text-color-secondary);
+  }
+  b {
+    font-weight: 500;
+    color: var(--el-text-color-primary);
+  }
+}
+.goal-cell__tip-krs {
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+.goal-cell__tip-kr {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12px;
+  span {
+    color: var(--el-text-color-regular);
+  }
+  b {
+    font-weight: 500;
+    color: var(--el-color-primary);
+  }
+}
 </style>

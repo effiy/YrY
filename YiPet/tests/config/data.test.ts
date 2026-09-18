@@ -12,11 +12,11 @@ describe('popup data adapter', () => {
     });
 
     it('exports COLORS array with values and labels', () => {
-      expect(popupConfig.COLORS).toHaveLength(6);
+      expect(popupConfig.COLORS).toHaveLength(7);
       expect(popupConfig.COLORS[0]).toMatchObject({ value: -1, label: 'None' });
-      expect(popupConfig.COLORS[1]).toMatchObject({ value: 0, label: 'Quantum Violet' });
-      expect(popupConfig.COLORS[5]).toMatchObject({ value: 4, label: 'Quantum Sunset' });
-      // Every option carries a CSS gradient for the swatch (added with the picker).
+      expect(popupConfig.COLORS[1]).toMatchObject({ value: 0, label: 'Slate Pro' });
+      expect(popupConfig.COLORS[6]).toMatchObject({ value: 5, label: 'Rose' });
+      // Every option carries a CSS gradient for the swatch.
       expect(
         popupConfig.COLORS.every((c) => typeof c.gradient === 'string' && c.gradient.length > 0),
       ).toBe(true);

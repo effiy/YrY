@@ -18,11 +18,7 @@ export type MermaidThemeVars = NonNullable<MermaidConfig["themeVariables"]>;
 /** Parse hex color to RGB tuple. */
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
-  return [
-    parseInt(h.substring(0, 2), 16),
-    parseInt(h.substring(2, 4), 16),
-    parseInt(h.substring(4, 6), 16),
-  ];
+  return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
 }
 
 /** Blend two hex colors by ratio (0 = a, 1 = colorB). */
@@ -40,7 +36,13 @@ function adjustLuminance(hex: string, delta: number): string {
   // Simple approach: add delta to each channel equally (perceptual-agnostic but works)
   const clamp = (v: number) => Math.max(0, Math.min(255, v));
   const [r, g, b] = hexToRgb(hex);
-  return `#${clamp(r + delta).toString(16).padStart(2, "0")}${clamp(g + delta).toString(16).padStart(2, "0")}${clamp(b + delta).toString(16).padStart(2, "0")}`;
+  return `#${clamp(r + delta)
+    .toString(16)
+    .padStart(2, "0")}${clamp(g + delta)
+    .toString(16)
+    .padStart(2, "0")}${clamp(b + delta)
+    .toString(16)
+    .padStart(2, "0")}`;
 }
 
 /** Lighten a dark color for surface/background use. */
@@ -137,7 +139,7 @@ function buildThemeVars(c: ThemeColors): MermaidThemeVars {
     loopTextColor: c.fg,
 
     // Sequence numbers
-    sequenceNumberColor: muted,
+    sequenceNumberColor: muted
   };
 }
 
@@ -151,26 +153,47 @@ function isDark(hex: string): boolean {
 
 const THEME_DEFS: Record<string, ThemeColors> = {
   // ── Light themes (6) ──
-  "zinc-light":        { bg: "#ffffff", fg: "#27272a" },
+  "zinc-light": { bg: "#ffffff", fg: "#27272a" },
   "tokyo-night-light": { bg: "#d5d6db", fg: "#34548a" },
-  "catppuccin-latte":  { bg: "#eff1f5", fg: "#8839ef" },
-  "nord-light":        { bg: "#eceff4", fg: "#5e81ac" },
-  "github-light":      { bg: "#ffffff", fg: "#0969da" },
-  "solarized-light":   { bg: "#fdf6e3", fg: "#268bd2" },
+  "catppuccin-latte": { bg: "#eff1f5", fg: "#8839ef" },
+  "nord-light": { bg: "#eceff4", fg: "#5e81ac" },
+  "github-light": { bg: "#ffffff", fg: "#0969da" },
+  "solarized-light": { bg: "#fdf6e3", fg: "#268bd2" },
 
   // ── Dark themes (9) ──
-  "zinc-dark":           { bg: "#18181b", fg: "#a1a1aa" },
-  "tokyo-night":         { bg: "#1a1b26", fg: "#a9b1d6", accent: "#7aa2f7",
-                           muted: "#565f89", line: "#3d59a1", surface: "#292e42", border: "#3d59a1" },
-  "tokyo-night-storm":   { bg: "#24283b", fg: "#a9b1d6", accent: "#7aa2f7",
-                           muted: "#565f89", line: "#3d59a1", surface: "#1f2335", border: "#3d59a1" },
-  "catppuccin-mocha":    { bg: "#1e1e2e", fg: "#cba6f7" },
-  "nord":                { bg: "#2e3440", fg: "#d8dee9" },
-  "dracula":             { bg: "#282a36", fg: "#f8f8f2",
-                           accent: "#bd93f9", muted: "#44475a", line: "#6272a4", surface: "#383a59", border: "#6272a4" },
-  "github-dark":         { bg: "#0d1117", fg: "#4493f8" },
-  "solarized-dark":      { bg: "#002b36", fg: "#268bd2" },
-  "one-dark":            { bg: "#282c34", fg: "#abb2bf" },
+  "zinc-dark": { bg: "#18181b", fg: "#a1a1aa" },
+  "tokyo-night": {
+    bg: "#1a1b26",
+    fg: "#a9b1d6",
+    accent: "#7aa2f7",
+    muted: "#565f89",
+    line: "#3d59a1",
+    surface: "#292e42",
+    border: "#3d59a1"
+  },
+  "tokyo-night-storm": {
+    bg: "#24283b",
+    fg: "#a9b1d6",
+    accent: "#7aa2f7",
+    muted: "#565f89",
+    line: "#3d59a1",
+    surface: "#1f2335",
+    border: "#3d59a1"
+  },
+  "catppuccin-mocha": { bg: "#1e1e2e", fg: "#cba6f7" },
+  nord: { bg: "#2e3440", fg: "#d8dee9" },
+  dracula: {
+    bg: "#282a36",
+    fg: "#f8f8f2",
+    accent: "#bd93f9",
+    muted: "#44475a",
+    line: "#6272a4",
+    surface: "#383a59",
+    border: "#6272a4"
+  },
+  "github-dark": { bg: "#0d1117", fg: "#4493f8" },
+  "solarized-dark": { bg: "#002b36", fg: "#268bd2" },
+  "one-dark": { bg: "#282c34", fg: "#abb2bf" }
 };
 
 // ── Public API ─────────────────────────────────────────────────────────────
@@ -190,14 +213,11 @@ export const DARK_THEME_DEFAULT = "tokyo-night";
  * @param isDark - Whether the app is in dark mode (used to pick default theme)
  * @param themeName - Optional specific theme name from THEME_DEFS
  */
-export function getMermaidThemeConfig(
-  isDark: boolean,
-  themeName?: string,
-): { theme: "base"; themeVariables: MermaidThemeVars } {
+export function getMermaidThemeConfig(isDark: boolean, themeName?: string): { theme: "base"; themeVariables: MermaidThemeVars } {
   const name = themeName ?? (isDark ? DARK_THEME_DEFAULT : LIGHT_THEME_DEFAULT);
   const def = THEME_DEFS[name] ?? THEME_DEFS[isDark ? DARK_THEME_DEFAULT : LIGHT_THEME_DEFAULT];
   return {
     theme: "base" as const,
-    themeVariables: buildThemeVars(def),
+    themeVariables: buildThemeVars(def)
   };
 }

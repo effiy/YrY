@@ -65,7 +65,7 @@ const trendOption = computed<ECOption>(() => {
   const sorted = [...dateMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   const dates = sorted.map(([d]) => d.slice(5)); // MM-DD
   const counts = sorted.map(([, v]) => v.count);
-  const avgScores = sorted.map(([, v]) => v.count ? +(v.totalScore / v.count).toFixed(3) : 0);
+  const avgScores = sorted.map(([, v]) => (v.count ? +(v.totalScore / v.count).toFixed(3) : 0));
 
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
@@ -74,12 +74,18 @@ const trendOption = computed<ECOption>(() => {
     xAxis: { type: "category", data: dates, axisLabel: { fontSize: 9, rotate: 30 } },
     yAxis: [
       { type: "value", name: "Queries", axisLabel: { fontSize: 9 }, minInterval: 1 },
-      { type: "value", name: "Score", min: 0, max: 1, axisLabel: { fontSize: 9 } },
+      { type: "value", name: "Score", min: 0, max: 1, axisLabel: { fontSize: 9 } }
     ],
     series: [
-      { name: "Queries", type: "bar", barWidth: "50%", itemStyle: { color: "#5470c6", borderRadius: [4, 4, 0, 0] }, data: counts },
-      { name: "Avg Score", type: "line", yAxisIndex: 1, smooth: true, itemStyle: { color: "#ee6666" }, data: avgScores },
-    ],
+      {
+        name: "Queries",
+        type: "bar",
+        barWidth: "50%",
+        itemStyle: { color: "#5470c6", borderRadius: [4, 4, 0, 0] },
+        data: counts
+      },
+      { name: "Avg Score", type: "line", yAxisIndex: 1, smooth: true, itemStyle: { color: "#ee6666" }, data: avgScores }
+    ]
   };
 });
 
@@ -92,7 +98,10 @@ const scoreDistOption = computed<ECOption>(() => {
   for (const h of props.history) {
     const s = h.topScore ?? 0;
     for (let i = 0; i < buckets.length; i++) {
-      if (s < buckets[i]) { counts[i]++; break; }
+      if (s < buckets[i]) {
+        counts[i]++;
+        break;
+      }
     }
   }
   return {
@@ -100,11 +109,14 @@ const scoreDistOption = computed<ECOption>(() => {
     grid: { left: "3%", right: "4%", top: "5%", bottom: "3%", containLabel: true },
     xAxis: { type: "category", data: labels, axisLabel: { fontSize: 9, rotate: 30 } },
     yAxis: { type: "value", name: "Queries", axisLabel: { fontSize: 9 }, minInterval: 1 },
-    series: [{
-      type: "bar", barWidth: "60%",
-      data: counts.map((c, i) => ({ value: c, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
-      label: { show: true, position: "top", fontSize: 10, formatter: (p: any) => p.value > 0 ? p.value : "" },
-    }],
+    series: [
+      {
+        type: "bar",
+        barWidth: "60%",
+        data: counts.map((c, i) => ({ value: c, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
+        label: { show: true, position: "top", fontSize: 10, formatter: (p: any) => (p.value > 0 ? p.value : "") }
+      }
+    ]
   };
 });
 
@@ -121,28 +133,32 @@ const scopePieOption = computed<ECOption>(() => {
     .map(([name, value], i) => ({
       name: name.length > 25 ? name.slice(0, 25) + "..." : name,
       value,
-      itemStyle: { color: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#fc8452", "#9a60b4", "#ea7ccc"][i] },
+      itemStyle: { color: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#fc8452", "#9a60b4", "#ea7ccc"][i] }
     }));
   return {
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
     legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10 } },
-    series: [{
-      type: "pie", radius: ["45%", "70%"], center: ["55%", "50%"],
-      label: { fontSize: 10, formatter: "{d}%" },
-      emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
-      data: items,
-    }],
+    series: [
+      {
+        type: "pie",
+        radius: ["45%", "70%"],
+        center: ["55%", "50%"],
+        label: { fontSize: 10, formatter: "{d}%" },
+        emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
+        data: items
+      }
+    ]
   };
 });
 </script>
 
 <style scoped lang="scss">
 .query-trends-chart {
+  padding: 12px;
+  margin-bottom: 12px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 12px;
 }
 .qtc-header {
   display: flex;
@@ -163,9 +179,9 @@ const scopePieOption = computed<ECOption>(() => {
   margin-bottom: 8px;
 }
 .qtc-sub-title {
+  margin-bottom: 2px;
   font-size: 11px;
   font-weight: 500;
   color: var(--el-text-color-secondary);
-  margin-bottom: 2px;
 }
 </style>

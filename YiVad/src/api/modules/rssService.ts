@@ -80,6 +80,7 @@ export interface RssListParams {
   pageSize?: number;
   orderBy?: string;
   orderType?: "asc" | "desc";
+  bodyMissing?: boolean;
 }
 
 /** Result envelope for parse_feed / parse_all_enabled_rss_sources. */
@@ -118,9 +119,7 @@ export async function getRssList(
     filter.$or = [{ title: rx }, { link: rx }, { author: rx }];
   }
   if (params.source_name) {
-    filter.source_name = Array.isArray(params.source_name)
-      ? { $in: params.source_name }
-      : params.source_name;
+    filter.source_name = Array.isArray(params.source_name) ? { $in: params.source_name } : params.source_name;
   }
   if (params.source_url) filter.source_url = params.source_url;
   if (params.category_path) filter.category_path = params.category_path;
@@ -151,7 +150,7 @@ export async function getRssList(
 }
 
 export async function getRssItem(key: string): Promise<RssItemDocument | null> {
-  const res = await queryDocuments<RssItemDocument>({ cname: RSS_COLLECTION, filter: { key }, limit: 1 });
+  const res = await queryDocuments<RssItemDocument>({ cname: RSS_COLLECTION, filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load RSS item");
   return res.data?.list?.[0] ?? null;
 }
@@ -189,13 +188,13 @@ export async function getSeedList(
 }
 
 export async function getSeed(key: string): Promise<RssSeedDocument | null> {
-  const res = await queryDocuments<RssSeedDocument>({ cname: SEEDS_COLLECTION, filter: { key }, limit: 1 });
+  const res = await queryDocuments<RssSeedDocument>({ cname: SEEDS_COLLECTION, filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load RSS seed");
   return res.data?.list?.[0] ?? null;
 }
 
 export async function getSeedByUrl(url: string): Promise<RssSeedDocument | null> {
-  const res = await queryDocuments<RssSeedDocument>({ cname: SEEDS_COLLECTION, filter: { url }, limit: 1 });
+  const res = await queryDocuments<RssSeedDocument>({ cname: SEEDS_COLLECTION, filter: { url }, pageSize: 1 });
   if (res.code !== 0) return null;
   return res.data?.list?.[0] ?? null;
 }

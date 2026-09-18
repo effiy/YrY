@@ -4,12 +4,12 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 from typing import Any, Dict, Optional
 
 import aiofiles
-import os
 
-from domain.ai.tools.core import ToolRegistry, ToolDefinition
+from domain.ai.tools.core import ToolDefinition, ToolRegistry, _format_file_size, _is_path_allowed, _is_url_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     """Register the built-in tools that ship with YiAi."""
 
     # ── web_search ──────────────────────────────────────────────────────
-    async def _web_search(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _web_search(args: dict[str, Any]) -> dict[str, Any]:
         from domain.search import search as do_search
         query = str(args.get("query", "")).strip()
         max_results = min(int(args.get("max_results", 6)), 10)
@@ -29,8 +29,8 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
         lines = [f"Web search results for '{query}':"]
         for i, r in enumerate(results, 1):
             lines.append(f"{i}. {r.get('title', '')} — {r.get('url', '')}")
-            if r.get("description"):
-                lines.append(f"   {r['description']}")
+            if r.get("snippet"):
+                lines.append(f"   {r['snippet']}")
         return {"content": "\n".join(lines), "details": results}
 
     registry.register(ToolDefinition(
@@ -48,7 +48,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── web_fetch ───────────────────────────────────────────────────────
-    async def _web_fetch(args: Dict[str, Any], on_progress=None) -> Dict[str, Any]:
+    async def _web_fetch(args: dict[str, Any], on_progress=None) -> dict[str, Any]:
         import aiohttp
         url = str(args.get("url", "")).strip()
         if not url:
@@ -62,12 +62,19 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
             if on_progress:
                 await on_progress({"content": msg, "url": url})
 
-        from server.routes.search import _fetch_via_jina, _extract_text_bs, _FETCH_HEADERS, _FETCH_MAX_BYTES, _FETCH_OUTPUT_MAX_CHARS
         import re
+
+        from domain.search.fetch import (
+            FETCH_HEADERS,
+            FETCH_MAX_BYTES,
+            FETCH_OUTPUT_MAX_CHARS,
+            extract_text_bs,
+            fetch_via_jina,
+        )
 
         # Try Jina Reader first
         await _progress("Fetching via Jina Reader...")
-        jina_text, jina_err = await _fetch_via_jina(url)
+        jina_text, jina_err = await fetch_via_jina(url)
         if jina_text is not None:
             await _progress(f"Jina fetched {len(jina_text)} chars")
             return {"content": jina_text, "details": {"url": url, "source": "jina"}}
@@ -76,33 +83,32 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
         await _progress("Jina unavailable, trying direct fetch...")
         timeout = aiohttp.ClientTimeout(total=15.0)
         try:
-            async with aiohttp.ClientSession(timeout=timeout, headers=_FETCH_HEADERS) as session:
-                async with session.get(url) as resp:
-                    if resp.status >= 400:
-                        return {"content": "", "error": f"HTTP {resp.status}"}
-                    ct = (resp.headers.get("Content-Type") or "").lower()
-                    await _progress(f"Downloading (Content-Type: {ct})...")
-                    chunks: list[str] = []
-                    total = 0
-                    async for chunk, _ in resp.content.iter_chunks():
-                        try:
-                            chunks.append(chunk.decode("utf-8", errors="replace"))
-                        except Exception:
-                            logger.debug("Failed to decode chunk", exc_info=True)
-                        total += len(chunk)
-                        if total >= _FETCH_MAX_BYTES:
-                            break
-                    await _progress(f"Downloaded {total} bytes, extracting text...")
-                    html = "".join(chunks)
-                    if "text/html" in ct:
-                        text = _extract_text_bs(html)
-                        await _progress(f"Extracted {len(text)} chars of text")
-                        return {"content": text, "details": {"url": url, "source": "beautifulsoup"}}
-                    text = re.sub(r"\s+", " ", html).strip()
-                    if len(text) > _FETCH_OUTPUT_MAX_CHARS:
-                        text = text[:_FETCH_OUTPUT_MAX_CHARS]
-                    await _progress(f"Plaintext: {len(text)} chars")
-                    return {"content": text, "details": {"url": url, "source": "plaintext"}}
+            async with aiohttp.ClientSession(timeout=timeout, headers=FETCH_HEADERS) as session, session.get(url) as resp:
+                if resp.status >= 400:
+                    return {"content": "", "error": f"HTTP {resp.status}"}
+                ct = (resp.headers.get("Content-Type") or "").lower()
+                await _progress(f"Downloading (Content-Type: {ct})...")
+                chunks: list[str] = []
+                total = 0
+                async for chunk, _ in resp.content.iter_chunks():
+                    try:
+                        chunks.append(chunk.decode("utf-8", errors="replace"))
+                    except UnicodeDecodeError:
+                        logger.debug("Failed to decode chunk", exc_info=True)
+                    total += len(chunk)
+                    if total >= FETCH_MAX_BYTES:
+                        break
+                await _progress(f"Downloaded {total} bytes, extracting text...")
+                html = "".join(chunks)
+                if "text/html" in ct:
+                    text = extract_text_bs(html)
+                    await _progress(f"Extracted {len(text)} chars of text")
+                    return {"content": text, "details": {"url": url, "source": "beautifulsoup"}}
+                text = re.sub(r"\s+", " ", html).strip()
+                if len(text) > FETCH_OUTPUT_MAX_CHARS:
+                    text = text[:FETCH_OUTPUT_MAX_CHARS]
+                await _progress(f"Plaintext: {len(text)} chars")
+                return {"content": text, "details": {"url": url, "source": "plaintext"}}
         except Exception as e:
             return {"content": "", "error": f"Fetch failed: {e}"}
 
@@ -120,7 +126,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── rag_search ──────────────────────────────────────────────────────
-    async def _rag_search(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _rag_search(args: dict[str, Any]) -> dict[str, Any]:
         from domain.rag.engine import rag_query
         query = str(args.get("query", "")).strip()
         top_k = min(int(args.get("top_k", 5)), 20)
@@ -155,7 +161,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── file_read ───────────────────────────────────────────────────────
-    async def _file_read(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _file_read(args: dict[str, Any]) -> dict[str, Any]:
         from domain.files import read_file
         path = str(args.get("path", "")).strip()
         if not path:
@@ -183,7 +189,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── file_write ──────────────────────────────────────────────────────
-    async def _file_write(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _file_write(args: dict[str, Any]) -> dict[str, Any]:
         from domain.files import write_file
         path = str(args.get("path", "")).strip()
         content = str(args.get("content", ""))
@@ -243,7 +249,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
         return False
 
     # ── bash ───────────────────────────────────────────────────────────
-    async def _bash(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _bash(args: dict[str, Any]) -> dict[str, Any]:
         import os
         command = str(args.get("command", "")).strip()
         workdir = str(args.get("workdir", ".")).strip()
@@ -289,8 +295,9 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── grep ───────────────────────────────────────────────────────────
-    async def _grep(args: Dict[str, Any]) -> Dict[str, Any]:
-        import os, re
+    async def _grep(args: dict[str, Any]) -> dict[str, Any]:
+        import os
+        import re
         pattern = str(args.get("pattern", "")).strip()
         path_filter = str(args.get("path", ".")).strip()
         if not pattern:
@@ -350,8 +357,9 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── find (glob) ────────────────────────────────────────────────────
-    async def _find(args: Dict[str, Any]) -> Dict[str, Any]:
-        import os, fnmatch
+    async def _find(args: dict[str, Any]) -> dict[str, Any]:
+        import fnmatch
+        import os
         pattern = str(args.get("pattern", "*")).strip()
         search_dir_str = str(args.get("path", ".")).strip()
         search_dir = _resolve_path(search_dir_str)
@@ -397,8 +405,9 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── ls ─────────────────────────────────────────────────────────────
-    async def _ls(args: Dict[str, Any]) -> Dict[str, Any]:
-        import os, stat
+    async def _ls(args: dict[str, Any]) -> dict[str, Any]:
+        import os
+        import stat
         dir_path = str(args.get("path", ".")).strip()
         abs_path = _resolve_path(dir_path)
         if not _is_path_safe(abs_path):
@@ -440,9 +449,9 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
     ))
 
     # ── edit ───────────────────────────────────────────────────────────
-    async def _edit(args: Dict[str, Any]) -> Dict[str, Any]:
-        import os
+    async def _edit(args: dict[str, Any]) -> dict[str, Any]:
         import difflib
+        import os
         file_path = str(args.get("path", "")).strip()
         old_string = str(args.get("old_string", ""))
         new_string = str(args.get("new_string", ""))
@@ -500,7 +509,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
 
     # ── Read tool (Pi: read file with offset/limit) ────────────────────
 
-    async def _read(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _read(args: dict[str, Any]) -> dict[str, Any]:
         import os
         file_path = str(args.get("path", "")).strip()
         offset = int(args.get("offset", 1)) - 1  # 1-indexed → 0-indexed
@@ -551,7 +560,7 @@ def _register_builtin_tools(registry: ToolRegistry) -> None:
 
     # ── Write tool (Pi: create/overwrite files) ────────────────────────
 
-    async def _write(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _write(args: dict[str, Any]) -> dict[str, Any]:
         import os
         file_path = str(args.get("path", "")).strip()
         content = str(args.get("content", ""))

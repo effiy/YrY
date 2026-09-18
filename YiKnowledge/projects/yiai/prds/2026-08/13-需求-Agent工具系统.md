@@ -26,6 +26,9 @@ review_status: 已评审
 issue_type: 功能
 roles:
 - engineer
+source_okr: [yiai-003]
+related_modules: [13-prd-task-Agent工具系统]
+related_tests: [13-prd-test-Agent工具系统]
 ---
 
 # Agent 工具系统

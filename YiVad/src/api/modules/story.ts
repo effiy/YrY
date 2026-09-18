@@ -133,7 +133,7 @@ export async function getStoryList(params: StoryListParams = {}) {
 }
 
 export async function getStory(key: string): Promise<StoryDocument | null> {
-  const res = await queryDocuments<StoryDocument>({ cname: CNAME, filter: { key }, limit: 1 });
+  const res = await queryDocuments<StoryDocument>({ cname: CNAME, filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load story");
   return res.data?.list?.[0] ?? null;
 }

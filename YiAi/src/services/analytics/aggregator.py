@@ -12,15 +12,15 @@ from typing import Any, Dict, List
 from data.database import db
 
 
-async def get_efficiency_metrics(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_efficiency_metrics(params: dict[str, Any]) -> dict[str, Any]:
     """Return pre-aggregated efficiency metrics for a project.
 
     ``params``: ``{ project_key?: str, dateRange?: { start, end } }``
     """
     project_key: str | None = params.get("project_key")
-    date_range: Dict[str, Any] | None = params.get("dateRange")
+    date_range: dict[str, Any] | None = params.get("dateRange")
 
-    match: Dict[str, Any] = {}
+    match: dict[str, Any] = {}
     if project_key:
         match["project_key"] = project_key
     if date_range:
@@ -69,15 +69,15 @@ async def get_efficiency_metrics(params: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-async def get_quality_metrics(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_quality_metrics(params: dict[str, Any]) -> dict[str, Any]:
     """Return pre-aggregated quality metrics for a project.
 
     ``params``: ``{ project_key?: str, dateRange?: { start, end } }``
     """
     project_key: str | None = params.get("project_key")
-    date_range: Dict[str, Any] | None = params.get("dateRange")
+    date_range: dict[str, Any] | None = params.get("dateRange")
 
-    match: Dict[str, Any] = {}
+    match: dict[str, Any] = {}
     if project_key:
         match["project_key"] = project_key
     if date_range:
@@ -103,7 +103,7 @@ async def get_quality_metrics(params: Dict[str, Any]) -> Dict[str, Any]:
         {"$sort": {"count": -1}},
         {"$limit": 20},
     ]
-    defect_density: List[Dict[str, Any]] = []
+    defect_density: list[dict[str, Any]] = []
     async for doc in db.db["bugs"].aggregate(density_pipeline):
         defect_density.append({"module": doc["_id"], "bugs": doc["count"]})
 

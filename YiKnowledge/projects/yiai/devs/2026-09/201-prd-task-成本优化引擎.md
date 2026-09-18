@@ -1,41 +1,70 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-196"
-title: "YA-09-196: 成本优化引擎 — AI 成本优化、模型选择降本、Prompt 压缩节省、缓存节省计算、批量处理折扣、请求成本追踪、成本预测、预算告警、优化建议 — 开发任务"
+prd_task_id: "YA-09-86"
+title: "YA-09-86: AI 成本优化引擎 — Token 追踪 + 模型降本 + 预算告警 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 1.5
 source_prd: "201-需求-成本优化引擎.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-196: 成本优化引擎 — AI 成本优化、模型选择降本、Prompt 压缩节省、缓存节省计算、批量处理折扣、请求成本追踪、成本预测、预算告警、优化建议 — 开发任务
+# YA-09-86: AI 成本优化引擎 — Token 追踪 + 模型降本 + 预算告警 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[201-需求-成本优化引擎.md](../../prds/2026-09/201-需求-成本优化引擎.md)
-> 需求编号：YA-09-196 · 优先级：P2 · 人天：0.3d
-> 类型：基础设施 · 状态：需求已编写
+> 需求编号：YA-09-86 · 优先级：P2 · 人天：1.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+追踪每次 LLM 调用的 Token 消耗和成本（Ollama 自托管成本接近零，外部 API 按量计费），提供预算告警和降本建议。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+class CostTracker:
+    PRICING = {
+        "deepseek-chat": {"input": 0.14, "output": 0.28},  # $/1M tokens
+        "ollama-local": {"input": 0, "output": 0},           # 自托管
+    }
 
-| 步骤 | 任务 | 产出 |
+    async def track(self, model: str, prompt_tokens: int, completion_tokens: int):
+        pricing = self.PRICING.get(model, {"input": 0, "output": 0})
+        cost = (prompt_tokens * pricing["input"] + completion_tokens * pricing["output"]) / 1_000_000
+
+        await db.ai_costs.insert_one({
+            "model": model, "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens, "cost_usd": cost,
+            "timestamp": datetime.now(timezone.utc),
+        })
+```
+
+### 降本策略
+
+| 策略 | 效果 |
+|------|------|
+| 简单任务用便宜模型 | 成本 -70% |
+| Prompt 压缩 | Token -30% |
+| 缓存命中 | API 调用 -50% |
+| 批量处理 | 减少请求数 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | Token 计数 + 成本追踪 | 每次调用成本可见 | 0.5 |
+| 2 | 预算告警 + 降本建议 + Dashboard | 超预算企微通知 | 1.0 |
+
+**合计：1.5d**。

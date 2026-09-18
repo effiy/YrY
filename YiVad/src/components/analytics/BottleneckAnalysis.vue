@@ -27,25 +27,29 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), { threshold: 3 });
 
-const tableData = computed(() =>
-  props.data.map(d => ({ ...d, isBottleneck: d.avgDays > props.threshold }))
-);
+const tableData = computed(() => props.data.map(d => ({ ...d, isBottleneck: d.avgDays > props.threshold })));
 
 const chartOption = computed<ECOption>(() => ({
   tooltip: { trigger: "axis" as const },
   grid: { top: 8, right: 16, bottom: 8, left: 100 },
   xAxis: { type: "value" as const, name: "days" },
   yAxis: { type: "category" as const, data: props.data.map(d => d.status), inverse: true },
-  series: [{
-    data: props.data.map(d => d.avgDays),
-    type: "bar" as const,
-    color: "#f56c6c",
-    barMaxWidth: 24,
-    label: { show: true, position: "right" as const, formatter: "{c}d" },
-  }],
+  series: [
+    {
+      data: props.data.map(d => d.avgDays),
+      type: "bar" as const,
+      color: "#f56c6c",
+      barMaxWidth: 24,
+      label: { show: true, position: "right" as const, formatter: "{c}d" }
+    }
+  ]
 }));
 </script>
 
 <style scoped lang="scss">
-.bottleneck-panel { .mt12 { margin-top: 12px; } }
+.bottleneck-panel {
+  .mt12 {
+    margin-top: 12px;
+  }
+}
 </style>

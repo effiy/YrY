@@ -4,6 +4,8 @@
 """
 import json
 import logging
+import asyncio
+import importlib
 import uvicorn
 import os
 import sys
@@ -18,21 +20,32 @@ _src_dir = Path(__file__).resolve().parent
 if str(_src_dir) not in sys.path:
     sys.path.insert(0, str(_src_dir))
 
+# Install uvloop if available — 2-4× asyncio speedup. Must be called
+# before the event loop is created (i.e. before uvicorn.run()).
+try:
+    import uvloop
+    uvloop.install()
+except ImportError:
+    pass
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from server.gzip_middleware import FastGZipMiddleware
 
 from data.database import db
 from shared.config import settings
-from server.middleware import header_verification_middleware, BodySizeLimitMiddleware
+from server.middleware import AuthMiddleware, BodySizeLimitMiddleware, GracefulShutdownMiddleware, RequestIdMiddleware, ResponseTimeMiddleware
 from shared.logging import setup_logging
 from server.errors import register_exception_handlers
-from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search, mcp, notification, openai_compat, backup, metrics, bridge
+from server.routes import about, auth, files, execution, wework, maintenance, state, health, users, system, knowledge, rag, search, mcp, notification, openai_compat, backup, metrics, bridge, dashboard, debug
+from shared.response import ORJSONResponse
 
 # Import service modules
 from domain.rss import init_rss_system, shutdown_rss_system
 from domain.knowledge import init_knowledge_watcher, shutdown_knowledge_watcher
 from shared.cache import cache
+from shared.runtime import configure_runtime
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +120,8 @@ def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
         """
         logger.info("Starting application...")
         try:
+            # ── Apply runtime optimisations before any I/O ──
+            configure_runtime()
             if init_db and settings.startup_init_database:
                 await db.initialize()
                 logger.info("Database initialized successfully")
@@ -123,16 +138,75 @@ def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
                 setup_backup_scheduler()
                 logger.info("Backup scheduler started")
             logger.info("Application startup complete")
-            # Preload RAG index in the background — fire-and-forget so it
-            # never blocks the app from accepting requests. The first
-            # /rag-chat call will load it lazily if the background task
-            # hasn't finished yet.
-            try:
-                from domain.rag import preload_kb_index
-                import asyncio
-                _preload_task = asyncio.ensure_future(preload_kb_index())
-            except Exception:
-                logger.warning("RAG index preload failed — first request will load it", exc_info=True)
+            # RAG index is loaded lazily on the first /rag-chat or /rag-query
+            # request. Preload on startup only if it's already built (persisted),
+            # so the first request doesn't pay the disk I/O penalty. Don't trigger
+            # a rebuild — that takes 15+ min with Ollama embeddings.
+
+            # Warm up cache for frequently-accessed endpoints in the background.
+            # None of these should block startup — failures are logged and the
+            # first request will populate the cache lazily.
+            async def _warmup_cache():
+                from shared.cache import cache as _c
+                try:
+                    from server.routes.system import get_menu_tree
+                    menus = await get_menu_tree(use_cache=False)
+                    await _c.set("yiai:system:menus", menus, ttl=3600)
+                    logger.info("Cache warmed: system:menus")
+                except Exception:
+                    logger.debug("Cache warmup menus skipped", exc_info=True)
+                try:
+                    from domain.knowledge import scan_knowledge
+                    tree = await asyncio.to_thread(scan_knowledge)
+                    await _c.set("yiai:knowledge:scan:all", tree, ttl=30)
+                    logger.info("Cache warmed: knowledge:scan:all")
+                except Exception:
+                    logger.debug("Cache warmup knowledge scan skipped", exc_info=True)
+                try:
+                    from domain.rag.indexer import is_index_available, preload_kb_index
+                    if is_index_available():
+                        await preload_kb_index()
+                        logger.info("Cache warmed: rag index preloaded")
+                except Exception:
+                    logger.debug("Cache warmup rag index skipped", exc_info=True)
+                # Pre-import hot service modules so the first RPC call doesn't
+                # pay the importlib cost. Each import is isolated so one failure
+                # doesn't block the rest.
+                _HOT_MODULES = [
+                    "services.database.data_service",
+                    "services.ai.chat_service",
+                    "services.knowledge.knowledge_service",
+                    "services.rag.rag_service",
+                    "data.repository",
+                ]
+                for mod_name in _HOT_MODULES:
+                    try:
+                        importlib.import_module(mod_name)
+                        logger.debug(f"Pre-warmed module: {mod_name}")
+                    except Exception:
+                        logger.debug(f"Pre-warm skipped: {mod_name}", exc_info=True)
+                # Pre-warm Ollama HTTP connection pool — establishes TCP/TLS
+                # and verifies the server is reachable before the first chat request.
+                try:
+                    import httpx
+                    from services.ai.model_runtime import _get_ollama_client
+                    from shared.config import settings as _s
+                    client = _get_ollama_client(
+                        _s.ollama_url.rstrip("/") if hasattr(_s, 'ollama_url') else "http://localhost:11434",
+                        float(getattr(_s, 'ollama_chat_timeout', 300) or 300)
+                    )
+                    # Fire a lightweight request to establish the connection
+                    resp = await client.get("/api/tags", timeout=httpx.Timeout(10.0))
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        models = data.get("models", [])
+                        logger.info(f"Ollama pre-warmed: {len(models)} model(s) available")
+                    else:
+                        logger.warning(f"Ollama pre-warm: HTTP {resp.status_code}")
+                except Exception:
+                    logger.debug("Ollama pre-warm skipped (server may not be running)", exc_info=True)
+
+            _warmup_task = asyncio.ensure_future(_warmup_cache())
             logger.info("Application startup complete")
         except Exception as e:
             logger.error(f"Application startup failed: {e!s}", exc_info=True)
@@ -141,6 +215,30 @@ def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
         yield
 
         logger.info("Shutting down application...")
+        # Cancel background warmup if still running
+        if not _warmup_task.done():
+            _warmup_task.cancel()
+            try:
+                await _warmup_task
+            except asyncio.CancelledError:
+                pass
+        # ── Graceful drain: stop accepting new requests, wait for inflight ──
+        try:
+            from server.middleware import GracefulShutdownMiddleware
+            drain_start = asyncio.get_running_loop().time()
+            drain_timeout = 30.0  # max seconds to wait for inflight requests
+            while GracefulShutdownMiddleware.inflight() > 0:
+                if asyncio.get_running_loop().time() - drain_start > drain_timeout:
+                    logger.warning(
+                        f"Graceful drain timed out after {drain_timeout}s — "
+                        f"{GracefulShutdownMiddleware.inflight()} requests still in flight"
+                    )
+                    break
+                await asyncio.sleep(0.1)
+            logger.info("Graceful drain complete — inflight=0")
+        except Exception:
+            logger.debug("Graceful drain skipped", exc_info=True)
+
         try:
             if init_knowledge and settings.knowledge_watcher_enabled:
                 await shutdown_knowledge_watcher()
@@ -151,6 +249,22 @@ def _build_lifespan(init_db: bool, init_rss: bool, init_knowledge: bool):
                 shutdown_backup_scheduler()
             if init_db and settings.startup_init_database:
                 await db.close()
+            # Close shared httpx clients (used by RAG engine + LLM providers for Ollama calls)
+            try:
+                from domain.rag import close_http_client
+                await close_http_client()
+            except Exception:
+                logger.debug("HTTP client close skipped", exc_info=True)
+            try:
+                from services.ai.llm_provider import close_http_client
+                await close_http_client()
+            except Exception:
+                logger.debug("LLM provider HTTP client close skipped", exc_info=True)
+            try:
+                from services.ai.model_runtime import _close_ollama_client
+                await _close_ollama_client()
+            except Exception:
+                logger.debug("Ollama runtime HTTP client close skipped", exc_info=True)
             logger.info("Application shutdown complete")
         except Exception as e:
             logger.error(f"Error during application shutdown: {e!s}", exc_info=True)
@@ -179,7 +293,8 @@ def create_app(
         title="YiAi API",
         description="YiPet AI Service API",
         version="1.0.0",
-        lifespan=_build_lifespan(db_init_enabled, rss_init_enabled, knowledge_init_enabled)
+        lifespan=_build_lifespan(db_init_enabled, rss_init_enabled, knowledge_init_enabled),
+        default_response_class=ORJSONResponse,
     )
 
     # Register global exception handlers
@@ -226,6 +341,8 @@ def create_app(
     app.include_router(backup.router, tags=["Backup"])
     app.include_router(metrics.router, tags=["Metrics"])
     app.include_router(bridge.router, tags=["Bridge"])
+    app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
+    app.include_router(debug.router, tags=["Debug"])
 
     origins = settings.get_cors_origins()
     app.add_middleware(
@@ -239,14 +356,28 @@ def create_app(
     )
     logger.info(f"CORS config: enabled, Origins: {origins}")
 
+    # Fast GZip compression — zlib level 1, 3-4× faster than Starlette's gzip level 9
+    app.add_middleware(FastGZipMiddleware, minimum_size=512, compression_level=1)
+    logger.info("Fast GZip compression enabled (zlib level 1, min 512 bytes)")
+
     # Reject requests exceeding the configured body size limit before they hit route handlers
     app.add_middleware(BodySizeLimitMiddleware)
 
+    # Response time tracking — adds X-Response-Time-Ms header to every response
+    app.add_middleware(ResponseTimeMiddleware)
+
+    # Request ID — adds X-Request-ID for distributed tracing
+    app.add_middleware(RequestIdMiddleware)
+
     if auth_enabled:
-        app.middleware("http")(header_verification_middleware)
+        app.add_middleware(AuthMiddleware, enabled=True)
         logger.info("Auth middleware enabled")
     else:
         logger.info("Auth middleware disabled")
+
+    # Graceful shutdown tracking — outermost middleware, always last
+    app.add_middleware(GracefulShutdownMiddleware)
+    logger.info("Graceful shutdown middleware registered")
 
     # Mount MCP server (before static to avoid route shadowing)
     from server.mcp_server import mount_to_app

@@ -39,17 +39,16 @@ defineEmits<{ edit: [] }>();
 
 <style scoped lang="scss">
 .rm-card {
+  padding: 0;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  padding: 0;
-  overflow: hidden;
 }
-
 .rm-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -57,33 +56,27 @@ defineEmits<{ edit: [] }>();
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .rm-card__icon {
   font-size: 16px;
   color: var(--el-color-primary);
 }
-
 .rm-card__meta-tag {
   font-weight: 400;
 }
-
 .rm-card__meta-date {
   font-size: 12px;
   font-weight: 400;
   color: var(--el-text-color-placeholder);
 }
-
 .rm-card__head-right {
-  margin-left: auto;
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
+  margin-left: auto;
 }
-
 .rm-card__body {
   padding: 16px;
 }
-
 .rm-preview {
   padding: 12px;
   font-size: 14px;
@@ -93,25 +86,21 @@ defineEmits<{ edit: [] }>();
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
 }
-
 .rm-empty {
-  text-align: center;
   padding: 24px 16px;
+  text-align: center;
 }
-
 .rm-empty__icon {
+  margin-bottom: 8px;
   font-size: 28px;
   color: var(--el-text-color-placeholder);
-  margin-bottom: 8px;
 }
-
 .rm-empty__text {
   margin: 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-secondary);
 }
-
 .rm-empty__hint {
   margin: 4px 0 0;
   font-size: 12px;
@@ -122,65 +111,85 @@ defineEmits<{ edit: [] }>();
 <!-- Non-scoped markdown preview styles (v-html content) -->
 <style lang="scss">
 .rm-preview {
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     margin: 1em 0 0.5em;
   }
-  h1 { font-size: 1.5em; }
-  h2 { font-size: 1.3em; }
-  h3 { font-size: 1.15em; }
-  p { margin: 0.5em 0; }
+  h1 {
+    font-size: 1.5em;
+  }
+  h2 {
+    font-size: 1.3em;
+  }
+  h3 {
+    font-size: 1.15em;
+  }
+  p {
+    margin: 0.5em 0;
+  }
   pre {
     padding: 12px;
     overflow-x: auto;
     font-size: 13px;
     background: var(--el-fill-color);
     border-radius: 6px;
-    code { padding: 0; background: none; }
+    code {
+      padding: 0;
+      background: none;
+    }
   }
   code {
     font-family: "SF Mono", Menlo, monospace;
     font-size: 0.9em;
   }
   blockquote {
-    margin: 0.5em 0;
     padding: 4px 12px;
-    border-left: 3px solid var(--el-color-primary-light-5);
+    margin: 0.5em 0;
     color: var(--el-text-color-secondary);
+    border-left: 3px solid var(--el-color-primary-light-5);
   }
   table {
     border-collapse: collapse;
   }
-  th, td {
+  th,
+  td {
     padding: 6px 12px;
     border: 1px solid var(--el-border-color-lighter);
   }
   th {
-    background: var(--el-fill-color-light);
     font-weight: 600;
+    background: var(--el-fill-color-light);
   }
-  ul, ol {
+  ul,
+  ol {
     padding-left: 22px;
     margin: 0.5em 0;
   }
-  li { margin-bottom: 2px; }
-  a { color: var(--el-color-primary); }
+  li {
+    margin-bottom: 2px;
+  }
+  a {
+    color: var(--el-color-primary);
+  }
   hr {
+    margin: 16px 0;
     border: none;
     border-top: 1px solid var(--el-border-color-lighter);
-    margin: 16px 0;
   }
-  img { max-width: 100%; }
-
+  img {
+    max-width: 100%;
+  }
   pre.mermaid {
     all: unset;
     display: block;
-    overflow-x: auto;
     margin: 12px 0;
-
+    overflow-x: auto;
     svg {
+      display: block;
       max-width: 100%;
       height: auto;
-      display: block;
       margin: 0 auto;
     }
   }

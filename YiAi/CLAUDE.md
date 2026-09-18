@@ -235,6 +235,58 @@ success
 
 ## 近期变更
 
+### 2026-09-17 — 性能优化（第七轮）：熔断器 + 优雅排水 + Pydantic 预编译
+
+- **`shared/circuit_breaker.py`**（新增）：时间窗口熔断器 — 当外部服务（Ollama/DeepSeek）连续失败达到阈值时，打开熔断器在冷却期内快速失败，防止资源耗尽。集成到 `LLMProviderRouter.chat_with_fallback()` 和 `embed_with_fallback()`。
+- **`server/middleware.py`**：新增 `GracefulShutdownMiddleware` — 跟踪 inflight 请求计数。`app.py` 关闭时等待所有 inflight 请求完成（最多 30s），实现零中断部署。
+- **`models/__init__.py`**（新增）：导入时 `model_rebuild()` 预编译全部 31 个 Pydantic v2 模型，消除首次请求的 Rust schema 编译耗时。
+- **`server/routes/debug.py`**：`/debug/performance` 增加熔断器状态 + inflight 请求数。
+- **`data/database.py`**：Motor 游标 `batch_size` 500，大结果集减少 ~5× 往返。
+
+### 2026-09-17 — 性能优化（第六轮）：Pydantic 预编译 + Motor batch_size
+
+### 2026-09-17 — 性能优化（第五轮）：运行时调优 + 性能分析端点
+
+- **`server/middleware.py`**：所有中间件从 `BaseHTTPMiddleware` 重写为纯 ASGI 协议（`__call__(scope, receive, send)`），消除每次请求的 `anyio.create_task_group()` 开销（~50-100μs/req）。Auth 中间件从函数式 `app.middleware("http")()` 改为 `AuthMiddleware` 类，日志降级为仅失败时采样。
+- **`server/gzip_middleware.py`**（新增）：`FastGZipMiddleware` — 纯 ASGI + zlib level 1，替代 Starlette 的 gzip level 9，压缩速度 3-4× 更快，体积仅增加 ~10%。
+- **`data/database.py`**：注册 PyMongo `CommandListener` 慢查询监控（默认阈值 200ms）。非关键集合（audit_logs/state_records/chat_records）写操作使用 `w=0`。
+- **`main.py` + `app.py`**：启动时自动安装 `uvloop`（libuv 事件循环）。
+- **`server/routes/execution.py`**：新增 `POST /batch` 并发 RPC 端点。
+
+### 2026-09-17 — 性能优化（第三轮）：uvloop + Batch RPC + 写关注分级
+
+### 2026-09-17 — 性能优化（第二轮）：HTTP 连接池 + DeepSeek 客户端复用 + orjson SSE
+
+- **`services/ai/llm_provider.py`**：新增共享 `httpx.AsyncClient`（连接池，keep-alive），`OllamaProvider.chat()`/`embed()` 不再每次创建新客户端。`DeepSeekProvider` 的 `AsyncOpenAI` 改为 `__init__` 时创建一次，复用内部连接池。
+- **`domain/rag/engine.py`**：`_stream_ollama_chat` 不再创建 `ollama.AsyncClient`，改为使用共享 `httpx.AsyncClient.stream()` 发起原始 HTTP 流式请求，消除 SDK 包装开销 + 复用连接池。
+- **`shared/sse_utils.py`**：`format_sse` 的 `json.dumps` 替换为 `orjson.dumps`（2-5× 更快），每次 SSE 帧序列化节省延迟。
+- **`domain/search/__init__.py`**：移除同步 `requests` 库，替换为共享 `httpx.Client`（连接池），Wikipedia 回退和 AI 查询生成复用同一 TCP 连接。
+- **`app.py`**：shutdown 时清理 LLM provider 的共享 HTTP 客户端。
+
+### 2026-09-17 — 性能优化：RPC 缓存 + 数据库单查询分页 + 缓存层
+
+- **`domain/execution/executor.py`**：新增 `_FUNC_CACHE` 字典缓存已解析的函数引用，消除每次 RPC 调用的 `importlib.import_module` + `getattr` 开销。
+- **`data/repository.py`**：`query_documents` 改用 MongoDB `$facet` 聚合管道实现单次查询分页（原来 `find` + `count_documents` 两次往返）。`get_document_detail` 新增 Cache-Aside 缓存层。
+- **`data/database.py`**：新增 11 个复合索引覆盖 `sessions`、`bugs`、`issues`、`rss`、`menus`、`chat_records`、`state_records`、`audit_logs` 的常见查询模式。
+- **`services/database/data_service.py`**：写操作（create/update/delete/upsert）增加 fire-and-forget 缓存失效，不阻塞响应。
+- **`app.py`**：启动预热阶段预导入 5 个热模块（`data_service`、`chat_service`、`knowledge_service`、`rag_service`、`repository`），消除首次 RPC 调用的冷启动延迟。
+- **`server/routes/knowledge.py`**：`knowledge-search` 端点新增 60s TTL 缓存，避免重复全盘扫描。
+- **文档**：`YiKnowledge/projects/yiai/workflows/开发规范/06-规范-性能优化.md` — 完整的性能优化体系文档（缓存架构、数据库优化、监控诊断、操作指南）。
+
+### 2026-09-17 — 代码健康：异常处理修复 + 死代码移除
+
+- **`domain/ai/chat.py`**：2 处裸 `except Exception:` 替换为具体异常类型。`asyncio.gather` 改为 `return_exceptions=True` 防止未预期异常崩溃整个 chat 请求。
+- **`domain/ai/tools/core.py`**：`_is_url_allowed` 裸 `except Exception:` 替换为 `except ValueError:`。
+- **`domain/ai/tools/builtin.py`**：chunk 解码 `except Exception:` 替换为 `except UnicodeDecodeError:`。
+- **`services/analytics/query_engine.py`**：`find_one` 返回 None 时增加兜底处理。
+- **`services/code_health_service.py`**：4 处文件 I/O 裸异常替换为 `(OSError, UnicodeDecodeError)`；修复注释解析器不检查 `*/` 存在的逻辑错误。
+- **`shared/utils.py`**：`extractJsonFromText` 裸 `except Exception:` 替换为 `(json.JSONDecodeError, ValueError, TypeError)`。
+- **`domain/knowledge/scanner.py`**：4 处裸异常替换为具体类型（`ValueError`/`SyntaxError` 用于 AST/类型转换，`(ValueError, OverflowError, OSError)` 用于日期解析）。
+- **`domain/rag/indexer.py`**：2 处裸异常替换为具体类型。
+- **`data/repository.py`**：移除 `limit`→`pageSize`、`page`→`pageNum` 兼容映射；`_parse_ms_ts` 移除冗余的本地 `timezone` 导入（顶层已导入）；日期解析异常收窄。
+- **`services/analytics/collector.py`**：移除空壳函数 `create_indexes()`。
+- **`models/schemas.py`**、**`server/routes/system.py`**：清理过时的 "legacy" 注释。
+
 ### 2026-09-10 — SSE 工具去重 + 模块边界更新
 
 - **`shared/sse_utils.py`**：新增 `stream_sync()` — 供同步生成器的 SSE 流式传输。

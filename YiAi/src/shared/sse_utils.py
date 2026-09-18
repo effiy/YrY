@@ -1,14 +1,17 @@
 """Shared SSE (Server-Sent Events) formatting helpers.
 
 Used by route modules that stream responses via text/event-stream.
+Uses ``orjson`` for frame serialization — 2-5× faster than stdlib json.
 """
-import json
-from typing import Any, AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Iterator
+from typing import Any
+
+import orjson
 
 
 def format_sse(data: Any) -> bytes:
     """Format a data item as an SSE ``data:`` frame."""
-    if isinstance(data, (bytes, bytearray)):
+    if isinstance(data, bytes | bytearray):
         try:
             data = data.decode("utf-8")
         except UnicodeDecodeError:
@@ -17,7 +20,7 @@ def format_sse(data: Any) -> bytes:
         payload: Any = {"data": {"message": data}}
     else:
         payload = data
-    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n".encode()
+    return b"data: " + orjson.dumps(payload, option=orjson.OPT_APPEND_NEWLINE) + b"\n"
 
 
 async def stream_async(gen: AsyncIterator[Any]):

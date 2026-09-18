@@ -28,13 +28,15 @@ export const useWatermarkStore = defineStore("watermark", () => {
     userEnabled.value = enable;
   }
 
-  function updateConfig(config: Partial<{
-    color: string;
-    opacity: number;
-    fontSize: number;
-    spacingX: number;
-    spacingY: number;
-  }>) {
+  function updateConfig(
+    config: Partial<{
+      color: string;
+      opacity: number;
+      fontSize: number;
+      spacingX: number;
+      spacingY: number;
+    }>
+  ) {
     if (config.color !== undefined) color.value = config.color;
     if (config.opacity !== undefined) opacity.value = config.opacity;
     if (config.fontSize !== undefined) fontSize.value = config.fontSize;
@@ -63,6 +65,6 @@ export const useWatermarkStore = defineStore("watermark", () => {
     forceDisable,
     toggleUser,
     updateConfig,
-    setUserInfo,
+    setUserInfo
   };
 });

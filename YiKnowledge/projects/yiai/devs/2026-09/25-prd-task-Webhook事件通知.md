@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "25-需求-Webhook事件通知.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-21: Webhook 事件通知系统 — 关键事件订阅与异步推送 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[25-需求-Webhook事件通知.md](../../prds/2026-09/25-需求-Webhook事件通知.md)
 > 需求编号：YA-09-21 · 优先级：P2 · 人天：1.0d

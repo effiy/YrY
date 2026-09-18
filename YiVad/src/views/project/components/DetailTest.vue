@@ -7,14 +7,14 @@
         <div class="dt-kpi">
           <span class="dt-kpi__value dt-kpi__value--pass">387</span>
           <span class="dt-kpi__label">已通过</span>
-          <span class="dt-kpi__sub">{{ (387 / 388 * 100).toFixed(1) }}% 通过率</span>
-          <div class="dt-kpi__bar"><div class="dt-kpi__bar-fill dt-kpi__bar-fill--pass" style="width:99.7%" /></div>
+          <span class="dt-kpi__sub">{{ ((387 / 388) * 100).toFixed(1) }}% 通过率</span>
+          <div class="dt-kpi__bar"><div class="dt-kpi__bar-fill dt-kpi__bar-fill--pass" style="width: 99.7%" /></div>
         </div>
         <div class="dt-kpi">
           <span class="dt-kpi__value dt-kpi__value--fail">1</span>
           <span class="dt-kpi__label">失败</span>
           <span class="dt-kpi__sub">useTableState › default pageSize</span>
-          <div class="dt-kpi__bar"><div class="dt-kpi__bar-fill dt-kpi__bar-fill--fail" style="width:2%" /></div>
+          <div class="dt-kpi__bar"><div class="dt-kpi__bar-fill dt-kpi__bar-fill--fail" style="width: 2%" /></div>
         </div>
         <div class="dt-kpi">
           <span class="dt-kpi__value">110</span>
@@ -94,7 +94,7 @@
 
         <!-- 最慢套件 + 覆盖率配置 -->
         <div>
-          <div class="dt-card" style="margin-bottom:12px">
+          <div class="dt-card" style="margin-bottom: 12px">
             <div class="dt-card__head">
               <span>最慢的 5 个测试套件</span>
               <span class="dt-card__total">总耗时 3.5s</span>
@@ -150,7 +150,8 @@
             <div class="dt-err">
               <code class="dt-err__name">useTableState uses default pageSize when not specified</code>
               <span class="dt-err__loc">tests/hooks/useTableState.test.ts:85</span>
-              <pre class="dt-err__msg">AssertionError: expected 50 to be 10
+              <pre class="dt-err__msg">
+AssertionError: expected 50 to be 10
   // Object.is equality</pre>
             </div>
           </div>
@@ -169,7 +170,10 @@
                 <span class="dt-gap__count">{{ g.files }} 个源文件</span>
               </div>
               <div class="dt-gap__bar">
-                <div class="dt-gap__bar-fill" :style="{ width: gapPct(g.files) + '%', background: g.critical ? '#f56c6c' : '#e6a23c' }" />
+                <div
+                  class="dt-gap__bar-fill"
+                  :style="{ width: gapPct(g.files) + '%', background: g.critical ? '#f56c6c' : '#e6a23c' }"
+                />
               </div>
             </div>
           </div>
@@ -183,30 +187,45 @@
       <div class="dt-actions">
         <div class="dt-action dt-action--danger">
           <div class="dt-action__left">
-            <span class="dt-action__icon"><el-icon :size="16"><WarningFilled /></el-icon></span>
+            <span class="dt-action__icon"
+              ><el-icon :size="16"><WarningFilled /></el-icon
+            ></span>
             <div>
               <span class="dt-action__title">修复唯一的失败测试</span>
-              <span class="dt-action__desc"><code>tests/hooks/useTableState.test.ts:85</code> — 预期值是 10，实际返回 50。大概率是 <code>useTableState</code> 的默认 <code>pageSize</code> 从 10 改为了 50，测试没有同步更新。</span>
+              <span class="dt-action__desc"
+                ><code>tests/hooks/useTableState.test.ts:85</code> — 预期值是 10，实际返回 50。大概率是
+                <code>useTableState</code> 的默认 <code>pageSize</code> 从 10 改为了 50，测试没有同步更新。</span
+              >
             </div>
           </div>
           <el-tag type="danger" size="small">立即修复</el-tag>
         </div>
         <div class="dt-action dt-action--warn">
           <div class="dt-action__left">
-            <span class="dt-action__icon"><el-icon :size="16"><WarningFilled /></el-icon></span>
+            <span class="dt-action__icon"
+              ><el-icon :size="16"><WarningFilled /></el-icon
+            ></span>
             <div>
               <span class="dt-action__title">为核心模块编写测试</span>
-              <span class="dt-action__desc"><code>stores/</code>（30 文件）、<code>directives/</code>（11 文件）、<code>routers/</code>（3 文件）零覆盖，建议优先为 Pinia stores 编写测试。</span>
+              <span class="dt-action__desc"
+                ><code>stores/</code>（30 文件）、<code>directives/</code>（11 文件）、<code>routers/</code>（3
+                文件）零覆盖，建议优先为 Pinia stores 编写测试。</span
+              >
             </div>
           </div>
           <el-tag type="warning" size="small">高优先级</el-tag>
         </div>
         <div class="dt-action">
           <div class="dt-action__left">
-            <span class="dt-action__icon"><el-icon :size="16"><CircleCheckFilled /></el-icon></span>
+            <span class="dt-action__icon"
+              ><el-icon :size="16"><CircleCheckFilled /></el-icon
+            ></span>
             <div>
               <span class="dt-action__title">扩充 E2E 测试</span>
-              <span class="dt-action__desc">当前仅有 1 个 smoke spec（<code>e2e/specs/smoke.spec.ts</code>），未覆盖关键用户路径。建议为核心流程增加 E2E 场景。</span>
+              <span class="dt-action__desc"
+                >当前仅有 1 个 smoke spec（<code>e2e/specs/smoke.spec.ts</code>），未覆盖关键用户路径。建议为核心流程增加 E2E
+                场景。</span
+              >
             </div>
           </div>
           <el-tag type="info" size="small">建议</el-tag>
@@ -222,37 +241,62 @@
           <div class="dt-card__head"><span>文件约定</span></div>
           <div class="dt-card__body">
             <table class="dt-ref">
-              <tr><td class="dt-ref__k">测试文件</td><td class="dt-ref__v"><code>tests/&lt;layer&gt;/&lt;name&gt;.test.ts</code></td></tr>
-              <tr><td class="dt-ref__k">命名</td><td class="dt-ref__v">与被测模块同名，<code>.test.ts</code> 后缀</td></tr>
-              <tr><td class="dt-ref__k">工具函数</td><td class="dt-ref__v"><code>tests/utils/</code> — 纯函数、无副作用</td></tr>
-              <tr><td class="dt-ref__k">Composable</td><td class="dt-ref__v"><code>tests/hooks/</code> — 状态、副作用</td></tr>
-              <tr><td class="dt-ref__k">组件</td><td class="dt-ref__v"><code>tests/components/</code> — 渲染、事件</td></tr>
-              <tr><td class="dt-ref__k">集成/API</td><td class="dt-ref__v"><code>tests/unit/</code> 或 <code>tests/api/</code></td></tr>
-              <tr><td class="dt-ref__k">Mock</td><td class="dt-ref__v"><code>tests/mocks/</code> — 共享 mock 辅助</td></tr>
-              <tr><td class="dt-ref__k">环境</td><td class="dt-ref__v">jsdom（配置于 <code>vitest.config.ts</code>）</td></tr>
+              <tr>
+                <td class="dt-ref__k">测试文件</td>
+                <td class="dt-ref__v"><code>tests/&lt;layer&gt;/&lt;name&gt;.test.ts</code></td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">命名</td>
+                <td class="dt-ref__v">与被测模块同名，<code>.test.ts</code> 后缀</td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">工具函数</td>
+                <td class="dt-ref__v"><code>tests/utils/</code> — 纯函数、无副作用</td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">Composable</td>
+                <td class="dt-ref__v"><code>tests/hooks/</code> — 状态、副作用</td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">组件</td>
+                <td class="dt-ref__v"><code>tests/components/</code> — 渲染、事件</td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">集成/API</td>
+                <td class="dt-ref__v"><code>tests/unit/</code> 或 <code>tests/api/</code></td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">Mock</td>
+                <td class="dt-ref__v"><code>tests/mocks/</code> — 共享 mock 辅助</td>
+              </tr>
+              <tr>
+                <td class="dt-ref__k">环境</td>
+                <td class="dt-ref__v">jsdom（配置于 <code>vitest.config.ts</code>）</td>
+              </tr>
             </table>
           </div>
         </div>
         <div class="dt-card">
           <div class="dt-card__head"><span>示例代码</span></div>
           <div class="dt-card__body">
-            <pre class="dt-example">import {{ '{' }} describe, it, expect, vi {{ '}' }} from "vitest";
-import {{ '{' }} mount {{ '}' }} from "@vue/test-utils";
-import {{ '{' }} useMyHook {{ '}' }} from "@/hooks/useMyHook";
+            <pre class="dt-example">
+import {{ "{" }} describe, it, expect, vi {{ "}" }} from "vitest";
+import {{ "{" }} mount {{ "}" }} from "@vue/test-utils";
+import {{ "{" }} useMyHook {{ "}" }} from "@/hooks/useMyHook";
 
-describe("useMyHook", () => {{ '{' }}
-  it("returns default state", () => {{ '{' }}
-    const {{ '{' }} result {{ '}' }} = useMyHook();
+describe("useMyHook", () => {{ "{" }}
+  it("returns default state", () => {{ "{" }}
+    const {{ "{" }} result {{ "}" }} = useMyHook();
     expect(result.value).toBe("default");
-  {{ '}' }});
+  {{ "}" }});
 
-  it("handles async operation", async () => {{ '{' }}
-    vi.mock("@/api/modules/myService", () => ({{ '{' }}
-      fetchData: vi.fn().mockResolvedValue({{ '{' }} data: [] {{ '}' }}),
-    {{ '}' }}));
+  it("handles async operation", async () => {{ "{" }}
+    vi.mock("@/api/modules/myService", () => ({{ "{" }}
+      fetchData: vi.fn().mockResolvedValue({{ "{" }} data: [] {{ "}" }}),
+    {{ "}" }}));
     // ... test async behavior
-  {{ '}' }});
-{{ '}' }});</pre>
+  {{ "}" }});
+{{ "}" }});</pre>
           </div>
         </div>
       </div>
@@ -263,7 +307,9 @@ describe("useMyHook", () => {{ '{' }}
       <h3 class="dt-section__title">质量流水线</h3>
       <div class="dt-pipe">
         <div v-for="(s, i) in pipeline" :key="s.name" class="dt-pipe__stage">
-          <div class="dt-pipe__icon"><el-icon :size="16"><component :is="s.icon" /></el-icon></div>
+          <div class="dt-pipe__icon">
+            <el-icon :size="16"><component :is="s.icon" /></el-icon>
+          </div>
           <span class="dt-pipe__name">{{ s.name }}</span>
           <div class="dt-pipe__checks">
             <div v-for="c in s.checks" :key="c.label" class="dt-pipe__check">
@@ -285,16 +331,10 @@ describe("useMyHook", () => {{ '{' }}
     <section class="dt-section">
       <h3 class="dt-section__title">常用命令</h3>
       <div class="dt-cmds">
-        <div
-          v-for="cmd in commands"
-          :key="cmd.label"
-          class="dt-cmd"
-          :class="{ 'is-copied': cmd._copied }"
-          @click="copyCmd(cmd)"
-        >
+        <div v-for="cmd in commands" :key="cmd.label" class="dt-cmd" :class="{ 'is-copied': cmd._copied }" @click="copyCmd(cmd)">
           <code class="dt-cmd__code">{{ cmd.code }}</code>
           <span class="dt-cmd__desc">{{ cmd.desc }}</span>
-          <span class="dt-cmd__hint">{{ cmd._copied ? '✓ 已复制' : '点击复制' }}</span>
+          <span class="dt-cmd__hint">{{ cmd._copied ? "✓ 已复制" : "点击复制" }}</span>
         </div>
       </div>
     </section>
@@ -303,12 +343,7 @@ describe("useMyHook", () => {{ '{' }}
     <section v-if="testDocs.length" class="dt-section">
       <h3 class="dt-section__title">测试文档</h3>
       <div class="dt-docs">
-        <div
-          v-for="doc in testDocs"
-          :key="doc.path"
-          class="dt-doc-row"
-          @click="openDoc(doc)"
-        >
+        <div v-for="doc in testDocs" :key="doc.path" class="dt-doc-row" @click="openDoc(doc)">
           <el-icon :size="14" class="dt-doc-row__icon"><Document /></el-icon>
           <span class="dt-doc-row__title">{{ doc.title }}</span>
           <code class="dt-doc-row__path">{{ doc.path }}</code>
@@ -322,7 +357,16 @@ describe("useMyHook", () => {{ '{' }}
 import { computed, inject, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useClipboard } from "@vueuse/core";
-import { Document, ArrowRight, CircleCheckFilled, WarningFilled, EditPen, Upload, Connection, Loading } from "@element-plus/icons-vue";
+import {
+  Document,
+  ArrowRight,
+  CircleCheckFilled,
+  WarningFilled,
+  EditPen,
+  Upload,
+  Connection,
+  Loading
+} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import ECharts from "@/components/ECharts/index.vue";
 import { readFile } from "@/api/modules/fileService";
@@ -343,14 +387,16 @@ const layerRows: TestLayerRow[] = [
   { name: "Utils / Helpers", tests: 125, passRate: 100, duration: 58, color: "#67c23a" },
   { name: "Hooks / Composables", tests: 171, passRate: 99.4, duration: 196, color: "#e6a23c" },
   { name: "Components", tests: 59, passRate: 100, duration: 496, color: "#409eff" },
-  { name: "Integration / API", tests: 33, passRate: 100, duration: 2724, color: "#9b59b6" },
+  { name: "Integration / API", tests: 33, passRate: 100, duration: 2724, color: "#9b59b6" }
 ];
 const layerBar = buildTestLayerBar(layerRows);
 
 // ── File Groups (test files by layer) ──
 const fileGroups = [
   {
-    label: "Utils / Helpers", color: "#67c23a", totalCases: 125,
+    label: "Utils / Helpers",
+    color: "#67c23a",
+    totalCases: 125,
     files: [
       { path: "tests/utils/chatNormalizers.test.ts", cases: 17 },
       { path: "tests/utils/citations.test.ts", cases: 12 },
@@ -361,11 +407,13 @@ const fileGroups = [
       { path: "tests/utils/errorHandler.test.ts", cases: 12 },
       { path: "tests/utils/errorReporter.test.ts", cases: 10 },
       { path: "tests/utils/storage.test.ts", cases: 9 },
-      { path: "tests/utils/tokenEstimate.test.ts", cases: 8 },
-    ],
+      { path: "tests/utils/tokenEstimate.test.ts", cases: 8 }
+    ]
   },
   {
-    label: "Hooks / Composables", color: "#e6a23c", totalCases: 171,
+    label: "Hooks / Composables",
+    color: "#e6a23c",
+    totalCases: 171,
     files: [
       { path: "tests/hooks/useTableState.test.ts", cases: 11 },
       { path: "tests/hooks/useTableExport.test.ts", cases: 10 },
@@ -385,11 +433,13 @@ const fileGroups = [
       { path: "tests/hooks/useConditionalFormat.test.ts", cases: 10 },
       { path: "tests/hooks/useGracefulDegradation.test.ts", cases: 9 },
       { path: "tests/hooks/useProjectFilter.test.ts", cases: 10 },
-      { path: "tests/hooks/useQuickFind.test.ts", cases: 9 },
-    ],
+      { path: "tests/hooks/useQuickFind.test.ts", cases: 9 }
+    ]
   },
   {
-    label: "Components", color: "#409eff", totalCases: 59,
+    label: "Components",
+    color: "#409eff",
+    totalCases: 59,
     files: [
       { path: "tests/components/ErrorCard.test.ts", cases: 16 },
       { path: "tests/components/ProjectCard.test.ts", cases: 8 },
@@ -399,27 +449,29 @@ const fileGroups = [
       { path: "tests/components/ErrorEmpty.test.ts", cases: 5 },
       { path: "tests/components/ErrorFallback.test.ts", cases: 4 },
       { path: "tests/components/KeyboardShortcuts.test.ts", cases: 4 },
-      { path: "tests/components/EntityBreadcrumb.test.ts", cases: 3 },
-    ],
+      { path: "tests/components/EntityBreadcrumb.test.ts", cases: 3 }
+    ]
   },
   {
-    label: "Integration / API", color: "#9b59b6", totalCases: 33,
+    label: "Integration / API",
+    color: "#9b59b6",
+    totalCases: 33,
     files: [
-      { path: "tests/unit/aiChat.test.ts", cases: 7 },
+      { path: "tests/unit/ai-chat.test.ts", cases: 7 },
       { path: "tests/unit/requestHttp.test.ts", cases: 7 },
       { path: "tests/unit/utils.test.ts", cases: 14 },
-      { path: "tests/api/bug.test.ts", cases: 5 },
-    ],
-  },
+      { path: "tests/api/bug.test.ts", cases: 5 }
+    ]
+  }
 ];
 
 // ── Slowest Suites ──
 const slowSuites = [
-  { name: "tests/unit/aiChat.test.ts", tests: 7, duration: "2,580ms", isSlow: true },
+  { name: "tests/unit/ai-chat.test.ts", tests: 7, duration: "2,580ms", isSlow: true },
   { name: "tests/components/ProTable.test.ts", tests: 7, duration: "179ms", isSlow: false },
   { name: "tests/unit/requestHttp.test.ts", tests: 7, duration: "138ms", isSlow: false },
   { name: "tests/components/ProjectCard.test.ts", tests: 8, duration: "103ms", isSlow: false },
-  { name: "tests/hooks/useTableExport.test.ts", tests: 10, duration: "60ms", isSlow: false },
+  { name: "tests/hooks/useTableExport.test.ts", tests: 10, duration: "60ms", isSlow: false }
 ];
 
 // ── Coverage Config ──
@@ -427,7 +479,7 @@ const covConfig = [
   { label: "Lines", pct: "80%", color: "#67c23a" },
   { label: "Functions", pct: "80%", color: "#409eff" },
   { label: "Branches", pct: "75%", color: "#e6a23c" },
-  { label: "Statements", pct: "80%", color: "#9b59b6" },
+  { label: "Statements", pct: "80%", color: "#9b59b6" }
 ];
 
 // ── Coverage Gaps ──
@@ -443,7 +495,7 @@ const coverageGaps = [
   { dir: "shortcuts", files: 5, critical: false },
   { dir: "types", files: 5, critical: false },
   { dir: "services", files: 2, critical: false },
-  { dir: "styles", files: 3, critical: false },
+  { dir: "styles", files: 3, critical: false }
 ];
 
 const maxGapFiles = 262;
@@ -458,16 +510,16 @@ const pipeline = [
     icon: EditPen,
     checks: [
       { label: "lint-staged", ok: true },
-      { label: "vue-tsc --noEmit", ok: true },
-    ],
+      { label: "vue-tsc --noEmit", ok: true }
+    ]
   },
   {
     name: "提交阶段",
     icon: Upload,
     checks: [
       { label: "husky pre-commit", ok: true },
-      { label: "commitlint", ok: true },
-    ],
+      { label: "commitlint", ok: true }
+    ]
   },
   {
     name: "PR 检查",
@@ -475,25 +527,32 @@ const pipeline = [
     checks: [
       { label: "vue-tsc --noEmit", ok: true },
       { label: "vitest run", ok: false, note: "1 failed" },
-      { label: "vitest --coverage", ok: true, note: "≥ 80%" },
-    ],
-  },
+      { label: "vitest --coverage", ok: true, note: "≥ 80%" }
+    ]
+  }
 ];
 
 // ── Commands ──
-interface CmdItem { label: string; desc: string; code: string; _copied?: boolean }
+interface CmdItem {
+  label: string;
+  desc: string;
+  code: string;
+  _copied?: boolean;
+}
 const commands = reactive<CmdItem[]>([
   { label: "Run all", desc: "单次运行全部测试", code: "pnpm test", _copied: false },
   { label: "Watch", desc: "文件变更时自动重新运行", code: "pnpm test:watch", _copied: false },
   { label: "Coverage", desc: "生成 HTML 覆盖率报告", code: "pnpm test:coverage", _copied: false },
-  { label: "Type check", desc: "仅 TypeScript 类型检查", code: "pnpm typecheck", _copied: false },
+  { label: "Type check", desc: "仅 TypeScript 类型检查", code: "pnpm typecheck", _copied: false }
 ]);
 
 async function copyCmd(cmd: CmdItem) {
   await copy(cmd.code);
   cmd._copied = true;
   ElMessage.success(`已复制: ${cmd.code}`);
-  setTimeout(() => { cmd._copied = false; }, 2000);
+  setTimeout(() => {
+    cmd._copied = false;
+  }, 2000);
 }
 
 // ── Docs ──
@@ -509,16 +568,18 @@ const testDocs = computed<DocItem[]>(() => {
       if (!f.path.startsWith(prefix) || !f.path.endsWith(".md")) return false;
       if (f.name === "README.md") return false;
       const rawTags = f.meta?.tags;
-      const tags: string[] = Array.isArray(rawTags) ? rawTags : (rawTags ? [rawTags] : []);
-      return tags.some((t: string) => testTags.includes(t))
-        || testKeywords.some(kw => f.name.toLowerCase().includes(kw) || f.path.toLowerCase().includes(kw));
+      const tags: string[] = Array.isArray(rawTags) ? rawTags : rawTags ? [rawTags] : [];
+      return (
+        tags.some((t: string) => testTags.includes(t)) ||
+        testKeywords.some(kw => f.name.toLowerCase().includes(kw) || f.path.toLowerCase().includes(kw))
+      );
     })
     .map(f => ({
       title: (f.meta?.title as string) || f.name.replace(/\.md$/, ""),
       path: f.path,
-      tag: (f.path.slice(prefix.length).split("/")[0] || "unknown"),
+      tag: f.path.slice(prefix.length).split("/")[0] || "unknown",
       updatedAt: (f.meta?.updated as string) || "",
-      isSpecial: false,
+      isSpecial: false
     }))
     .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
 });
@@ -552,7 +613,6 @@ function openDoc(doc: DocItem) {
   flex-direction: column;
   gap: 24px;
 }
-
 .dt-section {
   &__title {
     margin: 0 0 12px;
@@ -568,210 +628,211 @@ function openDoc(doc: DocItem) {
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
 }
-
 .dt-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   padding: 16px 20px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
-
 .dt-kpi__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 26px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
-
-  &--pass { color: #67c23a; }
-  &--fail { color: #f56c6c; }
-  &--warn { color: #e6a23c; }
+  &--pass {
+    color: #67c23a;
+  }
+  &--fail {
+    color: #f56c6c;
+  }
+  &--warn {
+    color: #e6a23c;
+  }
 }
-
 .dt-kpi__unit {
   font-size: 16px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
 }
-
 .dt-kpi__label {
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
-
 .dt-kpi__sub {
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 10px;
+  color: var(--el-text-color-placeholder);
   white-space: nowrap;
 }
-
 .dt-kpi__bar {
   height: 4px;
-  background: var(--el-fill-color);
-  border-radius: 2px;
   margin-top: 6px;
   overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: 2px;
 }
-
 .dt-kpi__bar-fill {
   height: 100%;
   border-radius: 2px;
-
-  &--pass { background: #67c23a; }
-  &--fail { background: #f56c6c; }
+  &--pass {
+    background: #67c23a;
+  }
+  &--fail {
+    background: #f56c6c;
+  }
 }
 
 // ── Grid ──
 .dt-grid {
   display: grid;
   gap: 12px;
-
-  &--2col { grid-template-columns: 1fr 1fr; }
+  &--2col {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 // ── Card ──
 .dt-card {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
-
   &__head {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     padding: 12px 16px;
     font-size: 13px;
     font-weight: 600;
     color: var(--el-text-color-primary);
     border-bottom: 1px solid var(--el-border-color-extra-light);
   }
-
   &__total {
     font-size: 11px;
     font-weight: 400;
     color: var(--el-text-color-placeholder);
   }
-
   &__body {
     padding: 16px;
-
-    &--sm { padding: 8px 4px; height: 200px; }
-    &--scroll { max-height: 320px; overflow-y: auto; }
+    &--sm {
+      height: 200px;
+      padding: 8px 4px;
+    }
+    &--scroll {
+      max-height: 320px;
+      overflow-y: auto;
+    }
   }
 }
 
 // ── File Groups ──
 .dt-fg {
   & + & {
-    margin-top: 12px;
     padding-top: 12px;
+    margin-top: 12px;
     border-top: 1px solid var(--el-border-color-extra-light);
   }
 }
-
 .dt-fg__head {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-bottom: 6px;
 }
-
 .dt-fg__label {
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
-
 .dt-fg__meta {
   margin-left: auto;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
 }
-
 .dt-fg__file {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 3px 0 3px 18px;
   cursor: pointer;
   border-radius: 4px;
   transition: background 0.12s;
-
-  &:hover { background: var(--el-fill-color-lighter); }
-  &.is-loading { opacity: 0.6; pointer-events: none; }
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
+  &.is-loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
 }
-
 .dt-fg__name {
   flex: 1;
-  font-size: 10px;
-  font-family: "SF Mono", Menlo, monospace;
-  color: var(--el-text-color-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
   white-space: nowrap;
   transition: color 0.12s;
-
-  .dt-fg__file:hover & { color: var(--el-color-primary); }
+  .dt-fg__file:hover & {
+    color: var(--el-color-primary);
+  }
 }
-
 .dt-fg__cases {
+  flex-shrink: 0;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
 
 // ── Slow Suites ──
 .dt-slow {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 5px 0;
-
-  & + & { border-top: 1px solid var(--el-border-color-extra-light); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-extra-light);
+  }
 }
-
 .dt-slow__rank {
+  flex-shrink: 0;
   width: 18px;
   font-size: 10px;
   font-weight: 700;
   color: var(--el-text-color-placeholder);
   text-align: center;
-  flex-shrink: 0;
 }
-
 .dt-slow__name {
   flex: 1;
-  font-size: 10px;
-  font-family: "SF Mono", Menlo, monospace;
-  color: var(--el-text-color-primary);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  color: var(--el-text-color-primary);
   white-space: nowrap;
 }
-
 .dt-slow__meta {
+  flex-shrink: 0;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
-
 .dt-slow__dur {
+  min-width: 56px;
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
   font-weight: 600;
-  font-family: "SF Mono", Menlo, monospace;
   color: var(--el-text-color-secondary);
-  min-width: 56px;
   text-align: right;
-
-  &.is-slow { color: #d97706; }
+  &.is-slow {
+    color: #d97706;
+  }
 }
 
 // ── Coverage Config ──
@@ -780,57 +841,49 @@ function openDoc(doc: DocItem) {
   flex-direction: column;
   gap: 12px;
 }
-
 .dt-cov__row {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .dt-cov__head {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
+  justify-content: space-between;
 }
-
 .dt-cov__label {
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
-
 .dt-cov__pct {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 14px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
 }
-
 .dt-cov__bar {
   height: 6px;
+  overflow: hidden;
   background: var(--el-fill-color);
   border-radius: 3px;
-  overflow: hidden;
 }
-
 .dt-cov__bar-fill {
   height: 100%;
   border-radius: 3px;
   opacity: 0.35;
 }
-
 .dt-cov__foot {
-  margin-top: 12px;
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  margin-top: 12px;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-
   code {
     padding: 1px 6px;
+    font-size: 10px;
     background: var(--el-fill-color);
     border-radius: 3px;
-    font-size: 10px;
   }
 }
 
@@ -840,81 +893,78 @@ function openDoc(doc: DocItem) {
   flex-direction: column;
   gap: 8px;
 }
-
 .dt-err__name {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 13px;
   font-weight: 600;
-  font-family: "SF Mono", Menlo, monospace;
   color: var(--el-text-color-primary);
   word-break: break-all;
 }
-
 .dt-err__loc {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
-  font-family: "SF Mono", Menlo, monospace;
 }
-
 .dt-err__msg {
-  margin: 0;
   padding: 10px 14px;
+  margin: 0;
+  overflow-x: auto;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: #991b1b;
+  white-space: pre-wrap;
   background: #fef2f2;
   border-radius: 6px;
-  font-size: 12px;
-  font-family: "SF Mono", Menlo, monospace;
-  color: #991b1b;
-  overflow-x: auto;
-  white-space: pre-wrap;
 }
 
 // ── Coverage Gaps ──
 .dt-gap {
   display: flex;
-  align-items: center;
   gap: 14px;
+  align-items: center;
   padding: 8px 12px;
   border-radius: 6px;
-
-  &:hover { background: var(--el-fill-color-lighter); }
-
-  &.is-critical { background: #fef2f2; }
-  &.is-critical:hover { background: #fee2e2; }
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
+  &.is-critical {
+    background: #fef2f2;
+  }
+  &.is-critical:hover {
+    background: #fee2e2;
+  }
 }
-
-.dt-gap + .dt-gap { margin-top: 2px; }
-
+.dt-gap + .dt-gap {
+  margin-top: 2px;
+}
 .dt-gap__info {
-  flex-shrink: 0;
-  width: 140px;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 2px;
+  width: 140px;
 }
-
 .dt-gap__dir {
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-primary);
 }
-
 .dt-gap__count {
   font-size: 10px;
   color: var(--el-text-color-placeholder);
 }
-
 .dt-gap__bar {
   flex: 1;
   height: 6px;
+  overflow: hidden;
   background: var(--el-fill-color);
   border-radius: 3px;
-  overflow: hidden;
 }
-
 .dt-gap__bar-fill {
+  min-width: 2px;
   height: 100%;
   border-radius: 3px;
-  min-width: 2px;
 }
 
 // ── Recommended Actions ──
@@ -923,54 +973,58 @@ function openDoc(doc: DocItem) {
   flex-direction: column;
   gap: 8px;
 }
-
 .dt-action {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--el-border-color-lighter);
   background: var(--el-bg-color);
-
-  &--danger { border-color: #fecaca; background: #fef2f2; }
-  &--warn   { border-color: #fde68a; background: #fffbeb; }
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  &--danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+  &--warn {
+    background: #fffbeb;
+    border-color: #fde68a;
+  }
 }
-
 .dt-action__left {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
   flex: 1;
+  gap: 12px;
+  align-items: flex-start;
   min-width: 0;
 }
-
 .dt-action__icon {
-  margin-top: 2px;
   flex-shrink: 0;
-
-  .dt-action--danger & { color: #f56c6c; }
-  .dt-action--warn   & { color: #d97706; }
-  & { color: var(--el-text-color-secondary); }
+  margin-top: 2px;
+  .dt-action--danger & {
+    color: #f56c6c;
+  }
+  .dt-action--warn & {
+    color: #d97706;
+  }
+  & {
+    color: var(--el-text-color-secondary);
+  }
 }
-
 .dt-action__title {
   display: block;
+  margin-bottom: 4px;
   font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
-  margin-bottom: 4px;
 }
-
 .dt-action__desc {
   font-size: 11px;
-  color: var(--el-text-color-secondary);
   line-height: 1.6;
-
+  color: var(--el-text-color-secondary);
   code {
+    padding: 1px 5px;
     font-family: "SF Mono", Menlo, monospace;
     font-size: 10px;
-    padding: 1px 5px;
     background: var(--el-fill-color);
     border-radius: 3px;
   }
@@ -980,124 +1034,113 @@ function openDoc(doc: DocItem) {
 .dt-ref {
   width: 100%;
   border-collapse: collapse;
-
   td {
     padding: 6px 0;
     font-size: 11px;
     vertical-align: top;
-
-    & + td { padding-left: 12px; }
+    & + td {
+      padding-left: 12px;
+    }
   }
 }
-
 .dt-ref__k {
+  width: 64px;
+  font-weight: 500;
   color: var(--el-text-color-secondary);
   white-space: nowrap;
-  font-weight: 500;
-  width: 64px;
 }
-
 .dt-ref__v {
   color: var(--el-text-color-primary);
-
   code {
+    padding: 1px 5px;
     font-family: "SF Mono", Menlo, monospace;
     font-size: 10px;
-    padding: 1px 5px;
     background: var(--el-fill-color);
     border-radius: 3px;
   }
 }
-
 .dt-example {
-  margin: 0;
   padding: 12px 14px;
-  background: var(--el-fill-color-lighter);
-  border-radius: 8px;
-  font-size: 11px;
+  margin: 0;
+  overflow-x: auto;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 11px;
   line-height: 1.65;
   color: var(--el-text-color-primary);
-  overflow-x: auto;
   white-space: pre;
+  background: var(--el-fill-color-lighter);
+  border-radius: 8px;
 }
 
 // ── Pipeline ──
 .dt-pipe {
   display: flex;
-  align-items: flex-start;
   gap: 0;
+  align-items: flex-start;
   overflow-x: auto;
 }
-
 .dt-pipe__stage {
-  flex: 1;
-  min-width: 180px;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  min-width: 180px;
   padding: 20px 16px;
+  text-align: center;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  text-align: center;
 }
-
 .dt-pipe__icon {
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: var(--el-fill-color);
+  width: 36px;
+  height: 36px;
   color: var(--el-color-primary);
+  background: var(--el-fill-color);
+  border-radius: 8px;
 }
-
 .dt-pipe__name {
   font-size: 13px;
   font-weight: 700;
   color: var(--el-text-color-primary);
 }
-
 .dt-pipe__checks {
   display: flex;
   flex-direction: column;
   gap: 6px;
   width: 100%;
 }
-
 .dt-pipe__check {
   display: flex;
-  align-items: center;
   gap: 6px;
-
+  align-items: center;
   code {
-    font-size: 11px;
-    font-family: "SF Mono", Menlo, monospace;
-    color: var(--el-text-color-regular);
     padding: 2px 6px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--el-text-color-regular);
     background: var(--el-fill-color);
     border-radius: 4px;
   }
 }
-
 .dt-pipe__note {
   margin-left: auto;
   font-size: 10px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-
-  &.is-fail { color: #f56c6c; }
+  &.is-fail {
+    color: #f56c6c;
+  }
 }
-
 .dt-pipe__arrow {
   display: flex;
+  flex-shrink: 0;
   align-items: flex-start;
   padding: 28px 4px 0;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
 
 // ── Commands ──
@@ -1106,91 +1149,91 @@ function openDoc(doc: DocItem) {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-
 .dt-cmd {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding: 12px 16px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
-
-  &:hover { background: var(--el-fill-color-lighter); border-color: var(--el-color-primary); }
-
-  &.is-copied { background: #f0fdf4; border-color: #67c23a; }
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+  &:hover {
+    background: var(--el-fill-color-lighter);
+    border-color: var(--el-color-primary);
+  }
+  &.is-copied {
+    background: #f0fdf4;
+    border-color: #67c23a;
+  }
 }
-
 .dt-cmd__code {
+  flex-shrink: 0;
   padding: 3px 8px;
-  background: var(--el-fill-color);
-  border-radius: 4px;
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-primary);
-  flex-shrink: 0;
+  background: var(--el-fill-color);
+  border-radius: 4px;
 }
-
 .dt-cmd__desc {
   flex: 1;
   font-size: 11px;
   color: var(--el-text-color-secondary);
 }
-
 .dt-cmd__hint {
+  flex-shrink: 0;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
 
 // ── Docs ──
 .dt-docs {
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
   overflow: hidden;
   background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
 }
-
 .dt-doc-row {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 10px 14px;
   cursor: pointer;
-  transition: background 0.12s;
   border-bottom: 1px solid var(--el-border-color-extra-light);
-
-  &:last-child { border-bottom: none; }
-
+  transition: background 0.12s;
+  &:last-child {
+    border-bottom: none;
+  }
   &:hover {
     background: var(--el-fill-color-lighter);
-    .dt-doc-row__title { color: var(--el-color-primary); }
+    .dt-doc-row__title {
+      color: var(--el-color-primary);
+    }
   }
 }
-
 .dt-doc-row__icon {
-  color: var(--el-color-primary);
   flex-shrink: 0;
+  color: var(--el-color-primary);
 }
-
 .dt-doc-row__title {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12px;
   font-weight: 500;
   color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.12s;
 }
-
 .dt-doc-row__path {
+  flex-shrink: 0;
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  font-family: "SF Mono", Menlo, monospace;
-  flex-shrink: 0;
 }
 </style>

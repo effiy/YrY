@@ -91,8 +91,8 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
   padding: 14px 16px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
   border-left: 3px solid transparent;
+  border-radius: 10px;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -162,23 +162,33 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
 }
 .pst-tile--issues {
   border-left-color: #5ab1ef;
-  .pst-icon { background: linear-gradient(135deg, #5ab1ef, #3a90d0); }
+  .pst-icon {
+    background: linear-gradient(135deg, #5ab1ef, #3a90d0);
+  }
 }
 .pst-tile--open {
   border-left-color: #fac858;
-  .pst-icon { background: linear-gradient(135deg, #fac858, #e0b040); }
+  .pst-icon {
+    background: linear-gradient(135deg, #fac858, #e0b040);
+  }
 }
 .pst-tile--progress {
   border-left-color: #3ba272;
-  .pst-icon { background: linear-gradient(135deg, #3ba272, #2c8159); }
+  .pst-icon {
+    background: linear-gradient(135deg, #3ba272, #2c8159);
+  }
 }
 .pst-tile--risk {
   border-left-color: #ee6666;
-  .pst-icon { background: linear-gradient(135deg, #ee6666, #da5a5a); }
+  .pst-icon {
+    background: linear-gradient(135deg, #ee6666, #da5a5a);
+  }
 }
 .pst-tile--bugs {
   border-left-color: #f56c6c;
-  .pst-icon { background: linear-gradient(135deg, #f56c6c, #e04545); }
+  .pst-icon {
+    background: linear-gradient(135deg, #f56c6c, #e04545);
+  }
 }
 .pst-tile--risk .pst-value {
   color: #ee6666;
@@ -201,7 +211,6 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
 .pst-pulse {
   animation: pst-pulse 0.4s ease-out;
 }
-
 .pst-date-tag {
   display: flex;
   gap: 5px;

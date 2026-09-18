@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-165: HTTP 请求测试器 — 请求构建器、自定义请求头编辑器、请求体编辑(JSON/Form/Text)、响应查看器、响应头展示、请求历史、curl 命令导出"
 tags: [需求文档, HTTP, 请求测试, API调试, curl导出, 开发者工具, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.2
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yipet-004]
+related_modules: [171-prd-task-HTTP请求测试器]
+related_tests: [171-prd-test-HTTP请求测试器]
 ---
 
 # YP-09-165: HTTP 请求测试器 — 请求构建器、自定义请求头编辑器、请求体编辑(JSON/Form/Text)、响应查看器、响应头展示、请求历史、curl 命令导出
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-165 · 优先级：P2 · 人天：0.2d · 状态：需求已编写
 > 依赖：无
@@ -61,6 +69,7 @@ HTTP 请求测试是前端开发和后端接口调试中最高频的操作之一
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 HTTP 请求测试流程
@@ -145,6 +154,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：请求发送方式 — fetch API vs XMLHttpRequest vs Service Worker 代理
@@ -198,6 +208,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后 HTTP 请求测试流程
@@ -290,6 +301,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 HTTP 请求服务
@@ -604,6 +616,7 @@ class HistoryService {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -621,6 +634,7 @@ class HistoryService {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：发送 GET 请求并查看 JSON 响应
@@ -679,6 +693,7 @@ class HistoryService {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -691,6 +706,7 @@ class HistoryService {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -702,6 +718,7 @@ class HistoryService {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择 Popup 页面运行而非 DevTools Panel？
@@ -722,6 +739,7 @@ Popup 页面优势：打开/关闭快速（点击扩展图标），不占用 Dev
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -745,6 +763,7 @@ Popup 页面优势：打开/关闭快速（点击扩展图标），不占用 Dev
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] HTTP 方法选择器包含所有标准方法（GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS）

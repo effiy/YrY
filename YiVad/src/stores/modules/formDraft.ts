@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 export interface FormDraft {
   id: string;
@@ -7,166 +7,94 @@ export interface FormDraft {
   formName: string;
   data: Record<string, any>;
   currentStep?: number;
+  totalFields: number;
   metadata: {
     createdAt: number;
     updatedAt: number;
     expiresAt: number;
     fieldCount: number;
-    totalFields: number;
   };
   version: number;
 }
 
-const DB_NAME = "yivad-form-drafts";
-const DB_VERSION = 1;
-const STORE_NAME = "drafts";
-const DRAFT_EXPIRY_DAYS = 30;
+const DRAFT_PREFIX = "yivad-form-draft-";
+const DEFAULT_EXPIRY_DAYS = 30;
 
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+function generateId(): string {
+  return `draft-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 export const useFormDraftStore = defineStore("formDraft", () => {
-  const drafts = ref<FormDraft[]>([]);
-  const loading = ref(false);
+  const drafts = ref<FormDraft[]>(loadAllDrafts());
 
-  const draftCount = computed(() => drafts.value.length);
-
-  async function loadDrafts(): Promise<void> {
-    loading.value = true;
+  function loadAllDrafts(): FormDraft[] {
     try {
-      const db = await openDB();
-      const tx = db.transaction(STORE_NAME, "readonly");
-      const store = tx.objectStore(STORE_NAME);
-      const all = await new Promise<FormDraft[]>((resolve, reject) => {
-        const request = store.getAll();
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-      const now = Date.now();
-      drafts.value = all.filter((d) => d.metadata.expiresAt > now);
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(DRAFT_PREFIX));
+      return keys.map(k => JSON.parse(localStorage.getItem(k)!)).filter(Boolean);
     } catch {
-      drafts.value = [];
-    } finally {
-      loading.value = false;
+      return [];
     }
   }
 
-  async function saveDraft(draft: FormDraft): Promise<void> {
-    const db = await openDB();
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    draft.metadata.updatedAt = Date.now();
-    draft.version = (draft.version || 0) + 1;
-    await new Promise<void>((resolve, reject) => {
-      const request = store.put(draft);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-    const idx = drafts.value.findIndex((d) => d.id === draft.id);
-    if (idx >= 0) {
-      drafts.value[idx] = { ...draft };
-    } else {
-      drafts.value.push({ ...draft });
-    }
-  }
-
-  async function deleteDraft(id: string): Promise<void> {
-    const db = await openDB();
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    await new Promise<void>((resolve, reject) => {
-      const request = store.delete(id);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-    drafts.value = drafts.value.filter((d) => d.id !== id);
-  }
-
-  async function getDraft(id: string): Promise<FormDraft | undefined> {
-    const db = await openDB();
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    return new Promise<FormDraft | undefined>((resolve, reject) => {
-      const request = store.get(id);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async function getDraftsByForm(formId: string): Promise<FormDraft[]> {
-    const db = await openDB();
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    const all = await new Promise<FormDraft[]>((resolve, reject) => {
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    return all.filter((d) => d.formId === formId);
-  }
-
-  async function cleanExpiredDrafts(): Promise<void> {
+  function createDraft(
+    formId: string,
+    formName: string,
+    data: Record<string, any>,
+    totalFields: number,
+    currentStep?: number
+  ): FormDraft {
     const now = Date.now();
-    const db = await openDB();
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    const all = await new Promise<FormDraft[]>((resolve, reject) => {
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    for (const draft of all) {
-      if (draft.metadata.expiresAt <= now) {
-        store.delete(draft.id);
-      }
-    }
-    await new Promise<void>((resolve) => {
-      tx.oncomplete = () => resolve();
-    });
-    drafts.value = drafts.value.filter((d) => d.metadata.expiresAt > now);
-  }
-
-  function createDraft(formId: string, formName: string, data: Record<string, any>, totalFields: number, currentStep?: number): FormDraft {
-    const now = Date.now();
-    const filledFields = Object.values(data).filter((v) => v !== null && v !== undefined && v !== "").length;
+    const filledFields = Object.values(data).filter(v => v !== null && v !== undefined && v !== "").length;
     return {
-      id: `${formId}-${now}`,
+      id: generateId(),
       formId,
       formName,
       data: { ...data },
       currentStep,
+      totalFields,
       metadata: {
         createdAt: now,
         updatedAt: now,
-        expiresAt: now + DRAFT_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
-        fieldCount: filledFields,
-        totalFields,
+        expiresAt: now + DEFAULT_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
+        fieldCount: filledFields
       },
-      version: 1,
+      version: 1
     };
   }
 
-  return {
-    drafts,
-    loading,
-    draftCount,
-    loadDrafts,
-    saveDraft,
-    deleteDraft,
-    getDraft,
-    getDraftsByForm,
-    cleanExpiredDrafts,
-    createDraft,
-  };
+  async function saveDraft(draft: FormDraft): Promise<void> {
+    draft.metadata.updatedAt = Date.now();
+    const filledFields = Object.values(draft.data).filter(v => v !== null && v !== undefined && v !== "").length;
+    draft.metadata.fieldCount = filledFields;
+    localStorage.setItem(`${DRAFT_PREFIX}${draft.id}`, JSON.stringify(draft));
+
+    const idx = drafts.value.findIndex(d => d.id === draft.id);
+    if (idx >= 0) drafts.value[idx] = draft;
+    else drafts.value.push(draft);
+  }
+
+  function getDraftsByForm(formId: string): FormDraft[] {
+    return drafts.value
+      .filter(d => d.formId === formId && d.metadata.expiresAt > Date.now())
+      .sort((a, b) => b.metadata.updatedAt - a.metadata.updatedAt);
+  }
+
+  function getDraft(id: string): FormDraft | undefined {
+    return drafts.value.find(d => d.id === id);
+  }
+
+  async function deleteDraft(id: string): Promise<void> {
+    localStorage.removeItem(`${DRAFT_PREFIX}${id}`);
+    drafts.value = drafts.value.filter(d => d.id !== id);
+  }
+
+  function cleanExpiredDrafts(): number {
+    const now = Date.now();
+    const expired = drafts.value.filter(d => d.metadata.expiresAt <= now);
+    expired.forEach(d => localStorage.removeItem(`${DRAFT_PREFIX}${d.id}`));
+    drafts.value = drafts.value.filter(d => d.metadata.expiresAt > now);
+    return expired.length;
+  }
+
+  return { drafts, createDraft, saveDraft, getDraftsByForm, getDraft, deleteDraft, cleanExpiredDrafts };
 });

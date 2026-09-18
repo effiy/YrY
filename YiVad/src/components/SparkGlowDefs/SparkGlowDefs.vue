@@ -20,7 +20,7 @@
   with soft glow falloff (pi's "key-light + halo-glow" combined pattern). (iter 210, 236, 241)
 -->
 <template>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <svg width="0" height="0" style="position: absolute" aria-hidden="true">
     <defs>
       <filter id="ssb-spark-glow-lg" x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur stdDeviation="0.5" />

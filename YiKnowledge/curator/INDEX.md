@@ -3,8 +3,8 @@ title: "知识管理者角色索引"
 tags: [index, curator, governance, diagrams, templates, archive]
 category: curator
 created: 2026-08-06
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -40,6 +40,7 @@ related:
 2. [governance/02-治理-治理规范.md](./governance/02-治理-治理规范.md) — 理解 4 角色、3 节奏模型
 3. [governance/04-治理-就绪检查清单.md](./governance/04-治理-就绪检查清单.md) — 任何知识文件发布前的 10 题门禁
 4. [governance/03-治理-收件箱.md](./governance/03-治理-收件箱.md) — 处理新进入的知识内容
+5. [governance/08-治理-操作速查卡.md](./governance/08-治理-操作速查卡.md) — 日常操作一张纸：可复制的命令和常见场景
 
 ### 如果你要创建新文件
 
@@ -49,7 +50,7 @@ related:
 
 ### 如果你要执行审查
 
-1. 每周审查：[governance/03-治理-收件箱.md](./governance/03-治理-收件箱.md) + [governance/07-治理-分类处理.md](./governance/07-治理-分类处理.md)
+1. 每周审查：[governance/08-治理-操作速查卡.md](./governance/08-治理-操作速查卡.md)（日常操作）+ [governance/03-治理-收件箱.md](./governance/03-治理-收件箱.md) + [governance/07-治理-分类处理.md](./governance/07-治理-分类处理.md)
 2. 每月审查：[governance/01-治理-知识健康看板.md](./governance/01-治理-知识健康看板.md)
 3. 每季度审查：[governance/02-治理-治理规范.md](./governance/02-治理-治理规范.md) + [governance/06-治理-隐性知识待办.md](./governance/06-治理-隐性知识待办.md)
 
@@ -58,3 +59,7 @@ related:
 - [../README.md](../README.md) — 知识库概览与设计原则
 - [../INDEX.md](../INDEX.md) — 全库索引
 - [./COLLABORATION.md](./COLLABORATION.md) — 协作领域索引
+- [./governance/README.md](./governance/README.md) — 治理子目录概览
+- [./diagrams/README.md](./diagrams/README.md) — 图表子目录概览
+- [./templates/README.md](./templates/README.md) — 模板子目录概览
+- [./archive/README.md](./archive/README.md) — 归档子目录概览

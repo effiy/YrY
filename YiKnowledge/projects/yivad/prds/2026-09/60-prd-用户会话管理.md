@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-130: 用户会话管理 — 活跃会话查看、强制下线、会话超时配置、并发会话限制"
 tags: [需求文档, 用户会话管理, 会话超时, 强制下线, 并发限制, 安全, 功能实现]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,44 @@ source_okr: [yivad-003]
 # YV-09-130: 用户会话管理 — 活跃会话查看、强制下线、会话超时配置、并发会话限制
 
 > 需求编号：YV-09-130 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/60-prd-task-用户会话管理.md)，验证方案见 [测试方案](../../tests/2026-09/60-prd-test-用户会话管理.md)。
 > 依赖：YV-09-60（API 令牌管理）、YV-09-02（基于角色的权限控制）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 当前会话管理现状 | 参见 §当前会话管理现状 |
+| FR-2 | 当前会话生命周期 | 参见 §当前会话生命周期 |
+| FR-3 | 根因矩阵 | 参见 §根因矩阵 |
+| FR-4 | 会话生命周期（目标） | 参见 §会话生命周期（目标） |
+| FR-5 | 数据模型 | 参见 §数据模型 |
+| FR-6 | YiAi 后端 — SessionService | 参见 §YiAi 后端 — SessionSer |
+| FR-7 | YiAi 后端 — Token 验证中间件增强 | 参见 §YiAi 后端 — Token 验证中间 |
+| FR-8 | YiVad 前端 — 会话管理页面 | 参见 §YiVad 前端 — 会话管理页面 |
+| FR-9 | YiVad 前端 — 会话配置组件 | 参见 §YiVad 前端 — 会话配置组件 |
+| FR-10 | 文件变更清单 | 参见 §文件变更清单 |
 
 ## 背景
 
@@ -61,6 +101,7 @@ YiVad 作为管理后台，用户登录后产生服务端会话，但当前缺�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前会话管理现状
@@ -128,6 +169,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：会话存储方式 — JWT 黑名单 vs 服务端会话表 vs Redis 会话
@@ -181,6 +223,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 会话管理架构
@@ -315,6 +358,7 @@ session_activities 集合:
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 YiAi 后端 — SessionService
@@ -544,6 +588,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -560,6 +605,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：管理员查看所有活跃会话
@@ -610,6 +656,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -622,6 +669,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -633,6 +681,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择 JWT 黑名单而非完全服务端会话？
@@ -653,6 +702,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -677,6 +727,7 @@ async def verify_token_middleware(request: Request, call_next):
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] SessionService 支持创建、列表、撤销、心跳、批量下线

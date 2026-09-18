@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-01"
 source_prds: ["00-需求总览"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YiAi 九月迭代 — 稳定性加固 / RAG 优化 / Agent 可靠性 / API 契约 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[00-需求总览.md](../../prds/2026-09/00-需求总览.md)
 > 提取日期：2026-09-11

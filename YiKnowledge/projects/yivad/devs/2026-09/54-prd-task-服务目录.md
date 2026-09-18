@@ -1,38 +1,57 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-115"
-title: "YV-09-115: 服务目录 — 微服务/API服务目录、服务列表含健康/负责人/版本、服务依赖地图、API端点浏览器、服务文档链接、服务归属追踪 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-115: 服务目录 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "54-prd-服务目录.md"
 ---
 
-# YV-09-115: 服务目录 — 微服务/API服务目录、服务列表含健康/负责人/版本、服务依赖地图、API端点浏览器、服务文档链接、服务归属追踪 — 开发任务
+# YV-09-115: 服务目录 — 开发方案
 
-> 来源 PRD：[54-prd-服务目录.md](../prds/2026-09/54-prd-服务目录.md)
-> 需求编号：YV-09-115 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-115 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 操作 | 路径 | 验证 | 人天 |
-|------|------|------|------|------|
-| 1 | 创建服务配置文件 | `YiAi/services.yaml` | YAML 解析正确 | 0.03 |
-| 2 | 实现 meta_service | `services/meta/meta_service.py` | RPC 返回服务列表 | 0.03 |
-| 3 | 实现健康检查服务 | `services/health/health_service.py` | ping Ollama+MongoDB+索引 | 0.04 |
-| 4 | 实现端点扫描器 | `services/meta/endpoint_scanner.py` | 收集所有 API 端点 | 0.03 |
-| 5 | 实现服务列表+详情页 | `ServiceList.vue` + `ServiceDetail.vue` | 正确展示所有服务 | 0.05 |
-| 6 | 实现依赖图 | `ServiceDependencyMap.vue` | Cytoscape.js 有向图渲染 | 0.05 |
-| 7 | 实现 API 端点浏览器 | `APIEndpointBrowser.vue` | 搜索+分类+示例展示 | 0.04 |
-| 8 | 实现健康仪表盘 | `ServiceHealth.vue` | 状态灯+延迟+错误统计 | 0.03 |
-
-**总人天：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+微服务/模块目录：展示所有 RPC 服务模块、API 端点、依赖关系。
+
+### 目录内容
+
+| 列 | 说明 |
+|-----|------|
+| 模块名 | `services.database.data_service` |
+| 方法 | `query_documents` / `create_document` |
+| 参数 | cname, filter, pageNum, pageSize |
+| 返回 | QueryResult |
+| 消费者 | YiVad, YiPet |
+
+> 低优先级。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

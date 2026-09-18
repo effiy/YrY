@@ -17,8 +17,15 @@ const emit = defineEmits<{ confirm: [includeAssociations: boolean] }>();
 
 const visible = ref(false);
 const copyAssociations = ref(false);
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm", copyAssociations.value); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm", copyAssociations.value);
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>

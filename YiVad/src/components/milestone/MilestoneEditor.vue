@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    :model-value="true"
-    :title="milestone ? '编辑里程碑' : '新建里程碑'"
-    width="560px"
-    @close="$emit('close')"
-  >
+  <el-dialog :model-value="true" :title="milestone ? '编辑里程碑' : '新建里程碑'" width="560px" @close="$emit('close')">
     <el-form ref="formRef" :model="form" label-width="80px">
       <el-form-item label="标题" required>
         <el-input v-model="form.title" placeholder="里程碑标题" />
@@ -15,23 +10,18 @@
       <el-row :gutter="16">
         <el-col :span="12">
           <el-form-item label="开始日期">
-            <el-date-picker v-model="form.start_date" type="date" placeholder="选择开始日期" style="width:100%" />
+            <el-date-picker v-model="form.start_date" type="date" placeholder="选择开始日期" style="width: 100%" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="目标日期">
-            <el-date-picker v-model="form.target_date" type="date" placeholder="选择目标日期" style="width:100%" />
+            <el-date-picker v-model="form.target_date" type="date" placeholder="选择目标日期" style="width: 100%" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="状态">
-        <el-select v-model="form.status" style="width:100%">
-          <el-option
-            v-for="(info, key) in MILESTONE_STATUS_MAP"
-            :key="key"
-            :label="info.label"
-            :value="key"
-          />
+        <el-select v-model="form.status" style="width: 100%">
+          <el-option v-for="(info, key) in MILESTONE_STATUS_MAP" :key="key" :label="info.label" :value="key" />
         </el-select>
       </el-form-item>
       <el-form-item label="负责人">
@@ -40,14 +30,9 @@
     </el-form>
     <template #footer>
       <el-button @click="$emit('close')">取消</el-button>
-      <el-button
-        v-if="milestone"
-        type="danger"
-        plain
-        @click="handleDelete"
-      >删除</el-button>
+      <el-button v-if="milestone" type="danger" plain @click="handleDelete">删除</el-button>
       <el-button type="primary" @click="handleSave">
-        {{ milestone ? '保存' : '创建' }}
+        {{ milestone ? "保存" : "创建" }}
       </el-button>
     </template>
   </el-dialog>
@@ -74,7 +59,7 @@ const form = reactive<MilestoneFormData>({
   status: props.milestone?.status || "planned",
   linked_issues: props.milestone?.linked_issues || [],
   dependencies: props.milestone?.dependencies || [],
-  owner: props.milestone?.owner || "",
+  owner: props.milestone?.owner || ""
 });
 
 async function handleSave() {

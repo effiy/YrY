@@ -21,6 +21,7 @@ related_prds:
   - projects/yivad/prds/2026-09/00-prd-需求总览.md
   - projects/yivad/prds/2026-09/01-prd-列表组件体系.md
   - projects/yivad/prds/2026-09/02-prd-表单组件体系.md
+  - projects/yivad/prds/2026-09/85-prd-多语言专项优化与补充.md
 ---
 
 # 全项目视图优化与体验提升

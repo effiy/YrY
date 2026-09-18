@@ -122,6 +122,6 @@ export const useAutoSave = (options: UseAutoSaveOptions) => {
     checkForDrafts,
     restoreDraft,
     discardDraft,
-    saveNow,
+    saveNow
   };
 };

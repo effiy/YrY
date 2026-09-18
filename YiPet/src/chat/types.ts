@@ -56,6 +56,8 @@ export interface Message {
   sources?: RagSource[];
   /** Time-to-first-token latency in ms (for latency badge). */
   firstTokenLatencyMs?: number;
+  /** Whether this message used web search grounding. */
+  searchGrounded?: boolean;
 }
 
 /** RAG provenance metadata surfaced per pet message. */
@@ -274,15 +276,16 @@ export interface ChatState {
   streamingTargetTimestamp: number | null;
   /** Current streaming action type — controls RequestStatusButton label. */
   streamingType: '' | 'send' | 'regenerate' | 'resend';
-  streamingPhase: '' | 'fetching' | 'thinking' | 'retrieving' | 'streaming';
+  streamingPhase: '' | 'fetching' | 'preparing' | 'thinking' | 'retrieving' | 'streaming';
+  /** Timestamp (Date.now()) when the current stream entered "thinking" phase.
+   *  Reset to null when streaming ends. Pet message uses this for elapsed display. */
+  thinkingStartTs: number | null;
   /** Web search results surfaced on user messages. */
   webSearchResults: WebSearchResult[];
   /** Monotonic counter bumped during streaming to trigger auto-scroll. */
   scrollTick: number;
   /** Per-timestamp copy feedback state — '' or 'copied'. */
   copyFeedback: Record<string, string>;
-  /** Per-timestamp like/dislike rating. */
-  feedback: Record<number, 'like' | 'dislike' | null>;
   /** Whether the FAQ modal is open. */
   faqVisible: boolean;
   /** FAQ search query. */

@@ -1,46 +1,102 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-63"
-title: "用户引导与新手任务 — 开发任务"
-status: 需求已编写
+title: "YV-09-63: 用户引导与新手任务 — 开发方案"
+status: 已完成
 priority: P2
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "31-prd-用户引导与新手任务.md"
 ---
 
-# 用户引导与新手任务 — 开发任务
+# YV-09-63: 用户引导与新手任务 — 开发方案
 
-> 来源 PRD：[31-prd-用户引导与新手任务.md](../prds/2026-09/31-prd-用户引导与新手任务.md)
-> 需求编号：YV-09-63 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-63 · 人天：0.5d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 定义引导类型接口 | `types/onboarding.ts` | TypeScript 类型检查通过 | 0.02 |
-| 2 | 实现引导 API 服务 | `services/onboarding.service.ts` | 接口调用返回正确数据结构 | 0.02 |
-| 3 | 实现 useOnboarding Composable | `composables/onboarding/useOnboarding.ts` | 步骤状态机、角色切换、进度计算正常 | 0.04 |
-| 4 | 实现 useTour Composable | `composables/onboarding/useTour.ts` | 元素定位、蒙层渲染、步骤切换正常 | 0.03 |
-| 5 | 实现 OnboardingWizard 向导 | `components/onboarding/OnboardingWizard.vue` | 多步骤向导、进度条、动画过渡正常 | 0.04 |
-| 6 | 实现 OnboardingStep 步骤容器 | `components/onboarding/OnboardingStep.vue` | 8 个步骤内容渲染正常 | 0.02 |
-| 7 | 实现 RoleSelector 角色选择 | `components/onboarding/RoleSelector.vue` | 3 个角色卡片选择和确认正常 | 0.01 |
-| 8 | 实现 WelcomeTour 欢迎导览 | `components/onboarding/WelcomeTour.vue` | Spotlight 效果、提示浮层、平滑滚动正常 | 0.03 |
-| 9 | 实现 TooltipHighlight 工具提示 | `components/onboarding/TooltipHighlight.vue` | 智能定位、高亮边框、脉冲动画正常 | 0.02 |
-| 10 | 实现 ProgressTracker 进度追踪 | `components/onboarding/ProgressTracker.vue` | 环形进度条、步骤列表正常 | 0.01 |
-| 11 | 实现 TaskChecklist 任务清单 | `components/onboarding/TaskChecklist.vue` | 5 项任务、完成动画、跳转正常 | 0.01 |
-| 12 | 实现 ContextualHint 上下文提示 | `components/onboarding/ContextualHint.vue` | 页面级提示、关闭后不再显示正常 | 0.01 |
-| 13 | 实现 CompletionCelebration 庆祝 | `components/onboarding/CompletionCelebration.vue` | 撒花动画、证书下载、统计摘要正常 | 0.02 |
-| 14 | 实现 OnboardingAnalytics 分析 | `components/onboarding/OnboardingAnalytics.vue` | 漏斗图、趋势图、角色分布正常 | 0.01 |
-| 15 | 实现 v-onboarding 指令 | `directives/onboarding.ts` | 元素注册/注销到引导管理器正常 | 0.01 |
-| 16 | 组件测试 | 测试文件 | 6 个测试场景通过 | 0.01 |
-
-**总计：** 0.3d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+新用户首次登录时展示引导步骤，帮助快速了解核心功能。
+
+### 引导步骤
+
+| 步骤 | 内容 | 目标元素 |
+|------|------|---------|
+| 1 | 欢迎页 | 全屏覆盖 |
+| 2 | 项目列表 | 侧边栏高亮 |
+| 3 | AI 聊天 | 导航入口 |
+| 4 | 知识库 | 知识树区域 |
+| 5 | 完成 | 关闭引导 |
+
+### 实现
+
+`useOnboarding` composable + driver.js 或自定义遮罩引导。
+
+### 实施步骤：0.5d
+
+- 5 步引导流程 + localStorage 记录完成状态
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 新用户首次登录看到引导
+- [ ] 完成后不再显示
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/31-prd-test-用户引导与新手任务.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

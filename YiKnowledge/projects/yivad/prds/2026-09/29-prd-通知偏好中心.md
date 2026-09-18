@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 通知偏好中心
 tags:
 - 通知
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -32,7 +35,39 @@ source_okr: [yivad-003]
 # 通知偏好中心
 
 > 需求编号：YV-09-61 · 优先级：P2 · 人天：0.3d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/29-prd-task-通知偏好中心.md)，验证方案见 [测试方案](../../tests/2026-09/29-prd-test-通知偏好中心.md)。
 > 依赖：依赖通知中心（YV-09-27），需 YiAi 后端提供通知偏好存储端点
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 通知偏好中心主页面 | 参见 §通知偏好中心主页面 |
+| FR-2 | 类型偏好设置组件（矩阵视图） | 参见 §类型偏好设置组件（矩阵视图） |
+| FR-3 | 免打扰时段配置组件 | 参见 §免打扰时段配置组件 |
+| FR-4 | 批量更新面板 | 参见 §批量更新面板 |
+| FR-5 | 通知偏好 RPC 接口 | 参见 §通知偏好 RPC 接口 |
 
 ## 改动总览
 
@@ -110,6 +145,7 @@ YiVad 的通知中心（YV-09-27）实现了统一的通知接收和展示，但
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前通知偏好能力 vs 目标
@@ -156,6 +192,7 @@ YiVad 的通知中心（YV-09-27）实现了统一的通知接收和展示，但
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：偏好存储方案
@@ -218,6 +255,7 @@ YiVad 的通知中心（YV-09-27）实现了统一的通知接收和展示，但
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 通知偏好中心架构
@@ -328,6 +366,7 @@ type NotificationType = 'mention' | 'assignment' | 'status_change' | 'comment' |
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 通知偏好中心主页面
@@ -1224,6 +1263,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1243,6 +1283,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario: 类型 x 渠道矩阵配置
@@ -1305,6 +1346,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1317,6 +1359,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1333,6 +1376,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 偏好存储在后端而非 localStorage
@@ -1372,6 +1416,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1395,6 +1440,7 @@ export const notificationPreferenceApi = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `NotificationPreferenceCenter.vue` 页面布局正确，6 个卡片区域展示正常

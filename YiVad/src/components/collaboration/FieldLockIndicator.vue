@@ -28,23 +28,21 @@ defineSlots<{
 <style scoped lang="scss">
 .field-lock-indicator {
   position: relative;
-
   &.is-locked &__content {
-    opacity: 0.5;
     pointer-events: none;
+    opacity: 0.5;
   }
-
   &__overlay {
     position: absolute;
     inset: 0;
     display: flex;
+    gap: 6px;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    background: rgba(var(--el-bg-color-rgb), 0.7);
-    border-radius: 4px;
     font-size: 13px;
     color: var(--el-text-color-secondary);
+    background: rgb(var(--el-bg-color-rgb), 0.7);
+    border-radius: 4px;
   }
 }
 </style>

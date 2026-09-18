@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-138: Webhook 集成系统 — 事件注册管理 + 签名验证 + 重试投递 + 健康监控"
 tags: [需求文档, 基础设施, Webhook, 事件驱动, 回调, 集成, 签名验证, 重试]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.0
 review_status: 待评审
 issue_type: 功能
 roles: [engineer, devops]
+source_okr: [yiai-001]
+related_modules: [144-prd-task-Webhook集成系统]
+related_tests: [144-prd-test-Webhook集成系统]
 ---
 
 # YA-09-138: Webhook 集成系统 — 事件注册管理 + 签名验证 + 重试投递 + 健康监控
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-138 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 > 依赖：无 · 前置需求：无
@@ -55,6 +63,7 @@ YiAi 目前缺乏对外事件通知机制。当系统内发生关键事件（文
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前事件处理状态
@@ -104,6 +113,7 @@ YiAi 目前缺乏对外事件通知机制。当系统内发生关键事件（文
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：Webhook 投递架构 — 同步 vs 异步队列 vs 内联异步
@@ -168,6 +178,7 @@ YiAi 目前缺乏对外事件通知机制。当系统内发生关键事件（文
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 Webhook 系统架构总览
@@ -271,6 +282,7 @@ stateDiagram-v2
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 Webhook 数据模型
@@ -851,6 +863,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -869,6 +882,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 投递操作性能
@@ -893,6 +907,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### Requirement: Webhook 注册管理
@@ -966,6 +981,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -979,6 +995,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 | 风险 |
@@ -990,6 +1007,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择内联异步而非 Redis 队列？
@@ -1010,6 +1028,7 @@ secret 明文存储存在安全风险：数据库泄露导致所有 Webhook secr
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、当前架构 vs 目标架构
 
 ### 改造前后对比
@@ -1051,6 +1070,7 @@ graph TD
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] `EventType` 枚举包含所有 8 种事件类型，值与规格一致
@@ -1074,6 +1094,7 @@ graph TD
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、回归问题预测
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -1087,6 +1108,7 @@ graph TD
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、可观测性
 
 ### 关键指标

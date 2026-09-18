@@ -1,41 +1,65 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-45"
-title: "YA-09-45: 服务端 CORS 安全策略增强 — 动态 Origin 白名单与凭证管理 — 开发任务"
+prd_task_id: "YA-09-96"
+title: "YA-09-96: CORS 安全增强 — 动态 Origin + 凭证管理 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "49-需求-CORS安全策略增强.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-45: 服务端 CORS 安全策略增强 — 动态 Origin 白名单与凭证管理 — 开发任务
+# YA-09-96: CORS 安全增强 — 动态 Origin + 凭证管理 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[49-需求-CORS安全策略增强.md](../../prds/2026-09/49-需求-CORS安全策略增强.md)
-> 需求编号：YA-09-45 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-96 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+当前 CORS 白名单硬编码在 `config.yaml`。升级为数据库驱动的动态白名单，Admin 页面可管理。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class DynamicCORS:
+    async def get_origins(self) -> list[str]:
+        origins = await db.cors_origins.find({"active": True}).to_list(None)
+        return [o["origin"] for o in origins]
 
-| 步骤 | 任务 | 产出 |
+    def validate(self, origin: str, allowed: list[str]) -> bool:
+        if "*" in allowed: return False  # 禁止通配符+凭证
+        for pattern in allowed:
+            if fnmatch.fnmatch(origin, pattern): return True
+        return False
+```
+
+### 安全约束
+
+| 约束 | 说明 |
+|------|------|
+| 禁止 `*` | 生产环境必须指定具体 Origin |
+| 禁止 `null` | 防止本地文件攻击 |
+| HTTPS 优先 | 生产环境仅允许 HTTPS Origin |
+| 凭证限制 | `Access-Control-Allow-Credentials` 仅对白名单 Origin |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 动态 Origin + Admin 管理 | 白名单热更新 | 0.25 |
+| 2 | 安全策略验证 + 测试 | `*` 被拒绝 | 0.25 |
+
+**合计：0.5d**。

@@ -4,26 +4,26 @@
     <div class="dt-summary">
       <div class="dt-summary__item">
         <span class="dt-summary__value">{{ flatTestSpecs.length }}</span>
-        <span class="dt-summary__label">测试规格</span>
+        <span class="dt-summary__label">{{ $t("project.test.summary.title") }}</span>
       </div>
       <div class="dt-summary__item">
         <span class="dt-summary__value" style="color: #67c23a">{{ summary.done }}</span>
-        <span class="dt-summary__label">已完成</span>
+        <span class="dt-summary__label">{{ $t("project.test.summary.done") }}</span>
       </div>
       <div class="dt-summary__item">
         <span class="dt-summary__value" style="color: #e6a23c">{{ summary.inProgress }}</span>
-        <span class="dt-summary__label">进行中</span>
+        <span class="dt-summary__label">{{ $t("project.test.summary.inProgress") }}</span>
       </div>
       <div class="dt-summary__item">
         <span class="dt-summary__value" style="color: #909399">{{ summary.pending }}</span>
-        <span class="dt-summary__label">待开始</span>
+        <span class="dt-summary__label">{{ $t("project.test.summary.pending") }}</span>
       </div>
     </div>
 
     <!-- ═══ Test Specs Table ═══ -->
     <ProTable
       v-if="flatTestSpecs.length"
-      title="测试规格"
+      :title="$t('project.test.summary.title')"
       :columns="testColumns"
       :data="flatTestSpecs"
       :pagination="false"
@@ -51,18 +51,20 @@
       </template>
     </ProTable>
 
-    <el-empty v-if="!flatTestSpecs.length" description="暂无测试规格" :image-size="60" />
+    <el-empty v-if="!flatTestSpecs.length" :description="$t('project.test.noDocs')" :image-size="60" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, inject, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { ProTable } from "@/components";
 import type { ColumnProps } from "@/components";
 import { useProjectDetail, PREVIEW_DLG_KEY } from "@/views/project/types";
 import { useTestSpecs, type TestSpec } from "@/views/project/composables/useTestSpecs";
 import { useRequirements } from "@/views/project/composables/useRequirements";
 
+const { t } = useI18n();
 const ctx = useProjectDetail();
 const { project, knowledgeFiles } = ctx;
 const previewDlgRef = inject(PREVIEW_DLG_KEY, null);
@@ -71,13 +73,17 @@ const previewDlgRef = inject(PREVIEW_DLG_KEY, null);
 const { items: testItems, deriveFrom: deriveTests } = useTestSpecs();
 const { items: prdItems, deriveFrom: derivePrds } = useRequirements();
 
-watch(() => knowledgeFiles.value, (files) => {
-  const key = project.value?.key;
-  if (key && files.length) {
-    deriveTests(files, key);
-    derivePrds(files, key);
-  }
-}, { immediate: true });
+watch(
+  () => knowledgeFiles.value,
+  files => {
+    const key = project.value?.key;
+    if (key && files.length) {
+      deriveTests(files, key);
+      derivePrds(files, key);
+    }
+  },
+  { immediate: true }
+);
 
 // ── Flat rows (linked to PRD) ──
 interface TestSpecRow extends TestSpec {
@@ -105,10 +111,10 @@ const summary = computed(() => {
 
 // ── ProTable columns ──
 const testColumns = computed<ColumnProps[]>(() => [
-  { prop: "prdMonth", label: "月份", width: 80, sortable: true },
-  { prop: "title", label: "测试名称", minWidth: 260 },
-  { prop: "prdTitle", label: "来源 PRD", minWidth: 80 },
-  { prop: "status", label: "状态", width: 120 },
+  { prop: "prdMonth", label: t("project.test.table.month"), width: 80, sortable: true },
+  { prop: "title", label: t("project.test.table.testName"), minWidth: 260 },
+  { prop: "prdTitle", label: t("project.test.table.sourcePrd"), minWidth: 80 },
+  { prop: "status", label: t("project.test.table.status"), width: 120 }
 ]);
 
 // ── Helpers ──
@@ -125,18 +131,28 @@ function fileName(p: string): string {
 
 function statusTagType(s: string) {
   switch (s) {
-    case "已完成": case "done": return "success";
-    case "进行中": case "in_progress": return "warning";
-    case "待开始": case "planned": return "info";
-    default: return "info";
+    case "已完成":
+    case "done":
+      return "success";
+    case "进行中":
+    case "in_progress":
+      return "warning";
+    case "待开始":
+    case "planned":
+      return "info";
+    default:
+      return "info";
   }
 }
 
 function statusLabel(s: string): string {
   const map: Record<string, string> = {
-    "已完成": "已完成", "done": "已完成",
-    "进行中": "进行中", "in_progress": "进行中",
-    "待开始": "待开始", "planned": "待开始",
+    已完成: "已完成",
+    done: "已完成",
+    进行中: "进行中",
+    in_progress: "进行中",
+    待开始: "待开始",
+    planned: "待开始"
   };
   return map[s] || s;
 }
@@ -152,55 +168,48 @@ function openYkFile(path: string) {
   flex-direction: column;
   gap: 16px;
 }
-
 .dt-summary {
   display: flex;
   gap: 1px;
+  overflow: hidden;
   background: var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
-
 .dt-summary__item {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   padding: 12px 10px;
   background: var(--el-bg-color);
 }
-
 .dt-summary__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 20px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
 }
-
 .dt-summary__label {
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
 }
-
 .dt-seq {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  font-family: "SF Mono", Menlo, monospace;
 }
-
 .dt-month {
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-
 .dt-muted {
-  color: var(--el-text-color-placeholder);
   font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 </style>

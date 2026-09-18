@@ -47,8 +47,8 @@ related:
 
 ### 经验教训总数
 
-- 成功案例 (wins): 1 篇
-- 失败复盘 (failures): 1 篇
+- 成功案例 (wins): 3 篇
+- 失败复盘 (failures): 2 篇
 - 陷阱记录 (gotchas): 4 篇
 - 学习路径 (lessons): 1 篇
 

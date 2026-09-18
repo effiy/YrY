@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-10: Content Script 性能剖析与内存管理 — 长期运行性能预算与泄漏检测"
 tags: [需求文档, 性能, 内存管理, Content Script, 性能预算, 泄漏检测, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 2.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer, srer]
+source_okr: [yipet-001]
+related_modules: [17-prd-task-ContentScript性能剖析与内存管理]
+related_tests: [17-prd-test-ContentScript性能剖析与内存管理]
 ---
 
 # YP-09-10: Content Script 性能剖析与内存管理 — 长期运行性能预算与泄漏检测
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-10 · 优先级：P1 · 人天：2.0d · 状态：需求已编写
 > 依赖：YP-09-01（Content Script 稳定性）
@@ -40,6 +48,7 @@ YiPet Content Script 注入到用户浏览的每个页面，随页面生命周�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 Content Script 资源消耗模型
@@ -113,6 +122,7 @@ Content Script 注入
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：性能监视策略 — Sampling Profiler vs Performance Observer vs 自报告
@@ -155,6 +165,7 @@ Content Script 注入
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 性能监视模块
@@ -423,6 +434,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -442,6 +454,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 验证方式 | 人天 |
@@ -456,6 +469,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Requirement: 性能监视
@@ -496,6 +510,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 | 操作 | 开销 | 说明 |
@@ -507,6 +522,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解 |
@@ -517,6 +533,7 @@ function checkBudget(name: string, duration: number) {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、可观测性
 
 | 指标 | 采集方式 | 告警阈值 | 说明 |

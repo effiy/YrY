@@ -28,6 +28,10 @@ export interface OkrFileInfo {
   path: string;
   name: string;
   title: string;
+  status: string;
+  period: string;
+  progress: number;
+  owner: string;
 }
 
 /** A knowledge document linked to a PRD — an openable path plus a display name. */
@@ -84,9 +88,9 @@ function mapReqFile(f: KnowledgeFileEntry): RequireItem {
     prd_task_id: (meta?.prd_task_id as string) || "",
     prd_month: month,
     doc_type: (meta?.doc_type as string) || "requirement",
-    related_modules: Array.isArray(meta?.related_modules) ? meta.related_modules as string[] : [],
-    related_tests: Array.isArray(meta?.related_tests) ? meta.related_tests as string[] : [],
-    source_okr: Array.isArray(meta?.source_okr) ? meta.source_okr as string[] : [],
+    related_modules: Array.isArray(meta?.related_modules) ? (meta.related_modules as string[]) : [],
+    related_tests: Array.isArray(meta?.related_tests) ? (meta.related_tests as string[]) : [],
+    source_okr: Array.isArray(meta?.source_okr) ? (meta.source_okr as string[]) : []
   };
 }
 
@@ -102,10 +106,12 @@ export function useRequirements(): UseRequirementsReturn {
   function deriveFrom(files: KnowledgeFileEntry[], projectKey: string) {
     const prefixes = REQ_DIRS.map(d => `projects/${projectKey}/${d}/`);
     allItems.value = files
-      .filter(f =>
-        f.path.endsWith(".md") &&
-        f.name !== "README.md" &&
-        prefixes.some(p => f.path.startsWith(p))
+      .filter(
+        f =>
+          f.path.endsWith(".md") &&
+          f.name !== "README.md" &&
+          !f.path.includes("/模板/") &&
+          prefixes.some(p => f.path.startsWith(p))
       )
       .map(mapReqFile)
       .sort((a, b) => {
@@ -125,7 +131,15 @@ export function useRequirements(): UseRequirementsReturn {
       if (f.path.startsWith(okrPrefix) && f.path.endsWith(".md") && f.name !== "README.md") {
         const goalId = (f.meta?.id as string) || "";
         if (!goalId) continue;
-        map.set(goalId, { path: f.path, name: f.name.replace(/\.md$/, ""), title: (f.meta?.title as string) || f.name.replace(/\.md$/, "") });
+        map.set(goalId, {
+          path: f.path,
+          name: f.name.replace(/\.md$/, ""),
+          title: (f.meta?.title as string) || f.name.replace(/\.md$/, ""),
+          status: (f.meta?.status as string) || "",
+          period: (f.meta?.period as string) || "",
+          progress: (f.meta?.progress as number) ?? 0,
+          owner: (f.meta?.owner as string) || ""
+        });
 
         const relatedPrds = f.meta?.related_prds;
         if (Array.isArray(relatedPrds)) {
@@ -134,17 +148,28 @@ export function useRequirements(): UseRequirementsReturn {
             const existing = prdToGoals.get(prdPath) || [];
             if (!existing.includes(goalId)) existing.push(goalId);
             prdToGoals.set(prdPath, existing);
+            // Also index by basename for fallback matching
+            const basename = prdPath.split("/").pop() || "";
+            if (basename && basename !== prdPath) {
+              const byName = prdToGoals.get(basename) || [];
+              if (!byName.includes(goalId)) byName.push(goalId);
+              prdToGoals.set(basename, byName);
+            }
           }
         }
       }
     }
     okrFileMap.value = map;
 
-    // Enrich PRD source_okr from goal files' related_prds (reverse lookup)
+    // Enrich PRD source_okr from goal files' related_prds (reverse lookup).
+    // Try exact path match first, then basename fallback.
     for (const item of allItems.value) {
       const fromReverse = prdToGoals.get(item.path) || [];
-      if (fromReverse.length > 0) {
-        const merged = new Set([...item.source_okr, ...fromReverse]);
+      const basename = item.path.split("/").pop() || "";
+      const fromBasename = basename !== item.path ? prdToGoals.get(basename) || [] : [];
+      const allReverse = [...new Set([...fromReverse, ...fromBasename])];
+      if (allReverse.length > 0) {
+        const merged = new Set([...item.source_okr, ...allReverse]);
         item.source_okr = [...merged];
       }
     }
@@ -174,7 +199,7 @@ export function useRequirements(): UseRequirementsReturn {
       const info: LinkedDocInfo = {
         path: f.path,
         name: f.name.replace(/\.md$/, ""),
-        title: (meta.title as string) || f.name.replace(/\.md$/, ""),
+        title: (meta.title as string) || f.name.replace(/\.md$/, "")
       };
       for (const raw of Array.isArray(sources) ? sources : [sources]) {
         if (typeof raw !== "string" || !raw.trim()) continue;
@@ -213,7 +238,7 @@ export function useRequirements(): UseRequirementsReturn {
     const key = prdRefKey(parts[parts.length - 2], parts[parts.length - 1]);
     return {
       dev: devFileMap.value.get(key) || [],
-      tests: testFileMap.value.get(key) || [],
+      tests: testFileMap.value.get(key) || []
     };
   }
 

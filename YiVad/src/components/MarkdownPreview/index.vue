@@ -16,11 +16,7 @@
         :placeholder="placeholder"
         @input="onInput"
       />
-      <div
-        v-if="previewOpen"
-        class="md-preview-wrap__preview markdown-body"
-        v-html="renderedPreview"
-      />
+      <div v-if="previewOpen" class="md-preview-wrap__preview markdown-body" v-html="renderedPreview" />
     </div>
   </div>
 </template>
@@ -31,12 +27,15 @@ import { Edit, View } from "@element-plus/icons-vue";
 import MarkdownToolbar from "@/components/MarkdownToolbar/MarkdownToolbar.vue";
 import { useMarkdown } from "@/hooks/useMarkdown";
 
-const props = withDefaults(defineProps<{
-  modelValue: string;
-  editorId: string;
-  placeholder?: string;
-  splitMode?: boolean;
-}>(), { placeholder: "", splitMode: true });
+const props = withDefaults(
+  defineProps<{
+    modelValue: string;
+    editorId: string;
+    placeholder?: string;
+    splitMode?: boolean;
+  }>(),
+  { placeholder: "", splitMode: true }
+);
 
 const emit = defineEmits<{ "update:modelValue": [value: string] }>();
 
@@ -56,14 +55,14 @@ function onInput(e: Event) {
 
 <style scoped>
 .md-preview-wrap {
+  overflow: hidden;
   border: 1px solid var(--el-border-color);
   border-radius: 6px;
-  overflow: hidden;
 }
 .md-preview-wrap__toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 0;
   background: var(--el-fill-color-lighter);
 }
@@ -76,25 +75,25 @@ function onInput(e: Event) {
 .md-preview-wrap__editor {
   flex: 1;
   min-height: 120px;
-  border: none;
-  outline: none;
   padding: 10px 12px;
-  font-size: 13px;
   font-family: monospace;
-  resize: vertical;
-  background: var(--el-bg-color);
+  font-size: 13px;
   color: var(--el-text-color-primary);
+  resize: vertical;
+  outline: none;
+  background: var(--el-bg-color);
+  border: none;
 }
 .md-preview-wrap__editor--hidden {
   display: none;
 }
 .md-preview-wrap__preview {
   flex: 1;
-  padding: 10px 12px;
   min-height: 120px;
+  padding: 10px 12px;
   overflow-y: auto;
+  font-size: 13px;
   background: var(--el-bg-color);
   border-left: 1px solid var(--el-border-color-lighter);
-  font-size: 13px;
 }
 </style>

@@ -6,7 +6,6 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from data.database import db
-from data.repository import query_documents
 from domain.auth import create_jwt, verify_password
 from shared.config import settings
 from shared.error_codes import ErrorCode
@@ -17,8 +16,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Business directories under YiVad src/views/ that appear in the sidebar.
-# Pure-template dirs (form, echarts, directives, assembly, etc.) are skipped.
-BUSINESS_DIRS = ["home", "aiChat", "system"]
+# Demo/showcase pages live under demo/ and are excluded from auto-scan.
+# NOTE: The filesystem scan (_scan_views_dir) is a fallback for fresh deploys with
+# an empty `menus` MongoDB collection. It only handles the `subdir/index.vue` pattern
+# — flat .vue files at the top level of business dirs are not auto-discovered.
+# Always seed the `menus` collection for production menus.
+BUSINESS_DIRS = [
+    "home", "ai-chat", "showcase", "system", "dashboard",
+    "bug", "issue", "kanban", "module", "project", "roadmap", "gantt",
+    "knowledge", "rag", "reports",
+    "search", "notification", "login",
+    "import",
+]
 SKIP_SUBDIRS = {"components", "composables", "styles", "constants", "utils", "hooks", "meta"}
 
 
@@ -75,69 +84,19 @@ async def logout():
 async def menu_list():
     """Return the sidebar menu tree.
 
-    Source of truth is the `menus` MongoDB collection (managed by the
-    /system/menuMange page). Falls back to filesystem auto-scan only when
-    the collection is empty (fresh deploy).
-
-    DB docs use the shape written by `createMenu`:
-        { key, path, name, component, redirect, parent (path or null),
-          order, meta: { title, icon, isLink, isHide, isFull, isAffix, isKeepAlive } }
-
-    The tree is built by grouping on `parent`: docs with `parent == null`
-    are top-level; docs with `parent == "/<top>"` are children of that top.
+    Delegates to ``system.get_menu_tree()`` — the single source of truth for
+    menu reads. Falls back to filesystem auto-scan only when the collection
+    is empty (fresh deploy with no seed data).
     """
-    await db.initialize()
-    result = await query_documents({"cname": "menus", "limit": 1000, "orderBy": "order", "orderType": "asc"})
-    docs = result.get("list", [])
-    if docs:
-        return success(data=_build_menu_tree(docs))
+    from server.routes.system import get_menu_tree
 
-    # Fallback: auto-scan views dir (preserves zero-config behavior on fresh deploys).
+    tree = await get_menu_tree()
+    if tree:
+        return success(data=tree)
+
+    # Fallback: auto-scan views dir
     menu = _scan_views_dir()
     return success(data=menu)
-
-
-def _build_menu_tree(docs: list[dict]) -> list[dict]:
-    """Build a nested menu tree from flat menu documents."""
-    by_path: dict[str, dict] = {}
-    for d in docs:
-        path = d.get("path") or ""
-        if not path:
-            continue
-        node = {
-            "key": d.get("key"),
-            "path": path,
-            "name": d.get("name") or path.lstrip("/"),
-            "component": d.get("component") or "",
-            "redirect": d.get("redirect") or "",
-            "meta": d.get("meta") or _default_meta(d.get("name") or path),
-            "parent": d.get("parent"),
-            "order": d.get("order") or 0,
-            "children": [],
-        }
-        by_path[path] = node
-
-    roots: list[dict] = []
-    for _path, node in by_path.items():
-        parent = node.get("parent")
-        if not parent:
-            roots.append(node)
-        else:
-            parent_node = by_path.get(parent)
-            if parent_node is not None:
-                parent_node["children"].append(node)
-            else:
-                # Orphan: parent path not present — promote to top-level so it isn't lost.
-                roots.append(node)
-
-    def _sort(nodes: list[dict]) -> list[dict]:
-        nodes.sort(key=lambda n: (n.get("order") or 0, n.get("path") or ""))
-        for n in nodes:
-            if n.get("children"):
-                n["children"] = _sort(n["children"])
-        return nodes
-
-    return _sort(roots)
 
 
 def _scan_views_dir() -> list[dict]:

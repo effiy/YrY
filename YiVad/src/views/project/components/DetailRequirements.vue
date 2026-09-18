@@ -57,26 +57,23 @@ const summary = computed(() => {
   background: var(--el-border-color-lighter);
   border-radius: 10px;
 }
-
 .dr-summary__item {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   padding: 12px 10px;
   background: var(--el-bg-color);
 }
-
 .dr-summary__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 20px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
 }
-
 .dr-summary__label {
   font-size: 11px;
   font-weight: 600;

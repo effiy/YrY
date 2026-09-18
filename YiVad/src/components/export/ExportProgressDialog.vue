@@ -26,12 +26,24 @@ const statusText = computed(() => {
   return "";
 });
 
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
 
 defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
-.export-progress { padding: 16px 0; &__text { margin-top: 12px; font-size: 13px; color: var(--el-text-color-secondary); text-align: center; } }
+.export-progress {
+  padding: 16px 0;
+  &__text {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    text-align: center;
+  }
+}
 </style>

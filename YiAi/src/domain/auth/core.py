@@ -5,8 +5,8 @@ Password flow:
   Server stores bcrypt(password) in MongoDB.
   On login, server runs bcrypt.checkpw(received_password, stored_hash).
 """
-import logging
 from datetime import datetime, timedelta, timezone
+import logging
 from typing import Optional
 
 import bcrypt
@@ -65,7 +65,7 @@ def create_jwt(user_id: str, username: str) -> str:
     return jwt.encode(payload, secret, algorithm=_JWT_ALGORITHM)
 
 
-def verify_jwt(token: str) -> Optional[dict]:
+def verify_jwt(token: str) -> dict | None:
     """Decode and validate a JWT token.
 
     Returns the payload dict on success, or ``None`` on any failure

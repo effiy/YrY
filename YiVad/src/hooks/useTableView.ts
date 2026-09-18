@@ -9,7 +9,9 @@ export function useTableView(storageKey: string, defaultView: ViewType = "table"
     try {
       const saved = localStorage.getItem(`yivad-view-${storageKey}`);
       return (saved as ViewType) ?? defaultView;
-    } catch { return defaultView; }
+    } catch {
+      return defaultView;
+    }
   }
 
   const switchView = (view: ViewType) => {

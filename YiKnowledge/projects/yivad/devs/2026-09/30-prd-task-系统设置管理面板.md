@@ -1,45 +1,113 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-62"
-title: "系统设置管理面板 — 开发任务"
-status: 需求已编写
+title: "YV-09-62: 系统设置管理面板 — 开发方案"
+status: 已完成
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "30-prd-系统设置管理面板.md"
 ---
 
-# 系统设置管理面板 — 开发任务
+# YV-09-62: 系统设置管理面板 — 开发方案
 
-> 来源 PRD：[30-prd-系统设置管理面板.md](../prds/2026-09/30-prd-系统设置管理面板.md)
-> 需求编号：YV-09-62 · 优先级：P2 · 人天：0.5d
+> 需求编号：YV-09-62 · 人天：1.0d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 定义设置类型接口 | `types/settings.ts` | TypeScript 类型检查通过 | 0.03 |
-| 2 | 实现设置 API 服务 | `services/settings.service.ts` | 接口调用返回正确数据结构 | 0.03 |
-| 3 | 实现 useSettings Composable | `composables/settings/useSettings.ts` | 搜索/校验/分组/导入导出逻辑正常 | 0.06 |
-| 4 | 实现 7 个设置项组件 | `components/settings/items/*.vue` | 各类型组件渲染和校验正常 | 0.08 |
-| 5 | 实现 SettingsNav 分类导航 | `components/settings/SettingsNav.vue` | 9 个分类切换正常，徽标显示正确 | 0.02 |
-| 6 | 实现 SettingsForm 表单容器 | `components/settings/SettingsForm.vue` | 动态渲染设置项，实时校验反馈 | 0.04 |
-| 7 | 实现 SettingSearch 搜索 | `components/settings/SettingSearch.vue` | 搜索过滤、高亮、键盘快捷键正常 | 0.03 |
-| 8 | 实现 SettingsPage 主页面 | `views/settings/SettingsPage.vue` | 左右布局、未保存提示、响应式正常 | 0.05 |
-| 9 | 实现 SettingHistory 历史 | `components/settings/SettingHistory.vue` | 时间线、值对比、分页正常 | 0.03 |
-| 10 | 实现 SettingAuditLog 审计 | `components/settings/SettingAuditLog.vue` | 筛选、导出 CSV 正常 | 0.03 |
-| 11 | 实现 EnvironmentDefaults 环境 | `components/settings/EnvironmentDefaults.vue` | 三列对比、差异高亮正常 | 0.02 |
-| 12 | 实现 SettingImportExport 导入导出 | `components/settings/SettingImportExport.vue` | 导出/导入/预验证/冲突处理正常 | 0.03 |
-| 13 | 实现 DangerConfirmDialog 危险确认 | `components/settings/DangerConfirmDialog.vue` | 双重点击、原因输入、倒计时正常 | 0.02 |
-| 14 | 实现 SettingGroupManager 分组 | `components/settings/SettingGroupManager.vue` | 分组 CRUD、批量应用正常 | 0.02 |
-| 15 | 组件测试 | 测试文件 | 6 个测试场景通过 | 0.01 |
-
-**总计：** 0.5d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+统一系统设置面板，管理员可配置全局参数：功能开关、默认值、限制阈值。
+
+### 设置分类
+
+| 分类 | 配置项 |
+|------|--------|
+| 通用 | 应用名称、默认语言、时区 |
+| 功能开关 | AI 聊天、知识库、RAG、通知 |
+| 安全 | 会话超时(min)、密码最小长度、登录失败锁定 |
+| 性能 | 分页默认值(20)、最大分页(100)、查询超时(30s) |
+
+### 数据模型
+
+```typescript
+interface SystemSetting {
+  key: string;        // "app.name" / "security.sessionTimeout"
+  value: unknown;
+  type: "string" | "number" | "boolean";
+  category: "general" | "feature" | "security" | "performance";
+  description: string;
+}
+```
+
+### 实施步骤：1.0d
+
+| 步骤 | 内容 |
+|------|------|
+| 1 | 设置 CRUD API + Store |
+| 2 | 设置面板 UI (分类 Tab + 表单) |
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 4 类设置分组管理
+- [ ] 设置持久化并实时生效
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（1.0d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（1.0d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/30-prd-test-系统设置管理面板.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

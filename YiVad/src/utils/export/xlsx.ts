@@ -1,21 +1,17 @@
 import type { ExportColumn } from "./types";
 import { triggerDownload, generateFileName } from "./types";
 
-export async function exportXLSX(
-  data: Record<string, any>[],
-  columns: ExportColumn[],
-  fileName?: string,
-) {
+export async function exportXLSX(data: Record<string, any>[], columns: ExportColumn[], fileName?: string) {
   const XLSX = await import("xlsx");
 
-  const rows = data.map((row) => {
+  const rows = data.map(row => {
     const r: Record<string, any> = {};
-    columns.forEach((c) => (r[c.label] = row[c.key] ?? ""));
+    columns.forEach(c => (r[c.label] = row[c.key] ?? ""));
     return r;
   });
 
   const ws = XLSX.utils.json_to_sheet(rows);
-  const colWidths = columns.map((c) => ({ wch: Math.max(String(c.label).length, 15) }));
+  const colWidths = columns.map(c => ({ wch: Math.max(String(c.label).length, 15) }));
   ws["!cols"] = colWidths;
 
   const wb = XLSX.utils.book_new();

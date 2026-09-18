@@ -17,6 +17,9 @@ estimate_backend: 3.0
 review_status: 已评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [03-prd-task-RPC信封协议]
+related_tests: [03-prd-test-RPC信封协议]
 ---
 
 # YA-07-03: RPC 信封协议设计 — 统一跨项目通信契约

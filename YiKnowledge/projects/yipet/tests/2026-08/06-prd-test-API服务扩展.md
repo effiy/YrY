@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YP-08-01"
 source_prds: ["06-基础设施-API服务扩展"]
 source_modules: []
+source_okr: [yipet-001]
 ---
 # API 服务层扩展 — Knowledge、RAG、Bug、WeWork、Agent 五大领域服务 — 测试规格
 

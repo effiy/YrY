@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-97: 部署追踪面板 — 部署历史、环境状态、部署成功率和变更日志"
 tags: [需求文档, 部署追踪, CI/CD, 环境管理, 回滚追踪, 部署指标]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-97: 部署追踪面板 — 部署历史、环境状态、部署成功率和变更日志
 
 > 需求编号：YV-09-97 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/45-prd-task-部署追踪面板.md)，验证方案见 [测试方案](../../tests/2026-09/45-prd-test-部署追踪面板.md)。
 > 依赖：YV-09-84（变更日志与发布说明）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -60,6 +83,7 @@ YiVad 项目当前缺少部署维度的可见性。开发团队和运维人员�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前部署追踪现状
@@ -110,6 +134,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：部署数据来源
@@ -163,6 +188,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 部署追踪面板布局
@@ -228,6 +254,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 改动总览
@@ -305,6 +332,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -321,6 +349,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：EnvStatusCard
@@ -368,6 +397,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -379,6 +409,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -394,6 +425,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么不直接嵌入 CI/CD 工具的 iframe 而要做自定义面板？
@@ -414,6 +446,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -435,6 +468,7 @@ interface DeployStats {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] EnvStatusCard 正确映射健康状态颜色（healthy→green, degraded→yellow, down→red）

@@ -33,11 +33,11 @@ class UserQuery(BaseModel):
 
     pageNum: int = 1
     pageSize: int = 10
-    username: Optional[str] = None
-    gender: Optional[int] = None
-    status: Optional[int] = None
-    email: Optional[str] = None
-    filter: Optional[dict[str, Any]] = None
+    username: str | None = None
+    gender: int | None = None
+    status: int | None = None
+    email: str | None = None
+    filter: dict[str, Any] | None = None
 
 
 class UserCreate(BaseModel):
@@ -50,12 +50,12 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    password: Optional[str] = None
-    gender: Optional[int] = None
-    email: Optional[str] = None
-    status: Optional[int] = None
-    avatar: Optional[str] = None
+    username: str | None = None
+    password: str | None = None
+    gender: int | None = None
+    email: str | None = None
+    status: int | None = None
+    avatar: str | None = None
 
 
 # ── Helpers ──
@@ -271,7 +271,7 @@ async def export_users(body: UserQuery):
         all_keys: list[str] = []
         seen = set()
         for r in rows:
-            for k in r.keys():
+            for k in r:
                 if k not in seen:
                     seen.add(k)
                     all_keys.append(k)

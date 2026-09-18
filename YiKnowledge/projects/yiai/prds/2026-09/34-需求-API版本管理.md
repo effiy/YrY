@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-30: API 版本管理策略 — URL 路径版本控制与向后兼容协议"
 tags: [需求文档, API版本, 向后兼容, 版本策略, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [34-prd-task-API版本管理]
+related_tests: [34-prd-test-API版本管理]
 ---
 
 # YA-09-30: API 版本管理策略 — 向后兼容协议
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-30 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-04（RPC 协议规范）、YA-09-10（JSON Schema 契约）
@@ -47,6 +55,7 @@ YiAi RPC 信封协议当前无版本标识——前端和后端部署不同步�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 RPC 信封
@@ -85,6 +94,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：版本控制方式 — RPC 信封 version 字段 vs URL 路径 vs Header
@@ -116,6 +126,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 版本生命周期
@@ -139,6 +150,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 RPC 版本路由
@@ -239,6 +251,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -254,6 +267,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 版本路由开销
@@ -267,6 +281,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### Requirement: 版本路由
@@ -300,6 +315,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -310,6 +326,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚方式 | 影响 | 恢复时间 |
@@ -319,6 +336,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择 RPC 信封 version 字段而非 URL 路径？
@@ -331,6 +349,7 @@ v1 是默认版本，所有未声明版本的前端都使用 v1。强制移除 v
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 关键指标
@@ -343,6 +362,7 @@ v1 是默认版本，所有未声明版本的前端都使用 v1。强制移除 v
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] RPC 信封支持 `version` 字段（可选，默认 `v1`）
@@ -355,6 +375,7 @@ v1 是默认版本，所有未声明版本的前端都使用 v1。强制移除 v
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

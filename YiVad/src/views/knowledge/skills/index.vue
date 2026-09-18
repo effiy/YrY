@@ -103,9 +103,15 @@
       <div class="skills__sidebar">
         <div class="skills__sidebar-view">
           <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="card"><el-icon><Grid /></el-icon></el-radio-button>
-            <el-radio-button value="list"><el-icon><List /></el-icon></el-radio-button>
-            <el-radio-button value="table"><el-icon><Tickets /></el-icon></el-radio-button>
+            <el-radio-button value="card"
+              ><el-icon><Grid /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="list"
+              ><el-icon><List /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="table"
+              ><el-icon><Tickets /></el-icon
+            ></el-radio-button>
           </el-radio-group>
         </div>
         <div class="skills__sidebar-section">
@@ -115,28 +121,36 @@
           </div>
           <div class="skills__sidebar-section-body">
             <div class="skills__sidebar-card" @click="clearAllFilters()">
-              <div class="skills__sidebar-card-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><el-icon><MagicStick /></el-icon></div>
+              <div class="skills__sidebar-card-icon" style="background: linear-gradient(135deg, #7c3aed, #6d28d9)">
+                <el-icon><MagicStick /></el-icon>
+              </div>
               <div class="skills__sidebar-card-info">
                 <span class="skills__sidebar-card-value">{{ skills.length }}</span>
                 <span class="skills__sidebar-card-label">Total</span>
               </div>
             </div>
             <div class="skills__sidebar-card" @click="toggleLifecycle('active')">
-              <div class="skills__sidebar-card-icon" style="background:linear-gradient(135deg,#5ab1ef,#3a90d0)"><el-icon><Loading /></el-icon></div>
+              <div class="skills__sidebar-card-icon" style="background: linear-gradient(135deg, #5ab1ef, #3a90d0)">
+                <el-icon><Loading /></el-icon>
+              </div>
               <div class="skills__sidebar-card-info">
                 <span class="skills__sidebar-card-value">{{ activeCount }}</span>
                 <span class="skills__sidebar-card-label">Active</span>
               </div>
             </div>
             <div class="skills__sidebar-card" @click="applyInvocableFilter()">
-              <div class="skills__sidebar-card-icon" style="background:linear-gradient(135deg,#91cc75,#7ab85e)"><el-icon><CircleCheckFilled /></el-icon></div>
+              <div class="skills__sidebar-card-icon" style="background: linear-gradient(135deg, #91cc75, #7ab85e)">
+                <el-icon><CircleCheckFilled /></el-icon>
+              </div>
               <div class="skills__sidebar-card-info">
                 <span class="skills__sidebar-card-value">{{ invocableCount }}</span>
                 <span class="skills__sidebar-card-label">Invocable</span>
               </div>
             </div>
             <div class="skills__sidebar-card">
-              <div class="skills__sidebar-card-icon" style="background:linear-gradient(135deg,#e6a23c,#d49520)"><el-icon><Collection /></el-icon></div>
+              <div class="skills__sidebar-card-icon" style="background: linear-gradient(135deg, #e6a23c, #d49520)">
+                <el-icon><Collection /></el-icon>
+              </div>
               <div class="skills__sidebar-card-info">
                 <span class="skills__sidebar-card-value">{{ totalFiles }}</span>
                 <span class="skills__sidebar-card-label">Files</span>
@@ -148,30 +162,39 @@
             <el-progress :percentage="activeRatio" :stroke-width="6" :show-text="true" />
           </div>
         </div>
-        <div class="skills__sidebar-section" style="margin-top:12px">
-          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-danger);">
+        <div class="skills__sidebar-section" style="margin-top: 12px">
+          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-danger)">
             <span class="skills__sidebar-section-label">Needs Attention</span>
           </div>
           <div class="skills__sidebar-section-body">
-            <div class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--nodesc" @click="applyAttentionFilter('nodesc')">
+            <div
+              class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--nodesc"
+              @click="applyAttentionFilter('nodesc')"
+            >
               <el-icon class="skills__sidebar-card-accent-icon"><WarningFilled /></el-icon>
               <span class="skills__sidebar-card-accent-value">{{ attention.noDescription }}</span>
               <span class="skills__sidebar-card-accent-label">No Description</span>
             </div>
-            <div class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--deprecated" @click="applyAttentionFilter('deprecated')">
+            <div
+              class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--deprecated"
+              @click="applyAttentionFilter('deprecated')"
+            >
               <el-icon class="skills__sidebar-card-accent-icon"><CircleCloseFilled /></el-icon>
               <span class="skills__sidebar-card-accent-value">{{ attention.deprecated }}</span>
               <span class="skills__sidebar-card-accent-label">Deprecated</span>
             </div>
-            <div class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--nofiles" @click="applyAttentionFilter('nofiles')">
+            <div
+              class="skills__sidebar-card skills__sidebar-card--attention skills__sidebar-card--nofiles"
+              @click="applyAttentionFilter('nofiles')"
+            >
               <el-icon class="skills__sidebar-card-accent-icon"><DocumentDelete /></el-icon>
               <span class="skills__sidebar-card-accent-value">{{ attention.noFiles }}</span>
               <span class="skills__sidebar-card-accent-label">No Files</span>
             </div>
           </div>
         </div>
-        <div class="skills__sidebar-section" style="margin-top:12px">
-          <div class="skills__sidebar-section-header" style="border-left-color: #7c3aed;">
+        <div class="skills__sidebar-section" style="margin-top: 12px">
+          <div class="skills__sidebar-section-header" style="border-left-color: #7c3aed">
             <span class="skills__sidebar-section-label">Categories</span>
           </div>
           <div class="skills__sidebar-section-body">
@@ -188,8 +211,8 @@
             </div>
           </div>
         </div>
-        <div class="skills__sidebar-section" style="margin-top:12px">
-          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-success);">
+        <div class="skills__sidebar-section" style="margin-top: 12px">
+          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-success)">
             <span class="skills__sidebar-section-label">Data Quality</span>
             <span class="skills__sidebar-section-hint">{{ skills.length }} skills</span>
           </div>
@@ -203,8 +226,8 @@
             </div>
           </div>
         </div>
-        <div class="skills__sidebar-section" style="margin-top:12px">
-          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-warning);">
+        <div class="skills__sidebar-section" style="margin-top: 12px">
+          <div class="skills__sidebar-section-header" style="border-left-color: var(--el-color-warning)">
             <span class="skills__sidebar-section-label">Lifecycle</span>
           </div>
           <div class="skills__sidebar-section-body">
@@ -225,7 +248,6 @@
 
       <!-- Main Grid -->
       <div class="skills__main">
-
         <!-- Table View -->
         <template v-if="viewMode === 'table'">
           <el-table :data="paginatedSkills" stripe size="small" @row-click="openSkill">
@@ -242,7 +264,9 @@
             </el-table-column>
             <el-table-column label="Category" width="120">
               <template #default="{ row }">
-                <el-tag :type="categoryTagType(row.category)" size="small" effect="plain">{{ categoryLabel(row.category) }}</el-tag>
+                <el-tag :type="categoryTagType(row.category)" size="small" effect="plain">{{
+                  categoryLabel(row.category)
+                }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="Files" width="80">
@@ -276,18 +300,15 @@
         <!-- Card View -->
         <template v-if="viewMode === 'card'">
           <div class="skills-card-grid">
-            <div
-              v-for="skill in paginatedSkills"
-              :key="skill.id"
-              class="skills-card-item"
-              @click="openSkill(skill)"
-            >
+            <div v-for="skill in paginatedSkills" :key="skill.id" class="skills-card-item" @click="openSkill(skill)">
               <div class="skills-card-item__head">
                 <span class="skills-card-item__icon">{{ skill.icon || "📄" }}</span>
                 <span class="skills-card-item__dot" :style="{ background: lifecycleColor(skill.lifecycle) }" />
                 <code class="skills-card-item__key">/{{ skill.name }}</code>
                 <div class="skills-card-item__head-right">
-                  <el-tag :type="categoryTagType(skill.category)" size="small" effect="plain">{{ categoryLabel(skill.category) }}</el-tag>
+                  <el-tag :type="categoryTagType(skill.category)" size="small" effect="plain">{{
+                    categoryLabel(skill.category)
+                  }}</el-tag>
                   <span v-if="skill.user_invocable" class="skills__card-tag skills__card-tag--invocable">invocable</span>
                 </div>
               </div>
@@ -322,16 +343,13 @@
         <!-- List View -->
         <template v-else-if="viewMode === 'list'">
           <div class="skills-list-view">
-            <div
-              v-for="skill in paginatedSkills"
-              :key="skill.id"
-              class="skills-list-view__row"
-              @click="openSkill(skill)"
-            >
+            <div v-for="skill in paginatedSkills" :key="skill.id" class="skills-list-view__row" @click="openSkill(skill)">
               <span class="skills-list-view__dot" :style="{ background: lifecycleColor(skill.lifecycle) }" />
               <code class="skills-list-view__key">/{{ skill.name }}</code>
               <span class="skills-list-view__title">{{ skill.title }}</span>
-              <el-tag :type="categoryTagType(skill.category)" size="small" effect="plain">{{ categoryLabel(skill.category) }}</el-tag>
+              <el-tag :type="categoryTagType(skill.category)" size="small" effect="plain">{{
+                categoryLabel(skill.category)
+              }}</el-tag>
               <el-tag :type="lifecycleTagType(skill.lifecycle)" size="small">{{ skill.lifecycle }}</el-tag>
               <span v-if="skill.user_invocable" class="skills__card-tag skills__card-tag--invocable">invocable</span>
               <span class="skills-list-view__files">{{ skillFiles[skill.id]?.length || 0 }} files</span>
@@ -352,7 +370,19 @@
 <script setup lang="ts" name="skillsHub">
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { MagicStick, Loading, CircleCheckFilled, Collection, Search, Grid, List, Tickets, WarningFilled, CircleCloseFilled, DocumentDelete } from "@element-plus/icons-vue";
+import {
+  MagicStick,
+  Loading,
+  CircleCheckFilled,
+  Collection,
+  Search,
+  Grid,
+  List,
+  Tickets,
+  WarningFilled,
+  CircleCloseFilled,
+  DocumentDelete
+} from "@element-plus/icons-vue";
 import { scanKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
@@ -375,9 +405,7 @@ const cardPage = ref(1);
 const cardPageSize = 20;
 
 // Display mapping built from static skill registry (source of truth)
-const skillDisplayMap = new Map(
-  staticSkills.map(s => [s.id, { icon: s.icon, category: s.category }])
-);
+const skillDisplayMap = new Map(staticSkills.map(s => [s.id, { icon: s.icon, category: s.category }]));
 
 // ── Dynamic skills from directory ──
 const skills = ref<SkillDef[]>([]);
@@ -457,13 +485,18 @@ const invocableDonutOption = computed<ECOption>(() => {
   return {
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
     legend: { bottom: 0, textStyle: { fontSize: 9 } },
-    series: [{
-      type: "pie", radius: ["42%", "68%"], center: ["50%", "42%"], label: { show: false },
-      data: [
-        { name: "User-invocable", value: invocable, itemStyle: { color: "#10b981" } },
-        { name: "Internal", value: internal, itemStyle: { color: "#909399" } }
-      ]
-    }]
+    series: [
+      {
+        type: "pie",
+        radius: ["42%", "68%"],
+        center: ["50%", "42%"],
+        label: { show: false },
+        data: [
+          { name: "User-invocable", value: invocable, itemStyle: { color: "#10b981" } },
+          { name: "Internal", value: internal, itemStyle: { color: "#909399" } }
+        ]
+      }
+    ]
   };
 });
 
@@ -477,7 +510,9 @@ const filesBarOption = computed<ECOption>(() => {
     grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
     xAxis: { type: "category", data: top.map(s => s.name), axisLabel: { fontSize: 9, rotate: 30 } },
     yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
-    series: [{ type: "bar", data: top.map(s => s.files), itemStyle: { color: "#7c3aed", borderRadius: [3, 3, 0, 0] }, barMaxWidth: 26 }]
+    series: [
+      { type: "bar", data: top.map(s => s.files), itemStyle: { color: "#7c3aed", borderRadius: [3, 3, 0, 0] }, barMaxWidth: 26 }
+    ]
   };
 });
 
@@ -558,10 +593,7 @@ const filteredSkills = computed(() => {
   if (searchText.value) {
     const q = searchText.value.toLowerCase();
     list = list.filter(
-      s =>
-        s.title.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q)
+      s => s.title.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
     );
   }
   return list;
@@ -593,35 +625,45 @@ const activePills = computed(() => {
     pills.push({
       id: "cat",
       label: `Category: ${cat?.label || activeCategory.value}`,
-      clear: () => { activeCategory.value = ""; }
+      clear: () => {
+        activeCategory.value = "";
+      }
     });
   }
   if (activeLifecycle.value) {
     pills.push({
       id: "lc",
       label: `Lifecycle: ${activeLifecycle.value}`,
-      clear: () => { activeLifecycle.value = ""; }
+      clear: () => {
+        activeLifecycle.value = "";
+      }
     });
   }
   if (invocableOnly.value) {
     pills.push({
       id: "inv",
       label: "Invocable only",
-      clear: () => { invocableOnly.value = false; }
+      clear: () => {
+        invocableOnly.value = false;
+      }
     });
   }
   if (showNoFiles.value) {
     pills.push({
       id: "nofiles",
       label: "Showing empty skills",
-      clear: () => { showNoFiles.value = false; }
+      clear: () => {
+        showNoFiles.value = false;
+      }
     });
   }
   if (searchText.value) {
     pills.push({
       id: "search",
       label: `Search: ${searchText.value}`,
-      clear: () => { searchText.value = ""; }
+      clear: () => {
+        searchText.value = "";
+      }
     });
   }
   return pills;
@@ -682,7 +724,7 @@ function categoryTagType(catId: string): "primary" | "success" | "warning" | "da
 
 function openSkill(skill: SkillDef) {
   trackRecent(skill);
-  router.push(`/skills/${skill.id}`);
+  router.push(`/knowledge/skills/${skill.id}`);
 }
 
 function openFile(path: string) {
@@ -695,7 +737,7 @@ const FILE_TYPE_INFO: Record<string, { icon: string; accent: string; label: stri
   ".mjs": { icon: "📜", accent: "#7c3aed", label: "" },
   ".js": { icon: "📜", accent: "#7c3aed", label: "" },
   ".ts": { icon: "🔷", accent: "#7c3aed", label: "" },
-  ".json": { icon: "📋", accent: "#10b981", label: "" },
+  ".json": { icon: "📋", accent: "#10b981", label: "" }
 };
 
 function fileTypeInfo(f: KnowledgeFileEntry) {
@@ -760,7 +802,7 @@ async function loadSkills() {
         lifecycle: (meta.lifecycle as string) || "active",
         user_invocable: meta.user_invocable === true || meta.user_invocable === "true",
         status: (meta.status as string) || "stable",
-        category: display.category,
+        category: display.category
       });
     }
 
@@ -774,21 +816,23 @@ async function loadSkills() {
 
 onMounted(loadSkills);
 
-watch(searchText, () => { cardPage.value = 1; });
+watch(searchText, () => {
+  cardPage.value = 1;
+});
 </script>
 
 <style scoped lang="scss">
 .skills {
   padding: 24px;
-  background: var(--el-bg-color-page);
   overflow-x: hidden;
+  background: var(--el-bg-color-page);
 }
 
 // ── Header Card ──
 .skills__header {
   display: flex;
-  align-items: center;
   gap: 16px;
+  align-items: center;
   padding: 16px 20px;
   margin-bottom: 20px;
   background: var(--el-bg-color);
@@ -797,26 +841,26 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills__header-icon {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
   font-size: 22px;
-  color: #fff;
+  color: #ffffff;
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  flex-shrink: 0;
+  border-radius: 10px;
 }
 .skills__header-text {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
 }
 .skills__header-title {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: var(--el-text-color-primary);
   line-height: 1.3;
+  color: var(--el-text-color-primary);
 }
 .skills__header-desc {
   margin: 2px 0 0;
@@ -825,28 +869,28 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills__header-pills {
   display: flex;
-  gap: 10px;
   flex-shrink: 0;
+  gap: 10px;
 }
 .skills__header-pill {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1px;
-  padding: 6px 16px;
-  border-radius: 8px;
-  background: var(--el-fill-color-light);
+  align-items: center;
   min-width: 64px;
+  padding: 6px 16px;
+  background: var(--el-fill-color-light);
+  border-radius: 8px;
   &--accent {
     background: var(--el-color-primary-light-9);
   }
 }
 .skills__header-pill-val {
+  font-family: DIN, sans-serif;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.1;
   color: var(--el-text-color-primary);
-  font-family: DIN, sans-serif;
 }
 .skills__header-pill--accent .skills__header-pill-val {
   color: var(--el-color-primary);
@@ -854,15 +898,15 @@ watch(searchText, () => { cardPage.value = 1; });
 .skills__header-pill-lbl {
   font-size: 10px;
   font-weight: 600;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
 }
 .skills__header-right {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
 }
 .skills__header-search {
   width: 200px;
@@ -871,9 +915,9 @@ watch(searchText, () => { cardPage.value = 1; });
 // ── Filter Pills ──
 .skills__pills {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
   margin-bottom: 12px;
 }
 .skills__pills-label {
@@ -892,15 +936,15 @@ watch(searchText, () => { cardPage.value = 1; });
   min-width: 0;
 }
 .skills__sidebar {
-  width: 240px;
-  flex-shrink: 0;
   position: sticky;
   top: 24px;
+  flex-shrink: 0;
   align-self: flex-start;
-  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
-  border-radius: 12px;
+  width: 240px;
   padding: 12px;
+  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
 }
 
 // ── Sidebar View Toggle ──
@@ -908,30 +952,40 @@ watch(searchText, () => { cardPage.value = 1; });
   padding: 4px 4px 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) { display: flex; width: 100%; }
-  :deep(.el-radio-button) { flex: 1; }
-  :deep(.el-radio-button__inner) { width: 100%; text-align: center; padding: 4px 0; font-size: 12px; }
+  :deep(.el-radio-group) {
+    display: flex;
+    width: 100%;
+  }
+  :deep(.el-radio-button) {
+    flex: 1;
+  }
+  :deep(.el-radio-button__inner) {
+    width: 100%;
+    padding: 4px 0;
+    font-size: 12px;
+    text-align: center;
+  }
 }
 
 // ── Sidebar Section ──
 .skills__sidebar-section {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .skills__sidebar-section-header {
   display: flex;
   align-items: center;
   padding: 8px 12px;
+  padding-left: 10px;
   font-size: 10px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--el-text-color-secondary);
   border-bottom: 1px solid var(--el-border-color-lighter);
   border-left: 2px solid var(--el-color-primary);
-  padding-left: 10px;
 }
 .skills__sidebar-section-label {
   flex: 1;
@@ -944,38 +998,38 @@ watch(searchText, () => { cardPage.value = 1; });
   letter-spacing: 0;
 }
 .skills__sidebar-section-body {
-  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 8px;
 }
 
 // ── Sidebar Card (stat item) ──
 .skills__sidebar-card {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 8px 10px;
+  cursor: pointer;
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  cursor: pointer;
   transition: all 0.15s;
-  background: var(--el-bg-color);
   &:hover {
-    border-color: var(--el-color-primary-light-5);
     background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
   }
 }
 .skills__sidebar-card-icon {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 7px;
-  color: #fff;
   font-size: 13px;
-  flex-shrink: 0;
+  color: #ffffff;
+  border-radius: 7px;
 }
 .skills__sidebar-card-info {
   display: flex;
@@ -984,11 +1038,11 @@ watch(searchText, () => { cardPage.value = 1; });
   min-width: 0;
 }
 .skills__sidebar-card-value {
+  font-family: DIN, sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.1;
   color: var(--el-text-color-primary);
-  font-family: DIN, sans-serif;
 }
 .skills__sidebar-card-label {
   font-size: 10px;
@@ -998,48 +1052,50 @@ watch(searchText, () => { cardPage.value = 1; });
 // ── Sidebar Filter Items (Categories / Lifecycle) ──
 .skills__sidebar-cat {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
   cursor: pointer;
   border-radius: 6px;
-  padding: 6px 8px;
   transition: background 0.15s;
-  &:hover { background: var(--el-fill-color); }
+  &:hover {
+    background: var(--el-fill-color);
+  }
   &--active {
-    background: var(--el-color-primary-light-9);
     color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
   }
 }
 .skills__sidebar-cat-icon {
-  font-size: 14px;
   flex-shrink: 0;
+  font-size: 14px;
 }
 .skills__sidebar-cat-dot {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .skills__sidebar-cat-label {
+  flex: 1;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  flex: 1;
 }
 .skills__sidebar-cat--active .skills__sidebar-cat-label {
-  color: var(--el-color-primary);
   font-weight: 600;
+  color: var(--el-color-primary);
 }
 .skills__sidebar-cat-count {
+  font-family: DIN, sans-serif;
   font-size: 12px;
   font-weight: 600;
-  font-family: DIN, sans-serif;
   color: var(--el-text-color-placeholder);
 }
 
 // ── Pagination ──
 .skills__pager {
-  margin-top: 16px;
   justify-content: center;
+  margin-top: 16px;
 }
 
 // ── Card Grid (new style matching issue page) ──
@@ -1050,134 +1106,140 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills-card-item {
   padding: 14px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   &:hover {
+    box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
     transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
 }
 .skills-card-item__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin-bottom: 6px;
 }
 .skills-card-item__icon {
-  font-size: 16px;
   flex-shrink: 0;
+  font-size: 16px;
 }
 .skills-card-item__dot {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .skills-card-item__key {
+  flex: 1;
+  min-width: 0;
+  padding: 1px 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-  padding: 1px 6px;
-  border-radius: 4px;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
 }
 .skills-card-item__head-right {
   display: flex;
-  align-items: center;
-  gap: 4px;
   flex-shrink: 0;
+  gap: 4px;
+  align-items: center;
 }
 .skills-card-item__title {
+  display: -webkit-box;
   margin: 0 0 4px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .skills-card-item__desc {
+  display: -webkit-box;
   margin: 0 0 8px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 12px;
   line-height: 1.5;
   color: var(--el-text-color-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .skills-card-item__meta {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
   margin-bottom: 6px;
 }
 .skills-card-item__files {
   display: inline-flex;
-  align-items: center;
   gap: 3px;
+  align-items: center;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  .el-icon { font-size: 13px; }
+  .el-icon {
+    font-size: 13px;
+  }
 }
 .skills-card-item__file-list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--el-border-color-lighter);
   padding-top: 6px;
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 .skills-card-item__file-row {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 3px 6px;
-  border-radius: 4px;
   cursor: pointer;
+  border-radius: 4px;
   transition: background 0.12s;
-  &:hover { background: var(--el-fill-color-lighter); }
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
 }
 .skills-card-item__file-accent {
+  flex-shrink: 0;
   width: 3px;
   height: 14px;
   border-radius: 2px;
-  flex-shrink: 0;
 }
 .skills-card-item__file-icon {
-  font-size: 12px;
   flex-shrink: 0;
+  font-size: 12px;
 }
 .skills-card-item__file-name {
-  font-size: 12px;
-  color: var(--el-text-color-regular);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
 }
 .skills-card-item__file-type {
+  flex-shrink: 0;
+  padding: 1px 5px;
   font-size: 10px;
   font-weight: 600;
   color: var(--el-text-color-placeholder);
   background: var(--el-fill-color);
-  padding: 1px 5px;
   border-radius: 3px;
-  flex-shrink: 0;
 }
 .skills-card-item__file-more {
+  padding: 2px 6px;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
-  padding: 2px 6px;
   text-align: center;
 }
 
@@ -1189,126 +1251,128 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills-list-view__row {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 10px 14px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
     transform: translateY(-1px);
   }
 }
 .skills-list-view__dot {
+  flex-shrink: 0;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .skills-list-view__key {
+  flex-shrink: 0;
+  padding: 1px 6px;
   font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
-  padding: 1px 6px;
   border-radius: 4px;
-  flex-shrink: 0;
 }
 .skills-list-view__title {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .skills-list-view__files {
+  flex-shrink: 0;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
 
 // ── Card meta tags ──
 .skills__card-meta {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 .skills__card-tag {
+  padding: 1px 6px;
   font-size: 10px;
   font-weight: 600;
-  padding: 1px 6px;
   border-radius: 3px;
   &--invocable {
-    background: #e6f9f2;
     color: #10b981;
+    background: #e6f9f2;
   }
   &--active {
-    background: #e6f0ff;
     color: #1677ff;
+    background: #e6f0ff;
   }
   &--draft {
-    background: #fff7e6;
     color: #f59e0b;
+    background: #fff7e6;
   }
   &--deprecated {
-    background: #fef0f0;
     color: #f56c6c;
+    background: #fef0f0;
   }
   &--confirm {
-    background: #fff7e6;
     color: #f59e0b;
+    background: #fff7e6;
   }
   &--auto {
-    background: #e6f9f2;
     color: #10b981;
+    background: #e6f9f2;
   }
   &--skill {
-    background: #f4f4f5;
     color: var(--el-text-color-secondary);
+    background: #f4f4f5;
   }
 }
 
 // ── Table view ──
 .skills__table-item {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
   cursor: pointer;
 }
 .skills__table-icon {
-  font-size: 18px;
   flex-shrink: 0;
   margin-top: 1px;
+  font-size: 18px;
 }
 .skills__table-title-area {
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .skills__table-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--el-text-color-primary);
   line-height: 1.3;
-  word-break: break-word;
+  color: var(--el-text-color-primary);
+  overflow-wrap: break-word;
 }
 .skills__table-handle {
-  font-size: 11px;
   font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 11px;
   color: var(--el-color-primary);
 }
 .skills__table-num {
+  font-family: DIN, sans-serif;
   font-size: 14px;
   font-weight: 700;
-  font-family: DIN, sans-serif;
   color: var(--el-text-color-primary);
 }
 .skills__table-muted {
@@ -1316,12 +1380,12 @@ watch(searchText, () => { cardPage.value = 1; });
   color: var(--el-text-color-placeholder);
 }
 .skills__table-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 // ── Analytics Charts ──
@@ -1332,13 +1396,15 @@ watch(searchText, () => { cardPage.value = 1; });
   margin-bottom: 20px;
 }
 .skills-chart {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 .skills-chart--active {
   border-color: var(--el-color-primary);
@@ -1346,16 +1412,16 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills-chart__title {
   display: flex;
+  flex-shrink: 0;
   gap: 6px;
   align-items: center;
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   border-bottom: 1px solid var(--el-border-color-lighter);
-  flex-shrink: 0;
 }
 .skills-chart__badge {
   padding: 0 5px;
@@ -1363,9 +1429,9 @@ watch(searchText, () => { cardPage.value = 1; });
   font-weight: 600;
   line-height: 15px;
   color: var(--el-color-primary);
+  text-transform: none;
   background: var(--el-color-primary-light-9);
   border-radius: 3px;
-  text-transform: none;
 }
 .skills-chart__body {
   flex: 1;
@@ -1376,43 +1442,45 @@ watch(searchText, () => { cardPage.value = 1; });
 // ── Recently Viewed ──
 .skills__recent {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
   padding: 8px 12px;
   margin-bottom: 16px;
-  border-radius: 8px;
   background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
 .skills__recent-label {
+  margin-right: 2px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  margin-right: 2px;
 }
 .skills__recent-chip {
   display: inline-flex;
-  align-items: center;
   gap: 5px;
+  align-items: center;
   padding: 2px 9px;
   font-size: 12px;
   color: var(--el-text-color-primary);
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 999px;
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   &:hover {
     border-color: var(--el-color-primary);
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
   }
 }
 .skills__recent-dot {
+  flex-shrink: 0;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 .skills__recent-name {
   font-family: monospace;
@@ -1426,26 +1494,30 @@ watch(searchText, () => { cardPage.value = 1; });
   white-space: nowrap;
 }
 .skills__recent-clear {
+  padding: 4px;
   margin-left: auto;
-  border: none;
-  background: transparent;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
   font-size: 13px;
   line-height: 1;
-  padding: 4px;
-  &:hover { color: var(--el-color-danger); }
+  color: var(--el-text-color-placeholder);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  &:hover {
+    color: var(--el-color-danger);
+  }
 }
 
 // ── Sidebar Quality ──
 .skills__sidebar-quality {
   padding: 4px 0;
-  & + & { padding-top: 8px; }
+  & + & {
+    padding-top: 8px;
+  }
 }
 .skills__sidebar-quality-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 3px;
 }
 .skills__sidebar-quality-label {
@@ -1453,9 +1525,9 @@ watch(searchText, () => { cardPage.value = 1; });
   color: var(--el-text-color-secondary);
 }
 .skills__sidebar-quality-pct {
+  font-family: DIN, sans-serif;
   font-size: 11px;
   font-weight: 600;
-  font-family: DIN, sans-serif;
 }
 
 // ── Sidebar Progress ──
@@ -1464,10 +1536,10 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills__sidebar-progress-label {
   display: block;
+  margin-bottom: 4px;
   font-size: 10px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
-  margin-bottom: 4px;
 }
 
 // ── Sidebar Attention Cards ──
@@ -1479,32 +1551,37 @@ watch(searchText, () => { cardPage.value = 1; });
 }
 .skills__sidebar-card--nodesc {
   .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value { color: var(--el-color-warning); }
+  .skills__sidebar-card-accent-value {
+    color: var(--el-color-warning);
+  }
 }
 .skills__sidebar-card--deprecated {
   .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value { color: var(--el-color-danger); }
+  .skills__sidebar-card-accent-value {
+    color: var(--el-color-danger);
+  }
 }
 .skills__sidebar-card--nofiles {
   .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value { color: var(--el-color-info); }
+  .skills__sidebar-card-accent-value {
+    color: var(--el-color-info);
+  }
 }
 .skills__sidebar-card-accent-icon {
-  font-size: 14px;
   flex-shrink: 0;
+  font-size: 14px;
 }
 .skills__sidebar-card-accent-value {
+  min-width: 20px;
+  font-family: DIN, sans-serif;
   font-size: 16px;
   font-weight: 700;
-  font-family: DIN, sans-serif;
-  min-width: 20px;
 }
 .skills__sidebar-card-accent-label {
+  flex: 1;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  flex: 1;
 }
-
 .skills__empty {
   display: flex;
   align-items: center;

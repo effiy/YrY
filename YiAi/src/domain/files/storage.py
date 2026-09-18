@@ -1,14 +1,16 @@
 """OSS storage service wrapper
 - Provides file upload/delete, tag management, file info maintenance, and list query
 """
-import os
-import oss2
-import logging
-from typing import Optional, List, Dict, Any
-from fastapi import UploadFile
 from datetime import datetime, timezone
-from shared.config import settings
+import logging
+import os
+from typing import Any, Dict, List, Optional
+
+from fastapi import UploadFile
+import oss2
+
 from data.database import db
+from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 
@@ -61,7 +63,7 @@ def build_oss_url(bucket_name: str, endpoint: str, object_key: str) -> str:
 
 async def upload_file_to_oss(
     file: UploadFile,
-    directory: Optional[str] = None
+    directory: str | None = None
 ) -> dict:
     """Upload file to OSS (parameter validation, size limit, return accessible URL)"""
     config = OSSConfig()
@@ -94,7 +96,7 @@ async def upload_file_to_oss(
 async def upload_bytes_to_oss(
     content: bytes,
     filename: str,
-    directory: Optional[str] = None
+    directory: str | None = None
 ) -> dict:
     config = OSSConfig()
     bucket = get_bucket(config)
@@ -153,7 +155,7 @@ async def delete_oss_file(object_name: str):
 
     return object_name
 
-async def set_file_tags(object_name: str, tags: List[str]) -> Dict[str, Any]:
+async def set_file_tags(object_name: str, tags: list[str]) -> dict[str, Any]:
     """
     Set file tags (deduplication, idempotent update)
 
@@ -192,7 +194,7 @@ async def set_file_tags(object_name: str, tags: List[str]) -> Dict[str, Any]:
     )
     return {"object_name": object_name, "tags": tags}
 
-async def get_file_tags(object_name: str) -> List[str]:
+async def get_file_tags(object_name: str) -> list[str]:
     """
     Get file tag list
 
@@ -220,7 +222,7 @@ async def delete_file_tags(object_name: str) -> bool:
     deleted_count = await db.delete_one(settings.collection_oss_file_tags, {"object_name": object_name})
     return deleted_count > 0
 
-async def get_all_tags() -> List[Dict[str, Any]]:
+async def get_all_tags() -> list[dict[str, Any]]:
     """
     Aggregate all tags and their usage counts
 
@@ -241,7 +243,7 @@ async def get_all_tags() -> List[Dict[str, Any]]:
     sorted_tags = sorted(tag_count.items(), key=lambda x: x[1], reverse=True)
     return [{"name": tag, "count": count} for tag, count in sorted_tags]
 
-async def update_file_info(object_name: str, title: Optional[str] = None, description: Optional[str] = None) -> Dict[str, str]:
+async def update_file_info(object_name: str, title: str | None = None, description: str | None = None) -> dict[str, str]:
     """
     Update file info (title/description), auto-maintain timestamps
 
@@ -292,7 +294,7 @@ async def update_file_info(object_name: str, title: Optional[str] = None, descri
         "description": description or ""
     }
 
-async def get_file_info(object_name: str) -> Dict[str, str]:
+async def get_file_info(object_name: str) -> dict[str, str]:
     """
     Get file info (title/description), return empty structure if not found
 
@@ -317,7 +319,7 @@ async def get_file_info(object_name: str) -> Dict[str, str]:
         "description": ""
     }
 
-async def list_files(directory: Optional[str] = None, tags: Optional[str] = None) -> List[Dict[str, Any]]:
+async def list_files(directory: str | None = None, tags: str | None = None) -> list[dict[str, Any]]:
     """
     List files in directory (supports tag filtering), returns basic metadata and tags/info
 

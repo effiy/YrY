@@ -30,12 +30,7 @@
           :model-value="getValue(field.key)"
           @update:model-value="setValue(field.key, $event)"
         >
-          <el-option
-            v-for="opt in (field.validation?.options || [])"
-            :key="opt"
-            :label="opt"
-            :value="opt"
-          />
+          <el-option v-for="opt in field.validation?.options || []" :key="opt" :label="opt" :value="opt" />
         </el-select>
         <!-- Multi Select -->
         <el-select
@@ -44,12 +39,7 @@
           multiple
           @update:model-value="setValue(field.key, $event)"
         >
-          <el-option
-            v-for="opt in (field.validation?.options || [])"
-            :key="opt"
-            :label="opt"
-            :value="opt"
-          />
+          <el-option v-for="opt in field.validation?.options || []" :key="opt" :label="opt" :value="opt" />
         </el-select>
         <!-- URL -->
         <el-input
@@ -65,11 +55,7 @@
           @update:model-value="setValue(field.key, $event)"
         />
         <!-- Default: text -->
-        <el-input
-          v-else
-          :model-value="getValue(field.key)"
-          @update:model-value="setValue(field.key, $event)"
-        />
+        <el-input v-else :model-value="getValue(field.key)" @update:model-value="setValue(field.key, $event)" />
       </el-form-item>
     </template>
   </div>
@@ -81,7 +67,7 @@ import type { CustomFieldDef } from "@/types/customField";
 
 const props = defineProps({
   fields: { type: Array as PropType<CustomFieldDef[]>, required: true },
-  values: { type: Object as PropType<Record<string, any>>, default: () => ({}) },
+  values: { type: Object as PropType<Record<string, any>>, default: () => ({}) }
 });
 
 const emit = defineEmits<{ "update:values": [values: Record<string, any>] }>();

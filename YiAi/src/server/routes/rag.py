@@ -8,38 +8,42 @@ Four flat POST routes mirroring ``knowledge.py``'s style:
   - /rag-file-query → single-file retrieval
   - /rag-file-chat  → SSE single-file chat
 """
-import logging
 import asyncio
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
 
 from domain.rag import (
-    rag_query,
-    rag_chat_stream,
-    rag_file_query,
-    rag_file_chat_stream,
-    rag_decompose,
-    rag_status,
-    rag_categories,
-    rebuild_index_async,
-    resolve_safe,
-    list_history,
+    clear_chat_history,
     clear_history,
     list_chat_history,
-    clear_chat_history,
+    list_history,
+    rag_categories,
+    rag_chat_stream,
+    rag_decompose,
+    rag_file_chat_stream,
+    rag_file_query,
+    rag_query,
+    rag_status,
+    rebuild_index,
+    rebuild_index_async,
+    resolve_safe,
 )
 from models.schemas import (
-    RagQueryRequest,
     RagChatRequest,
+    RagDecomposeRequest,
     RagFileChatRequest,
     RagFileQueryRequest,
-    RagDecomposeRequest,
+    RagQueryRequest,
 )
-from shared.response import success
-from shared.sse_utils import format_sse as _format_sse, stream_async as _stream_async
+from shared.cache import cache
+from shared.cache_keys import CACHE_TTL
 from shared.config import settings
+from shared.response import success
+from shared.sse_utils import format_sse as _format_sse
+from shared.sse_utils import stream_async as _stream_async
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -48,8 +52,7 @@ router = APIRouter()
 @router.post("/rag-query", operation_id="rag_query")
 async def rag_query_route(request: RagQueryRequest):
     try:
-        sources = await asyncio.to_thread(
-            rag_query,
+        sources = await rag_query(
             request.question,
             request.top_k,
             request.scope,
@@ -69,13 +72,20 @@ async def rag_query_route(request: RagQueryRequest):
 
 @router.post("/rag-status", operation_id="rag_status")
 async def rag_status_route():
-    return success(data=rag_status())
+    cache_key = "rag:status"
+    data = await cache.get_or_set(cache_key, rag_status, ttl=CACHE_TTL["rag:status"])
+    return success(data=data, cache_ttl=CACHE_TTL["rag:status"])
 
 
 @router.post("/rag-categories", operation_id="rag_categories")
 async def rag_categories_route():
-    data = await asyncio.to_thread(rag_categories)
-    return success(data=data)
+    cache_key = "rag:categories"
+
+    async def _factory():
+        return await asyncio.to_thread(rag_categories)
+
+    data = await cache.get_or_set(cache_key, _factory, ttl=CACHE_TTL["knowledge:scan"])
+    return success(data=data, cache_ttl=CACHE_TTL["knowledge:scan"])
 
 
 @router.post("/rag-history", operation_id="rag_history")
@@ -118,7 +128,10 @@ async def rag_chat_history_clear_route():
 
 @router.post("/rag-build", operation_id="rag_build")
 async def rag_build_route():
-    await rebuild_index_async()
+    # Fire-and-forget via thread — the index build can take 10+ minutes
+    # with local nomic-embed-text. The frontend polls /rag-status.
+    import threading
+    threading.Thread(target=rebuild_index, daemon=True).start()
     return success(data=rag_status())
 
 

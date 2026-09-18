@@ -35,8 +35,9 @@ const props = defineProps<{
 
 const containerRef = ref<HTMLDivElement>();
 
-const { viewOptions, criticalPath, dayWidth, timeRange, setViewMode, toggleCriticalPath, zoomIn, zoomOut } =
-  useGanttChart(computed(() => props.tasks));
+const { viewOptions, criticalPath, dayWidth, timeRange, setViewMode, toggleCriticalPath, zoomIn, zoomOut } = useGanttChart(
+  computed(() => props.tasks)
+);
 
 async function onTaskUpdate(taskId: string, start: string, end: string) {
   await updateDocument("issues", taskId, { start_date: start, end_date: end, updated_at: new Date().toISOString() });
@@ -45,7 +46,7 @@ async function onTaskUpdate(taskId: string, start: string, end: string) {
 const { isDragging, onDragStart, onDragMove, onDragEnd } = useGanttDrag(
   computed(() => props.tasks),
   dayWidth,
-  onTaskUpdate,
+  onTaskUpdate
 );
 
 const STATUS_COLORS: Record<string, string> = {
@@ -53,7 +54,7 @@ const STATUS_COLORS: Record<string, string> = {
   in_progress: "#409eff",
   review: "#e6a23c",
   done: "#67c23a",
-  cancelled: "#c0c4cc",
+  cancelled: "#c0c4cc"
 };
 
 const option = computed<ECOption | null>(() => {
@@ -62,7 +63,7 @@ const option = computed<ECOption | null>(() => {
 
   const startTime = timeRange.value.start.getTime();
   const endTime = timeRange.value.end.getTime();
-  const categories = tasks.map((t) => t.title);
+  const categories = tasks.map(t => t.title);
 
   return {
     tooltip: {
@@ -70,14 +71,14 @@ const option = computed<ECOption | null>(() => {
         const d = params.data;
         if (!d) return "";
         return `<b>${d.name}</b><br/>${d.value[1]} ~ ${d.value[2]}<br/>进度: ${(d.progress * 100).toFixed(0)}%`;
-      },
+      }
     },
     grid: { left: 200, right: 40, top: 20, bottom: 20 },
     xAxis: {
       type: "time" as const,
       min: startTime,
       max: endTime,
-      axisLabel: { formatter: (val: number) => new Date(val).toLocaleDateString("zh-CN", { month: "short", day: "numeric" }) },
+      axisLabel: { formatter: (val: number) => new Date(val).toLocaleDateString("zh-CN", { month: "short", day: "numeric" }) }
     },
     yAxis: { type: "category" as const, data: categories, inverse: true, axisLabel: { width: 180, overflow: "truncate" } },
     series: [
@@ -97,14 +98,22 @@ const option = computed<ECOption | null>(() => {
           const rect = {
             type: "group",
             children: [
-              { type: "rect", shape: { x: start[0], y, width: Math.max(end[0] - start[0], 2), height }, style: { fill: color, opacity: 0.3 } },
-              { type: "rect", shape: { x: start[0], y, width: Math.max((end[0] - start[0]) * progress, 0), height }, style: { fill: color } },
-            ],
+              {
+                type: "rect",
+                shape: { x: start[0], y, width: Math.max(end[0] - start[0], 2), height },
+                style: { fill: color, opacity: 0.3 }
+              },
+              {
+                type: "rect",
+                shape: { x: start[0], y, width: Math.max((end[0] - start[0]) * progress, 0), height },
+                style: { fill: color }
+              }
+            ]
           };
           return rect;
         },
         encode: { x: [1, 2], y: 0 },
-        data: tasks.map((t) => ({
+        data: tasks.map(t => ({
           name: t.title,
           value: [
             categories.indexOf(t.title),
@@ -112,13 +121,13 @@ const option = computed<ECOption | null>(() => {
             new Date(t.end_date).getTime(),
             criticalPath.value.has(t.id),
             STATUS_COLORS[t.status] || "#409eff",
-            t.progress || 0,
+            t.progress || 0
           ],
           taskId: t.id,
-          progress: t.progress,
-        })),
-      },
-    ],
+          progress: t.progress
+        }))
+      }
+    ]
   } as ECOption;
 });
 
@@ -166,9 +175,9 @@ onBeforeUnmount(() => {
 }
 .gantt-chart__container {
   height: 500px;
+  overflow: hidden;
   border: 1px solid var(--el-border-color-light);
   border-radius: 4px;
-  overflow: hidden;
 }
 .gantt-chart__empty {
   display: flex;

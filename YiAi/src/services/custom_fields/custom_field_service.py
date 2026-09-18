@@ -3,12 +3,12 @@ Custom Fields Service — dynamic field definitions for Issue/Bug/Project entiti
 
 RPC entry: services.custom_fields.custom_field_service.<method>
 """
-import logging
 from datetime import datetime, timezone
+import logging
 from typing import Any
 
 from data.database import db
-from data.repository import query_documents, create_document, update_document, delete_document
+from data.repository import create_document, delete_document, query_documents, update_document
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 

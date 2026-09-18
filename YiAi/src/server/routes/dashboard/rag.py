@@ -47,8 +47,8 @@ class RagStatsResponse(BaseModel):
 async def rag_stats():
     """Return RAG index status and recent query history."""
     try:
-        from domain.rag.indexer import rag_status
         from domain.rag.history import list_history
+        from domain.rag.indexer import rag_status
 
         status = rag_status()
         config = RagConfigInfo(**status.get("config", {}))

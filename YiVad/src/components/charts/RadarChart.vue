@@ -25,21 +25,21 @@ const chartOption = computed<ECOption>(() => {
       legend: {
         data: props.data.series.map(s => s.name),
         bottom: 0,
-        textStyle: { fontSize: 11 },
+        textStyle: { fontSize: 11 }
       },
       radar: {
         indicator: props.data.indicators,
         center: ["50%", "48%"],
-        radius: "60%",
+        radius: "60%"
       },
       series: props.data.series.map(s => ({
         name: s.name,
         type: "radar" as const,
         data: [{ value: s.data, name: s.name }],
         itemStyle: s.color ? { color: s.color } : undefined,
-        areaStyle: { opacity: 0.15 },
+        areaStyle: { opacity: 0.15 }
       })),
-      ...props.options,
+      ...props.options
     };
   }
   return (props.options as ECOption) ?? {};

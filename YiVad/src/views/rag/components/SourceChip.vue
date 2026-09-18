@@ -27,33 +27,30 @@ defineEmits<{
 <style scoped lang="scss">
 .source-chip {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 4px 8px;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
   cursor: pointer;
+  background: var(--el-color-primary-light-9);
+  border-radius: 4px;
   transition: background 0.15s;
-
   &:hover {
     background: var(--el-color-primary-light-7);
   }
-
   &__num {
+    flex-shrink: 0;
     font-size: 11px;
     font-weight: 700;
     color: var(--el-color-primary);
-    flex-shrink: 0;
   }
-
   &__path {
-    font-size: 11px;
-    font-family: monospace;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    font-family: monospace;
+    font-size: 11px;
     color: var(--el-text-color-regular);
+    white-space: nowrap;
   }
 }
 </style>

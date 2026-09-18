@@ -29,8 +29,10 @@ export interface LoginResponse {
 // ── Chat / Prompt (via execution module: services.ai.chat_service) ────
 
 export interface ChatParams {
-  /** User prompt text. */
-  user: string;
+  /** User prompt text (single-turn, legacy). */
+  user?: string;
+  /** Conversation messages (multi-turn, preferred). Each msg has {role, content}. */
+  messages?: Array<{ role: string; content: string }>;
   /** System prompt (optional). */
   system?: string;
   /** Model name (optional). */

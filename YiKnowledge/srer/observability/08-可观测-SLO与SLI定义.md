@@ -4,7 +4,7 @@ aliases: [slo-guide, sli-definition, service-level-objectives]
 tags: [sre, observability, slo, sli, error-budget, reliability]
 category: srer/observability
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -19,7 +19,9 @@ acceptance_criteria:
 related:
   - ./07-可观测-搭建可观测性.md
   - ./README.md
-  - ../incident-response/04-事件-响应事件.md
+  - ./12-可观测-错误预算策略.md
+  - ./15-可观测-SRE指标体系.md
+  - ./16-可观测-SLA管理.md
 ---
 
 # SLO 与 SLI 定义指南

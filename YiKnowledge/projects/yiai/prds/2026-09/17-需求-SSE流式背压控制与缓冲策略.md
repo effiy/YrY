@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-13: SSE 流式传输背压控制与缓冲策略 — 生产环境可靠性增强"
 tags: [需求文档, SSE, 流式传输, 背压, 缓冲, 可靠性, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [17-prd-task-SSE流式背压控制与缓冲策略]
+related_tests: [17-prd-test-SSE流式背压控制与缓冲策略]
 ---
 
 # YA-09-13: SSE 流式传输背压控制与缓冲策略 — 生产环境可靠性增强
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-13 · 优先级：P2 · 人天：1.5d · 状态：需求已编写
 > 依赖：YA-09-03（Agent 可靠性）
@@ -36,6 +44,7 @@ YiAi 通过 SSE (Server-Sent Events) 向 YiVad/YiPet 流式传输 AI 聊天和 A
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 SSE 发送路径
@@ -61,6 +70,7 @@ async for token in llm.stream_chat(messages):
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：缓冲策略 — 无缓冲 vs 固定时间 vs 固定大小 vs 混合
@@ -84,6 +94,7 @@ async for token in llm.stream_chat(messages):
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 带背压控制的 SSE 缓冲发送器
@@ -225,6 +236,7 @@ async def stream_chat(messages: list[dict], model: str = "qwen3:14b"):
 
 ---
 
+<a id="sec-4"></a>
 ## 四、性能分析
 
 | 指标 | 无缓冲 (当前) | 混合缓冲 (优化后) | 改善 |
@@ -236,6 +248,7 @@ async def stream_chat(messages: list[dict], model: str = "qwen3:14b"):
 
 ---
 
+<a id="sec-5"></a>
 ## 五、测试规格
 
 #### Scenario: 缓冲区达到大小阈值自动刷新
@@ -266,6 +279,7 @@ async def stream_chat(messages: list[dict], model: str = "qwen3:14b"):
 
 ---
 
+<a id="sec-6"></a>
 ## 六、代码审查检查清单
 
 - [ ] `BufferedSseEmitter` 使用 `asyncio.Queue` 而非无界列表
@@ -278,6 +292,7 @@ async def stream_chat(messages: list[dict], model: str = "qwen3:14b"):
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |

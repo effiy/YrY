@@ -33,7 +33,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   title: "页面发生错误",
   message: "抱歉，页面遇到了意外错误。请尝试刷新页面。",
-  error: null,
+  error: null
 });
 
 const router = useRouter();
@@ -63,30 +63,26 @@ function handleGoHome() {
   padding: 48px 24px;
   background: var(--el-bg-color-page, #f5f5f5);
 }
-
 .error-fallback-content {
-  max-width: 520px;
   width: 100%;
+  max-width: 520px;
 }
-
 .error-fallback-details {
   margin-top: 16px;
 }
-
 .error-fallback-details summary {
-  cursor: pointer;
-  color: #909399;
-  font-size: 13px;
   margin-bottom: 8px;
+  font-size: 13px;
+  color: #909399;
+  cursor: pointer;
 }
-
 .error-fallback-details pre {
-  background: #f5f5f5;
   padding: 12px;
-  border-radius: 4px;
-  font-size: 12px;
   overflow-x: auto;
-  white-space: pre-wrap;
+  font-size: 12px;
   word-break: break-all;
+  white-space: pre-wrap;
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 </style>

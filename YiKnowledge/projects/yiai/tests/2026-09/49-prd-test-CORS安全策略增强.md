@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-45"
 source_prds: ["49-需求-CORS安全策略增强"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-45: 服务端 CORS 安全策略增强 — 动态 Origin 白名单与凭证管理 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[49-需求-CORS安全策略增强.md](../../prds/2026-09/49-需求-CORS安全策略增强.md)
 > 提取日期：2026-09-11

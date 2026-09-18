@@ -28,13 +28,22 @@ defineEmits<{ rowClick: [row: Record<string, any>] }>();
   gap: 12px;
 }
 .view-card {
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
   padding: 16px;
   cursor: pointer;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
   transition: box-shadow 0.2s;
-  &:hover { box-shadow: var(--el-box-shadow-light); }
-  &__field { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
-  &__field-label { color: var(--el-text-color-secondary); }
+  &:hover {
+    box-shadow: var(--el-box-shadow-light);
+  }
+  &__field {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  &__field-label {
+    color: var(--el-text-color-secondary);
+  }
 }
 </style>

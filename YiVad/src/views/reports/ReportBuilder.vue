@@ -1,7 +1,10 @@
 <template>
   <div class="report-builder">
     <header class="page-header">
-      <div><h1>Report Builder</h1><p class="text-muted">Drag components to build custom reports. Choose a template or start from scratch.</p></div>
+      <div>
+        <h1>Report Builder</h1>
+        <p class="text-muted">Drag components to build custom reports. Choose a template or start from scratch.</p>
+      </div>
       <div class="page-header__actions">
         <el-button :icon="Refresh" size="small" @click="loadReports">Load Saved</el-button>
         <el-button type="primary" :icon="Plus" size="small" @click="addComponent">Add Component</el-button>
@@ -40,11 +43,7 @@
       </aside>
 
       <!-- Report Canvas -->
-      <main
-        class="report-builder__canvas"
-        @drop.prevent="onDrop"
-        @dragover.prevent
-      >
+      <main class="report-builder__canvas" @drop.prevent="onDrop" @dragover.prevent>
         <div v-if="!components.length" class="canvas-empty">
           <p>Drag components from the palette or apply a template to start building.</p>
         </div>
@@ -105,9 +104,21 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="reportBuilder">
 import { ref } from "vue";
-import { Plus, Download, Refresh, Setting, Delete, DataAnalysis, DataBoard, Document, PieChart, TrendCharts, Tickets } from "@element-plus/icons-vue";
+import {
+  Plus,
+  Download,
+  Refresh,
+  Setting,
+  Delete,
+  DataAnalysis,
+  DataBoard,
+  Document,
+  PieChart,
+  TrendCharts,
+  Tickets
+} from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import ReportPreviewContent from "@/views/reports/ReportPreview.vue";
 import { saveReport as saveReportApi, listReports } from "@/api/modules/reportService";
@@ -127,7 +138,7 @@ const paletteItems: { type: ReportComponentType; label: string; icon: any }[] = 
   { type: "bar_chart", label: "Bar Chart", icon: DataAnalysis },
   { type: "pie_chart", label: "Pie Chart", icon: PieChart },
   { type: "table", label: "Table", icon: Tickets },
-  { type: "text", label: "Text", icon: Document },
+  { type: "text", label: "Text", icon: Document }
 ];
 
 const templateTypes = [
@@ -136,21 +147,83 @@ const templateTypes = [
   { label: "Sprint Review", value: "sprint_review" },
   { label: "Quality Report", value: "quality" },
   { label: "Risk Report", value: "risk" },
-  { label: "Custom", value: "custom" },
+  { label: "Custom", value: "custom" }
 ];
 
 const templates = [
-  { label: "Weekly Report", type: "weekly", components: [
-    { id: "w1", type: "kpi_card" as const, title: "Completed This Week", x: 0, y: 0, width: 4, height: 1, data_source: { cname: "issues" } },
-    { id: "w2", type: "bar_chart" as const, title: "Throughput", x: 4, y: 0, width: 8, height: 1, data_source: { cname: "issues" } },
-    { id: "w3", type: "pie_chart" as const, title: "Issue Status", x: 0, y: 1, width: 4, height: 1, data_source: { cname: "issues" } },
-    { id: "w4", type: "table" as const, title: "Recent Issues", x: 4, y: 1, width: 8, height: 1, data_source: { cname: "issues" } },
-  ]},
-  { label: "Quality Report", type: "quality", components: [
-    { id: "q1", type: "kpi_card" as const, title: "Bug Rate", x: 0, y: 0, width: 4, height: 1, data_source: { cname: "bugs" } },
-    { id: "q2", type: "line_chart" as const, title: "Bug Trend", x: 4, y: 0, width: 8, height: 1, data_source: { cname: "bugs" } },
-    { id: "q3", type: "bar_chart" as const, title: "Defect Density", x: 0, y: 1, width: 12, height: 1, data_source: { cname: "bugs" } },
-  ]},
+  {
+    label: "Weekly Report",
+    type: "weekly",
+    components: [
+      {
+        id: "w1",
+        type: "kpi_card" as const,
+        title: "Completed This Week",
+        x: 0,
+        y: 0,
+        width: 4,
+        height: 1,
+        data_source: { cname: "issues" }
+      },
+      {
+        id: "w2",
+        type: "bar_chart" as const,
+        title: "Throughput",
+        x: 4,
+        y: 0,
+        width: 8,
+        height: 1,
+        data_source: { cname: "issues" }
+      },
+      {
+        id: "w3",
+        type: "pie_chart" as const,
+        title: "Issue Status",
+        x: 0,
+        y: 1,
+        width: 4,
+        height: 1,
+        data_source: { cname: "issues" }
+      },
+      {
+        id: "w4",
+        type: "table" as const,
+        title: "Recent Issues",
+        x: 4,
+        y: 1,
+        width: 8,
+        height: 1,
+        data_source: { cname: "issues" }
+      }
+    ]
+  },
+  {
+    label: "Quality Report",
+    type: "quality",
+    components: [
+      { id: "q1", type: "kpi_card" as const, title: "Bug Rate", x: 0, y: 0, width: 4, height: 1, data_source: { cname: "bugs" } },
+      {
+        id: "q2",
+        type: "line_chart" as const,
+        title: "Bug Trend",
+        x: 4,
+        y: 0,
+        width: 8,
+        height: 1,
+        data_source: { cname: "bugs" }
+      },
+      {
+        id: "q3",
+        type: "bar_chart" as const,
+        title: "Defect Density",
+        x: 0,
+        y: 1,
+        width: 12,
+        height: 1,
+        data_source: { cname: "bugs" }
+      }
+    ]
+  }
 ];
 
 const templateTypes2 = templateTypes; // alias for template
@@ -166,9 +239,11 @@ function onDrop(e: DragEvent) {
       id: `c${Date.now()}`,
       type,
       title: type.replace("_", " "),
-      x: 0, y: components.value.length,
-      width: 6, height: 1,
-      data_source: { cname: "issues" },
+      x: 0,
+      y: components.value.length,
+      width: 6,
+      height: 1,
+      data_source: { cname: "issues" }
     });
   }
 }
@@ -178,27 +253,35 @@ function addComponent() {
     id: `c${Date.now()}`,
     type: "kpi_card",
     title: "New KPI",
-    x: 0, y: components.value.length,
-    width: 4, height: 1,
-    data_source: { cname: "issues" },
+    x: 0,
+    y: components.value.length,
+    width: 4,
+    height: 1,
+    data_source: { cname: "issues" }
   });
 }
 
-function removeComponent(i: number) { components.value.splice(i, 1); }
-function configureComponent(i: number) { /* opens chart configurator */ }
+function removeComponent(i: number) {
+  components.value.splice(i, 1);
+}
+function configureComponent(i: number) {
+  /* opens chart configurator */
+}
 
-function applyTemplate(tpl: typeof templates[0]) {
+function applyTemplate(tpl: (typeof templates)[0]) {
   components.value = tpl.components.map(c => ({ ...c, id: `${c.id}_${Date.now()}` }));
 }
 
-function generateReport() { previewVisible.value = true; }
+function generateReport() {
+  previewVisible.value = true;
+}
 
 async function saveReport() {
   const res = await saveReportApi({
     name: saveForm.value.name || "Untitled",
     type: saveForm.value.type as any,
     description: saveForm.value.description,
-    layout: components.value,
+    layout: components.value
   });
   if (res.code === 0) {
     ElMessage.success(`Report saved: ${res.data.report_id}`);
@@ -206,46 +289,151 @@ async function saveReport() {
   }
 }
 
-function loadReports() { /* navigate or open dialog */ }
+function loadReports() {
+  /* navigate or open dialog */
+}
 </script>
 
 <style scoped lang="scss">
 .report-builder {
-  padding: 20px; height: calc(100vh - 100px); display: flex; flex-direction: column;
-  &__body { display: flex; gap: 16px; flex: 1; overflow: hidden; }
-  &__sidebar { width: 240px; flex-shrink: 0; overflow-y: auto; }
-  &__canvas { flex: 1; border: 2px dashed var(--el-border-color); border-radius: 8px; padding: 16px; overflow-y: auto; background: var(--el-fill-color-lighter); }
-}
-.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;
-  h1 { margin: 0 0 4px; font-size: 22px; }
-  &__actions { display: flex; gap: 8px; flex-shrink: 0; }
-}
-.text-muted { color: var(--el-text-color-secondary); font-size: 13px; }
-.mt16 { margin-top: 16px; }
-
-.palette { display: flex; flex-direction: column; gap: 4px;
-  &__item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: grab; border-radius: 4px; font-size: 13px;
-    &:hover { background: var(--el-fill-color-light); }
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 100px);
+  padding: 20px;
+  &__body {
+    display: flex;
+    flex: 1;
+    gap: 16px;
+    overflow: hidden;
+  }
+  &__sidebar {
+    flex-shrink: 0;
+    width: 240px;
+    overflow-y: auto;
+  }
+  &__canvas {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: var(--el-fill-color-lighter);
+    border: 2px dashed var(--el-border-color);
+    border-radius: 8px;
   }
 }
-
-.template-list { display: flex; flex-direction: column; gap: 4px;
-  &__item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; cursor: pointer; border-radius: 4px;
-    &:hover { background: var(--el-fill-color-light); }
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+  &__actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
   }
 }
-
+.text-muted {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
+.mt16 {
+  margin-top: 16px;
+}
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  &__item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: grab;
+    border-radius: 4px;
+    &:hover {
+      background: var(--el-fill-color-light);
+    }
+  }
+}
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    &:hover {
+      background: var(--el-fill-color-light);
+    }
+  }
+}
 .canvas-block {
-  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter); border-radius: 8px; margin-bottom: 12px; overflow: hidden;
-  &--selected { border-color: var(--el-color-primary); box-shadow: 0 0 0 1px var(--el-color-primary); }
-  &__toolbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--el-fill-color-lighter); border-bottom: 1px solid var(--el-border-color-lighter); }
-  &__title { font-size: 13px; font-weight: 500; }
-  &__preview { padding: 16px; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  &--selected {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 0 0 1px var(--el-color-primary);
+  }
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--el-fill-color-lighter);
+    border-bottom: 1px solid var(--el-border-color-lighter);
+  }
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  &__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    padding: 16px;
+  }
 }
-
-.canvas-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--el-text-color-secondary); font-size: 14px; }
-
-.preview-kpi { text-align: center; &__val { font-size: 24px; font-weight: 600; } &__lbl { display: block; font-size: 12px; color: var(--el-text-color-secondary); } }
-.preview-text { color: var(--el-text-color-secondary); }
-.preview-chart { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--el-text-color-secondary); font-size: 12px; }
+.canvas-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+}
+.preview-kpi {
+  text-align: center;
+  &__val {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  &__lbl {
+    display: block;
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+  }
+}
+.preview-text {
+  color: var(--el-text-color-secondary);
+}
+.preview-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
 </style>

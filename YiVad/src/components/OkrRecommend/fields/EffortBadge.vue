@@ -13,13 +13,22 @@ defineProps<{ effort: OkrTaskItem["effort"] }>();
   display: inline-block;
   width: 20px;
   height: 20px;
+  font-size: 11px;
+  font-weight: 700;
   line-height: 20px;
   text-align: center;
   border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  &.is-S { color: var(--el-color-success); background: var(--el-color-success-light-9); }
-  &.is-M { color: var(--el-color-primary); background: var(--el-color-primary-light-9); }
-  &.is-L { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
+  &.is-S {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
+  &.is-M {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+  &.is-L {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
 }
 </style>

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-19: RSS 抓取调度优化与内容去重 — Feed 健康监控与自适应轮询"
 tags: [需求文档, RSS, 抓取调度, 内容去重, 自适应轮询, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [23-prd-task-RSS抓取调度优化]
+related_tests: [23-prd-test-RSS抓取调度优化]
 ---
 
 # YA-09-19: RSS 抓取调度优化与内容去重 — Feed 健康监控与自适应轮询
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-19 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
@@ -41,6 +49,7 @@ YiAi 通过 `rss_scheduler` (apscheduler) 定期抓取 RSS 源内容存入 `rss_
 
 ---
 
+<a id="sec-1"></a>
 ## 一、目标架构
 
 ```python
@@ -122,6 +131,7 @@ class AdaptiveRssScheduler:
 
 ---
 
+<a id="sec-2"></a>
 ## 二、Feed 健康状态机
 
 | 状态 | 条件 | 轮询间隔 | 处理方式 |
@@ -133,6 +143,7 @@ class AdaptiveRssScheduler:
 
 ---
 
+<a id="sec-3"></a>
 ## 三、测试规格
 
 #### Scenario: 高频更新源——短轮询间隔
@@ -162,6 +173,7 @@ class AdaptiveRssScheduler:
 
 ---
 
+<a id="sec-4"></a>
 ## 四、代码审查检查清单
 
 - [ ] `MIN_INTERVAL = 5min`, `MAX_INTERVAL = 24h`
@@ -173,6 +185,7 @@ class AdaptiveRssScheduler:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、边缘场景处理
 
 ### 6.1 Feed 返回空内容（无新文章但 HTTP 200）
@@ -227,6 +240,7 @@ class AdaptiveRssScheduler:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、代码实现附录
 
 ### 7.1 完整 AdaptiveRssScheduler 实现
@@ -551,6 +565,7 @@ scheduler.start()
 
 ---
 
+<a id="sec-8"></a>
 ## 八、性能分析
 
 ### 8.1 Feed 抓取延迟基准
@@ -585,6 +600,7 @@ scheduler.start()
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 #### Scenario: 高频更新源——短轮询间隔
@@ -629,6 +645,7 @@ scheduler.start()
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回归问题
 
 | # | 预测问题 | 原因 | 验证方法 |
@@ -642,6 +659,7 @@ scheduler.start()
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `MIN_INTERVAL = 5min`, `MAX_INTERVAL = 24h`

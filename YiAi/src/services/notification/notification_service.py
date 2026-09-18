@@ -6,11 +6,12 @@ The YiVad frontend calls these via the RPC dispatcher:
 SSE streaming is provided through a dedicated route (/notification/stream) for clean
 URL-based EventSource connections that carry the auth token via query parameter.
 """
-import logging
 import asyncio
-import json
-from typing import Dict, Any, Optional
 from datetime import datetime, timezone
+import json
+import logging
+import re
+from typing import Any, Dict, Optional
 
 from data.database import db
 
@@ -28,7 +29,7 @@ async def _ensure_collection():
 
 # ── Notification CRUD ──
 
-async def get_notifications(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_notifications(params: dict[str, Any]) -> dict[str, Any]:
     """Query notifications with pagination, type filter, and search.
 
     Called via RPC: method_name="get_notifications", parameters={filter: {page, size, type, read, search}}
@@ -38,13 +39,13 @@ async def get_notifications(params: Dict[str, Any]) -> Dict[str, Any]:
     page = max(1, int(filter_param.get("page", 1)))
     size = min(100, max(1, int(filter_param.get("size", 20))))
 
-    query: Dict[str, Any] = {}
+    query: dict[str, Any] = {}
     if filter_param.get("type"):
         query["type"] = filter_param["type"]
     if "read" in filter_param and filter_param["read"] is not None:
         query["read"] = filter_param["read"]
     if filter_param.get("search"):
-        q = filter_param["search"]
+        q = re.escape(filter_param["search"])
         query["$or"] = [
             {"title": {"$regex": q, "$options": "i"}},
             {"message": {"$regex": q, "$options": "i"}},
@@ -64,7 +65,7 @@ async def get_notifications(params: Dict[str, Any]) -> Dict[str, Any]:
         "totalPages": (total + size - 1) // size if total else 0,
     }
 
-async def mark_as_read(params: Dict[str, Any]) -> Dict[str, Any]:
+async def mark_as_read(params: dict[str, Any]) -> dict[str, Any]:
     """Mark a single notification as read."""
     await _ensure_collection()
     notification_id = params.get("notification_id")
@@ -75,7 +76,7 @@ async def mark_as_read(params: Dict[str, Any]) -> Dict[str, Any]:
     )
     return {"ok": True}
 
-async def mark_all_as_read(params: Dict[str, Any]) -> Dict[str, Any]:
+async def mark_all_as_read(params: dict[str, Any]) -> dict[str, Any]:
     """Mark all notifications as read."""
     await _ensure_collection()
     await db.db[COLLECTION].update_many(
@@ -83,7 +84,7 @@ async def mark_all_as_read(params: Dict[str, Any]) -> Dict[str, Any]:
     )
     return {"ok": True}
 
-async def delete_notification(params: Dict[str, Any]) -> Dict[str, Any]:
+async def delete_notification(params: dict[str, Any]) -> dict[str, Any]:
     """Delete a notification by id."""
     await _ensure_collection()
     notification_id = params.get("notification_id")
@@ -94,7 +95,7 @@ async def delete_notification(params: Dict[str, Any]) -> Dict[str, Any]:
 
 # ── Preferences ──
 
-async def get_preferences(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_preferences(params: dict[str, Any]) -> dict[str, Any]:
     """Return default notification preferences (stored client-side)."""
     return {
         "preferences": {
@@ -106,13 +107,13 @@ async def get_preferences(params: Dict[str, Any]) -> Dict[str, Any]:
         "quietHours": {"enabled": False, "start": "22:00", "end": "08:00"},
     }
 
-async def save_preferences(params: Dict[str, Any]) -> Dict[str, Any]:
+async def save_preferences(params: dict[str, Any]) -> dict[str, Any]:
     """Acknowledge saved preferences (actual storage is client-side localStorage)."""
     return {"ok": True}
 
 # ── SSE notification stream (RPC-callable async generator) ──
 
-async def stream_notifications(params: Dict[str, Any]) -> None:
+async def stream_notifications(params: dict[str, Any]) -> None:
     """Async generator: poll DB for new notifications and yield SSE frames.
 
     Called via RPC POST / with streaming response.
@@ -160,11 +161,11 @@ async def create_notification(
     title: str,
     message: str,
     priority: str = "medium",
-    action_url: Optional[str] = None,
-    action_label: Optional[str] = None,
-    source: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    action_url: str | None = None,
+    action_label: str | None = None,
+    source: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Create a notification document. Called by other backend modules when events occur."""
     await _ensure_collection()
     import uuid

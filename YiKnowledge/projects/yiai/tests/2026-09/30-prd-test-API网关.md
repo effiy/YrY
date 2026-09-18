@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-26"
 source_prds: ["30-需求-API网关"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-26: 跨域请求代理与 API 网关 — 统一入口请求转发与认证注入 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[30-需求-API网关.md](../../prds/2026-09/30-需求-API网关.md)
 > 提取日期：2026-09-11

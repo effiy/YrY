@@ -1,49 +1,44 @@
 ---
 doc_type: test
-title: "YA-09-04: API 契约校验 — RPC 参数白名单 + 未知参数 WARNING 日志 — 测试规格"
-status: 待开始
+title: "YA-09-08: API 契约校验 — 测试规格"
+status: 已完成
 priority: P1
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-prd_task_id: "YA-09-04"
+prd_task_id: "YA-09-08"
 source_prds: ["08-需求-API契约校验"]
-source_modules: []
+source_modules: ["08-prd-task-API契约校验"]
+source_okr: [yiai-001]
 ---
-# YA-09-04: API 契约校验 — RPC 参数白名单 + 未知参数 WARNING 日志 — 测试规格
+
+# YA-09-08: API 契约校验 — 测试规格
 
 > 来源 PRD：[08-需求-API契约校验.md](../../prds/2026-09/08-需求-API契约校验.md)
-> 提取日期：2026-09-11
+> 开发方案：[08-prd-task-API契约校验.md](../../devs/2026-09/08-prd-task-API契约校验.md)
 
 ---
 
-## 测试场景
+## 一、单元测试
 
-### 功能验证
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-AP-01 | 已知参数通过 | `{cname, filter}` → 校验通过 |
+| UT-AP-02 | 未知参数 WARNING | `{query: "test"}` → WARNING "未知参数 query" |
+| UT-AP-03 | 已知+未知混合 | `{cname, filter, query}` → cname/filter 通过，query WARNING |
+| UT-AP-04 | 参数名 `target_file` 而非 `path` | 使用 `path` → WARNING |
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+---
 
-### 边界测试
+## 二、缺陷分级
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 级别 | 示例 |
+|------|------|
+| S1 — 严重 | 已知参数被误报为未知 |
+| S2 — 一般 | 未知参数未被 WARNING |
 
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

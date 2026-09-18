@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-13"
 source_prds: ["11-需求-维护工具服务"]
 source_modules: []
+source_okr: [yiai-003]
 ---
 # 维护工具服务 — 未引用图片清理与会话垃圾回收 — 测试规格
 

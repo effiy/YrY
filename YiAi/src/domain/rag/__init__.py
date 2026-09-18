@@ -6,6 +6,7 @@ reach into internal modules.
 from domain.rag.indexer import (
     build_kb_index,
     get_kb_index,
+    is_index_available,
     load_kb_index,
     preload_kb_index,
     rebuild_index,
@@ -22,6 +23,7 @@ from domain.rag.engine import (
     rag_file_query,
     rag_file_chat_stream,
     rag_decompose,
+    close_http_client,
 )
 from domain.rag.history import record_query, list_history, clear_history
 from domain.rag.chat_history import (
@@ -36,10 +38,12 @@ __all__ = [
     "base_dir",
     "build_file_index",
     "build_kb_index",
+    "close_http_client",
     "clear_chat_history",
     "clear_history",
     "ensure_settings_configured",
     "get_kb_index",
+    "is_index_available",
     "list_chat_history",
     "list_history",
     "load_kb_index",

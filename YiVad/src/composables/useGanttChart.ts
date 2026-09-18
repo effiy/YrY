@@ -7,7 +7,7 @@ export function useGanttChart(tasks: Ref<GanttTask[]>) {
     viewMode: "month",
     showWeekends: true,
     showCriticalPath: false,
-    showToday: true,
+    showToday: true
   });
 
   const criticalPath = computed(() => {
@@ -17,10 +17,14 @@ export function useGanttChart(tasks: Ref<GanttTask[]>) {
 
   const dayWidth = computed(() => {
     switch (viewOptions.value.viewMode) {
-      case "day": return 40;
-      case "week": return 12;
-      case "month": return 4;
-      default: return 4;
+      case "day":
+        return 40;
+      case "week":
+        return 12;
+      case "month":
+        return 4;
+      default:
+        return 4;
     }
   });
 
@@ -29,12 +33,12 @@ export function useGanttChart(tasks: Ref<GanttTask[]>) {
       const now = new Date();
       return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: new Date(now.getFullYear(), now.getMonth() + 2, 0) };
     }
-    const dates = tasks.value.flatMap((t) => [new Date(t.start_date).getTime(), new Date(t.end_date).getTime()]);
+    const dates = tasks.value.flatMap(t => [new Date(t.start_date).getTime(), new Date(t.end_date).getTime()]);
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
     return {
       start: new Date(min.getFullYear(), min.getMonth() - 1, 1),
-      end: new Date(max.getFullYear(), max.getMonth() + 2, 0),
+      end: new Date(max.getFullYear(), max.getMonth() + 2, 0)
     };
   });
 

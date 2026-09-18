@@ -25,9 +25,7 @@ function isPDF(type?: string): boolean {
 }
 
 function isText(type?: string): boolean {
-  return type
-    ? /^text\//.test(type)
-    : /\.(txt|md|log|json|xml|yml|yaml|csv)$/i.test(props.url);
+  return type ? /^text\//.test(type) : /\.(txt|md|log|json|xml|yml|yaml|csv)$/i.test(props.url);
 }
 </script>
 
@@ -37,7 +35,10 @@ function isText(type?: string): boolean {
     :title="fileName || '文件预览'"
     width="720px"
     destroy-on-close
-    @close="emit('update:visible', false); emit('close')"
+    @close="
+      emit('update:visible', false);
+      emit('close');
+    "
   >
     <div class="file-preview">
       <!-- Image preview -->
@@ -46,12 +47,7 @@ function isText(type?: string): boolean {
       </div>
 
       <!-- PDF preview -->
-      <iframe
-        v-else-if="isPDF(fileType)"
-        :src="url"
-        class="file-preview__pdf"
-        frameborder="0"
-      />
+      <iframe v-else-if="isPDF(fileType)" :src="url" class="file-preview__pdf" frameborder="0" />
 
       <!-- Text preview -->
       <pre v-else-if="isText(fileType)" class="file-preview__text"><code>{{ url }}</code></pre>
@@ -60,17 +56,11 @@ function isText(type?: string): boolean {
       <div v-else class="file-preview__generic">
         <el-icon :size="48"><Document /></el-icon>
         <p>{{ fileName }}</p>
-        <el-button type="primary" tag="a" :href="url" download>
-          下载文件
-        </el-button>
+        <el-button type="primary" tag="a" :href="url" download> 下载文件 </el-button>
       </div>
     </div>
 
-    <el-image-viewer
-      v-if="imgViewerVisible"
-      :url-list="[url]"
-      @close="imgViewerVisible = false"
-    />
+    <el-image-viewer v-if="imgViewerVisible" :url-list="[url]" @close="imgViewerVisible = false" />
   </el-dialog>
 </template>
 
@@ -80,36 +70,31 @@ function isText(type?: string): boolean {
   align-items: center;
   justify-content: center;
   min-height: 300px;
-
   &__image img {
     max-width: 100%;
     max-height: 60vh;
     cursor: zoom-in;
     border-radius: 4px;
   }
-
   &__pdf {
     width: 100%;
     height: 60vh;
   }
-
   &__text {
     width: 100%;
     max-height: 60vh;
     padding: 16px;
-    background: var(--el-fill-color-light);
-    border-radius: 4px;
     overflow: auto;
     font-size: 13px;
     line-height: 1.6;
-    white-space: pre-wrap;
     word-break: break-all;
+    white-space: pre-wrap;
+    background: var(--el-fill-color-light);
+    border-radius: 4px;
   }
-
   &__generic {
-    text-align: center;
     color: var(--el-text-color-secondary);
-
+    text-align: center;
     p {
       margin: 12px 0 16px;
     }

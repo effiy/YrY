@@ -149,3 +149,6 @@ Domain 包外部的每个调用者只依赖公开的 API 面：
 - [YiAi 工程文档](../../learn/projects/yiai/01-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiAi CLAUDE.md](../../../../YiAi/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
 - [跨项目 RPC 协议](../../build/cross-project-rpc-protocol.md) —— 完整的 API 契约
+- [MongoDB 模式设计](../../build/04-构建-MongoDB模式设计.md) —— 文档模型与索引策略
+- [API 设计模式](../../build/05-构建-API设计模式.md) —— RPC vs REST 决策
+- [调试排错指南](../../build/06-构建-调试排错指南.md) —— 系统化诊断方法论

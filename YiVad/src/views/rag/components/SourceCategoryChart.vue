@@ -37,28 +37,32 @@ const option = computed<ECOption>(() => {
     .map(([name, value], i) => ({
       name,
       value,
-      itemStyle: { color: PALETTE[i % PALETTE.length] },
+      itemStyle: { color: PALETTE[i % PALETTE.length] }
     }));
   return {
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
     legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10 } },
-    series: [{
-      type: "pie", radius: ["45%", "70%"], center: ["55%", "50%"],
-      label: { fontSize: 10, formatter: "{b}\n{d}%" },
-      emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
-      data: items,
-    }],
+    series: [
+      {
+        type: "pie",
+        radius: ["45%", "70%"],
+        center: ["55%", "50%"],
+        label: { fontSize: 10, formatter: "{b}\n{d}%" },
+        emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
+        data: items
+      }
+    ]
   };
 });
 </script>
 
 <style scoped lang="scss">
 .source-cat-chart {
+  padding: 12px;
+  margin-bottom: 12px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 12px;
 }
 .scc-header {
   display: flex;

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 拖拽排序系统
 tags:
 - 拖拽
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 已实现
+status: 已完成
+implementation_progress: 已全部实现
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,43 @@ source_okr: [yivad-003]
 # 拖拽排序系统
 
 > 需求编号：YV-09-37 · 优先级：P2 · 人天：1.0d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/14-prd-task-拖拽排序系统.md)，验证方案见 [测试方案](../../tests/2026-09/14-prd-test-拖拽排序系统.md)。
 > 依赖：无（纯前端交互，排序持久化需要后端端点）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | useDraggable Composable | 参见 §useDraggable Composa |
+| FR-2 | useDroppable Composable | 参见 §useDroppable Composa |
+| FR-3 | useSortable Composable | 参见 §useSortable Composab |
+| FR-4 | 键盘排序 Composable | 参见 §键盘排序 Composable |
+| FR-5 | FLIP 动画引擎 | 参见 §FLIP 动画引擎 |
+| FR-6 | 排序持久化服务 | 参见 §排序持久化服务 |
+| FR-7 | 触摸拖拽 Polyfill | 参见 §触摸拖拽 Polyfill |
+| FR-8 | 可排序列表组件 | 参见 §可排序列表组件 |
+| FR-9 | 拖拽手柄组件 | 参见 §拖拽手柄组件 |
 
 ## 改动总览
 
@@ -106,6 +145,7 @@ YiVad 当前多个页面需要排序功能（项目列表、看板卡片、菜�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前排序流程
@@ -135,6 +175,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 拖拽实现方案选型
@@ -184,6 +225,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -274,6 +316,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 useDraggable Composable
@@ -1384,6 +1427,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1406,6 +1450,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Composable 测试：useSortable
@@ -1444,6 +1489,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1456,6 +1502,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1472,6 +1519,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 使用 Pointer Events 而非 HTML5 Drag API
@@ -1504,6 +1552,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1527,6 +1576,7 @@ withDefaults(defineProps<Props>(), {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `useDraggable.ts` 支持 Pointer Events、拖拽手柄、方向约束、自定义拖拽预览

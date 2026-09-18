@@ -11,7 +11,13 @@
       <el-select v-model="cond.operator" size="small" style="width: 120px">
         <el-option v-for="op in operators" :key="op.key" :label="op.label" :value="op.key" />
       </el-select>
-      <el-input v-if="cond.operator !== 'is_empty' && cond.operator !== 'not_empty'" v-model="cond.value" size="small" placeholder="Value" style="width: 140px" />
+      <el-input
+        v-if="cond.operator !== 'is_empty' && cond.operator !== 'not_empty'"
+        v-model="cond.value"
+        size="small"
+        placeholder="Value"
+        style="width: 140px"
+      />
       <el-button size="small" text :icon="Delete" @click="removeCondition(idx)" />
     </div>
     <div class="filter-panel__footer">
@@ -34,7 +40,9 @@ export interface FilterCondition {
   logic?: "and" | "or";
 }
 
-const props = withDefaults(defineProps<{ conditions: FilterCondition[]; fields: { key: string; label: string }[] }>(), { conditions: () => [] });
+const props = withDefaults(defineProps<{ conditions?: FilterCondition[]; fields: { key: string; label: string }[] }>(), {
+  conditions: () => []
+});
 const emit = defineEmits<{ "update:conditions": [value: FilterCondition[]]; apply: [value: FilterCondition[]]; clear: [] }>();
 
 const operators = [
@@ -48,21 +56,34 @@ const operators = [
   { key: "is_empty", label: "Is empty" },
   { key: "not_empty", label: "Not empty" },
   { key: "starts_with", label: "Starts with" },
-  { key: "ends_with", label: "Ends with" },
+  { key: "ends_with", label: "Ends with" }
 ];
 
 const addCondition = () => {
   emit("update:conditions", [...props.conditions, { field: "", operator: "contains", value: "", logic: "and" }]);
 };
 const removeCondition = (idx: number) => {
-  const arr = [...props.conditions]; arr.splice(idx, 1); emit("update:conditions", arr);
+  const arr = [...props.conditions];
+  arr.splice(idx, 1);
+  emit("update:conditions", arr);
 };
 </script>
 
 <style scoped lang="scss">
 .filter-panel {
   padding: 8px;
-  &__condition { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-  &__footer { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--el-border-color-lighter); }
+  &__condition {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
 </style>

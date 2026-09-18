@@ -12,26 +12,26 @@ interface DragState {
 export function useGanttDrag(
   tasks: Ref<GanttTask[]>,
   dayWidth: Ref<number>,
-  onUpdate: (taskId: string, start: string, end: string) => Promise<void>,
+  onUpdate: (taskId: string, start: string, end: string) => Promise<void>
 ) {
   const dragState = ref<DragState>({
     taskId: null,
     edge: null,
     startX: 0,
     startDate: "",
-    startEndDate: "",
+    startEndDate: ""
   });
   const isDragging = ref(false);
 
   function onDragStart(taskId: string, edge: "left" | "right" | "move", clientX: number) {
-    const task = tasks.value.find((t) => t.id === taskId);
+    const task = tasks.value.find(t => t.id === taskId);
     if (!task) return;
     dragState.value = {
       taskId,
       edge,
       startX: clientX,
       startDate: task.start_date,
-      startEndDate: task.end_date,
+      startEndDate: task.end_date
     };
     isDragging.value = true;
   }
@@ -39,7 +39,7 @@ export function useGanttDrag(
   function onDragMove(clientX: number) {
     if (!isDragging.value || !dragState.value.taskId) return;
     const deltaDays = Math.round((clientX - dragState.value.startX) / dayWidth.value);
-    const task = tasks.value.find((t) => t.id === dragState.value.taskId);
+    const task = tasks.value.find(t => t.id === dragState.value.taskId);
     if (!task) return;
 
     const start = new Date(dragState.value.startDate);
@@ -61,7 +61,7 @@ export function useGanttDrag(
 
   async function onDragEnd() {
     if (dragState.value.taskId) {
-      const task = tasks.value.find((t) => t.id === dragState.value.taskId);
+      const task = tasks.value.find(t => t.id === dragState.value.taskId);
       if (task) {
         await onUpdate(task.id, task.start_date, task.end_date);
       }

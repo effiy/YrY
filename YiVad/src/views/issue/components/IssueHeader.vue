@@ -13,12 +13,7 @@
           @change="emit('changeStatus', $event)"
           style="width: 130px"
         >
-          <el-option
-            v-for="(label, val) in ISSUE_STATUS_MAP"
-            :key="val"
-            :label="label"
-            :value="val"
-          />
+          <el-option v-for="(label, val) in ISSUE_STATUS_MAP" :key="val" :label="label" :value="val" />
         </el-select>
         <el-dropdown trigger="click">
           <el-button :icon="MoreFilled" size="small" />

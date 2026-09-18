@@ -79,11 +79,7 @@
         </el-table-column>
         <el-table-column label="Results" width="80" align="center" sortable prop="resultCount">
           <template #default="{ row }">
-            <el-tag
-              :type="row.resultCount > 0 ? 'success' : 'danger'"
-              size="small"
-              effect="dark"
-            >
+            <el-tag :type="row.resultCount > 0 ? 'success' : 'danger'" size="small" effect="dark">
               {{ row.resultCount }}
             </el-tag>
           </template>
@@ -103,9 +99,7 @@
             <el-button text type="primary" size="small" @click.stop="rerunQuery($index)">
               <el-icon><RefreshRight /></el-icon> Rerun
             </el-button>
-            <el-button text type="primary" size="small" @click.stop="showQueryDetail(row as HistoryEntry)">
-              Detail
-            </el-button>
+            <el-button text type="primary" size="small" @click.stop="showQueryDetail(row as HistoryEntry)"> Detail </el-button>
             <el-button text type="primary" size="small" @click.stop="continueInAiChat(row as HistoryEntry)">
               <el-icon><ChatDotRound /></el-icon> Continue
             </el-button>
@@ -121,9 +115,7 @@
     <el-card v-else shadow="hover">
       <el-empty description="No query history yet. Start exploring in the Retrieval Explorer." :image-size="60">
         <template #extra>
-          <el-button type="primary" @click="$router.push('/rag/retrieval')">
-            Go to Retrieval Explorer
-          </el-button>
+          <el-button type="primary" @click="$router.push('/rag/retrieval')"> Go to Retrieval Explorer </el-button>
         </template>
       </el-empty>
     </el-card>
@@ -158,10 +150,23 @@
           </div>
         </div>
         <div class="rag-detail-footer">
-          <el-button type="primary" size="small" @click="rerunQuery(detailQuery._index); detailVisible = false">
+          <el-button
+            type="primary"
+            size="small"
+            @click="
+              rerunQuery(detailQuery._index);
+              detailVisible = false;
+            "
+          >
             <el-icon><RefreshRight /></el-icon> Rerun This Query
           </el-button>
-          <el-button size="small" @click="continueInAiChat(detailQuery); detailVisible = false">
+          <el-button
+            size="small"
+            @click="
+              continueInAiChat(detailQuery);
+              detailVisible = false;
+            "
+          >
             <el-icon><ChatDotRound /></el-icon> Continue in AI Chat
           </el-button>
         </div>
@@ -178,9 +183,7 @@ import type { InputInstance } from "element-plus";
 import { useRagStore } from "@/stores/modules/rag";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
-import {
-  scoreLabel, bestScore, avgScore, truncateText, formatTimestamp, formatRelativeTime
-} from "@/views/rag/constants";
+import { scoreLabel, bestScore, avgScore, truncateText, formatTimestamp, formatRelativeTime } from "@/views/rag/constants";
 import ScoreBar from "@/components/ScoreBar/index.vue";
 import QueryTrendsChart from "./components/QueryTrendsChart.vue";
 import { useRagKeyboard } from "@/views/rag/composables/useRagKeyboard";
@@ -213,30 +216,24 @@ const history = computed<HistoryEntry[]>(() =>
     resultCount: entry.sources?.length ?? 0,
     topScore: getTopScore(entry),
     avgScore: getAvgScore(entry),
-    _index: idx,
+    _index: idx
   }))
 );
 
 const filteredHistory = computed(() => {
   const q = searchText.value.toLowerCase().trim();
   if (!q) return history.value;
-  return history.value.filter(
-    (h) => h.question.toLowerCase().includes(q) || h.scope.toLowerCase().includes(q)
-  );
+  return history.value.filter(h => h.question.toLowerCase().includes(q) || h.scope.toLowerCase().includes(q));
 });
 
-const uniqueScopes = computed(() =>
-  new Set(history.value.map((h) => h.scope || "(full KB)")).size
-);
+const uniqueScopes = computed(() => new Set(history.value.map(h => h.scope || "(full KB)")).size);
 
 const avgBestScore = computed(() => {
   if (!history.value.length) return 0;
   return history.value.reduce((a, h) => a + h.topScore, 0) / history.value.length;
 });
 
-const totalSources = computed(() =>
-  history.value.reduce((a, h) => a + h.resultCount, 0)
-);
+const totalSources = computed(() => history.value.reduce((a, h) => a + h.resultCount, 0));
 
 const detailVisible = ref(false);
 const detailQuery = ref<HistoryEntry | null>(null);
@@ -265,9 +262,7 @@ const { openInAiChat } = useAiChatBridge();
 
 async function continueInAiChat(row: HistoryEntry) {
   const sources = (row.sources ?? []).slice(0, 3);
-  const ctxSections = sources.map((s, i) =>
-    `## ${i + 1}. ${s.file_path}\n\n${truncateText(s.text, 400)}`
-  ).join("\n\n---\n\n");
+  const ctxSections = sources.map((s, i) => `## ${i + 1}. ${s.file_path}\n\n${truncateText(s.text, 400)}`).join("\n\n---\n\n");
   const tags: string[] = ["rag"];
   if (row.scope) tags.push(`ctx:${row.scope}`);
   await openInAiChat({
@@ -285,28 +280,23 @@ function clearAll() {
 </script>
 
 <style scoped lang="scss">
-@use "./styles/shared.scss";
-
+@use "./styles/shared";
 .rag-history-hint {
   font-size: 12px;
   color: var(--el-text-color-placeholder);
 }
-
 .rag-time-relative {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--el-text-color-secondary);
   cursor: default;
 }
-
 .rag-history-search {
   width: 240px;
 }
-
 .rag-detail-block {
   margin-bottom: 20px;
 }
-
 .rag-detail-heading {
   margin: 0 0 8px;
   font-size: 13px;
@@ -315,46 +305,39 @@ function clearAll() {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .rag-detail-question {
   margin: 0;
   font-size: 14px;
   line-height: 1.7;
 }
-
 .rag-source {
   margin-bottom: 12px;
 }
-
 .rag-source-head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin-bottom: 4px;
 }
-
 .rag-source-rank {
   font-size: 11px;
   font-weight: 700;
   color: var(--el-color-primary);
 }
-
 .rag-source-path {
   flex: 1;
-  font-family: "SF Mono", "Menlo", monospace;
-  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   white-space: nowrap;
 }
-
 .rag-source-text {
   margin: 0;
   font-size: 12px;
-  color: var(--el-text-color-secondary);
   line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
-
 .rag-detail-footer {
   padding-top: 12px;
   border-top: 1px solid var(--el-border-color-lighter);

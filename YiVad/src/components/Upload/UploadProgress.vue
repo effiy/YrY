@@ -16,7 +16,7 @@ defineEmits<{
 <template>
   <div class="upload-progress">
     <div class="upload-progress__header">
-      <span class="upload-progress__name">{{ fileName || '上传中...' }}</span>
+      <span class="upload-progress__name">{{ fileName || "上传中..." }}</span>
       <span class="upload-progress__percent">{{ percentage }}%</span>
     </div>
     <el-progress
@@ -24,9 +24,7 @@ defineEmits<{
       :status="status === 'error' ? 'exception' : status === 'success' ? 'success' : undefined"
       :stroke-width="6"
     />
-    <el-button v-if="status === 'uploading'" text size="small" type="danger" @click="$emit('cancel')">
-      取消
-    </el-button>
+    <el-button v-if="status === 'uploading'" text size="small" type="danger" @click="$emit('cancel')"> 取消 </el-button>
   </div>
 </template>
 
@@ -37,19 +35,17 @@ defineEmits<{
     justify-content: space-between;
     margin-bottom: 4px;
   }
-
   &__name {
-    font-size: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
     white-space: nowrap;
   }
-
   &__percent {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
     flex-shrink: 0;
     margin-left: 8px;
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
   }
 }
 </style>

@@ -45,7 +45,7 @@ async function postJson<T>(path: string, body: Record<string, unknown>): Promise
   const resp = await fetch(url, {
     method: "POST",
     headers: { ...yiAiAuthHeaders(), "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
   if (!resp.ok) {
     throw new Error(`MCP request failed: ${path} HTTP ${resp.status}`);

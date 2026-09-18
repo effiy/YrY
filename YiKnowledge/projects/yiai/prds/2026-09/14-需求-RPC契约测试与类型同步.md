@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-10: RPC 契约测试与前后端类型同步 — 参数名漂移自动检测"
 tags: [需求文档, RPC, 契约测试, 类型安全, 跨项目, 自动化, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 2.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [14-prd-task-RPC契约测试与类型同步]
+related_tests: [14-prd-test-RPC契约测试与类型同步]
 ---
 
 # YA-09-10: RPC 契约测试与前后端类型同步 — 参数名漂移自动检测
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-10 · 优先级：P1 · 人天：2.0d · 状态：需求已编写
 > 依赖：YA-09-04（API 契约校验）
@@ -45,6 +53,7 @@ YrY 单体仓库通过 RPC 信封协议（`{module_name, method_name, parameters
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 参数名定义分布
@@ -116,6 +125,7 @@ L4: ❌ CI 契约回归测试           ← 缺失
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：契约定义格式 — JSON Schema vs TypeScript Interface vs Python TypedDict
@@ -160,6 +170,7 @@ L4: ❌ CI 契约回归测试           ← 缺失
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 契约文件结构
@@ -305,6 +316,7 @@ queryDocuments({ cname: 'bugs', filter: { status: 'open' } });
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -363,6 +375,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -379,6 +392,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Requirement: JSON Schema 契约定义
@@ -431,6 +445,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 契约校验性能
@@ -455,6 +470,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -465,6 +481,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -475,6 +492,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么 JSON Schema 而非 OpenAPI？
@@ -495,6 +513,7 @@ RPC 契约由后端定义（YiAi 是 API 提供方），前端是消费者。契
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、当前架构 vs 目标架构
 
 ### 改造前后对比
@@ -534,6 +553,7 @@ graph TD
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] 6 个 JSON Schema 文件覆盖所有 RPC 方法参数
@@ -549,6 +569,7 @@ graph TD
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -560,6 +581,7 @@ graph TD
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、可观测性
 
 | 指标 | 采集方式 | 采集频率 | 告警阈值 | 说明 |

@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YP-07-01"
 source_prds: ["00-需求-需求总览"]
 source_modules: []
+source_okr: [yipet-001]
 ---
 # YiPet 七月迭代 — 技术栈迁移 / 工具链升级 / 聊天框架搭建 — 测试规格
 

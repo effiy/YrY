@@ -1,38 +1,58 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-101"
-title: "YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-101: 公共 API 文档 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "48-prd-公共API文档.md"
 ---
 
-# YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台 — 开发任务
+# YV-09-101: 公共 API 文档 — 开发方案
 
-> 来源 PRD：[48-prd-公共API文档.md](../prds/2026-09/48-prd-公共API文档.md)
-> 需求编号：YV-09-101 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-101 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + API Docs Service | `types/apiDocs.ts`, `services/apiDocsService.ts` | 类型检查通过 | 0.04 |
-| 2 | 代码示例切换组件 | `CodeSamples.vue` | 三种语言切换正确 | 0.04 |
-| 3 | 侧边栏导航组件 | `ApiSidebar.vue` | 模块分组 + 搜索正确 | 0.04 |
-| 4 | 端点详情组件 | `EndpointDetail.vue` | 参数表/响应/示例渲染 | 0.06 |
-| 5 | 交互式控制台组件 | `ApiConsole.vue` | 参数填写 + 发送 + 结果 | 0.05 |
-| 6 | 变更日志组件 | `ApiChangelog.vue` | 版本列表 + 变更详情 | 0.03 |
-| 7 | API 文档主页面 | `ApiDocs.vue` | 三栏布局 + 路由联动 | 0.03 |
-| 8 | 路由 + 菜单配置 | `routes.ts`, 菜单 | 页面可访问 | 0.01 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+内置 API 文档页面，基于 YiAi 的 OpenAPI/Swagger 规范自动生成，展示所有 RPC 方法和参数说明。
+
+### 文档内容
+
+| 模块 | 端点 | 参数 | 响应 | 示例 |
+|------|------|------|------|------|
+| data_service | query_documents | cname, filter | QueryResult | curl 示例 |
+| chat_service | chat | messages, stream | SSE 流 | curl 示例 |
+
+### 数据源
+
+从 YiAi `/docs` 或 `/openapi.json` 获取 OpenAPI 规范，前端渲染为可交互文档。
+
+> 依赖 YiAi OpenAPI 文档完善。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

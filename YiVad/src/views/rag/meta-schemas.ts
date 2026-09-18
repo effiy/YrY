@@ -10,14 +10,14 @@
 
 export const SCORE_THRESHOLDS = {
   high: 0.7,
-  medium: 0.4,
+  medium: 0.4
 } as const;
 
 export const SCORE_COLORS = {
   high: "#67c23a",
   medium: "#e6a23c",
   low: "#f56c6c",
-  muted: "#909399",
+  muted: "#909399"
 } as const;
 
 // ── Index info fields (dashboard cards) ─────────────────────────────────────
@@ -36,13 +36,13 @@ export const INDEX_INFO_FIELDS: IndexInfoField[] = [
     key: "embed_model",
     label: "Embedding Model",
     format: "tag",
-    tagMap: { "nomic-embed-text": { label: "nomic-embed-text", type: "info" } },
+    tagMap: { "nomic-embed-text": { label: "nomic-embed-text", type: "info" } }
   },
   {
     key: "llm_model",
     label: "Chat LLM",
     format: "tag",
-    tagMap: { "qwen2.5": { label: "qwen2.5", type: "info" } },
+    tagMap: { "qwen2.5": { label: "qwen2.5", type: "info" } }
   },
   { key: "chunk_size", label: "Chunk Size" },
   { key: "chunk_overlap", label: "Overlap" },
@@ -52,8 +52,8 @@ export const INDEX_INFO_FIELDS: IndexInfoField[] = [
     format: "boolean-tag",
     tagMap: {
       true: { label: "Vector + BM25", type: "success" },
-      false: { label: "Vector only", type: "info" },
-    },
+      false: { label: "Vector only", type: "info" }
+    }
   },
   {
     key: "rerank_enabled",
@@ -61,8 +61,8 @@ export const INDEX_INFO_FIELDS: IndexInfoField[] = [
     format: "boolean-tag",
     tagMap: {
       true: { label: "Enabled", type: "success" },
-      false: { label: "Disabled", type: "info" },
-    },
+      false: { label: "Disabled", type: "info" }
+    }
   },
   {
     key: "inline_citations",
@@ -70,9 +70,9 @@ export const INDEX_INFO_FIELDS: IndexInfoField[] = [
     format: "boolean-tag",
     tagMap: {
       true: { label: "[Source N]", type: "success" },
-      false: { label: "Off", type: "info" },
-    },
-  },
+      false: { label: "Off", type: "info" }
+    }
+  }
 ];
 
 // ── Retrieval results table ─────────────────────────────────────────────────
@@ -97,7 +97,7 @@ export const RETRIEVAL_COLUMNS: RetrievalColumn[] = [
   { prop: "metadata.type", label: "Type", width: 90, align: "center", render: "tag-type" },
   { prop: "text", label: "Chunk Preview", minWidth: 280, render: "preview" },
   { prop: "metadata.char_count", label: "Chars", width: 70, align: "center", sortable: "metadata.char_count", render: "number" },
-  { prop: "actions", label: "Actions", width: 100, align: "center", fixed: "right", render: "action" },
+  { prop: "actions", label: "Actions", width: 100, align: "center", fixed: "right", render: "action" }
 ];
 
 // ── History table ───────────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ export const HISTORY_COLUMNS: RetrievalColumn[] = [
   { prop: "resultCount", label: "Results", width: 80, align: "center", sortable: "resultCount", render: "number" },
   { prop: "topScore", label: "Top Score", width: 110, align: "center", sortable: "topScore", render: "score" },
   { prop: "avgScore", label: "Avg Score", width: 120, align: "center", render: "text" },
-  { prop: "actions", label: "Actions", width: 140, align: "center", fixed: "right", render: "action" },
+  { prop: "actions", label: "Actions", width: 140, align: "center", fixed: "right", render: "action" }
 ];
 
 // ── Dashboard stat cards ────────────────────────────────────────────────────
@@ -126,5 +126,5 @@ export const HISTORY_STATS: DashboardStat[] = [
   { key: "totalQueries", label: "Total Queries", format: "number" },
   { key: "uniqueScopes", label: "Unique Scopes", format: "number" },
   { key: "avgBestScore", label: "Avg Best Score", format: "score" },
-  { key: "totalSources", label: "Total Sources Retrieved", format: "number" },
+  { key: "totalSources", label: "Total Sources Retrieved", format: "number" }
 ];

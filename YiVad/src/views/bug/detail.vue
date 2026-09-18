@@ -1,46 +1,66 @@
 <template>
   <DetailSkeleton v-if="store.detailLoading" />
   <div v-else-if="store.selectedBug" class="bug-detail">
-      <div class="bug-detail__head">
-        <div class="bug-detail__head-left">
-          <el-button text :icon="ArrowLeft" @click="goBack">Bugs</el-button>
-          <EntityBreadcrumb :project-key="store.selectedBug.project_key" :current-label="store.selectedBug.title" :current-icon="WarningFilled" class="bug-detail__breadcrumb" />
-          <div>
-            <h1 class="bug-detail__title">{{ store.selectedBug.title }}</h1>
-            <div class="bug-detail__meta">
-              <code>{{ store.selectedBug.key }}</code>
-              <el-tag :type="severityTagType(store.selectedBug.severity)" size="small">
-                {{ store.selectedBug.severity }}
-              </el-tag>
-              <el-tag :type="priorityTagType(store.selectedBug.priority)" size="small">
-                {{ store.selectedBug.priority }}
-              </el-tag>
-              <el-tag :type="statusTagType(store.selectedBug.status)" size="small">
-                {{ store.selectedBug.status }}
-              </el-tag>
-              <el-tag type="info" size="small" effect="plain">
-                {{ store.selectedBug.type }}
-              </el-tag>
-            </div>
+    <div class="bug-detail__head">
+      <div class="bug-detail__head-left">
+        <el-button text :icon="ArrowLeft" @click="goBack">Bugs</el-button>
+        <EntityBreadcrumb
+          :project-key="store.selectedBug.project_key"
+          :current-label="store.selectedBug.title"
+          :current-icon="WarningFilled"
+          class="bug-detail__breadcrumb"
+        />
+        <div>
+          <h1 class="bug-detail__title">{{ store.selectedBug.title }}</h1>
+          <div class="bug-detail__meta">
+            <code>{{ store.selectedBug.key }}</code>
+            <el-tag :type="severityTagType(store.selectedBug.severity)" size="small">
+              {{ store.selectedBug.severity }}
+            </el-tag>
+            <el-tag :type="priorityTagType(store.selectedBug.priority)" size="small">
+              {{ store.selectedBug.priority }}
+            </el-tag>
+            <el-tag :type="statusTagType(store.selectedBug.status)" size="small">
+              {{ store.selectedBug.status }}
+            </el-tag>
+            <el-tag type="info" size="small" effect="plain">
+              {{ store.selectedBug.type }}
+            </el-tag>
           </div>
         </div>
-        <div class="bug-detail__head-actions">
-          <el-button v-if="store.selectedBug.project_key" :icon="Link" @click="goProject(store.selectedBug.project_key)">Project</el-button>
-          <el-button v-if="store.selectedBug.issue_key" :icon="Link" type="warning" plain @click="goIssue(store.selectedBug.issue_key)">Issue</el-button>
-          <el-button :icon="Edit" @click="store.openEditDialog(store.selectedBug, store.selectedBugContent)">Edit</el-button>
-          <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
-        </div>
       </div>
+      <div class="bug-detail__head-actions">
+        <el-button v-if="store.selectedBug.project_key" :icon="Link" @click="goProject(store.selectedBug.project_key)"
+          >Project</el-button
+        >
+        <el-button
+          v-if="store.selectedBug.issue_key"
+          :icon="Link"
+          type="warning"
+          plain
+          @click="goIssue(store.selectedBug.issue_key)"
+          >Issue</el-button
+        >
+        <el-button :icon="Edit" @click="store.openEditDialog(store.selectedBug, store.selectedBugContent)">Edit</el-button>
+        <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
+      </div>
+    </div>
 
-      <div class="bug-detail__body">
-        <div class="bug-detail__sidebar">
-          <div class="bug-detail__props">
+    <div class="bug-detail__body">
+      <div class="bug-detail__sidebar">
+        <div class="bug-detail__props">
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Project</span>
-            <el-button v-if="store.selectedBug.project_key" link type="primary" class="bug-detail__field-value" @click="goProject(store.selectedBug.project_key)">
+            <el-button
+              v-if="store.selectedBug.project_key"
+              link
+              type="primary"
+              class="bug-detail__field-value"
+              @click="goProject(store.selectedBug.project_key)"
+            >
               {{ projectName(store.selectedBug.project_key) || store.selectedBug.project || store.selectedBug.project_key }}
             </el-button>
-            <span v-else class="bug-detail__field-value">{{ store.selectedBug.project || '-' }}</span>
+            <span v-else class="bug-detail__field-value">{{ store.selectedBug.project || "-" }}</span>
           </div>
           <div class="bug-detail__field" v-if="store.selectedBug.issue_key">
             <span class="bug-detail__field-label">Issue</span>
@@ -56,15 +76,15 @@
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Module</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.module || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.module || "-" }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Assignee</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.assignee || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.assignee || "-" }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Reporter</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.reporter || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.reporter || "-" }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Frequency</span>
@@ -72,15 +92,15 @@
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Environment</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.environment || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.environment || "-" }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Affected Version</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.affectedVersion || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.affectedVersion || "-" }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Fixed Version</span>
-            <span class="bug-detail__field-value">{{ store.selectedBug.fixedVersion || '-' }}</span>
+            <span class="bug-detail__field-value">{{ store.selectedBug.fixedVersion || "-" }}</span>
           </div>
           <div class="bug-detail__field" v-if="store.selectedBug.iteration">
             <span class="bug-detail__field-label">Iteration</span>
@@ -102,62 +122,62 @@
               </el-tag>
             </span>
           </div>
+        </div>
+      </div>
+
+      <div class="bug-detail__main">
+        <div class="bug-detail__section">
+          <h3>Description</h3>
+          <div v-if="store.selectedBugContent?.description" class="bug-detail__text">
+            {{ store.selectedBugContent.description }}
           </div>
+          <el-empty v-else description="No description" :image-size="40" />
         </div>
 
-        <div class="bug-detail__main">
-          <div class="bug-detail__section">
-            <h3>Description</h3>
-            <div v-if="store.selectedBugContent?.description" class="bug-detail__text">
-              {{ store.selectedBugContent.description }}
-            </div>
-            <el-empty v-else description="No description" :image-size="40" />
-          </div>
+        <div class="bug-detail__section">
+          <h3>Steps to Reproduce</h3>
+          <ol v-if="store.selectedBugContent?.stepsToReproduce.length" class="bug-detail__steps">
+            <li v-for="(s, i) in store.selectedBugContent.stepsToReproduce" :key="i">{{ s }}</li>
+          </ol>
+          <el-empty v-else description="No steps recorded" :image-size="40" />
+        </div>
 
-          <div class="bug-detail__section">
-            <h3>Steps to Reproduce</h3>
-            <ol v-if="store.selectedBugContent?.stepsToReproduce.length" class="bug-detail__steps">
-              <li v-for="(s, i) in store.selectedBugContent.stepsToReproduce" :key="i">{{ s }}</li>
-            </ol>
-            <el-empty v-else description="No steps recorded" :image-size="40" />
+        <div class="bug-detail__section">
+          <h3>Expected Result</h3>
+          <div v-if="store.selectedBugContent?.expectedResult" class="bug-detail__text">
+            {{ store.selectedBugContent.expectedResult }}
           </div>
+          <el-empty v-else description="Not specified" :image-size="40" />
+        </div>
 
-          <div class="bug-detail__section">
-            <h3>Expected Result</h3>
-            <div v-if="store.selectedBugContent?.expectedResult" class="bug-detail__text">
-              {{ store.selectedBugContent.expectedResult }}
-            </div>
-            <el-empty v-else description="Not specified" :image-size="40" />
+        <div class="bug-detail__section">
+          <h3>Actual Result</h3>
+          <div v-if="store.selectedBugContent?.actualResult" class="bug-detail__text">
+            {{ store.selectedBugContent.actualResult }}
           </div>
+          <el-empty v-else description="Not specified" :image-size="40" />
+        </div>
 
-          <div class="bug-detail__section">
-            <h3>Actual Result</h3>
-            <div v-if="store.selectedBugContent?.actualResult" class="bug-detail__text">
-              {{ store.selectedBugContent.actualResult }}
-            </div>
-            <el-empty v-else description="Not specified" :image-size="40" />
-          </div>
+        <div class="bug-detail__section" v-if="store.selectedBugContent?.causeProblem">
+          <h3>Root Cause</h3>
+          <div class="bug-detail__text">{{ store.selectedBugContent.causeProblem }}</div>
+        </div>
 
-          <div class="bug-detail__section" v-if="store.selectedBugContent?.causeProblem">
-            <h3>Root Cause</h3>
-            <div class="bug-detail__text">{{ store.selectedBugContent.causeProblem }}</div>
-          </div>
-
-          <div class="bug-detail__section" v-if="store.selectedBugContent?.solution">
-            <h3>Solution</h3>
-            <div class="bug-detail__text">{{ store.selectedBugContent.solution }}</div>
-          </div>
+        <div class="bug-detail__section" v-if="store.selectedBugContent?.solution">
+          <h3>Solution</h3>
+          <div class="bug-detail__text">{{ store.selectedBugContent.solution }}</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div v-else class="bug-detail__not-found">
-      <el-result icon="error" title="Bug not found" sub-title="This bug doesn't exist or was deleted.">
-        <template #extra>
-          <el-button type="primary" @click="goBack">Back to Bugs</el-button>
-        </template>
-      </el-result>
-    </div>
+  <div v-else class="bug-detail__not-found">
+    <el-result icon="error" title="Bug not found" sub-title="This bug doesn't exist or was deleted.">
+      <template #extra>
+        <el-button type="primary" @click="goBack">Back to Bugs</el-button>
+      </template>
+    </el-result>
+  </div>
 </template>
 
 <script setup lang="ts" name="bugDetail">
@@ -197,10 +217,7 @@ async function loadLinkedEntities() {
   linkedDataLoading.value = true;
   linkedDataError.value = false;
   try {
-    const [issueRes, moduleRes] = await Promise.all([
-      getIssueList({ pageSize: 500 }),
-      getModuleList({ pageSize: 500 })
-    ]);
+    const [issueRes, moduleRes] = await Promise.all([getIssueList({ pageSize: 500 }), getModuleList({ pageSize: 500 })]);
     const allIssues = (issueRes.data?.list as Issue[]) ?? [];
     const allModules = (moduleRes.data?.list as Module[]) ?? [];
     linkedIssue.value = allIssues.find(i => i.key === bug.issue_key) ?? null;
@@ -291,131 +308,113 @@ function statusTagType(s: BugStatus): "primary" | "warning" | "success" | "info"
 
 <style scoped lang="scss">
 .bug-detail {
-  padding: 24px;
   height: calc(100vh - 95px);
+  padding: 24px;
   overflow: auto;
   background: var(--el-bg-color-page);
-
   &__head {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    justify-content: space-between;
     margin-bottom: 24px;
   }
-
   &__head-left {
     display: flex;
-    align-items: flex-start;
     gap: 16px;
+    align-items: flex-start;
   }
-
   &__title {
     margin: 0 0 8px;
     font-size: 22px;
     font-weight: 600;
   }
-
   &__meta {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
-
     code {
+      padding: 1px 8px;
       font-size: 12px;
       color: var(--el-text-color-secondary);
       background: var(--el-fill-color-light);
-      padding: 1px 8px;
       border-radius: 4px;
     }
   }
-
   &__head-actions {
     display: flex;
-    gap: 6px;
     flex-shrink: 0;
+    gap: 6px;
   }
-
   &__body {
     display: flex;
     gap: 24px;
     align-items: flex-start;
   }
-
   &__sidebar {
-    width: 260px;
-    flex-shrink: 0;
     position: sticky;
     top: 24px;
+    flex-shrink: 0;
     align-self: flex-start;
+    width: 260px;
   }
-
   &__props {
+    padding: 16px;
     background: var(--el-fill-color-lighter);
     border-radius: 8px;
-    padding: 16px;
   }
-
   &__field {
     padding: 8px 0;
     font-size: 13px;
-    & + & { border-top: 1px solid var(--el-border-color-lighter); }
+    & + & {
+      border-top: 1px solid var(--el-border-color-lighter);
+    }
   }
-
   &__field-label {
     display: block;
-    color: var(--el-text-color-secondary);
-    font-weight: 500;
     margin-bottom: 4px;
     font-size: 12px;
+    font-weight: 500;
+    color: var(--el-text-color-secondary);
   }
-
   &__field-value {
     font-size: 13px;
     color: var(--el-text-color-primary);
   }
-
   &__main {
     flex: 1;
     min-width: 0;
   }
-
   &__section {
     margin-bottom: 24px;
-
     h3 {
       margin: 0 0 12px;
       font-size: 15px;
       font-weight: 600;
     }
   }
-
   &__text {
     font-size: 14px;
     line-height: 1.7;
     color: var(--el-text-color-regular);
     white-space: pre-wrap;
   }
-
   &__steps {
-    margin: 0;
     padding-left: 20px;
-
+    margin: 0;
     li {
       font-size: 14px;
       line-height: 1.8;
       color: var(--el-text-color-regular);
     }
   }
-
   &__not-found {
     padding: 80px 0;
   }
-
   &__link-row {
     display: flex;
-    align-items: center;
     gap: 6px;
+    align-items: center;
     font-size: 13px;
   }
 }

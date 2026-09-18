@@ -5,19 +5,13 @@
       <el-tag size="small" type="info">{{ rows.length }} metrics · {{ roleCount }} roles</el-tag>
       <div class="metrics__nav">
         <el-button size="small" text type="primary" :icon="House" @click="go('/home/index')">Home</el-button>
-        <el-button size="small" text type="primary" :icon="Odometer" @click="go('/executiver/okr')">OKR Dashboard</el-button>
+        <el-button size="small" text type="primary" :icon="Odometer" @click="go('/knowledge/executive/okr')"
+          >OKR Dashboard</el-button
+        >
       </div>
     </div>
 
-    <el-table
-      :data="rows"
-      stripe
-      border
-      style="width: 100%"
-      row-key="id"
-      empty-text="No metrics."
-      @row-click="onRowClick"
-    >
+    <el-table :data="rows" stripe border style="width: 100%" row-key="id" empty-text="No metrics." @row-click="onRowClick">
       <el-table-column label="Metric" min-width="240">
         <template #default="{ row }">
           <span class="metrics__cell-name">
@@ -28,7 +22,7 @@
       </el-table-column>
       <el-table-column label="Role" width="180">
         <template #default="{ row }">
-          <span class="metrics__cell-role" @click.stop="go(`/executiver/okr/${row.roleId}`)">
+          <span class="metrics__cell-role" @click.stop="go(`/knowledge/executive/okr?role=${row.roleId}`)">
             {{ row.roleIcon }} {{ row.roleName }}
           </span>
         </template>
@@ -61,8 +55,8 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { House, Odometer } from "@element-plus/icons-vue";
-import { ROLE_IDS, rolesData, metricsData } from "@/views/knowledge/executiver/okrData";
-import type { MetricItem } from "@/views/knowledge/executiver/okrData";
+import { ROLE_IDS, rolesData, metricsData } from "@/views/knowledge/executive/okrData";
+import type { MetricItem } from "@/views/knowledge/executive/okrData";
 
 const router = useRouter();
 
@@ -90,7 +84,7 @@ function trendType(trend: string): "success" | "danger" | "info" {
 }
 
 function onRowClick(row: Row) {
-  go(`/executiver/okr/${row.roleId}`);
+  go(`/knowledge/executive/okr?role=${row.roleId}`);
 }
 
 function go(path: string) {
@@ -158,9 +152,9 @@ function go(path: string) {
 .metrics__progress-num {
   flex-shrink: 0;
   min-width: 34px;
-  text-align: right;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   color: var(--el-text-color-secondary);
+  text-align: right;
 }
 </style>

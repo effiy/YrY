@@ -125,7 +125,9 @@ const findIndex = () => {
       return prev;
     }, 0);
     if (!find) hiddenIndex.value = -1;
-  } catch (_e) { /* findIndex may throw on edge cases */ }
+  } catch (_e) {
+    /* findIndex may throw on edge cases */
+  }
 };
 
 // Execute findIndex when breakpoint changes

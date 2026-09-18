@@ -25,7 +25,7 @@ const operators = [
   { value: "is_empty", label: "为空" },
   { value: "is_not_empty", label: "不为空" },
   { value: "starts_with", label: "以...开头" },
-  { value: "ends_with", label: "以...结尾" },
+  { value: "ends_with", label: "以...结尾" }
 ] as const;
 
 const actions = [
@@ -35,7 +35,7 @@ const actions = [
   { value: "disable", label: "禁用" },
   { value: "require", label: "设为必填" },
   { value: "optional", label: "设为可选" },
-  { value: "set_value", label: "设置值" },
+  { value: "set_value", label: "设置值" }
 ] as const;
 
 function addRule() {
@@ -44,7 +44,7 @@ function addRule() {
     name: "新规则",
     priority: rules.value.length + 1,
     conditions: { operator: "AND", conditions: [{ field: "", operator: "equals", value: "" }] },
-    actions: [{ target: "", action: "show" }],
+    actions: [{ target: "", action: "show" }]
   };
   showEditor.value = true;
 }
@@ -56,7 +56,7 @@ function editRule(rule: ConditionalRule) {
 
 function saveRule() {
   if (!editingRule.value) return;
-  const idx = rules.value.findIndex((r) => r.id === editingRule.value!.id);
+  const idx = rules.value.findIndex(r => r.id === editingRule.value!.id);
   if (idx >= 0) {
     rules.value[idx] = editingRule.value;
   } else {
@@ -68,7 +68,7 @@ function saveRule() {
 }
 
 function deleteRule(id: string) {
-  rules.value = rules.value.filter((r) => r.id !== id);
+  rules.value = rules.value.filter(r => r.id !== id);
   emit("update:modelValue", [...rules.value]);
 }
 
@@ -99,18 +99,14 @@ function addAction() {
         <el-button text size="small" type="danger" @click="deleteRule(rule.id)">删除</el-button>
       </div>
       <div class="form-conditional-logic__rule-summary">
-        IF {{ rule.conditions.conditions.map(c => `${c.field} ${c.operator} ${c.value}`).join(` ${rule.conditions.operator} `) }}
-        THEN {{ rule.actions.map(a => `${a.target} → ${a.action}`).join(', ') }}
+        IF
+        {{ rule.conditions.conditions.map(c => `${c.field} ${c.operator} ${c.value}`).join(` ${rule.conditions.operator} `) }}
+        THEN {{ rule.actions.map(a => `${a.target} → ${a.action}`).join(", ") }}
       </div>
     </div>
 
     <!-- Rule editor dialog -->
-    <el-dialog
-      v-model="showEditor"
-      :title="editingRule?.name || '编辑规则'"
-      width="680px"
-      destroy-on-close
-    >
+    <el-dialog v-model="showEditor" :title="editingRule?.name || '编辑规则'" width="680px" destroy-on-close>
       <template v-if="editingRule">
         <el-form label-position="top" size="small">
           <el-form-item label="规则名称">
@@ -139,7 +135,12 @@ function addAction() {
                 <el-select v-model="cond.operator" placeholder="运算符" style="width: 120px">
                   <el-option v-for="op in operators" :key="op.value" :label="op.label" :value="op.value" />
                 </el-select>
-                <el-input v-if="!['is_empty', 'is_not_empty'].includes(cond.operator)" v-model="cond.value" placeholder="值" style="width: 160px" />
+                <el-input
+                  v-if="!['is_empty', 'is_not_empty'].includes(cond.operator)"
+                  v-model="cond.value"
+                  placeholder="值"
+                  style="width: 160px"
+                />
                 <el-button text type="danger" @click="editingRule.conditions.conditions.splice(ci, 1)">×</el-button>
               </div>
               <el-button size="small" text type="primary" @click="addCondition(editingRule.conditions)">+ 添加条件</el-button>
@@ -147,11 +148,7 @@ function addAction() {
           </el-form-item>
 
           <el-form-item label="动作 (THEN)">
-            <div
-              v-for="(action, ai) in editingRule.actions"
-              :key="ai"
-              class="form-conditional-logic__action-row"
-            >
+            <div v-for="(action, ai) in editingRule.actions" :key="ai" class="form-conditional-logic__action-row">
               <el-select v-model="action.target" placeholder="目标字段" style="width: 140px">
                 <el-option v-for="f in availableFields" :key="f.name" :label="f.label" :value="f.name" />
               </el-select>
@@ -181,56 +178,50 @@ function addAction() {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
-
-    h4 { margin: 0; font-size: 15px; }
+    h4 {
+      margin: 0;
+      font-size: 15px;
+    }
   }
-
   &__rule {
-    margin-bottom: 12px;
     padding: 12px;
+    margin-bottom: 12px;
     border: 1px solid var(--el-border-color-light);
     border-radius: 8px;
   }
-
   &__rule-header {
     display: flex;
-    align-items: center;
     gap: 12px;
+    align-items: center;
     margin-bottom: 8px;
   }
-
   &__rule-name {
-    font-weight: 600;
     font-size: 14px;
+    font-weight: 600;
   }
-
   &__rule-priority {
     font-size: 12px;
     color: var(--el-text-color-secondary);
   }
-
   &__rule-summary {
+    font-family: monospace;
     font-size: 13px;
     color: var(--el-text-color-secondary);
-    font-family: monospace;
   }
-
   &__conditions {
     width: 100%;
     padding: 12px;
     background: var(--el-fill-color-light);
     border-radius: 6px;
   }
-
   &__condition-operator {
     margin-bottom: 8px;
   }
-
   &__condition-row,
   &__action-row {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-bottom: 8px;
   }
 }

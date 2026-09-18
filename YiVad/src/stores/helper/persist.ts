@@ -32,7 +32,11 @@ const _PERSISTED_KEYS = [
 /** Clear all persisted Pinia store data (call on logout). */
 export function clearPersistedState(): void {
   for (const key of _PERSISTED_KEYS) {
-    try { localStorage.removeItem(key); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
   }
 }
 

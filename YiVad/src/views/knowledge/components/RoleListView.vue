@@ -1,7 +1,14 @@
 <template>
   <div class="role-list-view">
     <div v-for="row in files" :key="row.file.path" class="role-list-view__row" @click="$emit('open', row.file)">
-      <el-button class="role-list-view__delete" text type="danger" size="small" :icon="Delete" @click.stop="$emit('delete', row.file)" />
+      <el-button
+        class="role-list-view__delete"
+        text
+        type="danger"
+        size="small"
+        :icon="Delete"
+        @click.stop="$emit('delete', row.file)"
+      />
       <span class="role-list-view__icon">{{ fileIcon(row.file) }}</span>
       <div class="role-list-view__main">
         <span class="role-list-view__title">{{ row.title }}</span>
@@ -13,8 +20,12 @@
       </span>
       <div class="role-list-view__tags">
         <el-tag v-if="row.file.meta?.type" :type="typeTagType(row.file.meta.type)" size="small">{{ row.file.meta.type }}</el-tag>
-        <el-tag v-if="row.file.meta?.status" :type="statusTagType(row.file.meta.status)" size="small">{{ row.file.meta.status }}</el-tag>
-        <el-tag v-if="row.file.meta?.lifecycle" :type="lifecycleTagType(row.file.meta.lifecycle)" size="small">{{ row.file.meta.lifecycle }}</el-tag>
+        <el-tag v-if="row.file.meta?.status" :type="statusTagType(row.file.meta.status)" size="small">{{
+          row.file.meta.status
+        }}</el-tag>
+        <el-tag v-if="row.file.meta?.lifecycle" :type="lifecycleTagType(row.file.meta.lifecycle)" size="small">{{
+          row.file.meta.lifecycle
+        }}</el-tag>
       </div>
       <span class="role-list-view__size">{{ formatSize(row.file.size) }}</span>
     </div>
@@ -93,23 +104,86 @@ function formatSize(bytes: number): string {
 </script>
 
 <style scoped lang="scss">
-.role-list-view { display: flex; flex-direction: column; gap: 6px; }
+.role-list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .role-list-view__row {
-  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
-  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px; cursor: pointer; transition: box-shadow 0.2s; position: relative;
-  &:hover { box-shadow: 0 2px 8px rgb(0 0 0 / 6%); }
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  }
 }
 .role-list-view__delete {
-  position: absolute; top: 6px; right: 6px; opacity: 0; transition: opacity 0.2s;
-  .role-list-view__row:hover & { opacity: 1; }
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  .role-list-view__row:hover & {
+    opacity: 1;
+  }
 }
-.role-list-view__icon { font-size: 18px; flex-shrink: 0; }
-.role-list-view__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.role-list-view__title { font-size: 13px; font-weight: 600; color: var(--el-text-color-primary); line-height: 1.3; word-break: break-word; }
-.role-list-view__path { font-size: 11px; font-family: monospace; color: var(--el-text-color-placeholder); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.role-list-view__domain { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
-.role-list-view__tags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.role-list-view__size { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder); flex-shrink: 0; }
-.role-list-view__empty { padding: 24px; text-align: center; font-size: 13px; color: var(--el-text-color-secondary); }
+.role-list-view__icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.role-list-view__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.role-list-view__title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--el-text-color-primary);
+  overflow-wrap: break-word;
+}
+.role-list-view__path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+}
+.role-list-view__domain {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+.role-list-view__tags {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+}
+.role-list-view__size {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-placeholder);
+}
+.role-list-view__empty {
+  padding: 24px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+}
 </style>

@@ -3,161 +3,173 @@
     <div v-if="filterDate" class="do-date-banner">
       <el-icon><Calendar /></el-icon>
       <span>{{ $t("project.detail.dateBanner.showing", { date: filterDateLabel }) }}</span>
-      <el-button size="small" text type="primary" @click="clearFilterDate">{{
-        $t("project.detail.dateBanner.clear")
-      }}</el-button>
+      <el-button size="small" text type="primary" @click="clearFilterDate">{{ $t("project.detail.dateBanner.clear") }}</el-button>
     </div>
 
     <!-- README.md -->
-      <div class="do-card do-card--flush">
-        <div class="do-card__head">
-          <el-icon class="do-card__icon"><Document /></el-icon>
-          <span>README.md</span>
+    <div class="do-card do-card--flush">
+      <div class="do-card__head">
+        <el-icon class="do-card__icon"><Document /></el-icon>
+        <span>README.md</span>
+        <div class="do-card__head-right">
+          <el-button v-if="descContent" link size="small" type="primary" :icon="Edit" @click="openDescDialog">{{
+            $t("project.overview.readme.edit")
+          }}</el-button>
+          <el-button v-else link size="small" type="primary" @click="openDescDialog">{{
+            $t("project.overview.readme.add")
+          }}</el-button>
+        </div>
+      </div>
+      <div class="do-card__body">
+        <div
+          v-if="descContent"
+          ref="descPreviewRef"
+          class="do-desc-preview"
+          :class="{ 'is-clamped': !descExpanded }"
+          v-html="descHtml"
+        />
+        <div v-if="descContent && descOverflows" class="do-desc-mask" :class="{ 'is-hidden': descExpanded }" />
+        <el-button
+          v-if="descContent && descOverflows"
+          link
+          size="small"
+          type="primary"
+          class="do-desc-toggle"
+          @click="descExpanded = !descExpanded"
+        >
+          {{ descExpanded ? $t("project.overview.readme.collapse") : $t("project.overview.readme.expand") }}
+          <el-icon><component :is="descExpanded ? ArrowUp : ArrowDown" /></el-icon>
+        </el-button>
+        <div v-if="!descContent" class="do-empty">
+          <el-icon class="do-empty__icon"><Document /></el-icon>
+          <p class="do-empty__text">{{ $t("project.overview.readme.noFile") }}</p>
+          <p class="do-empty__hint">{{ $t("project.overview.readme.noFileHint") }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity + Todo two-column row -->
+    <div class="do-row">
+      <!-- Activity timeline (left) -->
+      <div class="do-card do-row__left">
+        <div class="do-card__head-row">
+          <h3 class="do-card__title">{{ $t("project.overview.activity.title") }}</h3>
           <div class="do-card__head-right">
-            <el-button v-if="descContent" link size="small" type="primary" :icon="Edit" @click="openDescDialog">{{
-              $t("project.overview.readme.edit")
-            }}</el-button>
-            <el-button v-else link size="small" type="primary" @click="openDescDialog">{{
-              $t("project.overview.readme.add")
-            }}</el-button>
+            <span v-if="lastUpdated" class="do-activity-updated">
+              {{ $t("project.overview.activity.updatedAgo", { time: updatedAgo }) }}
+            </span>
+            <el-button size="small" text :icon="Refresh" :loading="loading" @click="retry" />
           </div>
         </div>
-        <div class="do-card__body">
-          <div v-if="descContent" ref="descPreviewRef" class="do-desc-preview" :class="{ 'is-clamped': !descExpanded }" v-html="descHtml" />
-          <div v-if="descContent && descOverflows" class="do-desc-mask" :class="{ 'is-hidden': descExpanded }" />
-          <el-button
-            v-if="descContent && descOverflows"
-            link
-            size="small"
-            type="primary"
-            class="do-desc-toggle"
-            @click="descExpanded = !descExpanded"
-          >
-            {{ descExpanded ? $t('project.overview.readme.collapse') : $t('project.overview.readme.expand') }}
-            <el-icon><component :is="descExpanded ? ArrowUp : ArrowDown" /></el-icon>
-          </el-button>
-          <div v-if="!descContent" class="do-empty">
-            <el-icon class="do-empty__icon"><Document /></el-icon>
-            <p class="do-empty__text">{{ $t("project.overview.readme.noFile") }}</p>
-            <p class="do-empty__hint">{{ $t("project.overview.readme.noFileHint") }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Activity + Todo two-column row -->
-      <div class="do-row">
-        <!-- Activity timeline (left) -->
-        <div class="do-card do-row__left">
-          <div class="do-card__head-row">
-            <h3 class="do-card__title">{{ $t("project.overview.activity.title") }}</h3>
-            <div class="do-card__head-right">
-              <span v-if="lastUpdated" class="do-activity-updated">
-                {{ $t("project.overview.activity.updatedAgo", { time: updatedAgo }) }}
-              </span>
-              <el-button
-                size="small"
-                text
-                :icon="Refresh"
-                :loading="loading"
-                @click="retry"
-              />
-            </div>
-          </div>
-          <div v-if="overviewActivity.length" class="do-timeline">
-            <template v-for="(group, gIdx) in activityGroups" :key="group.label">
-              <div class="do-timeline-group">
-                <div class="do-timeline-group-label">{{ group.label }}</div>
-                <div
-                  v-for="(a, i) in group.items"
-                  :key="a.id"
-                  class="do-timeline-item"
-                  :class="{ 'do-timeline-item--last': i === group.items.length - 1 && gIdx === activityGroups.length - 1 }"
-                  @click="handleActivityClick(a)"
-                >
-                  <div class="do-timeline-dot" :style="{ background: activityColor(a.type) }" />
-                  <div v-if="i < group.items.length - 1 || gIdx < activityGroups.length - 1" class="do-timeline-line" />
-                  <div class="do-timeline-content">
-                    <span class="do-timeline-action">{{ a.action }}</span>
-                    <span class="do-timeline-target">{{ a.target }}</span>
-                    <span class="do-timeline-time">{{ a.timeAgo }}</span>
-                  </div>
+        <div v-if="overviewActivity.length" class="do-timeline">
+          <template v-for="(group, gIdx) in activityGroups" :key="group.label">
+            <div class="do-timeline-group">
+              <div class="do-timeline-group-label">{{ group.label }}</div>
+              <div
+                v-for="(a, i) in group.items"
+                :key="a.id"
+                class="do-timeline-item"
+                :class="{ 'do-timeline-item--last': i === group.items.length - 1 && gIdx === activityGroups.length - 1 }"
+                @click="handleActivityClick(a)"
+              >
+                <div class="do-timeline-dot" :style="{ background: activityColor(a.type) }" />
+                <div v-if="i < group.items.length - 1 || gIdx < activityGroups.length - 1" class="do-timeline-line" />
+                <div class="do-timeline-content">
+                  <span class="do-timeline-action">{{ a.action }}</span>
+                  <span class="do-timeline-target">{{ a.target }}</span>
+                  <span class="do-timeline-time">{{ a.timeAgo }}</span>
                 </div>
               </div>
-            </template>
-          </div>
-          <el-empty v-else :description="$t('project.overview.activity.empty')" :image-size="48" />
+            </div>
+          </template>
+        </div>
+        <el-empty v-else :description="$t('project.overview.activity.empty')" :image-size="48" />
+      </div>
+
+      <!-- Todo List (right) -->
+      <div class="do-card do-row__right">
+        <div class="do-card__head-row">
+          <h3 class="do-card__title">{{ $t("project.overview.todo.title") }}</h3>
+          <span v-if="todoItems.length" class="do-todo-count">{{ todoItems.length }}</span>
         </div>
 
-        <!-- Todo List (right) -->
-        <div class="do-card do-row__right">
-          <div class="do-card__head-row">
-            <h3 class="do-card__title">{{ $t("project.overview.todo.title") }}</h3>
-            <span v-if="todoItems.length" class="do-todo-count">{{ todoItems.length }}</span>
+        <!-- loading -->
+        <div v-if="todoLoading && !todoItems.length" class="do-todo-skeleton">
+          <div v-for="n in 4" :key="n" class="do-todo-skel-item">
+            <span class="do-todo-skel-bar" />
+            <span class="do-todo-skel-line" />
           </div>
+        </div>
 
-          <!-- loading -->
-          <div v-if="todoLoading && !todoItems.length" class="do-todo-skeleton">
-            <div v-for="n in 4" :key="n" class="do-todo-skel-item">
-              <span class="do-todo-skel-bar" />
-              <span class="do-todo-skel-line" />
-            </div>
+        <!-- empty -->
+        <div v-else-if="!todoLoading && !todoItems.length" class="do-todo-empty">
+          <div class="do-todo-empty__icon">
+            <el-icon><Check /></el-icon>
           </div>
+          <p class="do-todo-empty__text">{{ $t("project.overview.todo.empty") }}</p>
+        </div>
 
-          <!-- empty -->
-          <div v-else-if="!todoLoading && !todoItems.length" class="do-todo-empty">
-            <div class="do-todo-empty__icon">
-              <el-icon><Check /></el-icon>
-            </div>
-            <p class="do-todo-empty__text">{{ $t("project.overview.todo.empty") }}</p>
-          </div>
-
-          <!-- items -->
-          <div v-else class="do-todo-list">
-            <template v-for="(group, gIdx) in todoGroups" :key="gIdx">
-              <div class="do-todo-group" :class="{ 'do-todo-group--last': gIdx === todoGroups.length - 1 }">
-                <div class="do-todo-group-label">
-                  <span class="do-todo-group-dot" :style="{ background: groupColor(group.label) }" />
-                  {{ group.label }}
-                  <span class="do-todo-group-count">{{ group.items.length }}</span>
+        <!-- items -->
+        <div v-else class="do-todo-list">
+          <template v-for="(group, gIdx) in todoGroups" :key="gIdx">
+            <div class="do-todo-group" :class="{ 'do-todo-group--last': gIdx === todoGroups.length - 1 }">
+              <div class="do-todo-group-label">
+                <span class="do-todo-group-dot" :style="{ background: groupColor(group.label) }" />
+                {{ group.label }}
+                <span class="do-todo-group-count">{{ group.items.length }}</span>
+              </div>
+              <div
+                v-for="item in group.items"
+                :key="item.id"
+                class="do-todo-item"
+                :class="{ 'is-overdue': item.isOverdue, 'is-updating': updatingKeys.has(item.id) }"
+                @click="handleTodoClick(item)"
+              >
+                <div class="do-todo-item__accent" :style="{ background: activityColor(item.type) }" />
+                <div class="do-todo-item__body">
+                  <div class="do-todo-item__title">{{ item.target }}</div>
+                  <div class="do-todo-item__meta">
+                    <span v-if="item.priorityLabel" class="do-todo-item__prio">
+                      <span class="do-todo-item__prio-dot" :style="{ background: item.priorityColor }" />
+                      {{ item.priorityLabel }}
+                    </span>
+                    <span v-if="item.assignee" class="do-todo-item__assignee">{{ item.assignee }}</span>
+                    <span v-if="item.dueDate" class="do-todo-item__due" :class="{ 'is-overdue': item.isOverdue }">{{
+                      item.dueDate
+                    }}</span>
+                    <span v-if="!item.assignee && !item.dueDate && !item.priorityLabel" class="do-todo-item__due">&mdash;</span>
+                  </div>
                 </div>
-                <div
-                  v-for="item in group.items"
-                  :key="item.id"
-                  class="do-todo-item"
-                  :class="{ 'is-overdue': item.isOverdue, 'is-updating': updatingKeys.has(item.id) }"
-                  @click="handleTodoClick(item)"
-                >
-                  <div class="do-todo-item__accent" :style="{ background: activityColor(item.type) }" />
-                  <div class="do-todo-item__body">
-                    <div class="do-todo-item__title">{{ item.target }}</div>
-                    <div class="do-todo-item__meta">
-                      <span v-if="item.priorityLabel" class="do-todo-item__prio">
-                        <span class="do-todo-item__prio-dot" :style="{ background: item.priorityColor }" />
-                        {{ item.priorityLabel }}
-                      </span>
-                      <span v-if="item.assignee" class="do-todo-item__assignee">{{ item.assignee }}</span>
-                      <span v-if="item.dueDate" class="do-todo-item__due" :class="{ 'is-overdue': item.isOverdue }">{{ item.dueDate }}</span>
-                      <span v-if="!item.assignee && !item.dueDate && !item.priorityLabel" class="do-todo-item__due">&mdash;</span>
-                    </div>
-                  </div>
-                  <div class="do-todo-item__actions" @click.stop>
-                    <el-tooltip :content="$t('project.overview.todo.start')" :show-after="600" placement="top">
-                      <button class="do-todo-act do-todo-act--start" :disabled="updatingKeys.has(item.id)" @click="transitionTodo(item, 'start')">
-                        <el-icon><VideoPlay /></el-icon>
-                      </button>
-                    </el-tooltip>
-                    <el-tooltip :content="item.type === 'bug' ? $t('project.overview.todo.resolve') : $t('project.overview.todo.complete')" :show-after="600" placement="top">
-                      <button class="do-todo-act do-todo-act--done" :disabled="updatingKeys.has(item.id)" @click="transitionTodo(item, 'complete')">
-                        <el-icon><Check /></el-icon>
-                      </button>
-                    </el-tooltip>
-                  </div>
+                <div class="do-todo-item__actions" @click.stop>
+                  <el-tooltip :content="$t('project.overview.todo.start')" :show-after="600" placement="top">
+                    <button
+                      class="do-todo-act do-todo-act--start"
+                      :disabled="updatingKeys.has(item.id)"
+                      @click="transitionTodo(item, 'start')"
+                    >
+                      <el-icon><VideoPlay /></el-icon>
+                    </button>
+                  </el-tooltip>
+                  <el-tooltip
+                    :content="item.type === 'bug' ? $t('project.overview.todo.resolve') : $t('project.overview.todo.complete')"
+                    :show-after="600"
+                    placement="top"
+                  >
+                    <button
+                      class="do-todo-act do-todo-act--done"
+                      :disabled="updatingKeys.has(item.id)"
+                      @click="transitionTodo(item, 'complete')"
+                    >
+                      <el-icon><Check /></el-icon>
+                    </button>
+                  </el-tooltip>
                 </div>
               </div>
-            </template>
-          </div>
+            </div>
+          </template>
         </div>
       </div>
+    </div>
   </div>
 </template>
 
@@ -171,11 +183,7 @@ import { readProjectFile } from "@/api/modules/fileService";
 import { getIssueFilePath, updateIssue } from "@/api/modules/issueService";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { formatRelativeTime } from "@/utils/datetime";
-import {
-  PREVIEW_DLG_KEY,
-  useProjectDetail,
-  type ActivityItem,
-} from "@/views/project/types";
+import { PREVIEW_DLG_KEY, useProjectDetail, type ActivityItem } from "@/views/project/types";
 import { activityColor } from "@/views/project/composables/useProjectStats";
 import { PRIORITY_COLORS } from "@/views/project/constants";
 import { ISSUE_PRIORITY_MAP } from "@/api/modules/issueService";
@@ -189,19 +197,22 @@ const ctx = useProjectDetail();
 const previewDlg = inject(PREVIEW_DLG_KEY, null);
 
 const {
-  allIssues, allBugs, allModules,
-  filterDate, filterDateStr, project, clearFilterDate,
-  lastUpdated, loading, retry,
-  navigateTab,
+  allIssues,
+  allBugs,
+  allModules,
+  filterDate,
+  filterDateStr,
+  project,
+  clearFilterDate,
+  lastUpdated,
+  loading,
+  retry,
+  navigateTab
 } = ctx;
 
 // ── Todo data (derived from injected allIssues/allBugs — no separate API calls) ──
-const todoRequirements = computed(() =>
-  allIssues.value.filter(i => i.issue_type !== "bug" && i.status === "backlog")
-);
-const todoBugs = computed(() =>
-  allBugs.value.filter(b => b.status === "open" || b.status === "reopened")
-);
+const todoRequirements = computed(() => allIssues.value.filter(i => i.issue_type !== "bug" && i.status === "backlog"));
+const todoBugs = computed(() => allBugs.value.filter(b => b.status === "open" || b.status === "reopened"));
 const todoLoading = computed(() => loading.value);
 
 const { label: filterDateLabel } = useDateFilter(filterDate);
@@ -245,7 +256,11 @@ async function loadDescFile() {
 }
 
 function openDescDialog() {
-  previewDlg?.value?.openRaw({ title: "README.md", content: descContent.value, path: `projects/${project.value?.key}/README.md` });
+  previewDlg?.value?.openRaw({
+    title: "README.md",
+    content: descContent.value,
+    path: `projects/${project.value?.key}/README.md`
+  });
 }
 
 onMounted(() => {
@@ -253,9 +268,12 @@ onMounted(() => {
 });
 
 // KeepAlive 场景：项目切换时重新加载 README.md
-watch(() => project.value?.key, () => {
-  loadDescFile();
-});
+watch(
+  () => project.value?.key,
+  () => {
+    loadDescFile();
+  }
+);
 
 // 轮询刷新时同步更新 README
 watch(lastUpdated, () => {
@@ -269,12 +287,8 @@ const overviewActivity = computed<ActivityItem[]>(() => {
   const reqIssues = date
     ? allIssues.value.filter(i => i.issue_type === "requirement" && (i.updated_at || "").slice(0, 10) === date)
     : allIssues.value.filter(i => i.issue_type === "requirement");
-  const bugs = date
-    ? allBugs.value.filter(b => new Date(b.updatedAt).toISOString().slice(0, 10) === date)
-    : allBugs.value;
-  const modules = date
-    ? allModules.value.filter(m => (m.updated_at || "").slice(0, 10) === date)
-    : allModules.value;
+  const bugs = date ? allBugs.value.filter(b => new Date(b.updatedAt).toISOString().slice(0, 10) === date) : allBugs.value;
+  const modules = date ? allModules.value.filter(m => (m.updated_at || "").slice(0, 10) === date) : allModules.value;
 
   const activity: ActivityItem[] = [];
 
@@ -282,11 +296,16 @@ const overviewActivity = computed<ActivityItem[]>(() => {
     activity.push({
       id: i.key,
       type: "requirement",
-      action: i.status === "done" ? t("project.overview.activity.completed") : i.status === "in_progress" ? t("project.overview.activity.started") : t("project.overview.activity.created"),
+      action:
+        i.status === "done"
+          ? t("project.overview.activity.completed")
+          : i.status === "in_progress"
+            ? t("project.overview.activity.started")
+            : t("project.overview.activity.created"),
       target: i.title,
       timeAgo: formatRelativeTime(i.updated_at, now.value),
       updatedAt: i.updated_at,
-      filePath: getIssueFilePath(i),
+      filePath: getIssueFilePath(i)
     });
   });
 
@@ -294,11 +313,16 @@ const overviewActivity = computed<ActivityItem[]>(() => {
     activity.push({
       id: b.key,
       type: "bug",
-      action: b.status === "resolved" || b.status === "closed" ? t("project.overview.activity.resolved") : b.status === "in_progress" ? t("project.overview.activity.started") : t("project.overview.activity.reported"),
+      action:
+        b.status === "resolved" || b.status === "closed"
+          ? t("project.overview.activity.resolved")
+          : b.status === "in_progress"
+            ? t("project.overview.activity.started")
+            : t("project.overview.activity.reported"),
       target: b.title,
       timeAgo: formatRelativeTime(b.updatedAt, now.value),
       updatedAt: new Date(b.updatedAt).toISOString(),
-      filePath: b.contentPath || "",
+      filePath: b.contentPath || ""
     });
   });
 
@@ -306,11 +330,14 @@ const overviewActivity = computed<ActivityItem[]>(() => {
     activity.push({
       id: m.key,
       type: "module",
-      action: m.created_at === m.updated_at ? t("project.overview.activity.moduleCreated") : t("project.overview.activity.moduleUpdated"),
+      action:
+        m.created_at === m.updated_at
+          ? t("project.overview.activity.moduleCreated")
+          : t("project.overview.activity.moduleUpdated"),
       target: m.name,
       timeAgo: formatRelativeTime(m.updated_at, now.value),
       updatedAt: m.updated_at,
-      link: `/project/${m.project_key}?tab=devs`,
+      link: `/project/${m.project_key}?tab=devs`
     });
   });
 
@@ -340,11 +367,15 @@ interface TodoItem {
 }
 
 const PRIORITY_RANK: Record<string, number> = {
-  urgent: 0, p0: 0,
-  high: 1, p1: 1,
-  medium: 2, p2: 2,
-  low: 3, p3: 3,
-  none: 4,
+  urgent: 0,
+  p0: 0,
+  high: 1,
+  p1: 1,
+  medium: 2,
+  p2: 2,
+  low: 3,
+  p3: 3,
+  none: 4
 };
 
 function formatDueDate(iso: string | undefined): string {
@@ -382,7 +413,7 @@ const todoItems = computed<TodoItem[]>(() => {
       priorityRank: PRIORITY_RANK[i.priority] ?? 4,
       assignee: i.assignee || "",
       dueDate: formatDueDate(i.due_date),
-      isOverdue: isOverdue(i.due_date),
+      isOverdue: isOverdue(i.due_date)
     });
   });
 
@@ -397,7 +428,7 @@ const todoItems = computed<TodoItem[]>(() => {
       priorityRank: PRIORITY_RANK[b.priority] ?? 4,
       assignee: b.assignee || "",
       dueDate: b.dueDate ? formatDueDate(new Date(b.dueDate).toISOString()) : "",
-      isOverdue: b.dueDate ? isOverdue(new Date(b.dueDate).toISOString()) : false,
+      isOverdue: b.dueDate ? isOverdue(new Date(b.dueDate).toISOString()) : false
     });
   });
 
@@ -413,7 +444,7 @@ const todoGroups = computed(() => {
   const groups: { label: string; items: TodoItem[] }[] = [];
   const typeLabels: Record<string, string> = {
     requirement: t("project.overview.todo.requirement"),
-    bug: t("project.overview.todo.bug"),
+    bug: t("project.overview.todo.bug")
   };
 
   for (const item of todoItems.value) {
@@ -437,7 +468,7 @@ function handleTodoClick(a: TodoItem) {
 function groupColor(label: string): string {
   const m: Record<string, string> = {
     [t("project.overview.todo.requirement")]: activityColor("requirement"),
-    [t("project.overview.todo.bug")]: activityColor("bug"),
+    [t("project.overview.todo.bug")]: activityColor("bug")
   };
   return m[label] || "#909399";
 }
@@ -490,7 +521,6 @@ const activityGroups = computed(() => {
   }
   return groups;
 });
-
 </script>
 
 <style scoped lang="scss">
@@ -515,11 +545,11 @@ const activityGroups = computed(() => {
   }
 }
 .do-card {
+  padding: 20px;
+  margin-bottom: 20px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
   &--flush {
     padding: 0;
     overflow: hidden;
@@ -530,20 +560,17 @@ const activityGroups = computed(() => {
   font-size: 15px;
   font-weight: 600;
 }
-
 .do-card__head-row {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
 }
-
 .do-card__head-right {
-  margin-left: auto;
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
+  margin-left: auto;
 }
-
 .do-activity-updated {
   font-size: 11px;
   color: var(--el-text-color-placeholder);
@@ -555,8 +582,8 @@ const activityGroups = computed(() => {
 }
 .do-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -569,15 +596,16 @@ const activityGroups = computed(() => {
   color: var(--el-color-primary);
 }
 .do-card__head-right {
-  margin-left: auto;
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
+  margin-left: auto;
 }
 .do-card__body {
   padding: 16px;
 }
 .do-desc-preview {
+  position: relative;
   padding: 12px;
   font-size: 14px;
   line-height: 1.7;
@@ -585,41 +613,35 @@ const activityGroups = computed(() => {
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
-  position: relative;
-
   &.is-clamped {
     max-height: 600px;
     overflow: hidden;
   }
 }
-
 .do-desc-mask {
   position: relative;
   height: 40px;
   margin-top: -40px;
-  background: linear-gradient(transparent, var(--el-bg-color));
   pointer-events: none;
+  background: linear-gradient(transparent, var(--el-bg-color));
   border-radius: 0 0 6px 6px;
-
   &.is-hidden {
     display: none;
   }
 }
-
 .do-desc-toggle {
   display: block;
   margin: 6px auto 0;
   font-size: 12px;
 }
-
 .do-empty {
-  text-align: center;
   padding: 24px 16px;
+  text-align: center;
 }
 .do-empty__icon {
+  margin-bottom: 8px;
   font-size: 28px;
   color: var(--el-text-color-placeholder);
-  margin-bottom: 8px;
 }
 .do-empty__text {
   margin: 0;
@@ -636,12 +658,10 @@ const activityGroups = computed(() => {
   display: flex;
   flex-direction: column;
 }
-
 .do-timeline-group {
   display: flex;
   flex-direction: column;
 }
-
 .do-timeline-group-label {
   padding: 4px 0 8px;
   font-size: 11px;
@@ -650,78 +670,71 @@ const activityGroups = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .do-timeline-item {
   position: relative;
   display: flex;
   gap: 12px;
   padding: 0 0 16px 20px;
   cursor: pointer;
-
   &:hover {
-    .do-timeline-target { color: var(--el-color-primary); }
+    .do-timeline-target {
+      color: var(--el-color-primary);
+    }
   }
-
-  &--last { padding-bottom: 0; }
+  &--last {
+    padding-bottom: 0;
+  }
 }
-
 .do-timeline-dot {
   position: absolute;
-  left: 0;
   top: 4px;
+  left: 0;
+  z-index: 1;
+  flex-shrink: 0;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  flex-shrink: 0;
-  z-index: 1;
   transition: transform 0.15s;
-
   .do-timeline-item:hover & {
     transform: scale(1.4);
   }
 }
-
 .do-timeline-line {
   position: absolute;
-  left: 4px;
   top: 18px;
   bottom: 0;
+  left: 4px;
   width: 2px;
   background: var(--el-border-color-light);
 }
-
 .do-timeline-content {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  font-size: 13px;
   align-items: center;
   padding: 2px 8px;
+  font-size: 13px;
   border-radius: 6px;
   transition: background 0.15s;
-
   .do-timeline-item:hover & {
     background: var(--el-fill-color-lighter);
   }
 }
-
 .do-timeline-action {
   font-weight: 600;
 }
-
 .do-timeline-target {
-  color: var(--el-color-primary);
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--el-color-primary);
   white-space: nowrap;
   transition: color 0.15s;
 }
-
 .do-timeline-time {
+  margin-left: auto;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
-  margin-left: auto;
 }
 
 // ── Two-column row ──
@@ -730,12 +743,10 @@ const activityGroups = computed(() => {
   gap: 20px;
   margin-bottom: 20px;
 }
-
 .do-row__left {
   flex: 1;
   min-width: 0;
 }
-
 .do-row__right {
   flex: 1;
   min-width: 0;
@@ -749,247 +760,248 @@ const activityGroups = computed(() => {
   min-width: 22px;
   height: 22px;
   padding: 0 7px;
-  border-radius: 999px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 999px;
 }
-
 .do-todo-skeleton {
   padding: 4px 0;
 }
-
 .do-todo-skel-item {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 8px 10px;
 }
-
 .do-todo-skel-bar {
+  flex-shrink: 0;
   width: 2px;
   height: 28px;
-  border-radius: 1px;
   background: var(--el-fill-color);
-  flex-shrink: 0;
+  border-radius: 1px;
 }
-
 .do-todo-skel-line {
   flex: 1;
   height: 10px;
-  border-radius: 5px;
   background: var(--el-fill-color);
+  border-radius: 5px;
   animation: do-todo-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes do-todo-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
-
 .do-todo-empty {
-  text-align: center;
   padding: 32px 16px 24px;
+  text-align: center;
 }
-
 .do-todo-empty__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: var(--el-color-success-light-9);
-  color: var(--el-color-success);
   margin-bottom: 10px;
   font-size: 18px;
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+  border-radius: 50%;
 }
-
 .do-todo-empty__text {
   margin: 0;
   font-size: 13px;
   color: var(--el-text-color-placeholder);
 }
-
 .do-todo-list {
   display: flex;
   flex-direction: column;
   max-height: 600px;
   overflow-y: auto;
 }
-
 .do-todo-group {
   padding: 0 0 10px;
-
   & + & {
     padding-top: 10px;
     border-top: 1px solid var(--el-border-color-lighter);
   }
-
-  &--last { padding-bottom: 0; }
+  &--last {
+    padding-bottom: 0;
+  }
 }
-
 .do-todo-group-label {
   display: flex;
-  align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
+  align-items: center;
   padding: 0 2px;
+  margin-bottom: 6px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
   letter-spacing: 0.2px;
 }
-
 .do-todo-group-dot {
+  flex-shrink: 0;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
-
 .do-todo-group-count {
   margin-left: auto;
   font-size: 10px;
   font-weight: 600;
   color: var(--el-text-color-placeholder);
 }
-
 .do-todo-item {
   position: relative;
   display: flex;
   align-items: stretch;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 6px;
   transition: background 0.15s ease;
-
-  & + & { margin-top: 1px; }
-
+  & + & {
+    margin-top: 1px;
+  }
   &:hover {
     background: var(--el-fill-color-lighter);
-
-    .do-todo-item__accent { width: 3px; }
-    .do-todo-item__title   { color: var(--el-color-primary); }
-    .do-todo-item__actions { opacity: 1; transform: translateX(0); }
+    .do-todo-item__accent {
+      width: 3px;
+    }
+    .do-todo-item__title {
+      color: var(--el-color-primary);
+    }
+    .do-todo-item__actions {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
-
   &.is-overdue .do-todo-item__accent {
     background: #f56c6c !important;
   }
-
   &.is-updating {
-    opacity: 0.4;
     pointer-events: none;
+    opacity: 0.4;
   }
 }
-
 .do-todo-item__accent {
-  width: 2px;
   flex-shrink: 0;
-  border-radius: 0 2px 2px 0;
+  width: 2px;
   margin: 5px 0;
+  border-radius: 0 2px 2px 0;
   opacity: 0.55;
-  transition: width 0.15s ease, opacity 0.15s;
-
+  transition:
+    width 0.15s ease,
+    opacity 0.15s;
   .do-todo-item:hover &,
-  .do-todo-item.is-overdue & { opacity: 1; }
+  .do-todo-item.is-overdue & {
+    opacity: 1;
+  }
 }
-
 .do-todo-item__body {
   flex: 1;
   min-width: 0;
-  padding: 8px 10px 8px 10px;
+  padding: 8px 10px;
 }
-
 .do-todo-item__title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  line-height: 1.45;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--el-text-color-primary);
   white-space: nowrap;
   transition: color 0.15s;
 }
-
 .do-todo-item__meta {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin-top: 4px;
   font-size: 11px;
 }
-
 .do-todo-item__prio {
   display: inline-flex;
-  align-items: center;
   gap: 3px;
-  color: var(--el-text-color-placeholder);
+  align-items: center;
   font-weight: 500;
+  color: var(--el-text-color-placeholder);
 }
-
 .do-todo-item__prio-dot {
+  flex-shrink: 0;
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
-
 .do-todo-item__assignee {
-  color: var(--el-text-color-placeholder);
   max-width: 72px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &::before { content: "· "; }
-}
-
-.do-todo-item__due {
   color: var(--el-text-color-placeholder);
-
-  &::before { content: "· "; }
-
-  &.is-overdue {
-    color: #f56c6c;
-    font-weight: 600;
+  white-space: nowrap;
+  &::before {
+    content: "· ";
   }
 }
-
+.do-todo-item__due {
+  color: var(--el-text-color-placeholder);
+  &::before {
+    content: "· ";
+  }
+  &.is-overdue {
+    font-weight: 600;
+    color: #f56c6c;
+  }
+}
 .do-todo-item__actions {
   display: flex;
-  align-items: center;
+  flex-shrink: 0;
   gap: 2px;
+  align-items: center;
   padding: 0 6px 0 0;
   opacity: 0;
   transform: translateX(3px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  flex-shrink: 0;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
-
 .do-todo-act {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: none;
-  border-radius: 5px;
-  background: none;
   color: var(--el-text-color-placeholder);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
-
-  .el-icon { font-size: 14px; }
-
-  &:disabled { opacity: 0.35; pointer-events: none; }
-
-  &--start:hover { background: var(--el-color-primary-light-9); color: var(--el-color-primary); }
-  &--done:hover  { background: var(--el-color-success-light-9);  color: var(--el-color-success); }
+  background: none;
+  border: none;
+  border-radius: 5px;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  .el-icon {
+    font-size: 14px;
+  }
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.35;
+  }
+  &--start:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+  &--done:hover {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
 }
-
 :deep(.do-desc-preview) {
   h1,
   h2,
@@ -1025,10 +1037,10 @@ const activityGroups = computed(() => {
     font-size: 0.9em;
   }
   blockquote {
-    margin: 0.5em 0;
     padding: 4px 12px;
-    border-left: 3px solid var(--el-color-primary-light-5);
+    margin: 0.5em 0;
     color: var(--el-text-color-secondary);
+    border-left: 3px solid var(--el-color-primary-light-5);
   }
   table {
     border-collapse: collapse;
@@ -1039,8 +1051,8 @@ const activityGroups = computed(() => {
     border: 1px solid var(--el-border-color-lighter);
   }
   th {
-    background: var(--el-fill-color-light);
     font-weight: 600;
+    background: var(--el-fill-color-light);
   }
   ul,
   ol {
@@ -1054,9 +1066,9 @@ const activityGroups = computed(() => {
     color: var(--el-color-primary);
   }
   hr {
+    margin: 16px 0;
     border: none;
     border-top: 1px solid var(--el-border-color-lighter);
-    margin: 16px 0;
   }
   img {
     max-width: 100%;
@@ -1064,15 +1076,14 @@ const activityGroups = computed(() => {
   pre.mermaid {
     all: unset;
     display: block;
-    overflow-x: auto;
     margin: 12px 0;
+    overflow-x: auto;
     svg {
+      display: block;
       max-width: 100%;
       height: auto;
-      display: block;
       margin: 0 auto;
     }
   }
 }
-
 </style>

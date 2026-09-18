@@ -1,0 +1,37 @@
+/* Shared styles for showcase pages */
+.showcase-page {
+  padding: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.sc-alert {
+  margin: 16px 0;
+}
+.sc-section {
+  margin-bottom: 20px;
+  h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 15px;
+  }
+}
+.sc-desc {
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+  margin-bottom: 16px;
+  code {
+    padding: 1px 6px;
+    font-size: 12px;
+    background: var(--el-fill-color-light);
+    border-radius: 3px;
+    color: var(--el-color-primary);
+  }
+}
+.sc-demo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}

@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-21"
 source_prds: ["25-需求-Webhook事件通知"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-21: Webhook 事件通知系统 — 关键事件订阅与异步推送 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[25-需求-Webhook事件通知.md](../../prds/2026-09/25-需求-Webhook事件通知.md)
 > 提取日期：2026-09-11

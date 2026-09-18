@@ -5,7 +5,9 @@
       <span>Description</span>
       <code v-if="descFilePath" class="id-desc-path" :title="descFilePath" @click.stop="emit('view')">{{ descFilePath }}</code>
       <div class="id-card__head-right">
-        <el-button link size="small" type="primary" :icon="FolderOpened" title="Open in file viewer" @click="emit('view')">View</el-button>
+        <el-button link size="small" type="primary" :icon="FolderOpened" title="Open in file viewer" @click="emit('view')"
+          >View</el-button
+        >
         <el-button v-if="descContent" link size="small" type="primary" :icon="Edit" @click="emit('edit')">Edit</el-button>
         <el-button v-else link size="small" type="primary" @click="emit('edit')">Add description</el-button>
       </div>

@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-35: 知识库跨项目 API 字段一致性自动扫描 — 前后端契约漂移检测"
 tags: [需求文档, 知识库, 契约扫描, 一致性, API, 自动化]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-35
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
+roles: [engineer]
+source_okr: [yiknowledge-001]
+related_modules: [38-prd-task-API字段一致性扫描]
+related_tests: [38-prd-test-API字段一致性扫描]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [engineer]
 ---
 

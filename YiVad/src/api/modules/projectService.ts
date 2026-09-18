@@ -38,10 +38,7 @@ export function getProjectList(params: ProjectQueryParams) {
   const filter: Record<string, any> = {};
   if (status) filter.status = status;
   if (search) {
-    filter.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { identifier: { $regex: search, $options: "i" } }
-    ];
+    filter.$or = [{ name: { $regex: search, $options: "i" } }, { identifier: { $regex: search, $options: "i" } }];
   }
   return queryDocuments<Project>({
     cname: COLLECTION,

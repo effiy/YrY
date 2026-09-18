@@ -7,6 +7,7 @@
 import { PET_DEFAULTS } from '@/config/defaults';
 import type { PopupToContent } from '@/shared/ipc/messages';
 import { applyThemeColors } from '@/shared/theme';
+import { applyPageTheme, removePageTheme } from '../rendering/page-theme';
 import { getSystemPrompt, validateRole } from '../config/role-config';
 import type { RestoredState } from '../state/persistence';
 import {
@@ -56,9 +57,17 @@ function applyRole(role: string): void {
 }
 
 function applyColor(color: number): void {
-  applyThemeColors(document.documentElement, color);
-  const c = getContainer();
-  if (c) c.dataset.colorIndex = String(color);
+  // Apply to overlay container (ISOLATED world shares DOM with MAIN)
+  const overlay = getContainer();
+  if (overlay) {
+    applyThemeColors(overlay, color);
+    overlay.dataset.colorIndex = String(color);
+  }
+  // Apply to chat root if present
+  const chatRoot = document.getElementById('yipet-chat-root');
+  if (chatRoot) applyThemeColors(chatRoot, color);
+  // Notify MAIN world chat to update its own state
+  dispatchSecureEvent('yipet:colorChanged', { color });
 }
 
 function persist(): void {
@@ -192,6 +201,17 @@ export function setupMessageRelay(): void {
         applyColor(_petColor);
         persist();
         chrome.storage.local.set({ petColorTheme: _petColor }).catch(() => {});
+        sendResponse({ success: true });
+        break;
+      }
+      case 'setPageTheme': {
+        const intensity = (msg as Record<string, unknown>).intensity as number;
+        if (intensity > 0) {
+          applyPageTheme(_petColor, intensity);
+        } else {
+          removePageTheme();
+        }
+        chrome.storage.local.set({ pageThemeIntensity: intensity }).catch(() => {});
         sendResponse({ success: true });
         break;
       }

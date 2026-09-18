@@ -1,19 +1,21 @@
 /* ── Vue v-cloak (prevents FOUC before mount) ── */
-[v-cloak] { display: none !important; }
+[v-cloak] {
+  display: none !important;
+}
 
 /* ── YiVad Design Tokens (semantic, no numeric tiers in names) ── */
 :root {
   /* Spacing — named by role, not by size */
   --space-xxs: 2px;
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  32px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
   --space-xxl: 48px;
 
   /* Page gutters — outer content padding */
-  --page-gutter:        var(--space-lg);
+  --page-gutter: var(--space-lg);
 
   /* Radii */
   --radius-xs: 4px;
@@ -24,69 +26,60 @@
 
   /* Motion */
   --transition-instant: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast:    0.2s  cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base:    0.3s  cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow:    0.5s  cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ── Semantic Color Tokens (light defaults) ── */
-  --color-bg-page:         #F5F7FA;
-  --color-bg-container:    #FFFFFF;
-  --color-bg-elevated:     #FFFFFF;
-  --color-bg-overlay:      rgba(0, 0, 0, 0.5);
-
-  --color-surface-primary:   var(--el-color-primary-light-9);
-  --color-surface-secondary: #F3F4F6;
-  --color-surface-hover:     #F3F4F6;
-
-  --color-text-primary:    #111827;
-  --color-text-secondary:  #4B5563;
-  --color-text-tertiary:   #9CA3AF;
-  --color-text-disabled:   #D1D5DB;
-  --color-text-inverse:    #FFFFFF;
-  --color-text-link:       var(--el-color-primary);
-
-  --color-border-base:     #E5E7EB;
-  --color-border-hover:    #D1D5DB;
-  --color-border-focus:    var(--el-color-primary);
-
-  --color-scrollbar-thumb: #D1D5DB;
+  --color-bg-page: #f5f7fa;
+  --color-bg-container: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-overlay: rgb(0 0 0 / 50%);
+  --color-surface-primary: var(--el-color-primary-light-9);
+  --color-surface-secondary: #f3f4f6;
+  --color-surface-hover: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+  --color-text-inverse: #ffffff;
+  --color-text-link: var(--el-color-primary);
+  --color-border-base: #e5e7eb;
+  --color-border-hover: #d1d5db;
+  --color-border-focus: var(--el-color-primary);
+  --color-scrollbar-thumb: #d1d5db;
   --color-scrollbar-track: transparent;
 
   /* Shadows */
-  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
 }
 
 /* ── Dark Theme ── */
 [data-theme="dark"] {
-  --color-bg-page:         #0F172A;
-  --color-bg-container:    #1E293B;
-  --color-bg-elevated:     #334155;
-  --color-bg-overlay:      rgba(0, 0, 0, 0.7);
-
-  --color-surface-primary:   rgba(59, 130, 246, 0.15);
-  --color-surface-secondary: rgba(255, 255, 255, 0.05);
-  --color-surface-hover:     rgba(255, 255, 255, 0.08);
-
-  --color-text-primary:    #F1F5F9;
-  --color-text-secondary:  #94A3B8;
-  --color-text-tertiary:   #64748B;
-  --color-text-disabled:   #475569;
-  --color-text-inverse:    #0F172A;
-  --color-text-link:       #93C5FD;
-
-  --color-border-base:     #334155;
-  --color-border-hover:    #475569;
-  --color-border-focus:    var(--el-color-primary);
-
+  --color-bg-page: #0f172a;
+  --color-bg-container: #1e293b;
+  --color-bg-elevated: #334155;
+  --color-bg-overlay: rgb(0 0 0 / 70%);
+  --color-surface-primary: rgb(59 130 246 / 15%);
+  --color-surface-secondary: rgb(255 255 255 / 5%);
+  --color-surface-hover: rgb(255 255 255 / 8%);
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+  --color-text-disabled: #475569;
+  --color-text-inverse: #0f172a;
+  --color-text-link: #93c5fd;
+  --color-border-base: #334155;
+  --color-border-hover: #475569;
+  --color-border-focus: var(--el-color-primary);
   --color-scrollbar-thumb: #475569;
-
-  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 30%);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 40%), 0 2px 4px -2px rgb(0 0 0 / 30%);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 40%), 0 4px 6px -4px rgb(0 0 0 / 30%);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 40%), 0 8px 10px -6px rgb(0 0 0 / 30%);
 }
 
 /* ── Theme Transition (only active during explicit user switches) ── */
@@ -106,18 +99,18 @@ html.theme-transitioning *::after {
 /* ── Accessibility ── */
 @media (prefers-contrast: high) {
   [data-theme="light"] {
-    --color-text-primary:   #000000;
-    --color-text-secondary: #1A1A1A;
-    --color-border-base:    #000000;
-    --color-bg-page:        #FFFFFF;
-    --color-bg-container:   #FFFFFF;
+    --color-text-primary: #000000;
+    --color-text-secondary: #1a1a1a;
+    --color-border-base: #000000;
+    --color-bg-page: #ffffff;
+    --color-bg-container: #ffffff;
   }
   [data-theme="dark"] {
-    --color-text-primary:   #FFFFFF;
-    --color-text-secondary: #E5E5E5;
-    --color-border-base:    #FFFFFF;
-    --color-bg-page:        #000000;
-    --color-bg-container:   #000000;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #e5e5e5;
+    --color-border-base: #ffffff;
+    --color-bg-page: #000000;
+    --color-bg-container: #000000;
   }
   *:focus-visible {
     outline: 3px solid var(--el-color-primary) !important;
@@ -129,10 +122,10 @@ html.theme-transitioning *::after {
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
   html.theme-transitioning,
   html.theme-transitioning *,
@@ -166,22 +159,24 @@ html.theme-transitioning *::after {
 .cite-chip {
   display: inline-flex;
   align-items: center;
-  margin: 0 1px;
   padding: 0 5px;
+  margin: 0 1px;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.4;
+  vertical-align: super;
   color: var(--el-color-primary);
+  cursor: pointer;
+  user-select: none;
   background: var(--el-color-primary-light-9);
   border: 1px solid var(--el-color-primary-light-7);
   border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  vertical-align: super;
-  transition: background 0.12s, transform 0.12s;
+  transition:
+    background 0.12s,
+    transform 0.12s;
   &:hover {
+    color: #ffffff;
     background: var(--el-color-primary-light-7);
-    color: #fff;
     transform: translateY(-1px);
   }
 }
@@ -219,12 +214,16 @@ html.theme-transitioning *::after {
 /* fade-transform */
 .fade-transform-leave-active,
 .fade-transform-enter-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .fade-transform-enter-from {
   opacity: 0;
   transform: translateX(-30px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .fade-transform-leave-to {
   opacity: 0;
@@ -234,7 +233,9 @@ html.theme-transitioning *::after {
 
 /* breadcrumb-transform */
 .breadcrumb-enter-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .breadcrumb-enter-from,
 .breadcrumb-leave-active {

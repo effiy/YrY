@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-51"
 source_prds: ["55-需求-Pydantic参数校验"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # YA-09-51: 服务端请求体 JSON Schema 自动校验 — Pydantic 模型驱动的参数验证管道 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[55-需求-Pydantic参数校验.md](../../prds/2026-09/55-需求-Pydantic参数校验.md)
 > 提取日期：2026-09-11

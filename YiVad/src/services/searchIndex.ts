@@ -9,7 +9,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
       queryDocuments({ cname: "projects", filter: { status: "active" }, pageSize: 200 }),
       queryDocuments({ cname: "issues", filter: {}, pageSize: 200 }),
       queryDocuments({ cname: "bugs", filter: {}, pageSize: 200 }),
-      queryDocuments({ cname: "modules", filter: {}, pageSize: 200 }),
+      queryDocuments({ cname: "modules", filter: {}, pageSize: 200 })
     ]);
 
     if (projectRes.status === "fulfilled" && projectRes.value?.data?.list) {
@@ -19,7 +19,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           title: p.name || p.key,
           description: p.description,
           entityType: "project",
-          url: `/project/${p.key}`,
+          url: `/project/${p.key}`
         });
       }
     }
@@ -31,7 +31,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           title: i.title,
           entityType: "issue",
           url: `/issue/${i.key}`,
-          metadata: { status: i.status, priority: i.priority },
+          metadata: { status: i.status, priority: i.priority }
         });
       }
     }
@@ -43,7 +43,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           title: b.title,
           entityType: "bug",
           url: `/bug/${b.key}`,
-          metadata: { status: b.status, severity: b.severity },
+          metadata: { status: b.status, severity: b.severity }
         });
       }
     }
@@ -54,7 +54,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           id: m.key,
           title: m.name || m.key,
           entityType: "module",
-          url: `/module/${m.key}`,
+          url: `/module/${m.key}`
         });
       }
     }

@@ -17,6 +17,9 @@ estimate_frontend: 1.0
 review_status: 已评审
 issue_type: 缺陷
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [04-prd-task-RPC参数与构建]
+related_tests: [04-prd-test-RPC参数与构建]
 ---
 
 # YP-07-04: 缺陷修复 — RPC 参数名契约修复与聊天构建兼容性

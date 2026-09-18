@@ -44,15 +44,46 @@ const previewText = computed(() => {
   return `${s || "(no subject)"}\n\n${b || "(no body)"}`;
 });
 
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm", { subject: subject.value, body: body.value }); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm", { subject: subject.value, body: body.value });
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
 .batch-mail {
-  &__field { margin-bottom: 16px; label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; } }
-  &__preview { label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; } &-content { padding: 12px; background: var(--el-fill-color-lighter); border-radius: 6px; font-size: 12px; white-space: pre-wrap; max-height: 150px; overflow-y: auto; } }
+  &__field {
+    margin-bottom: 16px;
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+  }
+  &__preview {
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    &-content {
+      max-height: 150px;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 12px;
+      white-space: pre-wrap;
+      background: var(--el-fill-color-lighter);
+      border-radius: 6px;
+    }
+  }
 }
 </style>

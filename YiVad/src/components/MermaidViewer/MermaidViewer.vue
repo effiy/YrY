@@ -8,8 +8,7 @@ import { watch, onUnmounted, ref, nextTick } from "vue";
 import { useMermaidViewer } from "@/hooks/useMermaidViewer";
 import { ZoomIn, ZoomOut, Download, Close } from "@element-plus/icons-vue";
 
-const { fsVisible, fsSvg, fsScale, closeFullscreen, zoomIn, zoomOut, zoomFit, setScale } =
-  useMermaidViewer();
+const { fsVisible, fsSvg, fsScale, closeFullscreen, zoomIn, zoomOut, zoomFit, setScale } = useMermaidViewer();
 
 const overlayRef = ref<HTMLElement | null>(null);
 
@@ -74,7 +73,7 @@ function onCanvasMouseDown(e: MouseEvent) {
     x: e.clientX,
     y: e.clientY,
     panX: panX.value,
-    panY: panY.value,
+    panY: panY.value
   };
   e.preventDefault();
 }
@@ -98,7 +97,7 @@ function onCanvasWheel(e: WheelEvent) {
 
   const rect = canvas.getBoundingClientRect();
   const cx = e.clientX - rect.left; // cursor X relative to canvas
-  const cy = e.clientY - rect.top;  // cursor Y relative to canvas
+  const cy = e.clientY - rect.top; // cursor Y relative to canvas
 
   const factor = e.deltaY < 0 ? 1.2 : 0.833;
   const oldScale = fsScale.value;
@@ -114,7 +113,7 @@ function onCanvasWheel(e: WheelEvent) {
 
 // ── Lock body scroll when fullscreen is open ──────────────────────────────
 
-watch(fsVisible, (v) => {
+watch(fsVisible, v => {
   if (v) {
     document.body.style.overflow = "hidden";
     // Reset pan and centre the SVG
@@ -151,20 +150,13 @@ function downloadFullscreen() {
 <template>
   <Teleport to="body">
     <Transition name="mv-fade">
-      <div
-        v-if="fsVisible"
-        ref="overlayRef"
-        class="mv-overlay"
-        tabindex="0"
-        @keydown="onKeydown"
-        @click.self="closeFullscreen"
-      >
+      <div v-if="fsVisible" ref="overlayRef" class="mv-overlay" tabindex="0" @keydown="onKeydown" @click.self="closeFullscreen">
         <!-- Toolbar -->
         <div class="mv-fs-toolbar">
           <el-button size="small" text :icon="ZoomIn" title="Zoom in (+)" @click="zoomIn" />
           <el-button size="small" text :icon="ZoomOut" title="Zoom out (-)" @click="zoomOut" />
           <el-button size="small" text title="Fit + reset position (0)" @click="resetView">
-            <span style="font-size:14px;line-height:1">⊡</span>
+            <span style="font-size: 14px; line-height: 1">⊡</span>
           </el-button>
           <span class="mv-fs-scale">{{ Math.round(fsScale * 100) }}%</span>
           <el-button size="small" text :icon="Download" title="Download SVG" @click="downloadFullscreen" />
@@ -184,7 +176,7 @@ function downloadFullscreen() {
             class="mv-fs-svg"
             :style="{
               transform: `translate(${panX}px, ${panY}px) scale(${fsScale})`,
-              cursor: isDragging ? 'grabbing' : 'grab',
+              cursor: isDragging ? 'grabbing' : 'grab'
             }"
             v-html="fsSvg"
           />
@@ -196,30 +188,28 @@ function downloadFullscreen() {
 
 <style scoped lang="scss">
 // ── Fullscreen overlay ──
-
 .mv-overlay {
   position: fixed;
   inset: 0;
   z-index: 3000;
   display: flex;
   flex-direction: column;
-  background: rgb(0 0 0 / 88%);
   outline: none;
+  background: rgb(0 0 0 / 88%);
 }
 
 // Toolbar at the top
 .mv-fs-toolbar {
   display: flex;
+  flex-shrink: 0;
   gap: 4px;
   align-items: center;
   justify-content: center;
   padding: 8px 16px;
+  user-select: none;
   background: rgb(30 30 30 / 90%);
   border-bottom: 1px solid rgb(255 255 255 / 8%);
-  flex-shrink: 0;
-  user-select: none;
 }
-
 .mv-fs-scale {
   min-width: 48px;
   font-size: 12px;
@@ -230,28 +220,24 @@ function downloadFullscreen() {
 
 // SVG canvas — no scrollbars, pan + zoom via transform
 .mv-fs-canvas {
-  flex: 1;
   position: relative;
+  flex: 1;
   overflow: hidden;
   user-select: none;
-  -webkit-user-select: none;
 }
-
 .mv-fs-svg {
   // transform is applied inline (translate + scale)
   transform-origin: 0 0;
   transition: transform 0.14s ease-out;
   will-change: transform;
-
   :deep(svg) {
+    display: block;
     max-width: none; // allow scaling beyond viewport
     height: auto;
-    display: block;
   }
 }
 
 // ── Transition ──
-
 .mv-fade-enter-active,
 .mv-fade-leave-active {
   transition: opacity 0.2s;

@@ -114,9 +114,28 @@ function resetDefaults() {
             <el-form-item :label="t('popupColorLabel')" class="popup-form-item">
               <ColorPicker
                 :value="state.color"
+                :custom-color="state.customColor"
                 :disabled="disabled"
                 @change="store.updateColor"
+                @update:custom-color="store.setCustomColor"
               />
+            </el-form-item>
+
+            <!-- ── Page Theme Intensity ── -->
+            <el-form-item :label="t('popupPageThemeLabel')" class="popup-form-item">
+              <div class="page-theme-row">
+                <el-slider
+                  :min="0"
+                  :max="100"
+                  :step="5"
+                  :model-value="state.pageTheme"
+                  :disabled="disabled || state.color < 0"
+                  :marks="{ 0: 'Off', 25: '', 50: 'Half', 75: '', 100: 'Full' }"
+                  @change="(v: any) => store.setPageTheme(Array.isArray(v) ? v[0] : v)"
+                  class="page-theme-slider"
+                />
+              </div>
+              <span class="popup-form-hint">{{ t('popupPageThemeHint') }}</span>
             </el-form-item>
 
             <el-divider />
@@ -205,5 +224,13 @@ function resetDefaults() {
   margin-top: 4px;
   font-size: 12px;
   color: var(--text-secondary, #d4d0e8);
+}
+
+.page-theme-row {
+  padding: 0 2px;
+}
+
+.page-theme-slider {
+  width: 100%;
 }
 </style>

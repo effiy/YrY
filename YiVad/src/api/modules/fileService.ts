@@ -155,34 +155,30 @@ export async function renameFolder(oldPath: string, newPath: string): Promise<vo
  * running / the path doesn't resolve (e.g. production builds where the
  * source tree isn't served).
  */
-export async function fetchSourceFromDevServer(path: string): Promise<string | null> {
-  if (!import.meta.env.DEV) return null;
-  const cleaned = String(path || "").replace(/^\/+/, "");
-  if (!cleaned) return null;
-  for (const suffix of ["?raw", ""]) {
-    try {
-      const url = suffix ? `/${cleaned}${suffix}` : `/${cleaned}`;
-      const resp = await fetch(url);
-      if (!resp.ok) continue;
-      const text = await resp.text();
-      // Rsbuild returns 200 with HTML shell for unknown paths in some
-      // setups; a real source file is plain text without a <!DOCTYPE>
-      // prefix. Also reject the Vite/Rspack HMR bootstrap that a direct
-      // .vue fetch returns when ?raw is unavailable — those start with
-      // `import`/`const`/`__vite__` but the SFC source starts with
-      // `<template>`/`<script>`/`<style>`/`<!--`, so a heuristic works.
-      if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) continue;
-      // Reject compiled JS module output for non-JS source files. The
-      // `?raw` middleware should make this unreachable, but defend against
-      // bare-fetch fallback returning the compiled module for .vue files.
-      const isJsLike = /\.(m?[tj]s|jsx|tsx)$/.test(cleaned);
-      if (!isJsLike && /^(import\s|export\s|"use strict"|__vite__|const __vite|\/\/.*\nimport)/.test(text)) {
-        continue;
-      }
-      return text;
-    } catch {
-      // try next suffix
-    }
-  }
-  return null;
+
+export interface DirEntry {
+  name: string;
+  path: string;
+  size: number;
+  mtime: number;
+  ext: string;
+}
+
+export interface DirListing {
+  root: string;
+  dirs: { name: string; path: string }[];
+  files: DirEntry[];
+}
+
+/** List directory contents recursively on the YiAi server. */
+export async function listDirectory(targetDir = "", maxDepth = 3): Promise<DirListing> {
+  const url = buildYiAiUrl("/list-directory");
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: yiAiAuthHeaders(),
+    body: JSON.stringify({ target_dir: targetDir, max_depth: maxDepth })
+  });
+  if (!resp.ok) throw new Error(`Failed to list directory: HTTP ${resp.status}`);
+  const data = await resp.json();
+  return data?.data ?? data;
 }

@@ -58,12 +58,6 @@ describe("useAiChatStore — chat mode", () => {
     setActivePinia(createPinia());
   });
 
-  it("has knowledgeMode flag", async () => {
-    const { useAiChatStore } = await import("@/stores/modules/aiChat");
-    const store = useAiChatStore();
-    expect(typeof store.knowledgeMode).toBe("boolean");
-  });
-
   it("has ragEnabled flag", async () => {
     const { useAiChatStore } = await import("@/stores/modules/aiChat");
     const store = useAiChatStore();

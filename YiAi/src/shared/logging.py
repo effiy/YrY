@@ -1,8 +1,45 @@
 import logging
-import sys
-import os
 from logging.handlers import RotatingFileHandler
+import os
+import sys
+
 from shared.config import settings
+
+# Context variable for request_id — set by RequestIdMiddleware,
+# consumed by RequestContextFilter for structured log enrichment.
+try:
+    from contextvars import ContextVar
+    _request_id_ctx: ContextVar[str] = ContextVar("request_id", default="")
+except ImportError:
+    _request_id_ctx = None  # type: ignore[assignment]
+
+
+class SafeFormatter(logging.Formatter):
+    """Formatter that never crashes on missing fields — defaults them to '-'."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        if not getattr(record, 'request_id', None):
+            record.request_id = '-'
+        return super().format(record)
+
+
+class RequestContextFilter(logging.Filter):
+    """Inject request_id into every log record when available."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if _request_id_ctx is not None:
+            rid = _request_id_ctx.get()
+            record.request_id = rid if rid else "-"
+        else:
+            record.request_id = "-"
+        return True
+
+
+def set_request_id(rid: str) -> None:
+    """Set the current request_id for the async context (called by middleware)."""
+    if _request_id_ctx is not None:
+        _request_id_ctx.set(rid)
+
 
 def setup_logging():
     """
@@ -24,8 +61,14 @@ def setup_logging():
     # Clear existing handlers
     root_logger.handlers = []
 
-    # Create formatter
-    formatter = logging.Formatter(fmt=log_format, datefmt=log_datefmt)
+    # Create formatter — include request_id when available
+    fmt = log_format.replace(
+        "%(message)s", "[%(request_id)s] %(message)s"
+    )
+    formatter = SafeFormatter(fmt=fmt, datefmt=log_datefmt)
+
+    # Register context filter on root logger
+    root_logger.addFilter(RequestContextFilter())
 
     # 1. Console Handler
     console_handler = logging.StreamHandler(sys.stdout)

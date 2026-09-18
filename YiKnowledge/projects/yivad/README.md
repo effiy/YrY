@@ -3,7 +3,7 @@ title: YiVad 知识库索引
 tags: [yivad, index, specs, workflows, bugs, okrs, prds, devs, tests]
 category: projects/yivad
 created: 2026-09-02
-updated: 2026-09-10
+updated: 2026-09-15
 source: YiVad
 type: index
 status: active
@@ -34,10 +34,10 @@ YiKnowledge/projects/yivad/
 │   ├── 2026-08/
 │   └── 2026-09/
 │       └── README.md          # PRD→Module→Test 可追溯矩阵
-├── workflows/                 # 开发规范 + 操作指南 + 流程规范（29 篇）
-│   ├── 开发规范/               # 22 篇 — 项目规范、编码、架构、组件、API、TypeScript、权限、国际化、依赖、模式等
-│   ├── 操作指南/               # 2 篇 — 快速开始、添加新页面
-│   └── 流程规范/               # 5 篇 — 分支管理、变更落地、状态管理、PRD→Proposal、构建部署
+├── workflows/                 # 开发规范 + 操作指南 + 流程规范（15 篇）
+│   ├── 开发规范/               # 8 篇 — 代码约定、项目架构、API开发、页面模式、质量构建、组件开发、Composable开发、国际化
+│   ├── 操作指南/               # 3 篇 — 环境搭建、开发任务、常见问题排查
+│   └── 流程规范/               # 4 篇 — 分支与变更、需求到上线、变更状态、代码审查
 └── bugs/                      # 缺陷（按分类归档）
     ├── README.md              # 缺陷索引 + 分类目录 + 常见模式 + 排查流程
     ├── 代码质量/              # 代码质量类
@@ -49,10 +49,10 @@ YiKnowledge/projects/yivad/
 
 ### 新人入门
 
-1. [快速开始](./workflows/操作指南/01-指南-快速开始.md) — 环境搭建、安装启动
-2. [架构概览](./workflows/开发规范/13-规范-架构概览.md) — 技术栈、分层架构、数据流
-3. [目录结构](./workflows/开发规范/14-规范-目录结构.md) — 完整源码目录树
-4. [编码规范](./workflows/开发规范/01-规范-项目规范.md) — 命名、提交、质量门禁
+1. [环境搭建](./workflows/操作指南/01-指南-环境搭建.md) — 环境要求、安装启动、IDE配置
+2. [项目架构](./workflows/开发规范/02-规范-项目架构.md) — 技术栈、分层架构、数据流
+3. [代码约定](./workflows/开发规范/01-规范-代码约定.md) — 命名、TypeScript、Store、反模式
+4. [开发任务](./workflows/操作指南/02-指南-开发任务.md) — 新增页面/API/Store 的标准步骤
 
 ### 需求与追溯
 
@@ -68,39 +68,40 @@ YiKnowledge/projects/yivad/
 
 | 场景 | 参考文档 |
 |------|----------|
-| 开发列表页 | [列表页模式](./workflows/开发规范/19-规范-列表页模式.md) |
-| 开发表单页 | [表单页模式](./workflows/开发规范/21-规范-表单页模式.md) |
-| 添加搜索功能 | [搜索表单模式](./workflows/开发规范/20-规范-搜索表单模式.md) |
-| 添加文件上传 | [上传模式](./workflows/开发规范/22-规范-文件上传模式.md) |
-| 调用后端 API | [API 规范](./workflows/开发规范/05-规范-API规范.md) |
-| 添加按钮权限 | [权限认证规范](./workflows/开发规范/09-规范-权限认证规范.md) |
-| 使用 ProTable | [组件规范](./workflows/开发规范/10-规范-组件结构规范.md) |
+| 开发列表页 | [页面模式 #列表页](./workflows/开发规范/04-规范-页面模式.md) |
+| 开发表单页 | [页面模式 #表单页](./workflows/开发规范/04-规范-页面模式.md) |
+| 开发搜索功能 | [页面模式 #搜索表单](./workflows/开发规范/04-规范-页面模式.md) |
+| 开发文件上传 | [页面模式 #文件上传](./workflows/开发规范/04-规范-页面模式.md) |
+| 开发 ProTable 列 | [组件开发 #ProTable](./workflows/开发规范/06-规范-组件开发.md) |
+| 开发 Composable | [Composable 开发](./workflows/开发规范/07-规范-Composable开发.md) |
+| 调用后端 API | [API 开发](./workflows/开发规范/03-规范-API开发.md) |
+| 添加按钮权限 | [代码约定 #硬约束](./workflows/开发规范/01-规范-代码约定.md) |
 | 添加国际化文本 | [国际化规范](./workflows/开发规范/08-规范-国际化规范.md) |
-| 定义 TypeScript 类型 | [TypeScript 规范](./workflows/开发规范/07-规范-TypeScript类型规范.md) |
-| 配置路由/菜单 | [路由菜单](./workflows/开发规范/16-规范-路由菜单.md) |
+| 配置路由/菜单 | [项目架构 #路由系统](./workflows/开发规范/02-规范-项目架构.md) |
+| 排查常见问题 | [常见问题排查](./workflows/操作指南/03-指南-常见问题.md) |
 
 ### 代码审查
 
 | 检查项 | 参考 |
 |--------|------|
-| 是否使用 ProTable 而非 el-table | [组件规范](./workflows/开发规范/10-规范-组件结构规范.md) |
-| 是否使用 v-auth 而非 v-if 权限判断 | [权限认证规范](./workflows/开发规范/09-规范-权限认证规范.md) |
+| 是否使用 ProTable 而非 el-table | [组件开发](./workflows/开发规范/06-规范-组件开发.md) |
+| 是否使用 v-auth 而非 v-if 权限判断 | [代码约定 #硬约束](./workflows/开发规范/01-规范-代码约定.md) |
 | 是否使用 $t() 而非硬编码文本 | [国际化规范](./workflows/开发规范/08-规范-国际化规范.md) |
-| 是否通过 RequestHttp 而非直接 axios | [API 规范](./workflows/开发规范/05-规范-API规范.md) |
-| 参数名是否使用 filter 而非 query | [API 规范 #关键参数名约定](./workflows/开发规范/05-规范-API规范.md) |
-| 是否使用 `<script setup lang="ts">` | [编码规范](./workflows/开发规范/01-规范-项目规范.md) |
-| TypeScript 类型检查是否通过 | [编码规范](./workflows/开发规范/01-规范-项目规范.md) |
+| 是否通过 RequestHttp 而非直接 axios | [API 开发](./workflows/开发规范/03-规范-API开发.md) |
+| 参数名是否使用 filter 而非 query | [API 开发 #参数命名契约](./workflows/开发规范/03-规范-API开发.md) |
+| 是否使用 `<script setup lang="ts">` | [代码约定](./workflows/开发规范/01-规范-代码约定.md) |
+| 完整审查流程 | [代码审查](./workflows/流程规范/04-流程-代码审查.md) |
 
 ### 流程操作
 
 | 操作 | 参考 |
 |------|------|
-| 创建新分支 | [分支管理](./workflows/流程规范/01-流程-分支管理规范.md) |
-| 需求转提案 | [PRD → Proposal](./workflows/流程规范/04-流程-PRD到Proposal流程.md) |
-| OpenSpec 变更 | [OpenSpec 规范](./workflows/开发规范/02-规范-OpenSpec工作流规范.md) |
-| 变更状态推进 | [状态管理](./workflows/流程规范/03-流程-变更状态管理规范.md) |
-| 代码收口落地 | [落地流程](./workflows/流程规范/02-流程-变更落地工作流.md) |
-| 发布上线 | [构建部署](./workflows/流程规范/05-流程-构建部署.md) + [分支管理](./workflows/流程规范/01-流程-分支管理规范.md) |
+| 创建新分支 | [分支与变更](./workflows/流程规范/01-流程-分支与变更.md) |
+| 需求到上线全流程 | [需求到上线](./workflows/流程规范/02-流程-需求到上线.md) |
+| 变更状态推进 | [变更状态管理](./workflows/流程规范/03-流程-变更状态.md) |
+| 代码审查流程 | [代码审查](./workflows/流程规范/04-流程-代码审查.md) |
+| 发布上线 | [分支与变更 #发布流程](./workflows/流程规范/01-流程-分支与变更.md) |
+| 构建与质量门禁 | [质量构建](./workflows/开发规范/05-规范-质量构建.md) |
 
 ## 关键约束速查
 

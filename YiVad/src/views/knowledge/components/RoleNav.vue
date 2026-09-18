@@ -1,12 +1,7 @@
 <template>
   <div class="role-nav-wrap">
     <div class="role-nav">
-      <button
-        v-if="all"
-        class="role-nav__item"
-        :class="{ 'is-active': isAllActive }"
-        @click="onAll"
-      >
+      <button v-if="all" class="role-nav__item" :class="{ 'is-active': isAllActive }" @click="onAll">
         <span class="role-nav__icon">🌐</span>
         <span class="role-nav__name">All</span>
         <span v-if="counts && counts.all !== undefined" class="role-nav__count">{{ counts.all }}</span>
@@ -32,11 +27,7 @@
         placement="bottom"
         :show-after="300"
       >
-        <button
-          class="role-nav__quick-item"
-          :class="{ 'is-active': item.key === quickActive }"
-          @click="$router.push(item.path)"
-        >
+        <button class="role-nav__quick-item" :class="{ 'is-active': item.key === quickActive }" @click="$router.push(item.path)">
           <span class="role-nav__quick-icon">{{ item.icon }}</span>
           <span class="role-nav__quick-label">{{ item.title }}</span>
         </button>
@@ -49,7 +40,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { rolesData, ROLE_IDS } from "@/views/knowledge/executiver/okrData";
+import { rolesData, ROLE_IDS } from "@/views/knowledge/executive/okrData";
 
 type QuickNavKey = "okr" | "rss" | "reading-list" | "process";
 
@@ -106,13 +97,11 @@ function onAll() {
 
 function onSelect(rid: string) {
   if (props.multiple) {
-    const next = props.modelValue.includes(rid)
-      ? props.modelValue.filter(r => r !== rid)
-      : [...props.modelValue, rid];
+    const next = props.modelValue.includes(rid) ? props.modelValue.filter(r => r !== rid) : [...props.modelValue, rid];
     emit("update:modelValue", next);
     return;
   }
-  if (rid !== props.active) router.push(`/${rid}`);
+  if (rid !== props.active) router.push(`/knowledge/${rid}`);
 }
 
 interface QuickNavItem {
@@ -128,28 +117,28 @@ const quickNavItems = computed<QuickNavItem[]>(() => {
   return [
     {
       key: "okr",
-      path: role ? `/executiver/okr/${role}` : "/executiver/okr",
+      path: role ? `/knowledge/executive/okr?role=${role}` : "/knowledge/executive/okr",
       icon: "🎯",
       title: t("home.knowledgeQuickNav.okr.title"),
       desc: t("home.knowledgeQuickNav.okr.desc")
     },
     {
       key: "rss",
-      path: role ? `/executiver/rss/${role}` : "/executiver/rss",
+      path: "/knowledge/executive/rssOverview",
       icon: "📡",
       title: t("home.knowledgeQuickNav.rss.title"),
       desc: t("home.knowledgeQuickNav.rss.desc")
     },
     {
       key: "reading-list",
-      path: "/executiver/reading-list",
+      path: "/knowledge/executive/readingList",
       icon: "📚",
       title: t("home.knowledgeQuickNav.readingList.title"),
       desc: t("home.knowledgeQuickNav.readingList.desc")
     },
     {
       key: "process",
-      path: "/executiver/process",
+      path: "/knowledge/executive/processRecord",
       icon: "🔁",
       title: t("home.knowledgeQuickNav.process.title"),
       desc: t("home.knowledgeQuickNav.process.desc")
@@ -161,16 +150,44 @@ const quickNavItems = computed<QuickNavItem[]>(() => {
 <style scoped lang="scss">
 .role-nav-wrap {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
   width: 100%;
 }
-
-.role-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.role-nav__item { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 16px; border: 1px solid var(--el-border-color-lighter); background: var(--el-bg-color); cursor: pointer; font-size: 12px; color: var(--el-text-color-regular); transition: all .15s; &:hover { border-color: var(--el-color-primary-light-5); color: var(--el-color-primary); } &.is-active { background: var(--el-color-primary); border-color: var(--el-color-primary); color: #fff; cursor: default; } }
-.role-nav__icon { font-size: 13px; }
+.role-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.role-nav__item {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 16px;
+  transition: all 0.15s;
+  &:hover {
+    color: var(--el-color-primary);
+    border-color: var(--el-color-primary-light-5);
+  }
+  &.is-active {
+    color: #ffffff;
+    cursor: default;
+    background: var(--el-color-primary);
+    border-color: var(--el-color-primary);
+  }
+}
+.role-nav__icon {
+  font-size: 13px;
+}
 .role-nav__count {
   display: inline-flex;
   align-items: center;
@@ -178,53 +195,56 @@ const quickNavItems = computed<QuickNavItem[]>(() => {
   min-width: 16px;
   height: 16px;
   padding: 0 5px;
-  border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-color-primary);
   background: var(--el-color-primary-light-9);
-  font-variant-numeric: tabular-nums;
+  border-radius: 8px;
 }
 .role-nav__item.is-active .role-nav__count {
   color: var(--el-color-primary);
-  background: #fff;
+  background: #ffffff;
 }
-
 .role-nav__quick {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding-left: 12px;
   margin-left: auto;
   border-left: 1px solid var(--el-border-color-lighter);
 }
 .role-nav__quick-item {
   display: inline-flex;
-  align-items: center;
   gap: 5px;
+  align-items: center;
   padding: 5px 11px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: var(--el-fill-color-light);
-  cursor: pointer;
   font-size: 12px;
   color: var(--el-text-color-regular);
-  transition: all .18s ease;
+  cursor: pointer;
+  background: var(--el-fill-color-light);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition: all 0.18s ease;
   &:hover {
+    color: var(--el-color-primary);
     background: var(--el-color-primary-light-9);
     border-color: var(--el-color-primary-light-5);
-    color: var(--el-color-primary);
     transform: translateY(-1px);
   }
   &.is-active {
+    font-weight: 600;
+    color: var(--el-color-primary);
     background: linear-gradient(135deg, var(--el-color-primary-light-9), var(--el-color-primary-light-8));
     border-color: var(--el-color-primary);
-    color: var(--el-color-primary);
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
   }
 }
-.role-nav__quick-icon { font-size: 14px; }
-.role-nav__quick-label { white-space: nowrap; }
+.role-nav__quick-icon {
+  font-size: 14px;
+}
+.role-nav__quick-label {
+  white-space: nowrap;
+}
 </style>

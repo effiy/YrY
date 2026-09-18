@@ -18,15 +18,10 @@ const emit = defineEmits<{
   <aside class="kpd-toc" :class="{ 'is-collapsed': collapsed }">
     <div class="kpd-toc-title" @click="emit('toggleCollapse')">
       <span class="kpd-toc-title-text">Contents</span>
-      <span class="kpd-toc-toggle">{{ collapsed ? '▶' : '◀' }}</span>
+      <span class="kpd-toc-toggle">{{ collapsed ? "▶" : "◀" }}</span>
     </div>
     <ul class="kpd-toc-list">
-      <li
-        v-for="item in items"
-        :key="item.id"
-        :class="`kpd-toc-item--h${item.level}`"
-        :title="collapsed ? item.text : ''"
-      >
+      <li v-for="item in items" :key="item.id" :class="`kpd-toc-item--h${item.level}`" :title="collapsed ? item.text : ''">
         <a href="#" @click.prevent="emit('scrollTo', item.id)">
           <span class="kpd-toc-full">{{ item.text }}</span>
           <span class="kpd-toc-initial">{{ item.text.charAt(0) }}</span>

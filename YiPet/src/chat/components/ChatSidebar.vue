@@ -7,6 +7,7 @@
 import { computed } from 'vue';
 import { useChatStore } from '../stores/chat';
 import type { SessionItem } from '../types';
+import { t } from '@/shared/i18n';
 import SearchBar from './SearchBar.vue';
 import SessionListItem from './SessionListItem.vue';
 import ContextFilesPanel from './ContextFilesPanel/ContextFilesPanel.vue';
@@ -63,7 +64,7 @@ async function onEditContext(id: string) {
           <div class="sidebar-spinner" />
         </div>
         <div v-else-if="filteredSessions.length === 0" class="sidebar-placeholder">
-          <p>{{ s.searchQuery ? 'No matching conversations' : 'No conversations' }}</p>
+          <p>{{ s.searchQuery ? t('sidebarNoMatch') : t('sidebarNoSessions') }}</p>
         </div>
         <SessionListItem
           v-for="ses in filteredSessions"

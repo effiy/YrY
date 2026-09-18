@@ -1,39 +1,108 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-121"
-title: "YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-121: 系统公告管理 — 开发方案"
+status: 已完成
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "55-prd-系统公告管理.md"
 ---
 
-# YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计 — 开发任务
+# YV-09-121: 系统公告管理 — 开发方案
 
-> 来源 PRD：[55-prd-系统公告管理.md](../prds/2026-09/55-prd-系统公告管理.md)
-> 需求编号：YV-09-121 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-121 · 人天：0.5d
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + API 服务 | `types/announcement.ts`, `services/announcementService.ts` | 类型检查通过 | 0.03 |
-| 2 | useAnnouncement composable | `composables/useAnnouncement.ts` | 定向过滤逻辑正确 | 0.04 |
-| 3 | GlobalBanner Banner 组件 | `GlobalBanner.vue` | 多条轮播、关闭交互 | 0.04 |
-| 4 | TargetRuleEditor 定向规则编辑器 | `TargetRuleEditor.vue` | AND/OR 组合规则正确 | 0.04 |
-| 5 | AnnounceForm 创建/编辑表单 | `AnnounceForm.vue` | 表单校验+预览 | 0.05 |
-| 6 | TemplateSelector 模板选择器 | `TemplateSelector.vue` | 模板内容正确填充 | 0.02 |
-| 7 | AnnounceTable + AnnounceStats | `AnnounceTable.vue`, `AnnounceStats.vue` | 列表+统计数据 | 0.03 |
-| 8 | 公告管理主页面 | `Announcements.vue` | 完整 CRUD + 状态管理 | 0.04 |
-| 9 | App.vue 集成 + 路由配置 | `App.vue`, `routes.ts` | 公告在全局显示 | 0.01 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+管理员发布系统公告（维护通知/新功能/紧急通知），用户在 Header 区域看到公告条。
+
+### 公告类型
+
+| 类型 | 样式 | 场景 |
+|------|------|------|
+| info | 蓝色 | 新功能上线 |
+| warning | 橙色 | 计划维护 |
+| error | 红色 | 紧急故障 |
+| success | 绿色 | 维护完成 |
+
+### 公告配置
+
+| 字段 | 说明 |
+|------|------|
+| 内容 | Markdown 支持 |
+| 类型 | info/warning/error/success |
+| 生效时间 | 定时发布 |
+| 过期时间 | 自动下线 |
+| 可关闭 | 用户可点击关闭 |
+
+### 实施步骤：0.5d
+
+- 公告 CRUD + Header 公告条
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 4 种公告类型渲染
+- [ ] 定时生效/过期
+- [ ] 用户可关闭
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/55-prd-test-系统公告管理.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

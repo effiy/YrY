@@ -30,20 +30,53 @@
 <script setup lang="ts">
 import { Sort, Delete } from "@element-plus/icons-vue";
 
-export interface SortField { field: string; order: "asc" | "desc" }
+export interface SortField {
+  field: string;
+  order: "asc" | "desc";
+}
 
-const props = withDefaults(defineProps<{ modelValue: SortField[]; columns: { key: string; label: string }[] }>(), { modelValue: () => [] });
+const props = withDefaults(defineProps<{ modelValue?: SortField[]; columns: { key: string; label: string }[] }>(), {
+  modelValue: () => []
+});
 const emit = defineEmits<{ "update:modelValue": [value: SortField[]]; apply: [value: SortField[]]; clear: [] }>();
 
 const addSort = () => emit("update:modelValue", [...props.modelValue, { field: "", order: "asc" as const }]);
-const removeSort = (idx: number) => { const arr = [...props.modelValue]; arr.splice(idx, 1); emit("update:modelValue", arr); };
+const removeSort = (idx: number) => {
+  const arr = [...props.modelValue];
+  arr.splice(idx, 1);
+  emit("update:modelValue", arr);
+};
 </script>
 
 <style scoped lang="scss">
 .sort-config {
-  &__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
-  &__row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-  &__empty { padding: 16px; text-align: center; color: var(--el-text-color-secondary); font-size: 12px; }
-  &__footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--el-border-color-lighter); }
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  &__row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  &__empty {
+    padding: 16px;
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+    text-align: center;
+  }
+  &__footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
 </style>

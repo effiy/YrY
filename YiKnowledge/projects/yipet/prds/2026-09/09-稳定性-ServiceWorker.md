@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: Service Worker 可靠性增强 — 心跳保活与消息重试
 tags: [稳定性, Service Worker, IPC, 消息队列, 重试, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P0
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [09-prd-task-ServiceWorker]
+related_tests: [09-prd-test-ServiceWorker]
 ---
 
 # Service Worker 可靠性增强 — 心跳保活与消息重试
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-02 · 优先级：P0 · 人天：3.0d · 状态：已完成
 > 依赖：无
@@ -38,6 +46,7 @@ Chrome MV3 的 Service Worker（SW）在空闲约 30 秒后会被浏览器终止
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 文件清单
@@ -102,6 +111,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：心跳保活机制
@@ -155,6 +165,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、当前架构 vs 目标架构
 
 ### 3.1 当前架构（修复前）
@@ -201,6 +212,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 `src/background/index.ts` — 心跳保活
@@ -330,6 +342,7 @@ YiPet/src/background/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -347,6 +360,7 @@ YiPet/src/background/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 心跳保活开销
@@ -411,6 +425,7 @@ flowchart LR
 
 ---
 
+<a id="sec-7"></a>
 ## 七、目标架构
 
 ```mermaid
@@ -451,6 +466,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -463,6 +479,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 ### Requirement: 心跳保活
@@ -523,6 +540,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择 `chrome.alarms` 而非 `setInterval`？
@@ -539,6 +557,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `chrome.alarms` 心跳不阻塞其他定时器
@@ -553,6 +572,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -580,6 +600,7 @@ sequenceDiagram
 - `chrome.runtime.onStartup` 重放队列正确
 - 消息处理延迟 < 100ms（P95）
 
+<a id="sec-13"></a>
 ## 十三、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -588,6 +609,7 @@ sequenceDiagram
 | 2 | SW 健康度监控 | P2 | 0.3 | 缺乏 SW 唤醒次数、消息处理延迟、重试成功率等指标，无法评估 SW 稳定性 |
 | 3 | 双向消息确认机制（ACK） | P3 | 0.5 | 当前 SW 发送消息后无 Content Script 确认，无法确保消息被正确处理 |
 
+<a id="sec-14"></a>
 ## 十四、可观测性
 
 ### 14.1 关键指标

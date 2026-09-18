@@ -54,16 +54,12 @@ export const useIssueStore = defineStore("issue", () => {
 
   async function bulkUpdateStatus(keys: string[], status: string) {
     await Promise.all(keys.map(key => updateIssue(key, { status } as any)));
-    issues.value = issues.value.map(i =>
-      keys.includes(i.key) ? { ...i, status: status as any } : i
-    );
+    issues.value = issues.value.map(i => (keys.includes(i.key) ? { ...i, status: status as any } : i));
   }
 
   async function bulkAssign(keys: string[], assignee: string) {
     await Promise.all(keys.map(key => updateIssue(key, { assignee } as any)));
-    issues.value = issues.value.map(i =>
-      keys.includes(i.key) ? { ...i, assignee } : i
-    );
+    issues.value = issues.value.map(i => (keys.includes(i.key) ? { ...i, assignee } : i));
   }
 
   async function bulkDelete(keys: string[]) {

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-68: 聊天窗口 Webhook 集成 — 消息推送到外部服务与企业微信通知"
 tags: [需求文档, Webhook, 消息推送, 企业微信, 自动化, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [75-prd-task-Webhook集成]
+related_tests: [75-prd-test-Webhook集成]
 ---
 
 # YP-09-68: 聊天窗口 Webhook 集成 — 消息推送到外部服务
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-68 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：无
@@ -53,6 +61,7 @@ YiPet 用户与 AI 的对话价值往往局限于聊天窗口内——Agent 完�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前工作流
@@ -108,6 +117,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：Webhook 发送位置 — Content Script vs Service Worker vs YiAi
@@ -150,6 +160,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后 Webhook 数据流
@@ -214,6 +225,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 Webhook 服务
@@ -370,6 +382,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -385,6 +398,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 | 操作 | 耗时 | 说明 |
@@ -396,6 +410,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：AI 回复完成后自动推送
@@ -447,6 +462,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -459,6 +475,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -469,6 +486,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：加密算法选择
@@ -494,6 +512,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 指标
@@ -515,6 +534,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 ### Chrome MV3 合规
@@ -528,6 +548,7 @@ class WebhookService {
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] Webhook 集成支持 Slack/Discord/企业微信

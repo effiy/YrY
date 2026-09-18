@@ -1,41 +1,73 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-141"
-title: "YA-09-141: 多环境配置管理 — 环境分层 + Pydantic Settings 校验 + 敏感信息保护 + 配置热更新 — 开发任务"
+prd_task_id: "YA-09-61"
+title: "YA-09-61: 多环境配置管理 — 环境分层 + 热更新 + 校验 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "147-需求-多环境配置管理.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-141: 多环境配置管理 — 环境分层 + Pydantic Settings 校验 + 敏感信息保护 + 配置热更新 — 开发任务
+# YA-09-61: 多环境配置管理 — 环境分层 + 热更新 + 校验 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[147-需求-多环境配置管理.md](../../prds/2026-09/147-需求-多环境配置管理.md)
-> 需求编号：YA-09-141 · 优先级：P2 · 人天：0.5d
-> 类型：功能 · 状态：需求已编写
+> 需求编号：YA-09-61 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+```yaml
+# config/base.yaml — 公共默认值
+# config/dev.yaml   — 开发环境覆盖
+# config/prod.yaml  — 生产环境覆盖
+# 环境变量          — 最高优先级
+```
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+from pydantic_settings import BaseSettings
 
-| 步骤 | 任务 | 产出 |
+class Settings(BaseSettings):
+    # 基础
+    server_port: int = 10086
+    mongo_url: str = "mongodb://localhost:27017"
+
+    # 环境分层加载
+    model_config = {
+        "yaml_file": ["config/base.yaml", f"config/{os.getenv('ENV', 'dev')}.yaml"],
+        "env_prefix": "YIAI_",
+    }
+
+    # 启动校验
+    @model_validator(mode="after")
+    def validate_prod_requirements(self):
+        if os.getenv("ENV") == "prod":
+            assert self.jwt_secret != "yi-ai-dev-secret", "JWT secret must be set in production"
+            assert self.middleware_auth_enabled, "Auth must be enabled in production"
+        return self
+```
+
+### 优先级: 环境变量 > 环境 YAML > 基础 YAML > 代码默认值
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 分层加载 + 生产校验 | `ENV=prod` 时硬编码默认值报错 | 0.5 |
+| 2 | 热更新 (SIGHUP) + 测试 | 不重启即可更新配置 | 0.5 |
+
+**合计：1.0d**。

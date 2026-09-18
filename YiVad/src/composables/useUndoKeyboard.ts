@@ -8,11 +8,7 @@ export function useUndoKeyboard() {
     const target = event.target as HTMLElement;
     const tagName = target.tagName.toLowerCase();
     const isEditable = target.isContentEditable;
-    const isFormElement =
-      tagName === "input" ||
-      tagName === "textarea" ||
-      tagName === "select" ||
-      isEditable;
+    const isFormElement = tagName === "input" || tagName === "textarea" || tagName === "select" || isEditable;
 
     const { ctrlKey, metaKey, shiftKey, key } = event;
     const modKey = ctrlKey || metaKey;
@@ -29,10 +25,7 @@ export function useUndoKeyboard() {
       undoRedoStore.undoCurrentScope();
     }
 
-    if (
-      (modKey && shiftKey && (key === "z" || key === "Z")) ||
-      (modKey && !shiftKey && (key === "y" || key === "Y"))
-    ) {
+    if ((modKey && shiftKey && (key === "z" || key === "Z")) || (modKey && !shiftKey && (key === "y" || key === "Y"))) {
       if (isFormElement) return;
       event.preventDefault();
       undoRedoStore.redoCurrentScope();

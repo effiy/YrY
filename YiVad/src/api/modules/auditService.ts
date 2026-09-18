@@ -51,7 +51,7 @@ export async function getAuditLogList(params: {
     pageNum: params.pageNum ?? 1,
     pageSize: params.pageSize ?? 10,
     orderBy: "createdAt",
-    orderType: "desc",
+    orderType: "desc"
   });
 }
 
@@ -63,7 +63,7 @@ export const AUDIT_ACTIONS = [
   { label: "登录", value: "login" },
   { label: "登出", value: "logout" },
   { label: "导出", value: "export" },
-  { label: "分配角色", value: "assign_role" },
+  { label: "分配角色", value: "assign_role" }
 ];
 
 // Module types for audit log filter dropdown
@@ -73,5 +73,5 @@ export const AUDIT_MODULES = [
   { label: "权限管理", value: "permission" },
   { label: "系统配置", value: "system" },
   { label: "项目管理", value: "project" },
-  { label: "知识库", value: "knowledge" },
+  { label: "知识库", value: "knowledge" }
 ];

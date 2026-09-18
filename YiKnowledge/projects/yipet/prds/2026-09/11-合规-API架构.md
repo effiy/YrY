@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: API 架构合规修复 — ApiClient 统一调用与参数名校验
 tags: [合规, API, ApiClient, 参数名, lint, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 2.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [11-prd-task-API架构]
+related_tests: [11-prd-test-API架构]
 ---
 
 # API 架构合规修复 — ApiClient 统一调用与参数名校验
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-04 · 优先级：P1 · 人天：2.0d · 状态：已完成
 > 依赖：无
@@ -38,6 +46,7 @@ YiPet 的四层 API 架构（client → endpoints → types → services）在�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 文件清单
@@ -117,6 +126,7 @@ YiPet 前端调用 API
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：强制 ApiClient 的方式
@@ -158,6 +168,7 @@ YiPet 前端调用 API
 
 ---
 
+<a id="sec-3"></a>
 ## 三、当前架构 vs 目标架构
 
 ### 3.1 当前架构（修复前）
@@ -206,6 +217,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 修复直接 fetch 调用
@@ -360,6 +372,7 @@ YiPet/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -378,6 +391,7 @@ YiPet/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 校验开销分析
@@ -435,6 +449,7 @@ flowchart LR
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -447,6 +462,7 @@ flowchart LR
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 ### Requirement: 所有 API 调用通过 ApiClient
@@ -488,6 +504,7 @@ flowchart LR
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么选择三层防护而非单一方案？
@@ -504,6 +521,7 @@ KNOWN_MISTAKES 是参数名契约的核心知识，硬编码在 `ApiClient` 中�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、代码审查检查清单
 
 - [ ] 所有 `fetch` 调用通过 `ApiClient`（`grep` 验证）
@@ -518,6 +536,7 @@ KNOWN_MISTAKES 是参数名契约的核心知识，硬编码在 `ApiClient` 中�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -530,6 +549,7 @@ KNOWN_MISTAKES 是参数名契约的核心知识，硬编码在 `ApiClient` 中�
 | 6 | `ApiClient` 的 `baseUrl` 在生产环境从 `RSBUILD_API_BASE` 环境变量读取，环境变量未设置时回退到 `http://localhost:10086`，生产环境请求发送到 localhost | 用户安装 YiPet 扩展后，`RSBUILD_API_BASE` 未设置，所有 API 请求命中 `http://localhost:10086`，浏览器控制台显示 `net::ERR_CONNECTION_REFUSED` | `ApiClient` 的默认 `baseUrl` 为 `http://localhost:10086`（开发环境地址），生产环境依赖 `RSBUILD_API_BASE` 环境变量。但 Chrome 扩展通过 `chrome.storage.local` 配置而非环境变量，`RSBUILD_API_BASE` 在扩展中始终为 undefined | 从 `chrome.storage.local` 读取 `apiBaseUrl` 配置项，`manifest.json` 中配置 `host_permissions` 允许跨域请求；提供配置页面让用户设置后端地址，默认值使用生产环境地址而非 localhost |
 | 7 | RPC 信封的 `parameters` 字段中传递了 `undefined` 值的属性，`JSON.stringify` 序列化后该属性被删除，后端收到不完整的参数 | 前端调用 `api.rpc('services.data.data_service', 'query_documents', { cname: 'issues', filter: undefined, sort: 'updated' })`，`JSON.stringify` 后 `filter` 属性被删除，后端收到 `{ cname: 'issues', sort: 'updated' }` | `JSON.stringify` 自动删除值为 `undefined` 的属性（`JSON` 标准不支持 `undefined`）。前端未在序列化前清理 `undefined` 值，也未告警开发者参数中存在 `undefined` | 在 `ApiClient.rpc()` 中添加 `undefined` 参数检测：`Object.entries(parameters).forEach(([k, v]) => { if (v === undefined) console.warn(\`[ApiClient] parameter "${k}" is undefined, will be omitted from JSON\`) })`；或使用 `JSON.stringify` 的 `replacer` 函数将 `undefined` 转为 `null` |
 
+<a id="sec-12"></a>
 ## 十二、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |

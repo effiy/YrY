@@ -8,8 +8,8 @@ tags:
 - pipeline
 category: root
 created: '2026-01-01'
-updated: 2026-09-10
-last_verified: '2026-09-10'
+updated: 2026-09-18
+last_verified: '2026-09-18'
 source: internal
 type: summary
 status: stable
@@ -93,11 +93,11 @@ AI 赋能层（贯穿整个流水线）
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
 | 编写 PRD | `prds` | [producter/discovery/prd/](./producter/discovery/prd/) |
-| 定义用户故事 / JTBD | `user-stories` | [producter/frameworks/jobs-to-be-done.md](./producter/frameworks/jobs-to-be-done.md) |
-| 排定功能优先级（RICE/ICE） | `priorities` | [producter/frameworks/rice-ice-prioritization.md](./producter/frameworks/rice-ice-prioritization.md) |
-| 定义北极星指标 | `priorities` | [producter/discovery/metrics/north-star-metric.md](./producter/discovery/metrics/north-star-metric.md) |
+| 定义用户故事 / JTBD | `user-stories` | [producter/frameworks/02-框架-JTBD框架摘要.md](./producter/frameworks/02-框架-JTBD框架摘要.md) |
+| 排定功能优先级（RICE/ICE） | `priorities` | [producter/frameworks/06-框架-RICE-ICE优先级.md](./producter/frameworks/06-框架-RICE-ICE优先级.md) |
+| 定义北极星指标 | `priorities` | [producter/discovery/metrics/01-指标-北极星指标.md](./producter/discovery/metrics/01-指标-北极星指标.md) |
 | 进行用户研究 | `user-stories` | [producter/frameworks/do-user-research.md](./producter/frameworks/01-框架-用户研究方法.md) |
-| 运行一个 Sprint | `priorities` | [producter/delivery/run-a-sprint.md](./producter/delivery/run-a-sprint.md) |
+| 运行一个 Sprint | `priorities` | [producter/delivery/01-交付-运作Sprint.md](./producter/delivery/01-交付-运作Sprint.md) |
 
 **上游输入**：[executiver/strategy/](./executiver/strategy/) 定义业务战略和竞争定位；[executiver/industry/](./executiver/industry/) 提供市场情报。这些是需求的*上下文*，而非需求本身。
 
@@ -167,13 +167,13 @@ BUILD                           SHIP
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 设计 API | `architecture-patterns` | [engineer/build/implement-an-api.md](./engineer/build/implement-an-api.md) |
+| 设计 API | `architecture-patterns` | [engineer/build/05-构建-API设计模式.md](./engineer/build/05-构建-API设计模式.md) |
 | 设计数据模型 | `data-reliability` | [engineer/ship/](./engineer/ship/) |
 | 加固供应链 | `quality-security` | [engineer/ship/harden-supply-chain.md](./engineer/ship/02-交付-加固供应链.md) |
-| 搭建测试基础设施 | `dev-practices` | [engineer/build/set-up-testing-infrastructure.md](./engineer/build/set-up-testing-infrastructure.md) |
+| 搭建测试基础设施 | `dev-practices` | [engineer/ship/06-交付-搭建测试基础设施.md](./engineer/ship/06-交付-搭建测试基础设施.md) |
 | 进行代码审查 | `quality-security` | [engineer/ship/](./engineer/ship/) |
 | 回顾过往经验 | `lessons` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
-| 跨项目共享客户端 | `dev-practices` | [engineer/build/share-client-across-projects.md](./engineer/build/share-client-across-projects.md) |
+| 跨项目共享客户端 | `dev-practices` | [engineer/build/implement-cross-project-rpc-call.md](./engineer/build/implement-cross-project-rpc-call.md) |
 
 **边界规则**：engineer 是*实现层* —— 不能替代 leader 的决策。如果实现过程中出现架构级问题 → 回到 leader/ 编写 ADR；不要在 engineer/ 内部"顺便做决定"。
 
@@ -193,7 +193,7 @@ BUILD                           SHIP
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 执行发布 | `release-procedures` | [srer/release/release.md](./srer/release/release.md) |
+| 执行发布 | `release-procedures` | [srer/release/04-发布-发布流程.md](./srer/release/04-发布-发布流程.md) |
 | 执行回滚 | `release-procedures` | [srer/release/rollback-drill.md](./srer/release/05-发布-回滚演练.md) |
 | 运行金丝雀发布 | `release-procedures` | [srer/release/canary-release.md](./srer/release/01-发布-金丝雀发布.md) |
 | 响应事件 | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/04-事件-响应事件.md) |
@@ -239,7 +239,7 @@ RUN                             LEARN
 | 搭建可观测性 | `observability` | [srer/observability/set-up-observability.md](./srer/observability/07-可观测-搭建可观测性.md) |
 | 编写事后复盘 | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/02-风险-事后复盘.md) |
 | 追踪 SLO/SLI 合规 | `slo-compliance` | [srer/observability/](./srer/observability/) |
-| 查看已知陷阱 | `lessons-learned` | [engineer/run/check-engineering-gotchas.md](./engineer/run/check-engineering-gotchas.md) |
+| 查看已知陷阱 | `lessons-learned` | [engineer/learn/lessons/gotchas/](./engineer/learn/lessons/gotchas/) |
 | 回顾过往经验 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
 | 为新成员入职 | `lessons-learned` | [engineer/run/onboarding/](./engineer/run/onboarding/) |
 
@@ -363,10 +363,10 @@ executiver ──→ producter ──→ leader ──→ engineer ──→ sre
 
 | 图 | 位置 | 回答 |
 |---|---|---|
-| 知识地图 | [curator/diagrams/knowledge-map.md](./curator/diagrams/03-图表-知识地图.md) | 存在哪些知识？显性 vs. 隐性？持有者和消费者？ |
-| 用户旅程图 | [curator/diagrams/user-journey.md](./curator/diagrams/04-图表-用户旅程.md) | 知识在哪里？如何流动？断点在哪里？ |
-| 目录蓝图 | [curator/diagrams/directory-blueprint.md](./curator/diagrams/02-图表-目录蓝图.md) | 用户如何一目了然地找到内容？角色 × 问题域，最多 3 级 |
-| 治理流程 | [curator/治理/governance.md](./curator/governance/02-治理-治理规范.md) | 谁维护？多久一次？4 个角色，3 种节奏 |
+| 知识地图 | [curator/diagrams/03-图表-知识地图.md](./curator/diagrams/03-图表-知识地图.md) | 存在哪些知识？显性 vs. 隐性？持有者和消费者？ |
+| 用户旅程图 | [curator/diagrams/04-图表-用户旅程.md](./curator/diagrams/04-图表-用户旅程.md) | 知识在哪里？如何流动？断点在哪里？ |
+| 目录蓝图 | [curator/diagrams/02-图表-目录蓝图.md](./curator/diagrams/02-图表-目录蓝图.md) | 用户如何一目了然地找到内容？角色 × 问题域，最多 3 级 |
+| 治理流程 | [curator/governance/02-治理-治理规范.md](./curator/governance/02-治理-治理规范.md) | 谁维护？多久一次？4 个角色，3 种节奏 |
 
 在扩展之前运行[就绪检查清单](./curator/governance/04-治理-就绪检查清单.md)的 10 个问题关卡。
 

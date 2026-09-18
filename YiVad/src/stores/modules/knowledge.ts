@@ -31,9 +31,7 @@ export const useKnowledgeStore = defineStore("yivad-knowledge", () => {
   const loadingCategory = ref<Set<string>>(new Set());
   const detailPath = ref<string | null>(null);
 
-  const totalFiles = computed(() =>
-    KNOWLEDGE_CATEGORIES.reduce((sum, c) => sum + (categoryFiles.value[c.key]?.length ?? 0), 0)
-  );
+  const totalFiles = computed(() => KNOWLEDGE_CATEGORIES.reduce((sum, c) => sum + (categoryFiles.value[c.key]?.length ?? 0), 0));
 
   const recentFiles = computed<KnowledgeFileEntry[]>(() => {
     const all: KnowledgeFileEntry[] = [];

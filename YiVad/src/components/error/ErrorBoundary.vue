@@ -21,7 +21,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  fallbackTitle: "组件加载失败",
+  fallbackTitle: "组件加载失败"
 });
 
 const error = ref<Error | null>(null);
@@ -41,7 +41,7 @@ onErrorCaptured((err: unknown, instance, info) => {
     error: normalized,
     componentName: props.componentName || (instance as any)?.$options?.name || "unknown",
     info,
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
 
   return false;

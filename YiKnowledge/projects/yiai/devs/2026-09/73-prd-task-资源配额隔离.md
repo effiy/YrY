@@ -1,41 +1,64 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-69"
-title: "YA-09-69: 服务端资源配额与租户隔离 — 多项目共享后端的资源公平分配机制 — 开发任务"
+prd_task_id: "YA-09-106"
+title: "YA-09-106: 资源配额隔离 — 多项目公平分配 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "73-需求-资源配额隔离.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-69: 服务端资源配额与租户隔离 — 多项目共享后端的资源公平分配机制 — 开发任务
+# YA-09-106: 资源配额隔离 — 多项目公平分配 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[73-需求-资源配额隔离.md](../../prds/2026-09/73-需求-资源配额隔离.md)
-> 需求编号：YA-09-69 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-106 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+4 个项目共享 YiAi 后端，需要配额隔离防止单一项目占用全部资源。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+@dataclass
+class ProjectQuota:
+    max_rps: int          # 最大请求速率
+    max_concurrent: int   # 最大并发
+    max_tokens_per_hour: int  # LLM Token 配额
+    max_storage_mb: int   # 存储配额
 
-| 步骤 | 任务 | 产出 |
+QUOTAS = {
+    "yivad": ProjectQuota(200, 20, 1_000_000, 500),
+    "yipet": ProjectQuota(100, 10, 500_000, 200),
+    "yiai":   ProjectQuota(50,  5,  200_000, 100),
+    "default": ProjectQuota(50, 5, 100_000, 100),
+}
+
+async def check_quota(project: str, resource: str, amount: int = 1) -> bool:
+    quota = QUOTAS.get(project, QUOTAS["default"])
+    usage = await get_usage(project, resource)
+    return usage + amount <= getattr(quota, resource)
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 配额定义 + 用量追踪 (Redis) | 超出配额返回 429 + 项目名 | 0.5 |
+| 2 | Dashboard 配额面板 + 测试 | YiVad 可查看各项目配额 | 0.5 |
+
+**合计：1.0d**。

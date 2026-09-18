@@ -60,6 +60,42 @@ export default {
       priorityChanged: "'{name}' priority → {priority}",
       statusChanged: "'{name}' → {status}",
       movedTo: "'{name}' moved to {status}"
+    },
+    loading: "Loading kanban data…",
+    loadFailed: "Failed to load kanban data",
+    swimlane: {
+      title: "Swimlane",
+      none: "None",
+      byAssignee: "By Assignee",
+      byPriority: "By Priority",
+      byType: "By Type",
+      byProject: "By Project",
+      byLabel: "By Label"
+    },
+    wip: {
+      title: "WIP Limit",
+      limit: "Limit {current}/{max}",
+      exceeded: "WIP limit exceeded",
+      column: "Column limit"
+    },
+    columnManager: {
+      title: "Column Management",
+      addColumn: "Add Column",
+      editColumn: "Edit Column",
+      deleteColumn: "Delete Column",
+      deleteConfirm: 'Delete column "{name}"? Issues will move to "Todo".',
+      name: "Column name",
+      namePlaceholder: "Column name",
+      nameRequired: "Column name is required",
+      colorLabel: "Column color",
+      wipLimit: "WIP limit",
+      wipLimitHint: "Leave empty for no limit",
+      save: "Save",
+      reset: "Reset to default columns"
+    },
+    viewMode: {
+      board: "Board",
+      table: "Table"
     }
   }
 };

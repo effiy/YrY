@@ -73,15 +73,7 @@ function normalizeContentPath(bug: Partial<BugDocument> & Pick<BugDocument, "key
 export type BugSeverity = "critical" | "major" | "minor" | "trivial";
 export type BugPriority = "p0" | "p1" | "p2" | "p3";
 export type BugStatus = "open" | "in_progress" | "resolved" | "closed" | "rejected" | "reopened";
-export type BugType =
-  | "functional"
-  | "performance"
-  | "ui"
-  | "security"
-  | "compatibility"
-  | "regression"
-  | "data"
-  | "other";
+export type BugType = "functional" | "performance" | "ui" | "security" | "compatibility" | "regression" | "data" | "other";
 export type BugFrequency = "always" | "sometimes" | "rarely" | "once" | "unable";
 
 import type { IssuePriority, IssueStatus, IssueType, TagType } from "@/api/modules/issueService";
@@ -408,7 +400,9 @@ export async function readBugContent(input: BugDocument | string): Promise<BugCo
     if (cp && !cp.startsWith("projects/")) {
       // Best-effort guess when no bug-context is available. Legacy path lives
       // under yivad by default because that project was the first to seed bugs.
-      cp = cp.startsWith("bugs/") ? `projects/yivad/${cp}` : contentPathFor("yivad", new Date().toISOString().slice(0, 10), "other", cp);
+      cp = cp.startsWith("bugs/")
+        ? `projects/yivad/${cp}`
+        : contentPathFor("yivad", new Date().toISOString().slice(0, 10), "other", cp);
     }
   } else {
     cp = normalizeContentPath(input, input.contentPath || "");
@@ -422,7 +416,10 @@ export async function readBugContent(input: BugDocument | string): Promise<BugCo
 }
 
 /** Delete the markdown body file (best-effort). */
-async function deleteBugContent(bugOrPath: BugDocument | { key: string; contentPath?: string; project_key?: string; type?: BugType; createdAt?: number } | string): Promise<void> {
+async function deleteBugContent(
+  bugOrPath:
+    BugDocument | { key: string; contentPath?: string; project_key?: string; type?: BugType; createdAt?: number } | string
+): Promise<void> {
   let cp: string;
   if (typeof bugOrPath === "string") {
     cp = bugOrPath;
@@ -530,7 +527,9 @@ export async function getBugList(
       orderType: "desc"
     });
     if (mongoRes.code === 0) mongoList = (mongoRes.data?.list ?? []) as BugDocument[];
-  } catch { /* use disk only */ }
+  } catch {
+    /* use disk only */
+  }
 
   // 3) Merge — disk wins on conflict (key-deduplicated). Mongo legacy docs have
   //    their contentPath normalized first so the rest of the pipeline can pass
@@ -571,10 +570,12 @@ export async function getBug(key: string): Promise<BugDocument | null> {
   // derivable from the bug key alone; the scanner walks it for us).
   try {
     const all = await listKnowledgeBugs();
-    const match = (all?.bugs as unknown as BugDocument[] ?? []).find(b => b.key === key);
+    const match = ((all?.bugs as unknown as BugDocument[]) ?? []).find(b => b.key === key);
     if (match) return match;
-  } catch { /* fall through */ }
-  const res = await queryDocuments<BugDocument>({ cname: CNAME, filter: { key }, limit: 1 });
+  } catch {
+    /* fall through */
+  }
+  const res = await queryDocuments<BugDocument>({ cname: CNAME, filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load bug");
   const doc = res.data?.list?.[0] ?? null;
   if (doc) doc.contentPath = normalizeContentPath(doc, doc.contentPath || "");
@@ -603,11 +604,7 @@ export async function createBug(
   return { envelope, contentPath };
 }
 
-export async function updateBug(
-  key: string,
-  meta: Partial<BugDocument>,
-  content?: BugContent
-): Promise<YiAiEnvelope> {
+export async function updateBug(key: string, meta: Partial<BugDocument>, content?: BugContent): Promise<YiAiEnvelope> {
   const now = Date.now();
   const payload: Partial<BugDocument> & { updatedAt: number; key: string } = {
     ...meta,
@@ -624,14 +621,18 @@ export async function updateBug(
     const current = await getBug(key);
     if (current) {
       const merged = { ...current, ...meta, updatedAt: now } as BugDocument;
-      const body = content ?? await readBugContent(current);
+      const body = content ?? (await readBugContent(current));
       const newPath = await writeBugContent(key, merged, body);
       payload.contentPath = newPath;
       // If the canonical path differs from the old one (e.g. bug was created
       // under a non-canonical directory), remove the old file so getBugList
       // doesn't see two entries with the same key and merge-stomp the update.
       if (current.contentPath && current.contentPath !== newPath) {
-        try { await deleteBugContent(current); } catch { /* best-effort */ }
+        try {
+          await deleteBugContent(current);
+        } catch {
+          /* best-effort */
+        }
       }
     }
   }

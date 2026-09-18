@@ -1,10 +1,15 @@
 // Migrated from Easy-Mock: /geeker/file/upload/img
-let MockJs = require('mockjs');
+let MockJs = require("mockjs");
 $$.mockResponse.setBody({
   code: 200,
   data: MockJs.mock({
-    'fileUrl|1': ["https://i.imgtg.com/2023/01/16/QRBHS.jpg","https://i.imgtg.com/2023/01/16/QRqMK.jpg","https://i.imgtg.com/2023/01/16/QR57a.jpg","https://i.imgtg.com/2023/01/16/QRa0s.jpg"]
+    "fileUrl|1": [
+      "https://i.imgtg.com/2023/01/16/QRBHS.jpg",
+      "https://i.imgtg.com/2023/01/16/QRqMK.jpg",
+      "https://i.imgtg.com/2023/01/16/QR57a.jpg",
+      "https://i.imgtg.com/2023/01/16/QRa0s.jpg"
+    ]
   }),
-  msg: 'Success'
+  msg: "Success"
 });
 $$.mockResponse.setCode(200);

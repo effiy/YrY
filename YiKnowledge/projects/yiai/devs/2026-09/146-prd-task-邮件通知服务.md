@@ -1,41 +1,71 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-140"
-title: "YA-09-140: 邮件通知服务 — SMTP 异步发送 + Jinja2 模板 + 邮件队列重试 + 退订机制 — 开发任务"
+prd_task_id: "YA-09-74"
+title: "YA-09-74: 邮件通知服务 — SMTP + Jinja2 模板 + 队列重试 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "146-需求-邮件通知服务.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-140: 邮件通知服务 — SMTP 异步发送 + Jinja2 模板 + 邮件队列重试 + 退订机制 — 开发任务
+# YA-09-74: 邮件通知服务 — SMTP + Jinja2 模板 + 队列重试 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[146-需求-邮件通知服务.md](../../prds/2026-09/146-需求-邮件通知服务.md)
-> 需求编号：YA-09-140 · 优先级：P2 · 人天：0.5d
-> 类型：功能 · 状态：需求已编写
+> 需求编号：YA-09-74 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+在企微通知之外增加邮件通道——SMTP 异步发送，Jinja2 模板渲染，失败重试队列。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+import aiosmtplib
+from email.mime.text import MIMEText
+from jinja2 import Environment, FileSystemLoader
 
-| 步骤 | 任务 | 产出 |
+env = Environment(loader=FileSystemLoader("templates/email"))
+
+async def send_email(to: str, subject: str, template: str, context: dict):
+    html = env.get_template(f"{template}.html").render(**context)
+    msg = MIMEText(html, "html")
+    msg["Subject"] = subject
+    msg["To"] = to
+
+    try:
+        await aiosmtplib.send(msg, hostname=settings.smtp_host, port=settings.smtp_port,
+                              username=settings.smtp_user, password=settings.smtp_password,
+                              use_tls=True)
+    except Exception:
+        await task_queue.submit(send_email, to, subject, template, context)  # 重试
+```
+
+### 与企微互补
+
+| 渠道 | 适用场景 | 延迟 |
+|------|---------|------|
+| 企微 | 紧急告警、实时通知 | < 1s |
+| 邮件 | 周报、审计摘要、合规通知 | < 30s |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | aiosmtplib + Jinja2 模板 | 邮件发送成功 | 0.5 |
+| 2 | 失败重试队列 + 退订 + 测试 | SMTP 不可用时重试 | 0.5 |
+
+**合计：1.0d**。

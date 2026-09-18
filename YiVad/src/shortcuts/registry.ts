@@ -25,8 +25,7 @@ class ShortcutRegistry {
     const existing = this.findConflict(shortcut);
     if (existing) {
       console.warn(
-        `[Shortcut] Conflict: "${shortcut.id}" (${shortcut.keys}) ` +
-        `conflicts with "${existing.id}" (${existing.keys})`
+        `[Shortcut] Conflict: "${shortcut.id}" (${shortcut.keys}) ` + `conflicts with "${existing.id}" (${existing.keys})`
       );
     }
     this.shortcuts.set(shortcut.id, shortcut);
@@ -38,11 +37,7 @@ class ShortcutRegistry {
 
   private findConflict(shortcut: ShortcutDefinition): ShortcutDefinition | null {
     for (const [, existing] of this.shortcuts) {
-      if (
-        existing.keys === shortcut.keys &&
-        existing.scope === shortcut.scope &&
-        existing.id !== shortcut.id
-      ) {
+      if (existing.keys === shortcut.keys && existing.scope === shortcut.scope && existing.id !== shortcut.id) {
         return existing;
       }
     }

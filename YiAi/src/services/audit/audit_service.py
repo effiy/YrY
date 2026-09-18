@@ -1,15 +1,15 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 from data.database import db
 from shared.config import settings
 
 
-async def query_audit_logs(params: Dict[str, Any]) -> Dict[str, Any]:
+async def query_audit_logs(params: dict[str, Any]) -> dict[str, Any]:
     """Query audit logs with optional filters. Admin-only in production."""
     await db.initialize()
     collection = db.db[settings.audit_collection]
 
-    filter_dict: Dict[str, Any] = {}
+    filter_dict: dict[str, Any] = {}
     for field in ("actor", "collection", "operation"):
         if params.get(field):
             filter_dict[field] = params[field]

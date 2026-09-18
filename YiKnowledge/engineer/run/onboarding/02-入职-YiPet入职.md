@@ -140,3 +140,5 @@ Popup 到 Content Script 的通信:
 - [YiPet CLAUDE.md](../../../../YiPet/CLAUDE.md) —— 权威参考
 - [跨项目 RPC 协议](../../build/cross-project-rpc-protocol.md) —— API 契约
 - [YiPet 跨项目 Hub 成功案例](../../learn/lessons/wins/01-成果-YiPet跨项目Hub.md) —— 架构模式启发
+- [开发工作流指南](../../run/02-运行-开发工作流.md) —— 全栈启动与调试
+- [Code Review 指南](../../run/04-运行-CodeReview指南.md) —— 提交 PR 前的自查清单

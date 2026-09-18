@@ -3,19 +3,19 @@ Maintenance-related APIs
 - Clean up unreferenced images
 - Clean up sessions collection
 """
-import os
-import re
 import logging
+import os
 from pathlib import Path
-from typing import Set, Dict, List, Any
-from pydantic import BaseModel, Field
+import re
+from typing import Any, Dict, List, Set
 
 from fastapi import APIRouter
-from shared.response import success
-from shared.config import settings
-from data.sessions import get_all_sessions, delete_session_by_key
+from pydantic import BaseModel, Field
 
+from data.sessions import delete_session_by_key, get_all_sessions
 from domain.files.paths import is_image_file
+from shared.config import settings
+from shared.response import success
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -37,7 +37,7 @@ class CleanupRequest(BaseModel):
     cleanup_sessions: bool = Field(False, description="Whether to clean up sessions referencing non-existent images")
 
 
-def scan_static_images(static_dir: str) -> Set[str]:
+def scan_static_images(static_dir: str) -> set[str]:
     """Scan all image files in the static directory"""
     static_path = Path(static_dir)
     if not static_path.exists():
@@ -54,7 +54,7 @@ def scan_static_images(static_dir: str) -> Set[str]:
     return image_paths
 
 
-def extract_referenced_images(text: str) -> Set[str]:
+def extract_referenced_images(text: str) -> set[str]:
     """Extract referenced image paths from text"""
     referenced = set()
 
@@ -83,9 +83,9 @@ def extract_referenced_images(text: str) -> Set[str]:
     return referenced
 
 
-def _extract_refs_from_value(field_value: Any) -> Set[str]:
+def _extract_refs_from_value(field_value: Any) -> set[str]:
     """Extract image references from field values of any nested structure"""
-    refs: Set[str] = set()
+    refs: set[str] = set()
     if isinstance(field_value, str):
         refs.update(extract_referenced_images(field_value))
     elif isinstance(field_value, list):
@@ -97,17 +97,17 @@ def _extract_refs_from_value(field_value: Any) -> Set[str]:
     return refs
 
 
-async def get_all_session_contents() -> tuple[Set[str], List[Dict[str, Any]]]:
+async def get_all_session_contents() -> tuple[set[str], list[dict[str, Any]]]:
     """Get all referenced images from the database sessions collection"""
     all_sessions = await get_all_sessions()
-    referenced_images: Set[str] = set()
+    referenced_images: set[str] = set()
     for doc in all_sessions:
         for field_value in doc.values():
             referenced_images.update(_extract_refs_from_value(field_value))
     return referenced_images, all_sessions
 
 
-def find_unused_images(static_images: Set[str], referenced_images: Set[str]) -> Set[str]:
+def find_unused_images(static_images: set[str], referenced_images: set[str]) -> set[str]:
     """Find unused images"""
     unused = static_images - referenced_images
     referenced_lower = {p.lower() for p in referenced_images}
@@ -118,7 +118,7 @@ def find_unused_images(static_images: Set[str], referenced_images: Set[str]) -> 
     return still_unused
 
 
-def delete_image_files(static_dir: str, unused_images: Set[str], dry_run: bool = True) -> tuple[int, int]:
+def delete_image_files(static_dir: str, unused_images: set[str], dry_run: bool = True) -> tuple[int, int]:
     """Delete unused image files, return (deletion count, freed space in bytes)"""
     static_path = Path(static_dir)
     deleted_count = 0
@@ -149,7 +149,7 @@ def delete_image_files(static_dir: str, unused_images: Set[str], dry_run: bool =
 
 async def cleanup_sessions_with_missing_images(
     static_dir: str,
-    all_sessions: List[Dict[str, Any]],
+    all_sessions: list[dict[str, Any]],
     dry_run: bool = True
 ) -> int:
     """Clean up documents in the sessions collection that reference non-existent images"""

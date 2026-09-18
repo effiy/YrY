@@ -1,11 +1,6 @@
 <template>
   <el-dialog v-model="visible" title="Advanced Filter" width="600px">
-    <FilterPanel
-      v-model:conditions="conditions"
-      :fields="fields"
-      @apply="handleApply"
-      @clear="$emit('clear')"
-    />
+    <FilterPanel v-model:conditions="conditions" :fields="fields" @apply="handleApply" @clear="$emit('clear')" />
     <div class="advanced-filter__preview" v-if="previewCount !== null">
       <span>{{ previewCount }} records match this filter</span>
     </div>
@@ -30,11 +25,22 @@ const handleApply = (cond: FilterCondition[]) => {
   visible.value = false;
 };
 
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
-.advanced-filter__preview { margin-top: 12px; padding: 8px; background: var(--el-fill-color-light); border-radius: 4px; font-size: 12px; text-align: center; }
+.advanced-filter__preview {
+  padding: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  text-align: center;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+}
 </style>

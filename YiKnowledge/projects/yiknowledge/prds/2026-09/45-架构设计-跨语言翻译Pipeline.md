@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-42: 知识库跨语言翻译 Pipeline — 自动化知识文件中英互译工作流"
 tags: [需求文档, 知识库, 翻译, 自动化, 中英互译, RAG]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-42
 estimate_frontend: 1.0
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [45-prd-task-跨语言翻译Pipeline]
+related_tests: [45-prd-test-跨语言翻译Pipeline]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [aier, curator]
 ---
 

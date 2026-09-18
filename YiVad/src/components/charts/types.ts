@@ -60,11 +60,7 @@ export interface ChartEvents {
   chartClick: [params: Record<string, unknown>];
 }
 
-export function buildAxisChartOption(
-  data: ChartData,
-  chartType: "line" | "bar",
-  custom: Partial<ECOption> = {},
-): ECOption {
+export function buildAxisChartOption(data: ChartData, chartType: "line" | "bar", custom: Partial<ECOption> = {}): ECOption {
   const { categories, series } = data;
 
   return {
@@ -72,7 +68,7 @@ export function buildAxisChartOption(
     legend: {
       data: series.map(s => s.name),
       bottom: 0,
-      textStyle: { fontSize: 11 },
+      textStyle: { fontSize: 11 }
     },
     grid: { left: "3%", right: "4%", bottom: series.length > 1 ? "12%" : "3%", containLabel: true },
     xAxis: { type: "category" as const, data: categories, axisLabel: { fontSize: 11 } },
@@ -81,10 +77,10 @@ export function buildAxisChartOption(
       name: s.name,
       type: chartType,
       data: s.data,
-      smooth: s.smooth ?? (chartType === "line"),
+      smooth: s.smooth ?? chartType === "line",
       areaStyle: s.areaStyle ? {} : undefined,
-      itemStyle: s.color ? { color: s.color } : undefined,
+      itemStyle: s.color ? { color: s.color } : undefined
     })),
-    ...custom,
+    ...custom
   };
 }

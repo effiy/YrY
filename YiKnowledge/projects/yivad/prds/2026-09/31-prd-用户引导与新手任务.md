@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 用户引导与新手任务
 tags:
 - 用户引导
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -31,7 +34,43 @@ source_okr: [yivad-003]
 # 用户引导与新手任务
 
 > 需求编号：YV-09-63 · 优先级：P2 · 人天：0.3d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/31-prd-task-用户引导与新手任务.md)，验证方案见 [测试方案](../../tests/2026-09/31-prd-test-用户引导与新手任务.md)。
 > 依赖：YiAi 数据服务（`services.data.data_service`）、YiAi 用户服务（`services.user.user_service`）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 引导类型定义 | 参见 §引导类型定义 |
+| FR-2 | 引导 API 服务 | 参见 §引导 API 服务 |
+| FR-3 | useOnboarding Composable | 参见 §useOnboarding Compos |
+| FR-4 | useTour Composable | 参见 §useTour Composable |
+| FR-5 | OnboardingWizard 引导向导 | 参见 §OnboardingWizard 引导向 |
+| FR-6 | WelcomeTour 欢迎导览 | 参见 §WelcomeTour 欢迎导览 |
+| FR-7 | TooltipHighlight 工具提示 | 参见 §TooltipHighlight 工具提 |
+| FR-8 | 辅助组件 | 参见 §辅助组件 |
+| FR-9 | v-onboarding 指令 | 参见 §v-onboarding 指令 |
 
 ## 改动总览
 
@@ -116,6 +155,7 @@ YiVad 当前缺乏系统化的用户引导机制。新用户首次登录后面�
 | 5 | **无角色化引导** -- 所有用户看到相同的引导流程，忽略角色差异 | **中** | 引导内容与用户角色不匹配，有效性低 |
 | 6 | **无引导数据分析** -- 无法追踪引导完成率和各步骤流失率 | **中** | 无法优化引导流程 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前用户引导能力矩阵
@@ -157,6 +197,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 引导流程架构
@@ -201,6 +242,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -290,6 +332,7 @@ OnboardingStepDefinition
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 引导类型定义
@@ -712,6 +755,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -737,6 +781,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 新用户首次登录触发引导
@@ -771,6 +816,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -784,6 +830,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -802,6 +849,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 采用全屏向导 + 嵌入式工具提示混合模式
@@ -834,6 +882,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -861,6 +910,7 @@ export const vOnboarding: Directive<HTMLElement, OnboardingBinding> = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/onboarding.ts` 中所有引导状态、步骤、任务、事件类型定义完整

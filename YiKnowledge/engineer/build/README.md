@@ -3,8 +3,8 @@ title: Build — Architecture & Development
 tags: [leaf, build, architecture, design, development, dx, api]
 category: engineer/build
 created: 2026-08-06
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -81,16 +81,15 @@ cd YiPet && npm run build
 | [cross-project-rpc-protocol.md](./cross-project-rpc-protocol.md) | RPC 信封规范、参数名契约（`filter`/`target_file`/`cname`）、已知 Bug 模式——所有跨项目调用的唯一事实来源 | 每次添加新的跨项目 API 调用前必读 |
 | [implement-cross-project-rpc-call.md](./implement-cross-project-rpc-call.md) | 跨 YiVad/YiPet 到 YiAi 添加新 RPC 调用的分步指南：后端 Service 创建 → 前端 Service 封装 → 参数验证 | 实施新的跨项目功能时使用 |
 | [implement-sse-streaming.md](./implement-sse-streaming.md) | AI 聊天的 SSE 流式实现指南，含中止处理（`AbortController`）、超时管理、增量渲染策略 | 实现或调试流式 AI 响应时使用 |
+| [04-MongoDB模式设计](./04-构建-MongoDB模式设计.md) | MongoDB 文档模型设计原则、嵌入 vs 引用决策框架、索引策略、集合命名规范 | 设计新集合或优化查询性能时使用 |
+| [05-API设计模式](./05-构建-API设计模式.md) | RPC vs REST 决策树、响应格式标准、分页约定、命名规范 | 设计新 API 端点或扩展 RPC Service 时使用 |
+| [06-调试排错指南](./06-构建-调试排错指南.md) | 四步诊断方法论——从症状到根因的系统排查流程、请求链路追踪、日志分析 | 遇到任何 Bug 时的第一站 |
+| [07-性能优化指南](./07-构建-性能优化指南.md) | Python 异步并发、Vue 渲染优化、MongoDB 查询与索引优化、包体积管理 | 系统变慢或优化性能时使用 |
 
 ## 此处应包含的内容（规划中）
 
-以下主题当前尚未有独立文档，但属于 Build 阶段的核心关注点。当有足够的实践经验后应补充：
-
-- **系统架构模式与设计决策**：YrY 中使用的具体架构模式（分层架构、发布-订阅、CQRS 等）及其适用场景
-- **数据建模与 Schema 设计**：MongoDB 文档模型设计原则、集合命名规范、索引策略
 - **项目启动与工具链设置**：新项目的脚手架模板、构建工具对比（Rsbuild vs Vite vs Webpack）
-- **依赖管理与技术栈指南**：Python（pip/poetry）vs Node.js（npm/pnpm）依赖管理最佳实践
-- **开发环境故障排查**：常见启动问题的解决方案（MongoDB 连接失败、Ollama 模型未加载、端口冲突）
+- **依赖管理与技术栈深入**：Python（pip/poetry）vs Node.js（npm/pnpm）依赖管理最佳实践
 
 ## 反模式 — Build 阶段常见错误
 

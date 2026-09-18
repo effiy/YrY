@@ -1,13 +1,12 @@
 <template>
   <div class="tree-table">
-    <el-table :data="flattenedData" row-key="__key" :tree-props="{ children: '__children', hasChildren: '__hasChildren' }" v-bind="$attrs">
-      <el-table-column
-        v-for="col in columns"
-        :key="col.key"
-        :prop="col.key"
-        :label="col.label"
-        :width="col.width"
-      >
+    <el-table
+      :data="flattenedData"
+      row-key="__key"
+      :tree-props="{ children: '__children', hasChildren: '__hasChildren' }"
+      v-bind="$attrs"
+    >
+      <el-table-column v-for="col in columns" :key="col.key" :prop="col.key" :label="col.label" :width="col.width">
         <template #default="{ row }">
           <slot :name="col.key" :row="row">
             {{ row[col.key] ?? "" }}
@@ -42,8 +41,12 @@ interface FlattenedNode extends Record<string, any> {
 }
 
 function flatten(nodes: TreeNode[], level = 0): FlattenedNode[] {
-  return nodes.flatMap((node) => {
-    const row: FlattenedNode = { ...node, __key: node.key ?? node.id ?? Math.random().toString(36).slice(2), __hasChildren: false };
+  return nodes.flatMap(node => {
+    const row: FlattenedNode = {
+      ...node,
+      __key: node.key ?? node.id ?? Math.random().toString(36).slice(2),
+      __hasChildren: false
+    };
     const kids = node[childrenKey] as TreeNode[] | undefined;
     delete (row as any)[childrenKey];
     if (kids && kids.length > 0) {

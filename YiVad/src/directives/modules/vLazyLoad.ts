@@ -1,7 +1,7 @@
 import type { Directive, DirectiveBinding } from "vue";
 
 const observer = new IntersectionObserver(
-  (entries) => {
+  entries => {
     for (const entry of entries) {
       if (entry.isIntersecting) {
         const img = entry.target as HTMLImageElement;
@@ -54,5 +54,5 @@ export const vLazyLoad: Directive<HTMLImageElement, string> = {
 
   unmounted(el: HTMLImageElement) {
     observer.unobserve(el);
-  },
+  }
 };

@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YA-07-06"
 source_prds: ["06-需求-认证与授权系统"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-07-06: 认证与授权系统 — bcrypt 密码哈希 + JWT 令牌管理 + HS256 签名 — 测试规格
 

@@ -18,7 +18,7 @@
       <div v-else class="id-sb-row">
         <span class="id-sb-row__label">Assignee</span>
         <span class="id-sb-row__value" :class="{ 'id-sb-row__value--empty': !issue.assignee }">
-          {{ issue.assignee || 'Unassigned' }}
+          {{ issue.assignee || "Unassigned" }}
         </span>
       </div>
     </div>
@@ -50,6 +50,8 @@ async function save() {
     await store.editIssue(props.issue.key, { assignee: assigneeEdit.value || undefined } as any);
     ElMessage.success("Assignee updated");
     editing.value = false;
-  } finally { saving.value = false; }
+  } finally {
+    saving.value = false;
+  }
 }
 </script>

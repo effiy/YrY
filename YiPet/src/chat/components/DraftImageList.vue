@@ -2,6 +2,8 @@
 /**
  * YiPet Chat — DraftImageList (Vue 3 SFC)
  */
+import { t } from '@/shared/i18n';
+
 defineProps<{
   images: string[];
 }>();
@@ -16,9 +18,9 @@ defineEmits<{
   <div class="draft-images">
     <div v-for="(src, idx) in images" :key="`draft-${idx}`" class="draft-image-wrap">
       <img :src="src" :alt="`Draft ${idx + 1}`" class="draft-image" />
-      <button type="button" class="draft-remove" title="Remove" @click="$emit('remove', idx)">✕</button>
+      <button type="button" class="draft-remove" :title="t('chatRemove')" @click="$emit('remove', idx)">✕</button>
     </div>
-    <button v-if="images.length > 0" type="button" class="draft-clear" @click="$emit('clear')">Clear all</button>
+    <button v-if="images.length > 0" type="button" class="draft-clear" @click="$emit('clear')">{{ t('chatClearAll') }}</button>
   </div>
 </template>
 

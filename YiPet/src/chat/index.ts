@@ -11,6 +11,7 @@ import { getSystemPrompt } from '@/shared/roles';
 import { useChatStore } from './stores/chat';
 import ChatWindow from './components/ChatWindow.vue';
 import { errorReporter } from '@/shared/error-boundary';
+import { keyboardRegistry } from '@/shared/shortcuts';
 
 const currentScript = document.currentScript as HTMLScriptElement | null;
 const dataset = currentScript?.dataset || {};
@@ -75,6 +76,46 @@ function initChatApp() {
   store.setSystemPrompt(INITIAL_SYSTEM_PROMPT);
   store.setRole(INITIAL_ROLE, roleImageUrl(INITIAL_ROLE));
   store.mount();
+
+  // ── Keyboard Shortcuts ────────────────────────────────────────────────
+  keyboardRegistry.initialize().then(() => {
+    keyboardRegistry.startListening();
+    console.log(
+      '%c⌨ YiPet Shortcuts%c ready — %c?%c for cheatsheet, %cCtrl+B%c toggle sidebar',
+      'color:#6366f1;font-weight:bold', 'color:inherit',
+      'color:#22c55e', 'color:#888',
+      'color:#22c55e', 'color:#888',
+    );
+  });
+
+  // Register shortcut handlers — each listens for the CustomEvent dispatched by KeyboardRegistry
+  const _textarea = () => document.querySelector('#yipet-chat-window .el-textarea__inner') as HTMLTextAreaElement | null;
+  const _msgArea = () => document.getElementById('yipet-chat-messages');
+
+  window.addEventListener('yipet:shortcut:focus-input', () => _textarea()?.focus());
+  window.addEventListener('yipet:shortcut:toggle-sidebar', () => store.toggleSidebar());
+  window.addEventListener('yipet:shortcut:new-session', () => store.createSession());
+  window.addEventListener('yipet:shortcut:export-session', () => store.exportCurrentSessionMarkdown());
+  window.addEventListener('yipet:shortcut:search-messages', () => { store.open(); _textarea()?.focus(); });
+  window.addEventListener('yipet:shortcut:zoom-in', () => {
+    const el = _msgArea(); if (el) { const s = parseFloat(getComputedStyle(el).fontSize); el.style.fontSize = (s + 1) + 'px'; }
+  });
+  window.addEventListener('yipet:shortcut:zoom-out', () => {
+    const el = _msgArea(); if (el) { const s = parseFloat(getComputedStyle(el).fontSize); el.style.fontSize = Math.max(10, s - 1) + 'px'; }
+  });
+  window.addEventListener('yipet:shortcut:open-chat', () => store.toggle());
+  window.addEventListener('yipet:shortcut:toggle-pet', () => store.toggle());
+  window.addEventListener('yipet:shortcut:clear-conversation', () => {
+    if (!store.state.isProcessing) {
+      store.sendMessage('/clear');
+      const ta = _textarea(); if (ta) { ta.value = ''; ta.dispatchEvent(new Event('input', { bubbles: true })); }
+    }
+  });
+  window.addEventListener('yipet:shortcut:clear-input', () => {
+    if (!store.state.isProcessing) {
+      const ta = _textarea(); if (ta) { ta.value = ''; ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus(); }
+    }
+  });
 
   app.mount(container);
 

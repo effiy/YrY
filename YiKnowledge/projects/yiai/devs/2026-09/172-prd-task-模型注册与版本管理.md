@@ -1,41 +1,58 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-166"
-title: "YA-09-166: 模型注册与版本管理 — 集中式模型元数据管理与生命周期治理 — 开发任务"
+prd_task_id: "YA-09-125"
+title: "YA-09-125: 模型注册与版本管理 — 集中式元数据 + 生命周期 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "172-需求-模型注册与版本管理.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-166: 模型注册与版本管理 — 集中式模型元数据管理与生命周期治理 — 开发任务
+# YA-09-125: 模型注册与版本管理 — 集中式元数据 + 生命周期 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[172-需求-模型注册与版本管理.md](../../prds/2026-09/172-需求-模型注册与版本管理.md)
-> 需求编号：YA-09-166 · 优先级：P2 · 人天：0.5d
-> 类型：功能 · 状态：需求已编写
+> 需求编号：YA-09-125 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+模型散落在 Ollama/DeepSeek 配置中。集中式注册表记录所有模型元数据：名称、版本、能力、状态、成本。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class ModelRegistry:
+    async def register(self, model: ModelMeta):
+        await db.models.update_one({"name": model.name}, {"$set": model.dict()}, upsert=True)
+    async def list_active(self) -> list[ModelMeta]: ...
+    async def decommission(self, name: str): ...
 
-| 步骤 | 任务 | 产出 |
+@dataclass
+class ModelMeta:
+    name: str; provider: str; version: str
+    capabilities: list[str]  # ["chat", "vision", "embedding"]
+    status: str  # active | testing | deprecated
+    cost_per_1k_tokens: float
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | ModelRegistry + MongoDB | 所有模型可查询 | 0.25 |
+| 2 | Dashboard + 生命周期 + 测试 | 模型状态可视化 | 0.25 |
+
+**合计：0.5d**。

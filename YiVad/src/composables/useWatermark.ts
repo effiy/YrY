@@ -16,25 +16,24 @@ function escapeXml(str: string): string {
 }
 
 function generateWatermarkSVG(config: WatermarkConfig): string {
-  const lines = [
-    config.username,
-    config.timestamp.toLocaleString(),
-    config.ipAddress || "N/A",
-    "YiVad Management Console",
-  ];
+  const lines = [config.username, config.timestamp.toLocaleString(), config.ipAddress || "N/A", "YiVad Management Console"];
   const lineHeight = 20;
   const width = 280;
   const height = lines.length * lineHeight + 20;
 
   const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
     <g transform="rotate(-25, ${width / 2}, ${height / 2})">
-      ${lines.map((line, i) => `
+      ${lines
+        .map(
+          (line, i) => `
         <text x="${width / 2}" y="${20 + i * lineHeight}" text-anchor="middle"
               fill="${config.color}" fill-opacity="${config.opacity}"
               font-size="${config.fontSize}px" font-family="${config.fontFamily}">
           ${escapeXml(line)}
         </text>
-      `).join("")}
+      `
+        )
+        .join("")}
     </g>
   </svg>`;
 
@@ -67,7 +66,7 @@ export function useWatermark() {
       opacity: store.opacity,
       fontSize: store.fontSize,
       fontFamily: store.fontFamily,
-      timestamp: currentTime.value,
+      timestamp: currentTime.value
     });
   });
 
@@ -82,17 +81,17 @@ export function useWatermark() {
     left: "0",
     width: "100%",
     height: "100%",
-    zIndex: 9999,
+    zIndex: 9999
   }));
 
   function setupTamperProtection(element: HTMLElement) {
     if (observer.value) observer.value.disconnect();
 
-    observer.value = new MutationObserver((mutations) => {
+    observer.value = new MutationObserver(mutations => {
       for (const mutation of mutations) {
         if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
           const removed = Array.from(mutation.removedNodes);
-          if (removed.some((n) => n === element || element.contains(n as Node))) {
+          if (removed.some(n => n === element || element.contains(n as Node))) {
             document.body.appendChild(element);
             console.warn("[Watermark] Tamper detected — watermark restored");
           }
@@ -112,6 +111,6 @@ export function useWatermark() {
     watermarkDataURI,
     overlayStyle,
     setupTamperProtection,
-    isEnabled: computed(() => store.enabled),
+    isEnabled: computed(() => store.enabled)
   };
 }

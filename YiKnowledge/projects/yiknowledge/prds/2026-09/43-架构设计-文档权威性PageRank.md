@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-40: 知识库内部文档间引用强度计算 — PageRank 算法评估文档权威性"
 tags: [需求文档, 知识库, PageRank, 引用强度, 权威性, 排序]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-40
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [43-prd-task-文档权威性PageRank]
+related_tests: [43-prd-test-文档权威性PageRank]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [aier, engineer]
 ---
 

@@ -44,12 +44,12 @@ export function useMermaidRender(options: UseMermaidRenderOptions) {
   // Watch the HTML source for changes
   const stopWatch = watch(
     html,
-    async (newHtml) => {
+    async newHtml => {
       if (!hasMermaidBlocks(newHtml)) return;
       if (enabled && !enabled.value) return;
       await render();
     },
-    { immediate: true, flush: "post" },
+    { immediate: true, flush: "post" }
   );
 
   // Ensure initial render catches edge cases where the immediate watcher

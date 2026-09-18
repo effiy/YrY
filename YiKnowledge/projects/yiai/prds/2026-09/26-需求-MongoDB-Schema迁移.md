@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-22: MongoDB 数据迁移与 Schema 版本管理 — 集合级滚动升级策略"
 tags: [需求文档, MongoDB, 数据迁移, Schema版本, 滚动升级, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [26-prd-task-MongoDB-Schema迁移]
+related_tests: [26-prd-test-MongoDB-Schema迁移]
 ---
 
 # YA-09-22: MongoDB 数据迁移与 Schema 版本管理 — 集合级滚动升级策略
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-22 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 > 依赖：无
@@ -45,6 +53,7 @@ MongoDB 作为 Schemaless 数据库，Schema 变更不会在数据库层面被�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 Schema 变更方式
@@ -95,6 +104,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：迁移框架 — 自建轻量 vs Alembic vs MongoDB 原生
@@ -138,6 +148,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造前后对比
@@ -193,6 +204,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 迁移管理器
@@ -359,6 +371,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -375,6 +388,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 迁移性能对比
@@ -396,6 +410,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### Requirement: 迁移管理
@@ -432,6 +447,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -443,6 +459,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚方式 | 影响 | 恢复时间 |
@@ -454,6 +471,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择自建迁移框架而非使用 Alembic？
@@ -470,6 +488,7 @@ MongoDB 的 `updateMany` 在默认 Write Concern 下会持有写锁。1000 条/�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 关键指标
@@ -492,6 +511,7 @@ MongoDB 的 `updateMany` 在默认 Write Concern 下会持有写锁。1000 条/�
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 ### 安全需求
@@ -512,6 +532,7 @@ MongoDB 的 `updateMany` 在默认 Write Concern 下会持有写锁。1000 条/�
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] 迁移脚本有唯一版本号（递增整数）
@@ -526,6 +547,7 @@ MongoDB 的 `updateMany` 在默认 Write Concern 下会持有写锁。1000 条/�
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

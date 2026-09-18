@@ -7,9 +7,10 @@
 import { computed, ref } from 'vue';
 import {
   ChatLineSquare, Picture, ChatDotRound, Search,
-  Clock, CollectionTag, Delete, DocumentCopy, Cpu,
+  Clock, CollectionTag, Delete, DocumentCopy, Cpu, Setting,
 } from '@element-plus/icons-vue';
 import { useChatStore } from '../../stores/chat';
+import { t } from '@/shared/i18n';
 import RequestStatusButton from '../RequestStatusButton.vue';
 
 defineProps<{ hasContent: boolean }>();
@@ -32,7 +33,16 @@ const modelOptions = computed(() => {
 // ── Popover visibility ──
 const showHistoryPopover = ref(false);
 const showContextPopover = ref(false);
+const showRagSettings = ref(false);
 const historyQuery = ref('');
+
+// ── RAG chat modes ──
+const RAG_CHAT_MODES = [
+  { value: 'condense_plus_context', label: 'Condense + Context' },
+  { value: 'condense', label: 'Condense Question' },
+  { value: 'context', label: 'Context Only' },
+  { value: 'simple', label: 'Simple' },
+];
 
 // ── Prompt history ──
 const recentPromptChips = computed(() => {
@@ -173,7 +183,7 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
 </script>
 
 <template>
-  <div class="ct-toolbar" role="toolbar" aria-label="Conversation toolbar">
+  <div class="ct-toolbar" role="toolbar" :aria-label="t('chatToolbarAriaLabel')">
     <!-- Left: FAQ, prompt history, skills, cross-project, upload, edit, tags, bot -->
     <div class="ct-left">
       <!-- FAQ -->
@@ -188,11 +198,11 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
         placement="bottom"
         :width="420"
         trigger="click"
-        :title="`Prompt history · ${s.promptHistory.length}`"
+        :title="t('chatPromptHistoryCount', String(s.promptHistory.length))"
         @show="historyQuery = ''"
       >
         <template #reference>
-          <el-button circle :icon="Clock" title="Prompt history" />
+          <el-button circle :icon="Clock" :title="t('chatPromptHistory')" />
         </template>
         <div class="ct-history-pop">
           <div v-if="recentPromptChips.length" class="ct-history-recent">
@@ -256,7 +266,7 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
       </el-popover>
 
       <!-- Upload image -->
-      <el-tooltip content="Upload image" placement="bottom">
+      <el-tooltip :content="t('chatUploadImage')" placement="bottom">
         <el-button circle :icon="Picture" :disabled="!canUpload" @click="onUploadImage" />
       </el-tooltip>
 
@@ -281,7 +291,7 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
           trigger="click"
         >
           <template #reference>
-            <div class="ct-pill on" title="Active context">
+            <div class="ct-pill on" :title="t('chatActiveContext')">
               <el-icon :size="14"><CollectionTag /></el-icon>
               <span class="ct-pill-label">Context: {{ contextFiles.length }}</span>
             </div>
@@ -295,7 +305,7 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
               <span
                 class="ct-context-item-path"
                 :class="{ 'is-clickable': file.kind === 'scope' || file.kind === 'ctx' }"
-                :title="file.kind === 'scope' || file.kind === 'ctx' ? 'Click to preview' : file.detail"
+                :title="file.kind === 'scope' || file.kind === 'ctx' ? t('chatClickToPreview') : file.detail"
                 @click="(file.kind === 'scope' || file.kind === 'ctx') ? handleContextFileClick(file.label) : undefined"
               >{{ file.label }}</span>
               <span class="ct-context-item-detail">{{ file.detail }}</span>
@@ -351,6 +361,63 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
         >
           <span class="ct-rag-status-dot" />
         </span>
+
+        <!-- RAG settings -->
+        <el-popover
+          v-if="s.knowledgeGrounded"
+          v-model:visible="showRagSettings"
+          popper-class="ct-tb-popper"
+          placement="bottom"
+          :width="280"
+          trigger="click"
+        >
+          <template #reference>
+            <span class="ct-rag-settings-btn" :class="{ 'is-active': showRagSettings }" title="RAG settings">
+              <el-icon :size="12"><Setting /></el-icon>
+            </span>
+          </template>
+          <div class="ct-rag-settings">
+            <div class="ct-rag-setting-section">
+              <span class="ct-rag-setting-label">Chat Mode</span>
+              <el-select
+                :model-value="s.ragChatMode"
+                size="small"
+                @update:model-value="s.ragChatMode = $event as string"
+              >
+                <el-option
+                  v-for="m in RAG_CHAT_MODES"
+                  :key="m.value"
+                  :label="m.label"
+                  :value="m.value"
+                />
+              </el-select>
+            </div>
+            <div class="ct-rag-setting-row">
+              <span class="ct-rag-setting-label">Hybrid (BM25+Vector)</span>
+              <el-switch :model-value="s.ragHybrid" size="small" @update:model-value="s.ragHybrid = $event as boolean" />
+            </div>
+            <div class="ct-rag-setting-row">
+              <span class="ct-rag-setting-label">Rerank results</span>
+              <el-switch :model-value="s.ragRerank" size="small" @update:model-value="s.ragRerank = $event as boolean" />
+            </div>
+            <div class="ct-rag-setting-row">
+              <span class="ct-rag-setting-label">Citation injection</span>
+              <el-switch :model-value="s.ragCitations" size="small" @update:model-value="s.ragCitations = $event as boolean" />
+            </div>
+            <div class="ct-rag-setting-section">
+              <span class="ct-rag-setting-label">Num queries (multi-query)</span>
+              <el-input-number
+                :model-value="s.ragNumQueries"
+                :min="0"
+                :max="10"
+                size="small"
+                controls-position="right"
+                style="width: 100px"
+                @update:model-value="s.ragNumQueries = $event as number"
+              />
+            </div>
+          </div>
+        </el-popover>
       </div>
 
       <RequestStatusButton
@@ -677,6 +744,52 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+// ── RAG settings popover ──
+.ct-rag-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: -4px;
+  cursor: pointer;
+  color: var(--text-secondary, #d4d0e8);
+  border-radius: 4px;
+  transition: all 0.15s;
+  &:hover { color: var(--primary-light, #818cf8); background: rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
+  &.is-active { color: var(--primary-light, #818cf8); }
+}
+
+.ct-rag-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.ct-rag-setting-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.ct-rag-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.08);
+}
+
+.ct-rag-setting-label {
+  font-size: 11px;
+  color: var(--text-secondary, #d4d0e8);
+  font-weight: 500;
+}
 </style>
 
 <style lang="scss">

@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-11: Knowledge Watcher 内部机制与性能调优 — 文件扫描管线与增量索引策略"
 tags: [需求文档, Knowledge Watcher, 文件扫描, 增量索引, 性能调优, 后端]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-15
 source: 内部
 type: 需求
 status: 需求已编写
@@ -17,9 +18,17 @@ estimate_backend: 2.0
 review_status: 待评审
 issue_type: 架构
 roles: [engineer, srer]
+source_okr: [yiknowledge-001]
+related_modules: [14-prd-task-KnowledgeWatcher内部机制与性能调优]
+related_tests: [14-prd-test-KnowledgeWatcher内部机制与性能调优]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-15'
 ---
 
 # YK-09-11: Knowledge Watcher 内部机制与性能调优 — 文件扫描管线与增量索引策略
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/14-prd-task-KnowledgeWatcher内部机制与性能调优.md)，验证方案见 [测试方案](../../tests/2026-09/14-prd-test-KnowledgeWatcher内部机制与性能调优.md)。
 
 > 需求编号：YK-09-11 · 优先级：P1 · 人天：2.0d · 状态：需求已编写
 > 依赖：YK-09-02（文件同步可靠性）、YK-09-01（Frontmatter 质量治理）

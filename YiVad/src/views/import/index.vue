@@ -8,14 +8,7 @@
       <!-- Step 1: Upload -->
       <div class="import-page__step">
         <h3>1. Upload File</h3>
-        <el-upload
-          drag
-          :auto-upload="false"
-          :on-change="handleFile"
-          :limit="1"
-          accept=".csv,.json"
-          class="import-page__upload"
-        >
+        <el-upload drag :auto-upload="false" :on-change="handleFile" :limit="1" accept=".csv,.json" class="import-page__upload">
           <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
           <div class="el-upload__text">Drop CSV or JSON file here or <em>click to browse</em></div>
         </el-upload>
@@ -51,7 +44,7 @@
             <tbody>
               <tr v-for="(row, ri) in previewRows.slice(0, 5)" :key="ri">
                 <td v-for="f in importFields.filter(f => f.mapped)" :key="f.key">
-                  {{ row[f.mapped] || '-' }}
+                  {{ row[f.mapped] || "-" }}
                 </td>
               </tr>
             </tbody>
@@ -110,7 +103,9 @@ function parseCSV(text: string): { headers: string[]; rows: Record<string, strin
   const rows = lines.slice(1).map(line => {
     const cols = line.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
     const row: Record<string, string> = {};
-    headers.forEach((h, i) => { row[h] = cols[i] || ""; });
+    headers.forEach((h, i) => {
+      row[h] = cols[i] || "";
+    });
     return row;
   });
   return { headers, rows };
@@ -124,7 +119,9 @@ function parseJSON(text: string): { headers: string[]; rows: Record<string, stri
     const headers = Object.keys(arr[0]);
     const rows = arr.map((item: any) => {
       const row: Record<string, string> = {};
-      headers.forEach(h => { row[h] = String(item[h] ?? ""); });
+      headers.forEach(h => {
+        row[h] = String(item[h] ?? "");
+      });
       return row;
     });
     return { headers, rows };
@@ -144,7 +141,9 @@ function handleFile(file: any) {
     previewRows.value = result.rows;
     // Auto-map matching columns
     importFields.forEach(f => {
-      const match = result.headers.find(h => h.toLowerCase() === f.key.toLowerCase() || h.toLowerCase().includes(f.key.toLowerCase()));
+      const match = result.headers.find(
+        h => h.toLowerCase() === f.key.toLowerCase() || h.toLowerCase().includes(f.key.toLowerCase())
+      );
       f.mapped = match || "";
     });
     ElMessage.success(`Parsed ${result.rows.length} rows`);
@@ -175,7 +174,9 @@ async function doImport() {
         due_date: mapped("due_date") || ""
       });
       success++;
-    } catch { errors++; }
+    } catch {
+      errors++;
+    }
   }
   importResult.value = { success, errors };
   importing.value = false;
@@ -185,24 +186,37 @@ async function doImport() {
 
 <style scoped lang="scss">
 .import-page {
-  padding: 24px;
   height: calc(100vh - 95px);
+  padding: 24px;
   overflow: auto;
   background: var(--el-bg-color-page);
 }
-.import-page__head { margin-bottom: 24px; }
-.import-page__title { margin: 0; font-size: 20px; font-weight: 600; }
-.import-page__body { max-width: 700px; }
+.import-page__head {
+  margin-bottom: 24px;
+}
+.import-page__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+.import-page__body {
+  max-width: 700px;
+}
 .import-page__step {
   margin-bottom: 28px;
-  h3 { margin: 0 0 12px; font-size: 15px; }
+  h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
 }
-.import-page__upload { width: 100%; }
+.import-page__upload {
+  width: 100%;
+}
 .import-page__file-info {
-  margin-top: 10px;
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  margin-top: 10px;
   font-size: 13px;
   color: var(--el-text-color-secondary);
 }
@@ -213,31 +227,34 @@ async function doImport() {
 }
 .import-page__map-row {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
 }
 .import-page__map-label {
+  width: 80px;
   font-size: 13px;
   font-weight: 500;
-  width: 80px;
 }
 .import-page__preview {
   overflow-x: auto;
   table {
-    border-collapse: collapse;
-    font-size: 13px;
     width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
   }
-  th, td {
-    padding: 6px 10px;
-    border: 1px solid var(--el-border-color-lighter);
-    text-align: left;
+  th,
+  td {
     max-width: 180px;
+    padding: 6px 10px;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
     white-space: nowrap;
+    border: 1px solid var(--el-border-color-lighter);
   }
-  th { background: var(--el-fill-color-lighter); }
+  th {
+    background: var(--el-fill-color-lighter);
+  }
 }
 .import-page__actions {
   display: flex;
@@ -245,8 +262,8 @@ async function doImport() {
   align-items: center;
 }
 .import-page__result {
-  margin-top: 10px;
   display: flex;
   gap: 8px;
+  margin-top: 10px;
 }
 </style>

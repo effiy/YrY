@@ -12,19 +12,8 @@
             <el-tooltip :content="focusMode ? 'Show sidebar' : 'Focus mode'" placement="bottom">
               <el-button size="small" :icon="focusMode ? Rank : FullScreen" @click="focusMode = !focusMode" />
             </el-tooltip>
-            <el-select
-              :model-value="mod.status"
-              placeholder="Status"
-              size="small"
-              @change="changeStatus"
-              style="width: 130px"
-            >
-              <el-option
-                v-for="(label, val) in MODULE_STATUS_MAP"
-                :key="val"
-                :label="label"
-                :value="val"
-              />
+            <el-select :model-value="mod.status" placeholder="Status" size="small" @change="changeStatus" style="width: 130px">
+              <el-option v-for="(label, val) in MODULE_STATUS_MAP" :key="val" :label="label" :value="val" />
             </el-select>
             <el-dropdown trigger="click">
               <el-button :icon="MoreFilled" size="small" />
@@ -60,15 +49,23 @@
                   <div class="md-issue__accent" :style="{ background: issueStatusColor(issue.status) }" />
                   <div class="md-issue__head">
                     <code class="md-issue__key" @click.stop="router.push(`/issue/${issue.key}`)">{{ issue.key }}</code>
-                    <el-tag :type="issueTypeTag(issue.issue_type)" size="small" effect="plain">{{ typeLabel(issue.issue_type) }}</el-tag>
-                    <span class="md-issue__status" :style="{ color: issueStatusColor(issue.status) }">{{ issueStatusLabel(issue.status) }}</span>
+                    <el-tag :type="issueTypeTag(issue.issue_type)" size="small" effect="plain">{{
+                      typeLabel(issue.issue_type)
+                    }}</el-tag>
+                    <span class="md-issue__status" :style="{ color: issueStatusColor(issue.status) }">{{
+                      issueStatusLabel(issue.status)
+                    }}</span>
                   </div>
                   <div class="md-issue__title" @click="openIssuePreview(issue)">{{ issue.title }}</div>
                   <div class="md-issue__foot">
                     <span v-if="issue.assignee" class="md-issue__foot-item">
                       <el-icon><User /></el-icon>{{ issue.assignee }}
                     </span>
-                    <span v-if="issue.due_date" class="md-issue__foot-item" :class="{ 'md-issue__foot-item--overdue': isIssueOverdue(issue) }">
+                    <span
+                      v-if="issue.due_date"
+                      class="md-issue__foot-item"
+                      :class="{ 'md-issue__foot-item--overdue': isIssueOverdue(issue) }"
+                    >
                       <el-icon><Clock /></el-icon>{{ formatDate(issue.due_date) }}
                     </span>
                     <span v-if="issue.labels?.length" class="md-issue__labels">
@@ -107,7 +104,7 @@
               <div v-else class="md-sb-row">
                 <span class="md-sb-row__label">Lead</span>
                 <span class="md-sb-row__value" :class="{ 'md-sb-row__value--empty': !mod.lead }">
-                  {{ mod.lead || 'Unassigned' }}
+                  {{ mod.lead || "Unassigned" }}
                 </span>
               </div>
             </div>
@@ -126,11 +123,23 @@
               <template v-if="editingSchedule">
                 <div class="md-sb-edit-row">
                   <span class="md-sb-edit-row__label">Start</span>
-                  <el-date-picker v-model="scheduleEdit.start_date" size="small" type="date" value-format="YYYY-MM-DD" style="width:100%" />
+                  <el-date-picker
+                    v-model="scheduleEdit.start_date"
+                    size="small"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
                 </div>
                 <div class="md-sb-edit-row">
                   <span class="md-sb-edit-row__label">Due</span>
-                  <el-date-picker v-model="scheduleEdit.due_date" size="small" type="date" value-format="YYYY-MM-DD" style="width:100%" />
+                  <el-date-picker
+                    v-model="scheduleEdit.due_date"
+                    size="small"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
                 </div>
                 <div class="md-sb-edit-actions">
                   <el-button size="small" type="primary" :loading="savingSchedule" @click="saveSchedule">Save</el-button>
@@ -140,12 +149,14 @@
               <template v-else>
                 <div class="md-sb-row">
                   <span class="md-sb-row__label">Start Date</span>
-                  <span class="md-sb-row__value md-sb-row__value--muted">{{ mod.start_date ? formatDate(mod.start_date) : '-' }}</span>
+                  <span class="md-sb-row__value md-sb-row__value--muted">{{
+                    mod.start_date ? formatDate(mod.start_date) : "-"
+                  }}</span>
                 </div>
                 <div class="md-sb-row">
                   <span class="md-sb-row__label">Due Date</span>
                   <span class="md-sb-row__value" :class="{ 'md-sb-row__value--overdue': isOverdue }">
-                    {{ mod.due_date ? formatDate(mod.due_date) : '-' }}
+                    {{ mod.due_date ? formatDate(mod.due_date) : "-" }}
                   </span>
                 </div>
               </template>
@@ -162,7 +173,9 @@
               <div class="md-sb-row">
                 <span class="md-sb-row__label">Project</span>
                 <span class="md-sb-row__value">
-                  <el-button link size="small" type="primary" @click="router.push(`/project/${mod.project_key}`)">{{ projectName }}</el-button>
+                  <el-button link size="small" type="primary" @click="router.push(`/project/${mod.project_key}`)">{{
+                    projectName
+                  }}</el-button>
                 </span>
               </div>
             </div>
@@ -184,12 +197,20 @@
               <div class="md-sb-row">
                 <span class="md-sb-row__label">Progress</span>
                 <span class="md-sb-row__value">
-                  <el-progress :percentage="progressPct" :stroke-width="6" :show-text="true" style="width:100px" :color="progressColor" />
+                  <el-progress
+                    :percentage="progressPct"
+                    :stroke-width="6"
+                    :show-text="true"
+                    style="width: 100px"
+                    :color="progressColor"
+                  />
                 </span>
               </div>
               <div class="md-sb-row">
                 <span class="md-sb-row__label">Breakdown</span>
-                <span class="md-sb-row__value md-sb-row__value--muted">{{ doneCount }} done · {{ inProgressCount }} active · {{ pendingCount }} pending</span>
+                <span class="md-sb-row__value md-sb-row__value--muted"
+                  >{{ doneCount }} done · {{ inProgressCount }} active · {{ pendingCount }} pending</span
+                >
               </div>
               <div class="md-sb-row">
                 <span class="md-sb-row__label">Created</span>
@@ -214,12 +235,7 @@
           </div>
           <div class="md-sticky-bar__actions">
             <el-button size="small" :icon="Edit" @click="openEdit">Edit</el-button>
-            <el-select
-              :model-value="mod.status"
-              size="small"
-              @change="changeStatus"
-              style="width: 130px"
-            >
+            <el-select :model-value="mod.status" size="small" @change="changeStatus" style="width: 130px">
               <el-option v-for="(label, val) in MODULE_STATUS_MAP" :key="val" :label="label" :value="val" />
             </el-select>
             <el-button size="small" :icon="Upload" circle @click="scrollToTop" />
@@ -238,7 +254,7 @@
             <el-row :gutter="16">
               <el-col :span="12">
                 <el-form-item label="Status">
-                  <el-select v-model="editDialog.form.status" style="width:100%">
+                  <el-select v-model="editDialog.form.status" style="width: 100%">
                     <el-option v-for="(label, val) in MODULE_STATUS_MAP" :key="val" :label="label" :value="val" />
                   </el-select>
                 </el-form-item>
@@ -261,12 +277,17 @@
             <el-row :gutter="16">
               <el-col :span="12">
                 <el-form-item label="Start Date">
-                  <el-date-picker v-model="editDialog.form.start_date" type="date" style="width:100%" value-format="YYYY-MM-DD" />
+                  <el-date-picker
+                    v-model="editDialog.form.start_date"
+                    type="date"
+                    style="width: 100%"
+                    value-format="YYYY-MM-DD"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="Due Date">
-                  <el-date-picker v-model="editDialog.form.due_date" type="date" style="width:100%" value-format="YYYY-MM-DD" />
+                  <el-date-picker v-model="editDialog.form.due_date" type="date" style="width: 100%" value-format="YYYY-MM-DD" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -292,7 +313,22 @@
 <script setup lang="ts" name="moduleDetail">
 import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Edit, Delete, Folder, Tickets, InfoFilled, Connection, Calendar, User, Clock, FullScreen, Rank, Upload, MoreFilled, CopyDocument } from "@element-plus/icons-vue";
+import {
+  Edit,
+  Delete,
+  Folder,
+  Tickets,
+  InfoFilled,
+  Connection,
+  Calendar,
+  User,
+  Clock,
+  FullScreen,
+  Rank,
+  Upload,
+  MoreFilled,
+  CopyDocument
+} from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { READMECard } from "@/components";
@@ -325,7 +361,8 @@ const rules: FormRules = {
 };
 
 const editDialog = reactive({
-  visible: false, submitting: false,
+  visible: false,
+  submitting: false,
   form: { name: "", description: "", status: "planned" as ModuleStatus, lead: "", start_date: "", due_date: "" }
 });
 
@@ -353,12 +390,18 @@ const isOverdue = computed(() => {
 // ── Keyboard Shortcuts ──────────────────────────────────────────────
 function handleKeydown(e: KeyboardEvent) {
   if (editDialog.visible) {
-    if (e.key === "Escape") { editDialog.visible = false; return; }
+    if (e.key === "Escape") {
+      editDialog.visible = false;
+      return;
+    }
     return;
   }
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-  if (e.key === "e" || e.key === "E") { e.preventDefault(); openEdit(); }
+  if (e.key === "e" || e.key === "E") {
+    e.preventDefault();
+    openEdit();
+  }
 }
 
 // ── Sticky Bar ──────────────────────────────────────────────────────
@@ -389,7 +432,9 @@ async function saveLead() {
     await store.editModule(mod.value.key, { lead: leadEdit.value || undefined } as any);
     ElMessage.success("Lead updated");
     editingLead.value = false;
-  } finally { savingLead.value = false; }
+  } finally {
+    savingLead.value = false;
+  }
 }
 
 // ── Inline Edit: Schedule ───────────────────────────────────────────
@@ -409,11 +454,13 @@ async function saveSchedule() {
   try {
     await store.editModule(mod.value.key, {
       start_date: scheduleEdit.start_date || undefined,
-      due_date: scheduleEdit.due_date || undefined,
+      due_date: scheduleEdit.due_date || undefined
     } as any);
     ElMessage.success("Schedule updated");
     editingSchedule.value = false;
-  } finally { savingSchedule.value = false; }
+  } finally {
+    savingSchedule.value = false;
+  }
 }
 
 async function changeStatus(newStatus: string) {
@@ -426,10 +473,16 @@ async function changeStatus(newStatus: string) {
 const descContent = ref("");
 const descFilePath = computed(() => {
   if (!mod.value) return "";
-  const slug = mod.value.name.toLowerCase().replace(/[→+(),]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = mod.value.name
+    .toLowerCase()
+    .replace(/[→+(),]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
   return `modules/${slug}.md`;
 });
-const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
+const descDialogRef = ref<{
+  openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
+} | null>(null);
 
 const descHtml = computed(() => renderMarkdown(descContent.value || ""));
 
@@ -447,7 +500,7 @@ function openDescDialog() {
         title: mod.value?.name || "",
         type: "module-description",
         status: mod.value?.status || "",
-        project: mod.value?.project_key || "",
+        project: mod.value?.project_key || ""
       });
       descContent.value = content;
     }
@@ -455,7 +508,13 @@ function openDescDialog() {
 }
 
 function issueStatusColor(status: string): string {
-  const m: Record<string, string> = { done: "#67c23a", in_progress: "#409eff", in_review: "#e6a23c", todo: "#909399", backlog: "#c0c4cc" };
+  const m: Record<string, string> = {
+    done: "#67c23a",
+    in_progress: "#409eff",
+    in_review: "#e6a23c",
+    todo: "#909399",
+    backlog: "#c0c4cc"
+  };
   return m[status] || "#909399";
 }
 
@@ -467,14 +526,30 @@ function isIssueOverdue(issue: Issue): boolean {
 async function openIssuePreview(issue: Issue) {
   const date = (issue.created_at || "").slice(0, 10);
   const type = issue.issue_type || "task";
-  const slug = issue.title.toLowerCase().replace(/[→+(),]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const slug = issue.title
+    .toLowerCase()
+    .replace(/[→+(),]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
   const filePath = `issues/${date}/${type}/${slug}.md`;
   let content = issue.description || "";
-  try { const res = await readKnowledgeFile(filePath); content = res.content || content; } catch { /* fallback */ }
+  try {
+    const res = await readKnowledgeFile(filePath);
+    content = res.content || content;
+  } catch {
+    /* fallback */
+  }
   descDialogRef.value?.openFile({
-    path: filePath, title: issue.title, content,
+    path: filePath,
+    title: issue.title,
+    content,
     onSave: async (newContent: string) => {
-      await writeKnowledgeFile(filePath, newContent, { title: issue.title, type: "issue-description", status: issue.status, created: date });
+      await writeKnowledgeFile(filePath, newContent, {
+        title: issue.title,
+        type: "issue-description",
+        status: issue.status,
+        created: date
+      });
     }
   });
 }
@@ -487,7 +562,7 @@ function openEdit() {
     status: mod.value.status,
     lead: mod.value.lead || "",
     start_date: mod.value.start_date || "",
-    due_date: mod.value.due_date || "",
+    due_date: mod.value.due_date || ""
   };
   editDialog.visible = true;
 }
@@ -503,7 +578,7 @@ async function submitEdit() {
       status: editDialog.form.status,
       lead: editDialog.form.lead,
       start_date: editDialog.form.start_date || undefined,
-      due_date: editDialog.form.due_date || undefined,
+      due_date: editDialog.form.due_date || undefined
     } as any);
     ElMessage.success("Module updated");
     editDialog.visible = false;
@@ -519,7 +594,9 @@ async function handleDelete() {
     await store.removeModule(mod.value.key, mod.value.project_key);
     ElMessage.success("Module deleted");
     goBack();
-  } catch { /* cancelled */ }
+  } catch {
+    /* cancelled */
+  }
 }
 
 async function cloneModule() {
@@ -534,7 +611,7 @@ async function cloneModule() {
     lead: mod.value.lead,
     issue_keys: [],
     start_date: mod.value.start_date,
-    due_date: mod.value.due_date,
+    due_date: mod.value.due_date
   } as any);
   ElMessage.success("Module cloned");
   router.push(`/module/${newKey}`);
@@ -546,7 +623,9 @@ async function loadIssues() {
     const res = await getIssueList({ project_key: mod.value.project_key, pageSize: 500 });
     const all = (res.data?.list as Issue[]) ?? [];
     issues.value = all.filter(i => mod.value!.issue_keys!.includes(i.key));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 function goBack() {
@@ -560,12 +639,21 @@ async function loadProjectName() {
     const res = await getProjectList({ pageSize: 500 });
     const projects = (res.data?.list as Project[]) ?? [];
     projectName.value = projects.find(p => p.key === mod.value!.project_key)?.name || mod.value!.project_key;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
-function statusLabel(s: ModuleStatus) { return MODULE_STATUS_MAP[s] || s; }
+function statusLabel(s: ModuleStatus) {
+  return MODULE_STATUS_MAP[s] || s;
+}
 function statusTagType(s: ModuleStatus): "success" | "warning" | "info" | "primary" | "danger" {
-  const m: Record<ModuleStatus, "success" | "warning" | "info" | "primary" | "danger"> = { planned: "info", in_progress: "primary", completed: "success", cancelled: "danger" };
+  const m: Record<ModuleStatus, "success" | "warning" | "info" | "primary" | "danger"> = {
+    planned: "info",
+    in_progress: "primary",
+    completed: "success",
+    cancelled: "danger"
+  };
   return m[s] || "info";
 }
 
@@ -586,40 +674,64 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .md-page {
-  padding: 24px;
   min-height: calc(100vh - 95px);
-  background: var(--el-bg-color-page);
+  padding: 24px;
   outline: none;
+  background: var(--el-bg-color-page);
 }
 
 // ── Header ──
 .md-header {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 20px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-left: 4px solid #9b59b6;
+  border-radius: 12px;
 }
-.md-header__top { display: flex; justify-content: space-between; align-items: center; }
-.md-header__actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-.md-header__title { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
+.md-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.md-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+}
+.md-header__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
 
 // ── Body ──
-.md-body { display: flex; gap: 20px; align-items: flex-start; }
-.md-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.md-body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.md-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
 
 // ── Cards ──
 .md-card {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .md-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -627,47 +739,86 @@ onUnmounted(() => {
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-.md-card__icon { font-size: 16px; color: var(--el-color-primary); }
-.md-card__head-right { margin-left: auto; display: flex; align-items: center; }
-.md-card__body { padding: 16px; }
+.md-card__icon {
+  font-size: 16px;
+  color: var(--el-color-primary);
+}
+.md-card__head-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.md-card__body {
+  padding: 16px;
+}
 
 // ── Empty States ──
 .md-empty {
-  text-align: center;
   padding: 24px 16px;
-  &__icon { font-size: 28px; color: var(--el-text-color-placeholder); margin-bottom: 8px; }
-  &__text { margin: 0; font-size: 13px; font-weight: 500; color: var(--el-text-color-secondary); }
-  &__hint { margin: 4px 0 0; font-size: 12px; color: var(--el-text-color-placeholder); }
+  text-align: center;
+  &__icon {
+    margin-bottom: 8px;
+    font-size: 28px;
+    color: var(--el-text-color-placeholder);
+  }
+  &__text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--el-text-color-secondary);
+  }
+  &__hint {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
 }
 
 // ── Issues ──
-.md-issues { display: flex; flex-direction: column; gap: 6px; }
+.md-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .md-issue {
   position: relative;
   padding: 10px;
   background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
-  transition: box-shadow 0.15s, transform 0.12s;
-  &:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+  transition:
+    box-shadow 0.15s,
+    transform 0.12s;
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  }
 }
 .md-issue__accent {
   position: absolute;
-  left: 0; top: 0; bottom: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 3px;
   border-radius: 6px 0 0 6px;
 }
-.md-issue__head { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.md-issue__head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 5px;
+}
 .md-issue__key {
+  padding: 1px 5px;
+  font-family: monospace;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  font-family: monospace;
-  background: var(--el-fill-color);
-  padding: 1px 5px;
-  border-radius: 3px;
   cursor: pointer;
+  background: var(--el-fill-color);
+  border-radius: 3px;
   transition: color 0.12s;
-  &:hover { color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
 .md-issue__status {
   margin-left: auto;
@@ -677,153 +828,205 @@ onUnmounted(() => {
   letter-spacing: 0.3px;
 }
 .md-issue__title {
+  display: -webkit-box;
+  margin-bottom: 5px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.35;
-  margin-bottom: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   color: var(--el-text-color-primary);
   cursor: pointer;
-  &:hover { color: var(--el-color-primary); }
+  -webkit-box-orient: vertical;
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
-.md-issue__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.md-issue__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
 .md-issue__foot-item {
   display: inline-flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   font-size: 11px;
-  color: var(--el-text-color-secondary);
   line-height: 1.4;
-  .el-icon { font-size: 11px; }
-  &--overdue { color: var(--el-color-danger); font-weight: 600; }
+  color: var(--el-text-color-secondary);
+  .el-icon {
+    font-size: 11px;
+  }
+  &--overdue {
+    font-weight: 600;
+    color: var(--el-color-danger);
+  }
 }
-.md-issue__labels { display: flex; gap: 4px; margin-left: auto; }
+.md-issue__labels {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
 .md-issue__label {
-  font-size: 10px;
-  padding: 0 5px;
-  border-radius: 3px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-  line-height: 1.7;
   max-width: 72px;
+  padding: 0 5px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--el-color-primary);
   white-space: nowrap;
+  background: var(--el-color-primary-light-9);
+  border-radius: 3px;
 }
 
 // ── Sidebar ──
 .md-sidebar {
-  width: 280px;
-  flex-shrink: 0;
   position: sticky;
   top: 20px;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 12px;
+  width: 280px;
 }
 .md-sb-group {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .md-sb-group__title {
   display: flex;
-  align-items: center;
   gap: 7px;
+  align-items: center;
   padding: 10px 14px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
-  .el-icon { font-size: 13px; }
+  .el-icon {
+    font-size: 13px;
+  }
 }
 .md-sb-edit {
-  margin-left: auto;
   display: flex;
   align-items: center;
-  border: none;
-  background: transparent;
+  padding: 2px;
+  margin-left: auto;
   color: var(--el-text-color-placeholder);
   cursor: pointer;
-  padding: 2px;
+  background: transparent;
+  border: none;
   border-radius: 4px;
   transition: all 0.12s;
-  &:hover { background: var(--el-fill-color); color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-fill-color);
+  }
 }
 .md-sb-edit-row {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 4px 0;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
 .md-sb-edit-row__label {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
   flex-shrink: 0;
   width: 42px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
 }
 .md-sb-edit-actions {
   display: flex;
   gap: 6px;
   padding-top: 8px;
 }
-.md-sb-group__body { padding: 8px 14px; }
+.md-sb-group__body {
+  padding: 8px 14px;
+}
 .md-sb-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 6px 0;
   font-size: 13px;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
-.md-sb-row__label { color: var(--el-text-color-secondary); font-weight: 500; flex-shrink: 0; }
+.md-sb-row__label {
+  flex-shrink: 0;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
 .md-sb-row__value {
   text-align: right;
-  &--muted { font-size: 12px; color: var(--el-text-color-placeholder); }
-  &--overdue { color: var(--el-color-danger); font-weight: 600; }
-  &--empty { color: var(--el-text-color-placeholder); font-style: italic; }
+  &--muted {
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
+  &--overdue {
+    font-weight: 600;
+    color: var(--el-color-danger);
+  }
+  &--empty {
+    font-style: italic;
+    color: var(--el-text-color-placeholder);
+  }
 }
-.md-sb-dep { margin-bottom: 8px; &:last-child { margin-bottom: 0; } }
+.md-sb-dep {
+  margin-bottom: 8px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
 .md-sb-dep__label {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
   display: block;
   margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 .md-sb-dep__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  .el-tag { cursor: pointer; }
+  .el-tag {
+    cursor: pointer;
+  }
+}
+.md-not-found {
+  padding: 80px 0;
 }
 
-.md-not-found { padding: 80px 0; }
-
 // ── Focus Mode ──
-.md-sidebar--hidden { display: none; }
+.md-sidebar--hidden {
+  display: none;
+}
 
 // ── Sticky Bottom Bar ──
 .md-sticky-bar {
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   z-index: 100;
+  padding: 10px 24px;
   background: var(--el-bg-color);
   border-top: 1px solid var(--el-border-color);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-  padding: 10px 24px;
+  box-shadow: 0 -4px 20px rgb(0 0 0 / 8%);
   transform: translateY(100%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  &--visible { transform: translateY(0); }
+  &--visible {
+    transform: translateY(0);
+  }
 }
 .md-sticky-bar__inner {
   display: flex;
@@ -832,70 +1035,97 @@ onUnmounted(() => {
   max-width: 1400px;
   margin: 0 auto;
 }
-.md-sticky-bar__left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.md-sticky-bar__left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
 .md-sticky-bar__key {
+  flex-shrink: 0;
+  padding: 2px 8px;
   font-family: monospace;
   font-size: 12px;
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
-  padding: 2px 8px;
   border-radius: 4px;
-  flex-shrink: 0;
 }
 .md-sticky-bar__title {
-  font-size: 14px;
-  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
 }
-.md-sticky-bar__actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.md-sticky-bar__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+}
 
 // ── Edit Dialog Sections ──
 .md-edit-section {
   margin-bottom: 8px;
 }
 .md-edit-section__title {
+  padding: 0 0 8px 100px;
+  margin-bottom: 12px;
   font-size: 13px;
   font-weight: 700;
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  padding: 0 0 8px 100px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  margin-bottom: 12px;
 }
 
 // ── Print Styles ──
 @media print {
   .md-page {
-    padding: 0;
     height: auto;
+    padding: 0;
     overflow: visible;
-    background: #fff;
+    background: #ffffff;
   }
-  .md-header__actions { display: none; }
-  .md-sidebar { display: none; }
-  .md-sticky-bar { display: none; }
+  .md-header__actions {
+    display: none;
+  }
+  .md-sidebar {
+    display: none;
+  }
+  .md-sticky-bar {
+    display: none;
+  }
   .md-header {
-    border: none;
-    border-left: none;
     padding: 0 0 16px;
     margin-bottom: 16px;
-    border-bottom: 2px solid #000;
-    border-radius: 0;
-  }
-  .md-header__title { font-size: 18px; }
-  .md-card {
     border: none;
+    border-bottom: 2px solid #000000;
+    border-left: none;
     border-radius: 0;
-    border-bottom: 1px solid #eee;
-    break-inside: avoid;
-    margin-bottom: 12px;
   }
-  .md-card__head { background: transparent; border-bottom: 1px solid #eee; }
-  .md-card__body { padding: 12px 0; }
-  .md-body { display: block; }
-  .md-main { max-width: 100%; }
+  .md-header__title {
+    font-size: 18px;
+  }
+  .md-card {
+    margin-bottom: 12px;
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+    border-radius: 0;
+    break-inside: avoid;
+  }
+  .md-card__head {
+    background: transparent;
+    border-bottom: 1px solid #eeeeee;
+  }
+  .md-card__body {
+    padding: 12px 0;
+  }
+  .md-body {
+    display: block;
+  }
+  .md-main {
+    max-width: 100%;
+  }
 }
 </style>

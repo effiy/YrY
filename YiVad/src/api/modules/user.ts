@@ -161,7 +161,7 @@ export async function exportUserInfo(_params: User.ReqUserParams): Promise<Blob>
 // ── Dictionary queries ──
 
 async function queryDict<T>(cname: string): Promise<YiAiEnvelope<T[]>> {
-  const res = await queryDocuments<T>({ cname, limit: 1000, orderBy: "sort", orderType: "asc" });
+  const res = await queryDocuments<T>({ cname, pageSize: 1000, orderBy: "sort", orderType: "asc" });
   return { ...res, data: (res.data?.list ?? []) as unknown as T[] };
 }
 

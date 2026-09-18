@@ -1,41 +1,66 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-83"
-title: "YA-09-83: 服务端 API Mock 服务 — 前端独立开发与测试的仿真后端环境 — 开发任务"
+prd_task_id: "YA-09-110"
+title: "YA-09-110: API Mock 服务 — 前端独立开发仿真后端 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "87-需求-API-Mock服务.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-83: 服务端 API Mock 服务 — 前端独立开发与测试的仿真后端环境 — 开发任务
+# YA-09-110: API Mock 服务 — 前端独立开发仿真后端 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[87-需求-API-Mock服务.md](../../prds/2026-09/87-需求-API-Mock服务.md)
-> 需求编号：YA-09-83 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-110 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+YiAi 停止时前端无法开发。Mock 模式根据 OpenAPI schema 生成仿真响应，前端可独立开发。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+# 启动 Mock 模式
+uvicorn app:app --port 10086 --env MOCK_MODE=true
 
-| 步骤 | 任务 | 产出 |
+# mock/mock_data.py
+MOCK_RESPONSES = {
+    "services.database.data_service.query_documents": {
+        "code": 0, "data": {"list": [{"key": "mock-1", "name": "Mock Project"}], "total": 1},
+    },
+    "/auth/menu/list": {
+        "code": 0, "data": [{"path": "/home", "name": "home", "meta": {"title": "首页"}}],
+    },
+}
+```
+
+### 模式切换
+
+| 模式 | 数据源 |
+|------|--------|
+| 正常 | MongoDB + Ollama |
+| Mock | `mock/*.json` 静态数据 |
+| Record | 录制真实响应 → 保存到 mock 文件 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | Mock 中间件 + 数据文件 | `MOCK_MODE=true` 返回仿真数据 | 0.25 |
+| 2 | Record 模式 + 测试 | 录制真实响应 → 离线回放 | 0.25 |
+
+**合计：0.5d**。

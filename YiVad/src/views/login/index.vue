@@ -68,23 +68,20 @@ async function login() {
   justify-content: center;
   min-height: 100vh;
   background: var(--el-bg-color-page);
-
   &-form {
     width: 380px;
     padding: 36px 32px;
     background: var(--el-bg-color);
     border-radius: 8px;
     box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
-
     &__title {
       margin: 0 0 32px;
       font-size: 24px;
       font-weight: 700;
-      text-align: center;
       color: var(--el-color-primary);
+      text-align: center;
       letter-spacing: 2px;
     }
-
     &__btn {
       width: 100%;
     }

@@ -6,7 +6,7 @@ priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiVad
 project_id: yivad
 prd_month: "202609"
@@ -17,10 +17,13 @@ source_modules: []
 # 性能监控与优化体系 — 测试规格
 
 > 来源 PRD：[08-prd-性能监控与优化.md](../../prds/2026-09/08-prd-性能监控与优化.md)
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。用例覆盖度以 PRD 的 `FR-x.y` / `NFR-x` 编号追溯，不复制需求正文。
 > 提取日期：2026-09-11
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 单元测试：webVitals（自研）
@@ -108,24 +111,34 @@ source_modules: []
 
 ---
 
+## 源码索引
 
-## 补充：单元测试用例
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| `src/utils/performance/performanceObserver.ts` | 性能观察器 | `YiVad/src/utils/performance/performanceObserver.ts` |
+| `src/hooks/useSlowThreshold.ts` | 慢请求阈值 hook | `YiVad/src/hooks/useSlowThreshold.ts` |
 
-### UT-PF01: usePerformanceMonitor
+---
 
-| # | 测试场景 | 输入 | 期望结果 |
-|---|---------|------|---------|
-| 1 | FPS 采集 | requestAnimationFrame 回调 | fps 值在 0-120 范围 |
-| 2 | 内存采集 | performance.memory | usedJSHeapSize > 0 |
-| 3 | 长任务检测 | 任务 > 50ms | 标记为长任务 |
-| 4 | DOM 节点数 | querySelectorAll('*') | 节点数 > 0 |
-| 5 | 采样间隔 | 30s 定时器 | 每 30s 采集一次 |
+## 覆盖矩阵
 
-### UT-PF02: 代码分割验证
+| 编号 | 用例 | 覆盖 FR | 优先级 | 自动化 |
+|------|------|--------|--------|--------|
+| TC-PERF-001 | slowThreshold 读写 | FR-8.8 | P1 | ✅ useSlowThreshold.test.ts |
+| TC-PERF-002 | formatSlowThreshold 格式化 | FR-8.8 | P1 | ✅ useSlowThreshold.test.ts |
+| TC-PERF-003 | SLOW_THRESHOLD_PRESETS 预设 | FR-8.8 | P1 | ✅ useSlowThreshold.test.ts |
+| TC-PERF-004 | markTiming 创建标记 | FR-8.3 | P1 | ✅ performanceObserver.test.ts |
+| TC-PERF-005 | measureTiming 测量耗时 | FR-8.3 | P1 | ✅ performanceObserver.test.ts |
+| TC-PERF-006 | getUserMeasures 获取记录 | FR-8.5 | P1 | ✅ performanceObserver.test.ts |
 
-| # | 测试场景 | 输入 | 期望结果 |
-|---|---------|------|---------|
-| 1 | 路由懒加载 | 访问路由 | 按需加载 chunk |
-| 2 | 动态 import | import('xlsx') | 仅在需要时加载 |
-| 3 | 首屏体积 | 构建产物分析 | 首屏 JS < 500KB |
 
+
+
+
+## 执行状态
+
+| 指标 | 值 |
+|------|-----|
+| 全局测试 | 78 文件 · 680 用例 · 100% 通过 |
+| 本模块测试 | 2 文件 · 10 用例 · 全部通过 |
+| 执行命令 | `cd YiVad && pnpm test` |

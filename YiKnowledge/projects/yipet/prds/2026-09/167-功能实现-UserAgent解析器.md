@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-161: UserAgent 解析器 — User-Agent 字符串解析器、浏览器/操作系统/设备检测、当前 UA 展示、UA 库浏览器、解析结果一键复制、分享 UA 到聊天用于兼容性调试"
 tags: [需求文档, UserAgent, 浏览器解析, 设备检测, 操作系统, UA库, 兼容性调试, 开发者工具, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.2
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yipet-004]
+related_modules: [167-prd-task-UserAgent解析器]
+related_tests: [167-prd-test-UserAgent解析器]
 ---
 
 # YP-09-161: UserAgent 解析器 — User-Agent 字符串解析器、浏览器/操作系统/设备检测、当前 UA 展示、UA 库浏览器、解析结果一键复制、分享 UA 到聊天用于兼容性调试
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-161 · 优先级：P2 · 人天：0.2d · 状态：需求已编写
 > 依赖：无
@@ -60,6 +68,7 @@ User-Agent 字符串是 Web 浏览器识别的核心标识符，在前端开发�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 UA 解析流程
@@ -136,6 +145,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：UA 解析引擎 — 自实现规则 vs ua-parser-js vs useragent 库
@@ -189,6 +199,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后 UA 解析流程
@@ -268,6 +279,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 UA 解析引擎
@@ -550,6 +562,7 @@ export function formatEnvAsJson(parsed: ParsedUA): string {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -566,6 +579,7 @@ export function formatEnvAsJson(parsed: ParsedUA): string {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：Chrome on Windows 解析
@@ -620,6 +634,7 @@ export function formatEnvAsJson(parsed: ParsedUA): string {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -631,6 +646,7 @@ export function formatEnvAsJson(parsed: ParsedUA): string {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -642,6 +658,7 @@ export function formatEnvAsJson(parsed: ParsedUA): string {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么不在 Chrome 扩展中使用 ua-parser-js？
@@ -662,6 +679,7 @@ URL 动态获取 UA 库（如从 CDN 拉取最新列表）会产生网络依赖�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -686,6 +704,7 @@ URL 动态获取 UA 库（如从 CDN 拉取最新列表）会产生网络依赖�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 浏览器正则顺序正确 (Edge 必须在 Chrome 之前，否则 Edge 被误判为 Chrome)

@@ -1,49 +1,30 @@
 ---
 doc_type: test
-title: "内容安全策略与数据隐私合规 — 测试规格"
-status: 待开始
-priority: P2
+title: "安全合规 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202608"
-prd_task_id: "YP-08-07"
-source_prds: ["03-基础设施-安全合规"]
-source_modules: []
----
-# 内容安全策略与数据隐私合规 — 测试规格
-
-> 来源 PRD：[03-基础设施-安全合规.md](../../prds/2026-08/03-基础设施-安全合规.md)
-> 提取日期：2026-09-11
-
+source_prds: ["03-合规-安全合规"]
+source_modules: ["03-prd-task-安全合规"]
 ---
 
-## 测试场景
+# 安全合规 — 测试用例
 
-### 功能验证
+## 测试用例
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-CSP-001 | CSP 无 eval | `rg "eval\("` 零匹配 | P0 |
+| TC-CSP-002 | Token 加密存储 | chrome.storage 隔离 | P0 |
+| TC-CSP-003 | XSS DOMPurify | script 标签被清洗 | P0 |
+| TC-CSP-004 | 最小权限 | manifest 仅声明必需权限 | P1 |
+| TC-CSP-005 | web_accessible 精确 | 仅 assets/*, cdn/* | P1 |
 
-### 边界测试
+## 出口准则
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过

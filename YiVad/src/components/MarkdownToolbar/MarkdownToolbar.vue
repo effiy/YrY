@@ -59,13 +59,13 @@ function wrapLine(prefix: string) {
 <style scoped>
 .md-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
   padding: 4px 6px;
   background: var(--el-fill-color-lighter);
-  border-radius: 6px 6px 0 0;
   border: 1px solid var(--el-border-color-lighter);
   border-bottom: none;
-  flex-wrap: wrap;
+  border-radius: 6px 6px 0 0;
 }
 .md-toolbar .el-button {
   min-width: 28px;

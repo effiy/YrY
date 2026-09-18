@@ -1,6 +1,7 @@
 ---
 title: Jobs-to-Be-Done (JTBD) 框架摘要
-tags: [framework, jtbd, producter, discovery]
+aliases: [jobs-to-be-done, jtbd-framework, jtbd-summary, customer-jobs]
+tags: [frameworks, jtbd, producter, discovery]
 category: producter/frameworks
 created: 2026-08-21
 updated: 2026-09-10
@@ -12,9 +13,10 @@ review_cycle: quarterly
 roles: [producter]
 benefit: "产品经理使用 JTBD 框架理解用户真正想要完成的任务，超越表面功能需求，找到稳定不变的用户目标"
 related:
-  - ./README.md
   - ./03-框架-Kano模型摘要.md
+  - ./08-框架-机会解决方案树.md
   - ../discovery/prd/01-需求-PRD模板.md
+  - ../discovery/03-发现-用户画像方法.md
 ---
 
 # Jobs-to-Be-Done (JTBD) 框架摘要

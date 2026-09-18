@@ -9,10 +9,18 @@ const props = defineProps<{ role: string; goalId: string }>();
 const router = useRouter();
 
 function navigate() {
-  if (props.goalId) router.push(`/executiver/okr/${props.role}?goal=${props.goalId}`);
+  if (props.goalId) router.push(`/knowledge/executive/okr?role=${props.role}&goal=${props.goalId}`);
 }
 </script>
 
 <style scoped lang="scss">
-.goal-link { font-family: monospace; font-size: 11px; color: var(--el-color-primary); cursor: pointer; &:hover { text-decoration: underline; } }
+.goal-link {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
 </style>

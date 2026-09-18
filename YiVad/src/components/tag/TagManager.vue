@@ -47,9 +47,23 @@ const addTag = () => {
 
 <style scoped lang="scss">
 .tag-manager {
-  &__header { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-  &__list { display: flex; flex-wrap: wrap; gap: 8px; }
-  &__tag { cursor: pointer; }
-  &__count { font-size: 10px; opacity: 0.8; }
+  &__header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  &__tag {
+    cursor: pointer;
+  }
+  &__count {
+    font-size: 10px;
+    opacity: 0.8;
+  }
 }
 </style>

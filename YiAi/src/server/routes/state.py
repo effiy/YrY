@@ -1,9 +1,10 @@
 import logging
 from typing import Optional
+
 from fastapi import APIRouter, Query
 
-from models.schemas import StateRecord
 from domain.state import StateStoreService
+from models.schemas import StateRecord
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 from shared.response import success
@@ -35,11 +36,11 @@ async def create_record(record: StateRecord):
 
 @router.get("/records", operation_id="query_state_records")
 async def query_records(
-    record_type: Optional[str] = Query(None),
-    tags: Optional[list[str]] = Query(None),
-    title_contains: Optional[str] = Query(None),
-    created_after: Optional[str] = Query(None),
-    created_before: Optional[str] = Query(None),
+    record_type: str | None = Query(None),
+    tags: list[str] | None = Query(None),
+    title_contains: str | None = Query(None),
+    created_after: str | None = Query(None),
+    created_before: str | None = Query(None),
     page_num: int = Query(1, ge=1),
     page_size: int = Query(2000, ge=1, le=8000),
 ):

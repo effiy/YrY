@@ -1,41 +1,61 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-201"
-title: "YA-09-201: 实时协作推理 — 多用户共享推理会话、异步轮次模型、每用户异步贡献上下文、所有输入就绪或超时后 AI 响应、结果通过 WebSocket 广播、会话持久化、访问控制 — 开发任务"
+prd_task_id: "YA-09-142"
+title: "YA-09-142: 实时协作推理 — 多用户共享会话 + WebSocket 广播 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "205-需求-实时协作推理-变体B.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-201: 实时协作推理 — 多用户共享推理会话、异步轮次模型、每用户异步贡献上下文、所有输入就绪或超时后 AI 响应、结果通过 WebSocket 广播、会话持久化、访问控制 — 开发任务
+# YA-09-142: 实时协作推理 — 多用户共享会话 + WebSocket 广播 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[205-需求-实时协作推理-变体B.md](../../prds/2026-09/205-需求-实时协作推理-变体B.md)
-> 需求编号：YA-09-201 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-142 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+多用户共享同一推理会话——各自提供上下文片段，收集完毕或超时后 AI 综合所有输入生成回答，WebSocket 广播结果。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+class CollaborativeSession:
+    def __init__(self, timeout: int = 30):
+        self.contributions: dict[str, str] = {}
+        self.ready = asyncio.Event()
 
-| 步骤 | 任务 | 产出 |
+    async def contribute(self, user_id: str, context: str):
+        self.contributions[user_id] = context
+        if len(self.contributions) >= self.min_participants:
+            self.ready.set()
+
+    async def infer(self):
+        await asyncio.wait_for(self.ready.wait(), timeout=self.timeout)
+        combined = "\n".join(f"{uid}: {ctx}" for uid, ctx in self.contributions.items())
+        response = await llm.chat(messages=[{"role": "user", "content": combined}])
+        await ws_manager.broadcast(self.room, {"response": response})
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 贡献收集 + 超时推理 | 多用户输入合并推理 | 0.25 |
+| 2 | WebSocket 广播 + 测试 | 所有参与者收到结果 | 0.25 |
+
+**合计：0.5d**。

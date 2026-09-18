@@ -1,41 +1,60 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-214"
-title: "YA-09-214: 对话质量监控 — 实时质量指标、幻觉检测启发式、响应长度异常检测、用户满意度代理指标、质量告警 — 开发任务"
+prd_task_id: "YA-09-146"
+title: "YA-09-146: 对话质量监控 — 幻觉检测 + 异常告警 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "214-需求-对话质量监控.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-214: 对话质量监控 — 实时质量指标、幻觉检测启发式、响应长度异常检测、用户满意度代理指标、质量告警 — 开发任务
+# YA-09-146: 对话质量监控 — 幻觉检测 + 异常告警 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[214-需求-对话质量监控.md](../../prds/2026-09/214-需求-对话质量监控.md)
-> 需求编号：YA-09-214 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-146 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+实时监控 LLM 对话质量：检测幻觉（回答与知识库矛盾）、异常短响应、用户重复提问等质量信号。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+async def check_hallucination(answer: str, sources: list[str]) -> float:
+    """LLM 自检：回答中的事实是否在来源文档中"""
+    response = await llm.chat(messages=[{
+        "role": "user", "content": f"回答:\n{answer}\n\n来源:\n{chr(10).join(sources)}\n\n回答是否完全基于来源？1-5 分。仅返回数字。"
+    }])
+    return int(response.strip())
 
-| 步骤 | 任务 | 产出 |
+async def quality_monitor(session_id: str):
+    metrics = {
+        "hallucination_score": await check_hallucination(answer, sources),
+        "response_length": len(answer),
+        "repeat_query": await check_if_repeat(query, history),
+    }
+    if metrics["hallucination_score"] <= 2: await send_wework(f"幻觉风险: {session_id}")
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 幻觉检测 + 异常响应检测 | 低分回答触发告警 | 0.25 |
+| 2 | Dashboard + 趋势 + 测试 | 质量趋势可视化 | 0.25 |
+
+**合计：0.5d**。

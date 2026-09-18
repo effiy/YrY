@@ -21,6 +21,7 @@ export default [
       ".husky",
       ".local",
       "/bin",
+      "src/typings/*.d.ts",
       "stats.html"
     ]
   },

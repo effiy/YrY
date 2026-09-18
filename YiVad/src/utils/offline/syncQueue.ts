@@ -27,14 +27,16 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-export async function addToQueue(item: Omit<SyncQueueItem, "id" | "timestamp" | "retryCount" | "maxRetries" | "status">): Promise<string> {
+export async function addToQueue(
+  item: Omit<SyncQueueItem, "id" | "timestamp" | "retryCount" | "maxRetries" | "status">
+): Promise<string> {
   const queueItem: SyncQueueItem = {
     ...item,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     timestamp: Date.now(),
     retryCount: 0,
     maxRetries: 3,
-    status: "pending",
+    status: "pending"
   };
 
   const db = await openDB();

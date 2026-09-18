@@ -13,6 +13,7 @@ from typing import Any
 
 import yaml
 
+from domain.knowledge.scanner import resolve_safe
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
@@ -22,36 +23,16 @@ logger = logging.getLogger(__name__)
 _FRONTMATTER_RE = re.compile(r"^---\s*\n(?P<yaml>.*?)\n---\s*(?P<rest>.*)$", re.DOTALL)
 
 
-def _base_dir() -> str:
-    return os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
-
-
-def _resolve_safe(rel_path: str) -> str:
-    cleaned = (rel_path or "").strip().replace("\\", "/")
-    if not cleaned:
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message="Empty path")
-    if cleaned.startswith("/"):
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message="Absolute paths not allowed")
-    norm = os.path.normpath(cleaned)
-    if norm.startswith("..") or os.path.isabs(norm):
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message="Invalid path")
-    base = _base_dir()
-    abs_path = os.path.realpath(os.path.abspath(os.path.join(base, norm)))
-    if os.path.commonpath([base, abs_path]) != base:
-        raise BusinessException(ErrorCode.INVALID_PARAMS, message="Path escapes knowledge base")
-    return abs_path
-
-
 def _normalize_meta(meta: dict) -> dict:
     """Drop None values and coerce non-scalar types to strings so YAML round-trips cleanly."""
     out: dict[str, Any] = {}
     for k, v in (meta or {}).items():
         if v is None or v == "":
             continue
-        if isinstance(v, (str, int, float, bool)):
+        if isinstance(v, str | int | float | bool):
             out[k] = v
         elif isinstance(v, list):
-            out[k] = [str(x) if not isinstance(x, (str, int, float, bool)) else x for x in v if x is not None and x != ""]
+            out[k] = [str(x) if not isinstance(x, str | int | float | bool) else x for x in v if x is not None and x != ""]
         else:
             out[k] = str(v)
     return out
@@ -64,13 +45,13 @@ def write_entry_markdown(rel_path: str, content: str, meta: dict) -> str:
     path written (same as ``rel_path``). The body is appended verbatim after
     the frontmatter block.
     """
-    abs_path = _resolve_safe(rel_path)
+    abs_path = resolve_safe(rel_path)
     if os.path.isdir(abs_path):
         raise BusinessException(
             ErrorCode.INVALID_PARAMS,
             message=f"Cannot write to a directory: {rel_path}",
         )
-    os.makedirs(os.path.dirname(abs_path) or _base_dir(), exist_ok=True)
+    os.makedirs(os.path.dirname(abs_path) or os.path.realpath(os.path.abspath(settings.knowledge_base_dir)), exist_ok=True)
     front = yaml.safe_dump(_normalize_meta(meta), allow_unicode=True, sort_keys=False, default_flow_style=False).strip()
     text = f"---\n{front}\n---\n\n{content.lstrip()}"
     with open(abs_path, "w", encoding="utf-8") as f:
@@ -81,7 +62,7 @@ def write_entry_markdown(rel_path: str, content: str, meta: dict) -> str:
 def entry_exists(rel_path: str) -> bool:
     """True if a knowledge file already exists at the relative path."""
     try:
-        abs_path = _resolve_safe(rel_path)
+        abs_path = resolve_safe(rel_path)
     except BusinessException:
         return False
     return os.path.isfile(abs_path)
@@ -96,7 +77,7 @@ def delete_entry_markdown(rel_path: str) -> bool:
     the metadata doc is deleted, the markdown file must go too.
     """
     try:
-        abs_path = _resolve_safe(rel_path)
+        abs_path = resolve_safe(rel_path)
     except BusinessException:
         return False
     if not os.path.isfile(abs_path):
@@ -108,7 +89,7 @@ def delete_entry_markdown(rel_path: str) -> bool:
 def read_entry_frontmatter(rel_path: str) -> dict:
     """Return parsed frontmatter for an existing file, or empty dict on miss."""
     try:
-        abs_path = _resolve_safe(rel_path)
+        abs_path = resolve_safe(rel_path)
     except BusinessException:
         return {}
     if not os.path.isfile(abs_path):

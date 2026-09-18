@@ -1,12 +1,5 @@
 <template>
-  <el-popover
-    :visible="visible"
-    placement="bottom-end"
-    :width="400"
-    trigger="click"
-    @show="handleOpen"
-    @hide="visible = false"
-  >
+  <el-popover :visible="visible" placement="bottom-end" :width="400" trigger="click" @show="handleOpen" @hide="visible = false">
     <template #reference>
       <el-badge :value="unreadCount" :max="99" :hidden="unreadCount === 0">
         <el-button :icon="Bell" text @click="visible = !visible" />
@@ -17,19 +10,12 @@
       <div class="notif-panel__head">
         <span class="notif-panel__title">通知</span>
         <div class="notif-panel__head-actions">
-          <el-button v-if="unreadCount > 0" text size="small" type="primary" @click="handleMarkAllRead">
-            全部已读
-          </el-button>
-          <el-button text size="small" @click="handleViewAll">
-            查看全部
-          </el-button>
+          <el-button v-if="unreadCount > 0" text size="small" type="primary" @click="handleMarkAllRead"> 全部已读 </el-button>
+          <el-button text size="small" @click="handleViewAll"> 查看全部 </el-button>
         </div>
       </div>
 
-      <NotificationFilter
-        v-model="activeFilter"
-        :counts="typeCounts"
-      />
+      <NotificationFilter v-model="activeFilter" :counts="typeCounts" />
 
       <div class="notif-panel__list" v-loading="loading">
         <template v-if="filteredList.length">
@@ -69,14 +55,12 @@ const typeCounts = computed(() => ({
   system: store.notificationsByType.system.length,
   user_action: store.notificationsByType.user_action.length,
   ai: store.notificationsByType.ai.length,
-  error: store.notificationsByType.error.length,
+  error: store.notificationsByType.error.length
 }));
 
 const filteredList = computed(() => {
   if (activeFilter.value === "all") return store.unreadNotifications.slice(0, 10);
-  return store.unreadNotifications
-    .filter((n) => n.type === activeFilter.value)
-    .slice(0, 10);
+  return store.unreadNotifications.filter(n => n.type === activeFilter.value).slice(0, 10);
 });
 
 function handleClick(notification: Notification): void {
@@ -97,7 +81,7 @@ function handleMarkAllRead(): void {
 
 function handleViewAll(): void {
   visible.value = false;
-  router.push("/notifications");
+  router.push("/notification");
 }
 
 function handleOpen(): void {
@@ -110,25 +94,21 @@ function handleOpen(): void {
 .notif-panel {
   margin: -12px;
 }
-
 .notif-panel__head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px 8px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .notif-panel__title {
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 600;
 }
-
 .notif-panel__head-actions {
   display: flex;
   gap: 4px;
 }
-
 .notif-panel__list {
   max-height: 420px;
   overflow-y: auto;

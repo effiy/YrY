@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-14: RAG 混合检索权重自动调优 — 基于反馈信号的 Alpha 参数优化"
 tags: [需求文档, RAG, 混合检索, Alpha调优, BM25, 向量检索, 反馈驱动]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-15
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-14
 estimate_frontend: 1.5
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [17-prd-task-RAG混合检索Alpha调优]
+related_tests: [17-prd-test-RAG混合检索Alpha调优]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-15'
+---
 roles: [aier, engineer]
 ---
 

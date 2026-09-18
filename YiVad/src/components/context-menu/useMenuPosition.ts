@@ -5,11 +5,7 @@ interface Position {
   y: number;
 }
 
-export function useMenuPosition(
-  anchor: Ref<Position>,
-  menuWidth: Ref<number>,
-  menuHeight: Ref<number>
-) {
+export function useMenuPosition(anchor: Ref<Position>, menuWidth: Ref<number>, menuHeight: Ref<number>) {
   const adjustedPosition = computed(() => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;

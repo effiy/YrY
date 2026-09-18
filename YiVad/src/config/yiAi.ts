@@ -23,6 +23,25 @@ export function buildYiAiUrl(path: string): string {
 }
 
 /**
+ * Build a URL for SSE / streaming requests. In dev, `YIAI_API_URL` is a
+ * relative path (`/api`) routed through the Rsbuild dev proxy — but the
+ * proxy (http-proxy-middleware) buffers the entire response, so streamed
+ * chunks never reach the browser until the stream closes. YiAi's CORS is
+ * wide open (`access-control-allow-origin: *`), so for streaming endpoints
+ * we bypass the proxy and call the backend directly. In prod/test the base
+ * is already an absolute URL, so we just use `buildYiAiUrl`.
+ */
+export function buildYiAiStreamUrl(path: string): string {
+  const p = String(path || "");
+  if (p.startsWith("http")) return p;
+  const base = YIAI_API_URL;
+  if (base.startsWith("/")) {
+    return `http://localhost:10086/${p.replace(/^\/+/, "")}`;
+  }
+  return buildYiAiUrl(p);
+}
+
+/**
  * Read the JWT issued at login. The Pinia user store (`yivad-user`) is the
  * source of truth — `setToken(token)` writes it into the store's persisted
  * state, which `pinia-plugin-persistedstate` serializes to localStorage as

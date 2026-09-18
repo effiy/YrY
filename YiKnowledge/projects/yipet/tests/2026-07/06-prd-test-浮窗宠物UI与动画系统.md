@@ -1,49 +1,39 @@
 ---
 doc_type: test
-title: "YP-07-06: 浮窗宠物UI与动画系统 — Shadow DOM 注入 + 9 种关键帧动画 + 空闲行为状态机 — 测试规格"
-status: 待开始
-priority: P0
+title: "YP-07-06: 浮窗宠物 UI 与动画 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202607"
-prd_task_id: "YP-07-06"
 source_prds: ["06-功能实现-浮窗宠物UI与动画系统"]
-source_modules: []
----
-# YP-07-06: 浮窗宠物UI与动画系统 — Shadow DOM 注入 + 9 种关键帧动画 + 空闲行为状态机 — 测试规格
-
-> 来源 PRD：[06-功能实现-浮窗宠物UI与动画系统.md](../../prds/2026-07/06-功能实现-浮窗宠物UI与动画系统.md)
-> 提取日期：2026-09-11
-
+source_modules: ["06-prd-task-浮窗宠物UI与动画系统"]
 ---
 
-## 测试场景
+# YP-07-06: 浮窗宠物 UI 与动画 — 测试用例
 
-### 功能验证
+## 测试分层
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 层级 | 覆盖 |
+|------|------|
+| L2 集成 | Shadow DOM + CSS 动画 + 空闲状态机 |
+| L3 E2E | 视觉验证 |
 
-### 边界测试
+## 测试用例
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-PET-001 | Pet DOM 渲染 | Shadow DOM 内正确的 DOM 结构 | P0 |
+| TC-PET-002 | 样式隔离 | 宿主 CSS 不影响 Pet 样式 | P0 |
+| TC-PET-003 | 空闲动画切换 | idle→sleep→唤醒 状态机正确 | P0 |
+| TC-PET-004 | hover 动画触发 | 鼠标悬停→弹跳动画 | P1 |
+| TC-PET-005 | 30s 无操作→sleep | 空闲状态机 30s 计时正确 | P1 |
+| TC-PET-006 | prefers-reduced-motion | 禁用所有动画 | P2 |
 
-### 异常测试
+## 出口准则
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 动画帧率 60fps (Composite 层)

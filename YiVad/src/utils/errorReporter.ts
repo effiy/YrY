@@ -47,7 +47,7 @@ export function reportError(ctx: ErrorContext, options: ReportOptions = {}): voi
     ERROR_DEDUP_MAP.set(fingerprint, {
       count: 1,
       firstSeen: Date.now(),
-      lastSeen: Date.now(),
+      lastSeen: Date.now()
     });
   }
 
@@ -84,17 +84,17 @@ function flushErrors(): void {
   const batch = ERROR_QUEUE.splice(0, ERROR_QUEUE.length);
 
   const payload = JSON.stringify({
-    errors: batch.map((ctx) => ({
+    errors: batch.map(ctx => ({
       type: ctx.type,
       message: ctx.error.message,
       stack: ctx.error.stack,
       componentName: ctx.componentName,
       url: ctx.url,
-      timestamp: ctx.timestamp,
+      timestamp: ctx.timestamp
     })),
     userAgent: navigator.userAgent,
     url: window.location.href,
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
 
   if (navigator.sendBeacon) {
@@ -104,7 +104,7 @@ function flushErrors(): void {
       method: "POST",
       body: payload,
       headers: { "Content-Type": "application/json" },
-      keepalive: true,
+      keepalive: true
     }).catch(() => {
       // Silent fail - cannot report the reporter
     });

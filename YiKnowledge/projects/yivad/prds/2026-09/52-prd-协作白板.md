@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式"
 tags: [需求文档, 协作白板, 头脑风暴, 实时协作, 画布, 导出, 演示模式]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式
 
 > 需求编号：YV-09-112 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/52-prd-task-协作白板.md)，验证方案见 [测试方案](../../tests/2026-09/52-prd-test-协作白板.md)。
 > 依赖：无（可独立实现，但 STS-109 文档协作空间的 WebSocket 基础设施可复用）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -61,6 +84,7 @@ YiVad 团队的远程协作场景中有一个明确的空白——视觉化头�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前视觉协作能力
@@ -125,6 +149,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：渲染引擎 — Canvas 2D vs SVG vs DOM + CSS vs WebGL
@@ -179,6 +204,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 协作白板系统架构
@@ -255,6 +281,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 核心类型定义
@@ -427,6 +454,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -446,6 +474,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：创建白板和基本绘制
@@ -500,6 +529,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -512,6 +542,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -523,6 +554,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择 Yjs 而非自己实现协作？
@@ -543,6 +575,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -567,6 +600,7 @@ export const BUILTIN_TEMPLATE_IDS = [
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] Canvas: SVG 元素使用 `transform` 而非修改 x/y 避免 layout thrashing

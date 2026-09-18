@@ -4,9 +4,10 @@ Exposes the one-time bridge token mechanism from services/bridge_service.py
 as REST endpoints for YiPet and YiVad to call.
 """
 from fastapi import APIRouter, Body
+
 from services.bridge_service import get_bridge_service
-from shared.response import success, fail
 from shared.error_codes import ErrorCode
+from shared.response import fail, success
 
 router = APIRouter(prefix="/bridge", tags=["Bridge"])
 

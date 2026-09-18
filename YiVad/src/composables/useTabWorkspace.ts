@@ -15,7 +15,7 @@ export function useTabWorkspace() {
       title,
       path,
       createdAt: Date.now(),
-      closable: path !== "/",
+      closable: path !== "/"
     });
   }
 
@@ -39,6 +39,6 @@ export function useTabWorkspace() {
     closeAllTabs: () => store.closeAllTabs(),
     pinTab: (id: string) => store.pinTab(id),
     unpinTab: (id: string) => store.unpinTab(id),
-    reorderTabs: (order: string[]) => store.reorderTabs(order),
+    reorderTabs: (order: string[]) => store.reorderTabs(order)
   };
 }

@@ -1,3 +1,10 @@
+[project]
+name = "yiai"
+version = "1.0.0"
+description = "YiAi — FastAPI backend for the Yi family. AI chat (Ollama), dual-write file persistence, RAG (llama_index), RSS aggregation, WeCom messaging, and agent loop execution."
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
 [tool.pytest.ini_options]
 # Test discovery paths — YiAi is a flat src/ tree, not a package
 pythonpath = ["src"]
@@ -16,3 +23,12 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests (require running services)",
 ]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+# Third-party packages without type stubs
+ignore_missing_imports = true
+exclude = ["tests/"]

@@ -1,37 +1,56 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-86"
-title: "YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-86: 集成市场 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "39-prd-集成市场.md"
 ---
 
-# YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手 — 开发任务
+# YV-09-86: 集成市场 — 开发方案
 
-> 来源 PRD：[39-prd-集成市场.md](../prds/2026-09/39-prd-集成市场.md)
-> 需求编号：YV-09-86 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-86 · 状态：待开始 · 未来规划
 
-## 五、实施步骤
-
-| 步骤 | 操作 | 路径 | 验证 | 人天 |
-|------|------|------|------|------|
-| 1 | 后端集成注册表 + 统一接口 | `YiAi/integration_service.py` | 注册/查询集成 | 0.05 |
-| 2 | 后端 OAuth PKCE 服务 | `YiAi/oauth_service.py` | PKCE 流程正确 | 0.05 |
-| 3 | 前端集成目录 UI | `YiVad/IntegrationCatalog.vue` | 目录展示和筛选 | 0.05 |
-| 4 | 前端安装流程向导 | `YiVad/InstallFlow.vue` | 多步骤流程正确 | 0.06 |
-| 5 | 前端 OAuth 配置助手 | `YiVad/OAuthHelper.vue` | PKCE 流程 UI | 0.03 |
-| 6 | 前端健康状态 + 统计 | `YiVad/IntegrationHealth.vue` | 状态指示和详情 | 0.04 |
-| 7 | 集成测试 | 前后端 | Slack/GitHub 完整安装流程 | 0.02 |
-
-**总人天：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+第三方集成市场，提供常用工具的连接器：GitHub/GitLab/Jira/Slack/企业微信/飞书。
+
+### 集成类型
+
+| 集成 | 功能 |
+|------|------|
+| GitHub | Issue PR 关联、Commit 引用 |
+| Jira | Issue 双向同步 |
+| Slack/企微/飞书 | 消息通知推送 |
+| Webhook | 自定义事件回调 |
+
+> 当前阶段：低优先级。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

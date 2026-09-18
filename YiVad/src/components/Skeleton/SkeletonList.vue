@@ -21,21 +21,44 @@ withDefaults(defineProps<{ items?: number }>(), { items: 6 });
     gap: 12px;
     padding: 12px;
     border-bottom: 1px solid var(--el-border-color-lighter);
-    &:last-child { border-bottom: none; }
+    &:last-child {
+      border-bottom: none;
+    }
   }
-  &__avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
-  &__body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  &__title { height: 16px; width: 60%; }
-  &__subtitle { height: 12px; width: 40%; }
+  &__avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+  }
+  &__title {
+    width: 60%;
+    height: 16px;
+  }
+  &__subtitle {
+    width: 40%;
+    height: 12px;
+  }
 }
 .skeleton-bar {
-  border-radius: 4px;
   background: linear-gradient(90deg, var(--el-fill-color) 25%, var(--el-fill-color-light) 50%, var(--el-fill-color) 75%);
   background-size: 200% 100%;
+  border-radius: 4px;
   animation: skeleton-shimmer 1.5s infinite;
 }
+
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

@@ -10,7 +10,7 @@
 //   - AI 给出更贴切的 skill/agent/mcp 时按需采纳（id 需合法）。
 // ═══════════════════════════════════════════════════════════════════
 import { skills } from "@/views/knowledge/skills/constants";
-import { rolesData } from "@/views/knowledge/executiver/okrData";
+import { rolesData } from "@/views/knowledge/executive/okrData";
 
 export type OkrSkill = string;
 export type OkrAgent = string;

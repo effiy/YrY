@@ -17,6 +17,9 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [06-prd-task-API服务扩展]
+related_tests: [06-prd-test-API服务扩展]
 ---
 
 # API 服务层扩展 — Knowledge、RAG、Bug、WeWork、Agent 五大领域服务

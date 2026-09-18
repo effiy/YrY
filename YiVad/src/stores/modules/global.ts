@@ -27,9 +27,25 @@ export const useGlobalStore = defineStore(
     const footer = ref(true);
 
     const _stateMap: Record<string, any> = {
-      layout, assemblySize, language, maximize, primary, isDark, themeMode,
-      isGrey, isWeak, asideInverted, headerInverted, isCollapse, accordion,
-      watermark, breadcrumb, breadcrumbIcon, tabs, tabsIcon, footer,
+      layout,
+      assemblySize,
+      language,
+      maximize,
+      primary,
+      isDark,
+      themeMode,
+      isGrey,
+      isWeak,
+      asideInverted,
+      headerInverted,
+      isCollapse,
+      accordion,
+      watermark,
+      breadcrumb,
+      breadcrumbIcon,
+      tabs,
+      tabsIcon,
+      footer
     };
 
     function setGlobalState(...args: [string, any]) {
@@ -39,10 +55,26 @@ export const useGlobalStore = defineStore(
     }
 
     return {
-      layout, assemblySize, language, maximize, primary, isDark, themeMode,
-      isGrey, isWeak, asideInverted, headerInverted, isCollapse, accordion,
-      watermark, breadcrumb, breadcrumbIcon, tabs, tabsIcon, footer,
-      setGlobalState,
+      layout,
+      assemblySize,
+      language,
+      maximize,
+      primary,
+      isDark,
+      themeMode,
+      isGrey,
+      isWeak,
+      asideInverted,
+      headerInverted,
+      isCollapse,
+      accordion,
+      watermark,
+      breadcrumb,
+      breadcrumbIcon,
+      tabs,
+      tabsIcon,
+      footer,
+      setGlobalState
     };
   },
   { persist: piniaPersistConfig("yivad-global") }

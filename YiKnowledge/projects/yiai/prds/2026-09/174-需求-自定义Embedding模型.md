@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-168: 自定义 Embedding 模型 — 微调模型注册、评估与热替换"
 tags: [需求文档, Embedding, 向量模型, 自定义模型, 模型评估, 索引重建, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [174-prd-task-自定义Embedding模型]
+related_tests: [174-prd-test-自定义Embedding模型]
 ---
 
 # YA-09-168: 自定义 Embedding 模型 — 微调模型注册、评估与热替换
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-168 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：RAG 引擎、模型注册中心（#166）、Ollama API
@@ -39,6 +47,7 @@ YiAi 当前使用 `nomic-embed-text` 作为唯一的 Embedding 模型，所有 R
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 Embedding 架构
@@ -83,6 +92,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：Embedding 模型注册 — 融入模型注册中心 vs 独立管理
@@ -129,6 +139,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 Embedding 模型管理架构
@@ -244,6 +255,7 @@ class EmbeddingCacheEntry(BaseModel):
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -794,6 +806,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -813,6 +826,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Requirement: Embedding 模型注册
@@ -878,6 +892,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -890,6 +905,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -905,6 +921,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么 Embedding 模型注册融入模型注册中心而非独立？
@@ -925,6 +942,7 @@ Embedding 模型和 LLM 模型在元数据（name、provider、version、status�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 10.1 关键指标
@@ -952,6 +970,7 @@ Embedding 模型和 LLM 模型在元数据（name、provider、version、status�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `EmbeddingModelInfo` 包含 dimension、max_tokens、normalization 字段
@@ -968,6 +987,7 @@ Embedding 模型和 LLM 模型在元数据（name、provider、version、status�
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、回归问题预测
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -981,6 +1001,7 @@ Embedding 模型和 LLM 模型在元数据（name、provider、version、status�
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、性能分析
 
 ### 13.1 Embedding 服务性能特征

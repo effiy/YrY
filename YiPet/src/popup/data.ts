@@ -7,11 +7,12 @@ import { NONE_PALETTE, THEME_PALETTES } from '@/shared/theme';
 // ── Color Labels ────────────────────────────────────────────────────────
 
 const COLOR_LABELS = [
-  'Quantum Violet',
-  'Indigo Violet',
-  'Quantum Ocean',
-  'Quantum Forest',
-  'Quantum Sunset',
+  'Slate Pro',
+  'Indigo',
+  'Ocean',
+  'Forest',
+  'Sunset',
+  'Rose',
 ];
 
 export interface ColorOption {

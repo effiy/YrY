@@ -4,6 +4,7 @@
  */
 import { computed } from 'vue';
 import { FolderOpened, Star, StarFilled, Edit, Delete } from '@element-plus/icons-vue';
+import { t } from '@/shared/i18n';
 import type { SessionItem } from '../types';
 
 const props = defineProps<{
@@ -88,7 +89,7 @@ function onDelete(id: string) {
     <div class="yipet-session-body">
       <div class="yipet-session-row">
         <span v-if="srcTag" class="yipet-session-src">{{ srcTag }}</span>
-        <span class="yipet-session-title">{{ session.title || 'Untitled conversation' }}</span>
+        <span class="yipet-session-title">{{ session.title || t('welcomeUntitled') }}</span>
         <span v-if="meta" class="yipet-session-meta">{{ meta }}</span>
       </div>
 

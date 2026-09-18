@@ -43,12 +43,15 @@ related:
 | 文件 | 描述 | 核心启示 |
 |---|---|---|
 | [01-YiPet跨项目Hub](./wins/01-成果-YiPet跨项目Hub.md) | YiPet 在一个 Sprint 内成为跨项目集成中心 | 浏览器扩展作为观察者模式具有独特的架构优势 |
+| [02-RPC统一信封](./wins/02-成果-RPC统一信封.md) | RPC 统一信封是 YrY 中回报率最高的架构决策——一个端点服务三个项目 | 统一性优于灵活性：1 种调用模式 > 2 种调用模式 |
+| [03-测试基础设施](./wins/03-成果-测试基础设施.md) | YiAi 从零测试到 76+ 测试、shared/ 92% 覆盖率 | 从纯函数开始——它们最容易测试、运行最快、最稳定 |
 
 ## 失败复盘（Failures）
 
 | 文件 | 描述 | 核心教训 |
 |---|---|---|
 | [01-YiVad-AICR端口幻觉](./failures/01-教训-YiVad-AICR端口幻觉.md) | AI 助手声称完成了 AICR 页面的端到端移植（9 个 Store、8 个 Modal），但 master 上实际不存在任何代码 | 永不基于 AI 的对话总结更新 CLAUDE.md；信任但验证：`git log`、`ls`、`git diff` 是唯一的真相来源 |
+| [02-无锁文件供应链](./failures/02-教训-无锁文件供应链.md) | 未提交 lockfile 导致不同机器安装不同版本依赖，构建不可重现——CI 成功但生产失败 | 始终提交 lockfile；CI 中使用 `npm ci` 而非 `npm install` |
 
 ## 陷阱记录（Gotchas）
 
@@ -77,8 +80,8 @@ related:
 
 ## 交叉引用
 
-- [../../run/check-engineering-gotchas.md](../../run/check-engineering-gotchas.md) — 工程陷阱检查清单（实施前自查）
-- [../../run/review-lessons.md](../../run/review-lessons.md) — 复盘与经验教训审查流程
+- [../../run/04-运行-CodeReview指南.md](../../run/04-运行-CodeReview指南.md) — Code Review 清单和 RPC 契约验证步骤
+- [../../ship/07-交付-CICD流水线.md](../../ship/07-交付-CICD流水线.md) — CI/CD 质量门禁配置
 - [../../../leader/risk/write-a-postmortem.md](../../../leader/risk/write-a-postmortem.md) — 事故复盘方法论
 - [../../../srer/incident-response/respond-to-an-incident.md](../../../srer/incident-response/respond-to-an-incident.md) — 事件响应流程
 - [../../../projects/yivad/bugs/](../../../projects/yivad/bugs/) — YiVad Bug 跟踪

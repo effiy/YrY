@@ -41,9 +41,7 @@ onMounted(() => {
 // element language (同时跟随 i18n.locale.value，保证切换即时生效)
 const locale = computed(() => {
   const currentLang = normalizeLocale(
-    (i18n.locale.value as string) ||
-    (globalStore.language as string) ||
-    (getBrowserLang() as string)
+    (i18n.locale.value as string) || (globalStore.language as string) || (getBrowserLang() as string)
   );
   return currentLang === "zh" ? zhCn : en;
 });

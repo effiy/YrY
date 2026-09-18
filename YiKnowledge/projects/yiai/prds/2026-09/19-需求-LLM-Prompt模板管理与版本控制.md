@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-15: LLM Prompt 模板管理与版本控制 — 可复用提示词工程体系"
 tags: [需求文档, Prompt, 模板管理, 版本控制, LLM, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.0
 review_status: 待评审
 issue_type: 架构
 roles: [aier, engineer]
+source_okr: [yiai-002]
+related_modules: [19-prd-task-LLM-Prompt模板管理与版本控制]
+related_tests: [19-prd-test-LLM-Prompt模板管理与版本控制]
 ---
 
 # YA-09-15: LLM Prompt 模板管理与版本控制 — 可复用提示词工程体系
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-15 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
@@ -36,6 +44,7 @@ YiAi 的 Prompt 分散在多个位置：Agent 系统提示词（`ai/agent.py`）
 
 ---
 
+<a id="sec-1"></a>
 ## 一、设计决策
 
 ### 决策 1：Prompt 存储 — 代码内嵌 vs 文件模板 vs 数据库
@@ -54,6 +63,7 @@ YiAi 的 Prompt 分散在多个位置：Agent 系统提示词（`ai/agent.py`）
 
 ---
 
+<a id="sec-2"></a>
 ## 二、目标架构
 
 ```
@@ -193,6 +203,7 @@ prompt = prompt_manager.render("system/agent", {
 
 ---
 
+<a id="sec-3"></a>
 ## 三、版本控制与回滚
 
 | 能力 | 实现 |
@@ -204,6 +215,7 @@ prompt = prompt_manager.render("system/agent", {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、测试规格
 
 #### Scenario: 加载并渲染 Prompt 模板
@@ -233,6 +245,7 @@ prompt = prompt_manager.render("system/agent", {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、代码审查检查清单
 
 - [ ] 所有 Prompt 模板从 Python 代码中迁移到 `YiKnowledge/prompts/` 目录
@@ -245,6 +258,7 @@ prompt = prompt_manager.render("system/agent", {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |

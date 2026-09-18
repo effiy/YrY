@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-12: API 限流与并发控制 — 令牌桶算法与分级配额策略"
 tags: [需求文档, API, 限流, 并发控制, 令牌桶, 配额, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer, srer]
+source_okr: [yiai-001]
+related_modules: [16-prd-task-API限流与并发控制]
+related_tests: [16-prd-test-API限流与并发控制]
 ---
 
 # YA-09-12: API 限流与并发控制 — 令牌桶算法与分级配额策略
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-12 · 优先级：P1 · 人天：1.5d · 状态：需求已编写
 > 依赖：YA-09-02（数据层稳定性）、YA-09-03（Agent 可靠性）
@@ -39,6 +47,7 @@ YiAi 作为 YrY 唯一后端，面临三类资源竞争：Agent（LLM 推理，�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前资源保护层级
@@ -66,6 +75,7 @@ L5: ❌ 无用户级限流
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：限流算法 — 固定窗口 vs 滑动窗口 vs 令牌桶
@@ -94,6 +104,7 @@ L5: ❌ 无用户级限流
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 三级令牌桶限流器
@@ -233,6 +244,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 | 文件 | 说明 |
@@ -243,6 +255,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 验证方式 | 人天 |
@@ -255,6 +268,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 | 操作 | 开销 | 说明 |
@@ -264,6 +278,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、可观测性
 
 ### 7.1 关键指标
@@ -304,6 +319,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、容量规划
 
 | 场景 | Agent 并发 | 全局 req/s | 用户数 | 内存占用 | 存储需求 | 说明 |
@@ -323,6 +339,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 ### Requirement: 三级令牌桶限流器
@@ -387,6 +404,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、代码审查检查清单
 
 合并前审查人需确认以下项目：
@@ -406,6 +424,7 @@ if (error.response?.status === 429) {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

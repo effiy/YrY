@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 系统设置管理面板
 tags:
 - 系统设置
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -30,7 +33,42 @@ source_okr: [yivad-003]
 # 系统设置管理面板
 
 > 需求编号：YV-09-62 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/30-prd-task-系统设置管理面板.md)，验证方案见 [测试方案](../../tests/2026-09/30-prd-test-系统设置管理面板.md)。
 > 依赖：YiAi 数据服务（`services.data.data_service`）、YiAi 设置服务（`services.settings.settings_service`）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 设置类型定义 | 参见 §设置类型定义 |
+| FR-2 | 设置 API 服务 | 参见 §设置 API 服务 |
+| FR-3 | useSettings Composable | 参见 §useSettings Composab |
+| FR-4 | SettingsPage 主页面 | 参见 §SettingsPage 主页面 |
+| FR-5 | 设置项组件 | 参见 §设置项组件 |
+| FR-6 | SettingSearch 搜索组件 | 参见 §SettingSearch 搜索组件 |
+| FR-7 | SettingHistory 与 SettingAuditL | 参见 §SettingHistory 与 Set |
+| FR-8 | 辅助组件 | 参见 §辅助组件 |
 
 ## 改动总览
 
@@ -124,6 +162,7 @@ YiVad 当前缺乏统一的系统设置管理面板。各类配置散落在代�
 | 5 | **无环境默认值** -- 开发/测试/生产环境配置无差异化管理 | **中** | 部署时需手动修改，容易遗漏 |
 | 6 | **无配置备份** -- 配置无法导出备份，迁移环境时需重新配置 | **中** | 环境迁移和灾备恢复耗时长 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前设置管理能力矩阵
@@ -165,6 +204,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 设置项存储架构
@@ -216,6 +256,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -316,6 +357,7 @@ SettingGroup
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 设置类型定义
@@ -685,6 +727,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -709,6 +752,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 按分类浏览和修改设置项
@@ -743,6 +787,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -756,6 +801,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -774,6 +820,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 所有设置后端存储，UI 偏好除外
@@ -806,6 +853,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -831,6 +879,7 @@ export const settingsService = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/settings.ts` 中所有设置类型、校验规则、导出格式接口定义完整

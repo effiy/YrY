@@ -1,5 +1,15 @@
 import http from "@/api/index";
-import type { DashboardHealthData, RssStatsData, KnowledgeStatsData, RssSourceHealthData, OrgStatsData, AiStatsData, RagStatsData, PerformanceData, ServiceStatsData } from "@/api/interface/yiAi";
+import type {
+  DashboardHealthData,
+  RssStatsData,
+  KnowledgeStatsData,
+  RssSourceHealthData,
+  OrgStatsData,
+  AiStatsData,
+  RagStatsData,
+  PerformanceData,
+  ServiceStatsData
+} from "@/api/interface/yiAi";
 
 export function getDashboardHealth(): Promise<{ code: number; message: string; data: DashboardHealthData }> {
   return http.get("/dashboard/health") as any;
@@ -44,6 +54,14 @@ export function getServiceStats(): Promise<{ code: number; message: string; data
   return http.get("/dashboard/service-stats") as any;
 }
 
-export function searchKnowledge(query: string, category?: string, maxResults?: number): Promise<{ code: number; message: string; data: { results: { path: string; title: string; snippet: string; size: number }[]; total: number } }> {
+export function searchKnowledge(
+  query: string,
+  category?: string,
+  maxResults?: number
+): Promise<{
+  code: number;
+  message: string;
+  data: { results: { path: string; title: string; snippet: string; size: number }[]; total: number };
+}> {
   return http.post("/knowledge-search", { query, category, max_results: maxResults ?? 50 }) as any;
 }

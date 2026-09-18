@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: SLA追踪与违约告警
 tags:
 - SLA追踪
@@ -12,7 +13,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -31,7 +34,27 @@ source_okr: [yivad-003]
 # SLA追踪与违约告警
 
 > 需求编号：YV-09-64 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/32-prd-task-SLA追踪与违约告警.md)，验证方案见 [测试方案](../../tests/2026-09/32-prd-test-SLA追踪与违约告警.md)。
 > 依赖：YiAi 数据服务（`services.data.data_service`）、YiAi 通知服务（`services.notification.notification_service`）、YiAi SLA 服务（`services.sla.sla_service`）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 改动总览
 
@@ -114,6 +137,7 @@ YiVad 当前缺乏 SLA（Service Level Agreement）追踪与违约告警机制�
 | 5 | **无营业时间计算** -- SLA 计时未区分工作时间和非工作时间 | **中** | 非工作时间被计入 SLA，导致虚高违约率 |
 | 6 | **无节假日处理** -- 法定节假日被计入 SLA 时间 | **低** | 节假日期间 SLA 违约率异常升高 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前 SLA 管理能力矩阵
@@ -157,6 +181,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### SLA 计时模式
@@ -201,6 +226,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -311,6 +337,7 @@ SlaCompliance
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 SLA 类型定义
@@ -833,6 +860,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -858,6 +886,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 创建 SLA 定义并应用到项目
@@ -892,6 +921,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -905,6 +935,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -923,6 +954,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 支持营业时间模式和 24/7 模式，默认营业时间
@@ -955,6 +987,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -983,6 +1016,7 @@ export const slaService = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/sla.ts` 中所有 SLA 定义、事件、计时器、合规数据类型定义完整

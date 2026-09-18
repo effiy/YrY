@@ -13,9 +13,9 @@ for a few hundred files).
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timezone
 import logging
 import os
-from datetime import datetime, timezone
 from typing import Optional
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -102,12 +102,12 @@ class KnowledgeWatcherManager:
     """Encapsulates watcher state and lifecycle."""
 
     def __init__(self):
-        self._scheduler: Optional[AsyncIOScheduler] = None
+        self._scheduler: AsyncIOScheduler | None = None
         self._running = False
         self._last_snapshot: dict[str, tuple[int, int]] = {}
         self._last_rebuilt_snapshot: dict[str, tuple[int, int]] = {}
         self._last_meta_snapshot: dict[str, tuple[int, int]] = {}
-        self._rag_rebuild_task: Optional[asyncio.Task] = None
+        self._rag_rebuild_task: asyncio.Task | None = None
 
     @property
     def is_running(self) -> bool:
@@ -330,14 +330,27 @@ async def sync_knowledge_full() -> dict:
     return await _watcher_manager.sync_knowledge_full()
 
 
-async def list_knowledge_files(category: Optional[str] = None) -> dict:
-    """Read metadata from DB mirror (no disk scan)."""
+async def list_knowledge_files(category: str | None = None, page: int = 1, page_size: int = 0) -> dict:
+    """Read metadata from DB mirror (no disk scan).
+
+    Args:
+        category: Filter by top-level role directory.
+        page: 1-based page number (only used when page_size > 0).
+        page_size: Page size. 0 means return all (no pagination).
+    """
     await db.initialize()
     collection = db.db[settings.collection_knowledge_files]
     query = {"category": category} if category else {}
-    cursor = collection.find(query, {"_id": 0})
+    cursor = collection.find(query, {"_id": 0}).sort("path", 1)
+
+    if page_size > 0:
+        total = await collection.count_documents(query)
+        skip = (page - 1) * page_size
+        cursor = cursor.skip(skip).limit(page_size)
+        files = [doc async for doc in cursor]
+        return {"files": files, "total": total, "page": page, "page_size": page_size}
+
     files = [doc async for doc in cursor]
-    files.sort(key=lambda x: x.get("path", ""))
     return {"files": files, "total": len(files)}
 
 

@@ -18,10 +18,18 @@ export interface SparkLegendToggle {
 export function useSparkLegendToggle(storageKey: string): SparkLegendToggle {
   const collapsed = ref<boolean>(load(storageKey));
   function load(key: string): boolean {
-    try { return localStorage.getItem(key) === "1"; } catch { return false; }
+    try {
+      return localStorage.getItem(key) === "1";
+    } catch {
+      return false;
+    }
   }
   function persist(): void {
-    try { localStorage.setItem(storageKey, collapsed.value ? "1" : "0"); } catch { /* noop */ }
+    try {
+      localStorage.setItem(storageKey, collapsed.value ? "1" : "0");
+    } catch {
+      /* noop */
+    }
   }
   function toggle(): void {
     collapsed.value = !collapsed.value;

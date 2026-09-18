@@ -34,15 +34,34 @@ export const stages: Stage[] = [
     role: "producter/",
     category: "producter",
     inputItems: [
-      { id: "business-strategy", label: "Business strategy", keywords: ["strategy", "business"], description: "Market intelligence, competitive landscape, and org-level goals from executiver/" }
+      {
+        id: "business-strategy",
+        label: "Business strategy",
+        keywords: ["strategy", "business"],
+        description: "Market intelligence, competitive landscape, and org-level goals from executiver/"
+      }
     ],
     outputItems: [
-      { id: "prds", label: "PRDs", keywords: ["prd", "product-requirement"], description: "Product Requirement Documents — what to build, for whom, and how to measure success" },
-      { id: "user-stories", label: "user stories", keywords: ["user-story", "story", "jtbd", "kano", "user-research", "story-mapping", "persona"], description: "User stories and JTBD narratives — the user's perspective on feature value" },
-      { id: "priorities", label: "priorities", keywords: ["priority", "prioritization", "rice", "ice", "north-star", "okr", "moscow", "metric", "backlog", "goal"], description: "Prioritization frameworks (RICE/ICE) and north-star metric definitions" }
+      {
+        id: "prds",
+        label: "PRDs",
+        keywords: ["prd", "product-requirement"],
+        description: "Product Requirement Documents — what to build, for whom, and how to measure success"
+      },
+      {
+        id: "user-stories",
+        label: "user stories",
+        keywords: ["user-story", "story", "jtbd", "kano", "user-research", "story-mapping", "persona"],
+        description: "User stories and JTBD narratives — the user's perspective on feature value"
+      },
+      {
+        id: "priorities",
+        label: "priorities",
+        keywords: ["priority", "prioritization", "rice", "ice", "north-star", "okr", "moscow", "metric", "backlog", "goal"],
+        description: "Prioritization frameworks (RICE/ICE) and north-star metric definitions"
+      }
     ],
-    description:
-      "Define what to build, for whom, and how to measure success — before any code is written.",
+    description: "Define what to build, for whom, and how to measure success — before any code is written.",
     topics: [
       { label: "Frameworks", file: "frameworks/" },
       { label: "Discovery", file: "discovery/prd/" },
@@ -59,16 +78,40 @@ export const stages: Stage[] = [
     role: "leader/",
     category: "leader",
     inputItems: [
-      { id: "prds", label: "PRDs", keywords: ["prd", "product-requirement"], description: "Product Requirement Documents from producter/ — the feature definitions to make decisions about" },
-      { id: "requirements", label: "requirements", keywords: ["requirement", "spec"], description: "Functional and non-functional requirements that constrain technical decisions" }
+      {
+        id: "prds",
+        label: "PRDs",
+        keywords: ["prd", "product-requirement"],
+        description: "Product Requirement Documents from producter/ — the feature definitions to make decisions about"
+      },
+      {
+        id: "requirements",
+        label: "requirements",
+        keywords: ["requirement", "spec"],
+        description: "Functional and non-functional requirements that constrain technical decisions"
+      }
     ],
     outputItems: [
-      { id: "adrs", label: "ADRs", keywords: ["adr", "decision", "architecture-decision"], description: "Architecture Decision Records — Context/Decision/Consequences for every significant technical choice" },
-      { id: "tech-selections", label: "tech selections", keywords: ["tech-select", "technology", "stack", "tool", "migration", "maturity", "selection", "debt"], description: "Technology stack evaluations, comparison matrices, and selection rationale" },
-      { id: "capacity-plans", label: "capacity plans", keywords: ["capacity", "planning", "finops", "cost"], description: "Capacity planning, FinOps reviews, and infrastructure sizing decisions" }
+      {
+        id: "adrs",
+        label: "ADRs",
+        keywords: ["adr", "decision", "architecture-decision"],
+        description: "Architecture Decision Records — Context/Decision/Consequences for every significant technical choice"
+      },
+      {
+        id: "tech-selections",
+        label: "tech selections",
+        keywords: ["tech-select", "technology", "stack", "tool", "migration", "maturity", "selection", "debt"],
+        description: "Technology stack evaluations, comparison matrices, and selection rationale"
+      },
+      {
+        id: "capacity-plans",
+        label: "capacity plans",
+        keywords: ["capacity", "planning", "finops", "cost"],
+        description: "Capacity planning, FinOps reviews, and infrastructure sizing decisions"
+      }
     ],
-    description:
-      "Make technical decisions explicit. Every choice is an ADR: Context, Decision, Consequences — why A over B.",
+    description: "Make technical decisions explicit. Every choice is an ADR: Context, Decision, Consequences — why A over B.",
     topics: [
       { label: "Architecture", file: "architecture/" },
       { label: "Decisions (YiAi)", file: "decisions/yiai/" },
@@ -87,18 +130,52 @@ export const stages: Stage[] = [
     role: "engineer/",
     category: "engineer",
     inputItems: [
-      { id: "adrs", label: "ADRs", keywords: ["adr", "decision", "architecture-decision"], description: "Architecture Decision Records from leader/ — the technical direction to implement" },
-      { id: "prds", label: "PRDs", keywords: ["prd", "product-requirement"], description: "Product Requirement Documents from producter/ — the feature specifications to build" }
+      {
+        id: "adrs",
+        label: "ADRs",
+        keywords: ["adr", "decision", "architecture-decision"],
+        description: "Architecture Decision Records from leader/ — the technical direction to implement"
+      },
+      {
+        id: "prds",
+        label: "PRDs",
+        keywords: ["prd", "product-requirement"],
+        description: "Product Requirement Documents from producter/ — the feature specifications to build"
+      }
     ],
     outputItems: [
-      { id: "architecture-patterns", label: "Architecture patterns", keywords: ["architecture", "pattern", "cqrs", "saga", "event-driven", "api-gateway", "bff"], description: "Implementation-level architecture patterns — CQRS, Saga, Event-Driven, API Gateway, BFF" },
-      { id: "dev-practices", label: "Dev practices", keywords: ["development", "dev", "dx", "ci-cd", "tooling", "dependency"], description: "Development practices, tooling, DX improvements, and dependency management" },
-      { id: "quality-security", label: "Quality & security", keywords: ["quality", "security", "testing", "audit", "hardening", "supply-chain"], description: "Code quality standards, security hardening, testing strategies, and supply-chain audits" },
-      { id: "data-reliability", label: "Data & reliability", keywords: ["data", "reliability", "resilience", "idempotency", "backpressure", "cdc", "materialized-view"], description: "Data patterns (migrations, caching, pipelines) and reliability patterns (retry, backpressure, idempotency)" },
-      { id: "lessons", label: "Lessons learned", keywords: ["lesson", "win", "failure", "gotcha", "postmortem", "retrospective"], description: "Wins, failures, gotchas, and bugs — field notes from real implementation experience" }
+      {
+        id: "architecture-patterns",
+        label: "Architecture patterns",
+        keywords: ["architecture", "pattern", "cqrs", "saga", "event-driven", "api-gateway", "bff"],
+        description: "Implementation-level architecture patterns — CQRS, Saga, Event-Driven, API Gateway, BFF"
+      },
+      {
+        id: "dev-practices",
+        label: "Dev practices",
+        keywords: ["development", "dev", "dx", "ci-cd", "tooling", "dependency"],
+        description: "Development practices, tooling, DX improvements, and dependency management"
+      },
+      {
+        id: "quality-security",
+        label: "Quality & security",
+        keywords: ["quality", "security", "testing", "audit", "hardening", "supply-chain"],
+        description: "Code quality standards, security hardening, testing strategies, and supply-chain audits"
+      },
+      {
+        id: "data-reliability",
+        label: "Data & reliability",
+        keywords: ["data", "reliability", "resilience", "idempotency", "backpressure", "cdc", "materialized-view"],
+        description: "Data patterns (migrations, caching, pipelines) and reliability patterns (retry, backpressure, idempotency)"
+      },
+      {
+        id: "lessons",
+        label: "Lessons learned",
+        keywords: ["lesson", "win", "failure", "gotcha", "postmortem", "retrospective"],
+        description: "Wins, failures, gotchas, and bugs — field notes from real implementation experience"
+      }
     ],
-    description:
-      "Turn decisions into working software. Eight subdirectories covering the full BUILD → SHIP cycle.",
+    description: "Turn decisions into working software. Eight subdirectories covering the full BUILD → SHIP cycle.",
     topics: [
       { label: "Architecture", file: "architecture/" },
       { label: "Development", file: "development/" },
@@ -118,13 +195,38 @@ export const stages: Stage[] = [
     role: "srer/ + engineer/learn/lessons/",
     category: "srer",
     inputItems: [
-      { id: "working-software", label: "Working software", keywords: ["implementation", "deployable", "artifact"], description: "Implementation artifacts from engineer/ — code that has passed design and build quality gates" }
+      {
+        id: "working-software",
+        label: "Working software",
+        keywords: ["implementation", "deployable", "artifact"],
+        description: "Implementation artifacts from engineer/ — code that has passed design and build quality gates"
+      }
     ],
     outputItems: [
-      { id: "release-procedures", label: "Release procedures", keywords: ["release", "deploy", "rollback", "canary", "hotfix", "staged-rollout"], description: "Release, rollback, canary, and hotfix procedures — how code reaches production safely" },
-      { id: "incident-response", label: "Incident response", keywords: ["incident", "postmortem", "on-call", "oncall", "handover"], description: "Incident response procedures, on-call handover, and blameless postmortem templates" },
-      { id: "observability", label: "Observability", keywords: ["observability", "monitoring", "alerting", "dashboard", "slo", "sli"], description: "Monitoring, alerting, dashboards, SLO/SLI definitions, and observability triad" },
-      { id: "lessons-learned", label: "Lessons learned", keywords: ["lesson", "win", "failure", "gotcha", "bug"], description: "Operational lessons — wins to replicate, failures to learn from, and gotchas to avoid" }
+      {
+        id: "release-procedures",
+        label: "Release procedures",
+        keywords: ["release", "deploy", "rollback", "canary", "hotfix", "staged-rollout"],
+        description: "Release, rollback, canary, and hotfix procedures — how code reaches production safely"
+      },
+      {
+        id: "incident-response",
+        label: "Incident response",
+        keywords: ["incident", "postmortem", "on-call", "oncall", "handover"],
+        description: "Incident response procedures, on-call handover, and blameless postmortem templates"
+      },
+      {
+        id: "observability",
+        label: "Observability",
+        keywords: ["observability", "monitoring", "alerting", "dashboard", "slo", "sli"],
+        description: "Monitoring, alerting, dashboards, SLO/SLI definitions, and observability triad"
+      },
+      {
+        id: "lessons-learned",
+        label: "Lessons learned",
+        keywords: ["lesson", "win", "failure", "gotcha", "bug"],
+        description: "Operational lessons — wins to replicate, failures to learn from, and gotchas to avoid"
+      }
     ],
     description:
       "Ship safely and keep running. Quality gates, release procedures, observability, incident response, and lessons from wins and failures.",
@@ -172,9 +274,27 @@ export const crossCuttingLayers: CrossCuttingLayer[] = [
       "executiver/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ producter/). Strategy informs; execution decides.",
     inputItems: [],
     outputItems: [
-      { id: "market-intel", label: "Market intelligence", keywords: ["market", "competitor", "industry", "trend", "report", "landscape", "analysis"], description: "Market sizing, competitor analysis, industry trends, and strategic intelligence reports that ground every product decision in external reality" },
-      { id: "org-strategy", label: "Org strategy", keywords: ["strategy", "roadmap", "vision", "goal", "okr", "mission", "objective"], description: "Organizational vision, strategic roadmaps, OKR frameworks, and goal cascades that align teams around shared outcomes" },
-      { id: "reading-list", label: "Reading list", keywords: ["reading", "book", "paper", "article", "leadership", "management"], description: "Curated reading lists for executive development — leadership, strategy, organizational design, and industry-specific knowledge" }
+      {
+        id: "market-intel",
+        label: "Market intelligence",
+        keywords: ["market", "competitor", "industry", "trend", "report", "landscape", "analysis"],
+        description:
+          "Market sizing, competitor analysis, industry trends, and strategic intelligence reports that ground every product decision in external reality"
+      },
+      {
+        id: "org-strategy",
+        label: "Org strategy",
+        keywords: ["strategy", "roadmap", "vision", "goal", "okr", "mission", "objective"],
+        description:
+          "Organizational vision, strategic roadmaps, OKR frameworks, and goal cascades that align teams around shared outcomes"
+      },
+      {
+        id: "reading-list",
+        label: "Reading list",
+        keywords: ["reading", "book", "paper", "article", "leadership", "management"],
+        description:
+          "Curated reading lists for executive development — leadership, strategy, organizational design, and industry-specific knowledge"
+      }
     ],
     topics: [
       { label: "Strategy", file: "strategy/" },
@@ -196,11 +316,36 @@ export const crossCuttingLayers: CrossCuttingLayer[] = [
       "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ producter/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages.",
     inputItems: [],
     outputItems: [
-      { id: "ai-foundations", label: "AI foundations", keywords: ["foundation", "transformer", "attention", "embedding", "fine-tune"], description: "Core AI concepts — transformers, attention mechanisms, embeddings, and fine-tuning" },
-      { id: "ai-methodology", label: "AI methodology", keywords: ["methodology", "prompt", "agent", "rag", "chain"], description: "AI engineering methods — prompt engineering, agent design, RAG patterns, and evaluation" },
-      { id: "ai-platform", label: "AI platform", keywords: ["platform", "llm", "model", "inference", "deploy"], description: "AI platform infrastructure — model serving, inference optimization, and LLM ops" },
-      { id: "ai-ml", label: "ML engineering", keywords: ["ml", "machine-learning", "training", "dataset", "eval"], description: "Machine learning engineering — training pipelines, dataset curation, and model evaluation" },
-      { id: "ai-data", label: "AI data", keywords: ["data", "pipeline", "vector", "embedding", "index"], description: "AI data infrastructure — vector databases, embedding pipelines, and data preparation" }
+      {
+        id: "ai-foundations",
+        label: "AI foundations",
+        keywords: ["foundation", "transformer", "attention", "embedding", "fine-tune"],
+        description: "Core AI concepts — transformers, attention mechanisms, embeddings, and fine-tuning"
+      },
+      {
+        id: "ai-methodology",
+        label: "AI methodology",
+        keywords: ["methodology", "prompt", "agent", "rag", "chain"],
+        description: "AI engineering methods — prompt engineering, agent design, RAG patterns, and evaluation"
+      },
+      {
+        id: "ai-platform",
+        label: "AI platform",
+        keywords: ["platform", "llm", "model", "inference", "deploy"],
+        description: "AI platform infrastructure — model serving, inference optimization, and LLM ops"
+      },
+      {
+        id: "ai-ml",
+        label: "ML engineering",
+        keywords: ["ml", "machine-learning", "training", "dataset", "eval"],
+        description: "Machine learning engineering — training pipelines, dataset curation, and model evaluation"
+      },
+      {
+        id: "ai-data",
+        label: "AI data",
+        keywords: ["data", "pipeline", "vector", "embedding", "index"],
+        description: "AI data infrastructure — vector databases, embedding pipelines, and data preparation"
+      }
     ],
     topics: [
       { label: "Foundations", file: "foundations/" },
@@ -223,9 +368,24 @@ export const crossCuttingLayers: CrossCuttingLayer[] = [
       "curator/ owns the STRUCTURE and HEALTH of the knowledge base — lifecycle policies, templates, directory design, and governance rules. It does not own the CONTENT of any specific domain (that belongs to each role's directory). Curator is the librarian; each role is the author.",
     inputItems: [],
     outputItems: [
-      { id: "kb-lifecycle", label: "KB lifecycle", keywords: ["lifecycle", "governance", "review", "readiness", "evolve"], description: "Knowledge base lifecycle management — review cycles, readiness checklists, and evolution guides" },
-      { id: "kb-templates", label: "KB templates", keywords: ["template", "leaf", "knowledge", "format"], description: "Knowledge base templates — leaf format, frontmatter specs, and writing guidelines" },
-      { id: "kb-diagrams", label: "KB diagrams", keywords: ["diagram", "blueprint", "map", "journey", "architecture"], description: "Knowledge base architecture diagrams — directory blueprints, knowledge maps, and user journeys" }
+      {
+        id: "kb-lifecycle",
+        label: "KB lifecycle",
+        keywords: ["lifecycle", "governance", "review", "readiness", "evolve"],
+        description: "Knowledge base lifecycle management — review cycles, readiness checklists, and evolution guides"
+      },
+      {
+        id: "kb-templates",
+        label: "KB templates",
+        keywords: ["template", "leaf", "knowledge", "format"],
+        description: "Knowledge base templates — leaf format, frontmatter specs, and writing guidelines"
+      },
+      {
+        id: "kb-diagrams",
+        label: "KB diagrams",
+        keywords: ["diagram", "blueprint", "map", "journey", "architecture"],
+        description: "Knowledge base architecture diagrams — directory blueprints, knowledge maps, and user journeys"
+      }
     ],
     topics: [
       { label: "Governance", file: "governance/" },

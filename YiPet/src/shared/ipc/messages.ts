@@ -16,7 +16,10 @@ export type PopupToContent =
   | { action: 'changeSize'; size: number }
   | { action: 'setRole'; role: string }
   | { action: 'setColor'; color: number }
+  | { action: 'setPageTheme'; intensity: number }
   | { action: 'toggleChat' }
+  | { action: 'screenshot' }
+  | { action: 'toggleMute' }
   | { action: 'extensionUpdated'; previousVersion: string; currentVersion: string }
   | { action: 'extensionUpdatePending' };
 

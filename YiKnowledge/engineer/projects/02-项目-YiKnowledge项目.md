@@ -354,10 +354,10 @@ rg -L "^tags:" YiKnowledge/**/*.md
 
 | 图表 | 位置 | 回答 |
 |------|------|------|
-| 知识地图 | [curator/diagrams/knowledge-map.md](../../curator/diagrams/knowledge-map.md) | 有哪些知识？显性 vs 隐性？持有者和消费者？ |
-| 用户旅程图 | [curator/diagrams/user-journey.md](../../curator/diagrams/user-journey.md) | 知识在哪里？如何流动？断点在哪里？ |
-| 目录蓝图 | [curator/diagrams/directory-blueprint.md](../../curator/diagrams/directory-blueprint.md) | 用户如何快速找到内容？ |
-| 治理流程 | [curator/治理/governance.md](../../curator/治理/governance.md) | 谁维护？多频繁？ |
+| 知识地图 | [curator/diagrams/03-图表-知识地图.md](../../curator/diagrams/03-图表-知识地图.md) | 有哪些知识？显性 vs 隐性？持有者和消费者？ |
+| 用户旅程图 | [curator/diagrams/04-图表-用户旅程.md](../../curator/diagrams/04-图表-用户旅程.md) | 知识在哪里？如何流动？断点在哪里？ |
+| 目录蓝图 | [curator/diagrams/02-图表-目录蓝图.md](../../curator/diagrams/02-图表-目录蓝图.md) | 用户如何快速找到内容？ |
+| 治理流程 | [curator/governance/02-治理-治理规范.md](../../curator/governance/02-治理-治理规范.md) | 谁维护？多频繁？ |
 
 ---
 
@@ -392,6 +392,6 @@ rag:
 | `README.md` | 知识库概述 + 流水线架构 |
 | `INDEX.md` | 全库导航索引 (7 角色 + 4 领域索引) |
 | `MEMORY.md` | 规则手册 (命名规范, frontmatter 规范, 检索策略) |
-| `curator/治理/readiness-checklist.md` | 就绪检查清单 |
-| `curator/治理/governance.md` | 治理流程 |
+| `curator/governance/04-治理-就绪检查清单.md` | 就绪检查清单 |
+| `curator/governance/02-治理-治理规范.md` | 治理流程 |
 | `curator/templates/` | 文档模板 (PRD, ADR, 复盘) |

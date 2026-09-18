@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 活动日志与审计追踪
 tags:
 - 活动日志
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -30,7 +33,40 @@ source_okr: [yivad-003]
 # 活动日志与审计追踪
 
 > 需求编号：YV-09-50 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/24-prd-task-活动日志与审计追踪.md)，验证方案见 [测试方案](../../tests/2026-09/24-prd-test-活动日志与审计追踪.md)。
 > 依赖：YiAi 审计服务（`services.audit.audit_service`）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 活动日志类型定义 | 参见 §活动日志类型定义 |
+| FR-2 | 活动日志 API 服务 | 参见 §活动日志 API 服务 |
+| FR-3 | useActivityLog Composable | 参见 §useActivityLog Compo |
+| FR-4 | DiffViewer 变更差异对比组件 | 参见 §DiffViewer 变更差异对比组件 |
+| FR-5 | ActivityTimeline 活动时间线组件 | 参见 §ActivityTimeline 活动时 |
+| FR-6 | ActivityFilter 活动过滤器组件 | 参见 §ActivityFilter 活动过滤器 |
 
 ## 改动总览
 
@@ -103,6 +139,7 @@ YiVad 当前缺乏用户操作记录和审计追踪能力。管理员无法查�
 | 4 | **无合规导出** -- 无法按合规要求导出操作日志 | **中** | 审计时无法提供操作记录证据 |
 | 5 | **实体页面无操作历史** -- 单个项目详情页看不到谁改过什么 | **低** | 协作时缺乏上下文，不知道队友做了什么 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前活动日志能力矩阵
@@ -128,6 +165,7 @@ YiVad 当前缺乏用户操作记录和审计追踪能力。管理员无法查�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 审计数据存储策略
@@ -166,6 +204,7 @@ YiVad 当前缺乏用户操作记录和审计追踪能力。管理员无法查�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```
@@ -233,6 +272,7 @@ YiVad 当前缺乏用户操作记录和审计追踪能力。管理员无法查�
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 活动日志类型定义
@@ -663,6 +703,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -684,6 +725,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 活动日志列表正常展示
@@ -718,6 +760,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -730,6 +773,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -747,6 +791,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 活动日志保留 90 天
@@ -779,6 +824,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -803,6 +849,7 @@ export function useActivityLog() {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/activity.ts` 中 ActivityType 联合类型完整，覆盖所有 8 种操作类型

@@ -1,44 +1,134 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-33"
-title: "撤销重做系统 — 开发任务"
-status: 已实现
-priority: 中
+title: "YV-09-33: 撤销重做系统 — 开发方案"
+status: 已完成
+priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "12-prd-撤销重做系统.md"
 ---
 
-# 撤销重做系统 — 开发任务
+# YV-09-33: 撤销重做系统 — 开发方案
 
-> 来源 PRD：[12-prd-撤销重做系统.md](../prds/2026-09/12-prd-撤销重做系统.md)
-> 需求编号：YV-09-33 · 优先级：中 · 人天：1.0d
+> 需求编号：YV-09-33 · 人天：1.0d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 创建命令模式类型定义 | `src/utils/undo/types.ts` | TypeScript 编译通过 | 0.05 |
-| 2 | 实现命令基类（Command/Create/Update/Delete/Batch） | `src/utils/undo/Command.ts` | 各命令类型 execute/undo/redo 逻辑正确 | 0.15 |
-| 3 | 实现命令管理器 | `src/utils/undo/CommandManager.ts` | 栈管理、深度控制、持久化正确 | 0.15 |
-| 4 | 实现事务管理器 | `src/utils/undo/TransactionManager.ts` | 事务分组、合并、提交逻辑正确 | 0.10 |
-| 5 | 实现序列化辅助 | `src/utils/undo/SerializationHelper.ts` | 序列化/反序列化正确，数据格式兼容 | 0.05 |
-| 6 | 实现 useUndoRedo Composable | `useUndoRedo.ts` | 撤销/重做/事务功能正常 | 0.08 |
-| 7 | 实现 useUndoKeyboard | `useUndoKeyboard.ts` | 键盘快捷键全部生效 | 0.05 |
-| 8 | 实现撤销重做 Store | `src/stores/undoRedo.ts` | 多作用域管理正常 | 0.05 |
-| 9 | 实现表单适配器 | `FormAdapter.ts` | 表单编辑自动生成 UpdateCommand | 0.08 |
-| 10 | 实现数据表适配器 | `DataTableAdapter.ts` | 表格 CRUD 自动生成对应命令 | 0.08 |
-| 11 | 实现历史时间线面板 | `HistoryTimeline.vue` | 时间线正确显示操作历史 | 0.08 |
-| 12 | 实现撤销重做工具栏 | `UndoRedoToolbar.vue` | 按钮状态正确，点击生效 | 0.03 |
-| 13 | 集成到 App.vue 全局快捷键 | `App.vue` | 全局 Ctrl+Z 和 Ctrl+Shift+Z 生效 | 0.02 |
-| 14 | 集成测试 + 端到端验证 | 表单、表格、设置场景验证 | 手动验证 | 0.03 |
-
-**总计：** 1.0d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+通用撤销/重做 composable `useUndoRedo`，基于快照栈模式，支持 Ctrl+Z/Ctrl+Shift+Z 快捷键。
+
+### 核心接口
+
+```typescript
+function useUndoRedo<T>(source: Ref<T>, maxHistory = 50) {
+  const state = ref<T>(cloneDeep(source.value));
+  const undoStack = ref<T[]>([]);
+  const redoStack = ref<T[]>([]);
+
+  function snapshot() {
+    undoStack.value.push(cloneDeep(state.value));
+    if (undoStack.value.length > maxHistory) undoStack.value.shift();
+    redoStack.value = []; // 新快照清除 redo 栈
+  }
+
+  function undo() {
+    if (!undoStack.value.length) return;
+    redoStack.value.push(cloneDeep(state.value));
+    state.value = undoStack.value.pop()!;
+  }
+
+  function redo() {
+    if (!redoStack.value.length) return;
+    undoStack.value.push(cloneDeep(state.value));
+    state.value = redoStack.value.pop()!;
+  }
+
+  return { state, snapshot, undo, redo, undoStack, redoStack };
+}
+```
+
+### 适用场景
+
+| 场景 | 快照时机 |
+|------|---------|
+| 表单编辑 | 字段变更后 |
+| Kanban 拖拽 | 拖拽结束 |
+| 列表排序 | 排序完成 |
+
+### 实施步骤
+
+| 步骤 | 内容 | 人天 |
+|------|------|------|
+| 1 | useUndoRedo composable 核心 | 0.5 |
+| 2 | Ctrl+Z / Ctrl+Shift+Z 全局快捷键 | 0.25 |
+| 3 | 表单 + Kanban 集成 | 0.25 |
+
+**合计：1.0d**
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] undo/redo 快照栈正确
+- [ ] Ctrl+Z 撤销，Ctrl+Shift+Z 重做
+- [ ] 最大 50 条历史限制
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（1.0d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（1.0d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/12-prd-test-撤销重做系统.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

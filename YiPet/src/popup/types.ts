@@ -19,4 +19,8 @@ export interface PopupState {
   hintText: string;
   notification: { visible: boolean; message: string; type: string };
   locale: SupportedLocale;
+  /** Page theme intensity (0-100, 0 = off). */
+  pageTheme: number;
+  /** Custom color hex (empty = using preset). */
+  customColor: string;
 }

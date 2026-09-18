@@ -16,13 +16,13 @@
         :show-settings="editable"
         @remove="$emit('remove-widget', widget.id)"
         @settings="$emit('settings-widget', widget.id)"
-        @resize="(layout) => $emit('resize-widget', widget.id, layout)"
+        @resize="layout => $emit('resize-widget', widget.id, layout)"
       >
         <component
           v-if="widget.component"
           :is="widget.component"
           v-bind="widget.props ?? {}"
-          @chartClick="(p: unknown) => $emit('widget-event', widget.id, 'chartClick', p)"
+          @chart-click="(p: unknown) => $emit('widget-event', widget.id, 'chartClick', p)"
         />
         <div v-else class="dashboard-grid__placeholder">
           <el-icon :size="24"><WarningFilled /></el-icon>
@@ -51,7 +51,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  editable: true,
+  editable: true
 });
 
 const emit = defineEmits<{
@@ -68,7 +68,7 @@ const gridRef = ref<HTMLElement>();
 function cellStyle(layout: WidgetLayout) {
   return {
     gridColumn: `${layout.x + 1} / span ${layout.cols}`,
-    gridRow: `${layout.y + 1} / span ${layout.rows}`,
+    gridRow: `${layout.y + 1} / span ${layout.rows}`
   };
 }
 
@@ -92,33 +92,32 @@ function onDrop(e: DragEvent, targetId: string) {
   gap: 12px;
   min-height: 300px;
   padding: 4px;
-
   &__cell {
     min-height: 160px;
   }
-
   &__placeholder {
     display: flex;
     flex-direction: column;
+    gap: 8px;
     align-items: center;
     justify-content: center;
     height: 100%;
-    gap: 8px;
-    color: var(--el-text-color-placeholder);
     font-size: 13px;
+    color: var(--el-text-color-placeholder);
   }
-
   &__empty {
-    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
+    grid-column: 1 / -1;
+    gap: 12px;
     align-items: center;
     justify-content: center;
     min-height: 300px;
-    gap: 12px;
     color: var(--el-text-color-secondary);
-
-    p { margin: 0; font-size: 14px; }
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
   }
 }
 </style>

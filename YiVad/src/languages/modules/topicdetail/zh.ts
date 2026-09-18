@@ -60,6 +60,52 @@ export default {
     moveUp: "上移",
     moveDown: "下移",
     createdHint: "创建于 {time}",
-    tocTitle: "目录"
+    tocTitle: "目录",
+    loading: "加载条目数据…",
+    view: {
+      compact: "紧凑",
+      comfortable: "舒适",
+      fullWidth: "全宽",
+      showToc: "显示目录",
+      hideToc: "隐藏目录",
+      focusMode: "专注模式",
+      exitFocus: "退出专注"
+    },
+    sort: {
+      label: "排序",
+      createdAsc: "创建时间（旧→新）",
+      createdDesc: "创建时间（新→旧）",
+      updatedAsc: "更新时间（旧→新）",
+      updatedDesc: "更新时间（新→旧）",
+      titleAsc: "标题（A→Z）",
+      titleDesc: "标题（Z→A）",
+      custom: "自定义排序"
+    },
+    filter: {
+      label: "筛选",
+      searchInTopic: "在条目内搜索…",
+      tagFilter: "按标签筛选",
+      dateFilter: "按日期筛选",
+      clearAll: "清除全部筛选",
+      noResults: "无匹配条目",
+      resultCount: "{count} 条匹配"
+    },
+    collaboration: {
+      locked: "{name} 正在编辑",
+      lockExpired: "编辑锁已过期",
+      takeOver: "接管编辑",
+      readOnly: "只读模式",
+      editRequest: "请求编辑权限"
+    },
+    export: {
+      title: "导出",
+      markdown: "导出 Markdown",
+      json: "导出 JSON",
+      csv: "导出 CSV",
+      single: "导出当前条目",
+      all: "导出全部条目",
+      success: "导出成功",
+      failed: "导出失败"
+    }
   }
 };

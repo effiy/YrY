@@ -31,9 +31,9 @@ const globalStore = useGlobalStore();
 
 /** 语言下拉选项（自举：每个选项的 label 都走 t()，保证切换即更新） */
 const languageList = computed(() =>
-  AVAILABLE_LOCALES.map((code) => ({
+  AVAILABLE_LOCALES.map(code => ({
     value: code,
-    label: t(`header.languageOptions.${code}`),
+    label: t(`header.languageOptions.${code}`)
   }))
 );
 
@@ -50,9 +50,7 @@ function applyDocumentLocale(lang: LocaleCode) {
 }
 
 // 1) 启动时：若持久化了 language → 同时同步到 i18n.locale（防止 store 与 i18n 不一致）
-const initialLocale: LocaleCode = normalizeLocale(
-  String(globalStore.language || localeRef.value || "en")
-);
+const initialLocale: LocaleCode = normalizeLocale(String(globalStore.language || localeRef.value || "en"));
 localeRef.value = initialLocale;
 if (String(globalStore.language) !== initialLocale) {
   globalStore.setGlobalState("language", initialLocale as LanguageType);
@@ -60,7 +58,7 @@ if (String(globalStore.language) !== initialLocale) {
 applyDocumentLocale(initialLocale);
 
 // 2) 持续双向同步：i18n.locale 变更 -> 同步到 store + document（外部调用者也能改 locale）
-watch(localeRef, (nextRaw) => {
+watch(localeRef, nextRaw => {
   const next = normalizeLocale(String(nextRaw));
   if (String(localeRef.value) !== next) localeRef.value = next;
   if (String(globalStore.language) !== next) {
@@ -72,7 +70,7 @@ watch(localeRef, (nextRaw) => {
 // 3) 监听 store.language 变化（如外部直接改 globalStore）→ 反推 i18n.locale
 watch(
   () => globalStore.language,
-  (raw) => {
+  raw => {
     if (!raw) return;
     const next = normalizeLocale(String(raw));
     if (String(localeRef.value) !== next) localeRef.value = next;

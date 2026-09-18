@@ -6,11 +6,7 @@
     </div>
 
     <div class="cfe__list">
-      <div
-        v-for="(field, idx) in fields"
-        :key="field.key || idx"
-        class="cfe__item"
-      >
+      <div v-for="(field, idx) in fields" :key="field.key || idx" class="cfe__item">
         <div class="cfe__item-head">
           <span class="cfe__item-name">{{ field.label || field.name }}</span>
           <el-tag size="small">{{ FIELD_TYPE_LABELS[field.field_type] }}</el-tag>
@@ -37,13 +33,8 @@
           <el-input v-model="editForm.label" placeholder="中文显示名称" />
         </el-form-item>
         <el-form-item label="字段类型">
-          <el-select v-model="editForm.field_type" style="width:100%">
-            <el-option
-              v-for="(label, type) in FIELD_TYPE_LABELS"
-              :key="type"
-              :label="label"
-              :value="type"
-            />
+          <el-select v-model="editForm.field_type" style="width: 100%">
+            <el-option v-for="(label, type) in FIELD_TYPE_LABELS" :key="type" :label="label" :value="type" />
           </el-select>
         </el-form-item>
         <el-form-item label="必填">
@@ -83,7 +74,7 @@ const defaultForm = () => ({
   label: "",
   field_type: "text" as FieldType,
   required: false,
-  description: "",
+  description: ""
 });
 
 const editForm = reactive(defaultForm());
@@ -102,7 +93,7 @@ function editField(idx: number) {
     label: field.label,
     field_type: field.field_type,
     required: field.required,
-    description: field.description,
+    description: field.description
   });
   dialogVisible.value = true;
 }
@@ -138,18 +129,38 @@ async function removeField(idx: number) {
 </script>
 
 <style scoped lang="scss">
-.cfe { margin-top: 8px; }
-.cfe__header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+.cfe {
+  margin-top: 8px;
 }
-.cfe__title { font-weight: 500; }
-.cfe__list { min-height: 60px; }
+.cfe__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cfe__title {
+  font-weight: 500;
+}
+.cfe__list {
+  min-height: 60px;
+}
 .cfe__item {
-  padding: 10px 12px; border: 1px solid var(--el-border-color-lighter); border-radius: 6px; margin-bottom: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
 }
 .cfe__item-head {
-  display: flex; align-items: center; gap: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
-.cfe__item-name { flex: 1; font-size: 14px; }
-.cfe__item-actions { display: flex; gap: 2px; }
+.cfe__item-name {
+  flex: 1;
+  font-size: 14px;
+}
+.cfe__item-actions {
+  display: flex;
+  gap: 2px;
+}
 </style>

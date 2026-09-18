@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-110: Markdown 编辑器增强 — 富文本工具栏、实时预览、语法高亮与自动补全"
 tags: [需求文档, Markdown编辑器, 富文本工具栏, 语法高亮, 自动补全, 表格编辑器, 图片上传, 草稿保存]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [117-prd-task-Markdown编辑器增强]
+related_tests: [117-prd-test-Markdown编辑器增强]
 ---
 
 # YP-09-110: Markdown 编辑器增强 — 富文本工具栏、实时预览、语法高亮与自动补全
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-110 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YP-09-22（Markdown 渲染安全）、YP-09-47（代码高亮增强）
@@ -60,6 +68,7 @@ YiPet 聊天输入框当前为纯文本 textarea，用户需手动输入 Markdow
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前编辑器状态
@@ -128,6 +137,7 @@ YiPet 聊天输入框当前为纯文本 textarea，用户需手动输入 Markdow
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：编辑器核心 — 原生 textarea vs CodeMirror vs 自建 contenteditable
@@ -181,6 +191,7 @@ YiPet 聊天输入框当前为纯文本 textarea，用户需手动输入 Markdow
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 编辑器组件树
@@ -250,6 +261,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 工具栏实现
@@ -718,6 +730,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -737,6 +750,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：工具栏格式化选中文本
@@ -787,6 +801,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -799,6 +814,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -810,6 +826,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：编辑器核心选型
@@ -842,6 +859,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -867,6 +885,7 @@ export function useEmojiShortcode(textareaRef: Ref<HTMLTextAreaElement | null>) 
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] 工具栏操作通过 textarea selection API 而非 DOM 操作

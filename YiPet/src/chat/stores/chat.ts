@@ -3,7 +3,7 @@
  * Ported from the ChatController class (useSyncExternalStore → Pinia reactive state).
  */
 import { defineStore } from 'pinia';
-import { reactive, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import type {
   BugService, ChatService, KnowledgeService,
   RagService, SessionService, WeWorkService,
@@ -11,12 +11,13 @@ import type {
 import { detectPageTypeFromUrl, detectProjectFromUrl, makeBugKey } from '@/api/services/bug';
 import type {
   BugFrequency, BugPriority, BugSeverity, BugStatus, BugType,
-  ChatMessage, KnowledgeFileEntry, KnowledgeTreeNode, RagChatMessage, RagSource, TodoItem, WeWorkBot,
+  ChatMessage, KnowledgeFileEntry, KnowledgeTreeNode, RagChatMessage, RagSource, WeWorkBot,
 } from '@/api/types';
 import { DEFAULT_MODEL } from '../constants';
 import type { ChatState, Message, SessionItem } from '../types';
-import { createApiServices } from '@/api';
+import { applyThemeColors } from '@/shared/theme';
 import { redactUrlCredentials } from '@/utils/url';
+import { t } from '@/shared/i18n';
 import { useChatWindow } from './useChatWindow';
 
 export type { ChatState, Message, SessionItem };
@@ -131,12 +132,7 @@ export const useChatStore = defineStore('chat', () => {
   let _rag: RagService;
   let _bug: BugService;
   let _abortController: AbortController | null = null;
-  let _searchTimer: ReturnType<typeof setTimeout> | null = null;
-  let _scrollTimer: ReturnType<typeof setTimeout> | null = null;
   let _loadSessionsPromise: Promise<void> | null = null;
-  let _treeSessionMap: Map<string, SessionItem> = new Map();
-  let _confirmationTimer: ReturnType<typeof setTimeout> | null = null;
-  let _compactionTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Drag/resize state (non-reactive)
   const _dragStart = { x: 0, y: 0, wx: 0, wy: 0 };
@@ -159,7 +155,7 @@ export const useChatStore = defineStore('chat', () => {
     searchQuery: '',
     sessionProjectFilter: '',
     sessionLoading: false,
-    sidebarCollapsed: true,
+    sidebarCollapsed: false,
     sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
     batchMode: false,
     selectedSessionIds: [],
@@ -235,10 +231,10 @@ export const useChatStore = defineStore('chat', () => {
     streamingTargetTimestamp: null,
     streamingType: '',
     streamingPhase: '',
+    thinkingStartTs: null,
     webSearchResults: [],
     scrollTick: 0,
     copyFeedback: {},
-    feedback: {},
     faqVisible: false,
     faqSearch: '',
     faqApplyMode: 'append',
@@ -581,6 +577,7 @@ export const useChatStore = defineStore('chat', () => {
     state.isProcessing = false;
     state.streamingType = '';
     state.streamingPhase = '';
+    state.thinkingStartTs = null;
     state.streamingTargetTimestamp = null;
   }
 
@@ -597,7 +594,7 @@ export const useChatStore = defineStore('chat', () => {
       state.viewState = 'empty';
       state.draftImages = [];
       _persistMessages();
-      notify('Conversation cleared');
+      notify(t('chatCleared'));
       return;
     }
 
@@ -616,8 +613,9 @@ export const useChatStore = defineStore('chat', () => {
       return;
     }
 
-    if (content.startsWith('/compact')) {
-      notify('Compact is not available');
+    if (content.startsWith('/new')) {
+      await createEmptySession();
+      notify('New chat created');
       return;
     }
 
@@ -654,6 +652,7 @@ export const useChatStore = defineStore('chat', () => {
     state.streamingType = type;
     state.isProcessing = true;
     state.streamingPhase = state.knowledgeGrounded ? 'retrieving' : 'thinking';
+    state.thinkingStartTs = Date.now();
     state.ragSources = [];
     _abortController = new AbortController();
     let streamed = '';
@@ -661,7 +660,7 @@ export const useChatStore = defineStore('chat', () => {
     let phaseFlipped = false;
     const streamStart = Date.now();
     let firstTokenAt = 0;
-    const SCROLL_THROTTLE_MS = 120;
+    const SCROLL_THROTTLE_MS = 80;
 
     const findPetIdx = () => state.messages.findIndex((m) => m.timestamp === petTimestamp);
 
@@ -737,10 +736,23 @@ export const useChatStore = defineStore('chat', () => {
           );
         }
       } else {
+        // Build conversation history (mirrors YiVad: send full context)
+        const history: Array<{ role: string; content: string }> = [];
+        if (state.systemPrompt) {
+          history.push({ role: 'system', content: state.systemPrompt });
+        }
+        for (let i = 0; i <= userIdx; i++) {
+          const m = slice[i];
+          const text = (m.content || '').trim();
+          if (!text) continue;
+          history.push({
+            role: m.type === 'user' ? 'user' : 'assistant',
+            content: text,
+          });
+        }
         await _chat.streamWithCallback(
           {
-            system: state.systemPrompt || undefined,
-            user: userContent,
+            messages: history,
             model: state.selectedModel || DEFAULT_MODEL,
             images: images.length > 0 ? images : undefined,
           },
@@ -759,6 +771,7 @@ export const useChatStore = defineStore('chat', () => {
       state.isProcessing = false;
       state.streamingType = '';
       state.streamingPhase = '';
+      state.thinkingStartTs = null;
       state.streamingTargetTimestamp = null;
       _abortController = null;
       const idx = findPetIdx();
@@ -823,6 +836,10 @@ export const useChatStore = defineStore('chat', () => {
     if (!Number.isFinite(idx) || idx === state.colorIndex) return;
     state.colorIndex = idx;
     _persistSetting('chatColorIndex', idx);
+    // Apply theme to chat root container only — never touch document.documentElement
+    // to avoid destroying host page styles (e.g. YiVad knowledge pages).
+    const root = document.getElementById('yipet-chat-root');
+    if (root) applyThemeColors(root, idx);
   }
 
   function setRole(name: string, imageUrl: string) {
@@ -894,6 +911,41 @@ export const useChatStore = defineStore('chat', () => {
     _persistSetting('ragScopeIsFile', false);
   }
 
+  /** Fetch available Ollama models from the backend. */
+  async function fetchModels() {
+    try {
+      const models = await _chat.listModels();
+      if (models.length) {
+        state.availableModels = models;
+        if (!state.selectedModel || !models.includes(state.selectedModel)) {
+          state.selectedModel = models[0];
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  /** Create a new empty session (for header + button, no page context). */
+  async function createEmptySession() {
+    state.isProcessing && stopSending();
+    const title = 'New chat';
+    try {
+      const res = await _sessions.create({
+        title,
+        url: `yipet://new/${Date.now()}`,
+        tags: ['source:YiPet'],
+        pageContent: '',
+      });
+      if (res.ok && res.data?.key) {
+        const id = res.data.key as string;
+        await _loadSessions();
+        state.currentSessionId = id;
+        state.title = title;
+        state.messages = [];
+        state.viewState = 'empty';
+      }
+    } catch { /* ignore */ }
+  }
+
   async function loadKnowledgeTree(category?: string) {
     if (state.knowledgeLoading) return;
     state.knowledgeLoading = true;
@@ -924,10 +976,10 @@ export const useChatStore = defineStore('chat', () => {
           'success',
         );
       } else {
-        notify(res.error || 'Sync failed', 'error');
+        notify(res.error || t('errorSyncFailed'), 'error');
       }
     } catch {
-      notify('Sync failed — check server connection', 'error');
+      notify(t('errorSyncFailedRetry'), 'error');
     } finally {
       state.knowledgeSyncing = false;
       await loadKnowledgeTree();
@@ -1036,6 +1088,7 @@ export const useChatStore = defineStore('chat', () => {
       state.isProcessing = false;
       state.streamingType = '';
       state.streamingPhase = '';
+      state.thinkingStartTs = null;
       state.streamingTargetTimestamp = null;
       _abortController = null;
     }
@@ -1134,7 +1187,7 @@ export const useChatStore = defineStore('chat', () => {
     if (idx < 0 || idx >= state.messages.length) return;
     state.messages[idx] = { ...state.messages[idx], content: text };
     _persistMessages();
-    notify('Message updated');
+    notify(t('chatMsgUpdated'));
   }
   function deleteMessage(idx: number) {
     if (idx < 0 || idx >= state.messages.length) return;
@@ -1142,7 +1195,7 @@ export const useChatStore = defineStore('chat', () => {
     const target = state.sessions.find((s) => s.id === state.currentSessionId);
     if (target) target.messageCount = state.messages.length;
     _persistMessages();
-    notify('Message deleted');
+    notify(t('chatMsgDeleted'));
   }
   function copyMessage(text: string, ts: number) {
     const key = String(ts);
@@ -1225,7 +1278,7 @@ export const useChatStore = defineStore('chat', () => {
 
   function exportCurrentSessionMarkdown() {
     const msgs = state.messages;
-    if (!msgs.length) { notify('Nothing to export'); return; }
+    if (!msgs.length) { notify(t('chatNothingToExport')); return; }
     const ses = state.sessions.find((x) => x.id === state.currentSessionId);
     const title = ses?.title || 'Untitled';
     const now = new Date().toISOString();
@@ -1256,16 +1309,90 @@ export const useChatStore = defineStore('chat', () => {
     a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 50)}.md`;
     a.click();
     URL.revokeObjectURL(url);
-    notify(`Exported ${msgs.length} messages as markdown`);
+    notify(t('chatExported', String(msgs.length)));
   }
 
-  function submitFeedback(ts: number, rating: 'like' | 'dislike') {
-    if (state.feedback[ts] === rating) {
-      delete state.feedback[ts];
-    } else {
-      state.feedback[ts] = rating;
-    }
+  function exportConversationHtml() {
+    const msgs = state.messages;
+    if (!msgs.length) { notify(t('chatNothingToExport')); return; }
+    const ses = state.sessions.find((x) => x.id === state.currentSessionId);
+    const title = ses?.title || 'Chat';
+    const exported = new Date().toISOString();
+    const escapeHtml = (text: string): string => {
+      const map: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return text.replace(/[&<>"']/g, (c) => map[c] || c);
+    };
+    const parts: string[] = [];
+    parts.push(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(title)}</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; }
+  .meta { color: #6b7280; font-size: 0.875rem; margin-bottom: 2rem; }
+  .msg { margin: 1.5rem 0; padding: 1rem; border-radius: 8px; }
+  .msg--user { background: #f3f4f6; }
+  .msg--ai { background: #eff6ff; border-left: 3px solid #3b82f6; }
+  .msg__role { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #6b7280; margin-bottom: 0.5rem; }
+  .msg__time { font-weight: 400; color: #9ca3af; }
+  .msg__content { white-space: pre-wrap; }
+  .msg__content img { max-width: 100%; }
+  details { margin-top: 0.75rem; }
+  summary { cursor: pointer; color: #3b82f6; font-size: 0.875rem; }
+  pre { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8125rem; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.875em; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #111827; color: #f9fafb; }
+    .msg--user { background: #1f2937; }
+    .msg--ai { background: #1e3a5f; border-left-color: #60a5fa; }
+    .meta, .msg__role { color: #9ca3af; }
+    h1 { border-bottom-color: #374151; }
   }
+</style>
+</head>
+<body>
+<h1>${escapeHtml(title)}</h1>
+<p class="meta">Exported: ${exported} · Source: ${escapeHtml(state.pageInfo?.url || 'unknown')}</p>`);
+
+    for (const m of msgs) {
+      const role = m.type === 'user' ? 'User' : 'AI';
+      const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : '';
+      const cls = m.type === 'user' ? 'msg--user' : 'msg--ai';
+      parts.push(`<div class="msg ${cls}">`);
+      parts.push(`<div class="msg__role">${role} <span class="msg__time">${time}</span></div>`);
+      const content = (m.content || '')
+        // Convert markdown code blocks to HTML pre/code for basic formatting
+        .replace(/```(\w*)\n([\s\S]*?)```/g, (_m: string, lang: string, code: string) =>
+          `<pre><code>${escapeHtml(code.trim())}</code></pre>`
+        )
+        // Convert inline code
+        .replace(/`([^`]+)`/g, (_m: string, code: string) => `<code>${escapeHtml(code)}</code>`)
+        // Convert bold
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Convert italic
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      parts.push(`<div class="msg__content">${content || '(empty)'}</div>`);
+      if (m.error) parts.push('<p><em>⚠️ Generation failed</em></p>');
+      if (m.aborted) parts.push('<p><em>⚠️ Stopped</em></p>');
+      parts.push('</div>');
+    }
+
+    parts.push('</body>\n</html>');
+    const html = parts.join('\n');
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 50)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    notify(`Exported ${msgs.length} messages as HTML`);
+  }
+
   function openSaveToKnowledge(_ts: number) { state.saveToKnowledgeTimestamp = _ts; state.saveToKnowledgeVisible = true; }
   async function openMessageInYiVad(ts: number) {
     const idx = state.messages.findIndex((m) => m.timestamp === ts);
@@ -1299,7 +1426,7 @@ export const useChatStore = defineStore('chat', () => {
         // Also set the messages on the session
         await _sessions.update(res.data.key as string, { messages: seedMessages } as unknown as Record<string, unknown>);
         window.open(`http://localhost:8848/#/aiChat?session=${res.data.key}`, '_blank', 'noopener,noreferrer');
-        notify('Opened in YiVad aiChat');
+        notify(t('chatOpenedInYiVad'));
       }
     } catch { /* ignore */ }
   }
@@ -1353,7 +1480,7 @@ export const useChatStore = defineStore('chat', () => {
     await _loadSessions();
     state.selectedSessionIds = [];
     state.batchMode = false;
-    notify(`Deleted ${ids.length} session(s)`);
+    notify(t('chatSessionsDeleted', String(ids.length)));
   }
   function openKnowledgeStory(story: { name: string; project: string }) {
     state.knowledgePreviewPath = `${story.project}/${story.name}`;
@@ -1412,6 +1539,21 @@ export const useChatStore = defineStore('chat', () => {
     } catch { /* ignore */ }
     finally { state.ragDecomposeLoading = false; }
   }
+
+  // ── Context pressure (mirrors YiVad aiChat) ──
+  const CONTEXT_WINDOW_TOKENS = 8192;
+  const CHARS_PER_TOKEN = 4;
+
+  const contextPressure = computed(() => {
+    const msgs = state.messages;
+    if (!msgs?.length) return { level: 'low' as const, estimatedTokens: 0, pct: 0 };
+    const totalChars = msgs.reduce((sum, m) => sum + (m.content?.length ?? 0), 0);
+    const estimatedTokens = Math.ceil(totalChars / CHARS_PER_TOKEN);
+    const pct = Math.round((estimatedTokens / CONTEXT_WINDOW_TOKENS) * 100);
+    const level =
+      pct > 90 ? ('critical' as const) : pct > 70 ? ('high' as const) : pct > 40 ? ('mid' as const) : ('low' as const);
+    return { level, estimatedTokens, pct };
+  });
 
   async function createSessionFromKnowledgeFile(path: string) {
     try {
@@ -1519,6 +1661,7 @@ export const useChatStore = defineStore('chat', () => {
     loadKnowledgeTree, syncKnowledge, loadRagStatus, loadRagCategories,
     setKnowledgeCategoryFilter, setSidebarView,
     openKnowledgePreview, closeKnowledgePreview,
+    fetchModels, createEmptySession,
     // Modals
     openBugReport, closeBugReport, toggleFaq, toggleSidebar,
     setSearchInput, setSearchQuery, toggleBatchMode,
@@ -1528,7 +1671,7 @@ export const useChatStore = defineStore('chat', () => {
     knowledgeFileMatches, recallPromptHistory, removePromptHistoryAt, invokePromptHistory, clearPromptHistory,
     addDraftImages, clearDraftImages, removeDraftImage,
     editMessage, deleteMessage, copyMessage,
-    regenerateMessage, resendMessage, retryLastMessage, submitFeedback, exportCurrentSessionMarkdown,
+    regenerateMessage, resendMessage, retryLastMessage, exportCurrentSessionMarkdown, exportConversationHtml,
     openSaveToKnowledge, openMessageInYiVad,
     openFaqManager, editSessionInfo, openTagManager, openWeChatSettings,
     updateSessionMeta, readKnowledgeFile, saveContextToKnowledge,
@@ -1536,5 +1679,6 @@ export const useChatStore = defineStore('chat', () => {
     openKnowledgeStory, openBugInYiVad,
     previewRagSources, decomposeRagQuestion,
     applyPageContextChip, createSessionFromKnowledgeFile, pageContextChip: pageContextChipValue,
+    contextPressure,
   };
 });

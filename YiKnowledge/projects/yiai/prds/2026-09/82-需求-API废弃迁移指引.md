@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-78: 服务端 API 接口废弃声明与迁移指引 — 客户端平滑升级的自动化兼容层"
 tags: [需求文档, API废弃, 迁移指引, 兼容层, 平滑升级, Deprecation, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,14 +20,20 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [82-prd-task-API废弃迁移指引]
+related_tests: [82-prd-test-API废弃迁移指引]
 ---
 
 # YA-09-78: API 接口废弃声明与迁移指引 — 平滑升级兼容层
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-78 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
 ---
 
+<a id="sec-1"></a>
 ## 一、背景
 
 ### 1.1 问题描述
@@ -55,6 +64,7 @@ YiAi 的 RPC 接口在演进过程中，部分旧参数和方法被新版本替�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、现状分析
 
 ### 2.1 当前废弃处理
@@ -97,6 +107,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、设计决策
 
 ### D-01: 废弃通知方式：HTTP Header vs 响应体 vs 两者
@@ -131,6 +142,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 目标数据流
@@ -175,6 +187,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 新增: YiAi/src/shared/deprecation_registry.py
@@ -423,6 +436,7 @@ app.add_middleware(DeprecationMiddleware)
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证 | 人天 |
@@ -438,6 +452,7 @@ app.add_middleware(DeprecationMiddleware)
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 中间件开销
@@ -459,6 +474,7 @@ app.add_middleware(DeprecationMiddleware)
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 **TC-01: Announce 阶段——返回 Sunset 头部**
@@ -511,6 +527,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-9"></a>
 ## 九、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -522,6 +539,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回滚策略
 
 | 场景 | 操作 | 影响 |
@@ -534,6 +552,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 | 编号 | 决策 | 理由 | 日期 |
@@ -546,6 +565,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 ### 12.1 指标
@@ -579,6 +599,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、安全合规
 
 | 要求 | 实现 |
@@ -590,6 +611,7 @@ THEN 应返回 3 条记录，各包含 name, phase, replacement, block_date
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、代码审查检查清单
 
 - [ ] API 废弃三阶段：Announce → Warn → Block——渐进式废弃

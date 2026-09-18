@@ -34,7 +34,15 @@ export interface Module {
   updated_at: string;
 }
 
-export function getModuleList(params: { pageNum?: number; pageSize?: number; project_key?: string; status?: string; due_date?: string; updated_at_start?: string; updated_at_end?: string }) {
+export function getModuleList(params: {
+  pageNum?: number;
+  pageSize?: number;
+  project_key?: string;
+  status?: string;
+  due_date?: string;
+  updated_at_start?: string;
+  updated_at_end?: string;
+}) {
   const { pageNum = 1, pageSize = 50, project_key, status, due_date, updated_at_start, updated_at_end } = params;
   const filter: Record<string, any> = {};
   if (project_key) filter.project_key = project_key;
@@ -46,8 +54,12 @@ export function getModuleList(params: { pageNum?: number; pageSize?: number; pro
     if (updated_at_end) filter.updated_at.$lte = updated_at_end + "T23:59:59";
   }
   return queryDocuments<Module>({
-    cname: COLLECTION, filter, pageNum, pageSize,
-    orderBy: "updated_at", orderType: "desc"
+    cname: COLLECTION,
+    filter,
+    pageNum,
+    pageSize,
+    orderBy: "updated_at",
+    orderType: "desc"
   });
 }
 

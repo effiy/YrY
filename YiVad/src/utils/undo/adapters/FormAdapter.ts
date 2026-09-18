@@ -13,14 +13,14 @@ export function createFormUpdateCommand(
     timestamp: Date.now(),
     source: "user",
     description: `编辑 ${fieldName}`,
-    category: "form",
+    category: "form"
   };
   const changeData: ChangeData = {
     type: "update",
     entityType,
     entityId,
     before: { [fieldName]: oldValue },
-    after: { [fieldName]: newValue },
+    after: { [fieldName]: newValue }
   };
   return new UpdateCommand(context, changeData, apiUpdate);
 }

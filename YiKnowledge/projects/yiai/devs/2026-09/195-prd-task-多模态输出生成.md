@@ -1,41 +1,59 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-190"
-title: "YA-09-190: 多模态输出生成 — 文本+图片/表格/代码/图表/JSON Schema/Mermaid 图表 — 开发任务"
+prd_task_id: "YA-09-141"
+title: "YA-09-141: 多模态输出生成 — 图表/表格/Mermaid/代码 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "195-需求-多模态输出生成.md"
+source_okr: [yiai-003]
 ---
 
-# YA-09-190: 多模态输出生成 — 文本+图片/表格/代码/图表/JSON Schema/Mermaid 图表 — 开发任务
+# YA-09-141: 多模态输出生成 — 图表/表格/Mermaid/代码 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[195-需求-多模态输出生成.md](../../prds/2026-09/195-需求-多模态输出生成.md)
-> 需求编号：YA-09-190 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-141 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+LLM 不仅输出纯文本，还能生成结构化内容——Mermaid 图、JSON Schema、ECharts 配置、代码块等。前端根据内容类型差异化渲染。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+OUTPUT_TYPES = {
+    "mermaid": lambda content: f"```mermaid\n{content}\n```",
+    "echarts": lambda content: f"```echarts\n{json.dumps(content)}\n```",
+    "table": lambda content: tabulate(content, headers="keys", tablefmt="github"),
+    "code": lambda content: f"```python\n{content}\n```",
+}
 
-| 步骤 | 任务 | 产出 |
+# LLM 系统提示中声明支持的输出格式
+system_prompt = """你可以输出多种格式:
+- Mermaid 图表: { "type": "mermaid", "content": "graph LR..." }
+- ECharts: { "type": "echarts", "content": {...} }
+- 表格: { "type": "table", "content": [...] }
+"""
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 4 种输出类型 + 前端渲染 | Mermaid 图在前端正确渲染 | 0.25 |
+| 2 | 自动类型检测 + 测试 | 代码块自动语法高亮 | 0.25 |
+
+**合计：0.5d**。

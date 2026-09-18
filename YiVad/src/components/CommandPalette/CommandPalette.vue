@@ -89,10 +89,24 @@ interface PaletteItem {
 const searchResults = ref<PaletteItem[]>([]);
 
 const quickActions = [
-  { id: "new-issue", title: "Create New Issue", shortcut: "N I", color: "#409eff", icon: Plus, action: () => router.push("/issue") },
-  { id: "new-project", title: "Create New Project", shortcut: "N P", color: "#67c23a", icon: Folder, action: () => router.push("/project") },
+  {
+    id: "new-issue",
+    title: "Create New Issue",
+    shortcut: "N I",
+    color: "#409eff",
+    icon: Plus,
+    action: () => router.push("/issue")
+  },
+  {
+    id: "new-project",
+    title: "Create New Project",
+    shortcut: "N P",
+    color: "#67c23a",
+    icon: Folder,
+    action: () => router.push("/project")
+  },
   { id: "kanban", title: "Open Kanban Board", shortcut: "K", color: "#e6a23c", icon: Grid, action: () => router.push("/kanban") },
-    { id: "pages", title: "Go to Pages", shortcut: "P", color: "#909399", icon: Document, action: () => router.push("/page") },
+  { id: "pages", title: "Go to Pages", shortcut: "P", color: "#909399", icon: Document, action: () => router.push("/page") },
   { id: "search", title: "Global Search", shortcut: "S", color: "#409eff", icon: Search, action: () => router.push("/search") }
 ].map((a, i) => ({ ...a, _idx: i }));
 
@@ -112,7 +126,7 @@ const resultGroups = computed<ResultGroup[]>(() => {
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-watch(query, (val) => {
+watch(query, val => {
   if (searchTimer) clearTimeout(searchTimer);
   if (!val.trim()) {
     searchResults.value = [];
@@ -140,11 +154,21 @@ async function doSearch(q: string) {
     const res = await getIssueList({ search: q, pageSize: 10 });
     const issues = (res.data?.list as Issue[]) ?? [];
     issues.forEach(i => {
-      results.push({ id: `iss-${i.key}`, title: i.title, subtitle: `${i.status} · ${i.project_key}`, link: `/issue/${i.key}`, _idx: 0 });
+      results.push({
+        id: `iss-${i.key}`,
+        title: i.title,
+        subtitle: `${i.status} · ${i.project_key}`,
+        link: `/issue/${i.key}`,
+        _idx: 0
+      });
     });
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
-  results.forEach((r, i) => { r._idx = i; });
+  results.forEach((r, i) => {
+    r._idx = i;
+  });
   searchResults.value = results;
   activeIdx.value = 0;
 }
@@ -223,85 +247,85 @@ defineExpose({ open, close });
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.35);
   display: flex;
   justify-content: center;
   padding-top: 15vh;
+  background: rgb(0 0 0 / 35%);
 }
 .cmd-palette {
-  width: 560px;
-  max-height: 420px;
-  background: var(--el-bg-color);
-  border-radius: 12px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 560px;
+  max-height: 420px;
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgb(0 0 0 / 20%);
 }
 .cmd-palette__input-wrap {
   display: flex;
+  gap: 10px;
   align-items: center;
   padding: 14px 16px;
   border-bottom: 1px solid var(--el-border-color);
-  gap: 10px;
 }
 .cmd-palette__search-icon {
-  color: var(--el-text-color-placeholder);
   flex-shrink: 0;
+  color: var(--el-text-color-placeholder);
 }
 .cmd-palette__input {
   flex: 1;
-  border: none;
-  outline: none;
   font-size: 15px;
-  background: transparent;
   color: var(--el-text-color-primary);
+  outline: none;
+  background: transparent;
+  border: none;
 }
 .cmd-palette__input::placeholder {
   color: var(--el-text-color-placeholder);
 }
 .cmd-palette__kbd {
-  font-size: 11px;
   padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--el-fill-color);
-  color: var(--el-text-color-placeholder);
   font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color);
+  border-radius: 4px;
 }
 .cmd-palette__results {
   flex: 1;
-  overflow-y: auto;
   padding: 8px;
+  overflow-y: auto;
 }
 .cmd-palette__group-label {
+  padding: 8px 12px 4px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-placeholder);
-  padding: 8px 12px 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .cmd-palette__item {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   padding: 8px 12px;
-  border-radius: 8px;
   cursor: pointer;
+  border-radius: 8px;
   transition: background 0.1s;
 }
 .cmd-palette__item--active {
   background: var(--el-color-primary-light-9);
 }
 .cmd-palette__item-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: #ffffff;
+  border-radius: 6px;
 }
 .cmd-palette__item-content {
   flex: 1;
@@ -311,9 +335,9 @@ defineExpose({ open, close });
   font-size: 13px;
   font-weight: 500;
   :deep(mark) {
-    background: var(--el-color-warning-light-5);
-    color: inherit;
     padding: 0 2px;
+    color: inherit;
+    background: var(--el-color-warning-light-5);
     border-radius: 2px;
   }
 }
@@ -322,17 +346,17 @@ defineExpose({ open, close });
   color: var(--el-text-color-placeholder);
 }
 .cmd-palette__item-kbd {
-  font-size: 11px;
   padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--el-fill-color);
-  color: var(--el-text-color-placeholder);
   font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color);
+  border-radius: 4px;
 }
 .cmd-palette__empty {
-  text-align: center;
   padding: 24px;
-  color: var(--el-text-color-placeholder);
   font-size: 13px;
+  color: var(--el-text-color-placeholder);
+  text-align: center;
 }
 </style>

@@ -24,8 +24,16 @@ const emit = defineEmits<{ confirm: [targetId: string] }>();
 
 const visible = ref(false);
 const targetId = ref<string | null>(null);
-const open = () => { visible.value = true; targetId.value = null; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { if (targetId.value) emit("confirm", targetId.value); visible.value = false; };
+const open = () => {
+  visible.value = true;
+  targetId.value = null;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  if (targetId.value) emit("confirm", targetId.value);
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>

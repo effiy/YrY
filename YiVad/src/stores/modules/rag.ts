@@ -58,10 +58,7 @@ export const useRagStore = defineStore("yivad-rag", () => {
     lastQuestion.value = q;
     lastTopK.value = topK;
     lastScope.value = scope;
-    queryHistory.value = [
-      { question: q, scope, topK, sources, timestamp: Date.now() },
-      ...queryHistory.value,
-    ].slice(0, 20);
+    queryHistory.value = [{ question: q, scope, topK, sources, timestamp: Date.now() }, ...queryHistory.value].slice(0, 20);
   }
 
   function rerunQuery(idx: number) {
@@ -90,6 +87,6 @@ export const useRagStore = defineStore("yivad-rag", () => {
     lastScope,
     recordQuery,
     rerunQuery,
-    clearQueryHistory,
+    clearQueryHistory
   };
 });

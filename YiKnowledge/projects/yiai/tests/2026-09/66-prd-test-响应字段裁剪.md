@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-62"
 source_prds: ["66-需求-响应字段裁剪"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-62: 服务端 API 响应字段裁剪 — Sparse Fieldsets 按需返回字段优化传输 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[66-需求-响应字段裁剪.md](../../prds/2026-09/66-需求-响应字段裁剪.md)
 > 提取日期：2026-09-11

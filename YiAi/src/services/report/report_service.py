@@ -9,8 +9,8 @@ RPC methods:
 
 from __future__ import annotations
 
-import logging
 from datetime import datetime
+import logging
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
@@ -19,16 +19,16 @@ from data.database import db
 logger = logging.getLogger(__name__)
 
 
-async def list_reports(params: Dict[str, Any]) -> Dict[str, Any]:
+async def list_reports(params: dict[str, Any]) -> dict[str, Any]:
     """List saved reports, optionally filtered by type.
 
     ``params``: ``{ type?, limit?, offset? }``
     """
-    report_type: Optional[str] = params.get("type")
+    report_type: str | None = params.get("type")
     limit: int = params.get("limit", 50)
     offset: int = params.get("offset", 0)
 
-    query: Dict[str, Any] = {}
+    query: dict[str, Any] = {}
     if report_type:
         query["type"] = report_type
 
@@ -51,7 +51,7 @@ async def list_reports(params: Dict[str, Any]) -> Dict[str, Any]:
     return {"reports": reports, "total": total}
 
 
-async def save_report(params: Dict[str, Any]) -> Dict[str, Any]:
+async def save_report(params: dict[str, Any]) -> dict[str, Any]:
     """Save or update a report definition.
 
     ``params``: ``{ report_id?, name, type?, description?, layout?, components?, schedule? }``
@@ -84,14 +84,14 @@ async def save_report(params: Dict[str, Any]) -> Dict[str, Any]:
     return {"report_id": report_id, "status": "saved"}
 
 
-async def generate_report(params: Dict[str, Any]) -> Dict[str, Any]:
+async def generate_report(params: dict[str, Any]) -> dict[str, Any]:
     """Generate a report from a saved definition or ad-hoc components.
 
     ``params``: ``{ report_id?, components[], dateRange?, format? }``
     """
-    report_id: Optional[str] = params.get("report_id")
-    components: List[Dict[str, Any]] = params.get("components", [])
-    date_range: Optional[Dict[str, str]] = params.get("dateRange")
+    report_id: str | None = params.get("report_id")
+    components: list[dict[str, Any]] = params.get("components", [])
+    date_range: dict[str, str] | None = params.get("dateRange")
     fmt: str = params.get("format", "json")
 
     # Load report definition if report_id provided
@@ -101,7 +101,7 @@ async def generate_report(params: Dict[str, Any]) -> Dict[str, Any]:
             components = doc.get("components", [])
 
     # Resolve each component's data binding
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     for comp in components:
         comp_type = comp.get("type", "kpi")
         data_source = comp.get("data_source", {})
@@ -111,7 +111,7 @@ async def generate_report(params: Dict[str, Any]) -> Dict[str, Any]:
         if date_range:
             aggr_filter["dateRange"] = date_range
 
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "component_id": comp.get("id", ""),
             "type": comp_type,
             "title": comp.get("title", ""),
@@ -137,7 +137,7 @@ async def generate_report(params: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-async def delete_report(params: Dict[str, Any]) -> Dict[str, Any]:
+async def delete_report(params: dict[str, Any]) -> dict[str, Any]:
     """Delete a report definition.
 
     ``params``: ``{ report_id: str }``

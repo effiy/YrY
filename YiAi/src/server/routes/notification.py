@@ -6,15 +6,16 @@ instead, and validate it here.
 
 URL: GET /notification/stream?token=<jwt>
 """
-import logging
 import asyncio
+import json
+import logging
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import StreamingResponse
-import json
 
+from data.database import db
 from shared.config import settings
 from shared.response import success
-from data.database import db
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -47,8 +48,8 @@ async def notification_stream(
             from domain.auth.core import verify_token
             verify_token(token)
         except Exception:
-            from shared.response import fail
             from shared.error_codes import ErrorCode
+            from shared.response import fail
             return fail(ErrorCode.UNAUTHORIZED, message="Invalid or expired token")
 
     async def event_generator():

@@ -1,11 +1,11 @@
 """Database backup and recovery service."""
 
 import asyncio
+from datetime import datetime, timedelta
 import hashlib
 import os
-import shutil
-from datetime import datetime, timedelta
 from pathlib import Path
+import shutil
 from typing import Optional
 
 from shared.config import settings
@@ -144,7 +144,7 @@ class BackupService:
         return {"status": "verified", "backup_name": backup_name}
 
     async def restore(
-        self, backup_name: str, target_time: Optional[datetime] = None
+        self, backup_name: str, target_time: datetime | None = None
     ) -> dict:
         """Restore from a backup. target_time enables point-in-time recovery."""
         backup_path = self.local_dir / backup_name
@@ -212,7 +212,7 @@ def _write_checksum(path: Path, checksum: str):
     (path / "checksum.txt").write_text(checksum)
 
 
-def _read_checksum(path: Path) -> Optional[str]:
+def _read_checksum(path: Path) -> str | None:
     f = path / "checksum.txt"
     return f.read_text().strip() if f.exists() else None
 

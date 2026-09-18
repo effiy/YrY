@@ -12,32 +12,22 @@
       </div>
     </div>
 
-    <ProTable
-      title=""
-      :columns="docColumns"
-      :data="filteredDocItems"
-      :pagination="false"
-    >
+    <ProTable title="" :columns="docColumns" :data="filteredDocItems" :pagination="false">
       <template #tableHeader>
         <span class="dw-table-title">{{ $t("project.detail.tabs.workflows") }}</span>
       </template>
       <template #title="scope">
         <div class="dw-file-cell">
           <el-icon :size="14" class="dw-file-icon"><component :is="docIcon(scope.row.tag)" /></el-icon>
-          <el-button
-            link
-            type="primary"
-            @click="openDoc(scope.row as DocItem)"
-          >
+          <el-button link type="primary" @click="openDoc(scope.row as DocItem)">
             {{ scope.row.title }}
           </el-button>
         </div>
       </template>
       <template #tag="scope">
-        <span
-          class="dw-tag"
-          :style="{ background: TAG_COLORS[scope.row.tag] || '#909399' }"
-        >{{ TAG_LABELS[scope.row.tag] || scope.row.tag }}</span>
+        <span class="dw-tag" :style="{ background: TAG_COLORS[scope.row.tag] || '#909399' }">{{
+          TAG_LABELS[scope.row.tag] || scope.row.tag
+        }}</span>
       </template>
       <template #updatedAt="scope">
         <span v-if="scope.row.updatedAt">{{ scope.row.updatedAt.slice(0, 10) }}</span>
@@ -87,7 +77,7 @@ const docColumns = computed<ColumnProps[]>(() => [
   { prop: "tag", label: t("project.workflows.columns.tag"), width: 100, sortable: true },
   { prop: "title", label: t("project.workflows.columns.file"), minWidth: 220, sortable: true },
   { prop: "path", label: t("project.workflows.columns.path"), minWidth: 180 },
-  { prop: "updatedAt", label: t("project.workflows.columns.updated"), width: 120, sortable: true },
+  { prop: "updatedAt", label: t("project.workflows.columns.updated"), width: 120, sortable: true }
 ]);
 
 const docItems = computed<DocItem[]>(() => {
@@ -102,7 +92,7 @@ const docItems = computed<DocItem[]>(() => {
         title: (f.meta?.title as string) || f.name.replace(/\.md$/, ""),
         path: f.path,
         tag,
-        updatedAt: (f.meta?.updated as string) || "",
+        updatedAt: (f.meta?.updated as string) || ""
       };
     })
     .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
@@ -155,65 +145,61 @@ function openDoc(doc: DocItem) {
   display: flex;
   gap: 1px;
   margin-bottom: 16px;
+  overflow: hidden;
   background: var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
-
 .dw-summary__item {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   padding: 12px 10px;
   background: var(--el-bg-color);
 }
-
 .dw-summary__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 20px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
 }
-
 .dw-summary__label {
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
 }
-
 .dw-count {
+  margin-left: auto;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  margin-left: auto;
 }
 .dw-tag {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
-  color: #fff;
+  color: #ffffff;
+  border-radius: 4px;
 }
 .dw-path {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: "Courier New", Courier, monospace;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  display: block;
 }
 .dw-muted {
   color: var(--el-text-color-placeholder);
 }
 .dw-file-cell {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 .dw-file-icon {
   flex-shrink: 0;

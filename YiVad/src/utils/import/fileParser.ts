@@ -25,7 +25,10 @@ export function detectFormat(text: string, fileName?: string): "csv" | "tsv" | "
 }
 
 export function parseCSV(text: string): ParsedData {
-  const lines = text.trim().split("\n").filter((l) => l.trim());
+  const lines = text
+    .trim()
+    .split("\n")
+    .filter(l => l.trim());
   if (lines.length === 0) return { headers: [], rows: [], rawText: text, detectedFormat: "csv" };
 
   const delimiter = detectDelimiter(text);
@@ -34,8 +37,15 @@ export function parseCSV(text: string): ParsedData {
     let current = "";
     let inQuotes = false;
     for (const ch of line) {
-      if (ch === '"') { inQuotes = !inQuotes; continue; }
-      if (ch === delimiter && !inQuotes) { result.push(current.trim()); current = ""; continue; }
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+        continue;
+      }
+      if (ch === delimiter && !inQuotes) {
+        result.push(current.trim());
+        current = "";
+        continue;
+      }
       current += ch;
     }
     result.push(current.trim());
@@ -43,10 +53,12 @@ export function parseCSV(text: string): ParsedData {
   };
 
   const headers = parseLine(lines[0]);
-  const rows = lines.slice(1).map((line) => {
+  const rows = lines.slice(1).map(line => {
     const values = parseLine(line);
     const record: Record<string, string> = {};
-    headers.forEach((h, i) => { record[h] = values[i] || ""; });
+    headers.forEach((h, i) => {
+      record[h] = values[i] || "";
+    });
     return record;
   });
 

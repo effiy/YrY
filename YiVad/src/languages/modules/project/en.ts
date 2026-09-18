@@ -10,12 +10,12 @@ export default {
         name: "Name",
         issues: "Most issues",
         done: "Most done",
-        risk: "Most at risk",
+        risk: "Most at risk"
       },
       statusFilter: {
         all: "All statuses",
         active: "Active",
-        archived: "Archived",
+        archived: "Archived"
       },
       starred: "Starred",
       starTooltip: "Show starred only",
@@ -29,26 +29,26 @@ export default {
         noProjects: "No projects yet",
         createFirst: "Create your first project",
         noMatch: "No projects match the current filters",
-        noMatchSearch: "No results found for \"{keyword}\"",
+        noMatchSearch: 'No results found for "{keyword}"',
         clearFilters: "Clear filters",
-        clearSearch: "Clear search",
+        clearSearch: "Clear search"
       },
       dateBanner: {
         showing: "Showing issues due on {date}",
-        clear: "Clear date filter",
+        clear: "Clear date filter"
       },
       batch: {
         selected: "{n} selected",
         archive: "Archive",
         restore: "Restore",
-        clear: "Clear",
+        clear: "Clear"
       },
       archiveConfirm: "Archive {n} projects?",
       restoreConfirm: "Restore {n} projects?",
       alreadyArchived: "Already archived",
       alreadyActive: "Already active",
       archiveSuccess: "{n} project(s) archived",
-      restoreSuccess: "{n} project(s) restored",
+      restoreSuccess: "{n} project(s) restored"
     },
     stats: {
       issues: "Issues",
@@ -62,7 +62,7 @@ export default {
       noneCritical: "none critical",
       total: "{n} total",
       critical: "{n} critical",
-      of: "of",
+      of: "of"
     },
     analytics: {
       title: "Analytics",
@@ -89,7 +89,7 @@ export default {
       retry: "Retry",
       emptyIssues: "No Issues",
       emptyFileData: "No file data",
-      clickToAnalyze: "Click Analyze to scan source files",
+      clickToAnalyze: "Click Analyze to scan source files"
     },
     risks: {
       title: "Attention",
@@ -102,8 +102,8 @@ export default {
       health: {
         good: "Healthy",
         warn: "Needs attention",
-        poor: "At risk",
-      },
+        poor: "At risk"
+      }
     },
     filters: {
       hasFilters: "Filters active",
@@ -118,8 +118,8 @@ export default {
         risk: "Risk",
         health: "Health",
         flagged: "Flagged",
-        project: "Project",
-      },
+        project: "Project"
+      }
     },
     dialog: {
       createTitle: "New Project",
@@ -141,7 +141,7 @@ export default {
       createSuccess: "Project created",
       updateSuccess: "Project updated",
       clipboardUnavailable: "Clipboard unavailable",
-      copied: "Copied {identifier}",
+      copied: "Copied {identifier}"
     },
     detail: {
       back: "Projects",
@@ -160,12 +160,12 @@ export default {
         milestones: "Milestones",
         tags: "Tags",
         test: "Testing",
-        okr: "OKR",
+        okr: "OKR"
       },
       dateBanner: {
         showing: "Showing issues due on {date}",
-        clear: "Clear",
-      },
+        clear: "Clear"
+      }
     },
     overview: {
       readme: {
@@ -175,7 +175,7 @@ export default {
         edit: "Edit",
         add: "Add README.md",
         expand: "Expand",
-        collapse: "Collapse",
+        collapse: "Collapse"
       },
       sidebar: {
         overview: "Overview",
@@ -185,17 +185,29 @@ export default {
         bugs: "Bugs",
         modules: "Modules",
         inProgress: "In Progress",
-        overdue: "Overdue",
+        overdue: "Overdue"
       },
       modules: {
         title: "Modules",
         empty: "No modules",
-	        createTitle: "New Module",
-	        createFirst: "Create First Module",
-	        namePlaceholder: "Module name",
-	        descPlaceholder: "Module description",
-	        leadPlaceholder: "Module lead",
-	        createSuccess: "Module created",
+        createTitle: "New Module",
+        createFirst: "Create First Module",
+        namePlaceholder: "Module name",
+        descPlaceholder: "Module description",
+        leadPlaceholder: "Module lead",
+        createSuccess: "Module created",
+        summary: {
+          title: "Dev Tasks",
+          done: "Done",
+          inProgress: "In Progress",
+          pending: "Pending"
+        },
+        table: {
+          month: "Month",
+          taskName: "Task Name",
+          sourcePrd: "Source PRD",
+          status: "Status"
+        }
       },
       activity: {
         title: "Recent Activity",
@@ -213,7 +225,7 @@ export default {
         unknownDate: "Unknown",
         refresh: "Refresh",
         refreshing: "Refreshing...",
-        updatedAgo: "Updated {time}",
+        updatedAgo: "Updated {time}"
       },
       todo: {
         title: "Todo List",
@@ -226,41 +238,41 @@ export default {
         resolve: "Resolve",
         noAssignee: "Unassigned",
         noDueDate: "No due date",
-        overdue: "Overdue",
+        overdue: "Overdue"
       },
       epic: "Epic",
-        quality: {
-          title: "Quality Overview",
-          viewAll: "View all",
-          totalBugs: "Total Bugs",
-          resolved: "resolved",
-          openBugs: "Open",
-          ofTotal: "of total",
-          critical: "Critical · Major",
-          priority: "Priority",
-          stale: "Stale",
-          noActivity: "no activity",
-          modules: "Modules",
-          withBugs: "with bugs",
-          sectionAnalysis: "Bug Analysis",
-          sectionModules: "Module Quality",
-          sectionTestDocs: "Test Documents",
-          bugStats: "Bug Stats",
-          trendTitle: "Creation Trend · Last 14 Days",
-          severity: "Severity",
-          noBugs: "No Bugs",
-          noModules: "No Modules",
-          noTestDocs: "No Test Documents",
-          staleHint: "> 14 days inactive",
-          resolvedCount: "{n} resolved",
-          resolvedRate: "Resolved Rate",
-          newCount: "{n} new",
-          matrixModule: "Module",
-          matrixStatus: "Status",
-          matrixBugs: "Bugs",
-          matrixSeverity: "Severity",
-          matrixScore: "Score",
-        },
+      quality: {
+        title: "Quality Overview",
+        viewAll: "View all",
+        totalBugs: "Total Bugs",
+        resolved: "resolved",
+        openBugs: "Open",
+        ofTotal: "of total",
+        critical: "Critical · Major",
+        priority: "Priority",
+        stale: "Stale",
+        noActivity: "no activity",
+        modules: "Modules",
+        withBugs: "with bugs",
+        sectionAnalysis: "Bug Analysis",
+        sectionModules: "Module Quality",
+        sectionTestDocs: "Test Documents",
+        bugStats: "Bug Stats",
+        trendTitle: "Creation Trend · Last 14 Days",
+        severity: "Severity",
+        noBugs: "No Bugs",
+        noModules: "No Modules",
+        noTestDocs: "No Test Documents",
+        staleHint: "> 14 days inactive",
+        resolvedCount: "{n} resolved",
+        resolvedRate: "Resolved Rate",
+        newCount: "{n} new",
+        matrixModule: "Module",
+        matrixStatus: "Status",
+        matrixBugs: "Bugs",
+        matrixSeverity: "Severity",
+        matrixScore: "Score"
+      }
     },
     requirements: {
       stats: {
@@ -269,7 +281,7 @@ export default {
         inProgress: "In Progress",
         done: "Done",
         completed: "Completed",
-        estimate: "Est. Days",
+        estimate: "Est. Days"
       },
       searchPlaceholder: "Filter by title...",
       table: {
@@ -279,9 +291,9 @@ export default {
         assignee: "Assignee",
         status: "Status",
         estimate: "Est.",
-        month: "Month",
+        month: "Month"
       },
-      empty: "No requirements match the current filter",
+      empty: "No requirements match the current filter"
     },
     members: {
       count: "{n} member(s)",
@@ -299,7 +311,7 @@ export default {
       remove: "Remove",
       addSuccess: "Added {username}",
       removeSuccess: "Removed {username}",
-      empty: "No members yet",
+      empty: "No members yet"
     },
     workflows: {
       empty: "No workflows yet",
@@ -312,13 +324,13 @@ export default {
         file: "File",
         tag: "Tag",
         updated: "Updated",
-        path: "Path",
+        path: "Path"
       },
-      loadError: "Failed to load CLAUDE.md",
+      loadError: "Failed to load CLAUDE.md"
     },
     error: {
       loadOverview: "Failed to load overview data",
-      tryAgain: "Try Again",
+      tryAgain: "Try Again"
     },
     health: {
       title: "Health Dashboard",
@@ -348,7 +360,7 @@ export default {
       timeJustNow: "just now",
       timeMinutesAgo: "{n} min ago",
       timeHoursAgo: "{n} h ago",
-      timeDaysAgo: "{n} d ago",
+      timeDaysAgo: "{n} d ago"
     },
     test: {
       layerStrategy: "Test Layers",
@@ -359,6 +371,18 @@ export default {
       duration: "Duration",
       layer: "Layer",
       file: "File",
+      summary: {
+        title: "Test Specs",
+        done: "Done",
+        inProgress: "In Progress",
+        pending: "Pending"
+      },
+      table: {
+        month: "Month",
+        testName: "Test Name",
+        sourcePrd: "Source PRD",
+        status: "Status"
+      },
       untested: "Untested Source Directories",
       untestedDesc: "These src/ directories have zero test coverage",
       gapCritical: "High Risk",
@@ -377,15 +401,21 @@ export default {
       stageCommit: "Commit",
       stagePR: "PR Check",
       documents: "Test Documents",
-      noDocs: "No test-related documents",
+      noDocs: "No test-related documents"
     },
     okr: {
       title: "OKR Goals",
       empty: "No linked OKR goals",
+      emptyHint: "Create OKR goal files in YiKnowledge to display here",
       progress: "Progress",
       keyResults: "Key Results",
       metrics: "Metrics",
       goal: "Goal",
+      summary: {
+        totalGoals: "Total Goals",
+        avgProgress: "Avg Progress",
+        completed: "Completed"
+      },
       role: {
         project: "Project",
         producter: "Product",
@@ -394,18 +424,41 @@ export default {
         curator: "Curator",
         srer: "SRE",
         aier: "AI Eng",
-        executiver: "Executive",
+        executiver: "Executive"
       },
-      viewInKnowledge: "View in Knowledge Base",
+      viewInKnowledge: "View in Knowledge Base"
     },
     bugs: {
       stats: {
         total: "Total",
         open: "Open",
         resolved: "Resolved",
-        closed: "Closed",
+        closed: "Closed"
       },
-      empty: "No bug records",
+      empty: "No bug records"
     },
-  },
+    milestone: {
+      title: "Milestones",
+      newMilestone: "New Milestone",
+      editMilestone: "Edit Milestone",
+      deleteMilestone: "Delete Milestone",
+      deleteConfirm: "Delete this milestone?",
+      confirmDelete: "Confirm Delete",
+      titlePlaceholder: "Milestone title",
+      titleRequired: "Milestone title is required",
+      startDate: "Start date",
+      startDatePlaceholder: "Select start date",
+      targetDate: "Target date",
+      targetDatePlaceholder: "Select target date",
+      noMilestones: "No milestones",
+      progress: "{done}/{total} completed",
+      burndown: {
+        title: "Burndown Chart",
+        noData: "No burndown data",
+        remainingWork: "Remaining work",
+        idealLine: "Ideal",
+        actualLine: "Actual"
+      }
+    }
+  }
 };

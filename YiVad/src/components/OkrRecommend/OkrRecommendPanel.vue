@@ -5,16 +5,18 @@
       <nav class="okr-rec__sidebar">
         <div class="okr-rec__sidebar-view">
           <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="table"><el-icon><Grid /></el-icon></el-radio-button>
-            <el-radio-button value="list"><el-icon><List /></el-icon></el-radio-button>
-            <el-radio-button value="card"><el-icon><Postcard /></el-icon></el-radio-button>
+            <el-radio-button value="table"
+              ><el-icon><Grid /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="list"
+              ><el-icon><List /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="card"
+              ><el-icon><Postcard /></el-icon
+            ></el-radio-button>
           </el-radio-group>
         </div>
-        <button
-          class="okr-rec__sidebar-item"
-          :class="{ 'is-active': categoryFilter === 'all' }"
-          @click="categoryFilter = 'all'"
-        >
+        <button class="okr-rec__sidebar-item" :class="{ 'is-active': categoryFilter === 'all' }" @click="categoryFilter = 'all'">
           <span class="okr-rec__sidebar-icon">📋</span>
           <span class="okr-rec__sidebar-label">{{ t("home.aiRecommend.filterAll") }}</span>
           <span class="okr-rec__sidebar-badge">{{ categoryCounts.all }}</span>
@@ -35,73 +37,72 @@
       <!-- ═══ Content ═══ -->
       <div class="okr-rec__content">
         <div class="okr-rec__section-body">
+          <!-- ═══ 表格视图：四类推荐清单合并 ═══ -->
+          <OkrRecommendTable
+            v-if="viewMode === 'table'"
+            :items="filteredItems"
+            :column-filters="columnFilters"
+            :api-goals="apiGoals"
+            :project-of-row="projectOfRow"
+            :project-label="projectLabel"
+            @open-preview="openPreview"
+            @open-record="openRecord"
+            @open-metric-preview="openMetricPreview"
+            @open-skill-preview="openSkillPreview"
+            @open-agent-chat="openAgentChat"
+            @open-mcp="openMcp"
+            @handle-delete="handleDelete"
+            @go-to-project="goToProject"
+          />
 
-    <!-- ═══ 表格视图：四类推荐清单合并 ═══ -->
-    <OkrRecommendTable
-      v-if="viewMode === 'table'"
-      :items="filteredItems"
-      :column-filters="columnFilters"
-      :api-goals="apiGoals"
-      :project-of-row="projectOfRow"
-      :project-label="projectLabel"
-      @open-preview="openPreview"
-      @open-record="openRecord"
-      @open-metric-preview="openMetricPreview"
-      @open-skill-preview="openSkillPreview"
-      @open-agent-chat="openAgentChat"
-      @open-mcp="openMcp"
-      @handle-delete="handleDelete"
-      @go-to-project="goToProject"
-    />
+          <!-- ═══ 列表视图 ═══ -->
+          <OkrRecommendList
+            v-else-if="viewMode === 'list'"
+            :items="filteredItems"
+            :loop-by-goal-id="loopByGoalId"
+            :api-goals="apiGoals"
+            :regenerating-id="regeneratingId"
+            :due-relative="dueRelative"
+            @open-preview="openPreview"
+            @go-to-process="goToProcess"
+            @open-record="openRecord"
+            @open-metric-preview="openMetricPreview"
+            @open-skill-preview="openSkillPreview"
+            @open-agent-chat="openAgentChat"
+            @open-mcp="openMcp"
+            @handle-regenerate="handleRegenerate"
+            @handle-delete="handleDelete"
+          />
 
-    <!-- ═══ 列表视图 ═══ -->
-    <OkrRecommendList
-      v-else-if="viewMode === 'list'"
-      :items="filteredItems"
-      :loop-by-goal-id="loopByGoalId"
-      :api-goals="apiGoals"
-      :regenerating-id="regeneratingId"
-      :due-relative="dueRelative"
-      @open-preview="openPreview"
-      @go-to-process="goToProcess"
-      @open-record="openRecord"
-      @open-metric-preview="openMetricPreview"
-      @open-skill-preview="openSkillPreview"
-      @open-agent-chat="openAgentChat"
-      @open-mcp="openMcp"
-      @handle-regenerate="handleRegenerate"
-      @handle-delete="handleDelete"
-    />
+          <!-- ═══ 卡片视图 ═══ -->
+          <OkrRecommendCard
+            v-else
+            :items="filteredItems"
+            :loop-by-goal-id="loopByGoalId"
+            :api-goals="apiGoals"
+            :regenerating-id="regeneratingId"
+            :expanded-cards="expandedCards"
+            :due-relative="dueRelative"
+            :level-label="levelLabel"
+            @open-preview="openPreview"
+            @go-to-process="goToProcess"
+            @open-record="openRecord"
+            @open-metric-preview="openMetricPreview"
+            @open-skill-preview="openSkillPreview"
+            @open-agent-chat="openAgentChat"
+            @open-mcp="openMcp"
+            @handle-regenerate="handleRegenerate"
+            @handle-delete="handleDelete"
+            @toggle-expand-card="toggleExpandCard"
+          />
 
-    <!-- ═══ 卡片视图 ═══ -->
-    <OkrRecommendCard
-      v-else
-      :items="filteredItems"
-      :loop-by-goal-id="loopByGoalId"
-      :api-goals="apiGoals"
-      :regenerating-id="regeneratingId"
-      :expanded-cards="expandedCards"
-      :due-relative="dueRelative"
-      :level-label="levelLabel"
-      @open-preview="openPreview"
-      @go-to-process="goToProcess"
-      @open-record="openRecord"
-      @open-metric-preview="openMetricPreview"
-      @open-skill-preview="openSkillPreview"
-      @open-agent-chat="openAgentChat"
-      @open-mcp="openMcp"
-      @handle-regenerate="handleRegenerate"
-      @handle-delete="handleDelete"
-      @toggle-expand-card="toggleExpandCard"
-    />
+          <!-- ═══ 空状态 ═══ -->
+          <el-empty v-if="!filteredItems.length" :description="t('home.aiRecommend.empty')" :image-size="48" />
 
-    <!-- ═══ 空状态 ═══ -->
-    <el-empty v-if="!filteredItems.length" :description="t('home.aiRecommend.empty')" :image-size="48" />
-
-    <KnowledgePreviewDialog ref="previewDlg" />
+          <KnowledgePreviewDialog ref="previewDlg" />
+        </div>
+      </div>
     </div>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -118,7 +119,7 @@ import { chat } from "@/api/modules/chatService";
 import { deleteDocument } from "@/api/modules/dataService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import { fetchAllOkrMetadata } from "@/api/modules/okrService";
-import { seedOkrMetadataIfEmpty } from "@/views/knowledge/executiver/okrSeed";
+import { seedOkrMetadataIfEmpty } from "@/views/knowledge/executive/data/okrSeed";
 import type { OkrMetadataContext } from "./okrRecommend";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { skillLabel, mcpLabel, isOverdue } from "./format";
@@ -229,7 +230,8 @@ const expandedCards = ref<Set<string>>(new Set());
 
 function toggleExpandCard(id: string) {
   const next = new Set(expandedCards.value);
-  if (next.has(id)) next.delete(id); else next.add(id);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
   expandedCards.value = next;
 }
 
@@ -328,10 +330,7 @@ const categoryCounts = computed<Record<string, number>>(() => {
 });
 
 const filteredItems = computed(() => {
-  let result =
-    categoryFilter.value === "all"
-      ? allRows.value
-      : allRows.value.filter(i => i.listType === categoryFilter.value);
+  let result = categoryFilter.value === "all" ? allRows.value : allRows.value.filter(i => i.listType === categoryFilter.value);
   // 「风险与阻塞」只展示未解除的项；已 Done 的阻塞视为已解除，不再列出。
   if (categoryFilter.value === "risk") result = result.filter(i => !isResolvedRisk(i));
   const projs = props.projects;
@@ -343,15 +342,27 @@ const filteredItems = computed(() => {
   }
   // per-column filters
   const f = (k: string) => (columnFilters[k] || "").trim().toLowerCase();
-  const tf = f("title"); if (tf) result = result.filter(i => i.title.toLowerCase().includes(tf));
-  const rf = f("role"); if (rf) result = result.filter(i => i.roleName.toLowerCase().includes(rf) || i.role.toLowerCase().includes(rf));
-  const gf = f("goal"); if (gf) result = result.filter(i => apiGoals.value[i.goalId]?.title?.toLowerCase().includes(gf) || i.goalId.toLowerCase().includes(gf));
-  const mf = f("metric"); if (mf) result = result.filter(i => i.metric?.name?.toLowerCase().includes(mf));
-  const sf = f("skill"); if (sf) result = result.filter(i => i.skill.toLowerCase().includes(sf) || skillLabel(i.skill).toLowerCase().includes(sf));
-  const af = f("agent"); if (af) result = result.filter(i => i.agent.toLowerCase().includes(af));
-  const mcpf = f("mcp"); if (mcpf) result = result.filter(i => i.mcp.toLowerCase().includes(mcpf));
-  const duef = f("due"); if (duef) result = result.filter(i => i.dueDate.includes(duef));
-  const reasonf = f("reason"); if (reasonf) result = result.filter(i => i.reason.toLowerCase().includes(reasonf));
+  const tf = f("title");
+  if (tf) result = result.filter(i => i.title.toLowerCase().includes(tf));
+  const rf = f("role");
+  if (rf) result = result.filter(i => i.roleName.toLowerCase().includes(rf) || i.role.toLowerCase().includes(rf));
+  const gf = f("goal");
+  if (gf)
+    result = result.filter(
+      i => apiGoals.value[i.goalId]?.title?.toLowerCase().includes(gf) || i.goalId.toLowerCase().includes(gf)
+    );
+  const mf = f("metric");
+  if (mf) result = result.filter(i => i.metric?.name?.toLowerCase().includes(mf));
+  const sf = f("skill");
+  if (sf) result = result.filter(i => i.skill.toLowerCase().includes(sf) || skillLabel(i.skill).toLowerCase().includes(sf));
+  const af = f("agent");
+  if (af) result = result.filter(i => i.agent.toLowerCase().includes(af));
+  const mcpf = f("mcp");
+  if (mcpf) result = result.filter(i => i.mcp.toLowerCase().includes(mcpf));
+  const duef = f("due");
+  if (duef) result = result.filter(i => i.dueDate.includes(duef));
+  const reasonf = f("reason");
+  if (reasonf) result = result.filter(i => i.reason.toLowerCase().includes(reasonf));
   return result;
 });
 
@@ -364,12 +375,15 @@ const stats = computed(() => {
   };
 });
 
-watch(filteredItems, (items) => {
+watch(filteredItems, items => {
   const ids = new Set(items.map(i => i.id));
   const next = new Set(expandedCards.value);
   let changed = false;
   for (const id of expandedCards.value) {
-    if (!ids.has(id)) { next.delete(id); changed = true; }
+    if (!ids.has(id)) {
+      next.delete(id);
+      changed = true;
+    }
   }
   if (changed) expandedCards.value = next;
 });
@@ -423,7 +437,9 @@ function renderRowMarkdown(row: TableRow): string {
     statusLine,
     "",
     metricLine
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function openPreview(row: TableRow) {
@@ -437,7 +453,20 @@ function openPreview(row: TableRow) {
   }
 }
 
-function renderMetricMarkdown(metric: { id: string; icon: string; name: string; description: string; current: number; target: number; baseline: number; unit: string; trend: string; progress: number; category: string; framework: string }): string {
+function renderMetricMarkdown(metric: {
+  id: string;
+  icon: string;
+  name: string;
+  description: string;
+  current: number;
+  target: number;
+  baseline: number;
+  unit: string;
+  trend: string;
+  progress: number;
+  category: string;
+  framework: string;
+}): string {
   return [
     `# ${metric.icon} ${metric.name}`,
     "",
@@ -451,11 +480,24 @@ function renderMetricMarkdown(metric: { id: string; icon: string; name: string; 
     `| Progress | ${metric.progress}% |`,
     `| Trend | ${metric.trend} |`,
     `| Category | ${metric.category} |`,
-    `| Framework | ${metric.framework} |`,
+    `| Framework | ${metric.framework} |`
   ].join("\n");
 }
 
-function openMetricPreview(metric: { id: string; icon: string; name: string; description: string; current: number; target: number; baseline: number; unit: string; trend: string; progress: number; category: string; framework: string }) {
+function openMetricPreview(metric: {
+  id: string;
+  icon: string;
+  name: string;
+  description: string;
+  current: number;
+  target: number;
+  baseline: number;
+  unit: string;
+  trend: string;
+  progress: number;
+  category: string;
+  framework: string;
+}) {
   previewDlg.value?.openRaw({
     title: `${metric.icon} ${metric.name}`,
     content: renderMetricMarkdown(metric)
@@ -467,14 +509,14 @@ function openSkillPreview(skillId: string) {
 }
 
 function openAgentChat(agent: string) {
-  router.push("/aiChat");
+  router.push("/ai-chat");
 }
 
 function openMcp(mcp: string) {
   if (mcp === "github") {
     window.open("https://github.com", "_blank", "noopener,noreferrer");
   } else if (mcp === "yiai") {
-    router.push("/aiChat");
+    router.push("/ai-chat");
   }
 }
 
@@ -623,10 +665,15 @@ function buildLoopGroups(files: KnowledgeFileEntry[]): LoopGroup[] {
       stageMap[r.stage] = r;
       if (r.goalId) goalIds.add(r.goalId);
     }
-    const title = summaryTitles[loopId] || (() => {
-      const dirSlug = recs[0]?.path.split("/").find(seg => /^loop-/.test(seg)) ?? loopId;
-      return dirSlug.replace(/^loop-\d+-/, "").replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-    })();
+    const title =
+      summaryTitles[loopId] ||
+      (() => {
+        const dirSlug = recs[0]?.path.split("/").find(seg => /^loop-/.test(seg)) ?? loopId;
+        return dirSlug
+          .replace(/^loop-\d+-/, "")
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, c => c.toUpperCase());
+      })();
     return { loopId, title, records: recs, stageMap, goalIds: [...goalIds] };
   });
 }
@@ -640,7 +687,7 @@ function stageLabel(stage: string): string {
 }
 
 function goToProcess(loopId: string) {
-  router.push({ path: "/executiver/process", query: { loop: loopId } });
+  router.push({ path: "/knowledge/executive/processRecord", query: { loop: loopId } });
 }
 
 /** 项目 key → 展示名（无映射时回退原 key）。 */
@@ -728,15 +775,11 @@ async function removeActionItem(row: OkrActionItem) {
 /** 表格行删除入口：任务走清单持久化，Action Item 走文件删除。 */
 async function handleDelete(row: TableRow) {
   try {
-    await ElMessageBox.confirm(
-      t("common.deleteItemConfirm"),
-      t("common.deleteTitle"),
-      {
-        confirmButtonText: t("common.delete"),
-        cancelButtonText: t("common.cancel"),
-        type: "warning"
-      }
-    );
+    await ElMessageBox.confirm(t("common.deleteItemConfirm"), t("common.deleteTitle"), {
+      confirmButtonText: t("common.delete"),
+      cancelButtonText: t("common.cancel"),
+      type: "warning"
+    });
   } catch {
     return;
   }
@@ -926,45 +969,55 @@ onMounted(async () => {
 }
 
 // ── Body + Sidebar ──
-.okr-rec__body { display: flex; gap: 16px; align-items: flex-start; }
-.okr-rec__sidebar {
+.okr-rec__body {
   display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.okr-rec__sidebar {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 4px;
   width: 180px;
-  flex-shrink: 0;
   padding: 8px 10px 12px;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  position: sticky;
-  top: 12px;
-  overflow: hidden;
 }
 .okr-rec__sidebar-item {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  width: 100%;
   padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  cursor: pointer;
   font-size: 13px;
   color: var(--el-text-color-regular);
-  transition: all .15s;
   text-align: left;
-  width: 100%;
   white-space: nowrap;
-  &:hover { background: var(--el-fill-color-light); color: var(--el-text-color-primary); }
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.15s;
+  &:hover {
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color-light);
+  }
   &.is-active {
-    background: var(--el-color-primary-light-9);
-    color: var(--el-color-primary);
     font-weight: 600;
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
     box-shadow: inset 3px 0 0 var(--el-color-primary);
   }
 }
-.okr-rec__sidebar-icon { font-size: 18px; flex-shrink: 0; }
+.okr-rec__sidebar-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
 .okr-rec__sidebar-label {
   flex: 1;
   min-width: 0;
@@ -972,243 +1025,534 @@ onMounted(async () => {
 }
 .okr-rec__sidebar-badge {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   min-width: 22px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 10px;
   font-size: 11px;
   font-weight: 700;
-  background: var(--el-fill-color);
   color: var(--el-text-color-secondary);
-  flex-shrink: 0;
+  background: var(--el-fill-color);
+  border-radius: 10px;
   .okr-rec__sidebar-item.is-active & {
+    color: #ffffff;
     background: var(--el-color-primary);
-    color: #fff;
   }
 }
 .okr-rec__sidebar-view {
   padding: 4px 8px 8px;
   margin-bottom: 4px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) { display: flex; width: 100%; }
-  :deep(.el-radio-button) { flex: 1; }
-  :deep(.el-radio-button__inner) { width: 100%; text-align: center; padding: 4px 0; font-size: 12px; }
+  :deep(.el-radio-group) {
+    display: flex;
+    width: 100%;
+  }
+  :deep(.el-radio-button) {
+    flex: 1;
+  }
+  :deep(.el-radio-button__inner) {
+    width: 100%;
+    padding: 4px 0;
+    font-size: 12px;
+    text-align: center;
+  }
 }
-
 .okr-rec__content {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  overflow: hidden;
 }
-
 .okr-rec__section-body {
   padding: 16px 20px;
 }
-
-.okr-rec__search { width: 220px; }
-.okr-rec__col-header { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
-.okr-rec__col-header span { font-size: 12px; line-height: 1.2; }
-.okr-rec__col-header .el-input { width: 100%; }
+.okr-rec__search {
+  width: 220px;
+}
+.okr-rec__col-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: stretch;
+}
+.okr-rec__col-header span {
+  font-size: 12px;
+  line-height: 1.2;
+}
+.okr-rec__col-header .el-input {
+  width: 100%;
+}
 .okr-rec__date-nav {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
 }
 .okr-rec__date {
+  min-width: 80px;
   font-size: 13px;
   font-weight: 600;
   color: var(--el-text-color-primary);
-  min-width: 80px;
   text-align: center;
 }
 .okr-rec__date.is-all {
   color: var(--el-color-primary);
 }
-.okr-rec__stats { display: flex; align-items: center; gap: 14px; }
-.okr-rec__stat { font-size: 12px; color: var(--el-text-color-secondary); }
-.okr-rec__stat.is-p0 { color: var(--el-color-danger); font-weight: 600; }
-.okr-rec__stat.is-overdue { color: var(--el-color-warning); font-weight: 600; }
-
-// ── Table cells ────────────────────────────────
-.okr-rec__cell-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
-.okr-rec__cell-title--link { cursor: pointer; &:hover { color: var(--el-color-primary); } }
-.okr-rec__cell-none { color: var(--el-text-color-placeholder); }
-.okr-rec__cell-project { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; color: var(--el-color-primary); background: var(--el-color-primary-light-9); cursor: pointer; transition: all .15s; &:hover { color: #fff; background: var(--el-color-primary); } }
-.okr-rec__subtask { margin-left: 6px; font-size: 11px; color: var(--el-text-color-secondary); }
-.okr-rec__why { display: flex; flex-direction: column; gap: 4px; }
-.okr-rec__why-head { display: flex; align-items: center; }
-.okr-rec__why-text {
+.okr-rec__stats {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.okr-rec__stat {
   font-size: 12px;
   color: var(--el-text-color-secondary);
+}
+.okr-rec__stat.is-p0 {
+  font-weight: 600;
+  color: var(--el-color-danger);
+}
+.okr-rec__stat.is-overdue {
+  font-weight: 600;
+  color: var(--el-color-warning);
+}
+
+// ── Table cells ────────────────────────────────
+.okr-rec__cell-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.okr-rec__cell-title--link {
+  cursor: pointer;
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
+.okr-rec__cell-none {
+  color: var(--el-text-color-placeholder);
+}
+.okr-rec__cell-project {
+  display: inline-block;
+  padding: 1px 8px;
+  font-size: 12px;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  background: var(--el-color-primary-light-9);
+  border-radius: 10px;
+  transition: all 0.15s;
+  &:hover {
+    color: #ffffff;
+    background: var(--el-color-primary);
+  }
+}
+.okr-rec__subtask {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.okr-rec__why {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.okr-rec__why-head {
+  display: flex;
+  align-items: center;
+}
+.okr-rec__why-text {
+  font-size: 12px;
   line-height: 1.5;
+  color: var(--el-text-color-secondary);
 }
 
 // ── Metric（任务自身指标）────────────────────
-.okr-rec__cell-metric { display: flex; align-items: center; gap: 6px; }
-.okr-rec__cell-metric--link { cursor: pointer; &:hover { opacity: 0.8; } }
-.okr-rec__metric-icon { font-size: 14px; }
-.okr-rec__metric-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.okr-rec__metric-name { font-size: 12px; font-weight: 600; line-height: 1.3; }
-.okr-rec__metric-bar-row { display: flex; align-items: center; gap: 4px; }
-.okr-rec__metric-bar { flex: 1; height: 4px; background: var(--el-fill-color-light); border-radius: 2px; overflow: hidden; }
-.okr-rec__metric-bar i { display: block; height: 100%; background: var(--el-color-primary); border-radius: 2px; transition: width 0.3s; }
-.okr-rec__metric-progress { font-size: 11px; font-weight: 600; color: var(--el-color-primary); font-variant-numeric: tabular-nums; }
-.okr-rec__metric-val { font-size: 11px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
-.okr-rec__metric-trend { font-weight: 700; }
-.okr-rec__metric-trend.is-up { color: var(--el-color-success); }
-.okr-rec__metric-trend.is-down { color: var(--el-color-danger); }
-.okr-rec__metric-trend.is-stable { color: var(--el-text-color-secondary); }
-.okr-rec__list-metric { font-size: 12px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
-.okr-rec__card-metric { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--el-text-color-secondary); }
-.okr-rec__card-metric-name { font-weight: 600; }
-.okr-rec__card-metric-bar { width: 60px; height: 4px; background: var(--el-fill-color-light); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
-.okr-rec__card-metric-bar i { display: block; height: 100%; background: var(--el-color-primary); border-radius: 2px; transition: width 0.3s; }
-.okr-rec__card-metric-val { font-variant-numeric: tabular-nums; }
+.okr-rec__cell-metric {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.okr-rec__cell-metric--link {
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+.okr-rec__metric-icon {
+  font-size: 14px;
+}
+.okr-rec__metric-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.okr-rec__metric-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.okr-rec__metric-bar-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.okr-rec__metric-bar {
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  background: var(--el-fill-color-light);
+  border-radius: 2px;
+}
+.okr-rec__metric-bar i {
+  display: block;
+  height: 100%;
+  background: var(--el-color-primary);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.okr-rec__metric-progress {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-color-primary);
+}
+.okr-rec__metric-val {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+}
+.okr-rec__metric-trend {
+  font-weight: 700;
+}
+.okr-rec__metric-trend.is-up {
+  color: var(--el-color-success);
+}
+.okr-rec__metric-trend.is-down {
+  color: var(--el-color-danger);
+}
+.okr-rec__metric-trend.is-stable {
+  color: var(--el-text-color-secondary);
+}
+.okr-rec__list-metric {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+}
+.okr-rec__card-metric {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr-rec__card-metric-name {
+  font-weight: 600;
+}
+.okr-rec__card-metric-bar {
+  flex-shrink: 0;
+  width: 60px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--el-fill-color-light);
+  border-radius: 2px;
+}
+.okr-rec__card-metric-bar i {
+  display: block;
+  height: 100%;
+  background: var(--el-color-primary);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.okr-rec__card-metric-val {
+  font-variant-numeric: tabular-nums;
+}
 
 // ── Dimensions（ROI / 难度 / 紧迫 合并列）───────
-.okr-rec__cell-dims { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.okr-rec__cell-dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
 .okr-rec__dim {
   display: inline-flex;
-  align-items: center;
   gap: 3px;
+  align-items: center;
   padding: 1px 6px;
-  border-radius: 4px;
   font-size: 11px;
   line-height: 16px;
   white-space: nowrap;
+  border-radius: 4px;
 }
-.okr-rec__dim em { font-style: normal; opacity: 0.7; }
-.okr-rec__dim b { font-weight: 700; }
-.okr-rec__dim.is-high { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
-.okr-rec__dim.is-medium { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
-.okr-rec__dim.is-low { color: var(--el-color-info); background: var(--el-color-info-light-9); }
+.okr-rec__dim em {
+  font-style: normal;
+  opacity: 0.7;
+}
+.okr-rec__dim b {
+  font-weight: 700;
+}
+.okr-rec__dim.is-high {
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+}
+.okr-rec__dim.is-medium {
+  color: var(--el-color-warning);
+  background: var(--el-color-warning-light-9);
+}
+.okr-rec__dim.is-low {
+  color: var(--el-color-info);
+  background: var(--el-color-info-light-9);
+}
 
-	// ── Process records ──────────────────────────
-	.okr-rec__cell-process { display: flex; flex-direction: column; gap: 6px; }
-	.okr-rec__list-process { margin-bottom: 2px; }
-	.okr-rec__card-process { margin-bottom: 6px; }
-	:deep(.okr-rec__list-process .okr-rec__process-loop) { flex-direction: column; align-items: flex-start; gap: 6px; }
-	:deep(.okr-rec__list-process .okr-rec__process-loop-id) { font-size: 10px; padding: 1px 5px; max-width: 120px; }
-	:deep(.okr-rec__card-process .okr-rec__process-loop) { flex-direction: column; align-items: flex-start; gap: 6px; }
+// ── Process records ──────────────────────────
+.okr-rec__cell-process {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.okr-rec__list-process {
+  margin-bottom: 2px;
+}
+.okr-rec__card-process {
+  margin-bottom: 6px;
+}
+:deep(.okr-rec__list-process .okr-rec__process-loop) {
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+:deep(.okr-rec__list-process .okr-rec__process-loop-id) {
+  max-width: 120px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
+:deep(.okr-rec__card-process .okr-rec__process-loop) {
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
 // ── Score（进度条 + 数值）───────────────────────
-.okr-rec__score { display: flex; align-items: center; gap: 6px; }
+.okr-rec__score {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
 .okr-rec__score-bar {
   display: inline-block;
+  flex-shrink: 0;
   width: 56px;
   height: 6px;
-  border-radius: 3px;
-  background: var(--el-fill-color);
   overflow: hidden;
-  flex-shrink: 0;
+  background: var(--el-fill-color);
+  border-radius: 3px;
 }
-.okr-rec__score-bar i { display: block; height: 100%; border-radius: 3px; transition: width 0.3s; }
-.okr-rec__score-bar i.is-danger { background: var(--el-color-danger); }
-.okr-rec__score-bar i.is-warning { background: var(--el-color-warning); }
-.okr-rec__score-bar i.is-primary { background: var(--el-color-primary); }
-.okr-rec__score-bar i.is-info { background: var(--el-color-info); }
-.okr-rec__score-bar i.is-success { background: var(--el-color-success); }
+.okr-rec__score-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.okr-rec__score-bar i.is-danger {
+  background: var(--el-color-danger);
+}
+.okr-rec__score-bar i.is-warning {
+  background: var(--el-color-warning);
+}
+.okr-rec__score-bar i.is-primary {
+  background: var(--el-color-primary);
+}
+.okr-rec__score-bar i.is-info {
+  background: var(--el-color-info);
+}
+.okr-rec__score-bar i.is-success {
+  background: var(--el-color-success);
+}
 .okr-rec__score-num,
 .okr-rec__list-score,
 .okr-rec__card-score {
-  font-weight: 700;
   font-family: monospace;
-  &.is-danger { color: var(--el-color-danger); }
-  &.is-warning { color: var(--el-color-warning); }
-  &.is-primary { color: var(--el-color-primary); }
-  &.is-info { color: var(--el-color-info); }
-  &.is-success { color: var(--el-color-success); }
+  font-weight: 700;
+  &.is-danger {
+    color: var(--el-color-danger);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+  }
+  &.is-primary {
+    color: var(--el-color-primary);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+  }
+  &.is-success {
+    color: var(--el-color-success);
+  }
 }
-.okr-rec__score-num { font-size: 12px; }
-.okr-rec__list-score { font-size: 16px; }
-.okr-rec__card-score { font-size: 18px; }
+.okr-rec__score-num {
+  font-size: 12px;
+}
+.okr-rec__list-score {
+  font-size: 16px;
+}
+.okr-rec__card-score {
+  font-size: 18px;
+}
 
 // ── List view ───────────────────────────────────
-.okr-rec__list { display: flex; flex-direction: column; gap: 6px; }
+.okr-rec__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .okr-rec__list-item {
   display: flex;
-  align-items: flex-start;
   gap: 14px;
+  align-items: flex-start;
   padding: 14px 16px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-left: 4px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  transition: box-shadow 0.2s, border-color 0.2s, border-left-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s,
+    border-left-color 0.2s;
   &:hover {
     border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    .okr-rec__list-actions { opacity: 1; }
+    box-shadow: 0 2px 10px rgb(0 0 0 / 6%);
+    .okr-rec__list-actions {
+      opacity: 1;
+    }
   }
-  &.is-priority-p0 { border-left-color: var(--el-color-danger); }
-  &.is-priority-p1 { border-left-color: var(--el-color-warning); }
-  &.is-priority-p2 { border-left-color: var(--el-color-primary); }
-  &.is-priority-p3 { border-left-color: var(--el-color-info); }
+  &.is-priority-p0 {
+    border-left-color: var(--el-color-danger);
+  }
+  &.is-priority-p1 {
+    border-left-color: var(--el-color-warning);
+  }
+  &.is-priority-p2 {
+    border-left-color: var(--el-color-primary);
+  }
+  &.is-priority-p3 {
+    border-left-color: var(--el-color-info);
+  }
 }
 .okr-rec__list-left {
   flex-shrink: 0;
   padding-top: 1px;
 }
-.okr-rec__list-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.okr-rec__list-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
 .okr-rec__list-head {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
-.okr-rec__list-title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+.okr-rec__list-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
 .okr-rec__list-status {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  padding: 1px 8px;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
   border-radius: 10px;
-  &.is-success { color: var(--el-color-success); background: var(--el-color-success-light-9); }
-  &.is-danger { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
-  &.is-warning { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
-  &.is-info { color: var(--el-color-info); background: var(--el-color-info-light-9); }
+  &.is-success {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
+  &.is-danger {
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-9);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+    background: var(--el-color-info-light-9);
+  }
 }
 .okr-rec__list-status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  .is-success & { background: var(--el-color-success); }
-  .is-danger & { background: var(--el-color-danger); }
-  .is-warning & { background: var(--el-color-warning); }
-  .is-info & { background: var(--el-color-info); }
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  .is-success & {
+    background: var(--el-color-success);
+  }
+  .is-danger & {
+    background: var(--el-color-danger);
+  }
+  .is-warning & {
+    background: var(--el-color-warning);
+  }
+  .is-info & {
+    background: var(--el-color-info);
+  }
 }
 .okr-rec__list-meta {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-.okr-rec__list-due { font-size: 12px; white-space: nowrap; &.is-overdue { color: var(--el-color-danger); font-weight: 700; } }
-.okr-rec__list-metric { font-size: 12px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
+.okr-rec__list-due {
+  font-size: 12px;
+  white-space: nowrap;
+  &.is-overdue {
+    font-weight: 700;
+    color: var(--el-color-danger);
+  }
+}
+.okr-rec__list-metric {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+}
 .okr-rec__list-right {
-  flex-shrink: 0;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
-  align-items: flex-end;
   gap: 8px;
+  align-items: flex-end;
   padding-top: 1px;
 }
 .okr-rec__list-score-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1px;
+  align-items: center;
 }
-.okr-rec__list-score { font-size: 20px; font-weight: 800; font-family: monospace; }
-.okr-rec__list-score-label { font-size: 10px; color: var(--el-text-color-placeholder); text-transform: uppercase; letter-spacing: 0.5px; }
+.okr-rec__list-score {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 800;
+}
+.okr-rec__list-score-label {
+  font-size: 10px;
+  color: var(--el-text-color-placeholder);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 .okr-rec__list-actions {
   display: flex;
   gap: 2px;
@@ -1227,120 +1571,218 @@ onMounted(async () => {
   flex-direction: column;
   gap: 10px;
   padding: 0;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-top: 4px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
-  overflow: hidden;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
   &:hover {
     border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
     transform: translateY(-2px);
-    .okr-rec__card-actions { opacity: 1; }
+    .okr-rec__card-actions {
+      opacity: 1;
+    }
   }
-  &.is-priority-p0 { border-top-color: var(--el-color-danger); }
-  &.is-priority-p1 { border-top-color: var(--el-color-warning); }
-  &.is-priority-p2 { border-top-color: var(--el-color-primary); }
-  &.is-priority-p3 { border-top-color: var(--el-color-info); }
+  &.is-priority-p0 {
+    border-top-color: var(--el-color-danger);
+  }
+  &.is-priority-p1 {
+    border-top-color: var(--el-color-warning);
+  }
+  &.is-priority-p2 {
+    border-top-color: var(--el-color-primary);
+  }
+  &.is-priority-p3 {
+    border-top-color: var(--el-color-info);
+  }
 }
 .okr-rec__card-head {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   padding: 14px 16px 0;
 }
 .okr-rec__card-head-left {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
 .okr-rec__card-head-right {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-shrink: 0;
+  gap: 10px;
+  align-items: center;
 }
 .okr-rec__card-due {
   font-size: 11px;
   color: var(--el-text-color-secondary);
   white-space: nowrap;
-  &.is-overdue { color: var(--el-color-danger); font-weight: 700; }
+  &.is-overdue {
+    font-weight: 700;
+    color: var(--el-color-danger);
+  }
 }
 .okr-rec__card-status {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  padding: 1px 8px;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
   border-radius: 10px;
-  &.is-success { color: var(--el-color-success); background: var(--el-color-success-light-9); }
-  &.is-danger { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
-  &.is-warning { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
-  &.is-info { color: var(--el-color-info); background: var(--el-color-info-light-9); }
+  &.is-success {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
+  &.is-danger {
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-9);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+    background: var(--el-color-info-light-9);
+  }
 }
 .okr-rec__card-status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  .is-success & { background: var(--el-color-success); }
-  .is-danger & { background: var(--el-color-danger); }
-  .is-warning & { background: var(--el-color-warning); }
-  .is-info & { background: var(--el-color-info); }
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  .is-success & {
+    background: var(--el-color-success);
+  }
+  .is-danger & {
+    background: var(--el-color-danger);
+  }
+  .is-warning & {
+    background: var(--el-color-warning);
+  }
+  .is-info & {
+    background: var(--el-color-info);
+  }
 }
-.okr-rec__card-score { font-size: 24px; font-weight: 800; font-family: monospace; line-height: 1; }
-.okr-rec__card-process { padding: 0 16px; }
-.okr-rec__card-title { font-size: 14px; font-weight: 700; line-height: 1.4; padding: 0 16px; }
-.okr-rec__card .okr-rec__cell-dims { padding: 0 16px; }
+.okr-rec__card-score {
+  font-family: monospace;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+.okr-rec__card-process {
+  padding: 0 16px;
+}
+.okr-rec__card-title {
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.okr-rec__card .okr-rec__cell-dims {
+  padding: 0 16px;
+}
 .okr-rec__card-metric {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
   padding: 8px 16px;
   margin: 0 16px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-radius: 8px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
 }
-.okr-rec__card-metric-icon { font-size: 16px; flex-shrink: 0; padding-top: 1px; }
-.okr-rec__card-metric-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.okr-rec__card-metric-head { display: flex; align-items: center; justify-content: space-between; }
-.okr-rec__card-metric-name { font-weight: 600; color: var(--el-text-color-primary); }
-.okr-rec__card-metric-pct { font-size: 11px; font-weight: 700; color: var(--el-color-primary); font-variant-numeric: tabular-nums; }
-.okr-rec__card-metric-bar { height: 5px; background: var(--el-fill-color); border-radius: 3px; overflow: hidden; }
-.okr-rec__card-metric-bar i { display: block; height: 100%; background: var(--el-color-primary); border-radius: 3px; transition: width 0.4s ease; }
-.okr-rec__card-metric-val { font-size: 11px; font-variant-numeric: tabular-nums; }
-.okr-rec__card-progress { padding: 0 16px; }
-.okr-rec__card-orch { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 0 16px; }
-.okr-rec__card-reason {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
-  padding: 0 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.okr-rec__card-metric-icon {
+  flex-shrink: 0;
+  padding-top: 1px;
+  font-size: 16px;
+}
+.okr-rec__card-metric-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.okr-rec__card-metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.okr-rec__card-metric-name {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.okr-rec__card-metric-pct {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-color-primary);
+}
+.okr-rec__card-metric-bar {
+  height: 5px;
   overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: 3px;
+}
+.okr-rec__card-metric-bar i {
+  display: block;
+  height: 100%;
+  background: var(--el-color-primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.okr-rec__card-metric-val {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.okr-rec__card-progress {
+  padding: 0 16px;
+}
+.okr-rec__card-orch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 0 16px;
+}
+.okr-rec__card-reason {
+  display: -webkit-box;
+  padding: 0 16px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
   cursor: pointer;
   transition: color 0.15s;
-  &:hover { color: var(--el-text-color-primary); }
+  -webkit-box-orient: vertical;
+  &:hover {
+    color: var(--el-text-color-primary);
+  }
   &.is-expanded {
-    -webkit-line-clamp: unset;
     display: block;
+    -webkit-line-clamp: unset;
   }
 }
 .okr-rec__card-foot {
   display: flex;
-  align-items: center;
   gap: 10px;
-  margin-top: auto;
+  align-items: center;
   padding: 10px 16px;
+  margin-top: auto;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  border-top: 1px solid var(--el-border-color-lighter);
   background: var(--el-fill-color-lighter);
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 .okr-rec__card-actions {
   display: flex;
@@ -1349,5 +1791,7 @@ onMounted(async () => {
   opacity: 0;
   transition: opacity 0.15s;
 }
-.okr-rec__card-due { margin-left: auto; }
+.okr-rec__card-due {
+  margin-left: auto;
+}
 </style>

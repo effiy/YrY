@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: CDN 资源加载系统
 tags:
 - 基础设施
@@ -13,6 +14,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiPet
 project_id: yipet
@@ -23,9 +26,14 @@ estimate_frontend: 1.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [15-prd-task-CDN资源加载系统]
+related_tests: [15-prd-test-CDN资源加载系统]
 ---
 
 # CDN 资源加载系统
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-08 · 优先级：P1 · 人天：1.0d · 状态：已完成
 > 依赖：无
@@ -38,6 +46,7 @@ YiPet 作为 Chrome MV3 扩展，需要向宿主页面注入 Vue 3.5、Element P
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前问题
@@ -67,6 +76,7 @@ CDN Injector
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### D-01: 为什么使用 Catalog + Injector 两层架构？
@@ -117,6 +127,7 @@ MV3 CSP 要求 `content_security_policy.extension_pages` 仅允许 `self` 和 `c
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 模块结构
@@ -175,6 +186,7 @@ interface CdnInjector {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 涉及文件
@@ -353,6 +365,7 @@ await injector.injectAll();            // 其余资源按 Catalog 顺序注入
 
 ---
 
+<a id="sec-5"></a>
 ## 五、当前架构 vs 目标架构
 
 ```mermaid
@@ -391,6 +404,7 @@ graph TD
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 当前性能特征
@@ -429,6 +443,7 @@ graph TD
 
 ---
 
+<a id="sec-7"></a>
 ## 七、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -446,6 +461,7 @@ graph TD
 
 ---
 
+<a id="sec-8"></a>
 ## 八、实施步骤
 
 ### 8.1 分步执行
@@ -479,6 +495,7 @@ flowchart TD
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 ### 9.1 单元测试
@@ -545,6 +562,7 @@ flowchart TD
 
 ---
 
+<a id="sec-10"></a>
 ## 十、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -557,6 +575,7 @@ flowchart TD
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -577,6 +596,7 @@ flowchart TD
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] `CDN_CATALOG` 所有条目 `key` 唯一，`path` 指向有效文件
@@ -591,6 +611,7 @@ flowchart TD
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -602,6 +623,7 @@ flowchart TD
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、可观测性
 
 ### 关键指标

@@ -19,12 +19,14 @@ Usage in route handlers::
 
 from __future__ import annotations
 
-import asyncio
-import logging
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator, Dict, List, Optional
+import asyncio
+from collections.abc import AsyncIterator
+import json
+import logging
+from typing import Any, Dict, List, Optional
 
-from ollama import Client
+import httpx
 
 from shared.config import settings
 
@@ -41,11 +43,11 @@ class ModelRuntime(ABC):
     @abstractmethod
     async def stream_chat(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
-    ) -> AsyncIterator[Dict[str, Any]]:
+        images: list[bytes] | None = None,
+    ) -> AsyncIterator[dict[str, Any]]:
         """Stream a chat response.
 
         Yields dicts of shape ``{"data": {"message": str}}`` for content
@@ -56,12 +58,12 @@ class ModelRuntime(ABC):
     @abstractmethod
     async def complete(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
+        images: list[bytes] | None = None,
         max_retries: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Non-streaming completion.
 
         Returns ``{"success": bool, "message": str, "model": str}`` on
@@ -74,143 +76,192 @@ class ModelRuntime(ABC):
         return "qwen3.5:4b"
 
 
-# ── OllamaRuntime ───────────────────────────────────────────────────────
+# ── Shared httpx client for Ollama streaming ─────────────────────────────
+
+_ollama_client: httpx.AsyncClient | None = None
+
+
+def _get_ollama_client(base_url: str, timeout: float) -> httpx.AsyncClient:
+    """Lazy-init a shared httpx client for Ollama streaming.
+
+    Reuses a single client with connection pooling — avoids the TCP/TLS
+    handshake on every chat request. The sync ollama-python SDK creates a
+    new HTTP connection per call; this eliminates that overhead entirely.
+    """
+    global _ollama_client
+    if _ollama_client is None or _ollama_client.is_closed:
+        _ollama_client = httpx.AsyncClient(
+            base_url=base_url,
+            timeout=httpx.Timeout(timeout, connect=10.0),
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=100),
+        )
+    return _ollama_client
+
+
+async def _close_ollama_client():
+    global _ollama_client
+    if _ollama_client is not None and not _ollama_client.is_closed:
+        await _ollama_client.aclose()
+        _ollama_client = None
+
+
+# ── OllamaRuntime (async httpx streaming — no thread, no queue) ─────────
 
 
 class OllamaRuntime(ModelRuntime):
-    """Ollama-backed runtime — the primary local LLM provider."""
+    """Ollama-backed runtime using async httpx streaming.
+
+    Replaces the sync ollama-python SDK + thread + asyncio.Queue pattern
+    with direct ``httpx.AsyncClient.stream()``. Eliminates:
+      - Thread context-switch per chunk
+      - Queue intermediary
+      - New HTTP connection per request (shared connection pool)
+    """
 
     def __init__(self, host: str | None = None, auth: str | None = None):
-        self._host = host or settings.ollama_url
+        self._host = (host or settings.ollama_url).rstrip("/")
         self._auth = auth or settings.ollama_auth
-        self._timeout = settings.ollama_chat_timeout
-
-    def _get_client(self) -> Client:
-        kwargs: Dict[str, Any] = {"host": self._host}
-        if self._auth:
-            username, _, password = self._auth.partition(":")
-            kwargs["auth"] = (username, password)
-        if self._timeout:
-            kwargs["timeout"] = self._timeout
-        return Client(**kwargs)
+        self._timeout = float(settings.ollama_chat_timeout or 300)
 
     def model_name(self) -> str:
         return "qwen3.5:4b"
 
     async def stream_chat(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
-    ) -> AsyncIterator[Dict[str, Any]]:
+        images: list[bytes] | None = None,
+    ) -> AsyncIterator[dict[str, Any]]:
         model_name = model or self.model_name()
 
-        # Build Ollama-format messages
         ollama_messages = list(messages)
         if images and ollama_messages:
             last = dict(ollama_messages[-1])
             last["images"] = images
             ollama_messages[-1] = last
 
-        loop = asyncio.get_running_loop()
-        queue: asyncio.Queue[Optional[Any]] = asyncio.Queue()
+        options: dict[str, Any] = {}
+        if getattr(settings, "ollama_num_ctx", None):
+            options["num_ctx"] = int(settings.ollama_num_ctx)
+        if getattr(settings, "ollama_num_predict", None):
+            options["num_predict"] = int(settings.ollama_num_predict)
+        temp = getattr(settings, "ollama_temperature", None)
+        if temp is not None:
+            options["temperature"] = float(temp)
 
-        def _worker() -> None:
-            try:
-                client = self._get_client()
-                options: Dict[str, Any] = {}
-                if getattr(settings, "ollama_num_ctx", None):
-                    options["num_ctx"] = int(settings.ollama_num_ctx)
-                if getattr(settings, "ollama_num_predict", None):
-                    options["num_predict"] = int(settings.ollama_num_predict)
-                for item in client.chat(
-                    model=model_name, messages=ollama_messages, stream=True,
-                    options=options or None,
-                ):
-                    try:
-                        delta = ""
-                        done_reason = None
-                        usage = None
-                        if isinstance(item, dict):
-                            msg = item.get("message") or {}
-                            delta = msg.get("content") or msg.get("thinking") or ""
-                            done_reason = item.get("done_reason")
-                            if item.get("done") and (item.get("eval_count") or item.get("prompt_eval_count")):
-                                usage = {
-                                    "prompt_tokens": item.get("prompt_eval_count", 0),
-                                    "completion_tokens": item.get("eval_count", 0),
-                                    "total_tokens": item.get("prompt_eval_count", 0) + item.get("eval_count", 0),
-                                }
-                        else:
-                            msg = getattr(item, "message", {}) or {}
-                            delta = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
-                            done_reason = getattr(item, "done_reason", None)
-                            if getattr(item, "done", False) and (getattr(item, "eval_count", 0) or getattr(item, "prompt_eval_count", 0)):
-                                usage = {
-                                    "prompt_tokens": getattr(item, "prompt_eval_count", 0),
-                                    "completion_tokens": getattr(item, "eval_count", 0),
-                                    "total_tokens": getattr(item, "prompt_eval_count", 0) + getattr(item, "eval_count", 0),
-                                }
-                        if usage:
-                            asyncio.run_coroutine_threadsafe(
-                                queue.put({"usage": usage}), loop
-                            )
-                        if delta:
-                            asyncio.run_coroutine_threadsafe(
-                                queue.put(str(delta)), loop
-                            )
-                        if done_reason:
-                            asyncio.run_coroutine_threadsafe(
-                                queue.put({"done_reason": done_reason}), loop
-                            )
-                    except Exception:
-                        logger.debug("Failed to queue done_reason, continuing", exc_info=True)
-                        continue
-            except Exception as e:
-                asyncio.run_coroutine_threadsafe(
-                    queue.put({"error": f"Ollama request failed: {e}"}), loop
-                )
-            finally:
-                asyncio.run_coroutine_threadsafe(queue.put(None), loop)
+        body: dict[str, Any] = {
+            "model": model_name,
+            "messages": ollama_messages,
+            "stream": True,
+        }
+        if options:
+            body["options"] = options
 
-        _worker_task = asyncio.create_task(asyncio.to_thread(_worker))
+        headers = {}
+        if self._auth:
+            import base64 as _b64
+            headers["Authorization"] = "Basic " + _b64.b64encode(
+                self._auth.encode()
+            ).decode()
 
-        timeout = self._timeout or 300
-        heartbeat_interval = 15.0
+        client = _get_ollama_client(self._host, self._timeout)
+
+        # Signal the frontend immediately — no more blank "thinking" without feedback
+        yield {"data": {"phase": "preparing"}}
+
+        heartbeat_interval = 8.0  # faster heartbeat for responsive phase feedback
+        heartbeat_phases = ["thinking", "processing", "inference"]
+        heartbeat_idx = 0
         start_time = asyncio.get_running_loop().time()
-        while True:
-            remaining = timeout - (asyncio.get_running_loop().time() - start_time)
-            if remaining <= 0:
-                yield {"error": f"Chat request timed out after {timeout}s"}
-                break
-            wait = min(heartbeat_interval, remaining)
-            try:
-                item = await asyncio.wait_for(queue.get(), timeout=wait)
-            except asyncio.TimeoutError:
-                now = asyncio.get_running_loop().time()
-                if now - start_time > timeout:
-                    yield {"error": f"Chat request timed out after {timeout}s"}
-                    break
-                yield {"data": {"phase": "thinking"}}
-                continue
-            if item is None:
-                break
-            if isinstance(item, dict) and "error" in item or isinstance(item, dict) and "done_reason" in item:
-                yield item
-            elif isinstance(item, dict) and "usage" in item:
-                yield {"data": {"usage": item["usage"]}}
-            else:
-                yield {"data": {"message": item}}
+
+        try:
+            async with client.stream(
+                "POST",
+                "/api/chat",
+                json=body,
+                headers=headers,
+                timeout=httpx.Timeout(self._timeout, connect=10.0),
+            ) as response:
+                if response.status_code >= 400:
+                    text = await response.aread()
+                    yield {"error": f"Ollama HTTP {response.status_code}: {text[:500]}"}
+                    return
+
+                # chunk_done tracks whether the final chunk has been received.
+                # Ollama sends a final JSON object with "done":true — this is
+                # different from stream completion (which just means the TCP
+                # stream closed).
+                chunk_done = False
+                buffer = ""
+
+                async for raw in response.aiter_bytes():
+                    if chunk_done:
+                        break
+                    # Decode and split into JSON lines. Ollama sends one JSON
+                    # object per line (ndjson-style streaming).
+                    buffer += raw.decode("utf-8", errors="replace")
+                    while "\n" in buffer:
+                        line, buffer = buffer.split("\n", 1)
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            item = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+
+                        done_flag = item.get("done", False)
+                        msg = item.get("message") or {}
+                        delta = msg.get("content") or ""
+                        done_reason = item.get("done_reason")
+
+                        # Emit usage on the final frame
+                        if done_flag and (item.get("eval_count") or item.get("prompt_eval_count")):
+                            yield {
+                                "data": {
+                                    "usage": {
+                                        "prompt_tokens": item.get("prompt_eval_count", 0),
+                                        "completion_tokens": item.get("eval_count", 0),
+                                        "total_tokens": item.get("prompt_eval_count", 0)
+                                        + item.get("eval_count", 0),
+                                    }
+                                }
+                            }
+
+                        if delta:
+                            yield {"data": {"message": delta}}
+
+                        if done_reason or done_flag:
+                            chunk_done = True
+                            if done_reason:
+                                yield {"done_reason": done_reason}
+
+                        # Heartbeat: if no chunk arrives within heartbeat_interval,
+                        # send a phase frame so the frontend doesn't think it's stuck.
+                        now = asyncio.get_running_loop().time()
+                        if now - start_time > heartbeat_interval:
+                            start_time = now
+                            phase = heartbeat_phases[heartbeat_idx % len(heartbeat_phases)]
+                            heartbeat_idx += 1
+                            yield {"data": {"phase": phase}}
+
+        except httpx.TimeoutException:
+            yield {"error": f"Chat request timed out after {self._timeout}s"}
+        except httpx.ConnectError as e:
+            yield {"error": f"Cannot connect to Ollama at {self._host}: {e}"}
+        except Exception as e:
+            logger.error(f"Ollama stream failed: {e}")
+            yield {"error": f"Ollama request failed: {e}"}
 
     async def complete(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
+        images: list[bytes] | None = None,
         max_retries: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         model_name = model or self.model_name()
 
         ollama_messages = list(messages)
@@ -219,45 +270,60 @@ class OllamaRuntime(ModelRuntime):
             last["images"] = images
             ollama_messages[-1] = last
 
-        loop = asyncio.get_running_loop()
+        options: dict[str, Any] = {}
+        if getattr(settings, "ollama_num_ctx", None):
+            options["num_ctx"] = int(settings.ollama_num_ctx)
 
-        def _call() -> Dict[str, Any]:
-            client = self._get_client()
-            attempt = 0
-            last_error: str | None = None
-            while attempt <= max_retries:
-                try:
-                    response = client.chat(model=model_name, messages=ollama_messages)
-                    if isinstance(response, dict):
-                        msg = response.get("message", {}) or {}
-                        result = msg.get("content") or msg.get("thinking") or ""
-                    else:
-                        msg = getattr(response, "message", {}) or {}
-                        result = getattr(msg, "content", "") or getattr(msg, "thinking", "") or ""
-                    return {"success": True, "model": model_name, "message": result}
-                except Exception as e:
-                    last_error = str(e)
-                    logger.warning(
-                        f"Ollama call failed: {last_error}, attempt={attempt}"
-                    )
-                    attempt += 1
-            return {
-                "success": False,
-                "error": last_error or "unknown error",
-                "model": model_name,
-            }
+        body: dict[str, Any] = {
+            "model": model_name,
+            "messages": ollama_messages,
+            "stream": False,
+        }
+        if options:
+            body["options"] = options
 
-        timeout = self._timeout or 300
-        try:
-            return await asyncio.wait_for(
-                loop.run_in_executor(None, _call), timeout=timeout
-            )
-        except asyncio.TimeoutError:
-            return {
-                "success": False,
-                "error": f"Chat request timed out after {timeout}s",
-                "model": model_name,
-            }
+        headers = {}
+        if self._auth:
+            import base64 as _b64
+            headers["Authorization"] = "Basic " + _b64.b64encode(
+                self._auth.encode()
+            ).decode()
+
+        client = _get_ollama_client(self._host, self._timeout)
+        attempt = 0
+        last_error: str | None = None
+
+        while attempt <= max_retries:
+            try:
+                resp = await client.post(
+                    "/api/chat",
+                    json=body,
+                    headers=headers,
+                    timeout=httpx.Timeout(self._timeout, connect=10.0),
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                msg = data.get("message") or {}
+                result = msg.get("content") or ""
+                return {
+                    "success": True,
+                    "model": model_name,
+                    "message": result,
+                    "usage": {
+                        "prompt_tokens": data.get("prompt_eval_count", 0),
+                        "completion_tokens": data.get("eval_count", 0),
+                    },
+                }
+            except Exception as e:
+                last_error = str(e)
+                logger.warning(f"Ollama call failed: {last_error}, attempt={attempt}")
+                attempt += 1
+
+        return {
+            "success": False,
+            "error": last_error or "unknown error",
+            "model": model_name,
+        }
 
 
 # ── RAGRuntime ──────────────────────────────────────────────────────────
@@ -278,11 +344,11 @@ class RAGRuntime(ModelRuntime):
 
     async def stream_chat(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
-    ) -> AsyncIterator[Dict[str, Any]]:
+        images: list[bytes] | None = None,
+    ) -> AsyncIterator[dict[str, Any]]:
         from domain.rag.engine import rag_chat_stream
 
         # RAG uses the last user message as the query and preceding messages
@@ -334,12 +400,12 @@ class RAGRuntime(ModelRuntime):
 
     async def complete(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
+        images: list[bytes] | None = None,
         max_retries: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # RAG doesn't support non-streaming well; delegate to Ollama
         return await self._fallback.complete(
             messages, model, system, images, max_retries
@@ -369,11 +435,11 @@ class OpenAIRuntime(ModelRuntime):
 
     async def stream_chat(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
-    ) -> AsyncIterator[Dict[str, Any]]:
+        images: list[bytes] | None = None,
+    ) -> AsyncIterator[dict[str, Any]]:
         try:
             from openai import AsyncOpenAI
         except ImportError:
@@ -438,12 +504,12 @@ class OpenAIRuntime(ModelRuntime):
 
     async def complete(
         self,
-        messages: List[Dict[str, Any]],
+        messages: list[dict[str, Any]],
         model: str | None = None,
         system: str | None = None,
-        images: List[bytes] | None = None,
+        images: list[bytes] | None = None,
         max_retries: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         try:
             from openai import AsyncOpenAI
         except ImportError:

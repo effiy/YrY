@@ -833,8 +833,9 @@ export function createPetOverlay(
   }
   ensureOverlayInDOM();
 
-  // Apply initial theme
-  applyThemeColors(document.documentElement, initialColor);
+  // Apply theme to overlay only — never touch document.documentElement
+  // to avoid destroying host page styles.
+  applyThemeColors(petContainer, initialColor);
 
   // ── Event Listeners ──────────────────────────────────────────────────
 

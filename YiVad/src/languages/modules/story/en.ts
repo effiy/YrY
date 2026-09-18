@@ -116,5 +116,42 @@ export default {
     send: "Send",
     stop: "Stop",
     clear: "Clear",
+    loading: "Loading story data…",
+    loadFailed: "Failed to load story data",
+    deleteStoryConfirm: 'Delete story "{name}"? Associated scenarios and files will also be removed.',
+    deleteScenarioConfirm: "Delete this scenario?",
+    milestone: {
+      title: "Milestones",
+      add: "Add milestone",
+      edit: "Edit milestone",
+      delete: "Delete milestone",
+      deleteConfirm: 'Delete milestone "{name}"?',
+      name: "Name",
+      date: "Date",
+      description: "Description",
+      noMilestones: "No milestones",
+      completed: "{done}/{total} completed",
+      overdue: "Overdue",
+      upcoming: "Upcoming"
+    },
+    export: {
+      title: "Export",
+      csv: "Export CSV",
+      json: "Export JSON",
+      markdown: "Export Markdown",
+      success: "Exported {count} stories",
+      failed: "Export failed"
+    },
+    filters: {
+      title: "Filters",
+      status: "Status",
+      priority: "Priority",
+      sprint: "Sprint",
+      assignee: "Assignee",
+      project: "Project",
+      clearAll: "Clear filters",
+      noResults: "No matching results",
+      adjustFilters: "Adjust filters and try again"
+    }
   }
 };

@@ -17,7 +17,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  variant: "pie",
+  variant: "pie"
 });
 
 const emit = defineEmits<{ chartClick: [params: Record<string, unknown>] }>();
@@ -31,20 +31,22 @@ const chartOption = computed<ECOption>(() => {
         orient: "vertical" as const,
         left: 0,
         top: "center",
-        textStyle: { fontSize: 11 },
+        textStyle: { fontSize: 11 }
       },
-      series: [{
-        type: "pie" as const,
-        radius,
-        center: ["55%", "50%"],
-        label: { fontSize: 11 },
-        data: props.data.map(d => ({
-          name: d.name,
-          value: d.value,
-          itemStyle: d.color ? { color: d.color } : undefined,
-        })),
-      }],
-      ...props.options,
+      series: [
+        {
+          type: "pie" as const,
+          radius,
+          center: ["55%", "50%"],
+          label: { fontSize: 11 },
+          data: props.data.map(d => ({
+            name: d.name,
+            value: d.value,
+            itemStyle: d.color ? { color: d.color } : undefined
+          }))
+        }
+      ],
+      ...props.options
     };
   }
   return (props.options as ECOption) ?? {};

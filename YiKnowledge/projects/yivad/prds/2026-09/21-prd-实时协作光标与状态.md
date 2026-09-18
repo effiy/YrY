@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 实时协作光标与状态
 tags:
 - 实时协作
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,27 @@ source_okr: [yivad-003]
 # 实时协作光标与状态
 
 > 需求编号：YV-09-46 · 优先级：P2 · 人天：1.0d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/21-prd-task-实时协作光标与状态.md)，验证方案见 [测试方案](../../tests/2026-09/21-prd-test-实时协作光标与状态.md)。
 > 依赖：YV-09-45（页面锁定系统），WebSocket 服务端支持
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 改动总览
 
@@ -103,6 +126,7 @@ YiVad 当前为单人操作设计，缺乏多用户同时在线时的感知能�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前协作状态
@@ -130,6 +154,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 实时通信协议选型
@@ -177,6 +202,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -263,6 +289,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 WebSocket 服务层
@@ -1279,6 +1306,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1300,6 +1328,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：PresenceIndicator
@@ -1340,6 +1369,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1352,6 +1382,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1369,6 +1400,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 选择 WebSocket 而非 SSE 作为实时通信协议
@@ -1401,6 +1433,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1424,6 +1457,7 @@ function handleCommand(level: PrivacyLevel) {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `wsService.ts` 连接/断连/重连/心跳逻辑完整，指数退避重连正确

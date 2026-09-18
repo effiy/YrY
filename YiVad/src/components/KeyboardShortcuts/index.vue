@@ -35,7 +35,7 @@ const groups = [
       { key: "G I", desc: "Go to Issues" },
       { key: "G P", desc: "Go to Projects" },
       { key: "G K", desc: "Go to Kanban" },
-      { key: "G A", desc: "Go to Analytics" }
+      { key: "G D", desc: "Go to Dashboards" }
     ]
   },
   {
@@ -72,10 +72,16 @@ function isInputTarget(e: KeyboardEvent): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 }
 
-function close() { visible.value = false; }
+function close() {
+  visible.value = false;
+}
 
-onMounted(() => { document.addEventListener("keydown", globalKeydown); });
-onUnmounted(() => { document.removeEventListener("keydown", globalKeydown); });
+onMounted(() => {
+  document.addEventListener("keydown", globalKeydown);
+});
+onUnmounted(() => {
+  document.removeEventListener("keydown", globalKeydown);
+});
 </script>
 
 <style scoped>
@@ -83,33 +89,36 @@ onUnmounted(() => { document.removeEventListener("keydown", globalKeydown); });
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0,0,0,0.35);
   display: flex;
   justify-content: center;
   padding-top: 12vh;
+  background: rgb(0 0 0 / 35%);
 }
 .shortcuts {
-  width: 520px;
-  max-height: 500px;
-  background: var(--el-bg-color);
-  border-radius: 12px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 520px;
+  max-height: 500px;
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgb(0 0 0 / 20%);
 }
 .shortcuts__head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid var(--el-border-color);
-  h2 { margin: 0; font-size: 16px; }
+  h2 {
+    margin: 0;
+    font-size: 16px;
+  }
 }
 .shortcuts__body {
   flex: 1;
-  overflow-y: auto;
   padding: 16px 20px;
+  overflow-y: auto;
 }
 .shortcuts__group {
   margin-bottom: 20px;
@@ -123,17 +132,19 @@ onUnmounted(() => { document.removeEventListener("keydown", globalKeydown); });
 }
 .shortcuts__row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 5px 0;
 }
-.shortcuts__desc { font-size: 13px; }
+.shortcuts__desc {
+  font-size: 13px;
+}
 kbd {
-  font-size: 11px;
   padding: 2px 8px;
-  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
   background: var(--el-fill-color);
   border: 1px solid var(--el-border-color);
-  font-family: monospace;
+  border-radius: 4px;
 }
 </style>

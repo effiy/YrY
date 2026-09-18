@@ -17,7 +17,7 @@ export interface AiChatBridgePayload {
  *
  * Spawns a fresh aiChat conversation seeded with `pageContent` (treated as
  * session context for RAG) + `tags` (ctx:-prefixed tags auto-activate RAG
- * over those files) and routes to /aiChat. The new conversation becomes the
+ * over those files) and routes to /ai-chat. The new conversation becomes the
  * active session — aiChat/index.vue's onMounted `loadConversations` picks
  * up the persisted active key, so the route change lands on the seeded
  * conversation even across a full reload.
@@ -34,7 +34,7 @@ export function useAiChatBridge() {
     if (payload.sourceUrl) tags.push(`from:${payload.sourceUrl}`);
     const key = await store.createConversation(payload.title, payload.pageContent, tags);
     if (payload.systemPrompt) store.setSystemPrompt(payload.systemPrompt);
-    await router.push({ path: "/aiChat", query: { session: key } });
+    await router.push({ path: "/ai-chat", query: { session: key } });
     return key;
   }
 
@@ -43,7 +43,7 @@ export function useAiChatBridge() {
    * a URL with `?session=<key>` so the link can be shared/bookmarked.
    */
   function linkToAiChatSession(key: string): string {
-    return `/aiChat?session=${encodeURIComponent(key)}`;
+    return `/ai-chat?session=${encodeURIComponent(key)}`;
   }
 
   /**
@@ -54,9 +54,8 @@ export function useAiChatBridge() {
    * affordances on business pages.
    */
   function linkToAiChatByTag(tag: string): string {
-    return `/aiChat?tag=${encodeURIComponent(tag)}`;
+    return `/ai-chat?tag=${encodeURIComponent(tag)}`;
   }
 
   return { openInAiChat, linkToAiChatSession, linkToAiChatByTag };
 }
-

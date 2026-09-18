@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-23: 知识库 API 文档自动生成 — Swagger/OpenAPI 格式的交互式文档"
 tags: [需求文档, 知识库, API文档, OpenAPI, Swagger, 自动生成]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-23
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
+roles: [engineer]
+source_okr: [yiknowledge-001]
+related_modules: [26-prd-task-API文档自动生成]
+related_tests: [26-prd-test-API文档自动生成]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [engineer]
 ---
 

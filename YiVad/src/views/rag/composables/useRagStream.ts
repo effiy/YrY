@@ -28,7 +28,17 @@ export interface RagStreamState {
 }
 
 export function useRagStream(state: RagStreamState) {
-  const { messages, sending, streamingPhase, streamElapsed, abortFn, userScrolledUp, scrollToBottom, currentRagMeta, buildStreamPayload } = state;
+  const {
+    messages,
+    sending,
+    streamingPhase,
+    streamElapsed,
+    abortFn,
+    userScrolledUp,
+    scrollToBottom,
+    currentRagMeta,
+    buildStreamPayload
+  } = state;
 
   let streamStartAt = 0;
   let streamElapsedTimer = 0;
@@ -118,7 +128,7 @@ export function useRagStream(state: RagStreamState) {
         }
       },
       onDone: onStreamDone,
-      onError: onStreamError,
+      onError: onStreamError
     });
 
     abortFn.value = abort;
@@ -137,5 +147,14 @@ export function useRagStream(state: RagStreamState) {
     }
   }
 
-  return { runStream, stopStream, appendAssistantMessage, getLastAssistant, onStreamDone, onStreamError, startStreamTimers, clearStreamTimers };
+  return {
+    runStream,
+    stopStream,
+    appendAssistantMessage,
+    getLastAssistant,
+    onStreamDone,
+    onStreamError,
+    startStreamTimers,
+    clearStreamTimers
+  };
 }

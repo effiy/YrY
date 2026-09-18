@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-168"
 source_prds: ["174-需求-自定义Embedding模型"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-168: 自定义 Embedding 模型 — 微调模型注册、评估与热替换 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[174-需求-自定义Embedding模型.md](../../prds/2026-09/174-需求-自定义Embedding模型.md)
 > 提取日期：2026-09-11

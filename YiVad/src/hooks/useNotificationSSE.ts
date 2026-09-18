@@ -9,11 +9,7 @@ interface SSEOptions {
 }
 
 export function useNotificationSSE(options: SSEOptions = {}) {
-  const {
-    reconnectInterval = 5000,
-    maxReconnectAttempts = 10,
-    endpoint = "/notification/stream",
-  } = options;
+  const { reconnectInterval = 5000, maxReconnectAttempts = 10, endpoint = "/notification/stream" } = options;
 
   const store = useNotificationStore();
   const connected = ref(false);
@@ -27,7 +23,9 @@ export function useNotificationSSE(options: SSEOptions = {}) {
     try {
       const raw = localStorage.getItem("user-store");
       if (raw) return JSON.parse(raw).token || "";
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return "";
   }
 
@@ -91,6 +89,6 @@ export function useNotificationSSE(options: SSEOptions = {}) {
       disconnect();
       reconnectAttempts = 0;
       connect();
-    },
+    }
   };
 }

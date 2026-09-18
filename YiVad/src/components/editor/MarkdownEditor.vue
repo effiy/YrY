@@ -5,15 +5,18 @@
  */
 import { ref, computed } from "vue";
 
-const props = withDefaults(defineProps<{
-  modelValue: string;
-  placeholder?: string;
-  disabled?: boolean;
-  rows?: number;
-}>(), {
-  placeholder: "输入 Markdown 内容...",
-  rows: 12,
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue: string;
+    placeholder?: string;
+    disabled?: boolean;
+    rows?: number;
+  }>(),
+  {
+    placeholder: "输入 Markdown 内容...",
+    rows: 12
+  }
+);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
@@ -46,17 +49,19 @@ function insertFormat(prefix: string, suffix: string = "") {
 // Simple markdown to HTML (for preview)
 function renderMarkdown(md: string): string {
   return md
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
     .replace(/^### (.+)$/gm, "<h3>$1</h3>")
     .replace(/^## (.+)$/gm, "<h2>$1</h2>")
     .replace(/^# (.+)$/gm, "<h1>$1</h1>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/^\- (.+)$/gm, "<li>$1</li>")
+    .replace(/^- (.+)$/gm, "<li>$1</li>")
     .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
     .replace(/\n\n/g, "</p><p>")
-    .replace(/^(.+)$/gm, (match) => {
+    .replace(/^(.+)$/gm, match => {
       if (match.startsWith("<")) return match;
       return match;
     });
@@ -79,7 +84,7 @@ const previewHtml = computed(() => {
       <el-button text size="small" @click="insertFormat('> ')" title="引用">❝</el-button>
       <div class="markdown-editor__spacer" />
       <el-button text size="small" @click="previewMode = !previewMode">
-        {{ previewMode ? '编辑' : '预览' }}
+        {{ previewMode ? "编辑" : "预览" }}
       </el-button>
     </div>
 
@@ -93,60 +98,50 @@ const previewHtml = computed(() => {
         :rows="rows"
         @input="onInput"
       />
-      <div
-        v-else
-        class="markdown-editor__preview"
-        v-html="previewHtml"
-      />
+      <div v-else class="markdown-editor__preview" v-html="previewHtml" />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .markdown-editor {
+  overflow: hidden;
   border: 1px solid var(--el-border-color);
   border-radius: 6px;
-  overflow: hidden;
-
   &__toolbar {
     display: flex;
-    align-items: center;
     gap: 2px;
+    align-items: center;
     padding: 6px 8px;
     background: var(--el-fill-color-light);
     border-bottom: 1px solid var(--el-border-color-lighter);
   }
-
   &__spacer {
     flex: 1;
   }
-
   &__body {
     min-height: 200px;
   }
-
   &__textarea {
     display: block;
     width: 100%;
     min-height: 200px;
     padding: 12px;
-    border: none;
-    outline: none;
-    resize: vertical;
-    font-family: 'Menlo', 'Monaco', monospace;
+    font-family: Menlo, Monaco, monospace;
     font-size: 14px;
     line-height: 1.7;
     color: var(--el-text-color-regular);
+    resize: vertical;
+    outline: none;
     background: var(--el-bg-color);
-
+    border: none;
     &::placeholder {
       color: var(--el-text-color-placeholder);
     }
   }
-
   &__preview {
-    padding: 16px;
     min-height: 200px;
+    padding: 16px;
     font-size: 14px;
     line-height: 1.8;
   }

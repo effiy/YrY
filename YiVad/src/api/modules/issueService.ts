@@ -71,10 +71,18 @@ export const ISSUE_TYPE_TAG_MAP: Record<IssueType, TagType> = {
   requirement: "info"
 };
 
-export function issueStatusLabel(s: IssueStatus) { return ISSUE_STATUS_MAP[s] || s; }
-export function issueStatusTag(s: IssueStatus): TagType { return ISSUE_STATUS_TAG_MAP[s] || "info"; }
-export function typeLabel(t: IssueType) { return ISSUE_TYPE_MAP[t] || t; }
-export function issueTypeTag(t: IssueType): TagType { return ISSUE_TYPE_TAG_MAP[t] || "info"; }
+export function issueStatusLabel(s: IssueStatus) {
+  return ISSUE_STATUS_MAP[s] || s;
+}
+export function issueStatusTag(s: IssueStatus): TagType {
+  return ISSUE_STATUS_TAG_MAP[s] || "info";
+}
+export function typeLabel(t: IssueType) {
+  return ISSUE_TYPE_MAP[t] || t;
+}
+export function issueTypeTag(t: IssueType): TagType {
+  return ISSUE_TYPE_TAG_MAP[t] || "info";
+}
 
 export interface Issue {
   key: string;
@@ -128,10 +136,31 @@ export interface IssueQueryParams {
   updated_at_start?: string;
   updated_at_end?: string;
   due_date?: string;
+  due_date_start?: string;
+  due_date_end?: string;
 }
 
 export function getIssueList(params: IssueQueryParams) {
-  const { pageNum = 1, pageSize = 20, project_key, status, priority, issue_type, exclude_issue_type, assignee, labels, goal_id, search, orderBy = "updated_at", orderType = "desc", updated_at_start, updated_at_end, due_date } = params;
+  const {
+    pageNum = 1,
+    pageSize = 20,
+    project_key,
+    status,
+    priority,
+    issue_type,
+    exclude_issue_type,
+    assignee,
+    labels,
+    goal_id,
+    search,
+    orderBy = "updated_at",
+    orderType = "desc",
+    updated_at_start,
+    updated_at_end,
+    due_date,
+    due_date_start,
+    due_date_end
+  } = params;
   const filter: Record<string, any> = {};
   if (project_key) filter.project_key = project_key;
   if (status) filter.status = status;
@@ -145,16 +174,18 @@ export function getIssueList(params: IssueQueryParams) {
   if (goal_id) filter.goal_id = goal_id;
   if (labels) filter.labels = { $regex: labels, $options: "i" };
   if (due_date) filter.due_date = due_date;
+  if (due_date_start || due_date_end) {
+    filter.due_date = {};
+    if (due_date_start) filter.due_date.$gte = due_date_start;
+    if (due_date_end) filter.due_date.$lte = due_date_end;
+  }
   if (updated_at_start || updated_at_end) {
     filter.updated_at = {};
     if (updated_at_start) filter.updated_at.$gte = updated_at_start;
     if (updated_at_end) filter.updated_at.$lte = updated_at_end + "T23:59:59";
   }
   if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } }
-    ];
+    filter.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
   }
   return queryDocuments<Issue>({
     cname: COLLECTION,
@@ -198,7 +229,16 @@ export function deleteIssue(key: string) {
  * Prefers kb_file_path if stored, otherwise derives from key date + title.
  * The path is relative to the YiKnowledge root.
  */
-export function getIssueFilePath(issue: { key: string; project_key: string; title: string; issue_type: IssueType; kb_file_path?: string; due_date?: string; start_date?: string; created_at?: string }): string {
+export function getIssueFilePath(issue: {
+  key: string;
+  project_key: string;
+  title: string;
+  issue_type: IssueType;
+  kb_file_path?: string;
+  due_date?: string;
+  start_date?: string;
+  created_at?: string;
+}): string {
   if (issue.kb_file_path) return issue.kb_file_path;
 
   const keyDate = issue.key.match(/(\d{4}-\d{2})/)?.[1];

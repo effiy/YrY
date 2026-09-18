@@ -54,7 +54,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   draggable: true,
   resizable: true,
-  showSettings: true,
+  showSettings: true
 });
 
 const emit = defineEmits<{
@@ -69,7 +69,7 @@ const isResizing = ref(false);
 
 const gridStyle = computed(() => ({
   gridColumn: `${props.layout.x + 1} / span ${props.layout.cols}`,
-  gridRow: `${props.layout.y + 1} / span ${props.layout.rows}`,
+  gridRow: `${props.layout.y + 1} / span ${props.layout.rows}`
 }));
 
 function onDragStart(e: DragEvent) {
@@ -111,56 +111,59 @@ function onResizeStart(e: MouseEvent) {
 
 <style scoped lang="scss">
 .dashboard-widget {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
   transition: box-shadow 0.2s;
-  position: relative;
-
-  &:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
-  &.is-dragging { opacity: 0.5; }
-  &.is-resizing { user-select: none; }
-
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  }
+  &.is-dragging {
+    opacity: 0.5;
+  }
+  &.is-resizing {
+    user-select: none;
+  }
   .widget-header {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid var(--el-border-color-lighter);
     cursor: grab;
-    flex-shrink: 0;
-
-    &:active { cursor: grabbing; }
+    border-bottom: 1px solid var(--el-border-color-lighter);
+    &:active {
+      cursor: grabbing;
+    }
   }
-
   .widget-drag-handle {
-    color: var(--el-text-color-placeholder);
-    margin-right: 6px;
     display: flex;
     align-items: center;
+    margin-right: 6px;
+    color: var(--el-text-color-placeholder);
   }
-
   .widget-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--el-text-color-primary);
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--el-text-color-primary);
     white-space: nowrap;
   }
-
-  .widget-actions { display: flex; gap: 1px; }
-
+  .widget-actions {
+    display: flex;
+    gap: 1px;
+  }
   .widget-body {
     flex: 1;
     min-height: 0;
     padding: 12px;
     overflow: auto;
   }
-
   .widget-resize-handle {
     position: absolute;
     right: 0;

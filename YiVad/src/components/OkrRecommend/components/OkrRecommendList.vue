@@ -24,7 +24,10 @@ const { t } = useI18n();
 
 defineProps<{
   items: TableRow[];
-  loopByGoalId: Record<string, { loopId: string; title: string; stageMap: Record<string, { status: string; title: string; path: string }> }[]>;
+  loopByGoalId: Record<
+    string,
+    { loopId: string; title: string; stageMap: Record<string, { status: string; title: string; path: string }> }[]
+  >;
   apiGoals: Record<string, any>;
   regeneratingId: string;
   dueRelative: (dueDate: string) => string;
@@ -45,7 +48,13 @@ const emit = defineEmits<{
 
 <template>
   <div class="okr-list">
-    <div v-for="item in items" :key="item.id" class="okr-list__item" :class="`is-priority-${item.priority.toLowerCase()}`" @click="emit('openPreview', item)">
+    <div
+      v-for="item in items"
+      :key="item.id"
+      class="okr-list__item"
+      :class="`is-priority-${item.priority.toLowerCase()}`"
+      @click="emit('openPreview', item)"
+    >
       <div class="okr-list__left">
         <PriorityTag :priority="item.priority" />
         <CategoryTag v-if="item.kind === 'task'" :list-type="item.listType" />
@@ -67,7 +76,7 @@ const emit = defineEmits<{
           <span class="okr-list__due" :class="{ 'is-overdue': isOverdue(item.dueDate) }">
             <el-icon><Clock /></el-icon>
             <template v-if="dueRelative(item.dueDate)">{{ dueRelative(item.dueDate) }}</template>
-            <template v-else>{{ item.dueDate || '—' }}</template>
+            <template v-else>{{ item.dueDate || "—" }}</template>
           </span>
         </div>
 
@@ -82,7 +91,9 @@ const emit = defineEmits<{
         <div v-if="item.metric" class="okr-list__metric" @click.stop="emit('openMetricPreview', item.metric)">
           <span class="okr-list__metric-icon">{{ item.metric.icon }}</span>
           <span class="okr-list__metric-bar"><i :style="{ width: `${Math.min(item.metric.progress, 100)}%` }" /></span>
-          <span class="okr-list__metric-val">{{ item.metric.current }}{{ item.metric.unit }} → {{ item.metric.target }}{{ item.metric.unit }}</span>
+          <span class="okr-list__metric-val"
+            >{{ item.metric.current }}{{ item.metric.unit }} → {{ item.metric.target }}{{ item.metric.unit }}</span
+          >
           <span class="okr-list__metric-pct">{{ item.metric.progress }}%</span>
         </div>
 
@@ -95,10 +106,17 @@ const emit = defineEmits<{
 
       <div class="okr-list__right">
         <span class="okr-list__score" :class="item.kind === 'action' ? 'is-success' : `is-${scoreTagType(item.score)}`">
-          {{ item.kind === 'action' ? `${item.progress}%` : item.score }}
+          {{ item.kind === "action" ? `${item.progress}%` : item.score }}
         </span>
         <div class="okr-list__actions">
-          <el-button link type="primary" size="small" :loading="regeneratingId === item.id" :icon="RefreshRight" @click.stop="emit('handleRegenerate', item)" />
+          <el-button
+            link
+            type="primary"
+            size="small"
+            :loading="regeneratingId === item.id"
+            :icon="RefreshRight"
+            @click.stop="emit('handleRegenerate', item)"
+          />
           <el-button link type="danger" size="small" :icon="Delete" @click.stop="emit('handleDelete', item)" />
         </div>
       </div>
@@ -112,174 +130,217 @@ const emit = defineEmits<{
   flex-direction: column;
   gap: 8px;
 }
-
 .okr-list__item {
   display: flex;
-  align-items: flex-start;
   gap: 14px;
+  align-items: flex-start;
   padding: 14px 16px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-left: 4px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  cursor: pointer;
-  transition: box-shadow 0.15s, border-color 0.15s, border-left-color 0.15s, background 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s,
+    border-left-color 0.15s,
+    background 0.15s;
   &:hover {
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     background: var(--el-fill-color-lighter);
-    .okr-list__actions { opacity: 1; }
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 2px 10px rgb(0 0 0 / 6%);
+    .okr-list__actions {
+      opacity: 1;
+    }
   }
-  &.is-priority-p0 { border-left-color: var(--el-color-danger); }
-  &.is-priority-p1 { border-left-color: var(--el-color-warning); }
-  &.is-priority-p2 { border-left-color: var(--el-color-primary); }
-  &.is-priority-p3 { border-left-color: var(--el-color-info); }
+  &.is-priority-p0 {
+    border-left-color: var(--el-color-danger);
+  }
+  &.is-priority-p1 {
+    border-left-color: var(--el-color-warning);
+  }
+  &.is-priority-p2 {
+    border-left-color: var(--el-color-primary);
+  }
+  &.is-priority-p3 {
+    border-left-color: var(--el-color-info);
+  }
 }
-
 .okr-list__left {
-  flex-shrink: 0;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding-top: 1px;
 }
-
 .okr-list__body {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
-
 .okr-list__head {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
-
 .okr-list__title {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  &:hover { color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
-
 .okr-list__status {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  padding: 1px 8px;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 8px;
   border-radius: 10px;
-  &.is-success { color: var(--el-color-success); background: var(--el-color-success-light-9); }
-  &.is-danger { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
-  &.is-warning { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
-  &.is-info { color: var(--el-color-info); background: var(--el-color-info-light-9); }
+  &.is-success {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-9);
+  }
+  &.is-danger {
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-9);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+    background: var(--el-color-info-light-9);
+  }
 }
-
 .okr-list__status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  .is-success & { background: var(--el-color-success); }
-  .is-danger & { background: var(--el-color-danger); }
-  .is-warning & { background: var(--el-color-warning); }
-  .is-info & { background: var(--el-color-info); }
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  .is-success & {
+    background: var(--el-color-success);
+  }
+  .is-danger & {
+    background: var(--el-color-danger);
+  }
+  .is-warning & {
+    background: var(--el-color-warning);
+  }
+  .is-info & {
+    background: var(--el-color-info);
+  }
 }
-
 .okr-list__meta {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-
 .okr-list__due {
   display: inline-flex;
-  align-items: center;
   gap: 3px;
+  align-items: center;
+  margin-left: auto;
   font-size: 12px;
   white-space: nowrap;
-  margin-left: auto;
-  &.is-overdue { color: var(--el-color-danger); font-weight: 700; }
+  &.is-overdue {
+    font-weight: 700;
+    color: var(--el-color-danger);
+  }
 }
-
 .okr-list__process {
   font-size: 12px;
 }
-
 .okr-list__metric {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 6px 10px;
+  cursor: pointer;
   background: var(--el-fill-color-lighter);
   border-radius: 6px;
-  cursor: pointer;
-  &:hover { background: var(--el-fill-color-light); }
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
 }
-
-.okr-list__metric-icon { font-size: 14px; flex-shrink: 0; }
-
+.okr-list__metric-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+}
 .okr-list__metric-bar {
+  flex-shrink: 0;
   width: 60px;
   height: 4px;
+  overflow: hidden;
   background: var(--el-fill-color);
   border-radius: 2px;
-  overflow: hidden;
-  flex-shrink: 0;
-  i { display: block; height: 100%; background: var(--el-color-primary); border-radius: 2px; transition: width 0.3s; }
+  i {
+    display: block;
+    height: 100%;
+    background: var(--el-color-primary);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
 }
-
 .okr-list__metric-val {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
   white-space: nowrap;
 }
-
 .okr-list__metric-pct {
+  flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;
   color: var(--el-color-primary);
-  flex-shrink: 0;
 }
-
 .okr-list__tags {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
-}
-
-.okr-list__right {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
+  gap: 6px;
   align-items: center;
+}
+.okr-list__right {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
   gap: 8px;
+  align-items: center;
   padding-top: 1px;
 }
-
 .okr-list__score {
+  font-family: "SF Mono", "Fira Code", monospace;
   font-size: 22px;
   font-weight: 800;
-  font-family: "SF Mono", "Fira Code", monospace;
   line-height: 1;
-  &.is-danger { color: var(--el-color-danger); }
-  &.is-warning { color: var(--el-color-warning); }
-  &.is-primary { color: var(--el-color-primary); }
-  &.is-info { color: var(--el-color-info); }
-  &.is-success { color: var(--el-color-success); }
+  &.is-danger {
+    color: var(--el-color-danger);
+  }
+  &.is-warning {
+    color: var(--el-color-warning);
+  }
+  &.is-primary {
+    color: var(--el-color-primary);
+  }
+  &.is-info {
+    color: var(--el-color-info);
+  }
+  &.is-success {
+    color: var(--el-color-success);
+  }
 }
-
 .okr-list__actions {
   display: flex;
   gap: 2px;

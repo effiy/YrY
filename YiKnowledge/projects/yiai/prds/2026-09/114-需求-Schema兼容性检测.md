@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-106: 服务端 JSON Schema 演化兼容性检测 — 向后不兼容变更的 CI 自动识别与告警"
 tags: [需求文档, JSON Schema, 兼容性检测, CI集成, 自动告警, API演化, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-002]
+related_modules: [114-prd-task-Schema兼容性检测]
+related_tests: [114-prd-test-Schema兼容性检测]
 ---
 
 # YA-09-106: JSON Schema 兼容性检测 — 向后不兼容变更的 CI 自动识别
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-106 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-10（RPC 契约测试）、YA-09-51（Pydantic 参数校验）
@@ -61,6 +69,7 @@ YA-09-10 实现了 RPC 契约测试，YA-09-51 使用 Pydantic 进行参数校�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 Schema 管理
@@ -106,6 +115,7 @@ graph TB
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：检测方式 — 静态分析 vs 运行时 vs 混合
@@ -147,6 +157,7 @@ graph TB
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 架构图
@@ -195,6 +206,7 @@ graph TB
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增 `src/shared/schema_checker.py`
@@ -599,6 +611,7 @@ if __name__ == '__main__':
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 描述 | 文件 | 验证 | 人天 |
@@ -612,6 +625,7 @@ if __name__ == '__main__':
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 | 指标 | 值 |
@@ -622,6 +636,7 @@ if __name__ == '__main__':
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：字段删除检测
@@ -680,6 +695,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -691,6 +707,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 回滚时间 |
@@ -701,6 +718,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：静态度对比 vs 运行时对比
@@ -723,6 +741,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 指标
@@ -748,6 +767,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 | 要求 | 实现 |
@@ -758,6 +778,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] Schema 变更时检测 5 类不兼容：字段删除/类型变更/必填新增/枚举收缩/约束收紧
@@ -772,6 +793,7 @@ THEN 检测到 minimum_increased → BREAKING
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |

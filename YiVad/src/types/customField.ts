@@ -32,5 +32,5 @@ export const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   multi_select: "多选",
   user: "用户选择",
   url: "链接",
-  checkbox: "复选框",
+  checkbox: "复选框"
 };

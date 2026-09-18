@@ -6,13 +6,13 @@ and code duplication detection with configurable thresholds.
 
 RPC entry: services.code_health_service.analyze
 """
+from collections import defaultdict
 import hashlib
 import logging
 import os
+from pathlib import Path
 import re
 import time
-from collections import defaultdict
-from pathlib import Path
 from typing import Any
 
 from data.database import db
@@ -92,10 +92,13 @@ def _is_comment(line: str, ext: str, in_block_comment: bool) -> tuple[bool, bool
         elif stripped.startswith(_open):
             return True, False
 
-    # inline block comments
+    # inline block comments — must have close token after open
     for _open, close in patterns:
-        if close and _open in stripped and stripped.index(_open) < len(stripped) - len(_open):
-            return True, False
+        if close and _open in stripped:
+            open_idx = stripped.index(_open)
+            close_idx = stripped.find(close, open_idx + len(_open))
+            if close_idx != -1:
+                return True, False
 
     return False, False
 
@@ -105,7 +108,7 @@ def _count_lines(path: Path) -> dict[str, int]:
     ext = path.suffix.lower()
     try:
         content = path.read_text(encoding="utf-8", errors="replace")
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         return {"total": 0, "comment": 0, "blank": 0, "code": 0}
 
     lines = content.split("\n")
@@ -150,7 +153,7 @@ def _detect_duplicates(files: list[Path], min_lines: int, project_dir: Path) -> 
     for fpath in files:
         try:
             raw = fpath.read_text(encoding="utf-8", errors="replace")
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             logger.debug("Failed to read file for duplicate detection, skipping", exc_info=True)
             continue
         lines = raw.split("\n")
@@ -246,7 +249,7 @@ def _read_snippet(file_path: str, project_dir: Path, start: int, end: int) -> st
         lines = content.split("\n")
         snippet = lines[start - 1 : end - 1]
         return "\n".join(snippet)[:200]
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         return ""
 
 
@@ -278,7 +281,7 @@ def _analyze_vue_reuse(files: list[Path], project_dir: Path) -> dict[str, Any]:
             continue
         try:
             content = fpath.read_text(encoding="utf-8", errors="replace")
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             logger.debug("Failed to read file for component analysis, skipping", exc_info=True)
             continue
         for m in _VUE_COMPONENT_RE.finditer(content):

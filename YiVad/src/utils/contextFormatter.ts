@@ -40,9 +40,7 @@ function parseSections(pageContent: string): ContextSection[] {
 
 /** Extract ctx:-tagged file paths from session tags. */
 function extractCtxPaths(tags: string[]): string[] {
-  return tags
-    .filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX))
-    .map(t => t.slice(CTX_PREFIX.length));
+  return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).map(t => t.slice(CTX_PREFIX.length));
 }
 
 /**
@@ -79,11 +77,7 @@ function relevanceScore(question: string, section: ContextSection): number {
  * @param userQuestion - Optional user question for relevance-based trimming
  * @returns Formatted system message string, or "" if no context
  */
-export function formatContextForPrompt(
-  pageContent: string,
-  tags: string[],
-  userQuestion?: string
-): string {
+export function formatContextForPrompt(pageContent: string, tags: string[], userQuestion?: string): string {
   if (!pageContent?.trim()) return "";
 
   const sections = parseSections(pageContent);
@@ -95,9 +89,7 @@ export function formatContextForPrompt(
   // Trim by relevance when context is large
   let activeSections = sections;
   if (totalChars > MAX_CONTEXT_CHARS && userQuestion) {
-    const ranked = sections
-      .map(s => ({ section: s, score: relevanceScore(userQuestion, s) }))
-      .sort((a, b) => b.score - a.score);
+    const ranked = sections.map(s => ({ section: s, score: relevanceScore(userQuestion, s) })).sort((a, b) => b.score - a.score);
 
     let chars = 0;
     const kept: ContextSection[] = [];

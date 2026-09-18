@@ -7,18 +7,14 @@ export function useContextMenu() {
   const items = ref<MenuItem[]>([]);
   const context = ref<MenuContext | null>(null);
 
-  function show(
-    event: MouseEvent,
-    menuItems: MenuItem[],
-    ctx?: Partial<MenuContext>
-  ) {
+  function show(event: MouseEvent, menuItems: MenuItem[], ctx?: Partial<MenuContext>) {
     event.preventDefault();
     event.stopPropagation();
     position.value = { x: event.clientX, y: event.clientY };
     items.value = menuItems;
     context.value = {
       element: event.target as HTMLElement,
-      ...ctx,
+      ...ctx
     };
     visible.value = true;
   }
@@ -29,20 +25,16 @@ export function useContextMenu() {
     context.value = null;
   }
 
-  function showAtTarget(
-    target: HTMLElement,
-    menuItems: MenuItem[],
-    ctx?: Partial<MenuContext>
-  ) {
+  function showAtTarget(target: HTMLElement, menuItems: MenuItem[], ctx?: Partial<MenuContext>) {
     const rect = target.getBoundingClientRect();
     position.value = {
       x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
+      y: rect.top + rect.height / 2
     };
     items.value = menuItems;
     context.value = {
       element: target,
-      ...ctx,
+      ...ctx
     };
     visible.value = true;
   }
@@ -54,6 +46,6 @@ export function useContextMenu() {
     context: readonly(context),
     show,
     hide,
-    showAtTarget,
+    showAtTarget
   };
 }

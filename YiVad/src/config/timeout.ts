@@ -18,5 +18,5 @@ export const TIMEOUT_CONFIG = {
   /** Agent loops may involve multiple LLM round-trips */
   agent: 300_000,
   /** RPC calls to the data service */
-  rpc: 30_000,
+  rpc: 30_000
 } as const;

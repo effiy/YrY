@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-15: Popup 皮肤中心架构设计 — 角色/皮肤选择器与实时预览"
 tags: [需求文档, Popup, 皮肤中心, 角色选择, 实时预览, UI, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 1.0
 review_status: 待评审
 issue_type: 架构
 roles: [producter, engineer]
+source_okr: [yipet-001]
+related_modules: [22-prd-task-Popup皮肤中心]
+related_tests: [22-prd-test-Popup皮肤中心]
 ---
 
 # YP-09-15: Popup 皮肤中心架构设计 — 角色/皮肤选择器与实时预览
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-15 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
@@ -31,6 +39,7 @@ YiPet 目前通过 `role-config.ts` 定义角色（猫咪助手、柴犬伙伴�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、设计决策
 
 ### 决策 1：Popup ↔ Content Script 通信 — chrome.runtime.sendMessage vs chrome.storage vs postMessage
@@ -47,6 +56,7 @@ YiPet 目前通过 `role-config.ts` 定义角色（猫咪助手、柴犬伙伴�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、目标架构
 
 ```typescript
@@ -171,6 +181,7 @@ function applySkin(skinId: string) {
 
 ---
 
+<a id="sec-3"></a>
 ## 三、性能考量
 
 | 操作 | 耗时 | 说明 |
@@ -181,6 +192,7 @@ function applySkin(skinId: string) {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、测试规格
 
 #### Scenario: 选择皮肤后宠物实时更新
@@ -210,6 +222,7 @@ function applySkin(skinId: string) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、代码审查检查清单
 
 - [ ] Popup → Content Script 通信通过 `chrome.storage.onChanged`（非 postMessage）
@@ -223,6 +236,7 @@ function applySkin(skinId: string) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、可观测性
 
 | 指标 | 采集方式 | 说明 |

@@ -111,4 +111,43 @@ export class ChatService {
     }
     return fullText;
   }
+
+  /**
+   * Send a prompt with full conversation history (messages array).
+   * Preferred over `streamWithCallback` for multi-turn conversations.
+   */
+  async chatWithHistory(
+    params: {
+      messages: Array<{ role: string; content: string }>;
+      system?: string;
+      model?: string;
+      images?: string[];
+    },
+    onToken: (token: string) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    return this.streamWithCallback(
+      {
+        messages: params.messages,
+        system: params.system,
+        model: params.model,
+        images: params.images,
+      },
+      onToken,
+      signal,
+    );
+  }
+
+  /** Fetch available Ollama models from the backend. */
+  async listModels(): Promise<string[]> {
+    const res = await this.client.rpc<{ models?: Array<{ name?: string; model?: string }> }>(
+      CHAT_MODULE,
+      'list_ollama_models',
+      {},
+    );
+    if (res.ok && res.data?.models) {
+      return res.data.models.map((m) => m.name || m.model || '').filter(Boolean);
+    }
+    return [];
+  }
 }

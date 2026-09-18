@@ -804,7 +804,7 @@
         {
           "path": "/system",
           "name": "system",
-          "redirect": "/system/accountManage",
+          "redirect": "/system/account-manage",
           "meta": {
             "icon": "Tools",
             "title": "系统管理",
@@ -815,9 +815,9 @@
             "isKeepAlive": true
           },
           "children": [{
-              "path": "/system/accountManage",
+              "path": "/system/account-manage",
               "name": "accountManage",
-              "component": "/system/accountManage/index",
+              "component": "/system/account-manage/index",
               "meta": {
                 "icon": "Menu",
                 "title": "账号管理",
@@ -829,9 +829,9 @@
               }
             },
             {
-              "path": "/system/roleManage",
+              "path": "/system/role-manage",
               "name": "roleManage",
-              "component": "/system/roleManage/index",
+              "component": "/system/role-manage/index",
               "meta": {
                 "icon": "Menu",
                 "title": "角色管理",
@@ -843,9 +843,9 @@
               }
             },
             {
-              "path": "/system/menuMange",
+              "path": "/system/menu-manage",
               "name": "menuMange",
-              "component": "/system/menuMange/index",
+              "component": "/system/menu-manage/index",
               "meta": {
                 "icon": "Menu",
                 "title": "菜单管理",
@@ -857,9 +857,9 @@
               }
             },
             {
-              "path": "/system/departmentManage",
+              "path": "/system/department-manage",
               "name": "departmentManage",
-              "component": "/system/departmentManage/index",
+              "component": "/system/department-manage/index",
               "meta": {
                 "icon": "Menu",
                 "title": "部门管理",
@@ -871,9 +871,9 @@
               }
             },
             {
-              "path": "/system/dictManage",
+              "path": "/system/dict-manage",
               "name": "dictManage",
-              "component": "/system/dictManage/index",
+              "component": "/system/dict-manage/index",
               "meta": {
                 "icon": "Menu",
                 "title": "字典管理",
@@ -885,9 +885,9 @@
               }
             },
             {
-              "path": "/system/timingTask",
+              "path": "/system/timing-task",
               "name": "timingTask",
-              "component": "/system/timingTask/index",
+              "component": "/system/timing-task/index",
               "meta": {
                 "icon": "Menu",
                 "title": "定时任务",
@@ -899,9 +899,9 @@
               }
             },
             {
-              "path": "/system/systemLog",
+              "path": "/system/system-log",
               "name": "systemLog",
-              "component": "/system/systemLog/index",
+              "component": "/system/system-log/index",
               "meta": {
                 "icon": "Menu",
                 "title": "系统日志",

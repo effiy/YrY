@@ -27,7 +27,7 @@ function newKey(prefix: string): string {
 export async function getMenuList(): Promise<YiAiEnvelope<MenuDocument[]>> {
   const res = await queryDocuments<MenuDocument>({
     cname: "menus",
-    limit: 1000,
+    pageSize: 1000,
     orderBy: "order",
     orderType: "asc"
   });
@@ -54,6 +54,12 @@ export function deleteMenu(key: string): Promise<YiAiEnvelope> {
   return deleteDocument("menus", key);
 }
 
+/** Bulk-reset the entire menu tree. Replaces all menus with the provided list. */
+export async function bulkResetMenus(menus: Record<string, any>[]): Promise<YiAiEnvelope> {
+  const http = (await import("@/api")).default;
+  return http.post("/system/menus/bulk-reset", { menus });
+}
+
 // ── Departments ──
 // Org departments live in the nested `dict_department` collection (the single
 // source of truth). The old flat `departments` collection and its CRUD writers
@@ -62,7 +68,7 @@ export function deleteMenu(key: string): Promise<YiAiEnvelope> {
 export async function getDepartmentList(): Promise<YiAiEnvelope<DepartmentDocument[]>> {
   const res = await queryDocuments<DepartmentDocument>({
     cname: "dict_department",
-    limit: 1000
+    pageSize: 1000
   });
   return { ...res, data: (res.data?.list ?? []) as DepartmentDocument[] };
 }
@@ -75,7 +81,7 @@ export async function getDepartmentList(): Promise<YiAiEnvelope<DepartmentDocume
 export async function getRoleList(): Promise<YiAiEnvelope<RoleDocument[]>> {
   const res = await queryDocuments<RoleDocument>({
     cname: "dict_role",
-    limit: 1000
+    pageSize: 1000
   });
   return { ...res, data: (res.data?.list ?? []) as RoleDocument[] };
 }
@@ -85,7 +91,7 @@ export async function getRoleList(): Promise<YiAiEnvelope<RoleDocument[]>> {
 export async function getDictItems(name: string): Promise<YiAiEnvelope<DictDocument[]>> {
   const res = await queryDocuments<DictDocument>({
     cname: name,
-    limit: 1000,
+    pageSize: 1000,
     orderBy: "sort",
     orderType: "asc"
   });
@@ -122,7 +128,7 @@ export function deleteDictItem(name: string, key: string): Promise<YiAiEnvelope>
 export async function getSchedulerStatus(): Promise<YiAiEnvelope<SchedulerStatusDocument>> {
   const res = await queryDocuments<SchedulerStatusDocument>({
     cname: "scheduler_status",
-    limit: 1,
+    pageSize: 1,
     orderBy: "updatedAt",
     orderType: "desc"
   });

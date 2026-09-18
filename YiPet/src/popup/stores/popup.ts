@@ -29,6 +29,8 @@ function buildInitialState(): PopupState {
     hintText: t('popupStatusConnecting'),
     notification: { visible: false, message: '', type: 'info' },
     locale: 'en' as SupportedLocale,
+    pageTheme: 0,
+    customColor: '',
   };
 }
 
@@ -144,6 +146,21 @@ export const usePopupStore = defineStore('popup', () => {
     });
   }
 
+  function setPageTheme(intensity: number) {
+    const pct = Math.max(0, Math.min(100, intensity));
+    send({
+      msg: { action: 'setPageTheme', intensity: pct },
+      okMsg: pct > 0 ? t('notifyPageThemeOn') : t('notifyPageThemeOff'),
+      optimistic: { pageTheme: pct },
+    });
+  }
+
+  function setCustomColor(hex: string) {
+    state.value = { ...state.value, customColor: hex };
+    const svc = getChrome();
+    if (svc) svc.saveState({ ...state.value, customColor: hex });
+  }
+
   function updateModel(model: string) {
     state.value = { ...state.value, model };
     const svc = getChrome();
@@ -192,7 +209,7 @@ export const usePopupStore = defineStore('popup', () => {
         onConnected(stored) {
           const next = { ...state.value };
           if (stored) {
-            const KEYS = ['visible', 'size', 'role', 'color', 'model'] as const;
+            const KEYS = ['visible', 'size', 'role', 'color', 'model', 'pageTheme', 'customColor'] as const;
             for (const k of KEYS) {
               if (stored[k] !== undefined) {
                 (next as Record<string, unknown>)[k] = stored[k];
@@ -244,5 +261,7 @@ export const usePopupStore = defineStore('popup', () => {
     updateColor,
     updateModel,
     changeLanguage,
+    setPageTheme,
+    setCustomColor,
   };
 });

@@ -37,10 +37,13 @@ function detectDelimiter(text: string): string {
 
 function parseText() {
   const delimiter = detectDelimiter(rawText.value);
-  const lines = rawText.value.trim().split("\n").filter((l) => l.trim());
+  const lines = rawText.value
+    .trim()
+    .split("\n")
+    .filter(l => l.trim());
   if (lines.length < 1) return;
 
-  rawRows.value = lines.map((line) => {
+  rawRows.value = lines.map(line => {
     // Handle quoted values
     const result: string[] = [];
     let current = "";
@@ -67,9 +70,9 @@ function parseText() {
   }
 
   // Auto-map by name similarity
-  mappings.value = headers.value.map((header) => {
+  mappings.value = headers.value.map(header => {
     const match = props.fields.find(
-      (f) => f.name.toLowerCase() === header.toLowerCase() || f.label.toLowerCase() === header.toLowerCase()
+      f => f.name.toLowerCase() === header.toLowerCase() || f.label.toLowerCase() === header.toLowerCase()
     );
     return { sourceCol: header, targetField: match?.name || "" };
   });
@@ -79,7 +82,7 @@ function parseText() {
 
 function handleFileUpload(file: File) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = e => {
     rawText.value = e.target?.result as string;
     parseText();
   };
@@ -103,8 +106,8 @@ function applyMapping() {
   errors.value = [];
   for (let i = 0; i < previewData.value.length; i++) {
     const row = previewData.value[i];
-    for (const field of props.fields.filter((f) => f.required)) {
-      const mapped = mappings.value.find((m) => m.targetField === field.name);
+    for (const field of props.fields.filter(f => f.required)) {
+      const mapped = mappings.value.find(m => m.targetField === field.name);
       if (mapped && (!row[field.name] || row[field.name].toString().trim() === "")) {
         errors.value.push({ row: i + 1, field: field.name, message: `${field.label} 为必填` });
       }
@@ -151,15 +154,18 @@ function reset() {
         <input
           type="file"
           accept=".csv,.tsv,.txt"
-          @change="(e) => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) handleFileUpload(f); }"
+          @change="
+            e => {
+              const f = (e.target as HTMLInputElement).files?.[0];
+              if (f) handleFileUpload(f);
+            }
+          "
         />
       </div>
 
       <div class="form-batch-input__actions">
         <el-button @click="emit('cancel')">取消</el-button>
-        <el-button type="primary" :disabled="!rawText.trim()" @click="parseText">
-          解析数据
-        </el-button>
+        <el-button type="primary" :disabled="!rawText.trim()" @click="parseText"> 解析数据 </el-button>
       </div>
     </div>
 
@@ -200,17 +206,10 @@ function reset() {
       />
 
       <el-table :data="previewData.slice(0, 10)" size="small" max-height="320">
-        <el-table-column
-          v-for="field in fields"
-          :key="field.name"
-          :prop="field.name"
-          :label="field.label"
-        />
+        <el-table-column v-for="field in fields" :key="field.name" :prop="field.name" :label="field.label" />
       </el-table>
 
-      <p v-if="previewData.length > 10" class="form-batch-input__more">
-        仅显示前 10 行，共 {{ previewData.length }} 行
-      </p>
+      <p v-if="previewData.length > 10" class="form-batch-input__more">仅显示前 10 行，共 {{ previewData.length }} 行</p>
 
       <div class="form-batch-input__actions">
         <el-button @click="currentStep = 'map'">返回修改</el-button>
@@ -227,30 +226,25 @@ function reset() {
   &__paste {
     margin-top: 12px;
   }
-
   &__file {
     margin-top: 12px;
   }
-
   &__hint {
     margin: 4px 0 12px;
     font-size: 13px;
     color: var(--el-text-color-secondary);
   }
-
   &__actions {
     display: flex;
-    justify-content: flex-end;
     gap: 8px;
+    justify-content: flex-end;
     margin-top: 16px;
   }
-
   &__more {
     margin-top: 8px;
     font-size: 12px;
     color: var(--el-text-color-placeholder);
   }
-
   h4 {
     margin: 0 0 4px;
     font-size: 15px;

@@ -1,49 +1,21 @@
 ---
 doc_type: test
-title: "安全合规配置 — CSP 加固与 Chrome Web Store 审核准备 — 测试规格"
-status: 待开始
-priority: P1
+title: "安全合规配置 — 测试用例"
+status: 已完成
 owner: 陈铭
-roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-prd_task_id: "YP-09-06"
 source_prds: ["13-合规-安全配置"]
-source_modules: []
----
-# 安全合规配置 — CSP 加固与 Chrome Web Store 审核准备 — 测试规格
-
-> 来源 PRD：[13-合规-安全配置.md](../../prds/2026-09/13-合规-安全配置.md)
-> 提取日期：2026-09-11
-
+source_modules: ["13-prd-task-安全配置"]
 ---
 
-## 测试场景
+# 安全合规配置 — 测试用例
 
-### 功能验证
-
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
-
-### 边界测试
-
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-SC01 | CSP script-src 'self' | 无 eval/inline/remote | P0 |
+| TC-SC02 | host_permissions 最小化 | 仅 localhost+生产 API | P0 |
+| TC-SC03 | web_accessible 精确 | assets/*, cdn/* | P1 |

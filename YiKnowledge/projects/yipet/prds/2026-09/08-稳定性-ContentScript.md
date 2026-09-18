@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: Content Script 稳定性修复 — SPA 路由检测与保活
 tags: [稳定性, Content Script, SPA, MutationObserver, history API, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P0
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [08-prd-task-ContentScript]
+related_tests: [08-prd-test-ContentScript]
 ---
 
 # Content Script 稳定性修复 — SPA 路由检测与保活
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-01 · 优先级：P0 · 人天：3.0d · 状态：已完成
 > 依赖：无
@@ -36,6 +44,7 @@ YiPet 通过 Content Script 向宿主页面注入宠物 UI。当前注入方式�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 文件清单
@@ -126,6 +135,7 @@ Chrome 加载 content script (ISOLATED 世界)
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：SPA 路由检测方式
@@ -178,6 +188,7 @@ Chrome 加载 content script (ISOLATED 世界)
 
 ---
 
+<a id="sec-3"></a>
 ## 三、性能分析
 
 ### 3.1 性能影响评估
@@ -259,6 +270,7 @@ Chrome 加载 content script (ISOLATED 世界)
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 修复后注入流程
@@ -317,6 +329,7 @@ Chrome 加载 content script (ISOLATED 世界)
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 `src/content/bootstrap.ts` — 新增路由拦截 + 保活检测
@@ -397,6 +410,7 @@ _mo.observe(document.body, { childList: true, subtree: true });
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -416,6 +430,7 @@ _mo.observe(document.body, { childList: true, subtree: true });
 
 ---
 
+<a id="sec-7"></a>
 ## 七、涉及文件
 
 ```
@@ -433,6 +448,7 @@ YiPet/src/content/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -446,6 +462,7 @@ YiPet/src/content/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 ### Requirement: SPA 路由切换宠物持续可见
@@ -540,6 +557,7 @@ MutationObserver MUST 作为兜底机制，在宠物 DOM 被移除时自动恢�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、当前架构 vs 目标架构
 
 ### 改造前后对比
@@ -580,6 +598,7 @@ graph TD
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 ### D-01: 为什么 history API 拦截而非仅监听 popstate？
@@ -600,6 +619,7 @@ Content Script 运行在页面 JavaScript 上下文中，`CustomEvent` 会被页
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 - [ ] `history.pushState`/`replaceState` 拦截不破坏页面原有功能（保留原始引用，仅追加事件分发）
@@ -615,6 +635,7 @@ Content Script 运行在页面 JavaScript 上下文中，`CustomEvent` 会被页
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -644,6 +665,7 @@ Content Script 运行在页面 JavaScript 上下文中，`CustomEvent` 会被页
 - SPA 路由切换后宠物不丢失、不重复
 - 宠物样式与宿主页面样式无冲突
 
+<a id="sec-14"></a>
 ## 十四、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -653,6 +675,7 @@ Content Script 运行在页面 JavaScript 上下文中，`CustomEvent` 会被页
 | 3 | 宠物 DOM 恢复而非重建 | P3 | 0.3 | 当前 MO 检测到 DOM 被移除后重新创建整个宠物 DOM，可保存 DOM 快照直接恢复 |
 | 4 | 页面兼容性黑名单 | P3 | 0.2 | 某些页面（如 Google Docs）使用 Canvas 渲染，宠物注入无意义。可维护页面黑名单避免注入 |
 
+<a id="sec-15"></a>
 ## 十五、可观测性
 
 ### 15.1 关键指标

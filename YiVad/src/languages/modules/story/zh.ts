@@ -116,5 +116,42 @@ export default {
     send: "发送",
     stop: "停止",
     clear: "清空",
+    loading: "加载故事数据…",
+    loadFailed: "故事数据加载失败",
+    deleteStoryConfirm: "确认删除故事「{name}」？关联的场景和文件将一并移除。",
+    deleteScenarioConfirm: "确认删除此场景？",
+    milestone: {
+      title: "里程碑",
+      add: "添加里程碑",
+      edit: "编辑里程碑",
+      delete: "删除里程碑",
+      deleteConfirm: "确认删除里程碑「{name}」？",
+      name: "名称",
+      date: "日期",
+      description: "描述",
+      noMilestones: "暂无里程碑",
+      completed: "已完成 {done}/{total}",
+      overdue: "已逾期",
+      upcoming: "即将到来"
+    },
+    export: {
+      title: "导出",
+      csv: "导出 CSV",
+      json: "导出 JSON",
+      markdown: "导出 Markdown",
+      success: "已导出 {count} 个故事",
+      failed: "导出失败"
+    },
+    filters: {
+      title: "筛选",
+      status: "状态",
+      priority: "优先级",
+      sprint: "迭代",
+      assignee: "负责人",
+      project: "项目",
+      clearAll: "清除筛选",
+      noResults: "无匹配结果",
+      adjustFilters: "调整筛选条件并重试"
+    }
   }
 };

@@ -33,7 +33,7 @@ export async function getRoleList(params: {
     pageNum: params.pageNum ?? 1,
     pageSize: params.pageSize ?? 10,
     orderBy: "createdAt",
-    orderType: "desc",
+    orderType: "desc"
   });
 }
 
@@ -41,9 +41,9 @@ export async function getRoleList(params: {
 export async function getAllRoles(): Promise<YiAiEnvelope<RoleDocument[]>> {
   const res = await queryDocuments<RoleDocument>({
     cname: CNAME,
-    limit: 1000,
+    pageSize: 1000,
     orderBy: "name",
-    orderType: "asc",
+    orderType: "asc"
   });
   return { ...res, data: (res.data?.list ?? []) as unknown as RoleDocument[] };
 }
@@ -62,7 +62,7 @@ export async function createRole(params: {
     ...params,
     userCount: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   });
 }
 
@@ -77,7 +77,7 @@ export async function updateRole(params: {
   const { key, ...rest } = params;
   return updateDocument(CNAME, key, {
     ...rest,
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   });
 }
 
@@ -92,7 +92,7 @@ export async function getRoleUserCount(roleCode: string): Promise<number> {
     const res = await queryDocuments<any>({
       cname: "users",
       filter: { roles: roleCode },
-      limit: 1,
+      pageSize: 1
     });
     return res.data?.total ?? 0;
   } catch {

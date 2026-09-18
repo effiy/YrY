@@ -62,7 +62,7 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 | 知识类型 | 归属角色 | 典型路径 |
 |---|---|---|
 | 带权衡分析的架构决策（ADR） | leader | [../leader/decisions/](../leader/decisions/) |
-| 技术选型评估与成熟度模型 | leader | [../leader/架构/](../leader/架构/) |
+| 技术选型评估与成熟度模型 | leader | [../leader/architecture/](../leader/architecture/) |
 | 产品需求与用户故事 | producter | [../producter/discovery/](../producter/discovery/) |
 | 事件响应流程与复盘 | srer | [../srer/incident-response/](../srer/incident-response/) |
 | AI 理论与方法论基础 | aier | [../aier/foundations/](../aier/foundations/) |

@@ -6,7 +6,7 @@ import type { GanttTask, CriticalPathResult } from "@/types/gantt";
 export function calcCriticalPath(tasks: GanttTask[]): CriticalPathResult {
   if (tasks.length === 0) return { path: [], totalDays: 0 };
 
-  const taskMap = new Map(tasks.map((t) => [t.id, t]));
+  const taskMap = new Map(tasks.map(t => [t.id, t]));
   const inDegree = new Map<string, number>();
   const adj = new Map<string, string[]>();
 
@@ -76,7 +76,7 @@ export function calcCriticalPath(tasks: GanttTask[]): CriticalPathResult {
   }
 
   // Critical path: tasks where ES == LS
-  const criticalIds = sorted.filter((id) => {
+  const criticalIds = sorted.filter(id => {
     const taskEs = es.get(id);
     const taskLs = ls.get(id);
     return taskEs !== undefined && taskLs !== undefined && Math.abs(taskEs - taskLs) < 1000;
@@ -84,6 +84,6 @@ export function calcCriticalPath(tasks: GanttTask[]): CriticalPathResult {
 
   return {
     path: criticalIds,
-    totalDays: Math.round((maxEf - Math.min(...Array.from(es.values()), Date.now())) / 86_400_000),
+    totalDays: Math.round((maxEf - Math.min(...Array.from(es.values()), Date.now())) / 86_400_000)
   };
 }

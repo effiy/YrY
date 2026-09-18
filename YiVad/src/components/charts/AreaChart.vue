@@ -23,7 +23,7 @@ const chartOption = computed<ECOption>(() => {
     const series = props.data.series.map(s => ({
       ...s,
       areaStyle: true,
-      smooth: true,
+      smooth: true
     }));
     return buildAxisChartOption({ ...props.data, series }, "line", props.options ?? {});
   }

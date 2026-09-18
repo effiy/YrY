@@ -75,8 +75,7 @@ export function getTimeState() {
  * @returns {String} "zh" | "en"
  */
 export function getBrowserLang() {
-  const browserLang =
-    (typeof navigator !== "undefined" && (navigator.language || (navigator as any).browserLanguage)) || "en";
+  const browserLang = (typeof navigator !== "undefined" && (navigator.language || (navigator as any).browserLanguage)) || "en";
   const key = String(browserLang).toLowerCase().replace("_", "-");
   if (key.startsWith("zh") || key === "cn") return "zh";
   return "en";

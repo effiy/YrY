@@ -24,14 +24,7 @@ const STATUS_COLOR: Record<IssueStatus, string> = {
   cancelled: "#ee6666"
 };
 
-const ISSUE_STATUS_ORDER: IssueStatus[] = [
-  "todo",
-  "in_progress",
-  "in_review",
-  "done",
-  "backlog",
-  "cancelled"
-];
+const ISSUE_STATUS_ORDER: IssueStatus[] = ["todo", "in_progress", "in_review", "done", "backlog", "cancelled"];
 
 type StatsShape = {
   total: number;
@@ -61,10 +54,7 @@ function aggregateStatusCounts(list: Issue[]): StatsShape {
   }, base);
 }
 
-function countBy<T, K extends string | number>(
-  list: T[],
-  keyFn: (item: T) => K | undefined | null
-): Record<string, number> {
+function countBy<T, K extends string | number>(list: T[], keyFn: (item: T) => K | undefined | null): Record<string, number> {
   return list.reduce<Record<string, number>>((acc, item) => {
     const k = keyFn(item);
     if (k != null && k !== "") {
@@ -77,25 +67,25 @@ function countBy<T, K extends string | number>(
 
 function mapReqStatus(s: string): IssueStatus {
   const m: Record<string, IssueStatus> = {
-    "待开始": "todo",
-    "进行中": "in_progress",
-    "已完成": "done",
-    "待排期": "backlog",
-    "已取消": "cancelled",
-    "待评审": "in_review",
-    "需求已编写": "done",
-    "待开发": "in_progress",
-    "已合并": "done"
+    待开始: "todo",
+    进行中: "in_progress",
+    已完成: "done",
+    待排期: "backlog",
+    已取消: "cancelled",
+    待评审: "in_review",
+    需求已编写: "done",
+    待开发: "in_progress",
+    已合并: "done"
   };
   return m[s] || "todo";
 }
 
 function mapReqPriority(p: string): IssuePriority {
   const m: Record<string, IssuePriority> = {
-    "紧急": "urgent",
-    "高": "high",
-    "中": "medium",
-    "低": "low"
+    紧急: "urgent",
+    高: "high",
+    中: "medium",
+    低: "low"
   };
   return m[p] || "medium";
 }
@@ -105,11 +95,8 @@ function formatReqMonth(m: string): string {
   return m;
 }
 
-function buildReqIssues(
-  reqItems: RequireItem[],
-  projectKey: string | undefined
-): Issue[] {
-  return reqItems.map((r) => ({
+function buildReqIssues(reqItems: RequireItem[], projectKey: string | undefined): Issue[] {
+  return reqItems.map(r => ({
     key: formatReqMonth(r.prd_month),
     project_key: projectKey || "",
     sequence_id: 0,
@@ -154,10 +141,7 @@ export function useIssueStats(
 
   async function loadNames() {
     try {
-      const [projRes, modRes] = await Promise.all([
-        getProjectList({ pageSize: 500 }),
-        getModuleList({ pageSize: 500 })
-      ]);
+      const [projRes, modRes] = await Promise.all([getProjectList({ pageSize: 500 }), getModuleList({ pageSize: 500 })]);
       projectNameByKey.value = new Map((projRes.data?.list as Project[]).map(p => [p.key, p.name]));
       const byIssue = new Map<string, Module[]>();
       for (const m of modRes.data?.list as Module[]) {
@@ -186,13 +170,9 @@ export function useIssueStats(
     cancelled: 0
   });
 
-  const openCount = computed(
-    () => stats.todo + stats.in_progress + stats.in_review
-  );
+  const openCount = computed(() => stats.todo + stats.in_progress + stats.in_review);
 
-  const completionPct = computed(() =>
-    stats.total ? Math.round((stats.done / stats.total) * 100) : 0
-  );
+  const completionPct = computed(() => (stats.total ? Math.round((stats.done / stats.total) * 100) : 0));
 
   const headerPills = computed<HeaderPill[]>(() => [
     { value: stats.total, label: "Total" },
@@ -208,25 +188,15 @@ export function useIssueStats(
     }
   ]);
 
-  const statusDist = computed(() =>
-    countBy(allIssues.value, (i) => i.status)
-  );
+  const statusDist = computed(() => countBy(allIssues.value, i => i.status));
 
-  const priorityDist = computed(() =>
-    countBy(allIssues.value, (i) => i.priority)
-  );
+  const priorityDist = computed(() => countBy(allIssues.value, i => i.priority));
 
-  const typeDist = computed(() =>
-    countBy(allIssues.value, (i) => i.issue_type)
-  );
+  const typeDist = computed(() => countBy(allIssues.value, i => i.issue_type));
 
-  const assigneeDist = computed(() =>
-    countBy(allIssues.value, (i) => i.assignee)
-  );
+  const assigneeDist = computed(() => countBy(allIssues.value, i => i.assignee));
 
-  const createdByDay = computed(() =>
-    countBy(allIssues.value, (i) => (i.created_at || "").slice(0, 10) || null)
-  );
+  const createdByDay = computed(() => countBy(allIssues.value, i => (i.created_at || "").slice(0, 10) || null));
 
   const completeness = computed(() => {
     const total = allIssues.value.length;
@@ -234,35 +204,35 @@ export function useIssueStats(
       {
         key: "assignee",
         label: "Assignee",
-        filled: allIssues.value.filter((i) => i.assignee).length
+        filled: allIssues.value.filter(i => i.assignee).length
       },
       {
         key: "due_date",
         label: "Due Date",
-        filled: allIssues.value.filter((i) => i.due_date).length
+        filled: allIssues.value.filter(i => i.due_date).length
       },
       {
         key: "labels",
         label: "Labels",
-        filled: allIssues.value.filter((i) => i.labels?.length).length
+        filled: allIssues.value.filter(i => i.labels?.length).length
       },
       {
         key: "description",
         label: "Description",
-        filled: allIssues.value.filter((i) => i.description).length
+        filled: allIssues.value.filter(i => i.description).length
       },
       {
         key: "acceptance",
         label: "Acceptance",
-        filled: allIssues.value.filter((i) => i.acceptance_criteria).length
+        filled: allIssues.value.filter(i => i.acceptance_criteria).length
       },
       {
         key: "estimate",
         label: "Estimate",
-        filled: allIssues.value.filter((i) => i.estimate_points != null).length
+        filled: allIssues.value.filter(i => i.estimate_points != null).length
       }
     ];
-    return fields.map((f) => ({
+    return fields.map(f => ({
       ...f,
       pct: total ? Math.round((f.filled / total) * 100) : 0,
       missing: total - f.filled
@@ -271,16 +241,9 @@ export function useIssueStats(
 
   const attention = computed(() => {
     const now = Date.now();
-    const overdue = allIssues.value.filter(
-      (i) =>
-        i.due_date &&
-        i.status !== "done" &&
-        new Date(i.due_date).getTime() < now
-    ).length;
-    const unassigned = allIssues.value.filter(
-      (i) => !i.assignee && i.status !== "done" && i.status !== "cancelled"
-    ).length;
-    const blocked = allIssues.value.filter((i) => i.blocked_by?.length).length;
+    const overdue = allIssues.value.filter(i => i.due_date && i.status !== "done" && new Date(i.due_date).getTime() < now).length;
+    const unassigned = allIssues.value.filter(i => !i.assignee && i.status !== "done" && i.status !== "cancelled").length;
+    const blocked = allIssues.value.filter(i => i.blocked_by?.length).length;
     return { overdue, unassigned, blocked };
   });
 
@@ -291,10 +254,7 @@ export function useIssueStats(
   }
 
   function trackRecent(issue: Issue) {
-    recentlyViewed.value = [
-      issue,
-      ...recentlyViewed.value.filter((r) => r.key !== issue.key)
-    ].slice(0, 8);
+    recentlyViewed.value = [issue, ...recentlyViewed.value.filter(r => r.key !== issue.key)].slice(0, 8);
   }
 
   function applyCountsToStats(counts: StatsShape) {
@@ -309,8 +269,7 @@ export function useIssueStats(
         pageSize: 1000
       };
       if (props.filterIssueType) params.issue_type = props.filterIssueType;
-      if (props.excludeIssueType)
-        params.exclude_issue_type = props.excludeIssueType;
+      if (props.excludeIssueType) params.exclude_issue_type = props.excludeIssueType;
       if (opts.filterDateStr.value) {
         if (props.filterDate !== undefined) {
           params.due_date = opts.filterDateStr.value;
@@ -331,10 +290,7 @@ export function useIssueStats(
   }
 
   function syncRequirementStats() {
-    const mapped = buildReqIssues(
-      opts.reqItems.value as RequireItem[],
-      props.projectKey
-    );
+    const mapped = buildReqIssues(opts.reqItems.value as RequireItem[], props.projectKey);
     allIssues.value = mapped;
     cardIssuesAll.value = mapped;
     applyCountsToStats(aggregateStatusCounts(mapped));

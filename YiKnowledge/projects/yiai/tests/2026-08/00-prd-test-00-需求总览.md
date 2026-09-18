@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-01"
 source_prds: ["00-需求总览"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YiAi 八月迭代 — Multi-Provider LLM / 测试覆盖 / 审计日志 / Dashboard 健康监控 / OpenAI 兼容 / Web 搜索 / 维护工具 / MCP 协议 / Agent 工具系统 / ModelRuntime 抽象层 / 数据访问层 — 测试规格
 

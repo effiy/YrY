@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 功能实现-项目分析Tab
 tags:
 - 需求文档
@@ -12,6 +13,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -27,6 +30,7 @@ source_okr: [yivad-003]
 ---
 
 # 项目分析 Tab
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 在项目详情页 (`/project/:key`) 中新增「分析」Tab，提供项目级数据可视化和代码健康度分析。
 

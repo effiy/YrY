@@ -29,11 +29,11 @@ related:
 
 | 领域 | 内容 | 文件数 |
 |---|---|---|
-| [strategy/](./strategy/) | 业务战略框架、竞争定位、合规旅程 | 14 |
-| [industry/](./industry/) | 行业报告、竞争对手分析、市场趋势 | 19 |
-| [roadmap/](./roadmap/) | 组织路线图、战略规划、OKR 追踪 | 5 |
-| [reading-list/](./reading-list/) | 高管阅读清单和学习资源 | 4 |
-| [./okr/2026-Q3/](./okr/2026-Q3/) | 2026 Q3 OKR 目标、指标和关键结果证据 | 14 |
+| [strategy/](./strategy/) | 业务战略、组织、决策、竞争、风险、产品、工程、GTM | 55 (52 内容 + 2 索引 + README) |
+| [industry/](./industry/) | 行业报告、竞品分析（Cursor/Copilot 深度分析）、市场趋势 | 14 (模板 + 实例 + README × 3) |
+| [CHECKLIST.md](./CHECKLIST.md) | 高管实战检查清单——周/月/季度/年度关键动作 | 1 |
+| [reading-list/](./reading-list/) | 高管阅读清单和学习资源 | 9 (3 清单/模板 + 5 读书笔记 + README) |
+| [./okr/2026-Q3/](./okr/2026-Q3/) | 2026 Q3 OKR 目标、指标和关键结果证据 | 20 (3 目标 + 15 KR/指标 + README + 6 goal.md) |
 
 ## 快速导航
 
@@ -66,7 +66,7 @@ related:
 - [../leader/capacity/](../leader/capacity/) — 预算规划驱动容量管理
 
 ### 向上游（其他角色 → 高管角色）
-- [../engineer/run/understand-competitors.md](../engineer/run/understand-competitors.md) — 工程师通过竞品分析了解市场
+- [../engineer/run/01-运行-了解竞品.md](../engineer/run/01-运行-了解竞品.md) — 工程师通过竞品分析了解市场
 - [../producter/discovery/](../producter/discovery/) — 产品发现需要战略输入
 
 ## 维护指引

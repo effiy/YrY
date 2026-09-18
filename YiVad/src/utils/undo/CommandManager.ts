@@ -6,7 +6,7 @@ const DEFAULT_CONFIG: CommandManagerConfig = {
   maxDepth: 50,
   scope: "page",
   enablePersistence: true,
-  transactionWindow: 500,
+  transactionWindow: 500
 };
 
 export class CommandManager {
@@ -97,7 +97,7 @@ export class CommandManager {
   }
 
   getHistory(): HistoryEntry[] {
-    return this.undoStack.map((cmd) => ({
+    return this.undoStack.map(cmd => ({
       commandId: cmd.id,
       description: cmd.context.description,
       category: cmd.context.category,
@@ -105,7 +105,7 @@ export class CommandManager {
       timestamp: cmd.context.timestamp,
       undone: false,
       isTransaction: cmd.changeData.type === "batch",
-      transactionSize: cmd.changeData.type === "batch" ? 1 : undefined,
+      transactionSize: cmd.changeData.type === "batch" ? 1 : undefined
     }));
   }
 
@@ -152,9 +152,9 @@ export class CommandManager {
       icon: command.context.icon,
       timestamp: command.context.timestamp,
       undone: false,
-      isTransaction: command.changeData.type === "batch",
+      isTransaction: command.changeData.type === "batch"
     };
-    this.listeners.forEach((fn) => fn(entry));
+    this.listeners.forEach(fn => fn(entry));
   }
 
   destroy(): void {

@@ -3,8 +3,8 @@
 
 For production use, consider: `uvicorn src.app:app --host 0.0.0.0 --port 8000`
 """
-import sys
 import os
+import sys
 
 # Disable __pycache__ generation
 sys.dont_write_bytecode = True
@@ -12,10 +12,19 @@ sys.dont_write_bytecode = True
 # Add the project root to path to support the src layout
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
+# Install uvloop if available — 2-4× asyncio speedup through Cython-based
+# event loop. Must be called before uvicorn creates its event loop.
+try:
+    import uvloop
+    uvloop.install()
+    print("uvloop installed — using libuv event loop")
+except ImportError:
+    pass
+
 if __name__ == "__main__":
     import uvicorn
-    from src.shared.config import settings
 
+    from src.shared.config import settings
 
     host = settings.server_host
     port = settings.server_port

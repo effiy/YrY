@@ -1,41 +1,70 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-14"
-title: "YA-09-14: Agent 工具调用结果缓存策略 — 减少重复 LLM 推理与工具执行开销 — 开发任务"
+prd_task_id: "YA-09-34"
+title: "YA-09-34: Agent 工具缓存 — 减少重复推理与执行开销 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "18-需求-Agent工具调用结果缓存.md"
+source_okr: [yiai-001]
+related_tests: ["18-prd-test-Agent工具调用结果缓存"]
 ---
 
-# YA-09-14: Agent 工具调用结果缓存策略 — 减少重复 LLM 推理与工具执行开销 — 开发任务
+# YA-09-34: Agent 工具缓存 — 减少重复推理与执行开销 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[18-需求-Agent工具调用结果缓存.md](../../prds/2026-09/18-需求-Agent工具调用结果缓存.md)
-> 需求编号：YA-09-14 · 优先级：P2 · 人天：1.0d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-34 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.5d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+Agent 对话循环中，同一工具+参数组合可能被多次调用（如反复读取同一文件）。基于 `(tool_name, hash(params))` 缓存结果。
 
-### 阶段二：完善与收尾（约 0.5d）
+```python
+@cached(cache=TTLCache(maxsize=200, ttl=300))
+async def execute_tool(name: str, params: dict) -> dict:
+    tool = registry.get(name)
+    return await tool.execute(**params)
+```
 
-| 步骤 | 任务 | 产出 |
+### 缓存键粒度
+
+| 工具 | TTL | 缓存键 |
+|------|-----|--------|
+| `read_file` | 60s | `(path, mtime)` |
+| `web_search` | 300s | `(query, source)` |
+| `knowledge_search` | 120s | `(query, scope)` |
+| `code_execute` | 0s | 不缓存（副作用） |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | TTL 缓存 + 工具粒度 TTL 配置 | 重复调用命中缓存 | 0.5 |
+| 2 | 副作用工具排除 + 测试 | `code_execute` 不被缓存 | 0.5 |
+
+**合计：1.0d**。
+
+---
+
+## 三、已知缺口与技术债
+
+| # | 技术债 | 优先级 | 说明 | 状态 |
+|---|--------|--------|------|------|
+| 1 | 缓存键仅基于参数哈希 | P3 | 相同语义不同表述未命中 | 待实施 |
+
+**合计：1.0d**。

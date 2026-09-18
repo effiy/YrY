@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-01: Frontmatter 质量治理 — tags 格式归一化与字段校验"
 tags: [需求文档, 知识库, 治理, Frontmatter, 质量]
 category: 项目/管理后台/需求
 created: 2026-09-07
-updated: 2026-09-10
+updated: 2026-09-15
 source: 内部
 type: 需求
 status: 已完成
@@ -17,9 +18,17 @@ estimate_frontend: 2.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer, curator]
+source_okr: [yiknowledge-001]
+related_modules: [04-prd-task-Frontmatter规范]
+related_tests: [04-prd-test-Frontmatter规范]
+implementation_progress: 已实现并合并
+implementation_updated: '2026-09-15'
 ---
 
 # YK-09-01: Frontmatter 质量治理 — tags 格式归一化与字段校验
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/04-prd-task-Frontmatter规范.md)，验证方案见 [测试方案](../../tests/2026-09/04-prd-test-Frontmatter规范.md)。
 
 > 需求编号：YK-09-01 · 优先级：P0 · 人天：2.0d · 状态：已完成
 > 依赖：无

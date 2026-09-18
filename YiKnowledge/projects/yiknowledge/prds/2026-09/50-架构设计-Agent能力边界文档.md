@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-47: 知识库 Agent 能力边界文档 — 工具描述最佳实践与 Hallucination 缓解"
 tags: [需求文档, Agent, 能力边界, 工具描述, Hallucination, Prompt工程]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-47
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [50-prd-task-Agent能力边界文档]
+related_tests: [50-prd-test-Agent能力边界文档]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [aier, engineer]
 ---
 

@@ -8,12 +8,16 @@ RPC methods (callable via the executor):
 
 from __future__ import annotations
 
+import logging
+import re
 from typing import Any, Dict, List, Optional
 
 from data.database import db
 
+logger = logging.getLogger(__name__)
 
-async def run_aggregation(params: Dict[str, Any]) -> Dict[str, Any]:
+
+async def run_aggregation(params: dict[str, Any]) -> dict[str, Any]:
     """Execute an aggregation query against a MongoDB collection.
 
     ``params`` shape::
@@ -29,17 +33,17 @@ async def run_aggregation(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     """
     cname: str = params["cname"]
-    dimensions: List[str] = params.get("dimensions", [])
-    metrics: List[Dict[str, str]] = params.get("metrics", [])
-    filters: Optional[List[Dict[str, Any]]] = params.get("filters")
-    date_range: Optional[Dict[str, str]] = params.get("dateRange")
-    sort: Optional[Dict[str, Any]] = params.get("sort")
+    dimensions: list[str] = params.get("dimensions", [])
+    metrics: list[dict[str, str]] = params.get("metrics", [])
+    filters: list[dict[str, Any]] | None = params.get("filters")
+    date_range: dict[str, str] | None = params.get("dateRange")
+    sort: dict[str, Any] | None = params.get("sort")
     limit: int = params.get("limit", 500)
 
-    pipeline: List[Dict[str, Any]] = []
+    pipeline: list[dict[str, Any]] = []
 
     # ── $match stage ──
-    match: Dict[str, Any] = {}
+    match: dict[str, Any] = {}
     if filters:
         for f in filters:
             field, op, value = f["field"], f.get("op", "eq"), f["value"]
@@ -54,11 +58,11 @@ async def run_aggregation(params: Dict[str, Any]) -> Dict[str, Any]:
         pipeline.append({"$match": match})
 
     # ── $group stage ──
-    group_id: Dict[str, str] = {}
+    group_id: dict[str, str] = {}
     for dim in dimensions:
         group_id[dim] = f"${dim}"
 
-    group_stage: Dict[str, Any] = {"_id": group_id if group_id else None}
+    group_stage: dict[str, Any] = {"_id": group_id if group_id else None}
     for m in metrics:
         alias = m.get("alias") or m["field"]
         agg = m.get("agg", "count")
@@ -84,15 +88,15 @@ async def run_aggregation(params: Dict[str, Any]) -> Dict[str, Any]:
     raw = await cursor.to_list(length=limit)
 
     # ── Format output ──
-    columns: List[str] = []
+    columns: list[str] = []
     for dim in dimensions:
         columns.append(dim)
     for m in metrics:
         columns.append(m.get("alias") or m["field"])
 
-    rows: List[List[Any]] = []
+    rows: list[list[Any]] = []
     for doc in raw:
-        row: List[Any] = []
+        row: list[Any] = []
         if group_id:
             gid = doc["_id"]
             for dim in dimensions:
@@ -106,14 +110,14 @@ async def run_aggregation(params: Dict[str, Any]) -> Dict[str, Any]:
     return {"columns": columns, "rows": rows, "total": len(rows)}
 
 
-async def get_available_fields(params: Dict[str, Any]) -> Dict[str, Any]:
+async def get_available_fields(params: dict[str, Any]) -> dict[str, Any]:
     """Return filterable/groupable fields and aggregatable metrics for a collection.
 
     ``params`` shape: ``{ cname: str }``
     """
     cname: str = params["cname"]
-    dimensions: List[str] = []
-    metrics: List[Dict[str, str]] = []
+    dimensions: list[str] = []
+    metrics: list[dict[str, str]] = []
 
     if cname in ("issues", "bugs", "projects"):
         dimensions = ["status", "project_key", "assignee", "type", "priority", "severity"]
@@ -134,7 +138,9 @@ async def get_available_fields(params: Dict[str, Any]) -> Dict[str, Any]:
             for key in doc:
                 if key not in ("_id",):
                     dimensions.append(key)
-            metrics = [{"field": "_id", "agg": "count", "alias": "count"}]
+        if not dimensions:
+            logger.warning(f"No schema inferred for collection '{cname}' — returning empty schema")
+        metrics = [{"field": "_id", "agg": "count", "alias": "count"}]
 
     return {"dimensions": dimensions, "metrics": metrics}
 
@@ -151,7 +157,7 @@ def _build_op(op: str, value: Any) -> Any:
             value = [value]
         return {f"${op}": value}
     if op == "regex":
-        return {"$regex": value, "$options": "i"}
+        return {"$regex": re.escape(str(value)), "$options": "i"}
     return value
 
 
@@ -165,7 +171,7 @@ def _build_accumulator(agg: str, field: str) -> Any:
 
 def _parse_date(val: Any) -> Any:
     """Accept ISO string or numeric timestamp (ms). Return a datetime for MongoDB."""
-    if isinstance(val, (int, float)):
+    if isinstance(val, int | float):
         from datetime import datetime
         return datetime.utcfromtimestamp(val / 1000)
     return val

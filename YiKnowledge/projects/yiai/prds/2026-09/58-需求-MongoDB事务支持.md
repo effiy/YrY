@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-54: 服务端批量操作事务支持 — MongoDB 多文档 ACID 事务与回滚策略"
 tags: [需求文档, MongoDB, 事务, ACID, 批量操作, 回滚, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [58-prd-task-MongoDB事务支持]
+related_tests: [58-prd-test-MongoDB事务支持]
 ---
 
 # YA-09-54: 服务端批量操作事务支持 — MongoDB 多文档 ACID 与回滚
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-54 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-02（数据层稳定性修复）
@@ -49,6 +57,7 @@ YiAi 的批量操作（如归档项目时批量更新 issue 状态、创建用�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前批量操作流程
@@ -96,6 +105,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：事务范围 — 全部操作强制事务 vs 按需事务
@@ -138,6 +148,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后事务流程
@@ -173,6 +184,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -396,6 +408,7 @@ async def archive_project(db, project_key: str):
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证方法 | 人天 |
@@ -409,6 +422,7 @@ async def archive_project(db, project_key: str):
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 事务开销基准
@@ -429,6 +443,7 @@ async def archive_project(db, project_key: str):
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：事务全部成功
@@ -494,6 +509,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -505,6 +521,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 影响范围 |
@@ -515,6 +532,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：仅多集合操作使用事务，单文档 CRUD 不需要
@@ -552,6 +570,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 11.1 指标
@@ -584,6 +603,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 | 要求 | 实现方式 | 状态 |
@@ -594,6 +614,7 @@ AND 性能与改造前一致（无额外开销）
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] MongoDB 事务用于多集合原子操作

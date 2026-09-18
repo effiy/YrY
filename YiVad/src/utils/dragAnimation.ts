@@ -2,10 +2,7 @@
  * FLIP animation helper for drag-and-drop transitions.
  * First-Last-Invert-Play technique for smooth layout animations.
  */
-export function flipAnimation(
-  container: HTMLElement,
-  getItemKey: (el: Element) => string
-): () => void {
+export function flipAnimation(container: HTMLElement, getItemKey: (el: Element) => string): () => void {
   const positions = new Map<string, DOMRect>();
 
   function record() {

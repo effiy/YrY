@@ -4,7 +4,7 @@ aliases: [prd-template, product-requirements-template]
 tags: [template, prd, product, requirements, producter]
 category: curator/templates
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-15
 source: internal
 type: template
 status: stable
@@ -18,7 +18,7 @@ acceptance_criteria:
   - "包含 PRD 写作专有反模式"
 related:
   - ./README.md
-  - ./knowledge-leaf.md
+  - ./02-模板-知识叶子模板.md
   - ../../producter/discovery/prd/
 ---
 

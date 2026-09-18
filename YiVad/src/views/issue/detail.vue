@@ -51,18 +51,15 @@
         <div class="id-sticky-bar__inner">
           <div class="id-sticky-bar__left">
             <code class="id-sticky-bar__key">{{ issue.key }}</code>
-            <code v-if="descFilePath" class="id-sticky-bar__file" :title="descFilePath" @click="openFileViewer">{{ descFilePath }}</code>
+            <code v-if="descFilePath" class="id-sticky-bar__file" :title="descFilePath" @click="openFileViewer">{{
+              descFilePath
+            }}</code>
             <span class="id-sticky-bar__title">{{ issue.title }}</span>
             <el-tag :type="statusTagType(issue.status)" size="small">{{ statusLabel(issue.status) }}</el-tag>
           </div>
           <div class="id-sticky-bar__actions">
             <el-button size="small" :icon="Edit" @click="openEdit">{{ $t("issue.dialog.editTitle") }}</el-button>
-            <el-select
-              :model-value="issue.status"
-              size="small"
-              @change="changeStatus"
-              style="width: 130px"
-            >
+            <el-select :model-value="issue.status" size="small" @change="changeStatus" style="width: 130px">
               <el-option v-for="(label, val) in ISSUE_STATUS_MAP" :key="val" :label="label" :value="val" />
             </el-select>
             <el-button size="small" :icon="Upload" circle @click="scrollToTop" />
@@ -75,7 +72,12 @@
           <div class="id-edit-section">
             <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.basic") }}</div>
             <el-form-item :label="$t('issue.dialog.title')" prop="title">
-              <el-input v-model="editDialog.form.title" :placeholder="$t('issue.dialog.titlePlaceholder')" maxlength="200" show-word-limit />
+              <el-input
+                v-model="editDialog.form.title"
+                :placeholder="$t('issue.dialog.titlePlaceholder')"
+                maxlength="200"
+                show-word-limit
+              />
             </el-form-item>
             <el-row :gutter="16">
               <el-col :span="8">
@@ -104,7 +106,12 @@
           <div class="id-edit-section">
             <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.content") }}</div>
             <el-form-item :label="$t('issue.dialog.description')">
-              <el-input v-model="editDialog.form.description" type="textarea" :rows="4" :placeholder="$t('issue.dialog.descriptionPlaceholder')" />
+              <el-input
+                v-model="editDialog.form.description"
+                type="textarea"
+                :rows="4"
+                :placeholder="$t('issue.dialog.descriptionPlaceholder')"
+              />
             </el-form-item>
           </div>
           <div class="id-edit-section">
@@ -124,7 +131,7 @@
                     allow-create
                     default-first-option
                     :placeholder="$t('issue.dialog.addLabels')"
-                    style="width:100%"
+                    style="width: 100%"
                   />
                 </el-form-item>
               </el-col>
@@ -135,7 +142,12 @@
             <el-row :gutter="16">
               <el-col :span="12">
                 <el-form-item :label="$t('issue.dialog.startDate')">
-                  <el-date-picker v-model="editDialog.form.start_date" type="date" style="width: 100%" value-format="YYYY-MM-DD" />
+                  <el-date-picker
+                    v-model="editDialog.form.start_date"
+                    type="date"
+                    style="width: 100%"
+                    value-format="YYYY-MM-DD"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -147,26 +159,42 @@
             <el-row :gutter="16">
               <el-col :span="12">
                 <el-form-item :label="$t('issue.dialog.estimatePts')">
-                  <el-input-number v-model="editDialog.form.estimate_points" :min="0" :step="1" style="width:100%" />
+                  <el-input-number v-model="editDialog.form.estimate_points" :min="0" :step="1" style="width: 100%" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label="$t('issue.dialog.timeEstimate')">
-                  <el-input-number v-model="editDialog.form.time_estimate" :min="0" :step="0.5" :precision="1" style="width:100%" />
+                  <el-input-number
+                    v-model="editDialog.form.time_estimate"
+                    :min="0"
+                    :step="0.5"
+                    :precision="1"
+                    style="width: 100%"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="16">
               <el-col :span="12">
                 <el-form-item :label="$t('issue.dialog.source')">
-                  <el-select v-model="editDialog.form.source" style="width: 100%" clearable :placeholder="$t('issue.dialog.sourcePlaceholder')">
+                  <el-select
+                    v-model="editDialog.form.source"
+                    style="width: 100%"
+                    clearable
+                    :placeholder="$t('issue.dialog.sourcePlaceholder')"
+                  >
                     <el-option v-for="(label, val) in ISSUE_SOURCE_MAP" :key="val" :label="label" :value="val" />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label="$t('issue.dialog.review')">
-                  <el-select v-model="editDialog.form.review_status" style="width: 100%" clearable :placeholder="$t('issue.dialog.reviewPlaceholder')">
+                  <el-select
+                    v-model="editDialog.form.review_status"
+                    style="width: 100%"
+                    clearable
+                    :placeholder="$t('issue.dialog.reviewPlaceholder')"
+                  >
                     <el-option v-for="(label, val) in REVIEW_STATUS_MAP" :key="val" :label="label" :value="val" />
                   </el-select>
                 </el-form-item>
@@ -213,7 +241,11 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { useIssueStore } from "@/stores/modules/issue";
 import {
-  ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP, ISSUE_TYPE_MAP, ISSUE_SOURCE_MAP, REVIEW_STATUS_MAP,
+  ISSUE_STATUS_MAP,
+  ISSUE_PRIORITY_MAP,
+  ISSUE_TYPE_MAP,
+  ISSUE_SOURCE_MAP,
+  REVIEW_STATUS_MAP,
   ISSUE_STATUS_TAG_MAP,
   getIssueFilePath
 } from "@/api/modules/issueService";
@@ -249,27 +281,48 @@ const quickStatus = ref("");
 const editFormRef = ref<FormInstance>();
 const bodyRef = ref<HTMLElement>();
 
-watch(() => issue.value?.status, s => { quickStatus.value = s || ""; });
+watch(
+  () => issue.value?.status,
+  s => {
+    quickStatus.value = s || "";
+  }
+);
 
 function handleKeydown(e: KeyboardEvent) {
   if (editDialog.visible) {
-    if (e.key === "Escape") { editDialog.visible = false; return; }
+    if (e.key === "Escape") {
+      editDialog.visible = false;
+      return;
+    }
     return;
   }
   const tag = (e.target as HTMLElement)?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-  if (e.key === "e" || e.key === "E") { e.preventDefault(); openEdit(); }
+  if (e.key === "e" || e.key === "E") {
+    e.preventDefault();
+    openEdit();
+  }
 }
 
 const showStickyBar = ref(false);
-function onScroll() { showStickyBar.value = window.scrollY > 300; }
-function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+function onScroll() {
+  showStickyBar.value = window.scrollY > 300;
+}
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 const focusMode = ref(false);
 
 const preview = reactive({ visible: false, src: "", alt: "" });
-function previewImage(src: string) { preview.src = src; preview.alt = ""; preview.visible = true; }
-function closePreview() { preview.visible = false; }
+function previewImage(src: string) {
+  preview.src = src;
+  preview.alt = "";
+  preview.visible = true;
+}
+function closePreview() {
+  preview.visible = false;
+}
 
 const linkedModules = ref<Module[]>([]);
 const linkedBugs = ref<BugDocument[]>([]);
@@ -287,14 +340,16 @@ async function loadLinked() {
     const [moduleRes, projectRes, bugRes] = await Promise.all([
       getModuleList({ project_key: issue.value.project_key, pageSize: 200 }),
       getProjectList({ pageSize: 500 }),
-      getBugList({ issue_key: issue.value.key, pageSize: 100 }),
+      getBugList({ issue_key: issue.value.key, pageSize: 100 })
     ]);
     const modules = (moduleRes.data?.list as Module[]) ?? [];
     const projects = (projectRes.data?.list as Project[]) ?? [];
     linkedModules.value = modules.filter(m => m.issue_keys?.includes(issue.value!.key));
     linkedBugs.value = (bugRes.data?.list as BugDocument[]) ?? [];
     projectName.value = projects.find(p => p.key === issue.value!.project_key)?.name || issue.value!.project_key;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 const rules: FormRules = {
@@ -308,7 +363,9 @@ const descFilePath = computed(() => {
   if (!i) return "";
   return getIssueFilePath(i);
 });
-const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
+const descDialogRef = ref<{
+  openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
+} | null>(null);
 
 const descHtml = computed(() => renderMarkdown(descContent.value || ""));
 
@@ -318,7 +375,11 @@ async function loadDescFile() {
     descContent.value = res.content || issue.value?.description || "";
   } catch {
     const defaultContent = issue.value?.description || `# ${issue.value?.title || ""}\n`;
-    try { await writeKnowledgeFile(descFilePath.value, defaultContent); } catch { /* best effort */ }
+    try {
+      await writeKnowledgeFile(descFilePath.value, defaultContent);
+    } catch {
+      /* best effort */
+    }
     descContent.value = defaultContent;
   }
 }
@@ -335,7 +396,7 @@ function openFileViewer() {
         type: "issue-description",
         status: issue.value?.status || "",
         project: issue.value?.project_key || "",
-        created: (issue.value?.created_at || "").slice(0, 10),
+        created: (issue.value?.created_at || "").slice(0, 10)
       });
       descContent.value = content;
     }
@@ -353,7 +414,7 @@ function openDescDialog() {
         type: "issue-description",
         status: issue.value?.status || "",
         project: issue.value?.project_key || "",
-        created: (issue.value?.created_at || "").slice(0, 10),
+        created: (issue.value?.created_at || "").slice(0, 10)
       });
       descContent.value = content;
     }
@@ -407,29 +468,33 @@ function openEdit() {
 
 function mapReqStatusReverse(s: string): string {
   const m: Record<string, string> = {
-    "done": "已完成",
-    "in_progress": "进行中",
-    "cancelled": "已取消",
-    "in_review": "待评审",
-    "backlog": "待排期",
-    "todo": "待开始"
+    done: "已完成",
+    in_progress: "进行中",
+    cancelled: "已取消",
+    in_review: "待评审",
+    backlog: "待排期",
+    todo: "待开始"
   };
   return m[s] || "待开始";
 }
 
 function mapReqPriorityReverse(p: string): string {
   const m: Record<string, string> = {
-    "urgent": "紧急",
-    "high": "高",
-    "medium": "中",
-    "low": "低"
+    urgent: "紧急",
+    high: "高",
+    medium: "中",
+    low: "低"
   };
   return m[p] || "中";
 }
 
 async function submitEdit() {
   if (!issue.value) return;
-  try { await editFormRef.value?.validate(); } catch { return; }
+  try {
+    await editFormRef.value?.validate();
+  } catch {
+    return;
+  }
   editDialog.submitting = true;
   try {
     await store.editIssue(issue.value.key, {
@@ -456,7 +521,9 @@ async function submitEdit() {
         if (editDialog.form.priority) updatedMeta.priority = mapReqPriorityReverse(editDialog.form.priority);
         if (editDialog.form.assignee !== undefined) updatedMeta.owner = editDialog.form.assignee;
         await writeKnowledgeFile(issue.value.kb_file_path, res.content, updatedMeta);
-      } catch { /* best-effort */ }
+      } catch {
+        /* best-effort */
+      }
     }
     editDialog.visible = false;
   } catch (e) {
@@ -475,11 +542,11 @@ async function changeStatus(newStatus: string) {
 async function handleDelete() {
   if (!issue.value) return;
   try {
-    await ElMessageBox.confirm(
-      t("issue.dialog.deleteConfirm", { title: issue.value.title }),
-      t("issue.dialog.deleteTitle"),
-      { confirmButtonText: t("issue.dialog.delete"), cancelButtonText: t("issue.dialog.cancel"), type: "error" }
-    );
+    await ElMessageBox.confirm(t("issue.dialog.deleteConfirm", { title: issue.value.title }), t("issue.dialog.deleteTitle"), {
+      confirmButtonText: t("issue.dialog.delete"),
+      cancelButtonText: t("issue.dialog.cancel"),
+      type: "error"
+    });
   } catch {
     return; // dismissed
   }
@@ -517,12 +584,14 @@ async function openMove() {
   ElMessageBox.prompt(t("issue.message.moveTarget"), t("issue.message.moveTitle"), {
     confirmButtonText: t("issue.message.move"),
     inputPlaceholder: t("issue.message.moveTarget")
-  }).then(async ({ value }) => {
-    if (!value) return;
-    await store.editIssue(issue.value!.key, { project_key: value });
-    ElMessage.success(t("issue.message.moveSuccess", { project: value }));
-    router.push(`/project/${value}`);
-  }).catch(() => {});
+  })
+    .then(async ({ value }) => {
+      if (!value) return;
+      await store.editIssue(issue.value!.key, { project_key: value });
+      ElMessage.success(t("issue.message.moveSuccess", { project: value }));
+      router.push(`/project/${value}`);
+    })
+    .catch(() => {});
 }
 
 function goBack() {
@@ -530,8 +599,12 @@ function goBack() {
   else router.push("/issue");
 }
 
-function statusLabel(s: IssueStatus) { return ISSUE_STATUS_MAP[s] || s; }
-function statusTagType(status: IssueStatus): TagType { return ISSUE_STATUS_TAG_MAP[status] || "info"; }
+function statusLabel(s: IssueStatus) {
+  return ISSUE_STATUS_MAP[s] || s;
+}
+function statusTagType(status: IssueStatus): TagType {
+  return ISSUE_STATUS_TAG_MAP[status] || "info";
+}
 
 onMounted(async () => {
   const key = route.params.key as string;
@@ -548,10 +621,10 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .issue-detail {
-  padding: 24px;
   min-height: calc(100vh - 95px);
-  background: var(--el-bg-color-page);
+  padding: 24px;
   outline: none;
+  background: var(--el-bg-color-page);
 }
 
 // ── Body Layout ─────────────────────────────────────────────────────
@@ -561,27 +634,27 @@ onUnmounted(() => {
   align-items: flex-start;
 }
 .id-main {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 // ── Section Cards ───────────────────────────────────────────────────
 .id-card {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
   &--parent {
     border-left: 3px solid var(--el-color-primary);
   }
 }
 .id-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -602,30 +675,34 @@ onUnmounted(() => {
 
 // ── Sidebar ─────────────────────────────────────────────────────────
 .id-sidebar {
-  width: 280px;
-  flex-shrink: 0;
   position: sticky;
   top: 20px;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 12px;
+  width: 280px;
 }
-.id-sidebar--hidden { display: none; }
+.id-sidebar--hidden {
+  display: none;
+}
 
 // ── Sticky Bottom Bar ───────────────────────────────────────────────
 .id-sticky-bar {
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   z-index: 100;
+  padding: 10px 24px;
   background: var(--el-bg-color);
   border-top: 1px solid var(--el-border-color);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-  padding: 10px 24px;
+  box-shadow: 0 -4px 20px rgb(0 0 0 / 8%);
   transform: translateY(100%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  &--visible { transform: translateY(0); }
+  &--visible {
+    transform: translateY(0);
+  }
 }
 .id-sticky-bar__inner {
   display: flex;
@@ -636,67 +713,73 @@ onUnmounted(() => {
 }
 .id-sticky-bar__left {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   min-width: 0;
 }
 .id-sticky-bar__key {
+  flex-shrink: 0;
+  padding: 2px 8px;
   font-family: monospace;
   font-size: 12px;
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
-  padding: 2px 8px;
   border-radius: 4px;
-  flex-shrink: 0;
 }
 .id-sticky-bar__file {
+  flex-shrink: 0;
+  max-width: 240px;
+  padding: 2px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  background: var(--el-fill-color);
-  border: 1px solid var(--el-border-color-lighter);
-  padding: 2px 8px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  background: var(--el-fill-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 4px;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
   &:hover {
     color: var(--el-color-primary);
     border-color: var(--el-color-primary-light-5);
   }
 }
 .id-sticky-bar__title {
-  font-size: 14px;
-  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
 }
 .id-sticky-bar__actions {
   display: flex;
+  flex-shrink: 0;
   gap: 8px;
   align-items: center;
-  flex-shrink: 0;
 }
 
 // ── Not Found ───────────────────────────────────────────────────────
-.id-not-found { padding: 80px 0; }
+.id-not-found {
+  padding: 80px 0;
+}
 
 // ── Edit Dialog ─────────────────────────────────────────────────────
-.id-edit-section { margin-bottom: 8px; }
+.id-edit-section {
+  margin-bottom: 8px;
+}
 .id-edit-section__title {
+  padding: 0 0 8px 100px;
+  margin-bottom: 12px;
   font-size: 13px;
   font-weight: 700;
   color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  padding: 0 0 8px 100px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  margin-bottom: 12px;
 }
 
 // ── Lightbox ─────────────────────────────────────────────────────────
@@ -712,7 +795,7 @@ onUnmounted(() => {
 .id-lightbox__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgb(0 0 0 / 85%);
   backdrop-filter: blur(4px);
 }
 .id-lightbox__content {
@@ -723,102 +806,132 @@ onUnmounted(() => {
     max-width: 90vw;
     max-height: 85vh;
     border-radius: 8px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 40px rgb(0 0 0 / 30%);
   }
 }
 .id-lightbox__info {
-  text-align: center;
-  color: rgba(255,255,255,0.7);
-  font-size: 12px;
   margin-top: 8px;
+  font-size: 12px;
+  color: rgb(255 255 255 / 70%);
+  text-align: center;
 }
 .id-lightbox__close {
   position: absolute;
   top: -20px;
   right: -20px;
-  color: #fff;
-  background: rgba(255,255,255,0.15) !important;
-  &:hover { background: rgba(255,255,255,0.25) !important; }
+  color: #ffffff;
+  background: rgb(255 255 255 / 15%) !important;
+  &:hover {
+    background: rgb(255 255 255 / 25%) !important;
+  }
 }
 
 @keyframes id-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // ── Print Styles ────────────────────────────────────────────────────
 @media print {
   .issue-detail {
-    padding: 0;
     height: auto;
+    padding: 0;
     overflow: visible;
-    background: #fff;
+    background: #ffffff;
   }
-  .id-sidebar { display: none; }
-  .id-sticky-bar { display: none; }
+  .id-sidebar {
+    display: none;
+  }
+  .id-sticky-bar {
+    display: none;
+  }
   .id-card {
-    border: none;
-    border-radius: 0;
-    border-bottom: 1px solid #eee;
-    break-inside: avoid;
     margin-bottom: 12px;
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+    border-radius: 0;
+    break-inside: avoid;
   }
-  .id-card__head { background: transparent; border-bottom: 1px solid #eee; }
-  .id-card__body { padding: 12px 0; }
-  .id-body { display: block; }
-  .id-main { max-width: 100%; }
-  kbd { border: 1px solid #999; }
-  code { background: #f5f5f5 !important; }
+  .id-card__head {
+    background: transparent;
+    border-bottom: 1px solid #eeeeee;
+  }
+  .id-card__body {
+    padding: 12px 0;
+  }
+  .id-body {
+    display: block;
+  }
+  .id-main {
+    max-width: 100%;
+  }
+  kbd {
+    border: 1px solid #999999;
+  }
+  code {
+    background: #f5f5f5 !important;
+  }
 }
 </style>
 
 <!-- Shared sidebar styles (non-scoped so child components inherit them) -->
 <style lang="scss">
 .id-sb-group {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .id-sb-group__title {
   display: flex;
-  align-items: center;
   gap: 7px;
+  align-items: center;
   padding: 10px 14px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-lighter);
   border-bottom: 1px solid var(--el-border-color-lighter);
-  .el-icon { font-size: 13px; }
+  .el-icon {
+    font-size: 13px;
+  }
 }
 .id-sb-edit {
-  margin-left: auto;
   display: flex;
   align-items: center;
-  border: none;
-  background: transparent;
+  padding: 2px;
+  margin-left: auto;
   color: var(--el-text-color-placeholder);
   cursor: pointer;
-  padding: 2px;
+  background: transparent;
+  border: none;
   border-radius: 4px;
   transition: all 0.12s;
-  &:hover { background: var(--el-fill-color); color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-fill-color);
+  }
 }
 .id-sb-edit-row {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 4px 0;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
 .id-sb-edit-row__label {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
   flex-shrink: 0;
   width: 42px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
 }
 .id-sb-edit-actions {
   display: flex;
@@ -830,30 +943,32 @@ onUnmounted(() => {
 }
 .id-sb-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 6px 0;
   font-size: 13px;
-  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
 }
 .id-sb-row__label {
-  color: var(--el-text-color-secondary);
-  font-weight: 500;
   flex-shrink: 0;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
 }
 .id-sb-row__value {
   text-align: right;
   &--overdue {
-    color: var(--el-color-danger);
     font-weight: 600;
+    color: var(--el-color-danger);
   }
   &--muted {
     font-size: 12px;
     color: var(--el-text-color-placeholder);
   }
   &--empty {
-    color: var(--el-text-color-placeholder);
     font-style: italic;
+    color: var(--el-text-color-placeholder);
   }
 }
 .id-time-bar {
@@ -875,44 +990,50 @@ onUnmounted(() => {
 .id-sb-label {
   cursor: pointer;
   transition: transform 0.12s;
-  &:hover { transform: scale(1.05); }
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 .id-sb-dep {
   margin-bottom: 8px;
-  &:last-child { margin-bottom: 0; }
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 .id-sb-dep__label {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
   display: block;
   margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 .id-sb-dep__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  .el-tag { cursor: pointer; }
+  .el-tag {
+    cursor: pointer;
+  }
 }
 
 // Header styles (used by IssueHeader)
 .id-header {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 20px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
   border-left: 4px solid var(--el-color-primary);
+  border-radius: 12px;
 }
 .id-header__top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 .id-header__actions {
   display: flex;
+  flex-shrink: 0;
   gap: 8px;
   align-items: center;
-  flex-shrink: 0;
 }
 .id-header__title {
   margin: 0;
@@ -924,46 +1045,52 @@ onUnmounted(() => {
 
 // Description styles (used by IssueDescription)
 .id-desc-path {
-  margin-left: 8px;
+  max-width: 280px;
   padding: 1px 7px;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 11px;
   color: var(--el-text-color-secondary);
+  white-space: nowrap;
+  cursor: pointer;
   background: var(--el-fill-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 4px;
-  max-width: 280px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
   &:hover {
     color: var(--el-color-primary);
     border-color: var(--el-color-primary-light-5);
   }
 }
 .id-card__head-right {
-  margin-left: auto;
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
+  margin-left: auto;
 }
 .id-card__body--clickable {
   cursor: pointer;
   transition: background 0.15s;
-  &:hover { background: var(--el-fill-color-lighter); }
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
 }
 .id-desc-preview {
-  :deep(.markdown-body) { font-size: 14px; }
+  :deep(.markdown-body) {
+    font-size: 14px;
+  }
 }
 .id-empty {
-  text-align: center;
   padding: 24px 16px;
+  text-align: center;
 }
 .id-empty__icon {
+  margin-bottom: 8px;
   font-size: 28px;
   color: var(--el-text-color-placeholder);
-  margin-bottom: 8px;
 }
 .id-empty__text {
   margin: 0;
@@ -978,15 +1105,19 @@ onUnmounted(() => {
 }
 
 @media print {
-  .id-header__actions { display: none; }
+  .id-header__actions {
+    display: none;
+  }
   .id-header {
-    border: none;
-    border-left: none;
     padding: 0 0 16px;
     margin-bottom: 16px;
-    border-bottom: 2px solid #000;
+    border: none;
+    border-bottom: 2px solid #000000;
+    border-left: none;
     border-radius: 0;
   }
-  .id-header__title { font-size: 18px; }
+  .id-header__title {
+    font-size: 18px;
+  }
 }
 </style>

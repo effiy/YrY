@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-68"
 source_prds: ["72-需求-响应格式协商"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-68: 服务端 API 响应格式协商 — JSON/XML/YAML 多格式 Content Negotiation — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[72-需求-响应格式协商.md](../../prds/2026-09/72-需求-响应格式协商.md)
 > 提取日期：2026-09-11

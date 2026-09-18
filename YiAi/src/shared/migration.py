@@ -1,8 +1,8 @@
 """MongoDB Schema migration engine."""
 
+from datetime import datetime
 import hashlib
 import importlib.util
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -66,7 +66,7 @@ class MigrationEngine:
         executed = await self.get_executed_versions()
         return [m for m in all_migrations if m.version not in executed]
 
-    async def migrate(self, target_version: Optional[int] = None) -> dict:
+    async def migrate(self, target_version: int | None = None) -> dict:
         """Execute pending migrations in order."""
         pending = await self.get_pending_migrations()
         if target_version:

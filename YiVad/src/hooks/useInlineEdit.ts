@@ -17,10 +17,7 @@ export interface ColumnEditConfig {
   validate?: (value: any) => string | true;
 }
 
-export function useInlineEdit(
-  columns: Ref<ColumnEditConfig[]>,
-  onCommit?: (cell: EditingCell) => Promise<void>,
-) {
+export function useInlineEdit(columns: Ref<ColumnEditConfig[]>, onCommit?: (cell: EditingCell) => Promise<void>) {
   const editingCell = ref<EditingCell | null>(null);
   const dirtyRows = ref<Set<string>>(new Set());
   // Map key: `${rowId}:${columnKey}` — survives virtual scroll DOM recycling
@@ -28,15 +25,14 @@ export function useInlineEdit(
 
   const editableColumns = computed(() => {
     const map = new Map<string, ColumnEditConfig>();
-    columns.value.filter((c) => c.editable !== false).forEach((c) => map.set(c.key, c));
+    columns.value.filter(c => c.editable !== false).forEach(c => map.set(c.key, c));
     return map;
   });
 
   const isEditing = (rowId: string, columnKey: string) =>
     editingCell.value?.rowId === rowId && editingCell.value?.columnKey === columnKey;
 
-  const getEditState = (rowId: string, columnKey: string) =>
-    editStateMap.get(`${rowId}:${columnKey}`) ?? null;
+  const getEditState = (rowId: string, columnKey: string) => editStateMap.get(`${rowId}:${columnKey}`) ?? null;
 
   const startEdit = (rowId: string, columnKey: string, currentValue: any) => {
     const col = editableColumns.value.get(columnKey);
@@ -76,10 +72,10 @@ export function useInlineEdit(
     const colIdx = colKeys.indexOf(columnKey);
     const nextCol = colKeys[colIdx + 1];
     if (nextCol) {
-      const row = rows.find((r) => r[rowKey] === rowId);
+      const row = rows.find(r => r[rowKey] === rowId);
       startEdit(rowId, nextCol, row?.[nextCol]);
     } else {
-      const rowIdx = rows.findIndex((r) => r[rowKey] === rowId);
+      const rowIdx = rows.findIndex(r => r[rowKey] === rowId);
       const nextRow = rows[rowIdx + 1];
       if (nextRow) {
         startEdit(nextRow[rowKey], colKeys[0], nextRow[colKeys[0]]);

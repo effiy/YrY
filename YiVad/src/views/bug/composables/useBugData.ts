@@ -9,10 +9,7 @@ export function buildDateFilter(filterDateStr: string): Record<string, any> {
   return { createdAtStart: start, createdAtEnd: end };
 }
 
-export function useBugData(options: {
-  projectKey?: string;
-  filterDateStr: Ref<string>;
-}) {
+export function useBugData(options: { projectKey?: string; filterDateStr: Ref<string> }) {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const stats = ref({ total: 0, open: 0, in_progress: 0, resolved: 0, closed: 0, critical: 0 });

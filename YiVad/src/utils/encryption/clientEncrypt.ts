@@ -11,7 +11,7 @@ export async function generateRSAKeyPair(): Promise<{ publicKey: JsonWebKey; pri
       name: "RSA-OAEP",
       modulusLength: 2048,
       publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256",
+      hash: "SHA-256"
     },
     true,
     ["encrypt", "decrypt"]
@@ -19,7 +19,7 @@ export async function generateRSAKeyPair(): Promise<{ publicKey: JsonWebKey; pri
 
   const [publicJwk, privateJwk] = await Promise.all([
     crypto.subtle.exportKey("jwk", keyPair.publicKey),
-    crypto.subtle.exportKey("jwk", keyPair.privateKey),
+    crypto.subtle.exportKey("jwk", keyPair.privateKey)
   ]);
 
   // Store private key in IndexedDB
@@ -47,7 +47,7 @@ export async function decryptWithPrivateKey(ciphertext: string): Promise<string>
   if (!jwk) throw new Error("Private key not found");
 
   const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSA-OAEP", hash: "SHA-256" }, true, ["decrypt"]);
-  const encrypted = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
+  const encrypted = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
   const decrypted = await crypto.subtle.decrypt({ name: "RSA-OAEP" }, key, encrypted);
   return new TextDecoder().decode(decrypted);
 }

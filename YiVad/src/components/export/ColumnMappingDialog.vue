@@ -3,7 +3,7 @@
     <el-table :data="mappings" size="small">
       <el-table-column prop="source" label="Source Column" />
       <el-table-column label="Target Field">
-        <template #default="{ row, $index }">
+        <template #default="{ row }">
           <el-select v-model="row.target" size="small" filterable placeholder="Select target field">
             <el-option v-for="f in targetFields" :key="f.key" :label="f.label" :value="f.key" />
           </el-select>
@@ -29,9 +29,16 @@ const props = defineProps<{ mappings: MappingRow[]; targetFields: { key: string;
 const emit = defineEmits<{ confirm: [mappings: MappingRow[]] }>();
 
 const visible = ref(false);
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const confirm = () => { emit("confirm", [...props.mappings]); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const confirm = () => {
+  emit("confirm", [...props.mappings]);
+  visible.value = false;
+};
 
 defineExpose({ open, close });
 </script>

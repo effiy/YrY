@@ -4,8 +4,8 @@ aliases: [知识库目录, kb-toc, 导航索引]
 tags: [index, navigation, toc, role-tree]
 category: root
 created: 2026-01-01
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-18
+last_verified: 2026-09-18
 source: internal
 type: summary
 status: stable
@@ -70,7 +70,7 @@ related:
 | [curator/templates/](./curator/templates/) | 文档模板（PRD、ADR、复盘、知识叶子、技术设计等 10 类模板，详见 [模板索引](./curator/templates/00-INDEX.md)） |
 | [curator/governance/](./curator/governance/) | 知识治理规范（[知识健康看板](./curator/governance/01-治理-知识健康看板.md)、[治理规范](./curator/governance/02-治理-治理规范.md)、[就绪检查清单](./curator/governance/04-治理-就绪检查清单.md) 等 7 篇） |
 | [curator/diagrams/](./curator/diagrams/) | 知识架构图（[看板索引](./curator/diagrams/01-图表-看板索引.md)、[目录蓝图](./curator/diagrams/02-图表-目录蓝图.md)、[知识地图](./curator/diagrams/03-图表-知识地图.md)、[用户旅程](./curator/diagrams/04-图表-用户旅程.md)） |
-| [skills/](./skills/) | Claude Code 自定义技能（详见 [README](./skills/README.md)） |
+| [skills/](./skills/) | Claude Code 自定义技能（[技能目录](./skills/)） |
 | [engineer/learn/projects/](./engineer/learn/projects/) | 跨项目工程文档（架构、开发规范、功能模块、Story，按 yivad/yiai/yipet 子目录组织） |
 | [leader/decisions/](./leader/decisions/) | 架构决策记录（ADR），按项目子目录组织 |
 

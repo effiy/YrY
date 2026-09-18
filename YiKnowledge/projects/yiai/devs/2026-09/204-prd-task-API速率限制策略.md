@@ -1,41 +1,77 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-200"
-title: "YA-09-200: API速率限制策略 — 高级限流策略、每用户每端点每IP限额、突发容许、限流头部(X-RateLimit-*)、滑动窗口与固定窗口、Redis分布式限流、限流分析面板 — 开发任务"
+prd_task_id: "YA-09-70"
+title: "YA-09-70: 高级限流 — per-user/per-endpoint + 响应头 + 分析面板 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 1.0
 source_prd: "204-需求-API速率限制策略.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-200: API速率限制策略 — 高级限流策略、每用户每端点每IP限额、突发容许、限流头部(X-RateLimit-*)、滑动窗口与固定窗口、Redis分布式限流、限流分析面板 — 开发任务
+# YA-09-70: 高级限流 — per-user/per-endpoint + 响应头 + 分析面板 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[204-需求-API速率限制策略.md](../../prds/2026-09/204-需求-API速率限制策略.md)
-> 需求编号：YA-09-200 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-70 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+在 [YA-09-08 令牌桶](./16-prd-task-API限流与并发控制.md) 和 [YA-09-21 滑动窗口](./76-prd-task-滑动窗口限流.md) 基础上，增加多维度限流和标准响应头。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+@app.middleware("http")
+async def rate_limit_middleware(request, call_next):
+    user = request.headers.get("X-Token", "anonymous")
+    endpoint = request.url.path
+    key = f"{user}:{endpoint}"
 
-| 步骤 | 任务 | 产出 |
+    limiter = get_limiter(endpoint)  # per-endpoint 配置
+    allowed, reset_at, remaining = limiter.check(key)
+
+    if not allowed:
+        return JSONResponse(status_code=429, headers={
+            "X-RateLimit-Limit": str(limiter.limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": str(int(reset_at)),
+            "Retry-After": str(int(reset_at - time.time())),
+        }, content={"code": 1003, "message": "请求过于频繁，请稍后重试"})
+
+    response = await call_next(request)
+    response.headers["X-RateLimit-Limit"] = str(limiter.limit)
+    response.headers["X-RateLimit-Remaining"] = str(remaining)
+    response.headers["X-RateLimit-Reset"] = str(int(reset_at))
+    return response
+```
+
+### 多维度配额
+
+| 维度 | 示例 | 配置 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| per-IP | 匿名请求 | 100/min |
+| per-User | `X-Token` | 1000/min |
+| per-Endpoint | `/auth/login` | 10/min |
+| per-User+Endpoint | `user123:/chat` | 30/min |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
+|------|------|------|
+| 1 | per-user/per-endpoint 限流 | 不同维度独立计数 | 0.5 |
+| 2 | X-RateLimit-* 头 + 分析面板 + 测试 | 前端可展示剩余配额 | 0.5 |
+
+**合计：1.0d**。

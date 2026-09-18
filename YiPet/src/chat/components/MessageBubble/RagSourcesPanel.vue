@@ -3,6 +3,8 @@
  * RagSourcesPanel — RAG source list with expand/collapse and flash highlight.
  * Extracted from MessageBubble.vue.
  */
+import { t } from '@/shared/i18n';
+
 defineProps<{
   sources: Array<{ path: string; score?: number; snippet?: string }>;
   expandedIdx: number | null;
@@ -40,7 +42,7 @@ const emit = defineEmits<{
           <span
             v-if="sourceIsContextFile(src.path)"
             class="mb-sources__ctx-badge"
-            title="Session context file"
+            :title="sourceIsContextFile(path) ? t('chatSessionContextFile') : undefined"
           >ctx</span>
           <span class="mb-sources__score-bar">
             <span

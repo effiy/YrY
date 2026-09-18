@@ -8,24 +8,17 @@
       <div v-if="linkedModules.length" class="id-sb-dep">
         <span class="id-sb-dep__label">Module</span>
         <div class="id-sb-dep__tags">
-          <el-tag
-            v-for="m in linkedModules"
-            :key="m.key"
-            size="small"
-            @click="router.push(`/module/${m.key}`)"
-          >{{ m.name }}</el-tag>
+          <el-tag v-for="m in linkedModules" :key="m.key" size="small" @click="router.push(`/module/${m.key}`)">{{
+            m.name
+          }}</el-tag>
         </div>
       </div>
       <div v-if="linkedBugs.length" class="id-sb-dep">
         <span class="id-sb-dep__label">Bug</span>
         <div class="id-sb-dep__tags">
-          <el-tag
-            v-for="b in linkedBugs"
-            :key="b.key"
-            size="small"
-            type="danger"
-            @click="router.push(`/bug/${b.key}`)"
-          >{{ b.title }}</el-tag>
+          <el-tag v-for="b in linkedBugs" :key="b.key" size="small" type="danger" @click="router.push(`/bug/${b.key}`)">{{
+            b.title
+          }}</el-tag>
         </div>
       </div>
     </div>

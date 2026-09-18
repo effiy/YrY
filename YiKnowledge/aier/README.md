@@ -4,18 +4,19 @@ aliases: [tech category, technology knowledge]
 tags: [leaf, aier, ai, machine-learning]
 category: aier
 created: 2026-08-03
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 lifecycle: reference
 status: stable
 review_cycle: quarterly
 roles: [aier]
-benefit: "AI 工程师查找 AI 专属知识：基础理论、方法论、平台工具和 ML 实践"
+benefit: "AI 工程师通过 12 步学习路径和快速参考表，快速定位 AI 基础理论、工程方法、Prompt 模板、平台选型和 ML 实践"
 acceptance_criteria:
-  - "叶子目录的范围有清晰边界"
-  - "存在到相关叶子和父级 INDEX 的交叉引用"
+  - "5 个子目录，19 个知识文件 + 7 个 Prompt 模板"
+  - "12 步分级学习路径：新手(3) → 进阶(4) → 全面掌握(5)"
+  - "10 项快速参考表：从'I want to...'到具体文件"
 related:
   - ./INDEX.md
   - ../INDEX.md
@@ -68,6 +69,20 @@ related:
 - AI 相关架构决策记录（ADR） → [leader/decisions/](../leader/decisions/)
 - AI 服务事件响应和可观测性 → [srer/incident-response/](../srer/incident-response/)
 - 通用代码质量和测试策略 → [engineer/ship/](../engineer/ship/)
+
+## 快速参考
+
+| 我想要... | 去这里 |
+|---|---|
+| 理解 LLM 的核心概念和选型方法 | [foundations/01-基础-LLM基础.md](./foundations/01-基础-LLM基础.md) |
+| 设计或优化 RAG 检索策略 | [foundations/02-基础-RAG设计模式.md](./foundations/02-基础-RAG设计模式.md) |
+| 设计 Agent 架构和工具调用模式 | [methods/01-方法-Agent架构模式.md](./methods/01-方法-Agent架构模式.md) |
+| 评估 Agent 或 LLM 的输出质量 | [methods/02-方法-Agent评估.md](./methods/02-方法-Agent评估.md) / [methods/04-方法-LLM评估.md](./methods/04-方法-LLM评估.md) |
+| 写好 Prompt 或找 Prompt 模板 | [methods/05-方法-提示词工程.md](./methods/05-方法-提示词工程.md) / [methods/prompts/](./methods/prompts/) |
+| 对比和选择 LLM 模型 | [platform/02-平台-LLM对比.md](./platform/02-平台-LLM对比.md) |
+| 选择 Embedding 模型或向量数据库 | [platform/01-平台-Embedding模型选型.md](./platform/01-平台-Embedding模型选型.md) / [platform/03-平台-向量数据库选型.md](./platform/03-平台-向量数据库选型.md) |
+| 了解 AI 安全风险和防护措施 | [foundations/03-基础-AI安全与防护.md](./foundations/03-基础-AI安全与防护.md) |
+| 了解传统 ML 的适用场景 | [machine-learning/01-机器学习-传统机器学习模式.md](./machine-learning/01-机器学习-传统机器学习模式.md) |
 
 ## 跨角色引用
 

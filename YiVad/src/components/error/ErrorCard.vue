@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<Props>(), {
   showGoBack: true,
   showReload: true,
   showDetails: import.meta.env.DEV,
-  errorType: "unknown",
+  errorType: "unknown"
 });
 
 defineEmits<{
@@ -56,7 +56,7 @@ const iconType = computed<"success" | "warning" | "info" | "error">(() => {
     server: "error",
     permission: "warning",
     notfound: "info",
-    unknown: "error",
+    unknown: "error"
   };
   return map[props.errorType] || "error";
 });
@@ -80,30 +80,27 @@ function handleReload() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
   min-height: 300px;
+  padding: 48px 24px;
 }
-
 .error-details {
-  margin-top: 16px;
-  max-width: 600px;
   width: 100%;
+  max-width: 600px;
+  margin-top: 16px;
 }
-
 .error-details summary {
-  cursor: pointer;
-  color: #909399;
-  font-size: 13px;
   margin-bottom: 8px;
+  font-size: 13px;
+  color: #909399;
+  cursor: pointer;
 }
-
 .error-details pre {
-  background: #f5f5f5;
   padding: 12px;
-  border-radius: 4px;
-  font-size: 12px;
   overflow-x: auto;
-  white-space: pre-wrap;
+  font-size: 12px;
   word-break: break-all;
+  white-space: pre-wrap;
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 </style>

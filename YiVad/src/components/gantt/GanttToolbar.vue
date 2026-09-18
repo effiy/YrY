@@ -21,12 +21,8 @@
       <el-button size="small" @click="$emit('today')">今天</el-button>
     </div>
     <div class="gantt-toolbar__right">
-      <el-checkbox :model-value="viewOptions.showCriticalPath" size="small" @change="toggleCriticalPath">
-        关键路径
-      </el-checkbox>
-      <el-checkbox :model-value="viewOptions.showToday" size="small" @change="$emit('toggle-today')">
-        今日线
-      </el-checkbox>
+      <el-checkbox :model-value="viewOptions.showCriticalPath" size="small" @change="toggleCriticalPath"> 关键路径 </el-checkbox>
+      <el-checkbox :model-value="viewOptions.showToday" size="small" @change="$emit('toggle-today')"> 今日线 </el-checkbox>
     </div>
   </div>
 </template>
@@ -52,17 +48,17 @@ defineEmits<{
 <style scoped lang="scss">
 .gantt-toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  margin-bottom: 8px;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  margin-bottom: 8px;
 }
 .gantt-toolbar__left,
 .gantt-toolbar__right {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 </style>

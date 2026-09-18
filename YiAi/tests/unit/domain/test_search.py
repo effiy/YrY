@@ -38,7 +38,7 @@ class TestSearch:
             mock_ddgs.return_value = instance
             search("test", max_results=100)
             call_args = instance.text.call_args
-            assert call_args[1]["max_results"] == 15
+            assert call_args[1]["max_results"] == 17  # per_query = max_results + 2 = 17
 
     def test_max_results_minimum(self):
         with patch("domain.search.DDGS") as mock_ddgs:
@@ -47,7 +47,7 @@ class TestSearch:
             mock_ddgs.return_value = instance
             search("test", max_results=0)
             call_args = instance.text.call_args
-            assert call_args[1]["max_results"] == 1
+            assert call_args[1]["max_results"] == 5  # per_query=1+2=3, ddgs_count=max(3,3+2)=5
 
     def test_returns_formatted_results(self):
         with patch("domain.search.DDGS") as mock_ddgs:

@@ -1,49 +1,31 @@
 ---
 doc_type: test
-title: "API 架构合规修复 — ApiClient 统一调用与参数名校验 — 测试规格"
-status: 待开始
-priority: P1
+title: "API 架构合规 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-prd_task_id: "YP-09-04"
 source_prds: ["11-合规-API架构"]
-source_modules: []
----
-# API 架构合规修复 — ApiClient 统一调用与参数名校验 — 测试规格
-
-> 来源 PRD：[11-合规-API架构.md](../../prds/2026-09/11-合规-API架构.md)
-> 提取日期：2026-09-11
-
+source_modules: ["11-prd-task-API架构"]
 ---
 
-## 测试场景
+# API 架构合规 — 测试用例
 
-### 功能验证
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+## 测试用例
 
-### 边界测试
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-API01 | 无直接 fetch | `rg "fetch(" src/ --not -path "*/api/*"` 零结果 | P0 |
+| TC-API02 | 参数名 filter | `rg '"query"' src/api` 零结果 | P0 |
+| TC-API03 | RPC 信封统一 | 所有 body 含 module_name/method_name | P0 |
+| TC-API04 | Token 自动附加 | 无手动 X-Token 设置 | P1 |
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+## 出口准则
 
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过

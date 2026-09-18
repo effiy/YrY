@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YA-07-03"
 source_prds: ["03-需求-RPC信封协议"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-07-03: RPC 信封协议设计 — 统一跨项目通信契约 — 测试规格
 

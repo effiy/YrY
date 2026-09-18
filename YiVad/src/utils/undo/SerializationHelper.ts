@@ -6,16 +6,16 @@ export class SerializationHelper {
   serialize(undoStack: ICommand[], redoStack: ICommand[]): void {
     try {
       const data = {
-        undoStack: undoStack.map((c) => ({
+        undoStack: undoStack.map(c => ({
           id: c.id,
           context: c.context,
-          changeData: c.changeData,
+          changeData: c.changeData
         })),
-        redoStack: redoStack.map((c) => ({
+        redoStack: redoStack.map(c => ({
           id: c.id,
           context: c.context,
-          changeData: c.changeData,
-        })),
+          changeData: c.changeData
+        }))
       };
       localStorage.setItem(this.storageKey, JSON.stringify(data));
     } catch {

@@ -46,7 +46,7 @@ const ICONS: Record<string, any> = {
   project: Folder,
   issue: Tickets,
   bug: WarningFilled,
-  module: Grid,
+  module: Grid
 };
 
 async function fetchProject(key: string) {
@@ -56,13 +56,14 @@ async function fetchProject(key: string) {
     const projects = (res.data?.list as any[]) ?? [];
     const found = projects.find((p: any) => p.key === key);
     if (found) project.value = { key, name: found.name };
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
-
 
 function loadAll() {
   if (props.projectKey) fetchProject(props.projectKey);
-  }
+}
 
 loadAll();
 
@@ -80,7 +81,7 @@ const segments = computed<BreadcrumbSegment[]>(() => {
       label: project.value.name,
       link: `/project/${project.value.key}`,
       icon: ICONS.project,
-      clickable: true,
+      clickable: true
     });
   }
 
@@ -89,7 +90,7 @@ const segments = computed<BreadcrumbSegment[]>(() => {
     label: props.currentLabel,
     link: props.currentLink,
     icon: props.currentIcon,
-    clickable: !!props.currentLink,
+    clickable: !!props.currentLink
   });
 
   return result;
@@ -99,56 +100,52 @@ const segments = computed<BreadcrumbSegment[]>(() => {
 <style scoped lang="scss">
 .eb {
   display: flex;
-  align-items: center;
-  gap: 4px;
   flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
   padding: 10px 16px;
   margin-bottom: 16px;
+  font-size: 13px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  font-size: 13px;
 }
-
 .eb__seg {
   display: inline-flex;
-  align-items: center;
   gap: 5px;
+  align-items: center;
   padding: 3px 8px;
-  border-radius: 6px;
   color: var(--el-text-color-secondary);
   text-decoration: none;
-  transition: background 0.12s, color 0.12s;
-
+  border-radius: 6px;
+  transition:
+    background 0.12s,
+    color 0.12s;
   &--link {
     cursor: pointer;
     &:hover {
-      background: var(--el-fill-color-light);
       color: var(--el-color-primary);
+      background: var(--el-fill-color-light);
     }
   }
-
   &--current {
-    color: var(--el-text-color-primary);
     font-weight: 600;
+    color: var(--el-text-color-primary);
   }
 }
-
 .eb__icon {
-  font-size: 14px;
   flex-shrink: 0;
+  font-size: 14px;
 }
-
 .eb__label {
-  white-space: nowrap;
+  max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  white-space: nowrap;
 }
-
 .eb__sep {
+  flex-shrink: 0;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
-  flex-shrink: 0;
 }
 </style>

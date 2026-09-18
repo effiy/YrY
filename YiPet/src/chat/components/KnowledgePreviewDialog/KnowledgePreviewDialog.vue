@@ -8,6 +8,7 @@
  * navigation. Plain HTML/CSS (no Element Plus), markdown via `renderMarkdown`.
  */
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { t } from '@/shared/i18n';
 import { useChatStore } from '../../stores/chat';
 import { addCodeCopyButtons, renderMarkdown, runMermaid } from '../../utils';
 import type { KnowledgeFrontmatter } from '@/api/types';
@@ -331,7 +332,7 @@ function close() {
           <button v-if="mode !== 'preview'" class="kpd-btn kpd-btn--primary" :disabled="saving" @click="save">
             {{ saving ? 'Saving…' : 'Save' }}
           </button>
-          <button class="kpd-btn" title="Download file" @click="downloadFile">↓</button>
+          <button class="kpd-btn" :title="t('chatDownloadFile')" @click="downloadFile">↓</button>
           <button class="kpd-btn" title="Close" @click="close">✕</button>
         </div>
       </div>
@@ -411,7 +412,7 @@ function close() {
           ref="editorRef"
           v-model="editContent"
           class="kpd-editor"
-          placeholder="Markdown content"
+          :placeholder="t('chatMarkdownPlaceholder')"
         />
 
         <div

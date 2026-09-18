@@ -7,6 +7,7 @@
  */
 import { computed, onMounted, ref } from 'vue';
 import { useChatStore } from '../stores/chat';
+import { t } from '@/shared/i18n';
 import type { KnowledgeTreeNode } from '@/api/types';
 
 const store = useChatStore();
@@ -109,7 +110,7 @@ onMounted(() => {
       >
         {{ s.knowledgeSyncing ? '…' : '↻' }}
       </button>
-      <span class="ks-hint" title="Drag files to the chat area to start a session">Drag → Chat</span>
+      <span class="ks-hint" :title="t('sidebarDragKnowledgeHint')">Drag → Chat</span>
     </div>
 
     <div class="ks-list">
@@ -119,7 +120,7 @@ onMounted(() => {
         <button type="button" class="ks-retry" @click="store.loadKnowledgeTree()">Retry</button>
       </div>
       <div v-else-if="!visibleItems.length" class="ks-empty">
-        {{ searchQuery ? 'No matching knowledge' : 'No knowledge files' }}
+        {{ searchQuery ? t('sidebarNoKnowledgeMatch') : t('sidebarNoKnowledgeFiles') }}
       </div>
       <div
         v-for="item in visibleItems"

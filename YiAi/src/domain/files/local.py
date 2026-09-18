@@ -1,8 +1,8 @@
 """Local file storage service layer.
 
 Encapsulates disk-only file persistence: read / write / delete / rename /
-upload. Route layer only parses requests and wraps success responses; all IO +
-error conversion is handled here.
+upload / list-directory. Route layer only parses requests and wraps success
+responses; all IO + error conversion is handled here.
 
 Metadata (file path, size, type, timestamps) should be stored in MongoDB via
 the data_service API. File content lives on disk only.
@@ -10,10 +10,11 @@ the data_service API. File content lives on disk only.
 Boundary: OSS uploads are in ``storage.py``; this file only handles local disk.
 """
 import base64
+from datetime import datetime, timezone
 import logging
 import os
 import shutil
-from datetime import datetime, timezone
+import stat
 
 import aiofiles
 
@@ -28,6 +29,69 @@ logger = logging.getLogger(__name__)
 
 def _static_url(rel_path: str) -> str:
     return f"{settings.static_base_url.rstrip('/')}/{rel_path}"
+
+
+# ---------------------------------------------------------------------------
+# list directory
+# ---------------------------------------------------------------------------
+
+async def list_directory(target_dir: str = "", max_depth: int = 3) -> dict:
+    """List directory contents recursively up to ``max_depth`` levels.
+
+    Returns a nested tree::
+
+        {"dirs": [...], "files": [{name, path, size, mtime, ext}, ...], "root": "..."}
+
+    Empty string / "." means the static base directory root.
+    """
+    target_dir = (target_dir or "").strip().replace("\\", "/")
+    if target_dir in (".", "/"):
+        target_dir = ""
+
+    base_dir = os.path.realpath(os.path.abspath(settings.static_base_dir))
+    if target_dir:
+        norm = paths.normalize_no_spaces(target_dir)
+        abs_path = os.path.realpath(os.path.join(base_dir, os.path.normpath(norm)))
+        if os.path.commonpath([base_dir, abs_path]) != base_dir:
+            raise BusinessException(ErrorCode.INVALID_PARAMS, message="Invalid directory path")
+        if not os.path.exists(abs_path) or not os.path.isdir(abs_path):
+            raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Directory not found: {target_dir}")
+    else:
+        abs_path = base_dir
+
+    files = []
+    dirs = []
+
+    async def _scan(current: str, depth: int) -> None:
+        if depth > max_depth:
+            return
+        try:
+            entries = sorted(os.scandir(current), key=lambda e: (not e.is_dir(), e.name))
+        except OSError:
+            return
+        for entry in entries:
+            rel = os.path.relpath(entry.path, base_dir).replace(os.sep, "/")
+            if entry.name.startswith(".") and entry.name not in (".claude",):
+                continue
+            try:
+                st = entry.stat()
+            except OSError:
+                continue
+            if stat.S_ISDIR(st.st_mode):
+                dirs.append({"name": entry.name, "path": rel})
+                if depth < max_depth:
+                    await _scan(entry.path, depth + 1)
+            else:
+                files.append({
+                    "name": entry.name,
+                    "path": rel,
+                    "size": st.st_size,
+                    "mtime": int(st.st_mtime * 1000),
+                    "ext": os.path.splitext(entry.name)[1].lower(),
+                })
+
+    await _scan(abs_path, 1)
+    return {"root": target_dir or "/", "dirs": dirs, "files": files}
 
 
 # ---------------------------------------------------------------------------

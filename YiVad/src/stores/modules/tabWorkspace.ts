@@ -7,10 +7,10 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
   const activeId = ref<string | null>(null);
   const pinnedIds = ref<Set<string>>(new Set());
 
-  const activeTab = computed(() => tabs.value.find((t) => t.id === activeId.value) || null);
+  const activeTab = computed(() => tabs.value.find(t => t.id === activeId.value) || null);
 
   function openTab(tab: TabPage) {
-    const existing = tabs.value.find((t) => t.id === tab.id);
+    const existing = tabs.value.find(t => t.id === tab.id);
     if (existing) {
       activeId.value = tab.id;
       return;
@@ -18,7 +18,7 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
     tabs.value.push({ ...tab, createdAt: Date.now() });
     activeId.value = tab.id;
     if (tabs.value.length > 20) {
-      const unpinned = tabs.value.filter((t) => !pinnedIds.value.has(t.id));
+      const unpinned = tabs.value.filter(t => !pinnedIds.value.has(t.id));
       if (unpinned.length > 0) {
         const idx = tabs.value.indexOf(unpinned[0]);
         tabs.value.splice(idx, 1);
@@ -27,7 +27,7 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
   }
 
   function closeTab(id: string) {
-    const idx = tabs.value.findIndex((t) => t.id === id);
+    const idx = tabs.value.findIndex(t => t.id === id);
     if (idx === -1) return;
     tabs.value.splice(idx, 1);
     if (activeId.value === id) {
@@ -36,21 +36,19 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
   }
 
   function closeOtherTabs(id: string) {
-    tabs.value = tabs.value.filter((t) => t.id === id || pinnedIds.value.has(t.id));
+    tabs.value = tabs.value.filter(t => t.id === id || pinnedIds.value.has(t.id));
     activeId.value = id;
   }
 
   function closeRightTabs(id: string) {
-    const idx = tabs.value.findIndex((t) => t.id === id);
+    const idx = tabs.value.findIndex(t => t.id === id);
     if (idx === -1) return;
-    tabs.value = tabs.value.filter((t, i) =>
-      i <= idx || pinnedIds.value.has(t.id)
-    );
+    tabs.value = tabs.value.filter((t, i) => i <= idx || pinnedIds.value.has(t.id));
     activeId.value = id;
   }
 
   function closeAllTabs() {
-    tabs.value = tabs.value.filter((t) => pinnedIds.value.has(t.id));
+    tabs.value = tabs.value.filter(t => pinnedIds.value.has(t.id));
     activeId.value = tabs.value[0]?.id || null;
   }
 
@@ -65,8 +63,8 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
   }
 
   function reorderTabs(newOrder: string[]) {
-    const map = new Map(tabs.value.map((t) => [t.id, t]));
-    tabs.value = newOrder.map((id) => map.get(id)!).filter(Boolean);
+    const map = new Map(tabs.value.map(t => [t.id, t]));
+    tabs.value = newOrder.map(id => map.get(id)!).filter(Boolean);
   }
 
   return {
@@ -81,6 +79,6 @@ export const useTabWorkspaceStore = defineStore("tabWorkspace", () => {
     closeAllTabs,
     pinTab,
     unpinTab,
-    reorderTabs,
+    reorderTabs
   };
 });

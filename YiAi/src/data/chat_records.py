@@ -23,8 +23,8 @@ async def save_chat_record(
     assistant_message: str,
     model: str = "",
     provider: str = "",
-    usage: Optional[Dict[str, int]] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    usage: dict[str, int] | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> None:
     """Append a chat turn to the session's message list (upsert)."""
     if not session_id:
@@ -54,13 +54,13 @@ async def save_chat_record(
 async def list_chat_sessions(
     limit: int = 50,
     offset: int = 0,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return recent chat sessions (newest first), excluding expired ones."""
     await db.initialize()
     collection = db.db[settings.collection_chat_records]
     now = time.time()
     cursor = collection.find().sort("updated_at", -1).skip(offset).limit(limit)
-    sessions: List[Dict[str, Any]] = []
+    sessions: list[dict[str, Any]] = []
     async for doc in cursor:
         updated = doc.get("updated_at", 0)
         if now - updated > _CHAT_HISTORY_TTL:
@@ -77,7 +77,7 @@ async def list_chat_sessions(
     return sessions
 
 
-async def load_chat_session(session_id: str) -> Optional[Dict[str, Any]]:
+async def load_chat_session(session_id: str) -> dict[str, Any] | None:
     """Return a single session's full message history, or None."""
     if not session_id:
         return None

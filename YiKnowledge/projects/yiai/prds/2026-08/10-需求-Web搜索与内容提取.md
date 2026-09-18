@@ -24,6 +24,9 @@ review_status: 待评审
 issue_type: 功能
 roles:
 - engineer
+source_okr: [yiai-003]
+related_modules: [10-prd-task-Web搜索与内容提取]
+related_tests: [10-prd-test-Web搜索与内容提取]
 ---
 
 # Web 搜索与内容提取服务 — Jina Reader + BeautifulSoup 双层提取管线

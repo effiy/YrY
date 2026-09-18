@@ -21,7 +21,7 @@ const C = {
   exampleLaunches: "okr_example_launches"
 } as const;
 
-/** Collection names — shared with the OKR seeder (views/knowledge/executiver/okrSeed.ts). */
+/** Collection names — shared with the OKR seeder (views/knowledge/executive/okrSeed.ts). */
 export const OKR_COLLECTIONS = C;
 
 // ── Types (mirror the Python seed data shapes) ──────────────────────

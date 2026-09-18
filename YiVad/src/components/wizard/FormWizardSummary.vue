@@ -22,10 +22,10 @@ const summary = computed(() => {
   return props.steps.map((step, index) => ({
     step,
     index,
-    fields: step.fields.map((field) => ({
+    fields: step.fields.map(field => ({
       name: field,
-      value: props.formData[field],
-    })),
+      value: props.formData[field]
+    }))
   }));
 });
 </script>
@@ -62,62 +62,51 @@ const summary = computed(() => {
     margin: 0 0 4px;
     font-size: 18px;
   }
-
   &__hint {
     margin: 0 0 20px;
-    color: var(--el-text-color-secondary);
     font-size: 13px;
+    color: var(--el-text-color-secondary);
   }
-
   &__section {
-    margin-bottom: 16px;
     padding: 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
     border: 1px solid var(--el-border-color-light);
     border-radius: 8px;
-    cursor: pointer;
     transition: border-color 0.2s;
-
     &:hover {
       border-color: var(--el-color-primary);
     }
   }
-
   &__section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
-
     h4 {
       margin: 0;
       font-size: 15px;
     }
   }
-
   &__fields {
     margin: 0;
   }
-
   &__field {
     display: flex;
     padding: 4px 0;
     font-size: 13px;
-
     dt {
       min-width: 100px;
       color: var(--el-text-color-secondary);
-
       &::after {
-        content: '：';
+        content: "：";
       }
     }
-
     dd {
       margin: 0;
       color: var(--el-text-color-regular);
     }
   }
-
   &__empty {
     margin: 0;
     color: var(--el-text-color-placeholder);

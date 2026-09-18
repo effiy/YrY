@@ -18,12 +18,8 @@
           size="default"
           style="width: 240px"
         />
-        <el-button v-if="unreadCount > 0" type="primary" @click="handleMarkAllRead">
-          全部已读 ({{ unreadCount }})
-        </el-button>
-        <el-button v-if="store.notifications.length > 0" @click="handleClearAll">
-          清空全部
-        </el-button>
+        <el-button v-if="unreadCount > 0" type="primary" @click="handleMarkAllRead"> 全部已读 ({{ unreadCount }}) </el-button>
+        <el-button v-if="store.notifications.length > 0" @click="handleClearAll"> 清空全部 </el-button>
       </div>
     </div>
 
@@ -53,19 +49,8 @@
             </div>
           </div>
           <div class="notif-item__actions">
-            <el-button
-              v-if="n.actionUrl"
-              text
-              size="small"
-              type="primary"
-              @click.stop="handleClick(n)"
-            >查看</el-button>
-            <el-button
-              :icon="Close"
-              text
-              size="small"
-              @click.stop="store.removeNotification(n.id)"
-            />
+            <el-button v-if="n.actionUrl" text size="small" type="primary" @click.stop="handleClick(n)">查看</el-button>
+            <el-button :icon="Close" text size="small" @click.stop="store.removeNotification(n.id)" />
           </div>
         </div>
       </template>
@@ -84,7 +69,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="notification">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Search, Close, Setting, User, Cpu, Warning } from "@element-plus/icons-vue";
@@ -104,13 +89,11 @@ const unreadCount = computed(() => store.unreadCount);
 const filteredList = computed(() => {
   let list = store.notifications;
   if (typeFilter.value !== "all") {
-    list = list.filter((n) => n.type === typeFilter.value);
+    list = list.filter(n => n.type === typeFilter.value);
   }
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase();
-    list = list.filter(
-      (n) => n.title.toLowerCase().includes(q) || n.message.toLowerCase().includes(q)
-    );
+    list = list.filter(n => n.title.toLowerCase().includes(q) || n.message.toLowerCase().includes(q));
   }
   return list;
 });
@@ -145,21 +128,33 @@ onMounted(async () => {
     const { getNotifications } = await import("@/api/modules/notificationService");
     const res = await getNotifications({ page: 1, size: 50 });
     if (res.data?.list) store.setNotifications(res.data.list as Notification[]);
-  } catch { /* backend may not be ready */ } finally {
+  } catch {
+    /* backend may not be ready */
+  } finally {
     loading.value = false;
   }
 });
 
 const TYPE_ICONS: Record<string, any> = {
-  system: Setting, user_action: User, ai: Cpu, error: Warning,
+  system: Setting,
+  user_action: User,
+  ai: Cpu,
+  error: Warning
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  system: "#409eff", user_action: "#67c23a", ai: "#e6a23c", error: "#f56c6c",
+  system: "#409eff",
+  user_action: "#67c23a",
+  ai: "#e6a23c",
+  error: "#f56c6c"
 };
 
-function iconFor(type: string) { return TYPE_ICONS[type] || Setting; }
-function iconColor(type: string) { return TYPE_COLORS[type] || "#909399"; }
+function iconFor(type: string) {
+  return TYPE_ICONS[type] || Setting;
+}
+function iconColor(type: string) {
+  return TYPE_COLORS[type] || "#909399";
+}
 
 type TagType = "success" | "warning" | "info" | "primary" | "danger";
 
@@ -187,46 +182,40 @@ function formatTime(iso: string): string {
 
 <style scoped lang="scss">
 .notif-center {
-  padding: 20px;
   max-width: 900px;
+  padding: 20px;
   margin: 0 auto;
 }
-
 .notif-center__header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
-
 .notif-center__title {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
 }
-
 .notif-center__toolbar {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
 }
-
 .notif-center__list {
-  background: var(--el-bg-color);
-  border-radius: 8px;
-  border: 1px solid var(--el-border-color-lighter);
   min-height: 200px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
-
 .notif-center__pagination {
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
-
 .notif-item {
   display: flex;
   gap: 12px;
@@ -234,55 +223,59 @@ function formatTime(iso: string): string {
   cursor: pointer;
   border-bottom: 1px solid var(--el-border-color-extra-light);
   transition: background 0.2s;
-
-  &:hover { background: var(--el-fill-color-light); }
-  &--unread { background: var(--el-color-primary-light-9); }
-
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
+  &--unread {
+    background: var(--el-color-primary-light-9);
+  }
   &__icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
     margin-top: 2px;
+    color: #ffffff;
+    border-radius: 50%;
   }
-
-  &__body { flex: 1; min-width: 0; }
-
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
   &__header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     gap: 8px;
+    align-items: center;
+    justify-content: space-between;
   }
-
-  &__title { font-size: 14px; font-weight: 500; }
-
+  &__title {
+    font-size: 14px;
+    font-weight: 500;
+  }
   &__msg {
-    font-size: 13px;
-    color: var(--el-text-color-secondary);
     margin-top: 4px;
+    font-size: 13px;
     line-height: 1.5;
+    color: var(--el-text-color-secondary);
   }
-
   &__meta {
     display: flex;
     gap: 8px;
     align-items: center;
     margin-top: 6px;
   }
-
-  &__time { font-size: 12px; color: var(--el-text-color-placeholder); }
-
+  &__time {
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
   &__actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
     flex-shrink: 0;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
   }
 }
 </style>

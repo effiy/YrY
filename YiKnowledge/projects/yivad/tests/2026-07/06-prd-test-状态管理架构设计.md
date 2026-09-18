@@ -1,74 +1,104 @@
 ---
 doc_type: test
-title: "YV-07-06: 状态管理架构设计 — 16 个 Pinia Store + 双语法模式 + 持久化策略 + 跨 Store 协调 — 测试规格"
+title: "YV-07-06: 状态管理架构设计 — 测试用例"
 status: 已完成
 priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
 project_id: yivad
 prd_month: "202607"
 prd_task_id: "YV-07-06"
 source_prds: ["06-prd-状态管理架构设计"]
-source_modules: []
+source_modules: ["06-prd-task-状态管理架构设计"]
 ---
-# YV-07-06: 状态管理架构设计 — 16 个 Pinia Store + 双语法模式 + 持久化策略 + 跨 Store 协调 — 测试规格
+
+# YV-07-06: 状态管理架构设计 — 测试用例
 
 > 来源 PRD：[06-prd-状态管理架构设计.md](../../prds/2026-07/06-prd-状态管理架构设计.md)
-> 提取日期：2026-09-11
+> 开发方案：[06-prd-task-状态管理架构设计.md](../../devs/2026-07/06-prd-task-状态管理架构设计.md)
 
 ---
 
-### 4.5 边缘场景处理（Edge Cases）
+## 一、测试范围与策略
 
-| 场景 | 描述 | 处理策略 | 实现细节 |
+### 1.1 测试分层
+
+| 层级 | 工具 | 覆盖目标 | 执行时机 |
 |------|------|---------|---------|
-| SSE ReadableStream 泄漏 | `useChatStore` 的 reader 被 `watch` 闭包持有，组件卸载后 GC 无法回收 | 新增 `cleanup()` 方法：`reader.cancel()` + `reader.releaseLock()` + `abortController.abort()`，在 `onBeforeUnmount` 和会话切换时调用 | `cleanup() { reader?.cancel(); reader?.releaseLock(); abortController?.abort() }` |
-| localStorage 配额超限 | 5 个 Store 同时持久化时，`aiChat` Store（~2MB）先恢复，耗尽配额导致后续 Store 恢复失败 | 大体积 Store (`aiChat`) 的消息体迁移到 IndexedDB，仅元数据保留在 localStorage | `persist.storage = customIndexedDBStorage` |
-| Options API → Setup 迁移 key 冲突 | 迁移后 `persist.key` 从 `$id`（如 `"auth"`）变为函数名（如 `"useAuthStore"`），旧数据无法读取 | 迁移时显式设置 `persist.key` 为旧值，`afterRestore` 中检测旧 key 数据并自动迁移 | `persist: { key: 'auth', afterRestore: (ctx) => { migrateOldKey(ctx) } }` |
-| 侧边栏折叠跨设备同步 | 桌面端折叠侧边栏 → `localStorage` 同步 → 移动端打开时侧边栏默认折叠（错误行为） | getter 中添加响应式判断：`return window.innerWidth < 768 ? true : state._sidebarCollapsed` | `sidebarCollapsed: computed(() => isMobile.value ? true : _sidebarCollapsed.value)` |
-| ProTable 筛选跨集合残留 | `filter` 是全局状态，从 Issue 页面切换 Bug 页面时 Issue 的 `status=open` 仍生效 | `watch(collection)` 中 `resetFilters()` + `resetSort()`，为每个集合维护独立的 `filter` 状态 | `filters: Record<string, FilterState> = ref({})` |
-| v-auth 权限加载 "闪烁" | 路由守卫在权限加载前放行，v-auth 在 `mounted` 时权限列表为空，移除所有按钮 | `beforeEach` 中 `await authStore.init()` 确保权限加载完成后才放行 | `await authStore.init()` before `next()` |
-| Date 序列化 | `JSON.stringify` 将 `Date` 转为字符串，恢复后 `dayjs(string).fromNow()` 返回 "Invalid date" | 自定义 serializer：`JSON.parse` + reviver 检测 ISO 8601 格式自动转 `new Date(value)` | `deserialize: (val) => JSON.parse(val, dateReviver)` |
-| 跨 Store 级联更新 | Store A 的 `watch` 触发 Store B 更新 → Store B 的 `watch` 触发 Store C 更新 | 单操作触发 > 5 次 watch 时控制台 warn，帮助诊断级联链 | `watchEffect(() => { count++; if (count > 5) console.warn('cascade detection') })` |
-| 持久化写入阻塞 UI | 大对象序列化（`JSON.stringify` 3MB+）在主线程阻塞 50ms+ | `aiChat` Store 消息体使用 IndexedDB 异步写入，不阻塞主线程 | `idbKeyval.set('chat-messages', messages)` |
-| Store 初始化竞态 | 页面加载时多个 Store 同时从 localStorage 恢复，`pinia-plugin-persistedstate` 串行恢复 | 使用 `Promise.all` 并行恢复独立 Store，减少初始化耗时 | 自定义 `hydrateStore` 插件并行恢复 |
+| L1 单元 | Vitest + jsdom | Store 状态初始化、computed 派生 | 每次提交 |
+| L2 集成 | Vitest + Pinia + mock API | Store 动作（CRUD）、持久化恢复、跨 Store 协调 | 每次提交 |
+| L3 组件 | Vitest + @vue/test-utils | Store 与组件集成 | 每次提交 |
+
+### 1.2 覆盖范围
+
+| 编号 | 被测对象 | 层级 |
+|------|---------|------|
+| COV-1 | 5 个全局 Store（user/auth/global/tabs/keepAlive） | L1/L2 |
+| COV-2 | 持久化策略（token/偏好保留，业务数据不持久化） | L2 |
+| COV-3 | 跨 Store 协调（tabs↔keepAlive, auth↔router） | L2 |
 
 ---
 
+## 二、测试用例
 
-## 六、测试规格
+### 2.1 Store 初始化与派生（COV-1 · L1）
 
-### Requirement: Store 持久化
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-STORE-001 | userStore 初始状态 | token 为空，userInfo 为 null | P0 |
+| TC-STORE-002 | authStore 初始状态 | authMenuList=[], authButtonList={}, routeName="" | P0 |
+| TC-STORE-003 | globalStore 初始状态 | language=zh, theme=light, isCollapse=false | P1 |
+| TC-STORE-004 | projectStore 派生 | activeProjects = list 中 status=active 的项 | P1 |
+| TC-STORE-005 | authStore 菜单派生 | flatMenuListGet 父先于子，showMenuListGet 过滤隐藏 | P0 |
 
-#### Scenario: 用户偏好持久化
-- **Given** 用户切换主题为暗色模式
-- **When** 刷新页面
-- **Then** 主题保持暗色模式（从 localStorage 恢复）
+### 2.2 Store 持久化（COV-2 · L2）
 
-#### Scenario: Token 持久化
-- **Given** 用户登录成功
-- **When** 刷新页面
-- **Then** 用户保持登录状态（Token 从 localStorage 恢复）
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-PERSIST-001 | 主题持久化 | 切换暗色 → 刷新 → 保持暗色 | P0 |
+| TC-PERSIST-002 | Token 持久化 | 登录 → 刷新 → 保持登录态 | P0 |
+| TC-PERSIST-003 | 业务数据不持久化 | 加载列表 → 刷新 → 从 API 重新加载 | P0 |
+| TC-PERSIST-004 | 侧边栏折叠持久化 | 折叠 → 刷新 → 保持折叠 | P1 |
+| TC-PERSIST-005 | 标签页持久化 | 打开 3 个标签 → 刷新 → 3 个标签恢复 | P1 |
 
-#### Scenario: 业务数据不持久化
-- **Given** 用户浏览项目列表
-- **When** 刷新页面
-- **Then** 项目列表从 YiAi 后端重新加载（不从 localStorage 恢复）
+### 2.3 跨 Store 协调（COV-3 · L2）
 
-### Requirement: 跨 Store 协调
-
-#### Scenario: 标签页关闭触发 KeepAlive 清理
-- **Given** 用户打开了 3 个标签页
-- **When** 关闭第 2 个标签页
-- **Then** `keepAlive` Store 中移除对应组件名
-
-#### Scenario: 路由切换更新权限上下文
-- **Given** 用户在项目列表页
-- **When** 导航到需求列表页
-- **Then** `auth.routeName` 更新为新路由名，按钮权限列表更新
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-COORD-001 | 关闭标签→清理缓存 | tabs.closeTab → keepAlive.removeCache | P0 |
+| TC-COORD-002 | 路由切换→更新权限上下文 | 导航 → auth.routeName 更新 | P0 |
+| TC-COORD-003 | 退出登录→清理所有业务 Store | token 清空 → 业务 Store 重置 | P1 |
 
 ---
 
+## 三、边缘场景
+
+| 编号 | 场景 | 处理策略 | 优先级 |
+|------|------|---------|--------|
+| TC-EDGE-001 | localStorage 配额超限 | 大 Store (aiChat) 迁移到 IndexedDB | P0 |
+| TC-EDGE-002 | Date 序列化/反序列化 | JSON reviver 自动恢复 Date 对象 | P0 |
+| TC-EDGE-003 | Store 初始化竞态 | 多个 Store 并行从 localStorage 恢复 | P1 |
+| TC-EDGE-004 | 跨 Store 级联更新检测 | 单操作 > 5 次 watch → console.warn | P2 |
+| TC-EDGE-005 | 持久化写入阻塞 UI | 大对象 IndexedDB 异步写入 | P1 |
+| TC-EDGE-006 | Options→Setup 迁移 key 冲突 | `persist.key` 显式设置兼容旧 key | P2 |
+
+---
+
+## 四、追溯矩阵
+
+| 需求项 | 验收标准 | 覆盖用例 |
+|--------|---------|---------|
+| 16 个 Store 可用 | Setup Store 语法，功能正常 | TC-STORE-001~005 |
+| 持久化策略 | token/偏好保留，业务数据不持久化 | TC-PERSIST-001~005 |
+| 跨 Store 协调 | tabs→keepAlive, auth→router | TC-COORD-001~003 |
+
+---
+
+## 五、出口准则
+
+- [ ] P0 用例 100% 通过
+- [ ] 持久化关键路径通过（token/主题刷新不丢失）
+- [ ] 跨 Store 协调通过（tabs↔keepAlive 同步）

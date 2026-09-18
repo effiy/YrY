@@ -1,8 +1,9 @@
 import os
-import yaml
-from typing import List, Union, Dict, Any
+from typing import Any
+
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource, InitSettingsSource
+from pydantic_settings import BaseSettings, InitSettingsSource, PydanticBaseSettingsSource, SettingsConfigDict
+import yaml
 
 
 class YamlConfigSettingsSource(InitSettingsSource):
@@ -14,7 +15,7 @@ class YamlConfigSettingsSource(InitSettingsSource):
 
     def __init__(self, settings_cls: type[BaseSettings]):
         config_file = "config.yaml"
-        yaml_data: Dict[str, Any] = {}
+        yaml_data: dict[str, Any] = {}
         if os.path.exists(config_file):
             with open(config_file, encoding='utf-8') as f:
                 data = yaml.safe_load(f) or {}
@@ -23,7 +24,7 @@ class YamlConfigSettingsSource(InitSettingsSource):
         super().__init__(settings_cls, yaml_data)
 
     @staticmethod
-    def _flatten(d: Dict[str, Any], parent_key: str = '', sep: str = '_') -> Dict[str, Any]:
+    def _flatten(d: dict[str, Any], parent_key: str = '', sep: str = '_') -> dict[str, Any]:
         items = []
         for k, v in d.items():
             new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -46,7 +47,7 @@ class Settings(BaseSettings):
     uvicorn_timeout_keep_alive: int = Field(5, validation_alias="uvicorn_timeout_keep_alive")
 
     # CORS
-    cors_origins: Union[str, List[str]] = Field(["*"], validation_alias="cors_origins")
+    cors_origins: str | list[str] = Field(["*"], validation_alias="cors_origins")
     cors_allow_any_origin: bool = Field(True, validation_alias="cors_allow_any_origin")
 
     # Pagination
@@ -78,6 +79,7 @@ class Settings(BaseSettings):
     mongodb_db_name: str = Field("ruiyi", validation_alias="mongodb_db_name")
     mongodb_pool_size: int = Field(10, validation_alias="mongodb_pool_size")
     mongodb_max_pool_size: int = Field(50, validation_alias="mongodb_max_pool_size")
+    mongodb_query_timeout_ms: int = Field(30000, validation_alias="mongodb_query_timeout_ms")
 
     collection_sessions: str = Field("sessions", validation_alias="collection_sessions")
     collection_rss: str = Field("rss", validation_alias="collection_rss")
@@ -96,7 +98,7 @@ class Settings(BaseSettings):
     oss_bucket: str = Field("", validation_alias="oss_bucket")
     oss_domain: str = Field("", validation_alias="oss_domain")
     oss_max_file_size_mb: int = Field(50, validation_alias="oss_max_file_size_mb")
-    oss_allowed_extensions: List[str] = Field(
+    oss_allowed_extensions: list[str] = Field(
         [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx", ".epub", ".md"],
         validation_alias="oss_allowed_extensions"
     )
@@ -118,7 +120,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = Field(1440, validation_alias="jwt_expire_minutes")
 
     # Module
-    module_allowlist: Union[str, List[str]] = Field(["*"], validation_alias="module_allowlist")
+    module_allowlist: str | list[str] = Field(["*"], validation_alias="module_allowlist")
 
     # State Store
     state_store_enabled: bool = Field(True, validation_alias="state_store_enabled")
@@ -131,13 +133,13 @@ class Settings(BaseSettings):
     observer_throttle_enabled: bool = Field(True, validation_alias="observer_throttle_enabled")
     observer_throttle_max_requests: int = Field(100, validation_alias="observer_throttle_max_requests")
     observer_throttle_window_seconds: int = Field(60, validation_alias="observer_throttle_window_seconds")
-    observer_throttle_whitelist: Union[str, List[str]] = Field("", validation_alias="observer_throttle_whitelist")
+    observer_throttle_whitelist: str | list[str] = Field("", validation_alias="observer_throttle_whitelist")
     observer_sampler_enabled: bool = Field(True, validation_alias="observer_sampler_enabled")
     observer_sampler_max_size: int = Field(1000, validation_alias="observer_sampler_max_size")
     observer_sampler_slow_threshold_ms: float = Field(5000.0, validation_alias="observer_sampler_slow_threshold_ms")
     observer_sandbox_enabled: bool = Field(False, validation_alias="observer_sandbox_enabled")
-    observer_sandbox_fs_allowlist: Union[str, List[str]] = Field("", validation_alias="observer_sandbox_fs_allowlist")
-    observer_sandbox_network_allowlist: Union[str, List[str]] = Field("", validation_alias="observer_sandbox_network_allowlist")
+    observer_sandbox_fs_allowlist: str | list[str] = Field("", validation_alias="observer_sandbox_fs_allowlist")
+    observer_sandbox_network_allowlist: str | list[str] = Field("", validation_alias="observer_sandbox_network_allowlist")
     observer_lazy_start: bool = Field(True, validation_alias="observer_lazy_start")
     observer_guard_enabled: bool = Field(True, validation_alias="observer_guard_enabled")
     observer_guard_max_depth: int = Field(3, validation_alias="observer_guard_max_depth")
@@ -164,26 +166,29 @@ class Settings(BaseSettings):
 
     # RAG (llama_index)
     rag_embed_model: str = Field("nomic-embed-text", validation_alias="rag_embed_model")
-    rag_llm_model: str = Field("qwen3.5:4b", validation_alias="rag_llm_model")
+    rag_llm_model: str = Field("qwen2.5:latest", validation_alias="rag_llm_model")
+    rag_hyde_model: str = Field("qwen2.5-coder:3b", validation_alias="rag_hyde_model")
     rag_persist_dir: str = Field("./data/rag_store", validation_alias="rag_persist_dir")
-    rag_top_k: int = Field(3, validation_alias="rag_top_k")
-    rag_chunk_size: int = Field(512, validation_alias="rag_chunk_size")
-    rag_chunk_overlap: int = Field(40, validation_alias="rag_chunk_overlap")
+    rag_top_k: int = Field(6, validation_alias="rag_top_k")
+    rag_chunk_size: int = Field(2048, validation_alias="rag_chunk_size")
+    rag_chunk_overlap: int = Field(200, validation_alias="rag_chunk_overlap")
     rag_auto_rebuild_enabled: bool = Field(True, validation_alias="rag_auto_rebuild_enabled")
     rag_auto_rebuild_debounce_seconds: int = Field(30, validation_alias="rag_auto_rebuild_debounce_seconds")
     rag_hybrid_retrieval_enabled: bool = Field(True, validation_alias="rag_hybrid_retrieval_enabled")
     rag_rerank_enabled: bool = Field(True, validation_alias="rag_rerank_enabled")
     rag_inline_citations_enabled: bool = Field(True, validation_alias="rag_inline_citations_enabled")
-    rag_chat_timeout: int = Field(180, validation_alias="rag_chat_timeout")
-    rag_llm_request_timeout: int = Field(120, validation_alias="rag_llm_request_timeout")
-    rag_num_predict: int = Field(512, validation_alias="rag_num_predict")
+    rag_chat_timeout: int = Field(300, validation_alias="rag_chat_timeout")
+    rag_llm_request_timeout: int = Field(60, validation_alias="rag_llm_request_timeout")
+    rag_num_predict: int = Field(1024, validation_alias="rag_num_predict")
     rag_temperature: float = Field(0.0, validation_alias="rag_temperature")
     rag_context_chunks: int = Field(4, validation_alias="rag_context_chunks")
-    rag_snippet_chars: int = Field(600, validation_alias="rag_snippet_chars")
-    rag_history_msgs: int = Field(6, validation_alias="rag_history_msgs")
-    rag_history_chars: int = Field(500, validation_alias="rag_history_chars")
-    rag_hyde_enabled: bool = Field(True, validation_alias="rag_hyde_enabled")
-    rag_sentence_window_enabled: bool = Field(True, validation_alias="rag_sentence_window_enabled")
+    rag_snippet_chars: int = Field(1500, validation_alias="rag_snippet_chars")
+    rag_history_msgs: int = Field(4, validation_alias="rag_history_msgs")
+    rag_history_chars: int = Field(300, validation_alias="rag_history_chars")
+    rag_hyde_enabled: bool = Field(False, validation_alias="rag_hyde_enabled")
+    rag_num_queries: int = Field(1, validation_alias="rag_num_queries")
+    rag_exclude_dirs: list[str] = Field(["rss", "projects"], validation_alias="rag_exclude_dirs")
+    rag_sentence_window_enabled: bool = Field(False, validation_alias="rag_sentence_window_enabled")
     rag_sentence_window_size: int = Field(3, validation_alias="rag_sentence_window_size")
 
     # Logging
@@ -214,7 +219,7 @@ class Settings(BaseSettings):
     # Alert
     alert_wework_webhook: str = Field("", validation_alias="alert_wework_webhook")
 
-    model_config = SettingsConfigDict(extra="ignore", populate_by_name=True, yaml_file=[])
+    model_config = SettingsConfigDict(extra="ignore", populate_by_name=True)
 
     @classmethod
     def settings_customise_sources(
@@ -241,24 +246,24 @@ class Settings(BaseSettings):
     def oss_max_file_size(self) -> int:
         return self.oss_max_file_size_mb * Settings._MB
 
-    def get_cors_origins(self) -> List[str]:
+    def get_cors_origins(self) -> list[str]:
         if isinstance(self.cors_origins, str) and self.cors_origins == "*":
             return ["*"]
         return Settings._to_list(self.cors_origins)
 
     @staticmethod
-    def _to_list(value: Union[str, List[str]]) -> List[str]:
+    def _to_list(value: str | list[str]) -> list[str]:
         if isinstance(value, str):
             return [item.strip() for item in value.split(',') if item.strip()]
         return value
 
-    def get_throttle_whitelist(self) -> List[str]:
+    def get_throttle_whitelist(self) -> list[str]:
         return Settings._to_list(self.observer_throttle_whitelist)
 
-    def get_sandbox_fs_allowlist(self) -> List[str]:
+    def get_sandbox_fs_allowlist(self) -> list[str]:
         return Settings._to_list(self.observer_sandbox_fs_allowlist)
 
-    def get_sandbox_network_allowlist(self) -> List[str]:
+    def get_sandbox_network_allowlist(self) -> list[str]:
         return Settings._to_list(self.observer_sandbox_network_allowlist)
 
     @property

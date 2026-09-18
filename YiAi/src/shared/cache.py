@@ -1,10 +1,10 @@
 """Unified cache manager — Redis primary + in-memory LRU fallback."""
 
 import asyncio
+from collections import OrderedDict
 import hashlib
 import json
 import time
-from collections import OrderedDict
 from typing import Any, Optional
 
 from shared.config import settings
@@ -20,7 +20,7 @@ class MemoryLRUCache:
         self._cache: OrderedDict[str, tuple[Any, float]] = OrderedDict()
         self.max_size = max_size
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         if key not in self._cache:
             return None
         value, ttl = self._cache[key]
@@ -87,7 +87,7 @@ class CacheManager:
             logger.warning(f"[Cache] Redis unavailable, fallback to memory: {e}")
             self._redis_available = False
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         full_key = f"{self._key_prefix}{key}"
         try:
             if self._redis_available:
@@ -139,28 +139,35 @@ class CacheManager:
             logger.warning(f"[Cache] DELETE_PATTERN failed: {e}")
 
     async def get_or_set(self, key: str, factory, ttl: int = 300) -> Any:
-        """Cache-Aside: get cached value or compute and cache."""
+        """Cache-Aside: get cached value or compute and cache.
+
+        Uses a per-key asyncio.Lock to prevent cache stampede (only one
+        caller recomputes the value while others wait). The lock is removed
+        after use to avoid unbounded memory growth from one-off keys.
+        """
         cached = await self.get(key)
         if cached is not None:
             return cached
 
-        # Per-key lock to prevent cache stampede
-        if key not in self._locks:
-            self._locks[key] = asyncio.Lock()
-        async with self._locks[key]:
-            # Double-check after acquiring lock
-            cached = await self.get(key)
-            if cached is not None:
-                return cached
+        # Per-key lock to prevent cache stampede — cleaned up in finally
+        lock = self._locks.setdefault(key, asyncio.Lock())
+        try:
+            async with lock:
+                # Double-check after acquiring lock
+                cached = await self.get(key)
+                if cached is not None:
+                    return cached
 
-            if asyncio.iscoroutinefunction(factory):
-                value = await factory()
-            else:
-                value = factory()
+                if asyncio.iscoroutinefunction(factory):
+                    value = await factory()
+                else:
+                    value = factory()
 
-            if value is not None:
-                await self.set(key, value, ttl)
-            return value
+                if value is not None:
+                    await self.set(key, value, ttl)
+                return value
+        finally:
+            self._locks.pop(key, None)
 
     @property
     def backend(self) -> str:

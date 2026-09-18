@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-56"
 source_prds: ["60-需求-HTTP2多路复用"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-56: 服务端 Connection Keep-Alive 与 HTTP/2 多路复用优化 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[60-需求-HTTP2多路复用.md](../../prds/2026-09/60-需求-HTTP2多路复用.md)
 > 提取日期：2026-09-11

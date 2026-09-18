@@ -15,11 +15,11 @@ Usage::
 
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+import logging
+from typing import Any, Optional
 
 import httpx
 
@@ -49,6 +49,36 @@ class ChatResponse:
     provider: ProviderType
     usage: dict = field(default_factory=dict)
     finish_reason: str = "stop"
+
+
+# ── Shared HTTP client (connection pooling) ─────────────────────────────────
+
+_shared_client: httpx.AsyncClient | None = None
+
+
+def _get_http_client() -> httpx.AsyncClient:
+    """Lazy-init a shared httpx client with connection pooling.
+
+    Reusing a single client across all provider calls avoids the TCP/TLS
+    handshake on every request — the largest single latency source in the
+    chat + embedding hot path.
+    """
+    global _shared_client
+    if _shared_client is None or _shared_client.is_closed:
+        _shared_client = httpx.AsyncClient(
+            timeout=httpx.Timeout(120.0, connect=10.0),
+            limits=httpx.Limits(max_keepalive_connections=10, max_connections=50),
+        )
+    return _shared_client
+
+
+async def close_http_client():
+    """Close the shared httpx client — call during app shutdown."""
+    global _shared_client
+    if _shared_client is not None and not _shared_client.is_closed:
+        await _shared_client.aclose()
+        _shared_client = None
+        logger.info("LLM provider HTTP client closed")
 
 
 # ── LLMProvider ABC ────────────────────────────────────────────────────────
@@ -142,40 +172,42 @@ class OllamaProvider(LLMProvider):
         **kwargs,
     ) -> ChatResponse:
         timeout = float(getattr(settings, "ollama_chat_timeout", 120))
-        async with httpx.AsyncClient(timeout=httpx.Timeout(timeout)) as client:
-            resp = await client.post(
-                f"{self._base_url}/api/chat",
-                json={
-                    "model": self._chat_model,
-                    "messages": [{"role": m.role, "content": m.content} for m in messages],
-                    "stream": False,
-                    "options": {
-                        "temperature": temperature,
-                        "num_predict": max_tokens,
-                    },
+        client = _get_http_client()
+        resp = await client.post(
+            f"{self._base_url}/api/chat",
+            json={
+                "model": self._chat_model,
+                "messages": [{"role": m.role, "content": m.content} for m in messages],
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                    "num_predict": max_tokens,
                 },
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            return ChatResponse(
-                content=data["message"]["content"],
-                model=self._chat_model,
-                provider=ProviderType.OLLAMA,
-                usage={
-                    "prompt_tokens": data.get("prompt_eval_count", 0),
-                    "completion_tokens": data.get("eval_count", 0),
-                },
-                finish_reason=data.get("done_reason", "stop"),
-            )
+            },
+            timeout=httpx.Timeout(timeout),
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return ChatResponse(
+            content=data["message"]["content"],
+            model=self._chat_model,
+            provider=ProviderType.OLLAMA,
+            usage={
+                "prompt_tokens": data.get("prompt_eval_count", 0),
+                "completion_tokens": data.get("eval_count", 0),
+            },
+            finish_reason=data.get("done_reason", "stop"),
+        )
 
     async def embed(self, text: str) -> list[float]:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
-            resp = await client.post(
-                f"{self._base_url}/api/embeddings",
-                json={"model": self._embed_model, "prompt": text},
-            )
-            resp.raise_for_status()
-            return resp.json()["embedding"]
+        client = _get_http_client()
+        resp = await client.post(
+            f"{self._base_url}/api/embeddings",
+            json={"model": self._embed_model, "prompt": text},
+            timeout=httpx.Timeout(30.0),
+        )
+        resp.raise_for_status()
+        return resp.json()["embedding"]
 
 
 # ── DeepSeekProvider ───────────────────────────────────────────────────────
@@ -183,6 +215,10 @@ class OllamaProvider(LLMProvider):
 
 class DeepSeekProvider(LLMProvider):
     """DeepSeek cloud provider — uses the OpenAI-compatible API.
+
+    The ``AsyncOpenAI`` client is created once and reused — it manages its
+    own internal connection pool. Previously a new client was created on
+    every ``chat()`` / ``embed()`` call, which discarded the pool.
 
     Config keys:
         - ``deepseek_api_key`` / ``DEEPSEEK_API_KEY``
@@ -201,6 +237,19 @@ class DeepSeekProvider(LLMProvider):
         self._base_url = base_url or settings.deepseek_base_url
         self._chat_model = chat_model or settings.deepseek_default_model
         self._embed_model = embed_model or getattr(settings, "deepseek_embed_model", None) or "deepseek-embed"
+        # Reuse a single AsyncOpenAI client — its internal httpx pool handles
+        # keep-alive and connection reuse.
+        self._client: Any = None
+
+    def _get_openai_client(self):
+        if self._client is None:
+            from openai import AsyncOpenAI
+            self._client = AsyncOpenAI(
+                api_key=self._api_key,
+                base_url=self._base_url,
+                timeout=float(getattr(settings, "deepseek_chat_timeout", 300)),
+            )
+        return self._client
 
     @property
     def provider_type(self) -> ProviderType:
@@ -221,13 +270,7 @@ class DeepSeekProvider(LLMProvider):
         max_tokens: int = 4096,
         **kwargs,
     ) -> ChatResponse:
-        from openai import AsyncOpenAI
-
-        client = AsyncOpenAI(
-            api_key=self._api_key,
-            base_url=self._base_url,
-            timeout=float(getattr(settings, "deepseek_chat_timeout", 300)),
-        )
+        client = self._get_openai_client()
         response = await client.chat.completions.create(
             model=self._chat_model,
             messages=[{"role": m.role, "content": m.content} for m in messages],
@@ -248,13 +291,7 @@ class DeepSeekProvider(LLMProvider):
         )
 
     async def embed(self, text: str) -> list[float]:
-        from openai import AsyncOpenAI
-
-        client = AsyncOpenAI(
-            api_key=self._api_key,
-            base_url=self._base_url,
-            timeout=30.0,
-        )
+        client = self._get_openai_client()
         response = await client.embeddings.create(
             model=self._embed_model,
             input=text,
@@ -313,10 +350,31 @@ class LLMProviderRouter:
     async def chat_with_fallback(
         self, messages: list[ChatMessage], **kwargs
     ) -> ChatResponse:
-        """Chat with automatic fallback to Ollama."""
+        """Chat with circuit breaker + automatic fallback to Ollama.
+
+        If the primary provider's circuit breaker is open, skips directly to
+        the fallback instead of waiting for a timeout.
+        """
+        from shared.circuit_breaker import CircuitBreakerOpen, get_circuit_breaker
+
+        primary = self.chat_provider
+        primary_cb = get_circuit_breaker(f"llm:chat:{primary.provider_type.value}")
+
+        if not primary_cb.allow():
+            if self._chat_provider_type != ProviderType.OLLAMA and ProviderType.OLLAMA in self._providers:
+                logger.warning(
+                    f"[LLM] Circuit breaker open for {primary.provider_type.value}, "
+                    f"falling back to Ollama"
+                )
+                return await self._providers[ProviderType.OLLAMA].chat(messages, **kwargs)
+            raise CircuitBreakerOpen(f"llm:chat:{primary.provider_type.value}")
+
         try:
-            return await self.chat_provider.chat(messages, **kwargs)
+            result = await primary.chat(messages, **kwargs)
+            primary_cb.record_success()
+            return result
         except Exception as e:
+            primary_cb.record_failure()
             if self._chat_provider_type != ProviderType.OLLAMA and ProviderType.OLLAMA in self._providers:
                 logger.warning(
                     f"[LLM] {self._chat_provider_type.value} chat failed: {e}, "
@@ -326,14 +384,31 @@ class LLMProviderRouter:
             raise
 
     async def embed_with_fallback(self, text: str) -> list[float]:
-        """Embed with automatic fallback to Ollama.
+        """Embed with circuit breaker + automatic fallback to Ollama.
 
         Note: fallback may change embedding dimensions, which requires
         rebuilding the RAG index.
         """
+        from shared.circuit_breaker import CircuitBreakerOpen, get_circuit_breaker
+
+        primary = self.embed_provider
+        primary_cb = get_circuit_breaker(f"llm:embed:{primary.provider_type.value}")
+
+        if not primary_cb.allow():
+            if self._embed_provider_type != ProviderType.OLLAMA and ProviderType.OLLAMA in self._providers:
+                logger.warning(
+                    f"[LLM] Circuit breaker open for {primary.provider_type.value} embed, "
+                    f"falling back to Ollama"
+                )
+                return await self._providers[ProviderType.OLLAMA].embed(text)
+            raise CircuitBreakerOpen(f"llm:embed:{primary.provider_type.value}")
+
         try:
-            return await self.embed_provider.embed(text)
+            result = await primary.embed(text)
+            primary_cb.record_success()
+            return result
         except Exception as e:
+            primary_cb.record_failure()
             if self._embed_provider_type != ProviderType.OLLAMA and ProviderType.OLLAMA in self._providers:
                 logger.warning(
                     f"[LLM] {self._embed_provider_type.value} embedding failed: {e}, "
@@ -360,7 +435,7 @@ class LLMProviderRouter:
 
 # ── Singleton ──────────────────────────────────────────────────────────────
 
-_router: Optional[LLMProviderRouter] = None
+_router: LLMProviderRouter | None = None
 
 
 def get_llm_router() -> LLMProviderRouter:

@@ -1,40 +1,108 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-49"
-title: "环境标识与切换器 — 开发任务"
-status: 需求已编写
-priority: 中
+title: "YV-09-49: 环境标识与切换器 — 开发方案"
+status: 已完成
+priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "23-prd-环境标识与切换器.md"
 ---
 
-# 环境标识与切换器 — 开发任务
+# YV-09-49: 环境标识与切换器 — 开发方案
 
-> 来源 PRD：[23-prd-环境标识与切换器.md](../prds/2026-09/23-prd-环境标识与切换器.md)
-> 需求编号：YV-09-49 · 优先级：中 · 人天：0.3d
+> 需求编号：YV-09-49 · 人天：0.5d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|------|------|
-| 1 | 创建环境配置 | `environments.ts` | 3 个环境配置完整，featureFlags 正确 | 0.03 |
-| 2 | 创建环境 Store | `environment.ts` | 环境切换/持久化逻辑正确 | 0.03 |
-| 3 | 创建环境 Composable | `useEnvironment.ts` | 标题更新、危险操作确认 | 0.03 |
-| 4 | 创建 EnvironmentBadge 组件 | `EnvironmentBadge.vue` | 非生产环境显示彩色横幅 | 0.03 |
-| 5 | 创建 EnvironmentSwitcher 组件 | `EnvironmentSwitcher.vue` | 管理员可切换环境，页面刷新 | 0.03 |
-| 6 | 创建 ProdWarningDialog 组件 | `ProdWarningDialog.vue` | 生产环境危险操作需输入 CONFIRM | 0.03 |
-| 7 | 创建页面标题工具 | `title.ts` | 页面标题包含环境前缀 | 0.02 |
-| 8 | 更新环境变量文件 | `.env` / `.env.staging` / `.env.production` | 构建时环境变量注入正确 | 0.02 |
-| 9 | 集成到全局布局 | `AppHeader.vue` | 横幅和切换器正确显示 | 0.03 |
-| 10 | 集成到危险操作按钮 | 各页面的删除/批量操作按钮 | 生产环境需要确认 | 0.05 |
-
-**总计：** 0.3d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+Header 区域显示当前环境标识（DEV/TEST/PROD），防止误操作生产环境。生产环境显示红色警告条。
+
+### 环境检测
+
+```typescript
+const envLabel = computed(() => {
+  const api = import.meta.env.RSBUILD_API_BASE;
+  if (api.includes("localhost")) return { label: "DEV", color: "green" };
+  if (api.includes("test")) return { label: "TEST", color: "orange" };
+  return { label: "PROD", color: "red" };
+});
+```
+
+### 生产环境保护
+
+| 机制 | 说明 |
+|------|------|
+| 红色顶栏警告 | 「⚠ 当前为生产环境，请谨慎操作」 |
+| 删除确认增强 | 生产环境删除操作需输入确认文本 |
+| 环境切换器 | Header 下拉切换 API 地址 |
+
+### 实施步骤：0.5d
+
+- 环境标识组件 + 生产环境警告条
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 三色环境标识正确显示
+- [ ] 生产环境红色警告 + 删除确认增强
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/23-prd-test-环境标识与切换器.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

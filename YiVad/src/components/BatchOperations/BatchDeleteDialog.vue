@@ -15,8 +15,15 @@ defineProps<{ count: number }>();
 const emit = defineEmits<{ confirm: [] }>();
 
 const visible = ref(false);
-const open = () => { visible.value = true; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm"); visible.value = false; };
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm");
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>

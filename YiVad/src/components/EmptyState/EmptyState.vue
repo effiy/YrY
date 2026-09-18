@@ -30,8 +30,21 @@ defineEmits<{ action: [] }>();
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
-  &__illustration { margin-bottom: 16px; opacity: 0.6; }
-  &__title { font-size: 16px; font-weight: 500; margin: 0 0 8px; color: var(--el-text-color-regular); }
-  &__description { font-size: 13px; color: var(--el-text-color-secondary); margin: 0 0 16px; max-width: 320px; }
+  &__illustration {
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+  &__title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--el-text-color-regular);
+  }
+  &__description {
+    max-width: 320px;
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+  }
 }
 </style>

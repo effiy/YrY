@@ -10,9 +10,7 @@
           <span class="rag-param-label">Scope:</span>
           <el-input v-model="chatScope" placeholder="Full KB" size="small" clearable class="rag-scope-input" />
         </div>
-        <el-button text type="danger" size="small" @click="clearChat" :disabled="!messages.length">
-          Clear Chat
-        </el-button>
+        <el-button text type="danger" size="small" @click="clearChat" :disabled="!messages.length"> Clear Chat </el-button>
       </div>
     </header>
 
@@ -27,7 +25,10 @@
                 v-for="(p, i) in CHAT_EXAMPLE_PROMPTS"
                 :key="i"
                 class="welcome-tag"
-                @click="chatInput = p; sendChat()"
+                @click="
+                  chatInput = p;
+                  sendChat();
+                "
                 effect="plain"
               >
                 {{ p }}
@@ -79,13 +80,7 @@
             </el-icon>
           </div>
           <div v-show="m._showSources" class="sources-list">
-            <SourceChip
-              v-for="(s, si) in m.sources"
-              :key="si"
-              :source="s"
-              :index="si"
-              @click="showSourceDetail(s, si)"
-            />
+            <SourceChip v-for="(s, si) in m.sources" :key="si" :source="s" :index="si" @click="showSourceDetail(s, si)" />
           </div>
         </div>
       </div>
@@ -117,9 +112,7 @@ import { ref, nextTick, onMounted, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 import type { InputInstance } from "element-plus";
 import { Document, ArrowDown, Loading, CopyDocument, RefreshRight, ChatDotRound } from "@element-plus/icons-vue";
-import {
-  renderAnswer, CHAT_EXAMPLE_PROMPTS
-} from "@/views/rag/constants";
+import { renderAnswer, CHAT_EXAMPLE_PROMPTS } from "@/views/rag/constants";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useRagStream } from "@/views/rag/composables/useRagStream";
@@ -159,9 +152,7 @@ function scrollToBottom(force?: boolean) {
 }
 
 function buildHistory() {
-  return messages.value
-    .filter((m) => !m.streaming && m.content.trim())
-    .map((m) => ({ role: m.role, content: m.content }));
+  return messages.value.filter(m => !m.streaming && m.content.trim()).map(m => ({ role: m.role, content: m.content }));
 }
 
 const { runStream, stopStream } = useRagStream({
@@ -175,16 +166,22 @@ const { runStream, stopStream } = useRagStream({
   currentRagMeta: () => ({ scope: chatScope.value }),
   buildStreamPayload: () => ({
     messages: buildHistory(),
-    scope: chatScope.value || undefined,
-  }),
+    scope: chatScope.value || undefined
+  })
 });
 
 const { focus: focusChatInput } = useRagKeyboard(chatInputRef);
 
 function escapeHandler(e: KeyboardEvent) {
   if (e.key !== "Escape") return;
-  if (sending.value) { stopStream(); return; }
-  if (chatInput.value) { chatInput.value = ""; return; }
+  if (sending.value) {
+    stopStream();
+    return;
+  }
+  if (chatInput.value) {
+    chatInput.value = "";
+    return;
+  }
 }
 
 onMounted(() => {
@@ -228,9 +225,10 @@ const { openInAiChat } = useAiChatBridge();
 
 async function continueInAiChat(m: ChatMessage) {
   const sources = m.sources ?? [];
-  const ctxSections = sources.slice(0, 3).map((s, i) =>
-    `## ${i + 1}. ${s.file_path}\n\n${s.text?.slice(0, 400) ?? ""}`
-  ).join("\n\n---\n\n");
+  const ctxSections = sources
+    .slice(0, 3)
+    .map((s, i) => `## ${i + 1}. ${s.file_path}\n\n${s.text?.slice(0, 400) ?? ""}`)
+    .join("\n\n---\n\n");
   const tags: string[] = ["rag"];
   if (chatScope.value) tags.push(`ctx:${chatScope.value}`);
   const userQuestion = [...messages.value].reverse().find(x => x.role === "user")?.content ?? "";
@@ -266,58 +264,57 @@ function clearChat() {
 </script>
 
 <style scoped lang="scss">
-@use "./styles/shared.scss";
-
+@use "./styles/shared";
 .rag-scope-row {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
 }
-
 .rag-scope-input {
   width: 160px;
 }
-
 .rag-chat-actions {
   display: flex;
   gap: 8px;
 }
-
 .rag-chat {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 120px);
-
   &__messages {
     flex: 1;
-    overflow-y: auto;
     padding: 0 0 16px;
+    overflow-y: auto;
   }
-
-  &__welcome { margin-top: 40px; }
-
+  &__welcome {
+    margin-top: 40px;
+  }
   &__input {
     flex-shrink: 0;
     padding: 12px 0 20px;
-    border-top: 1px solid var(--el-border-color-lighter);
     background: var(--el-bg-color);
+    border-top: 1px solid var(--el-border-color-lighter);
   }
 }
-
 .welcome-prompts {
-  p { margin: 0 0 8px; font-size: 13px; color: var(--el-text-color-secondary); }
+  p {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+  }
   .welcome-tag {
     margin: 4px;
     cursor: pointer;
-    &:hover { color: var(--el-color-primary); border-color: var(--el-color-primary); }
+    &:hover {
+      color: var(--el-color-primary);
+      border-color: var(--el-color-primary);
+    }
   }
 }
-
 .chat-msg {
-  margin-bottom: 16px;
   padding: 12px 16px;
+  margin-bottom: 16px;
   border-radius: 8px;
-
   &--user {
     background: var(--el-color-primary-light-9);
     border: 1px solid var(--el-color-primary-light-7);
@@ -326,68 +323,65 @@ function clearChat() {
     background: var(--el-fill-color);
     border: 1px solid var(--el-border-color-light);
   }
-
-  &__role { margin-bottom: 6px; }
-
+  &__role {
+    margin-bottom: 6px;
+  }
   &__content {
     font-size: 14px;
     line-height: 1.7;
     color: var(--el-text-color-primary);
+    overflow-wrap: break-word;
     white-space: pre-wrap;
-    word-break: break-word;
-
     :deep(.citation) {
-      color: var(--el-color-primary);
-      font-weight: 600;
       font-size: 11px;
-      cursor: pointer;
+      font-weight: 600;
       vertical-align: super;
+      color: var(--el-color-primary);
+      cursor: pointer;
     }
   }
-
   &__streaming {
+    display: flex;
+    gap: 4px;
+    align-items: center;
     margin-top: 6px;
     font-size: 12px;
     color: var(--el-text-color-placeholder);
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
-
   &__actions {
-    margin-top: 6px;
     display: flex;
     justify-content: flex-end;
+    margin-top: 6px;
     opacity: 0.6;
     transition: opacity 0.15s;
   }
   &:hover &__actions {
     opacity: 1;
   }
-
   &__sources {
-    margin-top: 10px;
     padding-top: 8px;
+    margin-top: 10px;
     border-top: 1px solid var(--el-border-color-lighter);
   }
 }
-
 .sources-header {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   font-size: 12px;
   color: var(--el-text-color-secondary);
   cursor: pointer;
   user-select: none;
-  &:hover { color: var(--el-color-primary); }
-
+  &:hover {
+    color: var(--el-color-primary);
+  }
   .sources-chevron {
     transition: transform 0.2s;
-    &.is-reversed { transform: rotate(180deg); }
+    &.is-reversed {
+      transform: rotate(180deg);
+    }
   }
 }
-
 .sources-list {
   display: flex;
   flex-direction: column;

@@ -1,49 +1,31 @@
 ---
 doc_type: test
-title: "YP-07-04: 缺陷修复 — RPC 参数名契约修复与聊天构建兼容性 — 测试规格"
-status: 待开始
-priority: P2
+title: "YP-07-04: RPC 参数与构建 — 测试用例"
+status: 已完成
+priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202607"
-prd_task_id: "YP-07-04"
 source_prds: ["04-缺陷修复-RPC参数与构建"]
-source_modules: []
----
-# YP-07-04: 缺陷修复 — RPC 参数名契约修复与聊天构建兼容性 — 测试规格
-
-> 来源 PRD：[04-缺陷修复-RPC参数与构建.md](../../prds/2026-07/04-缺陷修复-RPC参数与构建.md)
-> 提取日期：2026-09-11
-
+source_modules: ["04-prd-task-RPC参数与构建"]
 ---
 
-## 测试场景
+# YP-07-04: RPC 参数与构建 — 测试用例
 
-### 功能验证
+## 测试用例
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-RPC-001 | filter 参数正确 | `rg '"query"' src/api` 零结果 | P0 |
+| TC-RPC-002 | target_file 参数正确 | `rg '"path"' src/api/services` 零结果 | P0 |
+| TC-RPC-003 | cname 参数正确 | `rg 'collection_name' src/api` 零结果 | P0 |
+| TC-RPC-004 | 构建产物正确 | `npm run build` filenameHash:false | P0 |
+| TC-RPC-005 | CDN 资源 200 | `chrome.runtime.getURL` 返回正常 | P1 |
 
-### 边界测试
+## 出口准则
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 全局搜索零契约违规

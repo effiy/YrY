@@ -45,4 +45,9 @@ CACHE_TTL = {
     "data:query": 60,          # 1 minute
     "data:menus": 3600,        # 1 hour
     "data:users": 300,         # 5 minutes
+    "knowledge:scan": 30,      # 30 seconds (knowledge watcher polls every 60s)
+    "knowledge:files": 30,     # 30 seconds
+    "rag:status": 10,          # 10 seconds
+    "about:index": 3600,       # 1 hour (static data)
+    "system:scheduler": 30,    # 30 seconds
 }

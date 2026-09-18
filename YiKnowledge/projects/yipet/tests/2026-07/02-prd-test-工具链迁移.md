@@ -1,49 +1,31 @@
 ---
 doc_type: test
-title: "代码检查工具链迁移 — 测试规格"
-status: 待开始
-priority: P1
+title: "YP-07-02: 工具链迁移 — 测试用例"
+status: 已完成
+priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202607"
-prd_task_id: "2"
 source_prds: ["02-基础设施-工具链迁移"]
-source_modules: []
----
-# 代码检查工具链迁移 — 测试规格
-
-> 来源 PRD：[02-基础设施-工具链迁移.md](../../prds/2026-07/02-基础设施-工具链迁移.md)
-> 提取日期：2026-09-11
-
+source_modules: ["02-prd-task-工具链迁移"]
 ---
 
-## 测试场景
+# YP-07-02: 工具链迁移 — 测试用例
 
-### 功能验证
+## 测试用例
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-TOOL-001 | ESLint 检查 | `npm run lint` 通过 | P0 |
+| TC-TOOL-002 | Prettier 格式化 | 保存自动格式化 | P1 |
+| TC-TOOL-003 | pre-commit hook | 不规范代码阻止提交 | P0 |
+| TC-TOOL-004 | commitlint | 不规范提交信息拦截 | P0 |
+| TC-TOOL-005 | Vitest 运行 | `npm test` 通过 | P0 |
 
-### 边界测试
+## 出口准则
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] Git hooks 生效

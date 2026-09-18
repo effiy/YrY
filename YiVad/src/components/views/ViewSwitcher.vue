@@ -23,6 +23,6 @@ const availableViews = [
   { key: "kanban" as ViewType, label: "Kanban", icon: Grid },
   { key: "calendar" as ViewType, label: "Calendar", icon: Calendar },
   { key: "gallery" as ViewType, label: "Gallery", icon: PictureFilled },
-  { key: "map" as ViewType, label: "Map", icon: Location },
+  { key: "map" as ViewType, label: "Map", icon: Location }
 ];
 </script>

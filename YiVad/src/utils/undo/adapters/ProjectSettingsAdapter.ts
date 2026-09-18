@@ -12,14 +12,14 @@ export function createSettingsUpdateCommand(
     timestamp: Date.now(),
     source: "user",
     description: `修改设置 ${settingName}`,
-    category: "settings",
+    category: "settings"
   };
   const changeData: ChangeData = {
     type: "update",
     entityType: "project_settings",
     entityId,
     before: { [settingName]: oldValue },
-    after: { [settingName]: newValue },
+    after: { [settingName]: newValue }
   };
   return new UpdateCommand(context, changeData, apiUpdate);
 }

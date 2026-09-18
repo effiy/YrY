@@ -1,6 +1,6 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 @dataclass
@@ -13,13 +13,13 @@ class AuditLog:
     operation: str  # CREATE | UPDATE | DELETE
     collection: str
     document_key: str
-    before: Optional[Dict[str, Any]] = None
-    after: Optional[Dict[str, Any]] = None
-    changes: Optional[Dict[str, Any]] = None
+    before: dict[str, Any] | None = None
+    after: dict[str, Any] | None = None
+    changes: dict[str, Any] | None = None
     ip_address: str = ""
     user_agent: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = {}
         for k, v in asdict(self).items():
             if v is not None:

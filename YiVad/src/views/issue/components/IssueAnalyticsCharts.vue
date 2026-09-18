@@ -80,12 +80,12 @@ function onChartClick(dim: "status" | "priority" | "issue_type" | "assignee", ev
   margin-bottom: 20px;
 }
 .issue-chart {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
@@ -96,16 +96,16 @@ function onChartClick(dim: "status" | "priority" | "issue_type" | "assignee", ev
 }
 .issue-chart__title {
   display: flex;
+  flex-shrink: 0;
   gap: 6px;
   align-items: center;
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 700;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
   border-bottom: 1px solid var(--el-border-color-lighter);
-  flex-shrink: 0;
 }
 .issue-chart__badge {
   padding: 0 5px;
@@ -113,9 +113,9 @@ function onChartClick(dim: "status" | "priority" | "issue_type" | "assignee", ev
   font-weight: 600;
   line-height: 15px;
   color: var(--el-color-primary);
+  text-transform: none;
   background: var(--el-color-primary-light-9);
   border-radius: 3px;
-  text-transform: none;
 }
 .issue-chart__body {
   flex: 1;

@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-158"
 source_prds: ["164-需求-Prompt注入防御"]
 source_modules: []
+source_okr: [yiai-003]
 ---
 # YA-09-158: Prompt 注入防御 — 多层防御体系 + 三明治防护 + 注入评分 + 攻击日志告警 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[164-需求-Prompt注入防御.md](../../prds/2026-09/164-需求-Prompt注入防御.md)
 > 提取日期：2026-09-11

@@ -1,49 +1,44 @@
 ---
 doc_type: test
-title: "Service Worker 可靠性增强 — 心跳保活与消息重试 — 测试规格"
-status: 待开始
+title: "YP-09-02: Service Worker 可靠性 — 测试用例"
+status: 已完成
 priority: P0
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-09-02"
 source_prds: ["09-稳定性-ServiceWorker"]
-source_modules: []
----
-# Service Worker 可靠性增强 — 心跳保活与消息重试 — 测试规格
-
-> 来源 PRD：[09-稳定性-ServiceWorker.md](../../prds/2026-09/09-稳定性-ServiceWorker.md)
-> 提取日期：2026-09-11
-
+source_modules: ["09-prd-task-ServiceWorker"]
+source_okr: [yipet-004]
 ---
 
-## 测试场景
+# YP-09-02: Service Worker 可靠性 — 测试用例
 
-### 功能验证
+## 一、单元测试
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-SW-01 | 心跳 20s 发送 ping | `setInterval` 每 20s 触发，SW 保持 running |
+| UT-SW-02 | 空闲 35s 后被终止 (心跳关闭) | 无心跳 → Chrome 终止 SW |
+| UT-SW-03 | Content Script 唤醒 SW | `chrome.runtime.sendMessage` → SW 从 terminated→running |
+| UT-SW-04 | 休眠期间消息入队 | SW terminated → 消息写入 `chrome.storage.local` |
+| UT-SW-05 | 唤醒后消息批量出队 | SW 恢复 → 从 storage 读取并逐条处理 |
+| UT-SW-06 | 崩溃恢复 | SW throw Error → try/catch → chrome.storage 恢复状态 |
 
-### 边界测试
+## 二、集成测试
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 编号 | 场景 | 预期 |
+|------|------|------|
+| IT-SW-01 | SW 30s 空闲→终止→Content Script 唤醒 | 全链路：终止→消息入队→唤醒→出队→正常 |
+| IT-SW-02 | 长期运行稳定性 (1h) | SW 未意外终止，心跳正常 |
 
-### 异常测试
+## 三、出口准则
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
+- [ ] P0 用例 100% 通过
+- [ ] 1h 长期运行 SW 无意外终止
 
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

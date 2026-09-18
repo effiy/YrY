@@ -1,41 +1,62 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-205"
-title: "YA-09-205: 知识图谱查询 — 图基知识检索、实体关系遍历、类 SPARQL 查询接口、概念间路径查找、子图提取、图谱可视化输出、与现有知识图谱集成 — 开发任务"
+prd_task_id: "YA-09-143"
+title: "YA-09-143: 知识图谱查询 — 实体关系遍历 + 图检索 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 1.0
 source_prd: "208-需求-知识图谱查询.md"
+source_okr: [yiai-003]
 ---
 
-# YA-09-205: 知识图谱查询 — 图基知识检索、实体关系遍历、类 SPARQL 查询接口、概念间路径查找、子图提取、图谱可视化输出、与现有知识图谱集成 — 开发任务
+# YA-09-143: 知识图谱查询 — 实体关系遍历 + 图检索 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[208-需求-知识图谱查询.md](../../prds/2026-09/208-需求-知识图谱查询.md)
-> 需求编号：YA-09-205 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-143 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+从 YiKnowledge 的 frontmatter 和文件间引用关系中自动构建知识图谱（Neo4j/NetworkX），支持实体关系遍历查询。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+import networkx as nx
 
-| 步骤 | 任务 | 产出 |
+G = nx.DiGraph()
+
+async def build_knowledge_graph():
+    files = await db.knowledge_files.find({}).to_list(None)
+    for f in files:
+        G.add_node(f["path"], title=f["title"], tags=f["tags"], type=f["type"])
+        for tag in f.get("tags", []): G.add_edge(f["path"], f"tag:{tag}")
+        for related in f.get("related", []): G.add_edge(f["path"], related)
+
+async def query_graph(entity: str, depth: int = 2) -> list:
+    """从 entity 出发遍历 depth 层"""
+    if entity not in G: return []
+    paths = list(nx.single_source_shortest_path(G, entity, cutoff=depth))
+    return [{"path": p, "nodes": [G.nodes[n] for n in p]} for p in paths]
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | NetworkX 构图 + 遍历查询 | "RAG" → 找到所有相关文件和标签 | 0.5 |
+| 2 | 图谱可视化 + Agent 集成 + 测试 | Dashboard 可交互浏览图谱 | 0.5 |
+
+**合计：1.0d**。

@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "152-需求-GraphQL查询接口.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-146: GraphQL 查询接口 — Strawberry 集成 + Schema 自动生成 + DataLoader 防 N+1 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[152-需求-GraphQL查询接口.md](../../prds/2026-09/152-需求-GraphQL查询接口.md)
 > 需求编号：YA-09-146 · 优先级：P2 · 人天：1.5d

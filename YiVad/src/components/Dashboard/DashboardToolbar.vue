@@ -41,13 +41,23 @@ defineEmits<{
 <style scoped lang="scss">
 .dashboard-toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
   flex-shrink: 0;
-
-  &__left { display: flex; align-items: center; gap: 12px; }
-  &__name { font-size: 16px; font-weight: 600; }
-  &__right { display: flex; align-items: center; gap: 6px; }
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  &__left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  &__name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  &__right {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
 }
 </style>

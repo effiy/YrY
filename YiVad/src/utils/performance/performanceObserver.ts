@@ -23,7 +23,7 @@ export function observeRoutePerformance(router: Router): void {
       from: from.fullPath,
       to: to.fullPath,
       duration: Math.round(duration),
-      timestamp: Date.now(),
+      timestamp: Date.now()
     });
     if (routeTimings.length > MAX_RECORDS) routeTimings.shift();
 
@@ -58,7 +58,11 @@ export function measureTiming(name: string): number | null {
   if (!mark) return null;
 
   performance.mark(`${name}-end`);
-  try { performance.measure(name, `${name}-start`, `${name}-end`); } catch { /* ignore */ }
+  try {
+    performance.measure(name, `${name}-start`, `${name}-end`);
+  } catch {
+    /* ignore */
+  }
 
   const duration = performance.now() - mark.startTime;
   mark.duration = Math.round(duration);

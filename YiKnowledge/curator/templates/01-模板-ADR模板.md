@@ -4,7 +4,7 @@ aliases: [adr-template, architecture-decision-template]
 tags: [template, adr, architecture, decision, leader]
 category: curator/templates
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-15
 source: internal
 type: template
 status: stable
@@ -18,8 +18,8 @@ acceptance_criteria:
   - "状态字段强制执行生命周期（proposed → accepted → deprecated → superseded）"
 related:
   - ./README.md
-  - ./knowledge-leaf.md
-  - ./tech-design.md
+  - ./02-模板-知识叶子模板.md
+  - ./07-模板-技术设计模板.md
   - ../../leader/decisions/
   - ../../leader/architecture/design-architecture-decision.md
 ---

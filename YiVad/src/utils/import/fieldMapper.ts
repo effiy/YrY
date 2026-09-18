@@ -13,19 +13,19 @@ export interface MappingTemplate {
  * Auto-match source columns to target fields by name similarity.
  */
 export function autoMap(sourceColumns: string[], targetFields: { name: string; label: string }[]): FieldMapping[] {
-  return sourceColumns.map((col) => {
+  return sourceColumns.map(col => {
     const clean = (s: string) => s.toLowerCase().replace(/[\s_-]/g, "");
 
     // Exact match on name
-    let match = targetFields.find((f) => clean(f.name) === clean(col));
+    let match = targetFields.find(f => clean(f.name) === clean(col));
     // Match on label
-    if (!match) match = targetFields.find((f) => clean(f.label) === clean(col));
+    if (!match) match = targetFields.find(f => clean(f.label) === clean(col));
     // Partial match
-    if (!match) match = targetFields.find((f) => clean(f.name).includes(clean(col)) || clean(col).includes(clean(f.name)));
+    if (!match) match = targetFields.find(f => clean(f.name).includes(clean(col)) || clean(col).includes(clean(f.name)));
 
     return {
       sourceField: col,
-      targetField: match?.name || "",
+      targetField: match?.name || ""
     };
   });
 }
@@ -34,7 +34,7 @@ export function autoMap(sourceColumns: string[], targetFields: { name: string; l
  * Apply field mappings to data rows.
  */
 export function applyMapping(rows: Record<string, string>[], mappings: FieldMapping[]): Record<string, any>[] {
-  return rows.map((row) => {
+  return rows.map(row => {
     const mapped: Record<string, any> = {};
     for (const mapping of mappings) {
       if (!mapping.targetField) continue;
@@ -66,7 +66,9 @@ export function listMappingTemplates(): MappingTemplate[] {
     if (key?.startsWith("field-mapping-")) {
       try {
         templates.push(JSON.parse(localStorage.getItem(key)!));
-      } catch { /* skip corrupt entries */ }
+      } catch {
+        /* skip corrupt entries */
+      }
     }
   }
   return templates;

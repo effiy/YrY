@@ -19,15 +19,18 @@ interface DragState {
   sourceElement: HTMLElement | null;
 }
 
-export function useDraggable(
-  elementRef: Ref<HTMLElement | null>,
-  options: DraggableOptions = {}
-) {
+export function useDraggable(elementRef: Ref<HTMLElement | null>, options: DraggableOptions = {}) {
   const { handle, axis = "both", cancel, group = "default", data = {} } = options;
 
   const state = ref<DragState>({
-    isDragging: false, startX: 0, startY: 0,
-    currentX: 0, currentY: 0, deltaX: 0, deltaY: 0, sourceElement: null,
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    deltaX: 0,
+    deltaY: 0,
+    sourceElement: null
   });
 
   const onDragStartHandlers: Array<(e: PointerEvent) => void> = [];
@@ -51,13 +54,16 @@ export function useDraggable(
 
     state.value = {
       isDragging: true,
-      startX: e.clientX, startY: e.clientY,
-      currentX: e.clientX, currentY: e.clientY,
-      deltaX: 0, deltaY: 0,
-      sourceElement: el,
+      startX: e.clientX,
+      startY: e.clientY,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      deltaX: 0,
+      deltaY: 0,
+      sourceElement: el
     };
 
-    onDragStartHandlers.forEach((fn) => fn(e));
+    onDragStartHandlers.forEach(fn => fn(e));
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -67,25 +73,39 @@ export function useDraggable(
 
     state.value = {
       ...state.value,
-      currentX: e.clientX, currentY: e.clientY,
-      deltaX: dx, deltaY: dy,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      deltaX: dx,
+      deltaY: dy
     };
 
-    onDragMoveHandlers.forEach((fn) => fn(e, state.value));
+    onDragMoveHandlers.forEach(fn => fn(e, state.value));
   }
 
   function onPointerUp(e: PointerEvent) {
     if (!state.value.isDragging) return;
-    onDragEndHandlers.forEach((fn) => fn(e, state.value));
+    onDragEndHandlers.forEach(fn => fn(e, state.value));
     state.value = {
-      isDragging: false, startX: 0, startY: 0,
-      currentX: 0, currentY: 0, deltaX: 0, deltaY: 0, sourceElement: null,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0,
+      deltaX: 0,
+      deltaY: 0,
+      sourceElement: null
     };
   }
 
-  function onDragStart(fn: (e: PointerEvent) => void) { onDragStartHandlers.push(fn); }
-  function onDragMove(fn: (e: PointerEvent, state: DragState) => void) { onDragMoveHandlers.push(fn); }
-  function onDragEnd(fn: (e: PointerEvent, state: DragState) => void) { onDragEndHandlers.push(fn); }
+  function onDragStart(fn: (e: PointerEvent) => void) {
+    onDragStartHandlers.push(fn);
+  }
+  function onDragMove(fn: (e: PointerEvent, state: DragState) => void) {
+    onDragMoveHandlers.push(fn);
+  }
+  function onDragEnd(fn: (e: PointerEvent, state: DragState) => void) {
+    onDragEndHandlers.push(fn);
+  }
 
   onMounted(() => {
     const el = elementRef.value;

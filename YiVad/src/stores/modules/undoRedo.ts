@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { shallowRef } from "vue";
 import { CommandManager } from "@/utils/undo/CommandManager";
 import type { UndoRedoScope } from "@/utils/undo/types";
 
 export const useUndoRedoStore = defineStore("undoRedo", () => {
-  const managers = ref<Map<string, CommandManager>>(new Map());
+  const managers = shallowRef<Map<string, CommandManager>>(new Map());
   const activeScope = ref<UndoRedoScope>("page");
   const activeScopeId = ref<string>("default");
 
@@ -60,6 +60,6 @@ export const useUndoRedoStore = defineStore("undoRedo", () => {
     setActiveScope,
     getActiveManager,
     undoCurrentScope,
-    redoCurrentScope,
+    redoCurrentScope
   };
 });

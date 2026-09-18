@@ -34,7 +34,7 @@ const presets: Record<string, () => DateRange> = {
   today: () => ({ start: dayjs().format("YYYY-MM-DD"), end: dayjs().format("YYYY-MM-DD") }),
   week: () => ({ start: dayjs().subtract(7, "day").format("YYYY-MM-DD"), end: dayjs().format("YYYY-MM-DD") }),
   month: () => ({ start: dayjs().subtract(30, "day").format("YYYY-MM-DD"), end: dayjs().format("YYYY-MM-DD") }),
-  quarter: () => ({ start: dayjs().subtract(90, "day").format("YYYY-MM-DD"), end: dayjs().format("YYYY-MM-DD") }),
+  quarter: () => ({ start: dayjs().subtract(90, "day").format("YYYY-MM-DD"), end: dayjs().format("YYYY-MM-DD") })
 };
 
 function onPresetChange(val: string | number | boolean | undefined) {
@@ -46,7 +46,7 @@ function onCustomChange(val: [Date, Date] | null) {
   if (!val) return;
   emit("change", {
     start: dayjs(val[0]).format("YYYY-MM-DD"),
-    end: dayjs(val[1]).format("YYYY-MM-DD"),
+    end: dayjs(val[1]).format("YYYY-MM-DD")
   });
 }
 
@@ -55,5 +55,9 @@ emit("change", currentRange.value);
 </script>
 
 <style scoped lang="scss">
-.date-range-picker { display: flex; align-items: center; gap: 12px; }
+.date-range-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 </style>

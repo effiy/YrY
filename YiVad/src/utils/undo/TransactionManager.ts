@@ -34,13 +34,13 @@ export class TransactionManager {
       timestamp: Date.now(),
       source: "user",
       description: this.transactionDescription,
-      category: firstCmd.context.category,
+      category: firstCmd.context.category
     };
     const changeData: ChangeData = {
       type: "batch",
       entityType: firstCmd.changeData.entityType,
       before: firstCmd.changeData.before,
-      after: this.transactionCommands[this.transactionCommands.length - 1].changeData.after,
+      after: this.transactionCommands[this.transactionCommands.length - 1].changeData.after
     };
 
     const commands = [...this.transactionCommands];
@@ -59,7 +59,7 @@ export class TransactionManager {
         for (const cmd of commands) await cmd.redo();
       },
       canMergeWith: () => false,
-      mergeWith: () => {},
+      mergeWith: () => {}
     } as ICommand;
   }
 

@@ -11,12 +11,13 @@ Pattern adapted from Pi's ``AgentTool`` + ``executeTool`` in agent-core.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 import logging
 import os
 import time
 import traceback
-from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import aiofiles
 
@@ -39,8 +40,8 @@ class ToolDefinition:
 
     name: str
     description: str
-    parameters: Dict[str, Any]
-    execute: Callable[..., Awaitable[Dict[str, Any]]]
+    parameters: dict[str, Any]
+    execute: Callable[..., Awaitable[dict[str, Any]]]
     requires_confirmation: bool = False
 
 
@@ -50,7 +51,7 @@ class ToolCall:
 
     id: str
     name: str
-    arguments: Dict[str, Any]
+    arguments: dict[str, Any]
 
 
 @dataclass
@@ -60,7 +61,7 @@ class ToolResult:
     call_id: str
     name: str
     content: str
-    error: Optional[str] = None
+    error: str | None = None
     duration_ms: float = 0
     details: Any = None
     terminate: bool = False  # Pi: hint to stop after this tool batch
@@ -73,18 +74,18 @@ class ToolEvent:
     phase: str  # "start" | "update" | "end"
     name: str
     label: str
-    args: Optional[Dict[str, Any]] = None
-    content: Optional[str] = None
-    error: Optional[str] = None
+    args: dict[str, Any] | None = None
+    content: str | None = None
+    error: str | None = None
     duration_ms: float = 0
     timestamp: float = 0.0
     # Pi: tool_execution_update fields
-    tool_call_id: Optional[str] = None
-    partial_result: Optional[Dict[str, Any]] = None
+    tool_call_id: str | None = None
+    partial_result: dict[str, Any] | None = None
     is_error: bool = False
 
 
-def _validate_arguments(name: str, arguments: Any, schema: Dict[str, Any]) -> Optional[str]:
+def _validate_arguments(name: str, arguments: Any, schema: dict[str, Any]) -> str | None:
     """Validate tool-call arguments against the tool's JSON Schema (Pi: validateToolArguments).
 
     Returns an error string if invalid, or ``None`` if valid. Lightweight check for
@@ -111,7 +112,7 @@ def _validate_arguments(name: str, arguments: Any, schema: Dict[str, Any]) -> Op
             return f"Tool '{name}' argument '{fname}' must be a boolean, got {type(value).__name__}"
         if ptype == "integer" and not isinstance(value, int):
             return f"Tool '{name}' argument '{fname}' must be an integer, got {type(value).__name__}"
-        if ptype == "number" and not isinstance(value, (int, float)):
+        if ptype == "number" and not isinstance(value, int | float):
             return f"Tool '{name}' argument '{fname}' must be a number, got {type(value).__name__}"
     return None
 
@@ -125,8 +126,8 @@ class ToolRegistry:
     """
 
     def __init__(self):
-        self._tools: Dict[str, ToolDefinition] = {}
-        self._enabled: Dict[str, bool] = {}
+        self._tools: dict[str, ToolDefinition] = {}
+        self._enabled: dict[str, bool] = {}
 
     def register(self, tool: ToolDefinition) -> None:
         self._tools[tool.name] = tool
@@ -140,15 +141,15 @@ class ToolRegistry:
         if name in self._tools:
             self._enabled[name] = enabled
 
-    def get(self, name: str) -> Optional[ToolDefinition]:
+    def get(self, name: str) -> ToolDefinition | None:
         return self._tools.get(name)
 
-    def get_enabled(self) -> List[ToolDefinition]:
+    def get_enabled(self) -> list[ToolDefinition]:
         return [t for name, t in self._tools.items() if self._enabled.get(name, True)]
 
-    def get_function_definitions(self) -> List[Dict[str, Any]]:
+    def get_function_definitions(self) -> list[dict[str, Any]]:
         """Return OpenAI/Anthropic-compatible function/tool definitions."""
-        defs: List[Dict[str, Any]] = []
+        defs: list[dict[str, Any]] = []
         for tool in self.get_enabled():
             defs.append({
                 "type": "function",
@@ -160,7 +161,7 @@ class ToolRegistry:
             })
         return defs
 
-    def get_tool_catalog(self) -> List[Dict[str, Any]]:
+    def get_tool_catalog(self) -> list[dict[str, Any]]:
         """Return enriched tool descriptors for capability-discovery UIs.
 
         Unlike ``get_function_definitions`` (which produces the LLM-facing
@@ -182,9 +183,9 @@ class ToolRegistry:
         self,
         call: ToolCall,
         *,
-        signal: Optional[asyncio.Event] = None,
-        on_event: Optional[Callable[[ToolEvent], Awaitable[None]]] = None,
-        on_progress: Optional[Callable[[Dict[str, Any]], Awaitable[None]]] = None,
+        signal: asyncio.Event | None = None,
+        on_event: Callable[[ToolEvent], Awaitable[None]] | None = None,
+        on_progress: Callable[[dict[str, Any]], Awaitable[None]] | None = None,
         timeout: float = 60.0,
     ) -> ToolResult:
         """Execute a tool call and emit observability events.
@@ -252,7 +253,7 @@ class ToolRegistry:
                 timestamp=start_ts,
             ))
 
-        async def _run_with_abort() -> Dict[str, Any]:
+        async def _run_with_abort() -> dict[str, Any]:
             """Run the tool in a task, checking the abort signal periodically."""
             if signal and signal.is_set():
                 raise asyncio.CancelledError("Tool execution aborted")
@@ -360,12 +361,11 @@ _ALLOWED_ROOTS = ["../YiKnowledge", "../YiVad", "../YiPet", "../YiAi", "../YiWeb
 
 # Domains that web_fetch is allowed to access. Subdomains are matched by suffix.
 # Empty list = allow all (default when sandbox is off).
-_ALLOWED_DOMAINS: List[str] = []
+_ALLOWED_DOMAINS: list[str] = []
 
 
 def _is_path_allowed(target: str) -> bool:
     """Check if a relative path resolves within an allowed root directory."""
-    import os
     cwd = os.getcwd()
     resolved = os.path.normpath(os.path.join(cwd, target))
     for root in _ALLOWED_ROOTS:
@@ -382,7 +382,7 @@ def _is_url_allowed(url: str) -> bool:
     from urllib.parse import urlparse
     try:
         host = (urlparse(url).hostname or "").lower()
-    except Exception:
+    except ValueError:
         return False
     return any(
         host == allowed or host.endswith("." + allowed)
@@ -392,7 +392,7 @@ def _is_url_allowed(url: str) -> bool:
 
 # ── Global singleton ──────────────────────────────────────────────────────
 
-_registry: Optional[ToolRegistry] = None
+_registry: ToolRegistry | None = None
 
 
 def get_tool_registry() -> ToolRegistry:
@@ -415,7 +415,7 @@ def _format_file_size(size_bytes: int) -> str:
 
 # Coarse grouping used only by capability-discovery UIs.
 # Unknown tools fall back to "general".
-_TOOL_GROUPS: Dict[str, str] = {
+_TOOL_GROUPS: dict[str, str] = {
     "web_search": "search",
     "web_fetch": "search",
     "rag_search": "search",

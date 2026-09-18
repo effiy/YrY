@@ -3,6 +3,8 @@
  * MessageEditDialog — inline edit dialog for chat messages.
  * Extracted from MessageBubble.vue.
  */
+import { t } from '@/shared/i18n';
+
 const model = defineModel<string>({ required: true });
 
 defineProps<{
@@ -26,8 +28,8 @@ const emit = defineEmits<{
         aria-label="Edit message content"
       />
       <div class="mb-edit-actions">
-        <button type="button" class="mb-edit-btn mb-edit-btn--cancel" @click="emit('close')">Cancel</button>
-        <button type="button" class="mb-edit-btn mb-edit-btn--save" @click="emit('save')">Save</button>
+        <button type="button" class="mb-edit-btn mb-edit-btn--cancel" @click="emit('close')">{{ t('chatCancel') }}</button>
+        <button type="button" class="mb-edit-btn mb-edit-btn--save" @click="emit('save')">{{ t('chatSave') }}</button>
       </div>
     </div>
   </dialog>

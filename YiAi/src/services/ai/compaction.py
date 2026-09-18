@@ -28,7 +28,7 @@ _CHARS_PER_TOKEN = 4
 _DEFAULT_KEEP_LAST = 4
 
 
-def estimate_tokens(messages: List[Dict[str, Any]]) -> int:
+def estimate_tokens(messages: list[dict[str, Any]]) -> int:
     """Conservative token count estimation from message content strings."""
     total_chars = 0
     for m in messages:
@@ -40,7 +40,7 @@ def estimate_tokens(messages: List[Dict[str, Any]]) -> int:
 
 
 def should_compact(
-    messages: List[Dict[str, Any]],
+    messages: list[dict[str, Any]],
     max_tokens: int = 8192,
     threshold: float = 0.8,
 ) -> bool:
@@ -55,12 +55,12 @@ def should_compact(
 
 
 async def compact_messages(
-    messages: List[Dict[str, Any]],
+    messages: list[dict[str, Any]],
     *,
     keep_last: int = _DEFAULT_KEEP_LAST,
     compact_model: str = "qwen3.5:4b",
     max_tokens: int = 8192,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Summarize early messages, keep recent ones verbatim.
 
     Args:
@@ -122,7 +122,7 @@ async def compact_messages(
         return messages
 
 
-def _format_for_summary(messages: List[Dict[str, Any]]) -> str:
+def _format_for_summary(messages: list[dict[str, Any]]) -> str:
     """Format messages into a compact text block for the summarizer."""
     lines: list[str] = []
     for m in messages:

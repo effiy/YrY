@@ -14,7 +14,7 @@ export function createTableCreateCommand(
     timestamp: Date.now(),
     source: "user",
     description: `创建 ${entityType}`,
-    category: "table",
+    category: "table"
   };
   const changeData: ChangeData = { type: "create", entityType, before: null, after: data };
   return new CreateCommand(context, changeData, apiCreate, apiDelete);
@@ -31,7 +31,7 @@ export function createTableUpdateCommand(
     timestamp: Date.now(),
     source: "user",
     description: `编辑 ${entityType}`,
-    category: "table",
+    category: "table"
   };
   const changeData: ChangeData = { type: "update", entityType, entityId, before: oldData, after: newData };
   return new UpdateCommand(context, changeData, apiUpdate);
@@ -48,7 +48,7 @@ export function createTableDeleteCommand(
     timestamp: Date.now(),
     source: "user",
     description: `删除 ${entityType}`,
-    category: "table",
+    category: "table"
   };
   const changeData: ChangeData = { type: "delete", entityType, entityId, before: data, after: null };
   return new DeleteCommand(context, changeData, apiDelete, apiCreate);

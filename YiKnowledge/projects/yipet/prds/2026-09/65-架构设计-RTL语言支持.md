@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-58: 聊天窗口国际化 RTL 语言支持 — 阿拉伯语/希伯来语等从右到左布局适配"
 tags: [需求文档, 国际化, RTL, 阿拉伯语, 布局适配, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [65-prd-task-RTL语言支持]
+related_tests: [65-prd-test-RTL语言支持]
 ---
 
 # YP-09-58: 聊天窗口国际化 RTL 语言支持 — 从右到左布局适配
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-58 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YP-09-07（国际化与多语言支持）、YP-09-37（语言包热切换）
@@ -42,6 +50,7 @@ YP-09-07 和 YP-09-37 实现了中英文国际化支持，但聊天窗口的 UI 
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 CSS 使用物理属性
@@ -85,6 +94,7 @@ YP-09-07 和 YP-09-37 实现了中英文国际化支持，但聊天窗口的 UI 
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：CSS 迁移策略 — 全部逻辑属性 vs 仅 RTL 覆盖 vs CSS 方向选择器
@@ -118,6 +128,7 @@ YP-09-07 和 YP-09-37 实现了中英文国际化支持，但聊天窗口的 UI 
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 CSS 逻辑属性对照表
@@ -202,6 +213,7 @@ function applyDirection(lang: string): void {
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 修改文件
@@ -235,6 +247,7 @@ function applyRTLIconMirror(root: ShadowRoot, isRTL: boolean) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 描述 | 文件 | 验证方法 | 人天 |
@@ -249,6 +262,7 @@ function applyRTLIconMirror(root: ShadowRoot, isRTL: boolean) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 | 操作 | 耗时 | 说明 |
@@ -259,6 +273,7 @@ function applyRTLIconMirror(root: ShadowRoot, isRTL: boolean) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### GIVEN/WHEN/THEN 场景
@@ -305,6 +320,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | # | 风险 | 概率 | 影响 | 缓解措施 |
@@ -316,6 +332,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-9"></a>
 ## 九、代码审查检查清单
 
 - [ ] CSS 物理属性全面迁移到逻辑属性（margin/padding/border/position）
@@ -330,6 +347,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回归问题预测
 
 | # | 预测问题 | 原因 | 验证方法 |
@@ -341,6 +359,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -365,6 +384,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 ### D-01：CSS 逻辑属性而非 RTL 覆盖样式
@@ -393,6 +413,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 ### 指标
@@ -412,6 +433,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、安全合规
 
 | 检查项 | 状态 | 说明 |
@@ -422,6 +444,7 @@ THEN 整体文本方向由 bidi 算法自动处理
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、RTL 迁移检查表
 
 ### 组件级检查清单

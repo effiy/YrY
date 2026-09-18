@@ -42,7 +42,7 @@ export function makeKey(tree: TopicTree, topic: string): string {
   const stamp = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
   const prefixMap: Record<TopicTree, string> = {
-    "leader": "leader",
+    leader: "leader",
     "code-review": "cr",
     engineer: "eng",
     producter: "pm",
@@ -92,7 +92,7 @@ export async function getTopicEntry<T extends TopicEntryDocument = TopicEntryDoc
   topic: string,
   key: string
 ): Promise<T | null> {
-  const res = await queryDocuments<T>({ cname: cnameFor(tree, topic), filter: { key }, limit: 1 });
+  const res = await queryDocuments<T>({ cname: cnameFor(tree, topic), filter: { key }, pageSize: 1 });
   if (res.code !== 0) throw new Error(res.message || "Failed to load topic entry");
   const doc = res.data?.list?.[0] ?? null;
   if (!doc) return null;

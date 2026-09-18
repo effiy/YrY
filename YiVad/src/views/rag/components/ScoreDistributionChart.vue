@@ -38,7 +38,10 @@ const option = computed<ECOption>(() => {
   const counts = labels.map(() => 0);
   for (const s of scores) {
     for (let i = 0; i < buckets.length; i++) {
-      if (s < buckets[i]) { counts[i]++; break; }
+      if (s < buckets[i]) {
+        counts[i]++;
+        break;
+      }
     }
   }
   return {
@@ -46,22 +49,25 @@ const option = computed<ECOption>(() => {
     grid: { left: "3%", right: "4%", top: "5%", bottom: "3%", containLabel: true },
     xAxis: { type: "category", data: labels, axisLabel: { fontSize: 9, rotate: 30 } },
     yAxis: { type: "value", name: "Chunks", axisLabel: { fontSize: 9 }, minInterval: 1 },
-    series: [{
-      type: "bar", barWidth: "60%",
-      data: counts.map((c, i) => ({ value: c, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
-      label: { show: true, position: "top", fontSize: 10, formatter: (p: any) => p.value > 0 ? p.value : "" },
-    }],
+    series: [
+      {
+        type: "bar",
+        barWidth: "60%",
+        data: counts.map((c, i) => ({ value: c, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
+        label: { show: true, position: "top", fontSize: 10, formatter: (p: any) => (p.value > 0 ? p.value : "") }
+      }
+    ]
   };
 });
 </script>
 
 <style scoped lang="scss">
 .score-dist-chart {
+  padding: 12px;
+  margin-bottom: 12px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 12px;
 }
 .sdc-header {
   display: flex;

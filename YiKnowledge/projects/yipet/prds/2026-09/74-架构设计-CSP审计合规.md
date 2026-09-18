@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-67: Content Script CSP 绕过策略审计 — 安全合规的权限最小化验证"
 tags: [需求文档, Content Script, CSP审计, 安全合规, 权限最小化, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yipet-001]
+related_modules: [74-prd-task-CSP审计合规]
+related_tests: [74-prd-test-CSP审计合规]
 ---
 
 # YP-09-67: Content Script CSP 绕过策略审计 — 安全合规验证
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-67 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YP-09-71（沙箱逃逸防护）、YP-09-22（Markdown 渲染安全）
@@ -53,6 +61,7 @@ YiPet 的 Content Script 在 Chrome MV3 的 `ISOLATED` 世界中运行，但 Vue
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 CSP 配置
@@ -117,6 +126,7 @@ graph TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：unsafe-eval 豁免策略 — 保留 vs 消除 vs 最小化
@@ -159,6 +169,7 @@ graph TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 改造后 CSP 架构
@@ -217,6 +228,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 Vue 模板预编译
@@ -374,6 +386,7 @@ jobs:
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -391,6 +404,7 @@ jobs:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、性能分析
 
 ### 6.1 构建时间
@@ -410,6 +424,7 @@ jobs:
 
 ---
 
+<a id="sec-7"></a>
 ## 七、测试规格
 
 ### 场景 1：CSP 审计通过
@@ -457,6 +472,7 @@ jobs:
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -469,6 +485,7 @@ jobs:
 
 ---
 
+<a id="sec-9"></a>
 ## 九、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -480,6 +497,7 @@ jobs:
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01：Vue 模板预编译 vs 运行时编译
@@ -505,6 +523,7 @@ jobs:
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、可观测性
 
 ### 指标
@@ -540,6 +559,7 @@ document.addEventListener('securitypolicyviolation', (e) => {
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、安全合规
 
 ### Chrome MV3 合规
@@ -563,6 +583,7 @@ document.addEventListener('securitypolicyviolation', (e) => {
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、代码审查检查清单
 
 - [ ] CSP 配置月度审计——检查是否引入新的 unsafe 规则

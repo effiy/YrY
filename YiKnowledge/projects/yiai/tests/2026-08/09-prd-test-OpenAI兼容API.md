@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-11"
 source_prds: ["09-需求-OpenAI兼容API"]
 source_modules: []
+source_okr: [yiai-002]
 ---
 # OpenAI 兼容 API — DeepSeek-Harness 风格的多客户端适配层 — 测试规格
 

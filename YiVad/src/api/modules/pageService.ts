@@ -38,10 +38,7 @@ export function getPageList(params: PageQueryParams) {
     if (updated_at_end) filter.updated_at.$lte = updated_at_end + "T23:59:59";
   }
   if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { content: { $regex: search, $options: "i" } }
-    ];
+    filter.$or = [{ title: { $regex: search, $options: "i" } }, { content: { $regex: search, $options: "i" } }];
   }
   return queryDocuments<Page>({
     cname: COLLECTION,

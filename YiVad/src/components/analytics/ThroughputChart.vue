@@ -15,11 +15,13 @@ const option = computed<ECOption>(() => ({
   grid: { top: 16, right: 16, bottom: 24, left: 40 },
   xAxis: { type: "category" as const, data: props.data.map(d => d.period) },
   yAxis: { type: "value" as const, name: "issues" },
-  series: [{
-    data: props.data.map(d => d.count),
-    type: "bar" as const,
-    color: "#409eff",
-    barMaxWidth: 40,
-  }],
+  series: [
+    {
+      data: props.data.map(d => d.count),
+      type: "bar" as const,
+      color: "#409eff",
+      barMaxWidth: 40
+    }
+  ]
 }));
 </script>

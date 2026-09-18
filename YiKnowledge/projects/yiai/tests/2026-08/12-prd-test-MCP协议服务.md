@@ -1,49 +1,28 @@
 ---
 doc_type: test
-title: "MCP 协议服务 — FastMCP 工具代理与 Claude Code 集成 — 测试规格"
-status: 待开始
+title: "YA-08-12: MCP 协议服务 — 测试规格"
+status: 已完成
 priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiAi
 project_id: yiai
 prd_month: "202608"
-prd_task_id: "YA-08-14"
+prd_task_id: "YA-08-12"
 source_prds: ["12-需求-MCP协议服务"]
-source_modules: []
----
-# MCP 协议服务 — FastMCP 工具代理与 Claude Code 集成 — 测试规格
-
-> 来源 PRD：[12-需求-MCP协议服务.md](../../prds/2026-08/12-需求-MCP协议服务.md)
-> 提取日期：2026-09-11
-
+source_modules: ["12-prd-task-MCP协议服务"]
+source_okr: [yiai-003]
 ---
 
-## 测试场景
+# YA-08-12: MCP 协议服务 — 测试规格
 
-### 功能验证
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-MCP-01 | 工具发现 `list_tools` | 返回已注册工具列表（含描述+参数 schema） |
+| UT-MCP-02 | 工具调用 `call_tool` | RPC 方法被代理调用 → 返回结果 |
+| UT-MCP-03 | SSE transport | 客户端通过 SSE 接收工具调用结果 |
+| UT-MCP-04 | 未知工具→错误 | `call_tool("nonexistent")` → error |
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
-
-### 边界测试
-
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

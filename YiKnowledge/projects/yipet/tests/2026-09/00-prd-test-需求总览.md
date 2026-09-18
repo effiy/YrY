@@ -1,49 +1,41 @@
 ---
 doc_type: test
-title: "YiPet 九月迭代 — 稳定性修复 / 安全合规 / 体验优化 / 架构设计蓝图 — 测试规格"
-status: 待开始
-priority: P0
+title: "九月迭代总览 — 测试策略"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-prd_task_id: "YP-09-01"
-source_prds: ["00-需求-需求总览"]
-source_modules: []
----
-# YiPet 九月迭代 — 稳定性修复 / 安全合规 / 体验优化 / 架构设计蓝图 — 测试规格
-
-> 来源 PRD：[00-需求-需求总览.md](../../prds/2026-09/00-需求-需求总览.md)
-> 提取日期：2026-09-11
-
+source_prds: ["00-prd-需求总览"]
+source_modules: ["00-prd-task-需求总览"]
 ---
 
-## 测试场景
+# 九月迭代总览 — 测试策略
 
-### 功能验证
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+## 测试分层
 
-### 边界测试
+| 层级 | 工具 | 覆盖 |
+|------|------|------|
+| L1 单元 | Vitest | 工具函数、ApiClient |
+| L2 集成 | Vitest + mock chrome | SW/CS/IPC |
+| L3 E2E | 加载扩展 | 完整链路 |
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+## 核心用例
 
-### 异常测试
+| 模块 | 关键用例 | 优先级 |
+|------|---------|--------|
+| Content Script | SPA 路由不丢失、防重复注入 | P0 |
+| Service Worker | 心跳保活、唤醒恢复 | P0 |
+| SSE 流式 | 断连重连、AbortSignal | P0 |
+| API 合规 | 参数名 filter、无直接 fetch | P0 |
+| 安全 | CSP 无 eval、XSS DOMPurify | P0 |
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
+## 出口准则
 
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 扩展在 Chrome 中正常加载

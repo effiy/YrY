@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-150: JSON 格式化与验证 — 美化/压缩、节点折叠、JSONPath 求值、Schema 验证、TypeScript 转换、差异对比"
 tags: [需求文档, JSON, 格式化, 验证, JSONPath, Schema, TypeScript, 差异对比, 编辑器]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.2
 review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
+source_okr: [yipet-004]
+related_modules: [157-prd-task-JSON格式化与验证]
+related_tests: [157-prd-test-JSON格式化与验证]
 ---
 
 # YP-09-150: JSON 格式化与验证 — 美化/压缩、节点折叠、JSONPath 求值、Schema 验证、TypeScript 转换、差异对比
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-150 · 优先级：P2 · 人天：0.2d · 状态：需求已编写
 > 依赖：YP-09-148（文本差异对比）
@@ -60,6 +68,7 @@ JSON 是 Web 开发中最常用的数据格式，但处理 JSON 时的常见痛�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 JSON 处理流程
@@ -109,6 +118,7 @@ JSON 是 Web 开发中最常用的数据格式，但处理 JSON 时的常见痛�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：JSON 渲染 — 文本编辑器 vs 树形视图 vs 双模式
@@ -153,6 +163,7 @@ JSON 是 Web 开发中最常用的数据格式，但处理 JSON 时的常见痛�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 JSON 工具系统架构
@@ -224,6 +235,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 JSON 工具类型定义
@@ -600,6 +612,7 @@ export class TsGenerator {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -618,6 +631,7 @@ export class TsGenerator {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：JSON 格式化
@@ -671,6 +685,7 @@ export interface User {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -683,6 +698,7 @@ export interface User {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -694,6 +710,7 @@ export interface User {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么选择双模式（文本编辑器 + 树形视图）？
@@ -714,6 +731,7 @@ draft-07 是使用最广泛的 JSON Schema 版本，Swagger/OpenAPI 3.0、GitHub
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -738,6 +756,7 @@ draft-07 是使用最广泛的 JSON Schema 版本，Swagger/OpenAPI 3.0、GitHub
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] JSON.parse 错误位置正确（行号 + 列号）

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YP-09-46: Content Script WebSocket 实时通信 — 双向事件推送与低延迟信令"
 tags: [需求文档, Content Script, WebSocket, 实时通信, 信令, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yipet-002]
+related_modules: [53-prd-task-WebSocket实时通信]
+related_tests: [53-prd-test-WebSocket实时通信]
 ---
 
 # YP-09-46: Content Script WebSocket 实时通信 — 双向事件推送
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-46 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 

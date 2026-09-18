@@ -56,7 +56,11 @@
     </div>
 
     <div class="roadmap__stats" v-if="totalItems > 0">
-      <div class="roadmap__stat-segment" :style="{ width: kindPct('module') + '%', background: '#9b59b6' }" :title="`${t('roadmap.kind.modules')}: ${kindCounts.module}`" />
+      <div
+        class="roadmap__stat-segment"
+        :style="{ width: kindPct('module') + '%', background: '#9b59b6' }"
+        :title="`${t('roadmap.kind.modules')}: ${kindCounts.module}`"
+      />
     </div>
 
     <div v-loading="loading" class="roadmap__board">
@@ -67,7 +71,7 @@
             <div class="roadmap__col-head-actions">
               <el-tag size="small" round :type="col.countTagType">{{ col.items.length }}</el-tag>
               <el-dropdown trigger="click" @command="(cmd: string) => sortColumn(col, cmd)">
-                <el-button size="small" text style="padding: 2px 4px; margin-left: 2px;">
+                <el-button size="small" text style="padding: 2px 4px; margin-left: 2px">
                   <el-icon><Sort /></el-icon>
                 </el-button>
                 <template #dropdown>
@@ -115,12 +119,7 @@
             </div>
             <div v-if="item.detail" class="roadmap__item-detail">{{ item.detail }}</div>
             <div v-if="item.issueKeys.length > 0" class="roadmap__item-issues">
-              <div
-                v-for="key in item.issueKeys"
-                :key="key"
-                class="roadmap__item-issue-row"
-                @click.stop="openIssuePreview(key)"
-              >
+              <div v-for="key in item.issueKeys" :key="key" class="roadmap__item-issue-row" @click.stop="openIssuePreview(key)">
                 <span class="roadmap__item-issue-key">{{ key }}</span>
                 <span class="roadmap__item-issue-title">{{ issueTitle(key) }}</span>
               </div>
@@ -186,7 +185,22 @@ import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import { Search, Folder, User, Sort, Clock, View, Document, CopyDocument, VideoPlay, CircleCheck, Calendar, Loading, CircleClose, Delete } from "@element-plus/icons-vue";
+import {
+  Search,
+  Folder,
+  User,
+  Sort,
+  Clock,
+  View,
+  Document,
+  CopyDocument,
+  VideoPlay,
+  CircleCheck,
+  Calendar,
+  Loading,
+  CircleClose,
+  Delete
+} from "@element-plus/icons-vue";
 import { useModuleStore } from "@/stores/modules/module";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
@@ -203,7 +217,15 @@ const issueStore = useIssueStore();
 const loading = ref(false);
 
 const filterDate = ref<Date | null>(null);
-const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
+const {
+  label: filterDateLabel,
+  isToday: isFilterToday,
+  filterDateStr,
+  goToPrevDay,
+  goToNextDay,
+  goToFilterToday,
+  clearFilterDate
+} = useDateFilter(filterDate);
 
 const search = ref("");
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -215,7 +237,7 @@ function onSearchInput() {
 type RoadmapKind = "module";
 const kindFilter = ref(new Set<RoadmapKind>());
 const kindOptions = computed<{ value: RoadmapKind; label: string }[]>(() => [
-  { value: "module", label: t("roadmap.kind.modules") },
+  { value: "module", label: t("roadmap.kind.modules") }
 ]);
 function toggleKind(val: RoadmapKind) {
   if (kindFilter.value.has(val)) kindFilter.value.delete(val);
@@ -263,11 +285,11 @@ const COL_HEADER_STYLES = [
   { status: "b", headerBg: "linear-gradient(180deg, #fdf6ec 0%, #faecd8 100%)", countTagType: "warning" as const },
   { status: "c", headerBg: "linear-gradient(180deg, #f5f0ff 0%, #ede0ff 100%)", countTagType: "warning" as const },
   { status: "d", headerBg: "linear-gradient(180deg, #f0f9eb 0%, #e1f3d8 100%)", countTagType: "success" as const },
-  { status: "e", headerBg: "linear-gradient(180deg, #f0f2f5 0%, #e4e7ed 100%)", countTagType: "info" as const },
+  { status: "e", headerBg: "linear-gradient(180deg, #f0f2f5 0%, #e4e7ed 100%)", countTagType: "info" as const }
 ];
 
 const KIND_LABEL = computed<Record<RoadmapKind, string>>(() => ({
-  module: t("roadmap.kind.moduleLabel"),
+  module: t("roadmap.kind.moduleLabel")
 }));
 
 const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: string }>> = {
@@ -276,15 +298,15 @@ const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: str
     in_progress: { tag: "warning", color: "#e6a23c" },
     completed: { tag: "success", color: "#67c23a" },
     cancelled: { tag: "danger", color: "#f56c6c" }
-  },
+  }
 };
 
 const FINAL_STATUS: Record<RoadmapKind, Set<string>> = {
-  module: new Set(["completed", "cancelled"]),
+  module: new Set(["completed", "cancelled"])
 };
 
 const STATUS_LABEL: Record<RoadmapKind, Record<string, string>> = {
-  module: MODULE_STATUS_MAP,
+  module: MODULE_STATUS_MAP
 };
 
 const columns = ref<RoadmapColumn[]>([]);
@@ -323,13 +345,18 @@ const filteredColumns = computed(() => {
 const totalItems = computed(() => filteredItems.value.length);
 const kindCounts = computed(() => {
   const counts: Record<RoadmapKind, number> = { module: 0 };
-  allItems.value.forEach(i => { counts[i.kind]++; });
+  allItems.value.forEach(i => {
+    counts[i.kind]++;
+  });
   return counts;
 });
 const overallProgress = computed(() => {
   let done = 0;
   let total = 0;
-  allItems.value.forEach(i => { done += i.done; total += i.total; });
+  allItems.value.forEach(i => {
+    done += i.done;
+    total += i.total;
+  });
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
 });
 
@@ -341,7 +368,10 @@ function kindPct(kind: RoadmapKind): number {
 function colProgress(col: RoadmapColumn) {
   let done = 0;
   let total = 0;
-  col.items.forEach(i => { done += i.done; total += i.total; });
+  col.items.forEach(i => {
+    done += i.done;
+    total += i.total;
+  });
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
 }
 
@@ -374,7 +404,9 @@ const issueTitleMap = computed(() => {
   issueStore.issues.forEach(i => m.set(i.key, i.title));
   return m;
 });
-function issueTitle(key: string) { return issueTitleMap.value.get(key) || key; }
+function issueTitle(key: string) {
+  return issueTitleMap.value.get(key) || key;
+}
 
 const issueStatusMap = computed(() => {
   const m = new Map<string, string>();
@@ -391,7 +423,9 @@ async function openIssuePreview(key: string) {
   try {
     const res = await readKnowledgeFile(filePath);
     content = res.content || content;
-  } catch { /* use issue.description as fallback */ }
+  } catch {
+    /* use issue.description as fallback */
+  }
   descDialogRef.value?.openFile({
     path: filePath,
     title: issue.title,
@@ -440,10 +474,7 @@ async function loadData() {
     const params: any = { pageSize: 200 };
     if (projectFilter.value) params.project_key = projectFilter.value;
 
-    await Promise.all([
-      moduleStore.fetchModules(params),
-      issueStore.fetchIssues({ pageSize: 1000 })
-    ]);
+    await Promise.all([moduleStore.fetchModules(params), issueStore.fetchIssues({ pageSize: 1000 })]);
 
     const issueStatus = new Map<string, string>();
     issueStore.issues.forEach(i => issueStatus.set(i.key, i.status));
@@ -483,10 +514,16 @@ async function loadData() {
   }
 }
 
-watch(filteredColumns, v => { columns.value = v; });
+watch(filteredColumns, v => {
+  columns.value = v;
+});
 
-function goTo(link: string) { router.push(link); }
-function goProject(key: string) { if (key) router.push(`/project/${key}`); }
+function goTo(link: string) {
+  router.push(link);
+}
+function goProject(key: string) {
+  if (key) router.push(`/project/${key}`);
+}
 function clearFilters() {
   search.value = "";
   projectFilter.value = "";
@@ -495,7 +532,9 @@ function clearFilters() {
   loadData();
 }
 
-const descDialogRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
+const descDialogRef = ref<{
+  openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
+} | null>(null);
 async function openPreview(item: RoadmapItem) {
   const date = (item.startDate || "").slice(0, 10);
   const filePath = `roadmap/${item.kind}/${item.id}.md`;
@@ -503,7 +542,9 @@ async function openPreview(item: RoadmapItem) {
   try {
     const res = await readKnowledgeFile(filePath);
     content = res.content || content;
-  } catch { /* use item.detail as fallback */ }
+  } catch {
+    /* use item.detail as fallback */
+  }
   descDialogRef.value?.openFile({
     path: filePath,
     title: item.name,
@@ -598,7 +639,9 @@ async function ctxDelete() {
     }
     ElMessage.success(t("roadmap.messages.deleted", { name: item.name }));
     loadData();
-  } catch { /* cancelled */ }
+  } catch {
+    /* cancelled */
+  }
 }
 
 onMounted(async () => {
@@ -612,254 +655,257 @@ onUnmounted(() => {
   if (searchTimer) clearTimeout(searchTimer);
 });
 
-watch(filterDateStr, () => { loadData(); });
+watch(filterDateStr, () => {
+  loadData();
+});
 </script>
 
 <style scoped lang="scss">
 .roadmap {
-  padding: 20px 24px;
-  height: calc(100vh - 136px);
   display: flex;
   flex-direction: column;
-  background: var(--el-bg-color-page);
+  height: calc(100vh - 136px);
+  padding: 20px 24px;
   overflow: hidden;
+  background: var(--el-bg-color-page);
 }
 
 // ── Head ──
 .roadmap__head {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
   flex-shrink: 0;
   gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
-
 .roadmap__head-left {
   display: flex;
-  align-items: center;
-  gap: 0;
   flex-shrink: 0;
+  gap: 0;
+  align-items: center;
 }
-
 .roadmap__head-stat {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1px;
+  align-items: center;
   padding: 4px 12px;
   cursor: default;
   transition: background 0.15s;
-  position: relative;
-
   &:not(:last-child)::after {
-    content: "";
     position: absolute;
-    right: 0;
     top: 15%;
-    height: 70%;
+    right: 0;
     width: 1px;
+    height: 70%;
+    content: "";
     background: var(--el-border-color-lighter);
   }
-
   &:first-child {
     cursor: pointer;
-    &:hover .roadmap__head-stat-value { color: var(--el-color-primary); }
+    &:hover .roadmap__head-stat-value {
+      color: var(--el-color-primary);
+    }
   }
 }
-
 .roadmap__head-stat-value {
+  font-family: "SF Mono", "Fira Code", monospace;
   font-size: 16px;
   font-weight: 800;
-  font-family: "SF Mono", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
-  font-variant-numeric: tabular-nums;
-
-  &  &.is-module { color: #9b59b6; }
-  &.is-done { color: var(--el-color-success); }
+  & &.is-module {
+    color: #9b59b6;
+  }
+  &.is-done {
+    color: var(--el-color-success);
+  }
 }
-
 .roadmap__head-stat-label {
   font-size: 10px;
   color: var(--el-text-color-secondary);
   white-space: nowrap;
 }
-
 .roadmap__head-right {
   display: flex;
-  align-items: center;
-  gap: 12px;
   flex-shrink: 0;
+  gap: 12px;
+  align-items: center;
 }
 
 // ── Filters ──
 .roadmap__filters {
-  margin-bottom: 8px;
   flex-shrink: 0;
+  margin-bottom: 8px;
 }
-
 .roadmap__filter-row {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
-
 .roadmap__filter-label {
+  min-width: 32px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  min-width: 32px;
 }
 
 // ── Stats bar ──
 .roadmap__stats {
   display: flex;
-  height: 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 12px;
   flex-shrink: 0;
+  height: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
   background: var(--el-fill-color);
+  border-radius: 2px;
 }
-
 .roadmap__stat-segment {
-  transition: width 0.4s ease;
   min-width: 0;
+  transition: width 0.4s ease;
 }
 
 // ── Board ──
 .roadmap__board {
-  flex: 1;
   display: flex;
+  flex: 1;
   gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 8px;
   align-items: stretch;
-
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-track { background: transparent; }
+  padding-bottom: 8px;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
   &::-webkit-scrollbar-thumb {
     background: var(--el-border-color);
     border-radius: 3px;
-    &:hover { background: var(--el-border-color-dark); }
+    &:hover {
+      background: var(--el-border-color-dark);
+    }
   }
 }
 
 // ── Columns ──
 .roadmap__col {
-  flex: 1;
-  min-width: 270px;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  background: var(--el-fill-color-lighter);
-  border-radius: 10px;
-  overflow: hidden;
+  min-width: 270px;
   max-height: 100%;
+  overflow: hidden;
+  background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
 }
-
 .roadmap__col-head {
-  padding: 10px 14px;
   flex-shrink: 0;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .roadmap__col-head-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
-
 .roadmap__col-head-actions {
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
 }
-
 .roadmap__col-title {
-  font-weight: 600;
   font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--el-text-color-primary);
   cursor: pointer;
-  &:hover { color: var(--el-color-primary); }
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
-
 .roadmap__col-progress {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-top: 5px;
-  :deep(.el-progress) { flex: 1; max-width: 200px; }
+  :deep(.el-progress) {
+    flex: 1;
+    max-width: 200px;
+  }
   span {
     font-size: 11px;
     color: var(--el-text-color-placeholder);
   }
 }
-
 .roadmap__col-body {
-  flex: 1;
-  padding: 8px 10px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 50px;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 6px;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
+  min-height: 50px;
+  padding: 8px 10px;
+  overflow: hidden auto;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
   &::-webkit-scrollbar-thumb {
     background: var(--el-border-color);
     border-radius: 2px;
   }
 }
-
 .roadmap__col-empty {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: var(--el-text-color-placeholder);
-  font-size: 13px;
-  padding: 24px;
   min-height: 80px;
+  padding: 24px;
+  font-size: 13px;
+  color: var(--el-text-color-placeholder);
 }
 
 // ── Items (kanban cards) ──
 .roadmap__item {
   position: relative;
-  background: var(--el-bg-color);
-  border-radius: 6px;
   padding: 10px;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.15s, border-color 0.15s, transform 0.12s;
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
-
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s,
+    transform 0.12s;
   &:hover {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.09);
     border-color: var(--el-border-color);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 9%);
     transform: translateY(-1px);
   }
-
-  &:active { transform: translateY(0); }
-
+  &:active {
+    transform: translateY(0);
+  }
   &--overdue {
     border-color: var(--el-color-danger-light-4);
     box-shadow: 0 0 0 1px var(--el-color-danger-light-6);
   }
 }
-
 .roadmap__item-accent {
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
+  left: 0;
   width: 3px;
   border-radius: 6px 0 0 6px;
 }
@@ -867,31 +913,31 @@ watch(filterDateStr, () => { loadData(); });
 // Row 1: key + kind + status
 .roadmap__item-head {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   margin-bottom: 5px;
 }
-
 .roadmap__item-key {
+  padding: 1px 5px;
+  font-family: monospace;
   font-size: 10px;
   color: var(--el-text-color-placeholder);
-  font-family: monospace;
   background: var(--el-fill-color-light);
-  padding: 1px 5px;
   border-radius: 3px;
 }
-
 .roadmap__item-kind {
+  flex-shrink: 0;
+  padding: 0 6px;
   font-size: 10px;
   font-weight: 600;
-  padding: 0 6px;
-  border-radius: 8px;
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
   line-height: 1.7;
-  &  --module { color: #9b59b6; background: rgba(155, 89, 182, 0.12); }
+  letter-spacing: 0.3px;
+  border-radius: 8px;
+  & --module {
+    color: #9b59b6;
+    background: rgb(155 89 182 / 12%);
+  }
 }
-
 .roadmap__item-status {
   margin-left: auto;
   font-size: 10px;
@@ -902,25 +948,26 @@ watch(filterDateStr, () => { loadData(); });
 
 // Row 2: title
 .roadmap__item-title {
+  display: -webkit-box;
+  padding: 1px 4px;
+  margin-right: -4px;
+  margin-bottom: 5px;
+  margin-left: -4px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.35;
-  margin-bottom: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   color: var(--el-text-color-primary);
   cursor: pointer;
-  padding: 1px 4px;
-  margin-left: -4px;
-  margin-right: -4px;
   border-radius: 3px;
-  transition: background 0.12s, color 0.12s;
-
+  transition:
+    background 0.12s,
+    color 0.12s;
+  -webkit-box-orient: vertical;
   &:hover {
-    background: var(--el-color-primary-light-9);
     color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
   }
 }
 
@@ -928,83 +975,80 @@ watch(filterDateStr, () => { loadData(); });
 .roadmap__item-foot {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
-
 .roadmap__item-foot-item {
   display: inline-flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   font-size: 11px;
-  color: var(--el-text-color-secondary);
   line-height: 1.4;
-
-  .el-icon { font-size: 11px; flex-shrink: 0; }
-
-  :deep(.el-progress) {
-    width: 40px;
+  color: var(--el-text-color-secondary);
+  .el-icon {
     flex-shrink: 0;
+    font-size: 11px;
   }
-
+  :deep(.el-progress) {
+    flex-shrink: 0;
+    width: 40px;
+  }
   &--overdue {
-    color: var(--el-color-danger);
     font-weight: 600;
+    color: var(--el-color-danger);
   }
 }
 
 // Row 4: detail
 .roadmap__item-detail {
+  display: -webkit-box;
+  padding-top: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
   font-size: 12px;
   color: var(--el-text-color-secondary);
-  margin-top: 4px;
-  padding-top: 4px;
   border-top: 1px solid var(--el-border-color-lighter);
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 // Issue list
 .roadmap__item-issues {
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px solid var(--el-border-color-lighter);
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding-top: 4px;
+  margin-top: 4px;
+  border-top: 1px solid var(--el-border-color-lighter);
 }
-
 .roadmap__item-issue-row {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 2px 4px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.12s;
-  margin-left: -4px;
   margin-right: -4px;
-
-  &:hover { background: var(--el-fill-color-light); }
+  margin-left: -4px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.12s;
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
 }
-
 .roadmap__item-issue-key {
-  font-size: 10px;
+  flex-shrink: 0;
+  padding: 0 4px;
   font-family: monospace;
+  font-size: 10px;
   color: var(--el-text-color-placeholder);
   background: var(--el-fill-color);
-  padding: 0 4px;
   border-radius: 2px;
-  flex-shrink: 0;
 }
-
 .roadmap__item-issue-title {
-  font-size: 11px;
-  color: var(--el-text-color-regular);
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--el-text-color-regular);
   white-space: nowrap;
 }
 
@@ -1012,38 +1056,42 @@ watch(filterDateStr, () => { loadData(); });
 .roadmap-ctxmenu {
   position: fixed;
   z-index: 9999;
+  min-width: 180px;
+  padding: 4px;
   background: var(--el-bg-color-overlay);
   border: 1px solid var(--el-border-color);
   border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  padding: 4px;
-  min-width: 180px;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
 }
-
 .roadmap-ctxmenu__item {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 7px 12px;
   font-size: 13px;
+  color: var(--el-text-color-primary);
   cursor: pointer;
   border-radius: 4px;
-  color: var(--el-text-color-primary);
-
-  .el-icon { font-size: 14px; color: var(--el-text-color-secondary); }
-
-  &:hover { background: var(--el-fill-color-light); }
-
+  .el-icon {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+  }
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
   &--danger {
     color: var(--el-color-danger);
-    .el-icon { color: var(--el-color-danger); }
-    &:hover { background: var(--el-color-danger-light-9); }
+    .el-icon {
+      color: var(--el-color-danger);
+    }
+    &:hover {
+      background: var(--el-color-danger-light-9);
+    }
   }
 }
-
 .roadmap-ctxmenu__divider {
   height: 1px;
-  background: var(--el-border-color-lighter);
   margin: 4px 8px;
+  background: var(--el-border-color-lighter);
 }
 </style>

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-88: 服务端 API 响应 Schema 快照测试 — 基于 JSON Schema 的回归对比验证"
 tags: [需求文档, API测试, Schema快照, 回归测试, JSON Schema, 自动化测试, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,15 +20,21 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [92-prd-task-响应Schema快照测试]
+related_tests: [92-prd-test-响应Schema快照测试]
 ---
 
 # YA-09-88: API 响应 Schema 快照测试 — JSON Schema 回归验证
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-88 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 > 依赖：YA-09-10（RPC 契约测试与类型同步）
 
 ---
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -67,6 +76,7 @@ API 响应格式的意外变更（新增/删除/重命名字段、类型变更�
 
 ---
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前测试覆盖
@@ -117,6 +127,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策记录
@@ -148,6 +159,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -224,6 +236,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 代码改动
@@ -480,6 +493,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -495,6 +509,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 | 场景 | Before (无快照) | After (快照) | 增幅 |
@@ -505,6 +520,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -547,6 +563,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -558,6 +575,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚操作 | 回滚时间 | 数据影响 |
@@ -567,6 +585,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 ### D-01: 结构对比而非值对比
@@ -589,6 +608,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 | 指标名称 | 类型 | 说明 |
@@ -599,6 +619,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 | 要求 | 实现 | 验证 |
@@ -608,6 +629,7 @@ def _get_test_params(method_name: str) -> dict:
 
 ---
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] API 响应 Schema 快照存储在 `tests/snapshots/` 目录，文件命名规则 `{module}_{service}_{method}.json`

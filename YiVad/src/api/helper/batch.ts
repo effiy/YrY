@@ -29,20 +29,28 @@ export async function executeBatchOperation(
 
   for (let i = 0; i < ids.length; i += concurrency) {
     const batch = ids.slice(i, i + concurrency);
-    const promises = batch.map(async (id) => {
+    const promises = batch.map(async id => {
       try {
         if (operation === "delete") {
-          await http.post("", {
-            module_name: DATA_SERVICE,
-            method_name: "delete_document",
-            parameters: { cname: collection, key: id },
-          }, { cancel: false });
+          await http.post(
+            "",
+            {
+              module_name: DATA_SERVICE,
+              method_name: "delete_document",
+              parameters: { cname: collection, key: id }
+            },
+            { cancel: false }
+          );
         } else if (operation === "update") {
-          await http.post("", {
-            module_name: DATA_SERVICE,
-            method_name: "update_document",
-            parameters: { cname: collection, key: id, data: { ...data, key: id } },
-          }, { cancel: false });
+          await http.post(
+            "",
+            {
+              module_name: DATA_SERVICE,
+              method_name: "update_document",
+              parameters: { cname: collection, key: id, data: { ...data, key: id } }
+            },
+            { cancel: false }
+          );
         }
         result.success++;
       } catch (error) {

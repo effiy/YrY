@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-130: WebSocket 实时通信 — FastAPI WebSocket 端点 + 房间路由 + 连接管理 + SSE 降级"
 tags: [需求文档, 基础设施, WebSocket, 实时通信, FastAPI, 连接管理, 房间路由, SSE]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P1
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.5
 review_status: 待评审
 issue_type: 功能
 roles: [engineer, backend]
+source_okr: [yiai-001]
+related_modules: [136-prd-task-WebSocket实时通信]
+related_tests: [136-prd-test-WebSocket实时通信]
 ---
 
 # YA-09-130: WebSocket 实时通信 — FastAPI WebSocket 端点 + 房间路由 + 连接管理 + SSE 降级
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-130 · 优先级：P1 · 人天：1.5d · 状态：需求已编写
 > 依赖：无 · 前置需求：无
@@ -52,6 +60,7 @@ YiAi 当前所有前端与后端的通信均基于 HTTP 请求-响应模式（RP
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前通信模式
@@ -92,6 +101,7 @@ YiAi 当前所有前端与后端的通信均基于 HTTP 请求-响应模式（RP
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：WebSocket 实现方式 — 原生 FastAPI WebSocket vs socket.io vs 第三方库
@@ -153,6 +163,7 @@ YiAi 当前所有前端与后端的通信均基于 HTTP 请求-响应模式（RP
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 WebSocket 通信架构总览
@@ -251,6 +262,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 WebSocket 连接管理器
@@ -700,6 +712,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -718,6 +731,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Requirement: WebSocket 连接管理
@@ -778,6 +792,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -791,6 +806,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 | 风险 |
@@ -803,6 +819,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么选择原生 WebSocket 而非 socket.io？
@@ -823,6 +840,7 @@ RPC 信封（`{module_name, method_name, parameters}`）是为请求-响应模�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -860,6 +878,7 @@ RPC 信封（`{module_name, method_name, parameters}`）是为请求-响应模�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `ConnectionManager` 使用 `asyncio.Lock` 保护 `_connections` 和 `_rooms` 的并发访问
@@ -879,6 +898,7 @@ RPC 信封（`{module_name, method_name, parameters}`）是为请求-响应模�
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、回归问题预测
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -892,6 +912,7 @@ RPC 信封（`{module_name, method_name, parameters}`）是为请求-响应模�
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、性能分析
 
 ### 13.1 连接操作性能
@@ -927,6 +948,7 @@ RPC 信封（`{module_name, method_name, parameters}`）是为请求-响应模�
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、当前架构 vs 目标架构
 
 ### 改造前后对比

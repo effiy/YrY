@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-18"
 source_prds: ["22-需求-Agent工具链插件化"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-18: Agent 工具链插件化架构 — 工具注册与动态发现机制 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[22-需求-Agent工具链插件化.md](../../prds/2026-09/22-需求-Agent工具链插件化.md)
 > 提取日期：2026-09-11

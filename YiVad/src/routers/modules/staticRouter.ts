@@ -38,30 +38,41 @@ export const errorRouter = [
   {
     path: "/403",
     name: "403",
-    component: () => import("@/components/ErrorMessage/Error403.vue"),
+    component: () => import("@/components/ErrorMessage/ErrorPage.vue"),
     meta: {
-      title: "403 Page"
+      title: "403",
+      errorCode: 403,
+      errorDescription: "Sorry, you don't have permission to access this page~"
     }
   },
   {
     path: "/404",
     name: "404",
-    component: () => import("@/components/ErrorMessage/Error404.vue"),
+    component: () => import("@/components/ErrorMessage/ErrorPage.vue"),
     meta: {
-      title: "404 Page"
+      title: "404",
+      errorCode: 404,
+      errorDescription: "Sorry, the page you visited does not exist~"
     }
   },
   {
     path: "/500",
     name: "500",
-    component: () => import("@/components/ErrorMessage/Error500.vue"),
+    component: () => import("@/components/ErrorMessage/ErrorPage.vue"),
     meta: {
-      title: "500 Page"
+      title: "500",
+      errorCode: 500,
+      errorDescription: "Sorry, the server encountered an error~"
     }
   },
   // Resolve refresh page, route warnings
   {
     path: "/:pathMatch(.*)*",
-    component: () => import("@/components/ErrorMessage/Error404.vue")
+    component: () => import("@/components/ErrorMessage/ErrorPage.vue"),
+    meta: {
+      title: "404",
+      errorCode: 404,
+      errorDescription: "Sorry, the page you visited does not exist~"
+    }
   }
 ];

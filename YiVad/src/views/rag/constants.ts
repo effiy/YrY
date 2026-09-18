@@ -40,7 +40,7 @@ export function scoreTagType(score: number | undefined | null): "info" | "succes
 /** Best score across an array of sources. */
 export function bestScore(sources: RagSource[] | undefined): number {
   if (!sources?.length) return 0;
-  return Math.max(...sources.map((s) => s.score ?? 0));
+  return Math.max(...sources.map(s => s.score ?? 0));
 }
 
 /** Average score across an array of sources. */
@@ -102,7 +102,7 @@ export function categoryTagType(cat: string | undefined): "success" | "warning" 
     srer: "primary",
     executiver: "danger",
     aier: "success",
-    curator: "success",
+    curator: "success"
   };
   return map[top] || "info";
 }
@@ -113,7 +113,7 @@ export const CHAT_EXAMPLE_PROMPTS = [
   "What are the RAG design patterns for chunking?",
   "How does the YiVad ProTable component work?",
   "Explain the dual-write file persistence model",
-  "What are the best practices for hybrid retrieval?",
+  "What are the best practices for hybrid retrieval?"
 ];
 
 // ── Index info defaults ─────────────────────────────────────────────────────
@@ -125,5 +125,5 @@ export const INDEX_INFO_DEFAULTS = {
   chunk_overlap: 50,
   hybrid_retrieval: true,
   rerank_enabled: false,
-  inline_citations: true,
+  inline_citations: true
 };

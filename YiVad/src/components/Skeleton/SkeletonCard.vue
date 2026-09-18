@@ -11,23 +11,44 @@
 
 <style scoped lang="scss">
 .skeleton-card {
+  overflow: hidden;
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  overflow: hidden;
-  &__image { height: 140px; width: 100%; }
-  &__body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-  &__title { height: 18px; width: 75%; }
-  &__text { height: 12px; width: 90%; }
-  &__text--short { width: 50%; }
+  &__image {
+    width: 100%;
+    height: 140px;
+  }
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+  &__title {
+    width: 75%;
+    height: 18px;
+  }
+  &__text {
+    width: 90%;
+    height: 12px;
+  }
+  &__text--short {
+    width: 50%;
+  }
 }
 .skeleton-bar {
-  border-radius: 4px;
   background: linear-gradient(90deg, var(--el-fill-color) 25%, var(--el-fill-color-light) 50%, var(--el-fill-color) 75%);
   background-size: 200% 100%;
+  border-radius: 4px;
   animation: skeleton-shimmer 1.5s infinite;
 }
+
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

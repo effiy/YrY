@@ -18,10 +18,24 @@
 
     <!-- Charts -->
     <div v-if="!props.projectKey" class="bug-list__charts">
-      <div class="bug-chart" :class="{ 'bug-chart--active': activeFilter === 'critical' || activeFilter === 'open' || activeFilter === 'in_progress' || activeFilter === 'resolved' || activeFilter === 'closed' }">
+      <div
+        class="bug-chart"
+        :class="{
+          'bug-chart--active':
+            activeFilter === 'critical' ||
+            activeFilter === 'open' ||
+            activeFilter === 'in_progress' ||
+            activeFilter === 'resolved' ||
+            activeFilter === 'closed'
+        }"
+      >
         <div class="bug-chart__title">
           Status
-          <span v-if="activeFilter && ['open','in_progress','resolved','closed'].includes(activeFilter)" class="bug-chart__badge">filtered</span>
+          <span
+            v-if="activeFilter && ['open', 'in_progress', 'resolved', 'closed'].includes(activeFilter)"
+            class="bug-chart__badge"
+            >filtered</span
+          >
         </div>
         <div class="bug-chart__body">
           <ECharts :option="statusDonutOption" height="200" @chart-click="onStatusChartClick" />
@@ -47,7 +61,14 @@
     <!-- Recently Viewed -->
     <div v-if="!props.projectKey && recentlyViewed.length" class="bug-list__recent">
       <span class="bug-list__recent-label">{{ $t("bug.list.recentlyViewed") }}</span>
-      <button v-for="b in recentlyViewed" :key="b.key" type="button" class="bug-list__recent-chip" :title="b.title" @click="goDetail(b.key)">
+      <button
+        v-for="b in recentlyViewed"
+        :key="b.key"
+        type="button"
+        class="bug-list__recent-chip"
+        :title="b.title"
+        @click="goDetail(b.key)"
+      >
         <span class="bug-list__recent-dot" :style="{ background: severityColor(b.severity) }" />
         <span class="bug-list__recent-key">{{ b.key }}</span>
         <span class="bug-list__recent-title">{{ b.title }}</span>
@@ -67,9 +88,15 @@
       <div v-if="!props.projectKey" class="bug-list__sidebar">
         <div class="bug-list__sidebar-view">
           <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="table"><el-icon><Grid /></el-icon></el-radio-button>
-            <el-radio-button value="card"><el-icon><Postcard /></el-icon></el-radio-button>
-            <el-radio-button value="list"><el-icon><List /></el-icon></el-radio-button>
+            <el-radio-button value="table"
+              ><el-icon><Grid /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="card"
+              ><el-icon><Postcard /></el-icon
+            ></el-radio-button>
+            <el-radio-button value="list"
+              ><el-icon><List /></el-icon
+            ></el-radio-button>
           </el-radio-group>
         </div>
         <div class="bug-list__sidebar-section">
@@ -78,21 +105,27 @@
           </div>
           <div class="bug-list__sidebar-section-body">
             <div class="bug-list__sidebar-card" @click="router.push('/bug')">
-              <div class="bug-list__sidebar-card-icon" style="background:linear-gradient(135deg,#f56c6c,#dc2626)"><el-icon><WarningFilled /></el-icon></div>
+              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #f56c6c, #dc2626)">
+                <el-icon><WarningFilled /></el-icon>
+              </div>
               <div class="bug-list__sidebar-card-info">
                 <span class="bug-list__sidebar-card-value">{{ bugStats.total }}</span>
                 <span class="bug-list__sidebar-card-label">Total</span>
               </div>
             </div>
             <div class="bug-list__sidebar-card" @click="applyAttentionFilter('open')">
-              <div class="bug-list__sidebar-card-icon" style="background:linear-gradient(135deg,#e6a23c,#d09020)"><el-icon><CircleClose /></el-icon></div>
+              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #e6a23c, #d09020)">
+                <el-icon><CircleClose /></el-icon>
+              </div>
               <div class="bug-list__sidebar-card-info">
                 <span class="bug-list__sidebar-card-value">{{ bugStats.open }}</span>
                 <span class="bug-list__sidebar-card-label">Open</span>
               </div>
             </div>
             <div class="bug-list__sidebar-card" @click="applyAttentionFilter('resolved')">
-              <div class="bug-list__sidebar-card-icon" style="background:linear-gradient(135deg,#91cc75,#7ab85e)"><el-icon><CircleCheckFilled /></el-icon></div>
+              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #91cc75, #7ab85e)">
+                <el-icon><CircleCheckFilled /></el-icon>
+              </div>
               <div class="bug-list__sidebar-card-info">
                 <span class="bug-list__sidebar-card-value">{{ bugStats.resolved }}</span>
                 <span class="bug-list__sidebar-card-label">Resolved</span>
@@ -101,11 +134,16 @@
           </div>
           <div class="bug-list__sidebar-progress">
             <span class="bug-list__sidebar-progress-label">Resolution</span>
-            <el-progress :percentage="resolutionPct" :stroke-width="6" :show-text="true" :color="resolutionPct >= 80 ? '#67c23a' : '#e6a23c'" />
+            <el-progress
+              :percentage="resolutionPct"
+              :stroke-width="6"
+              :show-text="true"
+              :color="resolutionPct >= 80 ? '#67c23a' : '#e6a23c'"
+            />
           </div>
         </div>
-        <div class="bug-list__sidebar-section" style="margin-top:12px">
-          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-danger);">
+        <div class="bug-list__sidebar-section" style="margin-top: 12px">
+          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-danger)">
             <span class="bug-list__sidebar-section-label">Needs Attention</span>
           </div>
           <div class="bug-list__sidebar-section-body">
@@ -126,8 +164,8 @@
             </div>
           </div>
         </div>
-        <div class="bug-list__sidebar-section" style="margin-top:12px">
-          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-success);">
+        <div class="bug-list__sidebar-section" style="margin-top: 12px">
+          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-success)">
             <span class="bug-list__sidebar-section-label">Data Quality</span>
             <span class="bug-list__sidebar-section-hint">{{ allBugs.length }} bugs</span>
           </div>
@@ -146,119 +184,125 @@
       <div class="bug-list__main">
         <!-- Table View -->
         <template v-if="props.projectKey || viewMode === 'table'">
-        <ProTable
-          ref="proTable"
-          title="Bugs"
-          :columns="columns"
-          :request-api="fetchBugs"
-          :pagination="true"
-          row-key="key"
-        >
-          <template #tableHeader="scope">
-            <el-button type="primary" :icon="Plus" @click="store.openCreateDialog(props.projectKey ? projectName(props.projectKey) : '', props.projectKey)">New Bug</el-button>
-            <el-button :disabled="!scope.isSelected" type="danger" plain :icon="Delete" @click="batchDelete(scope.selectedListIds)">Delete Selected</el-button>
-          </template>
+          <ProTable ref="proTable" title="Bugs" :columns="columns" :request-api="fetchBugs" :pagination="true" row-key="key">
+            <template #tableHeader="scope">
+              <el-button
+                type="primary"
+                :icon="Plus"
+                @click="store.openCreateDialog(props.projectKey ? projectName(props.projectKey) : '', props.projectKey)"
+                >New Bug</el-button
+              >
+              <el-button
+                :disabled="!scope.isSelected"
+                type="danger"
+                plain
+                :icon="Delete"
+                @click="batchDelete(scope.selectedListIds)"
+                >Delete Selected</el-button
+              >
+            </template>
 
-          <template #title="scope">
-            <el-button link type="primary" @click="openTitlePreview(scope.row)">{{ scope.row.title }}</el-button>
-          </template>
+            <template #title="scope">
+              <el-button link type="primary" @click="openTitlePreview(scope.row)">{{ scope.row.title }}</el-button>
+            </template>
 
-          <template #severity="scope">
-            <el-tag :type="severityTagType(scope.row.severity)" size="small">{{ scope.row.severity }}</el-tag>
-          </template>
+            <template #severity="scope">
+              <el-tag :type="severityTagType(scope.row.severity)" size="small">{{ scope.row.severity }}</el-tag>
+            </template>
 
-          <template #priority="scope">
-            <el-tag :type="priorityTagType(scope.row.priority)" size="small">{{ scope.row.priority }}</el-tag>
-          </template>
+            <template #priority="scope">
+              <el-tag :type="priorityTagType(scope.row.priority)" size="small">{{ scope.row.priority }}</el-tag>
+            </template>
 
-          <template #status="scope">
-            <el-tag :type="statusTagType(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
-          </template>
+            <template #status="scope">
+              <el-tag :type="statusTagType(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
+            </template>
 
-          <template #labels="scope">
-            <div class="bug-list__labels">
-              <template v-if="scope.row.tags?.length">
-                <el-button
-                  v-for="tag in scope.row.tags"
-                  :key="tag"
-                  link
-                  size="small"
-                  type="primary"
-                  @click.stop="openLabelPrd(tag)"
-                >{{ prdLabel(tag) }}</el-button>
-              </template>
+            <template #labels="scope">
+              <div class="bug-list__labels">
+                <template v-if="scope.row.tags?.length">
+                  <el-button
+                    v-for="tag in scope.row.tags"
+                    :key="tag"
+                    link
+                    size="small"
+                    type="primary"
+                    @click.stop="openLabelPrd(tag)"
+                    >{{ prdLabel(tag) }}</el-button
+                  >
+                </template>
+                <span v-else class="bug-list__cell-empty">—</span>
+              </div>
+            </template>
+
+            <template #type="scope">
+              <el-tag size="small" effect="plain" :type="typeTagColor(scope.row.type)">{{ categoryLabel(scope.row) }}</el-tag>
+            </template>
+
+            <template #project="scope">
+              <el-button v-if="scope.row.project_key" link type="primary" @click="goProject(scope.row.project_key)">
+                {{ projectName(scope.row.project_key) || scope.row.project || scope.row.project_key }}
+              </el-button>
+              <span v-else class="bug-list__project-text">{{ scope.row.project || "—" }}</span>
+            </template>
+
+            <template #issue_key="scope">
+              <el-button v-if="scope.row.issue_key" link type="warning" @click="goIssue(scope.row.issue_key)">
+                {{ issueTitle(scope.row.issue_key) }}
+              </el-button>
+              <span v-else>—</span>
+            </template>
+
+            <template #module="scope">
+              <span v-if="scope.row.module" class="bug-list__cell-text">{{ scope.row.module }}</span>
               <span v-else class="bug-list__cell-empty">—</span>
-            </div>
-          </template>
+            </template>
 
-          <template #type="scope">
-            <el-tag size="small" effect="plain" :type="typeTagColor(scope.row.type)">{{ categoryLabel(scope.row) }}</el-tag>
-          </template>
+            <template #reporter="scope">
+              <span v-if="scope.row.reporter" class="bug-list__cell-text">{{ scope.row.reporter }}</span>
+              <span v-else class="bug-list__cell-empty">—</span>
+            </template>
 
-          <template #project="scope">
-            <el-button v-if="scope.row.project_key" link type="primary" @click="goProject(scope.row.project_key)">
-              {{ projectName(scope.row.project_key) || scope.row.project || scope.row.project_key }}
-            </el-button>
-            <span v-else class="bug-list__project-text">{{ scope.row.project || "—" }}</span>
-          </template>
+            <template #frequency="scope">
+              <el-tag size="small" effect="plain" :type="frequencyTagType(scope.row.frequency)">{{ scope.row.frequency }}</el-tag>
+            </template>
 
-          <template #issue_key="scope">
-            <el-button v-if="scope.row.issue_key" link type="warning" @click="goIssue(scope.row.issue_key)">
-              {{ issueTitle(scope.row.issue_key) }}
-            </el-button>
-            <span v-else>—</span>
-          </template>
+            <template #environment="scope">
+              <el-tag v-if="scope.row.environment" size="small" effect="plain" type="info">{{ scope.row.environment }}</el-tag>
+              <span v-else class="bug-list__cell-empty">—</span>
+            </template>
 
-          <template #module="scope">
-            <span v-if="scope.row.module" class="bug-list__cell-text">{{ scope.row.module }}</span>
-            <span v-else class="bug-list__cell-empty">—</span>
-          </template>
+            <template #affectedVersion="scope">
+              <span v-if="scope.row.affectedVersion" class="bug-list__cell-text">{{ scope.row.affectedVersion }}</span>
+              <span v-else class="bug-list__cell-empty">—</span>
+            </template>
 
-          <template #reporter="scope">
-            <span v-if="scope.row.reporter" class="bug-list__cell-text">{{ scope.row.reporter }}</span>
-            <span v-else class="bug-list__cell-empty">—</span>
-          </template>
+            <template #fixedVersion="scope">
+              <span v-if="scope.row.fixedVersion" class="bug-list__cell-text">{{ scope.row.fixedVersion }}</span>
+              <span v-else class="bug-list__cell-empty">—</span>
+            </template>
 
-          <template #frequency="scope">
-            <el-tag size="small" effect="plain" :type="frequencyTagType(scope.row.frequency)">{{ scope.row.frequency }}</el-tag>
-          </template>
+            <template #updatedAt="scope">
+              {{ formatDate(scope.row.updatedAt) }}
+            </template>
 
-          <template #environment="scope">
-            <el-tag v-if="scope.row.environment" size="small" effect="plain" type="info">{{ scope.row.environment }}</el-tag>
-            <span v-else class="bug-list__cell-empty">—</span>
-          </template>
-
-          <template #affectedVersion="scope">
-            <span v-if="scope.row.affectedVersion" class="bug-list__cell-text">{{ scope.row.affectedVersion }}</span>
-            <span v-else class="bug-list__cell-empty">—</span>
-          </template>
-
-          <template #fixedVersion="scope">
-            <span v-if="scope.row.fixedVersion" class="bug-list__cell-text">{{ scope.row.fixedVersion }}</span>
-            <span v-else class="bug-list__cell-empty">—</span>
-          </template>
-
-          <template #updatedAt="scope">
-            {{ formatDate(scope.row.updatedAt) }}
-          </template>
-
-          <template #operation="scope">
-            <el-button type="primary" link :icon="View" @click="goDetail(scope.row.key)"></el-button>
-            <el-button type="primary" link :icon="Edit" @click="openEdit(scope.row)"></el-button>
-            <el-button type="danger" link :icon="Delete" @click="store.handleDelete(scope.row).then(() => proTable?.getTableList())"></el-button>
-          </template>
-        </ProTable>
+            <template #operation="scope">
+              <el-button type="primary" link :icon="View" @click="goDetail(scope.row.key)"></el-button>
+              <el-button type="primary" link :icon="Edit" @click="openEdit(scope.row)"></el-button>
+              <el-button
+                type="danger"
+                link
+                :icon="Delete"
+                @click="store.handleDelete(scope.row).then(() => proTable?.getTableList())"
+              ></el-button>
+            </template>
+          </ProTable>
         </template>
 
         <!-- Card View -->
         <template v-else-if="!props.projectKey && viewMode === 'card'">
           <div class="bug-grid">
-            <div
-              v-for="bug in cardBugs"
-              :key="bug.key"
-              class="bug-card"
-              @click="goDetail(bug.key)"
-            >
+            <div v-for="bug in cardBugs" :key="bug.key" class="bug-card" @click="goDetail(bug.key)">
               <div class="bug-card__head">
                 <span class="bug-card__dot" :style="{ background: severityColor(bug.severity) }" />
                 <code class="bug-card__key">{{ bug.key }}</code>
@@ -301,12 +345,7 @@
         <!-- List View -->
         <template v-else>
           <div class="bug-list-view">
-            <div
-              v-for="bug in cardBugs"
-              :key="bug.key"
-              class="bug-list-view__row"
-              @click="goDetail(bug.key)"
-            >
+            <div v-for="bug in cardBugs" :key="bug.key" class="bug-list-view__row" @click="goDetail(bug.key)">
               <span class="bug-list-view__dot" :style="{ background: severityColor(bug.severity) }" />
               <code class="bug-list-view__key">{{ bug.key }}</code>
               <span class="bug-list-view__title">{{ bug.title }}</span>
@@ -394,7 +433,14 @@
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="Project">
-              <el-select v-model="store.form.project_key" filterable clearable placeholder="Select project" style="width: 100%" @change="onProjectChange">
+              <el-select
+                v-model="store.form.project_key"
+                filterable
+                clearable
+                placeholder="Select project"
+                style="width: 100%"
+                @change="onProjectChange"
+              >
                 <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
               </el-select>
             </el-form-item>
@@ -481,7 +527,22 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Plus, Delete, View, Edit, WarningFilled, CircleClose, Loading, CircleCheckFilled, Warning, Clock, User, Grid, Postcard, List } from "@element-plus/icons-vue";
+import {
+  Plus,
+  Delete,
+  View,
+  Edit,
+  WarningFilled,
+  CircleClose,
+  Loading,
+  CircleCheckFilled,
+  Warning,
+  Clock,
+  User,
+  Grid,
+  Postcard,
+  List
+} from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { useBugStore } from "@/stores/modules/bug";
@@ -520,12 +581,28 @@ const recentlyViewed = ref<BugDocument[]>([]);
 const _filterDate = ref<Date | null>(null);
 const filterDate = computed({
   get: () => (props.filterDate !== undefined ? props.filterDate : _filterDate.value),
-  set: (v) => { _filterDate.value = v; }
+  set: v => {
+    _filterDate.value = v;
+  }
 });
-const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
+const {
+  label: filterDateLabel,
+  isToday: isFilterToday,
+  filterDateStr,
+  goToPrevDay,
+  goToNextDay,
+  goToFilterToday,
+  clearFilterDate
+} = useDateFilter(filterDate);
 
 // ── Composable data ──
-const { stats: bugStats, headerPills, resolutionPct, refresh: refreshStats, buildDateFilter } = useBugData({
+const {
+  stats: bugStats,
+  headerPills,
+  resolutionPct,
+  refresh: refreshStats,
+  buildDateFilter
+} = useBugData({
   projectKey: props.projectKey,
   filterDateStr
 });
@@ -534,14 +611,20 @@ const { statusDonutOption, severityDonutOption, trendOption } = useBugCharts(all
 const { items: prdItems, deriveFrom: derivePrds } = useRequirements();
 
 // Pre-fetch PRD items when in project context for labels column
-watch(() => props.projectKey, async (key) => {
-  if (key) {
-    try {
-      const res = await listKnowledgeFiles("projects");
-      derivePrds((res.files || []) as KnowledgeFileEntry[], key);
-    } catch { /* best-effort */ }
-  }
-}, { immediate: true });
+watch(
+  () => props.projectKey,
+  async key => {
+    if (key) {
+      try {
+        const res = await listKnowledgeFiles("projects");
+        derivePrds((res.files || []) as KnowledgeFileEntry[], key);
+      } catch {
+        /* best-effort */
+      }
+    }
+  },
+  { immediate: true }
+);
 
 // Build PRD lookup: tag → { title, path }
 const prdLookup = computed(() => {
@@ -561,10 +644,21 @@ const cardBugs = computed(() => {
 });
 const cardTotal = computed(() => allBugs.value.length);
 
-function onCardPage(p: number) { cardPage.value = p; }
+function onCardPage(p: number) {
+  cardPage.value = p;
+}
 
 function truncateDesc(text: string): string {
-  const plain = text.replace(/#{1,6}\s/g, "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/`/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/>\s/g, "").replace(/[-*+]\s/g, "").replace(/\n+/g, " ").trim();
+  const plain = text
+    .replace(/#{1,6}\s/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "")
+    .replace(/`/g, "")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/>\s/g, "")
+    .replace(/[-*+]\s/g, "")
+    .replace(/\n+/g, " ")
+    .trim();
   return plain.length > 160 ? plain.slice(0, 160) + "..." : plain;
 }
 
@@ -580,7 +674,9 @@ async function loadBugStats() {
     }
     const res = await getBugList(params);
     allBugs.value = (res.data?.list as BugDocument[]) ?? [];
-  } catch { /* best-effort */ }
+  } catch {
+    /* best-effort */
+  }
   refreshStats();
 }
 
@@ -614,12 +710,26 @@ const activePills = computed(() => {
   const pills: Array<{ id: string; label: string; clear: () => void }> = [];
   if (activeFilter.value) {
     const labels: Record<string, string> = {
-      open: "Open", critical: "Critical", p0p1: "P0/P1", mine: "My Bugs", recent: "Recent",
-      in_progress: "In Progress", resolved: "Resolved", closed: "Closed",
-      unassigned: "Unassigned", stale: "Stale >30d"
+      open: "Open",
+      critical: "Critical",
+      p0p1: "P0/P1",
+      mine: "My Bugs",
+      recent: "Recent",
+      in_progress: "In Progress",
+      resolved: "Resolved",
+      closed: "Closed",
+      unassigned: "Unassigned",
+      stale: "Stale >30d"
     };
     const label = labels[activeFilter.value] || activeFilter.value;
-    pills.push({ id: "qf", label, clear: () => { activeFilter.value = ""; proTable.value?.getTableList(); } });
+    pills.push({
+      id: "qf",
+      label,
+      clear: () => {
+        activeFilter.value = "";
+        proTable.value?.getTableList();
+      }
+    });
   }
   return pills;
 });
@@ -667,11 +777,17 @@ async function fetchBugs(params: any) {
 
 async function openEdit(bug: BugDocument) {
   let content = null;
-  try { if (bug.contentPath) content = await readBugContent(bug); } catch { /* use empty */ }
+  try {
+    if (bug.contentPath) content = await readBugContent(bug);
+  } catch {
+    /* use empty */
+  }
   store.openEditDialog(bug, content);
 }
 
-const titlePreviewRef = ref<{ openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void } | null>(null);
+const titlePreviewRef = ref<{
+  openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
+} | null>(null);
 async function openTitlePreview(bug: BugDocument) {
   const filePath = bug.contentPath;
   let content = "";
@@ -683,14 +799,18 @@ async function openTitlePreview(bug: BugDocument) {
       try {
         const c = await readBugContent(bug);
         content = c.description || "";
-      } catch { /* use empty */ }
+      } catch {
+        /* use empty */
+      }
     }
   }
   titlePreviewRef.value?.openFile({
     path: filePath || "",
     title: bug.title,
     content,
-    onSave: async (_newContent: string) => { /* read-only preview */ }
+    onSave: async (_newContent: string) => {
+      /* read-only preview */
+    }
   });
 }
 
@@ -698,14 +818,16 @@ function openLabelPrd(tag: string) {
   const prd = prdLookup.value.get(tag);
   if (prd) {
     // Open the actual PRD file in the preview dialog
-    readKnowledgeFile(prd.path).then((res) => {
-      titlePreviewRef.value?.openFile({
-        path: prd.path,
-        title: prd.title,
-        content: res.content || "",
-        onSave: async () => {}
-      });
-    }).catch(() => {});
+    readKnowledgeFile(prd.path)
+      .then(res => {
+        titlePreviewRef.value?.openFile({
+          path: prd.path,
+          title: prd.title,
+          content: res.content || "",
+          onSave: async () => {}
+        });
+      })
+      .catch(() => {});
   }
 }
 
@@ -717,9 +839,14 @@ function prdLabel(tag: string): string {
 
 /** Type → YiKnowledge directory name mapping, matches BUG_TYPE_DIR in @/api/modules/bug */
 const TYPE_DIR: Record<string, string> = {
-  functional: "logic", performance: "performance", ui: "style",
-  security: "security", compatibility: "compatibility", regression: "regression",
-  data: "data", other: "other"
+  functional: "logic",
+  performance: "performance",
+  ui: "style",
+  security: "security",
+  compatibility: "compatibility",
+  regression: "regression",
+  data: "data",
+  other: "other"
 };
 
 /** Extract category directory from bug contentPath, consistent with YiKnowledge file layout */
@@ -732,9 +859,11 @@ function categoryLabel(bug: BugDocument): string {
 
 function typeTagColor(t: string): "danger" | "warning" | "primary" | "info" {
   const map: Record<string, "danger" | "warning" | "primary" | "info"> = {
-    functional: "danger", logic: "danger",
+    functional: "danger",
+    logic: "danger",
     performance: "warning",
-    ui: "primary", style: "primary",
+    ui: "primary",
+    style: "primary",
     security: "danger",
     compatibility: "warning",
     regression: "info",
@@ -784,22 +913,31 @@ function trackRecent(bug: BugDocument) {
 }
 
 const projects = computed(() => projectStore.projects);
-function projectName(key: string): string { return projects.value.find(p => p.key === key)?.name ?? ""; }
-function goProject(key: string) { router.push(`/project/${key}`); }
+function projectName(key: string): string {
+  return projects.value.find(p => p.key === key)?.name ?? "";
+}
+function goProject(key: string) {
+  router.push(`/project/${key}`);
+}
 
 const issues = computed(() => issueStore.issues);
 const selectableIssues = computed(() => {
   const pk = store.form.project_key;
   return pk ? issues.value.filter(i => i.project_key === pk) : issues.value;
 });
-function issueTitle(key: string): string { const i = issues.value.find(x => x.key === key); return i ? i.title : key; }
+function issueTitle(key: string): string {
+  const i = issues.value.find(x => x.key === key);
+  return i ? i.title : key;
+}
 function goIssue(key: string) {
   const issue = issues.value.find(i => i.key === key);
   if (!issue) return;
   const filePath = getIssueFilePath(issue);
   (titlePreviewRef.value as any)?.open?.(filePath);
 }
-function onProjectChange(key: string) { store.form.project = key ? projectName(key) : ""; }
+function onProjectChange(key: string) {
+  store.form.project = key ? projectName(key) : "";
+}
 
 function onStatusChartClick(e: { name?: string }) {
   if (!e?.name) return;
@@ -833,7 +971,9 @@ const completeness = computed(() => {
   return fields.map(f => ({ ...f, pct: total ? Math.round((f.filled / total) * 100) : 0 }));
 });
 
-function severityColor(s: string): string { return SEVERITY_COLOR[s] || "#909399"; }
+function severityColor(s: string): string {
+  return SEVERITY_COLOR[s] || "#909399";
+}
 
 onMounted(async () => {
   projectStore.fetchProjects({ pageSize: 100 });
@@ -852,7 +992,12 @@ function formatDate(ts: number | null): string {
 }
 
 function severityTagType(s: BugSeverity): "danger" | "warning" | "info" {
-  const map: Record<BugSeverity, "danger" | "warning" | "info"> = { critical: "danger", major: "warning", minor: "info", trivial: "info" };
+  const map: Record<BugSeverity, "danger" | "warning" | "info"> = {
+    critical: "danger",
+    major: "warning",
+    minor: "info",
+    trivial: "info"
+  };
   return map[s];
 }
 function priorityTagType(p: BugPriority): "danger" | "warning" | "info" {
@@ -861,13 +1006,22 @@ function priorityTagType(p: BugPriority): "danger" | "warning" | "info" {
 }
 function statusTagType(s: BugStatus): "primary" | "warning" | "success" | "info" | "danger" {
   const map: Record<BugStatus, "primary" | "warning" | "success" | "info" | "danger"> = {
-    open: "primary", in_progress: "warning", resolved: "success", closed: "info", rejected: "danger", reopened: "warning"
+    open: "primary",
+    in_progress: "warning",
+    resolved: "success",
+    closed: "info",
+    rejected: "danger",
+    reopened: "warning"
   };
   return map[s] || "info";
 }
 function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" {
   const map: Record<string, "danger" | "warning" | "info" | "primary"> = {
-    always: "danger", sometimes: "warning", rarely: "info", once: "primary", unable: "info"
+    always: "danger",
+    sometimes: "warning",
+    rarely: "info",
+    once: "primary",
+    unable: "info"
   };
   return map[f] || "info";
 }
@@ -887,149 +1041,285 @@ function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" 
   margin-bottom: 20px;
 }
 .bug-chart {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
-  display: flex; flex-direction: column;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
-.bug-chart--active { border-color: var(--el-color-primary); box-shadow: 0 0 0 1px var(--el-color-primary-light-5); }
+.bug-chart--active {
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
+}
 .bug-chart__title {
-  display: flex; gap: 6px; align-items: center;
-  padding: 8px 12px; font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.3px;
-  color: var(--el-text-color-secondary);
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  display: flex;
   flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 .bug-chart__badge {
-  padding: 0 5px; font-size: 9px; font-weight: 600; line-height: 15px;
-  color: var(--el-color-primary); background: var(--el-color-primary-light-9);
-  border-radius: 3px; text-transform: none;
+  padding: 0 5px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 15px;
+  color: var(--el-color-primary);
+  text-transform: none;
+  background: var(--el-color-primary-light-9);
+  border-radius: 3px;
 }
-.bug-chart__body { flex: 1; min-height: 0; padding: 8px; }
+.bug-chart__body {
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+}
 
 // ── Recently Viewed ──
 .bug-list__recent {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  padding: 8px 12px; margin-bottom: 16px; border-radius: 8px;
-  background: var(--el-fill-color-lighter); border: 1px solid var(--el-border-color-lighter);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
-.bug-list__recent-label { font-size: 11px; font-weight: 600; color: var(--el-text-color-secondary); margin-right: 2px; }
+.bug-list__recent-label {
+  margin-right: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
 .bug-list__recent-chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px;
-  font-size: 12px; color: var(--el-text-color-primary);
-  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter);
-  border-radius: 999px; cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  &:hover { border-color: var(--el-color-primary); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 2px 9px;
+  font-size: 12px;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 999px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  &:hover {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+  }
 }
-.bug-list__recent-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.bug-list__recent-key { font-family: monospace; font-size: 11px; color: var(--el-text-color-secondary); }
-.bug-list__recent-title { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bug-list__recent-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.bug-list__recent-key {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.bug-list__recent-title {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .bug-list__recent-clear {
-  margin-left: auto; border: none; background: transparent;
-  color: var(--el-text-color-placeholder); cursor: pointer; font-size: 13px; line-height: 1; padding: 4px;
-  &:hover { color: var(--el-color-danger); }
+  padding: 4px;
+  margin-left: auto;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--el-text-color-placeholder);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  &:hover {
+    color: var(--el-color-danger);
+  }
 }
 
 // ── Filter Pills ──
-.bug-list__pills { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-.bug-list__pills-label { font-size: 11px; font-weight: 600; color: var(--el-text-color-secondary); }
+.bug-list__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.bug-list__pills-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
 
 // ── Body / Main / Sidebar ──
-.bug-list__body { display: flex; gap: 24px; }
-.bug-list__main { flex: 1; min-width: 0; }
+.bug-list__body {
+  display: flex;
+  gap: 24px;
+}
+.bug-list__main {
+  flex: 1;
+  min-width: 0;
+}
 .bug-list__sidebar {
-  width: 240px; flex-shrink: 0; position: sticky; top: 24px; align-self: flex-start;
+  position: sticky;
+  top: 24px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  width: 240px;
+  padding: 12px;
   background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
-  border-radius: 12px; padding: 12px;
   border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
 }
 .bug-list__sidebar-view {
   padding: 4px 4px 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) { display: flex; width: 100%; }
-  :deep(.el-radio-button) { flex: 1; }
-  :deep(.el-radio-button__inner) { width: 100%; text-align: center; padding: 4px 0; font-size: 12px; }
+  :deep(.el-radio-group) {
+    display: flex;
+    width: 100%;
+  }
+  :deep(.el-radio-button) {
+    flex: 1;
+  }
+  :deep(.el-radio-button__inner) {
+    width: 100%;
+    padding: 4px 0;
+    font-size: 12px;
+    text-align: center;
+  }
 }
 
 // ── Sidebar Section ──
 .bug-list__sidebar-section {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
 .bug-list__sidebar-section-header {
-  display: flex; align-items: center;
-  padding: 8px 12px; font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  padding-left: 10px;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   border-bottom: 1px solid var(--el-border-color-lighter);
   border-left: 2px solid var(--el-color-primary);
-  padding-left: 10px;
 }
-.bug-list__sidebar-section-label { flex: 1; }
+.bug-list__sidebar-section-label {
+  flex: 1;
+}
 .bug-list__sidebar-section-hint {
-  font-size: 10px; font-weight: 500; color: var(--el-text-color-placeholder);
-  text-transform: none; letter-spacing: 0;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--el-text-color-placeholder);
+  text-transform: none;
+  letter-spacing: 0;
 }
 .bug-list__sidebar-section-body {
-  padding: 8px; display: flex; flex-direction: column; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
 }
 
 // ── Sidebar Card (stat item) ──
 .bug-list__sidebar-card {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px; cursor: pointer;
-  transition: all 0.15s;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
   background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition: all 0.15s;
   &:hover {
-    border-color: var(--el-color-primary-light-5);
     background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
   }
 }
 .bug-list__sidebar-card-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border-radius: 7px;
-  color: #fff; font-size: 13px; flex-shrink: 0;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  color: #ffffff;
+  border-radius: 7px;
 }
 .bug-list__sidebar-card-info {
-  display: flex; flex-direction: column; gap: 0; min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
 }
 .bug-list__sidebar-card-value {
-  font-size: 16px; font-weight: 700; line-height: 1.1;
-  color: var(--el-text-color-primary); font-family: DIN, sans-serif;
+  font-family: DIN, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--el-text-color-primary);
 }
 .bug-list__sidebar-card-label {
-  font-size: 10px; color: var(--el-text-color-secondary);
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
 }
 
 // ── Sidebar Card (attention variant) ──
 .bug-list__sidebar-card-accent-icon {
-  font-size: 14px; flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 14px;
 }
 .bug-list__sidebar-card-accent-value {
-  font-size: 16px; font-weight: 700; font-family: DIN, sans-serif; min-width: 20px;
+  min-width: 20px;
+  font-family: DIN, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
 }
 .bug-list__sidebar-card-accent-label {
-  font-size: 11px; color: var(--el-text-color-secondary); flex: 1;
+  flex: 1;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
 }
 .bug-list__sidebar-card--critical {
   .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value { color: var(--el-color-danger); }
+  .bug-list__sidebar-card-accent-value {
+    color: var(--el-color-danger);
+  }
 }
 .bug-list__sidebar-card--unassigned {
   .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value { color: var(--el-color-warning); }
+  .bug-list__sidebar-card-accent-value {
+    color: var(--el-color-warning);
+  }
 }
 .bug-list__sidebar-card--stale {
   .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value { color: var(--el-color-info); }
+  .bug-list__sidebar-card-accent-value {
+    color: var(--el-color-info);
+  }
 }
 
 // ── Sidebar Progress ──
@@ -1037,23 +1327,34 @@ function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" 
   padding: 0 12px 12px;
 }
 .bug-list__sidebar-progress-label {
-  display: block; font-size: 10px; font-weight: 600;
-  color: var(--el-text-color-secondary); margin-bottom: 4px;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
 }
 
 // ── Sidebar Quality ──
 .bug-list__sidebar-quality {
   padding: 4px 0;
-  & + & { padding-top: 8px; }
+  & + & {
+    padding-top: 8px;
+  }
 }
 .bug-list__sidebar-quality-head {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3px;
 }
 .bug-list__sidebar-quality-label {
-  font-size: 11px; color: var(--el-text-color-secondary);
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
 }
 .bug-list__sidebar-quality-pct {
-  font-size: 11px; font-weight: 600; font-family: DIN, sans-serif;
+  font-family: DIN, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 // ── Card Grid ──
@@ -1063,120 +1364,213 @@ function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" 
   gap: 10px;
 }
 .bug-grid__pager {
-  margin-top: 16px;
   justify-content: center;
+  margin-top: 16px;
 }
 .bug-card {
   padding: 14px;
+  cursor: pointer;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   &:hover {
+    box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
     transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
 }
 .bug-card__head {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
 }
 .bug-card__dot {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 .bug-card__key {
-  font-family: monospace; font-size: 11px; color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light); padding: 1px 6px; border-radius: 4px;
-  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  padding: 1px 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
 }
 .bug-card__head-right {
-  display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  align-items: center;
 }
 .bug-card__title {
-  margin: 0 0 4px; font-size: 14px; font-weight: 600; line-height: 1.4;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box;
+  margin: 0 0 4px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
 }
 .bug-card__desc {
-  margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--el-text-color-secondary);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box;
+  margin: 0 0 8px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
 }
 .bug-card__meta {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
 }
 .bug-card__assignee {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 12px; color: var(--el-text-color-secondary);
-  .el-icon { font-size: 13px; }
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  .el-icon {
+    font-size: 13px;
+  }
 }
 .bug-card__reporter {
-  font-size: 12px; color: var(--el-text-color-placeholder);
-  &::before { content: "by "; }
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  &::before {
+    content: "by ";
+  }
 }
 .bug-card__module {
-  font-size: 12px; color: var(--el-text-color-placeholder);
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 .bug-card__footer-row {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .bug-card__footer-tags {
-  display: flex; gap: 4px; align-items: center;
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 .bug-card__updated {
-  font-size: 12px; color: var(--el-text-color-placeholder);
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 .bug-card__env {
-  font-size: 11px; color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light); padding: 1px 6px; border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
 }
 .bug-card__ver {
-  font-size: 11px; color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9); padding: 1px 6px; border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-9);
+  border-radius: 4px;
 }
 
 // ── List View ──
 .bug-list-view {
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .bug-list-view__row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter); border-radius: 8px;
-  cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
     transform: translateY(-1px);
   }
 }
 .bug-list-view__dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
 }
 .bug-list-view__key {
-  font-family: monospace; font-size: 11px; color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light); padding: 1px 6px; border-radius: 4px; flex-shrink: 0;
+  flex-shrink: 0;
+  padding: 1px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
 }
 .bug-list-view__title {
-  flex: 1; min-width: 0; font-size: 13px; font-weight: 500;
-  color: var(--el-text-color-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
 }
 .bug-list-view__assignee {
-  font-size: 12px; color: var(--el-text-color-secondary); flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 .bug-list-view__reporter {
-  font-size: 12px; color: var(--el-text-color-placeholder); flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 .bug-list-view__updated {
-  font-size: 12px; color: var(--el-text-color-placeholder); flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 .bug-list-view__reporter {
-  font-size: 12px; color: var(--el-text-color-placeholder); flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
 
 // ── Cell helpers ──
-.bug-list__cell-text { font-size: 13px; }
-.bug-list__cell-empty { color: var(--el-text-color-placeholder); }
+.bug-list__cell-text {
+  font-size: 13px;
+}
+.bug-list__cell-empty {
+  color: var(--el-text-color-placeholder);
+}
 
 // ── Labels ──
 .bug-list__labels {
-  display: flex; flex-wrap: wrap; gap: 2px; align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
 }
 </style>

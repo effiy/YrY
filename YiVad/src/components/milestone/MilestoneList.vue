@@ -33,11 +33,7 @@
           </div>
         </div>
         <div class="milestone-card__progress">
-          <el-progress
-            :percentage="Math.round(ms.progress * 100)"
-            :color="progressColor(ms.health)"
-            :stroke-width="8"
-          />
+          <el-progress :percentage="Math.round(ms.progress * 100)" :color="progressColor(ms.health)" :stroke-width="8" />
         </div>
         <div class="milestone-card__meta">
           <span v-if="ms.target_date">目标: {{ ms.target_date }}</span>
@@ -103,36 +99,56 @@ onMounted(fetchMilestones);
 </script>
 
 <style scoped lang="scss">
-.milestone-list { padding: 8px 0; }
+.milestone-list {
+  padding: 8px 0;
+}
 .milestone-list__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
 }
-.milestone-list__count { color: var(--el-text-color-secondary); font-size: 13px; }
-
+.milestone-list__count {
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+}
 .milestone-card {
   padding: 12px 16px;
   margin-bottom: 8px;
+  cursor: pointer;
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
-  cursor: pointer;
   transition: box-shadow 0.2s;
-  &:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
-  &--delayed { border-left: 3px solid #f56c6c; }
-  &--at_risk { border-left: 3px solid #e6a23c; }
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  }
+  &--delayed {
+    border-left: 3px solid #f56c6c;
+  }
+  &--at_risk {
+    border-left: 3px solid #e6a23c;
+  }
 }
 .milestone-card__head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
 }
-.milestone-card__title { font-weight: 500; }
-.milestone-card__badges { display: flex; gap: 6px; }
-.milestone-card__progress { margin-bottom: 6px; }
+.milestone-card__title {
+  font-weight: 500;
+}
+.milestone-card__badges {
+  display: flex;
+  gap: 6px;
+}
+.milestone-card__progress {
+  margin-bottom: 6px;
+}
 .milestone-card__meta {
-  display: flex; gap: 16px; font-size: 12px; color: var(--el-text-color-secondary);
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 </style>

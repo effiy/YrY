@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: API调试控制台
 tags:
 - API调试
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,41 @@ source_okr: [yivad-003]
 # API调试控制台
 
 > 需求编号：YV-09-48 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/22-prd-task-API调试控制台.md)，验证方案见 [测试方案](../../tests/2026-09/22-prd-test-API调试控制台.md)。
 > 依赖：YiAi RPC 服务端正常运行
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | API 控制台 Store | 参见 §API 控制台 Store |
+| FR-2 | 请求构建器组件 | 参见 §请求构建器组件 |
+| FR-3 | JSON 语法高亮查看器 | 参见 §JSON 语法高亮查看器 |
+| FR-4 | JsonNode 递归组件 | 参见 §JsonNode 递归组件 |
+| FR-5 | 响应指标组件 | 参见 §响应指标组件 |
+| FR-6 | Curl 导出器 | 参见 §Curl 导出器 |
+| FR-7 | 请求历史面板 | 参见 §请求历史面板 |
 
 ## 改动总览
 
@@ -104,6 +141,7 @@ YiVad 开发者在调试 API 调用时，需要频繁切换到浏览器 DevTools
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前调试流程
@@ -137,6 +175,7 @@ graph LR
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 控制台定位
@@ -185,6 +224,7 @@ graph LR
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -229,6 +269,7 @@ graph TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 API 控制台 Store
@@ -1284,6 +1325,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -1303,6 +1345,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：JsonNode
@@ -1343,6 +1386,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1355,6 +1399,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -1371,6 +1416,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 使用独立页面而非侧边抽屉
@@ -1403,6 +1449,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1425,6 +1472,7 @@ async function handleClear() {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `apiConsole.ts` Store 历史/集合/环境 CRUD 逻辑正确，localStorage 持久化

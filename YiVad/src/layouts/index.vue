@@ -39,10 +39,7 @@ const font = reactive({ color: "var(--color-watermark)" });
 // Define watermark color token based on theme
 const setWatermarkColor = () => {
   const html = document.documentElement;
-  html.style.setProperty(
-    "--color-watermark",
-    globalStore.isDark ? "rgba(255, 255, 255, .15)" : "rgba(0, 0, 0, .15)"
-  );
+  html.style.setProperty("--color-watermark", globalStore.isDark ? "rgba(255, 255, 255, .15)" : "rgba(0, 0, 0, .15)");
 };
 watch(isDark, setWatermarkColor, { immediate: true });
 

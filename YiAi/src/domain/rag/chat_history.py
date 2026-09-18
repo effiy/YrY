@@ -14,19 +14,19 @@ Public API:
 from __future__ import annotations
 
 import time
-import uuid
 from typing import Any, Dict, List, Optional
+import uuid
 
 # Max turns kept in memory. 20 matches the retrieval ring buffer.
 MAX_CHAT_HISTORY = 20
 
-_chat_history: List[Dict[str, Any]] = []
+_chat_history: list[dict[str, Any]] = []
 
 
 def record_chat_turn(
     question: str,
     answer: str,
-    sources: List[Dict[str, Any]],
+    sources: list[dict[str, Any]],
     scope: str = "",
     chat_mode: str = "condense_plus_context",
     latency_ms: float = 0,
@@ -35,8 +35,8 @@ def record_chat_turn(
     citations: bool = False,
     num_queries: int = 1,
     category: str = "",
-    tags: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    tags: list[str] | None = None,
+) -> dict[str, Any]:
     """Push a chat turn and return it (already-shaped, ready for emit).
 
     Mirrors ``history.record_query``'s ``config`` block so the frontend
@@ -46,7 +46,7 @@ def record_chat_turn(
     latency so the chat sub-tab can render a latency-trend sparkline.
     """
     scores = [float(s.get("score") or 0) for s in sources if s.get("score") is not None]
-    record: Dict[str, Any] = {
+    record: dict[str, Any] = {
         "id": uuid.uuid4().hex[:12],
         "question": question,
         "answer": answer,
@@ -73,7 +73,7 @@ def record_chat_turn(
     return record
 
 
-def list_chat_history() -> List[Dict[str, Any]]:
+def list_chat_history() -> list[dict[str, Any]]:
     """Return turns newest-first (most-recent chat turn at the top)."""
     return list(reversed(_chat_history))
 

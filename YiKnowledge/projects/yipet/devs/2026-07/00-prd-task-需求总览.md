@@ -13,6 +13,7 @@ project_id: yipet
 prd_month: "202607"
 estimate_frontend: 13.5
 source_prd: "00-需求-需求总览.md"
+source_okr: [yipet-001]
 ---
 
 # YiPet 七月迭代 — 技术栈迁移 / 工具链升级 / 聊天框架搭建 — 开发任务

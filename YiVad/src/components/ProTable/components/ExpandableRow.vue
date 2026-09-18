@@ -20,17 +20,19 @@ import { ArrowRight } from "@element-plus/icons-vue";
 defineProps<{ row: Record<string, any> }>();
 
 const expanded = ref(false);
-const toggle = () => { expanded.value = !expanded.value; };
+const toggle = () => {
+  expanded.value = !expanded.value;
+};
 
 defineExpose({ expanded, toggle });
 </script>
 
 <style scoped lang="scss">
 .expandable-row__trigger {
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   padding: 4px;
+  cursor: pointer;
 }
 .expandable-row__icon--expanded {
   transform: rotate(90deg);
@@ -41,17 +43,17 @@ defineExpose({ expanded, toggle });
 }
 .expand-enter-active,
 .expand-leave-active {
-  transition: all 0.25s ease;
   overflow: hidden;
+  transition: all 0.25s ease;
 }
 .expand-enter-from,
 .expand-leave-to {
-  opacity: 0;
   max-height: 0;
+  opacity: 0;
 }
 .expand-enter-to,
 .expand-leave-from {
-  opacity: 1;
   max-height: 2000px;
+  opacity: 1;
 }
 </style>

@@ -25,7 +25,7 @@ const chartOption = computed<ECOption>(() => {
       legend: {
         data: props.data.map(s => s.name),
         bottom: 0,
-        textStyle: { fontSize: 11 },
+        textStyle: { fontSize: 11 }
       },
       grid: { left: "3%", right: "4%", bottom: "12%", containLabel: true },
       xAxis: { type: "value" as const, axisLabel: { fontSize: 11 } },
@@ -34,9 +34,9 @@ const chartOption = computed<ECOption>(() => {
         name: s.name,
         type: "scatter" as const,
         data: s.data,
-        itemStyle: s.color ? { color: s.color } : undefined,
+        itemStyle: s.color ? { color: s.color } : undefined
       })),
-      ...props.options,
+      ...props.options
     };
   }
   return (props.options as ECOption) ?? {};

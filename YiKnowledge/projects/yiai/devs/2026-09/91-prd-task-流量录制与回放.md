@@ -1,41 +1,79 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-87"
-title: "YA-09-87: 服务端请求流量录制与回放 — 生产流量镜像用于测试环境压力测试 — 开发任务"
+prd_task_id: "YA-09-58"
+title: "YA-09-58: 流量录制与回放 — 生产流量镜像 → 测试压测 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "91-需求-流量录制与回放.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-87: 服务端请求流量录制与回放 — 生产流量镜像用于测试环境压力测试 — 开发任务
+# YA-09-58: 流量录制与回放 — 生产流量镜像 → 测试压测 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[91-需求-流量录制与回放.md](../../prds/2026-09/91-需求-流量录制与回放.md)
-> 需求编号：YA-09-87 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-58 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+中间件层录制生产流量（脱敏后），测试环境回放进行压力测试和回归验证。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class TrafficRecorder:
+    def __init__(self, sample_rate: float = 0.01):
+        self.sample_rate = sample_rate
+        self.records: list[dict] = []
 
-| 步骤 | 任务 | 产出 |
+    async def record(self, request, response):
+        if random.random() > self.sample_rate:
+            return
+        self.records.append({
+            "method": request.method,
+            "path": request.url.path,
+            "headers": dict(request.headers),
+            "body": await sanitize_body(request),
+            "status": response.status_code,
+            "duration_ms": response.duration_ms,
+        })
+
+    def export(self, path: str):
+        with open(path, "w") as f:
+            json.dump(self.records, f, indent=2)
+```
+
+### 回放
+
+```python
+async def replay(records: list[dict], base_url: str, concurrency: int = 10):
+    sem = asyncio.Semaphore(concurrency)
+    async def do(rec):
+        async with sem:
+            start = time.monotonic()
+            resp = await client.request(rec["method"], f"{base_url}{rec['path']}", json=rec["body"])
+            return {"expected_status": rec["status"], "actual_status": resp.status_code, "duration": time.monotonic() - start}
+    return await asyncio.gather(*[do(r) for r in records])
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 录制中间件 | 生产流量采样写入文件 | 0.5 |
+| 2 | 回放引擎 + 报告 + 测试 | 测试环境回放 1000 条请求 | 0.5 |
+
+**合计：1.0d**。

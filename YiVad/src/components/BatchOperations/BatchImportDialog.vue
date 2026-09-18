@@ -1,13 +1,6 @@
 <template>
   <el-dialog v-model="visible" title="Batch Import" width="560px">
-    <el-upload
-      ref="uploadRef"
-      :auto-upload="false"
-      :on-change="handleFileChange"
-      :limit="1"
-      accept=".csv,.json,.xlsx,.xls"
-      drag
-    >
+    <el-upload ref="uploadRef" :auto-upload="false" :on-change="handleFileChange" :limit="1" accept=".csv,.json,.xlsx,.xls" drag>
       <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
       <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
       <template #tip>
@@ -63,12 +56,27 @@ const handleFileChange = async (file: any) => {
   }
 };
 
-const open = () => { visible.value = true; preview.value = []; };
-const close = () => { visible.value = false; };
-const handleConfirm = () => { emit("confirm", preview.value); visible.value = false; };
+const open = () => {
+  visible.value = true;
+  preview.value = [];
+};
+const close = () => {
+  visible.value = false;
+};
+const handleConfirm = () => {
+  emit("confirm", preview.value);
+  visible.value = false;
+};
 defineExpose({ open, close });
 </script>
 
 <style scoped lang="scss">
-.batch-import__preview { margin-top: 16px; &-header { font-size: 13px; font-weight: 500; margin-bottom: 8px; } }
+.batch-import__preview {
+  margin-top: 16px;
+  &-header {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
 </style>

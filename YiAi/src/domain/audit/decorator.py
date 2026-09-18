@@ -1,10 +1,11 @@
-import json
-import logging
-import uuid
+from collections.abc import Callable
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from functools import wraps
-from typing import Callable, Dict, Any, Optional
+import json
+import logging
+from typing import Any, Dict, Optional
+import uuid
 
 from data.database import db
 from domain.audit.logger import AuditLogger
@@ -24,10 +25,10 @@ def set_audit_context(actor: str = "", ip: str = "", user_agent: str = "") -> No
     _audit_user_agent.set(user_agent)
 
 
-def _truncate_large_fields(data: Optional[Dict[str, Any]], max_chars: int) -> Optional[Dict[str, Any]]:
+def _truncate_large_fields(data: dict[str, Any] | None, max_chars: int) -> dict[str, Any] | None:
     if data is None:
         return None
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     for k, v in data.items():
         if isinstance(v, str) and len(v) > max_chars:
             result[k] = v[:max_chars] + "[truncated]"
@@ -36,8 +37,8 @@ def _truncate_large_fields(data: Optional[Dict[str, Any]], max_chars: int) -> Op
     return result
 
 
-def _compute_changes(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any]:
-    changes: Dict[str, Any] = {}
+def _compute_changes(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
+    changes: dict[str, Any] = {}
     all_keys = set(before.keys()) | set(after.keys())
     for key in all_keys:
         old = before.get(key)
@@ -47,7 +48,7 @@ def _compute_changes(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str,
     return changes
 
 
-def _resolve_params(args, kwargs) -> Dict[str, Any]:
+def _resolve_params(args, kwargs) -> dict[str, Any]:
     """Extract params dict from decorated function arguments."""
     params = kwargs.get("parameters")
     if params is None and args:
@@ -80,7 +81,7 @@ def audit_write(operation: str):
             await db.initialize()
 
             # Fetch before-data (for UPDATE / DELETE)
-            before_data: Optional[Dict[str, Any]] = None
+            before_data: dict[str, Any] | None = None
             if operation in ("UPDATE", "DELETE") and collection_name and doc_key:
                 try:
                     existing = await db.db[collection_name].find_one({"key": doc_key})
@@ -94,7 +95,7 @@ def audit_write(operation: str):
             result = await func(*args, **kwargs)
 
             # Fetch after-data (for CREATE / UPDATE)
-            after_data: Optional[Dict[str, Any]] = None
+            after_data: dict[str, Any] | None = None
             resolved_key = doc_key or str(result.get("key", ""))
             if operation in ("CREATE", "UPDATE") and collection_name and resolved_key:
                 try:
@@ -106,7 +107,7 @@ def audit_write(operation: str):
                     logger.warning("Failed to fetch after-data for audit: %s", e)
 
             # Compute field-level diff for UPDATE
-            changes: Optional[Dict[str, Any]] = None
+            changes: dict[str, Any] | None = None
             if operation == "UPDATE" and before_data and after_data:
                 changes = _compute_changes(before_data, after_data)
 

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-87: 智能搜索过滤器 — 自然语言查询、保存过滤预设、过滤器分享、使用模式建议、语法高亮、布尔组合(AND/OR/NOT)"
 tags: [需求文档, 智能搜索, 自然语言查询, 过滤预设, 语法高亮, 布尔过滤器, 前端]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,46 @@ source_okr: [yivad-003]
 # YV-09-87: 智能搜索过滤器 — 自然语言查询、保存过滤预设、过滤器分享、使用模式建议、语法高亮、布尔组合(AND/OR/NOT)
 
 > 需求编号：YV-09-87 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/40-prd-task-智能搜索过滤器.md)，验证方案见 [测试方案](../../tests/2026-09/40-prd-test-智能搜索过滤器.md)。
 > 依赖：YV-09-36（全局搜索增强）、YV-09-68（全局搜索命令面板）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 当前过滤器构建流程 | 参见 §当前过滤器构建流程 |
+| FR-2 | 当前过滤器能力矩阵 | 参见 §当前过滤器能力矩阵 |
+| FR-3 | 改造前数据流 | 参见 §改造前数据流 |
+| FR-4 | 根因矩阵 | 参见 §根因矩阵 |
+| FR-5 | 双向同步数据流 | 参见 §双向同步数据流 |
+| FR-6 | DSL 语法规范 | 参见 §DSL 语法规范 |
+| FR-7 | 过滤器 DSL 解析器 | 参见 §过滤器 DSL 解析器 |
+| FR-8 | 自然语言解析引擎 | 参见 §自然语言解析引擎 |
+| FR-9 | 智能过滤器搜索栏 UI | 参见 §智能过滤器搜索栏 UI |
+| FR-10 | 语法高亮实现 | 参见 §语法高亮实现 |
+| FR-11 | 文件变更清单 | 参见 §文件变更清单 |
+| FR-12 | 后端预设 API | 参见 §后端预设 API |
 
 ## 背景
 
@@ -64,6 +106,7 @@ YiVad 当前的搜索和过滤功能依赖用户手动构建复杂的查询条�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前过滤器构建流程
@@ -147,6 +190,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：过滤器输入方式 — 纯 GUI vs 纯文本 vs GUI+文本双模式
@@ -200,6 +244,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 智能搜索过滤器系统架构
@@ -304,6 +349,7 @@ graph LR
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 过滤器 DSL 解析器
@@ -479,6 +525,7 @@ export function tokenizeDSL(input: string): HighlightToken[] {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -497,6 +544,7 @@ export function tokenizeDSL(input: string): HighlightToken[] {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：自然语言解析 — 简单查询
@@ -556,6 +604,7 @@ export function tokenizeDSL(input: string): HighlightToken[] {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -569,6 +618,7 @@ export function tokenizeDSL(input: string): HighlightToken[] {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -581,6 +631,7 @@ export function tokenizeDSL(input: string): HighlightToken[] {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么 NL 解析不全部使用 LLM？
@@ -601,6 +652,7 @@ Pinia store 作为唯一数据源，DSL 编辑器和 GUI 面板都是视图层�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -626,6 +678,7 @@ Pinia store 作为唯一数据源，DSL 编辑器和 GUI 面板都是视图层�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] DSL 解析器正确解析所有支持的操作符（eq/neq/gt/gte/lt/lte/contains/in）

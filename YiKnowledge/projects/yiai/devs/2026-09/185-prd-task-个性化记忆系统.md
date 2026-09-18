@@ -1,41 +1,57 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-180"
-title: "YA-09-180: 个性化记忆系统 — 长期用户记忆、记忆检索注入、记忆巩固衰减与隐私控制 — 开发任务"
+prd_task_id: "YA-09-135"
+title: "YA-09-135: 个性化记忆系统 — 长期用户记忆 + 衰减 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "185-需求-个性化记忆系统.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-180: 个性化记忆系统 — 长期用户记忆、记忆检索注入、记忆巩固衰减与隐私控制 — 开发任务
+# YA-09-135: 个性化记忆系统 — 长期用户记忆 + 衰减 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[185-需求-个性化记忆系统.md](../../prds/2026-09/185-需求-个性化记忆系统.md)
-> 需求编号：YA-09-180 · 优先级：P2 · 人天：0.5d
-> 类型：功能 · 状态：需求已编写
+> 需求编号：YA-09-135 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+跨会话记住用户偏好（名字、角色、常用工具）。记忆按重要性和时间衰减，自动注入到系统提示词。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+class UserMemory:
+    async def remember(self, user_id: str, key: str, value: str, importance: float = 1.0):
+        await db.memories.update_one({"user_id": user_id, "key": key},
+            {"$set": {"value": value, "importance": importance, "last_access": now}}, upsert=True)
 
-| 步骤 | 任务 | 产出 |
+    async def recall(self, user_id: str, top_k: int = 5) -> str:
+        memories = await db.memories.find({"user_id": user_id}).sort([("importance", -1), ("last_access", -1)]).limit(top_k).to_list(None)
+        return "\n".join(f"- {m['key']}: {m['value']}" for m in memories)
+
+    async def decay(self):  # 定期降低未访问记忆的重要性
+        await db.memories.update_many({"last_access": {"$lt": now - timedelta(days=30)}}, {"$mul": {"importance": 0.9}})
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 记忆 CRUD + 自动注入 | 新会话加载用户历史偏好 | 0.25 |
+| 2 | 衰减 + 隐私控制 + 测试 | 30 天未访问记忆降权 | 0.25 |
+
+**合计：0.5d**。

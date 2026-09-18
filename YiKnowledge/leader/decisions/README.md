@@ -3,8 +3,8 @@ title: 技术负责人 — 决策 (ADR)
 tags: [leaf, leader, adr, decisions, architecture]
 category: leader/decisions
 created: 2026-08-06
-updated: 2026-09-10
-last_verified: 2026-08-07
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -13,12 +13,11 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "技术负责人可以按项目找到所有项目级架构决策记录，理解过去决策的原因并做出前后一致的未来决策"
 acceptance_criteria:
-  - "ADR 按项目组织（YiAi、YiVad、YiPet、FDE）"
-  - "跨项目 ADR 仪表盘可访问"
+  - "ADR 按项目组织（YiAi、YiVad、YiPet）"
   - "每个 ADR 遵循 12 节模板"
 related:
   - ../INDEX.md
-  - ../architecture/design-architecture-decision.md
+  - ../architecture/01-架构-架构决策设计.md
   - ../../engineer/build/
 ---
 
@@ -34,14 +33,7 @@ related:
 |---|---|---|
 | [yiai/](./yiai/) | 5 | Agent 启动、LLM 多供应商路由、RAG 评估基础设施、pytest、知识监听器 |
 | [yivad/](./yivad/) | 3 | AiCR 移植、Vite 到 Rsbuild 迁移、Vitest 引入 |
-| [yipet/](./yipet/) | 6 | Biome 代码检查与格式化、AiCR 移植、Chrome MV3 双世界边界、跨项目 Hub、四层 API 架构、React 18 + Ant Design 5 迁移 |
-
-## 跨项目
-
-| 文件 | 描述 |
-|---|---|
-| [dashboard-architecture-decisions.md](./dashboard-architecture-decisions.md) | 所有项目的 ADR 状态仪表盘 |
-| [stack-migration-sequencing.md](./stack-migration-sequencing.md) | 多项目技术栈迁移排序 |
+| [yipet/](./yipet/) | 6 | AiCR 移植、Biome 代码检查与格式化、Chrome MV3 双世界边界、跨项目 Hub、四层 API 架构、React 18 + Ant Design 5 迁移 |
 
 ## ADR 编写流程
 

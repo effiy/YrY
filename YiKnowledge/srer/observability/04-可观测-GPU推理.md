@@ -4,7 +4,7 @@ aliases: [gpu-inference, ollama-gpu, gpu-optimization, vram]
 tags: [sre, observability, gpu, inference, ollama, performance]
 category: srer/observability
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -193,6 +193,53 @@ ollama --version               # 应显示 CUDA 支持
 1. 模型太大，被挤到 CPU 上运行（部分或全部层）
 2. GPU 温度过高，触发了降频保护
 3. 上下文窗口设置过大，KV Cache 占用过多计算资源
+
+## Ollama 日常运维
+
+### 模型生命周期
+
+```bash
+# 列出已安装的模型
+ollama list
+
+# 拉取新模型（YiAi 推荐模型）
+ollama pull qwen3.5:7b-q4_K_M     # 7B q4 — 12GB 显卡推荐
+ollama pull qwen3.5:14b-q4_K_M    # 14B q4 — 24GB 显卡
+
+# 删除旧模型释放空间
+ollama rm <模型名>
+
+# 查看模型详情（参数量、量化方式、显存占用）
+ollama show qwen3.5:7b-q4_K_M
+```
+
+### 模型预热
+
+Ollama 首次请求时才将模型加载到 GPU 显存，导致第一个用户等待 30 秒以上。在部署脚本中加入预热：
+
+```bash
+# YiAi 启动后立即预热模型
+sleep 3  # 等待 uvicorn 就绪
+curl -s http://localhost:11434/api/generate -d '{
+  "model": "qwen3.5:7b-q4_K_M",
+  "prompt": "ping",
+  "stream": false,
+  "options": {"num_predict": 1}
+}' > /dev/null
+echo "模型预热完成"
+```
+
+### 显存不足时的降级方案
+
+如果用户报告 "CUDA out of memory"：
+
+```bash
+# 临时缩小上下文窗口
+ollama run qwen3.5:7b-q4_K_M --num-ctx 4096  # 从 8192 降到 4096
+
+# 或切换更低量化版本
+ollama pull qwen3.5:7b-q4_0  # q4_0 比 q4_K_M 更小
+```
 
 ## 常见反模式
 

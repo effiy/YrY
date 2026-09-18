@@ -19,7 +19,7 @@ export function useSearchHistory() {
 
   function addToHistory(query: string) {
     if (!query.trim()) return;
-    const filtered = recentSearches.value.filter((s) => s !== query);
+    const filtered = recentSearches.value.filter(s => s !== query);
     filtered.unshift(query);
     if (filtered.length > MAX_HISTORY) filtered.pop();
     recentSearches.value = filtered;
@@ -50,10 +50,10 @@ export function useCommandSearch() {
       results.value = fuzzySearch(index, query, {
         keys: [
           { name: "title", weight: 1 },
-          { name: "description", weight: 2 },
+          { name: "description", weight: 2 }
         ],
-        threshold: 0.6,
-      }).map((r) => r.item);
+        threshold: 0.6
+      }).map(r => r.item);
     } catch {
       results.value = [];
     } finally {

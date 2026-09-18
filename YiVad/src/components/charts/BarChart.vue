@@ -26,7 +26,7 @@ const chartOption = computed<ECOption>(() => {
     }
     const series = chartData.series.map(s => ({
       ...s,
-      smooth: false,
+      smooth: false
     }));
     return buildAxisChartOption({ ...chartData, series }, "bar");
   }

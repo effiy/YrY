@@ -1,7 +1,7 @@
 """Dashboard knowledge stats — knowledge base health, quality, and drill-down."""
-import logging
-from datetime import datetime, timedelta, timezone
 from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
+import logging
 
 from fastapi import APIRouter
 from pydantic import BaseModel

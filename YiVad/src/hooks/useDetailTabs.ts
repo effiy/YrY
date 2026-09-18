@@ -1,8 +1,6 @@
 import { computed, ref, type Component, type ComputedRef, type Ref } from "vue";
 import { useI18n } from "vue-i18n";
-import {
-  Odometer, TrendCharts, Document, Grid, Warning, Folder, Aim, Checked,
-} from "@element-plus/icons-vue";
+import { Odometer, TrendCharts, Document, Grid, Warning, Folder, Aim, Checked } from "@element-plus/icons-vue";
 import DetailOverview from "@/views/project/components/DetailOverview.vue";
 import DetailWorkflows from "@/views/project/components/DetailWorkflows.vue";
 import DetailAnalytics from "@/views/project/components/DetailAnalytics.vue";
@@ -15,7 +13,6 @@ import type { Project } from "@/api/modules/projectService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import type { Issue } from "@/api/modules/issueService";
 import type { Module } from "@/api/modules/moduleService";
-import type { OkrSummary } from "@/views/project/types";
 import { countProjectWorkflows } from "@/views/project/constants";
 
 export interface TabConfig {
@@ -31,8 +28,7 @@ export function useDetailTabs(
   knowledgeFiles: Ref<KnowledgeFileEntry[]>,
   filterDate: Ref<Date | null>,
   allIssues: Ref<Issue[]>,
-  allModules: Ref<Module[]>,
-  okrSummary?: Ref<OkrSummary>,
+  allModules: Ref<Module[]>
 ) {
   const { t } = useI18n();
   const activeTab = ref("overview");
@@ -59,7 +55,12 @@ export function useDetailTabs(
     return knowledgeFiles.value.filter(f => f.path.endsWith(".md") && f.name !== "README.md" && f.path.startsWith(prefix)).length;
   });
 
-  const okrCount = computed(() => okrSummary?.value?.totalGoals ?? 0);
+  const okrCount = computed(() => {
+    const key = project.value?.key || "";
+    if (!key) return 0;
+    const prefix = `projects/${key}/okrs/`;
+    return knowledgeFiles.value.filter(f => f.path.endsWith(".md") && f.name !== "README.md" && f.path.startsWith(prefix)).length;
+  });
 
   const prdCount = computed(() => {
     const key = project.value?.key || "";
@@ -82,13 +83,17 @@ export function useDetailTabs(
     { name: "devs", label: t("project.detail.tabs.devs"), icon: Grid, component: DetailDevs, count: devCount },
     { name: "tests", label: t("project.detail.tabs.test"), icon: Checked, component: DetailTests, count: testCount },
     { name: "bugs", label: t("project.detail.tabs.bugs"), icon: Warning, component: DetailBugs, count: bugCount },
-    { name: "workflows", label: t("project.detail.tabs.workflows"), icon: Folder, component: DetailWorkflows, count: workflowCount },
-    { name: "analytics", label: t("project.detail.tabs.analytics"), icon: TrendCharts, component: DetailAnalytics },
+    {
+      name: "workflows",
+      label: t("project.detail.tabs.workflows"),
+      icon: Folder,
+      component: DetailWorkflows,
+      count: workflowCount
+    },
+    { name: "analytics", label: t("project.detail.tabs.analytics"), icon: TrendCharts, component: DetailAnalytics }
   ]);
 
-  const currentTabComponent = computed(
-    () => tabs.value.find((t) => t.name === activeTab.value)?.component,
-  );
+  const currentTabComponent = computed(() => tabs.value.find(t => t.name === activeTab.value)?.component);
 
   /** Props to pass to the current tab's dynamic component */
   const currentTabProps = computed<Record<string, unknown>>(() => {

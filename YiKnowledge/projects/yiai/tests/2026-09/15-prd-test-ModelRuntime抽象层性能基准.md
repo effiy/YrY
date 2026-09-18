@@ -1,49 +1,28 @@
 ---
 doc_type: test
-title: "YA-09-11: ModelRuntime 抽象层性能基准 — 多 Provider 延迟对比与模型选择策略 — 测试规格"
+title: "YA-09-11: ModelRuntime 性能基准 — 测试规格"
 status: 待开始
 priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 prd_task_id: "YA-09-11"
 source_prds: ["15-需求-ModelRuntime抽象层性能基准"]
-source_modules: []
----
-# YA-09-11: ModelRuntime 抽象层性能基准 — 多 Provider 延迟对比与模型选择策略 — 测试规格
-
-> 来源 PRD：[15-需求-ModelRuntime抽象层性能基准.md](../../prds/2026-09/15-需求-ModelRuntime抽象层性能基准.md)
-> 提取日期：2026-09-11
-
+source_modules: ["15-prd-task-ModelRuntime抽象层性能基准"]
+source_okr: [yiai-002]
 ---
 
-## 测试场景
+# YA-09-11: ModelRuntime 性能基准 — 测试规格
 
-### 功能验证
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-BM-01 | Ollama TTFT < 1s | 首 token 延迟 < 1000ms |
+| UT-BM-02 | DeepSeek TPS > 20 | 流式速率 > 20 tokens/s |
+| UT-BM-03 | 模型选择：简单任务→轻量模型 | "hello" → 选择 qwen2.5:0.5b |
+| UT-BM-04 | 模型选择：复杂任务→重量模型 | "分析微服务架构" → 选择 qwen2.5:7b |
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
-
-### 边界测试
-
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

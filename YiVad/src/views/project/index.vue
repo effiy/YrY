@@ -27,8 +27,8 @@
 
     <div v-if="filterDate" class="pl-date-banner">
       <el-icon><Calendar /></el-icon>
-      <span>{{ $t('project.list.dateBanner.showing', { date: filterDateLabel }) }}</span>
-      <el-button size="small" text type="primary" @click="clearFilterDate">{{ $t('project.list.dateBanner.clear') }}</el-button>
+      <span>{{ $t("project.list.dateBanner.showing", { date: filterDateLabel }) }}</span>
+      <el-button size="small" text type="primary" @click="clearFilterDate">{{ $t("project.list.dateBanner.clear") }}</el-button>
     </div>
 
     <ProjectAnalytics
@@ -96,11 +96,17 @@
         <el-option :label="$t('project.list.statusFilter.active')" value="active" />
         <el-option :label="$t('project.list.statusFilter.archived')" value="archived" />
       </el-select>
-      <el-button :type="showStarredOnly ? 'warning' : ''" size="small" :icon="Star" :title="$t('project.list.starTooltip')" @click="showStarredOnly = !showStarredOnly">
-        {{ $t('project.list.starred') }}
+      <el-button
+        :type="showStarredOnly ? 'warning' : ''"
+        size="small"
+        :icon="Star"
+        :title="$t('project.list.starTooltip')"
+        @click="showStarredOnly = !showStarredOnly"
+      >
+        {{ $t("project.list.starred") }}
       </el-button>
       <div class="pl-toolbar-right">
-        <span v-if="lastUpdated" class="pl-updated">{{ $t('project.list.updated', { time: lastUpdated }) }}</span>
+        <span v-if="lastUpdated" class="pl-updated">{{ $t("project.list.updated", { time: lastUpdated }) }}</span>
         <el-button size="small" :icon="Refresh" :loading="loading" :title="$t('project.list.refresh')" @click="refreshAll" />
         <el-button
           size="small"
@@ -109,7 +115,7 @@
           :title="$t('project.list.export')"
           @click="exportCSV"
         />
-        <el-button type="primary" size="small" :icon="Plus" @click="openCreate">{{ $t('project.list.newProject') }}</el-button>
+        <el-button type="primary" size="small" :icon="Plus" @click="openCreate">{{ $t("project.list.newProject") }}</el-button>
         <el-radio-group v-model="viewMode" size="small">
           <el-radio-button value="grid"
             ><el-icon><Grid /></el-icon
@@ -184,13 +190,15 @@
       <!-- Two-tier empty state: nothing exists yet vs. nothing matches. -->
       <div v-else-if="!loading && !projects.length" class="pl-empty">
         <el-empty :description="$t('project.list.empty.noProjects')">
-          <el-button type="primary" @click="openCreate">{{ $t('project.list.empty.createFirst') }}</el-button>
+          <el-button type="primary" @click="openCreate">{{ $t("project.list.empty.createFirst") }}</el-button>
         </el-empty>
       </div>
       <div v-else-if="!loading" class="pl-empty">
         <el-empty :description="emptyDescription">
-          <el-button v-if="searchText" size="small" @click="searchText = ''">{{ $t('project.list.empty.clearSearch') }}</el-button>
-          <el-button v-else size="small" @click="resetView">{{ $t('project.list.empty.clearFilters') }}</el-button>
+          <el-button v-if="searchText" size="small" @click="searchText = ''">{{
+            $t("project.list.empty.clearSearch")
+          }}</el-button>
+          <el-button v-else size="small" @click="resetView">{{ $t("project.list.empty.clearFilters") }}</el-button>
         </el-empty>
       </div>
     </div>
@@ -198,38 +206,56 @@
     <!-- Batch bar — archive/restore only; bulk delete is intentionally absent. -->
     <Transition name="pl-batch">
       <div v-if="selectedKeys.size" class="pl-batch">
-        <span class="pl-batch-count">{{ $t('project.list.batch.selected', { n: selectedKeys.size }) }}</span>
-        <el-button size="small" type="warning" plain @click="setStatus([...selectedKeys], 'archived')">{{ $t('project.list.batch.archive') }}</el-button>
-        <el-button size="small" type="success" plain @click="setStatus([...selectedKeys], 'active')">{{ $t('project.list.batch.restore') }}</el-button>
-        <el-button size="small" text @click="selectedKeys.clear()">{{ $t('project.list.batch.clear') }}</el-button>
+        <span class="pl-batch-count">{{ $t("project.list.batch.selected", { n: selectedKeys.size }) }}</span>
+        <el-button size="small" type="warning" plain @click="setStatus([...selectedKeys], 'archived')">{{
+          $t("project.list.batch.archive")
+        }}</el-button>
+        <el-button size="small" type="success" plain @click="setStatus([...selectedKeys], 'active')">{{
+          $t("project.list.batch.restore")
+        }}</el-button>
+        <el-button size="small" text @click="selectedKeys.clear()">{{ $t("project.list.batch.clear") }}</el-button>
       </div>
     </Transition>
 
-    <el-dialog v-model="dialog.visible" :title="dialog.isEdit ? $t('project.dialog.editTitle') : $t('project.dialog.createTitle')" width="560px" destroy-on-close>
+    <el-dialog
+      v-model="dialog.visible"
+      :title="dialog.isEdit ? $t('project.dialog.editTitle') : $t('project.dialog.createTitle')"
+      width="560px"
+      destroy-on-close
+    >
       <el-form ref="formRef" :model="dialog.form" :rules="rules" label-width="100px">
         <el-form-item :label="$t('project.dialog.name')" prop="name">
-          <el-input v-model="dialog.form.name" :placeholder="$t('project.dialog.namePlaceholder')" maxlength="80" show-word-limit />
+          <el-input
+            v-model="dialog.form.name"
+            :placeholder="$t('project.dialog.namePlaceholder')"
+            maxlength="80"
+            show-word-limit
+          />
         </el-form-item>
         <el-form-item :label="$t('project.dialog.identifier')" prop="identifier">
           <el-input v-model="dialog.form.identifier" :placeholder="$t('project.dialog.identifierPlaceholder')" maxlength="12" />
         </el-form-item>
         <el-form-item :label="$t('project.dialog.description')">
-          <el-input v-model="dialog.form.description" type="textarea" :rows="3" :placeholder="$t('project.dialog.descriptionPlaceholder')" />
+          <el-input
+            v-model="dialog.form.description"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('project.dialog.descriptionPlaceholder')"
+          />
         </el-form-item>
         <el-form-item :label="$t('project.dialog.status')">
           <el-radio-group v-model="dialog.form.status">
-            <el-radio value="active">{{ $t('project.dialog.statusActive') }}</el-radio>
-            <el-radio value="archived">{{ $t('project.dialog.statusArchived') }}</el-radio>
+            <el-radio value="active">{{ $t("project.dialog.statusActive") }}</el-radio>
+            <el-radio value="archived">{{ $t("project.dialog.statusArchived") }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialog.visible = false">{{ $t('project.dialog.cancel') }}</el-button>
-        <el-button type="primary" :loading="dialog.submitting" @click="submit">{{ $t('project.dialog.save') }}</el-button>
+        <el-button @click="dialog.visible = false">{{ $t("project.dialog.cancel") }}</el-button>
+        <el-button type="primary" :loading="dialog.submitting" @click="submit">{{ $t("project.dialog.save") }}</el-button>
       </template>
     </el-dialog>
-
-      </div>
+  </div>
 </template>
 
 <script setup lang="ts" name="projectList">
@@ -280,7 +306,15 @@ const { render: renderMarkdown } = useMarkdown();
 
 // ── Date filter (must be before useProjectInsights so it can filter by date) ──
 const filterDate = ref<Date | null>(null);
-const { label: filterDateLabel, isToday: isFilterToday, filterDateStr, goToPrevDay, goToNextDay, goToFilterToday, clearFilterDate } = useDateFilter(filterDate);
+const {
+  label: filterDateLabel,
+  isToday: isFilterToday,
+  filterDateStr,
+  goToPrevDay,
+  goToNextDay,
+  goToFilterToday,
+  clearFilterDate
+} = useDateFilter(filterDate);
 
 // Destructured so the template gets auto-unwrapped refs instead of `x.value`.
 const {
@@ -399,7 +433,9 @@ const topProjects = computed(() =>
 
 const criticalCount = computed(() => projects.value.filter(p => healthFor(p.key) === "poor").length);
 
-const countLabel = computed(() => t("project.list.countLabel", { shown: displayedProjects.value.length, total: projects.value.length }));
+const countLabel = computed(() =>
+  t("project.list.countLabel", { shown: displayedProjects.value.length, total: projects.value.length })
+);
 
 const emptyDescription = computed(() => {
   if (searchText.value.trim()) return t("project.list.empty.noMatchSearch", { keyword: searchText.value.trim() });
@@ -550,7 +586,10 @@ async function setStatus(keys: string[], status: "active" | "archived") {
   }
   const verb = status === "archived" ? t("project.list.batch.archive") : t("project.list.batch.restore");
   if (targets.length > 1) {
-    const confirmMsg = status === "archived" ? t("project.list.archiveConfirm", { n: targets.length }) : t("project.list.restoreConfirm", { n: targets.length });
+    const confirmMsg =
+      status === "archived"
+        ? t("project.list.archiveConfirm", { n: targets.length })
+        : t("project.list.restoreConfirm", { n: targets.length });
     const ok = await ElMessageBox.confirm(confirmMsg, verb, {
       type: "warning"
     }).catch(() => false);
@@ -560,7 +599,9 @@ async function setStatus(keys: string[], status: "active" | "archived") {
   selectedKeys.value = new Set();
   await refreshAll();
   ElMessage.success(
-    status === "archived" ? t("project.list.archiveSuccess", { n: targets.length }) : t("project.list.restoreSuccess", { n: targets.length })
+    status === "archived"
+      ? t("project.list.archiveSuccess", { n: targets.length })
+      : t("project.list.restoreSuccess", { n: targets.length })
   );
 }
 
@@ -677,7 +718,7 @@ const CSV_HEADERS = [
   "open",
   "overdue",
   "completion_pct",
-    "health",
+  "health",
   "risks",
   "updated_at"
 ];
@@ -749,7 +790,6 @@ watch(projects, list => {
   overflow: auto;
   background: var(--el-bg-color-page);
 }
-
 .pl-updated {
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -811,9 +851,9 @@ watch(projects, list => {
   width: 28px;
   height: 28px;
   padding: 0;
+  border-left: 0;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-left: 0;
 }
 .pl-status {
   width: 120px;
@@ -837,6 +877,7 @@ watch(projects, list => {
 .pl-results {
   min-height: 200px;
 }
+
 /* Skeleton cards — pulse animation matching the grid layout. */
 .pl-skeleton-card {
   overflow: hidden;
@@ -868,9 +909,14 @@ watch(projects, list => {
     width: 35%;
   }
 }
+
 @keyframes pl-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 .pl-empty {
   padding: 56px 0;

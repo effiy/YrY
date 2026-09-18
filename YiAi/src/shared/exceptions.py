@@ -1,6 +1,8 @@
 """Custom exception definitions"""
 from typing import Any, Optional
+
 from shared.error_codes import ErrorCode
+
 
 class BusinessException(Exception):
     """
@@ -10,7 +12,7 @@ class BusinessException(Exception):
     def __init__(
         self,
         error_code: ErrorCode,
-        message: Optional[str] = None,
+        message: str | None = None,
         data: Any = None
     ):
         self.error_code = error_code

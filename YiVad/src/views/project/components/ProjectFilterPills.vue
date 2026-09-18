@@ -75,7 +75,9 @@ const emit = defineEmits<{
   transition: all 0.15s;
   &:hover {
     filter: brightness(0.92);
-    .pfp-close { opacity: 1; }
+    .pfp-close {
+      opacity: 1;
+    }
   }
 }
 .pfp-dim {

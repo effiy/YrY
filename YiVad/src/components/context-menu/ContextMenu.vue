@@ -1,12 +1,6 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="visible"
-      ref="menuRef"
-      class="context-menu"
-      :style="menuStyle"
-      @click.stop
-    >
+    <div v-if="visible" ref="menuRef" class="context-menu" :style="menuStyle" @click.stop>
       <template v-for="(item, index) in items" :key="item.id">
         <div v-if="item.type === 'divider'" class="context-menu__divider" />
         <ContextMenuItem
@@ -14,7 +8,7 @@
           :item="item"
           :active="activeIndex === index"
           :context="context"
-          @click.native="handleItemClick(item)"
+          @click="handleItemClick(item)"
           @mouseenter="activeIndex = index"
         />
       </template>
@@ -55,7 +49,7 @@ const { adjustedPosition, transformOrigin } = useMenuPosition(posRef, widthRef, 
 const menuStyle = computed(() => ({
   left: `${adjustedPosition.value.x}px`,
   top: `${adjustedPosition.value.y}px`,
-  transformOrigin: transformOrigin.value,
+  transformOrigin: transformOrigin.value
 }));
 
 function hide() {
@@ -103,13 +97,11 @@ onBeforeUnmount(() => {
   box-shadow: var(--el-box-shadow-light);
   animation: context-menu-enter 150ms ease-out;
 }
-
 .context-menu__divider {
   height: 1px;
   margin: 4px 8px;
   background: var(--el-border-color-lighter);
 }
-
 .context-menu__backdrop {
   position: fixed;
   inset: 0;

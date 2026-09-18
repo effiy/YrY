@@ -31,10 +31,13 @@ const ROLE_NAMES: Record<string, string> = {
   curator: "知识管理",
   srer: "SRE",
   aier: "AI 工程",
-  executiver: "经营",
+  executiver: "经营"
 };
 
 const ROLE_DIRS = Object.keys(ROLE_NAMES);
+
+/** Roles excluded from project-level OKR views (cross-cutting business roles). */
+const EXCLUDED_ROLES = new Set(["executiver", "curator", "srer"]);
 
 export interface UseProjectOkrsReturn {
   groups: ComputedRef<OkrGroup[]>;
@@ -56,9 +59,7 @@ export function useProjectOkrs(): UseProjectOkrsReturn {
       list.push(g);
       map.set(g.role, list);
     }
-    return [...map.entries()]
-      .sort(([, a], [, b]) => b.length - a.length)
-      .map(([role, goals]) => ({ role, goals }));
+    return [...map.entries()].sort(([, a], [, b]) => b.length - a.length).map(([role, goals]) => ({ role, goals }));
   });
 
   const totalGoals = computed(() => allGoals.value.length);
@@ -113,7 +114,7 @@ export function useProjectOkrs(): UseProjectOkrsReturn {
           description: m.description || "",
           current: m.current || "-",
           target: m.target || "-",
-          completion: 0,
+          completion: 0
         });
       }
     }
@@ -150,7 +151,7 @@ export function useProjectOkrs(): UseProjectOkrsReturn {
             owner: (meta?.owner as string) || "",
             path: f.path,
             keyResults,
-            metrics,
+            metrics
           });
           continue;
         }
@@ -162,6 +163,7 @@ export function useProjectOkrs(): UseProjectOkrsReturn {
         const roleIdx = parts.findIndex(p => ROLE_DIRS.includes(p));
         if (roleIdx === -1) continue;
         const role = parts[roleIdx];
+        if (EXCLUDED_ROLES.has(role)) continue;
 
         const goalProject = (meta?.project as string) || "";
         const matchesProject =
@@ -184,7 +186,7 @@ export function useProjectOkrs(): UseProjectOkrsReturn {
           owner: (meta?.owner as string) || "",
           path: f.path,
           keyResults,
-          metrics,
+          metrics
         });
       }
 

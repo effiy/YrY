@@ -22,7 +22,7 @@ export const useRowSelection = (rowKey: string = "id") => {
     if (clone.has(id)) {
       clone.delete(id);
       if (row) {
-        selectedList.value = selectedList.value.filter((r) => r[rowKey] !== id);
+        selectedList.value = selectedList.value.filter(r => r[rowKey] !== id);
       }
     } else {
       if (selectionMode.value === "single") clone.clear();
@@ -34,11 +34,11 @@ export const useRowSelection = (rowKey: string = "id") => {
 
   const selectRange = (ids: string[], rows: Record<string, any>[]) => {
     const clone = new Set(selectedIds.value);
-    ids.forEach((id) => clone.add(id));
+    ids.forEach(id => clone.add(id));
     selectedIds.value = clone;
 
-    const existingIds = new Set(selectedList.value.map((r) => r[rowKey]));
-    rows.forEach((row) => {
+    const existingIds = new Set(selectedList.value.map(r => r[rowKey]));
+    rows.forEach(row => {
       if (!existingIds.has(row[rowKey])) {
         selectedList.value.push(row);
       }
@@ -58,7 +58,7 @@ export const useRowSelection = (rowKey: string = "id") => {
 
   const selectionChange = (rowArr: Record<string, any>[]) => {
     selectedList.value = rowArr;
-    selectedIds.value = new Set(rowArr.map((r) => r[rowKey]));
+    selectedIds.value = new Set(rowArr.map(r => r[rowKey]));
   };
 
   const isIndeterminate = computed(() => selectedIds.value.size > 0);
@@ -75,6 +75,6 @@ export const useRowSelection = (rowKey: string = "id") => {
     selectAll,
     clearSelection,
     selectionChange,
-    isIndeterminate,
+    isIndeterminate
   };
 };

@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "YA-07-05"
 source_prds: ["05-需求-模块执行沙箱"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-07-05: 模块执行沙箱 — RPC 分发 + 白名单校验 + Observer 沙箱 + 重入保护 — 测试规格
 

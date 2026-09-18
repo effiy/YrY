@@ -23,6 +23,9 @@ review_status: 待评审
 issue_type: 功能
 roles:
 - engineer
+source_okr: [yiai-001]
+related_modules: [07-prd-task-Dashboard健康聚合API]
+related_tests: [07-prd-test-Dashboard健康聚合API]
 ---
 
 # Dashboard 健康聚合 API — 7 子系统实时监控

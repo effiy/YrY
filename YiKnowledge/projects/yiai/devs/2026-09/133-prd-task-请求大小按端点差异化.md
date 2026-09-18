@@ -1,41 +1,61 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-125"
-title: "YA-09-125: 服务端请求大小限制按端点差异化 — 不同 API 端点的最大请求体限制配置方案 — 开发任务"
+prd_task_id: "YA-09-88"
+title: "YA-09-88: 按端点差异化请求体限制 — 细粒度 BodySize — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "133-需求-请求大小按端点差异化.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-125: 服务端请求大小限制按端点差异化 — 不同 API 端点的最大请求体限制配置方案 — 开发任务
+# YA-09-88: 按端点差异化请求体限制 — 细粒度 BodySize — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[133-需求-请求大小按端点差异化.md](../../prds/2026-09/133-需求-请求大小按端点差异化.md)
-> 需求编号：YA-09-125 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-88 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+当前 `BodySizeLimitMiddleware` 使用全局统一限制。按端点设置不同上限——文件上传 50MB、RPC 5MB、登录 1KB。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+ENDPOINT_LIMITS = {
+    "/upload-image-to-oss": 50 * 1024 * 1024,  # 50MB
+    "/write-file": 10 * 1024 * 1024,            # 10MB
+    "POST /": 5 * 1024 * 1024,                  # RPC 5MB
+    "/auth/login": 1024,                         # 1KB
+    "DEFAULT": 1 * 1024 * 1024,                 # 1MB
+}
 
-| 步骤 | 任务 | 产出 |
+class PerEndpointBodySizeMiddleware:
+    async def __call__(self, request, call_next):
+        limit = ENDPOINT_LIMITS.get(request.url.path, ENDPOINT_LIMITS["DEFAULT"])
+        body = await request.body()
+        if len(body) > limit:
+            return JSONResponse(status_code=413, content={"error": f"Body too large. Max {limit} bytes"})
+        return await call_next(request)
+```
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | 端点级 BodySize 配置 | 超大文件上传被拒绝 | 0.25 |
+| 2 | 413 错误友好提示 + 测试 | 前端收到明确限值信息 | 0.25 |
+
+**合计：0.5d**。

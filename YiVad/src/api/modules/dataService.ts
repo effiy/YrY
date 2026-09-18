@@ -15,7 +15,12 @@ const DATA_SERVICE = "services.database.data_service";
  * Call any YiAi service module method.
  * Low-level — prefer using the convenience functions below.
  */
-export function callService<T = any>(module: string, method: string, params: Record<string, any> = {}, timeout?: number): Promise<YiAiEnvelope<T>> {
+export function callService<T = any>(
+  module: string,
+  method: string,
+  params: Record<string, any> = {},
+  timeout?: number
+): Promise<YiAiEnvelope<T>> {
   const payload: ServicePayload = {
     module_name: module,
     method_name: method,
@@ -66,7 +71,11 @@ export function updateDocument<T = any>(cname: string, key: string, data: Record
  * @param filter - optional filter dict
  * @param groupBy - optional field to group counts by
  */
-export function countDocuments(cname: string, filter?: Record<string, any>, groupBy?: string): Promise<YiAiEnvelope<{ count?: number; groups?: Array<{ value: any; count: number }>; total?: number }>> {
+export function countDocuments(
+  cname: string,
+  filter?: Record<string, any>,
+  groupBy?: string
+): Promise<YiAiEnvelope<{ count?: number; groups?: Array<{ value: any; count: number }>; total?: number }>> {
   return callService(DATA_SERVICE, "count_documents", { cname, ...(filter ? { filter } : {}), ...(groupBy ? { groupBy } : {}) });
 }
 

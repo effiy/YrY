@@ -2,7 +2,13 @@
   <div class="tabs-box">
     <div class="tabs-menu">
       <el-tabs v-model="tabsMenuValue" type="card" @tab-click="tabClick" @tab-remove="tabRemove">
-        <el-tab-pane v-for="item in tabsMenuList" :key="item.path" :label="translateTitle(item.name, item.title)" :name="item.path" :closable="item.close">
+        <el-tab-pane
+          v-for="item in tabsMenuList"
+          :key="item.path"
+          :label="translateTitle(item.name, item.title)"
+          :name="item.path"
+          :closable="item.close"
+        >
           <template #label>
             <el-icon v-if="item.icon && tabsIcon" class="tabs-icon">
               <component :is="item.icon"></component>
@@ -49,6 +55,7 @@ watch(
   () => {
     if (route.meta.isFull) return;
     tabsMenuValue.value = route.fullPath;
+    const hasRouteParams = Object.keys(route.params).length > 0;
     const tabsParams = {
       icon: route.meta.icon as string,
       title: route.meta.title as string,
@@ -56,7 +63,7 @@ watch(
       name: route.name as string,
       close: !route.meta.isAffix,
       isKeepAlive: route.meta.isKeepAlive as boolean,
-      independentTab: route.meta.independentTab as boolean
+      independentTab: (route.meta.independentTab as boolean) || hasRouteParams
     };
     tabStore.addTabs(tabsParams);
   },

@@ -3,8 +3,8 @@ title: Oncall SRE
 tags: [leaf, srer, incident-response, observability, release]
 category: srer
 created: 2026-08-06
-updated: 2026-09-10
-last_verified: 2026-08-12
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -48,9 +48,12 @@ SRE 角色在 YrY 单仓中承担以下核心职责：
 | 资源 | 描述 |
 |---|---|
 | [INDEX.md](./INDEX.md) | Srer 角色索引 — 子目录映射、文件数量、关键流程 |
-| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、演练 — 17 个文件 |
-| [observability/](./observability/) | 监控、告警、基础设施、SLO/SLI、容量 — 13 个文件 |
-| [release/](./release/) | 发布协调、金丝雀、热修复、回滚、冻结 — 6 个文件 |
+| [ONBOARDING.md](./ONBOARDING.md) | SRE 新人入职指南 — 30 天上手路线图 |
+| [QUARTERLY-REVIEW.md](./QUARTERLY-REVIEW.md) | SRE 季度回顾指南 — 数据驱动的可靠性改进 |
+| [QUICKREF.md](./QUICKREF.md) | 运维速查卡 — 值班 SRE 的即时命令参考 |
+| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、演练 — 16 个文件 |
+| [observability/](./observability/) | 监控、告警、基础设施、SLO/SLI、容量 — 18 个文件 |
+| [release/](./release/) | 发布协调、金丝雀、热修复、回滚、冻结 — 7 个文件 |
 
 ## 流水线芯片契约
 
@@ -66,12 +69,11 @@ SRE 角色在 YrY 单仓中承担以下核心职责：
 
 ## 摘要
 
-- 3 个子目录：[incident-response/](./incident-response/)（事件流程 + 事后复盘）/ [observability/](./observability/)（监控 + 基础设施 + SLO）/ [release/](./release/)（发布 + 回滚 + 热修复）
-- 2 份真实事后复盘：[FSEvents silent drop](./incident-response/tl-postmortem-fsevents-silent-drop-2026-08.md) / [no-lockfile supply chain](./incident-response/tl-postmortem-no-lockfile-supply-chain-2026-07.md)
-- 2 份 oncall 交接示例：[W32](./incident-response/tl-oncall-handover-2026-w32.md) / [W33](./incident-response/tl-oncall-handover-2026-w33.md)
-- 可观测性覆盖三大支柱（日志/指标/链路追踪）、容器化、CI/CD、反向代理、GPU 推理、容量/成本和技术债务
-- 发布覆盖标准、金丝雀、热修复和回滚演练工作流
-- 事件响应事后复盘存放在此；事后复盘**方法论**存放在 [leader/risk/](../leader/risk/)
+- 3 个子目录：[incident-response/](./incident-response/)（事件流程 + 事后复盘 + 演练 + oncall 运维）/ [observability/](./observability/)（监控 + 基础设施 + SLO + 备份）/ [release/](./release/)（发布 + 回滚 + 热修复 + 冻结）
+- 事件响应覆盖事件全生命周期：响应 → 作战室 → 复盘 → 演练 → runbook → 沟通 → 灾难恢复 → 去重劳动
+- 可观测性覆盖三大支柱（日志/指标/链路追踪）、基础设施（容器化/反向代理/GPU）、SLO/SLI、错误预算策略、SRE 指标体系、告警规则、健康检查、性能测试、容量/成本、数据库备份和技术债务
+- 发布覆盖标准流程、金丝雀、热修复、回滚演练、发布冻结和变更管理
+- 事后复盘**方法论**存放在 [leader/risk/](../leader/risk/)；事件复盘**指南**和模板存放在 [incident-response/](./incident-response/)
 
 ## 核心观点
 
@@ -82,33 +84,43 @@ SRE 角色在 YrY 单仓中承担以下核心职责：
 
 ## 子目录
 
-### incident-response/（17 个文件）
+### incident-response/（16 个文件）
 
 | 分类 | 关键文件 |
 |---|---|
-| 响应流程 | [响应事件](./incident-response/04-事件-响应事件.md) · [处理数据泄露](./incident-response/01-事件-处理数据泄露.md) · [处理 DDoS 攻击](./incident-response/handle-a-ddos-attack.md) · [处理缓存失效](./incident-response/handle-a-cache-invalidation.md) · [处理大版本升级](./incident-response/handle-a-major-version-upgrade.md) |
-| 演练与演习 | [作战室运作](./incident-response/05-事件-作战室运作.md) · [组织 Game Day](./incident-response/run-a-game-day.md) · [运行混沌实验](./incident-response/run-a-chaos-engineering-experiment.md) · [回滚演练](./incident-response/do-a-rollback-drill.md) · [爆炸半径分析](./incident-response/do-a-blast-radius-analysis.md) |
-| Oncall 运维 | [处理值班轮班](./incident-response/02-事件-处理值班轮班.md) · [建立值班轮换](./incident-response/06-事件-建立值班轮换.md) |
-| 事后复盘 | [FSEvents 事后复盘](./incident-response/tl-postmortem-fsevents-silent-drop-2026-08.md) · [无锁文件供应链事后复盘](./incident-response/tl-postmortem-no-lockfile-supply-chain-2026-07.md) |
-| 交接 | [W32 交接](./incident-response/tl-oncall-handover-2026-w32.md) · [W33 交接](./incident-response/tl-oncall-handover-2026-w33.md) |
+| 响应流程 | [响应事件](./incident-response/04-事件-响应事件.md) · [处理数据泄露](./incident-response/01-事件-处理数据泄露.md) |
+| 作战室与演练 | [作战室运作](./incident-response/05-事件-作战室运作.md) · [Game Day 演练](./incident-response/08-事件-GameDay演练.md) |
+| 事后复盘 | [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) · [复盘会议主持](./incident-response/13-事件-复盘会议主持.md) · [复盘示例](./incident-response/14-事件-事后复盘示例.md) |
+| 风险预防 | [FMEA 模板](./incident-response/16-事件-FMEA模板.md) |
+| 事件沟通 | [事件沟通模板](./incident-response/10-事件-事件沟通模板.md) |
+| 灾难恢复 | [灾难恢复计划](./incident-response/11-事件-灾难恢复计划.md) |
+| Oncall 运维 | [处理值班轮班](./incident-response/02-事件-处理值班轮班.md) · [值班交接](./incident-response/03-事件-值班交接.md) · [建立值班轮换](./incident-response/06-事件-建立值班轮换.md) · [交接示例](./incident-response/15-事件-值班交接示例.md) |
+| Runbook | [Runbook 模板](./incident-response/09-事件-Runbook模板.md) |
+| 效率提升 | [减少重复劳动](./incident-response/12-事件-减少重复劳动.md) |
 
-### observability/（13 个文件）
+### observability/（18 个文件）
 
 | 分类 | 关键文件 |
 |---|---|
 | 核心可观测性 | [可观测性三支柱](./observability/05-可观测-可观测性三支柱.md) · [搭建可观测性](./observability/07-可观测-搭建可观测性.md) |
-| 基础设施 | [Docker 与 Kubernetes](./observability/03-可观测-Docker与Kubernetes.md) · [容器化部署](./observability/containerized-deployment.md) · [反向代理](./observability/06-可观测-反向代理.md) · [私有云 vs 公有云](./observability/private-vs-public-cloud.md) · [GPU 推理](./observability/04-可观测-GPU推理.md) |
+| 告警与 SLO | [告警规则配置](./observability/10-可观测-告警规则配置.md) · [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md) · [错误预算策略](./observability/12-可观测-错误预算策略.md) |
+| SRE 度量 | [SRE 指标体系](./observability/15-可观测-SRE指标体系.md) · [SLA 管理](./observability/16-可观测-SLA管理.md) |
+| 健康与性能 | [健康检查设计](./observability/14-可观测-健康检查设计.md) · [性能测试指南](./observability/13-可观测-性能测试指南.md) |
+| 基础设施 | [Docker 与 Kubernetes](./observability/03-可观测-Docker与Kubernetes.md) · [反向代理](./observability/06-可观测-反向代理.md) · [GPU 推理](./observability/04-可观测-GPU推理.md) |
 | CI/CD | [CI/CD 流水线](./observability/02-可观测-CICD.md) |
-| 容量与成本 | [容量与成本](./observability/01-可观测-容量与成本.md) · [容量与成本模板](./observability/capacity-and-cost-template.md) |
-| 技术债务 | [技术债清单](./observability/09-可观测-技术债清单.md) · [技术债清单模板](./observability/tech-debt-inventory-template.md) |
+| 容量与成本 | [容量与成本](./observability/01-可观测-容量与成本.md) |
+| 数据保护 | [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) |
+| AI 运维 | [知识库与 RAG 运维](./observability/17-可观测-知识库与RAG运维.md) · [Ollama 模型管理](./observability/18-可观测-Ollama模型管理.md) |
+| 技术债务 | [技术债清单](./observability/09-可观测-技术债清单.md) |
 
-### release/（6 个文件）
+### release/（7 个文件）
 
 | 分类 | 关键文件 |
 |---|---|
 | 发布流程 | [发布流程](./release/04-发布-发布流程.md) · [金丝雀发布](./release/01-发布-金丝雀发布.md) · [热修复发布](./release/02-发布-热修复发布.md) |
-| 发布治理 | [发布冻结](./release/03-发布-发布冻结.md) |
+| 发布治理 | [发布冻结](./release/03-发布-发布冻结.md) · [变更管理](./release/06-发布-变更管理流程.md) |
 | 回滚 | [回滚演练](./release/05-发布-回滚演练.md) |
+| 上线门禁 | [生产就绪审查](./release/07-发布-生产就绪审查.md) |
 
 ## 范围
 
@@ -167,9 +179,9 @@ SRE 角色在 YrY 单仓中承担以下核心职责：
 
 | 域 | 解决问题 | 文件数 |
 |---|---|---|
-| [incident-response/](./incident-response/) | 如何响应和管理事件？ | 17 |
-| [observability/](./observability/) | 如何监控和观测系统？ | 13 |
-| [release/](./release/) | 如何安全发布和回滚？ | 6 |
+| [incident-response/](./incident-response/) | 如何响应和管理事件？ | 16 |
+| [observability/](./observability/) | 如何监控和观测系统？ | 18 |
+| [release/](./release/) | 如何安全发布和回滚？ | 7 |
 
 ## 快速参考
 
@@ -177,24 +189,42 @@ SRE 角色在 YrY 单仓中承担以下核心职责：
 |---|---|
 | 响应事件 | [incident-response/04-事件-响应事件.md](./incident-response/04-事件-响应事件.md) |
 | 处理数据泄露 | [incident-response/01-事件-处理数据泄露.md](./incident-response/01-事件-处理数据泄露.md) |
-| 处理 DDoS 攻击 | [incident-response/handle-a-ddos-attack.md](./incident-response/handle-a-ddos-attack.md) |
 | 主持 War Room | [incident-response/05-事件-作战室运作.md](./incident-response/05-事件-作战室运作.md) |
-| 组织 Game Day | [incident-response/run-a-game-day.md](./incident-response/run-a-game-day.md) |
-| 运行混沌实验 | [incident-response/run-a-chaos-engineering-experiment.md](./incident-response/run-a-chaos-engineering-experiment.md) |
-| 做爆炸半径分析 | [incident-response/do-a-blast-radius-analysis.md](./incident-response/do-a-blast-radius-analysis.md) |
+| 组织 Game Day | [incident-response/08-事件-GameDay演练.md](./incident-response/08-事件-GameDay演练.md) |
+| 撰写事后复盘 | [incident-response/07-事件-事后复盘指南.md](./incident-response/07-事件-事后复盘指南.md) |
+| 参考复盘示例 | [incident-response/14-事件-事后复盘示例.md](./incident-response/14-事件-事后复盘示例.md) |
+| 主持复盘会议 | [incident-response/13-事件-复盘会议主持.md](./incident-response/13-事件-复盘会议主持.md) |
+| 编写 Runbook | [incident-response/09-事件-Runbook模板.md](./incident-response/09-事件-Runbook模板.md) |
+| 事件中对外沟通 | [incident-response/10-事件-事件沟通模板.md](./incident-response/10-事件-事件沟通模板.md) |
+| 制定灾难恢复计划 | [incident-response/11-事件-灾难恢复计划.md](./incident-response/11-事件-灾难恢复计划.md) |
+| 做故障模式分析 | [incident-response/16-事件-FMEA模板.md](./incident-response/16-事件-FMEA模板.md) |
+| 减少重复手工操作 | [incident-response/12-事件-减少重复劳动.md](./incident-response/12-事件-减少重复劳动.md) |
 | 处理 oncall 值班 | [incident-response/02-事件-处理值班轮班.md](./incident-response/02-事件-处理值班轮班.md) |
 | 设置 oncall 排班 | [incident-response/06-事件-建立值班轮换.md](./incident-response/06-事件-建立值班轮换.md) |
-| 撰写事后复盘 | [../leader/risk/write-a-postmortem.md](../leader/risk/write-a-postmortem.md) |
-| 阅读真实事后复盘 | [incident-response/tl-postmortem-fsevents-silent-drop-2026-08.md](./incident-response/tl-postmortem-fsevents-silent-drop-2026-08.md) |
+| 执行值班交接 | [incident-response/03-事件-值班交接.md](./incident-response/03-事件-值班交接.md) |
+| 参考交接示例 | [incident-response/15-事件-值班交接示例.md](./incident-response/15-事件-值班交接示例.md) |
 | 配置可观测性 | [observability/07-可观测-搭建可观测性.md](./observability/07-可观测-搭建可观测性.md) |
 | 理解可观测性三大支柱 | [observability/05-可观测-可观测性三支柱.md](./observability/05-可观测-可观测性三支柱.md) |
+| 配置告警规则 | [observability/10-可观测-告警规则配置.md](./observability/10-可观测-告警规则配置.md) |
+| 定义 SLO | [observability/08-可观测-SLO与SLI定义.md](./observability/08-可观测-SLO与SLI定义.md) |
+| 管理错误预算 | [observability/12-可观测-错误预算策略.md](./observability/12-可观测-错误预算策略.md) |
+| 做性能测试 | [observability/13-可观测-性能测试指南.md](./observability/13-可观测-性能测试指南.md) |
+| 设计健康检查 | [observability/14-可观测-健康检查设计.md](./observability/14-可观测-健康检查设计.md) |
+| 搭建 SRE 指标体系 | [observability/15-可观测-SRE指标体系.md](./observability/15-可观测-SRE指标体系.md) |
+| 定义 SLA 协议 | [observability/16-可观测-SLA管理.md](./observability/16-可观测-SLA管理.md) |
+| 运维知识库和 RAG | [observability/17-可观测-知识库与RAG运维.md](./observability/17-可观测-知识库与RAG运维.md) |
+| 管理 Ollama 模型 | [observability/18-可观测-Ollama模型管理.md](./observability/18-可观测-Ollama模型管理.md) |
 | 监控容量和成本 | [observability/01-可观测-容量与成本.md](./observability/01-可观测-容量与成本.md) |
+| 备份恢复数据库 | [observability/11-可观测-数据库备份恢复.md](./observability/11-可观测-数据库备份恢复.md) |
 | 管理技术债务清单 | [observability/09-可观测-技术债清单.md](./observability/09-可观测-技术债清单.md) |
 | 发布上线 | [release/04-发布-发布流程.md](./release/04-发布-发布流程.md) |
 | 做金丝雀发布 | [release/01-发布-金丝雀发布.md](./release/01-发布-金丝雀发布.md) |
 | 发布热修复 | [release/02-发布-热修复发布.md](./release/02-发布-热修复发布.md) |
 | 管理发布冻结 | [release/03-发布-发布冻结.md](./release/03-发布-发布冻结.md) |
 | 做回滚演练 | [release/05-发布-回滚演练.md](./release/05-发布-回滚演练.md) |
+| 管理变更流程 | [release/06-发布-变更管理流程.md](./release/06-发布-变更管理流程.md) |
+| 执行生产就绪审查 | [release/07-发布-生产就绪审查.md](./release/07-发布-生产就绪审查.md) |
+| 做季度 SRE 回顾 | [QUARTERLY-REVIEW.md](./QUARTERLY-REVIEW.md) |
 
 ## 交叉引用
 
@@ -233,26 +263,27 @@ leader/risk/（事后复盘方法论）+ engineer/learn/lessons/（现场笔记�
 ```
 
 ### 关键跨阶段链接
-- [发布流程](./release/04-发布-发布流程.md) ← [供应链加固](../engineer/ship/harden-supply-chain.md) → [金丝雀发布](./release/01-发布-金丝雀发布.md)
-- [响应事件](./incident-response/04-事件-响应事件.md) ← [撰写事后复盘](../leader/risk/write-a-postmortem.md) → [搭建可观测性](./observability/07-可观测-搭建可观测性.md)
-- [搭建可观测性](./observability/07-可观测-搭建可观测性.md) ← [定义 SLO](../leader/roadmap/define-an-slo.md) → [重试退避](../engineer/ship/retry-with-backoff.md)
-- [回滚演练](./release/05-发布-回滚演练.md) ← [数据迁移](../engineer/ship/migrate-data.md) — 数据迁移需要回滚方案
-- [容量与成本](./observability/01-可观测-容量与成本.md) ← [FinOps 审查](../leader/capacity/run-a-finops-review.md) — FinOps 反馈到监控
+- [响应事件](./incident-response/04-事件-响应事件.md) ← [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) → [搭建可观测性](./observability/07-可观测-搭建可观测性.md)
+- [搭建可观测性](./observability/07-可观测-搭建可观测性.md) ← [告警规则配置](./observability/10-可观测-告警规则配置.md) → [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md)
+- [回滚演练](./release/05-发布-回滚演练.md) ← [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) — 数据恢复是回滚的最后防线
+- [容量与成本](./observability/01-可观测-容量与成本.md) ← [错误预算策略](./observability/12-可观测-错误预算策略.md) — 预算追踪反馈到成本监控
 
 ## 行动建议
 
-1. **发生事件** → 从 [响应事件](./incident-response/04-事件-响应事件.md) 开始，然后按场景选择特定流程
-2. **事后** → 使用 [../leader/risk/write-a-postmortem.md](../leader/risk/write-a-postmortem.md) 撰写事后复盘；将实际复盘存放在 [incident-response/](./incident-response/)
-3. **新服务上线** → 通过 [搭建可观测性](./observability/07-可观测-搭建可观测性.md) 配置可观测性，通过 [../leader/roadmap/define-an-slo.md](../leader/roadmap/define-an-slo.md) 定义 SLO，通过 [容量与成本](./observability/01-可观测-容量与成本.md) 进行容量评估
-4. **发布日** → 遵循 [发布流程](./release/04-发布-发布流程.md)；如需热修复，使用 [热修复发布](./release/02-发布-热修复发布.md)；如需回滚，使用 [回滚演练](./release/05-发布-回滚演练.md)
-5. **Oncall 交接** → 使用 [W33 交接](./incident-response/tl-oncall-handover-2026-w33.md) 作为模板；每周更新
-6. **每季度** → 通过 [技术债清单](./observability/09-可观测-技术债清单.md) 评审技术债务，通过 [Game Day](./incident-response/run-a-game-day.md) 组织 Game Day
+1. **发生事件** → 从 [响应事件](./incident-response/04-事件-响应事件.md) 开始；对外沟通使用 [事件沟通模板](./incident-response/10-事件-事件沟通模板.md)
+2. **事后** → 使用 [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) 撰写事后复盘
+3. **新服务上线** → 通过 [搭建可观测性](./observability/07-可观测-搭建可观测性.md) 配置可观测性，通过 [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md) 定义 SLO，通过 [错误预算策略](./observability/12-可观测-错误预算策略.md) 设定预算策略
+4. **发布日** → 遵循 [发布流程](./release/04-发布-发布流程.md)；高风险变更走 [变更管理流程](./release/06-发布-变更管理流程.md)；热修复使用 [热修复发布](./release/02-发布-热修复发布.md)
+5. **Oncall 交接** → 使用 [值班交接](./incident-response/03-事件-值班交接.md) 模板；每周更新
+6. **每季度** → 通过 [技术债清单](./observability/09-可观测-技术债清单.md) 评审技术债务，通过 [Game Day](./incident-response/08-事件-GameDay演练.md) 组织 Game Day，通过 [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) 验证备份可恢复，通过 [性能测试指南](./observability/13-可观测-性能测试指南.md) 更新性能基线
+7. **新人入职** → 从 [SRE 新人入职指南](./ONBOARDING.md) 开始，按 4 周路线图逐步上手
+8. **灾难发生** → 遵循 [灾难恢复计划](./incident-response/11-事件-灾难恢复计划.md) 按恢复优先级重建系统
 
 ## 反模式
 
-- **没有方法论就写事后复盘** — 后果：格式不一致，缺少根因分析；始终使用 leader/risk/ 中的 [事后复盘模板](../leader/risk/write-a-postmortem.md)
+- **没有方法论就写事后复盘** — 后果：格式不一致，缺少根因分析；始终使用 [事后复盘指南](./incident-response/07-事件-事后复盘指南.md)
 - **跳过回滚演练** — 后果：第一次回滚尝试发生在真实事件中；每季度执行 [回滚演练](./release/05-发布-回滚演练.md)
-- **没有 SLO 就配置告警** — 后果：告警疲劳，无优先级；先通过 [../leader/roadmap/define-an-slo.md](../leader/roadmap/define-an-slo.md) 定义 SLO，再配置告警
+- **没有 SLO 就配置告警** — 后果：告警疲劳，无优先级；先通过 [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md) 定义 SLO，再通过 [告警规则配置](./observability/10-可观测-告警规则配置.md) 配置告警
 - **可观测性事后补** — 后果：生产环境盲区；将可观测性作为上线检查清单的一部分，而非上线后补救
 - **Oncall 无交接** — 后果：轮班之间上下文丢失；始终在轮换结束前完成交接文档
 - **混淆运维监控与战略规划** — 后果：成本仪表盘（srer）与成本预算（leader）混合；使用[决策规则](#边界情况决策规则)表

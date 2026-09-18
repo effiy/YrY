@@ -31,13 +31,13 @@ export function useRagQuery() {
     const t0 = performance.now();
     try {
       const res = await ragQuery({ question: q, top_k: topK, scope: scope || undefined });
-      sources.value = (res.sources ?? []).map((s) => ({
+      sources.value = (res.sources ?? []).map(s => ({
         ...s,
         metadata: {
           ...s.metadata,
           char_count: s.metadata?.char_count ?? (s.text?.length || 0),
-          token_estimate: s.metadata?.token_estimate ?? Math.round((s.text?.length || 0) / 4),
-        },
+          token_estimate: s.metadata?.token_estimate ?? Math.round((s.text?.length || 0) / 4)
+        }
       }));
 
       ragStore.recordQuery(q, topK, scope || "", sources.value);
@@ -60,6 +60,6 @@ export function useRagQuery() {
     lastError,
     lastLatency,
     execute,
-    clear,
+    clear
   };
 }

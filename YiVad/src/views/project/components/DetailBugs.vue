@@ -21,16 +21,9 @@
     </div>
 
     <!-- ═══ Bugs Table ═══ -->
-    <ProTable
-      v-if="items.length"
-      title="缺陷"
-      :columns="bugColumns"
-      :data="items"
-      :pagination="false"
-      row-key="path"
-    >
+    <ProTable v-if="items.length" title="缺陷" :columns="bugColumns" :data="items" :pagination="false" row-key="path">
       <template #prdMonth="scope">
-        <span class="db-month">{{ scope.row.prdMonth || '-' }}</span>
+        <span class="db-month">{{ scope.row.prdMonth || "-" }}</span>
       </template>
       <template #title="scope">
         <el-button v-if="scope.row.path" link size="small" type="primary" @click="openYkFile(scope.row.path)">
@@ -47,10 +40,10 @@
         <span class="db-category">{{ scope.row.category }}</span>
       </template>
       <template #module="scope">
-        <code class="db-module">{{ scope.row.module || '-' }}</code>
+        <code class="db-module">{{ scope.row.module || "-" }}</code>
       </template>
       <template #updated="scope">
-        <span class="db-date">{{ scope.row.updated || '-' }}</span>
+        <span class="db-date">{{ scope.row.updated || "-" }}</span>
       </template>
     </ProTable>
 
@@ -71,19 +64,21 @@ const previewDlgRef = inject(PREVIEW_DLG_KEY, null);
 
 const { items, deriveFrom } = useBugs();
 
-watch(() => knowledgeFiles.value, (files) => {
-  const key = project.value?.key;
-  if (key && files.length) {
-    deriveFrom(files, key);
-  }
-}, { immediate: true });
+watch(
+  () => knowledgeFiles.value,
+  files => {
+    const key = project.value?.key;
+    if (key && files.length) {
+      deriveFrom(files, key);
+    }
+  },
+  { immediate: true }
+);
 
 // ── Summary ──
 const summary = computed(() => {
   const list = items.value;
-  const open = list.filter(i =>
-    i.status === "open" || i.status === "analyzing" || i.status === "in_progress"
-  ).length;
+  const open = list.filter(i => i.status === "open" || i.status === "analyzing" || i.status === "in_progress").length;
   const resolved = list.filter(i => i.status === "resolved" || i.status === "verified").length;
   const closed = list.filter(i => i.status === "closed").length;
   return { open, resolved, closed };
@@ -96,7 +91,7 @@ const bugColumns = computed<ColumnProps[]>(() => [
   { prop: "category", label: "分类", width: 90 },
   { prop: "module", label: "模块", minWidth: 160 },
   { prop: "updated", label: "更新", width: 100, sortable: true },
-  { prop: "status", label: "状态", width: 120 },
+  { prop: "status", label: "状态", width: 120 }
 ]);
 
 // ── Helpers ──
@@ -106,14 +101,20 @@ function fileName(p: string): string {
   return name.replace(/\.md$/, "");
 }
 
-
 function statusTagType(s: string) {
   switch (s) {
-    case "open": case "analyzing": return "danger";
-    case "in_progress": return "warning";
-    case "resolved": case "verified": return "success";
-    case "closed": return "info";
-    default: return "info";
+    case "open":
+    case "analyzing":
+      return "danger";
+    case "in_progress":
+      return "warning";
+    case "resolved":
+    case "verified":
+      return "success";
+    case "closed":
+      return "info";
+    default:
+      return "info";
   }
 }
 
@@ -133,65 +134,56 @@ function openYkFile(path: string) {
 .db-summary {
   display: flex;
   gap: 1px;
+  overflow: hidden;
   background: var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
-
 .db-summary__item {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 2px;
+  align-items: center;
   padding: 12px 10px;
   background: var(--el-bg-color);
 }
-
 .db-summary__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 20px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
 }
-
 .db-summary__label {
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
 }
-
-
 .db-muted {
-  color: var(--el-text-color-placeholder);
   font-size: 12px;
+  color: var(--el-text-color-placeholder);
 }
-
 .db-category {
   font-size: 12px;
   color: var(--el-text-color-regular);
 }
-
 .db-module {
-  font-size: 11px;
   padding: 1px 5px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 3px;
-  color: var(--el-text-color-secondary);
 }
-
 .db-date {
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-
 .db-month {
-  font-size: 12px;
   font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
   color: var(--el-text-color-secondary);
 }
 </style>

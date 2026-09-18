@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YP-09-175"
 source_prds: ["182-功能实现-emoji搜索与复制"]
 source_modules: []
+source_okr: [yipet-002]
 ---
 # YP-09-175: Emoji 搜索与复制 — 关键词搜索 Emoji、分类浏览、最近使用、肤色变体、Emoji 复制、短代码显示、多语言搜索 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[182-功能实现-emoji搜索与复制.md](../../prds/2026-09/182-功能实现-emoji搜索与复制.md)
 > 提取日期：2026-09-11

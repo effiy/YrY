@@ -5,7 +5,7 @@ import { getFlatMenuList, getShowMenuList, getAllBreadcrumbList, sortMenuTree } 
 
 export const useAuthStore = defineStore("yivad-auth", () => {
   const authButtonList = ref<Record<string, string[]>>({});
-  const authMenuList = ref<MenuItem[]>([]);
+  const authMenuList = ref<Menu.MenuOptions[]>([]);
   const routeName = ref("");
 
   // Getters
@@ -30,5 +30,17 @@ export const useAuthStore = defineStore("yivad-auth", () => {
     routeName.value = name;
   }
 
-  return { authButtonList, authMenuList, routeName, authButtonListGet, authMenuListGet, showMenuListGet, flatMenuListGet, breadcrumbListGet, getAuthButtonList, getAuthMenuList, setRouteName };
+  return {
+    authButtonList,
+    authMenuList,
+    routeName,
+    authButtonListGet,
+    authMenuListGet,
+    showMenuListGet,
+    flatMenuListGet,
+    breadcrumbListGet,
+    getAuthButtonList,
+    getAuthMenuList,
+    setRouteName
+  };
 });

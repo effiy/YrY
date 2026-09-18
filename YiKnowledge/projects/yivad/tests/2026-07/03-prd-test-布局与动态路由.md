@@ -1,95 +1,145 @@
 ---
 doc_type: test
-title: "YV-07-03: 布局与动态路由 — 三栏布局 + 菜单驱动的动态路由 — 测试规格"
+title: "YV-07-03: 布局与动态路由 — 测试用例"
 status: 已完成
 priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
 project_id: yivad
 prd_month: "202607"
 prd_task_id: "YV-07-03"
 source_prds: ["03-prd-布局与动态路由"]
-source_modules: []
+source_modules: ["03-prd-task-布局与动态路由"]
 ---
-# YV-07-03: 布局与动态路由 — 三栏布局 + 菜单驱动的动态路由 — 测试规格
+
+# YV-07-03: 布局与动态路由 — 测试用例
 
 > 来源 PRD：[03-prd-布局与动态路由.md](../../prds/2026-07/03-prd-布局与动态路由.md)
-> 提取日期：2026-09-11
+> 开发方案：[03-prd-task-布局与动态路由.md](../../devs/2026-07/03-prd-task-布局与动态路由.md)
 
 ---
 
-### 4.3 边缘场景处理（Edge Cases）
+## 一、测试范围与策略
 
-| 场景 | 描述 | 处理策略 | 实现细节 |
+### 1.1 测试分层
+
+| 层级 | 工具 | 覆盖目标 | 执行时机 |
 |------|------|---------|---------|
-| 菜单 API 加载失败 | YiAi 不可用时菜单列表为空，侧边栏白屏 | 降级到本地 `authMenuList.json` 兜底菜单，包含基础导航项 | `catch { menus = localFallbackMenus }` |
-| 动态路由 addRoute 白屏 | `addRoute` 后路由匹配器未重建，新路由匹配失败 | `addRoute` 循环后 `router.replace({ path: to.path })` 触发匹配器重编译 | `router.replace({ ...to, replace: true })` |
-| 菜单项 component 未找到 | 后端 menu 的 `component` 字段指向不存在的组件路径 | `componentMap` 查找失败时回退到 `ErrorPage` 占位组件 | `component: componentMap[path] ?? ErrorPage` |
-| 路由守卫死循环 | `initDynamicRouter()` 后 `next({...to, replace: true})` 重试 → `beforeEach` 再次触发 | `menuLoading` 锁：加载中返回不做任何操作，加载完成后 `next()` 放行 | `if (menuLoading) return` |
-| 嵌套路由子菜单未展开 | 直接访问 `/knowledge/ai/foundations`，`el-menu` 的 `default-active` 仅匹配一级 | `useLayoutStore.openedMenus` 根据 `route.matched` 计算所有父级路径 | `default-openeds` 绑定到 `openedMenus` |
-| 侧边栏折叠跨设备 | 桌面端展开侧边栏 → localStorage 持久化 → 移动端打开也展开（遮挡 80% 屏幕） | getter 响应式判断：`return window.innerWidth < 768 ? true : state._sidebarCollapsed` | `sidebarCollapsed: computed(() => isMobile ? true : persisted)` |
-| 面包屑空白 | 动态路由 `/chat/:sessionKey` 的 `route.matched[last].meta.title` 未设置 | `beforeEach` 中从后端获取会话标题设置 `to.meta.title = session.title` | `if (!to.meta.title && to.params.sessionKey) { fetchSessionTitle(...) }` |
-| Date 序列化 | `session.updated` 在 localStorage 中从 Date 变为 string，`dayjs().fromNow()` 返回 "Invalid date" | 自定义 `serializer.deserialize` 使用 JSON.parse + reviver 自动恢复 Date | `JSON.parse(val, (k, v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(v) ? new Date(v) : v)` |
-| 菜单项重名 | 后端菜单与静态路由有同名 `name`，`addRoute` 报错 `Duplicate named routes` | `try/catch` 捕获，自动追加后缀 `Chat_1`, `Chat_2`，控制台 warn | `catch (e) { if (e.message.includes('Duplicate')) route.name += '_' + count++ }` |
-| 路由组件懒加载超时 | `() => import()` 的文件过大，网络慢时加载超时 | 添加 loading 组件 + 错误重试：`() => import().catch(() => import('./ErrorComponent.vue'))` | `component: () => import('...').catch(e => { console.error(e); return import('@/views/error/LoadError.vue') })` |
-| 动态路由注册顺序 | `addRoute` 注册的子路由必须先注册父路由 | 按菜单树的广度优先顺序注册：先访问父节点 → 注册路由 → 再访问子节点 | `flatMenuList` 确保父级在子级之前 |
+| L1 单元 | Vitest + jsdom | 菜单工具函数（flatMenuList/showMenuList/sortMenuTree） | 每次提交 |
+| L2 集成 | Vitest + Pinia + 内存路由 | 动态路由注册、路由守卫 | 每次提交 |
+| L3 组件 | Vitest + @vue/test-utils | MainLayout/Sidebar/Breadcrumb 渲染 | 每次提交 |
+| L4 端到端 | Playwright | 完整导航链路 | 发布前 |
+
+### 1.2 覆盖范围
+
+| 编号 | 被测对象 | 层级 |
+|------|---------|------|
+| COV-1 | 菜单工具函数（扁平化/过滤/排序/面包屑） | L1 |
+| COV-2 | 动态路由注册（initDynamicRouter） | L2 |
+| COV-3 | 路由守卫（beforeEach 编排） | L2 |
+| COV-4 | MainLayout 三栏渲染 | L3 |
+| COV-5 | Sidebar 菜单渲染 | L3 |
+
+### 1.3 不覆盖范围
+
+| 不覆盖 | 原因 |
+|--------|------|
+| 后端菜单 API 正确性 | 属 YiAi 测试范围 |
+| CSS Grid 像素级布局 | 视觉回归，非逻辑测试 |
+| 响应式断点视觉 | 属 E2E 视觉测试 |
 
 ---
 
-## 五、测试规格
+## 二、测试用例
 
-### Requirement: 三栏布局渲染
+### 2.1 菜单工具函数（COV-1 · L1）
 
-#### Scenario: 布局正常渲染
-- **GIVEN** 用户已登录
-- **WHEN** 访问任意业务页面
-- **THEN** 页面渲染为三栏布局：Header + Sidebar + Main
-- **AND** Header 显示面包屑和用户信息
-- **AND** Sidebar 显示菜单列表
+> 自动化落点：`tests/utils/index.test.ts`
 
-#### Scenario: 侧边栏折叠/展开
-- **GIVEN** 用户点击侧边栏折叠按钮
-- **WHEN** 侧边栏折叠
-- **THEN** Sidebar 宽度从 240px 缩小到 64px（仅图标）
-- **AND** Main 区域自动扩展
-- **AND** 折叠状态持久化到 localStorage
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-UTIL-001 | 扁平化父先于子 | 输出顺序中父节点索引 < 子节点索引 | P0 |
+| TC-UTIL-002 | 扁平化含全部节点 | 输出长度 = 树中节点总数 | P0 |
+| TC-UTIL-003 | 扁平化不污染原树 | 入参菜单树结构不变（深拷贝） | P1 |
+| TC-UTIL-004 | 隐藏项被过滤 | `getShowMenuList` 结果不含 `meta.isHide: true` 项 | P0 |
+| TC-UTIL-005 | 排序按标题 | 兄弟节点按 `meta.title` 升序 | P0 |
+| TC-UTIL-006 | 面包屑按路径索引 | 结果为 `{ path: [祖先链] }` | P0 |
+| TC-UTIL-007 | 空输入不报错 | 四个函数传 `[]` 均返回空数组/空对象 | P1 |
 
-### Requirement: 动态路由
+### 2.2 动态路由注册（COV-2 · L2）
 
-#### Scenario: 菜单数据加载后动态注册路由
-- **GIVEN** 用户首次访问业务页面
-- **WHEN** 路由守卫检测到菜单未加载
-- **THEN** 自动调用 `loadMenus()` 获取菜单数据
-- **AND** 调用 `addRoute()` 动态注册业务路由
-- **AND** 重试当前导航，页面正常渲染
+> 自动化落点：`tests/routers/dynamicRouter.test.ts`
 
-#### Scenario: 数据库新增菜单后前端自动生效
-- **GIVEN** 管理员在 MongoDB `menus` 集合中新增一条菜单记录
-- **WHEN** 用户刷新页面
-- **THEN** 新菜单出现在侧边栏中
-- **AND** 新路由自动注册，点击菜单可访问对应页面
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-ROUTE-001 | 常规菜单注册 | `router.hasRoute(name)` 为 true，挂于 layout 下 | P0 |
+| TC-ROUTE-002 | 全屏菜单注册于顶层 | `meta.isFull: true` → 顶层路由，非 layout 子路由 | P0 |
+| TC-ROUTE-003 | 组件缺失被跳过 | 缺失项未注册，其余菜单正常（不中断） | P0 |
+| TC-ROUTE-004 | 纯重定向不注册组件 | 有 `redirect` 无 `component` → 不注册 | P1 |
+| TC-ROUTE-005 | 子节点 children 已清理 | 注册路由无 `children` 残留 | P0 |
+| TC-ROUTE-006 | 菜单为空 → 清态跳登录 | token 清空 + `clearPersistedState` + `router.replace(LOGIN_URL)` | P0 |
+| TC-ROUTE-007 | 接口异常 → 清态跳登录 | 同上三项动作发生 | P0 |
 
-### Requirement: 权限控制
+### 2.3 路由守卫（COV-3 · L2）
 
-#### Scenario: 未登录用户访问受保护页面
-- **GIVEN** 用户未登录
-- **WHEN** 直接访问 `/chat`
-- **THEN** 路由守卫拦截，重定向到 `/login`
+> 自动化落点：`tests/routers/guard.test.ts`
 
-#### Scenario: 无权限用户访问受限页面
-- **GIVEN** 用户角色为 `viewer`
-- **WHEN** 访问仅 `admin` 可访问的页面
-- **THEN** 路由守卫拦截，重定向到 `/403`
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-GUARD-001 | 未登录 → 登录页 | 无 token，受保护路由 → `/login` | P0 |
+| TC-GUARD-002 | 白名单放行 | 无 token，`/500` → 放行 | P0 |
+| TC-GUARD-003 | 已登录访问登录页→退回 | 有 token，`/login` → 退回来源页 | P0 |
+| TC-GUARD-004 | 菜单未加载→初始化 | `initDynamicRouter` 调用，二次导航命中 | P0 |
+| TC-GUARD-005 | 仅初始化一次 | 连续导航两次，`initDynamicRouter` 调用一次 | P0 |
+| TC-GUARD-006 | 未下发路由不可达 | 手工输入未下发路径 → 404 | P0 |
+| TC-GUARD-007 | 初始化失败不白屏 | `initDynamicRouter` reject → 落登录页 | P0 |
 
-### Requirement: 面包屑
+### 2.4 布局组件（COV-4/COV-5 · L3）
 
-#### Scenario: 面包屑动态生成
-- **GIVEN** 用户访问 `/chat/session/abc123`
-- **WHEN** 页面渲染
-- **THEN** 面包屑显示：首页 > AI Chat > 会话名称
+> 自动化落点：`tests/components/MainLayout.test.ts`
+
+| 编号 | 用例 | 预期结果 | 优先级 |
+|------|------|---------|--------|
+| TC-LAYOUT-001 | 三栏渲染 | Sidebar + Header + Main 三个区域存在 | P0 |
+| TC-LAYOUT-002 | 侧边栏折叠 | 折叠后宽度 64px，展开后 240px | P0 |
+| TC-LAYOUT-003 | 折叠持久化 | 刷新后折叠状态保持 | P1 |
+| TC-LAYOUT-004 | 菜单递归渲染 | 多级菜单正确嵌套 | P0 |
+| TC-LAYOUT-005 | 当前菜单高亮 | 当前路由对应菜单项 `is-active` | P1 |
+| TC-LAYOUT-006 | 面包屑动态生成 | 路径 `/project/list` → 首页 > 项目管理 | P1 |
 
 ---
 
+## 三、边缘场景
+
+| 编号 | 场景 | 处理策略 | 优先级 |
+|------|------|---------|--------|
+| TC-EDGE-001 | 菜单 API 不可用 | 降级到 `authMenuList.json` | P0 |
+| TC-EDGE-002 | 菜单项组件缺失 | 跳过该项，其余正常注册 | P0 |
+| TC-EDGE-003 | 菜单项与静态路由重名 | try/catch 捕获，控制台 warn | P1 |
+| TC-EDGE-004 | 侧边栏折叠跨设备 | 移动端 (<768px) 强制折叠 | P1 |
+| TC-EDGE-005 | 深层嵌套菜单 (≥3级) | 全部扁平化注册，父先于子 | P1 |
+| TC-EDGE-006 | 菜单项为 null 而非 [] | `authMenuListGet.length` 判定不抛错 | P0 |
+
+---
+
+## 四、追溯矩阵
+
+| 需求项 | 验收标准 | 覆盖用例 |
+|--------|---------|---------|
+| 三栏布局渲染 | 布局正确 | TC-LAYOUT-001~003 |
+| 侧边栏递归菜单 | 多级展开/折叠 | TC-LAYOUT-004~005 |
+| 动态路由注册 | 菜单→路由 | TC-ROUTE-001~007 |
+| 路由守卫 | 登录态/白名单/初始化 | TC-GUARD-001~007 |
+| 菜单工具函数 | 扁平化/过滤/排序 | TC-UTIL-001~007 |
+
+---
+
+## 五、出口准则
+
+- [ ] P0 用例 100% 通过
+- [ ] 菜单工具函数覆盖率 ≥ 90%
+- [ ] 路由守卫关键路径（TC-GUARD-001~004）通过
+- [ ] 边缘场景 TC-EDGE-001（降级）通过

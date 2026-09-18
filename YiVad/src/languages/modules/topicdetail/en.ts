@@ -60,6 +60,52 @@ export default {
     moveUp: "Move up",
     moveDown: "Move down",
     createdHint: "Created {time}",
-    tocTitle: "Contents"
+    tocTitle: "Contents",
+    loading: "Loading entries…",
+    view: {
+      compact: "Compact",
+      comfortable: "Comfortable",
+      fullWidth: "Full width",
+      showToc: "Show table of contents",
+      hideToc: "Hide table of contents",
+      focusMode: "Focus mode",
+      exitFocus: "Exit focus"
+    },
+    sort: {
+      label: "Sort",
+      createdAsc: "Created (oldest first)",
+      createdDesc: "Created (newest first)",
+      updatedAsc: "Updated (oldest first)",
+      updatedDesc: "Updated (newest first)",
+      titleAsc: "Title (A→Z)",
+      titleDesc: "Title (Z→A)",
+      custom: "Custom order"
+    },
+    filter: {
+      label: "Filter",
+      searchInTopic: "Search within entries…",
+      tagFilter: "Filter by tag",
+      dateFilter: "Filter by date",
+      clearAll: "Clear all filters",
+      noResults: "No matching entries",
+      resultCount: "{count} match(es)"
+    },
+    collaboration: {
+      locked: "{name} is editing",
+      lockExpired: "Edit lock expired",
+      takeOver: "Take over editing",
+      readOnly: "Read-only mode",
+      editRequest: "Request edit access"
+    },
+    export: {
+      title: "Export",
+      markdown: "Export Markdown",
+      json: "Export JSON",
+      csv: "Export CSV",
+      single: "Export current entry",
+      all: "Export all entries",
+      success: "Exported successfully",
+      failed: "Export failed"
+    }
   }
 };

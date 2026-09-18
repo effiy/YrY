@@ -99,7 +99,7 @@ export function useMermaidViewer() {
       "box-shadow:0 2px 8px rgb(0 0 0 / 10%)",
       "transition:opacity 0.18s",
       "z-index:10",
-      "pointer-events:auto",
+      "pointer-events:auto"
     ].join(";");
   }
 
@@ -116,7 +116,7 @@ export function useMermaidViewer() {
       "background:transparent",
       "border:none",
       "border-radius:4px",
-      "pointer-events:auto",
+      "pointer-events:auto"
     ].join(";");
   }
 
@@ -141,7 +141,7 @@ export function useMermaidViewer() {
       toolbar.setAttribute("style", toolbarCss(isDark));
       toolbar.innerHTML = [
         `<button style="${btnCss(isDark)}" title="Fullscreen preview" data-mv-action="fullscreen">${ICON_FULLSCREEN}</button>`,
-        `<button style="${btnCss(isDark)}" title="Download SVG" data-mv-action="download">${ICON_DOWNLOAD}</button>`,
+        `<button style="${btnCss(isDark)}" title="Download SVG" data-mv-action="download">${ICON_DOWNLOAD}</button>`
       ].join("");
 
       // Show toolbar on hover
@@ -167,7 +167,7 @@ export function useMermaidViewer() {
       });
 
       // Button hover effect
-      toolbar.querySelectorAll("button").forEach((btn) => {
+      toolbar.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("mouseenter", () => {
           btn.style.color = isDark ? "#7aa2f7" : "#409eff";
           btn.style.background = isDark ? "rgb(255 255 255 / 6%)" : "#ecf5ff";
@@ -196,6 +196,6 @@ export function useMermaidViewer() {
     setScale,
     downloadSvg,
     // Post-render enhancement
-    enhanceContainer,
+    enhanceContainer
   };
 }

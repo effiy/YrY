@@ -11,7 +11,9 @@
       }"
     >
       <div class="role-page__header-row">
-        <slot name="title"><h1>{{ title }}</h1></slot>
+        <slot name="title"
+          ><h1>{{ title }}</h1></slot
+        >
       </div>
     </header>
 
@@ -20,66 +22,66 @@
     <KnowledgeError v-if="error" :message="error" @retry="loadFiles" />
 
     <template v-else>
-    <div class="role-page__body">
-      <nav
-        class="role-page__sidebar"
-        v-sticky="{
-          top: 96,
-          zIndex: 18,
-          activeClass: 'is-stuck'
-        }"
-      >
-        <div class="role-page__sidebar-view">
-          <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="card">Cards</el-radio-button>
-            <el-radio-button value="list">List</el-radio-button>
-            <el-radio-button value="table">Table</el-radio-button>
-          </el-radio-group>
-        </div>
-        <button
-          v-for="dir in subdirs"
-          :key="dir.id"
-          class="role-page__sidebar-item"
-          :class="{ 'is-active': isStatActive(dir) }"
-          @click="scrollTo(dir.id)"
+      <div class="role-page__body">
+        <nav
+          class="role-page__sidebar"
+          v-sticky="{
+            top: 96,
+            zIndex: 18,
+            activeClass: 'is-stuck'
+          }"
         >
-          <span class="role-page__sidebar-icon">{{ dir.icon }}</span>
-          <span class="role-page__sidebar-label">{{ dir.label }}</span>
-          <span class="role-page__sidebar-badge">{{ fileCounts[dir.id] || 0 }}</span>
-        </button>
-      </nav>
+          <div class="role-page__sidebar-view">
+            <el-radio-group v-model="viewMode" size="small">
+              <el-radio-button value="card">Cards</el-radio-button>
+              <el-radio-button value="list">List</el-radio-button>
+              <el-radio-button value="table">Table</el-radio-button>
+            </el-radio-group>
+          </div>
+          <button
+            v-for="dir in subdirs"
+            :key="dir.id"
+            class="role-page__sidebar-item"
+            :class="{ 'is-active': isStatActive(dir) }"
+            @click="scrollTo(dir.id)"
+          >
+            <span class="role-page__sidebar-icon">{{ dir.icon }}</span>
+            <span class="role-page__sidebar-label">{{ dir.label }}</span>
+            <span class="role-page__sidebar-badge">{{ fileCounts[dir.id] || 0 }}</span>
+          </button>
+        </nav>
 
-      <div class="role-page__content">
-        <RoleCardView
-          v-if="viewMode === 'card'"
-          :subdirs="subdirs"
-          :files-by-dir="filesByDir"
-          :collapsed-sections="collapsedSections"
-          :category="category"
-          :structural-tags="structuralTags"
-          @open="openFile"
-          @delete="handleDelete"
-          @toggle-section="toggleSection"
-        />
-        <RoleListView
-          v-else-if="viewMode === 'list'"
-          :files="filteredFiles"
-          :total-count="flatFiles.length"
-          :category="category"
-          @open="openFile"
-          @delete="handleDelete"
-        />
-        <RoleTableView
-          v-else
-          :files="filteredFiles"
-          :total-count="flatFiles.length"
-          :filters="filters"
-          :category="category"
-          @open="openFile"
-          @delete="handleDelete"
-        />
+        <div class="role-page__content">
+          <RoleCardView
+            v-if="viewMode === 'card'"
+            :subdirs="subdirs"
+            :files-by-dir="filesByDir"
+            :collapsed-sections="collapsedSections"
+            :category="category"
+            :structural-tags="structuralTags"
+            @open="openFile"
+            @delete="handleDelete"
+            @toggle-section="toggleSection"
+          />
+          <RoleListView
+            v-else-if="viewMode === 'list'"
+            :files="filteredFiles"
+            :total-count="flatFiles.length"
+            :category="category"
+            @open="openFile"
+            @delete="handleDelete"
+          />
+          <RoleTableView
+            v-else
+            :files="filteredFiles"
+            :total-count="flatFiles.length"
+            :filters="filters"
+            :category="category"
+            @open="openFile"
+            @delete="handleDelete"
+          />
+        </div>
       </div>
-    </div>
     </template>
 
     <KnowledgePreviewDialog ref="previewDlg" />
@@ -160,7 +162,8 @@ function scrollTo(id: string) {
 
 function toggleSection(id: string) {
   const s = collapsedSections.value;
-  if (s.has(id)) s.delete(id); else s.add(id);
+  if (s.has(id)) s.delete(id);
+  else s.add(id);
   collapsedSections.value = new Set(s);
 }
 
@@ -176,7 +179,16 @@ const filesByDir = computed<Record<string, KnowledgeFileEntry[]>>(() => {
 });
 
 const flatFiles = computed(() => {
-  const rows: Array<{ file: KnowledgeFileEntry; path: string; name: string; title: string; size: number; domain: string; domainIcon: string; domainColor: string }> = [];
+  const rows: Array<{
+    file: KnowledgeFileEntry;
+    path: string;
+    name: string;
+    title: string;
+    size: number;
+    domain: string;
+    domainIcon: string;
+    domainColor: string;
+  }> = [];
   for (const dir of props.subdirs) {
     for (const f of filesByDir.value[dir.id]) {
       rows.push({
@@ -214,14 +226,14 @@ const filteredFiles = computed(() => {
 });
 
 const STATUS_ORDER: Record<string, number> = { stable: 0, active: 0, evolving: 1, draft: 2, deprecated: 3, archived: 3 };
-const LIFECYCLE_ORDER: Record<string, number> = { stable: 0, active: 0, evolving: 1, draft: 2, 'in-review': 2, deprecated: 3 };
+const LIFECYCLE_ORDER: Record<string, number> = { stable: 0, active: 0, evolving: 1, draft: 2, "in-review": 2, deprecated: 3 };
 
 function compareByMaturity(a: KnowledgeFileEntry, b: KnowledgeFileEntry): number {
-  const sa = STATUS_ORDER[a.meta?.status ?? ''] ?? 99;
-  const sb = STATUS_ORDER[b.meta?.status ?? ''] ?? 99;
+  const sa = STATUS_ORDER[a.meta?.status ?? ""] ?? 99;
+  const sb = STATUS_ORDER[b.meta?.status ?? ""] ?? 99;
   if (sa !== sb) return sa - sb;
-  const la = LIFECYCLE_ORDER[a.meta?.lifecycle ?? ''] ?? 99;
-  const lb = LIFECYCLE_ORDER[b.meta?.lifecycle ?? ''] ?? 99;
+  const la = LIFECYCLE_ORDER[a.meta?.lifecycle ?? ""] ?? 99;
+  const lb = LIFECYCLE_ORDER[b.meta?.lifecycle ?? ""] ?? 99;
   if (la !== lb) return la - lb;
   return a.name.localeCompare(b.name);
 }
@@ -232,16 +244,20 @@ const fileCounts = computed<Record<string, number>>(() => {
   return counts;
 });
 
-function openFile(file: KnowledgeFileEntry) { previewDlg.value?.open(file.path); }
+function openFile(file: KnowledgeFileEntry) {
+  previewDlg.value?.open(file.path);
+}
 
 async function handleDelete(file: KnowledgeFileEntry) {
   try {
-    await ElMessageBox.confirm(
-      `Delete "${file.path}"? This action cannot be undone.`,
-      "Confirm Delete",
-      { confirmButtonText: "Delete", cancelButtonText: "Cancel", type: "warning" }
-    );
-  } catch { return; }
+    await ElMessageBox.confirm(`Delete "${file.path}"? This action cannot be undone.`, "Confirm Delete", {
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      type: "warning"
+    });
+  } catch {
+    return;
+  }
   try {
     await deleteKnowledgeFile(file.path);
     ElMessage.success("File deleted");
@@ -268,92 +284,150 @@ onMounted(loadFiles);
 </script>
 
 <style scoped lang="scss">
-.role-page { display: flex; flex-direction: column; box-sizing: border-box; padding: 20px 24px; background: var(--el-bg-color-page); }
+.role-page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+  background: var(--el-bg-color-page);
+}
 .role-page__header {
   z-index: 20;
-  transition: box-shadow .2s ease, border-color .2s ease, background-color .2s ease, backdrop-filter .2s ease;
-  h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
-  p { margin: 0; font-size: 13px; color: var(--el-text-color-secondary); line-height: 1.6; }
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    backdrop-filter 0.2s ease;
+  h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--el-text-color-secondary);
+  }
   &.is-stuck {
     background: color-mix(in srgb, var(--el-bg-color-page) 82%, transparent);
-    backdrop-filter: saturate(180%) blur(14px);
-    -webkit-backdrop-filter: saturate(180%) blur(14px);
     border-bottom: 1px solid color-mix(in srgb, var(--el-border-color-lighter) 70%, transparent);
-    box-shadow: 0 6px 20px -12px rgba(0, 0, 0, .1);
+    box-shadow: 0 6px 20px -12px rgb(0 0 0 / 10%);
+    backdrop-filter: saturate(180%) blur(14px);
   }
 }
-.role-page__header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; h1 { margin-bottom: 4px; } }
+.role-page__header-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  h1 {
+    margin-bottom: 4px;
+  }
+}
+
 // ── Body + Sidebar ──
-.role-page__body { display: flex; gap: 16px; align-items: flex-start; }
+.role-page__body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
 .role-page__sidebar {
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 4px;
   width: 180px;
-  flex-shrink: 0;
   padding: 10px 10px 12px;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
-  overflow: hidden;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   &.is-stuck {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, .12),
-                0 2px 6px rgba(0, 0, 0, .04);
     border-color: color-mix(in srgb, var(--el-border-color) 70%, transparent);
+    box-shadow:
+      0 8px 24px -10px rgb(0 0 0 / 12%),
+      0 2px 6px rgb(0 0 0 / 4%);
+    transform: translateY(-2px);
   }
 }
 .role-page__sidebar-item {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  width: 100%;
   padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  cursor: pointer;
   font-size: 13px;
   color: var(--el-text-color-regular);
-  transition: all .15s;
   text-align: left;
-  width: 100%;
   white-space: nowrap;
-  &:hover { background: var(--el-fill-color-light); color: var(--el-text-color-primary); }
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.15s;
+  &:hover {
+    color: var(--el-text-color-primary);
+    background: var(--el-fill-color-light);
+  }
   &.is-active {
-    background: var(--el-color-primary-light-9);
-    color: var(--el-color-primary);
     font-weight: 600;
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
     box-shadow: inset 3px 0 0 var(--el-color-primary);
   }
 }
-.role-page__sidebar-icon { font-size: 18px; flex-shrink: 0; }
-.role-page__sidebar-label { flex: 1; min-width: 0; overflow: hidden; }
+.role-page__sidebar-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.role-page__sidebar-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
 .role-page__sidebar-badge {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   min-width: 22px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 10px;
   font-size: 11px;
   font-weight: 700;
-  background: var(--el-fill-color);
   color: var(--el-text-color-secondary);
-  flex-shrink: 0;
+  background: var(--el-fill-color);
+  border-radius: 10px;
   .role-page__sidebar-item.is-active & {
+    color: #ffffff;
     background: var(--el-color-primary);
-    color: #fff;
   }
 }
 .role-page__sidebar-view {
   padding: 4px 8px 8px;
   margin-bottom: 4px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) { display: flex; width: 100%; }
-  :deep(.el-radio-button) { flex: 1; }
-  :deep(.el-radio-button__inner) { width: 100%; text-align: center; padding: 4px 0; font-size: 12px; }
+  :deep(.el-radio-group) {
+    display: flex;
+    width: 100%;
+  }
+  :deep(.el-radio-button) {
+    flex: 1;
+  }
+  :deep(.el-radio-button__inner) {
+    width: 100%;
+    padding: 4px 0;
+    font-size: 12px;
+    text-align: center;
+  }
 }
-.role-page__content { flex: 1; min-width: 0; }
+.role-page__content {
+  flex: 1;
+  min-width: 0;
+}
 </style>

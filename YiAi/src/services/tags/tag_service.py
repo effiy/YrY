@@ -3,12 +3,12 @@ Tag Service — global tag management with hierarchy, merge, and cleanup.
 
 RPC entry: services.tags.tag_service.<method>
 """
-import logging
 from datetime import datetime, timezone
+import logging
 from typing import Any
 
 from data.database import db
-from data.repository import query_documents, create_document, update_document, delete_document
+from data.repository import create_document, delete_document, query_documents, update_document
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
 
@@ -96,7 +96,7 @@ async def merge_tags(parameters: dict[str, Any]) -> dict[str, Any]:
         raise BusinessException(ErrorCode.RESOURCE_NOT_FOUND, message=f"Target tag {target_key} not found")
 
     # Update all documents that reference the source tag
-    target_name = target_doc.get("name", "")
+    target_doc.get("name", "")
     for cname in ["issues", "bugs", "projects", "knowledge_files"]:
         result = await db.db[cname].update_many(
             {"tags": source_key},

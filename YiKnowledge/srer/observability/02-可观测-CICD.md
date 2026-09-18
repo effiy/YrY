@@ -4,7 +4,7 @@ aliases: [cicd, ci-cd, continuous-integration, continuous-deployment, pipeline]
 tags: [sre, observability, cicd, deployment, automation]
 category: srer/observability
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -132,6 +132,40 @@ related:
 | **添加冒烟测试** | 约 1 小时 | 每次部署后自动验证系统可用性 |
 | **添加流水线耗时追踪** | 约 1 小时 | 量化衡量流水线性能，在变慢时告警 |
 | **添加不稳定测试检测** | 约 2 小时 | 跟踪测试失败模式；自动隔离不稳定的测试 |
+
+## YrY 最小 CI 搭建指南
+
+在引入完整 CI 平台之前，可以用 Git hooks + Makefile 建立本地门禁：
+
+```bash
+# .git/hooks/pre-push（所有项目通用模式）
+#!/bin/bash
+set -e
+echo "=== 预推送检查 ==="
+
+# YiAi 项目
+if [ -f "requirements.txt" ]; then
+  ruff check src/ || exit 1
+  python -m pytest tests/ -v || exit 1
+fi
+
+# YiVad/YiPet 项目
+if [ -f "package.json" ]; then
+  npx biome check --max-diagnostics=0 || exit 1
+  npx tsc --noEmit || npx vue-tsc --noEmit || exit 1
+  npm test || exit 1
+fi
+
+echo "✓ 全部通过"
+```
+
+每个项目的快速门禁命令：
+
+| 项目 | Lint | 类型检查 | 测试 | 构建 |
+|---|---|---|---|---|
+| YiAi | `ruff check src/` | — | `python -m pytest tests/ -v` | — |
+| YiVad | `npx biome check` | `vue-tsc --noEmit` | `vitest run` | `pnpm build:pro` |
+| YiPet | `npx biome check` | `tsc --noEmit` | `vitest run` | `npm run build` |
 
 ## 常见反模式
 

@@ -83,11 +83,13 @@ export interface RagChatPayload {
   /** Per-call override of QueryFusionRetriever LLM query-variant count. */
   num_queries?: number;
   /** Per-call override of the llama_index chat engine mode. */
-  chat_mode?: "condense_plus_context" | "condense_question" | "context" | "simple";
+  chat_mode?: "condense" | "condense_plus_context" | "condense_question" | "context" | "simple";
   /** MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid. */
   category?: string;
   /** MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid. */
   tags?: string[];
+  /** HyDE — generate hypothetical answer for better retrieval accuracy. */
+  hyde_enabled?: boolean;
 }
 
 export interface RagFileChatPayload {

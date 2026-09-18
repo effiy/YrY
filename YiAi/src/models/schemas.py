@@ -2,13 +2,15 @@
 - Contains Pydantic models for all API requests and responses
 - Organized by functional module: Module, RSS, etc.
 """
-from typing import Optional, Dict, Any, Union, List
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class ChatMode(str, Enum):
     """RAG chat engine mode."""
+    CONDENSE = "condense"
     CONDENSE_PLUS_CONTEXT = "condense_plus_context"
     CONDENSE_QUESTION = "condense_question"
     CONTEXT = "context"
@@ -28,7 +30,7 @@ class ExecuteRequest(BaseModel):
     """
     module_name: str = Field(default="", description="Full path of the target module")
     method_name: str = Field(default="", description="Target function name")
-    parameters: Union[Dict[str, Any], str] = Field(
+    parameters: dict[str, Any] | str = Field(
         default_factory=dict,
         description="Parameters passed to the target function; supports dict or JSON string"
     )
@@ -55,6 +57,11 @@ class FolderDeleteRequest(BaseModel):
     Folder deletion request model
     """
     target_dir: str = Field(..., description="Directory path to delete")
+
+class ListDirectoryRequest(BaseModel):
+    """List directory contents request."""
+    target_dir: str = Field(default="", description="Directory path relative to static base")
+    max_depth: int = Field(default=3, ge=1, le=10, description="Maximum recursion depth")
 
 class FileDeleteRequest(BaseModel):
     """
@@ -128,7 +135,7 @@ class FolderRenameRequest(BaseModel):
 # --- Knowledge Base Schemas ---
 class KnowledgeScanRequest(BaseModel):
     """Scan the ~/YiKnowledge markdown tree for a sidebar view."""
-    category: Optional[str] = Field(default=None, description="Limit to one top-level role directory (producter/leader/engineer/...). Empty = all.")
+    category: str | None = Field(default=None, description="Limit to one top-level role directory (producter/leader/engineer/...). Empty = all.")
 
 class KnowledgeReadRequest(BaseModel):
     """Read a single knowledge markdown file with parsed frontmatter."""
@@ -136,7 +143,7 @@ class KnowledgeReadRequest(BaseModel):
 
 class KnowledgeStoriesRequest(BaseModel):
     """List story.md entries under engineer/learn/projects/{project}/."""
-    project: Optional[str] = Field(default=None, description="Limit to one project (YiAi/YiPet/YiVad/...). Empty = all.")
+    project: str | None = Field(default=None, description="Limit to one project (YiAi/YiPet/YiVad/...). Empty = all.")
 
 class KnowledgeStoryReadRequest(BaseModel):
     """Read a specific story's story.md."""
@@ -150,7 +157,7 @@ class KnowledgeBugsRequest(BaseModel):
     status, contentPath, …) parsed from each file's YAML frontmatter — no
     MongoDB lookup is required.
     """
-    project: Optional[str] = Field(default=None, description="Limit to one project (case-insensitive match on the directory name under projects/). Empty = all projects.")
+    project: str | None = Field(default=None, description="Limit to one project (case-insensitive match on the directory name under projects/). Empty = all projects.")
 
 class KnowledgeBugReadRequest(BaseModel):
     """Read a single bug markdown file by its relative contentPath.
@@ -163,13 +170,15 @@ class KnowledgeBugReadRequest(BaseModel):
 
 class KnowledgeFilesRequest(BaseModel):
     """Read metadata from the DB mirror (no disk scan)."""
-    category: Optional[str] = Field(default=None, description="Filter by top-level role directory (producter/leader/engineer/.../static/__root__).")
+    category: str | None = Field(default=None, description="Filter by top-level role directory (producter/leader/engineer/.../static/__root__).")
+    page: int = Field(default=1, ge=1, description="1-based page number.")
+    page_size: int = Field(default=0, ge=0, description="Page size. 0 = return all (no pagination).")
 
 class KnowledgeWriteRequest(BaseModel):
     """Write a markdown file with YAML frontmatter to the knowledge base."""
     target_file: str = Field(..., description="Relative path under the knowledge base dir, e.g. reports/q3-sales.md")
     content: str = Field(..., description="Markdown body (will be written after auto-generated frontmatter)")
-    metadata: Optional[dict] = Field(default=None, description="Optional YAML frontmatter key-value pairs (title, tags, category, etc.)")
+    metadata: dict | None = Field(default=None, description="Optional YAML frontmatter key-value pairs (title, tags, category, etc.)")
 
 class KnowledgeDeleteRequest(BaseModel):
     """Delete a knowledge markdown file from disk. No-op if the file does not exist."""
@@ -178,7 +187,7 @@ class KnowledgeDeleteRequest(BaseModel):
 class KnowledgeSearchRequest(BaseModel):
     """Search content within knowledge base markdown files."""
     query: str = Field(..., description="Search query string")
-    category: Optional[str] = Field(default=None, description="Optional category filter")
+    category: str | None = Field(default=None, description="Optional category filter")
     max_results: int = Field(default=50, description="Max results to return")
 
 class KnowledgeExportRequest(BaseModel):
@@ -189,29 +198,29 @@ class KnowledgeExportRequest(BaseModel):
 class RagQueryRequest(BaseModel):
     """One-shot retrieval over the YiKnowledge VectorStoreIndex."""
     question: str = Field(..., description="Query string")
-    top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
-    scope: Optional[str] = Field(default=None, description="Substring filter on file_path (e.g. 'engineer/learn/projects/yivad/')")
-    hybrid: Optional[bool] = Field(default=None, description="Override settings.rag_hybrid_retrieval_enabled (vector + BM25 fusion)")
-    rerank: Optional[bool] = Field(default=None, description="Override settings.rag_rerank_enabled (LLMRerank postprocessor)")
-    citations: Optional[bool] = Field(default=None, description="Override settings.rag_inline_citations_enabled ([Source N] prefix)")
-    num_queries: Optional[int] = Field(default=None, description="QueryFusionRetriever LLM query-variant count (1 = no expansion). Only honored when hybrid active + no metadata filter.")
-    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
-    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
-    hyde: Optional[bool] = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
+    top_k: int | None = Field(default=None, description="Override settings.rag_top_k")
+    scope: str | None = Field(default=None, description="Substring filter on file_path (e.g. 'engineer/learn/projects/yivad/')")
+    hybrid: bool | None = Field(default=None, description="Override settings.rag_hybrid_retrieval_enabled (vector + BM25 fusion)")
+    rerank: bool | None = Field(default=None, description="Override settings.rag_rerank_enabled (LLMRerank postprocessor)")
+    citations: bool | None = Field(default=None, description="Override settings.rag_inline_citations_enabled ([Source N] prefix)")
+    num_queries: int | None = Field(default=None, description="QueryFusionRetriever LLM query-variant count (1 = no expansion). Only honored when hybrid active + no metadata filter.")
+    category: str | None = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: list[str] | None = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
+    hyde: bool | None = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
 
 class RagChatRequest(BaseModel):
     """SSE-streaming RAG chat over the knowledge index."""
-    messages: List[Dict[str, Any]] = Field(..., min_length=1, description="[{role:'user'|'assistant'|'system', content}] — last must be user")
-    scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
-    top_k: Optional[int] = Field(default=None, description="Override settings.rag_top_k")
-    hybrid: Optional[bool] = Field(default=None, description="Override hybrid retrieval for this turn only")
-    rerank: Optional[bool] = Field(default=None, description="Override LLMRerank for this turn only")
-    citations: Optional[bool] = Field(default=None, description="Override inline [Source N] prefix for this turn only")
-    num_queries: Optional[int] = Field(default=None, description="Override QueryFusionRetriever LLM query-variant count for this turn only")
+    messages: list[dict[str, Any]] = Field(..., min_length=1, description="[{role:'user'|'assistant'|'system', content}] — last must be user")
+    scope: str | None = Field(default=None, description="Optional file_path substring filter")
+    top_k: int | None = Field(default=None, description="Override settings.rag_top_k")
+    hybrid: bool | None = Field(default=None, description="Override hybrid retrieval for this turn only")
+    rerank: bool | None = Field(default=None, description="Override LLMRerank for this turn only")
+    citations: bool | None = Field(default=None, description="Override inline [Source N] prefix for this turn only")
+    num_queries: int | None = Field(default=None, description="Override QueryFusionRetriever LLM query-variant count for this turn only")
     chat_mode: ChatMode = Field(default=ChatMode.CONDENSE_PLUS_CONTEXT, description="Chat engine mode")
-    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
-    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
-    hyde: Optional[bool] = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
+    category: str | None = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: list[str] | None = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
+    hyde: bool | None = Field(default=None, description="HyDE — generate hypothetical answer for retrieval query")
 
 class RagFileChatRequest(BaseModel):
     """SSE-streaming RAG chat grounded in a single file."""
@@ -222,7 +231,7 @@ class RagFileQueryRequest(BaseModel):
     """One-shot retrieval over a single file's index."""
     target_file: str = Field(..., description="Relative path under knowledge base dir")
     question: str = Field(..., description="Query string")
-    top_k: Optional[int] = Field(default=None)
+    top_k: int | None = Field(default=None)
 
 class RagDecomposeRequest(BaseModel):
     """Sub-question decomposition over the knowledge index.
@@ -233,11 +242,11 @@ class RagDecomposeRequest(BaseModel):
     llama_index capability to the aiChat UI.
     """
     question: str = Field(..., description="Complex question to decompose")
-    scope: Optional[str] = Field(default=None, description="Optional file_path substring filter")
-    sub_q_top_k: Optional[int] = Field(default=None, description="Per-sub-question retrieval depth")
-    citations: Optional[bool] = Field(default=None, description="Override settings.rag_inline_citations_enabled for decompose path")
-    category: Optional[str] = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
-    tags: Optional[List[str]] = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
+    scope: str | None = Field(default=None, description="Optional file_path substring filter")
+    sub_q_top_k: int | None = Field(default=None, description="Per-sub-question retrieval depth")
+    citations: bool | None = Field(default=None, description="Override settings.rag_inline_citations_enabled for decompose path")
+    category: str | None = Field(default=None, description="MetadataFilter on frontmatter 'category' (TEXT_MATCH). Disables hybrid when set.")
+    tags: list[str] | None = Field(default=None, description="MetadataFilter on frontmatter 'tags' (TEXT_MATCH each, AND-combined). Disables hybrid when set.")
 
 # --- RSS Schemas ---
 class ParseRssRequest(BaseModel):
@@ -251,7 +260,7 @@ class ParseRssRequest(BaseModel):
         }
     """
     url: str = Field(..., description="RSS source URL")
-    name: Optional[str] = Field(None, description="Custom source name; auto-fetched if not provided")
+    name: str | None = Field(None, description="Custom source name; auto-fetched if not provided")
 
 class ParseAllRssRequest(BaseModel):
     """
@@ -262,7 +271,7 @@ class ParseAllRssRequest(BaseModel):
             "force": true
         }
     """
-    force: Optional[bool] = Field(False, description="Whether to force refresh")
+    force: bool | None = Field(False, description="Whether to force refresh")
 
 class SchedulerConfigRequest(BaseModel):
     """
@@ -275,10 +284,10 @@ class SchedulerConfigRequest(BaseModel):
             "interval": 3600
         }
     """
-    enabled: Optional[bool] = Field(None, description="Whether to enable the scheduler")
-    type: Optional[str] = Field(None, description="Schedule type: interval or cron")
-    interval: Optional[int] = Field(None, description="Interval in seconds; only valid for interval type")
-    cron: Optional[Dict[str, Any]] = Field(None, description="Cron expression configuration; only valid for cron type")
+    enabled: bool | None = Field(None, description="Whether to enable the scheduler")
+    type: str | None = Field(None, description="Schedule type: interval or cron")
+    interval: int | None = Field(None, description="Interval in seconds; only valid for interval type")
+    cron: dict[str, Any] | None = Field(None, description="Cron expression configuration; only valid for cron type")
 
 # --- WeWork Schemas ---
 class WeWorkWebhookRequest(BaseModel):
@@ -302,8 +311,8 @@ class StateRecord(BaseModel):
     key: str = Field(default="", description="Unique record identifier")
     record_type: str = Field(..., min_length=1, description="Record type, e.g., conversation_summary")
     title: str = Field(default="", description="Record title; used for text search")
-    payload: Dict[str, Any] = Field(default_factory=dict, description="Flexible business payload")
-    tags: List[str] = Field(default_factory=list, description="Tag list")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Flexible business payload")
+    tags: list[str] = Field(default_factory=list, description="Tag list")
     created_time: str = Field(default="", description="Creation time (ISO 8601)")
     updated_time: str = Field(default="", description="Update time (ISO 8601)")
 
@@ -311,9 +320,9 @@ class StateRecord(BaseModel):
 class SessionState(BaseModel):
     """Structured session state model"""
     key: str = Field(..., description="Must match the key in the sessions collection")
-    page_content: str = Field(default="", description="Corresponds to legacy pageContent")
-    messages: List[Dict[str, Any]] = Field(default_factory=list, description="Corresponds to legacy messages")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Extended metadata")
+    page_content: str = Field(default="", description="Page content for RAG context")
+    messages: list[dict[str, Any]] = Field(default_factory=list, description="Chat messages")
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Extended metadata")
     created_time: str = Field(default="")
     updated_time: str = Field(default="")
 
@@ -328,16 +337,16 @@ class SkillExecutionRecord(BaseModel):
     output_summary: str = Field(default="", max_length=2000, description="Output summary")
     error_message: str = Field(default="", max_length=4000, description="Error message")
     timestamp: str = Field(default="", description="Record time (ISO 8601)")
-    tags: List[str] = Field(default_factory=lambda: ["skill_execution"], description="Tags")
+    tags: list[str] = Field(default_factory=lambda: ["skill_execution"], description="Tags")
 
 
 class StateQueryRequest(BaseModel):
     """State record query request"""
-    record_type: Optional[str] = Field(None, description="Filter by record type")
-    tags: Optional[List[str]] = Field(None, description="Filter by tags")
-    title_contains: Optional[str] = Field(None, description="Fuzzy search on title")
-    created_after: Optional[str] = Field(None, description="Lower bound of creation time (ISO 8601)")
-    created_before: Optional[str] = Field(None, description="Upper bound of creation time (ISO 8601)")
+    record_type: str | None = Field(None, description="Filter by record type")
+    tags: list[str] | None = Field(None, description="Filter by tags")
+    title_contains: str | None = Field(None, description="Fuzzy search on title")
+    created_after: str | None = Field(None, description="Lower bound of creation time (ISO 8601)")
+    created_before: str | None = Field(None, description="Upper bound of creation time (ISO 8601)")
     page_num: int = Field(default=1, ge=1, description="Page number")
     page_size: int = Field(default=2000, ge=1, le=8000, description="Items per page")
 
@@ -346,4 +355,4 @@ class AdaptationResult(BaseModel):
     """Batch adaptation result"""
     success_count: int = Field(default=0, description="Number of successes")
     failure_count: int = Field(default=0, description="Number of failures")
-    errors: List[Dict[str, Any]] = Field(default_factory=list, description="Error details")
+    errors: list[dict[str, Any]] = Field(default_factory=list, description="Error details")

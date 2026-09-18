@@ -15,5 +15,5 @@ export const vWatermark: Directive = {
     } else {
       el.removeAttribute("data-watermark-disabled");
     }
-  },
+  }
 };

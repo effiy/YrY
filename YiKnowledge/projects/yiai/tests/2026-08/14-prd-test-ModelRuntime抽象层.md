@@ -1,49 +1,28 @@
 ---
 doc_type: test
-title: "YA-08-15: ModelRuntime 抽象层 — Pi 风格的多 Provider 统一流式接口 — 测试规格"
-status: 待开始
+title: "YA-08-14: ModelRuntime 抽象层 — 测试规格"
+status: 已完成
 priority: P1
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-16
 project: YiAi
 project_id: yiai
 prd_month: "202608"
-prd_task_id: "YA-08-15"
+prd_task_id: "YA-08-14"
 source_prds: ["14-需求-ModelRuntime抽象层"]
-source_modules: []
----
-# YA-08-15: ModelRuntime 抽象层 — Pi 风格的多 Provider 统一流式接口 — 测试规格
-
-> 来源 PRD：[14-需求-ModelRuntime抽象层.md](../../prds/2026-08/14-需求-ModelRuntime抽象层.md)
-> 提取日期：2026-09-11
-
+source_modules: ["14-prd-task-ModelRuntime抽象层"]
+source_okr: [yiai-002]
 ---
 
-## 测试场景
+# YA-08-14: ModelRuntime 抽象层 — 测试规格
 
-### 功能验证
+| 编号 | 用例 | 预期 |
+|------|------|------|
+| UT-MR-01 | stream_chat Ollama | 流式返回 token |
+| UT-MR-02 | stream_chat DeepSeek | OpenAI 格式 SSE 正确解析 |
+| UT-MR-03 | primary 故障→fallback | Ollama 不可用 → 自动切换 DeepSeek |
+| UT-MR-04 | 双 Provider 均不可用→错误 | 无可用 Provider → ProviderError |
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
-
-### 边界测试
-
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
-
-### 异常测试
-
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+---

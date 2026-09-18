@@ -116,7 +116,7 @@ class RequestHttp {
           type: "API",
           error: new Error(friendlyMessage),
           url: error.config?.url,
-          timestamp: Date.now(),
+          timestamp: Date.now()
         });
 
         if (!window.navigator.onLine) router.replace("/500");

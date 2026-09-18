@@ -6,23 +6,8 @@
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import {
-  getBugList,
-  getBug,
-  createBug,
-  updateBug,
-  deleteBug,
-  readBugContent
-} from "@/api/modules/bug";
-import type {
-  BugDocument,
-  BugContent,
-  BugSeverity,
-  BugPriority,
-  BugStatus,
-  BugType,
-  BugFrequency
-} from "@/api/modules/bug";
+import { getBugList, getBug, createBug, updateBug, deleteBug, readBugContent } from "@/api/modules/bug";
+import type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency } from "@/api/modules/bug";
 
 export type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency };
 
@@ -32,8 +17,12 @@ function newKey(): string {
 
 const _VALID_STATUSES = new Set<string>(["open", "in_progress", "resolved", "closed", "rejected", "reopened"]);
 const _STATUS_NORMALIZE: Record<string, BugStatus> = {
-  "Open": "open", "In Progress": "in_progress", "Resolved": "resolved",
-  "Closed": "closed", "Rejected": "rejected", "Reopened": "reopened"
+  Open: "open",
+  "In Progress": "in_progress",
+  Resolved: "resolved",
+  Closed: "closed",
+  Rejected: "rejected",
+  Reopened: "reopened"
 };
 
 function normalizeStatus(raw: string | undefined | null): BugStatus {

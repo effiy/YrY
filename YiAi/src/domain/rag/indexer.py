@@ -17,24 +17,23 @@ Public surface:
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timezone
 import logging
 import os
 import re
 import shutil
 import time
-from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import yaml
 
-from shared.config import settings
-
 from domain.rag.settings import ensure_settings_configured
+from shared.config import settings
 
 logger = logging.getLogger(__name__)
 
-_kb_index: Optional[Any] = None           # VectorStoreIndex singleton
-_kb_index_built_at: Optional[str] = None  # ISO-ish timestamp string
+_kb_index: Any | None = None           # VectorStoreIndex singleton
+_kb_index_built_at: str | None = None  # ISO-ish timestamp string
 _kb_doc_count: int = 0
 
 # Serialize index mutations so incremental refresh and full rebuild never
@@ -42,8 +41,8 @@ _kb_doc_count: int = 0
 _index_lock = asyncio.Lock()
 
 # Category cache globals
-_last_categories_scan: Optional[float] = None
-_cached_categories: Optional[Dict[str, Any]] = None
+_last_categories_scan: float | None = None
+_cached_categories: dict[str, Any] | None = None
 
 # Matches leading YAML frontmatter delimited by `---` lines. CRLF tolerant.
 _FRONTMATTER_RE = re.compile(r"^---\s*\r?\n(.*?)\r?\n---\s*\r?\n?(.*)$", re.DOTALL)
@@ -77,7 +76,7 @@ def _extract_frontmatter(doc: Any) -> None:
     for k, v in parsed.items():
         if k in _RESERVED_META_KEYS:
             continue
-        if isinstance(v, (str, int, float, bool, list)):
+        if isinstance(v, str | int | float | bool | list):
             doc.metadata[k] = v
     if "category" in parsed and isinstance(parsed["category"], str):
         doc.metadata["category"] = parsed["category"]
@@ -136,8 +135,8 @@ def build_kb_index() -> Any:
     fixed-size chunking for the same embedding cost.
     """
     global _kb_index, _kb_index_built_at, _kb_doc_count
-    from llama_index.core import VectorStoreIndex, StorageContext
-    from llama_index.core.node_parser import SentenceWindowNodeParser, SentenceSplitter
+    from llama_index.core import StorageContext, VectorStoreIndex
+    from llama_index.core.node_parser import SentenceSplitter, SentenceWindowNodeParser
 
     ensure_settings_configured()
     persist = _persist_dir()
@@ -146,6 +145,17 @@ def build_kb_index() -> Any:
     os.makedirs(persist, exist_ok=True)
 
     docs = _load_kb_documents()
+    # Exclude noisy directories (RSS feed dumps, etc.) from the index.
+    # Controlled by rag_exclude_dirs in config.yaml — empty list to index all.
+    exclude = getattr(settings, "rag_exclude_dirs", None) or []
+    if exclude:
+        before = len(docs)
+        base = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
+        docs = [d for d in docs if not any(
+            os.path.relpath(d.metadata.get("file_path", ""), base).startswith(f"{ed}{os.sep}")
+            for ed in exclude
+        )]
+        logger.info(f"RAG index: excluded {before - len(docs)} docs in {exclude}, kept {len(docs)}")
     for d in docs:
         rel = _to_rel_file_path(d)
         if rel:
@@ -227,7 +237,7 @@ def _load_specific_documents(base: str, rel_paths: list) -> list:
     return docs
 
 
-def refresh_index_for_changes(added: list, removed: list, changed: list) -> Dict[str, Any]:
+def refresh_index_for_changes(added: list, removed: list, changed: list) -> dict[str, Any]:
     """Apply incremental file-level updates to the existing KB index.
 
     ``added`` / ``removed`` / ``changed`` are lists of relative paths under
@@ -307,8 +317,14 @@ def _count_ref_docs(persist_dir: str) -> int:
         with open(docstore, encoding="utf-8") as f:
             data = json.load(f)
         return len(data.get("docstore/data", {})) if isinstance(data, dict) else 0
-    except Exception:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, TypeError, AttributeError):
         return 0
+
+
+def is_index_available() -> bool:
+    """Return ``True`` when a persisted index exists on disk (no build trigger)."""
+    persist = _persist_dir()
+    return os.path.isdir(persist) and bool(_kb_index is not None or any(os.scandir(persist)))
 
 
 def get_kb_index() -> Any:
@@ -334,7 +350,7 @@ async def preload_kb_index() -> None:
     await asyncio.to_thread(load_kb_index)
 
 
-def rag_status() -> Dict[str, Any]:
+def rag_status() -> dict[str, Any]:
     persist = _persist_dir()
     built = _kb_index is not None or (
         os.path.isdir(persist) and any(os.scandir(persist))
@@ -349,7 +365,7 @@ def rag_status() -> Dict[str, Any]:
                         persist_dir_size += os.path.getsize(os.path.join(dirpath, f))
                     except OSError:
                         pass
-        except Exception:
+        except OSError:
             logger.debug("Failed to get persist dir size", exc_info=True)
 
     return {
@@ -380,7 +396,7 @@ def rag_status() -> Dict[str, Any]:
     }
 
 
-def _check_ollama_sync() -> Dict[str, Any]:
+def _check_ollama_sync() -> dict[str, Any]:
     """Check if Ollama is reachable and the configured model is available."""
     try:
         import requests
@@ -418,7 +434,7 @@ def build_file_index(abs_path: str) -> Any:
     return VectorStoreIndex.from_documents(docs, show_progress=False)
 
 
-def rag_categories() -> Dict[str, Any]:
+def rag_categories() -> dict[str, Any]:
     """Return available categories and tag counts from the knowledge base.
 
     Scans the knowledge base dir for top-level folders (categories)

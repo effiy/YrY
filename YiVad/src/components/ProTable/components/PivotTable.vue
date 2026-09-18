@@ -49,18 +49,18 @@ const colField = ref("");
 const valueField = ref("");
 const aggregation = ref<"sum" | "count" | "avg" | "max" | "min">("sum");
 
-const numericFields = computed(() => props.fields.filter((f) => props.data.some((r) => typeof r[f] === "number")));
+const numericFields = computed(() => props.fields.filter(f => props.data.some(r => typeof r[f] === "number")));
 
 const pivotReady = computed(() => rowField.value && colField.value && valueField.value);
 
 const pivotResult = computed(() => {
   if (!pivotReady.value) return { columns: [], rows: [] };
 
-  const rowValues = [...new Set(props.data.map((r) => String(r[rowField.value] ?? "")))].sort();
-  const colValues = [...new Set(props.data.map((r) => String(r[colField.value] ?? "")))].sort();
+  const rowValues = [...new Set(props.data.map(r => String(r[rowField.value] ?? "")))].sort();
+  const colValues = [...new Set(props.data.map(r => String(r[colField.value] ?? "")))].sort();
 
   const cells = new Map<string, number[]>();
-  props.data.forEach((r) => {
+  props.data.forEach(r => {
     const rk = String(r[rowField.value] ?? "");
     const ck = String(r[colField.value] ?? "");
     const v = Number(r[valueField.value]);
@@ -69,9 +69,9 @@ const pivotResult = computed(() => {
     if (!isNaN(v)) cells.get(key)!.push(v);
   });
 
-  const rows = rowValues.map((rv) => {
+  const rows = rowValues.map(rv => {
     const row: Record<string, any> = { __rowLabel: rv };
-    colValues.forEach((cv) => {
+    colValues.forEach(cv => {
       const vals = cells.get(`${rv}::${cv}`) ?? [];
       if (aggregation.value === "sum") row[cv] = vals.reduce((a, b) => a + b, 0);
       else if (aggregation.value === "count") row[cv] = vals.length;
@@ -93,14 +93,17 @@ const pivotData = computed(() => pivotResult.value.rows);
 .pivot-table {
   &__config {
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 16px;
-    flex-wrap: wrap;
     &-item {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      label { font-size: 12px; font-weight: 500; }
+      label {
+        font-size: 12px;
+        font-weight: 500;
+      }
     }
   }
 }

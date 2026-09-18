@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-143"
 source_prds: ["149-需求-Session分析与洞察"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-143: Session 分析与洞察 — 会话分析 + 自动标签 + 用户参与度 + 异常检测 + 数据导出 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[149-需求-Session分析与洞察.md](../../prds/2026-09/149-需求-Session分析与洞察.md)
 > 提取日期：2026-09-11

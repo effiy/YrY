@@ -27,7 +27,7 @@ export function createDebouncedValidator(
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   return (value: any): Promise<boolean> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(async () => {
         try {

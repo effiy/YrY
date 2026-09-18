@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-04: RAG 检索质量监控 — 空结果告警与维度检测"
 tags: [需求文档, 知识库, RAG, 监控, 质量]
 category: 项目/管理后台/需求
 created: 2026-09-07
-updated: 2026-09-10
+updated: 2026-09-15
 source: 内部
 type: 需求
 status: 待开发
@@ -17,9 +18,17 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer, srer]
+source_okr: [yiknowledge-001]
+related_modules: [07-prd-task-RAG检索质量]
+related_tests: [07-prd-test-RAG检索质量]
+implementation_progress: 待开发
+implementation_updated: '2026-09-15'
 ---
 
 # YK-09-04: RAG 检索质量监控 — 空结果告警与维度检测
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/07-prd-task-RAG检索质量.md)，验证方案见 [测试方案](../../tests/2026-09/07-prd-test-RAG检索质量.md)。
 
 > 需求编号：YK-09-04 · 优先级：P1 · 人天：3.0d · 状态：待开发
 > 依赖：YK-09-01（Frontmatter 质量治理）、YK-09-02（文件同步可靠性）

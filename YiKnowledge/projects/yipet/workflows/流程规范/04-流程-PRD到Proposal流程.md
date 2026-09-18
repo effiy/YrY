@@ -3,9 +3,11 @@ title: PRD 到 Proposal 流程
 tags: [yipet, workflow, prd, proposal, openspec]
 category: projects/yipet/workflows
 created: 2026-09-07
-updated: 2026-09-10
+updated: 2026-09-15
 source: YiPet
 type: workflow
+roles: [engineer]
+benefit: "需求→Proposal 三层提炼：结构化提取→代码库碰撞→组装提案"
 status: active
 ---
 
@@ -69,7 +71,7 @@ proposal.md
 | 搜现有模块 | 代码中是否已有类似功能/组件（`src/`） | 影响范围 |
 | 搜 API | 是否已有可复用 ApiClient 方法 | 依赖 + API 变更 |
 | 搜 i18n/Chrome API | 已有语言 key 和 Chrome API 权限 | 依赖模块 |
-| 搜 spec | `YiKnowledge/projects/yipet/specs/` 中的已有规范 | 规范引用 |
+| 搜 spec | `YiKnowledge/projects/yipet/workflows/` 中的已有规范 | 规范引用 |
 
 ### 搜索清单
 
@@ -80,7 +82,7 @@ proposal.md
 - **Store**：`src/stores/` 中是否有相关状态
 - **国际化**：`src/locales/` 中是否有已有 key
 - **Chrome API**：`manifest.json` 中已有权限声明
-- **规范**：`YiKnowledge/projects/yipet/specs/` 中相关规范
+- **规范**：`YiKnowledge/projects/yipet/workflows/` 中相关规范
 
 ## 第三层：组装 Proposal
 
@@ -136,12 +138,12 @@ proposal.md
 
 | 模块类型 | 遵循规范 | 核心模式 |
 |----------|----------|----------|
-| Content Script | `specs/architecture/extension-arch/规范.md` | MAIN world + DOM 操作 |
-| Service Worker | `specs/architecture/extension-arch/规范.md` | ISOLATED world + chrome.* API |
-| API 调用 | `specs/architecture/api/规范.md` | ApiClient 四层封装 |
-| 聊天组件 | `specs/patterns/chat-controller/规范.md` | Chat Store（Pinia）状态管理 |
-| IPC 通信 | `specs/architecture/extension-arch/规范.md` | IPC Relay（action-based + dispatchSecureEvent + IPC_SECRET） |
-| 国际化 | `specs/architecture/i18n/规范.md` | Vue-i18n + chrome.i18n |
+| Content Script | [扩展架构](../架构设计/02-架构-扩展架构.md) | MAIN world + DOM 操作 |
+| Service Worker | [扩展架构](../架构设计/02-架构-扩展架构.md) | ISOLATED world + chrome.* API |
+| API 调用 | [API 架构与规范](../开发规范/05-规范-API架构与规范.md) | ApiClient 四层封装 |
+| 聊天组件 | [Chat Store 状态管理](../功能模式/01-模式-ChatStore状态管理.md) | Pinia 状态管理 |
+| IPC 通信 | [IPC 跨世界通信](../架构设计/06-架构-IPC跨世界通信.md) | IPC_SECRET + dispatchSecureEvent |
+| 国际化 | [国际化](../开发规范/08-规范-国际化.md) | chrome.i18n + t() |
 
 ### 强制约束检查
 
@@ -149,7 +151,7 @@ proposal.md
 - Chrome API 调用区分 ISOLATED 和 MAIN world 执行边界
 - Content Script 和 Service Worker 不共享状态
 - IPC Relay 消息必须通过 IPC_SECRET + 时间戳验证（3 层：来源标记、签名匹配、5 秒过期）
-- 所有文本必须使用国际化（Vue-i18n）
+- 所有文本必须使用国际化（chrome.i18n）
 - 参数名遵守跨项目 RPC 契约（`filter` 而非 `query`，`target_file` 而非 `path`）
 - SSE 流式响应有断连检测和 token 缓冲
 

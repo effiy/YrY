@@ -25,22 +25,13 @@
     </section>
 
     <!-- ═══ Bug List by Category ═══ -->
-    <section
-      v-for="group in categoryGroups"
-      :key="group.category"
-      class="db-section"
-    >
+    <section v-for="group in categoryGroups" :key="group.category" class="db-section">
       <div class="db-toolbar">
         <h3 class="db-section__title">{{ group.category }}</h3>
         <span class="db-card__total">{{ $t("project.stats.total", { n: group.items.length }) }}</span>
       </div>
       <div class="db-card">
-        <div
-          v-for="bug in group.items"
-          :key="bug.path"
-          class="db-bug-row"
-          @click="openDoc(bug)"
-        >
+        <div v-for="bug in group.items" :key="bug.path" class="db-bug-row" @click="openDoc(bug)">
           <div class="db-bug-row__left">
             <span
               class="db-bug-row__severity"
@@ -50,11 +41,7 @@
             <span class="db-bug-row__title">{{ bug.title }}</span>
           </div>
           <div class="db-bug-row__right">
-            <el-tag
-              :type="statusTagType(bug.status)"
-              size="small"
-              effect="plain"
-            >{{ bug.status || "open" }}</el-tag>
+            <el-tag :type="statusTagType(bug.status)" size="small" effect="plain">{{ bug.status || "open" }}</el-tag>
             <span class="db-bug-row__module" v-if="bug.module">{{ bug.module }}</span>
             <span class="db-bug-row__date">{{ formatDate(bug.updated) }}</span>
           </div>
@@ -121,24 +108,18 @@ const bugs = computed<BugFile[]>(() => {
         assignee: String(m.assignee || ""),
         reporter: String(m.reporter || ""),
         created: String(m.created || ""),
-        updated: String(m.updated || ""),
+        updated: String(m.updated || "")
       };
     })
     .sort((a, b) => (b.updated || "").localeCompare(a.updated || ""));
 });
 
 // ── Derived stats ──
-const openCount = computed(() =>
-  bugs.value.filter(b => b.status === "open" || b.status === "reopened").length
-);
+const openCount = computed(() => bugs.value.filter(b => b.status === "open" || b.status === "reopened").length);
 
-const criticalCount = computed(() =>
-  bugs.value.filter(b => b.severity === "critical" || b.severity === "major").length
-);
+const criticalCount = computed(() => bugs.value.filter(b => b.severity === "critical" || b.severity === "major").length);
 
-const resolvedCount = computed(() =>
-  bugs.value.filter(b => b.status === "resolved" || b.status === "closed").length
-);
+const resolvedCount = computed(() => bugs.value.filter(b => b.status === "resolved" || b.status === "closed").length);
 
 const resolvedRate = computed(() => {
   if (!bugs.value.length) return 0;
@@ -164,11 +145,17 @@ const categoryGroups = computed(() => {
 // ── Helpers ──
 function statusTagType(s: string): "success" | "warning" | "info" | "primary" | "danger" {
   switch (s) {
-    case "open": return "danger";
-    case "reopened": return "warning";
-    case "in_progress": return "primary";
-    case "resolved": case "closed": return "success";
-    default: return "info";
+    case "open":
+      return "danger";
+    case "reopened":
+      return "warning";
+    case "in_progress":
+      return "primary";
+    case "resolved":
+    case "closed":
+      return "success";
+    default:
+      return "info";
   }
 }
 
@@ -188,21 +175,20 @@ function openDoc(bug: BugFile) {
   flex-direction: column;
   gap: 24px;
 }
-
 .db-section__title {
   margin: 0 0 12px;
   font-size: 14px;
   font-weight: 700;
   color: var(--el-text-color-primary);
 }
-
 .db-toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
-
-  .db-section__title { margin: 0; }
+  .db-section__title {
+    margin: 0;
+  }
 }
 
 // ── Stats row ──
@@ -210,38 +196,40 @@ function openDoc(bug: BugFile) {
   display: flex;
   padding: 12px 0 8px;
 }
-
 .db-stat {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
   gap: 3px;
-  padding: 0 14px;
+  align-items: center;
   min-width: 0;
-
-  & + & { border-left: 1px solid var(--el-border-color-extra-light); }
+  padding: 0 14px;
+  & + & {
+    border-left: 1px solid var(--el-border-color-extra-light);
+  }
 }
-
 .db-stat__value {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 22px;
   font-weight: 800;
-  font-family: "SF Mono", Menlo, monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--el-text-color-primary);
-
-  &--warn    { color: #e6a23c; }
-  &--danger  { color: #f56c6c; }
-  &--success { color: #67c23a; }
+  &--warn {
+    color: #e6a23c;
+  }
+  &--danger {
+    color: #f56c6c;
+  }
+  &--success {
+    color: #67c23a;
+  }
 }
-
 .db-stat__label {
   font-size: 11px;
   font-weight: 600;
   color: var(--el-text-color-secondary);
 }
-
 .db-stat__sub {
   font-size: 10px;
   color: var(--el-text-color-placeholder);
@@ -249,11 +237,10 @@ function openDoc(bug: BugFile) {
 
 // ── Card ──
 .db-card {
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
-
   &__total {
     font-size: 11px;
     font-weight: 400;
@@ -264,67 +251,70 @@ function openDoc(bug: BugFile) {
 // ── Bug row ──
 .db-bug-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 16px;
   cursor: pointer;
   transition: background 0.15s;
-
-  & + & { border-top: 1px solid var(--el-border-color-extra-light); }
-
-  &:hover { background: var(--el-fill-color-light); }
+  & + & {
+    border-top: 1px solid var(--el-border-color-extra-light);
+  }
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
 }
-
 .db-bug-row__left {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
   flex: 1;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
 }
-
 .db-bug-row__severity {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
-
-  &--critical { background: #f56c6c; }
-  &--major    { background: #e6a23c; }
-  &--minor    { background: #409eff; }
-  &--trivial  { background: #909399; }
+  &--critical {
+    background: #f56c6c;
+  }
+  &--major {
+    background: #e6a23c;
+  }
+  &--minor {
+    background: #409eff;
+  }
+  &--trivial {
+    background: #909399;
+  }
 }
-
 .db-bug-row__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .db-bug-row__right {
   display: flex;
-  align-items: center;
-  gap: 12px;
   flex-shrink: 0;
+  gap: 12px;
+  align-items: center;
   margin-left: 16px;
 }
-
 .db-bug-row__module {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  font-family: "SF Mono", Menlo, monospace;
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.db-bug-row__date {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
   color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+}
+.db-bug-row__date {
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
 }
 </style>

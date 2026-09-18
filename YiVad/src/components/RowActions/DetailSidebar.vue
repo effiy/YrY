@@ -33,7 +33,10 @@ const startResize = (e: MouseEvent) => {
     const w = startWidth - (ev.clientX - startX);
     panelWidth.value = Math.max(320, Math.min(800, w));
   };
-  const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
+  const onUp = () => {
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+  };
   document.addEventListener("mousemove", onMove);
   document.addEventListener("mouseup", onUp);
 };
@@ -46,34 +49,52 @@ const startResize = (e: MouseEvent) => {
   right: 0;
   bottom: 0;
   z-index: 2000;
-  background: var(--el-bg-color);
-  border-left: 1px solid var(--el-border-color);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
+  background: var(--el-bg-color);
+  border-left: 1px solid var(--el-border-color);
+  box-shadow: -4px 0 16px rgb(0 0 0 / 8%);
   &__header {
     display: flex;
-    align-items: center;
+    flex-shrink: 0;
     gap: 8px;
+    align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid var(--el-border-color-lighter);
-    flex-shrink: 0;
   }
-  &__title { font-weight: 600; font-size: 15px; flex: 1; }
-  &__nav { display: flex; align-items: center; }
+  &__title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  &__nav {
+    display: flex;
+    align-items: center;
+  }
   &__resize-handle {
     position: absolute;
-    left: 0;
     top: 0;
     bottom: 0;
+    left: 0;
     width: 4px;
     cursor: col-resize;
-    &:hover { background: var(--el-color-primary); opacity: 0.3; }
+    &:hover {
+      background: var(--el-color-primary);
+      opacity: 0.3;
+    }
   }
-  &__body { flex: 1; overflow-y: auto; padding: 16px; }
+  &__body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+  }
 }
 .slide-right-enter-active,
-.slide-right-leave-active { transition: transform 0.3s ease; }
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
 .slide-right-enter-from,
-.slide-right-leave-to { transform: translateX(100%); }
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
 </style>

@@ -7,9 +7,8 @@ Runs periodic aggregation jobs to populate pre-computed metrics collections:
 
 from __future__ import annotations
 
-import logging
-
 from datetime import datetime
+import logging
 
 from data.database import db
 
@@ -94,9 +93,3 @@ async def collect_quality_snapshot() -> None:
 
     except Exception:
         logger.exception("Failed to collect quality snapshot")
-
-
-def create_indexes() -> None:
-    """Ensure indexes exist on analytics collections (called at app startup)."""
-    # Will be called synchronously, so we register them as background tasks
-    pass

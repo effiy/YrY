@@ -9,6 +9,7 @@
  */
 import { computed, onMounted, ref, watch } from 'vue';
 import { useChatStore } from '../../stores/chat';
+import { t } from '@/shared/i18n';
 
 const emit = defineEmits<{ back: [] }>();
 
@@ -562,7 +563,7 @@ watch(() => curSession.value, () => {
 <template>
   <div class="cfp-panel">
     <div class="cfp-header">
-      <button type="button" class="cfp-back" title="Back to sessions" @click="emit('back')">&larr; Sessions</button>
+      <button type="button" class="cfp-back" :title="t('contextBackToSessions')" @click="emit('back')">&larr; Sessions</button>
       <span class="cfp-title">
         Context files
         <span v-if="fileCount" class="cfp-count">{{ fileCount }}</span>
@@ -588,7 +589,7 @@ watch(() => curSession.value, () => {
       <!-- Title -->
       <div class="cfp-field">
         <label class="cfp-label">Title</label>
-        <input v-model="sessionTitle" type="text" class="cfp-input" placeholder="Session title" @change="onSave()" />
+        <input v-model="sessionTitle" type="text" class="cfp-input" :placeholder="t('contextSessionTitle')" @change="onSave()" />
       </div>
 
       <!-- Search -->
@@ -676,14 +677,14 @@ watch(() => curSession.value, () => {
             type="button"
             class="cfp-item-act cfp-item-save"
             :class="{ 'is-saved': savedToKB.has(item.node.path) }"
-            :title="savedToKB.has(item.node.path) ? 'Saved to knowledge base' : 'Save to knowledge base'"
+            :title="savedToKB.has(item.node.path) ? t('contextSavedToKB') : t('contextSaveToKB')"
             :disabled="savingToKB.has(item.node.path)"
             @click="saveFileToKB(item.node)"
           >{{ savedToKB.has(item.node.path) ? '&#x2714;' : '&#x1F4BE;' }}</button>
           <button
             type="button"
             class="cfp-item-act cfp-item-remove"
-            title="Remove"
+            :title="t('chatRemove')"
             @click="removeContextNode(item.node.key)"
           >&#x2716;</button>
         </div>

@@ -38,7 +38,7 @@ function mapModuleFile(f: KnowledgeFileEntry): YiKnowledgeModule {
   const parts = f.path.split("/");
   const month = parts.length >= 4 ? parts[parts.length - 2] : "";
   const meta = f.meta || {};
-  const seq = (f.name.match(/^(\d+)/)?.[1]) || "";
+  const seq = f.name.match(/^(\d+)/)?.[1] || "";
   return {
     title: (meta?.title as string) || f.name.replace(/\.md$/, ""),
     path: f.path,
@@ -47,10 +47,10 @@ function mapModuleFile(f: KnowledgeFileEntry): YiKnowledgeModule {
     owner: (meta?.owner as string) || "",
     prd_task_id: (meta?.prd_task_id as string) || "",
     source_prd: (meta?.source_prd as string) || "",
-    related_tests: Array.isArray(meta?.related_tests) ? meta.related_tests as string[] : [],
+    related_tests: Array.isArray(meta?.related_tests) ? (meta.related_tests as string[]) : [],
     prd_month: month,
     estimate_frontend: (meta?.estimate_frontend as number) || 0,
-    seq,
+    seq
   };
 }
 
@@ -71,11 +71,7 @@ export function useYiKnowledgeModules(): UseYiKnowledgeModulesReturn {
   function deriveFrom(files: KnowledgeFileEntry[], projectKey: string) {
     const prefixes = MODULE_DIRS.map(d => `projects/${projectKey}/${d}/`);
     allItems.value = files
-      .filter(f =>
-        f.path.endsWith(".md") &&
-        f.name !== "README.md" &&
-        prefixes.some(p => f.path.startsWith(p))
-      )
+      .filter(f => f.path.endsWith(".md") && f.name !== "README.md" && prefixes.some(p => f.path.startsWith(p)))
       .map(mapModuleFile)
       .sort((a, b) => {
         const monthCmp = (b.prd_month || "").localeCompare(a.prd_month || "");

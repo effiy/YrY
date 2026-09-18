@@ -7,9 +7,7 @@
       </div>
       <div class="header-info">
         <h1 class="header-name">Forward Deployed Engineer</h1>
-        <p class="header-tagline">
-          Technical Special Forces &mdash; between SWE, AI Architect, and Strategy Consultant
-        </p>
+        <p class="header-tagline">Technical Special Forces &mdash; between SWE, AI Architect, and Strategy Consultant</p>
         <div class="header-meta">
           <el-tag type="primary" effect="dark" round>FDE</el-tag>
           <el-tag effect="plain" round>Glue Code, Not Feature Code</el-tag>
@@ -29,28 +27,40 @@
           <el-icon :size="20" color="#409eff"><Aim /></el-icon>
           <div>
             <strong>The Delta</strong>
-            <p>Bridge the gap between product out-of-the-box capability and the customer's mission. Write glue code that stitches modern SaaS/AI into legacy, messy reality.</p>
+            <p>
+              Bridge the gap between product out-of-the-box capability and the customer's mission. Write glue code that stitches
+              modern SaaS/AI into legacy, messy reality.
+            </p>
           </div>
         </div>
         <div class="summary-item">
           <el-icon :size="20" color="#67c23a"><Connection /></el-icon>
           <div>
             <strong>Embedded Engineering</strong>
-            <p>Hold customer credentials, join customer Slack, submit directly to customer production. Not remote advice — on the ground, in the environment.</p>
+            <p>
+              Hold customer credentials, join customer Slack, submit directly to customer production. Not remote advice — on the
+              ground, in the environment.
+            </p>
           </div>
         </div>
         <div class="summary-item">
           <el-icon :size="20" color="#e6a23c"><TrendCharts /></el-icon>
           <div>
             <strong>Productized Consulting</strong>
-            <p>Solve customer-unique problems with code, abstract solutions back into the core product. Make yourself redundant — the system runs itself after FDE exit.</p>
+            <p>
+              Solve customer-unique problems with code, abstract solutions back into the core product. Make yourself redundant —
+              the system runs itself after FDE exit.
+            </p>
           </div>
         </div>
         <div class="summary-item">
           <el-icon :size="20" color="#f56c6c"><Opportunity /></el-icon>
           <div>
             <strong>80/20 Value Scoping</strong>
-            <p>Identify the 20% of features that solve 80% of pain points. No gold-plating. Every integration connects to a business measurement.</p>
+            <p>
+              Identify the 20% of features that solve 80% of pain points. No gold-plating. Every integration connects to a
+              business measurement.
+            </p>
           </div>
         </div>
       </div>
@@ -226,13 +236,7 @@
             <h4>{{ adr.title }}</h4>
             <p>{{ adr.summary }}</p>
             <div class="adr-dimensions">
-              <el-tag
-                v-for="dim in adr.dimensions"
-                :key="dim"
-                size="small"
-                effect="plain"
-                round
-              >
+              <el-tag v-for="dim in adr.dimensions" :key="dim" size="small" effect="plain" round>
                 {{ dim }}
               </el-tag>
             </div>
@@ -305,7 +309,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="knowledgeResume">
 import { reactive, type Component } from "vue";
 import {
   Aim,
@@ -321,7 +325,7 @@ import {
   Search,
   Document,
   Monitor,
-  Lock,
+  Lock
 } from "@element-plus/icons-vue";
 
 type TagType = "success" | "warning" | "info" | "primary" | "danger";
@@ -350,8 +354,8 @@ const methodologies = reactive<MethodologyItem[]>([
       "Data Landscape: source systems, data gravity, known quality issues",
       "Technical/Security: identity, connectivity, exfiltration risks",
       "Delta: product gap + proposed glue code",
-      "Quick Win: falsifiable Week 2 goal (e.g., Agent Search 90% recall)",
-    ],
+      "Quick Win: falsifiable Week 2 goal (e.g., Agent Search 90% recall)"
+    ]
   },
   {
     phase: "Phase 2",
@@ -365,8 +369,8 @@ const methodologies = reactive<MethodologyItem[]>([
       "Pyramid Principle: conclusion → 3 pillars → data, not the reverse",
       "MECE: Mutually Exclusive, Collectively Exhaustive decomposition",
       "Trusted Advisor: Trust = (Credibility + Reliability + Intimacy) / Self-Orientation",
-      "Three Whys: System of Record → Cost of Inaction → Day 2 owner",
-    ],
+      "Three Whys: System of Record → Cost of Inaction → Day 2 owner"
+    ]
   },
   {
     phase: "Phase 3",
@@ -380,8 +384,8 @@ const methodologies = reactive<MethodologyItem[]>([
       "30-day anchoring: prove value, not 90 days",
       "Minimum component set: Cloud Run + BigQuery, not GKE + streaming",
       "Phased Delivery: MVP → Scale → Optimize",
-      "FinOps anchored: cost observable, not burning blindly",
-    ],
+      "FinOps anchored: cost observable, not burning blindly"
+    ]
   },
   {
     phase: "Phase 4",
@@ -395,8 +399,8 @@ const methodologies = reactive<MethodologyItem[]>([
       "In-Scope: every deliverable measurable",
       "Out-of-Scope: explicit — legacy AS400 deferred to Q3",
       "Acceptance Criteria: >90% recall, <5s latency, 0% hallucination",
-      "Anti-Scope-Creep: changes go through change request, no verbal agreements",
-    ],
+      "Anti-Scope-Creep: changes go through change request, no verbal agreements"
+    ]
   },
   {
     phase: "Phase 5",
@@ -410,8 +414,8 @@ const methodologies = reactive<MethodologyItem[]>([
       "K3s + Ollama/vLLM + Iron Bank + Cosign + Vault + Chrony",
       "One-way Data Diode / CDS for cross-domain data flow",
       "Image hardening: distroless, no shell = no pivot",
-      "Day -7 drill: 4 classes of pitfall injection in mirrored env",
-    ],
+      "Day -7 drill: 4 classes of pitfall injection in mirrored env"
+    ]
   },
   {
     phase: "Phase 6",
@@ -425,9 +429,9 @@ const methodologies = reactive<MethodologyItem[]>([
       "Internal Owner: identified in Week 1, no owner = project death",
       "Run Team training: transfer 1st-line support to customer Ops",
       "Monitoring: Prediction Drift + Feature Attribution + Latency + Error Rate",
-      "30/60/90-day follow-up spot audits after handover",
-    ],
-  },
+      "30/60/90-day follow-up spot audits after handover"
+    ]
+  }
 ]);
 
 interface AdrItem {
@@ -448,7 +452,7 @@ const adrs = reactive<AdrItem[]>([
     statusType: "success",
     summary:
       "Delta items managed as SOW attachment contracts with 4 mandatory fields: proposal glue + business metric + exit criteria + owner. Changes go through change request, not product backlog.",
-    dimensions: ["Legal Traceability", "Exit Criteria", "Scope-Creep Control", "Renewal Evidence"],
+    dimensions: ["Legal Traceability", "Exit Criteria", "Scope-Creep Control", "Renewal Evidence"]
   },
   {
     id: "ADR-Fde-Two-Loop-Eval-Gate",
@@ -457,7 +461,7 @@ const adrs = reactive<AdrItem[]>([
     statusType: "success",
     summary:
       "Inner Loop (ADK dev-time + golden dataset + 3 metrics) + Outer Loop (Pairwise + RAG triad + Model Monitoring). Failing either gate = no launch. No more vibes-test.",
-    dimensions: ["Inner Loop", "Outer Loop", "Pairwise", "RAG Triad", "Golden Dataset"],
+    dimensions: ["Inner Loop", "Outer Loop", "Pairwise", "RAG Triad", "Golden Dataset"]
   },
   {
     id: "ADR-Fde-Hybrid-Search-Mandatory",
@@ -466,7 +470,7 @@ const adrs = reactive<AdrItem[]>([
     statusType: "success",
     summary:
       "All enterprise RAG deploys must use hybrid search (semantic + BM25 + cross-encoder rerank). Pure semantic recall on industry terms <60%; hybrid reaches 95%+.",
-    dimensions: ["BM25", "Semantic", "Cross-Encoder", "Citation", "95%+ Recall"],
+    dimensions: ["BM25", "Semantic", "Cross-Encoder", "Citation", "95%+ Recall"]
   },
   {
     id: "ADR-Fde-Air-Gap-First",
@@ -476,208 +480,189 @@ const adrs = reactive<AdrItem[]>([
     summary:
       "Compliance-driven customers (DoD IL4+, FedRAMP High, ITAR, CMMC L2+) default to air-gap-first. K3s + Ollama + Iron Bank + Cosign from Day 1. Cloud is only dev/test mirror.",
     dimensions: ["Air-Gap", "K3s", "Ollama", "Iron Bank", "Cosign", "Compliance"],
-    dependencies: ["K3s", "Ollama", "Iron Bank", "Cosign", "Vault", "Data Diode"],
-  },
+    dependencies: ["K3s", "Ollama", "Iron Bank", "Cosign", "Vault", "Data Diode"]
+  }
 ]);
 
 const gotchas = reactive([
   {
     title: "Air-Gap First Boot Surprise",
-    desc: "4 classes of pitfalls: TLS cert without PKI, NTP unreachable, Cloud KMS unreachable, sneakernet ISO missing weights. Day -7 drill is mandatory.",
+    desc: "4 classes of pitfalls: TLS cert without PKI, NTP unreachable, Cloud KMS unreachable, sneakernet ISO missing weights. Day -7 drill is mandatory."
   },
   {
     title: "Discovery Three Whys Skipped",
-    desc: "Skipping the 3rd question (Day 2 owner) during discovery means the project has no internal owner — guaranteed collapse after FDE exit.",
+    desc: "Skipping the 3rd question (Day 2 owner) during discovery means the project has no internal owner — guaranteed collapse after FDE exit."
   },
   {
     title: "No Lockfile Supply Chain Risk",
-    desc: "Missing lockfile in air-gapped environments — dependency versions drift, reproducibility breaks, security audit fails.",
+    desc: "Missing lockfile in air-gapped environments — dependency versions drift, reproducibility breaks, security audit fails."
   },
   {
     title: "Pure Semantic RAG Fails on Nomenclature",
-    desc: "Enterprise terms (SKU codes, regulatory clause numbers, abbreviations) have <60% recall with pure semantic search. Hybrid is mandatory.",
-  },
+    desc: "Enterprise terms (SKU codes, regulatory clause numbers, abbreviations) have <60% recall with pure semantic search. Hybrid is mandatory."
+  }
 ]);
 
 const failures = reactive([
   {
     title: "FDE Exit Without Internal Owner",
-    desc: "Discovery skipped 3rd Three Whys question → SOW had no exit criteria → handover was formality → system collapsed in 4-12 weeks → customer churned.",
+    desc: "Discovery skipped 3rd Three Whys question → SOW had no exit criteria → handover was formality → system collapsed in 4-12 weeks → customer churned."
   },
   {
     title: "Air-Gapped Pipeline Broke Without Sneakernet",
-    desc: "Offline CI/CD pipeline broke; no sneakernet procedure in place; cleared engineer had to be re-dispatched; 2-week delay; customer trust eroded.",
+    desc: "Offline CI/CD pipeline broke; no sneakernet procedure in place; cleared engineer had to be re-dispatched; 2-week delay; customer trust eroded."
   },
   {
     title: "Enterprise RAG Pure Semantic Baseline",
-    desc: "Started with pure semantic vector search; regulatory clause recall <30%; customer lost trust in Week 2; full re-index to hybrid cost 3 weeks.",
+    desc: "Started with pure semantic vector search; regulatory clause recall <30%; customer lost trust in Week 2; full re-index to hybrid cost 3 weeks."
   },
   {
     title: "Cloud-First, Air-Gap Migration Blocked",
-    desc: "Verified on GKE first, discovered air-gap blockers at Week 12 (no NTP, no KMS, no package mirror). Migration took 8 weeks. Customer patience was 4 weeks.",
-  },
+    desc: "Verified on GKE first, discovered air-gap blockers at Week 12 (no NTP, no KMS, no package mirror). Migration took 8 weeks. Customer patience was 4 weeks."
+  }
 ]);
 
 const comparisonData = reactive([
   {
     dimension: "User",
     swe: "Millions of anonymous users",
-    fde: "High-risk stakeholder (CTO, General, CEO)",
+    fde: "High-risk stakeholder (CTO, General, CEO)"
   },
   {
     dimension: "Environment",
     swe: "Controlled cloud",
-    fde: "Hostile, legacy, air-gapped, hybrid",
+    fde: "Hostile, legacy, air-gapped, hybrid"
   },
   {
     dimension: "Goal",
     swe: "Scale + stability",
-    fde: "Speed to value + solve the problem",
+    fde: "Speed to value + solve the problem"
   },
   {
     dimension: "Code Ratio",
     swe: "90% features + 10% ops",
-    fde: "50% integration/glue + 50% strategy",
+    fde: "50% integration/glue + 50% strategy"
   },
   {
     dimension: "Delivery",
     swe: "Sprint → PR → CI/CD → deploy",
-    fde: "Embedded on-site, commits to customer production",
+    fde: "Embedded on-site, commits to customer production"
   },
   {
     dimension: "Success Metric",
     swe: "Uptime, latency, throughput",
-    fde: "Customer renewal, Delta closed, system self-running",
+    fde: "Customer renewal, Delta closed, system self-running"
   },
   {
     dimension: "Exit Condition",
     swe: "Feature shipped",
-    fde: "Make yourself redundant; system runs itself",
-  },
+    fde: "Make yourself redundant; system runs itself"
+  }
 ]);
 </script>
 
 <style scoped lang="scss">
 .resume-container {
-  padding: 24px;
   max-width: 1200px;
+  padding: 24px;
   margin: 0 auto;
   background: #f5f7fa;
 }
-
 .resume-header {
   display: flex;
-  align-items: center;
   gap: 24px;
+  align-items: center;
   padding: 32px;
+  margin-bottom: 20px;
+  color: #ffffff;
   background: linear-gradient(135deg, #409eff 0%, #337ecc 100%);
   border-radius: 12px;
-  margin-bottom: 20px;
-  color: #fff;
-
   .header-avatar {
     flex-shrink: 0;
   }
-
   .header-info {
     flex: 1;
   }
-
   .header-name {
     margin: 0 0 8px;
     font-size: 28px;
     font-weight: 700;
   }
-
   .header-tagline {
     margin: 0 0 16px;
     font-size: 15px;
-    opacity: 0.9;
     line-height: 1.5;
+    opacity: 0.9;
   }
-
   .header-meta {
     display: flex;
-    gap: 8px;
     flex-wrap: wrap;
+    gap: 8px;
   }
 }
-
 .resume-section {
   margin-bottom: 20px;
   border-radius: 8px;
-
   .section-title {
+    display: flex;
+    gap: 8px;
+    align-items: center;
     font-size: 16px;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
   }
 }
-
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-
   .summary-item {
     display: flex;
     gap: 12px;
     padding: 12px;
     background: #fafafa;
-    border-radius: 8px;
     border-left: 3px solid #409eff;
-
+    border-radius: 8px;
     strong {
       display: block;
       margin-bottom: 4px;
       font-size: 14px;
     }
-
     p {
       margin: 0;
       font-size: 13px;
-      color: #606266;
       line-height: 1.6;
+      color: #606266;
     }
   }
 }
-
 .competency-list {
   .competency-item {
     margin-bottom: 16px;
-
     &:last-child {
       margin-bottom: 0;
     }
-
     .competency-label {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 6px;
       font-size: 13px;
       font-weight: 500;
     }
   }
 }
-
 .toolchain-grid {
   .toolchain-group {
     margin-bottom: 16px;
-
     &:last-child {
       margin-bottom: 0;
     }
-
     h4 {
       margin: 0 0 8px;
       font-size: 13px;
       font-weight: 600;
       color: #303133;
     }
-
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -685,118 +670,100 @@ const comparisonData = reactive([
     }
   }
 }
-
 .method-card {
   margin-bottom: 0;
-
   .method-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 8px;
-
     h3 {
       margin: 0;
       font-size: 15px;
       font-weight: 600;
     }
   }
-
   .method-desc {
     margin: 0 0 12px;
     font-size: 13px;
-    color: #606266;
     line-height: 1.6;
+    color: #606266;
   }
-
   .method-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
-
     .method-detail-item {
       display: flex;
-      align-items: flex-start;
       gap: 6px;
+      align-items: flex-start;
       font-size: 12px;
-      color: #909399;
       line-height: 1.5;
+      color: #909399;
     }
   }
 }
-
 .adr-card {
   height: 100%;
   margin-bottom: 0;
-
   .adr-header {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-bottom: 8px;
-
     .adr-id {
+      font-family: monospace;
       font-size: 11px;
       color: #909399;
-      font-family: monospace;
     }
   }
-
   h4 {
     margin: 0 0 8px;
     font-size: 14px;
     font-weight: 600;
   }
-
   p {
     margin: 0 0 12px;
     font-size: 13px;
-    color: #606266;
     line-height: 1.6;
+    color: #606266;
   }
-
   .adr-dimensions {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
   }
 }
-
 .lesson-list {
   .lesson-item {
     display: flex;
     gap: 10px;
     padding: 10px 0;
     border-bottom: 1px solid #ebeef5;
-
     &:last-child {
-      border-bottom: none;
       padding-bottom: 0;
+      border-bottom: none;
     }
-
     strong {
       display: block;
-      font-size: 13px;
       margin-bottom: 4px;
+      font-size: 13px;
     }
-
     p {
       margin: 0;
       font-size: 12px;
-      color: #909399;
       line-height: 1.5;
+      color: #909399;
     }
   }
 }
-
 .table-cell-swe {
-  color: #909399;
   font-size: 13px;
+  color: #909399;
 }
-
 .table-cell-fde {
-  color: #409eff;
   font-size: 13px;
   font-weight: 500;
+  color: #409eff;
 }
 </style>

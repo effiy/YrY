@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-11: ModelRuntime 抽象层性能基准 — 多 Provider 延迟对比与模型选择策略"
 tags: [需求文档, ModelRuntime, 性能基准, LLM, 多Provider, 延迟优化, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 1.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer, aier]
+source_okr: [yiai-002]
+related_modules: [15-prd-task-ModelRuntime抽象层性能基准]
+related_tests: [15-prd-test-ModelRuntime抽象层性能基准]
 ---
 
 # YA-09-11: ModelRuntime 抽象层性能基准 — 多 Provider 延迟对比与模型选择策略
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-11 · 优先级：P2 · 人天：1.5d · 状态：需求已编写
 > 依赖：YA-08-15（ModelRuntime 抽象层）、YA-09-09（上下文压缩）
@@ -42,6 +50,7 @@ YiAi 八月迭代完成 Multi-Provider LLM 架构设计（YA-08-15），实现�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 ModelRuntime 架构
@@ -99,6 +108,7 @@ SSE 流式 → 前端 (YiVad/YiPet)
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：性能基准框架 — 独立脚本 vs CI 集成 vs 运行时自动
@@ -143,6 +153,7 @@ SSE 流式 → 前端 (YiVad/YiPet)
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 性能基准脚本
@@ -386,6 +397,7 @@ class MonitoredProvider:
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 新增文件
@@ -404,6 +416,7 @@ class MonitoredProvider:
 
 ---
 
+<a id="sec-5"></a>
 ## 五、性能基准参考数据（预期）
 
 | Provider | Model | 任务 | TTFT (ms) | Tokens/sec | Total (s) |
@@ -417,6 +430,7 @@ class MonitoredProvider:
 
 ---
 
+<a id="sec-6"></a>
 ## 六、可观测性
 
 | 指标 | 采集方式 | 告警阈值 | 说明 |

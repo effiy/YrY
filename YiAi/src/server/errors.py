@@ -1,12 +1,13 @@
 """Global exception handlers"""
 import logging
-from fastapi import Request, HTTPException
+
+from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from shared.error_codes import ErrorCode, map_http_to_error_code
-from shared.response import fail
 from shared.exceptions import BusinessException
+from shared.response import fail
 
 logger = logging.getLogger(__name__)
 

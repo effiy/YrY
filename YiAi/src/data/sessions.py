@@ -1,13 +1,14 @@
 """Sessions maintenance service layer — encapsulates database access for use by routes"""
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from data.database import db
 from shared.config import settings
 
 logger = logging.getLogger(__name__)
 
 
-async def get_all_sessions() -> List[Dict[str, Any]]:
+async def get_all_sessions() -> list[dict[str, Any]]:
     """Get all sessions documents"""
     await db.initialize()
     collection = db.db[settings.collection_sessions]

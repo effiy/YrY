@@ -1,12 +1,6 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="visible"
-      class="context-menu"
-      :style="{ top: y + 'px', left: x + 'px' }"
-      role="menu"
-      @click.stop
-    >
+    <div v-if="visible" class="context-menu" :style="{ top: y + 'px', left: x + 'px' }" role="menu" @click.stop>
       <div
         v-for="item in items"
         :key="item.key"
@@ -42,13 +36,15 @@ const items = ref<ContextMenuItem[]>([]);
 
 const open = (e: MouseEvent, menuItems: ContextMenuItem[]) => {
   e.preventDefault();
-  items.value = menuItems.filter((i) => !i.divider);
+  items.value = menuItems.filter(i => !i.divider);
   x.value = Math.min(e.clientX, window.innerWidth - 200);
   y.value = Math.min(e.clientY, window.innerHeight - items.value.length * 36 - 16);
   visible.value = true;
 };
 
-const close = () => { visible.value = false; };
+const close = () => {
+  visible.value = false;
+};
 
 const handleClick = (item: ContextMenuItem) => {
   item.onClick();
@@ -63,23 +59,37 @@ defineExpose({ open, close });
   position: fixed;
   z-index: 9999;
   min-width: 160px;
+  padding: 4px 0;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
   border-radius: 6px;
   box-shadow: var(--el-box-shadow);
-  padding: 4px 0;
-  &__backdrop { position: fixed; inset: 0; z-index: 9998; }
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+  }
   &__item {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     padding: 6px 16px;
     font-size: 13px;
     cursor: pointer;
-    &:hover { background: var(--el-fill-color-light); }
-    &--danger { color: var(--el-color-danger); }
-    &--divider { border-top: 1px solid var(--el-border-color-lighter); margin-top: 4px; padding-top: 10px; }
-    &-icon { font-size: 14px; }
+    &:hover {
+      background: var(--el-fill-color-light);
+    }
+    &--danger {
+      color: var(--el-color-danger);
+    }
+    &--divider {
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 1px solid var(--el-border-color-lighter);
+    }
+    &-icon {
+      font-size: 14px;
+    }
   }
 }
 </style>

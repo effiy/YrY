@@ -3,8 +3,8 @@ title: "Oncall SRE 角色索引"
 tags: [index, srer, incident-response, observability, release]
 category: srer
 created: 2026-08-06
-updated: 2026-09-10
-last_verified: 2026-08-14
+updated: 2026-09-15
+last_verified: 2026-09-15
 source: internal
 type: summary
 status: stable
@@ -30,18 +30,18 @@ SRE 角色在 YrY 单仓中的定位是：**保障生产环境稳定运行**。�
 
 | 关注点 | SRE 角色职责 |
 |---|---|
-| **事件响应** | 接收告警、定级故障、指挥作战室、撰写事后复盘 |
-| **可观测性** | 搭建监控、配置告警、维护仪表盘、追踪 SLO |
-| **发布管理** | 执行发布流程、协调多服务发布、处理热修复、管理发布冻结 |
-| **值班运维** | 轮值 on-call、交接上下文、维护 runbook |
+| **事件响应** | 接收告警、定级故障、指挥作战室、撰写事后复盘、对外沟通 |
+| **可观测性** | 搭建监控、配置告警、维护仪表盘、追踪 SLO、管理错误预算 |
+| **发布管理** | 执行发布流程、协调多服务发布、处理热修复、管理发布冻结、变更管理、生产就绪审查、季度回顾 |
+| **值班运维** | 轮值 on-call、交接上下文、维护 runbook、快速排障 |
 
 ## 子目录导航
 
 | 问题域 | 内容 | 文件数 |
 |---|---|---|
-| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、runbook | 17 |
-| [observability/](./observability/) | 监控告警、仪表盘、SLO 定义、容量成本 | 13 |
-| [release/](./release/) | 发布协调、热修复、回滚、金丝雀发布 | 6 |
+| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、runbook | 16 |
+| [observability/](./observability/) | 监控告警、仪表盘、SLO 定义、容量成本 | 18 |
+| [release/](./release/) | 发布协调、热修复、回滚、金丝雀发布 | 7 |
 
 ## 常用入口
 
@@ -49,12 +49,35 @@ SRE 角色在 YrY 单仓中的定位是：**保障生产环境稳定运行**。�
 |---|---|
 | 收到告警，不知道如何处理 | [响应事件](./incident-response/04-事件-响应事件.md) |
 | 需要主持作战室 | [作战室运作](./incident-response/05-事件-作战室运作.md) |
+| 需要撰写事后复盘 | [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) |
+| 需要参考复盘示例 | [事后复盘示例](./incident-response/14-事件-事后复盘示例.md) |
+| 需要主持复盘会议 | [复盘会议主持](./incident-response/13-事件-复盘会议主持.md) |
+| 需要组织 Game Day | [Game Day 演练](./incident-response/08-事件-GameDay演练.md) |
+| 需要编写故障处理手册 | [Runbook 模板](./incident-response/09-事件-Runbook模板.md) |
+| 需要事件中对外沟通 | [事件沟通模板](./incident-response/10-事件-事件沟通模板.md) |
+| 需要制定灾难恢复方案 | [灾难恢复计划](./incident-response/11-事件-灾难恢复计划.md) |
+| 需要做故障风险分析 | [FMEA 模板](./incident-response/16-事件-FMEA模板.md) |
+| 需要减少手工重复操作 | [减少重复劳动](./incident-response/12-事件-减少重复劳动.md) |
+| 需要执行值班交接 | [值班交接](./incident-response/03-事件-值班交接.md) |
+| 需要参考交接示例 | [值班交接示例](./incident-response/15-事件-值班交接示例.md) |
 | 需要发布上线 | [发布流程](./release/04-发布-发布流程.md) |
 | 需要紧急修复生产 Bug | [热修复发布](./release/02-发布-热修复发布.md) |
+| 需要管理变更风险 | [变更管理流程](./release/06-发布-变更管理流程.md) |
+| 需要做上线前审查 | [生产就绪审查](./release/07-发布-生产就绪审查.md) |
 | 需要搭建监控 | [搭建可观测性](./observability/07-可观测-搭建可观测性.md) |
+| 需要配置告警 | [告警规则配置](./observability/10-可观测-告警规则配置.md) |
 | 需要定义 SLO | [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md) |
+| 需要管理错误预算 | [错误预算策略](./observability/12-可观测-错误预算策略.md) |
+| 需要做性能测试 | [性能测试指南](./observability/13-可观测-性能测试指南.md) |
+| 需要设计健康检查 | [健康检查设计](./observability/14-可观测-健康检查设计.md) |
+| 需要建立 SRE 指标 | [SRE 指标体系](./observability/15-可观测-SRE指标体系.md) |
+| 需要定义对外 SLA | [SLA 管理](./observability/16-可观测-SLA管理.md) |
+| 需要排查 RAG 故障 | [知识库与 RAG 运维](./observability/17-可观测-知识库与RAG运维.md) |
+| 需要管理模型版本 | [Ollama 模型管理](./observability/18-可观测-Ollama模型管理.md) |
 | 需要做回滚演练 | [回滚演练](./release/05-发布-回滚演练.md) |
 | 需要管理技术债务 | [技术债清单](./observability/09-可观测-技术债清单.md) |
+| 需要配置数据库备份 | [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) |
+| 需要做季度可靠性回顾 | [季度回顾指南](./QUARTERLY-REVIEW.md) |
 
 ## 跨角色引用
 

@@ -1,41 +1,68 @@
 ---
 doc_type: module
 prd_task_id: "YP-09-17"
-title: "YP-09-17: 聊天窗口拖拽与多显示器适配 — 窗口管理增强 — 开发任务"
+title: "YP-09-17: 聊天窗口拖拽管理 — 开发方案"
 status: 已完成
-priority: P2
+priority: P1
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiPet
-project_id: yipet
 prd_month: "202609"
-estimate_frontend: 0.5
 source_prd: "24-架构设计-聊天窗口拖拽管理.md"
 ---
 
-# YP-09-17: 聊天窗口拖拽与多显示器适配 — 窗口管理增强 — 开发任务
+# YP-09-17: 聊天窗口拖拽管理 — 开发方案
 
-> 来源 PRD：[24-架构设计-聊天窗口拖拽管理.md](../../prds/2026-09/24-架构设计-聊天窗口拖拽管理.md)
-> 需求编号：YP-09-17 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：已完成
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
-## 实施路线图
+> 需求编号：YP-09-17 · 优先级：P1
 
-### 阶段一：核心实现（约 0.2d）
+---
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+<a id="sec-1"></a>
+## 一、方案概述
 
-### 阶段二：完善与收尾（约 0.2d）
+聊天窗口自由拖拽：窗口位置/大小调整、边界吸附、最小尺寸限制。
 
-| 步骤 | 任务 | 产出 |
-|------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+### 拖拽实现
+
+```typescript
+function useDraggable(el: Ref<HTMLElement>) {
+  let startX = 0, startY = 0;
+  function onMousedown(e: MouseEvent) {
+    startX = e.clientX - el.value.offsetLeft;
+    startY = e.clientY - el.value.offsetTop;
+    document.addEventListener("mousemove", onMousemove);
+    document.addEventListener("mouseup", onMouseup);
+  }
+  function onMousemove(e: MouseEvent) {
+    el.value.style.left = `${e.clientX - startX}px`;
+    el.value.style.top = `${e.clientY - startY}px`;
+  }
+}
+```
+
+### 约束
+
+| 约束 | 值 |
+|------|-----|
+| 最小宽度 | 400px |
+| 最小高度 | 300px |
+| 边界吸附 | 距边缘 16px 吸附 |
+
+---
+
+## 已知缺口与技术债
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 无 | — | — | — | — |

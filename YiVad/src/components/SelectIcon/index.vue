@@ -33,7 +33,7 @@ import { ref, computed } from "vue";
 import * as Icons from "@element-plus/icons-vue";
 
 interface SelectIconProps {
-  iconValue: string;
+  iconValue?: string;
   title?: string;
   clearable?: boolean;
   placeholder?: string;

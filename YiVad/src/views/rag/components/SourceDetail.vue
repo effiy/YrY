@@ -55,11 +55,7 @@ function openInKb(filePath: string) {
     <div class="sd-section">
       <h4>Relevance Score</h4>
       <div class="sd-score">
-        <el-progress
-          :percentage="scorePercent(source.score)"
-          :stroke-width="12"
-          :color="scoreColor(source.score)"
-        />
+        <el-progress :percentage="scorePercent(source.score)" :stroke-width="12" :color="scoreColor(source.score)" />
         <span class="sd-score__text">{{ scoreLabel(source.score) }}</span>
       </div>
     </div>
@@ -68,11 +64,7 @@ function openInKb(filePath: string) {
     <div class="sd-section" v-if="hasMeta">
       <h4>Metadata</h4>
       <el-descriptions :column="1" border size="small" class="sd-meta">
-        <el-descriptions-item
-          v-for="(val, key) in visibleMeta"
-          :key="key"
-          :label="String(key)"
-        >
+        <el-descriptions-item v-for="(val, key) in visibleMeta" :key="key" :label="String(key)">
           <template v-if="Array.isArray(val)">
             <el-tag v-for="(t, ti) in val" :key="ti" size="small" class="sd-meta-tag">{{ t }}</el-tag>
           </template>
@@ -107,10 +99,8 @@ function openInKb(filePath: string) {
 .source-detail {
   // container
 }
-
 .sd-section {
   margin-bottom: 20px;
-
   h4 {
     margin: 0 0 8px;
     font-size: 13px;
@@ -120,54 +110,51 @@ function openInKb(filePath: string) {
     letter-spacing: 0.5px;
   }
 }
-
 .sd-score {
   display: flex;
-  align-items: center;
   gap: 12px;
-
+  align-items: center;
   .el-progress {
     flex: 1;
   }
-
   &__text {
     font-size: 18px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 }
-
 .sd-meta {
-  :deep(.el-descriptions__label) { font-size: 12px; }
-  :deep(.el-descriptions__content) { font-size: 12px; word-break: break-all; }
+  :deep(.el-descriptions__label) {
+    font-size: 12px;
+  }
+  :deep(.el-descriptions__content) {
+    font-size: 12px;
+    word-break: break-all;
+  }
 }
-
 .sd-meta-tag {
   margin: 1px 2px;
 }
-
 .sd-text {
+  max-height: 300px;
+  padding: 12px;
+  overflow-y: auto;
   background: var(--el-fill-color-light);
   border-radius: 6px;
-  padding: 12px;
-  max-height: 300px;
-  overflow-y: auto;
-
   pre {
     margin: 0;
+    font-family: inherit;
     font-size: 13px;
     line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-family: inherit;
     color: var(--el-text-color-primary);
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
   }
 }
-
 .sd-actions {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
   padding-top: 12px;
   border-top: 1px solid var(--el-border-color-lighter);
 }

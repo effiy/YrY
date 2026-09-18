@@ -14,18 +14,28 @@ from typing import Any, Dict
 
 from domain.knowledge.scanner import (
     list_bugs as _list_bugs,
-    read_bug_markdown as _read_bug_markdown,
+)
+from domain.knowledge.scanner import (
     list_stories as _list_stories,
+)
+from domain.knowledge.scanner import (
+    read_bug_markdown as _read_bug_markdown,
+)
+from domain.knowledge.scanner import (
     read_story_markdown as _read_story_markdown,
 )
 from domain.knowledge.writer import (
-    write_entry_markdown as _write_entry_markdown,
     delete_entry_markdown as _delete_entry_markdown,
+)
+from domain.knowledge.writer import (
     entry_exists as _entry_exists,
+)
+from domain.knowledge.writer import (
+    write_entry_markdown as _write_entry_markdown,
 )
 
 
-def write_entry_markdown(params: Dict[str, Any]) -> Dict[str, Any]:
+def write_entry_markdown(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ rel_path, content, meta }``.
 
     Returns ``{ path: <rel_path> }`` on success.
@@ -37,7 +47,7 @@ def write_entry_markdown(params: Dict[str, Any]) -> Dict[str, Any]:
     return {"path": written, "exists": True}
 
 
-def delete_entry_markdown(params: Dict[str, Any]) -> Dict[str, Any]:
+def delete_entry_markdown(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ rel_path }`` (or ``path``).
 
     Returns ``{ deleted: bool }``.
@@ -47,13 +57,13 @@ def delete_entry_markdown(params: Dict[str, Any]) -> Dict[str, Any]:
     return {"deleted": deleted}
 
 
-def entry_exists(params: Dict[str, Any]) -> Dict[str, Any]:
+def entry_exists(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ rel_path }`` (or ``path``)."""
     rel_path = params.get("rel_path") or params.get("path") or ""
     return {"exists": _entry_exists(rel_path)}
 
 
-def list_bugs(params: Dict[str, Any]) -> Dict[str, Any]:
+def list_bugs(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ project? }`` — same as ``/knowledge-bugs`` REST.
 
     Returns ``{ bugs: [...], total: N }`` where each bug carries the full
@@ -64,7 +74,7 @@ def list_bugs(params: Dict[str, Any]) -> Dict[str, Any]:
     return _list_bugs(project=project)
 
 
-def read_bug(params: Dict[str, Any]) -> Dict[str, Any]:
+def read_bug(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ content_path }`` (or ``path``).
 
     Returns ``{ bug: BugDocument, content: BugContent }`` for a single file.
@@ -73,13 +83,13 @@ def read_bug(params: Dict[str, Any]) -> Dict[str, Any]:
     return _read_bug_markdown(content_path)
 
 
-def list_stories(params: Dict[str, Any]) -> Dict[str, Any]:
+def list_stories(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ project? }`` — mirrors ``/knowledge-stories``."""
     project = params.get("project") or None
     return _list_stories(project=project)
 
 
-def read_story(params: Dict[str, Any]) -> Dict[str, Any]:
+def read_story(params: dict[str, Any]) -> dict[str, Any]:
     """RPC entry point. ``params``: ``{ project, story_name }``."""
     project = params.get("project") or ""
     story_name = params.get("story_name") or params.get("storyName") or ""

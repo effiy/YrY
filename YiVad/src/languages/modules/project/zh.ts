@@ -10,12 +10,12 @@ export default {
         name: "名称",
         issues: "最多 Issue",
         done: "最多已完成",
-        risk: "最多风险",
+        risk: "最多风险"
       },
       statusFilter: {
         all: "全部状态",
         active: "活跃",
-        archived: "已归档",
+        archived: "已归档"
       },
       starred: "星标",
       starTooltip: "仅显示星标项目",
@@ -29,26 +29,26 @@ export default {
         noProjects: "暂无项目",
         createFirst: "创建第一个项目",
         noMatch: "没有匹配当前过滤条件的项目",
-        noMatchSearch: "未找到匹配 \"{keyword}\" 的结果",
+        noMatchSearch: '未找到匹配 "{keyword}" 的结果',
         clearFilters: "清除过滤",
-        clearSearch: "清除搜索",
+        clearSearch: "清除搜索"
       },
       dateBanner: {
         showing: "显示截止日期为 {date} 的 Issue",
-        clear: "清除日期过滤",
+        clear: "清除日期过滤"
       },
       batch: {
         selected: "已选择 {n} 项",
         archive: "归档",
         restore: "恢复",
-        clear: "清除选择",
+        clear: "清除选择"
       },
       archiveConfirm: "确认归档 {n} 个项目？",
       restoreConfirm: "确认恢复 {n} 个项目？",
       alreadyArchived: "项目已归档",
       alreadyActive: "项目已处于活跃状态",
       archiveSuccess: "已归档 {n} 个项目",
-      restoreSuccess: "已恢复 {n} 个项目",
+      restoreSuccess: "已恢复 {n} 个项目"
     },
     stats: {
       issues: "Issue",
@@ -62,7 +62,7 @@ export default {
       noneCritical: "无严重问题",
       total: "共 {n} 项",
       critical: "{n} 项严重",
-      of: "/",
+      of: "/"
     },
     analytics: {
       title: "分析",
@@ -89,7 +89,7 @@ export default {
       retry: "重试",
       emptyIssues: "暂无 Issue",
       emptyFileData: "暂无文件数据",
-      clickToAnalyze: "点击「分析」扫描源码大文件",
+      clickToAnalyze: "点击「分析」扫描源码大文件"
     },
     risks: {
       title: "关注",
@@ -102,8 +102,8 @@ export default {
       health: {
         good: "健康",
         warn: "需要关注",
-        poor: "有风险",
-      },
+        poor: "有风险"
+      }
     },
     filters: {
       hasFilters: "过滤已激活",
@@ -118,8 +118,8 @@ export default {
         risk: "风险",
         health: "健康度",
         flagged: "已标记",
-        project: "项目",
-      },
+        project: "项目"
+      }
     },
     dialog: {
       createTitle: "新建项目",
@@ -141,7 +141,7 @@ export default {
       createSuccess: "项目已创建",
       updateSuccess: "项目已更新",
       clipboardUnavailable: "剪贴板不可用",
-      copied: "已复制 {identifier}",
+      copied: "已复制 {identifier}"
     },
     detail: {
       back: "返回项目列表",
@@ -160,12 +160,12 @@ export default {
         milestones: "里程碑",
         tags: "标签",
         test: "测试",
-        okr: "OKR 目标",
+        okr: "OKR 目标"
       },
       dateBanner: {
         showing: "显示截止日期为 {date} 的 Issue",
-        clear: "清除",
-      },
+        clear: "清除"
+      }
     },
     overview: {
       readme: {
@@ -175,7 +175,7 @@ export default {
         edit: "编辑",
         add: "添加 README.md",
         expand: "展开",
-        collapse: "收起",
+        collapse: "收起"
       },
       sidebar: {
         overview: "概览",
@@ -185,17 +185,29 @@ export default {
         bugs: "Bug",
         modules: "模块",
         inProgress: "进行中",
-        overdue: "已逾期",
+        overdue: "已逾期"
       },
       modules: {
         title: "模块",
         empty: "暂无模块",
-	        createTitle: "新建模块",
-	        createFirst: "创建第一个模块",
-	        namePlaceholder: "模块名称",
-	        descPlaceholder: "模块描述",
-	        leadPlaceholder: "模块负责人",
-	        createSuccess: "模块创建成功",
+        createTitle: "新建模块",
+        createFirst: "创建第一个模块",
+        namePlaceholder: "模块名称",
+        descPlaceholder: "模块描述",
+        leadPlaceholder: "模块负责人",
+        createSuccess: "模块创建成功",
+        summary: {
+          title: "开发任务",
+          done: "已完成",
+          inProgress: "进行中",
+          pending: "待开始"
+        },
+        table: {
+          month: "月份",
+          taskName: "任务名称",
+          sourcePrd: "来源 PRD",
+          status: "状态"
+        }
       },
       activity: {
         title: "最近动态",
@@ -213,7 +225,7 @@ export default {
         unknownDate: "未知日期",
         refresh: "刷新",
         refreshing: "刷新中...",
-        updatedAgo: "更新于 {time}",
+        updatedAgo: "更新于 {time}"
       },
       todo: {
         title: "待办列表",
@@ -226,41 +238,41 @@ export default {
         resolve: "标记解决",
         noAssignee: "未分配",
         noDueDate: "无截止日",
-        overdue: "已逾期",
+        overdue: "已逾期"
       },
       epic: "史诗",
-        quality: {
-          title: "质量概览",
-          viewAll: "查看详情",
-          totalBugs: "Bug 总数",
-          resolved: "已解决",
-          openBugs: "待修复",
-          ofTotal: "占比",
-          critical: "严重 · 主要",
-          priority: "需优先处理",
-          stale: "超期未更新",
-          noActivity: "无活动",
-          modules: "开发模块",
-          withBugs: "个有 Bug",
-          sectionAnalysis: "Bug 分析",
-          sectionModules: "模块质量",
-          sectionTestDocs: "测试文档",
-          bugStats: "Bug 统计",
-          trendTitle: "创建趋势 · 近 14 天",
-          severity: "严重程度",
-          noBugs: "暂无 Bug",
-          noModules: "暂无模块",
-          noTestDocs: "暂无测试文档",
-          staleHint: "> 14 天无活动",
-          resolvedCount: "{n} 已解决",
-          resolvedRate: "解决率",
-          newCount: "{n} 个新增",
-          matrixModule: "模块",
-          matrixStatus: "状态",
-          matrixBugs: "Bug",
-          matrixSeverity: "严重程度",
-          matrixScore: "质量分",
-        },
+      quality: {
+        title: "质量概览",
+        viewAll: "查看详情",
+        totalBugs: "Bug 总数",
+        resolved: "已解决",
+        openBugs: "待修复",
+        ofTotal: "占比",
+        critical: "严重 · 主要",
+        priority: "需优先处理",
+        stale: "超期未更新",
+        noActivity: "无活动",
+        modules: "开发模块",
+        withBugs: "个有 Bug",
+        sectionAnalysis: "Bug 分析",
+        sectionModules: "模块质量",
+        sectionTestDocs: "测试文档",
+        bugStats: "Bug 统计",
+        trendTitle: "创建趋势 · 近 14 天",
+        severity: "严重程度",
+        noBugs: "暂无 Bug",
+        noModules: "暂无模块",
+        noTestDocs: "暂无测试文档",
+        staleHint: "> 14 天无活动",
+        resolvedCount: "{n} 已解决",
+        resolvedRate: "解决率",
+        newCount: "{n} 个新增",
+        matrixModule: "模块",
+        matrixStatus: "状态",
+        matrixBugs: "Bug",
+        matrixSeverity: "严重程度",
+        matrixScore: "质量分"
+      }
     },
     requirements: {
       stats: {
@@ -269,7 +281,7 @@ export default {
         inProgress: "进行中",
         done: "已完成",
         completed: "完成率",
-        estimate: "预估人天",
+        estimate: "预估人天"
       },
       searchPlaceholder: "按标题过滤...",
       table: {
@@ -279,9 +291,9 @@ export default {
         assignee: "负责人",
         status: "状态",
         estimate: "预估",
-        month: "月份",
+        month: "月份"
       },
-      empty: "没有匹配的需求",
+      empty: "没有匹配的需求"
     },
     members: {
       count: "{n} 位成员",
@@ -299,7 +311,7 @@ export default {
       remove: "移除",
       addSuccess: "已添加 {username}",
       removeSuccess: "已移除 {username}",
-      empty: "暂无成员",
+      empty: "暂无成员"
     },
     workflows: {
       empty: "暂无工作流",
@@ -312,13 +324,13 @@ export default {
         file: "文件",
         tag: "标签",
         updated: "更新时间",
-        path: "路径",
+        path: "路径"
       },
-      loadError: "加载 CLAUDE.md 失败",
+      loadError: "加载 CLAUDE.md 失败"
     },
     error: {
       loadOverview: "加载概览数据失败",
-      tryAgain: "重试",
+      tryAgain: "重试"
     },
     health: {
       title: "健康大盘",
@@ -348,7 +360,7 @@ export default {
       timeJustNow: "刚刚",
       timeMinutesAgo: "{n} 分钟前",
       timeHoursAgo: "{n} 小时前",
-      timeDaysAgo: "{n} 天前",
+      timeDaysAgo: "{n} 天前"
     },
     test: {
       layerStrategy: "测试分层",
@@ -359,6 +371,18 @@ export default {
       duration: "耗时",
       layer: "层级",
       file: "文件",
+      summary: {
+        title: "测试规格",
+        done: "已完成",
+        inProgress: "进行中",
+        pending: "待开始"
+      },
+      table: {
+        month: "月份",
+        testName: "测试名称",
+        sourcePrd: "来源 PRD",
+        status: "状态"
+      },
       untested: "未覆盖的源码目录",
       untestedDesc: "以下 src/ 目录没有任何测试覆盖",
       gapCritical: "高风险",
@@ -377,15 +401,21 @@ export default {
       stageCommit: "提交阶段",
       stagePR: "PR 检查",
       documents: "测试文档",
-      noDocs: "暂无测试相关文档",
+      noDocs: "暂无测试相关文档"
     },
     okr: {
       title: "OKR 目标",
       empty: "暂无关联的 OKR 目标",
+      emptyHint: "在 YiKnowledge 中创建 OKR 目标文件以在此处展示",
       progress: "进度",
       keyResults: "关键结果",
       metrics: "关联指标",
       goal: "目标",
+      summary: {
+        totalGoals: "总目标",
+        avgProgress: "平均进度",
+        completed: "已完成"
+      },
       role: {
         project: "项目",
         producter: "产品",
@@ -394,18 +424,41 @@ export default {
         curator: "知识管理",
         srer: "SRE",
         aier: "AI 工程",
-        executiver: "经营",
+        executiver: "经营"
       },
-      viewInKnowledge: "在知识库中查看",
+      viewInKnowledge: "在知识库中查看"
     },
     bugs: {
       stats: {
         total: "总计",
         open: "待处理",
         resolved: "已解决",
-        closed: "已关闭",
+        closed: "已关闭"
       },
-      empty: "暂无缺陷记录",
+      empty: "暂无缺陷记录"
     },
-  },
+    milestone: {
+      title: "里程碑",
+      newMilestone: "新建里程碑",
+      editMilestone: "编辑里程碑",
+      deleteMilestone: "删除里程碑",
+      deleteConfirm: "确定要删除此里程碑吗？",
+      confirmDelete: "确认删除",
+      titlePlaceholder: "里程碑标题",
+      titleRequired: "请输入里程碑标题",
+      startDate: "开始日期",
+      startDatePlaceholder: "选择开始日期",
+      targetDate: "目标日期",
+      targetDatePlaceholder: "选择目标日期",
+      noMilestones: "暂无里程碑",
+      progress: "{done}/{total} 已完成",
+      burndown: {
+        title: "燃尽图",
+        noData: "暂无燃尽数据",
+        remainingWork: "剩余工作量",
+        idealLine: "理想线",
+        actualLine: "实际线"
+      }
+    }
+  }
 };

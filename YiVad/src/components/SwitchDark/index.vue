@@ -1,11 +1,6 @@
 <template>
   <div class="switch-dark">
-    <el-tooltip
-      v-for="item in modes"
-      :key="item.key"
-      :content="item.label"
-      placement="top"
-    >
+    <el-tooltip v-for="item in modes" :key="item.key" :content="item.label" placement="top">
       <el-button
         :type="globalStore.themeMode === item.key ? 'primary' : 'default'"
         size="small"

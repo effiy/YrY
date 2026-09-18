@@ -37,14 +37,14 @@
 import { Connection } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import type { Issue } from "@/api/modules/issueService";
-import { goalRoleMap, allGoalsMap } from "@/views/knowledge/executiver/okrData";
+import { goalRoleMap, allGoalsMap } from "@/views/knowledge/executive/okrData";
 
 const props = defineProps<{ issue: Issue; projectName: string }>();
 const router = useRouter();
 
 function goGoal(goalId: string) {
   const role = goalRoleMap[goalId];
-  if (role) router.push(`/executiver/okr/${role}?goal=${goalId}`);
+  if (role) router.push(`/knowledge/executive/okr?role=${role}&goal=${goalId}`);
 }
 
 function goalLabel(goalId: string): string {

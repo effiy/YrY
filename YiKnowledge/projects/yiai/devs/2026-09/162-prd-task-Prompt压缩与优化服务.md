@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "162-需求-Prompt压缩与优化服务.md"
+source_okr: [yiai-002]
 ---
 
 # YA-09-156: Prompt 压缩与优化服务 — 智能上下文压缩 + 关键信息保留 + 长对话优化 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[162-需求-Prompt压缩与优化服务.md](../../prds/2026-09/162-需求-Prompt压缩与优化服务.md)
 > 需求编号：YA-09-156 · 优先级：P2 · 人天：0.5d

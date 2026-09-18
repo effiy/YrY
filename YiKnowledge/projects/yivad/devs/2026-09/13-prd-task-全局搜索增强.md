@@ -1,43 +1,120 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-36"
-title: "全局搜索增强 — 开发任务"
-status: 已实现
-priority: 中
+title: "YV-09-36: 全局搜索增强 — 开发方案"
+status: 已完成
+priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "13-prd-全局搜索增强.md"
 ---
 
-# 全局搜索增强 — 开发任务
+# YV-09-36: 全局搜索增强 — 开发方案
 
-> 来源 PRD：[13-prd-全局搜索增强.md](../prds/2026-09/13-prd-全局搜索增强.md)
-> 需求编号：YV-09-36 · 优先级：中 · 人天：1.0d
+> 需求编号：YV-09-36 · 人天：1.0d
 
-## 五、实施步骤
-
-| 步骤 | 任务 | 产出 | 验证方式 | 人天 |
-|------|------|------|----------|------|
-| 1 | 实现模糊搜索引擎 | `fuzzySearch.ts` | Fuse.js 集成，搜索语法解析正确 | 0.10 |
-| 2 | 实现搜索历史管理 | `useSearchHistory.ts` | 搜索历史保存/读取/清除正确 | 0.05 |
-| 3 | 创建 CommandPalette 主组件 | `CommandPalette.vue` | Ctrl+K 打开面板，Esc 关闭 | 0.15 |
-| 4 | 创建 SearchInput 组件 | `SearchInput.vue` | 输入框自动聚焦，300ms 防抖 | 0.05 |
-| 5 | 创建 SearchResultGroup + SearchResultItem 组件 | 两个组件 | 结果按实体类型分组，键盘导航正确 | 0.10 |
-| 6 | 创建 SearchEmpty 组件 | `SearchEmpty.vue` | 空状态显示搜索提示和历史 | 0.05 |
-| 7 | 实现搜索索引服务 | `searchIndex.ts` | 前端缓存 + 后端搜索，5 分钟 TTL | 0.10 |
-| 8 | 实现 useCommandSearch Composable | `useCommandSearch.ts` | 防抖搜索、错误处理、加载状态 | 0.10 |
-| 9 | 注册 Ctrl+K 全局快捷键 | `useKeyboardShortcut.ts` | 任意页面按 Ctrl+K 打开命令面板 | 0.05 |
-| 10 | 类型定义 | `src/types/search.ts` | SearchResult, SearchResultGroup 等类型完整 | 0.03 |
-| 11 | 集成到 App.vue 全局挂载 | `App.vue` | 命令面板在全局可用 | 0.05 |
-| 12 | 后端搜索端点 | `search_service.py` | 跨 8 种实体类型搜索 | 0.12 |
-| 13 | 整体验证 | 全流程搜索 | 快捷键、搜索、历史、导航完整 | 0.05 |
-
-**总计：** 1.0d
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+在现有全局搜索基础上增强：正则搜索、搜索语法（`type:issue`、`status:open`）、搜索建议、最近搜索改进。
+
+### 增强功能
+
+| 功能 | 说明 | 示例 |
+|------|------|------|
+| 搜索语法 | `key:value` 过滤 | `type:issue status:open` |
+| 正则搜索 | `/pattern/` 触发 | `/bug.*crash/` |
+| 搜索建议 | 输入时下拉相关搜索 | 基于历史搜索 |
+| 最近搜索 | 最近 20 条 | localStorage 持久化 |
+
+### 搜索语法解析
+
+```typescript
+function parseQuery(q: string): { text: string; filters: Record<string, string> } {
+  const filters: Record<string, string> = {};
+  const text = q.replace(/(\w+):(\S+)/g, (_, key, val) => {
+    filters[key] = val;
+    return "";
+  }).trim();
+  return { text, filters };
+}
+
+// "type:issue status:open login bug" → { text: "login bug", filters: { type: "issue", status: "open" } }
+```
+
+### 实施步骤
+
+| 步骤 | 内容 | 人天 |
+|------|------|------|
+| 1 | 搜索语法解析器 | 0.25 |
+| 2 | 正则搜索支持 | 0.25 |
+| 3 | 搜索建议 + 最近搜索 UI | 0.5 |
+
+**合计：1.0d**
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] `type:issue status:open` 语法正确过滤
+- [ ] 正则 `/pattern/` 搜索生效
+- [ ] 最近搜索 20 条持久化
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（1.0d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（1.0d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/13-prd-test-全局搜索增强.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

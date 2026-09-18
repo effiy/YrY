@@ -11,16 +11,8 @@ export interface RetryConfig {
   onRetry?: (attempt: number, error: any) => void;
 }
 
-export async function withRetry<T>(
-  requestFn: () => Promise<T>,
-  config: RetryConfig = {}
-): Promise<T> {
-  const {
-    maxRetries = 3,
-    retryDelay = 1000,
-    backoffMultiplier = 2,
-    retryOnStatus = [502, 503, 504],
-  } = config;
+export async function withRetry<T>(requestFn: () => Promise<T>, config: RetryConfig = {}): Promise<T> {
+  const { maxRetries = 3, retryDelay = 1000, backoffMultiplier = 2, retryOnStatus = [502, 503, 504] } = config;
   let lastError: any;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {

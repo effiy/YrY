@@ -65,5 +65,5 @@ export const keyManager = {
     combined.set(iv);
     combined.set(new Uint8Array(encrypted), iv.length);
     return btoa(String.fromCharCode(...combined));
-  },
+  }
 };

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: SSE 流式可靠性修复 — 断连重连与 Chunk 去重
 tags: [稳定性, SSE, 流式, 重连, 去重, 退避, 前端]
 category: 项目/浏览器扩展/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P0
 project: YiPet
 project_id: yipet
@@ -17,9 +20,14 @@ estimate_frontend: 2.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yipet-001]
+related_modules: [10-prd-task-SSE流式]
+related_tests: [10-prd-test-SSE流式]
 ---
 
 # SSE 流式可靠性修复 — 断连重连与 Chunk 去重
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YP-09-03 · 优先级：P0 · 人天：2.0d · 状态：已完成
 > 依赖：无
@@ -38,6 +46,7 @@ YiPet 的 AI 聊天功能通过 SSE（Server-Sent Events）流式接收 YiAi 后
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 文件清单
@@ -104,6 +113,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：重连策略
@@ -157,6 +167,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、当前架构 vs 目标架构
 
 ### 3.1 当前架构（修复前）
@@ -210,6 +221,7 @@ flowchart TD
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 `src/api/client.ts` — 重连 + 去重 + 退避
@@ -362,6 +374,7 @@ YiPet/src/api/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、性能分析
 
 ### 5.1 修复前后 SSE 可靠性对比
@@ -473,6 +486,7 @@ flowchart LR
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -491,6 +505,7 @@ flowchart LR
 
 ---
 
+<a id="sec-7"></a>
 ## 七、目标架构
 
 ```mermaid
@@ -524,6 +539,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-8"></a>
 ## 八、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -536,6 +552,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-9"></a>
 ## 九、测试规格
 
 ### Requirement: 断连自动重连
@@ -598,6 +615,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-10"></a>
 ## 十、设计决策记录
 
 ### D-01: 为什么选择断点续传而非完整重连？
@@ -614,6 +632,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] SSE 重连循环正确终止（正常结束 + 重连耗尽 + 用户取消）
@@ -629,6 +648,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -656,6 +676,7 @@ sequenceDiagram
 - 服务端重启后 SSE 重连正常，seq 正确同步
 - `AbortController` 在 Strict Mode 下无控制台警告
 
+<a id="sec-13"></a>
 ## 十三、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -664,6 +685,7 @@ sequenceDiagram
 | 2 | 增量重连的服务端支持 | P2 | 0.5 | 当前服务端不支持 `_last_chunk_seq` 增量重连，每次重连都全量重传 |
 | 3 | WebSocket 替代 SSE 评估 | P3 | 0.5 | SSE 单向流式在交互式 Agent 场景下受限，评估 WebSocket 双向通信的可行性 |
 
+<a id="sec-14"></a>
 ## 十四、可观测性
 
 ### 14.1 关键指标

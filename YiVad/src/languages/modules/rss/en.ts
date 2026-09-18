@@ -47,7 +47,7 @@ export default {
       actions: "Actions",
       addTitle: "Add Seed",
       editTitle: "Edit Seed",
-      deleteConfirm: "Delete seed \"{name}\"?",
+      deleteConfirm: 'Delete seed "{name}"?',
       deleted: "Deleted",
       added: "Seed added",
       updated: "Seed updated",
@@ -80,7 +80,8 @@ export default {
       noItemsTitle: "No RSS items yet",
       noItemsHint: "Add a seed and run parse first.",
       summarizePromptTitle: "Summarize RSS feed: {name}",
-      summarizePromptPrelude: "Based on the {n} RSS items below, write a summary of around 300 words (English) or 300 字 (Chinese) covering the key points."
+      summarizePromptPrelude:
+        "Based on the {n} RSS items below, write a summary of around 300 words (English) or 300 字 (Chinese) covering the key points."
     },
     items: {
       title: "Title",
@@ -217,7 +218,7 @@ export default {
           dateIcon: "📭",
           todayTitle: "No new articles today",
           dateTitle: "No articles for this date",
-          todayHint: "Go to \"📡 Feed Sources\" to add and parse a feed — your daily briefing will appear here shortly.",
+          todayHint: 'Go to "📡 Feed Sources" to add and parse a feed — your daily briefing will appear here shortly.',
           dateHint: "Try a different date, or jump back to today for the latest.",
           backToday: "Back to Today",
           noMatchIcon: "🔍",

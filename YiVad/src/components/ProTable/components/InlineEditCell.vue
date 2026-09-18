@@ -38,7 +38,7 @@ const emit = defineEmits<{
 
 const editValue = computed({
   get: () => props.modelValue,
-  set: (v) => emit("update:modelValue", v),
+  set: v => emit("update:modelValue", v)
 });
 
 const editorMap: Record<EditorType, string> = {
@@ -51,7 +51,7 @@ const editorMap: Record<EditorType, string> = {
   tag: "el-select",
   user: "el-select",
   boolean: "el-switch",
-  color: "el-color-picker",
+  color: "el-color-picker"
 };
 
 const editorComponent = computed(() => editorMap[props.editorType] ?? "el-input");

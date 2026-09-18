@@ -23,10 +23,7 @@ export function getNotifications(params: NotificationQueryParams = {}) {
   if (type && type !== "all") filter.type = type;
   if (read !== undefined) filter.read = read;
   if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { message: { $regex: search, $options: "i" } },
-    ];
+    filter.$or = [{ title: { $regex: search, $options: "i" } }, { message: { $regex: search, $options: "i" } }];
   }
   return queryDocuments<Notification>({
     cname: COLLECTION,
@@ -34,7 +31,7 @@ export function getNotifications(params: NotificationQueryParams = {}) {
     pageNum: page,
     pageSize: size,
     orderBy: "createdAt",
-    orderType: "desc",
+    orderType: "desc"
   });
 }
 

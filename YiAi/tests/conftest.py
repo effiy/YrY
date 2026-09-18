@@ -43,3 +43,15 @@ def mock_mongo(mocker):
     mock_instance = mocker.patch("data.database.MongoDB", return_value=mock_db)
     mock_instance._instance = mock_db
     return mock_db
+
+
+@pytest.fixture(autouse=True)
+def _isolate_cache():
+    """Flush the shared CacheManager before each test to prevent state leakage.
+    Also clears the per-key async locks so get_or_set doesn't deadlock."""
+    from shared.cache import cache as _c
+    _c._memory.flush()
+    _c._locks.clear()
+    yield
+    _c._memory.flush()
+    _c._locks.clear()

@@ -2,21 +2,62 @@
  * Knowledge tree store — YiKnowledge markdown tree state shared by aiChat
  * sidebar and AiChatBox drag-drop. Uses useKnowledgeFiles composable for
  * shared selectFile logic.
+ *
+ * Caching: knowledge tree data is cached in localStorage with a 5-minute TTL
+ * to avoid repeated disk scans on every mount. The cache is updated in the
+ * background (stale-while-revalidate).
  */
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { scanKnowledge, listKnowledgeFiles, readKnowledgeFile, listKnowledgeStories, readKnowledgeStory } from "@/api/modules/knowledgeService";
+import {
+  scanKnowledge,
+  listKnowledgeFiles,
+  readKnowledgeFile,
+  listKnowledgeStories,
+  readKnowledgeStory
+} from "@/api/modules/knowledgeService";
 import { getSession, upsertSession, updateSession } from "@/api/modules/sessions";
 import { useKnowledgeFiles } from "@/views/knowledge/composables/useKnowledgeFiles";
 import type { KnowledgeFileEntry, KnowledgeReadResponse, KnowledgeStoryEntry, SessionDocument } from "@/api/interface/yiAi";
 
+const CACHE_KEY = "yivad:knowledge-tree:v3";
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+interface CacheEntry {
+  ts: number;
+  cats: { category: string; files: KnowledgeFileEntry[] }[];
+  stories: KnowledgeStoryEntry[];
+}
+
+function readCache(): CacheEntry | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const entry: CacheEntry = JSON.parse(raw);
+    if (Date.now() - entry.ts > CACHE_TTL_MS) return null;
+    return entry;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(cats: { category: string; files: KnowledgeFileEntry[] }[], stories: KnowledgeStoryEntry[]) {
+  try {
+    const entry: CacheEntry = { ts: Date.now(), cats, stories };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(entry));
+  } catch {
+    /* ignore */
+  }
+}
+
 export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
-  const { currentFile, fileLoading, error, selectFile: _selectFile } = useKnowledgeFiles();
+  const { currentFile, fileLoading, error: fileError, selectFile: _selectFile } = useKnowledgeFiles();
 
   const categories = ref<{ category: string; files: KnowledgeFileEntry[] }[]>([]);
   const stories = ref<KnowledgeStoryEntry[]>([]);
   const selectedPath = ref<string | null>(null);
   const loading = ref(true);
+  const error = ref<string | null>(null);
   const expandedCategories = ref<Set<string>>(new Set());
   const searchQuery = ref("");
 
@@ -37,9 +78,7 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
         (f.meta?.tags || []).some(t => String(t).toLowerCase().includes(q))
       );
     };
-    return categories.value
-      .map(c => ({ ...c, files: c.files.filter(matchFile) }))
-      .filter(c => c.files.length > 0);
+    return categories.value.map(c => ({ ...c, files: c.files.filter(matchFile) })).filter(c => c.files.length > 0);
   });
 
   function toggleCategory(cat: string) {
@@ -56,42 +95,85 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
   }
 
   async function loadAll() {
+    // Stale-while-revalidate: return cached data immediately, refresh in background
+    const cached = readCache();
+    if (cached) {
+      categories.value = cached.cats;
+      stories.value = cached.stories;
+      loading.value = false;
+      // Refresh in background
+      fetchFresh().catch(() => {});
+      return;
+    }
+
     loading.value = true;
     error.value = null;
     try {
-      let cats: { category: string; files: KnowledgeFileEntry[] }[] = [];
-      try {
-        const dbResult = await listKnowledgeFiles();
-        if (dbResult.files?.length) {
-          const grouped = new Map<string, KnowledgeFileEntry[]>();
-          for (const f of dbResult.files) {
-            if (f.meta?.type === "rss") continue;
-            const cat = f.category || "__root__";
-            if (!grouped.has(cat)) grouped.set(cat, []);
-            grouped.get(cat)!.push(f);
-          }
-          cats = [...grouped.entries()].map(([category, files]) => ({ category, files }));
-        }
-      } catch {
-        console.warn("[knowledgeTree] DB mirror unavailable, falling back to disk scan");
-        // DB mirror unavailable — fall through to disk scan
-      }
-
-      if (!cats.length) {
-        const scan = await scanKnowledge();
-        cats = (scan.categories ?? []).map(c => ({ ...c, files: c.files.filter(f => f.meta?.type !== "rss") }));
-      }
-
-      const storyList = await listKnowledgeStories().catch(() => ({ stories: [] as KnowledgeStoryEntry[] }));
-      categories.value = cats;
-      stories.value = storyList.stories ?? [];
-    } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : "Failed to load knowledge tree";
-      categories.value = [];
-      stories.value = [];
+      await fetchFresh();
+    } catch {
+      /* fetchFresh handles errors internally */
     } finally {
       loading.value = false;
     }
+  }
+
+  async function fetchFresh() {
+    error.value = null;
+
+    // Fire all requests in parallel — main scan, RSS scan, stories
+    const [mainResult, rssResult, storyResult] = await Promise.allSettled([
+      scanKnowledge().catch(() => ({ categories: [] })),
+      scanKnowledge("rss").catch(() => ({ categories: [] })),
+      listKnowledgeStories()
+        .then(r => r.stories ?? [])
+        .catch(() => [] as KnowledgeStoryEntry[])
+    ]);
+
+    const mainCats = (mainResult.status === "fulfilled" ? mainResult.value : { categories: [] }).categories ?? [];
+    const rssCats = (rssResult.status === "fulfilled" ? rssResult.value : { categories: [] }).categories ?? [];
+    const cats = [...mainCats.map(c => ({ ...c, files: c.files })), ...rssCats.map(c => ({ ...c, files: c.files }))];
+    const storyList = storyResult.status === "fulfilled" ? storyResult.value : [];
+
+    if (cats.length) {
+      categories.value = cats;
+      stories.value = storyList;
+      writeCache(cats, storyList);
+    } else if (mainResult.status === "rejected") {
+      // Only show error if the main scan failed (RSS + stories are optional)
+      error.value = "Failed to load knowledge tree — server may be busy";
+    }
+  }
+
+  async function fetchCategories(): Promise<{ category: string; files: KnowledgeFileEntry[] }[]> {
+    // Fire main scan + RSS scan in parallel
+    const [mainResult, rssResult] = await Promise.allSettled([
+      scanKnowledge().catch(() => ({ categories: [] })),
+      scanKnowledge("rss").catch(() => ({ categories: [] }))
+    ]);
+
+    const mainCats = (mainResult.status === "fulfilled" ? mainResult.value : { categories: [] }).categories ?? [];
+    const rssCats = (rssResult.status === "fulfilled" ? rssResult.value : { categories: [] }).categories ?? [];
+    const cats = [...mainCats.map(c => ({ ...c, files: c.files })), ...rssCats.map(c => ({ ...c, files: c.files }))];
+
+    if (cats.length && cats.some(c => c.files.length > 0)) return cats;
+
+    // Fall back to DB mirror
+    try {
+      const dbResult = await listKnowledgeFiles();
+      if (dbResult.files?.length) {
+        const grouped = new Map<string, KnowledgeFileEntry[]>();
+        for (const f of dbResult.files) {
+          const cat = f.category || "__root__";
+          if (!grouped.has(cat)) grouped.set(cat, []);
+          grouped.get(cat)!.push(f);
+        }
+        return [...grouped.entries()].map(([category, files]) => ({ category, files }));
+      }
+    } catch {
+      console.warn("[knowledgeTree] DB mirror unavailable");
+    }
+
+    return [];
   }
 
   async function selectFile(path: string) {

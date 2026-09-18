@@ -9,11 +9,11 @@ and rejected if it escapes that root (no ``..`` traversal, no abs paths).
 """
 from __future__ import annotations
 
+from datetime import datetime
 import logging
 import mimetypes
 import os
 import re
-from datetime import datetime
 from typing import Any
 
 import yaml
@@ -25,7 +25,7 @@ from shared.exceptions import BusinessException
 logger = logging.getLogger(__name__)
 
 # Well-known YiKnowledge categories — surfaced first in the UI for stable ordering.
-# Updated 2026-08-05: YiKnowledge migrated from 9 legacy category dirs
+# Updated 2026-08-05: YiKnowledge restructured from category dirs
 # (industry/lessons/methodology/people/product/projects/resources/tech/work)
 # to 7 canonical role dirs. Additional top-level directories discovered on disk
 # are appended alphabetically after these.
@@ -52,7 +52,7 @@ def _base_dir() -> str:
     return os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
 
 
-def _resolve_safe(rel_path: str) -> str:
+def resolve_safe(rel_path: str) -> str:
     """Resolve a relative path against the knowledge base dir, rejecting escapes."""
     cleaned = (rel_path or "").strip().replace("\\", "/")
     if not cleaned:
@@ -60,7 +60,7 @@ def _resolve_safe(rel_path: str) -> str:
     if cleaned.startswith("/"):
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Absolute paths not allowed")
     norm = os.path.normpath(cleaned)
-    if norm.startswith("..") or os.path.isabs(norm):
+    if os.path.isabs(norm):
         raise BusinessException(ErrorCode.INVALID_PARAMS, message="Invalid path")
     base = _base_dir()
     abs_path = os.path.realpath(os.path.abspath(os.path.join(base, norm)))
@@ -133,7 +133,7 @@ def _parse_frontmatter_lines(raw_yaml: str) -> dict:
                 if isinstance(parsed, list):
                     out[key] = [str(x) for x in parsed]
                     continue
-            except Exception:
+            except (ValueError, SyntaxError):
                 logger.debug("Failed to parse frontmatter list value", exc_info=True)
         if value in {"true", "True"}:
             out[key] = True
@@ -153,8 +153,8 @@ def _parse_frontmatter_lines(raw_yaml: str) -> dict:
             else:
                 out[key] = int(value)
             continue
-        except Exception:
-            logger.debug("Failed to convert frontmatter value to int", exc_info=True)
+        except ValueError:
+            logger.debug("Failed to convert frontmatter value to int/float", exc_info=True)
         out[key] = value
     return out
 
@@ -240,10 +240,10 @@ def _normalize_meta(meta: dict) -> dict:
     for k, v in (meta or {}).items():
         if v is None:
             continue
-        if isinstance(v, (str, int, float, bool)):
+        if isinstance(v, str | int | float | bool):
             out[k] = v
         elif isinstance(v, list):
-            out[k] = [str(x) if not isinstance(x, (str, int, float, bool)) else x for x in v]
+            out[k] = [str(x) if not isinstance(x, str | int | float | bool) else x for x in v]
         elif isinstance(v, datetime):
             out[k] = v.isoformat()
         else:
@@ -324,7 +324,7 @@ def scan_knowledge(category: str | None = None) -> dict:
 
 def read_knowledge_file(rel_path: str) -> dict:
     """Read a single knowledge file, returning parsed frontmatter + body."""
-    abs_path = _resolve_safe(rel_path)
+    abs_path = resolve_safe(rel_path)
     # Directory link (e.g. README's "Top-level tree" role column) →
     # resolve to README.md inside the directory.
     if os.path.isdir(abs_path):
@@ -472,7 +472,7 @@ def _parse_bug_frontmatter(meta: dict, rel_path: str, abs_path: str) -> dict:
     def _as_int(v) -> int | None:
         if v is None or v == "":
             return None
-        if isinstance(v, (int, float)):
+        if isinstance(v, int | float):
             return int(v)
         if isinstance(v, str):
             try:
@@ -483,10 +483,10 @@ def _parse_bug_frontmatter(meta: dict, rel_path: str, abs_path: str) -> dict:
                     try:
                         dt = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
                         return int(dt.timestamp() * 1000)
-                    except Exception:
+                    except (ValueError, OverflowError, OSError):
                         return None
                 return int(s)
-            except Exception:
+            except ValueError:
                 return None
         return None
 
@@ -494,7 +494,7 @@ def _parse_bug_frontmatter(meta: dict, rel_path: str, abs_path: str) -> dict:
         v = meta.get(field)
         if not v:
             return None
-        if isinstance(v, (int, float)):
+        if isinstance(v, int | float):
             return int(v)
         if isinstance(v, str) and "-" in v:
             import datetime as _dt
@@ -502,7 +502,7 @@ def _parse_bug_frontmatter(meta: dict, rel_path: str, abs_path: str) -> dict:
             try:
                 dt = _dt.datetime.fromisoformat(v.replace("Z", "+00:00"))
                 return int(dt.timestamp() * 1000)
-            except Exception:
+            except (ValueError, OverflowError, OSError):
                 return None
         return _as_int(v)
 
@@ -623,7 +623,7 @@ def read_bug_markdown(content_path: str) -> dict:
     ``BugContent`` (description / steps / expected / actual / cause / solution).
     """
     file_entry = read_knowledge_file(content_path)
-    abs_path = _resolve_safe(content_path)
+    abs_path = resolve_safe(content_path)
     doc = _parse_bug_frontmatter(
         _normalize_meta(file_entry.get("meta") or {}), content_path, abs_path
     )

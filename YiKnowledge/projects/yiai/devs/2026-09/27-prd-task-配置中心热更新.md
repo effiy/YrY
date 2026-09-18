@@ -1,41 +1,75 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-23"
-title: "YA-09-23: 配置中心与动态配置热更新 — 运行时参数无需重启生效 — 开发任务"
+prd_task_id: "YA-09-72"
+title: "YA-09-72: 配置中心热更新 — SIGHUP + YAML watch + 通知 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "27-需求-配置中心热更新.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-23: 配置中心与动态配置热更新 — 运行时参数无需重启生效 — 开发任务
+# YA-09-72: 配置中心热更新 — SIGHUP + YAML watch + 通知 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[27-需求-配置中心热更新.md](../../prds/2026-09/27-需求-配置中心热更新.md)
-> 需求编号：YA-09-23 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-72 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+支持运行时重载 `config.yaml` 而无需重启服务——通过 `SIGHUP` 信号或 Admin API 触发。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+import signal
+from watchdog.observers import Observer
 
-| 步骤 | 任务 | 产出 |
+class HotReloader:
+    def __init__(self, settings):
+        self.settings = settings
+        signal.signal(signal.SIGHUP, self._on_sighup)
+        # 可选：watchdog 文件监听
+        self.observer = Observer()
+        self.observer.schedule(ConfigHandler(settings), path="config.yaml")
+
+    def _on_sighup(self, signum, frame):
+        self.settings.reload()
+        logger.info("Config reloaded via SIGHUP")
+
+# Admin API 手动触发
+@router.post("/admin/config/reload")
+async def reload_config():
+    settings.reload()
+    return {"message": "OK"}
+```
+
+### 可热更新 vs 需重启
+
+| 可热更新 | 需重启 |
+|---------|--------|
+| `rag.top_k`、`rag.chunk_size` | `server.port` |
+| `knowledge.watcher_poll_seconds` | `mongo.url` |
+| `llm.model`、`llm.provider` | `jwt.secret` |
+| 日志级别、CORS origins | 中间件配置 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | SIGHUP + Admin API 重载 | `kill -HUP` → 配置生效 | 0.25 |
+| 2 | 变更通知 + 测试 | 企微推送热更新结果 | 0.25 |
+
+**合计：0.5d**。

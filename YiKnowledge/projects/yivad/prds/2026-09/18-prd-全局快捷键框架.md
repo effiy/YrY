@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 全局快捷键框架
 tags:
 - 快捷键
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 已实现
+status: 已完成
+implementation_progress: 已全部实现
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,40 @@ source_okr: [yivad-003]
 # 全局快捷键框架
 
 > 需求编号：YV-09-43 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/18-prd-task-全局快捷键框架.md)，验证方案见 [测试方案](../../tests/2026-09/18-prd-test-全局快捷键框架.md)。
 > 依赖：无（纯前端基础设施，独立实现）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 快捷键注册表 | 参见 §快捷键注册表 |
+| FR-2 | useKeyboardShortcuts Composabl | 参见 §useKeyboardShortcuts |
+| FR-3 | 标准化快捷键配置 | 参见 §标准化快捷键配置 |
+| FR-4 | 快捷键覆盖层组件 | 参见 §快捷键覆盖层组件 |
+| FR-5 | 快捷键设置页面 | 参见 §快捷键设置页面 |
+| FR-6 | 快捷键使用分析 | 参见 §快捷键使用分析 |
 
 ## 改动总览
 
@@ -92,6 +128,7 @@ YiVad 作为管理后台，用户需要频繁执行重复操作（保存、搜�
 | 4 | **无快捷键自定义** -- 用户无法根据个人习惯修改快捷键 | **低** | 不同编辑器/IDE 背景的用户需要适应固定快捷键 |
 | 5 | **无作用域隔离** -- 输入框内编辑时快捷键误触发 | **中** | 在 input 中按 Ctrl+S 可能触发页面保存而非浏览器保存 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前键盘事件处理方式
@@ -116,6 +153,7 @@ YiVad 作为管理后台，用户需要频繁执行重复操作（保存、搜�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 快捷键注册方式选型
@@ -153,6 +191,7 @@ YiVad 作为管理后台，用户需要频繁执行重复操作（保存、搜�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```
@@ -214,6 +253,7 @@ YiVad 作为管理后台，用户需要频繁执行重复操作（保存、搜�
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 快捷键注册表
@@ -552,6 +592,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -572,6 +613,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 全局快捷键触发
@@ -606,6 +648,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -618,6 +661,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -634,6 +678,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 使用全局注册表而非组件内事件绑定
@@ -666,6 +711,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -688,6 +734,7 @@ export const shortcutAnalytics = new ShortcutAnalytics();
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `registry.ts` 中快捷键注册/注销/冲突检测逻辑正确

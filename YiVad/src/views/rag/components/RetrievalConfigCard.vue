@@ -14,16 +14,15 @@ defineProps<{
 <template>
   <el-card shadow="hover" class="rcc-card">
     <template #header>
-      <span><el-icon><Setting /></el-icon> Retrieval Configuration</span>
+      <span
+        ><el-icon><Setting /></el-icon> Retrieval Configuration</span
+      >
     </template>
     <div class="rcc-body">
       <div v-for="field in INDEX_INFO_FIELDS" :key="field.key" class="rcc-row">
         <span class="rcc-label">{{ field.label }}</span>
         <template v-if="field.format === 'tag' || field.format === 'boolean-tag'">
-          <el-tag
-            size="small"
-            :type="(field.tagMap?.[String(indexInfo[field.key])]?.type || 'info') as any"
-          >
+          <el-tag size="small" :type="(field.tagMap?.[String(indexInfo[field.key])]?.type || 'info') as any">
             {{ field.tagMap?.[String(indexInfo[field.key])]?.label ?? indexInfo[field.key] }}
           </el-tag>
         </template>
@@ -45,19 +44,19 @@ defineProps<{
 }
 .rcc-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   font-size: 13px;
   line-height: 1.8;
 }
 .rcc-label {
-  color: var(--el-text-color-secondary);
   flex-shrink: 0;
   margin-right: 12px;
+  color: var(--el-text-color-secondary);
 }
 .rcc-value {
-  text-align: right;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 </style>

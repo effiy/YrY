@@ -1,41 +1,69 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-77"
-title: "YA-09-77: 服务端数据库慢查询自动索引建议 — 基于查询模式分析的缺失索引检测 — 开发任务"
+prd_task_id: "YA-09-64"
+title: "YA-09-64: 慢查询索引建议 — MongoDB profiler + explain 分析 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.5
+estimate_frontend: 1.0
 source_prd: "81-需求-慢查询索引建议.md"
+source_okr: [yiai-001]
 ---
 
-# YA-09-77: 服务端数据库慢查询自动索引建议 — 基于查询模式分析的缺失索引检测 — 开发任务
+# YA-09-64: 慢查询索引建议 — MongoDB profiler + explain 分析 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[81-需求-慢查询索引建议.md](../../prds/2026-09/81-需求-慢查询索引建议.md)
-> 需求编号：YA-09-77 · 优先级：P2 · 人天：0.5d
-> 类型：架构 · 状态：需求已编写
+> 需求编号：YA-09-64 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.2d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+启用 MongoDB profiler（`level: 1, slowms: 100`），定期分析慢查询的 `explain()` 结果，自动建议缺失索引。
 
-### 阶段二：完善与收尾（约 0.2d）
+```python
+async def analyze_slow_queries():
+    profile = db.system.profile.find({"millis": {"$gt": 100}}).sort("ts", -1).limit(50)
+    suggestions = []
+    async for entry in profile:
+        explain = await db.command("explain", {"find": entry["ns"].split(".")[1], "filter": entry["command"].get("filter", {})})
+        if explain["queryPlanner"]["winningPlan"].get("stage") == "COLLSCAN":
+            # 全表扫描 → 建议索引
+            filter_keys = list(entry["command"].get("filter", {}).keys())
+            suggestions.append({
+                "collection": entry["ns"],
+                "query": entry["command"].get("filter"),
+                "duration_ms": entry["millis"],
+                "suggested_index": filter_keys,
+            })
+    return suggestions
+```
 
-| 步骤 | 任务 | 产出 |
+### 自动索引管理
+
+| 操作 | 条件 |
+|------|------|
+| 建议索引 | COLLSCAN + 查询频率 > 10/天 |
+| 自动创建 | 建议索引 + 索引大小 < 100MB |
+| 需人工确认 | 复合索引 3+ 字段 或 唯一索引 |
+
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | profiler 启用 + explain 分析 | 慢查询被识别和分类 | 0.5 |
+| 2 | 索引建议 + 自动创建 (保守) + 测试 | COLLSCAN 查询减少 80%+ | 0.5 |
+
+**合计：1.0d**。

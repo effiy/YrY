@@ -28,12 +28,31 @@ export type { Project } from "@/api/modules/projectService";
 
 export function useProjectInsights(filterDateStr?: Ref<string>) {
   const { loading, lastUpdated, projects, issues, bugs, modules, load } = useProjectData();
-  const { statsByKey, statsFor, completionPct, rollup, activitySeries, topProjects } =
-    useProjectStats(projects, issues, bugs, modules, filterDateStr);
-  const { risksByKey, risksFor, healthFor: riskHealthFor, riskCounts, flaggedCount } =
-    useProjectRisk(projects, issues, statsByKey, filterDateStr);
-  const { activeFilter, setFilter, removeFilter, clearAllFilters, undoLastFilter,
-    hasActiveFilter, canUndo, matchesFilter: filterMatchesFilter, activeFilterPills } = useProjectFilter();
+  const { statsByKey, statsFor, completionPct, rollup, activitySeries, topProjects } = useProjectStats(
+    projects,
+    issues,
+    bugs,
+    modules,
+    filterDateStr
+  );
+  const {
+    risksByKey,
+    risksFor,
+    healthFor: riskHealthFor,
+    riskCounts,
+    flaggedCount
+  } = useProjectRisk(projects, issues, statsByKey, filterDateStr);
+  const {
+    activeFilter,
+    setFilter,
+    removeFilter,
+    clearAllFilters,
+    undoLastFilter,
+    hasActiveFilter,
+    canUndo,
+    matchesFilter: filterMatchesFilter,
+    activeFilterPills
+  } = useProjectFilter();
 
   // Wrap pure functions to maintain the pre-refactor API (key-based, not value-based).
   const healthFor = (key: string) => riskHealthFor(risksFor(key));

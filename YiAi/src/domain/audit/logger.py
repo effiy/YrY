@@ -1,8 +1,8 @@
 import asyncio
-import logging
-import uuid
 from datetime import datetime, timezone
-from typing import Dict, Any
+import logging
+from typing import Any, Dict
+import uuid
 
 from data.database import db
 from shared.config import settings
@@ -35,7 +35,7 @@ class AuditLogger:
         logger.info("Audit log indexes ensured (TTL=%dd)", settings.audit_retention_days)
 
     @classmethod
-    async def write(cls, entry: Dict[str, Any]) -> None:
+    async def write(cls, entry: dict[str, Any]) -> None:
         try:
             await cls._ensure_indexes()
             entry.setdefault("log_id", str(uuid.uuid4()))
@@ -45,5 +45,5 @@ class AuditLogger:
             logger.error("Audit log write failed: %s", e)
 
     @classmethod
-    def write_async(cls, entry: Dict[str, Any]) -> None:
+    def write_async(cls, entry: dict[str, Any]) -> None:
         _task = asyncio.create_task(cls.write(entry))

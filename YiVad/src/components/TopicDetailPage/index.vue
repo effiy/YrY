@@ -16,7 +16,9 @@
         <span v-if="!isViewMode" class="topic-detail__shortcut-hint">{{ $t("topicDetail.shortcutHint") }}</span>
         <template v-if="isViewMode">
           <el-button v-if="!isNew" :icon="Link" @click="copyPermalink">{{ $t("topicDetail.copyLink") }}</el-button>
-          <el-button v-if="!isNew" :icon="ChatDotRound" @click="discussInAiChat">{{ $t("topicDetail.discussInAiChat") }}</el-button>
+          <el-button v-if="!isNew" :icon="ChatDotRound" @click="discussInAiChat">{{
+            $t("topicDetail.discussInAiChat")
+          }}</el-button>
           <el-button v-if="!isNew" link @click="viewRelatedAiChatSessions">Related AI Chat sessions</el-button>
           <el-button type="primary" :icon="EditPen" @click="switchToEdit">{{ $t("topicDetail.edit") }}</el-button>
         </template>
@@ -205,7 +207,9 @@
         <el-form-item :label="$t('topicDetail.contentLabel')" prop="content">
           <div v-if="!isViewMode" class="topic-detail__editor">
             <div class="topic-detail__editor-bar">
-              <span class="topic-detail__editor-count">{{ $t("topicDetail.wordCount", { chars: contentChars, words: contentWords }) }}</span>
+              <span class="topic-detail__editor-count">{{
+                $t("topicDetail.wordCount", { chars: contentChars, words: contentWords })
+              }}</span>
               <el-radio-group v-model="editorMode" size="small">
                 <el-radio-button value="edit">{{ $t("topicDetail.editorModeEdit") }}</el-radio-button>
                 <el-radio-button value="split">{{ $t("topicDetail.editorModeSplit") }}</el-radio-button>
@@ -221,11 +225,7 @@
                 :placeholder="$t('topicDetail.contentPlaceholder')"
                 class="topic-detail__editor-input"
               />
-              <div
-                v-show="editorMode !== 'edit'"
-                class="topic-detail__md topic-detail__editor-preview"
-                v-html="contentHtml"
-              />
+              <div v-show="editorMode !== 'edit'" class="topic-detail__md topic-detail__editor-preview" v-html="contentHtml" />
             </div>
           </div>
           <div v-else class="topic-detail__content-wrap">
@@ -258,7 +258,17 @@
 import { ref, reactive, computed, onMounted, onBeforeUnmount, h } from "vue";
 import { useRoute, useRouter, onBeforeRouteLeave } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowRight, CirclePlus, ArrowLeft, ArrowUp, ArrowDown, Delete as DeleteIcon, EditPen, Link, ChatDotRound } from "@element-plus/icons-vue";
+import {
+  ArrowRight,
+  CirclePlus,
+  ArrowLeft,
+  ArrowUp,
+  ArrowDown,
+  Delete as DeleteIcon,
+  EditPen,
+  Link,
+  ChatDotRound
+} from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
@@ -587,9 +597,14 @@ async function saveAndContinue() {
 // to the just-saved entry's view URL — survives the subsequent navigation.
 function detailRouteName(): string {
   const ROUTE_PREFIX_MAP: Record<string, string> = {
-    "leader": "leader", "code-review": "cr",
-    engineer: "eng", producter: "pm", aier: "ai",
-    srer: "sre", executiver: "exec", curator: "cur"
+    leader: "leader",
+    "code-review": "cr",
+    engineer: "eng",
+    producter: "pm",
+    aier: "ai",
+    srer: "sre",
+    executiver: "exec",
+    curator: "cur"
   };
   const prefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
@@ -657,9 +672,14 @@ async function handleCancel() {
 
 function back() {
   const ROUTE_PREFIX_MAP: Record<string, string> = {
-    "leader": "leader", "code-review": "cr",
-    engineer: "eng", producter: "pm", aier: "ai",
-    srer: "sre", executiver: "exec", curator: "cur"
+    leader: "leader",
+    "code-review": "cr",
+    engineer: "eng",
+    producter: "pm",
+    aier: "ai",
+    srer: "sre",
+    executiver: "exec",
+    curator: "cur"
   };
   const prefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
   // Topics that contain the tree prefix (e.g. "leader-postmortem").
@@ -785,9 +805,9 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .topic-detail {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   height: 100%;
   min-height: 0;
   max-height: calc(100vh - 95px);
@@ -820,9 +840,9 @@ onBeforeUnmount(() => {
 }
 .topic-detail__shortcut-hint {
   margin-right: 12px;
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
-  font-family: "SF Mono", "Menlo", monospace;
   white-space: nowrap;
 }
 .topic-detail__editor {
@@ -830,15 +850,15 @@ onBeforeUnmount(() => {
 }
 .topic-detail__editor-bar {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   margin-bottom: 8px;
 }
 .topic-detail__editor-count {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
-  font-family: "SF Mono", "Menlo", monospace;
   white-space: nowrap;
 }
 .topic-detail__editor-body {
@@ -873,12 +893,12 @@ onBeforeUnmount(() => {
 .topic-detail__body {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
   padding: 20px;
+  overflow-y: auto;
 }
 .topic-detail__related {
-  margin-top: 8px;
   padding: 0 4px 24px;
+  margin-top: 8px;
 }
 .topic-detail__tags {
   width: 100%;
@@ -892,9 +912,9 @@ onBeforeUnmount(() => {
 }
 .topic-detail__form {
   :deep(.el-form-item__label) {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .topic-detail__textarea-view {
@@ -904,8 +924,8 @@ onBeforeUnmount(() => {
   font-size: 14px;
   line-height: 1.7;
   color: var(--el-text-color-primary);
+  overflow-wrap: break-word;
   white-space: pre-wrap;
-  word-break: break-word;
   background: var(--el-fill-color-lighter);
   border-radius: 4px;
 }
@@ -916,49 +936,49 @@ onBeforeUnmount(() => {
   font-size: 14px;
   line-height: 1.6;
   color: var(--el-text-color-primary);
+  overflow-wrap: break-word;
   background: var(--el-fill-color-lighter);
   border-radius: 4px;
-  word-break: break-word;
 }
 .topic-detail__content-wrap {
   display: flex;
   gap: 24px;
-  width: 100%;
   align-items: flex-start;
+  width: 100%;
 }
 .topic-detail__content-wrap > .topic-detail__md {
   flex: 1;
   min-width: 0;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
   font-size: 15px;
   line-height: 1.8;
   color: var(--el-text-color-primary);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
 }
 .topic-detail__toc {
-  flex-shrink: 0;
   position: sticky;
   top: 12px;
+  flex-shrink: 0;
   width: 200px;
   max-height: calc(100vh - 100px);
   padding: 12px 14px;
+  overflow-y: auto;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 8px;
-  overflow-y: auto;
 }
 .topic-detail__toc-title {
   margin-bottom: 8px;
   font-size: 12px;
   font-weight: 600;
+  color: var(--el-text-color-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--el-text-color-secondary);
 }
 .topic-detail__toc ul {
-  list-style: none;
   padding: 0;
   margin: 0;
+  list-style: none;
 }
 .topic-detail__toc-item a {
   display: block;
@@ -967,7 +987,9 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-regular);
   text-decoration: none;
   border-left: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 .topic-detail__toc-item a:hover {
   color: var(--el-color-primary);
@@ -981,26 +1003,26 @@ onBeforeUnmount(() => {
 
   /* ── Headings ──────────────────────────────────────────────────── */
   :deep(h1) {
-    font-size: 1.75em;
-    margin: 1.6em 0 0.6em;
     padding-bottom: 0.4em;
-    border-bottom: 2px solid var(--el-border-color-lighter);
-    color: var(--el-text-color-primary);
+    margin: 1.6em 0 0.6em;
+    font-size: 1.75em;
     font-weight: 700;
+    color: var(--el-text-color-primary);
+    border-bottom: 2px solid var(--el-border-color-lighter);
   }
   :deep(h2) {
-    font-size: 1.4em;
-    margin: 1.4em 0 0.5em;
     padding-bottom: 0.3em;
-    border-bottom: 1px solid var(--el-border-color-lighter);
-    color: var(--el-text-color-primary);
+    margin: 1.4em 0 0.5em;
+    font-size: 1.4em;
     font-weight: 600;
+    color: var(--el-text-color-primary);
+    border-bottom: 1px solid var(--el-border-color-lighter);
   }
   :deep(h3) {
-    font-size: 1.15em;
     margin: 1.2em 0 0.4em;
-    color: var(--el-text-color-regular);
+    font-size: 1.15em;
     font-weight: 600;
+    color: var(--el-text-color-regular);
   }
   :deep(h1:first-child),
   :deep(h2:first-child),
@@ -1035,37 +1057,37 @@ onBeforeUnmount(() => {
   /* ── Inline code ────────────────────────────────────────────────── */
   :deep(code) {
     padding: 2px 7px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.88em;
+    color: var(--el-color-primary-dark-2);
     background: var(--el-color-primary-light-9);
     border-radius: 4px;
-    font-size: 0.88em;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-    color: var(--el-color-primary-dark-2);
   }
 
   /* ── Code blocks ────────────────────────────────────────────────── */
   :deep(pre) {
     padding: 16px 20px;
+    margin: 1em 0;
+    overflow-x: auto;
     background: var(--el-fill-color);
     border: 1px solid var(--el-border-color-lighter);
     border-radius: 6px;
-    overflow-x: auto;
-    margin: 1em 0;
     code {
       padding: 0;
-      background: none;
-      color: var(--el-text-color-primary);
       font-size: 0.85em;
+      color: var(--el-text-color-primary);
+      background: none;
     }
   }
 
   /* ── Blockquote (callout) ───────────────────────────────────────── */
   :deep(blockquote) {
-    margin: 1em 0;
     padding: 12px 18px;
-    border-left: 4px solid var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-radius: 0 6px 6px 0;
+    margin: 1em 0;
     color: var(--el-text-color-secondary);
+    background: var(--el-color-primary-light-9);
+    border-left: 4px solid var(--el-color-primary);
+    border-radius: 0 6px 6px 0;
     p {
       margin: 0.3em 0;
     }
@@ -1073,28 +1095,28 @@ onBeforeUnmount(() => {
 
   /* ── Tables ─────────────────────────────────────────────────────── */
   :deep(table) {
-    border-collapse: collapse;
     width: 100%;
     margin: 1em 0;
-    font-size: 0.93em;
-    border-radius: 6px;
     overflow: hidden;
+    font-size: 0.93em;
+    border-collapse: collapse;
     border: 1px solid var(--el-border-color-lighter);
+    border-radius: 6px;
     th,
     td {
       padding: 10px 14px;
-      border: 1px solid var(--el-border-color-lighter);
-      text-align: left;
       vertical-align: top;
+      text-align: left;
+      border: 1px solid var(--el-border-color-lighter);
     }
     th {
-      background: var(--el-fill-color);
+      font-size: 0.85em;
       font-weight: 600;
       color: var(--el-text-color-secondary);
-      font-size: 0.85em;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       white-space: nowrap;
+      background: var(--el-fill-color);
     }
     tbody tr:nth-child(even) {
       background: var(--el-fill-color-lighter);
@@ -1116,8 +1138,8 @@ onBeforeUnmount(() => {
   /* ── Images ─────────────────────────────────────────────────────── */
   :deep(img) {
     max-width: 100%;
-    border-radius: 6px;
     margin: 1em 0;
+    border-radius: 6px;
   }
 }
 
@@ -1134,10 +1156,10 @@ onBeforeUnmount(() => {
 .array-field__index {
   flex-shrink: 0;
   width: 20px;
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
   color: var(--el-text-color-placeholder);
   text-align: center;
-  font-family: "SF Mono", "Menlo", monospace;
 }
 .array-field__key {
   flex: 2;
@@ -1147,21 +1169,21 @@ onBeforeUnmount(() => {
 }
 .array-field__table {
   width: 100%;
-  border-collapse: collapse;
   font-size: 13px;
+  border-collapse: collapse;
   th,
   td {
     padding: 8px 12px;
-    border: 1px solid var(--el-border-color-lighter);
     text-align: left;
+    border: 1px solid var(--el-border-color-lighter);
   }
   th {
-    background: var(--el-fill-color);
+    font-size: 12px;
     font-weight: 600;
     color: var(--el-text-color-secondary);
-    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    background: var(--el-fill-color);
   }
   tbody tr:nth-child(even) {
     background: var(--el-fill-color-lighter);
@@ -1170,8 +1192,8 @@ onBeforeUnmount(() => {
 .array-field__empty {
   display: block;
   padding: 12px;
-  color: var(--el-text-color-placeholder);
-  font-style: italic;
   font-size: 13px;
+  font-style: italic;
+  color: var(--el-text-color-placeholder);
 }
 </style>

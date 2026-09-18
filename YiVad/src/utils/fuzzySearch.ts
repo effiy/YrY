@@ -14,12 +14,8 @@ interface FuseOptions<T> {
  * Lightweight fuzzy search based on substring matching with scoring.
  * For production use, consider Fuse.js for better CJK support.
  */
-export function fuzzySearch<T extends Record<string, any>>(
-  list: T[],
-  query: string,
-  options: FuseOptions<T>
-): FuseResult<T>[] {
-  if (!query.trim()) return list.map((item) => ({ item, score: 0 }));
+export function fuzzySearch<T extends Record<string, any>>(list: T[], query: string, options: FuseOptions<T>): FuseResult<T>[] {
+  if (!query.trim()) return list.map(item => ({ item, score: 0 }));
 
   const q = query.toLowerCase().trim();
   const threshold = options.threshold ?? 0.6;

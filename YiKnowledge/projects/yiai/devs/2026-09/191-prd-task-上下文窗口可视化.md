@@ -1,41 +1,52 @@
 ---
 doc_type: module
-prd_task_id: "YA-09-186"
-title: "YA-09-186: 上下文窗口可视化 — LLM 上下文窗口用量可视化、token 分配分解、实时用量条、溢出警告、优化建议、逐消息 token 计数 — 开发任务"
+prd_task_id: "YA-09-138"
+title: "YA-09-138: 上下文窗口可视化 — Token 用量实时展示 — 开发方案"
 status: 需求已编写
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiAi
 project_id: yiai
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "191-需求-上下文窗口可视化.md"
+source_okr: [yiai-002]
 ---
 
-# YA-09-186: 上下文窗口可视化 — LLM 上下文窗口用量可视化、token 分配分解、实时用量条、溢出警告、优化建议、逐消息 token 计数 — 开发任务
+# YA-09-138: 上下文窗口可视化 — Token 用量实时展示 — 开发方案
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[191-需求-上下文窗口可视化.md](../../prds/2026-09/191-需求-上下文窗口可视化.md)
-> 需求编号：YA-09-186 · 优先级：P2 · 人天：0.3d
-> 类型：功能实现 · 状态：需求已编写
+> 需求编号：YA-09-138 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 0.1d）
+<a id="sec-1"></a>
+## 一、方案
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+前端显示当前对话的 Token 用量进度条——系统提示 + 历史消息 + 当前消息各占多少，接近窗口上限时警告。
 
-### 阶段二：完善与收尾（约 0.1d）
+```python
+async def token_usage(session_id: str) -> dict:
+    messages = await get_session_messages(session_id)
+    tokens = {"system": count(system_prompt), "history": sum(count(m["content"]) for m in messages[:-1]),
+              "current": count(messages[-1]["content"]) if messages else 0}
+    return {"tokens": tokens, "total": sum(tokens.values()), "limit": 8192,
+            "usage_pct": round(sum(tokens.values()) / 8192 * 100)}
+```
 
-| 步骤 | 任务 | 产出 |
+---
+
+<a id="sec-2"></a>
+## 二、实施步骤
+
+| 步骤 | 验证 | 人天 |
 |------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 1 | Token 计数 API | 实时返回各段用量 | 0.25 |
+| 2 | 前端进度条 + 溢出警告 + 测试 | > 80% 黄色，> 95% 红色 | 0.25 |
+
+**合计：0.5d**。

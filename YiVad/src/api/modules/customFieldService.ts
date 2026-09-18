@@ -8,7 +8,7 @@ const MODULE = "services.custom_fields.custom_field_service";
 
 export function listFieldDefs(entityType?: string) {
   return callService<{ list: CustomFieldDef[] }>(MODULE, "list_field_defs", {
-    entityType,
+    entityType
   });
 }
 

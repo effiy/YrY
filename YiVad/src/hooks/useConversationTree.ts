@@ -32,7 +32,7 @@ export function useConversationTree(deps: ConversationTreeDeps) {
         if (!current[seg]) {
           current[seg] = {
             key,
-            name: isLast ? (c.title || "(Untitled)") : seg,
+            name: isLast ? c.title || "(Untitled)" : seg,
             type: isLast ? "file" : "folder",
             children: isLast ? undefined : {},
             session: isLast ? c : undefined,
@@ -91,6 +91,6 @@ export function useConversationTree(deps: ConversationTreeDeps) {
     toggleFolder,
     conversationTree,
     filteredConversationTree,
-    isStreaming,
+    isStreaming
   };
 }

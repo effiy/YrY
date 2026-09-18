@@ -1,19 +1,20 @@
 """Utility functions"""
-import re
-import json
-import hashlib
-import logging
-import random
-import string
-import math
-from typing import Union, Any, List, Dict, Optional, Generator
+from collections.abc import Generator
 from datetime import datetime, timezone
+import hashlib
+import json
+import logging
+import math
+import random
+import re
+import string
+from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
 # --- Text Processing ---
 
-def estimate_tokens(text: Union[str, bytes]) -> int:
+def estimate_tokens(text: str | bytes) -> int:
     """
     Estimate token count for text (simplified)
     ASCII characters (e.g. English) ~4 chars per token (0.25)
@@ -55,7 +56,7 @@ def generate_random_string(length: int = 8, chars: str = string.ascii_letters + 
     """Generate random string of specified length"""
     return ''.join(random.choice(chars) for _ in range(length))
 
-def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
+def extract_json_from_text(text: str) -> dict | list | None:
     """
     Try to extract and parse JSON from text
     Supports extracting JSON from markdown code blocks (```json ... ```)
@@ -104,7 +105,7 @@ def extract_json_from_text(text: str) -> Optional[Union[Dict, List]]:
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
             json_str = text[start_idx:end_idx+1]
             return json.loads(json_str)
-    except Exception:
+    except (json.JSONDecodeError, ValueError, TypeError):
         logger.debug("Failed to extract JSON from text", exc_info=True)
 
     return None
@@ -136,9 +137,7 @@ def is_number(value: Any) -> bool:
         result = float(value)
     except (ValueError, TypeError):
         return False
-    if math.isnan(result) or math.isinf(result):
-        return False
-    return True
+    return not (math.isnan(result) or math.isinf(result))
 
 def format_file_size(size_in_bytes: int) -> str:
     """
@@ -173,7 +172,7 @@ def format_tokens_with_commas(tokens: int) -> str:
 
 # --- Collection Processing ---
 
-def chunk_list(lst: List[Any], size: int) -> Generator[List[Any], None, None]:
+def chunk_list(lst: list[Any], size: int) -> Generator[list[Any], None, None]:
     """
     Split list into chunks of specified size
     """

@@ -13,6 +13,7 @@ prd_month: "202608"
 prd_task_id: "YA-08-15"
 source_prds: ["13-需求-Agent工具系统"]
 source_modules: []
+source_okr: [yiai-003]
 ---
 # Agent 工具系统 — 测试规格
 

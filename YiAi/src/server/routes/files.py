@@ -11,6 +11,7 @@ from domain.files import (
     delete_file,
     delete_folder,
     delete_project_folder,
+    list_directory,
     read_file,
     read_project_file,
     rename_file,
@@ -30,6 +31,7 @@ from models.schemas import (
     FolderDeleteRequest,
     FolderRenameRequest,
     ImageUploadToOssRequest,
+    ListDirectoryRequest,
     ProjectFileReadRequest,
     ProjectFileWriteRequest,
     ProjectFolderDeleteRequest,
@@ -130,4 +132,11 @@ async def upload_file_route(request: FileUploadRequest):
     data = await upload_file(
         request.target_dir, request.filename, request.content, request.is_base64
     )
+    return success(data=data)
+
+
+@router.post("/list-directory", operation_id="list_directory")
+async def list_directory_route(request: ListDirectoryRequest):
+    """List directory contents recursively on the server."""
+    data = await list_directory(request.target_dir, request.max_depth)
     return success(data=data)

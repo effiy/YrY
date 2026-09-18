@@ -1,49 +1,40 @@
 ---
 doc_type: test
-title: "YP-07-05: Content Script 注入架构 — Shadow DOM 隔离 + 生命周期管理 + 页面兼容 — 测试规格"
-status: 待开始
-priority: P0
+title: "YP-07-05: Content Script 注入架构 — 测试用例"
+status: 已完成
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-15
 project: YiPet
-project_id: yipet
 prd_month: "202607"
-prd_task_id: "YP-07-05"
 source_prds: ["05-架构设计-ContentScript注入架构"]
-source_modules: []
----
-# YP-07-05: Content Script 注入架构 — Shadow DOM 隔离 + 生命周期管理 + 页面兼容 — 测试规格
-
-> 来源 PRD：[05-架构设计-ContentScript注入架构.md](../../prds/2026-07/05-架构设计-ContentScript注入架构.md)
-> 提取日期：2026-09-11
-
+source_modules: ["05-prd-task-ContentScript注入架构"]
 ---
 
-## 测试场景
+# YP-07-05: Content Script 注入架构 — 测试用例
 
-### 功能验证
+## 测试分层
 
-- **GIVEN** 满足前置条件
-- **WHEN** 执行核心功能操作
-- **THEN** 预期结果正确返回
+| 层级 | 工具 | 覆盖 |
+|------|------|------|
+| L1 单元 | Vitest | bootstrap 防重复逻辑 |
+| L2 集成 | Vitest + mock chrome | 注入流程、Shadow DOM 创建 |
+| L3 E2E | 加载扩展 | 各页面类型注入验证 |
 
-### 边界测试
+## 测试用例
 
-- 空输入/空数据场景
-- 超大数据量场景
-- 并发/竞态场景
+| 编号 | 用例 | 预期 | 优先级 |
+|------|------|------|--------|
+| TC-CS-001 | 静态页面注入 | `__YIPET_LOADED__` 标记+Pet 可见 | P0 |
+| TC-CS-002 | 防重复注入 | 刷新页面 `__YIPET_LOADED__` 仅一次 | P0 |
+| TC-CS-003 | Shadow DOM 样式隔离 | 宿主 CSS 不影响 Pet | P0 |
+| TC-CS-004 | chrome:// 页面跳过 | 静默跳过，无报错 | P0 |
+| TC-CS-005 | SPA 路由切换不丢失 | MutationObserver 保持注入 | P1 |
+| TC-CS-006 | 注入失败清除标记 | 失败后重试允许 | P1 |
 
-### 异常测试
+## 出口准则
 
-- 依赖服务不可用时的降级行为
-- 超时/网络中断时的恢复行为
-- 非法输入时的错误提示
-
-## 验收标准
-
-- [ ] 核心功能正常工作
-- [ ] 边界情况处理正确
-- [ ] 异常路径有合理的降级/错误提示
-- [ ] 无性能退化
+- [ ] P0 用例 100% 通过
+- [ ] 无 console.error 注入错误

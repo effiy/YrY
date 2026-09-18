@@ -29,7 +29,7 @@ src/
 │   ├── index.ts              — RequestHttp 类（Axios 封装、拦截器、取消请求）
 │   ├── helper/               — checkStatus（错误码映射）、axiosCancel（请求取消）
 │   ├── interface/            — 响应类型定义
-│   └── modules/              — 领域服务函数（39 个模块）
+│   └── modules/              — 领域服务函数（37 个模块）
 │       ├── chatService.ts    — SSE 流式对话
 │       ├── dataService.ts    — MongoDB CRUD（RPC 信封）
 │       ├── fileService.ts    — 文件读写（/read-file、/write-file）
@@ -51,7 +51,7 @@ src/
 │   ├── copy/                 — v-copy（一键复制）
 │   ├── watermark/            — v-watermark（水印）
 │   └── ...                   — debounce、throttle、draggable、longpress、sticky
-├── hooks/                    — 63 composables
+├── hooks/                    — 58 composables
 │   ├── useTable.ts           — ProTable 数据获取 + 分页逻辑
 │   ├── useTheme.ts           — 主题切换
 │   ├── useAuthButtons.ts     — 权限按钮列表
@@ -68,7 +68,7 @@ src/
 ├── routers/                  — 动态路由
 │   ├── index.ts              — 路由实例 + 静态路由 + beforeEach 权限守卫
 │   └── modules/              — staticRouter.ts、dynamicRouter.ts
-├── stores/modules/           — 25 个 Pinia stores
+├── stores/modules/           — 24 个 Pinia stores
 │   ├── global.ts             — 全局状态（主题、语言、布局）
 │   ├── user.ts               — 用户信息
 │   ├── auth.ts               — 权限菜单
@@ -82,15 +82,26 @@ src/
 ├── styles/                   — 全局 SCSS、Element Plus 覆盖、主题变量
 ├── typings/                  — 全局类型声明 + 自动生成（auto-imports.d.ts、components.d.ts）
 ├── utils/                    — 工具函数（颜色、菜单树、localStorage、日期）
-└── views/                    — 28 个功能模块的页面组件
-    ├── aiChat/               — AI 对话（核心页面）
-    ├── knowledge/            — 知识库管理
-    ├── project/              — 项目管理
-    ├── bug/                  — Bug 追踪
-    ├── issue/                — 问题管理
-    ├── dashboard/            — 仪表盘
-    ├── rag/                  — RAG 检索
-    └── ...
+└── views/                    — 19 个功能模块的页面组件
+    ├── ai-chat/               — AI 对话（核心页面，SSE 流式）
+    ├── bug/                   — Bug 追踪（列表 + 详情）
+    ├── dashboard/             — 仪表盘（knowledge-base、rss-content、analytics）
+    ├── gantt/                 — 甘特图
+    ├── home/                  — 首页仪表盘（今日焦点、知识动态、活动日志）
+    ├── import/                — 数据导入导出（含 sync、export 子模块）
+    ├── issue/                 — 问题管理（列表 + 详情）
+    ├── kanban/                — 看板
+    ├── knowledge/             — 知识库管理（7 角色 + executive/pipeline/skills/goals/metrics/resume）
+    ├── login/                 — 登录页
+    ├── module/                — 模块管理（列表 + 详情）
+    ├── notification/          — 通知中心 + 偏好设置
+    ├── project/               — 项目管理（列表 + 详情）
+    ├── rag/                   — RAG 检索（概览、聊天、对比、历史、检索配置）
+    ├── reports/               — 报表（ReportBuilder、ReportPreview）
+    ├── roadmap/               — 路线图
+    ├── search/                — 全局搜索
+    ├── showcase/              — 组件展示（Components、Directives、Charts，23 个示例）
+    └── system/                — 系统管理（菜单/账户/角色/部门/字典/日志/定时任务）
 ```
 
 ## 架构分层
@@ -108,7 +119,7 @@ src/
 ├──────────────┬───────────────────────────────┤
 │  Stores      │  API Modules                  │
 │  Pinia 状态  │  领域服务函数                   │
-│  25 modules  │  39 modules                   │
+│  24 modules  │  37 modules                   │
 ├──────────────┴───────────────────────────────┤
 │  RequestHttp（Axios 封装）                     │
 │  拦截器、取消请求、错误映射                     │
@@ -202,7 +213,7 @@ View → fileService.writeFile(p, c) → POST /write-file { target_file, content
 
 | 类型 | 框架 | 运行方式 |
 |------|------|----------|
-| 类型检查 | `vue-tsc --noEmit` | `pnpm typecheck`（阻断构建） |
+| 类型检查 | `vue-tsc --noEmit` | `pnpm type:check`（阻断构建） |
 | 单元测试 | Vitest + `@vue/test-utils` + jsdom | `pnpm test` |
 | 代码检查 | ESLint 10 + Prettier 3 + Stylelint 17 | `pnpm lint` / `pnpm lint:prettier` / `pnpm lint:stylelint` |
 | 提交检查 | husky 9 + lint-staged 17 + commitlint 21 | 提交时自动触发 |
@@ -220,12 +231,33 @@ pnpm build:dev        # 开发环境构建
 pnpm build:pro        # 生产环境构建
 pnpm build:test       # 测试环境构建
 pnpm preview          # 预览构建产物
-pnpm lint             # ESLint 检查
+pnpm lint:eslint      # ESLint 检查
 pnpm lint:prettier    # Prettier 格式化
 pnpm lint:stylelint   # Stylelint 检查
-pnpm typecheck        # vue-tsc --noEmit
+pnpm type:check       # vue-tsc --noEmit
 pnpm test             # vitest run
 ```
+
+## 近期变更
+
+### 2026-09-18 — Views 重构 + 菜单系统专业化
+
+- **Views 目录重组**：删除 `demo/`（40+ 死代码子目录），`analytics/` 合并入 `dashboard/analytics/`，新增 `showcase/` 组件展示（Components、Directives、Charts）
+- **菜单数据专业化**：12 个顶级菜单分区，语义化图标（系统管理各子项不再统一用 `Menu`），修复 key 拼写错误（Executiver→Executive 等），data-tools 分区收拢 import/export，reports 改为可见
+- **菜单管理增强**：form 字段添加 hint 提示，parent 列显示菜单标题而非原始路径，新增 "Reset Defaults" 按钮（调用 `POST /system/menus/bulk-reset` 一键恢复默认菜单）
+- **YiAi 后端**：`MenuMeta` Pydantic 子模型校验（path/name 正则、parent 不自引用），新增 `POST /system/menus/bulk-reset` 批量重置端点
+- **类型完善**：`MenuOptions` 新增 `key` 和 `parent` 字段
+- **Mock 清理**：`menu-list.js` 1442→100 行，匹配当前生产菜单数据
+
+### 2026-09-17 — 代码健康：死代码移除 + Bug 修复 + SSE 工具去重
+
+- **死代码移除**：删除 `api/modules/claudeService.ts`、`api/modules/commentService.ts`（零消费者）。移除 `api/modules/fileService.ts` 中 `fetchSourceFromDevServer`（30 行，从未被导入）。移除 `utils/errorHandler.ts` 中遗留的 `default export`。移除 `api/interface/yiAi.ts` 中未使用的 `ChatEntry`/`ChatEntryType`/`normalizeEntry`/`normalizeEntries` 及相关死代码。
+- **Store 清理**：移除 `stores/modules/aiChat.ts` 中从未被外部消费的 `knowledgeMode`、`contextSwitchEnabled`、`setContextSwitchEnabled`。
+- **Bug 修复**：`stores/modules/project.ts` 中 `editProject` 乐观更新增加 API 失败时的回滚逻辑。
+- **SSE 工具去重**：`api/modules/chatService.ts` 和 `api/modules/ragService.ts` 中的重复 `extractDelta` 提取到 `utils/sse.ts` 共享模块。
+- **类型清理**：`api/interface/yiAi.ts` 移除 `ChatMessage.content` 遗留字段和 `QueryDocumentsParams` 中被后端静默忽略的 `tags`/`search` 参数。
+- **死 Hook 移除**：删除 5 个零消费者的 composables（`useRichText`、`useGracefulDegradation`、`useSkeleton`、`useLazyLoad`、`useDashboard`）。
+- **Prop 变更修复**：`components/Upload/FileManager.vue` 修复 `v-model` 直接绑定 prop 的反模式。
 
 ## 参考指引
 
@@ -234,9 +266,9 @@ pnpm test             # vitest run
 | [rsbuild.config.ts](./rsbuild.config.ts) | 构建配置（插件、代理、别名、产物输出） |
 | [tsconfig.json](./tsconfig.json) | TypeScript 严格模式配置 |
 | [src/api/index.ts](./src/api/index.ts) | RequestHttp 类 —— 所有 HTTP 请求的入口 |
-| [src/api/modules/](./src/api/modules/) | 39 个领域服务模块 |
-| [src/stores/modules/](./src/stores/modules/) | 25 个 Pinia stores |
-| [src/hooks/](./src/hooks/) | 63 composables |
+| [src/api/modules/](./src/api/modules/) | 37 个领域服务模块 |
+| [src/stores/modules/](./src/stores/modules/) | 24 个 Pinia stores |
+| [src/hooks/](./src/hooks/) | 58 composables |
 | [src/components/](./src/components/) | 55 个可复用组件 |
 | [src/directives/](./src/directives/) | 10 个自定义指令 |
 | [src/routers/](./src/routers/) | 动态路由 + 权限守卫 |
@@ -244,7 +276,7 @@ pnpm test             # vitest run
 | [组件模式](../YiKnowledge/projects/yivad/patterns/component-patterns.md) | Vue 3.5 组件开发规范 |
 | [状态管理](../YiKnowledge/projects/yivad/patterns/state-management.md) | Pinia store 模式与持久化 |
 | [路由系统](../YiKnowledge/projects/yivad/architecture/routing.md) | 动态路由与权限守卫 |
-| [API 模块](../YiKnowledge/projects/yivad/architecture/api-modules.md) | 39 个 API 服务模块参考 |
+| [API 模块](../YiKnowledge/projects/yivad/architecture/api-modules.md) | 37 个 API 服务模块参考 |
 | [添加页面](../YiKnowledge/projects/yivad/workflows/adding-page.md) | 添加新页面工作流 |
 | [YiAi/CLAUDE.md](../YiAi/CLAUDE.md) | 后端项目参考 |
 | [../CLAUDE.md](../CLAUDE.md) | 根级 CLAUDE.md（RPC 协议、跨项目关系） |

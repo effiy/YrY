@@ -13,9 +13,12 @@ project_id: yiai
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "96-需求-Merkle批量完整性.md"
+source_okr: [yiai-001]
 ---
 
 # YA-09-92: 服务端请求重放保护增强 — 基于 Merkle Tree 的请求批次完整性验证 — 开发任务
+
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 > 来源 PRD：[96-需求-Merkle批量完整性.md](../../prds/2026-09/96-需求-Merkle批量完整性.md)
 > 需求编号：YA-09-92 · 优先级：P2 · 人天：0.5d

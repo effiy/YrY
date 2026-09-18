@@ -20,7 +20,9 @@
           <span class="da-kpi__value da-kpi__value--warn">{{ overdueIssues }}</span>
           <span class="da-kpi__label">{{ $t("project.analytics.kpiOverdue") }}</span>
           <span class="da-kpi__sub">{{ overduePct }}% {{ $t("project.risks.overdue") }}</span>
-          <div class="da-kpi__bar"><div class="da-kpi__bar-fill da-kpi__bar-fill--warn" :style="{ width: overduePct + '%' }" /></div>
+          <div class="da-kpi__bar">
+            <div class="da-kpi__bar-fill da-kpi__bar-fill--warn" :style="{ width: overduePct + '%' }" />
+          </div>
         </div>
         <div class="da-kpi">
           <span class="da-kpi__value da-kpi__value--danger">{{ unassignedIssues }}</span>
@@ -59,22 +61,10 @@
           <div class="da-card__head">
             <span>{{ $t("project.analytics.largeFileWarning") }}</span>
             <span class="da-card__total">
-              <el-button
-                v-if="!healthReport"
-                link
-                size="small"
-                type="primary"
-                :loading="healthLoading"
-                @click="analyzeHealth"
-              >{{ $t("project.analytics.analyze") }}</el-button>
-              <el-button
-                v-else
-                link
-                size="small"
-                :icon="Refresh"
-                :loading="healthLoading"
-                @click="analyzeHealth"
-              />
+              <el-button v-if="!healthReport" link size="small" type="primary" :loading="healthLoading" @click="analyzeHealth">{{
+                $t("project.analytics.analyze")
+              }}</el-button>
+              <el-button v-else link size="small" :icon="Refresh" :loading="healthLoading" @click="analyzeHealth" />
             </span>
           </div>
           <div class="da-card__body da-card__body--scroll">
@@ -89,12 +79,7 @@
               {{ $t("project.analytics.clickToAnalyze") }}
             </div>
             <div v-else-if="largeFiles.length" class="da-file-list">
-              <div
-                v-for="(f, idx) in largeFiles"
-                :key="f.path"
-                class="da-file-row"
-                :class="`da-file-row--${fileLevel(f)}`"
-              >
+              <div v-for="(f, idx) in largeFiles" :key="f.path" class="da-file-row" :class="`da-file-row--${fileLevel(f)}`">
                 <span class="da-file-row__idx">{{ idx + 1 }}</span>
                 <div class="da-file-row__info">
                   <span class="da-file-row__name">{{ f.path.split("/").pop() }}</span>
@@ -112,8 +97,7 @@
             <p v-else class="da-card__empty">{{ $t("project.analytics.emptyFileData") }}</p>
           </div>
         </div>
-
-        </div>
+      </div>
     </section>
 
     <!-- ═══ Section 3: 活跃度趋势 ═══ -->
@@ -138,11 +122,7 @@ import ECharts from "@/components/ECharts/index.vue";
 import CodeHealthPanel from "./CodeHealthPanel.vue";
 import { useCodeHealth } from "@/hooks/useCodeHealth";
 import { useProjectDetail, CLOSED_STATUSES, ACTIVITY_DAYS, isoDay } from "@/views/project/types";
-import {
-  buildStatusBar,
-  buildTypeBar,
-  buildActivityArea,
-} from "@/views/project/charts";
+import { buildStatusBar, buildTypeBar, buildActivityArea } from "@/views/project/charts";
 
 const ctx = useProjectDetail();
 const { allIssues, allBugs, allModules, project } = ctx;
@@ -155,9 +135,13 @@ const projectKey = computed(() => project.value?.key || "");
 const projectKeyRef = computed(() => projectKey.value);
 const { report: healthReport, loading: healthLoading, error: healthError, analyze: analyzeHealth } = useCodeHealth(projectKeyRef);
 
-watch(projectKey, (key) => {
-  if (key) analyzeHealth();
-}, { immediate: true });
+watch(
+  projectKey,
+  key => {
+    if (key) analyzeHealth();
+  },
+  { immediate: true }
+);
 
 const LARGE_FILE_LIMIT = 10;
 
@@ -235,8 +219,8 @@ const donePct = computed(() => {
   const d = allIssues.value.filter(i => i.status === "done").length;
   return t ? Math.round((d / t) * 100) : 0;
 });
-const openPct = computed(() => totalIssues.value ? Math.round((openIssues.value / totalIssues.value) * 100) : 0);
-const overduePct = computed(() => openIssues.value ? Math.round((overdueIssues.value / openIssues.value) * 100) : 0);
+const openPct = computed(() => (totalIssues.value ? Math.round((openIssues.value / totalIssues.value) * 100) : 0));
+const overduePct = computed(() => (openIssues.value ? Math.round((overdueIssues.value / openIssues.value) * 100) : 0));
 
 // ══════════════════════════════════════════════
 // Charts
@@ -260,8 +244,8 @@ const activityOption = computed(() => buildActivityArea(activity.value));
 .da-section {
   &__title {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin: 0 0 12px;
     font-size: 14px;
     font-weight: 700;
@@ -284,94 +268,96 @@ const activityOption = computed(() => buildActivityArea(activity.value));
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
 }
-
 .da-kpi {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   padding: 16px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  gap: 2px;
 }
-
 .da-kpi__value {
   font-size: 28px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-primary);
   line-height: 1.2;
-  &--info { color: var(--el-color-primary); }
-  &--warn { color: var(--el-color-warning); }
-  &--danger { color: var(--el-color-danger); }
+  color: var(--el-text-color-primary);
+  &--info {
+    color: var(--el-color-primary);
+  }
+  &--warn {
+    color: var(--el-color-warning);
+  }
+  &--danger {
+    color: var(--el-color-danger);
+  }
 }
-
 .da-kpi__label {
   font-size: 12px;
   font-weight: 500;
   color: var(--el-text-color-regular);
 }
-
 .da-kpi__sub {
   font-size: 10px;
   color: var(--el-text-color-placeholder);
 }
-
 .da-kpi__bar {
-  margin-top: 8px;
   height: 4px;
+  margin-top: 8px;
+  overflow: hidden;
   background: var(--el-fill-color);
   border-radius: 2px;
-  overflow: hidden;
 }
-
 .da-kpi__bar-fill {
   height: 100%;
-  border-radius: 2px;
   background: var(--el-color-success);
+  border-radius: 2px;
   transition: width 0.4s ease;
-  &--info { background: var(--el-color-primary); }
-  &--warn { background: var(--el-color-warning); }
+  &--info {
+    background: var(--el-color-primary);
+  }
+  &--warn {
+    background: var(--el-color-warning);
+  }
 }
 
 // ── Card ──
 .da-card {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 10px;
-  overflow: hidden;
 }
-
 .da-card__head {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   padding: 10px 14px;
   font-size: 12px;
   font-weight: 600;
   color: var(--el-text-color-regular);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
-
 .da-card__total {
   margin-left: auto;
-  font-weight: 400;
   font-size: 10px;
-  color: var(--el-text-color-placeholder);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
 }
-
 .da-card__body {
   height: 220px;
-  &--sm { height: 140px; }
+  &--sm {
+    height: 140px;
+  }
   &--scroll {
     height: 220px;
     overflow-y: auto;
   }
 }
-
 .da-card__center {
   display: flex;
   align-items: center;
@@ -380,18 +366,16 @@ const activityOption = computed(() => buildActivityArea(activity.value));
   font-size: 20px;
   color: var(--el-text-color-placeholder);
 }
-
 .da-card__error {
   display: flex;
   flex-direction: column;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   height: 100%;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
-
 .da-card__empty {
   display: flex;
   align-items: center;
@@ -406,76 +390,79 @@ const activityOption = computed(() => buildActivityArea(activity.value));
 .da-file-list {
   padding: 4px 8px;
 }
-
 .da-file-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   padding: 5px 6px;
   border-bottom: 1px solid var(--el-border-color-extra-light);
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 }
-
 .da-file-row__idx {
+  min-width: 16px;
   font-size: 10px;
   font-weight: 600;
-  color: var(--el-text-color-placeholder);
-  min-width: 16px;
   font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
 }
-
 .da-file-row__info {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1px;
+  min-width: 0;
 }
-
 .da-file-row__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 11px;
   font-weight: 500;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
+}
+.da-file-row__path {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--el-text-color-regular);
-}
-
-.da-file-row__path {
+  font-family: "SF Mono", Menlo, monospace;
   font-size: 9px;
   color: var(--el-text-color-placeholder);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: "SF Mono", Menlo, monospace;
 }
-
 .da-file-row__meta {
   display: flex;
   gap: 8px;
   font-size: 10px;
-  color: var(--el-text-color-placeholder);
   font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
 }
-
 .da-file-row__bar {
   width: 100%;
   height: 3px;
+  overflow: hidden;
   background: var(--el-fill-color);
   border-radius: 2px;
-  overflow: hidden;
 }
-
 .da-file-row__bar-fill {
   height: 100%;
   border-radius: 2px;
   transition: width 0.3s ease;
 }
-
-.da-file-row--good .da-file-row__bar-fill { background: var(--el-color-success); }
-.da-file-row--warn .da-file-row__bar-fill { background: var(--el-color-warning); }
-.da-file-row--warn .da-file-row__name { color: var(--el-color-warning); }
-.da-file-row--danger .da-file-row__bar-fill { background: var(--el-color-danger); }
-.da-file-row--danger .da-file-row__name { color: var(--el-color-danger); }
+.da-file-row--good .da-file-row__bar-fill {
+  background: var(--el-color-success);
+}
+.da-file-row--warn .da-file-row__bar-fill {
+  background: var(--el-color-warning);
+}
+.da-file-row--warn .da-file-row__name {
+  color: var(--el-color-warning);
+}
+.da-file-row--danger .da-file-row__bar-fill {
+  background: var(--el-color-danger);
+}
+.da-file-row--danger .da-file-row__name {
+  color: var(--el-color-danger);
+}
 </style>

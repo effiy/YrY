@@ -1,9 +1,10 @@
 ---
+doc_type: prd
 title: "YK-09-39: 知识库 Agent 辅助问答 — 基于知识库的智能 FAQ 自动生成"
 tags: [需求文档, 知识库, Agent, FAQ, 自动生成, RAG]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-09-16
 source: 内部
 type: 需求
 status: 需求已编写
@@ -16,6 +17,13 @@ prd_task_id: YK-09-39
 estimate_frontend: 1.0
 review_status: 待评审
 issue_type: 架构
+roles: [engineer, aier]
+source_okr: [yiknowledge-001]
+related_modules: [42-prd-task-Agent辅助FAQ生成]
+related_tests: [42-prd-test-Agent辅助FAQ生成]
+implementation_progress: 需求已编写，尚未开始实施
+implementation_updated: '2026-09-16'
+---
 roles: [aier, producter]
 ---
 

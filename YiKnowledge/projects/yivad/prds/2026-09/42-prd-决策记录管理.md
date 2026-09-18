@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化"
 tags: [需求文档, ADR, 架构决策记录, 决策管理, 项目治理, 前端]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化
 
 > 需求编号：YV-09-93 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/42-prd-task-决策记录管理.md)，验证方案见 [测试方案](../../tests/2026-09/42-prd-test-决策记录管理.md)。
 > 依赖：YV-09-91（问题分类与优先级矩阵）、YV-09-92（风险登记册）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -62,6 +85,7 @@ source_okr: [yivad-003]
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前决策管理流程
@@ -136,6 +160,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：ADR 存储位置 — YiKnowledge Markdown vs YiVad 数据库 vs 两者同步
@@ -189,6 +214,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 ADR 管理系统架构
@@ -266,6 +292,7 @@ stateDiagram-v2
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 ADR 数据模型
@@ -522,6 +549,7 @@ interface Alternative {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 操作 | 路径 | 验证 | 人天 |
@@ -538,6 +566,7 @@ interface Alternative {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 场景 1：创建 ADR
@@ -600,6 +629,7 @@ interface Alternative {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -612,6 +642,7 @@ interface Alternative {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚操作 | 影响 |
@@ -623,6 +654,7 @@ interface Alternative {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01：为什么 ADR 存在数据库中而不是纯 Git 管理？
@@ -643,6 +675,7 @@ YiKnowledge 的知识目录树被 YiAi 的 RAG 引擎索引。将 ADR 的 Markdo
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 指标
@@ -667,6 +700,7 @@ YiKnowledge 的知识目录树被 YiAi 的 RAG 引擎索引。将 ADR 的 Markdo
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] ADR 创建表单包含 Nygard 标准字段

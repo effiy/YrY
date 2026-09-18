@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-03: Agent 可靠性修复 — 分层超时保护 + SSE 错误传播"
 tags: [需求文档, Agent, 稳定性, 超时保护, SSE, 异步, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 已完成
+implementation_progress: 已全部实现并测试通过
+implementation_updated: \'2026-09-15\'
 priority: P0
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
 roles: [engineer, aier]
+source_okr: [yiai-001]
+related_modules: [07-prd-task-Agent可靠性]
+related_tests: [07-prd-test-Agent可靠性]
 ---
 
 # YA-09-03: Agent 可靠性修复 — 分层超时保护 + SSE 错误传播
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-03 · 优先级：P0 · 人天：3.0d · 状态：已完成
 > 依赖：YA-09-01（RAG 引擎稳定性）、YA-09-02（数据层稳定性）
@@ -34,6 +42,7 @@ Agent 循环是 YiAi 的核心 AI 能力——LLM 根据用户意图自主决策
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 缺陷详情
@@ -128,6 +137,7 @@ Agent 循环仅依赖 `max_iterations`（默认为 50）限制轮次，但无单
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：分层超时 vs 单一超时
@@ -161,6 +171,7 @@ Agent 循环仅依赖 `max_iterations`（默认为 50）限制轮次，但无单
 
 ---
 
+<a id="sec-3"></a>
 ## 三、性能分析
 
 ### 3.1 当前性能瓶颈
@@ -236,6 +247,7 @@ data: {"type": "done"}
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 分层超时保护架构
@@ -367,6 +379,7 @@ graph TD
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 修改 `domain/ai/agent.py` — 核心超时保护
@@ -624,6 +637,7 @@ class SSEErrorFrame(TypedDict):
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 按依赖顺序排列，每步可独立验证和提交：
@@ -642,6 +656,7 @@ class SSEErrorFrame(TypedDict):
 
 ---
 
+<a id="sec-7"></a>
 ## 七、涉及文件
 
 ```
@@ -670,6 +685,7 @@ YiAi/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 ### Requirement: 工具调用超时后 Agent 继续执行
@@ -735,6 +751,7 @@ YiAi/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -748,6 +765,7 @@ YiAi/
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 | 风险 |
@@ -759,6 +777,7 @@ YiAi/
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 | 决策 | 选项 A | 选项 B | 选择 | 理由 |
@@ -783,6 +802,7 @@ YiAi/
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、代码审查检查清单
 
 合并前审查人需确认以下项目：
@@ -805,6 +825,7 @@ YiAi/
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、重构后发现的回归问题
 
 | # | 问题 | 发现场景 | 根因 | 修复方式 |
@@ -819,6 +840,7 @@ YiAi/
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、技术债务追踪
 
 | # | 技术债 | 优先级 | 预计人天 | 说明 |
@@ -829,6 +851,7 @@ YiAi/
 | 4 | Agent 状态机可视化 | P3 | 1.0 | 当前 Agent 状态转换仅日志可见，应添加调试端点返回当前 Agent 状态机状态 |
 | 5 | 工具超时重试策略 | P3 | 0.5 | 当前工具超时直接失败，可添加指数退避重试（最多 2 次），提升临时网络波动下的成功率 |
 
+<a id="sec-15"></a>
 ## 十五、可观测性
 
 ### 15.1 关键指标
@@ -850,6 +873,7 @@ YiAi/
 | `WARN` | 工具超时、迭代接近限制 | `[Agent] tool timeout: ${name}, elapsed=${s}s` |
 | `ERROR` | 迭代超时、连接超时、未预期异常 | `[Agent] iteration timeout: max=${n}` |
 
+<a id="sec-16"></a>
 ## 十六、安全合规
 
 ### 16.1 安全需求

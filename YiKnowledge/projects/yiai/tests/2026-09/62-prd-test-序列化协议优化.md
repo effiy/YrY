@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-58"
 source_prds: ["62-需求-序列化协议优化"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-58: 服务端数据序列化协议优化 — MessagePack 与 Protobuf 对比集成方案 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[62-需求-序列化协议优化.md](../../prds/2026-09/62-需求-序列化协议优化.md)
 > 提取日期：2026-09-11

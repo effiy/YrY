@@ -40,7 +40,7 @@ const emit = defineEmits<{
 
 const model = computed({
   get: () => props.modelValue,
-  set: (v: NotificationType | "all") => emit("update:modelValue", v),
+  set: (v: NotificationType | "all") => emit("update:modelValue", v)
 });
 </script>
 
@@ -48,22 +48,19 @@ const model = computed({
 .notif-filter {
   padding: 8px 16px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-
   :deep(.el-radio-group) {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
   }
-
   :deep(.el-radio-button__inner) {
     padding: 4px 10px;
     font-size: 12px;
   }
 }
-
 .notif-filter__count {
+  margin-left: 2px;
   font-size: 10px;
   opacity: 0.7;
-  margin-left: 2px;
 }
 </style>

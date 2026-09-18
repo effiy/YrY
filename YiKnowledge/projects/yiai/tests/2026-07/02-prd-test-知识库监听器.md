@@ -13,6 +13,7 @@ prd_month: "202607"
 prd_task_id: "5"
 source_prds: ["02-需求-知识库监听器"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # 知识库监听器-文件系统到数据库同步 — 测试规格
 

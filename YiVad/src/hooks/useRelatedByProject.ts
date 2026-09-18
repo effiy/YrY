@@ -47,11 +47,23 @@ export const RELATED_TOPICS: TopicConfig[] = [
   { domain: "cr", topic: "tests", label: "Tests", cname: "cr_tests", route: "crTestsDetail" },
   { domain: "cr", topic: "style", label: "Style", cname: "cr_style", route: "crStyleDetail" },
   { domain: "cr", topic: "api-contract", label: "API Contract", cname: "cr_api-contract", route: "crApiContractDetail" },
-  { domain: "cr", topic: "observability-gap", label: "Observability", cname: "cr_observability-gap", route: "crObservabilityGapDetail" },
+  {
+    domain: "cr",
+    topic: "observability-gap",
+    label: "Observability",
+    cname: "cr_observability-gap",
+    route: "crObservabilityGapDetail"
+  },
   { domain: "cr", topic: "concurrency", label: "Concurrency", cname: "cr_concurrency", route: "crConcurrencyDetail" },
   { domain: "cr", topic: "error-handling", label: "Error Handling", cname: "cr_error-handling", route: "crErrorHandlingDetail" },
   { domain: "cr", topic: "dead-code", label: "Dead Code", cname: "cr_dead-code", route: "crDeadCodeDetail" },
-  { domain: "cr", topic: "backward-compat", label: "Backward Compat", cname: "cr_backward-compat", route: "crBackwardCompatDetail" },
+  {
+    domain: "cr",
+    topic: "backward-compat",
+    label: "Backward Compat",
+    cname: "cr_backward-compat",
+    route: "crBackwardCompatDetail"
+  },
   { domain: "cr", topic: "i18n-a11y", label: "i18n & A11y", cname: "cr_i18n-a11y", route: "crI18nA11yDetail" }
 ];
 
@@ -82,16 +94,35 @@ function fetchAllForProject(project: string): Promise<(RelatedEntry & { topic: s
           ? { project: { $regex: `^${escapeRegex(p)}$`, $options: "i" } }
           : { "meta.project": { $regex: `^${escapeRegex(p)}$`, $options: "i" } },
         pageSize: 50,
-        fields: ["key", "title", "name", "topic", "meta", "project", "severity", "status", "module", "priority", "type", "assignee", "updatedAt"],
+        fields: [
+          "key",
+          "title",
+          "name",
+          "topic",
+          "meta",
+          "project",
+          "severity",
+          "status",
+          "module",
+          "priority",
+          "type",
+          "assignee",
+          "updatedAt"
+        ],
         orderBy: "updatedAt",
         orderType: "desc"
       })
-        .then(res => (res.data?.list ?? []).map(e => ({
-          ...e,
-          title: e.title ?? e.name ?? e.key,
-          topic: t.topic,
-          domain: t.domain
-        }) as RelatedEntry & { topic: string; domain: RelatedDomain }))
+        .then(res =>
+          (res.data?.list ?? []).map(
+            e =>
+              ({
+                ...e,
+                title: e.title ?? e.name ?? e.key,
+                topic: t.topic,
+                domain: t.domain
+              }) as RelatedEntry & { topic: string; domain: RelatedDomain }
+          )
+        )
         .catch(() => [] as (RelatedEntry & { topic: string; domain: RelatedDomain })[])
     )
   ).then(rows => rows.flat());
@@ -114,11 +145,19 @@ export interface UseRelatedByProject {
   filtered: Ref<(RelatedEntry & { topic: string; domain: RelatedDomain })[]>;
   totalCount: Ref<number>;
   perDomainCount: Ref<Record<RelatedDomain, number>>;
-  grouped: Ref<{ domain: RelatedDomain; groups: { config: TopicConfig; list: (RelatedEntry & { topic: string; domain: RelatedDomain })[] }[] }[]>;
+  grouped: Ref<
+    {
+      domain: RelatedDomain;
+      groups: { config: TopicConfig; list: (RelatedEntry & { topic: string; domain: RelatedDomain })[] }[];
+    }[]
+  >;
   refresh: () => void;
 }
 
-export function useRelatedByProject(project: () => string | undefined, opts: UseRelatedByProjectOptions = {}): UseRelatedByProject {
+export function useRelatedByProject(
+  project: () => string | undefined,
+  opts: UseRelatedByProjectOptions = {}
+): UseRelatedByProject {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const allEntries = ref<(RelatedEntry & { topic: string; domain: RelatedDomain })[]>([]);
@@ -142,18 +181,16 @@ export function useRelatedByProject(project: () => string | undefined, opts: Use
   });
 
   const grouped = computed(() => {
-    return RELATED_DOMAIN_ORDER
-      .map(d => {
-        const topicsForDomain = RELATED_TOPICS.filter(t => t.domain === d);
-        const groups = topicsForDomain
-          .map(t => {
-            const list = filtered.value.filter(e => e.topic === t.topic);
-            return { config: t, list };
-          })
-          .filter(g => g.list.length > 0);
-        return { domain: d, groups };
-      })
-      .filter(d => d.groups.length > 0);
+    return RELATED_DOMAIN_ORDER.map(d => {
+      const topicsForDomain = RELATED_TOPICS.filter(t => t.domain === d);
+      const groups = topicsForDomain
+        .map(t => {
+          const list = filtered.value.filter(e => e.topic === t.topic);
+          return { config: t, list };
+        })
+        .filter(g => g.list.length > 0);
+      return { domain: d, groups };
+    }).filter(d => d.groups.length > 0);
   });
 
   async function load() {
@@ -188,17 +225,15 @@ export function useRelatedByProject(project: () => string | undefined, opts: Use
 }
 
 // One-shot helper for callers that just want the raw list (e.g. AI Chat enrichment).
-export async function fetchRelatedByProject(project: string): Promise<(RelatedEntry & { topic: string; domain: RelatedDomain })[]> {
+export async function fetchRelatedByProject(
+  project: string
+): Promise<(RelatedEntry & { topic: string; domain: RelatedDomain })[]> {
   return fetchAllForProject(project);
 }
 
 // Build a markdown "## Related Entries (by project)" section for AI Chat payloads.
 // Returns "" when there are no siblings (caller should skip appending in that case).
-export async function buildRelatedEntriesSection(
-  project: string,
-  hostKey?: string,
-  hostTopic?: string
-): Promise<string> {
+export async function buildRelatedEntriesSection(project: string, hostKey?: string, hostTopic?: string): Promise<string> {
   if (!project) return "";
   const p = project.toLowerCase() || project;
   const displayName = PROJECT_LABELS[p] ?? project;

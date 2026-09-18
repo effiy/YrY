@@ -1,9 +1,13 @@
 """MCP server tools exposed as agent tools."""
 from __future__ import annotations
 
+import logging
 from typing import Any, Dict
 
-from domain.ai.tools.core import ToolRegistry, ToolDefinition
+from domain.ai.tools.core import ToolDefinition, ToolRegistry
+
+logger = logging.getLogger(__name__)
+
 
 def _register_mcp_tools(registry: ToolRegistry) -> None:
     """Register YiAi MCP server tools as agent tools.
@@ -12,7 +16,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
     can call YiAi's own capabilities (chat, DB queries, health checks, etc.).
     """
 
-    async def _mcp_chat(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _mcp_chat(args: dict[str, Any]) -> dict[str, Any]:
         from server.mcp_server import mcp
         prompt = str(args.get("prompt", ""))
         model = str(args.get("model", "qwen3.5:4b"))
@@ -41,7 +45,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
         execute=_mcp_chat,
     ))
 
-    async def _mcp_list_models(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _mcp_list_models(args: dict[str, Any]) -> dict[str, Any]:
         from server.mcp_server import mcp
         try:
             result = await mcp.call_tool("list_ollama_models", {})
@@ -57,7 +61,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
         execute=_mcp_list_models,
     ))
 
-    async def _mcp_health(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _mcp_health(args: dict[str, Any]) -> dict[str, Any]:
         from server.mcp_server import mcp
         try:
             result = await mcp.call_tool("health_check", {})
@@ -73,7 +77,7 @@ def _register_mcp_tools(registry: ToolRegistry) -> None:
         execute=_mcp_health,
     ))
 
-    async def _mcp_query_db(args: Dict[str, Any]) -> Dict[str, Any]:
+    async def _mcp_query_db(args: dict[str, Any]) -> dict[str, Any]:
         from server.mcp_server import mcp
         collection = str(args.get("collection", ""))
         filter_json = str(args.get("filter", "{}"))
@@ -111,7 +115,7 @@ def _extract_mcp_text(result) -> str:
         return ""
     if isinstance(result, str):
         return result
-    if isinstance(result, (list, tuple)):
+    if isinstance(result, list | tuple):
         parts: list[str] = []
         for item in result:
             text = _extract_mcp_text(item)

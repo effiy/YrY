@@ -1,4 +1,3 @@
-import { ElNotification } from "element-plus";
 import type { App } from "vue";
 import { reportError } from "./errorReporter";
 
@@ -40,7 +39,7 @@ export function getUserFriendlyMessage(error: Error | string): string {
     "Request failed with status code 404": "请求的资源不存在",
     "Request failed with status code 500": "服务器内部错误，请稍后重试",
     "Request failed with status code 502": "服务暂时不可用，请稍后重试",
-    "Request failed with status code 503": "服务正在维护中，请稍后重试",
+    "Request failed with status code 503": "服务正在维护中，请稍后重试"
   };
 
   if (messageMap[message]) return messageMap[message];
@@ -68,7 +67,7 @@ export function setupGlobalErrorHandler(app: App): void {
       error,
       componentName: (instance as any)?.$options?.name || "unknown",
       info,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
 
     console.error("[ErrorHandler] Vue Error:", ctx);
@@ -89,7 +88,7 @@ export function setupUnhandledRejectionHandler(): void {
     const ctx: ErrorContext = {
       type: "PROMISE",
       error,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
 
     console.error("[ErrorHandler] Unhandled Promise Rejection:", ctx);
@@ -104,7 +103,7 @@ export function setupGlobalScriptErrorHandler(): void {
       type: "SCRIPT",
       error: error || new Error(String(message)),
       url: source,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
 
     console.error("[ErrorHandler] Script Error:", ctx);
@@ -112,39 +111,3 @@ export function setupGlobalScriptErrorHandler(): void {
     return true;
   };
 }
-
-/**
- * Legacy default export for backward compatibility.
- * Used as `app.config.errorHandler` directly.
- */
-const errorHandler = (error: any) => {
-  if (error.status || error.status === 0) return false;
-
-  const errorMap: Record<string, string> = {
-    InternalError: "Javascript engine internal error",
-    ReferenceError: "Object not found",
-    TypeError: "Wrong type or object used",
-    RangeError: "Parameter out of range when using built-in object",
-    SyntaxError: "Syntax error",
-    EvalError: "Incorrect use of Eval",
-    URIError: "URI error",
-  };
-
-  const errorName = errorMap[error.name] || "Unknown error";
-  ElNotification({
-    title: errorName,
-    message: error,
-    type: "error",
-    duration: 3000,
-  });
-
-  if (error instanceof Error) {
-    reportError({
-      type: "RENDER",
-      error,
-      timestamp: Date.now(),
-    });
-  }
-};
-
-export default errorHandler;

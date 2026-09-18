@@ -4,6 +4,7 @@
  */
 import { computed } from 'vue';
 import { Star, StarFilled, Monitor, Link } from '@element-plus/icons-vue';
+import { t } from '@/shared/i18n';
 import { formatDate } from '@/chat/utils';
 
 const props = defineProps<{
@@ -38,7 +39,7 @@ const parsed = computed(() => parseUrl(props.url));
 <template>
   <div class="welcome-card">
     <div class="wc-header">
-      <span class="wc-title">{{ title || 'Untitled conversation' }}</span>
+      <span class="wc-title">{{ title || t('welcomeUntitled') }}</span>
       <button
         v-if="isFavorite !== undefined"
         class="wc-fav-btn"
@@ -63,7 +64,7 @@ const parsed = computed(() => parseUrl(props.url));
         :href="url"
         target="_blank"
         rel="noopener noreferrer"
-        title="Open page"
+        :title="t('welcomeOpenPage')"
       ><el-icon :size="14"><Link /></el-icon></a>
     </div>
 

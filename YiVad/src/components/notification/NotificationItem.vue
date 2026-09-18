@@ -1,23 +1,12 @@
 <template>
-  <div
-    class="notif-item"
-    :class="{ 'notif-item--unread': !notification.read }"
-    @click="$emit('click')"
-  >
+  <div class="notif-item" :class="{ 'notif-item--unread': !notification.read }" @click="$emit('click')">
     <div class="notif-item__icon" :style="{ background: iconColor }">
       <el-icon :size="14"><component :is="iconComponent" /></el-icon>
     </div>
     <div class="notif-item__body">
       <div class="notif-item__header">
         <span class="notif-item__title">{{ notification.title }}</span>
-        <el-button
-          v-if="showClose"
-          :icon="Close"
-          text
-          size="small"
-          class="notif-item__close"
-          @click.stop="$emit('close')"
-        />
+        <el-button v-if="showClose" :icon="Close" text size="small" class="notif-item__close" @click.stop="$emit('close')" />
       </div>
       <div class="notif-item__message">{{ notification.message }}</div>
       <div class="notif-item__meta">
@@ -28,9 +17,7 @@
       </div>
     </div>
     <div v-if="showActions && notification.actionUrl" class="notif-item__actions">
-      <el-button text size="small" type="primary" @click.stop="$emit('click')">
-        查看
-      </el-button>
+      <el-button text size="small" type="primary" @click.stop="$emit('click')"> 查看 </el-button>
     </div>
   </div>
 </template>
@@ -40,14 +27,17 @@ import { computed } from "vue";
 import { Close, Setting, User, Cpu, Warning } from "@element-plus/icons-vue";
 import type { Notification, NotificationType } from "@/stores/modules/notification";
 
-const props = withDefaults(defineProps<{
-  notification: Notification;
-  showClose?: boolean;
-  showActions?: boolean;
-}>(), {
-  showClose: true,
-  showActions: false,
-});
+const props = withDefaults(
+  defineProps<{
+    notification: Notification;
+    showClose?: boolean;
+    showActions?: boolean;
+  }>(),
+  {
+    showClose: true,
+    showActions: false
+  }
+);
 
 defineEmits<{
   click: [];
@@ -58,14 +48,14 @@ const TYPE_ICONS: Record<NotificationType, any> = {
   system: Setting,
   user_action: User,
   ai: Cpu,
-  error: Warning,
+  error: Warning
 };
 
 const TYPE_COLORS: Record<NotificationType, string> = {
   system: "#409eff",
   user_action: "#67c23a",
   ai: "#e6a23c",
-  error: "#f56c6c",
+  error: "#f56c6c"
 };
 
 const iconComponent = computed(() => TYPE_ICONS[props.notification.type] || Setting);
@@ -91,44 +81,37 @@ function formatTime(iso: string): string {
   cursor: pointer;
   border-bottom: 1px solid var(--el-border-color-extra-light);
   transition: background 0.2s;
-
   &:hover {
     background: var(--el-fill-color-light);
   }
-
   &--unread {
     background: var(--el-color-primary-light-9);
   }
-
   &__icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
     margin-top: 2px;
+    color: #ffffff;
+    border-radius: 50%;
   }
-
   &__body {
     flex: 1;
     min-width: 0;
   }
-
   &__header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    justify-content: space-between;
   }
-
   &__title {
     font-size: 13px;
     font-weight: 500;
     line-height: 1.4;
   }
-
   &__close {
     padding: 0;
     margin-left: 4px;
@@ -138,34 +121,30 @@ function formatTime(iso: string): string {
       opacity: 1;
     }
   }
-
   &__message {
-    font-size: 12px;
-    color: var(--el-text-color-secondary);
-    line-height: 1.4;
-    margin-top: 2px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    margin-top: 2px;
     overflow: hidden;
+    -webkit-line-clamp: 2;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--el-text-color-secondary);
+    -webkit-box-orient: vertical;
   }
-
   &__meta {
     display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
     margin-top: 4px;
   }
-
   &__time {
     font-size: 11px;
     color: var(--el-text-color-placeholder);
   }
-
   &__actions {
     display: flex;
-    align-items: center;
     flex-shrink: 0;
+    align-items: center;
   }
 }
 </style>

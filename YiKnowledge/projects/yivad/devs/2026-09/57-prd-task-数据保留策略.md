@@ -1,38 +1,56 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-125"
-title: "YV-09-125: 数据保留策略 — 按集合配置数据保留规则、自动归档/删除、保留策略预览、合规仪表盘 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-125: 数据保留策略 — 开发方案"
+status: 待开始
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
 source_prd: "57-prd-数据保留策略.md"
 ---
 
-# YV-09-125: 数据保留策略 — 按集合配置数据保留规则、自动归档/删除、保留策略预览、合规仪表盘 — 开发任务
+# YV-09-125: 数据保留策略 — 开发方案
 
-> 来源 PRD：[57-prd-数据保留策略.md](../prds/2026-09/57-prd-数据保留策略.md)
-> 需求编号：YV-09-125 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-125 · 状态：待开始
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 类型定义 + API 服务 | `types/retentionPolicy.ts`, `services/retentionPolicyService.ts` | 类型检查通过 | 0.03 |
-| 2 | useRetentionPolicy 状态管理 | `composables/useRetentionPolicy.ts` | CRUD+预览逻辑正确 | 0.04 |
-| 3 | PolicyEditor 策略编辑器 | `PolicyEditor.vue` | 规则添加+编辑+预览+保存 | 0.06 |
-| 4 | PolicyPreview 影响预览 | `PolicyPreview.vue` + `utils/policyPreview.ts` | 数据量估算+样本展示 | 0.04 |
-| 5 | RetentionPolicies 策略列表 | `RetentionPolicies.vue` | 列表+启停+执行记录 | 0.04 |
-| 6 | ComplianceDashboard 合规仪表盘 | `ComplianceDashboard.vue` | 各集合状态+趋势图+存储预估 | 0.05 |
-| 7 | RecycleBin 回收站 | `RecycleBin.vue` | 恢复+永久删除+到期倒计时 | 0.03 |
-| 8 | 路由+菜单配置 | `routes.ts` | 保留策略页面可访问 | 0.01 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+配置数据自动归档和清理策略：按集合/时间设置保留期限。
+
+### 策略配置
+
+| 集合 | 保留策略 | 操作 |
+|------|---------|------|
+| sessions | 90 天 | 自动删除 |
+| bugs (closed) | 365 天 | 归档到 history |
+| audit_logs | 180 天 | 压缩存储 |
+| notifications | 30 天 | 自动删除 |
+
+> 依赖 YiAi 定时任务。
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：待开始
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 待补充 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------|
+| — | 待补充 | — | — | — | — |

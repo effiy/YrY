@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-79: 服务端 Dashboard 数据预聚合 — 定时计算快照替代实时查询"
 tags: [需求文档, Dashboard, 数据预聚合, 快照, 性能优化, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,14 +20,20 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yiai-001]
+related_modules: [83-prd-task-Dashboard预聚合快照]
+related_tests: [83-prd-test-Dashboard预聚合快照]
 ---
 
 # YA-09-79: Dashboard 数据预聚合 — 定时快照替代实时查询
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-79 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
 ---
 
+<a id="sec-1"></a>
 ## 一、背景
 
 ### 1.1 问题描述
@@ -59,6 +68,7 @@ YiVad Dashboard 是管理后台的首页，每次加载需要执行 5 个以上�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、现状分析
 
 ### 2.1 当前 Dashboard 查询
@@ -136,6 +146,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-3"></a>
 ## 三、设计决策
 
 ### D-01: 快照存储：MongoDB 集合 vs Redis vs 内存
@@ -170,6 +181,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-4"></a>
 ## 四、目标架构
 
 ### 4.1 目标数据流
@@ -214,6 +226,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-5"></a>
 ## 五、具体改动
 
 ### 5.1 新增: YiAi/src/services/dashboard/snapshot_service.py
@@ -443,6 +456,7 @@ scheduler.add_job(
 
 ---
 
+<a id="sec-6"></a>
 ## 六、实施步骤
 
 | 步骤 | 操作 | 文件 | 验证 | 人天 |
@@ -457,6 +471,7 @@ scheduler.add_job(
 
 ---
 
+<a id="sec-7"></a>
 ## 七、性能分析
 
 ### 7.1 响应时间对比
@@ -485,6 +500,7 @@ scheduler.add_job(
 
 ---
 
+<a id="sec-8"></a>
 ## 八、测试规格
 
 **TC-01: 快照生成正确**
@@ -537,6 +553,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-9"></a>
 ## 九、风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
@@ -548,6 +565,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-10"></a>
 ## 十、回滚策略
 
 | 场景 | 操作 | 影响 |
@@ -560,6 +578,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、设计决策记录
 
 | 编号 | 决策 | 理由 | 日期 |
@@ -572,6 +591,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-12"></a>
 ## 十二、可观测性
 
 ### 12.1 指标
@@ -610,6 +630,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-13"></a>
 ## 十三、安全合规
 
 | 要求 | 实现 |
@@ -621,6 +642,7 @@ AND 日志应记录 "清理 100 条过期快照"
 
 ---
 
+<a id="sec-14"></a>
 ## 十四、代码审查检查清单
 
 - [ ] Dashboard 数据预聚合快照——替代每次实时查询

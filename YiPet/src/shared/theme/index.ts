@@ -1,8 +1,10 @@
 /**
- * Theme system barrel — color palettes, injection utilities, and Element Plus adapter.
+ * Theme system barrel — color palettes, injection utilities, Element Plus adapter,
+ * and palette generator.
  */
 
 export { applyElementTheme, clearElementTheme } from './element-theme';
+export { generatePalette } from './color-generator';
 export {
   applyThemeColors,
   clearThemeColors,

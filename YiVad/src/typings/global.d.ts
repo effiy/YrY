@@ -1,11 +1,13 @@
 /* Menu */
 declare namespace Menu {
   interface MenuOptions {
+    key?: string;
     path: string;
     name: string;
     component?: string | (() => Promise<unknown>);
     redirect?: string;
     meta: MetaProps;
+    parent?: string | null;
     order?: number;
     children?: MenuOptions[];
   }

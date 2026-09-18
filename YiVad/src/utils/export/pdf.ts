@@ -1,17 +1,13 @@
 import type { ExportColumn } from "./types";
 import { triggerDownload, generateFileName } from "./types";
 
-export async function exportPDF(
-  data: Record<string, any>[],
-  columns: ExportColumn[],
-  fileName?: string,
-) {
+export async function exportPDF(data: Record<string, any>[], columns: ExportColumn[], fileName?: string) {
   const { jsPDF } = await import("jspdf");
   await import("jspdf-autotable");
 
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  const headers = columns.map((c) => c.label);
-  const rows = data.map((row) => columns.map((c) => String(row[c.key] ?? "")));
+  const headers = columns.map(c => c.label);
+  const rows = data.map(row => columns.map(c => String(row[c.key] ?? "")));
 
   doc.setFontSize(12);
   doc.text(fileName ?? "Export", 14, 15);
@@ -29,7 +25,7 @@ export async function exportPDF(
       const totalPages = doc.getNumberOfPages();
       doc.setFontSize(7);
       doc.text(`Page ${hookData.pageNumber} / ${totalPages}`, doc.internal.pageSize.width - 25, doc.internal.pageSize.height - 8);
-    },
+    }
   });
 
   const blob = doc.output("blob");

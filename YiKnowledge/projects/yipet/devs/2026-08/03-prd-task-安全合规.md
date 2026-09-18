@@ -1,41 +1,42 @@
 ---
 doc_type: module
-prd_task_id: "YP-08-07"
-title: "内容安全策略与数据隐私合规 — 开发任务"
+prd_task_id: "YP-08-05"
+title: "YP-08-05: 安全合规 — 开发方案"
 status: 已完成
-priority: P2
+priority: P0
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiPet
-project_id: yipet
 prd_month: "202608"
-estimate_frontend: 3.0
-source_prd: "03-基础设施-安全合规.md"
+source_prd: "03-合规-安全合规.md"
 ---
 
-# 内容安全策略与数据隐私合规 — 开发任务
+# YP-08-05: 安全合规 — 开发方案
 
-> 来源 PRD：[03-基础设施-安全合规.md](../../prds/2026-08/03-基础设施-安全合规.md)
-> 需求编号：YP-08-07 · 优先级：P2 · 人天：3.0d
-> 类型：功能 · 状态：已完成
+> 需求编号：YP-08-05 · 优先级：P0
 
-## 实施路线图
+---
 
-### 阶段一：核心实现（约 1.5d）
+## 一、方案概述
 
-| 步骤 | 任务 | 产出 | 验证方式 |
-|------|------|------|----------|
-| 1 | 需求分析与技术方案 | 技术设计文档 | 方案评审通过 |
-| 2 | 核心逻辑实现 | 功能代码 + 单元测试 | pytest/vitest 通过 |
-| 3 | 集成与联调 | API/组件集成 | 集成测试通过 |
-| 4 | 代码审查与优化 | Review 通过的代码 | 无阻塞评论 |
+安全合规加固：CSP 完善、数据加密存储、最小权限原则、XSS 防护。
 
-### 阶段二：完善与收尾（约 1.5d）
+### 加固项
 
-| 步骤 | 任务 | 产出 |
-|------|------|------|
-| 5 | 边界情况处理 | 异常路径覆盖 |
-| 6 | 文档更新 | CLAUDE.md / 知识库更新 |
-| 7 | 验收测试 | 验收测试通过 |
+| 项目 | 措施 |
+|------|------|
+| CSP | `script-src 'self'` ，禁止 eval/inline/remote |
+| Token 存储 | `chrome.storage.local` 隔离，敏感数据加密 |
+| IPC 安全 | IPC_SECRET + 时间戳 5s 过期 |
+| XSS 防护 | DOMPurify 清洗用户输入/Markdown |
+| 权限最小化 | manifest.json 仅声明必需权限 |
+| MV3 合规 | 无远程代码、Service Worker 非持久化 |
+
+### 安全审查清单
+
+- [ ] CSP 无 `unsafe-eval` / `unsafe-inline`
+- [ ] Token 存储在 chrome.storage（非 localStorage）
+- [ ] IPC 消息签名 + 时间戳验证
+- [ ] Markdown 渲染前 DOMPurify 清洗
+- [ ] manifest 权限仅 activeTab/storage/scripting

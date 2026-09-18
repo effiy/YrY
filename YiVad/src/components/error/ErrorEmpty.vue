@@ -21,7 +21,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   description: "暂无数据",
-  imageSize: 120,
+  imageSize: 120
 });
 
 defineEmits<{
@@ -34,7 +34,7 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
   min-height: 200px;
+  padding: 48px 24px;
 }
 </style>

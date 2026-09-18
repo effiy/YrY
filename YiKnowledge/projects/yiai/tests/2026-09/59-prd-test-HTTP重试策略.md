@@ -13,8 +13,11 @@ prd_month: "202609"
 prd_task_id: "YA-09-55"
 source_prds: ["59-需求-HTTP重试策略"]
 source_modules: []
+source_okr: [yiai-001]
 ---
 # YA-09-55: 服务端请求重试与指数退避 — HTTP 客户端重试策略与断路器集成 — 测试规格
+
+> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 > 来源 PRD：[59-需求-HTTP重试策略.md](../../prds/2026-09/59-需求-HTTP重试策略.md)
 > 提取日期：2026-09-11

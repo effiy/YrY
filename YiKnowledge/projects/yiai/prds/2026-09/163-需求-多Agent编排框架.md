@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-157: 多 Agent 编排框架 — Supervisor + Worker 角色分工 + 消息总线 + 黑板模式 + 人机协同"
 tags: [需求文档, 功能实现, Agent, 多Agent编排, Supervisor, Worker, 消息总线, 黑板模式, 人机协同]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,9 +20,14 @@ estimate_backend: 2.0
 review_status: 待评审
 issue_type: 功能
 roles: [engineer]
+source_okr: [yiai-003]
+related_modules: [163-prd-task-多Agent编排框架]
+related_tests: [163-prd-test-多Agent编排框架]
 ---
 
 # YA-09-157: 多 Agent 编排框架 — Supervisor + Worker 角色分工 + 消息总线 + 黑板模式 + 人机协同
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
 
 > 需求编号：YA-09-157 · 优先级：P2 · 人天：2.0d · 状态：需求已编写
 > 依赖：YA-09-03（Agent 循环） · 前置需求：YA-09-03（Agent 循环）
@@ -63,6 +71,7 @@ YiAi 当前实现了单 Agent 循环（YA-09-03），单个 Agent 负责从理�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前 Agent 相关状态
@@ -119,6 +128,7 @@ class AgentLoop:
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：多 Agent 架构模式 — Supervisor-Worker vs 完全去中心化 vs 层级式
@@ -180,6 +190,7 @@ Supervisor 根据任务特征自动选择协作模式，也可通过 API 参数�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 多 Agent 编排架构总览
@@ -290,6 +301,7 @@ stateDiagram-v2
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 Agent 角色定义
@@ -1428,6 +1440,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -1446,6 +1459,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Requirement: 消息总线
@@ -1525,6 +1539,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -1538,6 +1553,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 场景 | 回滚方式 | 回滚时间 | 风险 |
@@ -1550,6 +1566,7 @@ YiAi/src/
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么选择 Supervisor-Worker 而非完全去中心化？
@@ -1570,6 +1587,7 @@ Supervisor 的职责是协调和决策，而非具体执行。将规划和审查
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -1595,6 +1613,7 @@ Supervisor 的职责是协调和决策，而非具体执行。将规划和审查
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `AgentRole` 枚举包含 5 种角色（SUPERVISOR, RESEARCHER, CODER, REVIEWER, PLANNER）

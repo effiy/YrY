@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-49: 服务端 ETag 缓存验证 — 条件请求与 304 响应优化重复传输"
 tags: [需求文档, ETag, 缓存验证, 304, 条件请求, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,12 +20,18 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [engineer]
+source_okr: [yiai-001]
+related_modules: [53-prd-task-ETag缓存验证]
+related_tests: [53-prd-test-ETag缓存验证]
 ---
 
 # YA-09-49: 服务端 ETag 缓存验证 — 条件请求与 304 Not Modified
 
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+
 > 需求编号：YA-09-49 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -55,6 +64,7 @@ ETag（Entity Tag）是 HTTP 标准的缓存验证机制，服务端生成响应
 | 缓存粒度 | 不同端点的缓存策略需要差异化 | 中 |
 | SSE 兼容 | 流式响应不能使用 ETag | 低 |
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前状态
@@ -102,6 +112,7 @@ sequenceDiagram
 | 无 Cache-Control | 每次请求 | 无法利用浏览器缓存 | 低 |
 | 无响应体哈希 | 持续 | 无法判断数据是否变化 | 低 |
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策选项对比
@@ -145,6 +156,7 @@ sequenceDiagram
 | D-03 | 中间件位置 | 全局中间件 | 自动化，减少遗漏 |
 | D-04 | SSE 处理 | 排除 text/event-stream | 流式响应不适用 |
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -190,6 +202,7 @@ flowchart LR
 | 精确 vs 快速 | SHA256 精确 | 大响应体增加 1-5ms |
 | 自动化 vs 精细化 | 全局中间件 | 需要排除 SSE 端点 |
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 新增文件
@@ -421,6 +434,7 @@ async function fetchWithETag(url: string) {
 | `src/server/main.py` | 注册 ETag 中间件 | 集成 |
 | 前端 (YiVad) | 适配 If-None-Match 头 | 利用 304 |
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 | 步骤 | 文件 | 操作 | 验证 | 人天 |
@@ -433,6 +447,7 @@ async function fetchWithETag(url: string) {
 
 **总人天：0.5d**
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 ### 7.1 基准测试
@@ -452,6 +467,7 @@ async function fetchWithETag(url: string) {
 | CPU | < 0.1ms/请求 | SHA256 哈希 |
 | 网络 | 减少 95% | 轮询场景 |
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -504,6 +520,7 @@ WHEN  分别返回响应
 THEN  max-age 分别为 120 和 60
 ```
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 | 风险 | 概率 | 影响 | 严重级别 | 缓解措施 | 应急预案 |
@@ -512,6 +529,7 @@ THEN  max-age 分别为 120 和 60
 | 缓存失效不完整导致返回过期数据 | 中 | 中 | 中等 | 写操作后清除相关 ETag 缓存 | 前端强制刷新 |
 | 304 响应被代理缓存导致数据不一致 | 低 | 中 | 中等 | Cache-Control max-age 限制缓存时间 | 使用 no-cache 策略 |
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚方法 | 影响范围 | 恢复时间 |
@@ -519,6 +537,7 @@ THEN  max-age 分别为 120 和 60
 | ETag 中间件异常 | 注释 setup_etag 调用 | 无 | < 30 秒 |
 | 304 导致数据过期 | 调低 max_age 或改为 no-cache | 缓存策略 | < 1 分钟 |
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 **D-01：选择 SHA256 而非 MD5 作为 ETag 哈希**
@@ -537,6 +556,7 @@ THEN  max-age 分别为 120 和 60
 
 **理由**：不同端点的数据变化频率不同：聚合数据（Dashboard）变化慢但计算成本高，适合 2 分钟缓存；数据查询变化快，适合 30 秒缓存；健康检查必须实时，不使用缓存。差异化策略最大化缓存收益。
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 ### 12.1 指标
@@ -563,6 +583,7 @@ THEN  max-age 分别为 120 和 60
 |----------|------|------|------|
 | ETag 计算耗时过高 | `etag_compute_time_ms P99 > 10ms` | Warning | 检查响应体大小 |
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 | 安全要求 | 实现方式 | 验证方法 |
@@ -571,6 +592,7 @@ THEN  max-age 分别为 120 和 60
 | 缓存策略不缓存敏感数据 | 认证端点使用 no-cache | 策略审查 |
 | 中间件不干扰安全头 | 仅添加 ETag/Cache-Control，不修改现有安全头 | 集成测试 |
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] ETag 基于响应体 SHA256 哈希（前 16 位）

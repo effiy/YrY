@@ -19,15 +19,15 @@
         <div class="upload-handle" @click.stop>
           <div v-if="!self_disabled" class="handle-icon" @click="editImg">
             <el-icon><Edit /></el-icon>
-            <span>{{ t('common.edit') }}</span>
+            <span>{{ t("common.edit") }}</span>
           </div>
           <div class="handle-icon" @click="imgViewVisible = true">
             <el-icon><ZoomIn /></el-icon>
-            <span>{{ t('common.view') }}</span>
+            <span>{{ t("common.view") }}</span>
           </div>
           <div v-if="!self_disabled" class="handle-icon" @click="deleteImg">
             <el-icon><Delete /></el-icon>
-            <span>{{ t('common.delete') }}</span>
+            <span>{{ t("common.delete") }}</span>
           </div>
         </div>
       </template>
@@ -58,7 +58,7 @@ import type { UploadProps, UploadRequestOptions } from "element-plus";
 const { t } = useI18n();
 
 interface UploadFileProps {
-  imageUrl: string; // Image URL ==> required
+  imageUrl?: string; // Image URL with default => optional
   api?: (params: any) => Promise<any>; // Upload image API method, usually the same API across the project, can be imported directly in the component ==> optional
   drag?: boolean; // Whether to support drag upload ==> optional (default true)
   disabled?: boolean; // Whether to disable upload component ==> optional (default false)

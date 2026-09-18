@@ -19,8 +19,8 @@ export function useColumnManager(storageKey: string, defaultColumns: ColumnConfi
       const saved = localStorage.getItem(`yivad-columns-${storageKey}`);
       if (!saved) return [...defaultColumns];
       const parsed: ColumnConfig[] = JSON.parse(saved);
-      const map = new Map(parsed.map((c) => [c.key, c]));
-      return defaultColumns.map((d) => ({ ...d, ...map.get(d.key) }));
+      const map = new Map(parsed.map(c => [c.key, c]));
+      return defaultColumns.map(d => ({ ...d, ...map.get(d.key) }));
     } catch {
       return [...defaultColumns];
     }
@@ -28,21 +28,32 @@ export function useColumnManager(storageKey: string, defaultColumns: ColumnConfi
 
   function persist() {
     const minimal = columns.value.map(({ key, visible, width, order, fixed, sortable }) => ({
-      key, visible, width, order, fixed, sortable,
+      key,
+      visible,
+      width,
+      order,
+      fixed,
+      sortable
     }));
     localStorage.setItem(`yivad-columns-${storageKey}`, JSON.stringify(minimal));
   }
 
-  const visibleColumns = computed(() => columns.value.filter((c) => c.visible).sort((a, b) => a.order - b.order));
+  const visibleColumns = computed(() => columns.value.filter(c => c.visible).sort((a, b) => a.order - b.order));
 
   const toggleColumn = (key: string) => {
-    const col = columns.value.find((c) => c.key === key);
-    if (col) { col.visible = !col.visible; persist(); }
+    const col = columns.value.find(c => c.key === key);
+    if (col) {
+      col.visible = !col.visible;
+      persist();
+    }
   };
 
   const resizeColumn = (key: string, width: number) => {
-    const col = columns.value.find((c) => c.key === key);
-    if (col) { col.width = Math.max(width, col.minWidth ?? 50); persist(); }
+    const col = columns.value.find(c => c.key === key);
+    if (col) {
+      col.width = Math.max(width, col.minWidth ?? 50);
+      persist();
+    }
   };
 
   const reorderColumns = (from: number, to: number) => {
@@ -55,8 +66,11 @@ export function useColumnManager(storageKey: string, defaultColumns: ColumnConfi
   };
 
   const freezeColumn = (key: string, fixed?: "left" | "right") => {
-    const col = columns.value.find((c) => c.key === key);
-    if (col) { col.fixed = fixed; persist(); }
+    const col = columns.value.find(c => c.key === key);
+    if (col) {
+      col.fixed = fixed;
+      persist();
+    }
   };
 
   const resetToDefault = () => {
@@ -65,12 +79,12 @@ export function useColumnManager(storageKey: string, defaultColumns: ColumnConfi
   };
 
   const showAll = () => {
-    columns.value.forEach((c) => (c.visible = true));
+    columns.value.forEach(c => (c.visible = true));
     persist();
   };
 
   const hideAll = () => {
-    columns.value.forEach((c) => (c.visible = false));
+    columns.value.forEach(c => (c.visible = false));
     persist();
   };
 

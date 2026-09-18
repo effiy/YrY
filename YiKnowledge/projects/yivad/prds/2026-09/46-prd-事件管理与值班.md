@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标"
 tags: [需求文档, 事件管理, 值班系统, 升级策略, MTTD, MTTR]
 category: 项目/管理后台/需求
@@ -6,7 +7,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 待开始
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -23,7 +26,27 @@ source_okr: [yivad-003]
 # YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标
 
 > 需求编号：YV-09-98 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/46-prd-task-事件管理与值班.md)，验证方案见 [测试方案](../../tests/2026-09/46-prd-test-事件管理与值班.md)。
 > 依赖：YV-09-92（风险登记册）、YV-09-93（决策记录管理）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
 
 ## 背景
 
@@ -60,6 +83,7 @@ YiVad 管理项目中的 Bug 和 Issue，但缺少生产环境事件（Incident�
 
 ---
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 1.1 当前事件管理现状
@@ -116,6 +140,7 @@ flowchart TD
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 决策 1：事件 vs Bug 的模型关系
@@ -169,6 +194,7 @@ flowchart TD
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ### 3.1 事件管理页面布局
@@ -230,6 +256,7 @@ stateDiagram-v2
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 改动总览
@@ -360,6 +387,7 @@ const DEFAULT_ESCALATION: Record<IncidentSeverity, EscalationLevel[]> = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
@@ -377,6 +405,7 @@ const DEFAULT_ESCALATION: Record<IncidentSeverity, EscalationLevel[]> = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 组件测试：IncidentCard
@@ -429,6 +458,7 @@ const DEFAULT_ESCALATION: Record<IncidentSeverity, EscalationLevel[]> = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -440,6 +470,7 @@ const DEFAULT_ESCALATION: Record<IncidentSeverity, EscalationLevel[]> = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -455,6 +486,7 @@ const DEFAULT_ESCALATION: Record<IncidentSeverity, EscalationLevel[]> = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 为什么事件使用独立模型而非复用 Bug 模型？
@@ -475,6 +507,7 @@ Bug 的生命周期是"发现→分配→修复→验证→关闭"，关注的�
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -497,6 +530,7 @@ Bug 的生命周期是"发现→分配→修复→验证→关闭"，关注的�
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] IncidentCard 正确映射严重级别颜色（P0→红色, P1→橙色, P2→黄色, P3→蓝色, P4→灰色）

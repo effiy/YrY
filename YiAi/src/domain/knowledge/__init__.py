@@ -6,6 +6,7 @@ created / source / type …) — this module parses it lazily so the UI can rend
 metadata-driven tree without pulling full file bodies.
 """
 from domain.knowledge.scanner import (
+    resolve_safe,
     scan_knowledge,
     read_knowledge_file,
     list_stories,
@@ -37,6 +38,7 @@ __all__ = [
     "read_entry_frontmatter",
     "read_knowledge_file",
     "read_story_markdown",
+    "resolve_safe",
     "scan_knowledge",
     "shutdown_knowledge_watcher",
     "sync_knowledge_full",

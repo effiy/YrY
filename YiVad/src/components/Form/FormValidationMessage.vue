@@ -28,22 +28,19 @@ defineEmits<{
 <style scoped lang="scss">
 .form-validation-message {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   margin-top: 4px;
   font-size: 12px;
   line-height: 1.4;
   color: var(--el-color-danger);
-
   &--valid {
     color: var(--el-color-success);
   }
-
   &__icon {
     flex-shrink: 0;
     font-size: 14px;
   }
-
   &__text {
     flex: 1;
   }

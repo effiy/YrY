@@ -1,19 +1,10 @@
 import { computed, type Ref } from "vue";
-import {
-  ISSUE_STATUS_MAP,
-  ISSUE_PRIORITY_MAP,
-  ISSUE_TYPE_MAP
-} from "@/api/modules/issueService";
+import { ISSUE_STATUS_MAP, ISSUE_PRIORITY_MAP, ISSUE_TYPE_MAP } from "@/api/modules/issueService";
 import type { IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
 import { STATUS_COLOR, ISSUE_STATUS_ORDER } from "./useIssueStats";
 import type { ECOption } from "@/components/ECharts/config";
 
-function barOption(
-  categories: string[],
-  values: number[],
-  color: string,
-  label?: (name: string) => string
-): ECOption {
+function barOption(categories: string[], values: number[], color: string, label?: (name: string) => string): ECOption {
   return {
     tooltip: {
       trigger: "axis",
@@ -44,13 +35,11 @@ export function useIssueCharts(deps: {
   createdByDay: Ref<Record<string, number>>;
 }) {
   const statusDonutOption = computed<ECOption>(() => {
-    const data = ISSUE_STATUS_ORDER
-      .map(s => ({
-        name: s,
-        value: deps.statusDist.value[s] ?? 0,
-        itemStyle: { color: STATUS_COLOR[s] }
-      }))
-      .filter(d => d.value > 0);
+    const data = ISSUE_STATUS_ORDER.map(s => ({
+      name: s,
+      value: deps.statusDist.value[s] ?? 0,
+      itemStyle: { color: STATUS_COLOR[s] }
+    })).filter(d => d.value > 0);
     return {
       tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
       legend: { bottom: 0, textStyle: { fontSize: 9 }, formatter: (n: string) => ISSUE_STATUS_MAP[n as IssueStatus] ?? n },

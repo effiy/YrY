@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 右键菜单系统
 tags:
 - 右键菜单
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 已实现
+status: 已完成
+implementation_progress: 已全部实现
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,39 @@ source_okr: [yivad-003]
 # 右键菜单系统
 
 > 需求编号：YV-09-42 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/17-prd-task-右键菜单系统.md)，验证方案见 [测试方案](../../tests/2026-09/17-prd-test-右键菜单系统.md)。
 > 依赖：无（纯前端组件，独立实现）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 菜单项类型定义 | 参见 §菜单项类型定义 |
+| FR-2 | useContextMenu Composable | 参见 §useContextMenu Compo |
+| FR-3 | 菜单定位引擎 | 参见 §菜单定位引擎 |
+| FR-4 | 键盘导航 Hook | 参见 §键盘导航 Hook |
+| FR-5 | ContextMenu 主组件 | 参见 §ContextMenu 主组件 |
 
 ## 改动总览
 
@@ -91,6 +126,7 @@ YiVad 当前所有页面均依赖浏览器默认右键菜单，用户无法通�
 | 4 | **无键盘右键等效操作** -- 仅依赖鼠标右键，键盘用户无法触发上下文菜单 | **低** | 键盘用户（包括无障碍需求）无法使用上下文操作 |
 | 5 | **操作发现性差** -- 新用户不知道可以对某个元素执行哪些操作 | **低** | 右键菜单天然提供操作发现，当前缺失这一渠道 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前右键交互矩阵
@@ -116,6 +152,7 @@ YiVad 当前所有页面均依赖浏览器默认右键菜单，用户无法通�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 菜单组件架构选型
@@ -151,6 +188,7 @@ YiVad 当前所有页面均依赖浏览器默认右键菜单，用户无法通�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```
@@ -204,6 +242,7 @@ YiVad 当前所有页面均依赖浏览器默认右键菜单，用户无法通�
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 菜单项类型定义
@@ -567,6 +606,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -588,6 +628,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 右键菜单正常显示
@@ -622,6 +663,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -634,6 +676,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -649,6 +692,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 自研 ContextMenu 而非使用 Element Plus Dropdown
@@ -681,6 +725,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -703,6 +748,7 @@ export function useMenuKeyboard(
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types.ts` 中 MenuItem 联合类型完整，覆盖所有 5 种类型

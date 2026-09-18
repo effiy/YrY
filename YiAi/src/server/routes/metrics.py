@@ -1,6 +1,7 @@
 """Prometheus metrics endpoint."""
 
 from fastapi import APIRouter, Response
+
 from shared.metrics import get_metrics
 
 router = APIRouter(tags=["Metrics"])

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 页面锁定与并发编辑控制
 tags:
 - 锁定
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 需求已编写
+status: 已完成
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: '2026-09-15'
 priority: 中
 project: YiVad
 project_id: yivad
@@ -30,7 +33,42 @@ source_okr: [yivad-003]
 # 页面锁定与并发编辑控制
 
 > 需求编号：YV-09-45 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/20-prd-task-页面锁定与并发编辑控制.md)，验证方案见 [测试方案](../../tests/2026-09/20-prd-test-页面锁定与并发编辑控制.md)。
 > 依赖：YiAi 后端需提供 lock API 端点（后端人天 0.5d）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | 锁定状态类型定义 | 参见 §锁定状态类型定义 |
+| FR-2 | 锁定 API 客户端 | 参见 §锁定 API 客户端 |
+| FR-3 | useEditLock Composable | 参见 §useEditLock Composab |
+| FR-4 | 锁心跳 Hook | 参见 §锁心跳 Hook |
+| FR-5 | 并发编辑检测 Hook | 参见 §并发编辑检测 Hook |
+| FR-6 | LockIndicator 锁定指示器组件 | 参见 §LockIndicator 锁定指示器组 |
+| FR-7 | ConflictResolver 冲突解决组件 | 参见 §ConflictResolver 冲突解 |
+| FR-8 | WebSocket 锁定状态监听 | 参见 §WebSocket 锁定状态监听 |
 
 ## 改动总览
 
@@ -97,6 +135,7 @@ YiVad 作为团队协作管理后台，多个用户可能同时编辑同一个�
 | 4 | **无只读保护** -- 无法阻止其他用户在编辑期间修改 | **中** | 编辑锁缺失，任何人都可以随时修改任何内容 |
 | 5 | **无编辑历史** -- 无法追踪谁在何时编辑了什么 | **低** | 冲突发生后无法追溯责任和恢复内容 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前并发编辑场景
@@ -121,6 +160,7 @@ YiVad 作为团队协作管理后台，多个用户可能同时编辑同一个�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 锁定策略选型
@@ -154,6 +194,7 @@ YiVad 作为团队协作管理后台，多个用户可能同时编辑同一个�
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```
@@ -217,6 +258,7 @@ YiVad 作为团队协作管理后台，多个用户可能同时编辑同一个�
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 锁定状态类型定义
@@ -721,6 +763,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -741,6 +784,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### Scenario 1: 获取编辑锁
@@ -775,6 +819,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -787,6 +832,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -804,6 +850,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 混合策略（乐观锁 + 悲观锁）
@@ -836,6 +883,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -860,6 +908,7 @@ export function useLockWebSocket(entityType: string, entityId: string) {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `types/lock.ts` 中 LockStatus、ConflictInfo、LockEvent 等类型定义完整

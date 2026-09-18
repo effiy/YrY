@@ -41,7 +41,7 @@
       <button type="button" class="pr-count" title="Issues" @click.stop="emit('tab', 'issues')">
         <el-icon><Tickets /></el-icon>{{ stats.issues }}
       </button>
-            <button type="button" class="pr-count" title="Bugs" @click.stop="emit('tab', 'bugs')">
+      <button type="button" class="pr-count" title="Bugs" @click.stop="emit('tab', 'bugs')">
         <el-icon><WarningFilled /></el-icon>{{ stats.totalBugs }}
       </button>
     </div>
@@ -129,9 +129,15 @@ const extraMembers = computed(() => Math.max(0, (props.project.members?.length |
 
 function handleCommand(cmd: string) {
   switch (cmd) {
-    case "edit": emit("edit"); break;
-    case "archive": emit("archive"); break;
-    case "restore": emit("restore"); break;
+    case "edit":
+      emit("edit");
+      break;
+    case "archive":
+      emit("archive");
+      break;
+    case "restore":
+      emit("restore");
+      break;
   }
 }
 </script>

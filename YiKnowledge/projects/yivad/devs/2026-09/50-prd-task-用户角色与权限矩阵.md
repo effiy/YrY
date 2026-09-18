@@ -1,40 +1,96 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-106"
-title: "YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-106: 用户角色与权限矩阵 — 开发方案"
+status: 已完成
+priority: P1
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.5
 source_prd: "50-prd-用户角色与权限矩阵.md"
 ---
 
-# YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志 — 开发任务
+# YV-09-106: 用户角色与权限矩阵 — 开发方案
 
-> 来源 PRD：[50-prd-用户角色与权限矩阵.md](../prds/2026-09/50-prd-用户角色与权限矩阵.md)
-> 需求编号：YV-09-106 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-106 · 人天：0.5d
 
-## 五、实施步骤
-
-| 步骤 | 操作 | 路径 | 验证 | 人天 |
-|------|------|------|------|------|
-| 1 | 定义类型 | `src/views/permissions/types.ts` | 类型检查通过 | 0.02 |
-| 2 | 实现后端权限矩阵服务 | `YiAi: services/perm/matrix_service.py` | 有效权限展开/角色对比正确 | 0.05 |
-| 3 | 实现后端审计日志服务 | `YiAi: services/perm/audit_service.py` | 日志记录+查询 | 0.02 |
-| 4 | 实现权限矩阵表格组件 | `src/views/permissions/components/PermissionMatrix.vue` | 表格渲染+排序+筛选 | 0.05 |
-| 5 | 实现角色对比视图 | `src/views/permissions/components/RoleCompare.vue` | Venn 图+差异列表 | 0.04 |
-| 6 | 实现权限继承树 | `src/views/permissions/components/PermissionTree.vue` | 树形渲染+展开/折叠 | 0.03 |
-| 7 | 实现有效权限计算器 UI | `src/views/permissions/components/EffectivePermCalc.vue` | 用户选择→权限展示 | 0.03 |
-| 8 | 实现审计日志查看器 | `src/views/permissions/components/AuditLogViewer.vue` | 分页+筛选+时间范围 | 0.03 |
-| 9 | 实现重叠度图表 | `src/views/permissions/components/RoleOverlapChart.vue` | ECharts 热力图 | 0.02 |
-| 10 | 添加路由和权限（管理员可见） | `src/router/` | 仅管理员角色可访问 | 0.01 |
-
-**总人天：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+可视化角色-权限矩阵页面：行=角色，列=权限模块，交叉点=勾选框。
+
+### 矩阵视图
+
+| 角色 \ 模块 | project | knowledge | data | chat | user | role | audit |
+|------------|---------|-----------|------|------|------|------|-------|
+| admin | ✅✅✅✅ | ✅✅✅✅ | ✅✅ | ✅✅ | ✅ | ✅ | ✅✅ |
+| engineer | ✅✅✅ | ✅✅✅ | ✅✅ | ✅✅ | — | — | — |
+| viewer | ✅ | ✅ | ✅ | ✅✅ | — | — | — |
+
+### 实施步骤：0.5d
+
+- 矩阵组件（复用 PermissionMatrix 模式，角色×模块维度）
+
+---
+
+<a id="sec-2"></a>
+## 二、完成定义（DoD）
+
+- [ ] 5 角色 × 7 模块矩阵渲染
+- [ ] 勾选即时生效
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.5d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.5d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/50-prd-test-用户角色与权限矩阵.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

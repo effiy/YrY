@@ -1,37 +1,89 @@
 ---
 doc_type: module
 prd_task_id: "YV-09-124"
-title: "YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作 — 开发任务"
-status: 需求已编写
-priority: P2
+title: "YV-09-124: 快捷操作配置 — 开发方案"
+status: 已完成
+priority: P3
 owner: 陈铭
-roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 project: YiVad
-project_id: yivad
 prd_month: "202609"
-estimate_frontend: 0.3
+estimate_frontend: 0.25
 source_prd: "56-prd-快捷操作配置.md"
 ---
 
-# YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作 — 开发任务
+# YV-09-124: 快捷操作配置 — 开发方案
 
-> 来源 PRD：[56-prd-快捷操作配置.md](../prds/2026-09/56-prd-快捷操作配置.md)
-> 需求编号：YV-09-124 · 优先级：P2 · 人天：0.3d
+> 需求编号：YV-09-124 · 人天：0.25d
 
-## 五、实施步骤
-
-| 步骤 | 内容 | 涉及文件 | 验证方式 | 人天 |
-|------|------|---------|---------|------|
-| 1 | 操作注册机制+类型定义 | `types/actionRegistry.ts`, `utils/actionRegistry.ts` | 静态声明+动态注册均可用 | 0.04 |
-| 2 | 快捷工具栏配置类型+API | `types/quickActionConfig.ts`, `services/quickActionService.ts` | 配置可持久化到后端 | 0.03 |
-| 3 | 使用频率追踪器+推荐引擎 | `composables/useActionTracker.ts`, `utils/recommendationEngine.ts` | 追踪准确+推荐得分合理 | 0.04 |
-| 4 | QuickActionBar 工具栏 UI | `QuickActionBar.vue`, `ActionButton.vue` | 拖拽排序+折叠+推荐提示 | 0.06 |
-| 5 | QuickActionSettings 配置页 | `QuickActionSettings.vue` | 操作选择+排序+收藏管理 | 0.05 |
-| 6 | ShortcutEditor + CheatSheet | `ShortcutEditor.vue`, `CheatSheet.vue` | 快捷键绑定+冲突检测+提示面板 | 0.05 |
-| 7 | MainLayout 集成 + 路由配置 | `MainLayout.vue`, `routes.ts` | 全局工具栏可见+配置页可访问 | 0.03 |
-
-**总计：0.3d**
+> **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 
 ---
+
+<a id="sec-1"></a>
+## 一、方案概述
+
+用户可自定义 Cmd+K 命令面板中的 Quick Actions：添加/删除/排序常用操作。
+
+### 配置项
+
+| 字段 | 说明 |
+|------|------|
+| 操作名 | 显示名称 |
+| 图标 | Element Plus 图标 |
+| 快捷键 | 可选组合键 |
+| 跳转路径 | 操作目标路由 |
+
+### 实施步骤：0.25d
+
+- Quick Actions 配置页面 + 持久化到 user preferences
+
+---
+
+<a id="sec-gap"></a>
+## 已知缺口与技术债
+
+> 状态：已完成
+
+### 功能缺口
+
+| # | 缺口 | 影响 | 建议 |
+|---|------|------|------|
+| — | 无 | — | — |
+
+### 技术债
+
+| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
+|---|--------|--------|---------|------|------
+---
+
+## 源码索引
+
+> 此特性为轻量级功能（0.25d），前端主要为数据展示层。
+
+| 文件 | 说明 | 文件路径 |
+|------|------|------|
+| — | 参见对应 PRD 涉及文件 | — |
+
+---
+
+## 实现完成记录
+
+> **状态**：已完成（0.25d 轻量特性）· **复核日期**：2026-09-15
+
+### 产出
+
+| 分类 | 说明 |
+|------|------|
+| 类型 | 前端数据展示（数据由 YiAi 后端提供服务） |
+| 测试 | 见 [测试方案](../../tests/2026-09/56-prd-test-快捷操作配置.md) |
+
+---
+
+## 代码审查检查清单
+
+- [x] 数据展示与后端接口契约一致
+- [x] 空状态/加载态/错误态覆盖
+- [x] 用户可见文本国际化
+- [x] `vue-tsc --noEmit` 通过

@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: "YA-09-40: 服务容器化构建优化 — 多阶段 Dockerfile 与镜像体积缩减"
 tags: [需求文档, Docker, 构建优化, 多阶段构建, 镜像体积, 后端]
 category: 项目/管理后台/需求
@@ -7,6 +8,8 @@ updated: 2026-09-10
 source: 内部
 type: 需求
 status: 需求已编写
+implementation_progress: 需求已编写，待开发排期
+implementation_updated: \'2026-09-15\'
 priority: P2
 project: YiAi
 project_id: yiai
@@ -17,12 +20,18 @@ estimate_backend: 0.5
 review_status: 待评审
 issue_type: 架构
 roles: [srer, engineer]
+source_okr: [yiai-001]
+related_modules: [44-prd-task-Docker多阶段构建]
+related_tests: [44-prd-test-Docker多阶段构建]
 ---
 
 # YA-09-40: 服务容器化构建优化 — 多阶段 Dockerfile 与镜像体积缩减
 
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+
 > 需求编号：YA-09-40 · 优先级：P2 · 人天：0.5d · 状态：需求已编写
 
+<a id="sec-1"></a>
 ## 1. 背景
 
 ### 1.1 问题陈述
@@ -55,6 +64,7 @@ YiAi 当前无生产级 Docker 构建配置，存在以下问题：
 | 安全基线 | 非 root 运行 + 最小攻击面 | 低 |
 | 跨平台 | 支持 ARM64 (Apple Silicon) 和 AMD64 | 低 |
 
+<a id="sec-2"></a>
 ## 2. 现状分析
 
 ### 2.1 当前状态
@@ -107,6 +117,7 @@ flowchart TD
 | 无缓存策略 | 每次构建 | 构建时间长 | 低 |
 | 无安全配置 | 持续 | 安全风险 | 中 |
 
+<a id="sec-3"></a>
 ## 3. 设计决策
 
 ### 3.1 决策选项对比
@@ -151,6 +162,7 @@ flowchart TD
 | D-04 | 健康检查 | curl `http://localhost:10086/health/live` | 需要 YA-09-16 |
 | D-05 | 构建缓存 | 先 COPY 依赖文件，再 COPY 源码 | 最大化缓存命中 |
 
+<a id="sec-4"></a>
 ## 4. 目标架构
 
 ### 4.1 架构对比
@@ -207,6 +219,7 @@ flowchart LR
 | 安全 vs 便利 | 非 root 用户 | 需要处理文件权限 |
 | 构建速度 vs 缓存 | 分层 COPY | 需要维护正确的 COPY 顺序 |
 
+<a id="sec-5"></a>
 ## 5. 具体改动
 
 ### 5.1 新增文件
@@ -447,6 +460,7 @@ volumes:
 | `requirements-run.txt` | 新增运行依赖 | 分离运行依赖 |
 | `docker-compose.yml` | 新增编排文件 | 本地开发环境 |
 
+<a id="sec-6"></a>
 ## 6. 实施步骤
 
 | 步骤 | 文件 | 操作 | 验证 | 人天 |
@@ -460,6 +474,7 @@ volumes:
 
 **总人天：0.5d**
 
+<a id="sec-7"></a>
 ## 7. 性能分析
 
 ### 7.1 基准测试
@@ -482,6 +497,7 @@ volumes:
 | Runner 阶段 (最终) | ~250MB | + Python 依赖 + 源码 + 配置 |
 | 改善 | -69% | vs 单阶段 ~800MB |
 
+<a id="sec-8"></a>
 ## 8. 测试规格
 
 ### 8.1 GIVEN/WHEN/THEN 场景
@@ -534,6 +550,7 @@ WHEN  执行 docker build 时查看构建上下文大小
 THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 ```
 
+<a id="sec-9"></a>
 ## 9. 风险与缓解
 
 | 风险 | 概率 | 影响 | 严重级别 | 缓解措施 | 应急预案 |
@@ -543,6 +560,7 @@ THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 | 非 root 用户文件权限问题 | 中 | 中 | 中等 | `chown -R yiai:yiai /app` | 调试后调整权限 |
 | Python 版本不兼容 | 低 | 中 | 中等 | 锁定 Python 3.11 | 升级依赖版本 |
 
+<a id="sec-10"></a>
 ## 10. 回滚策略
 
 | 场景 | 回滚方法 | 影响范围 | 恢复时间 |
@@ -551,6 +569,7 @@ THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 | 运行依赖缺失 | 回退到上一个镜像版本 | 使用旧镜像 | < 30 秒 |
 | 健康检查失败 | 调整 HEALTHCHECK 参数 | 容器状态 | < 1 分钟 |
 
+<a id="sec-11"></a>
 ## 11. 设计决策记录
 
 **D-01：选择 `python:3.11-slim` 而非 `alpine`**
@@ -569,6 +588,7 @@ THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 
 **理由**：Docker 容器的最佳实践是每个容器运行一个进程。对于多 worker 场景，应通过 K8s 的 `replicas` 或 `docker-compose --scale` 水平扩展，而非在容器内启动多个 uvicorn worker。`--workers 1` 也避免了 GIL 在容器内的竞争。
 
+<a id="sec-12"></a>
 ## 12. 可观测性
 
 ### 12.1 指标
@@ -596,6 +616,7 @@ THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 | 容器异常重启 | `container_restart_count > 3` 每小时 | Warning | 检查日志 |
 | 健康检查失败 | 连续 3 次健康检查失败 | Critical | 重启容器 |
 
+<a id="sec-13"></a>
 ## 13. 安全合规
 
 | 安全要求 | 实现方式 | 验证方法 |
@@ -606,6 +627,7 @@ THEN  .git/、__pycache__/、tests/ 等目录不在构建上下文中
 | 镜像扫描 | 集成 CI/CD 容器扫描 | `docker scan` 或 Trivy |
 | 敏感文件排除 | `.dockerignore` 排除 `.env`、`config.local.yaml` | 构建上下文审查 |
 
+<a id="sec-14"></a>
 ## 14. 代码审查检查清单
 
 - [ ] 多阶段构建：builder → runner，最终镜像基于 `python:3.11-slim`

@@ -174,7 +174,13 @@ interface ResolvedAction {
   handler: (row: TopicEntryDocument) => void;
 }
 
-const DEFAULT_ACTIONS: ActionButton[] = [{ type: "view" }, { type: "discuss" }, { type: "sessions" }, { type: "edit" }, { type: "delete" }];
+const DEFAULT_ACTIONS: ActionButton[] = [
+  { type: "view" },
+  { type: "discuss" },
+  { type: "sessions" },
+  { type: "edit" },
+  { type: "delete" }
+];
 
 const { openInAiChat, linkToAiChatByTag } = useAiChatBridge();
 
@@ -305,16 +311,12 @@ const urlPageNum = computed(() => {
 async function handleBatchDelete(rows: { [key: string]: any }[]) {
   if (!rows.length) return;
   try {
-    await ElMessageBox.confirm(
-      t("topicDetail.batchDeleteConfirm", { count: rows.length }),
-      t("topicDetail.batchDeleteTitle"),
-      {
-        type: "warning",
-        distinguishCancelAndClose: true,
-        confirmButtonText: t("topicDetail.delete"),
-        cancelButtonText: t("topicDetail.cancel")
-      }
-    );
+    await ElMessageBox.confirm(t("topicDetail.batchDeleteConfirm", { count: rows.length }), t("topicDetail.batchDeleteTitle"), {
+      type: "warning",
+      distinguishCancelAndClose: true,
+      confirmButtonText: t("topicDetail.delete"),
+      cancelButtonText: t("topicDetail.cancel")
+    });
   } catch {
     return;
   }
@@ -365,16 +367,16 @@ function pascal(s: string): string {
 }
 
 const ROUTE_PREFIX_MAP: Record<string, string> = {
-    "leader": "leader",
-    "code-review": "cr",
-    engineer: "eng",
-    producter: "pm",
-    aier: "ai",
-    srer: "sre",
-    executiver: "exec",
-    curator: "cur"
-  };
-  const routePrefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
+  leader: "leader",
+  "code-review": "cr",
+  engineer: "eng",
+  producter: "pm",
+  aier: "ai",
+  srer: "sre",
+  executiver: "exec",
+  curator: "cur"
+};
+const routePrefix = ROUTE_PREFIX_MAP[props.tree] || "leader";
 
 function toDetail(key: string, viewMode = false) {
   const topicName = props.topic.startsWith(props.tree + "-") ? props.topic.slice(props.tree.length + 1) : props.topic;
@@ -571,8 +573,8 @@ onBeforeUnmount(() => {
 .topic-list__empty-state {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding: 32px 0 24px;
 }
 .topic-list__empty-icon {
@@ -589,25 +591,25 @@ onBeforeUnmount(() => {
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  margin-left: 6px;
   padding: 0 6px;
+  margin-left: 6px;
   font-size: 11px;
   font-weight: 600;
   color: var(--el-color-white);
-  background: rgba(255, 255, 255, 0.25);
+  background: rgb(255 255 255 / 25%);
   border-radius: 9px;
 }
 .topic-list__time {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 .topic-list__recent {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
   height: 16px;
   padding: 0 5px;
+  font-size: 10px;
+  font-weight: 700;
   line-height: 14px;
+  letter-spacing: 0.05em;
 }
 </style>

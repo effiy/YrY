@@ -1,4 +1,5 @@
 ---
+doc_type: prd
 title: 水印系统
 tags:
 - 水印
@@ -11,7 +12,9 @@ created: 2026-09-09
 updated: 2026-09-10
 source: 内部
 type: 需求
-status: 已实现
+status: 已完成
+implementation_progress: 已全部实现
+implementation_updated: '2026-09-15'
 priority: P2
 project: YiVad
 project_id: yivad
@@ -31,7 +34,39 @@ source_okr: [yivad-003]
 # 水印系统
 
 > 需求编号：YV-09-40 · 优先级：P2 · 人天：0.5d
+
+> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
+> 实现方案见 [开发方案](../../devs/2026-09/16-prd-task-水印系统.md)，验证方案见 [测试方案](../../tests/2026-09/16-prd-test-水印系统.md)。
 > 依赖：无（独立功能，可与需求并行开发）
+
+
+## 目录
+
+- [一、现状分析](#sec-1)
+- [二、设计决策](#sec-2)
+- [三、目标架构](#sec-3)
+- [四、具体改动](#sec-4)
+- [五、实施步骤](#sec-5)
+- [六、测试规格](#sec-6)
+- [七、风险与缓解](#sec-7)
+- [八、回滚策略](#sec-8)
+- [九、设计决策记录](#sec-9)
+- [十、可观测性](#sec-10)
+- [十一、代码审查检查清单](#sec-十一)
+
+---
+
+
+
+### 功能需求摘要
+
+| 编号 | 功能 | 说明 |
+|------|------|------|
+| FR-1 | useWatermark Composable | 参见 §useWatermark Composa |
+| FR-2 | WatermarkOverlay 组件 | 参见 §WatermarkOverlay 组件 |
+| FR-3 | watermarkStore 状态管理 | 参见 §watermarkStore 状态管理 |
+| FR-4 | v-watermark 指令 | 参见 §v-watermark 指令 |
+| FR-5 | 打印样式 | 参见 §打印样式 |
 
 ## 改动总览
 
@@ -97,6 +132,7 @@ YiVad 管理后台包含大量敏感业务数据（项目信息、用户数据�
 | 4 | **无颗粒度控制** -- 无法按页面敏感度配置水印 | **中** | 所有页面要么全有水印要么全无，不灵活 |
 | 5 | **无强制水印** -- 管理员无法全局强制开启水印 | **中** | 用户可自行关闭水印，安全策略失效 |
 
+<a id="sec-1"></a>
 ## 一、现状分析
 
 ### 当前信息安全能力矩阵
@@ -121,6 +157,7 @@ YiVad 管理后台包含大量敏感业务数据（项目信息、用户数据�
 
 ---
 
+<a id="sec-2"></a>
 ## 二、设计决策
 
 ### 水印实现方式选型
@@ -202,6 +239,7 @@ function generateWatermarkSVG(config: WatermarkConfig): string {
 
 ---
 
+<a id="sec-3"></a>
 ## 三、目标架构
 
 ```mermaid
@@ -264,6 +302,7 @@ z-index 层级:
 
 ---
 
+<a id="sec-4"></a>
 ## 四、具体改动
 
 ### 4.1 useWatermark Composable
@@ -602,6 +641,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-5"></a>
 ## 五、实施步骤
 
 | 步骤 | 任务 | 产出 | 验证方式 | 人天 |
@@ -619,6 +659,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-6"></a>
 ## 六、测试规格
 
 ### 单元测试：useWatermark
@@ -657,6 +698,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-7"></a>
 ## 七、风险与缓解
 
 | 风险 | 概率 | 影响 | 等级 | 缓解措施 | 应急预案 |
@@ -669,6 +711,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-8"></a>
 ## 八、回滚策略
 
 | 回滚场景 | 回滚方式 | 影响范围 | 恢复时间 |
@@ -685,6 +728,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-9"></a>
 ## 九、设计决策记录
 
 ### D-01: 选择 CSS 背景图方案而非 Canvas
@@ -717,6 +761,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-10"></a>
 ## 十、可观测性
 
 ### 关键指标
@@ -741,6 +786,7 @@ export const vWatermark: Directive = {
 
 ---
 
+<a id="sec-11"></a>
 ## 十一、代码审查检查清单
 
 - [ ] `WatermarkOverlay` 使用 `pointer-events: none` 确保不阻挡交互
