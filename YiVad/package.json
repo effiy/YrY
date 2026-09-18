@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "packageManager": "pnpm@9.1.4",
   "description": "YiVad admin dashboard",
   "license": "MIT",
   "scripts": {

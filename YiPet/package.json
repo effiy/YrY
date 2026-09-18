@@ -5,7 +5,6 @@
   "description": "YiPet — Gentle Companion Chrome MV3 extension with AI chat, multi-role support, and cross-project bridge to YiVad",
   "license": "MIT",
   "type": "module",
-  "packageManager": "npm@11.6.2",
   "scripts": {
     "dev": "npm run build:cdn && (rsbuild build --mode development --watch & rsbuild build --mode production --watch --config rsbuild.config.chat.ts & rsbuild build --mode development --watch --config rsbuild.config.bootstrap.ts)",
     "build": "npm run build:cdn && rsbuild build && npm run build:chat && npm run build:bootstrap",
