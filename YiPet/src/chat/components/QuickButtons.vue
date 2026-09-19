@@ -1,6 +1,9 @@
 <script setup lang="ts">
 /**
  * YiPet Chat — QuickButtons (Vue 3 SFC)
+ * Mirrors YiVad ai-chat-box QuickButtons: horizontal chip row of curated
+ * prompts, with template variants carrying a "template" badge. Sits as a
+ * sibling of ci-input so it appears as an independent action band.
  */
 import { computed } from 'vue';
 import { useChatStore } from '../stores/chat';
@@ -10,11 +13,25 @@ import type { QuickButton } from '../constants';
 const store = useChatStore();
 const s = store.state;
 
-const chip = computed(() => {
+const chipIcons: Record<string, string> = {
+  roadmap_review: '🗺',
+  adr_review: '📋',
+  dora_metrics: '📊',
+  tech_debt: '🛠',
+  tech_selection: '🔍',
+  org_diagnose: '🏢',
+  postmortem: '🚨',
+  capacity_cost: '💰'
+};
+
+// Page-context chip (e.g. inject current page URL into the prompt).
+const contextChip = computed(() => {
   try {
     const fn = (store as any).pageContextChip;
     return typeof fn === 'function' ? fn() : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 });
 
 function onClick(b: QuickButton) {
@@ -25,117 +42,177 @@ function onClick(b: QuickButton) {
       return;
     }
     store.sendMessage?.(b.content || '');
-  } catch {}
+  } catch { /* swallow: chip is decorative */ }
+}
+
+function onContextChip() {
+  if (s.isProcessing) return;
+  try { store.applyPageContextChip?.(); } catch { /* noop */ }
 }
 </script>
 
 <template>
+  <!-- qb-row: sibling of ci-input, mirrors YiVad ai-chat-box QuickButtons -->
   <div
+    v-if="s.messages.length === 0"
     class="qb-row"
-    style="display: flex !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; min-height: 28px; flex-shrink: 0 !important;"
+    role="toolbar"
+    aria-label="Quick action prompts"
   >
-    <span
-      v-if="chip"
+    <button
+      v-if="contextChip"
+      type="button"
       class="qb-chip qb-chip--context"
-      :class="{ 'is-disabled': s.isProcessing }"
-      @click="!s.isProcessing && store.applyPageContextChip?.()"
+      :disabled="s.isProcessing"
+      :title="contextChip.prompt"
+      @click="onContextChip"
     >
-      {{ chip.label }}
-    </span>
-    <span
+      <span class="qb-chip-icon">🌐</span>
+      <span class="qb-chip-label">{{ contextChip.label }}</span>
+    </button>
+    <button
       v-for="b in QUICK_BUTTONS"
       :key="b.value"
+      type="button"
       class="qb-chip qb-chip--normal"
-      :class="{ 'is-disabled': s.isProcessing }"
+      :disabled="s.isProcessing"
+      :title="b.content"
       @click="onClick(b)"
     >
-      {{ b.label }}
-    </span>
-    <span
+      <span class="qb-chip-icon">{{ chipIcons[b.value] || '💡' }}</span>
+      <span class="qb-chip-label">{{ b.label }}</span>
+    </button>
+    <button
       v-for="b in QUICK_BUTTONS_NEW"
       :key="b.value"
+      type="button"
       class="qb-chip qb-chip--special"
-      :class="{ 'is-disabled': s.isProcessing }"
+      :disabled="s.isProcessing"
+      :title="b.content"
       @click="onClick(b)"
     >
-      {{ b.label }}
-    </span>
+      <span class="qb-chip-icon">{{ chipIcons[b.value] || '✨' }}</span>
+      <span class="qb-chip-label">{{ b.label }}</span>
+      <span class="qb-chip-badge">template</span>
+    </button>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .qb-row {
-  display: flex !important;
+  display: flex;
+  flex-shrink: 0;
   flex-wrap: nowrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   width: 100%;
-  min-height: 28px;
-  flex-shrink: 0;
-  padding: 2px 4px;
+  min-height: 44px;
+  padding: 8px 14px;
+  background: #141228;
+  border-top: 1px solid rgba(99, 102, 241, 0.18);
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
-  visibility: visible !important;
-  opacity: 1 !important;
+  box-sizing: border-box;
 
-  &::-webkit-scrollbar { display: none; }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .qb-chip {
-  display: inline-block;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.4;
+  color: #f5f3ff;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: 999px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s,
+    background 0.15s;
 
-  &.is-disabled {
-    opacity: 0.5;
+  &:hover:not(:disabled) {
+    border-color: rgba(99, 102, 241, 0.55);
+    background: rgba(99, 102, 241, 0.22);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.18);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+
+  &:disabled {
     cursor: not-allowed;
-    pointer-events: none;
+    opacity: 0.45;
   }
 }
 
-.qb-chip--context {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  font-weight: 500;
+.qb-chip-icon {
+  font-size: 14px;
+  line-height: 1;
+}
 
-  &:hover:not(.is-disabled) {
+.qb-chip-label {
+  white-space: nowrap;
+}
+
+.qb-chip-badge {
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fde68a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: rgba(234, 179, 8, 0.18);
+  border-radius: 8px;
+}
+
+// ── Variants ──
+.qb-chip--context {
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.4);
+
+  &:hover:not(:disabled) {
     background: rgba(34, 197, 94, 0.22);
     border-color: rgba(34, 197, 94, 0.6);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
-  }
-}
-
-.qb-chip--normal {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  color: var(--primary-light, #818cf8);
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
-
-  &:hover:not(.is-disabled) {
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.5);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(var(--primary-rgb, 99, 102, 241), 0.15);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.18);
   }
 }
 
 .qb-chip--special {
-  background: rgba(234, 179, 8, 0.1);
-  color: #eab308;
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fde68a;
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.42);
 
-  &:hover:not(.is-disabled) {
-    background: rgba(234, 179, 8, 0.2);
-    border-color: rgba(234, 179, 8, 0.5);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(234, 179, 8, 0.15);
+  &:hover:not(:disabled) {
+    background: rgba(234, 179, 8, 0.22);
+    border-color: rgba(234, 179, 8, 0.62);
+    box-shadow: 0 2px 8px rgba(234, 179, 8, 0.18);
+  }
+}
+
+// ── Responsive ──
+@media (max-width: 480px) {
+  .qb-row {
+    padding: 6px 10px;
+    gap: 6px;
+    min-height: 40px;
+  }
+  .qb-chip {
+    padding: 5px 10px;
+    font-size: 12px;
   }
 }
 </style>

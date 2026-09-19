@@ -12,7 +12,6 @@ import { useChatStore } from '../stores/chat';
 import { keyboardRegistry, displayKeys } from '@/shared/shortcuts';
 import ChatToolbar from './ChatToolbar/ChatToolbar.vue';
 import DraftImageList from './DraftImageList.vue';
-import QuickButtons from './QuickButtons.vue';
 import FileMentionDropdown from './FileMentionDropdown.vue';
 
 const MAX_DRAFT_IMAGES = 4;
@@ -573,7 +572,6 @@ if (typeof window !== 'undefined') {
 <template>
   <div
     class="ci-input"
-    style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 1 !important; width: 100% !important; box-sizing: border-box !important;"
     @dragenter="onDragEnter"
     @dragleave="onDragLeave"
     @dragover="onDragOver"
@@ -603,8 +601,6 @@ if (typeof window !== 'undefined') {
       @remove="(idx: number) => store.removeDraftImage?.(idx)"
       @clear="store.clearDraftImages?.()"
     />
-
-    <QuickButtons v-show="true" />
 
     <div class="ci-row">
       <div class="ci-textarea-wrap">
@@ -687,21 +683,18 @@ if (typeof window !== 'undefined') {
 
 <style lang="scss" scoped>
 .ci-input {
-  display: flex !important;
+  display: flex;
+  flex: 0 0 auto;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 6px;
   padding: 8px 12px 12px;
   background: #141228;
   border-top: 1px solid rgba(99, 102, 241, 0.2);
   position: relative;
-  flex-shrink: 0 !important;
-  min-height: 160px !important;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  visibility: visible !important;
-  opacity: 1 !important;
-  overflow: visible !important;
   z-index: 3;
 
   @supports (backdrop-filter: blur(1px)) {

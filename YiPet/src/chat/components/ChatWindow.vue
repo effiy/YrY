@@ -12,6 +12,7 @@ import ChatSidebar from './ChatSidebar.vue';
 import KnowledgeSidebar from './KnowledgeSidebar.vue';
 import ChatMessages from './ChatMessages.vue';
 import ChatInput from './ChatInput.vue';
+import QuickButtons from './QuickButtons.vue';
 import BugReportDialog from './BugReportDialog.vue';
 import FaqDialog from './FaqDialog.vue';
 import KnowledgePreviewDialog from './KnowledgePreviewDialog/KnowledgePreviewDialog.vue';
@@ -362,10 +363,11 @@ onUnmounted(() => {
           />
         </div>
 
-        <!-- Input area -->
-        <div class="yipet-chat-input-wrap">
-          <ChatInput v-show="true" />
-        </div>
+        <!-- Quick action chips (qb-row) — sibling of input, mirrors YiVad ai-chat-box -->
+        <QuickButtons />
+
+        <!-- Input area (ci-input) -->
+        <ChatInput />
       </div>
     </div>
 
@@ -583,22 +585,6 @@ onUnmounted(() => {
 .yipet-chat-messages-wrap::-webkit-scrollbar-thumb {
   background: rgba(99,102,241,.35);
   border-radius: 3px;
-}
-
-// Input wrap
-.yipet-chat-input-wrap {
-  flex: 0 0 auto !important;
-  min-height: 160px !important;
-  height: auto !important;
-  max-height: 60vh;
-  overflow: visible !important;
-  background: #141228;
-  border-top: 1px solid rgba(99,102,241,.22);
-  z-index: 10 !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: block !important;
-  position: relative;
 }
 
 // Resize handles (keep dark for contrast against any page)
