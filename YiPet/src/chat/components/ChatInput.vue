@@ -83,6 +83,37 @@ const streamingPhaseLabel = _safeCompute(() => {
   return 'Processing';
 }, '');
 
+const searchPrefetchStatus = computed(() => {
+  if (!s.webSearchEnabled) return null;
+  const timing = s.searchTimingMs;
+  const results = s.webSearchResults?.length ?? 0;
+  const images = s.webSearchImages?.length ?? 0;
+  const lastQuery = s.lastSearchQuery || '';
+  if (s.isProcessing && s.streamingPhase === 'retrieving' && results === 0) {
+    return { tone: 'pending', text: 'Searching web…' };
+  }
+  if (!lastQuery) return null;
+  const timingText = timing && timing > 0 ? (timing < 1000 ? `${timing}ms` : `${(timing/1000).toFixed(1)}s`) : '';
+  if (results || images) {
+    const parts: string[] = [];
+    if (results) parts.push(`${results} results`);
+    if (images) parts.push(`${images} images`);
+    return { tone: 'ok', text: `Prefetch · ${parts.join(', ')}${timingText ? ' · ' + timingText : ''}` };
+  }
+  if (timing) return { tone: 'idle', text: `Prefetch · ${timingText} · no hits` };
+  return { tone: 'idle', text: 'Prefetch · waiting' };
+});
+
+const ragIndexHealth = computed(() => {
+  if (!s.knowledgeGrounded) return null;
+  if (s.ragStatusLoading) return { tone: 'pending', text: 'RAG index loading…' };
+  const docs = s.ragStatus?.num_docs ?? 0;
+  if (s.ragStatus?.built === true) {
+    return { tone: 'ok', text: `RAG index · ${docs} docs` };
+  }
+  return { tone: 'warn', text: 'RAG index not built — click status dot to reload' };
+});
+
 // ── Phase-aware placeholder (mirrors YiVad aiChat) ──
 const placeholder = _safeCompute(() => {
   try {
@@ -112,7 +143,42 @@ const compositionEndTime = ref(0);
 const lastTemplateRef = ref('');
 const historyIdxRef = ref(-1);
 const preHistoryInputRef = ref('');
+const preHistoryCaretRef = ref(-1);
 const preserveComposerOnNextOpen = ref(false);
+const textareaEl = ref<HTMLTextAreaElement | null>(null);
+const pasteLastWasMixed = ref(false);
+
+function getTa(): HTMLTextAreaElement | null {
+  if (textareaEl.value) return textareaEl.value;
+  return document.querySelector<HTMLTextAreaElement>('#yipet-chat-window .el-textarea__inner');
+}
+function getCaret(): { start: number; end: number } {
+  const ta = getTa();
+  if (!ta) return { start: 0, end: 0 };
+  try { return { start: ta.selectionStart ?? 0, end: ta.selectionEnd ?? 0 }; } catch { return { start: 0, end: 0 }; }
+}
+function setCaret(pos: number) {
+  nextTick(() => {
+    const ta = getTa();
+    if (!ta) return;
+    try { ta.focus(); ta.setSelectionRange(pos, pos); } catch { /* ignore */ }
+  });
+}
+function setInputValueRestoreCaret(text: string, caretHint: 'start' | 'end' | number = 'end') {
+  inputValue.value = text;
+  nextTick(() => {
+    const ta = getTa();
+    if (!ta) return;
+    try {
+      const len = ta.value.length;
+      let target: number;
+      if (caretHint === 'start') target = 0;
+      else if (caretHint === 'end') target = len;
+      else target = Math.max(0, Math.min(len, caretHint as number));
+      ta.setSelectionRange(target, target);
+    } catch { /* ignore */ }
+  });
+}
 
 // ── Can send: user has text, images, and is not currently sending ──
 const canSend = _safeCompute(() => {
@@ -490,77 +556,126 @@ function onKeyDown(e: KeyboardEvent) {
     return;
   }
 
-  // Prompt history navigation
+  // Prompt history navigation (caret-aware — mirrors YiVad aiChat behavior)
   if (!e.metaKey && !e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-    if (e.key === 'ArrowUp' && (!inputValue.value || inputValue.value.length === 0)) {
-      if (historyIdxRef.value === -1) preHistoryInputRef.value = inputValue.value;
+    const caret = getCaret();
+    const len = (inputValue.value || '').length;
+    const empty = len === 0;
+    const navigating = historyIdxRef.value !== -1;
+    if (e.key === 'ArrowUp' && (empty || caret.start === 0)) {
+      if (!navigating) {
+        preHistoryInputRef.value = inputValue.value;
+        preHistoryCaretRef.value = caret.end;
+      }
       const rec = store.recallPromptHistory?.(-1, historyIdxRef.value);
       if (rec) {
         e.preventDefault();
         historyIdxRef.value = rec.idx;
-        inputValue.value = rec.text;
+        setInputValueRestoreCaret(rec.text, 'end');
       }
       return;
     }
-    if (e.key === 'ArrowDown' && historyIdxRef.value !== -1) {
+    if (e.key === 'ArrowDown' && (navigating || caret.end === len)) {
+      if (!navigating) return; // ArrowDown without active navigation: let it move caret normally
       const rec = store.recallPromptHistory?.(1, historyIdxRef.value);
       e.preventDefault();
       if (rec && rec.idx === -1) {
+        const prev = preHistoryInputRef.value;
+        const restoreCaret = preHistoryCaretRef.value;
         historyIdxRef.value = -1;
-        inputValue.value = preHistoryInputRef.value;
+        preHistoryInputRef.value = '';
+        preHistoryCaretRef.value = -1;
+        setInputValueRestoreCaret(prev, restoreCaret === -1 ? 'end' : restoreCaret);
       } else if (rec) {
         historyIdxRef.value = rec.idx;
-        inputValue.value = rec.text;
+        setInputValueRestoreCaret(rec.text, 'end');
       }
       return;
     }
   }
 }
 
+function insertAtCaret(insert: string) {
+  const ta = getTa();
+  if (!ta) { inputValue.value += insert; return; }
+  const start = ta.selectionStart ?? inputValue.value.length;
+  const end = ta.selectionEnd ?? start;
+  const before = inputValue.value.slice(0, start);
+  const after = inputValue.value.slice(end);
+  const next = before + insert + after;
+  inputValue.value = next;
+  setCaret(start + insert.length);
+}
 function onPaste(e: ClipboardEvent) {
   const items = e.clipboardData?.items;
   if (!items) return;
   const imageItems: DataTransferItem[] = [];
+  const htmlText = e.clipboardData?.getData('text/html') || '';
+  const plainText = e.clipboardData?.getData('text/plain');
   for (let i = 0; i < items.length; i++) {
     if (items[i].type.startsWith('image/')) imageItems.push(items[i]);
   }
-  const plainText = e.clipboardData?.getData('text/plain');
-  if (plainText && URL_RE.test(plainText.trim())) {
+  // Pure URL → attach as context file, insert trailing space so user can type after
+  if (plainText && URL_RE.test(plainText.trim()) && !htmlText && imageItems.length === 0) {
     const url = plainText.trim();
     e.preventDefault();
     store.addContextFile?.(url)
       .then(() => {
-        inputValue.value = (inputValue.value + ' ').replace(/\s+$/, ' ');
+        insertAtCaret(' ');
         ElMessage({ message: `URL attached: ${url.length > 40 ? url.slice(0,40)+'…' : url}`, type: 'success', duration: 1600, showClose: false });
       })
-      .catch(() => { inputValue.value += plainText; });
+      .catch(() => { insertAtCaret(plainText); });
     return;
   }
-  if (imageItems.length === 0) return;
-  e.preventDefault();
-  const remaining = MAX_DRAFT_IMAGES - draftImages.value.length;
-  const toRead = imageItems.slice(0, remaining);
-  let loaded = 0;
-  const sources: string[] = new Array(toRead.length);
-  toRead.forEach((item, i) => {
-    const file = item.getAsFile();
-    if (!file) {
-      loaded++;
-      return;
+  // Mixed rich text + URL or just text — let the browser insert normally, but bridge URLs out
+  if (plainText && URL_RE.test(plainText.trim()) && imageItems.length === 0) {
+    // Single URL with html wrapper (e.g. a link copied from page)
+    const url = plainText.trim();
+    e.preventDefault();
+    store.addContextFile?.(url)
+      .then(() => {
+        insertAtCaret(' ');
+        pasteLastWasMixed.value = true;
+        ElMessage({ message: `URL attached: ${url.length > 40 ? url.slice(0,40)+'…' : url}`, type: 'success', duration: 1600, showClose: false });
+      })
+      .catch(() => { insertAtCaret(plainText); });
+    return;
+  }
+  // Mixed text + images → attach images, insert text at caret (bridge paste composition)
+  if (imageItems.length > 0) {
+    e.preventDefault();
+    if (plainText) {
+      insertAtCaret(plainText);
+      pasteLastWasMixed.value = true;
     }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const src = ev.target?.result as string;
-      if (src) sources[i] = src;
-      loaded++;
-      if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
-    };
-    reader.onerror = () => {
-      loaded++;
-      if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
-    };
-    reader.readAsDataURL(file);
-  });
+    const remaining = MAX_DRAFT_IMAGES - draftImages.value.length;
+    const toRead = imageItems.slice(0, remaining);
+    if (!toRead.length) return;
+    let loaded = 0;
+    const sources: string[] = new Array(toRead.length);
+    toRead.forEach((item, i) => {
+      const file = item.getAsFile();
+      if (!file) {
+        loaded++;
+        if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const src = ev.target?.result as string;
+        if (src) sources[i] = src;
+        loaded++;
+        if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
+      };
+      reader.onerror = () => {
+        loaded++;
+        if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
+      };
+      reader.readAsDataURL(file);
+    });
+    return;
+  }
+  // Plain text paste — nothing to do, let browser handle it
 }
 
 // ── Drag-and-drop images ──
@@ -658,15 +773,26 @@ if (typeof window !== 'undefined') {
       @clear-input="inputValue = ''; lastTemplateRef = ''; store.clearDraftImages?.()"
     />
 
-    <!-- Streaming status bar (mirrors YiVad aiChat) -->
+    <!-- Streaming / prefetch status bar (mirrors YiVad aiChat) -->
     <transition name="ci-status-fade">
-      <div v-if="s.isProcessing" class="ci-status">
-        <span class="ci-status-dot" />
-        <span class="ci-status-phase">{{ streamingPhaseLabel }}</span>
-        <span class="ci-status-time">{{ streamingElapsed }}</span>
-        <span v-if="streamingChars" class="ci-status-chars">{{ streamingChars }}</span>
-        <span v-if="streamingSpeed" class="ci-status-speed">{{ streamingSpeed }}</span>
-        <button class="ci-status-stop" @click="store.stopSending()">Stop</button>
+      <div
+        v-if="s.isProcessing || searchPrefetchStatus || ragIndexHealth"
+        class="ci-status"
+      >
+        <span v-if="s.isProcessing" class="ci-status-dot" />
+        <template v-if="s.isProcessing">
+          <span class="ci-status-phase">{{ streamingPhaseLabel }}</span>
+          <span class="ci-status-time">{{ streamingElapsed }}</span>
+          <span v-if="streamingChars" class="ci-status-chars">{{ streamingChars }}</span>
+          <span v-if="streamingSpeed" class="ci-status-speed">{{ streamingSpeed }}</span>
+        </template>
+        <template v-else>
+          <span class="ci-status-dot ci-status-dot--muted" />
+          <span class="ci-status-phase">Idle</span>
+        </template>
+        <span v-if="searchPrefetchStatus" class="ci-status-hint" :class="`tone-${searchPrefetchStatus.tone}`">{{ searchPrefetchStatus.text }}</span>
+        <span v-if="ragIndexHealth" class="ci-status-hint" :class="`tone-${ragIndexHealth.tone}`">{{ ragIndexHealth.text }}</span>
+        <button v-if="s.isProcessing" class="ci-status-stop" @click="store.stopSending()">Stop</button>
       </div>
     </transition>
 
@@ -827,6 +953,12 @@ if (typeof window !== 'undefined') {
   background: #818cf8;
   border-radius: 50%;
   animation: ci-status-pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.ci-status-dot--muted {
+  background: #64748b;
+  animation: none;
+  opacity: 0.4;
 }
 @keyframes ci-status-pulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
@@ -835,6 +967,20 @@ if (typeof window !== 'undefined') {
 .ci-status-phase {
   font-weight: 600;
   color: #f5f3ff;
+}
+.ci-status-hint {
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'SF Mono', monospace;
+  white-space: nowrap;
+  &.tone-ok { color: #22c55e; background: rgba(34,197,94,.1); }
+  &.tone-warn { color: #eab308; background: rgba(234,179,8,.1); }
+  &.tone-pending { color: #38bdf8; background: rgba(56,189,248,.1); }
+  &.tone-idle { color: #a5b4fc; background: rgba(129,140,248,.08); }
 }
 .ci-status-time {
   font-family: 'SF Mono', 'Menlo', monospace;

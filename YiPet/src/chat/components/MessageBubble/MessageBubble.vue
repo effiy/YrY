@@ -282,6 +282,28 @@ const charWordLineStats = computed(() => {
   const toks = tokenEstimate.value;
   return `${chars} chars · ${words} words · ${lines} lines · ~${toks} tokens`;
 });
+const prevRoleSnippet = computed(() => {
+  const pm = prevRoleMessage.value;
+  if (!pm) return '';
+  const t = (pm.content || '').trim().replace(/\s+/g, ' ');
+  if (!t) return '';
+  return t.length <= 80 ? t : t.slice(0, 77) + '…';
+});
+const tokenTrendTooltip = computed(() => {
+  const trend = tokenTrend.value;
+  const pm = prevRoleMessage.value;
+  const roleLabel = props.message.type === 'pet' ? 'assistant' : 'user';
+  const lines = [charWordLineStats.value];
+  if (pm) {
+    const prevTok = prevRoleTokenEstimate.value;
+    lines.push(
+      `vs previous ${roleLabel} message: ${trend.sign}${trend.delta} tok (was ~${prevTok} tok)`,
+    );
+    if (prevRoleSnippet.value) lines.push(`Previous: "${prevRoleSnippet.value}"`);
+    lines.push('Click to jump to previous same-role message');
+  }
+  return lines.join('\n');
+});
 
 function gradePct(g: string | undefined): number {
   switch ((g || '').toUpperCase()) {
@@ -591,7 +613,7 @@ const tokensPerSec = computed(() => {
         <span v-if="msg.ragContentSummary" class="mb-ret-sum" :title="msg.ragContentSummary">{{ msg.ragContentSummary }}</span>
       </span>
 
-      <!-- Token estimate and trend -->
+      <!-- Token estimate and trend (YiVad parity — full tooltip with previous snippet) -->
       <div v-if="props.message.type === 'pet' && !props.message.streaming" class="mb-tokens">
         <span class="mb-tokens-count" :title="charWordLineStats">
           ~{{ tokenEstimate }} tok
@@ -600,7 +622,7 @@ const tokensPerSec = computed(() => {
           v-if="prevRoleMessage"
           class="mb-tokens-trend"
           :class="tokenTrend.cls"
-          :title="`${tokenTrend.sign}${tokenTrend.delta} vs previous ${props.message.type} message · click to jump`"
+          :title="tokenTrendTooltip"
           @click="scrollToPrevRoleMessage"
         >
           {{ tokenTrend.arrow }} {{ tokenTrend.sign }}{{ tokenTrend.delta }}

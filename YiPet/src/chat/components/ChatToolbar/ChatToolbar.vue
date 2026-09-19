@@ -9,7 +9,7 @@ import {
   ChatLineSquare, Picture, ChatDotRound, Search,
   Clock, CollectionTag, Delete, DocumentCopy, Cpu, Setting,
   FolderChecked, FolderOpened, Folder, Document, Plus,
-  Loading, Tools,
+  Loading, Tools, Edit,
 } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useChatStore } from '../../stores/chat';
@@ -34,6 +34,141 @@ const historyQuery = ref('');
 const contextPopoverTab = ref<'context' | 'browse'>('context');
 const knowledgeSearch = ref('');
 const knowledgeExpandedFolders = ref<Set<string>>(new Set());
+
+// ── Context DnD + inline editor ──
+const contextDropCounter = ref(0);
+const contextDropOver = ref(false);
+const ctxEditorOpen = ref(false);
+const ctxEditorPath = ref('');
+const ctxEditorContent = ref('');
+const ctxEditorOriginal = ref('');
+const ctxEditorLoading = ref(false);
+const ctxEditorSaving = ref(false);
+
+function isCtxDrag(e: DragEvent): boolean {
+  if (!e.dataTransfer) return false;
+  return e.dataTransfer.types.includes('application/x-yipet-knowledge-file')
+    || e.dataTransfer.types.includes('application/x-knowledge-file')
+    || e.dataTransfer.types.includes('Files');
+}
+function onCtxDragOver(e: DragEvent) {
+  if (!isCtxDrag(e)) return;
+  e.preventDefault();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+}
+function onCtxDragEnter(e: DragEvent) {
+  if (!isCtxDrag(e)) return;
+  e.preventDefault();
+  contextDropCounter.value += 1;
+  contextDropOver.value = true;
+}
+function onCtxDragLeave(e: DragEvent) {
+  e.preventDefault();
+  contextDropCounter.value -= 1;
+  if (contextDropCounter.value <= 0) { contextDropCounter.value = 0; contextDropOver.value = false; }
+}
+function flattenCtxPaths(raw: string): string[] {
+  if (!raw) return [];
+  const trimmed = raw.trim();
+  if (!trimmed) return [];
+  const candidates: string[] = [];
+  try {
+    const parsed = JSON.parse(trimmed);
+    const walk = (node: any) => {
+      if (!node) return;
+      if (node.type === 'file' && typeof node.path === 'string') candidates.push(node.path);
+      else if (Array.isArray(node)) node.forEach(walk);
+      else if (Array.isArray(node.children)) node.children.forEach(walk);
+    };
+    walk(parsed);
+  } catch {
+    candidates.push(...trimmed.split('\n').map(x => x.trim()).filter(Boolean));
+  }
+  return Array.from(new Set(candidates));
+}
+async function addPathsToContext(paths: string[]) {
+  const uniq = Array.from(new Set(paths.filter(Boolean)));
+  if (!uniq.length) return;
+  let added = 0;
+  for (const p of uniq) {
+    try {
+      const content = (await store.readKnowledgeFile?.(p)) as any;
+      const c = typeof content === 'string' ? content : content?.content || '';
+      if (c) await store.applyContextChange?.(p, c);
+      else await store.addContextFile?.(p);
+      added += 1;
+    } catch {
+      try { await store.addContextFile?.(p); added += 1; } catch { /* skip */ }
+    }
+  }
+  if (added) ElMessage.success(`Added ${added} file${added !== 1 ? 's' : ''} to context`);
+  else ElMessage.warning('No files could be added to context');
+}
+async function onCtxDrop(e: DragEvent) {
+  e.preventDefault();
+  contextDropCounter.value = 0;
+  contextDropOver.value = false;
+  const yipet = e.dataTransfer?.getData('application/x-yipet-knowledge-file') || '';
+  const yivad = e.dataTransfer?.getData('application/x-knowledge-file') || '';
+  const textData = e.dataTransfer?.getData('text/plain') || '';
+  const fileList = e.dataTransfer?.files;
+  const allPaths: string[] = [];
+  allPaths.push(...flattenCtxPaths(yipet));
+  allPaths.push(...flattenCtxPaths(yivad));
+  if (!allPaths.length && textData && /^https?:\/\//i.test(textData.trim())) {
+    allPaths.push(textData.trim());
+  }
+  if (allPaths.length) { await addPathsToContext(allPaths); return; }
+  if (fileList?.length) {
+    const paths: string[] = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const f = fileList[i];
+      if (f && (f as any).path) paths.push((f as any).path);
+    }
+    if (paths.length) await addPathsToContext(paths);
+  }
+}
+
+async function openCtxEditor(path: string) {
+  ctxEditorPath.value = path;
+  ctxEditorLoading.value = true;
+  ctxEditorSaving.value = false;
+  ctxEditorOpen.value = true;
+  try {
+    const content = (await store.getContextSectionContent?.(path)) as any;
+    const c = typeof content === 'string' ? content : content?.content || '';
+    ctxEditorOriginal.value = c;
+    ctxEditorContent.value = c;
+  } catch {
+    ctxEditorOriginal.value = '';
+    ctxEditorContent.value = '';
+    ElMessage.warning('Could not load context content — editor will start empty');
+  } finally {
+    ctxEditorLoading.value = false;
+  }
+}
+function closeCtxEditor() {
+  ctxEditorOpen.value = false;
+  ctxEditorPath.value = '';
+  ctxEditorContent.value = '';
+  ctxEditorOriginal.value = '';
+  ctxEditorLoading.value = false;
+  ctxEditorSaving.value = false;
+}
+async function saveCtxEditor() {
+  if (!ctxEditorPath.value) return;
+  ctxEditorSaving.value = true;
+  try {
+    await store.applyContextChange?.(ctxEditorPath.value, ctxEditorContent.value);
+    ElMessage.success('Context updated');
+    closeCtxEditor();
+  } catch {
+    ElMessage.error('Failed to save context changes');
+  } finally {
+    ctxEditorSaving.value = false;
+  }
+}
+function cancelCtxEditor() { closeCtxEditor(); }
 
 interface BrowseNode {
   key: string; label: string; type: 'folder' | 'file'; path: string; children?: BrowseNode[];
@@ -218,20 +353,47 @@ const similarPrompts = computed<{ text: string; score: number }[]>(() => {
     .slice(0, 3);
 });
 
+const TOOL_SLOW_MS = 2000;
+const TOOL_VERY_SLOW_MS = 5000;
 const recentToolCalls = computed(() =>
   (s.toolEvents ?? [])
     .filter((event) => event.phase === 'end')
     .slice(-5)
     .reverse()
-    .map((event) => ({
-      key: `${event.name}-${event.timestamp}`,
-      label: event.label,
-      name: event.name,
-      error: event.error || '',
-      durationText: typeof event.durationMs === 'number' ? `${event.durationMs}ms` : '',
-      preview: (event.error || event.content || '').trim(),
-    })),
+    .map((event) => {
+      const ms = typeof event.durationMs === 'number' ? event.durationMs : undefined;
+      let speedTier: 'fast' | 'ok' | 'slow' | 'very-slow' | 'idle' = 'idle';
+      let speedLabel = '';
+      if (ms != null) {
+        if (ms >= TOOL_VERY_SLOW_MS) { speedTier = 'very-slow'; speedLabel = 'very slow'; }
+        else if (ms >= TOOL_SLOW_MS) { speedTier = 'slow'; speedLabel = 'slow'; }
+        else if (ms < 300) { speedTier = 'fast'; speedLabel = 'fast'; }
+        else { speedTier = 'ok'; speedLabel = 'ok'; }
+      }
+      return {
+        key: `${event.name}-${event.timestamp}`,
+        label: event.label,
+        name: event.name,
+        error: event.error || '',
+        durationMs: ms,
+        durationText: ms == null ? '' : (ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`),
+        speedTier,
+        speedLabel,
+        preview: (event.error || event.content || '').trim(),
+      };
+    }),
 );
+const toolperfAggregate = computed(() => {
+  const events = s.toolEvents ?? [];
+  const recent = events.filter(e => e.phase === 'end').slice(-20);
+  const total = recent.length;
+  const errors = recent.filter(e => !!e.error).length;
+  const slowCount = recent.filter(e => typeof e.durationMs === 'number' && e.durationMs >= TOOL_SLOW_MS).length;
+  const verySlowCount = recent.filter(e => typeof e.durationMs === 'number' && e.durationMs >= TOOL_VERY_SLOW_MS).length;
+  const withDurations = recent.map(e => e.durationMs as number).filter(v => typeof v === 'number');
+  const avgMs = withDurations.length ? Math.round(withDurations.reduce((a, b) => a + b, 0) / withDurations.length) : 0;
+  return { total, errors, slowCount, verySlowCount, avgMs };
+});
 
 // ── Context files ──
 const contextFiles = computed(() => {
@@ -444,11 +606,17 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
                 v-for="call in recentToolCalls"
                 :key="call.key"
                 class="ct-tool-call-item"
-                :class="{ 'is-error': !!call.error }"
+                :class="[
+                  { 'is-error': !!call.error },
+                  call.speedTier ? `speed-${call.speedTier}` : '',
+                ]"
                 :title="call.preview || call.name"
               >
                 <div class="ct-tool-call-top">
-                  <span class="ct-tool-call-name">{{ call.label }}</span>
+                  <span class="ct-tool-call-name">
+                    {{ call.label }}
+                    <span v-if="call.speedLabel" class="ct-tool-call-speed" :class="`is-${call.speedTier}`">{{ call.speedLabel }}</span>
+                  </span>
                   <span class="ct-tool-call-meta">
                     <span class="ct-tool-call-status">{{ call.error ? 'error' : 'ok' }}</span>
                     <span v-if="call.durationText">{{ call.durationText }}</span>
@@ -462,13 +630,27 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
           </div>
           <div class="ct-skills-footer">
             <div class="ct-skills-toolperf">
-              <span class="ct-skills-toolperf-label">Recent calls</span>
-              <span class="ct-skills-toolperf-value">{{ s.toolEvents?.length ?? 0 }}</span>
+              <span class="ct-skills-toolperf-label">Calls</span>
+              <span class="ct-skills-toolperf-value" :title="`Last 20 tool executions: ${toolperfAggregate.total} runs · avg ${toolperfAggregate.avgMs}ms`">
+                {{ s.toolEvents?.length ?? 0 }}
+              </span>
             </div>
             <div class="ct-skills-toolperf">
               <span class="ct-skills-toolperf-label">Active</span>
               <span class="ct-skills-toolperf-value" :class="{'is-on': (store.activeTools?.length ?? 0) > 0}">
                 {{ store.activeTools?.length ?? 0 }}
+              </span>
+            </div>
+            <div class="ct-skills-toolperf">
+              <span class="ct-skills-toolperf-label">Errors</span>
+              <span class="ct-skills-toolperf-value" :class="{'is-err': toolperfAggregate.errors > 0}" :title="`${toolperfAggregate.errors} failed in last 20 runs`">
+                {{ toolperfAggregate.errors }}
+              </span>
+            </div>
+            <div class="ct-skills-toolperf">
+              <span class="ct-skills-toolperf-label">Slow</span>
+              <span class="ct-skills-toolperf-value" :class="{'is-slow': toolperfAggregate.slowCount > 0}" :title="`${toolperfAggregate.slowCount} slow (≥2s) · ${toolperfAggregate.verySlowCount} very slow (≥5s) in last 20`">
+                {{ toolperfAggregate.slowCount }}
               </span>
             </div>
           </div>
@@ -499,40 +681,62 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
           </template>
           <el-tabs v-model="contextPopoverTab" class="ct-context-tabs">
             <el-tab-pane label="Context" name="context">
-              <div class="ct-context-list">
-                <div
-                  v-for="(file, i) in contextFiles"
-                  :key="i"
-                  class="ct-context-item"
-                >
-                  <span
-                    class="ct-context-item-path"
-                    :class="{ 'is-clickable': file.kind === 'scope' || file.kind === 'ctx' }"
-                    :title="file.kind === 'scope' || file.kind === 'ctx' ? t('chatClickToPreview') : file.detail"
-                    @click="(file.kind === 'scope' || file.kind === 'ctx') ? handleContextFileClick(file.label) : undefined"
-                  >{{ file.label }}</span>
-                  <span class="ct-context-item-detail">{{ file.detail }}</span>
-                  <el-button
-                    v-if="file.kind === 'scope'"
-                    size="small"
-                    text
-                    type="danger"
-                    :icon="Delete"
-                    title="Clear RAG scope"
-                    @click="store.clearRagScope?.(); showContextPopover = false"
-                  />
-                  <el-button
-                    v-else-if="file.kind === 'ctx'"
-                    size="small"
-                    text
-                    type="danger"
-                    :icon="Delete"
-                    title="Remove context file"
-                    @click="store.removeContextFile?.(file.label)"
-                  />
+              <div
+                class="ct-context-drop-zone"
+                :class="{ 'is-dragging': contextDropOver }"
+                @dragenter="onCtxDragEnter"
+                @dragover="onCtxDragOver"
+                @dragleave="onCtxDragLeave"
+                @drop="onCtxDrop"
+              >
+                <div v-if="contextDropOver" class="ct-context-drop-hint">
+                  <span class="ct-context-drop-icon">📥</span>
+                  <span>Drop knowledge files / URLs here to add to context</span>
                 </div>
-                <div v-if="!contextFiles.length" class="ct-context-empty">
-                  No active context. Switch to Browse tab to add files from the knowledge base.
+                <div v-else class="ct-context-list">
+                  <div
+                    v-for="(file, i) in contextFiles"
+                    :key="i"
+                    class="ct-context-item"
+                  >
+                    <span
+                      class="ct-context-item-path"
+                      :class="{ 'is-clickable': file.kind === 'scope' || file.kind === 'ctx' }"
+                      :title="file.kind === 'scope' || file.kind === 'ctx' ? t('chatClickToPreview') : file.detail"
+                      @click="(file.kind === 'scope' || file.kind === 'ctx') ? handleContextFileClick(file.label) : undefined"
+                    >{{ file.label }}</span>
+                    <span class="ct-context-item-detail">{{ file.detail }}</span>
+                    <el-button
+                      v-if="file.kind === 'ctx'"
+                      size="small"
+                      text
+                      type="primary"
+                      :icon="Edit"
+                      title="Edit context content inline"
+                      @click.stop="openCtxEditor(file.label)"
+                    />
+                    <el-button
+                      v-if="file.kind === 'scope'"
+                      size="small"
+                      text
+                      type="danger"
+                      :icon="Delete"
+                      title="Clear RAG scope"
+                      @click="store.clearRagScope?.(); showContextPopover = false"
+                    />
+                    <el-button
+                      v-else-if="file.kind === 'ctx'"
+                      size="small"
+                      text
+                      type="danger"
+                      :icon="Delete"
+                      title="Remove context file"
+                      @click="store.removeContextFile?.(file.label)"
+                    />
+                  </div>
+                  <div v-if="!contextFiles.length" class="ct-context-empty">
+                    No active context yet. Drag files from the knowledge base above, or switch to the Browse tab to pick files.
+                  </div>
                 </div>
               </div>
             </el-tab-pane>
@@ -704,6 +908,38 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
       />
     </div>
   </div>
+
+  <!-- Inline context editor dialog (mirrors YiVad context edit pattern) -->
+  <el-dialog
+    v-model:visible="ctxEditorOpen"
+    :title="`Edit context · ${ctxEditorPath}`"
+    width="min(720px, 92vw)"
+    top="12vh"
+    :close-on-click-modal="false"
+    destroy-on-close
+    @close="closeCtxEditor"
+  >
+    <div class="ct-ctx-editor-body" v-loading="ctxEditorLoading">
+      <el-input
+        v-model="ctxEditorContent"
+        type="textarea"
+        :autosize="{ minRows: 12, maxRows: 22 }"
+        placeholder="Context content will be inserted verbatim into the prompt..."
+        resize="vertical"
+        class="ct-ctx-editor-ta"
+      />
+      <div class="ct-ctx-editor-meta">
+        <span>Original length: {{ ctxEditorOriginal.length }} chars</span>
+        <span>·</span>
+        <span>Current length: {{ ctxEditorContent.length }} chars</span>
+        <span v-if="ctxEditorOriginal !== ctxEditorContent" class="ct-ctx-editor-dirty">· modified</span>
+      </div>
+    </div>
+    <template #footer>
+      <el-button @click="cancelCtxEditor" :disabled="ctxEditorSaving">Cancel</el-button>
+      <el-button type="primary" :loading="ctxEditorSaving" @click="saveCtxEditor">Save changes</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -1179,6 +1415,35 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
   background: rgba(239,68,68,.08);
   border-color: rgba(239,68,68,.18);
 }
+.ct-tool-call-item.speed-slow {
+  border-color: rgba(234,179,8,.28);
+}
+.ct-tool-call-item.speed-very-slow {
+  border-color: rgba(239,68,68,.28);
+  background: rgba(239,68,68,.04);
+}
+.ct-tool-call-item.speed-fast {
+  border-color: rgba(34,197,94,.18);
+}
+.ct-tool-call-speed {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  height: 14px;
+  line-height: 14px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  vertical-align: middle;
+  color: var(--text-secondary,#d4d0e8);
+  background: rgba(var(--primary-rgb,99,102,241),.12);
+  &.is-fast { color: #22c55e; background: rgba(34,197,94,.12); }
+  &.is-ok { color: #818cf8; background: rgba(var(--primary-rgb,99,102,241),.14); }
+  &.is-slow { color: #eab308; background: rgba(234,179,8,.14); }
+  &.is-very-slow { color: #ef4444; background: rgba(239,68,68,.14); }
+}
 .ct-tool-call-top {
   display: flex;
   align-items: center;
@@ -1232,6 +1497,62 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
   font-family: 'SF Mono', monospace; font-size: 14px; font-weight: 700;
   color: var(--text-secondary,#d4d0e8);
   &.is-on { color: #22c55e; }
+  &.is-err { color: #ef4444; }
+  &.is-slow { color: #eab308; }
+}
+
+// ── Context DnD zone ──
+.ct-context-drop-zone {
+  position: relative;
+  min-height: 80px;
+  border-radius: 8px;
+  border: 1px dashed rgba(var(--primary-rgb,99,102,241),.15);
+  padding: 4px;
+  transition: border-color .15s, background .15s;
+  &.is-dragging {
+    border-color: rgba(var(--primary-rgb,99,102,241),.55);
+    background: rgba(var(--primary-rgb,99,102,241),.06);
+  }
+}
+.ct-context-drop-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 8px;
+  color: var(--primary-light,#818cf8);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+.ct-context-drop-icon { font-size: 22px; line-height: 1; }
+
+// ── Inline context editor ──
+.ct-ctx-editor-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ct-ctx-editor-ta :deep(.el-textarea__inner) {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  background: rgba(var(--primary-rgb,99,102,241),.04);
+  border-color: rgba(var(--primary-rgb,99,102,241),.18);
+}
+.ct-ctx-editor-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: 'SF Mono', monospace;
+  font-size: 11px;
+  color: var(--text-secondary,#d4d0e8);
+  padding: 2px 4px;
+}
+.ct-ctx-editor-dirty {
+  color: #eab308;
+  font-weight: 600;
 }
 </style>
 

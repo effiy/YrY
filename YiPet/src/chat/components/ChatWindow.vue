@@ -3,10 +3,24 @@
  * YiPet Chat — ChatWindow Root Component (Vue 3 SFC)
  * Mirrors YiVad AiChatBox: inline chat header, light theme, clean layout.
  */
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue';
 import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Search, Check, DataBoard } from '@element-plus/icons-vue';
 import { useChatStore } from '../stores/chat';
 import { keyboardRegistry } from '@/shared/shortcuts';
+
+function phaseLabel(phase: string | undefined): string {
+  if (phase === 'preparing') return 'Preparing';
+  if (phase === 'fetching') return 'Fetching';
+  if (phase === 'retrieving') return 'Retrieving';
+  if (phase === 'thinking') return 'Thinking';
+  if (phase === 'streaming') return 'Writing';
+  return 'Processing';
+}
+function formatElapsed(ms: number): string {
+  if (!ms) return '0s';
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
 import ChatHeader from './ChatHeader.vue';
 import ChatSidebar from './ChatSidebar.vue';
 import KnowledgeSidebar from './KnowledgeSidebar.vue';
@@ -64,6 +78,23 @@ const contextFileCount = computed(() => {
   const tags = currentSession.value?.tags ?? [];
   return tags.filter((t: string) => typeof t === 'string' && t.startsWith('ctx:')).length;
 });
+
+// ── Header streaming timer (mirrors YiVad chat-hdr streaming pill parity) ──
+const hdrStreamStart = ref(0);
+const hdrStreamElapsed = ref(0);
+let _hdrTimer: ReturnType<typeof setInterval> | null = null;
+watch(
+  () => s.isProcessing,
+  (v) => {
+    if (_hdrTimer) { clearInterval(_hdrTimer); _hdrTimer = null; }
+    if (v) {
+      hdrStreamStart.value = Date.now();
+      hdrStreamElapsed.value = 0;
+      _hdrTimer = setInterval(() => { hdrStreamElapsed.value = Date.now() - hdrStreamStart.value; }, 100);
+    }
+  }
+);
+onBeforeUnmount(() => { if (_hdrTimer) { clearInterval(_hdrTimer); _hdrTimer = null; } });
 
 const perf = computed(() => {
   const msgs = s.messages ?? [];
@@ -267,9 +298,17 @@ onUnmounted(() => {
             <span v-if="contextFileCount" class="yipet-chat-hdr-ctx">
               {{ contextFileCount }} file{{ contextFileCount !== 1 ? 's' : '' }}
             </span>
-            <span v-if="s.isProcessing" class="yipet-chat-hdr-streaming">
+            <span
+              v-if="s.isProcessing"
+              class="yipet-chat-hdr-streaming"
+              :class="`phase-${s.streamingPhase || 'processing'}`"
+              :title="`Streaming in progress — click to jump to latest message`"
+              @click="store.scrollToBottom?.()"
+              style="cursor: pointer;"
+            >
               <span class="yipet-chat-hdr-streaming-dot" />
-              {{ s.streamingPhase === 'retrieving' ? 'Retrieving...' : s.streamingPhase === 'thinking' ? 'Thinking...' : s.streamingPhase === 'streaming' ? 'Writing...' : 'Processing...' }}
+              <span class="yipet-chat-hdr-streaming-phase">{{ phaseLabel(s.streamingPhase) }}…</span>
+              <span class="yipet-chat-hdr-streaming-elapsed">{{ formatElapsed(hdrStreamElapsed) }}</span>
             </span>
           </div>
           <div class="yipet-chat-hdr-right">
@@ -524,7 +563,7 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 1px 8px;
+  padding: 1px 10px;
   font-size: 11px;
   font-weight: 500;
   color: #818cf8;
@@ -532,13 +571,51 @@ onUnmounted(() => {
   border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 10px;
   white-space: nowrap;
+  transition: all .15s;
+  &:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+  &.phase-retrieving {
+    color: #38bdf8;
+    background: rgba(56,189,248,.12);
+    border-color: rgba(56,189,248,.25);
+  }
+  &.phase-thinking {
+    color: #f59e0b;
+    background: rgba(245,158,11,.12);
+    border-color: rgba(245,158,11,.25);
+  }
+  &.phase-streaming {
+    color: #22c55e;
+    background: rgba(34,197,94,.12);
+    border-color: rgba(34,197,94,.25);
+  }
+  &.phase-preparing, &.phase-fetching {
+    color: #a78bfa;
+    background: rgba(167,139,250,.12);
+    border-color: rgba(167,139,250,.25);
+  }
+}
+.yipet-chat-hdr-streaming-phase { font-weight: 600; }
+.yipet-chat-hdr-streaming-elapsed {
+  font-family: 'SF Mono', monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+  height: 14px;
+  line-height: 14px;
+  background: rgba(255,255,255,.05);
+  border-radius: 7px;
+  color: inherit;
+  opacity: .85;
 }
 
 .yipet-chat-hdr-streaming-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #818cf8;
+  background: currentColor;
   animation: hdr-dot-pulse 1.2s ease-in-out infinite;
 }
 
