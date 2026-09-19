@@ -282,7 +282,16 @@ export function t(key: MessageKey, substitutions?: string | string[]): string {
   if (cached) return cached;
 
   // Fallback to Chrome's built-in i18n
-  return chrome.i18n.getMessage(key, substitutions) || key;
+  try {
+    const chromeI18n = typeof chrome !== 'undefined' ? chrome.i18n : undefined;
+    if (chromeI18n?.getMessage) {
+      return chromeI18n.getMessage(key, substitutions) || key;
+    }
+  } catch {
+    // The chat bundle runs in the page's main world where chrome.i18n is unavailable.
+  }
+
+  return key;
 }
 
 /**

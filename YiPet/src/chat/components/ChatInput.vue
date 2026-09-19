@@ -16,7 +16,6 @@ import FileMentionDropdown from './FileMentionDropdown.vue';
 
 const MAX_DRAFT_IMAGES = 4;
 const URL_RE = /^https?:\/\/[^\s"'<>]+$/i;
-const DRAFT_KEY = 'yipet:input-draft:v1';
 
 const store = useChatStore();
 const s = store.state;
@@ -113,6 +112,7 @@ const compositionEndTime = ref(0);
 const lastTemplateRef = ref('');
 const historyIdxRef = ref(-1);
 const preHistoryInputRef = ref('');
+const preserveComposerOnNextOpen = ref(false);
 
 // ── Can send: user has text, images, and is not currently sending ──
 const canSend = _safeCompute(() => {
@@ -122,6 +122,11 @@ const canSend = _safeCompute(() => {
 
 const charCount = _safeCompute(() => (inputValue.value || '').length, 0);
 const tokenEstimate = _safeCompute(() => Math.ceil(charCount.value / 4), 0);
+const composerTone = _safeCompute(() => {
+  if (s.isProcessing) return 'is-processing';
+  if (charCount.value > 0 || draftImages.value.length > 0) return 'is-engaged';
+  return 'is-idle';
+}, 'is-idle');
 
 // @-mention detection
 const mentionQuery = ref('');
@@ -252,22 +257,30 @@ onBeforeUnmount(() => { clearTimeout(preFetchTimer); });
 // Sync template from QuickButtons
 watch(() => s.inputTemplate, (val) => {
   if (val && val !== lastTemplateRef.value) {
+    preserveComposerOnNextOpen.value = true;
     lastTemplateRef.value = val;
     inputValue.value = val;
+    s.inputTemplate = '';
   }
 });
 
-let _draftT: ReturnType<typeof setTimeout> | undefined;
-watch([inputValue, () => s.draftImages?.length ?? 0, () => s.currentSessionId], () => {
-  clearTimeout(_draftT);
-  _draftT = setTimeout(() => {
-    const payload = JSON.stringify({ sid: s.currentSessionId, text: inputValue.value, imgs: s.draftImages?.length ?? 0, ts: Date.now() });
-    try { window.localStorage?.setItem(DRAFT_KEY, payload); } catch {}
-    if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
-      try { chrome.storage.local.set({ [DRAFT_KEY]: inputValue.value }); } catch {}
-    }
-  }, 500);
-});
+function clearComposer() {
+  inputValue.value = '';
+  lastTemplateRef.value = '';
+  historyIdxRef.value = -1;
+  preHistoryInputRef.value = '';
+  store.clearDraftImages?.();
+}
+
+function handleProgrammaticInput(detail?: { text?: string; mode?: 'replace' | 'append' }) {
+  const text = detail?.text || '';
+  if (!text) return;
+  preserveComposerOnNextOpen.value = true;
+  if (detail?.mode === 'append') inputValue.value += text;
+  else inputValue.value = text;
+  lastTemplateRef.value = inputValue.value;
+  nextTick(() => focusTa());
+}
 
 function slashKeyHandler(e: KeyboardEvent) {
   if (e.key !== '/') return;
@@ -279,27 +292,49 @@ function slashKeyHandler(e: KeyboardEvent) {
   textarea?.focus();
 }
 
+function onExternalSetInput(e: Event) {
+  handleProgrammaticInput((e as CustomEvent<{ text?: string; mode?: 'replace' | 'append' }>).detail);
+}
+
 onMounted(() => {
   window.addEventListener('keydown', slashKeyHandler);
-  try {
-    const raw = typeof chrome !== 'undefined' && chrome.storage?.local ? null : null;
-    let restore = (txt: string | undefined) => {
-      if (txt && !inputValue.value) { inputValue.value = txt; lastTemplateRef.value = txt; }
-    };
-    const fromLs = typeof window !== 'undefined' ? window.localStorage?.getItem(DRAFT_KEY) : null;
-    if (typeof chrome !== 'undefined' && chrome.storage?.local?.get) {
-      chrome.storage.local.get([DRAFT_KEY], (r) => { restore((r as any)?.[DRAFT_KEY] || fromLs || undefined); nextTick(() => focusTa()); });
-    } else if (fromLs) { restore(fromLs); nextTick(() => focusTa()); }
-    else nextTick(() => focusTa());
-  } catch { nextTick(() => focusTa()); }
+  window.addEventListener('yipet:set-input', onExternalSetInput as EventListener);
+  nextTick(() => focusTa());
 });
+
+// ── Auto-focus input when chat becomes visible or session changes (mirrors YiVad aiChat) ──
+watch(
+  () => s.visible,
+  v => {
+    if (!v) return;
+    if (preserveComposerOnNextOpen.value) {
+      preserveComposerOnNextOpen.value = false;
+    } else {
+      clearComposer();
+    }
+    nextTick(() => focusTa());
+  }
+);
+
+watch(
+  () => s.currentSessionId,
+  () => {
+    if (preserveComposerOnNextOpen.value) {
+      preserveComposerOnNextOpen.value = false;
+    } else {
+      clearComposer();
+    }
+    nextTick(() => focusTa());
+  },
+);
 function focusTa() {
   const ta = document.querySelector('#yipet-chat-window .el-textarea__inner') as HTMLTextAreaElement | null;
-  if (ta && !ta.value) ta.focus();
+  ta?.focus();
 }
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', slashKeyHandler);
+  window.removeEventListener('yipet:set-input', onExternalSetInput as EventListener);
 });
 
 function send() {
@@ -310,13 +345,7 @@ function send() {
   store.pushPromptHistory?.(inputValue.value);
   historyIdxRef.value = -1;
   store.sendMessage(text, imgs);
-  inputValue.value = '';
-  try { window.localStorage?.removeItem(DRAFT_KEY); } catch {}
-  if (typeof chrome !== 'undefined' && chrome.storage?.local?.remove) {
-    try { chrome.storage.local.remove([DRAFT_KEY]); } catch {}
-  }
-  lastTemplateRef.value = '';
-  historyIdxRef.value = -1;
+  clearComposer();
   // Auto-focus after send
   nextTick(() => {
     const ta = document.querySelector('#yipet-chat-window .el-textarea__inner') as HTMLTextAreaElement | null;
@@ -564,14 +593,48 @@ function onDrop(e: DragEvent) {
   });
 }
 
+// ── Image picker (mirrors YiVad aiChat) ──
+const imageInput = ref<HTMLInputElement | null>(null);
+
+function onImageChange(e: Event) {
+  const input = e.target as HTMLInputElement;
+  if (!input) return;
+  const files = Array.from(input.files || []);
+  const imageFiles = files.filter((f) => f.type.startsWith('image/'));
+  input.value = '';
+  if (!imageFiles.length) return;
+  const remaining = MAX_DRAFT_IMAGES - draftImages.value.length;
+  const toRead = imageFiles.slice(0, remaining);
+  let loaded = 0;
+  const sources: string[] = new Array(toRead.length);
+  toRead.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      sources[i] = ev.target?.result as string;
+      loaded++;
+      if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
+    };
+    reader.onerror = () => {
+      loaded++;
+      if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 if (typeof window !== 'undefined') {
-  try { (window as any).__yipet_ci_ok = true; } catch {}
+  try {
+    (window as any).__yipet_ci_ok = true;
+  } catch {
+    // Best-effort runtime marker for manual debugging.
+  }
 }
 </script>
 
 <template>
   <div
     class="ci-input"
+    :class="composerTone"
     @dragenter="onDragEnter"
     @dragleave="onDragLeave"
     @dragover="onDragOver"
@@ -581,7 +644,10 @@ if (typeof window !== 'undefined') {
     <div v-if="isDragOver" class="ci-drop-overlay">
       <span>Drop images here</span>
     </div>
-    <ChatToolbar :has-content="!!inputValue.trim() || draftImages.length > 0" @clear-input="inputValue = ''; lastTemplateRef = ''; store.clearDraftImages?.()" />
+    <ChatToolbar
+      :has-content="!!inputValue.trim() || draftImages.length > 0"
+      @clear-input="inputValue = ''; lastTemplateRef = ''; store.clearDraftImages?.()"
+    />
 
     <!-- Streaming status bar (mirrors YiVad aiChat) -->
     <transition name="ci-status-fade">
@@ -594,6 +660,16 @@ if (typeof window !== 'undefined') {
         <button class="ci-status-stop" @click="store.stopSending()">Stop</button>
       </div>
     </transition>
+
+    <!-- Hidden image picker (parity with YiVad aiChat) -->
+    <input
+      ref="imageInput"
+      type="file"
+      accept="image/*"
+      multiple
+      class="ci-file-input"
+      @change="onImageChange"
+    />
 
     <DraftImageList
       v-if="draftImages.length > 0"
@@ -665,18 +741,22 @@ if (typeof window !== 'undefined') {
     </div>
 
     <!-- Character count -->
-    <div v-if="charCount > 0" class="ci-char-count">
-      <span>{{ charCount }} chars</span>
-      <span class="ci-char-count-sep">·</span>
-      <span>~{{ tokenEstimate }} tok</span>
-    </div>
-
-    <!-- Keyboard shortcut hints -->
-    <div class="yipet-shortcut-hints">
-      <span class="yipet-shortcut-hint"><kbd>?</kbd> shortcuts</span>
-      <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+B') }}</kbd> sidebar</span>
-      <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+N') }}</kbd> new</span>
-      <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+K') }}</kbd> clear</span>
+    <div class="ci-footer">
+      <div class="ci-footer-left">
+        <div v-if="charCount > 0" class="ci-char-count">
+          <span>{{ charCount }} chars</span>
+          <span class="ci-char-count-sep">·</span>
+          <span>~{{ tokenEstimate }} tok</span>
+        </div>
+      </div>
+      <div class="ci-footer-right">
+        <div class="yipet-shortcut-hints">
+          <span class="yipet-shortcut-hint"><kbd>?</kbd> shortcuts</span>
+          <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+B') }}</kbd> sidebar</span>
+          <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+N') }}</kbd> new</span>
+          <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+K') }}</kbd> clear</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -687,21 +767,39 @@ if (typeof window !== 'undefined') {
   flex: 0 0 auto;
   flex-shrink: 0;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px 12px;
-  background: #141228;
-  border-top: 1px solid rgba(99, 102, 241, 0.2);
+  gap: 8px;
+  padding: 10px 12px 12px;
+  background:
+    linear-gradient(180deg, rgba(20, 18, 40, 0.96) 0%, rgba(17, 16, 34, 0.98) 100%);
+  border-top: 1px solid rgba(129, 140, 248, 0.18);
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-height: 144px;
   z-index: 3;
+  visibility: visible;
+  opacity: 1;
+  overflow: visible;
+  box-shadow: 0 -12px 32px rgba(7, 10, 30, 0.16);
 
   @supports (backdrop-filter: blur(1px)) {
-    background: color-mix(in srgb, #141228 92%, transparent);
+    background: color-mix(in srgb, #141228 90%, transparent);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
+}
+
+.ci-input.is-idle {
+  border-top-color: rgba(129, 140, 248, 0.14);
+}
+
+.ci-input.is-engaged {
+  border-top-color: rgba(129, 140, 248, 0.28);
+}
+
+.ci-input.is-processing {
+  border-top-color: rgba(96, 165, 250, 0.28);
 }
 
 // ── Streaming status bar ──
@@ -811,20 +909,22 @@ if (typeof window !== 'undefined') {
 
 .ci-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: flex-end;
-  padding: 6px 14px;
-  margin: 0 4px;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 0 2px;
+  background:
+    linear-gradient(180deg, rgba(37, 33, 74, 0.72) 0%, rgba(30, 27, 62, 0.88) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.22);
+  border-radius: 14px;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  min-height: 52px;
+  min-height: 56px;
   box-sizing: border-box;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   &:focus-within {
-    border-color: rgba(99, 102, 241, 0.5);
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.12);
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14), 0 10px 30px rgba(17, 24, 39, 0.24);
     transform: translateY(-1px);
   }
 }
@@ -832,7 +932,8 @@ if (typeof window !== 'undefined') {
 .ci-row .ci-textarea-wrap { position: relative; flex: 1; min-width: 0; }
 
 .ci-row :deep(.el-textarea__inner) {
-  padding: 8px 0;
+  min-height: 40px !important;
+  padding: 8px 0 6px;
   font-size: 14px;
   line-height: 1.6;
   resize: none;
@@ -896,17 +997,17 @@ if (typeof window !== 'undefined') {
 
 .ci-send-btn {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  margin-bottom: 4px;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 2px;
   transition: transform 0.15s, box-shadow 0.15s;
   &:hover { transform: scale(1.08); }
   &:active { transform: scale(0.95); }
   &:where(.el-button--primary) {
-    background: linear-gradient(135deg, #818cf8, var(--el-color-primary-light-3, #79bbff));
+    background: linear-gradient(135deg, #818cf8, #60a5fa);
     border: none;
-    box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
-    &:hover { box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4); }
+    box-shadow: 0 6px 18px rgba(96, 165, 250, 0.26);
+    &:hover { box-shadow: 0 10px 22px rgba(96, 165, 250, 0.34); }
   }
 }
 
@@ -931,23 +1032,45 @@ if (typeof window !== 'undefined') {
   gap: 4px;
 }
 
+.ci-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
+  padding: 0 4px;
+}
+
+.ci-footer-left {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.ci-footer-right {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
 .yipet-shortcut-hints {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 2px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 // ── Character count ──
 .ci-char-count {
   display: flex;
-  justify-content: flex-end;
   gap: 4px;
-  padding: 0 4px;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   color: #d4d0e8;
-  opacity: 0.6;
+  opacity: 0.72;
+  white-space: nowrap;
 }
 
 .ci-char-count-sep {
@@ -984,7 +1107,7 @@ if (typeof window !== 'undefined') {
     padding: 6px 8px 10px;
   }
   .ci-row {
-    padding: 2px 8px;
+    padding: 6px 10px;
     margin: 0;
     border-radius: 10px;
   }
@@ -995,7 +1118,14 @@ if (typeof window !== 'undefined') {
   .ci-send-btn {
     width: 32px;
     height: 32px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+  }
+  .ci-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ci-footer-right {
+    width: 100%;
   }
 }
 </style>

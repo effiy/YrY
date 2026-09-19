@@ -12,6 +12,7 @@ import { useChatStore } from './stores/chat';
 import ChatWindow from './components/ChatWindow.vue';
 import { errorReporter } from '@/shared/error-boundary';
 import { keyboardRegistry } from '@/shared/shortcuts';
+import { applyLocale, resolveLocale } from '@/shared/i18n/locale';
 
 const currentScript = document.currentScript as HTMLScriptElement | null;
 const dataset = currentScript?.dataset || {};
@@ -39,9 +40,16 @@ function roleImageUrl(role: string): string {
   return EXT_ROOT + 'assets/images/' + slug + '/icon.png';
 }
 
-function initChatApp() {
+async function initChatApp() {
   if ((window as unknown as Record<string, unknown>).__yipetChatInit) return;
   (window as unknown as Record<string, unknown>).__yipetChatInit = true;
+
+  try {
+    const { locale } = await resolveLocale();
+    await applyLocale(locale);
+  } catch (err) {
+    console.warn('[YiPet Chat] Failed to preload locale, continuing with fallback strings.', err);
+  }
 
   const container = document.createElement('div');
   container.id = 'yipet-chat-root';

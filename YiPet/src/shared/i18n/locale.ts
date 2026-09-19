@@ -33,7 +33,13 @@ export function isRTL(locale: string): boolean {
  *   3. Fallback to 'en'.
  */
 export function getChromeLocale(): SupportedLocale {
-  const raw = chrome.i18n.getUILanguage(); // e.g. "zh-CN", "en-US", "ja"
+  let raw = 'en';
+  try {
+    const chromeLocale = typeof chrome !== 'undefined' ? chrome.i18n?.getUILanguage?.() : '';
+    raw = chromeLocale || navigator.language || 'en';
+  } catch {
+    raw = typeof navigator !== 'undefined' ? navigator.language || 'en' : 'en';
+  }
   const base = raw.replace('-', '_'); // normalize to "zh_CN"
 
   // Exact match first
@@ -52,16 +58,23 @@ export function getChromeLocale(): SupportedLocale {
 /* ── User Preference ───────────────────────────────────────────────────── */
 
 export async function getUserLocale(): Promise<SupportedLocale | null> {
-  const result = await chrome.storage.local.get([STORAGE_KEY]);
-  const val = result[STORAGE_KEY] as string | undefined;
-  if (val && SUPPORTED_LOCALES.includes(val as SupportedLocale)) {
-    return val as SupportedLocale;
+  try {
+    if (!(typeof chrome !== 'undefined' && chrome.storage?.local?.get)) return null;
+    const result = await chrome.storage.local.get([STORAGE_KEY]);
+    const val = result[STORAGE_KEY] as string | undefined;
+    if (val && SUPPORTED_LOCALES.includes(val as SupportedLocale)) {
+      return val as SupportedLocale;
+    }
+  } catch {
+    return null;
   }
   return null;
 }
 
 export async function setUserLocale(locale: SupportedLocale): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEY]: locale });
+  if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
+    await chrome.storage.local.set({ [STORAGE_KEY]: locale });
+  }
 }
 
 /* ── Combined Resolution ───────────────────────────────────────────────── */

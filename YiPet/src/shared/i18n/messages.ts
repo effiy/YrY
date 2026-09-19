@@ -25,6 +25,26 @@ type MessageTable = Record<string, ChromeMessageEntry>;
 const cache = new Map<string, MessageTable>();
 let _activeLocale: SupportedLocale = 'en';
 
+function resolveMessagesUrl(locale: SupportedLocale): string {
+  try {
+    const runtimeUrl = typeof chrome !== 'undefined' ? chrome.runtime?.getURL?.(`_locales/${locale}/messages.json`) : '';
+    if (runtimeUrl) return runtimeUrl;
+  } catch {
+    // Fall through to deriving the path from the loaded bundle URL.
+  }
+
+  if (typeof document !== 'undefined') {
+    const script = Array.from(document.scripts).find((item) =>
+      /\/assets\/(?:chat|popup|bootstrap)\.js(?:[?#].*)?$/.test(item.src),
+    );
+    if (script?.src) {
+      return new URL(`../_locales/${locale}/messages.json`, script.src).toString();
+    }
+  }
+
+  return `/_locales/${locale}/messages.json`;
+}
+
 /* ── Public API ─────────────────────────────────────────────────────────── */
 
 export function getActiveLocale(): SupportedLocale {
@@ -45,7 +65,7 @@ export async function setActiveLocale(locale: SupportedLocale): Promise<void> {
 export async function loadMessages(locale: SupportedLocale): Promise<MessageTable> {
   if (cache.has(locale)) return cache.get(locale)!;
 
-  const url = chrome.runtime.getURL(`_locales/${locale}/messages.json`);
+  const url = resolveMessagesUrl(locale);
   const resp = await fetch(url);
   if (!resp.ok) {
     throw new Error(`Failed to load messages for ${locale}: HTTP ${resp.status}`);
