@@ -18,6 +18,7 @@ const currentScript = document.currentScript as HTMLScriptElement | null;
 const dataset = currentScript?.dataset || {};
 const API_BASE = dataset.apiBase || 'http://localhost:10086';
 const COLOR_INDEX = parseInt(dataset.colorIndex || '0', 10);
+const CUSTOM_COLOR = dataset.customColor || '';
 const INITIAL_ROLE = dataset.role || 'Teacher';
 const INITIAL_SYSTEM_PROMPT = getSystemPrompt(INITIAL_ROLE);
 const IPC_SECRET = dataset.ipcSecret || '';
@@ -80,7 +81,7 @@ async function initChatApp() {
     rag: api.rag,
     bug: api.bug,
   });
-  store.setColorIndex(COLOR_INDEX);
+  store.setColorIndex(COLOR_INDEX, CUSTOM_COLOR);
   store.setSystemPrompt(INITIAL_SYSTEM_PROMPT);
   store.setRole(INITIAL_ROLE, roleImageUrl(INITIAL_ROLE));
   store.mount();
@@ -147,7 +148,10 @@ async function initChatApp() {
   window.addEventListener('yipet:colorChanged', ((e: CustomEvent) => {
     if (!isValidIpcEvent(e)) return;
     const idx = Number(e.detail?.data?.color);
-    if (Number.isFinite(idx)) store.setColorIndex(idx);
+    const customColor = typeof e.detail?.data?.customColor === 'string'
+      ? e.detail.data.customColor
+      : '';
+    if (Number.isFinite(idx)) store.setColorIndex(idx, customColor);
   }) as EventListener);
 
   window.addEventListener('yipet:roleChanged', ((e: CustomEvent) => {

@@ -8,8 +8,7 @@ import { t } from '@/shared/i18n/index';
 import type { SupportedLocale } from '@/shared/i18n/locale';
 import { applyLocale, setUserLocale } from '@/shared/i18n/locale';
 import { validateRole } from '@/shared/roles';
-import { applyThemeColors } from '@/shared/theme';
-import { COLOR_OPTIONS, MODELS, POPUP_CONFIG } from '../data';
+import { COLOR_OPTIONS, POPUP_CONFIG } from '../data';
 import type { ChromeService } from '../services/chrome';
 import { createChromeService } from '../services/chrome';
 import { connect } from '../services/connection';
@@ -139,10 +138,11 @@ export const usePopupStore = defineStore('popup', () => {
   }
 
   function updateColor(idx: number) {
+    const nextCustomColor = '';
     send({
-      msg: { action: 'setColor', color: idx },
+      msg: { action: 'setColor', color: idx, customColor: nextCustomColor },
       okMsg: t('notifyColorSet'),
-      optimistic: { color: idx },
+      optimistic: { color: idx, customColor: nextCustomColor },
     });
   }
 
@@ -156,9 +156,13 @@ export const usePopupStore = defineStore('popup', () => {
   }
 
   function setCustomColor(hex: string) {
-    state.value = { ...state.value, customColor: hex };
-    const svc = getChrome();
-    if (svc) svc.saveState({ ...state.value, customColor: hex });
+    const normalized = hex.trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(normalized)) return;
+    send({
+      msg: { action: 'setColor', color: state.value.color, customColor: normalized },
+      okMsg: t('notifyColorSet'),
+      optimistic: { customColor: normalized },
+    });
   }
 
   function updateModel(model: string) {
@@ -225,7 +229,7 @@ export const usePopupStore = defineStore('popup', () => {
           const s = state.value;
           svc.sendMessage({ action: 'setVisibility', visible: s.visible }).catch(() => {});
           svc.sendMessage({ action: 'changeSize', size: s.size }).catch(() => {});
-          svc.sendMessage({ action: 'setColor', color: s.color }).catch(() => {});
+          svc.sendMessage({ action: 'setColor', color: s.color, customColor: s.customColor }).catch(() => {});
           svc.sendMessage({ action: 'setRole', role: s.role }).catch(() => {});
         },
         onFailed() {

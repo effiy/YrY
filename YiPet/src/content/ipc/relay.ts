@@ -6,13 +6,13 @@
  */
 import { PET_DEFAULTS } from '@/config/defaults';
 import type { PopupToContent } from '@/shared/ipc/messages';
-import { applyThemeColors } from '@/shared/theme';
+import { applyThemeColors, applyThemeHex } from '@/shared/theme';
 import { applyPageTheme, removePageTheme } from '../rendering/page-theme';
-import { getSystemPrompt, validateRole } from '../config/role-config';
-import type { RestoredState } from '../state/persistence';
+import { validateRole } from '../config/role-config';
 import {
   loadColorTheme,
   loadSavedRole,
+  loadSavedPetStateForPage,
   persistPetState,
   restorePetState,
 } from '../state/persistence';
@@ -23,6 +23,7 @@ let _petVisible = false;
 let _petSize = PET_DEFAULTS.pet.defaultSize;
 let _petRole = 'Teacher';
 let _petColor = 0;
+let _petCustomColor = '';
 
 // ── DOM Helpers ──────────────────────────────────────────────────────────
 
@@ -56,22 +57,36 @@ function applyRole(role: string): void {
   img.title = role;
 }
 
-function applyColor(color: number): void {
+function applyColor(color: number, customColor = ''): void {
   // Apply to overlay container (ISOLATED world shares DOM with MAIN)
   const overlay = getContainer();
   if (overlay) {
-    applyThemeColors(overlay, color);
+    if (!customColor || !applyThemeHex(overlay, customColor)) {
+      applyThemeColors(overlay, color);
+    }
     overlay.dataset.colorIndex = String(color);
+    overlay.dataset.customColor = customColor;
   }
   // Apply to chat root if present
   const chatRoot = document.getElementById('yipet-chat-root');
-  if (chatRoot) applyThemeColors(chatRoot, color);
+  if (chatRoot) {
+    if (!customColor || !applyThemeHex(chatRoot, customColor)) {
+      applyThemeColors(chatRoot, color);
+    }
+    chatRoot.dataset.customColor = customColor;
+  }
   // Notify MAIN world chat to update its own state
-  dispatchSecureEvent('yipet:colorChanged', { color });
+  dispatchSecureEvent('yipet:colorChanged', { color, customColor });
 }
 
 function persist(): void {
-  persistPetState({ visible: _petVisible, size: _petSize, role: _petRole, color: _petColor });
+  persistPetState({
+    visible: _petVisible,
+    size: _petSize,
+    role: _petRole,
+    color: _petColor,
+    customColor: _petCustomColor,
+  });
 }
 
 // ── IPC Security ────────────────────────────────────────────────────────
@@ -97,6 +112,7 @@ export function injectIntoMainWorld(
   extBase: string,
   initialRole: string,
   initialColor: number,
+  initialCustomColor: string,
   initialVisible: boolean,
 ): void {
   const el = document.createElement('script');
@@ -115,6 +131,7 @@ export function injectIntoMainWorld(
       chatEl.src = chatUrl;
       chatEl.dataset.apiBase = 'http://localhost:10086';
       chatEl.dataset.colorIndex = String(initialColor);
+      chatEl.dataset.customColor = initialCustomColor;
       chatEl.dataset.role = initialRole;
       chatEl.dataset.ipcSecret = IPC_SECRET;
       chatEl.id = 'yipet-chat';
@@ -198,9 +215,12 @@ export function setupMessageRelay(): void {
       }
       case 'setColor': {
         _petColor = (msg.color as number) ?? _petColor;
-        applyColor(_petColor);
+        _petCustomColor = typeof (msg as Record<string, unknown>).customColor === 'string'
+          ? String((msg as Record<string, unknown>).customColor || '')
+          : '';
+        applyColor(_petColor, _petCustomColor);
         persist();
-        chrome.storage.local.set({ petColorTheme: _petColor }).catch(() => {});
+        chrome.storage.local.set({ petColorTheme: _petColor, petCustomColor: _petCustomColor }).catch(() => {});
         sendResponse({ success: true });
         break;
       }
@@ -255,8 +275,14 @@ export function setupMessageRelay(): void {
 // ── Init ─────────────────────────────────────────────────────────────────
 
 export async function initRelay(): Promise<void> {
+  const savedState = await loadSavedPetStateForPage();
   const savedColor = await loadColorTheme();
-  if (savedColor !== _petColor) _petColor = savedColor;
+  if (typeof savedState.color === 'number') _petColor = savedState.color;
+  else if (savedColor !== _petColor) _petColor = savedColor;
+  if (typeof savedState.customColor === 'string') _petCustomColor = savedState.customColor;
+  if (typeof savedState.visible === 'boolean') _petVisible = savedState.visible;
+  if (typeof savedState.size === 'number') _petSize = savedState.size;
+  if (typeof savedState.role === 'string' && validateRole(savedState.role)) _petRole = savedState.role;
 
   const savedRole = await loadSavedRole(_petRole);
   if (savedRole && validateRole(savedRole)) {
@@ -265,12 +291,12 @@ export async function initRelay(): Promise<void> {
 
   const extBase = chrome.runtime.getURL('cdn/');
   const selfUrl = chrome.runtime.getURL('assets/bootstrap.js');
-  injectIntoMainWorld(selfUrl, extBase, _petRole, _petColor, _petVisible);
+  injectIntoMainWorld(selfUrl, extBase, _petRole, _petColor, _petCustomColor, _petVisible);
 
   setupMessageRelay();
 
   restorePetState(
-    { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor },
+    { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor, customColor: _petCustomColor },
     (type, detail) => {
       switch (type) {
         case 'visibilityChanged':
@@ -283,7 +309,11 @@ export async function initRelay(): Promise<void> {
           break;
         case 'colorChanged':
           _petColor = detail.color as number;
-          applyColor(_petColor);
+          applyColor(_petColor, _petCustomColor);
+          break;
+        case 'customColorChanged':
+          _petCustomColor = String(detail.customColor || '');
+          applyColor(_petColor, _petCustomColor);
           break;
       }
     },

@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 import { View, Hide, Refresh } from '@element-plus/icons-vue';
 import { t } from '@/shared/i18n/index';
 import type { SupportedLocale } from '@/shared/i18n/locale';
-import { applyThemeColors } from '@/shared/theme';
+import { applyThemeColors, applyThemeHex } from '@/shared/theme';
 import AppHeader from './components/AppHeader.vue';
 import AppFooter from './components/AppFooter.vue';
 import PetPreview from './components/PetPreview.vue';
@@ -25,8 +25,9 @@ const SIZE = POPUP_CONFIG.SIZE;
 const DEFAULTS = POPUP_CONFIG.DEFAULTS;
 
 // Inject CSS variables onto :root so popup's CSS follows the active color theme.
-watch(() => state.value.color, (c) => {
-  applyThemeColors(document.documentElement, c);
+watch(() => [state.value.color, state.value.customColor] as const, ([color, customColor]) => {
+  if (customColor && applyThemeHex(document.documentElement, customColor)) return;
+  applyThemeColors(document.documentElement, color);
 }, { immediate: true });
 
 onMounted(() => {
@@ -195,13 +196,32 @@ function resetDefaults() {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted, rgba(212, 208, 232, 0.5));
-  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary, #e9e5f5);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.popup-section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  background: var(--primary, #a78bfa);
+  border-radius: 2px;
 }
 
 .popup-form-item {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.popup-form-item :deep(.el-form-item__label) {
+  color: var(--text-primary, #f5f3ff);
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
 .popup-form-row {
@@ -212,18 +232,45 @@ function resetDefaults() {
 
 .popup-form-hint {
   font-size: 11px;
-  color: var(--text-muted, rgba(212, 208, 232, 0.5));
+  color: var(--text-secondary, #e9e5f5);
   line-height: 1.4;
+  opacity: 0.7;
 }
 
 .popup-select {
   width: 100%;
 }
 
+.popup-select :deep(.el-input__wrapper) {
+  background: var(--bg-secondary, #1c1926);
+  box-shadow: none;
+  border: 1px solid var(--border-secondary, rgba(196, 181, 253, 0.15));
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-select :deep(.el-input__wrapper:hover) {
+  border-color: var(--border-focus, #a78bfa);
+}
+
+.popup-select :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--border-focus, #a78bfa);
+  box-shadow: 0 0 0 2px var(--primary-alpha, rgba(167, 139, 250, 0.2));
+}
+
+.popup-select :deep(.el-input__inner) {
+  color: var(--text-primary, #f5f3ff);
+}
+
+.popup-select :deep(.el-select__caret) {
+  color: var(--text-secondary, #e9e5f5);
+}
+
 .size-label {
   margin-top: 4px;
   font-size: 12px;
-  color: var(--text-secondary, #d4d0e8);
+  color: var(--text-accent, #ddd6fe);
+  font-weight: 500;
 }
 
 .page-theme-row {
@@ -232,5 +279,74 @@ function resetDefaults() {
 
 .page-theme-slider {
   width: 100%;
+}
+
+/* Slider styling */
+.page-theme-slider :deep(.el-slider__runway) {
+  background: var(--bg-tertiary, #262333);
+  height: 4px;
+  border-radius: 2px;
+}
+
+.page-theme-slider :deep(.el-slider__bar) {
+  background: var(--primary-gradient, linear-gradient(90deg, #a78bfa, #8b5cf6));
+  height: 4px;
+  border-radius: 2px;
+}
+
+.page-theme-slider :deep(.el-slider__button-wrapper) {
+  top: -8px;
+}
+
+.page-theme-slider :deep(.el-slider__button) {
+  width: 14px;
+  height: 14px;
+  background: var(--primary, #a78bfa);
+  border: 2px solid var(--bg-primary, #13111a);
+  box-shadow: 0 2px 6px rgba(167, 139, 250, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-theme-slider :deep(.el-slider__button:hover) {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(167, 139, 250, 0.5);
+}
+
+.page-theme-slider :deep(.el-slider__marks-text) {
+  color: var(--text-secondary, #e9e5f5);
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+/* Divider styling */
+:deep(.el-divider) {
+  border-color: var(--border-secondary, rgba(196, 181, 253, 0.12));
+  margin: 18px 0;
+}
+
+/* Switch styling */
+:deep(.el-switch.is-checked .el-switch__core) {
+  background: var(--primary-gradient, linear-gradient(90deg, #a78bfa, #8b5cf6));
+  border-color: transparent;
+}
+
+/* Segmented control styling */
+:deep(.el-segmented) {
+  background: var(--bg-tertiary, #262333);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+:deep(.el-segmented__item) {
+  color: var(--text-secondary, #e9e5f5);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+:deep(.el-segmented__item.is-selected) {
+  background: var(--primary-gradient, linear-gradient(135deg, #a78bfa, #8b5cf6));
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.3);
 }
 </style>

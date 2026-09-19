@@ -758,30 +758,39 @@ const tokensPerSec = computed(() => {
   display: flex;
   flex-direction: column;
   max-width: 85%;
-  padding: 10px 14px;
-  margin-bottom: 6px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.6;
-  border-radius: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.12);
   animation: mb-slide-in 0.25s ease-out;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .mb-bubble--user {
   align-self: flex-end;
-  background: var(--el-color-primary-light-9, #ecf5ff);
-  border-radius: 6px 6px 2px 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  color: var(--text-primary, #f5f3ff);
+  background:
+    linear-gradient(135deg, rgba(var(--primary-rgb, 99, 102, 241), 0.24), rgba(var(--primary-rgb, 99, 102, 241), 0.12)),
+    rgba(255, 255, 255, 0.04);
+  border-radius: 18px 18px 8px 18px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
 }
 
 .mb-bubble--pet {
   align-self: flex-start;
-  background: var(--el-fill-color-light, #f5f7fa);
-  border-radius: 6px 6px 6px 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  color: var(--text-primary, #f5f3ff);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 36%),
+    rgba(var(--primary-rgb, 99, 102, 241), 0.05);
+  border-radius: 18px 18px 18px 8px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
 }
 
 .mb-bubble--error {
-  border: 1px solid var(--el-color-danger, #f56c6c);
+  border: 1px solid rgba(255, 77, 79, 0.45);
 }
 
 
@@ -799,14 +808,25 @@ const tokensPerSec = computed(() => {
 .mb-content {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
   line-height: 1.5;
   word-break: break-word;
 }
 
 .mb-images { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
-.mb-image { max-width: 100%; border-radius: 6px; cursor: pointer; transition: transform 0.15s; &:hover { transform: scale(1.02); } }
+.mb-image {
+  max-width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  &:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+  }
+}
 .mb-empty { min-height: 14px; }
 
 .mb-typing {
@@ -815,9 +835,10 @@ const tokensPerSec = computed(() => {
   gap: 6px;
   align-items: flex-start;
   padding: 10px 14px;
-  color: #d4d0e8;
-  background: rgba(30, 26, 59, 0.85);
-  border-radius: 12px 12px 12px 4px;
+  color: var(--text-secondary, #d4d0e8);
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.16);
+  border-radius: 16px 16px 16px 8px;
   transition: background 0.3s, border-color 0.3s;
 }
 .mb-typing--slow {
@@ -837,7 +858,7 @@ const tokensPerSec = computed(() => {
   font-family: 'SF Mono', 'Menlo', monospace;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  color: #d4d0e8;
+  color: var(--text-secondary, #d4d0e8);
   opacity: 0.7;
 }
 .mb-typing-warn {
@@ -880,7 +901,7 @@ const tokensPerSec = computed(() => {
   font-weight: 600;
   font-family: 'SF Mono', 'Menlo', monospace;
   letter-spacing: 0.3px;
-  color: #818cf8;
+  color: var(--primary-light, #818cf8);
 }
 .mb-typing-pulse {
   display: inline-flex;
@@ -890,7 +911,7 @@ const tokensPerSec = computed(() => {
 .mb-typing-pulse span {
   width: 7px;
   height: 7px;
-  background: #818cf8;
+  background: var(--primary-light, #818cf8);
   border-radius: 50%;
   animation: mb-pulse 1.4s ease-in-out infinite;
 }
@@ -904,7 +925,7 @@ const tokensPerSec = computed(() => {
 
 .mb-tag {
   align-self: flex-start; display: inline-block; font-size: 11px;
-  padding: 1px 6px; border-radius: 4px; margin-top: 4px;
+  padding: 3px 8px; border-radius: 999px; margin-top: 2px;
 }
 .mb-tag--error {
   background: rgba(255, 77, 79, 0.15); color: #ff4d4f;
@@ -1073,9 +1094,9 @@ const tokensPerSec = computed(() => {
   position: relative;
   transition: padding 0.15s;
   &.is-streaming {
-    padding-bottom: 2px;
-    border-left: 2px solid rgba(99, 102, 241, 0.45);
-    padding-left: 10px;
+    padding-bottom: 4px;
+    border-left: 2px solid rgba(var(--primary-rgb, 99, 102, 241), 0.45);
+    padding-left: 12px;
     animation: mb-stream-glow 2s ease-in-out infinite;
   }
 }
@@ -1088,15 +1109,15 @@ const tokensPerSec = computed(() => {
   padding: 2px 10px;
   margin-bottom: 6px;
   font-size: 11px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 10px;
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.22);
+  border-radius: 999px;
   animation: mb-live-fade-in 0.3s ease-out;
 }
 .mb-live-dot {
   width: 6px;
   height: 6px;
-  background: #818cf8;
+  background: var(--primary-light, #818cf8);
   border-radius: 50%;
   animation: mb-live-pulse 1s ease-in-out infinite;
 }
@@ -1104,7 +1125,7 @@ const tokensPerSec = computed(() => {
   font-family: 'SF Mono', 'Menlo', monospace;
   font-size: 10px;
   font-weight: 600;
-  color: #818cf8;
+  color: var(--primary-light, #818cf8);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1126,8 +1147,8 @@ const tokensPerSec = computed(() => {
   left: 0;
   height: 24px;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(30, 26, 59, 0.85) 80%);
-  border-radius: 0 0 12px 12px;
+  background: linear-gradient(to bottom, transparent, rgba(12, 18, 32, 0.42) 80%);
+  border-radius: 0 0 14px 14px;
   animation: mb-fade-pulse 2s ease-in-out infinite;
 }
 @keyframes mb-fade-pulse {
@@ -1136,8 +1157,8 @@ const tokensPerSec = computed(() => {
 }
 
 @keyframes mb-stream-glow {
-  0%, 100% { border-left-color: rgba(99, 102, 241, 0.45); }
-  50% { border-left-color: #818cf8; }
+  0%, 100% { border-left-color: rgba(var(--primary-rgb, 99, 102, 241), 0.45); }
+  50% { border-left-color: var(--primary-light, #818cf8); }
 }
 
 .mb-markdown {
@@ -1157,10 +1178,10 @@ const tokensPerSec = computed(() => {
 
 .mb-caret {
   display: inline-block; width: 8px; height: 1.35em; margin-left: 1px;
-  background: #818cf8;
+  background: var(--primary-light, #818cf8);
   vertical-align: text-bottom;
   border-radius: 1px;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 8px rgba(var(--primary-rgb, 99, 102, 241), 0.6);
   animation: mb-caret-blink 0.7s step-end infinite;
 }
 
@@ -1174,8 +1195,8 @@ const tokensPerSec = computed(() => {
   font-size: 10px;
   font-family: 'SF Mono', 'Menlo', monospace;
   font-variant-numeric: tabular-nums;
-  color: #d4d0e8;
-  opacity: 0.5;
+  color: var(--text-secondary, #d4d0e8);
+  opacity: 0.7;
 }
 
 // ── Code block line numbers ──
@@ -1213,21 +1234,21 @@ const tokensPerSec = computed(() => {
     font-weight: 600;
     &:first-child { margin-top: 0; }
   }
-  :deep(h1) { font-size: 1.4em; border-bottom: 1px solid rgba(99, 102, 241, 0.25); padding-bottom: 0.3em; }
+  :deep(h1) { font-size: 1.4em; border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.22); padding-bottom: 0.3em; }
   :deep(h2) { font-size: 1.25em; }
   :deep(h3) { font-size: 1.1em; }
-  :deep(h4) { font-size: 1em; color: #d4d0e8; }
+  :deep(h4) { font-size: 1em; color: var(--text-secondary, #d4d0e8); }
 
   :deep(p) { margin: 0.6em 0; line-height: 1.65; }
   :deep(p:first-child) { margin-top: 0; }
   :deep(p:last-child) { margin-bottom: 0; }
 
   :deep(a) {
-    color: #818cf8;
+    color: var(--link-color, #818cf8);
     text-decoration: none;
-    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+    border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
     transition: border-color 0.15s;
-    &:hover { border-color: #818cf8; }
+    &:hover { border-color: var(--primary-light, #818cf8); }
   }
 
   :deep(.cite-chip) {
@@ -1238,22 +1259,22 @@ const tokensPerSec = computed(() => {
     font-size: 11px;
     font-weight: 700;
     line-height: 1.4;
-    color: #818cf8;
-    background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--primary-light, #818cf8);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.26);
     border-radius: 6px;
     cursor: pointer;
     user-select: none;
     vertical-align: super;
     transition: background 0.12s, transform 0.12s;
     &:hover {
-      background: rgba(99, 102, 241, 0.25);
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.22);
       color: #fff;
       transform: translateY(-1px);
     }
   }
 
-  :deep(strong) { font-weight: 600; color: #f5f3ff; }
+  :deep(strong) { font-weight: 700; color: var(--text-primary, #f5f3ff); }
   :deep(em) { font-style: italic; }
 
   :deep(ul), :deep(ol) {
@@ -1270,20 +1291,20 @@ const tokensPerSec = computed(() => {
   :deep(blockquote) {
     margin: 0.6em 0;
     padding: 6px 14px;
-    border-left: 3px solid #818cf8;
-    background: rgba(99, 102, 241, 0.06);
+    border-left: 3px solid var(--primary-light, #818cf8);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
     border-radius: 0 4px 4px 0;
-    color: #d4d0e8;
+    color: var(--text-secondary, #d4d0e8);
     p { margin: 0.3em 0; }
   }
 
   :deep(code) {
     font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
     font-size: 0.88em;
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
     padding: 1px 5px;
     border-radius: 4px;
-    color: #e2e8f0;
+    color: var(--text-primary, #e2e8f0);
   }
 
   :deep(pre) {
@@ -1293,9 +1314,9 @@ const tokensPerSec = computed(() => {
     overflow-x: auto;
     font-size: 13px;
     line-height: 1.55;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    background: rgba(10, 14, 26, 0.55);
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+    border-radius: 14px;
 
     code {
       background: none;
@@ -1308,8 +1329,8 @@ const tokensPerSec = computed(() => {
 
   :deep(.code-block-wrapper) {
     margin: 0.8em 0;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+    border-radius: 14px;
     overflow: hidden;
 
     pre {
@@ -1326,8 +1347,8 @@ const tokensPerSec = computed(() => {
     align-items: center;
     justify-content: space-between;
     padding: 6px 14px;
-    background: rgba(0, 0, 0, 0.25);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
   }
 
   :deep(.code-block-lang) {
@@ -1336,7 +1357,7 @@ const tokensPerSec = computed(() => {
     font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #818cf8;
+    color: var(--primary-light, #818cf8);
   }
 
   :deep(table) {
@@ -1345,23 +1366,23 @@ const tokensPerSec = computed(() => {
     border-collapse: collapse;
     font-size: 0.92em;
     overflow: hidden;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+    border-radius: 14px;
   }
 
   :deep(th), :deep(td) {
     padding: 8px 12px;
-    border: 1px solid rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
     text-align: left;
   }
 
   :deep(th) {
-    background: rgba(99, 102, 241, 0.12);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
     font-weight: 600;
     font-size: 0.85em;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    color: #818cf8;
+    color: var(--primary-light, #818cf8);
   }
 
   :deep(tr:nth-child(even) td) {
@@ -1369,13 +1390,13 @@ const tokensPerSec = computed(() => {
   }
 
   :deep(tr:hover td) {
-    background: rgba(99, 102, 241, 0.06);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
   }
 
   // ── Task list checkboxes ──
   :deep(input[type="checkbox"]) {
     margin-right: 6px;
-    accent-color: #6366f1;
+    accent-color: var(--primary, #6366f1);
     width: 14px;
     height: 14px;
     cursor: default;
@@ -1390,7 +1411,7 @@ const tokensPerSec = computed(() => {
   :deep(hr) {
     margin: 1em 0;
     border: none;
-    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
   }
 
   :deep(img) {
@@ -1401,7 +1422,7 @@ const tokensPerSec = computed(() => {
 
   :deep(input[type="checkbox"]) {
     margin-right: 6px;
-    accent-color: #6366f1;
+    accent-color: var(--primary, #6366f1);
   }
 
   :deep(pre.mermaid) {
@@ -1421,17 +1442,17 @@ const tokensPerSec = computed(() => {
   padding: 2px 8px;
   font-size: 11px;
   font-family: inherit;
-  color: #d4d0e8;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--text-secondary, #d4d0e8);
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.22);
   border-radius: 4px;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease;
 
   &:hover {
-    background: rgba(99, 102, 241, 0.3);
-    color: #f5f3ff;
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.24);
+    color: var(--text-primary, #f5f3ff);
   }
 }
 
@@ -1518,8 +1539,8 @@ const tokensPerSec = computed(() => {
   display: flex;
   gap: 2px;
   padding: 4px;
-  background: rgba(30, 26, 59, 0.98);
-  border: 1px solid rgba(99, 102, 241, 0.35);
+  background: var(--bg-elevated, rgba(30, 26, 59, 0.98));
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.28);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translate(-50%, -100%);
@@ -1535,7 +1556,7 @@ const tokensPerSec = computed(() => {
   padding: 4px 10px;
   font-size: 12px;
   font-weight: 500;
-  color: #f5f3ff;
+  color: var(--text-primary, #f5f3ff);
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
@@ -1543,9 +1564,9 @@ const tokensPerSec = computed(() => {
   transition: all 0.12s;
   white-space: nowrap;
   &:hover {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
-    color: #818cf8;
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
+    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.3);
+    color: var(--primary-light, #818cf8);
   }
 }
 
@@ -1556,15 +1577,15 @@ const tokensPerSec = computed(() => {
   padding: 3px 10px;
   font-size: 11px;
   font-weight: 500;
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 4px;
+  color: var(--primary-light, #818cf8);
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+  border-radius: 999px;
   cursor: pointer;
   transition: all 0.15s;
   &:hover {
-    background: rgba(99, 102, 241, 0.18);
-    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(var(--primary-rgb, 99, 102, 241), 0.16);
+    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.3);
   }
 }
 
@@ -1585,7 +1606,7 @@ const tokensPerSec = computed(() => {
   transition: background .15s;
   user-select: none;
 }
-.mb-tokens-trend:hover { background: rgba(99,102,241,.15); }
+.mb-tokens-trend:hover { background: rgba(var(--primary-rgb, 99, 102, 241), .15); }
 .mb-tokens-trend--flat { color: #9ca3af; }
 .mb-tokens-trend--up { color: #f87171; }
 .mb-tokens-trend--down { color: #34d399; }
@@ -1594,8 +1615,8 @@ const tokensPerSec = computed(() => {
   animation: mb-flash 1.2s ease-out;
 }
 @keyframes mb-flash {
-  0% { box-shadow: 0 0 0 3px rgba(99,102,241,.6); background: rgba(99,102,241,.12); }
-  100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); background: transparent; }
+  0% { box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 99, 102, 241), .5); background: rgba(var(--primary-rgb, 99, 102, 241), .12); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb, 99, 102, 241), 0); background: transparent; }
 }
 
 .mb-tool-timeline { margin-top: 8px; }

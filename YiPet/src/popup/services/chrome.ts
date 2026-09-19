@@ -64,6 +64,8 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
           role: state.role,
           color: state.color,
           model: state.model,
+          pageTheme: state.pageTheme,
+          customColor: state.customColor,
         };
         await chrome.storage.local.set({ [storageKey]: map });
 
@@ -77,6 +79,7 @@ export function createChromeService(tabRef: TabRef, storageKey: string): ChromeS
             size: state.size,
             role: state.role,
             color: state.color,
+            customColor: state.customColor,
           };
           await chrome.storage.local.set({ pet_state_by_url: urlMap });
         }

@@ -7,6 +7,7 @@ export { applyElementTheme, clearElementTheme } from './element-theme';
 export { generatePalette } from './color-generator';
 export {
   applyThemeColors,
+  applyThemeHex,
   clearThemeColors,
   NONE_PALETTE,
   THEME_PALETTES,

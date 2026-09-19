@@ -18,6 +18,7 @@ export function persistPetState(state: {
   size: number;
   role: string;
   color: number;
+  customColor?: string;
 }): void {
   if (!chrome?.runtime?.id) return;
   const urlKey = getPageUrlKey();
@@ -44,6 +45,7 @@ export interface RestoredState {
   size: number;
   role: string;
   color: number;
+  customColor?: string;
 }
 
 export type StateChangeHandler = (type: string, detail: Record<string, unknown>) => void;
@@ -75,6 +77,9 @@ export function restorePetState(
         if (typeof urlState.color === 'number' && urlState.color !== current.color) {
           onChange('colorChanged', { color: urlState.color });
         }
+        if (typeof urlState.customColor === 'string' && urlState.customColor !== (current.customColor || '')) {
+          onChange('customColorChanged', { customColor: urlState.customColor });
+        }
       }
     })
     .then(() => {
@@ -98,6 +103,22 @@ export async function loadColorTheme(): Promise<number> {
     console.warn('[YiPet] Failed to load color theme, using default:', (err as Error)?.message ?? err);
   }
   return 0;
+}
+
+/** Load per-page saved visual state when available. */
+export async function loadSavedPetStateForPage(): Promise<Partial<RestoredState>> {
+  try {
+    const urlKey = getPageUrlKey();
+    const stateResult = await chrome.storage.local.get(PET_URL_STATE_KEY);
+    const map = stateResult?.[PET_URL_STATE_KEY] || {};
+    const urlState = map[urlKey];
+    if (urlState && typeof urlState === 'object') {
+      return urlState as Partial<RestoredState>;
+    }
+  } catch (err: unknown) {
+    console.warn('[YiPet] Failed to load saved pet state for page:', (err as Error)?.message ?? err);
+  }
+  return {};
 }
 
 /** Load saved role from chrome.storage (global preference, then per-URL). */

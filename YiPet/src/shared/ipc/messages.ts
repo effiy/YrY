@@ -15,7 +15,7 @@ export type PopupToContent =
   | { action: 'setVisibility'; visible: boolean }
   | { action: 'changeSize'; size: number }
   | { action: 'setRole'; role: string }
-  | { action: 'setColor'; color: number }
+  | { action: 'setColor'; color: number; customColor?: string }
   | { action: 'setPageTheme'; intensity: number }
   | { action: 'toggleChat' }
   | { action: 'screenshot' }
@@ -36,7 +36,9 @@ export interface PetGlobalState {
   size?: number;
   role?: string;
   color?: number;
+  customColor?: string;
   model?: string | null;
+  pageTheme?: number;
 }
 
 /** Per-tab state map keyed by tab ID. */

@@ -15,7 +15,7 @@ import type {
 } from '@/api/types';
 import { DEFAULT_MODEL } from '../constants';
 import type { ChatState, Message, SessionItem } from '../types';
-import { applyThemeColors } from '@/shared/theme';
+import { applyThemeColors, applyThemeHex } from '@/shared/theme';
 import { redactUrlCredentials } from '@/utils/url';
 import { t } from '@/shared/i18n';
 import { useChatWindow } from './useChatWindow';
@@ -276,6 +276,7 @@ export const useChatStore = defineStore('chat', () => {
     weChatRobotsDraft: [],
     weChatSettingsVisible: false,
     colorIndex: 0,
+    customColor: '',
     systemPrompt: '',
     roleName: 'Teacher',
     roleImageUrl: '',
@@ -1066,14 +1067,26 @@ export const useChatStore = defineStore('chat', () => {
 
   // ── Color/Role ──────────────────────────────────────────────────────
 
-  function setColorIndex(idx: number) {
-    if (!Number.isFinite(idx) || idx === state.colorIndex) return;
+  function setColorIndex(idx: number, customColor = state.customColor) {
+    customColor = String(customColor || '').trim();
+    if (!Number.isFinite(idx)) return;
+    if (idx === state.colorIndex && customColor === state.customColor) {
+      const root = document.getElementById('yipet-chat-root');
+      if (root && (!customColor || !applyThemeHex(root, customColor))) {
+        applyThemeColors(root, idx);
+      }
+      return;
+    }
     state.colorIndex = idx;
+    state.customColor = customColor;
     _persistSetting('chatColorIndex', idx);
+    _persistSetting('chatCustomColor', customColor);
     // Apply theme to chat root container only — never touch document.documentElement
     // to avoid destroying host page styles (e.g. YiVad knowledge pages).
     const root = document.getElementById('yipet-chat-root');
-    if (root) applyThemeColors(root, idx);
+    if (root && (!customColor || !applyThemeHex(root, customColor))) {
+      applyThemeColors(root, idx);
+    }
   }
 
   function setRole(name: string, imageUrl: string) {
@@ -1357,12 +1370,17 @@ export const useChatStore = defineStore('chat', () => {
       try {
         const result = await chrome.storage.local.get([
           'knowledgeGrounded', 'ragScope', 'ragScopeIsFile',
-          'chatColorIndex',
+          'chatColorIndex', 'chatCustomColor',
         ]);
         if (typeof result.knowledgeGrounded === 'boolean') state.knowledgeGrounded = result.knowledgeGrounded;
         if (typeof result.ragScope === 'string') state.ragScope = result.ragScope;
         if (typeof result.ragScopeIsFile === 'boolean') state.ragScopeIsFile = result.ragScopeIsFile;
-        if (typeof result.chatColorIndex === 'number') state.colorIndex = result.chatColorIndex;
+        if (typeof result.chatColorIndex === 'number' || typeof result.chatCustomColor === 'string') {
+          setColorIndex(
+            typeof result.chatColorIndex === 'number' ? result.chatColorIndex : state.colorIndex,
+            typeof result.chatCustomColor === 'string' ? result.chatCustomColor : state.customColor,
+          );
+        }
       } catch { /* storage unavailable */ }
     }
     await _loadSessions();

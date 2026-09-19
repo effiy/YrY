@@ -7,12 +7,15 @@ import { NONE_PALETTE, THEME_PALETTES } from '@/shared/theme';
 // ── Color Labels ────────────────────────────────────────────────────────
 
 const COLOR_LABELS = [
-  'Slate Pro',
-  'Indigo',
+  'Lavender',
+  'Mint',
+  'Sky',
+  'Peach',
+  'Sakura',
   'Ocean',
   'Forest',
+  'Indigo',
   'Sunset',
-  'Rose',
 ];
 
 export interface ColorOption {

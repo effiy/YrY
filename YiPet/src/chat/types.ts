@@ -353,6 +353,8 @@ export interface ChatState {
   weChatSettingsVisible: boolean;
   /** Active color palette index — followss popup color changes via yipet:colorChanged. */
   colorIndex: number;
+  /** Optional custom hex color from the popup theme picker. */
+  customColor: string;
   /** Role system prompt sent as `system` field in chat requests. Updated via yipet:roleChanged. */
   systemPrompt: string;
   /** Canonical role name (e.g. "Teacher"), drives the header avatar. Updated via yipet:roleChanged. */
