@@ -342,7 +342,7 @@ function send() {
   const imgs = draftImages.value.length > 0 ? draftImages.value : undefined;
   if (!text && !imgs) return;
   if (s.isProcessing) return;
-  store.pushPromptHistory?.(inputValue.value);
+  if (text) store.pushPromptHistory?.(text);
   historyIdxRef.value = -1;
   store.sendMessage(text, imgs);
   clearComposer();
@@ -445,6 +445,19 @@ function onKeyDown(e: KeyboardEvent) {
     return;
   }
 
+  // Ctrl+Shift+R / Cmd+Shift+R: toggle RAG
+  if (mod && e.shiftKey && e.key === 'R' && !s.isProcessing) {
+    e.preventDefault();
+    s.knowledgeGrounded = !s.knowledgeGrounded;
+    ElMessage({
+      message: s.knowledgeGrounded ? 'RAG on' : 'RAG off',
+      type: s.knowledgeGrounded ? 'success' : 'info',
+      duration: 1500,
+      showClose: false,
+    });
+    return;
+  }
+
   // Ctrl+L / Cmd+L: clear input
   if (mod && e.key === 'l' && !s.isProcessing) {
     e.preventDefault();
@@ -473,8 +486,6 @@ function onKeyDown(e: KeyboardEvent) {
     if (e.shiftKey) return;
     e.preventDefault();
     if (s.isProcessing) return;
-    store.pushPromptHistory?.(inputValue.value);
-    historyIdxRef.value = -1;
     send();
     return;
   }
@@ -594,8 +605,6 @@ function onDrop(e: DragEvent) {
 }
 
 // ── Image picker (mirrors YiVad aiChat) ──
-const imageInput = ref<HTMLInputElement | null>(null);
-
 function onImageChange(e: Event) {
   const input = e.target as HTMLInputElement;
   if (!input) return;
@@ -663,7 +672,6 @@ if (typeof window !== 'undefined') {
 
     <!-- Hidden image picker (parity with YiVad aiChat) -->
     <input
-      ref="imageInput"
       type="file"
       accept="image/*"
       multiple
@@ -754,6 +762,8 @@ if (typeof window !== 'undefined') {
           <span class="yipet-shortcut-hint"><kbd>?</kbd> shortcuts</span>
           <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+B') }}</kbd> sidebar</span>
           <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+N') }}</kbd> new</span>
+          <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+Shift+S') }}</kbd> web</span>
+          <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+Shift+R') }}</kbd> rag</span>
           <span class="yipet-shortcut-hint"><kbd>{{ displayKeys('Ctrl+K') }}</kbd> clear</span>
         </div>
       </div>

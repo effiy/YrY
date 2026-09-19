@@ -11,11 +11,12 @@ import {
   FolderChecked, FolderOpened, Folder, Document, Plus,
   Loading, Tools,
 } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { useChatStore } from '../../stores/chat';
 import { t } from '@/shared/i18n';
 import RequestStatusButton from '../RequestStatusButton.vue';
 
-defineProps<{ hasContent: boolean }>();
+const props = defineProps<{ hasContent: boolean }>();
 const emit = defineEmits<{ clearInput: [] }>();
 
 const store = useChatStore();
@@ -24,13 +25,6 @@ const MAX_DRAFT_IMAGES = 4;
 
 const canUpload = computed(() => s.draftImages.length < MAX_DRAFT_IMAGES);
 const currentSession = computed(() => s.sessions.find((ses) => ses.id === s.currentSessionId));
-
-// ── Model selector (mirrors YiVad aiChat) ──
-const modelOptions = computed(() => {
-  const list = [...(s.availableModels ?? [])];
-  if (s.selectedModel && !list.includes(s.selectedModel)) list.unshift(s.selectedModel);
-  return list.length ? list : [s.selectedModel || 'qwen3.5'];
-});
 
 // ── Popover visibility ──
 const showHistoryPopover = ref(false);
@@ -45,17 +39,16 @@ interface BrowseNode {
   key: string; label: string; type: 'folder' | 'file'; path: string; children?: BrowseNode[];
 }
 const browseTree = computed<BrowseNode[]>(() => {
-  const roots: BrowseNode[] = [];
   const folderMap = new Map<string, BrowseNode>();
   const q = knowledgeSearch.value.trim().toLowerCase();
-  function copyTree(nodes: any[], parent: BrowseNode[]): BrowseNode[] {
+  function copyTree(nodes: any[]): BrowseNode[] {
     const out: BrowseNode[] = [];
     for (const n of nodes) {
       if (n.type === 'file') {
         const match = !q || n.label.toLowerCase().includes(q) || n.path.toLowerCase().includes(q);
         if (match) out.push({ key: `file:${n.path}`, label: n.name || n.label, type: 'file', path: n.path });
       } else {
-        const children = n.children?.length ? copyTree(n.children, []) : [];
+        const children = n.children?.length ? copyTree(n.children) : [];
         if (!q || children.length) {
           const folder: BrowseNode = { key: `folder:${n.path}`, label: n.name || n.label, type: 'folder', path: n.path, children };
           folderMap.set(folder.key, folder);
@@ -69,7 +62,7 @@ const browseTree = computed<BrowseNode[]>(() => {
     arr.sort((a, b) => { if (a.type !== b.type) return a.type === 'folder' ? -1 : 1; return a.label.localeCompare(b.label, 'zh-CN'); });
     for (const n of arr) if (n.children) sorted(n.children);
   }
-  const built = copyTree(s.knowledgeTree || [], roots);
+  const built = copyTree(s.knowledgeTree || []);
   sorted(built);
   return built;
 });
@@ -153,11 +146,34 @@ function useHistoryPrompt(text: string) {
 }
 
 function copyHistoryPrompt(text: string) {
-  navigator.clipboard?.writeText(text);
+  navigator.clipboard?.writeText(text).then(
+    () => ElMessage.success('Prompt copied'),
+    () => ElMessage.error('Copy failed'),
+  );
 }
 
 function removeHistoryPrompt(idx: number) {
   store.removePromptHistoryAt?.(idx);
+}
+
+async function confirmClearPromptHistory() {
+  if (!s.promptHistory.length) return;
+  try {
+    await ElMessageBox.confirm(
+      `Clear all ${s.promptHistory.length} prompt(s)? This cannot be undone.`,
+      'Clear prompt history',
+      {
+        type: 'warning',
+        confirmButtonText: 'Clear',
+        cancelButtonText: 'Cancel',
+      },
+    );
+  } catch {
+    return;
+  }
+  store.clearPromptHistory?.();
+  showHistoryPopover.value = false;
+  ElMessage.success('Prompt history cleared');
 }
 
 function truncatePrompt(t: string, max = 40): string {
@@ -201,6 +217,21 @@ const similarPrompts = computed<{ text: string; score: number }[]>(() => {
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 });
+
+const recentToolCalls = computed(() =>
+  (s.toolEvents ?? [])
+    .filter((event) => event.phase === 'end')
+    .slice(-5)
+    .reverse()
+    .map((event) => ({
+      key: `${event.name}-${event.timestamp}`,
+      label: event.label,
+      name: event.name,
+      error: event.error || '',
+      durationText: typeof event.durationMs === 'number' ? `${event.durationMs}ms` : '',
+      preview: (event.error || event.content || '').trim(),
+    })),
+);
 
 // ── Context files ──
 const contextFiles = computed(() => {
@@ -350,7 +381,7 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
             </div>
           </div>
           <div v-if="s.promptHistory.length" class="ct-history-footer">
-            <el-button size="small" type="danger" text :icon="Delete" @click="store.clearPromptHistory?.()">Clear all ({{ s.promptHistory.length }})</el-button>
+            <el-button size="small" type="danger" text :icon="Delete" @click="confirmClearPromptHistory()">Clear all ({{ s.promptHistory.length }})</el-button>
           </div>
         </div>
       </el-popover>
@@ -358,6 +389,11 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
       <!-- Upload image -->
       <el-tooltip :content="t('chatUploadImage')" placement="bottom">
         <el-button circle :icon="Picture" :disabled="!canUpload" @click="onUploadImage" />
+      </el-tooltip>
+
+      <!-- Clear composer -->
+      <el-tooltip v-if="props.hasContent" content="Clear composer" placement="bottom">
+        <el-button circle :icon="Delete" @click="emit('clearInput')" />
       </el-tooltip>
 
       <!-- Bot settings -->
@@ -399,6 +435,29 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
                 size="small"
                 @update:model-value="store.setToolEnabled?.(tool.name, $event as boolean)"
               />
+            </div>
+          </div>
+          <div v-if="recentToolCalls.length" class="ct-tool-calls">
+            <div class="ct-skills-section-title">Latest runs</div>
+            <div class="ct-tool-call-list">
+              <div
+                v-for="call in recentToolCalls"
+                :key="call.key"
+                class="ct-tool-call-item"
+                :class="{ 'is-error': !!call.error }"
+                :title="call.preview || call.name"
+              >
+                <div class="ct-tool-call-top">
+                  <span class="ct-tool-call-name">{{ call.label }}</span>
+                  <span class="ct-tool-call-meta">
+                    <span class="ct-tool-call-status">{{ call.error ? 'error' : 'ok' }}</span>
+                    <span v-if="call.durationText">{{ call.durationText }}</span>
+                  </span>
+                </div>
+                <div class="ct-tool-call-preview">
+                  {{ call.preview || 'Completed without preview content' }}
+                </div>
+              </div>
             </div>
           </div>
           <div class="ct-skills-footer">
@@ -1057,6 +1116,13 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
 .ct-pop-in-enter-from, .ct-pop-in-leave-to { opacity: 0; transform: translateX(6px); max-width: 0; padding-left: 0; padding-right: 0; border: 0; }
 
 .ct-skills-panel { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.ct-skills-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary,#d4d0e8);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
 .ct-skills-empty {
   padding: 12px 8px; text-align: center;
   color: var(--text-secondary,#d4d0e8); font-style: italic;
@@ -1084,6 +1150,72 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
 .ct-skill-desc {
   margin: 2px 0 0; font-size: 11px; color: var(--text-secondary,#d4d0e8);
   line-height: 1.5;
+}
+.ct-tool-calls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(var(--primary-rgb,99,102,241),.1);
+}
+.ct-tool-call-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.ct-tool-call-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(var(--primary-rgb,99,102,241),.05);
+  border: 1px solid rgba(var(--primary-rgb,99,102,241),.12);
+}
+.ct-tool-call-item.is-error {
+  background: rgba(239,68,68,.08);
+  border-color: rgba(239,68,68,.18);
+}
+.ct-tool-call-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ct-tool-call-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary,#f5f3ff);
+}
+.ct-tool-call-meta {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: 'SF Mono', monospace;
+  font-size: 10px;
+  color: var(--text-secondary,#d4d0e8);
+}
+.ct-tool-call-status {
+  text-transform: uppercase;
+  color: #22c55e;
+}
+.ct-tool-call-item.is-error .ct-tool-call-status {
+  color: #f87171;
+}
+.ct-tool-call-preview {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary,#d4d0e8);
+  text-overflow: ellipsis;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .ct-skills-footer {
   display: flex; justify-content: space-around;
