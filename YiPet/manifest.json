@@ -77,7 +77,8 @@
       "cdn/**/*.eot",
       "cdn/**/*.png",
       "cdn/**/*.jpg",
-      "cdn/**/*.ico"
+      "cdn/**/*.ico",
+      "_locales/**/*.json"
     ],
     "matches": ["<all_urls>"]
   }]

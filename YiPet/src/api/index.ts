@@ -29,6 +29,7 @@ export type {
   DatabaseService,
   KnowledgeService,
   RagService,
+  SearchService,
   SessionService,
   WeWorkService,
 } from './services';

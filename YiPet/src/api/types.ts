@@ -379,6 +379,38 @@ export interface RagDecomposeResponse {
   error?: string;
 }
 
+// ── Search (web search + page fetch) ───────────────────────────────────
+
+export interface WebSearchResult {
+  title: string;
+  url: string;
+  snippet: string;
+  quality?: number;
+  date?: string;
+}
+
+export interface WebImageResult {
+  title: string;
+  imageUrl: string;
+  thumbnailUrl: string;
+  sourceUrl: string;
+  width?: number;
+  height?: number;
+}
+
+export interface WebSearchResponse {
+  results: WebSearchResult[];
+  images?: WebImageResult[];
+  query?: string;
+  error?: string;
+}
+
+export interface WebFetchResponse {
+  text: string;
+  url: string;
+  error?: string;
+}
+
 // ── Bug tracking (YiVad /bug page backend) ────────────────────────────
 
 export type BugSeverity = 'critical' | 'major' | 'minor' | 'trivial';

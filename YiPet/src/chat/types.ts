@@ -18,27 +18,10 @@ import type {
   RagSource,
   RagStatusResponse,
   TodoItem,
+  WebImageResult,
+  WebSearchResult,
   WeWorkBot,
 } from '@/api/types';
-
-/** Web search result surfaced on user messages. */
-export interface WebSearchResult {
-  title: string;
-  url: string;
-  snippet: string;
-  quality?: number;
-  date?: string;
-}
-
-/** Web image result — parallel-fetched by backend, displayed as thumbnails. */
-export interface WebImageResult {
-  title: string;
-  imageUrl: string;
-  thumbnailUrl: string;
-  sourceUrl: string;
-  width?: number;
-  height?: number;
-}
 
 // ── Tool Call (Pi-inspired per-message tool timeline) ────────────────────
 
@@ -130,6 +113,10 @@ export interface Message {
   searchResults?: WebSearchResult[];
   /** Web search image results — parallel-fetched by backend, displayed as thumbnails. */
   searchImages?: WebImageResult[];
+  /** Refined web query actually executed for this turn. */
+  searchQuery?: string;
+  /** Web search elapsed time for this turn. */
+  searchTimingMs?: number;
   /** Tool calls fired during this turn (Pi-inspired: per-message tool timeline). */
   toolCalls?: ToolCall[];
   /** RAG retrieval grade A/B/C/D — from backend's retrieval scoring. */

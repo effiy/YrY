@@ -14,7 +14,7 @@
  *  - Lock icon for non-customizable shortcuts
  */
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { Search, Close, WarningFilled } from '@element-plus/icons-vue';
+import { Search, Close, WarningFilled, InfoFilled } from '@element-plus/icons-vue';
 import { keyboardRegistry, displayKeys, type ShortcutBinding } from '@/shared/shortcuts';
 
 interface CategoryMeta { label: string; icon: string }
@@ -33,6 +33,13 @@ const searchQuery = ref('');
 
 const allShortcuts = computed(() => keyboardRegistry.getAll());
 const knownConflicts = computed(() => keyboardRegistry.knownConflicts.value);
+
+const highConflicts = computed(() => knownConflicts.value.filter(c => c.severity === 'high'));
+const lowConflicts = computed(() => knownConflicts.value.filter(c => c.severity === 'low'));
+
+function muteConflictLogs(permanent = false) {
+  keyboardRegistry.muteConflictLogs(permanent);
+}
 
 const filtered = computed(() => {
   const q = searchQuery.value.toLowerCase().trim();
@@ -139,14 +146,46 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Conflict warning -->
-          <div v-if="knownConflicts.length > 0" class="yipet-cheatsheet-conflict-banner">
-            <el-icon :size="14"><WarningFilled /></el-icon>
-            <span>
-              <strong>{{ knownConflicts.length }}</strong> known browser/page conflict(s) detected.
-              <span class="yipet-cheatsheet-conflict-detail">{{ knownConflicts.map(c => c.description).join(', ') }}</span>
-            </span>
-          </div>
+          <!-- Conflict warning (grouped by severity) -->
+          <template v-if="knownConflicts.length > 0">
+            <div v-if="highConflicts.length > 0" class="yipet-cheatsheet-conflict-banner conflict-high">
+              <el-icon :size="14"><WarningFilled /></el-icon>
+              <div class="yipet-cheatsheet-conflict-body">
+                <div class="yipet-cheatsheet-conflict-title">
+                  <strong>{{ highConflicts.length }} global-scope</strong> shortcut{{ highConflicts.length > 1 ? 's' : '' }} may conflict with the browser or other sites
+                </div>
+                <ul class="yipet-cheatsheet-conflict-list">
+                  <li v-for="c in highConflicts" :key="c.keys + c.shortcutId">
+                    <kbd class="conflict-keys">{{ displayKeys(c.keys) }}</kbd>
+                    <span class="conflict-action">{{ allShortcuts.find(s => s.id === c.shortcutId)?.description ?? c.shortcutId }}</span>
+                    <span class="conflict-vs">↔</span>
+                    <span class="conflict-target">{{ c.description }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div v-if="lowConflicts.length > 0" class="yipet-cheatsheet-conflict-banner conflict-low">
+              <el-icon :size="14"><InfoFilled /></el-icon>
+              <div class="yipet-cheatsheet-conflict-body">
+                <div class="yipet-cheatsheet-conflict-title">
+                  <strong>{{ lowConflicts.length }} chat-scope</strong> override{{ lowConflicts.length > 1 ? 's' : '' }} — only active while YiPet chat window is open
+                </div>
+                <ul class="yipet-cheatsheet-conflict-list compact">
+                  <li v-for="c in lowConflicts" :key="c.keys + c.shortcutId">
+                    <kbd class="conflict-keys">{{ displayKeys(c.keys) }}</kbd>
+                    <span class="conflict-target">{{ c.description }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div v-if="knownConflicts.length > 0" class="yipet-cheatsheet-conflict-actions">
+              <el-button size="small" text @click="muteConflictLogs(false)">Mute this session</el-button>
+              <el-button size="small" text @click="muteConflictLogs(true)">Mute permanently</el-button>
+              <el-button size="small" text type="primary" @click="openBindingEditor">Reassign in Editor</el-button>
+            </div>
+          </template>
 
           <!-- Search -->
           <div class="yipet-cheatsheet-search">
@@ -282,32 +321,79 @@ onUnmounted(() => {
   --el-button-hover-text-color: var(--text-primary, #f5f3ff);
 }
 
-// Conflict banner
+// Conflict banners (severity-tiered)
 .yipet-cheatsheet-conflict-banner {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 10px;
   margin: 10px 20px 0;
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-size: 12px;
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  border-radius: 8px;
+  border-radius: 10px;
   line-height: 1.5;
 
-  .el-icon { margin-top: 1px; flex-shrink: 0; }
+  &.conflict-high {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    .el-icon { margin-top: 2px; flex-shrink: 0; }
+  }
+  &.conflict-low {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.07);
+    border: 1px solid rgba(34, 211, 238, 0.18);
+    .el-icon { margin-top: 2px; flex-shrink: 0; }
+  }
 }
+.yipet-cheatsheet-conflict-body { flex: 1; min-width: 0; }
+.yipet-cheatsheet-conflict-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.yipet-cheatsheet-conflict-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 
-.yipet-cheatsheet-conflict-detail {
-  display: block;
-  margin-top: 2px;
-  color: rgba(251, 191, 36, 0.7);
-  font-size: 11px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  li {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 11px;
+    opacity: 0.9;
+  }
+  &.compact li { font-size: 11px; opacity: 0.85; }
+}
+.conflict-keys {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  line-height: 1.6;
   white-space: nowrap;
-  max-width: 560px;
+}
+.conflict-action {
+  color: var(--text-secondary, #d4d0e8);
+  font-weight: 500;
+}
+.conflict-vs { opacity: 0.4; }
+.conflict-target { opacity: 0.75; }
+
+.yipet-cheatsheet-conflict-actions {
+  margin: 4px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  opacity: 0.85;
+
+  :deep(.el-button--small) { padding: 4px 8px; font-size: 11px; }
 }
 
 .yipet-cheatsheet-search {

@@ -37,6 +37,16 @@ export interface ConflictRecord {
   keys: string;
 }
 
+export type ConflictSeverity = 'high' | 'low';
+
+interface KnownConflictRecord {
+  shortcutId: string;
+  keys: string;
+  description: string;
+  severity: ConflictSeverity;
+  scope: ShortcutScope;
+}
+
 interface ParsedKeys {
   ctrl: boolean;
   alt: boolean;
@@ -195,9 +205,11 @@ class KeyboardRegistry {
   private _chatActive = false;
   private _inputFocused = false;
   private _boundHandler: ((e: KeyboardEvent) => void) | null = null;
+  private _logsMutedSession = false;
+  private _logsMutedPermanent = false;
 
-  /** Known browser/page conflicts detected at init. */
-  knownConflicts = ref<{ keys: string; description: string }[]>([]);
+  /** Known browser/page conflicts detected at init — with severity + scope. */
+  knownConflicts = ref<KnownConflictRecord[]>([]);
   /** Internal conflicts (duplicate bindings). */
   conflicts = ref<ConflictRecord[]>([]);
 
@@ -367,21 +379,160 @@ class KeyboardRegistry {
     this.conflicts.value = conflicts;
   }
 
+  /* ── Mute Controls ────────────────────────────────────────────────────── */
+
+  private static readonly CONFLICT_LOG_FLAG_SESSION = 'yipet:conflicts-logged';
+  private static readonly CONFLICT_LOG_FLAG_PERMANENT = 'yipet:conflicts-muted';
+
+  /** True when a log emission is suppressed (session- or permanently-muted, or already logged this session). */
+  private _shouldSkipEmission(): boolean {
+    if (this._logsMutedPermanent) return true;
+    if (this._logsMutedSession) return true;
+    try {
+      if (localStorage.getItem(KeyboardRegistry.CONFLICT_LOG_FLAG_PERMANENT) === '1') {
+        this._logsMutedPermanent = true;
+        return true;
+      }
+      if (sessionStorage.getItem(KeyboardRegistry.CONFLICT_LOG_FLAG_SESSION) === '1') {
+        return true;
+      }
+    } catch {
+      // storage blocked — best effort, still emit.
+    }
+    return false;
+  }
+
+  private _markEmittedSession(): void {
+    try {
+      sessionStorage.setItem(KeyboardRegistry.CONFLICT_LOG_FLAG_SESSION, '1');
+    } catch { /* ignore */ }
+  }
+
+  /**
+   * Suppress future conflict logs.
+   * @param permanent If true, persist across sessions via localStorage.
+   */
+  muteConflictLogs(permanent = false): void {
+    if (permanent) {
+      this._logsMutedPermanent = true;
+      try {
+        localStorage.setItem(KeyboardRegistry.CONFLICT_LOG_FLAG_PERMANENT, '1');
+      } catch { /* ignore */ }
+    } else {
+      this._logsMutedSession = true;
+    }
+  }
+
+  /** Re-enable conflict logs (clears both session and permanent mute). */
+  unmuteConflictLogs(): void {
+    this._logsMutedSession = false;
+    this._logsMutedPermanent = false;
+    try {
+      localStorage.removeItem(KeyboardRegistry.CONFLICT_LOG_FLAG_PERMANENT);
+      sessionStorage.removeItem(KeyboardRegistry.CONFLICT_LOG_FLAG_SESSION);
+    } catch { /* ignore */ }
+  }
+
+  /**
+   * Manually print the current conflict report to the console, regardless of mute state.
+   * Useful in devtools after the user asks "show me conflicts again".
+   */
+  printConflictReport(): void {
+    this._emitConflictLogs(/* force */ true);
+  }
+
+  /* ── Conflict Detection + Log Emission ────────────────────────────────── */
+
   private _detectKnownConflicts(): void {
-    const known: { keys: string; description: string }[] = [];
+    const known: KnownConflictRecord[] = [];
     for (const kc of KNOWN_CONFLICTS) {
       const normalized = normalizeKeys(kc.keys);
-      if (this._byKeys.has(normalized)) {
-        known.push({ keys: normalized, description: kc.description });
-      }
+      const shortcutId = this._byKeys.get(normalized);
+      if (!shortcutId) continue;
+      const binding = this._bindings.get(shortcutId);
+      if (!binding) continue;
+      known.push({
+        shortcutId,
+        keys: normalized,
+        description: kc.description,
+        severity: binding.scope === 'global' ? 'high' : 'low',
+        scope: binding.scope,
+      });
     }
     this.knownConflicts.value = known;
     if (known.length > 0) {
-      console.warn(
-        '[YiPet:KeyboardRegistry] Known conflicts detected:',
-        known.map(k => `${k.keys} → ${k.description}`).join(', '),
-      );
+      this._emitConflictLogs(/* force */ false);
     }
+  }
+
+  private _emitConflictLogs(force: boolean): void {
+    const known = this.knownConflicts.value;
+    if (known.length === 0) return;
+    if (!force && this._shouldSkipEmission()) return;
+
+    const highs = known.filter(k => k.severity === 'high');
+    const lows = known.filter(k => k.severity === 'low');
+    const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform);
+    const fmt = (keys: string) =>
+      keys
+        .replace(/^Ctrl\+/, isMac ? 'Cmd+' : 'Ctrl+')
+        .replace(/\+Ctrl\+/g, isMac ? '+Cmd+' : '+Ctrl+');
+
+    const buildRows = (items: KnownConflictRecord[]) =>
+      items.map(k => ({
+        Shortcut: fmt(k.keys),
+        Action: this._bindings.get(k.shortcutId)?.description ?? k.shortcutId,
+        'Scope': k.scope,
+        'Conflicts with': k.description,
+      }));
+
+    if (highs.length > 0) {
+      const summary = `[YiPet:KeyboardRegistry] ${highs.length} global-scope shortcut${highs.length > 1 ? 's' : ''} may conflict with browser or other websites — expand for details.`;
+      try {
+        console.groupCollapsed('%c' + summary, 'color:#d97706;font-weight:600');
+        console.warn(
+          'These shortcuts are intercepted globally (even when the chat window is closed).\n' +
+          'Consider reassigning them via the Shortcut Binding Editor if they break your daily workflow.\n' +
+          'To hide this notice, call:  keyboardRegistry.muteConflictLogs()',
+        );
+        if (typeof console.table === 'function') {
+          console.table(buildRows(highs));
+        } else {
+          for (const h of highs) console.warn(`  ${fmt(h.keys)}  →  ${h.description}  (${this._bindings.get(h.shortcutId)?.description ?? h.shortcutId})`);
+        }
+        console.groupEnd();
+      } catch {
+        // groupCollapsed not supported — fall back to single-line warn
+        console.warn(
+          `[YiPet:KeyboardRegistry] Conflicts (global): ` +
+          highs.map(h => `${fmt(h.keys)} → ${h.description}`).join('; '),
+        );
+      }
+    }
+
+    if (lows.length > 0) {
+      const summary = `[YiPet:KeyboardRegistry] ${lows.length} chat-scope shortcut${lows.length > 1 ? 's' : ''} only override the page when the YiPet chat window is focused.`;
+      try {
+        console.groupCollapsed('%c' + summary, 'color:#0891b2;font-weight:500');
+        console.info(
+          'These are usually safe: preventDefault only fires while the YiPet chat window is open,\n' +
+          'so the host page retains its native shortcuts in normal browsing.',
+        );
+        if (typeof console.table === 'function') {
+          console.table(buildRows(lows));
+        } else {
+          for (const l of lows) console.info(`  ${fmt(l.keys)}  →  ${l.description}  (${this._bindings.get(l.shortcutId)?.description ?? l.shortcutId})`);
+        }
+        console.groupEnd();
+      } catch {
+        console.info(
+          `[YiPet:KeyboardRegistry] Chat-scope overrides: ` +
+          lows.map(l => `${fmt(l.keys)} → ${l.description}`).join('; '),
+        );
+      }
+    }
+
+    if (!force) this._markEmittedSession();
   }
 }
 

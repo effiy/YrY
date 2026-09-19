@@ -3,10 +3,7 @@
  * YiPet Chat — MessageBubble (Vue 3 SFC)
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import {
-  CopyDocument, Refresh, Delete, Edit, Link,
-  FolderOpened, Search,
-} from '@element-plus/icons-vue';
+import { Search } from '@element-plus/icons-vue';
 import { useChatStore } from '../../stores/chat';
 import type { Message } from '../../types';
 import { addCodeCopyButtons, formatTime, injectCitations, renderMarkdown, runMermaid } from '../../utils';
@@ -34,16 +31,21 @@ const empty = computed(() => !hasContent.value && images.length === 0);
 const streaming = computed(() => !!msg.streaming);
 const copyState = s.copyFeedback[String(msg.timestamp)] || '';
 const showRetryLabel = !!(msg.error || msg.aborted);
-const isLastUser = computed(() => {
-  if (!isUser) return false;
-  const msgs = s.messages ?? [];
-  for (let i = msgs.length - 1; i >= 0; i--) {
-    if (msgs[i].type === 'user') return i === props.index;
-  }
-  return false;
-});
-const isLastPet = !isUser && props.index === props.totalMessages - 1 && s.ragSources.length > 0 && s.knowledgeGrounded;
+const isLastPet = computed(() => !isUser && props.index === props.totalMessages - 1);
 const isRagStreaming = computed(() => !isUser && streaming.value && s.knowledgeGrounded);
+const visibleRagSources = computed(() => msg.sources ?? (isLastPet.value ? s.ragSources : []));
+const visibleSearchResults = computed(() => {
+  if (msg.searchResults?.length) return msg.searchResults;
+  if (isLastPet.value && s.webSearchResults.length) return s.webSearchResults;
+  return [];
+});
+const visibleSearchImages = computed(() => {
+  if (msg.searchImages?.length) return msg.searchImages;
+  if (isLastPet.value && s.webSearchImages.length) return s.webSearchImages;
+  return [];
+});
+const visibleSearchQuery = computed(() => msg.searchQuery || (isLastPet.value ? s.lastSearchQuery : ''));
+const visibleSearchTimingMs = computed(() => msg.searchTimingMs ?? (isLastPet.value ? s.searchTimingMs : 0));
 const liveSourceCount = computed(() => {
   if (!isRagStreaming.value) return 0;
   return s.ragSources.length;
@@ -55,7 +57,7 @@ function formatLatency(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 const retrievalGrade = computed<{ letter: string; top: number } | null>(() => {
-  const sources = msg.sources ?? (isLastPet ? s.ragSources : []);
+  const sources = visibleRagSources.value;
   if (!sources.length) return null;
   const scores = sources.map((s) => s.score ?? 0).filter(Boolean);
   if (!scores.length) return null;
@@ -114,8 +116,7 @@ const streamingHtml = computed(() => {
 // Citation-injected HTML — transforms [N] markers into clickable superscripts
 const sourceCount = computed(() => {
   if (isUser) return 0;
-  const sources = msg.sources ?? (isLastPet ? s.ragSources : []);
-  return sources.length;
+  return visibleRagSources.value.length;
 });
 const citedHtml = computed(() => {
   const base = markdownHtml.value;
@@ -188,18 +189,9 @@ function onCopy() {
   store.copyMessage?.(msg.content || '', msg.timestamp);
 }
 
-function onCopyRaw() {
-  const text = msg.content || '';
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    store.state.copyFeedback[String(msg.timestamp)] = 'copied';
-    setTimeout(() => { delete store.state.copyFeedback[String(msg.timestamp)]; }, 1500);
-  });
-}
-
 // ── Text selection toolbar ──
 const selToolbar = ref<{ x: number; y: number; text: string } | null>(null);
-function onMarkdownMouseUp(e: MouseEvent) {
+function onMarkdownMouseUp() {
   const sel = window.getSelection();
   if (!sel || !sel.toString().trim()) { selToolbar.value = null; return; }
   const text = sel.toString().trim();
@@ -631,8 +623,8 @@ const tokensPerSec = computed(() => {
 
       <!-- RAG sources (per-message or last-pet fallback, mirrors YiVad RagSources) -->
       <RagSourcesPanel
-        v-if="!isUser && (msg.sources?.length || (isLastPet && s.ragSources.length) || (isRagStreaming && liveSourceCount > 0))"
-        :sources="msg.sources?.length ? msg.sources : s.ragSources"
+        v-if="!isUser && (visibleRagSources.length || (isRagStreaming && liveSourceCount > 0))"
+        :sources="visibleRagSources.length ? visibleRagSources : s.ragSources"
         :expanded-idx="expandedSourceIdx"
         :flash-idx="flashSourceIdx"
         :file-icon="fileIcon"
@@ -689,13 +681,24 @@ const tokensPerSec = computed(() => {
         </div>
       </div>
 
-      <!-- Web search results (mirrors YiVad aiChat) -->
-      <!-- Web search indicator (mirrors YiVad aiChat) -->
-      <div v-if="isUser && s.webSearchEnabled && s.webSearchResults.length > 0" class="mb-web-indicator">
+      <div
+        v-if="!isUser && (visibleSearchResults.length || visibleSearchImages.length || msg.searchGrounded)"
+        class="mb-web-indicator"
+      >
         <el-icon :size="12"><Search /></el-icon>
-        <span>Web search results used</span>
+        <span>
+          Web-grounded
+          <template v-if="visibleSearchResults.length"> · {{ visibleSearchResults.length }} sources</template>
+          <template v-if="visibleSearchImages.length"> · {{ visibleSearchImages.length }} images</template>
+        </span>
       </div>
-      <WebSearchResults v-if="isUser && isLastUser && s.webSearchResults.length > 0" :results="s.webSearchResults" />
+      <WebSearchResults
+        v-if="!isUser && (visibleSearchResults.length || visibleSearchImages.length || msg.searchGrounded)"
+        :results="visibleSearchResults"
+        :images="visibleSearchImages"
+        :query="visibleSearchQuery"
+        :timing-ms="visibleSearchTimingMs"
+      />
     </div>
 
     <!-- Meta row -->
@@ -709,7 +712,7 @@ const tokensPerSec = computed(() => {
       :formatted-time="formatTime(msg.timestamp)"
       :relative-time="relativeTime"
       :token-estimate="tokenEstimate"
-      :has-web-search="!!(s.webSearchResults?.length || msg.searchGrounded)"
+      :has-web-search="!!(visibleSearchResults.length || visibleSearchImages.length || msg.searchGrounded)"
       @copy="onCopy"
       @edit="editOpen = true"
       @regenerate="store.regenerateMessage?.(index)"

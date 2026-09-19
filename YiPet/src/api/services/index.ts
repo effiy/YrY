@@ -14,6 +14,7 @@ export { ChatService } from './chat';
 export { DatabaseService } from './database';
 export { KnowledgeService } from './knowledge';
 export { RagService } from './rag';
+export { SearchService } from './search';
 export { SessionService } from './sessions';
 export { WeWorkService } from './wework';
 
@@ -25,6 +26,7 @@ import { ChatService } from './chat';
 import { DatabaseService } from './database';
 import { KnowledgeService } from './knowledge';
 import { RagService } from './rag';
+import { SearchService } from './search';
 import { SessionService } from './sessions';
 import { WeWorkService } from './wework';
 
@@ -37,6 +39,7 @@ export interface ApiServices {
   database: DatabaseService;
   knowledge: KnowledgeService;
   rag: RagService;
+  search: SearchService;
   bug: BugService;
   wework: WeWorkService;
 }
@@ -56,6 +59,7 @@ export function createApiServices(config: ApiClientConfig & { token?: string }):
     database: new DatabaseService(client),
     knowledge: new KnowledgeService(client),
     rag: new RagService(client),
+    search: new SearchService(client),
     bug: new BugService(client),
     wework: new WeWorkService(client),
   };

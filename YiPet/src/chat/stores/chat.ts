@@ -6,12 +6,13 @@ import { defineStore } from 'pinia';
 import { computed, reactive, watch } from 'vue';
 import type {
   BugService, ChatService, KnowledgeService,
-  RagService, SessionService, WeWorkService,
+  RagService, SearchService, SessionService, WeWorkService,
 } from '@/api/services';
 import { detectPageTypeFromUrl, detectProjectFromUrl, makeBugKey } from '@/api/services/bug';
 import type {
   BugFrequency, BugPriority, BugSeverity, BugStatus, BugType,
-  ChatMessage, KnowledgeFileEntry, KnowledgeTreeNode, RagChatMessage, RagSource, WeWorkBot,
+  ChatMessage, KnowledgeFileEntry, KnowledgeTreeNode, RagChatMessage, RagSource,
+  WebImageResult, WebSearchResult, WeWorkBot,
 } from '@/api/types';
 import { DEFAULT_MODEL } from '../constants';
 import type { ChatState, Message, SessionItem } from '../types';
@@ -22,7 +23,7 @@ import { useChatWindow } from './useChatWindow';
 import { injectChatService, useModelSelection } from '../composables/useModelSelection';
 import { useRagSettings } from '../composables/useRagSettings';
 import { useChatUiState } from '../composables/useChatUiState';
-import { useToolRegistry, type ToolDefinition, type ToolResult, type ToolEvent as RegistryToolEvent } from '../composables/useToolRegistry';
+import { useToolRegistry, type ToolEvent as RegistryToolEvent } from '../composables/useToolRegistry';
 import { useContextChanges } from '../composables/useContextChanges';
 import { useConversationCompact } from '../composables/useConversationCompact';
 import type { ToolCall } from '../types';
@@ -87,6 +88,140 @@ function formatPageMarkdown(title: string, url: string, content: string): string
 
 const CTX_PREFIX = 'ctx:';
 
+const HIGH_REPUTATION_DOMAINS = new Set([
+  'en.wikipedia.org',
+  'github.com',
+  'stackoverflow.com',
+  'developer.mozilla.org',
+  'arxiv.org',
+  'ieeexplore.ieee.org',
+  'dl.acm.org',
+  'semanticscholar.org',
+  'docs.python.org',
+  'nodejs.org',
+  'react.dev',
+  'vuejs.org',
+  'typescriptlang.org',
+  'aws.amazon.com',
+  'cloud.google.com',
+  'learn.microsoft.com',
+  'nature.com',
+  'science.org',
+  'w3.org',
+  'whatwg.org',
+  'ecma-international.org',
+]);
+
+const LOW_REPUTATION_DOMAINS = new Set([
+  'pinterest.com',
+  'quora.com',
+  'answers.com',
+  'exampledomain.com',
+]);
+
+function getDomain(url: string): string {
+  try {
+    const u = new URL(url.startsWith('http') ? url : `https://${url}`);
+    return u.hostname.replace(/^www\./, '').toLowerCase();
+  } catch {
+    return '';
+  }
+}
+
+function domainReputation(url: string): 'high' | 'medium' | 'low' {
+  const domain = getDomain(url);
+  if (!domain) return 'medium';
+  if (HIGH_REPUTATION_DOMAINS.has(domain)) return 'high';
+  if (LOW_REPUTATION_DOMAINS.has(domain)) return 'low';
+  if (domain.endsWith('.gov') || domain.endsWith('.edu')) return 'high';
+  return 'medium';
+}
+
+function deduplicateByDomain(results: WebSearchResult[]): WebSearchResult[] {
+  const seen = new Set<string>();
+  const out: WebSearchResult[] = [];
+  for (const item of results) {
+    const domain = getDomain(item.url);
+    const key = domain || item.url;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+function rankByReputation(results: WebSearchResult[]): WebSearchResult[] {
+  const tiers = {
+    high: [] as WebSearchResult[],
+    medium: [] as WebSearchResult[],
+    low: [] as WebSearchResult[],
+  };
+  for (const item of results) {
+    tiers[domainReputation(item.url)].push(item);
+  }
+  return [...tiers.high, ...tiers.medium, ...tiers.low];
+}
+
+function formatSearchResults(results: WebSearchResult[]): string {
+  if (!results.length) return '';
+  const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const lines = [
+    `## Web Search (${results.length} results, ${now})`,
+    'Cite as `[N](url)` matching the numbers. Distinguish web sources from your own knowledge.',
+    '',
+  ];
+  results.forEach((item, idx) => {
+    const domain = getDomain(item.url);
+    const rep = domainReputation(item.url);
+    const badge = rep === 'high' ? 'STAR' : rep === 'low' ? 'WARN' : '';
+    const quality = item.quality ? `${'★'.repeat(Math.min(item.quality, 5))}` : '';
+    const qualityText = quality ? ` ${quality}` : '';
+    const dateText = item.date ? ` [${item.date}]` : '';
+    const snippet = item.snippet && item.snippet.length > 200
+      ? `${item.snippet.slice(0, 197)}...`
+      : (item.snippet || '');
+    lines.push(
+      `[${idx + 1}] ${badge}${qualityText} **${item.title}**${dateText} — ${snippet} → ${item.url} (${domain})`,
+    );
+  });
+  return lines.join('\n');
+}
+
+function formatRagSources(query: string, sources: RagSource[]): string {
+  if (!sources.length) return `No relevant knowledge documents found for: ${query}`;
+  const lines = [`Knowledge base results for "${query}":`];
+  sources.forEach((source, idx) => {
+    const path = source.path || 'unknown';
+    lines.push(`${idx + 1}. [${path}] (score: ${(source.score ?? 0).toFixed(2)})`);
+    if (source.snippet) {
+      lines.push(`   ${source.snippet.slice(0, 320)}`);
+    }
+  });
+  return lines.join('\n');
+}
+
+function buildRagSummary(sources: RagSource[]): { grade?: 'A' | 'B' | 'C' | 'D'; summary?: string } {
+  if (!sources.length) return {};
+  const scores = sources
+    .map((source) => source.score)
+    .filter((score): score is number => typeof score === 'number');
+  const top = scores.length ? Math.max(...scores) : 0;
+  const grade = top >= 0.85 ? 'A' : top >= 0.70 ? 'B' : top >= 0.50 ? 'C' : 'D';
+  const topSource = sources[0];
+  const title = String(topSource?.metadata?.title || topSource?.path?.split('/').pop() || '').replace(/\.md$/, '');
+  const fileCount = new Set(sources.map((source) => source.path)).size;
+  const summary = `检索到 ${fileCount} 个文件中的 ${sources.length} 个片段${title ? `，最佳匹配：${title}` : ''}`;
+  return { grade, summary };
+}
+
+function isSearchWorthy(query: string): boolean {
+  const q = query.trim();
+  if (q.length < 4) return false;
+  if (/^(hi|hello|hey|thanks|thank you|你好|嗨|谢谢)[!.? ]*$/i.test(q)) return false;
+  if (q.startsWith('/')) return false;
+  return true;
+}
+
 function mapMessages(raw: ChatMessage[]): Message[] {
   return raw.map((m) => ({
     type: (m.type === 'user' ? 'user' : 'pet') as 'user' | 'pet',
@@ -98,8 +233,13 @@ function mapMessages(raw: ChatMessage[]): Message[] {
     searchResults: (m as any).searchResults,
     searchImages: (m as any).searchImages,
     searchGrounded: (m as any).searchGrounded,
+    searchQuery: (m as any).searchQuery,
+    searchTimingMs: (m as any).searchTimingMs,
     retrievalGrade: (m as any).retrievalGrade,
     ragContentSummary: (m as any).ragContentSummary,
+    sources: (m as any).sources,
+    ragMeta: (m as any).ragMeta,
+    firstTokenLatencyMs: (m as any).firstTokenLatencyMs,
   }));
 }
 
@@ -143,6 +283,7 @@ export const useChatStore = defineStore('chat', () => {
   let _wework: WeWorkService;
   let _knowledge: KnowledgeService;
   let _rag: RagService;
+  let _search: SearchService;
   let _bug: BugService;
   let _abortController: AbortController | null = null;
   let _loadSessionsPromise: Promise<void> | null = null;
@@ -382,38 +523,141 @@ export const useChatStore = defineStore('chat', () => {
 
   function injectServices(services: {
     chat: ChatService; sessions: SessionService;
-    wework: WeWorkService; knowledge: KnowledgeService; rag: RagService; bug: BugService;
+    wework: WeWorkService; knowledge: KnowledgeService; rag: RagService; search: SearchService; bug: BugService;
   }) {
     _chat = services.chat;
     _sessions = services.sessions;
     _wework = services.wework;
     _knowledge = services.knowledge;
     _rag = services.rag;
+    _search = services.search;
     _bug = services.bug;
     injectChatService(_chat);
     registry.registerTool({
       name: 'web_search',
       label: 'Web Search',
       description: 'Queries the public web for real-time information',
-      parameters: { query: { type: 'string', description: 'Search query' } },
+      promptSnippet: 'answers include internet results',
+      promptGuidelines: [
+        'If web results are present, cite them with numbered references or direct links.',
+        'For time-sensitive questions, prefer recent or authoritative domains and say when results are sparse.',
+      ],
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Search query' },
+          maxResults: { type: 'integer', description: 'Max results (default 6)' },
+        },
+        required: ['query'],
+      },
       preStream: true,
       enabled: state.webSearchEnabled,
-      async execute(args) {
-        const q = String((args as any).query || '');
+      async execute(args, signal) {
+        const q = String((args as any).query || '').trim();
         if (!q) return { content: '' };
-        return { content: `Web search results for query:\n${q}` };
+        if (!isSearchWorthy(q)) {
+          state.lastSearchQuery = q;
+          state.searchTimingMs = 0;
+          state.webSearchResults = [];
+          state.webSearchImages = [];
+          return { content: '' };
+        }
+
+        state.webSearching = true;
+        state.lastSearchQuery = q;
+        const startedAt = Date.now();
+        try {
+          const res = await _search.webSearch(
+            {
+              query: q,
+              max_results: Number((args as any).maxResults ?? (args as any).topK ?? 6),
+            },
+            signal,
+          );
+          state.searchTimingMs = Date.now() - startedAt;
+          if (!res.ok || !res.data) {
+            state.webSearchResults = [];
+            state.webSearchImages = [];
+            return { content: '', error: res.error || 'Web search failed' };
+          }
+
+          const rawItems = Array.isArray(res.data.results) ? res.data.results : [];
+          const ranked = rankByReputation(deduplicateByDomain(rawItems));
+          const images = Array.isArray(res.data.images) ? res.data.images : [];
+          state.lastSearchQuery = res.data.query || q;
+          state.webSearchResults = ranked;
+          state.webSearchImages = images;
+
+          return {
+            content: formatSearchResults(ranked),
+            details: {
+              items: ranked,
+              images,
+              query: state.lastSearchQuery,
+              timingMs: state.searchTimingMs,
+            },
+          };
+        } catch (err) {
+          state.searchTimingMs = Date.now() - startedAt;
+          state.webSearchResults = [];
+          state.webSearchImages = [];
+          return {
+            content: '',
+            error: err instanceof Error ? err.message : String(err),
+          };
+        } finally {
+          state.webSearching = false;
+        }
       }
     });
     registry.registerTool({
       name: 'rag_search',
       label: 'Knowledge Search',
-      description: 'Searches the local YiKnowledge markdown tree',
-      parameters: { query: { type: 'string', description: 'Query' } },
+      description: 'Searches the shared YiKnowledge knowledge base',
+      promptSnippet: 'searches internal knowledge base for context',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Query' },
+          top_k: { type: 'integer', description: 'Top results count (default 5)' },
+        },
+        required: ['query'],
+      },
       preStream: true,
       enabled: state.knowledgeGrounded,
       async execute(args) {
-        const q = String((args as any).query || '');
-        return { content: `Knowledge-base search context:\n${q}` };
+        const q = String((args as any).query || '').trim();
+        if (!q) return { content: '' };
+        const topK = Number((args as any).top_k ?? 5);
+        try {
+          const res = await _rag.query({
+            question: q,
+            top_k: Number.isFinite(topK) ? topK : 5,
+            scope: state.ragScope || undefined,
+            hybrid: state.ragHybrid,
+            rerank: state.ragRerank,
+            citations: state.ragCitations,
+            num_queries: state.ragNumQueries,
+            category: state.knowledgeCategoryFilter || undefined,
+            tags: state.ragTags.length ? state.ragTags : undefined,
+          });
+          if (!res.ok || !res.data) {
+            return { content: '', error: res.error || 'Knowledge search failed' };
+          }
+          const sources = Array.isArray(res.data.sources) ? res.data.sources : [];
+          return {
+            content: formatRagSources(q, sources),
+            details: {
+              sources,
+              scope: state.ragScope || '',
+            },
+          };
+        } catch (err) {
+          return {
+            content: '',
+            error: err instanceof Error ? err.message : String(err),
+          };
+        }
       }
     });
     watch(
@@ -832,12 +1076,21 @@ export const useChatStore = defineStore('chat', () => {
     state.streamingPhase = state.knowledgeGrounded ? 'retrieving' : 'thinking';
     state.thinkingStartTs = Date.now();
     state.ragSources = [];
+    state.webSearching = false;
+    state.searchTimingMs = 0;
+    state.lastSearchQuery = '';
+    state.webSearchResults = [];
+    state.webSearchImages = [];
     _abortController = new AbortController();
     let streamed = '';
     let lastScrollAt = 0;
     let phaseFlipped = false;
     const streamStart = Date.now();
     let firstTokenAt = 0;
+    let turnSearchResults: WebSearchResult[] = [];
+    let turnSearchImages: WebImageResult[] = [];
+    let turnSearchQuery = '';
+    let turnSearchTimingMs = 0;
     const SCROLL_THROTTLE_MS = 80;
 
     const findPetIdx = () => state.messages.findIndex((m) => m.timestamp === petTimestamp);
@@ -864,6 +1117,10 @@ export const useChatStore = defineStore('chat', () => {
       argsMap.set('web_search', { query: userContent });
       argsMap.set('rag_search', { query: userContent });
       const preStreamCtx = await registry.executePreStreamTools(argsMap, _abortController.signal);
+      turnSearchResults = [...state.webSearchResults];
+      turnSearchImages = [...state.webSearchImages];
+      turnSearchQuery = state.lastSearchQuery;
+      turnSearchTimingMs = state.searchTimingMs;
 
       if (state.knowledgeGrounded) {
         if (!state.ragScope) {
@@ -968,6 +1225,13 @@ export const useChatStore = defineStore('chat', () => {
       if (idx >= 0) {
         state.messages[idx].streaming = false;
         attachTurnToolCalls(petTimestamp, toolEventsStartIdx);
+        if (turnSearchResults.length || turnSearchImages.length || turnSearchQuery) {
+          state.messages[idx].searchGrounded = true;
+          state.messages[idx].searchResults = turnSearchResults;
+          state.messages[idx].searchImages = turnSearchImages;
+          state.messages[idx].searchQuery = turnSearchQuery;
+          state.messages[idx].searchTimingMs = turnSearchTimingMs;
+        }
         if (state.knowledgeGrounded) {
           state.messages[idx].sources = state.ragSources;
           state.messages[idx].ragMeta = {
@@ -980,6 +1244,9 @@ export const useChatStore = defineStore('chat', () => {
             tags: state.ragTags.length ? state.ragTags : undefined,
             scope: state.ragScope || undefined,
           };
+          const summary = buildRagSummary(state.ragSources);
+          state.messages[idx].retrievalGrade = summary.grade;
+          state.messages[idx].ragContentSummary = summary.summary;
         }
         if (firstTokenAt > 0) {
           state.messages[idx].firstTokenLatencyMs = firstTokenAt - streamStart;
@@ -1012,10 +1279,13 @@ export const useChatStore = defineStore('chat', () => {
         ...(m.searchResults?.length ? { searchResults: m.searchResults } : {}),
         ...(m.searchImages?.length ? { searchImages: m.searchImages } : {}),
         ...(m.searchGrounded ? { searchGrounded: true } : {}),
+        ...(m.searchQuery ? { searchQuery: m.searchQuery } : {}),
+        ...(m.searchTimingMs != null ? { searchTimingMs: m.searchTimingMs } : {}),
         ...(m.retrievalGrade ? { retrievalGrade: m.retrievalGrade } : {}),
         ...(m.ragContentSummary ? { ragContentSummary: m.ragContentSummary } : {}),
         ...(m.ragMeta ? { ragMeta: m.ragMeta } : {}),
         ...(m.sources?.length ? { sources: m.sources } : {}),
+        ...(m.firstTokenLatencyMs != null ? { firstTokenLatencyMs: m.firstTokenLatencyMs } : {}),
       }));
       const target = state.sessions.find((s) => s.id === state.currentSessionId);
       if (target) target.messageCount = state.messages.length;
@@ -1029,7 +1299,7 @@ export const useChatStore = defineStore('chat', () => {
     return ok;
   }
 
-  function scrollToBottom(force?: boolean) {
+  function scrollToBottom() {
     state.scrollTick++;
   }
 
@@ -1532,7 +1802,6 @@ export const useChatStore = defineStore('chat', () => {
     state.viewState = 'messages';
     state.isProcessing = true;
     state.scrollTick++;
-    const newPetIdx = msgs.length - 1;
 
     await _runStream(i, petMsg.timestamp, 'resend');
   }
@@ -1644,7 +1913,7 @@ export const useChatStore = defineStore('chat', () => {
       parts.push(`<div class="msg__role">${role} <span class="msg__time">${time}</span></div>`);
       const content = (m.content || '')
         // Convert markdown code blocks to HTML pre/code for basic formatting
-        .replace(/```(\w*)\n([\s\S]*?)```/g, (_m: string, lang: string, code: string) =>
+        .replace(/```(\w*)\n([\s\S]*?)```/g, (_m: string, _lang: string, code: string) =>
           `<pre><code>${escapeHtml(code.trim())}</code></pre>`
         )
         // Convert inline code

@@ -68,6 +68,13 @@ export const RAG = {
   FILE_CHAT: '/rag-file-chat',
 } as const;
 
+// ── Search (web search + page fetch) ───────────────────────────────────
+
+export const SEARCH = {
+  WEB: '/web-search',
+  FETCH: '/web-fetch',
+} as const;
+
 // ── Bridge (cross-project session transfer) ─────────────────────────
 
 export const BRIDGE = {

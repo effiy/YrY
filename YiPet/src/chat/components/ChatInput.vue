@@ -298,22 +298,19 @@ watch(
     if (!q || q.length < 4) return;
     preFetchTimer = setTimeout(async () => {
       try {
-        s.lastSearchQuery = q;
-        const t0 = Date.now();
         try {
           const tool = store.getTool?.('web_search');
           if (tool && tool.enabled !== false) {
-            const r = await store.executeTool?.('web_search', { query: q, topK: 8, topImages: 4 });
-            if (r) {
-              const data: any = (r as any).content || (r as any).result || r;
-              const items = Array.isArray(data) ? data : (data.results || data.items || []);
-              const imgs = Array.isArray(data.images) ? data.images : [];
-              if (items.length) s.webSearchResults = items;
-              if (imgs.length) s.webSearchImages = imgs;
+            const result = await store.executeTool?.('web_search', { query: q, maxResults: 8 });
+            const details: any = result?.details;
+            if (details) {
+              if (Array.isArray(details.items)) s.webSearchResults = details.items;
+              if (Array.isArray(details.images)) s.webSearchImages = details.images;
+              if (typeof details.query === 'string') s.lastSearchQuery = details.query;
+              if (typeof details.timingMs === 'number') s.searchTimingMs = details.timingMs;
             }
           }
         } catch { /* best-effort — no web search service */ }
-        s.searchTimingMs = Date.now() - t0;
       } catch { /* ignore best-effort */ }
     }, 600);
   }

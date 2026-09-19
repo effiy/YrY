@@ -79,6 +79,7 @@ async function initChatApp() {
     wework: api.wework,
     knowledge: api.knowledge,
     rag: api.rag,
+    search: api.search,
     bug: api.bug,
   });
   store.setColorIndex(COLOR_INDEX, CUSTOM_COLOR);

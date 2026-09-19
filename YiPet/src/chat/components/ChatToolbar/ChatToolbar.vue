@@ -781,11 +781,27 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
 
         <!-- Web search -->
         <div
-          class="ct-pill" :class="{ on: s.webSearchEnabled }"
-          :title="s.webSearchEnabled ? 'Web search on — answers include internet results' : 'Web search off — toggle to search the web'"
+          class="ct-pill"
+          :class="{ on: s.webSearchEnabled, searching: s.webSearching }"
+          :title="s.webSearchEnabled
+            ? (s.webSearching
+              ? 'Web search running...'
+              : (s.webSearchResults.length
+                ? `Web search on — ${s.webSearchResults.length} cached source(s)${s.searchTimingMs ? ` · ${s.searchTimingMs}ms` : ''}`
+                : 'Web search on — answers include internet results'))
+            : 'Web search off — toggle to search the web'"
           @click="s.webSearchEnabled = !s.webSearchEnabled"
         >
-          <el-icon :size="14"><Search /></el-icon>
+          <el-icon :size="14">
+            <Loading v-if="s.webSearching" />
+            <Search v-else />
+          </el-icon>
+          <span v-if="s.webSearchEnabled && s.webSearchResults.length" class="ct-pill-label">
+            Web {{ s.webSearchResults.length }}
+          </span>
+          <span v-else-if="s.webSearchEnabled && s.searchTimingMs > 0" class="ct-pill-label">
+            Web
+          </span>
           <el-switch :model-value="s.webSearchEnabled" size="small" @click.stop @update:model-value="s.webSearchEnabled = !s.webSearchEnabled" />
         </div>
 

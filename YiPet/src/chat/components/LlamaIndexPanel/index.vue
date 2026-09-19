@@ -51,6 +51,20 @@ const ragStats = ref({
   avgLatencyMs: 0,
 });
 
+const recentPetMessages = computed(() =>
+  (s.messages || []).filter((message: any) => message.type === 'pet').slice(-3).reverse()
+);
+
+function topSourceLabel(message: any): string {
+  const top = message?.sources?.[0];
+  if (!top) return '';
+  return String(top.metadata?.title || top.path || '').replace(/\.md$/, '');
+}
+
+function topSourcePath(message: any): string {
+  return String(message?.sources?.[0]?.path || '');
+}
+
 onMounted(async () => {
   try {
     const stats = await store.fetchRagStatus?.() as any;
@@ -68,6 +82,12 @@ onMounted(async () => {
 
 function preview(path: string) {
   store.openKnowledgePreview?.(path);
+}
+
+function previewQuestionSources(message: any) {
+  const question = String(message?.searchQuery || message?.content || '').trim();
+  if (!question) return;
+  store.previewRagSources?.(question);
 }
 </script>
 
@@ -174,28 +194,47 @@ function preview(path: string) {
           <div v-if="!s.messages?.length" class="lip-empty">No messages yet — ask a RAG question first.</div>
           <template v-else>
             <div
-              v-for="(m, i) in s.messages.filter((m:any) => m.type === 'pet').slice(-3)"
+              v-for="(m, i) in recentPetMessages"
               :key="`dm-${i}`"
               class="lip-decompose-card"
             >
               <div class="lip-dc-header">
-                <span class="lip-dc-role">{{ m.type === 'pet' ? 'Answer' : 'User' }}</span>
-                <span class="lip-dc-id">#{{ i + 1 }}</span>
+                <span class="lip-dc-role">Answer</span>
+                <span class="lip-dc-id">#{{ recentPetMessages.length - i }}</span>
               </div>
-              <div v-if="m.searchResults?.length" class="lip-dc-queries">
-                <div v-for="(sr, j) in m.searchResults.slice(0, 10)" :key="j" class="lip-dc-sr">
-                  <span class="lip-dc-sr-title">{{ sr.title || sr.url || '—' }}</span>
-                  <span v-if="sr.quality != null" class="lip-dc-sr-score">{{ sr.quality }}</span>
+              <div v-if="m.sources?.length" class="lip-dc-queries">
+                <div v-for="(src, j) in m.sources.slice(0, 5)" :key="j" class="lip-dc-sr">
+                  <span class="lip-dc-sr-title">{{ src.metadata?.title || src.path || '—' }}</span>
+                  <span v-if="src.score != null" class="lip-dc-sr-score">{{ src.score.toFixed(3) }}</span>
                 </div>
               </div>
-              <div v-else class="lip-dc-sr-empty">No search results recorded on this turn.</div>
+              <div v-else class="lip-dc-sr-empty">No knowledge retrieval recorded on this turn.</div>
               <div v-if="m.ragContentSummary" class="lip-dc-summary">
                 <span class="lip-dc-summary-label">RAG summary</span>
                 <p>{{ m.ragContentSummary }}</p>
               </div>
+              <div v-if="m.searchResults?.length" class="lip-dc-summary lip-dc-summary--web">
+                <span class="lip-dc-summary-label">Web grounding</span>
+                <p>{{ m.searchResults.length }} web sources{{ m.searchQuery ? ` · ${m.searchQuery}` : '' }}</p>
+              </div>
               <div v-if="m.retrievalGrade" class="lip-dc-grade">
                 <span class="lip-dc-grade-label">Retrieval grade</span>
                 <span class="lip-dc-grade-chip" :class="`grade-${m.retrievalGrade}`">{{ m.retrievalGrade }}</span>
+              </div>
+              <div class="lip-dc-actions">
+                <el-button
+                  v-if="m.sources?.length"
+                  size="small"
+                  text
+                  type="primary"
+                  @click="preview(topSourcePath(m))"
+                >Preview top source</el-button>
+                <el-button
+                  v-if="m.sources?.length || m.searchQuery"
+                  size="small"
+                  text
+                  @click="previewQuestionSources(m)"
+                >Preview retrieval</el-button>
               </div>
             </div>
           </template>
@@ -266,7 +305,12 @@ function preview(path: string) {
                 <div class="lip-snippet">{{ (row.content || '').slice(0, 140) }}</div>
               </template>
             </el-table-column>
-            <el-table-column label="Hits" width="72">
+            <el-table-column label="KB" width="72">
+              <template #default="{ row }">
+                <span class="lip-hits">{{ row.sources?.length || 0 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Web" width="72">
               <template #default="{ row }">
                 <span class="lip-hits">{{ row.searchResults?.length || 0 }}</span>
               </template>
@@ -277,9 +321,9 @@ function preview(path: string) {
                 <span v-else class="lip-empty-grade">—</span>
               </template>
             </el-table-column>
-            <el-table-column label="Images" width="80">
+            <el-table-column label="Top Source" min-width="180">
               <template #default="{ row }">
-                <span v-if="row.searchImages?.length" class="lip-img-n">🖼 {{ row.searchImages.length }}</span>
+                <span v-if="row.sources?.length" class="lip-top-source" :title="topSourceLabel(row)">{{ topSourceLabel(row) }}</span>
                 <span v-else class="lip-empty-grade">—</span>
               </template>
             </el-table-column>
@@ -425,6 +469,7 @@ function preview(path: string) {
   border-top: 1px dashed rgba(var(--primary-rgb,99,102,241),.1);
   p { margin: 4px 0 0; font-size: 12px; line-height: 1.6; color: var(--text-primary,#f5f3ff); white-space: pre-wrap; }
 }
+.lip-dc-summary--web .lip-dc-summary-label { color: #38bdf8; }
 .lip-dc-summary-label {
   font-size: 10px; color: var(--primary-light,#818cf8); text-transform: uppercase; letter-spacing: .04em;
 }
@@ -439,6 +484,11 @@ function preview(path: string) {
   &.grade-B { background: #3b82f6; }
   &.grade-C { background: #eab308; color: #141228; }
   &.grade-D { background: #ef4444; }
+}
+.lip-dc-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
 }
 .lip-index-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
@@ -494,6 +544,15 @@ function preview(path: string) {
 }
 .lip-hits {
   font-family: 'SF Mono', monospace; font-size: 12px; font-weight: 700; color: var(--primary-light,#818cf8);
+}
+.lip-top-source {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-primary,#f5f3ff);
 }
 .lip-empty-grade { color: var(--text-secondary,#d4d0e8); opacity: .5; }
 .lip-img-n { font-size: 12px; }
