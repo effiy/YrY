@@ -1,54 +1,88 @@
 /**
- * Element Plus theme adapter — maps YiPet color palette to Element Plus CSS vars.
+ * Element Plus Theme Adapter — YiPet palette → Element Plus CSS vars.
  *
- * Used by popup and chat surfaces to apply the active theme. Element Plus uses
- * CSS custom properties for theming, so we inject the mapped vars onto the root
- * element. CSP-safe for MV3.
+ * Element Plus 的主题完全通过 CSS 自定义属性驱动，因此我们只需将
+ * palette 中的 token 映射到对应的 `--el-*` 变量即可完成主题注入。
+ *
+ * ## 语义对齐原则
+ * - `--el-color-primary-light-{n}` 表示主色的浅色阶（n 越大越浅，9 最浅）
+ *   - light-3 ≈ 主色 + 黑色 20%（hover 适用）
+ *   - light-5 ≈ 主色 + 黑色 50%（disabled/soft 适用）
+ *   - light-7 / light-9 ≈ 主色 + 黑色 70% / 90%（背景 tint 适用）
+ * - `--el-bg-color-*` 三档：page（页面） / overlay（弹层） / color（默认组件）
+ * - `--el-text-color-primary` / `regular` / `secondary` / `placeholder`
+ *
+ * @see https://element-plus.org/en-US/guide/theming.html
  */
+
 import type { ThemePalette } from './colors';
-import { NONE_PALETTE, THEME_PALETTES } from './colors';
+import { NONE_PALETTE, resolvePalette } from './colors';
 
 /**
- * YiPet palette → Element Plus CSS var mapping.
- * Each entry: [paletteField, elementPlusVarName]
+ * YiPet palette → Element Plus CSS var 映射。
+ * 每个条目：[paletteField, elPlusVarName]
+ *
+ * 设计要点：
+ * - 同一变量可能映射多次（如 surfaceBase 同时作为 page 与 overlay），
+ *   保留必要的重复以确保 EP 各组件风格一致。
+ * - 不引入语义错位的映射（如：linkColor ≠ info color；buttonHover ≠ button-hover-bg-color）。
  */
 const EP_VAR_MAP: ReadonlyArray<readonly [keyof ThemePalette, string]> = [
+  /* ── Brand ── */
   ['primary', '--el-color-primary'],
   ['primaryHover', '--el-color-primary-light-3'],
-  ['primaryLight', '--el-color-primary-light-5'],
+  ['primarySoft', '--el-color-primary-light-7'],
+  ['primaryFaint', '--el-color-primary-light-9'],
   ['primaryAlpha', '--el-color-primary-light-9'],
-  ['bgPrimary', '--el-bg-color'],
-  ['bgSecondary', '--el-bg-color-overlay'],
-  ['bgPrimary', '--el-bg-color-page'],
+
+  /* ── Surface ── */
+  ['surfaceBase', '--el-bg-color'],
+  ['surfaceSunken', '--el-bg-color-overlay'],
+  ['surfaceBase', '--el-bg-color-page'],
+
+  /* ── Text ── */
   ['textPrimary', '--el-text-color-primary'],
   ['textSecondary', '--el-text-color-regular'],
-  ['borderSecondary', '--el-border-color'],
-  ['borderSecondary', '--el-border-color-base'],
+  ['textMuted', '--el-text-color-secondary'],
+  ['placeholderColor', '--el-text-color-placeholder'],
+
+  /* ── Border ── */
+  ['borderSubtle', '--el-border-color'],
+  ['borderSubtle', '--el-border-color-light'],
+  ['borderSubtle', '--el-border-color-lighter'],
+  ['borderStrong', '--el-border-color-dark'],
+
+  /* ── Fill ── */
   ['inputBg', '--el-fill-color-blank'],
-  ['buttonBg', '--el-button-bg-color'],
-  ['buttonHover', '--el-button-hover-bg-color'],
-  ['buttonText', '--el-button-text-color'],
-  ['linkColor', '--el-color-info'],
+  ['surfaceSunken', '--el-fill-color-light'],
+  ['surfaceRaised', '--el-fill-color'],
+  ['borderSubtle', '--el-fill-color-dark'],
 ];
 
 /**
- * Apply Element Plus CSS variables to a root element based on palette index.
- * Pass idx < 0 for the None palette (light theme).
+ * 将 Element Plus 主题变量注入到 root 元素。
+ * @param root 注入目标容器
+ * @param idx 调色板索引；-1 表示 NONE_PALETTE（浅色无主题）
  */
 export function applyElementTheme(root: HTMLElement, idx: number): void {
-  const s = root.style;
-  const p: ThemePalette = idx < 0 || idx >= THEME_PALETTES.length ? NONE_PALETTE : THEME_PALETTES[idx];
-
+  const { palette } = resolvePalette(idx);
+  const style = root.style;
   for (const [field, varName] of EP_VAR_MAP) {
-    s.setProperty(varName, p[field]);
+    style.setProperty(varName, palette[field]);
   }
 }
 
 /**
- * Remove Element Plus theme CSS variables from the root element.
+ * 清除注入到 root 元素的 Element Plus 主题变量。
  */
 export function clearElementTheme(root: HTMLElement): void {
   for (const [, varName] of EP_VAR_MAP) {
     root.style.removeProperty(varName);
   }
 }
+
+/**
+ * 内部导出：NONE 调色板别名，便于 EP 单独导入。
+ * @internal
+ */
+export { NONE_PALETTE };

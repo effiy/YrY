@@ -57,7 +57,7 @@
           <el-icon><QuestionFilled /></el-icon>
         </el-tooltip>
       </span>
-      <el-switch v-model="asideInverted" @change="setAsideTheme" />
+      <el-switch v-model="asideInverted" @change="refreshRegionThemes" />
     </div>
     <div class="theme-item mb50">
       <span>
@@ -66,7 +66,7 @@
           <el-icon><QuestionFilled /></el-icon>
         </el-tooltip>
       </span>
-      <el-switch v-model="headerInverted" @change="setHeaderTheme" />
+      <el-switch v-model="headerInverted" @change="refreshRegionThemes" />
     </div>
 
     <!-- Global Theme -->
@@ -141,7 +141,7 @@ import { DEFAULT_PRIMARY } from "@/config";
 import mittBus from "@/utils/mittBus";
 import SwitchDark from "@/components/SwitchDark/index.vue";
 
-const { changePrimary, changeGreyOrWeak, setAsideTheme, setHeaderTheme } = useTheme();
+const { changePrimary, changeGreyOrWeak, resolveIsDark, applyRegionThemes } = useTheme();
 
 const globalStore = useGlobalStore();
 const {
@@ -175,10 +175,13 @@ const colorList = [
   "#9b59b6"
 ];
 
+// Re-apply menu/aside/header theme tokens based on current state
+const refreshRegionThemes = () => applyRegionThemes(resolveIsDark());
+
 // Set layout mode
 const setLayout = (val: LayoutType) => {
   globalStore.setGlobalState("layout", val);
-  setAsideTheme();
+  refreshRegionThemes();
 };
 
 // Open theme settings

@@ -21,5 +21,17 @@ export { ROLE_STORAGE_KEY, validateRole } from './roles';
 // Chrome storage helpers
 export * from './storage/state';
 
-// Theme system
-export { applyThemeColors } from './theme/colors';
+// Theme system — 统一通过 ./theme 子模块 barrel 导出
+export {
+  applyThemeColors,
+  applyThemeHex,
+  clearThemeColors,
+  applyElementTheme,
+  clearElementTheme,
+  generatePalette,
+  NONE_PALETTE,
+  THEME_PALETTES,
+  THEME_VAR_KEYS,
+  resolvePalette,
+} from './theme';
+export type { ColorScheme, RgbTuple, ThemePalette } from './theme';

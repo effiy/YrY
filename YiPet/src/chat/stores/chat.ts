@@ -1256,7 +1256,7 @@ export const useChatStore = defineStore('chat', () => {
       }
       await persistActive();
       await compact.maybeCompact(state.messages);
-      setTimeout(() => scrollToBottom(true), 50);
+      setTimeout(() => scrollToBottom(), 50);
     }
   }
 
