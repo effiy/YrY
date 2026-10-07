@@ -68,5 +68,5 @@ related:
 
 ## 内容目录
 
-- [../../reading-list/02-阅读-读书笔记-高产出管理.md](../../reading-list/02-阅读-读书笔记-高产出管理.md) — 完整读书笔记
-- [../../reading-list/03-阅读-读书笔记汇总.md](../../reading-list/03-阅读-读书笔记汇总.md) — 笔记模板
+- [../../reading-list/002-阅读-读书笔记-高产出管理.md](../../reading-list/002-阅读-读书笔记-高产出管理.md) — 完整读书笔记
+- [../../reading-list/003-阅读-读书笔记汇总.md](../../reading-list/003-阅读-读书笔记汇总.md) — 笔记模板

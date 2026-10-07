@@ -33,27 +33,27 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Add a cross-project RPC call | [engineer/build/implement-cross-project-rpc-call.md](engineer/build/implement-cross-project-rpc-call.md) |
-| Implement SSE streaming | [engineer/build/implement-sse-streaming.md](engineer/build/implement-sse-streaming.md) |
-| Design MongoDB schemas | [engineer/build/04-构建-MongoDB模式设计.md](engineer/build/04-构建-MongoDB模式设计.md) |
-| Design API patterns | [engineer/build/05-构建-API设计模式.md](engineer/build/05-构建-API设计模式.md) |
-| Debug and troubleshoot | [engineer/build/06-构建-调试排错指南.md](engineer/build/06-构建-调试排错指南.md) |
-| Optimize performance | [engineer/build/07-构建-性能优化指南.md](engineer/build/07-构建-性能优化指南.md) |
-| Configure environment variables | [engineer/build/08-构建-环境变量配置.md](engineer/build/08-构建-环境变量配置.md) |
-| Reference cross-project RPC protocol | [engineer/build/cross-project-rpc-protocol.md](engineer/build/cross-project-rpc-protocol.md) |
+| Add a cross-project RPC call | [engineer/build/007-构建-实现跨项目RPC调用.md](engineer/build/007-构建-实现跨项目RPC调用.md) |
+| Implement SSE streaming | [engineer/build/008-构建-实现SSE流式推送.md](engineer/build/008-构建-实现SSE流式推送.md) |
+| Design MongoDB schemas | [engineer/build/001-构建-MongoDB模式设计.md](engineer/build/001-构建-MongoDB模式设计.md) |
+| Design API patterns | [engineer/build/002-构建-API设计模式.md](engineer/build/002-构建-API设计模式.md) |
+| Debug and troubleshoot | [engineer/build/003-构建-调试排错指南.md](engineer/build/003-构建-调试排错指南.md) |
+| Optimize performance | [engineer/build/004-构建-性能优化指南.md](engineer/build/004-构建-性能优化指南.md) |
+| Configure environment variables | [engineer/build/005-构建-环境变量配置.md](engineer/build/005-构建-环境变量配置.md) |
+| Reference cross-project RPC protocol | [engineer/build/006-构建-跨项目RPC协议设计.md](engineer/build/006-构建-跨项目RPC协议设计.md) |
 
 ### SHIP — Quality & Release
 
 | I want to... | Go to |
 |---|---|
-| Plan capacity | [engineer/ship/01-交付-容量规划.md](engineer/ship/01-交付-容量规划.md) |
-| Harden supply chain | [engineer/ship/02-交付-加固供应链.md](engineer/ship/02-交付-加固供应链.md) |
-| Migrate data safely | [engineer/ship/03-交付-数据迁移.md](engineer/ship/03-交付-数据迁移.md) |
-| Track quarterly tech debt | [engineer/ship/04-交付-季度技术债.md](engineer/ship/04-交付-季度技术债.md) |
-| Implement retry with backoff | [engineer/ship/05-交付-退避重试.md](engineer/ship/05-交付-退避重试.md) |
-| Set up testing infrastructure | [engineer/ship/06-交付-搭建测试基础设施.md](engineer/ship/06-交付-搭建测试基础设施.md) |
-| Set up CI/CD pipeline | [engineer/ship/07-交付-CICD流水线.md](engineer/ship/07-交付-CICD流水线.md) |
-| Deploy to production | [engineer/ship/08-交付-部署指南.md](engineer/ship/08-交付-部署指南.md) |
+| Plan capacity | [engineer/ship/0001-交付-容量规划.md](engineer/ship/0001-交付-容量规划.md) |
+| Harden supply chain | [engineer/ship/0002-交付-加固供应链.md](engineer/ship/0002-交付-加固供应链.md) |
+| Migrate data safely | [engineer/ship/0003-交付-数据迁移.md](engineer/ship/0003-交付-数据迁移.md) |
+| Track quarterly tech debt | [engineer/ship/0004-交付-季度技术债.md](engineer/ship/0004-交付-季度技术债.md) |
+| Implement retry with backoff | [engineer/ship/0005-交付-退避重试.md](engineer/ship/0005-交付-退避重试.md) |
+| Set up testing infrastructure | [engineer/ship/0006-交付-搭建测试基础设施.md](engineer/ship/0006-交付-搭建测试基础设施.md) |
+| Set up CI/CD pipeline | [engineer/ship/0007-交付-CICD流水线.md](engineer/ship/0007-交付-CICD流水线.md) |
+| Deploy to production | [engineer/ship/0008-交付-部署指南.md](engineer/ship/0008-交付-部署指南.md) |
 
 ### LEARN — Lessons & Gotchas
 
@@ -72,42 +72,42 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Write an ADR | [leader/architecture/01-架构-架构决策设计.md](leader/architecture/01-架构-架构决策设计.md) |
-| Review DORA metrics baseline | [leader/architecture/02-架构-DORA指标-2026-Q2基线.md](leader/architecture/02-架构-DORA指标-2026-Q2基线.md) |
-| Assess architecture maturity | [leader/architecture/03-架构-架构成熟度模型-2026-08.md](leader/architecture/03-架构-架构成熟度模型-2026-08.md) |
-| Evaluate a technology (LLM provider) | [leader/architecture/06-架构-技术选型-LLM提供商.md](leader/architecture/06-架构-技术选型-LLM提供商.md) |
-| Plan Q4 tech strategy | [leader/architecture/08-架构-技术战略-2026-Q4方向.md](leader/architecture/08-架构-技术战略-2026-Q4方向.md) |
-| See architecture landscape | [leader/architecture/09-架构-架构全景图.md](leader/architecture/09-架构-架构全景图.md) |
-| Review code review standards | [leader/architecture/10-架构-代码审查标准.md](leader/architecture/10-架构-代码审查标准.md) |
+| Write an ADR | [leader/architecture/001-架构-架构决策设计.md](leader/architecture/001-架构-架构决策设计.md) |
+| Review DORA metrics baseline | [leader/architecture/002-架构-DORA指标-2026-Q2基线.md](leader/architecture/002-架构-DORA指标-2026-Q2基线.md) |
+| Assess architecture maturity | [leader/architecture/003-架构-架构成熟度模型-2026-08.md](leader/architecture/003-架构-架构成熟度模型-2026-08.md) |
+| Evaluate a technology (LLM provider) | [leader/architecture/006-架构-技术选型-LLM提供商.md](leader/architecture/006-架构-技术选型-LLM提供商.md) |
+| Plan Q4 tech strategy | [leader/architecture/008-架构-技术战略-2026-Q4方向.md](leader/architecture/008-架构-技术战略-2026-Q4方向.md) |
+| See architecture landscape | [leader/architecture/009-架构-架构全景图.md](leader/architecture/009-架构-架构全景图.md) |
+| Review code review standards | [leader/architecture/010-架构-代码审查标准.md](leader/architecture/010-架构-代码审查标准.md) |
 | Browse ADRs by project | [leader/decisions/](leader/decisions/) |
 
 ### Risk & Capacity
 
 | I want to... | Go to |
 |---|---|
-| Assess launch risks | [leader/risk/01-风险-上线风险评估.md](leader/risk/01-风险-上线风险评估.md) |
-| Write a postmortem (methodology) | [leader/risk/02-风险-事后复盘.md](leader/risk/02-风险-事后复盘.md) |
-| Maintain risk register | [leader/risk/03-风险-风险登记册模板.md](leader/risk/03-风险-风险登记册模板.md) |
-| Manage dependency risks | [leader/risk/04-风险-依赖风险管理.md](leader/risk/04-风险-依赖风险管理.md) |
-| Lead incident command | [leader/risk/05-风险-事故指挥指南.md](leader/risk/05-风险-事故指挥指南.md) |
-| Run security review | [leader/risk/06-风险-安全审查清单.md](leader/risk/06-风险-安全审查清单.md) |
-| Run a FinOps review | [leader/capacity/01-容量-FinOps审查.md](leader/capacity/01-容量-FinOps审查.md) |
-| Track monthly costs | [leader/capacity/02-容量-成本追踪模板.md](leader/capacity/02-容量-成本追踪模板.md) |
-| Audit dependencies | [leader/capacity/03-容量-依赖审计清单.md](leader/capacity/03-容量-依赖审计清单.md) |
+| Assess launch risks | [leader/risk/001-风险-上线风险评估.md](leader/risk/001-风险-上线风险评估.md) |
+| Write a postmortem (methodology) | [leader/risk/002-风险-事后复盘.md](leader/risk/002-风险-事后复盘.md) |
+| Maintain risk register | [leader/risk/003-风险-风险登记册模板.md](leader/risk/003-风险-风险登记册模板.md) |
+| Manage dependency risks | [leader/risk/004-风险-依赖风险管理.md](leader/risk/004-风险-依赖风险管理.md) |
+| Lead incident command | [leader/risk/005-风险-事故指挥指南.md](leader/risk/005-风险-事故指挥指南.md) |
+| Run security review | [leader/risk/006-风险-安全审查清单.md](leader/risk/006-风险-安全审查清单.md) |
+| Run a FinOps review | [leader/capacity/001-容量-FinOps审查.md](leader/capacity/001-容量-FinOps审查.md) |
+| Track monthly costs | [leader/capacity/002-容量-成本追踪模板.md](leader/capacity/002-容量-成本追踪模板.md) |
+| Audit dependencies | [leader/capacity/003-容量-依赖审计清单.md](leader/capacity/003-容量-依赖审计清单.md) |
 
 ### Roadmap & Planning
 
 | I want to... | Go to |
 |---|---|
-| View progress dashboard | [leader/roadmap/01-路线图-进度看板.md](leader/roadmap/01-路线图-进度看板.md) |
-| Define SLOs | [leader/roadmap/03-路线图-定义SLO.md](leader/roadmap/03-路线图-定义SLO.md) |
-| Evaluate a technology | [leader/roadmap/07-路线图-技术选型.md](leader/roadmap/07-路线图-技术选型.md) |
-| Manage tech debt | [leader/roadmap/08-路线图-管理技术债.md](leader/roadmap/08-路线图-管理技术债.md) |
-| Plan tech roadmap | [leader/roadmap/09-路线图-规划技术路线图.md](leader/roadmap/09-路线图-规划技术路线图.md) |
-| Run quarterly review | [leader/roadmap/11-路线图-季度审查流程.md](leader/roadmap/11-路线图-季度审查流程.md) |
-| Communicate with stakeholders | [leader/roadmap/12-路线图-利益相关者沟通.md](leader/roadmap/12-路线图-利益相关者沟通.md) |
-| Manage operating cadence | [leader/roadmap/13-路线图-运营节奏.md](leader/roadmap/13-路线图-运营节奏.md) |
-| Estimate engineering effort | [leader/roadmap/14-路线图-估算指南.md](leader/roadmap/14-路线图-估算指南.md) |
+| View progress dashboard | [leader/roadmap/001-路线图-进度看板.md](leader/roadmap/001-路线图-进度看板.md) |
+| Define SLOs | [leader/roadmap/003-路线图-定义SLO.md](leader/roadmap/003-路线图-定义SLO.md) |
+| Evaluate a technology | [leader/roadmap/007-路线图-技术选型.md](leader/roadmap/007-路线图-技术选型.md) |
+| Manage tech debt | [leader/roadmap/008-路线图-管理技术债.md](leader/roadmap/008-路线图-管理技术债.md) |
+| Plan tech roadmap | [leader/roadmap/009-路线图-规划技术路线图.md](leader/roadmap/009-路线图-规划技术路线图.md) |
+| Run quarterly review | [leader/roadmap/011-路线图-季度审查流程.md](leader/roadmap/011-路线图-季度审查流程.md) |
+| Communicate with stakeholders | [leader/roadmap/012-路线图-利益相关者沟通.md](leader/roadmap/012-路线图-利益相关者沟通.md) |
+| Manage operating cadence | [leader/roadmap/013-路线图-运营节奏.md](leader/roadmap/013-路线图-运营节奏.md) |
+| Estimate engineering effort | [leader/roadmap/014-路线图-估算指南.md](leader/roadmap/014-路线图-估算指南.md) |
 
 ## product — What to Build
 
@@ -237,18 +237,18 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Create a new knowledge file | [curator/governance/04-治理-就绪检查清单.md](curator/governance/04-治理-就绪检查清单.md) |
+| Create a new knowledge file | [curator/governance/00004-治理-就绪检查清单.md](curator/governance/00004-治理-就绪检查清单.md) |
 | Use a document template | [curator/templates/00-INDEX.md](curator/templates/00-INDEX.md) |
-| Check knowledge base health | [curator/governance/01-治理-知识健康看板.md](curator/governance/01-治理-知识健康看板.md) |
-| Understand governance model | [curator/governance/02-治理-治理规范.md](curator/governance/02-治理-治理规范.md) |
-| Process inbox items | [curator/governance/03-治理-收件箱.md](curator/governance/03-治理-收件箱.md) |
-| Review triage queue | [curator/governance/07-治理-分类处理.md](curator/governance/07-治理-分类处理.md) |
-| See daily ops quick reference | [curator/governance/08-治理-操作速查卡.md](curator/governance/08-治理-操作速查卡.md) |
-| See the directory blueprint | [curator/diagrams/02-图表-目录蓝图.md](curator/diagrams/02-图表-目录蓝图.md) |
-| See the knowledge map | [curator/diagrams/03-图表-知识地图.md](curator/diagrams/03-图表-知识地图.md) |
-| See the user journey | [curator/diagrams/04-图表-用户旅程.md](curator/diagrams/04-图表-用户旅程.md) |
-| Capture tacit knowledge | [curator/governance/06-治理-隐性知识待办.md](curator/governance/06-治理-隐性知识待办.md) |
-| View review audit log | [curator/governance/05-治理-审查日志.md](curator/governance/05-治理-审查日志.md) |
+| Check knowledge base health | [curator/governance/00001-治理-知识健康看板.md](curator/governance/00001-治理-知识健康看板.md) |
+| Understand governance model | [curator/governance/00002-治理-治理规范.md](curator/governance/00002-治理-治理规范.md) |
+| Process inbox items | [curator/governance/00003-治理-收件箱.md](curator/governance/00003-治理-收件箱.md) |
+| Review triage queue | [curator/governance/00007-治理-分类处理.md](curator/governance/00007-治理-分类处理.md) |
+| See daily ops quick reference | [curator/governance/00008-治理-操作速查卡.md](curator/governance/00008-治理-操作速查卡.md) |
+| See the directory blueprint | [curator/diagrams/00002-图表-目录蓝图.md](curator/diagrams/00002-图表-目录蓝图.md) |
+| See the knowledge map | [curator/diagrams/00003-图表-知识地图.md](curator/diagrams/00003-图表-知识地图.md) |
+| See the user journey | [curator/diagrams/00004-图表-用户旅程.md](curator/diagrams/00004-图表-用户旅程.md) |
+| Capture tacit knowledge | [curator/governance/00006-治理-隐性知识待办.md](curator/governance/00006-治理-隐性知识待办.md) |
+| View review audit log | [curator/governance/00005-治理-审查日志.md](curator/governance/00005-治理-审查日志.md) |
 | Archive a file | [curator/archive/](curator/archive/) |
 
 ## Cross-Cutting — Domain Indexes

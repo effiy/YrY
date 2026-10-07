@@ -12,7 +12,7 @@ mod screenshot;
 mod server;
 mod system_ocr;
 mod tray;
-mod updater;
+// mod updater;
 mod window;
 
 use backup::*;
@@ -31,9 +31,9 @@ use tauri::api::notification::Notification;
 use tauri::Manager;
 use tauri_plugin_log::LogTarget;
 use tray::*;
-use updater::check_update;
+// use updater::check_update;
 use window::config_window;
-use window::updater_window;
+// use window::updater_window;
 
 // Global AppHandle
 pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
@@ -47,7 +47,7 @@ fn main() {
             Notification::new(&app.config().tauri.bundle.identifier)
                 .title("The program is already running. Please do not start it again!")
                 .body(cwd)
-                .icon("pot")
+                .icon("yipot")
                 .show()
                 .unwrap();
         }))
@@ -95,7 +95,7 @@ fn main() {
                 Err(e) => Notification::new(app.config().tauri.bundle.identifier.clone())
                     .title("Failed to register global shortcut")
                     .body(&e)
-                    .icon("pot")
+                    .icon("yipot")
                     .show()
                     .unwrap(),
             }
@@ -108,7 +108,7 @@ fn main() {
                 None => {}
             }
             // Check Update
-            check_update(app.handle());
+            // check_update(app.handle());
             if let Some(engine) = get("translate_detect_engine") {
                 if engine.as_str().unwrap() == "local" {
                     init_lang_detect();
@@ -140,7 +140,7 @@ fn main() {
             open_devtools,
             register_shortcut_by_frontend,
             update_tray,
-            updater_window,
+            // updater_window,
             screenshot,
             lang_detect,
             webdav,

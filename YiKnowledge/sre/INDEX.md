@@ -39,45 +39,50 @@ SRE 角色在 YrY 单仓中的定位是：**保障生产环境稳定运行**。�
 
 | 问题域 | 内容 | 文件数 |
 |---|---|---|
-| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、runbook | 16 |
-| [observability/](./observability/) | 监控告警、仪表盘、SLO 定义、容量成本 | 18 |
+| [incident-response/](./incident-response/) | 事件流程、事后复盘、oncall 交接、runbook、Gameday 演练 17-19 号 3 份新增 | 19 |
+| [observability/](./observability/) | 监控告警、仪表盘、SLO 定义、容量成本、新增 5 项目统一看板 19 号与告警路由 IM 20 号 | 20 |
 | [release/](./release/) | 发布协调、热修复、回滚、金丝雀发布 | 7 |
+| [run/](./run/) | 入职 30 天路线图、季度回顾、新增 YiAi/YiPot/YiVad 项目级 Runbook 03/04/05 | 5 |
 
 ## 常用入口
 
 | 场景 | 起始文件 |
 |---|---|
-| 收到告警，不知道如何处理 | [响应事件](./incident-response/04-事件-响应事件.md) |
-| 需要主持作战室 | [作战室运作](./incident-response/05-事件-作战室运作.md) |
-| 需要撰写事后复盘 | [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) |
-| 需要参考复盘示例 | [事后复盘示例](./incident-response/14-事件-事后复盘示例.md) |
-| 需要主持复盘会议 | [复盘会议主持](./incident-response/13-事件-复盘会议主持.md) |
-| 需要组织 Game Day | [Game Day 演练](./incident-response/08-事件-GameDay演练.md) |
-| 需要编写故障处理手册 | [Runbook 模板](./incident-response/09-事件-Runbook模板.md) |
-| 需要事件中对外沟通 | [事件沟通模板](./incident-response/10-事件-事件沟通模板.md) |
-| 需要制定灾难恢复方案 | [灾难恢复计划](./incident-response/11-事件-灾难恢复计划.md) |
-| 需要做故障风险分析 | [FMEA 模板](./incident-response/16-事件-FMEA模板.md) |
-| 需要减少手工重复操作 | [减少重复劳动](./incident-response/12-事件-减少重复劳动.md) |
-| 需要执行值班交接 | [值班交接](./incident-response/03-事件-值班交接.md) |
-| 需要参考交接示例 | [值班交接示例](./incident-response/15-事件-值班交接示例.md) |
-| 需要发布上线 | [发布流程](./release/04-发布-发布流程.md) |
-| 需要紧急修复生产 Bug | [热修复发布](./release/02-发布-热修复发布.md) |
-| 需要管理变更风险 | [变更管理流程](./release/06-发布-变更管理流程.md) |
-| 需要做上线前审查 | [生产就绪审查](./release/07-发布-生产就绪审查.md) |
-| 需要搭建监控 | [搭建可观测性](./observability/07-可观测-搭建可观测性.md) |
-| 需要配置告警 | [告警规则配置](./observability/10-可观测-告警规则配置.md) |
-| 需要定义 SLO | [SLO 与 SLI 定义](./observability/08-可观测-SLO与SLI定义.md) |
-| 需要管理错误预算 | [错误预算策略](./observability/12-可观测-错误预算策略.md) |
-| 需要做性能测试 | [性能测试指南](./observability/13-可观测-性能测试指南.md) |
-| 需要设计健康检查 | [健康检查设计](./observability/14-可观测-健康检查设计.md) |
-| 需要建立 SRE 指标 | [SRE 指标体系](./observability/15-可观测-SRE指标体系.md) |
-| 需要定义对外 SLA | [SLA 管理](./observability/16-可观测-SLA管理.md) |
-| 需要排查 RAG 故障 | [知识库与 RAG 运维](./observability/17-可观测-知识库与RAG运维.md) |
-| 需要管理模型版本 | [Ollama 模型管理](./observability/18-可观测-Ollama模型管理.md) |
-| 需要做回滚演练 | [回滚演练](./release/05-发布-回滚演练.md) |
-| 需要管理技术债务 | [技术债清单](./observability/09-可观测-技术债清单.md) |
-| 需要配置数据库备份 | [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) |
-| 需要做季度可靠性回顾 | [季度回顾指南](./run/02-运行-季度回顾指南.md) |
+| 收到告警，不知道如何处理 | [响应事件](./incident-response/004-事件-响应事件.md) |
+| 需要主持作战室 | [作战室运作](./incident-response/005-事件-作战室运作.md) |
+| 需要撰写事后复盘 | [事后复盘指南](./incident-response/007-事件-事后复盘指南.md) |
+| 需要参考复盘示例 | [事后复盘示例](./incident-response/014-事件-事后复盘示例.md) |
+| 需要主持复盘会议 | [复盘会议主持](./incident-response/013-事件-复盘会议主持.md) |
+| 需要组织 Game Day | [Game Day 演练](./incident-response/008-事件-GameDay演练.md) |
+| 需要编写故障处理手册 | [Runbook 模板](./incident-response/009-事件-Runbook模板.md) |
+| 需要事件中对外沟通 | [事件沟通模板](./incident-response/010-事件-事件沟通模板.md) |
+| 需要制定灾难恢复方案 | [灾难恢复计划](./incident-response/011-事件-灾难恢复计划.md) |
+| 需要做故障风险分析 | [FMEA 模板](./incident-response/016-事件-FMEA模板.md) |
+| 需要减少手工重复操作 | [减少重复劳动](./incident-response/012-事件-减少重复劳动.md) |
+| 需要执行值班交接 | [值班交接](./incident-response/003-事件-值班交接.md) |
+| 需要参考交接示例 | [值班交接示例](./incident-response/015-事件-值班交接示例.md) |
+| 需要发布上线 | [发布流程](./release/004-发布-发布流程.md) |
+| 需要紧急修复生产 Bug | [热修复发布](./release/002-发布-热修复发布.md) |
+| 需要管理变更风险 | [变更管理流程](./release/006-发布-变更管理流程.md) |
+| 需要做上线前审查 | [生产就绪审查](./release/007-发布-生产就绪审查.md) |
+| 需要搭建监控 | [搭建可观测性](./observability/007-可观测-搭建可观测性.md) |
+| 需要配置告警 | [告警规则配置](./observability/010-可观测-告警规则配置.md) |
+| 需要定义 SLO | [SLO 与 SLI 定义](./observability/008-可观测-SLO与SLI定义.md) |
+| 需要管理错误预算 | [错误预算策略](./observability/012-可观测-错误预算策略.md) |
+| 需要做性能测试 | [性能测试指南](./observability/013-可观测-性能测试指南.md) |
+| 需要设计健康检查 | [健康检查设计](./observability/014-可观测-健康检查设计.md) |
+| 需要建立 SRE 指标 | [SRE 指标体系](./observability/015-可观测-SRE指标体系.md) |
+| 需要定义对外 SLA | [SLA 管理](./observability/016-可观测-SLA管理.md) |
+| 需要排查 RAG 故障 | [知识库与 RAG 运维](./observability/017-可观测-知识库与RAG运维.md) |
+| 需要管理模型版本 | [Ollama 模型管理](./observability/018-可观测-Ollama模型管理.md) |
+| 需要设计 5 项目统一健康看板 | [5 项目统一健康看板设计](./observability/019-可观测-5项目统一健康看板设计.md) |
+| 需要配置告警路由到企业微信/IM | [告警路由到 IM](./observability/20-可观测-告警路由到IM.md) |
+| 需要演练熔断器 / 60828 断连 / MV3 权限撤回 | [GameDay-YiAi-RPC熔断](./incident-response/017-事件-GameDay-YiAi-RPC熔断.md) / [GameDay-YiPot-60828断连](./incident-response/018-事件-GameDay-YiPot-60828断连.md) / [GameDay-YiPet-MV3权限撤回](./incident-response/019-事件-GameDay-YiPet-MV3权限撤回.md) |
+| 需要按项目排障（YiAi/YiPot/YiVad） | [YiAi 后端健康 Runbook](./run/003-运行-YiAi后端健康Runbook.md) / [YiPot 桌面集成 Runbook](./run/004-运行-YiPot桌面集成Runbook.md) / [YiVad 前端项目页 Runbook](./run/005-运行-YiVad前端项目页Runbook.md) |
+| 需要做回滚演练 | [回滚演练](./release/005-发布-回滚演练.md) |
+| 需要管理技术债务 | [技术债清单](./observability/009-可观测-技术债清单.md) |
+| 需要配置数据库备份 | [数据库备份恢复](./observability/011-可观测-数据库备份恢复.md) |
+| 需要做季度可靠性回顾 | [季度回顾指南](./run/002-运行-季度回顾指南.md) |
 
 ## 跨角色引用
 

@@ -109,7 +109,7 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 
 | 项目 | 角色 | 快速入口 |
 |---|---|---|
-| YiAi（FastAPI 后端） | engineer | [projects/01-项目-YiAi项目.md](./projects/01-项目-YiAi项目.md) |
+| YiAi（FastAPI 后端） | engineer | [projects/0001-项目-YiAi项目.md](./projects/0001-项目-YiAi项目.md) |
 | YiKnowledge（知识库） | engineer + curator | [projects/02-项目-YiKnowledge项目.md](./projects/02-项目-YiKnowledge项目.md) |
-| YiPet（Chrome 扩展） | engineer | [projects/03-项目-YiPet项目.md](./projects/03-项目-YiPet项目.md) |
-| YiVad（Vue 管理后台） | engineer | [projects/04-项目-YiVad项目.md](./projects/04-项目-YiVad项目.md) |
+| YiPet（Chrome 扩展） | engineer | [projects/0003-项目-YiPet项目.md](./projects/0003-项目-YiPet项目.md) |
+| YiVad（Vue 管理后台） | engineer | [projects/0004-项目-YiVad项目.md](./projects/0004-项目-YiVad项目.md) |

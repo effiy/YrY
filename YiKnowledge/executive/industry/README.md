@@ -18,8 +18,8 @@ acceptance_criteria:
   - "行业报告来源和评审标准明确"
   - "情报收集节奏可执行"
 related:
-  - ./competitors/03-行业-竞品分析模板.md
-  - ./reports/01-行业-行业报告模板.md
+  - ./competitors/003-行业-竞品分析模板.md
+  - ./reports/001-行业-行业报告模板.md
   - ../README.md
   - ../INDEX.md
   - ../strategy/README.md
@@ -35,9 +35,9 @@ related:
 
 | 我想... | 最快入口 |
 |---|---|
-| 分析一个竞品 | [竞品分析模板](./competitors/03-行业-竞品分析模板.md) |
+| 分析一个竞品 | [竞品分析模板](./competitors/003-行业-竞品分析模板.md) |
 | 了解竞品分析分级体系 | [竞品分级](#竞品分级体系) |
-| 撰写行业报告摘要 | [行业报告模板](./reports/01-行业-行业报告模板.md) |
+| 撰写行业报告摘要 | [行业报告模板](./reports/001-行业-行业报告模板.md) |
 | 追踪市场趋势 | [市场趋势](./market-trends/) |
 | 了解情报收集节奏 | [收集节奏](#收集节奏) |
 | 评估情报来源可靠性 | [情报来源](#情报来源评估) |
@@ -131,10 +131,10 @@ related:
 行业情报是战略分析的核心输入：
 
 ```
-industry/ ──→ strategy/07-战略-波特五力模型.md（竞争格局）
-industry/     ──→ strategy/10-战略-SWOT分析.md（机会威胁）
-industry/ ──→ strategy/01-战略-蓝海战略.md（新兴空间）
-                        ──→ strategy/09-战略-第二曲线.md（趋势判断）
+industry/ ──→ strategy/007-战略-波特五力模型.md（竞争格局）
+industry/     ──→ strategy/010-战略-SWOT分析.md（机会威胁）
+industry/ ──→ strategy/001-战略-蓝海战略.md（新兴空间）
+                        ──→ strategy/009-战略-第二曲线.md（趋势判断）
 ```
 
 ## 维护

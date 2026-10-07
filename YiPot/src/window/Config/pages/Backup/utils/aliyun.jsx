@@ -161,7 +161,7 @@ export async function userInfo(token) {
 }
 
 export async function accessToken(code) {
-    const res = await fetch('https://pot-app.com/api/ali_access_token', {
+    const res = await fetch('https://yipot.com/api/ali_access_token', {
         method: 'POST',
         body: Body.json({
             code,
@@ -218,7 +218,7 @@ async function createDir(token, drive_id) {
         body: Body.json({
             drive_id,
             parent_file_id: 'root',
-            name: 'pot-app',
+            name: 'yipot',
             type: 'folder',
             check_name_mode: 'refuse',
         }),
@@ -282,7 +282,7 @@ async function getFileByPath(token, drive_id, name) {
         },
         body: Body.json({
             drive_id,
-            file_path: `/pot-app/${name}`,
+            file_path: `/yipot/${name}`,
         }),
     });
     if (res.ok) {

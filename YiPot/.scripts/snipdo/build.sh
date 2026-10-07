@@ -1,1 +1,1 @@
-zip pot.pbar pot.json pot.png pot.ps1
+zip yipot.pbar yipot.json yipot.png yipot.ps1

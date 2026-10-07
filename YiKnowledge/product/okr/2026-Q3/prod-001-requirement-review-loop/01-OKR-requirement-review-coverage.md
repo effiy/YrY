@@ -19,7 +19,7 @@ framework: OKR
 trend: up
 progress: 100
 related:
-  - ../../../discovery/01-发现-编写PRD.md
+  - ../../../discovery/001-发现-编写PRD.md
   - ../../../discovery/01-需求-PRD模板.md
 ---
 

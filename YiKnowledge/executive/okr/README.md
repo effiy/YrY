@@ -16,15 +16,15 @@ benefit: "快速了解 OKR 目录结构、当前周期进展和各目标状态"
 related:
   - ../README.md
   - ../INDEX.md
-  - ../strategy/15-战略-OKR方法论.md
-  - ../roadmap/03-路线图-组织OKR追踪.md
+  - ../strategy/015-战略-OKR方法论.md
+  - ../roadmap/003-路线图-组织OKR追踪.md
 ---
 
 # OKR 目录 — 2026 Q3
 
 > **周期**：2026 Q3 (7月-9月) | **最后更新**：2026-09-15 | **整体进度**：~72%
 >
-> **与 OKR 方法论的关系**：本目录是 OKR 的**执行实例**。方法论参考 [strategy/15-战略-OKR方法论.md](../strategy/15-战略-OKR方法论.md)。
+> **与 OKR 方法论的关系**：本目录是 OKR 的**执行实例**。方法论参考 [strategy/015-战略-OKR方法论.md](../strategy/015-战略-OKR方法论.md)。
 
 ## 当前目标总览
 
@@ -81,9 +81,9 @@ Q3 评分完成后，Q4 OKR 应在本目录下创建 `2026-Q4/` 子目录，复�
 
 ## 跨模块关联
 
-- OKR 目标定义 → 参考 [strategy/15-战略-OKR方法论.md](../strategy/15-战略-OKR方法论.md)
-- OKR 评分和 QBR → 参考 [roadmap/04-路线图-季度业务回顾.md](../roadmap/04-路线图-季度业务回顾.md)
-- 组织 OKR 追踪 → 参考 [roadmap/03-路线图-组织OKR追踪.md](../roadmap/03-路线图-组织OKR追踪.md)
+- OKR 目标定义 → 参考 [strategy/015-战略-OKR方法论.md](../strategy/015-战略-OKR方法论.md)
+- OKR 评分和 QBR → 参考 [roadmap/004-路线图-季度业务回顾.md](../roadmap/004-路线图-季度业务回顾.md)
+- 组织 OKR 追踪 → 参考 [roadmap/003-路线图-组织OKR追踪.md](../roadmap/003-路线图-组织OKR追踪.md)
 - 竞品/行业 KR 证据 → 参考 [industry/](../industry/)
 - 阅读/学习 KR 证据 → 参考 [reading-list/](../reading-list/)
 

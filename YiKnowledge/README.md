@@ -24,7 +24,7 @@ acceptance_criteria:
 - 识别出反模式或不应使用的场景
 related:
 - ./INDEX.md
-- ./curator/governance/04-治理-就绪检查清单.md
+- ./curator/governance/00004-治理-就绪检查清单.md
 - ./curator/diagrams/directory-blueprint.md
 ---
 
@@ -120,10 +120,10 @@ AI 赋能层（贯穿整个流水线）
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 编写架构决策（ADR） | `adrs` | [leader/架构/design-architecture-decision.md](./leader/architecture/01-架构-架构决策设计.md) |
-| 评估技术选型 | `tech-selections` | [leader/roadmap/do-a-tech-selection.md](./leader/roadmap/07-路线图-技术选型.md) |
-| 规划容量 / FinOps | `capacity-plans` | [leader/capacity/run-a-finops-review.md](./leader/capacity/01-容量-FinOps审查.md) |
-| 管理技术债务 | `tech-selections` | [leader/roadmap/manage-tech-debt.md](./leader/roadmap/08-路线图-管理技术债.md) |
+| 编写架构决策（ADR） | `adrs` | [leader/架构/design-architecture-decision.md](./leader/architecture/001-架构-架构决策设计.md) |
+| 评估技术选型 | `tech-selections` | [leader/roadmap/do-a-tech-selection.md](./leader/roadmap/007-路线图-技术选型.md) |
+| 规划容量 / FinOps | `capacity-plans` | [leader/capacity/run-a-finops-review.md](./leader/capacity/001-容量-FinOps审查.md) |
+| 管理技术债务 | `tech-selections` | [leader/roadmap/manage-tech-debt.md](./leader/roadmap/008-路线图-管理技术债.md) |
 | 评估上线风险 | `adrs` | [leader/risk/](./leader/risk/) |
 | 浏览已有 ADR | `adrs` | [leader/decisions/](./leader/decisions/) —— 按项目子目录组织 |
 
@@ -162,13 +162,13 @@ BUILD                           SHIP
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 设计 API | `architecture-patterns` | [engineer/build/05-构建-API设计模式.md](./engineer/build/05-构建-API设计模式.md) |
+| 设计 API | `architecture-patterns` | [engineer/build/002-构建-API设计模式.md](./engineer/build/002-构建-API设计模式.md) |
 | 设计数据模型 | `data-reliability` | [engineer/ship/](./engineer/ship/) |
-| 加固供应链 | `quality-security` | [engineer/ship/harden-supply-chain.md](./engineer/ship/02-交付-加固供应链.md) |
-| 搭建测试基础设施 | `dev-practices` | [engineer/ship/06-交付-搭建测试基础设施.md](./engineer/ship/06-交付-搭建测试基础设施.md) |
+| 加固供应链 | `quality-security` | [engineer/ship/harden-supply-chain.md](./engineer/ship/0002-交付-加固供应链.md) |
+| 搭建测试基础设施 | `dev-practices` | [engineer/ship/0006-交付-搭建测试基础设施.md](./engineer/ship/0006-交付-搭建测试基础设施.md) |
 | 进行代码审查 | `quality-security` | [engineer/ship/](./engineer/ship/) |
 | 回顾过往经验 | `lessons` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
-| 跨项目共享客户端 | `dev-practices` | [engineer/build/implement-cross-project-rpc-call.md](./engineer/build/implement-cross-project-rpc-call.md) |
+| 跨项目共享客户端 | `dev-practices` | [engineer/build/007-构建-实现跨项目RPC调用.md](./engineer/build/007-构建-实现跨项目RPC调用.md) |
 
 **边界规则**：engineer 是*实现层* —— 不能替代 leader 的决策。如果实现过程中出现架构级问题 → 回到 leader/ 编写 ADR；不要在 engineer/ 内部"顺便做决定"。
 
@@ -232,7 +232,7 @@ RUN                             LEARN
 |---|---|---|
 | 响应生产事件 | `incident-response` | [sre/incident-response/respond-to-an-incident.md](./sre/incident-response/04-事件-响应事件.md) |
 | 搭建可观测性 | `observability` | [sre/observability/set-up-observability.md](./sre/observability/07-可观测-搭建可观测性.md) |
-| 编写事后复盘 | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/02-风险-事后复盘.md) |
+| 编写事后复盘 | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/002-风险-事后复盘.md) |
 | 追踪 SLO/SLI 合规 | `slo-compliance` | [sre/observability/](./sre/observability/) |
 | 查看已知陷阱 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
 | 回顾过往经验 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
@@ -358,12 +358,12 @@ executive ──→ product ──→ leader ──→ engineer ──→ sre
 
 | 图 | 位置 | 回答 |
 |---|---|---|
-| 知识地图 | [curator/diagrams/03-图表-知识地图.md](./curator/diagrams/03-图表-知识地图.md) | 存在哪些知识？显性 vs. 隐性？持有者和消费者？ |
-| 用户旅程图 | [curator/diagrams/04-图表-用户旅程.md](./curator/diagrams/04-图表-用户旅程.md) | 知识在哪里？如何流动？断点在哪里？ |
-| 目录蓝图 | [curator/diagrams/02-图表-目录蓝图.md](./curator/diagrams/02-图表-目录蓝图.md) | 用户如何一目了然地找到内容？角色 × 问题域，最多 3 级 |
-| 治理流程 | [curator/governance/02-治理-治理规范.md](./curator/governance/02-治理-治理规范.md) | 谁维护？多久一次？4 个角色，3 种节奏 |
+| 知识地图 | [curator/diagrams/00003-图表-知识地图.md](./curator/diagrams/00003-图表-知识地图.md) | 存在哪些知识？显性 vs. 隐性？持有者和消费者？ |
+| 用户旅程图 | [curator/diagrams/00004-图表-用户旅程.md](./curator/diagrams/00004-图表-用户旅程.md) | 知识在哪里？如何流动？断点在哪里？ |
+| 目录蓝图 | [curator/diagrams/00002-图表-目录蓝图.md](./curator/diagrams/00002-图表-目录蓝图.md) | 用户如何一目了然地找到内容？角色 × 问题域，最多 3 级 |
+| 治理流程 | [curator/governance/00002-治理-治理规范.md](./curator/governance/00002-治理-治理规范.md) | 谁维护？多久一次？4 个角色，3 种节奏 |
 
-在扩展之前运行[就绪检查清单](./curator/governance/04-治理-就绪检查清单.md)的 10 个问题关卡。
+在扩展之前运行[就绪检查清单](./curator/governance/00004-治理-就绪检查清单.md)的 10 个问题关卡。
 
 ## 导航策略
 

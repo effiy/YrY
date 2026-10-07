@@ -42,7 +42,7 @@ lifecycle: active
 | TC-05 | RSS 种子无 Anthropic Blog | 检查 `rssSeedData.ts` `EXAMPLE_SEEDS` 数组 | 无 `anthropic` 相关条目 | ✅ |
 | TC-06 | RSS 种子无 OpenAI Blog | 检查 `rssSeedData.ts` `EXAMPLE_SEEDS` 数组 | 无 `openai` 相关条目 | ✅ |
 | TC-07 | 成本优化 PRD 无外部定价链接 | 检查 `201-需求-成本优化引擎.md` 相关文档节 | 仅含内部 PRD 引用 | ✅ |
-| TC-08 | Git 工作流 PR 示例无推广页脚 | 检查 `03-运行-Git工作流.md` 行 200-202 | 示例代码不含推广行 | ✅ |
+| TC-08 | Git 工作流 PR 示例无推广页脚 | 检查 `007-运行-Git工作流.md` 行 200-202 | 示例代码不含推广行 | ✅ |
 | TC-09 | 分支管理规范无第三方签名 | 检查 `01-流程-分支管理规范.md` 行 272 | 仅 Conventional Commits 格式说明 | ✅ |
 | TC-10 | TypeScript 编译通过 | `cd YiVad && pnpm type:check` | 无新增错误 | ✅ |
 

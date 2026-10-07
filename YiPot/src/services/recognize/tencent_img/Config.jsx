@@ -70,16 +70,7 @@ export function Config(props) {
                         }}
                     />
                 </div>
-                <div className={'config-item'}>
-                    <h3 className='my-auto'>{t('services.help')}</h3>
-                    <Button
-                        onPress={() => {
-                            open('https://pot-app.com/docs/api/recognize/tencent_img.html');
-                        }}
-                    >
-                        {t('services.help')}
-                    </Button>
-                </div>
+
                 <div className={'config-item'}>
                     <Input
                         label={t('services.recognize.tencent_img_ocr.secret_id')}

@@ -19,8 +19,8 @@ framework: OKR
 trend: up
 progress: 100
 related:
-  - ../../../discovery/01-发现-编写PRD.md
-  - ../../../frameworks/05-框架-OKR设计摘要.md
+  - ../../../discovery/001-发现-编写PRD.md
+  - ../../../frameworks/005-框架-OKR设计摘要.md
 ---
 
 # 验收标准完备率

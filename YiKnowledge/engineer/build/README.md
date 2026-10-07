@@ -18,9 +18,9 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../../INDEX.md
-  - ./cross-project-rpc-protocol.md
-  - ./implement-cross-project-rpc-call.md
-  - ./implement-sse-streaming.md
+  - ./006-构建-跨项目RPC协议设计.md
+  - ./007-构建-实现跨项目RPC调用.md
+  - ./008-构建-实现SSE流式推送.md
   - ../ship/
   - ../run/
   - ../learn/
@@ -78,13 +78,13 @@ cd YiPet && npm run build
 
 | 文件 | 描述 | 适用场景 |
 |---|---|---|
-| [cross-project-rpc-protocol.md](./cross-project-rpc-protocol.md) | RPC 信封规范、参数名契约（`filter`/`target_file`/`cname`）、已知 Bug 模式——所有跨项目调用的唯一事实来源 | 每次添加新的跨项目 API 调用前必读 |
-| [implement-cross-project-rpc-call.md](./implement-cross-project-rpc-call.md) | 跨 YiVad/YiPet 到 YiAi 添加新 RPC 调用的分步指南：后端 Service 创建 → 前端 Service 封装 → 参数验证 | 实施新的跨项目功能时使用 |
-| [implement-sse-streaming.md](./implement-sse-streaming.md) | AI 聊天的 SSE 流式实现指南，含中止处理（`AbortController`）、超时管理、增量渲染策略 | 实现或调试流式 AI 响应时使用 |
-| [04-MongoDB模式设计](./04-构建-MongoDB模式设计.md) | MongoDB 文档模型设计原则、嵌入 vs 引用决策框架、索引策略、集合命名规范 | 设计新集合或优化查询性能时使用 |
-| [05-API设计模式](./05-构建-API设计模式.md) | RPC vs REST 决策树、响应格式标准、分页约定、命名规范 | 设计新 API 端点或扩展 RPC Service 时使用 |
-| [06-调试排错指南](./06-构建-调试排错指南.md) | 四步诊断方法论——从症状到根因的系统排查流程、请求链路追踪、日志分析 | 遇到任何 Bug 时的第一站 |
-| [07-性能优化指南](./07-构建-性能优化指南.md) | Python 异步并发、Vue 渲染优化、MongoDB 查询与索引优化、包体积管理 | 系统变慢或优化性能时使用 |
+| [006-构建-跨项目RPC协议设计.md](./006-构建-跨项目RPC协议设计.md) | RPC 信封规范、参数名契约（`filter`/`target_file`/`cname`）、已知 Bug 模式——所有跨项目调用的唯一事实来源 | 每次添加新的跨项目 API 调用前必读 |
+| [007-构建-实现跨项目RPC调用.md](./007-构建-实现跨项目RPC调用.md) | 跨 YiVad/YiPet 到 YiAi 添加新 RPC 调用的分步指南：后端 Service 创建 → 前端 Service 封装 → 参数验证 | 实施新的跨项目功能时使用 |
+| [008-构建-实现SSE流式推送.md](./008-构建-实现SSE流式推送.md) | AI 聊天的 SSE 流式实现指南，含中止处理（`AbortController`）、超时管理、增量渲染策略 | 实现或调试流式 AI 响应时使用 |
+| [04-MongoDB模式设计](./001-构建-MongoDB模式设计.md) | MongoDB 文档模型设计原则、嵌入 vs 引用决策框架、索引策略、集合命名规范 | 设计新集合或优化查询性能时使用 |
+| [05-API设计模式](./002-构建-API设计模式.md) | RPC vs REST 决策树、响应格式标准、分页约定、命名规范 | 设计新 API 端点或扩展 RPC Service 时使用 |
+| [06-调试排错指南](./003-构建-调试排错指南.md) | 四步诊断方法论——从症状到根因的系统排查流程、请求链路追踪、日志分析 | 遇到任何 Bug 时的第一站 |
+| [07-性能优化指南](./004-构建-性能优化指南.md) | Python 异步并发、Vue 渲染优化、MongoDB 查询与索引优化、包体积管理 | 系统变慢或优化性能时使用 |
 
 ## 此处应包含的内容（规划中）
 

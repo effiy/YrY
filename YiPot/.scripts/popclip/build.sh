@@ -1,7 +1,7 @@
-rm Pot.popclipextz
-mkdir Pot.popclipext
-cp Config.plist Pot.popclipext
-cp Pot.png Pot.popclipext
-cp Pot.sh Pot.popclipext
-zip -r Pot.popclipextz Pot.popclipext
-rm -r Pot.popclipext
+rm YiPot.popclipextz
+mkdir YiPot.popclipext
+cp Config.plist YiPot.popclipext
+cp YiPot.png YiPot.popclipext
+cp YiPot.sh YiPot.popclipext
+zip -r YiPot.popclipextz YiPot.popclipext
+rm -r YiPot.popclipext

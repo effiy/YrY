@@ -1,0 +1,12 @@
+{
+    "name": "YiPot Translation",
+    "identifier": "com.yipot.snipdoext.desktop",
+    "icon": "yipot.png",
+    "actions": [
+        {
+            "title": "YiPot Translation",
+            "icon": "yipot.png",
+            "powershellFile": "yipot.ps1"
+        }
+    ]
+}

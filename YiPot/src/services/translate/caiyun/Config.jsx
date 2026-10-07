@@ -65,16 +65,7 @@ export function Config(props) {
                         }}
                     />
                 </div>
-                <div className={'config-item'}>
-                    <h3 className='my-auto'>{t('services.help')}</h3>
-                    <Button
-                        onPress={() => {
-                            open('https://pot-app.com/docs/api/translate/caiyun.html');
-                        }}
-                    >
-                        {t('services.help')}
-                    </Button>
-                </div>
+
                 <div className={'config-item'}>
                     <Input
                         label={t('services.translate.caiyun.token')}

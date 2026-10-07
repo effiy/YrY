@@ -39,10 +39,10 @@ related:
 
 | 类别 | 目录 | 描述 | 代表性文件 |
 |---|---|---|---|
-| 成功案例 | [lessons/](./lessons/) | 可复用的成功模式 | [YiPet 跨项目 Hub](./lessons/09-成果-YiPet跨项目Hub.md) — 浏览器扩展作为多项目集成中心的架构模式 |
-| 失败复盘 | [lessons/](./lessons/) | 失败分析和事后复盘 | [YiVad AICR 端口幻觉](./lessons/02-教训-YiVad-AICR端口幻觉.md) — AI 助手声称完成但实际不存在的代码移植 |
-| 陷阱记录 | [lessons/](./lessons/) | 需要避开的工程坑点 | [RPC 参数名不匹配](./lessons/06-陷阱-RPC参数名不匹配.md) — `filter` vs `query` 导致后端静默忽略 |
-| 框架学习 | [lessons/](./lessons/) | 工程能力提升 | [学习 PM 框架](./lessons/01-经验-学习PM框架.md) — 产品管理框架的学习路径 |
+| 成功案例 | [lessons/](./lessons/) | 可复用的成功模式 | [YiPet 跨项目 Hub](./lessons/0009-成果-YiPet跨项目Hub.md) — 浏览器扩展作为多项目集成中心的架构模式 |
+| 失败复盘 | [lessons/](./lessons/) | 失败分析和事后复盘 | [YiVad AICR 端口幻觉](./lessons/0002-教训-YiVad-AICR端口幻觉.md) — AI 助手声称完成但实际不存在的代码移植 |
+| 陷阱记录 | [lessons/](./lessons/) | 需要避开的工程坑点 | [RPC 参数名不匹配](./lessons/0006-陷阱-RPC参数名不匹配.md) — `filter` vs `query` 导致后端静默忽略 |
+| 框架学习 | [lessons/](./lessons/) | 工程能力提升 | [学习 PM 框架](./lessons/0001-经验-学习PM框架.md) — 产品管理框架的学习路径 |
 | 项目 Bug | [../../projects/yivad/bugs/](../../projects/yivad/bugs/) | Bug 分析报告 | ProTable 搜索参数不匹配、项目 i18n 标题不显示等 |
 
 ### 经验教训总数
@@ -73,7 +73,7 @@ related:
 ### 场景 1：我在调试一个诡异的跨项目 Bug
 
 1. 先检查 [gotchas/](./lessons/) 目录，看是否有已知的陷阱记录
-2. 重点关注 [RPC 参数名不匹配](./lessons/06-陷阱-RPC参数名不匹配.md) 和 [SSE onDone 守卫](./lessons/07-陷阱-SSE-onDone守卫.md)
+2. 重点关注 [RPC 参数名不匹配](./lessons/0006-陷阱-RPC参数名不匹配.md) 和 [SSE onDone 守卫](./lessons/0007-陷阱-SSE-onDone守卫.md)
 3. 如果没有匹配，考虑在问题解决后贡献一篇新的 gotcha
 
 ### 场景 2：我要了解某个项目的架构
@@ -85,7 +85,7 @@ related:
 
 ### 场景 3：我要开始一个新的 AI 辅助开发任务
 
-1. 先读 [YiVad AICR 端口幻觉](./lessons/02-教训-YiVad-AICR端口幻觉.md) 学习"信任但验证"原则
+1. 先读 [YiVad AICR 端口幻觉](./lessons/0002-教训-YiVad-AICR端口幻觉.md) 学习"信任但验证"原则
 2. 建立验证流程：每个开发会话结束后用 `git diff --stat` 和 `ls` 验证 AI 声称的产出
 3. 在 CLAUDE.md 中只记录经过独立验证的状态
 

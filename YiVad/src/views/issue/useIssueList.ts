@@ -426,7 +426,6 @@ export function useIssueList(
   const columns = computed<ColumnProps<Issue>[]>(() => {
     const coreCols: ColumnProps<Issue>[] = [
       { type: "selection", width: 50 },
-      { prop: "key", label: t("issue.table.key"), width: 120 },
       { prop: "title", label: t("issue.table.title"), minWidth: 220 },
       { prop: "issue_type", label: t("issue.table.type"), width: 105 },
       { prop: "priority", label: t("issue.table.priority"), width: 92 },

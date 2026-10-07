@@ -165,7 +165,7 @@ AI 赋能层（贯穿整个流水线）
 
 ```
 ✓ aier/methods/01-方法-Agent架构模式.md
-✓ engineer/learn/lessons/05-陷阱-macOS-FSEvents静默丢弃.md
+✓ engineer/learn/lessons/0005-陷阱-macOS-FSEvents静默丢弃.md
 ✓ projects/yivad/workflows/开发规范/02-规范-项目架构.md
 ✓ leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md  ← OKR 目录例外
 ✗ aier/methods/subcategory/deep/file.md                       ← 4 级，拒绝合并
@@ -252,7 +252,7 @@ RAG 检索 → 混合检索 (向量 + BM25) → YiVad/YiPet 查询
 
 ### 就绪检查清单
 
-提交新文件前必须通过 [curator/governance/04-治理-就绪检查清单.md](curator/governance/04-治理-就绪检查清单.md)：
+提交新文件前必须通过 [curator/governance/00004-治理-就绪检查清单.md](curator/governance/00004-治理-就绪检查清单.md)：
 
 - [ ] Frontmatter 完整且有效
 - [ ] 文件名符合约定
@@ -263,7 +263,7 @@ RAG 检索 → 混合检索 (向量 + BM25) → YiVad/YiPet 查询
 
 ### 健康看板
 
-[curator/governance/01-治理-知识健康看板.md](curator/governance/01-治理-知识健康看板.md) 跟踪：
+[curator/governance/00001-治理-知识健康看板.md](curator/governance/00001-治理-知识健康看板.md) 跟踪：
 - stale 内容（超过 review_cycle 未审核）
 - 缺失 frontmatter 的文件
 - 孤立文件（无 incoming 链接）

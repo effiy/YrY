@@ -113,16 +113,7 @@ export function Config(props) {
                         }}
                     />
                 </div>
-                <div className='config-item'>
-                    <h3 className='my-auto'>{t('services.help')}</h3>
-                    <Button
-                        onPress={() => {
-                            open('https://pot-app.com/docs/api/translate/openai.html');
-                        }}
-                    >
-                        {t('services.help')}
-                    </Button>
-                </div>
+
                 <div className='config-item'>
                     <h3 className='my-auto'>{t('services.translate.openai.service')}</h3>
                     <Dropdown>
@@ -215,13 +206,7 @@ export function Config(props) {
                                 AiHubMix
                             </Link>
                             的OpenAI API 密钥，速度飞快，经济实惠，1美元的OpenAI API 额度只需人民币6.3元
-                            <Link
-                                isExternal
-                                href='https://pot-app.com/ads/aihubmix.html'
-                                color='primary'
-                            >
-                                配置文档
-                            </Link>
+
                         </div>
                     </CardBody>
                 </Card>

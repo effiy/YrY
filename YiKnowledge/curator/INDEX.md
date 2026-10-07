@@ -31,28 +31,29 @@ related:
 | [diagrams/](./diagrams/) | 知识地图、用户旅程、目录蓝图、看板索引 | 可视化知识库结构与流向 |
 | [archive/](./archive/) | 废弃文件索引与归档流程 | 追溯已移除内容的历史 |
 | [templates/](./templates/) | 知识叶子、ADR、PRD、技术设计、会议记录等模板 | 统一文档结构规范 |
+| [COLLABORATION.md](./COLLABORATION.md) | 协作总索引（入职引导/Mentor 1:1/会议节奏/排期估算/跨项目协作/知识治理/项目管理七入口） | 团队协作相关内容的唯一索引入口 |
 
 ## 快速导航
 
 ### 如果你是 Curator 新人，按此顺序阅读
 
 1. [README.md](./README.md) — 理解 curator 角色的范围与边界
-2. [governance/02-治理-治理规范.md](./governance/02-治理-治理规范.md) — 理解 4 角色、3 节奏模型
-3. [governance/04-治理-就绪检查清单.md](./governance/04-治理-就绪检查清单.md) — 任何知识文件发布前的 10 题门禁
-4. [governance/03-治理-收件箱.md](./governance/03-治理-收件箱.md) — 处理新进入的知识内容
-5. [governance/08-治理-操作速查卡.md](./governance/08-治理-操作速查卡.md) — 日常操作一张纸：可复制的命令和常见场景
+2. [governance/00002-治理-治理规范.md](./governance/00002-治理-治理规范.md) — 理解 4 角色、3 节奏模型
+3. [governance/00004-治理-就绪检查清单.md](./governance/00004-治理-就绪检查清单.md) — 任何知识文件发布前的 10 题门禁
+4. [governance/00003-治理-收件箱.md](./governance/00003-治理-收件箱.md) — 处理新进入的知识内容
+5. [governance/00008-治理-操作速查卡.md](./governance/00008-治理-操作速查卡.md) — 日常操作一张纸：可复制的命令和常见场景
 
 ### 如果你要创建新文件
 
 1. 选择模板：[templates/00-INDEX.md](./templates/00-INDEX.md)
-2. 复制使用：[templates/02-模板-知识叶子模板.md](./templates/02-模板-知识叶子模板.md)（通用）或专用模板
-3. 发布前执行：[governance/04-治理-就绪检查清单.md](./governance/04-治理-就绪检查清单.md)
+2. 复制使用：[templates/00002-模板-知识叶子模板.md](./templates/00002-模板-知识叶子模板.md)（通用）或专用模板
+3. 发布前执行：[governance/00004-治理-就绪检查清单.md](./governance/00004-治理-就绪检查清单.md)
 
 ### 如果你要执行审查
 
-1. 每周审查：[governance/08-治理-操作速查卡.md](./governance/08-治理-操作速查卡.md)（日常操作）+ [governance/03-治理-收件箱.md](./governance/03-治理-收件箱.md) + [governance/07-治理-分类处理.md](./governance/07-治理-分类处理.md)
-2. 每月审查：[governance/01-治理-知识健康看板.md](./governance/01-治理-知识健康看板.md)
-3. 每季度审查：[governance/02-治理-治理规范.md](./governance/02-治理-治理规范.md) + [governance/06-治理-隐性知识待办.md](./governance/06-治理-隐性知识待办.md)
+1. 每周审查：[governance/00008-治理-操作速查卡.md](./governance/00008-治理-操作速查卡.md)（日常操作）+ [governance/00003-治理-收件箱.md](./governance/00003-治理-收件箱.md) + [governance/00007-治理-分类处理.md](./governance/00007-治理-分类处理.md)
+2. 每月审查：[governance/00001-治理-知识健康看板.md](./governance/00001-治理-知识健康看板.md)
+3. 每季度审查：[governance/00002-治理-治理规范.md](./governance/00002-治理-治理规范.md) + [governance/00006-治理-隐性知识待办.md](./governance/00006-治理-隐性知识待办.md)
 
 ## 跨角色引用
 

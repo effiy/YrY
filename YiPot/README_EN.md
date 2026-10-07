@@ -1,10 +1,10 @@
 <img width="200px" src="public/icon.svg" align="left"/>
 
-# Pot (A cute translator)
+# YiPot (A cute translator)
 
 > A cross-platform translator application ([Telegram Group](https://t.me/pot_app))
 
-![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
+![License](https://img.shields.io/github/license/yipot/yipot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?logo=javascript&logoColor=white)
 ![Rust](https://img.shields.io/badge/-Rust-orange?logo=rust&logoColor=white)
@@ -98,9 +98,9 @@
 -   [x] [Youdao](https://ai.youdao.com/)
 -   [x] [Cambridge Dictionary](https://dictionary.cambridge.org/)
 -   [x] [Yandex](https://translate.yandex.com/)
--   [x] [Lingva](https://github.com/TheDavidDelta/lingva-translate) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-template))
--   [x] [Tatoeba](https://tatoeba.org/) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-tatoeba))
--   [x] [ECDICT](https://github.com/skywind3000/ECDICT) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-ecdict))
+-   [x] [Lingva](https://github.com/TheDavidDelta/lingva-translate) ([Plugin](https://github.com/yipot/yipot-translate-plugin-template))
+-   [x] [Tatoeba](https://tatoeba.org/) ([Plugin](https://github.com/yipot/yipot-translate-plugin-tatoeba))
+-   [x] [ECDICT](https://github.com/skywind3000/ECDICT) ([Plugin](https://github.com/yipot/yipot-translate-plugin-ecdict))
 
 More Services see [Plugin System](#plugin-system)
 
@@ -118,9 +118,9 @@ More Services see [Plugin System](#plugin-system)
 -   [x] [Tencent Image Translate](https://cloud.tencent.com/document/product/551/17232)
 -   [x] [Baidu Image Translate](https://fanyi-api.baidu.com/product/22)
 -   [x] [Simple LaTeX](https://simpletex.cn/)
--   [x] [OCRSpace](https://ocr.space/) ([Plugin](https://github.com/pot-app/pot-app-recognize-plugin-template))
--   [x] [Rapid](https://github.com/RapidAI/RapidOcrOnnx) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-rapid))
--   [x] [Paddle](https://github.com/hiroi-sora/PaddleOCR-json) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-paddle))
+-   [x] [OCRSpace](https://ocr.space/) ([Plugin](https://github.com/yipot/yipot-recognize-plugin-template))
+-   [x] [Rapid](https://github.com/RapidAI/RapidOcrOnnx) (Offline [Plugin](https://github.com/yipot/yipot-recognize-plugin-rapid))
+-   [x] [Paddle](https://github.com/hiroi-sora/PaddleOCR-json) (Offline [Plugin](https://github.com/yipot/yipot-recognize-plugin-paddle))
 
 More Services see [Plugin System](#plugin-system)
 
@@ -134,8 +134,8 @@ More Services see [Plugin System](#plugin-system)
 
 -   [x] [Anki](https://apps.ankiweb.net/)
 -   [x] [Eudic](https://dict.eudic.net/)
--   [x] [Youdao](https://www.youdao.com/) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-youdao))
--   [x] [ShanBay](https://web.shanbay.com/web/main) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-shanbay))
+-   [x] [Youdao](https://www.youdao.com/) ([Plugin](https://github.com/yipot/yipot-collection-plugin-youdao))
+-   [x] [ShanBay](https://web.shanbay.com/web/main) ([Plugin](https://github.com/yipot/yipot-collection-plugin-shanbay))
 
 More Services see [Plugin System](#plugin-system)
 
@@ -149,9 +149,9 @@ The built-in services are limited. But you can expand the app's functionality th
 
 ## Install Plugin
 
-You can find plugins you need in the [Plugin List](https://pot-app.com/plugin.html), and then go to the plugin repo to download it.
+You can find plugins you need in the [Plugin List](https://yipot.com/plugin.html), and then go to the plugin repo to download it.
 
-The file extension of pot plugin is `.potext`. After downloading the `.potext` file, go to Preferences - Service Settings - Add External Plugin - Install External Plugin to select the corresponding `.potext` to install it. It will then be added to the service list and can be used like a built-in service.
+The file extension of YiPot plugin is `.potext`. After downloading the `.potext` file, go to Preferences - Service Settings - Add External Plugin - Install External Plugin to select the corresponding `.potext` to install it. It will then be added to the service list and can be used like a built-in service.
 
 ### Troubleshooting
 
@@ -165,7 +165,7 @@ The file extension of pot plugin is `.potext`. After downloading the `.potext` f
 
 ## Develop Plugin
 
-The [Template](https://pot-app.com/en/plugin.html#template) section in the [Plugin List](https://pot-app.com/en/plugin.html) provides plugin development templates for various plugins. Please check the corresponding template repo for specific documentation.
+The [Template](https://yipot.com/en/plugin.html#template) section in the [Plugin List](https://yipot.com/en/plugin.html) provides plugin development templates for various plugins. Please check the corresponding template repo for specific documentation.
 
 <div align="center">
 
@@ -178,16 +178,16 @@ The [Template](https://pot-app.com/en/plugin.html#template) section in the [Plug
 ### Install via Winget
 
 ```powershell
-winget install Pylogmon.pot
+winget install Pylogmon.yipot
 ```
 
 ### Install Manually
 
-1. Download the installation package ending in `.exe` from the Latest [Release](https://github.com/pot-app/pot-desktop/releases/latest) page.
+1. Download the installation package ending in `.exe` from the Latest [Release](https://github.com/yipot/yipot-desktop/releases/latest) page.
 
-    - 64-bit machine download `pot_{version}_x64-setup.exe`
-    - 32-bit machine download `pot_{version}_x86-setup.exe`
-    - arm64 machine download `pot_{version}_arm64-setup.exe`
+    - 64-bit machine download `yipot_{version}_x64-setup.exe`
+    - 32-bit machine download `yipot_{version}_x86-setup.exe`
+    - arm64 machine download `yipot_{version}_arm64-setup.exe`
 
 2. Double click the downloaded file to install it.
 
@@ -197,7 +197,7 @@ winget install Pylogmon.pot
 
     Check if WebView2 is uninstalled/disabled, if so, install WebView2 manually or restore it.
 
-    If the enterprise edition system is inconvenient to install or cannot install WebView2, please try to download the fix WebView2 version `pot_{version} at [Release](https://github.com/pot-app/pot-desktop/releases/latest) _{arch}_fix_webview2_runtime-setup.exe`
+    If the enterprise edition system is inconvenient to install or cannot install WebView2, please try to download the fix WebView2 version `yipot_{version} at [Release](https://github.com/yipot/yipot-desktop/releases/latest) _{arch}_fix_webview2_runtime-setup.exe`
 
     If the issue persists, please try starting in Windows 7 compatibility mode.
 
@@ -208,39 +208,39 @@ winget install Pylogmon.pot
 1. Add our tap:
 
 ```bash
-brew tap pot-app/homebrew-tap
+brew tap yipot/homebrew-tap
 ```
 
-2. Install pot:
+2. Install YiPot:
 
 ```bash
-brew install --cask pot
+brew install --cask yipot
 ```
 
-3. Upgrade pot
+3. Upgrade YiPot
 
 ```bash
-brew upgrade --cask pot
+brew upgrade --cask yipot
 ```
 
 ### Install Manually
 
-1. Download the installation package ending in `.dmg` from the Latest [Release](https://github.com/pot-app/pot-desktop/releases/latest) page. (If you are using M1, please download the installation package named `pot_{version}_aarch64.dmg`, otherwise download the installation package named `pot_{version}_x64.dmg`)
+1. Download the installation package ending in `.dmg` from the Latest [Release](https://github.com/yipot/yipot-desktop/releases/latest) page. (If you are using M1, please download the installation package named `yipot_{version}_aarch64.dmg`, otherwise download the installation package named `yipot_{version}_x64.dmg`)
 2. Double click the downloaded file to install it.
 
 ### Troubleshooting
 
--   "pot" can’t be opened because the developer cannot be verified.
+-   "YiPot" can’t be opened because the developer cannot be verified.
 
-    Click the Cancel button, then go to the Settings -> Privacy and Security page, click the Still Open button, and then click the Open button in the pop-up window. After that, there will be no more pop-up warnings when opening pot.
+    Click the Cancel button, then go to the Settings -> Privacy and Security page, click the Still Open button, and then click the Open button in the pop-up window. After that, there will be no more pop-up warnings when opening YiPot.
 
-    If you cannot find the above options in Privacy & Security, or get error prompts such as broken files with Apple Silicon machines. Open Terminal.app and enter the following command (you may need to enter a password halfway through), then restart pot:
+    If you cannot find the above options in Privacy & Security, or get error prompts such as broken files with Apple Silicon machines. Open Terminal.app and enter the following command (you may need to enter a password halfway through), then restart YiPot:
 
     ```bash
-    sudo xattr -d com.apple.quarantine /Applications/pot.app
+    sudo xattr -d com.apple.quarantine /Applications/YiPot.app
     ```
 
--   If you encounter a permission prompt every time you open it, or if you cannot perform a shortcut translation, please go to Settings -> Privacy & Security -> Supporting Features to remove pot, and then re-add pot.
+-   If you encounter a permission prompt every time you open it, or if you cannot perform a shortcut translation, please go to Settings -> Privacy & Security -> Supporting Features to remove YiPot, and then re-add YiPot.
 
 ## Linux
 
@@ -256,20 +256,20 @@ Please note that: There are two deb package, `universal` is based on `glibc2.28`
 > In newer version of [Webkit2Gtk](https://archlinux.org/packages/extra/x86_64/webkit2gtk) (2.42.0), Because Nvidia Proprietary drives are not fully implemented DMABUF, it will cause failure to start and crash.<br>
 > Please downgrade or add the `WEBKIT_DISABLE_DMABUF_RENDERER=1` environment variable to `/etc/environment` (or other places where environment variables are set) to turn off the use of DMABUF.
 
-1. View on [AUR](https://aur.archlinux.org/packages?O=0&K=pot-translation)
+1. View on [AUR](https://aur.archlinux.org/packages?O=0&K=yipot-translation)
 
 Use aur helper：
 
 ```bash
-yay -S pot-translation # or pot-translation-bin or pot-translation-git
+yay -S yipot-translation # or yipot-translation-bin or yipot-translation-git
 # or
-paru -S pot-translation # or pot-translation-bin or pot-translation-git
+paru -S yipot-translation # or yipot-translation-bin or yipot-translation-git
 ```
 
 2. If you are using `archlinuxcn`, you can install directly using pacman:
 
 ```bash
-sudo pacman -S pot-translation
+sudo pacman -S yipot-translation
 ```
 
 ### Flatpak
@@ -277,7 +277,7 @@ sudo pacman -S pot-translation
 > [!WARNING]
 > The tray icon is missing in Flatpak version.
 
-<a href='https://flathub.org/apps/com.pot_app.pot'>
+<a href='https://flathub.org/apps/com.yipot.yipot'>
     <img width='240' alt='Download on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
@@ -287,7 +287,7 @@ sudo pacman -S pot-translation
 
 </div>
 
-Pot provides a complete HTTP interface for integration with other software. You can call pot by sending HTTP requests to `127.0.0.1:port`, where `port` is the listening port of pot, default to `60828`, and can be changed in the app settings.
+YiPot provides a complete HTTP interface for integration with other software. You can call YiPot by sending HTTP requests to `127.0.0.1:port`, where `port` is the listening port of YiPot, default to `60828`, and can be changed in the app settings.
 
 ## API Docs:
 
@@ -309,7 +309,7 @@ GET "/ocr_translate?screenshot=true" => Translate screenshot
 
 -   Call translation by selection:
 
-    To call pot's translation by selection, simply send a request to `127.0.0.1:port`:
+    To call YiPot's translation by selection, simply send a request to `127.0.0.1:port`:
 
     E.g. using curl:
 
@@ -319,22 +319,22 @@ GET "/ocr_translate?screenshot=true" => Translate screenshot
 
 ## OCR without internal screenshot
 
-This allows you to perform OCR/translation without using pot's internal screenshot, so you can use your own screenshot tools. It also solves the problem where pot's internal screenshot doesn't work on some platforms.
+This allows you to perform OCR/translation without using YiPot's internal screenshot, so you can use your own screenshot tools. It also solves the problem where YiPot's internal screenshot doesn't work on some platforms.
 
 ### Workflow:
 
 1. Take screenshot using other tool
-2. Save screenshot to `$CACHE/com.pot-app.desktop/pot_screenshot_cut.png`
+2. Save screenshot to `$CACHE/com.yipot.desktop/yipot_screenshot_cut.png`
 3. Send request to `127.0.0.1:port/ocr_recognize?screenshot=false` to call
 
-> `$CACHE` is the system cache dir, e.g. `C:\Users\{username}\AppData\Local\com.pot-app.desktop\pot_screenshot_cut.png` on Windows.
+> `$CACHE` is the system cache dir, e.g. `C:\Users\{username}\AppData\Local\com.yipot.desktop\yipot_screenshot_cut.png` on Windows.
 
 ### Example
 
 OCR using Flameshot on Linux:
 
 ```bash
-rm ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && flameshot gui -s -p ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
+rm ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && flameshot gui -s -p ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
 ```
 
 ## Existing Usages (Quick selection translation)
@@ -342,16 +342,16 @@ rm ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && flameshot gui -s -p ~/
 ### SnipDo (Windows)
 
 1. Download and install SnipDo in the [Microsoft Store](https://apps.microsoft.com/store/detail/snipdo/9NPZ2TVKJVT7)
-2. Download the SnipDo extension of pot from the Latest [Release](https://github.com/pot-app/pot-desktop/releases/latest) (pot.pbar)
+2. Download the SnipDo extension of YiPot from the Latest [Release](https://github.com/yipot/yipot-desktop/releases/latest) (yipot.pbar)
 3. Double click the downloaded file to install it.
-4. Selection some text, you can see the pot icon in the upper right corner of the selection, click the icon to translate.
+4. Selection some text, you can see the YiPot icon in the upper right corner of the selection, click the icon to translate.
 
 ### PopClip (MacOS)
 
 1. Download and install PopClip in the [App Store](https://apps.apple.com/us/app/popclip/id445189367?mt=12)
-2. Download the PopClip extension of pot from the Latest [Release](https://github.com/pot-app/pot-desktop/releases/latest) (pot.popclipextz)
+2. Download the PopClip extension of YiPot from the Latest [Release](https://github.com/yipot/yipot-desktop/releases/latest) (YiPot.popclipextz)
 3. Double click the downloaded file to install it.
-4. Enable the pot extension in PopClip settings, and then you can translate by selecting text.
+4. Enable the YiPot extension in PopClip settings, and then you can translate by selecting text.
 
 ### Starry (Linux)
 
@@ -365,43 +365,43 @@ Github: [ccslykx/Starry](https://github.com/ccslykx/Starry)
 
 </div>
 
-Due to the varying levels of support for Wayland among different distributions, pot itself cannot achieve perfect compatibility. However, here are some solutions to common issues that can be implemented through proper configuration, allowing pot to run flawlessly on Wayland.
+Due to the varying levels of support for Wayland among different distributions, YiPot itself cannot achieve perfect compatibility. However, here are some solutions to common issues that can be implemented through proper configuration, allowing YiPot to run flawlessly on Wayland.
 
 ## Shortcut key cannot be used
 
-Due to Tauri's lack of support for Wayland, the shortcut key scheme in the pot application cannot be used under Wayland.
-You can set the system shortcut and send a request with `curl` to call pot, see [External Calls](#external-calls) for details
+Due to Tauri's lack of support for Wayland, the shortcut key scheme in the YiPot application cannot be used under Wayland.
+You can set the system shortcut and send a request with `curl` to call YiPot, see [External Calls](#external-calls) for details
 
 ## Screenshot doesn't work
 
-In some pure Wayland desktop environments/window managers (such as Hyprland), the built-in screenshot feature of pot cannot be used. In this case, you can use other screenshot tools instead. For more details, please refer to the section [Not Using Built-in Screenshot](#not-using-built-in-screenshot).
+In some pure Wayland desktop environments/window managers (such as Hyprland), the built-in screenshot feature of YiPot cannot be used. In this case, you can use other screenshot tools instead. For more details, please refer to the section [Not Using Built-in Screenshot](#not-using-built-in-screenshot).
 
 Below is a configuration example for Hyprland using `grim` and `slurp` to achieve screenshot functionality:
 
 ```conf
-bind = ALT, X, exec, grim -g "$(slurp)" ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
-bind = ALT, C, exec, grim -g "$(slurp)" ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_translate?screenshot=false"
+bind = ALT, X, exec, grim -g "$(slurp)" ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
+bind = ALT, C, exec, grim -g "$(slurp)" ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_translate?screenshot=false"
 ```
 
 Other desktop environments/window managers also have similar operations.
 
 ## The translation window follows the mouse position.
 
-Due to the current inability of pot to obtain accurate mouse coordinates under Wayland, its internal implementation cannot function properly.
+Due to the current inability of YiPot to obtain accurate mouse coordinates under Wayland, its internal implementation cannot function properly.
 For certain desktop environments/window managers, it is possible to achieve window following mouse position by setting window rules. Here we take Hyprland as an example:
 
 ```conf
-windowrulev2 = float, class:(pot), title:(Translator|OCR|PopClip|Screenshot Translate) # Translation window floating
-windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screenshot Translate) # Translation window follows the mouse position.
+windowrulev2 = float, class:(YiPot), title:(Translator|OCR|PopClip|Screenshot Translate) # Translation window floating
+windowrulev2 = move cursor 0 0, class:(YiPot), title:(Translator|PopClip|Screenshot Translate) # Translation window follows the mouse position.
 ```
 
 <div align="center">
 
-# Internationalization([Weblate](https://hosted.weblate.org/engage/pot-app/))
+# Internationalization([Weblate](https://hosted.weblate.org/engage/yipot/))
 
-[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/svg-badge.svg)](https://hosted.weblate.org/engage/pot-app/)
+[![](https://hosted.weblate.org/widget/yipot/yipot-desktop/svg-badge.svg)](https://hosted.weblate.org/engage/yipot/)
 
-[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/multi-auto.svg)](https://hosted.weblate.org/engage/pot-app/)
+[![](https://hosted.weblate.org/widget/yipot/yipot-desktop/multi-auto.svg)](https://hosted.weblate.org/engage/yipot/)
 
 </div>
 
@@ -411,7 +411,7 @@ windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screensho
 
 </div>
 
-<img src="https://github.com/pot-app/.github/blob/master/pot-desktop-contributions.svg?raw=true" width="100%"/>
+<img src="https://github.com/yipot/.github/blob/master/yipot-desktop-contributions.svg?raw=true" width="100%"/>
 
 ## Manual compilation
 
@@ -428,13 +428,13 @@ Rust >= 1.80.0
 1. Clone the repository
 
     ```bash
-    git clone https://github.com/pot-app/pot-desktop.git
+    git clone https://github.com/yipot/yipot-desktop.git
     ```
 
 2. Install dependencies
 
     ```bash
-    cd pot-desktop
+    cd yipot-desktop
     pnpm install
     ```
 

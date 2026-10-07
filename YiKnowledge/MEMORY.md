@@ -15,8 +15,8 @@ last_verified: 2026-09-21
 related:
   - ./README.md
   - ./INDEX.md
-  - ./curator/governance/02-治理-治理规范.md
-  - ./curator/governance/04-治理-就绪检查清单.md
+  - ./curator/governance/00002-治理-治理规范.md
+  - ./curator/governance/00004-治理-就绪检查清单.md
   - ./curator/templates/00-INDEX.md
 ---
 
@@ -48,13 +48,13 @@ YiKnowledge/
 
 | 角色 | 核心问题 | 典型文件示例 |
 |---|---|---|
-| engineer/ | 如何实现？ | [engineer/build/05-构建-API设计模式.md](./engineer/build/05-构建-API设计模式.md) —— API 实现模式 |
-| leader/ | 如何决策？ | [leader/architecture/01-架构-架构决策设计.md](./leader/architecture/01-架构-架构决策设计.md) —— 架构决策记录 |
+| engineer/ | 如何实现？ | [engineer/build/002-构建-API设计模式.md](./engineer/build/002-构建-API设计模式.md) —— API 实现模式 |
+| leader/ | 如何决策？ | [leader/architecture/001-架构-架构决策设计.md](./leader/architecture/001-架构-架构决策设计.md) —— 架构决策记录 |
 | product/ | 构建什么产品？ | [product/discovery/01-发现-编写PRD.md](./product/discovery/01-发现-编写PRD.md) —— PRD 编写指南 |
 | aier/ | 如何使用 AI？ | [aier/methods/](./aier/methods/) —— RAG 模式、Agent 架构 |
 | executive/ | 如何做业务？ | [executive/strategy/](./executive/strategy/) —— 企业战略、SWOT 分析 |
 | sre/ | 如何保障稳定性？ | [sre/observability/07-可观测-搭建可观测性.md](./sre/observability/07-可观测-搭建可观测性.md) —— 可观测性搭建 |
-| curator/ | 如何管理知识库？ | [curator/governance/04-治理-就绪检查清单.md](./curator/governance/04-治理-就绪检查清单.md) —— 就绪检查清单 |
+| curator/ | 如何管理知识库？ | [curator/governance/00004-治理-就绪检查清单.md](./curator/governance/00004-治理-就绪检查清单.md) —— 就绪检查清单 |
 
 ## 文件命名约定
 
@@ -69,9 +69,9 @@ YiKnowledge/
 **命名示例：**
 ```
 curator/governance/
-├── 01-治理-知识健康看板.md      # 正确：序号-分类-描述
-├── 02-治理-治理规范.md
-├── 04-治理-就绪检查清单.md
+├── 00001-治理-知识健康看板.md      # 正确：序号-分类-描述
+├── 00002-治理-治理规范.md
+├── 00004-治理-就绪检查清单.md
 
 sre/release/
 ├── 01-发布-金丝雀发布.md        # 正确
@@ -166,7 +166,7 @@ acceptance_criteria:
   - 了解两种框架的常见误用模式
 related:
   - ./04-框架-MoSCoW优先级.md
-  - ../../leader/roadmap/07-路线图-技术选型.md
+  - ../../leader/roadmap/007-路线图-技术选型.md
 ---
 ```
 
@@ -253,6 +253,6 @@ engineer/build/api/rest/authentication.md       # 4 级 —— 禁止
 
 - [README.md](./README.md) —— 知识库顶层概览，流水线叙事 + 角色决策树
 - [INDEX.md](./INDEX.md) —— 全库导航索引，按角色 × 阶段的矩阵视图
-- [curator/governance/04-治理-就绪检查清单.md](./curator/governance/04-治理-就绪检查清单.md) —— 新增内容前的 10 个问题关卡
-- [curator/governance/02-治理-治理规范.md](./curator/governance/02-治理-治理规范.md) —— 知识生命周期治理规范
+- [curator/governance/00004-治理-就绪检查清单.md](./curator/governance/00004-治理-就绪检查清单.md) —— 新增内容前的 10 个问题关卡
+- [curator/governance/00002-治理-治理规范.md](./curator/governance/00002-治理-治理规范.md) —— 知识生命周期治理规范
 - [curator/templates/00-INDEX.md](./curator/templates/00-INDEX.md) —— 10 类文档模板索引

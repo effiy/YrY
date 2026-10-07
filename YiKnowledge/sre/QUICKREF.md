@@ -17,9 +17,9 @@ acceptance_criteria:
   - "命令可直接复制粘贴执行"
   - "包含服务依赖图和值班决策树"
 related:
-  - ./incident-response/04-事件-响应事件.md
-  - ./incident-response/09-事件-Runbook模板.md
-  - ./observability/07-可观测-搭建可观测性.md
+  - ./incident-response/004-事件-响应事件.md
+  - ./incident-response/009-事件-Runbook模板.md
+  - ./observability/007-可观测-搭建可观测性.md
 ---
 
 # YrY 运维速查卡
@@ -331,16 +331,16 @@ curl -s localhost:10086/health/observer
 
 | 我需要... | 去这里 |
 |---|---|
-| 完整事件响应流程 | [事件响应流程](./incident-response/04-事件-响应事件.md) |
-| 详细故障处理步骤 | [Runbook 模板](./incident-response/09-事件-Runbook模板.md) |
-| 如何主持作战室 | [作战室运作](./incident-response/05-事件-作战室运作.md) |
-| 如何写事后复盘 | [事后复盘指南](./incident-response/07-事件-事后复盘指南.md) |
-| 如何主持复盘会议 | [复盘会议主持](./incident-response/13-事件-复盘会议主持.md) |
-| 如何对外沟通事件 | [事件沟通模板](./incident-response/10-事件-事件沟通模板.md) |
-| 如何发布变更 | [发布流程](./release/04-发布-发布流程.md) |
-| 如何做热修复 | [热修复发布](./release/02-发布-热修复发布.md) |
-| 灾难恢复完整流程 | [灾难恢复计划](./incident-response/11-事件-灾难恢复计划.md) |
-| 新人该从哪里开始 | [新人入职指南](./run/01-入职-SRE入职指南.md) |
-| 备份恢复数据库 | [数据库备份恢复](./observability/11-可观测-数据库备份恢复.md) |
-| 生产就绪上线审查 | [生产就绪审查](./release/07-发布-生产就绪审查.md) |
-| 季度可靠性回顾 | [季度回顾指南](./run/02-运行-季度回顾指南.md) |
+| 完整事件响应流程 | [事件响应流程](./incident-response/004-事件-响应事件.md) |
+| 详细故障处理步骤 | [Runbook 模板](./incident-response/009-事件-Runbook模板.md) |
+| 如何主持作战室 | [作战室运作](./incident-response/005-事件-作战室运作.md) |
+| 如何写事后复盘 | [事后复盘指南](./incident-response/007-事件-事后复盘指南.md) |
+| 如何主持复盘会议 | [复盘会议主持](./incident-response/013-事件-复盘会议主持.md) |
+| 如何对外沟通事件 | [事件沟通模板](./incident-response/010-事件-事件沟通模板.md) |
+| 如何发布变更 | [发布流程](./release/004-发布-发布流程.md) |
+| 如何做热修复 | [热修复发布](./release/002-发布-热修复发布.md) |
+| 灾难恢复完整流程 | [灾难恢复计划](./incident-response/011-事件-灾难恢复计划.md) |
+| 新人该从哪里开始 | [新人入职指南](./run/001-入职-SRE入职指南.md) |
+| 备份恢复数据库 | [数据库备份恢复](./observability/011-可观测-数据库备份恢复.md) |
+| 生产就绪上线审查 | [生产就绪审查](./release/007-发布-生产就绪审查.md) |
+| 季度可靠性回顾 | [季度回顾指南](./run/002-运行-季度回顾指南.md) |

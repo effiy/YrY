@@ -46,7 +46,7 @@ updated: 2026-09-10
   - 已完成：所有 ADR 归档到 `YiKnowledge/leader/decisions/` 下按项目组织的子目录中
 
 - **KR5: ADR 模板可复用（上下文/决策/后果）** — 100%
-  - 已完成：12 节 ADR 模板归档在 `YiKnowledge/leader/architecture/01-架构-架构决策设计.md`
+  - 已完成：12 节 ADR 模板归档在 `YiKnowledge/leader/architecture/001-架构-架构决策设计.md`
 
 ## 相关指标 (2 个，均已完成 100%)
 

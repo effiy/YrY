@@ -52,10 +52,10 @@ related:
 
 | 框架 | 落地文件 | 落地日期 | YrY 应用 |
 |---|---|---|---|
-| 波特五力模型 | [strategy/07-战略-波特五力模型.md](../../../strategy/07-战略-波特五力模型.md) | 2026-08 | AI 开发工具领域五力分析 + YrY 差异化策略 |
-| 蓝海战略 | [strategy/01-战略-蓝海战略.md](../../../strategy/01-战略-蓝海战略.md) | 2026-08 | YiPet/YiKnowledge 蓝海机会 + ERRC 网格 |
-| 商业模式画布 | [strategy/02-战略-商业模式画布.md](../../../strategy/02-战略-商业模式画布.md) | 2026-08 | YrY 三项目协同 BMC 分析 |
-| 价值主张画布 | [strategy/11-战略-价值主张画布.md](../../../strategy/11-战略-价值主张画布.md) | 2026-08 | YiVad/YiPet/YiKnowledge 各自的客户画像 |
+| 波特五力模型 | [strategy/007-战略-波特五力模型.md](../../../strategy/007-战略-波特五力模型.md) | 2026-08 | AI 开发工具领域五力分析 + YrY 差异化策略 |
+| 蓝海战略 | [strategy/001-战略-蓝海战略.md](../../../strategy/001-战略-蓝海战略.md) | 2026-08 | YiPet/YiKnowledge 蓝海机会 + ERRC 网格 |
+| 商业模式画布 | [strategy/002-战略-商业模式画布.md](../../../strategy/002-战略-商业模式画布.md) | 2026-08 | YrY 三项目协同 BMC 分析 |
+| 价值主张画布 | [strategy/011-战略-价值主张画布.md](../../../strategy/011-战略-价值主张画布.md) | 2026-08 | YiVad/YiPet/YiKnowledge 各自的客户画像 |
 
 ## 证据
 

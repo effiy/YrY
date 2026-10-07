@@ -1,10 +1,10 @@
 <img width="200px" src="public/icon.svg" align="left"/>
 
-# Pot (간편 번역기)
+# YiPot (간편 번역기)
 
 > A cross-platform translator application ([Telegram Group](https://t.me/pot_app))
 
-![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
+![License](https://img.shields.io/github/license/yipot/yipot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?logo=javascript&logoColor=white)
 ![Rust](https://img.shields.io/badge/-Rust-orange?logo=rust&logoColor=white)
@@ -98,9 +98,9 @@
 -   [x] [Youdao](https://ai.youdao.com/)
 -   [x] [Cambridge Dictionary](https://dictionary.cambridge.org/)
 -   [x] [Yandex](https://translate.yandex.com/)
--   [x] [Lingva](https://github.com/TheDavidDelta/lingva-translate) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-template))
--   [x] [Tatoeba](https://tatoeba.org/) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-tatoeba))
--   [x] [ECDICT](https://github.com/skywind3000/ECDICT) ([Plugin](https://github.com/pot-app/pot-app-translate-plugin-ecdict))
+-   [x] [Lingva](https://github.com/TheDavidDelta/lingva-translate) ([Plugin](https://github.com/yipot/yipot-translate-plugin-template))
+-   [x] [Tatoeba](https://tatoeba.org/) ([Plugin](https://github.com/yipot/yipot-translate-plugin-tatoeba))
+-   [x] [ECDICT](https://github.com/skywind3000/ECDICT) ([Plugin](https://github.com/yipot/yipot-translate-plugin-ecdict))
 
 추가항목은 다음을 참고 [Plugin System](#plugin-system)
 
@@ -118,9 +118,9 @@
 -   [x] [Tencent Image Translate](https://cloud.tencent.com/document/product/551/17232)
 -   [x] [Baidu Image Translate](https://fanyi-api.baidu.com/product/22)
 -   [x] [Simple LaTeX](https://simpletex.cn/)
--   [x] [OCRSpace](https://ocr.space/) ([Plugin](https://github.com/pot-app/pot-app-recognize-plugin-template))
--   [x] [Rapid](https://github.com/RapidAI/RapidOcrOnnx) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-rapid))
--   [x] [Paddle](https://github.com/hiroi-sora/PaddleOCR-json) (Offline [Plugin](https://github.com/pot-app/pot-app-recognize-plugin-paddle))
+-   [x] [OCRSpace](https://ocr.space/) ([Plugin](https://github.com/yipot/yipot-recognize-plugin-template))
+-   [x] [Rapid](https://github.com/RapidAI/RapidOcrOnnx) (Offline [Plugin](https://github.com/yipot/yipot-recognize-plugin-rapid))
+-   [x] [Paddle](https://github.com/hiroi-sora/PaddleOCR-json) (Offline [Plugin](https://github.com/yipot/yipot-recognize-plugin-paddle))
 
 추가항목은 다음을 참고 [Plugin System](#plugin-system)
 
@@ -134,8 +134,8 @@
 
 -   [x] [Anki](https://apps.ankiweb.net/)
 -   [x] [Eudic](https://dict.eudic.net/)
--   [x] [Youdao](https://www.youdao.com/) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-youdao))
--   [x] [ShanBay](https://web.shanbay.com/web/main) ([Plugin](https://github.com/pot-app/pot-app-collection-plugin-shanbay))
+-   [x] [Youdao](https://www.youdao.com/) ([Plugin](https://github.com/yipot/yipot-collection-plugin-youdao))
+-   [x] [ShanBay](https://web.shanbay.com/web/main) ([Plugin](https://github.com/yipot/yipot-collection-plugin-shanbay))
 
 추가항목은 다음을 참고 [Plugin System](#plugin-system)
 
@@ -149,7 +149,7 @@
 
 ## -플러그인-의 설치
 
-설치가능한 플러그인 항목은 다음을 참고하세요 [Plugin List](https://pot-app.com/plugin.html). 그리고 필요한 항목을 다운받으십시오.
+설치가능한 플러그인 항목은 다음을 참고하세요 [Plugin List](https://yipot.com/plugin.html). 그리고 필요한 항목을 다운받으십시오.
 
 플러그인의 확장자는 `.potext` 입니다. 다운받은 `.potext` 확장자 파일을 프로그램 설정메뉴 - 서비스 - Add External Plugin - Install External Plugin 메뉴에서 등록하여 설치합니다. 파일을 등록하면 해당 항목을 프로그램의 사용목록에 표시가 되어 사용이 가능해 집니다.
 
@@ -165,7 +165,7 @@
 
 ## -플러그인-의 개발
 
-템플릿 [Template](https://pot-app.com/en/plugin.html#template) 항목에서 다양한 항목을 플러그인들을 찾을 수 있습니다 [Plugin List](https://pot-app.com/en/plugin.html). 이 곳에서 필요한 문서를 참고하십시오.
+템플릿 [Template](https://yipot.com/en/plugin.html#template) 항목에서 다양한 항목을 플러그인들을 찾을 수 있습니다 [Plugin List](https://yipot.com/en/plugin.html). 이 곳에서 필요한 문서를 참고하십시오.
 
 <div align="center">
 
@@ -178,16 +178,16 @@
 ### Winget 을 이용한 설치
 
 ```powershell
-winget install Pylogmon.pot
+winget install Pylogmon.yipot
 ```
 
 ### 수동 설치
 
-1. 최신버전 다운로드 페이지 [Release](https://github.com/pot-app/pot-desktop/releases/latest)에서 `.exe` 파일을 다운받습니다.
+1. 최신버전 다운로드 페이지 [Release](https://github.com/yipot/yipot-desktop/releases/latest)에서 `.exe` 파일을 다운받습니다.
 
-    - 64-bit 버전 사용시, `pot_{version}_x64-setup.exe`
-    - 32-bit 버전 사용시, `pot_{version}_x86-setup.exe`
-    - arm64 버전 사용시, `pot_{version}_arm64-setup.exe`
+    - 64-bit 버전 사용시, `yipot_{version}_x64-setup.exe`
+    - 32-bit 버전 사용시, `yipot_{version}_x86-setup.exe`
+    - arm64 버전 사용시, `yipot_{version}_arm64-setup.exe`
 
 2. 더블클릭하여 설치를 합니다.
 
@@ -197,7 +197,7 @@ winget install Pylogmon.pot
 
     윈도우-브라우저에서 사용하는 WebView2 기능이 설치되지 않았거나 비활성화 된 경우 입니다. 이 때는 WebView2 를 설치하거나 기능을 재설정 하십시오.
 
-    회사/기업 사용자의 경우 WebView2 기능이 설치되지 않았거나 비활성화된 경우가 있습니다. 이 경우 다음을 설치하십시오. WebView2 version `pot_{version} at [Release](https://github.com/pot-app/pot-desktop/releases/latest) _{arch}_fix_webview2_runtime-setup.exe`
+    회사/기업 사용자의 경우 WebView2 기능이 설치되지 않았거나 비활성화된 경우가 있습니다. 이 경우 다음을 설치하십시오. WebView2 version `yipot_{version} at [Release](https://github.com/yipot/yipot-desktop/releases/latest) _{arch}_fix_webview2_runtime-setup.exe`
 
     문제가 해결되지 않는 경우, Windows 7 compatibility mode에서 시도해 보십시오.
 
@@ -208,40 +208,40 @@ winget install Pylogmon.pot
 1. 탭에 추가:
 
 ```bash
-brew tap pot-app/homebrew-tap
+brew tap yipot/homebrew-tap
 ```
 
 2. 설치:
 
 ```bash
-brew install --cask pot
+brew install --cask yipot
 ```
 
 3. 업데이트:
 
 ```bash
-brew upgrade --cask pot
+brew upgrade --cask yipot
 ```
 
 ### 수동설치
 
-1. 최신버전 다운로드 페이지 [Release](https://github.com/pot-app/pot-desktop/releases/latest)에서 `.dmg` 파일을 다운받습니다. (M1 사용자이면, 다음 파일명을 다운로드 합니다 `pot_{version}_aarch64.dmg`, 기타 사용자는 다음 파일을 다운로드 합니다. `pot_{version}_x64.dmg`)
+1. 최신버전 다운로드 페이지 [Release](https://github.com/yipot/yipot-desktop/releases/latest)에서 `.dmg` 파일을 다운받습니다. (M1 사용자이면, 다음 파일명을 다운로드 합니다 `yipot_{version}_aarch64.dmg`, 기타 사용자는 다음 파일을 다운로드 합니다. `yipot_{version}_x64.dmg`)
 2. 더블클릭하여 설치를 합니다.
 
 ### 문제해결
 
--   "pot" 을 열 수 없는 경우는 개발자 인증이 되지 않아서 입니다.
+-   "YiPot" 을 열 수 없는 경우는 개발자 인증이 되지 않아서 입니다.
 
     취소 버튼을 누르고 설정 메뉴로 들어갑니다 -> 개인정보 및 보안 메뉴에서 설정을 합니다.
-    열기 버튼을 클릭한 다음 팝업 창에서 열기 버튼을 클릭합니다. 그 이후에는 포트를 열 때 더 이상 팝업 경고가 표시되지 않습니다.
+    열기 버튼을 클릭한 다음 팝업 창에서 열기 버튼을 클릭합니다. 그 이후에는 YiPot을 열 때 더 이상 팝업 경고가 표시되지 않습니다.
 
-    개인정보 및 보안에서 위의 옵션을 찾을 수 없거나 Apple Silicon 컴퓨터에서 파일 손상과 같은 오류 메시지가 표시되는 경우. Terminal.app을 열고 다음 명령을 입력한 다음(중간에 비밀번호를 입력해야 할 수도 있음), pot을 다시 시작합니다:
+    개인정보 및 보안에서 위의 옵션을 찾을 수 없거나 Apple Silicon 컴퓨터에서 파일 손상과 같은 오류 메시지가 표시되는 경우. Terminal.app을 열고 다음 명령을 입력한 다음(중간에 비밀번호를 입력해야 할 수도 있음), YiPot을 다시 시작합니다:
 
     ```bash
-    sudo xattr -d com.apple.quarantine /Applications/pot.app
+    sudo xattr -d com.apple.quarantine /Applications/YiPot.app
     ```
 
--   열 때마다 권한 프롬프트가 나타나거나 바로 가기 번역을 수행할 수 없는 경우 설정 -> 개인정보 및 보안 -> 지원 기능으로 이동하여 Pot을 제거한 다음 Pot을 다시 추가하세요..
+-   열 때마다 권한 프롬프트가 나타나거나 바로 가기 번역을 수행할 수 없는 경우 설정 -> 개인정보 및 보안 -> 지원 기능으로 이동하여 YiPot을 제거한 다음 YiPot을 다시 추가하세요..
 
 ## Linux
 
@@ -257,20 +257,20 @@ brew upgrade --cask pot
 > In newer version of [Webkit2Gtk](https://archlinux.org/packages/extra/x86_64/webkit2gtk) (2.42.0), Because Nvidia Proprietary drives are not fully implemented DMABUF, it will cause failure to start and crash.<br>
 > Please downgrade or add the `WEBKIT_DISABLE_DMABUF_RENDERER=1` environment variable to `/etc/environment` (or other places where environment variables are set) to turn off the use of DMABUF.
 
-1. View on [AUR](https://aur.archlinux.org/packages?O=0&K=pot-translation)
+1. View on [AUR](https://aur.archlinux.org/packages?O=0&K=yipot-translation)
 
 Use aur helper：
 
 ```bash
-yay -S pot-translation # or pot-translation-bin or pot-translation-git
+yay -S yipot-translation # or yipot-translation-bin or yipot-translation-git
 # or
-paru -S pot-translation # or pot-translation-bin or pot-translation-git
+paru -S yipot-translation # or yipot-translation-bin or yipot-translation-git
 ```
 
 2. If you are using `archlinuxcn`, you can install directly using pacman:
 
 ```bash
-sudo pacman -S pot-translation
+sudo pacman -S yipot-translation
 ```
 
 ### Flatpak
@@ -278,7 +278,7 @@ sudo pacman -S pot-translation
 > [!WARNING]
 > 시스템 트레이 아이콘이 Flatpak을 통해 설치하면 표시되지 않습니다.
 
-<a href='https://flathub.org/apps/com.pot_app.pot'>
+<a href='https://flathub.org/apps/com.yipot.yipot'>
     <img width='240' alt='Download on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
@@ -288,7 +288,7 @@ sudo pacman -S pot-translation
 
 </div>
 
-Pot은 완벽한 HTTP 인터페이스를 제공합니다. 이를 통해 다른 프로그램과 연동해서 사용이 가능합니다. 타 프로그램은 HTTP requests를 `127.0.0.1:port` 주소로 보내어 활용할 수 있습니다. 기본 포트는 `60828`입니다. 이는 사용자 설정에서 변경이 가능합니다.
+YiPot은 완벽한 HTTP 인터페이스를 제공합니다. 이를 통해 다른 프로그램과 연동해서 사용이 가능합니다. 타 프로그램은 HTTP requests를 `127.0.0.1:port` 주소로 보내어 활용할 수 있습니다. 기본 포트는 `60828`입니다. 이는 사용자 설정에서 변경이 가능합니다.
 
 ## API 상세:
 
@@ -320,22 +320,22 @@ GET "/ocr_translate?screenshot=true" => Translate screenshot
 
 ## 자체스크린샷 미사용 OCR 기능
 
-OCR 및 번역을 위해서 pot은 자체 스크린샷(화면캡쳐)기능을 사용하지 않을 수 있습니다. 자체 화면캡쳐 툴을 사용하면 특정환경에서 자체 스크린샷 기능이 정상적으로 동작하지 않는 것을 해결할 수 있습니다.
+OCR 및 번역을 위해서 YiPot은 자체 스크린샷(화면캡쳐)기능을 사용하지 않을 수 있습니다. 자체 화면캡쳐 툴을 사용하면 특정환경에서 자체 스크린샷 기능이 정상적으로 동작하지 않는 것을 해결할 수 있습니다.
 
 ### Workflow:
 
 1. 타 스크린샷 프로그램을 사용하여 화면을 캡쳐합니다
-2. 캡쳐한 화면을 다음 위치에 저장합니다. `$CACHE/com.pot-app.desktop/pot_screenshot_cut.png`
+2. 캡쳐한 화면을 다음 위치에 저장합니다. `$CACHE/com.yipot.desktop/yipot_screenshot_cut.png`
 3. 외부호출을 통해 번역요청을 요청합니다. `127.0.0.1:port/ocr_recognize?screenshot=false`
 
-> `$CACHE` 는 시스템 캐시 폴더입니다. e.g. 윈도우는 다음경로를 확인하세요 `C:\Users\{username}\AppData\Local\com.pot-app.desktop\pot_screenshot_cut.png` .
+> `$CACHE` 는 시스템 캐시 폴더입니다. e.g. 윈도우는 다음경로를 확인하세요 `C:\Users\{username}\AppData\Local\com.yipot.desktop\yipot_screenshot_cut.png` .
 
 ### 예제
 
 리눅스에서 Flameshot을 활용한 OCR:
 
 ```bash
-rm ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && flameshot gui -s -p ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
+rm ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && flameshot gui -s -p ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
 ```
 
 ## Existing Usages (Quick selection translation)
@@ -343,14 +343,14 @@ rm ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && flameshot gui -s -p ~/
 ### SnipDo (Windows)
 
 1. SnipDo를 [Microsoft Store](https://apps.microsoft.com/store/detail/snipdo/9NPZ2TVKJVT7) 에서 다운받아 설치합니다.
-2. DSnipDo 확장팩을 최신버전 다운 경로에서 [Release](https://github.com/pot-app/pot-desktop/releases/latest) (pot.pbar) 다운받습니다.
+2. SnipDo 확장팩을 최신버전 다운 경로에서 [Release](https://github.com/yipot/yipot-desktop/releases/latest) (yipot.pbar) 다운받습니다.
 3. 더블클릭하여 설치합니다.
 4. 특정단어를 선택하게 되면, 선택영역의 오른쪽 윗 부분에 번역아이콘이 보이게 됩니다. 클릭하여 번역을 진행합니다.
 
 ### PopClip (MacOS)
 
 1. PopClip를 [App Store](https://apps.apple.com/us/app/popclip/id445189367?mt=12) 에서 다운받아 설치합니다.
-2. PopClip 확장팩을 최신버전 다운 경로에서 [Release](https://github.com/pot-app/pot-desktop/releases/latest) (pot.popclipextz) 다운받습니다.
+2. PopClip 확장팩을 최신버전 다운 경로에서 [Release](https://github.com/yipot/yipot-desktop/releases/latest) (YiPot.popclipextz) 다운받습니다.
 3. 더블클릭하여 설치합니다.
 4. PopClip settings에서 기능을 활성화 하면 선택영역의 번역을 할 수 있습니다.
 
@@ -366,22 +366,22 @@ Github: [ccslykx/Starry](https://github.com/ccslykx/Starry)
 
 </div>
 
-배포판마다 Wayland에 대한 지원 수준이 다르기 때문에 pot 자체로는 완벽한 호환성을 달성할 수 없습니다. 하지만 다음은 적절한 구성을 통해 구현할 수 있는 몇 가지 일반적인 문제에 대한 해결책으로, Wayland에서 pot을 완벽하게 실행할 수 있습니다.
+배포판마다 Wayland에 대한 지원 수준이 다르기 때문에 YiPot 자체로는 완벽한 호환성을 달성할 수 없습니다. 하지만 다음은 적절한 구성을 통해 구현할 수 있는 몇 가지 일반적인 문제에 대한 해결책으로, Wayland에서 YiPot을 완벽하게 실행할 수 있습니다.
 
 ## 단축키를 적용할 수 없을 때,
 
-타우리Tauri는 웨이랜드Wayland를 지원하지 않기 때문에, pot의 단축키 기능은 웨이랜드Waylan에서 사용할 수 없습니다.
-시스템 단축키를 설정하고 `curl`로 요청을 보내 팟을 호출할 수 있으며, 자세한 내용은[External Calls](#external-calls) 을 참조하세요.
+타우리Tauri는 웨이랜드Wayland를 지원하지 않기 때문에, YiPot의 단축키 기능은 웨이랜드Waylan에서 사용할 수 없습니다.
+시스템 단축키를 설정하고 `curl`로 요청을 보내 YiPot을 호출할 수 있으며, 자세한 내용은[External Calls](#external-calls) 을 참조하세요.
 
 ## 단축키가 동작하지 않을 때,
 
-일부 순수 웨이랜드Wayland 데스크톱 환경/창 관리자(예: 하이프랜드)에서는 pot의 기본 제공 스크린샷 기능을 사용할 수 없습니다. 이 경우 다른 스크린샷 도구를 대신 사용할 수 있습니다. 자세한 내용은 [Not Using Built-in Screenshot](#not-using-built-in-screenshot) 섹션을 참조하세요.
+일부 순수 웨이랜드Wayland 데스크톱 환경/창 관리자(예: 하이프랜드)에서는 YiPot의 기본 제공 스크린샷 기능을 사용할 수 없습니다. 이 경우 다른 스크린샷 도구를 대신 사용할 수 있습니다. 자세한 내용은 [Not Using Built-in Screenshot](#not-using-built-in-screenshot) 섹션을 참조하세요.
 
 아래는 스크린샷 기능을 구현하기 위해 `grim`과 `slurp`를 사용하는 Hyprland의 구성 예시입니다:
 
 ```conf
-bind = ALT, X, exec, grim -g "$(slurp)" ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
-bind = ALT, C, exec, grim -g "$(slurp)" ~/.cache/com.pot-app.desktop/pot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_translate?screenshot=false"
+bind = ALT, X, exec, grim -g "$(slurp)" ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_recognize?screenshot=false"
+bind = ALT, C, exec, grim -g "$(slurp)" ~/.cache/com.yipot.desktop/yipot_screenshot_cut.png && curl "127.0.0.1:60828/ocr_translate?screenshot=false"
 ```
 
 다른 데스크톱 환경/창 관리자도 비슷한 작업을 수행합니다.
@@ -391,17 +391,17 @@ bind = ALT, C, exec, grim -g "$(slurp)" ~/.cache/com.pot-app.desktop/pot_screens
 현재 웨이랜드Wayland에서 정확한 마우스 좌표를 얻을 수 없기 때문에 내부 구현이 제대로 작동하지 않습니다. 특정 데스크톱 환경/창 관리자의 경우 창 규칙을 설정하여 마우스 위치에 따른 창을 구현할 수 있습니다. 여기서는 하이프랜드Hyprland를 예로 들어보겠습니다:
 
 ```conf
-windowrulev2 = float, class:(pot), title:(Translator|OCR|PopClip|Screenshot Translate) # Translation window floating
-windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screenshot Translate) # Translation window follows the mouse position.
+windowrulev2 = float, class:(YiPot), title:(Translator|OCR|PopClip|Screenshot Translate) # Translation window floating
+windowrulev2 = move cursor 0 0, class:(YiPot), title:(Translator|PopClip|Screenshot Translate) # Translation window follows the mouse position.
 ```
 
 <div align="center">
 
-# 다중언어 지원([Weblate](https://hosted.weblate.org/engage/pot-app/))
+# 다중언어 지원([Weblate](https://hosted.weblate.org/engage/yipot/))
 
-[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/svg-badge.svg)](https://hosted.weblate.org/engage/pot-app/)
+[![](https://hosted.weblate.org/widget/yipot/yipot-desktop/svg-badge.svg)](https://hosted.weblate.org/engage/yipot/)
 
-[![](https://hosted.weblate.org/widget/pot-app/pot-desktop/multi-auto.svg)](https://hosted.weblate.org/engage/pot-app/)
+[![](https://hosted.weblate.org/widget/yipot/yipot-desktop/multi-auto.svg)](https://hosted.weblate.org/engage/yipot/)
 
 </div>
 
@@ -411,7 +411,7 @@ windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screensho
 
 </div>
 
-<img src="https://github.com/pot-app/.github/blob/master/pot-desktop-contributions.svg?raw=true" width="100%"/>
+<img src="https://github.com/yipot/.github/blob/master/yipot-desktop-contributions.svg?raw=true" width="100%"/>
 
 ## 사용자 컴파일
 
@@ -428,13 +428,13 @@ Rust >= 1.80.0
 1. repository을 복사합니다
 
     ```bash
-    git clone https://github.com/pot-app/pot-desktop.git
+    git clone https://github.com/yipot/yipot-desktop.git
     ```
 
 2. dependencies를 설치합니다
 
     ```bash
-    cd pot-desktop
+    cd yipot-desktop
     pnpm install
     ```
 

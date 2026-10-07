@@ -46,11 +46,11 @@ related:
 
 | 观点 | 蒸馏目标文件 | 状态 |
 |---|---|---|
-| 管理杠杆概念 | [roadmap/03-路线图-组织OKR追踪.md](../../../roadmap/03-路线图-组织OKR追踪.md) | 🔄 进行中 |
-| 决策框架（六问） | [strategy/06-战略-Now-Next-Later路线图.md](../../../strategy/06-战略-Now-Next-Later路线图.md) | ✅ 已完成 |
-| 任务相关成熟度模型 | [roadmap/04-路线图-季度业务回顾.md](../../../roadmap/04-路线图-季度业务回顾.md) | 🔄 进行中 |
+| 管理杠杆概念 | [roadmap/003-路线图-组织OKR追踪.md](../../../roadmap/003-路线图-组织OKR追踪.md) | 🔄 进行中 |
+| 决策框架（六问） | [strategy/006-战略-Now-Next-Later路线图.md](../../../strategy/006-战略-Now-Next-Later路线图.md) | ✅ 已完成 |
+| 任务相关成熟度模型 | [roadmap/004-路线图-季度业务回顾.md](../../../roadmap/004-路线图-季度业务回顾.md) | 🔄 进行中 |
 | 会议类型学（流程 vs. 任务） | [curator/治理/README.md](../../../curator/governance/README.md) | ✅ 已完成 |
-| 培训是最高杠杆活动 | [roadmap/02-路线图-人员预算规划.md](../../../roadmap/02-路线图-人员预算规划.md) | 🔄 进行中 |
+| 培训是最高杠杆活动 | [roadmap/002-路线图-人员预算规划.md](../../../roadmap/002-路线图-人员预算规划.md) | 🔄 进行中 |
 | 绩效评估是管理杠杆 | [leader/roadmap/](../../../leader/roadmap/) | 🔄 进行中 |
 
 ## 待蒸馏书籍

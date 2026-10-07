@@ -87,9 +87,9 @@ Q3 完成了 ADR 决策和框架选型（Vitest 引入、Biome 代码检查）�
 ## 相关资源
 
 - [ADR: Vitest 引入](../decisions/03-决策-Vitest引入.md)
-- [技术债: YiVad 缺少测试框架](../architecture/05-架构-技术债-YiVad缺少测试框架.md)
-- [技术战略 Q4 方向](../architecture/08-架构-技术战略-2026-Q4方向.md)
-- [Q4 路线图预览](../roadmap/10-路线图-审查-2026-Q4预览.md)
+- [技术债: YiVad 缺少测试框架](../architecture/005-架构-技术债-YiVad缺少测试框架.md)
+- [技术战略 Q4 方向](../architecture/008-架构-技术战略-2026-Q4方向.md)
+- [Q4 路线图预览](../roadmap/010-路线图-审查-2026-Q4预览.md)
 
 ## 进度追踪
 
