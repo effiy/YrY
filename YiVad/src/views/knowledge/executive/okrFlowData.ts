@@ -161,7 +161,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
       {
         id: "flow-t-002-1",
         title: "定义北极星与角色职责",
-        detail: "executiver 立北极星，7 角色各拥闭环一环（需求/技术/编码/测试/编排/记录）。",
+        detail: "executive 立北极星，7 角色各拥闭环一环（需求/技术/编码/测试/编排/记录）。",
         acceptance: "7 角色 Goal 全部 trace 到北极星。"
       },
       {
@@ -181,7 +181,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-003",
     title: "产出需求评审记录（PRD + 验收标准 + WSJF）",
-    role: "producter",
+    role: "product",
     roleIcon: "📋",
     roleName: "Product",
     goalId: "prod-001",
@@ -329,7 +329,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
       {
         id: "flow-t-006-3",
         title: "加菜单项",
-        detail: "authMenuList.json 加菜单入口，activeMenu 指向 /executiver。",
+        detail: "authMenuList.json 加菜单入口，activeMenu 指向 /executive。",
         acceptance: "侧边栏可见「流程记录」入口。"
       }
     ]
@@ -382,7 +382,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-008",
     title: "跑门禁 + 产出测试报告与上线记录",
-    role: "srer",
+    role: "sre",
     roleIcon: "🔧",
     roleName: "SRE",
     goalId: "sre-001",
@@ -459,7 +459,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-010",
     title: "复盘 loop-001 需求评审，产出 loop-002 PRD 与验收标准",
-    role: "producter",
+    role: "product",
     roleIcon: "📋",
     roleName: "Product",
     goalId: "prod-001",
@@ -576,7 +576,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-013",
     title: "复盘 loop-001 门禁与上线，规划 loop-002 上线口径",
-    role: "srer",
+    role: "sre",
     roleIcon: "🔧",
     roleName: "SRE",
     goalId: "sre-001",
@@ -692,7 +692,7 @@ export const EXAMPLE_TASKS: ExampleTask[] = [
   {
     id: "flow-t-016",
     title: "复盘 loop-001 全流程，审批 loop-002 目标与里程碑",
-    role: "executiver",
+    role: "executive",
     roleIcon: "🏢",
     roleName: "Executive",
     goalId: "exec-001",

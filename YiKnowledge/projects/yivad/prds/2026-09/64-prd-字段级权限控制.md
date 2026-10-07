@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-134: 字段级权限控制 — 按角色显隐字段、只读字段、数据脱敏、字段访问审计、项目级字段权限"
 tags: [需求文档, 字段级权限, 角色控制, 数据脱敏, 只读字段, 审计日志, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["64-prd-task-字段级权限控制"]
+related_tests: ["64-prd-test-字段级权限控制"]
+benefit: "产品需求：字段级权限控制"
+lifecycle: active
 ---
 
 # YV-09-134: 字段级权限控制 — 按角色显隐字段、只读字段、数据脱敏、字段访问审计、项目级字段权限

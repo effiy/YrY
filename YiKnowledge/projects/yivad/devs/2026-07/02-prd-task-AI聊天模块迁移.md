@@ -17,6 +17,8 @@ estimate_frontend: 5.0
 source_prd: "02-prd-AI聊天模块迁移.md"
 source_okr: [yivad-001]
 roles: [engineer]
+benefit: "开发方案：task-AI聊天模块迁移"
+lifecycle: active
 ---
 
 # YV-07-02: AI Chat 模块迁移 — 开发方案

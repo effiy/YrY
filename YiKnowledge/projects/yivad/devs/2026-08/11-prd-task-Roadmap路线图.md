@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-11"
 title: "YV-08-11: Roadmap 路线图 — 多项目模块进度可视化 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 2.0
 source_prd: "11-prd-Roadmap路线图.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, Roadmap路线图]
+benefit: "开发方案：task-Roadmap路线图"
+lifecycle: active
 ---
 
 # YV-08-11: Roadmap 路线图 — 开发方案

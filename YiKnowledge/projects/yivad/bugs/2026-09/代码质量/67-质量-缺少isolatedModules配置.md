@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-缺少isolatedModules配置"
+lifecycle: active
 ---
 
 # 缺少 TypeScript isolatedModules 检查
@@ -40,7 +42,5 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`isolatedModules` 是 esbuild/swc 转译的安全网**：Rsbuild 使用 esbuild 进行单文件独立编译，`const enum` 导出和类型重导出在独立编译模式下会出错。`isolatedModules: true` 让 `vue-tsc` 模拟独立编译行为，在类型检查阶段就捕获这些不兼容模式
 

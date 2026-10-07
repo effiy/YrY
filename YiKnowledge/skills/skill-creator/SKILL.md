@@ -1,7 +1,11 @@
 ---
 name: skill-creator
 description: 创建新技能、修改和改进现有技能，以及衡量技能表现。当用户想要从零开始创建技能、编辑或优化现有技能、运行 eval 来测试技能、通过方差分析进行技能基准测试，或优化技能描述以获得更好的触发准确率时使用。
-updated: 2026-09-10---
+user_invocable: true
+updated: 2026-09-10
+lifecycle: active
+priority: medium
+---
 
 # 技能创建器
 
@@ -339,3 +343,4 @@ python -m scripts.package_skill <path/to/skill-folder>
 - `agents/comparator.md`——如何进行盲法 A/B 对比
 - `agents/analyzer.md`——如何分析为什么一个版本优于另一个
 - `references/schemas.md`——evals.json、grading.json 等的 JSON 结构
+- `../shared/glossary.md`——技能共享术语表（渐进式披露、描述优化等术语定义）

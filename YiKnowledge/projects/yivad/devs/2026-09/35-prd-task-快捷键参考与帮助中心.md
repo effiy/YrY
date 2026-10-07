@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-70"
 title: "YV-09-70: 快捷键参考与帮助中心 — 开发方案"
 status: 已完成
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.25
 source_prd: "35-prd-快捷键参考与帮助中心.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 快捷键参考与帮助中心]
+roles: [engineer]
+benefit: "开发方案：task-快捷键参考与帮助中心"
+lifecycle: active
 ---
 
 # YV-09-70: 快捷键参考与帮助中心 — 开发方案
@@ -40,6 +46,20 @@ source_prd: "35-prd-快捷键参考与帮助中心.md"
 ### 实施步骤：0.25d
 
 - 快捷键面板组件 + ? 触发
+
+
+### 架构方案
+
+**技术路线**：复用现有 KeyboardShortcuts 组件 → 增加分类过滤 + 搜索 + 自定义绑定（存储到 localStorage）
+
+**组件树**：
+```
+KeyboardShortcuts.vue (增强: 分类 tabs + 搜索输入框) + ShortcutEditor.vue (自定义绑定对话框)
+```
+
+**关键决策**：
+自定义快捷键存储到 localStorage (`yivad-custom-shortcuts`)；冲突检测：保存前检查是否与其他快捷键冲突
+
 
 ---
 

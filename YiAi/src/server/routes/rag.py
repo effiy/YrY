@@ -10,7 +10,6 @@ Four flat POST routes mirroring ``knowledge.py``'s style:
 """
 import asyncio
 import logging
-from typing import Any
 
 from fastapi import APIRouter, Body
 from fastapi.responses import StreamingResponse
@@ -28,7 +27,6 @@ from domain.rag import (
     rag_query,
     rag_status,
     rebuild_index,
-    rebuild_index_async,
     resolve_safe,
 )
 from models.schemas import (
@@ -42,7 +40,6 @@ from shared.cache import cache
 from shared.cache_keys import CACHE_TTL
 from shared.config import settings
 from shared.response import success
-from shared.sse_utils import format_sse as _format_sse
 from shared.sse_utils import stream_async as _stream_async
 
 logger = logging.getLogger(__name__)
@@ -63,6 +60,7 @@ async def rag_query_route(request: RagQueryRequest):
             request.category,
             request.tags,
             hyde=request.hyde if request.hyde is not None else settings.rag_hyde_enabled,
+            file_paths=request.file_paths,
         )
         return success(data={"sources": sources})
     except Exception as e:
@@ -126,10 +124,96 @@ async def rag_chat_history_clear_route():
     return success(data={"records": [], "max": 20})
 
 
+@router.post("/rag-history-persistent", operation_id="rag_history_persistent")
+async def rag_history_persistent_route(
+    limit: int = Body(50, embed=True),
+    before_ts: float | None = Body(None, embed=True),
+    scope: str = Body("", embed=True),
+    record_type: str = Body("retrieval", embed=True),
+):
+    """Paginated RAG history from MongoDB — survives server restarts.
+
+    Supports cursor-based pagination via ``before_ts`` (Unix timestamp).
+    ``record_type``: "retrieval" | "chat".
+    """
+    from data.rag_history import list_chat_history, list_retrieval_history
+    try:
+        if record_type == "chat":
+            records = await list_chat_history(limit=min(limit, 200), before_ts=before_ts, scope=scope)
+        else:
+            records = await list_retrieval_history(limit=min(limit, 200), before_ts=before_ts, scope=scope)
+        return success(data={"records": records, "limit": limit, "type": record_type})
+    except Exception as e:
+        logger.exception(f"Failed to list persistent RAG history: {e}")
+        return success(data={"records": [], "error": str(e)})
+
+
+@router.post("/rag-analytics", operation_id="rag_analytics")
+async def rag_analytics_route(
+    window: str = Body("7d", embed=True),
+):
+    """Aggregated RAG quality metrics over a time window.
+
+    ``window``: "24h" | "7d" | "30d". Returns avg latency, avg top_score,
+    query count, zero-result rate, and source grade distribution.
+    """
+    from data.rag_history import get_rag_analytics
+    cache_key = f"rag:analytics:{window}"
+    data = await cache.get_or_set(cache_key, lambda: get_rag_analytics(window), ttl=300)
+    return success(data=data)
+
+
+@router.post("/rag-config-update", operation_id="rag_config_update")
+async def rag_config_update_route(
+    top_k: int | None = Body(None, embed=True),
+    hybrid_retrieval_enabled: bool | None = Body(None, embed=True),
+    rerank_enabled: bool | None = Body(None, embed=True),
+    inline_citations_enabled: bool | None = Body(None, embed=True),
+    hyde_enabled: bool | None = Body(None, embed=True),
+    chunk_size: int | None = Body(None, embed=True),
+    chunk_overlap: int | None = Body(None, embed=True),
+    auto_rebuild_enabled: bool | None = Body(None, embed=True),
+):
+    """Update RAG configuration at runtime without editing config.yaml.
+
+    Only the provided fields are updated; others remain unchanged. Changes
+    take effect on the next RAG request (settings are read per-request).
+    """
+    updated: list[str] = []
+    if top_k is not None and 1 <= top_k <= 50:
+        settings.rag_top_k = top_k
+        updated.append("top_k")
+    if hybrid_retrieval_enabled is not None:
+        settings.rag_hybrid_retrieval_enabled = hybrid_retrieval_enabled
+        updated.append("hybrid_retrieval_enabled")
+    if rerank_enabled is not None:
+        settings.rag_rerank_enabled = rerank_enabled
+        updated.append("rerank_enabled")
+    if inline_citations_enabled is not None:
+        settings.rag_inline_citations_enabled = inline_citations_enabled
+        updated.append("inline_citations_enabled")
+    if hyde_enabled is not None:
+        settings.rag_hyde_enabled = hyde_enabled
+        updated.append("hyde_enabled")
+    if chunk_size is not None and 128 <= chunk_size <= 4096:
+        settings.rag_chunk_size = chunk_size
+        updated.append("chunk_size")
+    if chunk_overlap is not None and 0 <= chunk_overlap <= 1024:
+        settings.rag_chunk_overlap = chunk_overlap
+        updated.append("chunk_overlap")
+    if auto_rebuild_enabled is not None:
+        settings.rag_auto_rebuild_enabled = auto_rebuild_enabled
+        updated.append("auto_rebuild_enabled")
+    await cache.delete("rag:status")
+    return success(data={"updated": updated, "config": rag_status()["config"]})
+
+
 @router.post("/rag-build", operation_id="rag_build")
 async def rag_build_route():
     # Fire-and-forget via thread — the index build can take 10+ minutes
     # with local nomic-embed-text. The frontend polls /rag-status.
+    await cache.delete("rag:status")
+    await cache.delete("rag:categories")
     import threading
     threading.Thread(target=rebuild_index, daemon=True).start()
     return success(data=rag_status())
@@ -139,16 +223,21 @@ async def rag_build_route():
 async def rag_chat_route(request: RagChatRequest):
     gen = rag_chat_stream(
         request.messages,
+        model=request.model,
         scope=request.scope,
+        file_paths=request.file_paths,
+        context_notes=request.context_notes,
         top_k=request.top_k,
         hybrid=request.hybrid,
         rerank=request.rerank,
         citations=request.citations,
         num_queries=request.num_queries,
-        chat_mode=request.chat_mode,
+        chat_mode=request.chat_mode.value if request.chat_mode else None,
         category=request.category,
         tags=request.tags,
         hyde_enabled=request.hyde if request.hyde is not None else settings.rag_hyde_enabled,
+        web_search=request.web_search,
+        fast=request.fast,
     )
     return StreamingResponse(
         _stream_async(gen),
@@ -192,6 +281,7 @@ async def rag_decompose_route(request: RagDecomposeRequest):
             request.citations,
             request.category,
             request.tags,
+            request.file_paths,
         )
         return success(data=result)
     except Exception as e:

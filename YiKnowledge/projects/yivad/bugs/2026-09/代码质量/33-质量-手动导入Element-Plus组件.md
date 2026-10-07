@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-手动导入Element-Plus组件"
+lifecycle: active
 ---
 
 # 部分组件绕过自动导入直接 import Element Plus
@@ -69,7 +71,6 @@ import { formContextKey, formItemContextKey } from "element-plus";
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **自动导入机制有三种合理例外**：(1) 命令式 API（`ElMessage`/`ElNotification`）——自动导入不处理它们；(2) 内部 API（`formContextKey`）——不在自动导入的公共 API 范围内；(3) 根组件配置（`ElConfigProvider`）——App.vue 是特例。除此之外的手动导入都应该用自动导入替代
+- **图标的手动导入影响 bundle**：`unplugin-vue-components` 可以按需自动导入图标，手动导入的图标会完整打包。应优先使用自动导入
 

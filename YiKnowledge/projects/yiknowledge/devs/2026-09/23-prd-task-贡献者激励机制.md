@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-20"
 title: "YK-09-20: 贡献者激励机制 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "23-架构设计-贡献者激励机制.md"
 source_okr: [yiknowledge-001]
 related_tests: ["23-prd-test-贡献者激励机制"]
+
+type: task
 ---
 
 # YK-09-20: 贡献者激励机制 — 开发方案

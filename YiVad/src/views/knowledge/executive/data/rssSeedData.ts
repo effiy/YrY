@@ -15,105 +15,105 @@ export interface ExampleRssSeed {
   key: string;
   url: string;
   name: string;
-  /** 覆盖分类，如 "executiver/industry"；留空走自动分类。 */
+  /** 覆盖分类，如 "executive/industry"；留空走自动分类。 */
   category: string;
   enabled: boolean;
 }
 
 export const EXAMPLE_SEEDS: ExampleRssSeed[] = [
-  // ── executiver/industry ──
+  // ── executive/industry ──
   {
     key: "seed_example_the-verge",
     url: "https://www.theverge.com/rss/index.xml",
     name: "The Verge",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
   {
     key: "seed_example_ars-technica",
     url: "https://feeds.arstechnica.com/arstechnica/index",
     name: "Ars Technica",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
   {
     key: "seed_example_ifanr",
     url: "https://www.ifanr.com/feed",
     name: "爱范儿 ifanr",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
   {
     key: "seed_example_36kr",
     url: "https://www.36kr.com/feed",
     name: "36氪",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
   {
     key: "seed_example_tmtpost",
     url: "https://www.tmtpost.com/rss.xml",
     name: "钛媒体",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
   {
     key: "seed_example_product-hunt",
     url: "https://www.producthunt.com/feed",
     name: "Product Hunt",
-    category: "executiver/industry",
+    category: "executive/industry",
     enabled: true
   },
-  // ── executiver/strategy ──
+  // ── executive/strategy ──
   {
     key: "seed_example_hbr",
     url: "https://hbr.org/rss-feeds",
     name: "Harvard Business Review",
-    category: "executiver/strategy",
+    category: "executive/strategy",
     enabled: true
   },
   {
     key: "seed_example_mckinsey",
     url: "https://www.mckinsey.com/feeds/global",
     name: "McKinsey Insights",
-    category: "executiver/strategy",
+    category: "executive/strategy",
     enabled: true
   },
   {
     key: "seed_example_strategy-business",
     url: "https://www.strategy-business.com/feed",
     name: "Strategy+Business",
-    category: "executiver/strategy",
+    category: "executive/strategy",
     enabled: true
   },
-  // ── executiver/roadmap ──
+  // ── executive/roadmap ──
   {
     key: "seed_example_a16z",
     url: "https://a16z.com/feed/",
     name: "a16z",
-    category: "executiver/roadmap",
+    category: "executive/roadmap",
     enabled: true
   },
   {
     key: "seed_example_strictvc",
     url: "https://www.strictlyvc.com/feed/",
     name: "StrictlyVC",
-    category: "executiver/roadmap",
+    category: "executive/roadmap",
     enabled: true
   },
-  // ── executiver/reading-list ──
+  // ── executive/reading-list ──
   {
     key: "seed_example_sspai",
     url: "https://sspai.com/feed",
     name: "少数派 sspai",
-    category: "executiver/reading-list",
+    category: "executive/reading-list",
     enabled: true
   },
   {
     key: "seed_example_nytimes-tech",
     url: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
     name: "NYT Technology",
-    category: "executiver/reading-list",
+    category: "executive/reading-list",
     enabled: true
   },
   // ── aier/methodology ──
@@ -152,21 +152,7 @@ export const EXAMPLE_SEEDS: ExampleRssSeed[] = [
     category: "aier/methodology",
     enabled: true
   },
-  {
-    key: "seed_example_anthropic",
-    url: "https://www.anthropic.com/blog/feed",
-    name: "Anthropic Blog",
-    category: "aier/methodology",
-    enabled: true
-  },
   // ── aier/foundations ──
-  {
-    key: "seed_example_openai",
-    url: "https://openai.com/blog/rss.xml",
-    name: "OpenAI Blog",
-    category: "aier/foundations",
-    enabled: true
-  },
   {
     key: "seed_example_deepmind",
     url: "https://deepmind.google/blog/rss/",
@@ -311,48 +297,48 @@ export const EXAMPLE_SEEDS: ExampleRssSeed[] = [
     category: "engineer/learn/lessons/failures",
     enabled: true
   },
-  // ── srer/release ──
+  // ── sre/release ──
   {
     key: "seed_example_github-blog",
     url: "https://github.blog/feed/",
     name: "GitHub Blog",
-    category: "srer/release",
+    category: "sre/release",
     enabled: true
   },
   {
     key: "seed_example_cloudflare",
     url: "https://blog.cloudflare.com/rss/",
     name: "Cloudflare Blog",
-    category: "srer/release",
+    category: "sre/release",
     enabled: true
   },
   {
     key: "seed_example_nginx",
     url: "https://www.nginx.com/feed/",
     name: "NGINX Blog",
-    category: "srer/release",
+    category: "sre/release",
     enabled: true
   },
-  // ── producter/frameworks ──
+  // ── product/frameworks ──
   {
     key: "seed_example_svpg",
     url: "https://www.svpg.com/feed/",
     name: "SVPG",
-    category: "producter/frameworks",
+    category: "product/frameworks",
     enabled: true
   },
   {
     key: "seed_example_intercom",
     url: "https://www.intercom.com/blog/feed",
     name: "Intercom Blog",
-    category: "producter/frameworks",
+    category: "product/frameworks",
     enabled: true
   },
   {
     key: "seed_example_lenny",
     url: "https://www.lennysnewsletter.com/feed",
     name: "Lenny's Newsletter",
-    category: "producter/frameworks",
+    category: "product/frameworks",
     enabled: true
   },
   // ── curator/templates ──

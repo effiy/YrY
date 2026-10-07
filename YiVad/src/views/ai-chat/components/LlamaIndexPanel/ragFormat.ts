@@ -4,6 +4,8 @@
  * Pure functions with no reactive state — imported by all LlamaIndexPanel sub-components.
  */
 
+import { filesize } from "filesize";
+
 // ── Score display ──
 
 /** Cosine score → percentage string (e.g. 0.82 → "82%"). */
@@ -65,10 +67,7 @@ export function indexFreshness(iso?: string): { color: string; label: string; ag
 /** Human-readable byte size (KB/MB/GB with 1 decimal). */
 export function formatBytes(bytes?: number): string {
   if (!bytes || bytes <= 0) return "—";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  return String(filesize(bytes));
 }
 
 // ── Text ──

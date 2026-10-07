@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YA-09-02: 检索排序与优化 — 测试规格"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YA-09-02"
 source_prds: ["02-需求-检索排序与优化"]
 source_modules: ["02-prd-task-检索排序与优化"]
 source_okr: [yiai-001]
+
+type: test
 ---
 
 # YA-09-02: 检索排序与优化 — 测试规格

@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 import logging
 from typing import Any
 
-from data.database import db
 from data.repository import create_document, delete_document, query_documents, update_document
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException

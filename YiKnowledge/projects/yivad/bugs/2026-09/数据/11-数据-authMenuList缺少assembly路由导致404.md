@@ -11,6 +11,8 @@ severity: major
 priority: p1
 project: YiVad
 module: src/assets/json/authMenuList.json
+benefit: "缺陷记录：数据-authMenuList缺少assembly路由导致404"
+lifecycle: active
 ---
 
 # authMenuList.json 缺少 assembly 路由导致 batchImport 404
@@ -54,13 +56,12 @@ module: src/assets/json/authMenuList.json
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 新增路由模块后，同步更新 `authMenuList.json` 降级数据源，保持与后端菜单 API 返回结构一致 |
+| 流程 | 路由变更的 PR 模板中增加检查项：「降级 JSON 是否已同步更新」 |
+| 测试 | CI 中增加路由完整性校验：对比 `src/views/` 目录与 `authMenuList.json` 的路由覆盖差异 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **降级数据源是隐式依赖**：`authMenuList.json` 在后端正常时不会被读取，仅在 API 不可用时生效。这种「平时不可见、故障时才暴露」的隐式依赖最容易在新增功能时遗漏同步
+- **双写问题**：菜单数据存在两份（后端 MongoDB + 前端 JSON），任何菜单变更都是双写操作。如果双写不能自动化，至少需要 CI 检测不一致并阻断合并
 

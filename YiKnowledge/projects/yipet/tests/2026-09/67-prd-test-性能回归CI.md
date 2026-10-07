@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "性能回归 CI — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["67-性能-性能回归CI"]
+source_prds: ["67-架构设计-性能回归CI.md"]
+source_modules: ["67-prd-task-性能回归CI.md"]
+
+type: test
 ---
 
 # 性能回归 CI — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["67-性能-性能回归CI"]
 |------|------|------|--------|
 | TC-RCI01 | 注入 < 50ms | CI 门禁 | P2 |
 | TC-RCI02 | 产物体积 < 2MB | 构建检查 | P2 |
+

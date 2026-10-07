@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-228"
 source_prds: ["82-prd-项目合并"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目合并]
+benefit: "测试用例：项目合并"
+lifecycle: active
 ---
 # YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并 — 测试规格
 

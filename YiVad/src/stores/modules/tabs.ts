@@ -6,11 +6,10 @@ import { useKeepAliveStore } from "./keepAlive";
 import type { TabsMenuProps } from "@/stores/interface";
 import piniaPersistConfig from "@/stores/helper/persist";
 
-const keepAliveStore = useKeepAliveStore();
-
 export const useTabsStore = defineStore(
   "yivad-tabs",
   () => {
+    const keepAliveStore = useKeepAliveStore();
     const tabsMenuList = ref<TabsMenuProps[]>([]);
 
     function addTabs(tabItem: TabsMenuProps) {

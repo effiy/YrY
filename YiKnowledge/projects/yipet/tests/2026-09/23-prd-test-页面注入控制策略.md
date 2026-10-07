@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "页面注入控制策略 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["23-功能实现-页面注入控制策略"]
-source_modules: ["23-prd-task-页面注入控制策略"]
+source_prds: ["23-架构设计-页面注入控制策略.md"]
+source_modules: ["23-prd-task-页面注入控制策略.md"]
+
+type: test
 ---
 
 # 页面注入控制策略 — 测试用例
@@ -23,3 +26,4 @@ source_modules: ["23-prd-task-页面注入控制策略"]
 | TC-INJ02 | 白名单模式 | 仅指定域名注入 | P1 |
 | TC-INJ03 | 黑名单排除 | chrome:// 等排除 | P0 |
 | TC-INJ04 | 配置持久化 | chrome.storage 保存策略 | P1 |
+

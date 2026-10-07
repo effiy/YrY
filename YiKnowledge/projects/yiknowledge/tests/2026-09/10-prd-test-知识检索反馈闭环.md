@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-07: 知识检索反馈闭环 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-07"
 source_prds: ["10-架构设计-知识检索反馈闭环"]
 source_modules: ["10-prd-task-知识检索反馈闭环"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-07: 知识检索反馈闭环 — 测试用例

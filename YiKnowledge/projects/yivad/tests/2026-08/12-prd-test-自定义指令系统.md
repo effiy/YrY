@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-08-12: 自定义指令系统 — 8 个 Vue 3 指令的声明式行为增强 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-12"
 source_prds: ["12-prd-自定义指令系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 自定义指令系统]
+benefit: "测试用例：自定义指令系统"
+lifecycle: active
 ---
 # YV-08-12: 自定义指令系统 — 8 个 Vue 3 指令的声明式行为增强 — 测试规格
 

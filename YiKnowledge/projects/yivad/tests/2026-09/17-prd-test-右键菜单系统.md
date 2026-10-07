@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "右键菜单系统 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-42"
 source_prds: ["17-prd-右键菜单系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 右键菜单系统]
+benefit: "测试用例：右键菜单系统"
+lifecycle: active
 ---
 # 右键菜单系统 — 测试规格
 

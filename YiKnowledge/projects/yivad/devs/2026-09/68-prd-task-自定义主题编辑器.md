@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-138"
 title: "YV-09-138: 自定义主题编辑器 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "68-prd-自定义主题编辑器.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 自定义主题编辑器]
+roles: [engineer]
+benefit: "开发方案：task-自定义主题编辑器"
+lifecycle: active
 ---
 
 # YV-09-138: 自定义主题编辑器 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "68-prd-自定义主题编辑器.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：用户设置子页面 (`/settings/appearance`)，颜色选择器 + 实时预览 + CSS 变量覆盖
+
+**数据模型**：
+```
+存储到 `users` 集合或 `localStorage`；主题变量包括：`--primary-color`, `--bg-color`, `--text-color`, `--border-radius` 等
+```
+
+**组件树**：
+```
+ThemeEditor.vue (颜色选择器 + 预览面板) + ThemePresets.vue (预设主题)
+```
+
+**关键决策**：
+主题通过 CSS 自定义属性（`document.documentElement.style.setProperty`）动态注入；Element Plus 主题变量同步覆盖
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "68-prd-自定义主题编辑器.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

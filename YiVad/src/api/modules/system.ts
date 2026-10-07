@@ -8,6 +8,7 @@
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import { callService } from "./dataService";
+import { nanoid } from "nanoid";
 import type {
   YiAiEnvelope,
   QueryDocumentsData,
@@ -19,7 +20,7 @@ import type {
 } from "@/api/interface/yiAi";
 
 function newKey(prefix: string): string {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `${prefix}_${nanoid(12)}`;
 }
 
 // ── Menus ──

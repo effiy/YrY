@@ -10,7 +10,7 @@ type: template
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [leader, srer, engineer]
+roles: [leader, sre, engineer]
 benefit: "技术负责人通过标准化的操作手册确保常见运维操作可重复、可审查、可由非原作者执行"
 acceptance_criteria:
   - "包含 runbook 编写规范和模板"
@@ -19,7 +19,7 @@ acceptance_criteria:
 related:
   - ./05-风险-事故指挥指南.md
   - ./02-风险-事后复盘.md
-  - ../../srer/incident-response/
+  - ../../sre/incident-response/
 ---
 
 # Runbook 模板 — 常见运维操作手册

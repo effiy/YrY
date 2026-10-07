@@ -42,6 +42,8 @@ export default {
       severity: "Severity",
       status: "Status",
       priority: "Priority",
+      type: "Type",
+      frequency: "Frequency",
       assignee: "Assignee",
       reporter: "Reporter",
       project: "Project",

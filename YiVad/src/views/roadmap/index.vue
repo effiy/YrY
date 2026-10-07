@@ -1,21 +1,52 @@
 <template>
-  <div class="roadmap">
+  <div class="roadmap page">
     <div class="roadmap__head">
       <div class="roadmap__head-left">
-        <div class="roadmap__head-stat" @click="clearFilters">
+        <div class="roadmap__head-stat" :class="{ 'is-active': !hasFilter }" @click="clearFilters">
           <span class="roadmap__head-stat-value">{{ totalItems }}</span>
           <span class="roadmap__head-stat-label">{{ t("roadmap.total") }}</span>
         </div>
-        <div class="roadmap__head-stat">
-          <span class="roadmap__head-stat-value is-module">{{ kindCounts.module }}</span>
-          <span class="roadmap__head-stat-label">{{ t("roadmap.kind.modules") }}</span>
+        <div
+          class="roadmap__head-stat"
+          :class="{ 'is-active': statusFilter === 'in_progress' }"
+          @click="toggleStatusFilter('in_progress')"
+        >
+          <span class="roadmap__head-stat-value is-progress">{{ statusCounts.in_progress }}</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.inProgress") }}</span>
         </div>
-        <div class="roadmap__head-stat">
-          <span class="roadmap__head-stat-value is-done">{{ overallProgress.pct }}%</span>
-          <span class="roadmap__head-stat-label">{{ t("roadmap.done") }}</span>
+        <div
+          class="roadmap__head-stat"
+          :class="{ 'is-active': riskFilter === 'overdue' }"
+          @click="toggleRiskFilter('overdue')"
+        >
+          <span class="roadmap__head-stat-value is-overdue">{{ riskCounts.overdue }}</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.overdue") }}</span>
+        </div>
+        <div
+          class="roadmap__head-stat"
+          :class="{ 'is-active': riskFilter === 'dueSoon' }"
+          @click="toggleRiskFilter('dueSoon')"
+        >
+          <span class="roadmap__head-stat-value is-risk">{{ riskCounts.dueSoon }}</span>
+          <span class="roadmap__head-stat-label">{{ t("roadmap.atRisk") }}</span>
         </div>
       </div>
       <div class="roadmap__head-right">
+        <div v-if="autoRefresh" class="roadmap__head-countdown">
+          <span class="roadmap__head-countdown-dot" />
+          {{ t("roadmap.nextRefresh", { n: nextRefreshIn }) }}
+        </div>
+        <span v-if="lastRefreshed && !autoRefresh" class="roadmap__head-freshness">
+          {{ t("roadmap.refreshed") }} {{ freshnessText }}
+        </span>
+        <el-tooltip :content="autoRefresh ? t('roadmap.autoRefreshOn') : t('roadmap.autoRefreshOff')" :show-after="300">
+          <el-button size="small" text :type="autoRefresh ? 'primary' : 'info'" @click="toggleAutoRefresh">
+            {{ autoRefresh ? t("roadmap.autoRefreshOn") : t("roadmap.autoRefreshOff") }}
+          </el-button>
+        </el-tooltip>
+        <el-button size="small" text :loading="loading" :icon="Refresh" @click="loadData">
+          {{ loading ? t("roadmap.refreshing") : t("roadmap.refresh") }}
+        </el-button>
         <el-input
           v-model="search"
           :placeholder="t('roadmap.searchPlaceholder')"
@@ -40,31 +71,56 @@
       </div>
     </div>
 
-    <div v-if="hasKindFilter" class="roadmap__filters">
+    <div v-if="partialError" class="roadmap__warning">
+      <el-icon><WarningFilled /></el-icon>
+      <span>{{ t("roadmap.partialError") }}</span>
+    </div>
+
+    <div v-if="hasKindFilter || statusFilter || riskFilter" class="roadmap__filters">
       <div class="roadmap__filter-row">
-        <span class="roadmap__filter-label">{{ t("roadmap.kind.label") }}</span>
+        <span class="roadmap__filter-label">{{ t("roadmap.filters.status") }}</span>
         <el-check-tag
-          v-for="k in kindOptions"
-          :key="k.value"
-          :checked="kindFilter.has(k.value)"
+          v-for="s in statusOptions"
+          :key="s.value"
+          :checked="statusFilter === s.value"
           size="small"
-          @change="() => toggleKind(k.value)"
+          @change="() => toggleStatusFilter(s.value)"
         >
-          {{ k.label }}
+          {{ s.label }}
         </el-check-tag>
       </div>
     </div>
 
-    <div class="roadmap__stats" v-if="totalItems > 0">
+    <div v-if="totalItems > 0 && healthIssues.length" class="roadmap__health">
+      <el-icon :size="12"><WarningFilled /></el-icon>
+      <span class="roadmap__health-label">{{ t("roadmap.health.label") }}</span>
+      <span v-for="h in healthIssues" :key="h" class="roadmap__health-item">{{ h }}</span>
+    </div>
+
+    <div v-if="isStale" class="roadmap__stale">
+      <el-icon :size="12"><Clock /></el-icon>
+      <span>{{ t("roadmap.staleWarning") }}</span>
+      <el-button link size="small" type="primary" @click="loadData">{{ t("roadmap.refresh") }}</el-button>
+    </div>
+
+    <div v-if="totalItems > 0" class="roadmap__stats">
       <div
+        v-for="seg in kindSegments"
+        :key="seg.label"
         class="roadmap__stat-segment"
-        :style="{ width: kindPct('module') + '%', background: '#9b59b6' }"
-        :title="`${t('roadmap.kind.modules')}: ${kindCounts.module}`"
+        :style="{ width: seg.width + '%', background: seg.color }"
+        :title="`${seg.label}: ${seg.count}`"
       />
     </div>
 
-    <div v-loading="loading" class="roadmap__board">
-      <div v-for="col in columns" :key="col.projectKey" class="roadmap__col" :class="`roadmap__col--${col.status}`">
+    <div v-if="initialLoading" class="roadmap__skeleton">
+      <div v-for="n in 3" :key="n" class="roadmap__col roadmap__col--skeleton">
+        <div class="roadmap__col-head-skeleton" />
+        <div v-for="m in 4" :key="m" class="roadmap__item-skeleton" />
+      </div>
+    </div>
+    <div v-else v-loading="loading" class="roadmap__board">
+      <div v-for="col in columns" :key="col.projectKey" class="roadmap__col">
         <div class="roadmap__col-head" :style="{ background: col.headerBg }">
           <div class="roadmap__col-head-row">
             <span class="roadmap__col-title" @click="goProject(col.projectKey)">{{ col.project }}</span>
@@ -85,7 +141,10 @@
             </div>
           </div>
           <div class="roadmap__col-progress">
-            <el-progress :percentage="colProgress(col).pct" :stroke-width="3" :show-text="false" color="#67c23a" />
+            <span class="roadmap__col-progress-bar" :title="`Done: ${colProgress(col).done} | Active: ${colProgress(col).inProgress} | Total: ${colProgress(col).total}`">
+              <span class="roadmap__col-progress-done" :style="{ width: colProgress(col).pct + '%' }" />
+              <span class="roadmap__col-progress-active" :style="{ width: colProgress(col).activePct + '%', marginLeft: colProgress(col).pct + '%' }" />
+            </span>
             <span>{{ t("roadmap.progress.ofTotal", colProgress(col)) }}</span>
           </div>
         </div>
@@ -94,28 +153,44 @@
             v-for="item in col.items"
             :key="item.id"
             class="roadmap__item"
-            :class="{ 'roadmap__item--overdue': isOverdue(item) }"
+            :class="riskClass(item)"
             @click="goTo(item.link)"
             @contextmenu.prevent="openContextMenu($event, item)"
           >
             <div class="roadmap__item-accent" :style="{ background: item.color }" />
             <div class="roadmap__item-head">
               <code class="roadmap__item-key">{{ item.id }}</code>
-              <span class="roadmap__item-kind" :class="`roadmap__item-kind--${item.kind}`">{{ item.kindLabel }}</span>
+              <span v-if="item.issueType" class="roadmap__item-issue-type" :class="`roadmap__item-issue-type--${item.issueType}`">{{ item.issueType }}</span>
+              <span v-if="item.ykModulePath" class="roadmap__item-doc-icon" title="查看知识库文档" @click.stop="goToKnowledge(item.ykModulePath)">📄</span>
+              <span v-if="riskLabel(item)" class="roadmap__item-risk" :class="`roadmap__item-risk--${riskLevel(item)}`">
+                {{ riskLabel(item) }}
+              </span>
               <span class="roadmap__item-status" :style="{ color: item.color }">{{ item.statusLabel }}</span>
             </div>
             <div class="roadmap__item-title" @click.stop="openPreview(item)">{{ item.name }}</div>
             <div class="roadmap__item-foot">
-              <span class="roadmap__item-foot-item" :class="{ 'roadmap__item-foot-item--overdue': isOverdue(item) }">
+              <span class="roadmap__item-foot-item" :class="riskFootClass(item)">
                 <el-icon><Clock /></el-icon>{{ item.dates }}
               </span>
               <span v-if="item.lead" class="roadmap__item-foot-item">
                 <el-icon><User /></el-icon>{{ item.lead }}
               </span>
-              <span v-if="item.total > 0" class="roadmap__item-foot-item">
-                <el-progress :percentage="pct(item)" :stroke-width="4" :show-text="false" :color="progressColor(item)" />
-                <span>{{ t("roadmap.progress.ofTotal", item) }}</span>
+              <span v-else class="roadmap__item-foot-item roadmap__item-foot-item--muted">
+                <el-icon><User /></el-icon>{{ t("roadmap.noLead") }}
               </span>
+              <span v-if="item.total > 0" class="roadmap__item-foot-item">
+                <span class="roadmap__item-progress-bar">
+                  <span class="roadmap__item-progress-done" :style="{ width: donePct(item) + '%' }" />
+                  <span class="roadmap__item-progress-active" :style="{ width: inProgressPct(item) + '%' }" />
+                </span>
+                <span>{{ item.done }}<span v-if="item.inProgress > 0" class="roadmap__item-progress-active-text">+{{ item.inProgress }}</span>/{{ item.total }}</span>
+              </span>
+              <span v-else-if="item.issueKeys.length === 0" class="roadmap__item-foot-item roadmap__item-foot-item--muted">
+                {{ t("roadmap.noIssues") }}
+              </span>
+            </div>
+            <div v-if="item.lastUpdated" class="roadmap__item-updated" :title="fmtAbsolute(item.lastUpdated)">
+              {{ t("roadmap.updated", { time: fmtRelative(item.lastUpdated) }) }}
             </div>
             <div v-if="item.detail" class="roadmap__item-detail">{{ item.detail }}</div>
             <div v-if="item.issueKeys.length > 0" class="roadmap__item-issues">
@@ -152,20 +227,18 @@
             <el-icon><CopyDocument /></el-icon>{{ t("roadmap.ctxMenu.copyId") }}
           </div>
           <div class="roadmap-ctxmenu__divider" />
-          <template v-if="contextMenu.item.kind === 'module'">
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
-              <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
-              <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
-              <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
-            </div>
-            <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('cancelled')">
-              <el-icon><CircleClose /></el-icon>{{ t("roadmap.ctxMenu.markCancelled") }}
-            </div>
-          </template>
+          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
+            <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
+          </div>
+          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
+            <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
+          </div>
+          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
+            <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
+          </div>
+          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('cancelled')">
+            <el-icon><CircleClose /></el-icon>{{ t("roadmap.ctxMenu.markCancelled") }}
+          </div>
           <div class="roadmap-ctxmenu__divider" />
           <div class="roadmap-ctxmenu__item roadmap-ctxmenu__item--danger" @click="ctxDelete">
             <el-icon><Delete /></el-icon>{{ t("roadmap.ctxMenu.delete") }}
@@ -182,9 +255,10 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
+import { confirm, tryAction } from "@/hooks/useConfirmAction";
 import {
   Search,
   Folder,
@@ -194,19 +268,23 @@ import {
   View,
   Document,
   CopyDocument,
-  VideoPlay,
   CircleCheck,
   Calendar,
   Loading,
   CircleClose,
-  Delete
+  Delete,
+  Refresh,
+  WarningFilled
 } from "@element-plus/icons-vue";
 import { useModuleStore } from "@/stores/modules/module";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
 import { MODULE_STATUS_MAP, type ModuleStatus } from "@/api/modules/moduleService";
+import type { IssueStatus } from "@/api/modules/issueService";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
+import dayjs from "dayjs";
+import { formatRelativeTime, formatAbsolute } from "@/utils/datetime";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -215,6 +293,9 @@ const projectStore = useProjectStore();
 const issueStore = useIssueStore();
 
 const loading = ref(false);
+const initialLoading = ref(true);
+const partialError = ref(false);
+const lastRefreshed = ref<Date | null>(null);
 
 const filterDate = ref<Date | null>(null);
 const {
@@ -234,10 +315,35 @@ function onSearchInput() {
   searchTimer = setTimeout(() => loadData(), 250);
 }
 
-type RoadmapKind = "module";
+// -- Status filter (click stat pills to toggle) --
+const statusFilter = ref<string>("");
+
+const statusOptions = computed(() => [
+  { value: "planned", label: t("roadmap.status.planned") },
+  { value: "in_progress", label: t("roadmap.status.active") },
+  { value: "completed", label: t("roadmap.status.completed") },
+  { value: "cancelled", label: t("roadmap.status.cancelled") }
+]);
+
+function toggleStatusFilter(val: string) {
+  statusFilter.value = statusFilter.value === val ? "" : val;
+  riskFilter.value = "";
+}
+
+// -- Risk filter --
+const riskFilter = ref<string>("");
+
+function toggleRiskFilter(val: string) {
+  riskFilter.value = riskFilter.value === val ? "" : val;
+  statusFilter.value = "";
+}
+
+// -- Kind filter --
+type RoadmapKind = "module" | "issue";
 const kindFilter = ref(new Set<RoadmapKind>());
 const kindOptions = computed<{ value: RoadmapKind; label: string }[]>(() => [
-  { value: "module", label: t("roadmap.kind.modules") }
+  { value: "module", label: t("roadmap.kind.modules") },
+  { value: "issue", label: t("roadmap.kind.issues") }
 ]);
 function toggleKind(val: RoadmapKind) {
   if (kindFilter.value.has(val)) kindFilter.value.delete(val);
@@ -246,8 +352,54 @@ function toggleKind(val: RoadmapKind) {
 }
 const hasKindFilter = computed(() => kindFilter.value.size > 0);
 
-const projectFilter = ref("");
+const hasFilter = computed(() => hasKindFilter.value || !!statusFilter.value || !!riskFilter.value);
 
+// -- Freshness --
+const freshnessText = computed(() => {
+  if (!lastRefreshed.value) return "";
+  return formatRelativeTime(lastRefreshed.value);
+});
+
+const isStale = computed(() => {
+  if (!lastRefreshed.value || autoRefresh.value) return false;
+  return Date.now() - lastRefreshed.value.getTime() > 300_000;
+});
+
+  // -- Auto-refresh polling --
+  const REFRESH_INTERVAL = 60;
+  const autoRefresh = ref(true);
+  const nextRefreshIn = ref(REFRESH_INTERVAL);
+  let pollTimer: ReturnType<typeof setInterval> | null = null;
+  let countdownTimer: ReturnType<typeof setInterval> | null = null;
+
+  function startPolling() {
+    stopPolling();
+    nextRefreshIn.value = REFRESH_INTERVAL;
+    countdownTimer = setInterval(() => {
+      nextRefreshIn.value = Math.max(0, nextRefreshIn.value - 1);
+    }, 1000);
+    pollTimer = setInterval(() => {
+      loadData();
+      nextRefreshIn.value = REFRESH_INTERVAL;
+    }, REFRESH_INTERVAL * 1000);
+  }
+
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  }
+
+  function toggleAutoRefresh() {
+    autoRefresh.value = !autoRefresh.value;
+    if (autoRefresh.value) {
+      loadData();
+      startPolling();
+    } else {
+      stopPolling();
+    }
+  }
+
+  // -- Data model --
 type TagType = "success" | "warning" | "info" | "primary" | "danger";
 
 interface RoadmapItem {
@@ -267,47 +419,64 @@ interface RoadmapItem {
   lead?: string;
   link: string;
   done: number;
+  inProgress: number;
   total: number;
   issueKeys: string[];
+  lastUpdated?: string;
+  ykModulePath?: string;
+  issueType?: string;
 }
 
 interface RoadmapColumn {
   project: string;
   projectKey: string;
-  status: string;
   headerBg: string;
   countTagType: "info" | "primary" | "warning" | "success" | "danger";
   items: RoadmapItem[];
 }
 
 const COL_HEADER_STYLES = [
-  { status: "a", headerBg: "linear-gradient(180deg, #ecf5ff 0%, #d9ecff 100%)", countTagType: "primary" as const },
-  { status: "b", headerBg: "linear-gradient(180deg, #fdf6ec 0%, #faecd8 100%)", countTagType: "warning" as const },
-  { status: "c", headerBg: "linear-gradient(180deg, #f5f0ff 0%, #ede0ff 100%)", countTagType: "warning" as const },
-  { status: "d", headerBg: "linear-gradient(180deg, #f0f9eb 0%, #e1f3d8 100%)", countTagType: "success" as const },
-  { status: "e", headerBg: "linear-gradient(180deg, #f0f2f5 0%, #e4e7ed 100%)", countTagType: "info" as const }
+  { headerBg: "linear-gradient(180deg, #ecf5ff 0%, #d9ecff 100%)", countTagType: "primary" as const },
+  { headerBg: "linear-gradient(180deg, #fdf6ec 0%, #faecd8 100%)", countTagType: "warning" as const },
+  { headerBg: "linear-gradient(180deg, #f5f0ff 0%, #ede0ff 100%)", countTagType: "warning" as const },
+  { headerBg: "linear-gradient(180deg, #f0f9eb 0%, #e1f3d8 100%)", countTagType: "success" as const },
+  { headerBg: "linear-gradient(180deg, #f0f2f5 0%, #e4e7ed 100%)", countTagType: "info" as const }
 ];
 
 const KIND_LABEL = computed<Record<RoadmapKind, string>>(() => ({
-  module: t("roadmap.kind.moduleLabel")
+  module: t("roadmap.kind.moduleLabel"),
+  issue: t("roadmap.kind.issueLabel")
 }));
 
-const STATUS_META: Record<RoadmapKind, Record<string, { tag: TagType; color: string }>> = {
-  module: {
-    planned: { tag: "info", color: "#909399" },
-    in_progress: { tag: "warning", color: "#e6a23c" },
-    completed: { tag: "success", color: "#67c23a" },
-    cancelled: { tag: "danger", color: "#f56c6c" }
-  }
+const STATUS_META: Record<string, { tag: TagType; color: string }> = {
+  planned: { tag: "info", color: "#909399" },
+  in_progress: { tag: "warning", color: "#e6a23c" },
+  completed: { tag: "success", color: "#67c23a" },
+  cancelled: { tag: "danger", color: "#f56c6c" }
 };
 
-const FINAL_STATUS: Record<RoadmapKind, Set<string>> = {
-  module: new Set(["completed", "cancelled"])
+const ISSUE_STATUS_META: Record<string, { tag: TagType; color: string }> = {
+  backlog: { tag: "info", color: "#909399" },
+  todo: { tag: "info", color: "#67c23a" },
+  in_progress: { tag: "primary", color: "#409eff" },
+  in_review: { tag: "warning", color: "#e6a23c" },
+  done: { tag: "success", color: "#67c23a" },
+  cancelled: { tag: "danger", color: "#f56c6c" }
 };
 
-const STATUS_LABEL: Record<RoadmapKind, Record<string, string>> = {
-  module: MODULE_STATUS_MAP
-};
+const FINAL_STATUS = new Set(["completed", "cancelled", "done"]);
+
+function statusLabel(s: string): string {
+  const key = `roadmap.status.${s}` as any;
+  const translated = t(key);
+  return translated !== key ? translated : MODULE_STATUS_MAP[s as ModuleStatus] ?? s;
+}
+
+function issueStatusLabel(s: string): string {
+  const key = `roadmap.status.issue.${s}` as any;
+  const translated = t(key);
+  return translated !== key ? translated : s;
+}
 
 const columns = ref<RoadmapColumn[]>([]);
 const allItems = ref<RoadmapItem[]>([]);
@@ -315,6 +484,44 @@ const allItems = ref<RoadmapItem[]>([]);
 const projects = computed(() => projectStore.projects.map(p => ({ key: p.key, name: p.name })));
 const projectNames = computed(() => new Map(projectStore.projects.map(p => [p.key, p.name])));
 
+// -- Risk helpers --
+type RiskLevel = "overdue" | "dueSoon" | "none";
+
+function riskLevel(item: RoadmapItem): RiskLevel {
+  if (!item.endDate || FINAL_STATUS.has(item.status)) return "none";
+  const today = dayjs().startOf("day");
+  const end = dayjs(item.endDate).startOf("day");
+  if (!end.isValid()) return "none";
+  if (end.isBefore(today)) return "overdue";
+  const daysLeft = end.diff(today, "day");
+  if (daysLeft <= 3) return "dueSoon";
+  return "none";
+}
+
+function riskLabel(item: RoadmapItem): string {
+  const level = riskLevel(item);
+  if (level === "overdue") return t("roadmap.overdue");
+  if (level === "dueSoon") return t("roadmap.dueSoon");
+  return "";
+}
+
+function riskClass(item: RoadmapItem) {
+  const level = riskLevel(item);
+  return {
+    "roadmap__item--overdue": level === "overdue",
+    "roadmap__item--due-soon": level === "dueSoon"
+  };
+}
+
+function riskFootClass(item: RoadmapItem) {
+  const level = riskLevel(item);
+  return {
+    "roadmap__item-foot-item--overdue": level === "overdue",
+    "roadmap__item-foot-item--due-soon": level === "dueSoon"
+  };
+}
+
+// -- Filtered items --
 const filteredItems = computed(() => {
   let items = allItems.value;
   if (hasKindFilter.value) {
@@ -323,6 +530,12 @@ const filteredItems = computed(() => {
   if (search.value) {
     const q = search.value.toLowerCase();
     items = items.filter(i => i.name.toLowerCase().includes(q) || (i.detail && i.detail.toLowerCase().includes(q)));
+  }
+  if (statusFilter.value) {
+    items = items.filter(i => i.status === statusFilter.value);
+  }
+  if (riskFilter.value) {
+    items = items.filter(i => riskLevel(i) === riskFilter.value);
   }
   return items;
 });
@@ -342,42 +555,85 @@ const filteredColumns = computed(() => {
     .sort((a, b) => a.project.localeCompare(b.project));
 });
 
+// -- Stats --
 const totalItems = computed(() => filteredItems.value.length);
-const kindCounts = computed(() => {
-  const counts: Record<RoadmapKind, number> = { module: 0 };
+
+const statusCounts = computed(() => {
+  const counts: Record<string, number> = { planned: 0, in_progress: 0, completed: 0, cancelled: 0 };
   allItems.value.forEach(i => {
-    counts[i.kind]++;
+    if (counts[i.status] !== undefined) counts[i.status]++;
   });
   return counts;
 });
-const overallProgress = computed(() => {
-  let done = 0;
-  let total = 0;
+
+const riskCounts = computed(() => {
+  let overdue = 0;
+  let dueSoon = 0;
   allItems.value.forEach(i => {
-    done += i.done;
-    total += i.total;
+    const level = riskLevel(i);
+    if (level === "overdue") overdue++;
+    else if (level === "dueSoon") dueSoon++;
   });
-  return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
+  return { overdue, dueSoon };
 });
 
-function kindPct(kind: RoadmapKind): number {
-  if (totalItems.value === 0) return 0;
-  return Math.round((kindCounts.value[kind] / totalItems.value) * 100) || 0;
-}
+const kindSegments = computed(() => {
+  const kindColors: Record<string, string> = { module: "#9b59b6", issue: "#409eff" };
+  const groups = new Map<string, { count: number; color: string }>();
+  for (const item of allItems.value) {
+    const k = item.kind;
+    if (!groups.has(k)) groups.set(k, { count: 0, color: kindColors[k] || "#909399" });
+    groups.get(k)!.count++;
+  }
+  const total = allItems.value.length || 1;
+  return Array.from(groups.entries()).map(([label, { count, color }]) => ({
+    label,
+    count,
+    width: Math.round((count / total) * 100) || 0,
+    color
+  }));
+});
 
+// -- Health stats --
+const healthIssues = computed(() => {
+  const issues: string[] = [];
+  const active = allItems.value.filter(i => !FINAL_STATUS.has(i.status));
+  const missingDates = active.filter(i => !i.startDate || !i.endDate).length;
+  const missingLead = active.filter(i => !i.lead).length;
+  const missingIssues = active.filter(i => i.kind === "module" && i.issueKeys.length === 0).length;
+  if (missingDates > 0) issues.push(t("roadmap.health.missingDates", { n: missingDates }));
+  if (missingLead > 0) issues.push(t("roadmap.health.missingLead", { n: missingLead }));
+  if (missingIssues > 0) issues.push(t("roadmap.health.missingIssues", { n: missingIssues }));
+  return issues;
+});
+
+// -- Helpers --
 function colProgress(col: RoadmapColumn) {
   let done = 0;
+  let inProgress = 0;
   let total = 0;
   col.items.forEach(i => {
     done += i.done;
+    inProgress += i.inProgress;
     total += i.total;
   });
-  return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
+  return { done, inProgress, total, pct: total ? Math.round((done / total) * 100) : 0, activePct: total ? Math.round((inProgress / total) * 100) : 0 };
 }
 
 function fmtDate(iso?: string) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
+  const d = dayjs(iso);
+  return d.isValid() ? d.format("M/D") : "—";
+}
+
+function fmtRelative(iso?: string) {
+  if (!iso) return "";
+  return formatRelativeTime(iso);
+}
+
+function fmtAbsolute(iso?: string) {
+  if (!iso) return "";
+  return formatAbsolute(iso);
 }
 
 function pct(item: RoadmapItem) {
@@ -392,13 +648,203 @@ function progressColor(item: RoadmapItem) {
   return "#f56c6c";
 }
 
-function isOverdue(item: RoadmapItem): boolean {
-  if (!item.endDate) return false;
-  if (FINAL_STATUS[item.kind]?.has(item.status)) return false;
-  const today = new Date().toISOString().slice(0, 10);
-  return item.endDate < today;
+function donePct(item: RoadmapItem) {
+  return item.total ? Math.round((item.done / item.total) * 100) : 0;
 }
 
+function inProgressPct(item: RoadmapItem) {
+  return item.total ? Math.round((item.inProgress / item.total) * 100) : 0;
+}
+
+function sortColumn(col: RoadmapColumn, cmd: string) {
+  if (cmd === "date") {
+    col.items.sort((a, b) => a.sortDate.localeCompare(b.sortDate));
+  } else if (cmd === "progress") {
+    col.items.sort((a, b) => pct(b) - pct(a));
+  } else if (cmd === "name") {
+    col.items.sort((a, b) => a.name.localeCompare(b.name));
+  }
+}
+
+// -- Data loading --
+async function loadData() {
+  loading.value = true;
+  partialError.value = false;
+  try {
+    const [modResult, issResult] = await Promise.allSettled([
+      moduleStore.fetchModules({ pageSize: 500 }),
+      issueStore.fetchIssues({ pageSize: 5000 })
+    ]);
+
+    if (modResult.status === "rejected") {
+      console.error("[Roadmap] fetchModules failed:", modResult.reason);
+      partialError.value = true;
+    }
+    if (issResult.status === "rejected") {
+      console.error("[Roadmap] fetchIssues failed:", issResult.reason);
+      partialError.value = true;
+    }
+
+    const issueStatus = new Map<string, string>();
+    const issuePoints = new Map<string, number>();
+    if (issResult.status === "fulfilled") {
+      issueStore.issues.forEach(i => {
+        issueStatus.set(i.key, i.status);
+        if (i.story_points) issuePoints.set(i.key, i.story_points);
+      });
+    }
+
+    const items: RoadmapItem[] = [];
+    const dateTarget = filterDateStr.value;
+    const kindLabelMap = KIND_LABEL.value;
+
+    if (modResult.status === "fulfilled") {
+      moduleStore.modules.forEach(m => {
+        if (dateTarget && !inDateRange(m.start_date ?? "", m.due_date ?? "", dateTarget)) return;
+        const status = m.status ?? "planned";
+        const meta = STATUS_META[status] ?? { tag: "info" as TagType, color: "#909399" };
+        const { done, inProgress, total } = progressOf(m.issue_keys ?? [], issueStatus, issuePoints);
+        items.push({
+          id: m.key,
+          name: m.name,
+          kind: "module",
+          kindLabel: kindLabelMap.module,
+          status,
+          statusLabel: statusLabel(status),
+          tagType: meta.tag,
+          color: meta.color,
+          dates: `${fmtDate(m.start_date)} → ${fmtDate(m.due_date)}`,
+          sortDate: m.start_date || "9999",
+          startDate: m.start_date ?? "",
+          endDate: m.due_date ?? "",
+          detail: m.description,
+          lead: m.lead,
+          link: `/module/${m.key}`,
+          done,
+          inProgress,
+          total,
+          issueKeys: m.issue_keys ?? [],
+          lastUpdated: m.updated_at,
+          ykModulePath: m.yk_module_path
+        });
+      });
+    }
+
+    // Collect linked issue keys for standalone detection
+    const linkedIssueKeys = new Set<string>();
+    if (modResult.status === "fulfilled") {
+      moduleStore.modules.forEach(m => {
+        (m.issue_keys ?? []).forEach(k => linkedIssueKeys.add(k));
+      });
+    }
+
+    // Standalone (unlinked) issues as roadmap items
+    if (issResult.status === "fulfilled") {
+      issueStore.issues.forEach(iss => {
+        if (linkedIssueKeys.has(iss.key)) return;
+        if (dateTarget && !inDateRange(iss.start_date ?? "", iss.due_date ?? "", dateTarget)) return;
+        if (iss.status === "cancelled") return;
+
+        const status = iss.status ?? "backlog";
+        const meta = ISSUE_STATUS_META[status] ?? { tag: "info" as TagType, color: "#909399" };
+        const sortDate = iss.due_date || iss.start_date || iss.created_at?.slice(0, 10) || "9999";
+
+        items.push({
+          id: iss.key,
+          name: iss.title,
+          kind: "issue",
+          kindLabel: kindLabelMap.issue,
+          status,
+          statusLabel: issueStatusLabel(status),
+          tagType: meta.tag,
+          color: meta.color,
+          dates: `${fmtDate(iss.start_date)} → ${fmtDate(iss.due_date)}`,
+          sortDate,
+          startDate: iss.start_date ?? "",
+          endDate: iss.due_date ?? "",
+          detail: iss.description,
+          lead: iss.assignee,
+          link: `/issue/${iss.key}`,
+          done: status === "done" ? 1 : 0,
+          inProgress: ACTIVE_STATUSES.has(status) ? 1 : 0,
+          total: 1,
+          issueKeys: [],
+          lastUpdated: iss.updated_at,
+          issueType: iss.issue_type
+        });
+      });
+    }
+
+    allItems.value = items;
+    columns.value = filteredColumns.value;
+    lastRefreshed.value = new Date();
+    initialLoading.value = false;
+  } finally {
+    loading.value = false;
+  }
+}
+
+const ACTIVE_STATUSES = new Set(["in_progress", "in_review"]);
+
+function progressOf(keys: string[], issueStatus: Map<string, string>, issuePoints: Map<string, number>) {
+  let done = 0;
+  let inProgress = 0;
+  let total = 0;
+  for (const key of keys) {
+    const status = issueStatus.get(key);
+    if (status === undefined || status === "cancelled") continue;
+    const points = issuePoints.get(key) || 1;
+    total += points;
+    if (status === "done") done += points;
+    else if (ACTIVE_STATUSES.has(status)) inProgress += points;
+  }
+  return { done, inProgress, total };
+}
+
+function inDateRange(start: string, end: string, target: string): boolean {
+  if (!target) return true;
+  return (!start || start <= target) && (!end || end >= target);
+}
+
+watch(filteredColumns, v => {
+  columns.value = v;
+});
+
+// -- Navigation --
+function goTo(link: string) {
+  router.push(link);
+}
+function goProject(key: string) {
+  if (key) router.push(`/project/${key}`);
+}
+async function goToKnowledge(filePath: string) {
+  if (!filePath) return;
+  let content = "";
+  try {
+    const res = await readKnowledgeFile(filePath);
+    content = res.content || "";
+  } catch {
+    /* empty */
+  }
+  descDialogRef.value?.openFile({
+    path: filePath,
+    title: filePath.split("/").pop() || filePath,
+    content,
+    onSave: async (newContent: string) => {
+      await writeKnowledgeFile(filePath, newContent, { type: "module-doc" });
+    }
+  });
+}
+function clearFilters() {
+  search.value = "";
+  statusFilter.value = "";
+  riskFilter.value = "";
+  kindFilter.value = new Set();
+  filterDate.value = null;
+  loadData();
+}
+
+// -- Issue helpers --
 const issueTitleMap = computed(() => {
   const m = new Map<string, string>();
   issueStore.issues.forEach(i => m.set(i.key, i.title));
@@ -408,11 +854,6 @@ function issueTitle(key: string) {
   return issueTitleMap.value.get(key) || key;
 }
 
-const issueStatusMap = computed(() => {
-  const m = new Map<string, string>();
-  issueStore.issues.forEach(i => m.set(i.key, i.status));
-  return m;
-});
 async function openIssuePreview(key: string) {
   const issue = issueStore.issues.find(i => i.key === key);
   if (!issue) return;
@@ -441,100 +882,11 @@ async function openIssuePreview(key: string) {
   });
 }
 
-function progressOf(keys: string[], issueStatus: Map<string, string>) {
-  let done = 0;
-  let total = 0;
-  for (const key of keys) {
-    const status = issueStatus.get(key);
-    if (status === undefined || status === "cancelled") continue;
-    total++;
-    if (status === "done") done++;
-  }
-  return { done, total, issueKeys: keys };
-}
-
-function inDateRange(start: string, end: string, target: string): boolean {
-  if (!target) return true;
-  return (!start || start <= target) && (!end || end >= target);
-}
-
-function sortColumn(col: RoadmapColumn, cmd: string) {
-  if (cmd === "date") {
-    col.items.sort((a, b) => a.sortDate.localeCompare(b.sortDate));
-  } else if (cmd === "progress") {
-    col.items.sort((a, b) => pct(b) - pct(a));
-  } else if (cmd === "name") {
-    col.items.sort((a, b) => a.name.localeCompare(b.name));
-  }
-}
-
-async function loadData() {
-  loading.value = true;
-  try {
-    const params: any = { pageSize: 200 };
-    if (projectFilter.value) params.project_key = projectFilter.value;
-
-    await Promise.all([moduleStore.fetchModules(params), issueStore.fetchIssues({ pageSize: 1000 })]);
-
-    const issueStatus = new Map<string, string>();
-    issueStore.issues.forEach(i => issueStatus.set(i.key, i.status));
-
-    const items: RoadmapItem[] = [];
-    const dateTarget = filterDateStr.value;
-    const kindLabelMap = KIND_LABEL.value;
-
-    moduleStore.modules.forEach(m => {
-      if (dateTarget && !inDateRange(m.start_date ?? "", m.due_date ?? "", dateTarget)) return;
-      const status = m.status ?? "planned";
-      const meta = STATUS_META.module[status] ?? { tag: "info" as TagType, color: "#909399" };
-      items.push({
-        id: m.key,
-        name: m.name,
-        kind: "module",
-        kindLabel: kindLabelMap.module,
-        status,
-        statusLabel: STATUS_LABEL.module[status] ?? status,
-        tagType: meta.tag,
-        color: meta.color,
-        dates: `${fmtDate(m.start_date)} → ${fmtDate(m.due_date)}`,
-        sortDate: m.start_date ?? "",
-        startDate: m.start_date ?? "",
-        endDate: m.due_date ?? "",
-        detail: m.description,
-        lead: m.lead,
-        link: `/module/${m.key}`,
-        ...progressOf(m.issue_keys ?? [], issueStatus)
-      });
-    });
-
-    allItems.value = items;
-    columns.value = filteredColumns.value;
-  } finally {
-    loading.value = false;
-  }
-}
-
-watch(filteredColumns, v => {
-  columns.value = v;
-});
-
-function goTo(link: string) {
-  router.push(link);
-}
-function goProject(key: string) {
-  if (key) router.push(`/project/${key}`);
-}
-function clearFilters() {
-  search.value = "";
-  projectFilter.value = "";
-  kindFilter.value = new Set();
-  filterDate.value = null;
-  loadData();
-}
-
+// -- Preview --
 const descDialogRef = ref<{
   openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
 } | null>(null);
+
 async function openPreview(item: RoadmapItem) {
   const date = (item.startDate || "").slice(0, 10);
   const filePath = `roadmap/${item.kind}/${item.id}.md`;
@@ -561,6 +913,7 @@ async function openPreview(item: RoadmapItem) {
   });
 }
 
+// -- Context menu --
 const contextMenu = reactive<{
   visible: boolean;
   x: number;
@@ -604,19 +957,17 @@ async function ctxCopyId() {
   }
 }
 
-type RoadmapStatus = ModuleStatus;
-
-async function ctxQuickStatus(status: RoadmapStatus) {
+async function ctxQuickStatus(status: string) {
   const item = contextMenu.item;
   closeContextMenu();
   if (!item) return;
   try {
-    let statusLabel: string = status as string;
     if (item.kind === "module") {
       await moduleStore.editModule(item.id, { status: status as ModuleStatus });
-      statusLabel = MODULE_STATUS_MAP[status as ModuleStatus] || status;
+    } else if (item.kind === "issue") {
+      await issueStore.editIssue(item.id, { status: status as IssueStatus });
     }
-    ElMessage.success(t("roadmap.messages.statusChanged", { name: item.name, status: statusLabel }));
+    ElMessage.success(t("roadmap.messages.statusChanged", { name: item.name, status: statusLabel(status) }));
     loadData();
   } catch {
     loadData();
@@ -627,30 +978,31 @@ async function ctxDelete() {
   const item = contextMenu.item;
   closeContextMenu();
   if (!item) return;
-  try {
-    await ElMessageBox.confirm(
-      t("roadmap.confirm.deleteMessage", { kindLabel: item.kindLabel, name: item.name }),
-      t("roadmap.confirm.deleteTitle"),
-      { type: "warning" }
-    );
-    const projectKey = item.id.split("-")[0];
-    if (item.kind === "module") {
-      await moduleStore.removeModule(item.id, projectKey);
-    }
-    ElMessage.success(t("roadmap.messages.deleted", { name: item.name }));
-    loadData();
-  } catch {
-    /* cancelled */
+  const ok = await confirm(
+    t("roadmap.confirm.deleteMessage", { kindLabel: item.kindLabel, name: item.name }),
+    t("roadmap.confirm.deleteTitle")
+  );
+  if (!ok) return;
+  const projectKey = item.id.split("-")[0];
+  if (item.kind === "module") {
+    await tryAction(() => moduleStore.removeModule(item.id, projectKey));
+  } else if (item.kind === "issue") {
+    await tryAction(() => issueStore.removeIssue(item.id, projectKey));
   }
+  ElMessage.success(t("roadmap.messages.deleted", { name: item.name }));
+  loadData();
 }
 
+// -- Lifecycle --
 onMounted(async () => {
   await projectStore.fetchProjects({ pageSize: 100 });
   await loadData();
+  startPolling();
   document.addEventListener("click", closeContextMenu);
 });
 
 onUnmounted(() => {
+  stopPolling();
   document.removeEventListener("click", closeContextMenu);
   if (searchTimer) clearTimeout(searchTimer);
 });
@@ -661,437 +1013,5 @@ watch(filterDateStr, () => {
 </script>
 
 <style scoped lang="scss">
-.roadmap {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 136px);
-  padding: 20px 24px;
-  overflow: hidden;
-  background: var(--el-bg-color-page);
-}
-
-// ── Head ──
-.roadmap__head {
-  display: flex;
-  flex-shrink: 0;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.roadmap__head-left {
-  display: flex;
-  flex-shrink: 0;
-  gap: 0;
-  align-items: center;
-}
-.roadmap__head-stat {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  align-items: center;
-  padding: 4px 12px;
-  cursor: default;
-  transition: background 0.15s;
-  &:not(:last-child)::after {
-    position: absolute;
-    top: 15%;
-    right: 0;
-    width: 1px;
-    height: 70%;
-    content: "";
-    background: var(--el-border-color-lighter);
-  }
-  &:first-child {
-    cursor: pointer;
-    &:hover .roadmap__head-stat-value {
-      color: var(--el-color-primary);
-    }
-  }
-}
-.roadmap__head-stat-value {
-  font-family: "SF Mono", "Fira Code", monospace;
-  font-size: 16px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--el-text-color-primary);
-  & &.is-module {
-    color: #9b59b6;
-  }
-  &.is-done {
-    color: var(--el-color-success);
-  }
-}
-.roadmap__head-stat-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.roadmap__head-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 12px;
-  align-items: center;
-}
-
-// ── Filters ──
-.roadmap__filters {
-  flex-shrink: 0;
-  margin-bottom: 8px;
-}
-.roadmap__filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.roadmap__filter-label {
-  min-width: 32px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Stats bar ──
-.roadmap__stats {
-  display: flex;
-  flex-shrink: 0;
-  height: 4px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  background: var(--el-fill-color);
-  border-radius: 2px;
-}
-.roadmap__stat-segment {
-  min-width: 0;
-  transition: width 0.4s ease;
-}
-
-// ── Board ──
-.roadmap__board {
-  display: flex;
-  flex: 1;
-  gap: 14px;
-  align-items: stretch;
-  padding-bottom: 8px;
-  overflow-x: auto;
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: var(--el-border-color);
-    border-radius: 3px;
-    &:hover {
-      background: var(--el-border-color-dark);
-    }
-  }
-}
-
-// ── Columns ──
-.roadmap__col {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 270px;
-  max-height: 100%;
-  overflow: hidden;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.roadmap__col-head {
-  flex-shrink: 0;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.roadmap__col-head-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.roadmap__col-head-actions {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-}
-.roadmap__col-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  &:hover {
-    color: var(--el-color-primary);
-  }
-}
-.roadmap__col-progress {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-top: 5px;
-  :deep(.el-progress) {
-    flex: 1;
-    max-width: 200px;
-  }
-  span {
-    font-size: 11px;
-    color: var(--el-text-color-placeholder);
-  }
-}
-.roadmap__col-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 50px;
-  padding: 8px 10px;
-  overflow: hidden auto;
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: var(--el-border-color);
-    border-radius: 2px;
-  }
-}
-.roadmap__col-empty {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
-  padding: 24px;
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Items (kanban cards) ──
-.roadmap__item {
-  position: relative;
-  padding: 10px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
-  transition:
-    box-shadow 0.15s,
-    border-color 0.15s,
-    transform 0.12s;
-  &:hover {
-    border-color: var(--el-border-color);
-    box-shadow: 0 3px 10px rgb(0 0 0 / 9%);
-    transform: translateY(-1px);
-  }
-  &:active {
-    transform: translateY(0);
-  }
-  &--overdue {
-    border-color: var(--el-color-danger-light-4);
-    box-shadow: 0 0 0 1px var(--el-color-danger-light-6);
-  }
-}
-.roadmap__item-accent {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 3px;
-  border-radius: 6px 0 0 6px;
-}
-
-// Row 1: key + kind + status
-.roadmap__item-head {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.roadmap__item-key {
-  padding: 1px 5px;
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color-light);
-  border-radius: 3px;
-}
-.roadmap__item-kind {
-  flex-shrink: 0;
-  padding: 0 6px;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.7;
-  letter-spacing: 0.3px;
-  border-radius: 8px;
-  & --module {
-    color: #9b59b6;
-    background: rgb(155 89 182 / 12%);
-  }
-}
-.roadmap__item-status {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-// Row 2: title
-.roadmap__item-title {
-  display: -webkit-box;
-  padding: 1px 4px;
-  margin-right: -4px;
-  margin-bottom: 5px;
-  margin-left: -4px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  border-radius: 3px;
-  transition:
-    background 0.12s,
-    color 0.12s;
-  -webkit-box-orient: vertical;
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-}
-
-// Row 3: compact footer
-.roadmap__item-foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.roadmap__item-foot-item {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--el-text-color-secondary);
-  .el-icon {
-    flex-shrink: 0;
-    font-size: 11px;
-  }
-  :deep(.el-progress) {
-    flex-shrink: 0;
-    width: 40px;
-  }
-  &--overdue {
-    font-weight: 600;
-    color: var(--el-color-danger);
-  }
-}
-
-// Row 4: detail
-.roadmap__item-detail {
-  display: -webkit-box;
-  padding-top: 4px;
-  margin-top: 4px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  border-top: 1px solid var(--el-border-color-lighter);
-  -webkit-box-orient: vertical;
-}
-
-// Issue list
-.roadmap__item-issues {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-top: 4px;
-  margin-top: 4px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.roadmap__item-issue-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 2px 4px;
-  margin-right: -4px;
-  margin-left: -4px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: background 0.12s;
-  &:hover {
-    background: var(--el-fill-color-light);
-  }
-}
-.roadmap__item-issue-key {
-  flex-shrink: 0;
-  padding: 0 4px;
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
-  border-radius: 2px;
-}
-.roadmap__item-issue-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 11px;
-  color: var(--el-text-color-regular);
-  white-space: nowrap;
-}
-
-// ── Context Menu ──
-.roadmap-ctxmenu {
-  position: fixed;
-  z-index: 9999;
-  min-width: 180px;
-  padding: 4px;
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
-}
-.roadmap-ctxmenu__item {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 7px 12px;
-  font-size: 13px;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  border-radius: 4px;
-  .el-icon {
-    font-size: 14px;
-    color: var(--el-text-color-secondary);
-  }
-  &:hover {
-    background: var(--el-fill-color-light);
-  }
-  &--danger {
-    color: var(--el-color-danger);
-    .el-icon {
-      color: var(--el-color-danger);
-    }
-    &:hover {
-      background: var(--el-color-danger-light-9);
-    }
-  }
-}
-.roadmap-ctxmenu__divider {
-  height: 1px;
-  margin: 4px 8px;
-  background: var(--el-border-color-lighter);
-}
+@use "../../styles/index.scss";
 </style>

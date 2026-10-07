@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-05"
 title: "YV-07-05: API 层设计 — RequestHttp RPC 拦截器 + 错误处理 + 认证集成 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202607"
 estimate_frontend: 2.0
 source_prd: "05-prd-API层设计.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, API层设计]
+benefit: "开发方案：task-API层设计"
+lifecycle: active
 ---
 
 # YV-07-05: API 层设计 — RequestHttp RPC 拦截器 + 错误处理 + 认证集成 — 开发方案

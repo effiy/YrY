@@ -182,6 +182,13 @@ export default {
       updateFailed: "Failed to update issue",
       deleteFailed: "Delete failed",
       fileCleanupFailed: "Issue deleted, but the knowledge file could not be removed: {path}"
+    },
+    orphaned: {
+      warning: "{count} orphaned issues without knowledge files",
+      cleanup: "Clean up",
+      cleanupSuccess: "Cleaned up {count} orphaned issues",
+      noFilePath: "No kb_file_path",
+      missingFile: "Missing file"
     }
   }
 };

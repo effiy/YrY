@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-198: 用户个人资料页 — 头像/姓名/角色/团队/简介、活动摘要、贡献图、技能标签、联系方式、资料编辑"
 tags: [需求文档, 用户中心, 个人资料, 用户画像, 贡献图, 技能标签, 资料编辑]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["72-prd-task-用户个人资料页"]
+related_tests: ["72-prd-test-用户个人资料页"]
+benefit: "产品需求：用户个人资料页"
+lifecycle: active
 ---
 
 # YV-09-198: 用户个人资料页 — 头像/姓名/角色/团队/简介、活动摘要、贡献图、技能标签、联系方式、资料编辑

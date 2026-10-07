@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-129: 功能实现-外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-129"
 source_prds: ["59-prd-外部集成日志"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 外部集成日志]
+benefit: "测试用例：外部集成日志"
+lifecycle: active
 ---
 # YV-09-129: 功能实现-外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志 — 测试规格
 

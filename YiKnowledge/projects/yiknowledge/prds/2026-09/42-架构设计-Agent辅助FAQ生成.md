@@ -24,7 +24,7 @@ related_tests: [42-prd-test-Agent辅助FAQ生成]
 implementation_progress: 需求已编写，尚未开始实施
 implementation_updated: '2026-09-16'
 ---
-roles: [aier, producter]
+roles: [aier, product]
 ---
 
 # YK-09-39: 知识库 Agent 辅助问答 — 基于知识库的智能 FAQ 自动生成

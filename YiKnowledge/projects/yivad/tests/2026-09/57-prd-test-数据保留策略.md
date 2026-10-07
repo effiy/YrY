@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-125: 数据保留策略 — 按集合配置数据保留规则、自动归档/删除、保留策略预览、合规仪表盘 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-125"
 source_prds: ["57-prd-数据保留策略"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 数据保留策略]
+benefit: "测试用例：数据保留策略"
+lifecycle: active
 ---
 # YV-09-125: 数据保留策略 — 按集合配置数据保留规则、自动归档/删除、保留策略预览、合规仪表盘 — 测试规格
 

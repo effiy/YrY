@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-68"
 title: "YV-09-68: 全局搜索命令面板 — 开发方案"
 status: 已完成
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "34-prd-全局搜索命令面板.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 全局搜索命令面板]
+roles: [engineer]
+benefit: "开发方案：task-全局搜索命令面板"
+lifecycle: active
 ---
 
 # YV-09-68: 全局搜索命令面板 — 开发方案
@@ -38,6 +44,20 @@ source_prd: "34-prd-全局搜索命令面板.md"
 ### 实施步骤：0.5d
 
 - 4 种模式切换 + 搜索集成
+
+
+### 架构方案
+
+**技术路线**：增强现有全局搜索 → 添加搜索源 + 搜索历史 + 智能建议
+
+**组件树**：
+```
+SearchPanel.vue (CommandPalette 风格) + SearchResults.vue (分类展示) + SearchHistory.vue (localStorage)
+```
+
+**关键决策**：
+搜索结果分类：页面/Issue/文档/知识文件/API；搜索防抖 300ms；历史保留最近 20 条
+
 
 ---
 

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 列表组件体系
 tags:
 - 列表
@@ -41,6 +40,8 @@ related_modules:
 - YV-09-M08
 related_tests:
 - YV-09-M08
+benefit: "产品需求：列表组件体系"
+lifecycle: active
 ---
 
 # 列表组件体系

@@ -1,604 +1,281 @@
 <script setup lang="ts">
 /**
  * YiPet Chat — ChatToolbar (Vue 3 SFC)
- * Matches YiVad aiChat's ChatToolbar: Element Plus components, prompt history
- * popover, RAG controls.
+ * Matches YiVad aiChat's ChatToolbar: "More tools" dropdown, Skills/MCP
+ * popover, RAG/Web/Context pills, running tools indicator.
  */
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import {
   ChatLineSquare, Picture, ChatDotRound, Search,
-  Clock, CollectionTag, Delete, DocumentCopy, Cpu, Setting,
-  FolderChecked, FolderOpened, Folder, Document, Plus,
-  Loading, Tools, Edit,
+  Loading, Tools, Cpu, More, Setting,
 } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import { useChatStore } from '../../stores/chat';
 import { t } from '@/shared/i18n';
 import RequestStatusButton from '../RequestStatusButton.vue';
+import ContextFilesButton from './ContextFilesButton.vue';
+import PromptHistoryPopover from './PromptHistoryPopover.vue';
+import TemplatePicker from '../TemplatePicker.vue';
+import FaqDialog from '../FaqDialog.vue';
+import { useToolPerformance } from './useToolPerformance';
 
-const props = defineProps<{ hasContent: boolean }>();
-const emit = defineEmits<{ clearInput: [] }>();
+const props = withDefaults(
+  defineProps<{
+    faqActive?: boolean;
+    sending?: boolean;
+    streamingType?: '' | 'send' | 'regenerate' | 'resend';
+    ragToggle?: boolean;
+    webSearchToggle?: boolean;
+    contextFiles?: string[];
+  }>(),
+  {
+    faqActive: false,
+    sending: false,
+    streamingType: '',
+    ragToggle: false,
+    webSearchToggle: false,
+    contextFiles: () => [],
+  },
+);
+
+const emit = defineEmits<{
+  (e: 'toggle-faq'): void;
+  (e: 'pick-image'): void;
+  (e: 'open-wechat'): void;
+  (e: 'toggle-rag'): void;
+  (e: 'toggle-web-search'): void;
+  (e: 'stop'): void;
+}>();
 
 const store = useChatStore();
 const s = store.state;
-const MAX_DRAFT_IMAGES = 4;
 
-const canUpload = computed(() => s.draftImages.length < MAX_DRAFT_IMAGES);
-const currentSession = computed(() => s.sessions.find((ses) => ses.id === s.currentSessionId));
+// ── More tools dropdown ──
+const moreToolsVisible = ref(false);
 
-// ── Popover visibility ──
-const showHistoryPopover = ref(false);
-const showContextPopover = ref(false);
-const showRagSettings = ref(false);
-const historyQuery = ref('');
-const contextPopoverTab = ref<'context' | 'browse'>('context');
-const knowledgeSearch = ref('');
-const knowledgeExpandedFolders = ref<Set<string>>(new Set());
+// ── RAG settings popover ──
+const ragSettingsVisible = ref(false);
 
-// ── Context DnD + inline editor ──
-const contextDropCounter = ref(0);
-const contextDropOver = ref(false);
-const ctxEditorOpen = ref(false);
-const ctxEditorPath = ref('');
-const ctxEditorContent = ref('');
-const ctxEditorOriginal = ref('');
-const ctxEditorLoading = ref(false);
-const ctxEditorSaving = ref(false);
+// ── Skills popover ──
+const skillsPopoverVisible = ref(false);
+const skillFilter = ref('');
+const compactMode = ref(false);
 
-function isCtxDrag(e: DragEvent): boolean {
-  if (!e.dataTransfer) return false;
-  return e.dataTransfer.types.includes('application/x-yipet-knowledge-file')
-    || e.dataTransfer.types.includes('application/x-knowledge-file')
-    || e.dataTransfer.types.includes('Files');
-}
-function onCtxDragOver(e: DragEvent) {
-  if (!isCtxDrag(e)) return;
-  e.preventDefault();
-  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-}
-function onCtxDragEnter(e: DragEvent) {
-  if (!isCtxDrag(e)) return;
-  e.preventDefault();
-  contextDropCounter.value += 1;
-  contextDropOver.value = true;
-}
-function onCtxDragLeave(e: DragEvent) {
-  e.preventDefault();
-  contextDropCounter.value -= 1;
-  if (contextDropCounter.value <= 0) { contextDropCounter.value = 0; contextDropOver.value = false; }
-}
-function flattenCtxPaths(raw: string): string[] {
-  if (!raw) return [];
-  const trimmed = raw.trim();
-  if (!trimmed) return [];
-  const candidates: string[] = [];
-  try {
-    const parsed = JSON.parse(trimmed);
-    const walk = (node: any) => {
-      if (!node) return;
-      if (node.type === 'file' && typeof node.path === 'string') candidates.push(node.path);
-      else if (Array.isArray(node)) node.forEach(walk);
-      else if (Array.isArray(node.children)) node.children.forEach(walk);
-    };
-    walk(parsed);
-  } catch {
-    candidates.push(...trimmed.split('\n').map(x => x.trim()).filter(Boolean));
-  }
-  return Array.from(new Set(candidates));
-}
-async function addPathsToContext(paths: string[]) {
-  const uniq = Array.from(new Set(paths.filter(Boolean)));
-  if (!uniq.length) return;
-  let added = 0;
-  for (const p of uniq) {
-    try {
-      const content = (await store.readKnowledgeFile?.(p)) as any;
-      const c = typeof content === 'string' ? content : content?.content || '';
-      if (c) await store.applyContextChange?.(p, c);
-      else await store.addContextFile?.(p);
-      added += 1;
-    } catch {
-      try { await store.addContextFile?.(p); added += 1; } catch { /* skip */ }
-    }
-  }
-  if (added) ElMessage.success(`Added ${added} file${added !== 1 ? 's' : ''} to context`);
-  else ElMessage.warning('No files could be added to context');
-}
-async function onCtxDrop(e: DragEvent) {
-  e.preventDefault();
-  contextDropCounter.value = 0;
-  contextDropOver.value = false;
-  const yipet = e.dataTransfer?.getData('application/x-yipet-knowledge-file') || '';
-  const yivad = e.dataTransfer?.getData('application/x-knowledge-file') || '';
-  const textData = e.dataTransfer?.getData('text/plain') || '';
-  const fileList = e.dataTransfer?.files;
-  const allPaths: string[] = [];
-  allPaths.push(...flattenCtxPaths(yipet));
-  allPaths.push(...flattenCtxPaths(yivad));
-  if (!allPaths.length && textData && /^https?:\/\//i.test(textData.trim())) {
-    allPaths.push(textData.trim());
-  }
-  if (allPaths.length) { await addPathsToContext(allPaths); return; }
-  if (fileList?.length) {
-    const paths: string[] = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const f = fileList[i];
-      if (f && (f as any).path) paths.push((f as any).path);
-    }
-    if (paths.length) await addPathsToContext(paths);
-  }
-}
-
-async function openCtxEditor(path: string) {
-  ctxEditorPath.value = path;
-  ctxEditorLoading.value = true;
-  ctxEditorSaving.value = false;
-  ctxEditorOpen.value = true;
-  try {
-    const content = (await store.getContextSectionContent?.(path)) as any;
-    const c = typeof content === 'string' ? content : content?.content || '';
-    ctxEditorOriginal.value = c;
-    ctxEditorContent.value = c;
-  } catch {
-    ctxEditorOriginal.value = '';
-    ctxEditorContent.value = '';
-    ElMessage.warning('Could not load context content — editor will start empty');
-  } finally {
-    ctxEditorLoading.value = false;
-  }
-}
-function closeCtxEditor() {
-  ctxEditorOpen.value = false;
-  ctxEditorPath.value = '';
-  ctxEditorContent.value = '';
-  ctxEditorOriginal.value = '';
-  ctxEditorLoading.value = false;
-  ctxEditorSaving.value = false;
-}
-async function saveCtxEditor() {
-  if (!ctxEditorPath.value) return;
-  ctxEditorSaving.value = true;
-  try {
-    await store.applyContextChange?.(ctxEditorPath.value, ctxEditorContent.value);
-    ElMessage.success('Context updated');
-    closeCtxEditor();
-  } catch {
-    ElMessage.error('Failed to save context changes');
-  } finally {
-    ctxEditorSaving.value = false;
-  }
-}
-function cancelCtxEditor() { closeCtxEditor(); }
-
-interface BrowseNode {
-  key: string; label: string; type: 'folder' | 'file'; path: string; children?: BrowseNode[];
-}
-const browseTree = computed<BrowseNode[]>(() => {
-  const folderMap = new Map<string, BrowseNode>();
-  const q = knowledgeSearch.value.trim().toLowerCase();
-  function copyTree(nodes: any[]): BrowseNode[] {
-    const out: BrowseNode[] = [];
-    for (const n of nodes) {
-      if (n.type === 'file') {
-        const match = !q || n.label.toLowerCase().includes(q) || n.path.toLowerCase().includes(q);
-        if (match) out.push({ key: `file:${n.path}`, label: n.name || n.label, type: 'file', path: n.path });
-      } else {
-        const children = n.children?.length ? copyTree(n.children) : [];
-        if (!q || children.length) {
-          const folder: BrowseNode = { key: `folder:${n.path}`, label: n.name || n.label, type: 'folder', path: n.path, children };
-          folderMap.set(folder.key, folder);
-          out.push(folder);
-        }
-      }
-    }
-    return out;
-  }
-  function sorted(arr: BrowseNode[]) {
-    arr.sort((a, b) => { if (a.type !== b.type) return a.type === 'folder' ? -1 : 1; return a.label.localeCompare(b.label, 'zh-CN'); });
-    for (const n of arr) if (n.children) sorted(n.children);
-  }
-  const built = copyTree(s.knowledgeTree || []);
-  sorted(built);
-  return built;
-});
-interface BrowseItem { node: BrowseNode; depth: number; }
-const browseItems = computed<BrowseItem[]>(() => {
-  const expanded = knowledgeExpandedFolders.value;
-  const items: BrowseItem[] = [];
-  function walk(nodes: BrowseNode[], depth: number) {
-    for (const n of nodes) {
-      items.push({ node: n, depth });
-      if (n.type === 'folder' && n.children?.length && expanded.has(n.key)) walk(n.children, depth + 1);
-    }
-  }
-  walk(browseTree.value, 0);
-  return items;
-});
-
-function toggleKnowledgeFolder(key: string) {
-  const next = new Set(knowledgeExpandedFolders.value);
-  if (next.has(key)) next.delete(key); else next.add(key);
-  knowledgeExpandedFolders.value = next;
-}
-async function addSingleToContext(path: string) {
-  try {
-    const content = (await store.readKnowledgeFile?.(path)) as any;
-    const c = typeof content === 'string' ? content : content?.content || '';
-    if (c) await store.applyContextChange?.(path, c);
-    else await store.addContextFile?.(path);
-  } catch { await store.addContextFile?.(path); }
-  showContextPopover.value = false;
-}
-async function addFolderToContext(node: BrowseNode) {
-  if (!node.children?.length) return;
-  const files: BrowseNode[] = [];
-  const walk = (arr: BrowseNode[]) => { for (const n of arr) { if (n.type === 'file') files.push(n); else if (n.children?.length) walk(n.children); } };
-  walk(node.children);
-  for (const f of files) await addSingleToContext(f.path);
-}
-function onContextPopoverShow() {
-  contextPopoverTab.value = (currentSession.value?.tags?.length ?? 0) > 0 ? 'context' : 'browse';
-  knowledgeSearch.value = '';
-  if (!s.knowledgeTree?.length) store.loadKnowledgeTree?.();
-}
-
-const runningToolsLabel = computed(() => {
-  const evs = s.toolEvents ?? [];
-  const running = new Map<string, string>();
-  for (const e of evs) {
-    if (e.phase === 'start') running.set(e.name, e.label);
-    else running.delete(e.name);
-  }
-  if (!running.size) return (evs[evs.length - 1]?.label) || 'Running tools...';
-  const labels = Array.from(running.values());
-  return labels.length <= 2 ? labels.join(', ') : labels.slice(0, 2).join(', ') + ` +${labels.length - 2}`;
-});
-
-// ── RAG chat modes ──
-const RAG_CHAT_MODES = [
-  { value: 'condense_plus_context', label: 'Condense + Context' },
-  { value: 'condense', label: 'Condense Question' },
-  { value: 'context', label: 'Context Only' },
-  { value: 'simple', label: 'Simple' },
-];
-
-// ── Prompt history ──
-const recentPromptChips = computed(() => {
-  if (historyQuery.value.trim()) return [];
-  return s.promptHistory.slice(-3).reverse();
-});
-
-const historyList = computed(() => {
-  const q = historyQuery.value.trim().toLowerCase();
-  const indexed = s.promptHistory.map((text, i) => ({ text, realIdx: i }));
-  const filtered = q ? indexed.filter((x) => x.text.toLowerCase().includes(q)) : indexed;
-  return filtered.reverse();
-});
-
-function useHistoryPrompt(text: string) {
-  store.invokePromptHistory?.(s.promptHistory.indexOf(text));
-  showHistoryPopover.value = false;
-}
-
-function copyHistoryPrompt(text: string) {
-  navigator.clipboard?.writeText(text).then(
-    () => ElMessage.success('Prompt copied'),
-    () => ElMessage.error('Copy failed'),
+const filteredTools = computed(() => {
+  const q = skillFilter.value.trim().toLowerCase();
+  if (!q) return store.allTools ?? [];
+  return (store.allTools ?? []).filter(
+    t => t.label.toLowerCase().includes(q) || t.name.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q),
   );
-}
-
-function removeHistoryPrompt(idx: number) {
-  store.removePromptHistoryAt?.(idx);
-}
-
-async function confirmClearPromptHistory() {
-  if (!s.promptHistory.length) return;
-  try {
-    await ElMessageBox.confirm(
-      `Clear all ${s.promptHistory.length} prompt(s)? This cannot be undone.`,
-      'Clear prompt history',
-      {
-        type: 'warning',
-        confirmButtonText: 'Clear',
-        cancelButtonText: 'Cancel',
-      },
-    );
-  } catch {
-    return;
-  }
-  store.clearPromptHistory?.();
-  showHistoryPopover.value = false;
-  ElMessage.success('Prompt history cleared');
-}
-
-function truncatePrompt(t: string, max = 40): string {
-  const trimmed = t.trim();
-  if (trimmed.length <= max) return trimmed;
-  return trimmed.slice(0, max - 1) + '\u2026';
-}
-
-function highlightSegments(text: string, query: string): { text: string; match: boolean }[] {
-  if (!query.trim()) return [{ text, match: false }];
-  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
-  const testRe = new RegExp(`^${escaped}$`, 'i');
-  return parts.map((p) => ({ text: p, match: testRe.test(p) }));
-}
-
-function trigrams(str: string): Set<string> {
-  const t = str.toLowerCase().trim();
-  if (t.length < 3) return new Set([t]);
-  const set = new Set<string>();
-  for (let i = 0; i + 3 <= t.length; i++) set.add(t.slice(i, i + 3));
-  return set;
-}
-
-function jaccard(a: Set<string>, b: Set<string>): number {
-  if (!a.size || !b.size) return 0;
-  let intersection = 0;
-  for (const item of a) if (b.has(item)) intersection++;
-  return intersection / (a.size + b.size - intersection);
-}
-
-const similarPrompts = computed<{ text: string; score: number }[]>(() => {
-  const q = historyQuery.value.trim();
-  if (!q) return [];
-  if (historyList.value.length > 0) return [];
-  const qt = trigrams(q);
-  if (!qt.size) return [];
-  return s.promptHistory
-    .map((text) => ({ text, score: jaccard(qt, trigrams(text)) }))
-    .filter((x) => x.score >= 0.1)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
 });
 
-const TOOL_SLOW_MS = 2000;
-const TOOL_VERY_SLOW_MS = 5000;
-const recentToolCalls = computed(() =>
-  (s.toolEvents ?? [])
-    .filter((event) => event.phase === 'end')
-    .slice(-5)
-    .reverse()
-    .map((event) => {
-      const ms = typeof event.durationMs === 'number' ? event.durationMs : undefined;
-      let speedTier: 'fast' | 'ok' | 'slow' | 'very-slow' | 'idle' = 'idle';
-      let speedLabel = '';
-      if (ms != null) {
-        if (ms >= TOOL_VERY_SLOW_MS) { speedTier = 'very-slow'; speedLabel = 'very slow'; }
-        else if (ms >= TOOL_SLOW_MS) { speedTier = 'slow'; speedLabel = 'slow'; }
-        else if (ms < 300) { speedTier = 'fast'; speedLabel = 'fast'; }
-        else { speedTier = 'ok'; speedLabel = 'ok'; }
-      }
-      return {
-        key: `${event.name}-${event.timestamp}`,
-        label: event.label,
-        name: event.name,
-        error: event.error || '',
-        durationMs: ms,
-        durationText: ms == null ? '' : (ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`),
-        speedTier,
-        speedLabel,
-        preview: (event.error || event.content || '').trim(),
-      };
-    }),
-);
-const toolperfAggregate = computed(() => {
+const activeSkillCount = computed(() => store.activeTools?.length ?? 0);
+
+// ── RAG pill computed ──
+const ragSourceCount = computed(() => s.ragSources?.length ?? 0);
+const ragTopScore = computed(() => {
+  if (!s.ragSources?.length) return 0;
+  return Math.max(...s.ragSources.map(x => x.score ?? 0));
+});
+const ragGrade = computed(() => {
+  if (!ragSourceCount.value) return null;
+  const top = ragTopScore.value;
+  if (top >= 0.85) return 'A';
+  if (top >= 0.7) return 'B';
+  if (top >= 0.5) return 'C';
+  return 'D';
+});
+const ragHealthDot = computed(() => {
+  if (!s.ragStatus) return 'red';
+  if (s.ragStatus.error) return 'orange';
+  if (s.ragStatus.built && s.ragStatus.num_docs > 0) return 'green';
+  if (s.ragStatus.built) return 'orange';
+  return 'red';
+});
+const ragIndexAvailable = computed(() => s.ragStatus?.built && s.ragStatus.num_docs > 0);
+const isRetrieving = computed(() => s.isProcessing && s.streamingPhase === 'retrieving');
+
+// ── Derived scope from context files ──
+const derivedScope = computed(() => {
+  const ctxPaths = props.contextFiles ?? [];
+  if (!ctxPaths.length) return null;
+  if (ctxPaths.length === 1) return { label: ctxPaths[0], count: 1 };
+  const parts = ctxPaths.map(p => p.split('/'));
+  const minLen = Math.min(...parts.map(p => p.length));
+  const common: string[] = [];
+  for (let i = 0; i < minLen; i++) {
+    if (parts.every(p => p[i] === parts[0][i])) common.push(parts[0][i]);
+    else break;
+  }
+  return { label: common.join('/') || 'mixed roles', count: ctxPaths.length };
+});
+
+const ragTooltip = computed(() => {
+  const shortcut = 'Ctrl+Shift+R';
+  if (!s.ragStatus) return `RAG — checking index... (${shortcut})`;
+  const info = s.ragStatus;
+  const ctxCount = props.contextFiles?.length ?? 0;
+  const scopeNote = s.ragEnabled && ctxCount > 0
+    ? ` · scoped to ${ctxCount} file(s)`
+    : s.ragEnabled ? ' · full knowledge base' : '';
+  const health = ragHealthDot.value === 'green' ? 'healthy' : ragHealthDot.value === 'orange' ? 'degraded' : 'not built';
+  const fastNote = s.ragEnabled && s.ragFast ? ' · FAST (no retrieval)' : '';
+  const srcNote = ragSourceCount.value ? ` · last: ${ragSourceCount.value} sources${ragGrade.value ? ` (${ragGrade.value})` : ''}` : '';
+  if (!ragIndexAvailable.value) return `RAG unavailable — index not built (${shortcut})`;
+  if (s.ragEnabled && s.webSearchEnabled) return `RAG+Web · ${info.num_docs} docs · ${health}${fastNote}${scopeNote}${srcNote} (${shortcut})`;
+  if (s.ragEnabled) return `RAG on · ${info.num_docs} docs · ${health}${fastNote}${scopeNote}${srcNote} (${shortcut})`;
+  return `RAG off · ${info.num_docs} docs · ${health} (${shortcut})`;
+});
+
+// ── Running tools ──
+const runningTools = computed(() => {
   const events = s.toolEvents ?? [];
-  const recent = events.filter(e => e.phase === 'end').slice(-20);
-  const total = recent.length;
-  const errors = recent.filter(e => !!e.error).length;
-  const slowCount = recent.filter(e => typeof e.durationMs === 'number' && e.durationMs >= TOOL_SLOW_MS).length;
-  const verySlowCount = recent.filter(e => typeof e.durationMs === 'number' && e.durationMs >= TOOL_VERY_SLOW_MS).length;
-  const withDurations = recent.map(e => e.durationMs as number).filter(v => typeof v === 'number');
-  const avgMs = withDurations.length ? Math.round(withDurations.reduce((a, b) => a + b, 0) / withDurations.length) : 0;
-  return { total, errors, slowCount, verySlowCount, avgMs };
-});
-
-// ── Context files ──
-const contextFiles = computed(() => {
-  const files: { label: string; detail: string; kind: 'scope' | 'page' | 'ctx' }[] = [];
-  if (s.ragScope) {
-    const autoDerived = !!(currentSession.value?.tags?.some((t) => t.startsWith('ctx:') && t.slice(4) === s.ragScope || s.ragScope.startsWith(t.slice(4))));
-    files.push({ label: s.ragScope, detail: s.ragScopeIsFile ? 'File scope' + (autoDerived ? ' (auto)' : '') : 'Folder scope' + (autoDerived ? ' (auto)' : ''), kind: 'scope' });
+  const started = new Set<string>();
+  const ended = new Set<string>();
+  for (const e of events) {
+    if (e.phase === 'start') started.add(e.name);
+    if (e.phase === 'end') ended.add(e.name);
   }
-  const ses = currentSession.value;
-  if (ses?.pageContent) {
-    const preview = ses.pageContent.slice(0, 120).replace(/\n/g, ' ');
-    files.push({ label: 'Page context', detail: preview + (ses.pageContent.length > 120 ? '...' : ''), kind: 'page' });
-  }
-  const ctxTags = (ses?.tags ?? []).filter((t) => t.startsWith('ctx:'));
-  for (const tag of ctxTags) {
-    const path = tag.slice(4);
-    if (!files.some((f) => f.label === path)) {
-      files.push({ label: path, detail: 'Context file', kind: 'ctx' });
-    }
-  }
-  return files;
+  return [...started]
+    .filter(n => !ended.has(n))
+    .map(n => events.find(e => e.name === n && e.phase === 'start'))
+    .filter(Boolean) as Array<{ name: string; label: string }>;
 });
 
-/** Context files that feed into RAG (ctx: tagged files). */
-const ragContextFiles = computed(() => {
-  const ses = currentSession.value;
-  if (!ses?.tags) return [];
-  return ses.tags
-    .filter((t) => typeof t === 'string' && t.startsWith('ctx:'))
-    .map((t) => t.slice(4));
+const { runningToolsLabel, recentToolCalls, toolperfAggregate } = useToolPerformance();
+
+// Load RAG status on mount
+onMounted(() => {
+  if (!s.ragStatus) store.loadRagStatus?.();
 });
-
-/** Whether RAG is auto-scoped to session context files. */
-const ragAutoScoped = computed(() => {
-  if (!s.knowledgeGrounded || !s.ragScope) return false;
-  const ctxFiles = ragContextFiles.value;
-  if (!ctxFiles.length) return false;
-  return ctxFiles.some((f) => f === s.ragScope || s.ragScope.startsWith(f) || f.startsWith(s.ragScope));
-});
-
-function handleContextFileClick(path: string) {
-  store.openKnowledgePreview?.(path);
-  showContextPopover.value = false;
-}
-
-// ── Actions ──
-function onUploadImage() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.multiple = true;
-  input.onchange = () => {
-    const files = Array.from(input.files || []);
-    const remaining = MAX_DRAFT_IMAGES - s.draftImages.length;
-    const toRead = files.slice(0, remaining);
-    let loaded = 0;
-    const sources: string[] = new Array(toRead.length);
-    toRead.forEach((file, i) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => { sources[i] = ev.target?.result as string; loaded++; if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean)); };
-      reader.onerror = () => { loaded++; if (loaded === toRead.length) store.addDraftImages?.(sources.filter(Boolean)); };
-      reader.readAsDataURL(file);
-    });
-  };
-  input.click();
-}
-
-function toggleRag() { store.toggleKnowledgeGrounded?.(); }
-
 </script>
 
 <template>
   <div class="ct-toolbar" role="toolbar" :aria-label="t('chatToolbarAriaLabel')">
-    <!-- Left: FAQ, prompt history, skills, cross-project, upload, edit, tags, bot -->
+    <!-- Left: More tools dropdown, TemplatePicker, FaqPopover, PromptHistory, Skills -->
     <div class="ct-left">
-      <!-- FAQ -->
-      <el-tooltip content="FAQ" placement="bottom">
-        <el-button circle :icon="ChatLineSquare" @click="store.openFaqManager?.()" />
-      </el-tooltip>
-
-      <!-- Prompt history -->
+      <!-- More tools dropdown -->
       <el-popover
-        v-model:visible="showHistoryPopover"
-        popper-class="ct-tb-popper"
-        placement="bottom"
-        :width="420"
+        v-model:visible="moreToolsVisible"
+        placement="bottom-start"
+        :width="200"
         trigger="click"
-        :title="t('chatPromptHistoryCount', String(s.promptHistory.length))"
-        @show="historyQuery = ''"
+        :teleported="true"
+        popper-class="ct-more-pop"
       >
         <template #reference>
-          <el-button circle :icon="Clock" :title="t('chatPromptHistory')" />
+          <el-button circle size="default" :icon="More" :title="'More tools'" />
         </template>
-        <div class="ct-history-pop">
-          <div v-if="recentPromptChips.length" class="ct-history-recent">
-            <span class="ct-history-recent-label">Recent:</span>
-            <span
-              v-for="(p, i) in recentPromptChips"
-              :key="`recent-${i}`"
-              class="ct-history-chip"
-            >
-              <span class="ct-history-chip-text" :title="`${p} — click to insert into input`" @click="useHistoryPrompt(p)">{{ truncatePrompt(p) }}</span>
-              <el-button
-                class="ct-history-chip-copy"
-                size="small"
-                text
-                :icon="DocumentCopy"
-                title="Copy prompt"
-                @click.stop="copyHistoryPrompt(p)"
-              />
-            </span>
+        <div class="ct-more-menu">
+          <div
+            class="ct-more-item"
+            :class="{ 'is-active': props.faqActive }"
+            @click="emit('toggle-faq'); moreToolsVisible = false"
+          >
+            <el-icon :size="16"><ChatLineSquare /></el-icon>
+            <span>FAQ</span>
+            <span v-if="props.faqActive" class="ct-more-item-dot" />
           </div>
-          <el-input
-            v-model="historyQuery"
-            size="small"
-            clearable
-            :prefix-icon="Search"
-            placeholder="Search prompts..."
-            class="ct-history-search"
-          />
-          <div v-if="!historyList.length && !similarPrompts.length" class="ct-history-empty">
-            {{ historyQuery ? 'No prompts match your filter.' : 'No prompts yet. Type a prompt and press Enter — it will show up here.' }}
+          <div
+            class="ct-more-item"
+            @click="skillsPopoverVisible = true; moreToolsVisible = false"
+          >
+            <el-icon :size="16"><Tools /></el-icon>
+            <span>Skills · {{ activeSkillCount }} active</span>
           </div>
-          <div v-if="similarPrompts.length" class="ct-history-similar">
-            <span class="ct-history-similar-label">Did you mean:</span>
-            <span
-              v-for="(p, i) in similarPrompts"
-              :key="`sim-${i}`"
-              class="ct-history-chip-text ct-history-chip-text--sim"
-              :title="`${p.text} — similarity ${(p.score * 100).toFixed(0)}% · click to insert into input`"
-              @click="useHistoryPrompt(p.text)"
-            >{{ truncatePrompt(p.text, 60) }} <span class="ct-history-similar-score">{{ (p.score * 100).toFixed(0) }}%</span></span>
+          <div
+            class="ct-more-item"
+            @click="emit('pick-image'); moreToolsVisible = false"
+          >
+            <el-icon :size="16"><Picture /></el-icon>
+            <span>Upload image</span>
           </div>
-          <div class="ct-history-rows">
-            <div v-for="(p, i) in historyList" :key="`${p.realIdx}-${i}`" class="ct-history-row">
-              <span class="ct-history-idx">{{ s.promptHistory.length - p.realIdx }}</span>
-              <span class="ct-history-text" :title="p.text" @click="useHistoryPrompt(p.text)">
-                <template v-for="(seg, si) in highlightSegments(p.text, historyQuery)" :key="si">
-                  <mark v-if="seg.match" class="ct-skill-match">{{ seg.text }}</mark>
-                  <template v-else>{{ seg.text }}</template>
-                </template>
-              </span>
-              <div class="ct-history-actions">
-                <el-button size="small" text :icon="DocumentCopy" @click="copyHistoryPrompt(p.text)" />
-                <el-button size="small" text :icon="Delete" @click="removeHistoryPrompt(p.realIdx)" />
-              </div>
-            </div>
-          </div>
-          <div v-if="s.promptHistory.length" class="ct-history-footer">
-            <el-button size="small" type="danger" text :icon="Delete" @click="confirmClearPromptHistory()">Clear all ({{ s.promptHistory.length }})</el-button>
+          <div
+            class="ct-more-item"
+            @click="emit('open-wechat'); moreToolsVisible = false"
+          >
+            <el-icon :size="16"><ChatDotRound /></el-icon>
+            <span>WeCom settings</span>
           </div>
         </div>
       </el-popover>
 
-      <!-- Upload image -->
-      <el-tooltip :content="t('chatUploadImage')" placement="bottom">
-        <el-button circle :icon="Picture" :disabled="!canUpload" @click="onUploadImage" />
-      </el-tooltip>
+      <!-- Prompt templates -->
+      <TemplatePicker />
 
-      <!-- Clear composer -->
-      <el-tooltip v-if="props.hasContent" content="Clear composer" placement="bottom">
-        <el-button circle :icon="Delete" @click="emit('clearInput')" />
-      </el-tooltip>
+      <!-- FAQ dialog (matches YiVad FaqPopover placement) -->
+      <FaqDialog />
 
-      <!-- Bot settings -->
-      <el-tooltip content="WeCom bot settings" placement="bottom">
-        <el-button circle :icon="ChatDotRound" @click="store.openWeChatSettings?.()" />
-      </el-tooltip>
+      <!-- Prompt history -->
+      <PromptHistoryPopover />
 
-      <!-- Skills / MCP -->
+      <!-- Skills / MCP popover (triggered from More menu via hidden anchor) -->
       <el-popover
+        v-model:visible="skillsPopoverVisible"
         placement="bottom"
+        :width="360"
         trigger="click"
-        :width="420"
-        popper-class="ct-tb-popper"
-        :title="`Skills & Tools · ${store.activeTools?.length ?? 0} active`"
+        :title="`Skills · ${activeSkillCount} active`"
+        popper-class="ct-skills-pop"
       >
         <template #reference>
-          <el-tooltip content="Skills & Tools" placement="bottom">
-            <el-button circle :icon="Tools" />
-          </el-tooltip>
+          <span class="ct-skills-anchor" />
         </template>
-        <div class="ct-skills-panel">
-          <div v-if="!store.allTools?.length" class="ct-skills-empty">
-            No tools registered. Built-in tools (Web Search, Knowledge Search) activate automatically when the corresponding toggles are on.
-          </div>
-          <div v-else class="ct-skills-list">
+        <div class="ct-skills-list">
+          <!-- Global tool search -->
+          <div class="ct-skills-search-sticky">
+            <el-input
+              v-model="skillFilter"
+              size="small"
+              clearable
+              :prefix-icon="Search"
+              placeholder="Search all tools…"
+              class="ct-skills-global-search"
+            />
             <div
-              v-for="tool in (store.allTools ?? [])"
-              :key="tool.name"
-              class="ct-skill-item"
-              :class="{ 'is-on': tool.enabled !== false }"
+              v-if="skillFilter.trim()"
+              class="ct-skills-search-summary"
             >
-              <div class="ct-skill-main">
-                <span class="ct-skill-name">{{ tool.label }}</span>
-                <span class="ct-skill-sub">{{ tool.name }}</span>
-                <p class="ct-skill-desc">{{ tool.promptSnippet || tool.description }}</p>
-              </div>
-              <el-switch
-                :model-value="tool.enabled !== false"
-                size="small"
-                @update:model-value="store.setToolEnabled?.(tool.name, $event as boolean)"
-              />
+              <span class="ct-skills-search-total">{{ filteredTools.length }} match{{ filteredTools.length === 1 ? '' : 'es' }}</span>
             </div>
           </div>
+
+          <!-- Tool list -->
+          <div v-if="!store.allTools?.length" class="ct-skills-empty">
+            No tools registered.
+          </div>
+          <div v-else-if="!filteredTools.length" class="ct-skills-empty">
+            No tools match "{{ skillFilter }}"
+          </div>
+          <div v-else class="ct-skills-section">
+            <span>Tools · {{ activeSkillCount }} active</span>
+            <el-button
+              class="ct-skills-compact-toggle"
+              :class="{ 'is-active': compactMode }"
+              size="small"
+              text
+              :title="compactMode ? 'Full view' : 'Compact view'"
+              @click="compactMode = !compactMode"
+            >{{ compactMode ? '▤' : '▥' }}</el-button>
+          </div>
+          <div
+            v-for="tool in filteredTools"
+            :key="tool.name"
+            class="ct-skill"
+            :class="{
+              'ct-skill--off': tool.enabled === false,
+              'ct-skill--compact': compactMode
+            }"
+          >
+            <div class="ct-skill-head">
+              <span class="ct-skill-label">{{ tool.label }}</span>
+              <span class="ct-skill-name">{{ tool.name }}</span>
+              <span v-if="tool.enabled === false" class="ct-skill-tag ct-skill-tag--off" title="Disabled">off</span>
+              <span v-else class="ct-skill-tag ct-skill-tag--on" title="Enabled">on</span>
+            </div>
+            <div v-if="!compactMode" class="ct-skill-desc">{{ tool.promptSnippet || tool.description }}</div>
+          </div>
+
+          <!-- Recent tool calls -->
           <div v-if="recentToolCalls.length" class="ct-tool-calls">
             <div class="ct-skills-section-title">Latest runs</div>
             <div class="ct-tool-call-list">
@@ -628,6 +305,8 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
               </div>
             </div>
           </div>
+
+          <!-- Footer stats -->
           <div class="ct-skills-footer">
             <div class="ct-skills-toolperf">
               <span class="ct-skills-toolperf-label">Calls</span>
@@ -637,19 +316,19 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
             </div>
             <div class="ct-skills-toolperf">
               <span class="ct-skills-toolperf-label">Active</span>
-              <span class="ct-skills-toolperf-value" :class="{'is-on': (store.activeTools?.length ?? 0) > 0}">
-                {{ store.activeTools?.length ?? 0 }}
+              <span class="ct-skills-toolperf-value" :class="{'is-on': activeSkillCount > 0}">
+                {{ activeSkillCount }}
               </span>
             </div>
             <div class="ct-skills-toolperf">
               <span class="ct-skills-toolperf-label">Errors</span>
-              <span class="ct-skills-toolperf-value" :class="{'is-err': toolperfAggregate.errors > 0}" :title="`${toolperfAggregate.errors} failed in last 20 runs`">
+              <span class="ct-skills-toolperf-value" :class="{'is-err': toolperfAggregate.errors > 0}">
                 {{ toolperfAggregate.errors }}
               </span>
             </div>
             <div class="ct-skills-toolperf">
               <span class="ct-skills-toolperf-label">Slow</span>
-              <span class="ct-skills-toolperf-value" :class="{'is-slow': toolperfAggregate.slowCount > 0}" :title="`${toolperfAggregate.slowCount} slow (≥2s) · ${toolperfAggregate.verySlowCount} very slow (≥5s) in last 20`">
+              <span class="ct-skills-toolperf-value" :class="{'is-slow': toolperfAggregate.slowCount > 0}">
                 {{ toolperfAggregate.slowCount }}
               </span>
             </div>
@@ -658,131 +337,193 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
       </el-popover>
     </div>
 
-    <!-- Right: pills group + running tools + clear + stop -->
+    <!-- Right: pills group + running tools + stop -->
     <div class="ct-right">
-
       <!-- Pills group: status toggles -->
       <div class="ct-pills-group">
         <!-- Context files -->
+        <ContextFilesButton />
+
+        <!-- RAG split-button: left toggles, right opens settings -->
         <el-popover
-          v-if="contextFiles.length"
-          v-model:visible="showContextPopover"
-          popper-class="ct-tb-popper"
+          v-model:visible="ragSettingsVisible"
           placement="bottom"
-          :width="360"
+          :width="300"
           trigger="click"
-          @show="onContextPopoverShow"
+          :teleported="true"
+          popper-class="ct-rag-console-pop"
         >
           <template #reference>
-            <div class="ct-pill on" :title="t('chatActiveContext')">
-              <el-icon :size="14"><CollectionTag /></el-icon>
-              <span class="ct-pill-label">Context: {{ contextFiles.length }}</span>
+            <div
+              class="ct-pill ct-pill--rag"
+              :class="{
+                on: s.ragEnabled,
+                combined: s.ragEnabled && s.webSearchEnabled,
+                retrieving: isRetrieving,
+                fast: s.ragEnabled && s.ragFast,
+                sourced: !isRetrieving && !s.isProcessing && ragSourceCount > 0,
+                unavailable: !ragIndexAvailable
+              }"
+              :title="ragTooltip"
+            >
+              <span class="ct-pill--rag-main" @click.stop="emit('toggle-rag')">
+                <span class="ct-rag-dot" :class="ragHealthDot" />
+                <el-icon :size="14" :class="{ 'ct-spin': isRetrieving }">
+                  <Loading v-if="isRetrieving" />
+                  <Cpu v-else />
+                </el-icon>
+                <span class="ct-pill-label">
+                  {{ s.ragEnabled && s.webSearchEnabled ? 'RAG+Web' : isRetrieving ? 'Retrieving' : 'RAG' }}
+                </span>
+                <span v-if="s.ragEnabled && s.ragFast" class="ct-rag-fast-badge">FAST</span>
+                <span v-if="!isRetrieving && !s.isProcessing && ragSourceCount > 0" class="ct-rag-src-badge" :class="'grade-' + ragGrade?.toLowerCase()">
+                  {{ ragSourceCount }}{{ ragGrade ? ` · ${ragGrade}` : '' }}
+                </span>
+              </span>
+              <span class="ct-pill--rag-gear" title="RAG Settings">
+                <el-icon :size="10"><Setting /></el-icon>
+              </span>
             </div>
           </template>
-          <el-tabs v-model="contextPopoverTab" class="ct-context-tabs">
-            <el-tab-pane label="Context" name="context">
-              <div
-                class="ct-context-drop-zone"
-                :class="{ 'is-dragging': contextDropOver }"
-                @dragenter="onCtxDragEnter"
-                @dragover="onCtxDragOver"
-                @dragleave="onCtxDragLeave"
-                @drop="onCtxDrop"
-              >
-                <div v-if="contextDropOver" class="ct-context-drop-hint">
-                  <span class="ct-context-drop-icon">📥</span>
-                  <span>Drop knowledge files / URLs here to add to context</span>
-                </div>
-                <div v-else class="ct-context-list">
-                  <div
-                    v-for="(file, i) in contextFiles"
-                    :key="i"
-                    class="ct-context-item"
+          <div class="ct-rag-pop">
+            <div class="ct-rag-pop-head">
+              <span class="ct-rag-pop-title">
+                <span class="ct-rag-dot ct-rag-dot--lg" :class="ragHealthDot" />
+                RAG Settings
+              </span>
+              <span v-if="s.ragStatus?.num_docs" class="ct-rag-pop-docs">{{ s.ragStatus.num_docs }} docs indexed</span>
+              <span v-else class="ct-rag-pop-docs ct-rag-pop-docs--warn">Index not built</span>
+            </div>
+            <template v-if="s.ragEnabled || ragIndexAvailable">
+              <div v-if="derivedScope" class="ct-rag-scope-bar">
+                <span class="ct-rag-scope-bar-icon">ctx</span>
+                <span class="ct-rag-scope-bar-label">{{ derivedScope.label }}</span>
+                <span class="ct-rag-scope-bar-count">{{ derivedScope.count }} file{{ derivedScope.count !== 1 ? 's' : '' }}</span>
+              </div>
+              <div class="ct-rag-pop-section">
+                <div class="ct-rag-pop-section-title">Chat Engine</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Chat Mode</span>
+                    <el-tooltip content="How conversation history is used for retrieval" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
+                  </div>
+                  <el-select
+                    :model-value="s.ragChatMode"
+                    size="small"
+                    class="ct-rag-select"
+                    @change="store.setRagChatMode(($event as string))"
+                    @click.stop
                   >
-                    <span
-                      class="ct-context-item-path"
-                      :class="{ 'is-clickable': file.kind === 'scope' || file.kind === 'ctx' }"
-                      :title="file.kind === 'scope' || file.kind === 'ctx' ? t('chatClickToPreview') : file.detail"
-                      @click="(file.kind === 'scope' || file.kind === 'ctx') ? handleContextFileClick(file.label) : undefined"
-                    >{{ file.label }}</span>
-                    <span class="ct-context-item-detail">{{ file.detail }}</span>
-                    <el-button
-                      v-if="file.kind === 'ctx'"
-                      size="small"
-                      text
-                      type="primary"
-                      :icon="Edit"
-                      title="Edit context content inline"
-                      @click.stop="openCtxEditor(file.label)"
-                    />
-                    <el-button
-                      v-if="file.kind === 'scope'"
-                      size="small"
-                      text
-                      type="danger"
-                      :icon="Delete"
-                      title="Clear RAG scope"
-                      @click="store.clearRagScope?.(); showContextPopover = false"
-                    />
-                    <el-button
-                      v-else-if="file.kind === 'ctx'"
-                      size="small"
-                      text
-                      type="danger"
-                      :icon="Delete"
-                      title="Remove context file"
-                      @click="store.removeContextFile?.(file.label)"
-                    />
+                    <el-option label="Condense (LLM)" value="condense" />
+                    <el-option label="Heuristic" value="condense_plus_context" />
+                    <el-option label="Context (all)" value="context" />
+                    <el-option label="Simple" value="simple" />
+                  </el-select>
+                </div>
+                <div class="ct-rag-row-desc">How conversation history is condensed for retrieval context</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Fast Mode</span>
+                    <el-tooltip content="Skip retrieval entirely — direct LLM answer for speed" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
                   </div>
-                  <div v-if="!contextFiles.length" class="ct-context-empty">
-                    No active context yet. Drag files from the knowledge base above, or switch to the Browse tab to pick files.
+                  <el-switch :model-value="s.ragFast" size="small" @update:model-value="store.toggleRagFast()" @click.stop />
+                </div>
+                <div class="ct-rag-row-desc">Skip retrieval entirely — direct LLM answer for speed</div>
+              </div>
+              <div class="ct-rag-pop-section">
+                <div class="ct-rag-pop-section-title">Retrieval</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Query Variants</span>
+                    <el-tooltip content="Number of query variations for fusion retrieval (1 = no expansion)" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
                   </div>
+                  <el-select
+                    :model-value="s.ragNumQueries"
+                    size="small"
+                    class="ct-rag-select"
+                    @change="store.setRagNumQueries(Number($event))"
+                    @click.stop
+                  >
+                    <el-option label="Default (1)" :value="0" />
+                    <el-option label="1 — no expansion" :value="1" />
+                    <el-option label="3 — balanced" :value="3" />
+                    <el-option label="5 — thorough" :value="5" />
+                  </el-select>
                 </div>
+                <div class="ct-rag-row-desc">QueryFusionRetriever generates N variants for broader recall</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Hybrid (BM25 + Vector)</span>
+                    <el-tooltip content="Combine keyword matching with semantic search for better recall" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
+                  </div>
+                  <el-switch :model-value="s.ragHybrid" size="small" @update:model-value="store.toggleRagHybrid()" @click.stop />
+                </div>
+                <div class="ct-rag-row-desc">Combine keyword matching with semantic search for better recall</div>
               </div>
-            </el-tab-pane>
-            <el-tab-pane label="Browse" name="browse">
-              <el-input
-                v-model="knowledgeSearch"
-                size="small"
-                clearable
-                :prefix-icon="Search"
-                placeholder="Search knowledge tree..."
-                class="ct-browse-search"
-              />
-              <div class="ct-browse-tree">
-                <div
-                  v-for="item in browseItems"
-                  :key="item.node.key"
-                  class="ct-browse-item"
-                  :style="{ paddingLeft: (item.depth * 12 + 4) + 'px' }"
-                >
-                  <template v-if="item.node.type === 'folder'">
-                    <el-icon :size="12" class="ct-browse-caret" @click="toggleKnowledgeFolder(item.node.key)">
-                      <component :is="knowledgeExpandedFolders.has(item.node.key) ? FolderOpened : Folder" />
-                    </el-icon>
-                    <el-icon :size="14"><FolderChecked /></el-icon>
-                    <span class="ct-browse-label">{{ item.node.label }}</span>
-                    <el-button size="small" text :icon="Plus" title="Add all files in folder to context" @click="addFolderToContext(item.node)" />
-                  </template>
-                  <template v-else>
-                    <span class="ct-browse-caret" />
-                    <el-icon :size="14"><Document /></el-icon>
-                    <span class="ct-browse-label ct-browse-label--file" :title="item.node.path" @click="addSingleToContext(item.node.path)">{{ item.node.label }}</span>
-                    <el-button size="small" text :icon="Plus" title="Add to context" @click="addSingleToContext(item.node.path)" />
-                  </template>
+              <div class="ct-rag-pop-section">
+                <div class="ct-rag-pop-section-title">Ranking</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Rerank (LLM)</span>
+                    <el-tooltip content="Cross-encoder re-ranks retrieved chunks for precision (~8 LLM calls)" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
+                  </div>
+                  <el-switch :model-value="s.ragRerank" size="small" @update:model-value="store.toggleRagRerank()" @click.stop />
                 </div>
-                <div v-if="!browseItems.length" class="ct-browse-empty">
-                  {{ knowledgeSearch ? 'No files match your search.' : 'No knowledge files loaded yet.' }}
+                <div class="ct-rag-row-desc">Cross-encoder re-ranks retrieved chunks for precision (~8 LLM calls)</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>HyDE</span>
+                    <el-tooltip content="Generate hypothetical answer first to improve embedding match" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
+                  </div>
+                  <el-switch :model-value="s.ragHyde" size="small" @update:model-value="store.toggleRagHyde()" @click.stop />
                 </div>
+                <div class="ct-rag-row-desc">Generate hypothetical answer first to improve embedding match</div>
               </div>
-            </el-tab-pane>
-          </el-tabs>
+              <div class="ct-rag-pop-section">
+                <div class="ct-rag-pop-section-title">Output</div>
+                <div class="ct-rag-row">
+                  <div class="ct-rag-row-label">
+                    <span>Inline Citations [N]</span>
+                    <el-tooltip content="Prefix chunks with [Source N] markers for traceable answers" placement="top">
+                      <span class="ct-rag-info">?</span>
+                    </el-tooltip>
+                  </div>
+                  <el-switch :model-value="s.ragCitations" size="small" @update:model-value="store.toggleRagCitations()" @click.stop />
+                </div>
+                <div class="ct-rag-row-desc">Prefix chunks with [Source N] markers for traceable answers</div>
+              </div>
+              <div class="ct-rag-pop-footer">
+                <el-button size="small" text type="info" @click.stop="store.resetRagSettings()">Reset to Defaults</el-button>
+              </div>
+            </template>
+            <div v-else class="ct-rag-pop-section">
+              <div class="ct-rag-pop-empty">
+                Knowledge index not built. Run a build from the RAG dashboard or use <code>python -m scripts.build_index</code> on the server.
+              </div>
+            </div>
+          </div>
         </el-popover>
 
         <!-- Web search -->
         <div
-          class="ct-pill"
-          :class="{ on: s.webSearchEnabled, searching: s.webSearching }"
+          class="ct-pill ct-pill--web"
+          :class="{
+            on: s.webSearchEnabled,
+            searching: s.webSearching,
+            combined: s.webSearchEnabled && s.ragEnabled
+          }"
           :title="s.webSearchEnabled
             ? (s.webSearching
               ? 'Web search running...'
@@ -790,828 +531,47 @@ function toggleRag() { store.toggleKnowledgeGrounded?.(); }
                 ? `Web search on — ${s.webSearchResults.length} cached source(s)${s.searchTimingMs ? ` · ${s.searchTimingMs}ms` : ''}`
                 : 'Web search on — answers include internet results'))
             : 'Web search off — toggle to search the web'"
-          @click="s.webSearchEnabled = !s.webSearchEnabled"
+          @click="emit('toggle-web-search')"
         >
-          <el-icon :size="14">
+          <el-icon :size="14" :class="{ 'ct-spin': s.webSearching }">
             <Loading v-if="s.webSearching" />
             <Search v-else />
           </el-icon>
-          <span v-if="s.webSearchEnabled && s.webSearchResults.length" class="ct-pill-label">
-            Web {{ s.webSearchResults.length }}
+          <span class="ct-pill-label">{{
+            s.webSearching
+              ? 'Searching...'
+              : s.webSearchEnabled && s.webSearchResults.length
+                ? `Web ${s.webSearchResults.length}`
+                : 'Web'
+          }}</span>
+          <span v-if="s.webSearchEnabled && s.searchTimingMs > 0 && !s.webSearching" class="ct-pill-timing">
+            {{ s.searchTimingMs < 1000 ? `${s.searchTimingMs}ms` : `${(s.searchTimingMs / 1000).toFixed(1)}s` }}
           </span>
-          <span v-else-if="s.webSearchEnabled && s.searchTimingMs > 0" class="ct-pill-label">
-            Web
-          </span>
-          <el-switch :model-value="s.webSearchEnabled" size="small" @click.stop @update:model-value="s.webSearchEnabled = !s.webSearchEnabled" />
         </div>
-
-        <!-- RAG -->
-        <div
-          class="ct-pill" :class="{ on: s.knowledgeGrounded, 'ct-pill--auto': ragAutoScoped }"
-          :title="s.knowledgeGrounded
-            ? (ragAutoScoped
-              ? `RAG on — grounded in ${ragContextFiles.length} session context file${ragContextFiles.length > 1 ? 's' : ''}: ${ragContextFiles.join(', ')}`
-              : (s.ragScope ? `RAG on — scoped to ${s.ragScope}` : 'RAG on — searching full knowledge base'))
-            : 'RAG off — direct chat'"
-          @click="toggleRag"
-        >
-          <el-icon :size="14"><Cpu /></el-icon>
-          <span v-if="s.knowledgeGrounded && ragAutoScoped" class="ct-pill-label ct-pill-label--rag">{{ ragContextFiles.length }}</span>
-          <el-switch :model-value="s.knowledgeGrounded" size="small" @click.stop @update:model-value="toggleRag" />
-        </div>
-
-        <!-- RAG status dot -->
-        <span
-          v-if="s.knowledgeGrounded"
-          class="ct-rag-status"
-          :class="{
-            'ct-rag-status--built': s.ragStatus?.built === true,
-            'ct-rag-status--loading': s.ragStatusLoading,
-          }"
-          :title="s.ragStatus?.built === true ? `RAG index built · ${s.ragStatus.num_docs ?? 0} docs` : s.ragStatusLoading ? 'Loading RAG status...' : 'RAG index not built'"
-          @click="s.ragStatus?.built !== true && !s.ragStatusLoading ? store.loadRagStatus?.() : undefined"
-        >
-          <span class="ct-rag-status-dot" />
-        </span>
-
-        <!-- RAG settings -->
-        <el-popover
-          v-if="s.knowledgeGrounded"
-          v-model:visible="showRagSettings"
-          popper-class="ct-tb-popper"
-          placement="bottom"
-          :width="280"
-          trigger="click"
-        >
-          <template #reference>
-            <span class="ct-rag-settings-btn" :class="{ 'is-active': showRagSettings }" title="RAG settings">
-              <el-icon :size="12"><Setting /></el-icon>
-            </span>
-          </template>
-          <div class="ct-rag-settings">
-            <div class="ct-rag-setting-section">
-              <span class="ct-rag-setting-label">Chat Mode</span>
-              <el-select
-                :model-value="s.ragChatMode"
-                size="small"
-                @update:model-value="s.ragChatMode = $event as string"
-              >
-                <el-option
-                  v-for="m in RAG_CHAT_MODES"
-                  :key="m.value"
-                  :label="m.label"
-                  :value="m.value"
-                />
-              </el-select>
-            </div>
-            <div class="ct-rag-setting-row">
-              <span class="ct-rag-setting-label">Hybrid (BM25+Vector)</span>
-              <el-switch :model-value="s.ragHybrid" size="small" @update:model-value="s.ragHybrid = $event as boolean" />
-            </div>
-            <div class="ct-rag-setting-row">
-              <span class="ct-rag-setting-label">Rerank results</span>
-              <el-switch :model-value="s.ragRerank" size="small" @update:model-value="s.ragRerank = $event as boolean" />
-            </div>
-            <div class="ct-rag-setting-row">
-              <span class="ct-rag-setting-label">Citation injection</span>
-              <el-switch :model-value="s.ragCitations" size="small" @update:model-value="s.ragCitations = $event as boolean" />
-            </div>
-            <div class="ct-rag-setting-section">
-              <span class="ct-rag-setting-label">Num queries (multi-query)</span>
-              <el-input-number
-                :model-value="s.ragNumQueries"
-                :min="0"
-                :max="10"
-                size="small"
-                controls-position="right"
-                style="width: 100px"
-                @update:model-value="s.ragNumQueries = $event as number"
-              />
-            </div>
-            <div class="ct-rag-setting-row">
-              <span class="ct-rag-setting-label">HyDE (Hypothetical Document)</span>
-              <el-switch :model-value="s.ragHyde" size="small" @update:model-value="s.ragHyde = $event as boolean" />
-            </div>
-            <div class="ct-rag-setting-section" style="border-top: 1px solid rgba(var(--primary-rgb,99,102,241),.15); padding-top: 8px; margin-top: 4px;">
-              <span class="ct-rag-setting-label">Context files in session</span>
-              <span class="ct-rag-ctx-count">{{ ragContextFiles.length }}</span>
-            </div>
-            <div class="ct-rag-setting-section">
-              <span class="ct-rag-setting-label">RAG scope</span>
-              <el-input size="small" :model-value="s.ragScope" placeholder="(all knowledge base)" clearable @update:model-value="store.setRagScopeFromNode?.($event as string, false)" />
-            </div>
-          </div>
-        </el-popover>
       </div>
 
-      <transition name="ct-pop-in">
-        <div
-          v-if="s.isProcessing && s.toolEvents?.length"
-          class="ct-running-tools"
-          :title="s.toolEvents.slice(-3).map(e => `${e.label} · ${e.phase}`).join(', ')"
-        >
-          <el-icon class="ct-running-dot" :size="10"><Loading /></el-icon>
-          <span class="ct-running-label">
-            {{ runningToolsLabel }}
-          </span>
-        </div>
-      </transition>
+      <!-- Running tools indicator -->
+      <div v-for="tool in runningTools" :key="tool.name" class="ct-pill on" :title="`Running: ${tool.label}`">
+        <el-icon :size="14" class="ct-spin"><Loading /></el-icon>
+        <span class="ct-pill-label">{{ tool.label }}</span>
+      </div>
 
       <RequestStatusButton
+        v-if="s.isProcessing"
         :sending="s.isProcessing"
         :streaming-type="s.streamingType"
-        @stop="store.stopSending()"
+        @stop="emit('stop')"
       />
     </div>
-  </div>
 
-  <!-- Inline context editor dialog (mirrors YiVad context edit pattern) -->
-  <el-dialog
-    v-model:visible="ctxEditorOpen"
-    :title="`Edit context · ${ctxEditorPath}`"
-    width="min(720px, 92vw)"
-    top="12vh"
-    :close-on-click-modal="false"
-    destroy-on-close
-    @close="closeCtxEditor"
-  >
-    <div class="ct-ctx-editor-body" v-loading="ctxEditorLoading">
-      <el-input
-        v-model="ctxEditorContent"
-        type="textarea"
-        :autosize="{ minRows: 12, maxRows: 22 }"
-        placeholder="Context content will be inserted verbatim into the prompt..."
-        resize="vertical"
-        class="ct-ctx-editor-ta"
-      />
-      <div class="ct-ctx-editor-meta">
-        <span>Original length: {{ ctxEditorOriginal.length }} chars</span>
-        <span>·</span>
-        <span>Current length: {{ ctxEditorContent.length }} chars</span>
-        <span v-if="ctxEditorOriginal !== ctxEditorContent" class="ct-ctx-editor-dirty">· modified</span>
-      </div>
-    </div>
-    <template #footer>
-      <el-button @click="cancelCtxEditor" :disabled="ctxEditorSaving">Cancel</el-button>
-      <el-button type="primary" :loading="ctxEditorSaving" @click="saveCtxEditor">Save changes</el-button>
-    </template>
-  </el-dialog>
+    <!-- FAQ dialog (matches YiVad FaqPopover inline render) -->
+  </div>
 </template>
 
+
 <style lang="scss" scoped>
-// ── Toolbar ──
-.ct-toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  padding: 6px 12px;
-  background: var(--bg-elevated, rgba(20, 18, 40, 0.96));
-  border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-}
-
-.ct-left, .ct-right {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.ct-sep {
-  width: 1px;
-  height: 16px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  margin: 0 2px;
-}
-
-// ── Round buttons ──
-:deep(.el-button.is-circle) {
-  --el-button-bg-color: transparent;
-  --el-button-border-color: transparent;
-  --el-button-text-color: var(--text-primary, #f5f3ff);
-  --el-button-hover-bg-color: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-  --el-button-hover-border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.35);
-  --el-button-hover-text-color: var(--primary-light, #818cf8);
-  transition: all 0.15s;
-}
-
-// ── Pills group ──
-.ct-pills-group {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-// ── Status pills ──
-.ct-pill {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  height: 28px;
-  padding: 0 10px;
-  font-size: 12px;
-  color: var(--text-secondary, #d4d0e8);
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  border-radius: 14px;
-  transition: all 0.15s;
-
-  &:hover { border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.25); }
-
-  &.on {
-    color: var(--primary-light, #818cf8);
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.35);
-  }
-}
-
-.ct-pill-label {
-  font-size: 10px;
-  line-height: 1;
-}
-
-.ct-pill-label--rag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 15px;
-  padding: 0 4px;
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  background: var(--primary, #6366f1);
-  border-radius: 7px;
-}
-
-.ct-pill--auto {
-  border-color: rgba(34, 197, 94, 0.35);
-  &.on {
-    color: #22c55e;
-    background: rgba(34, 197, 94, 0.08);
-    border-color: rgba(34, 197, 94, 0.3);
-  }
-}
-
-.ct-spin { animation: ct-spin 1s linear infinite; }
-@keyframes ct-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-// ── RAG status dot ──
-.ct-rag-status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 10px;
-  height: 10px;
-  margin-left: -6px;
-  margin-right: -2px;
-  cursor: pointer;
-}
-.ct-rag-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #eab308;
-  transition: background 0.2s;
-}
-.ct-rag-status--built .ct-rag-status-dot { background: #22c55e; }
-.ct-rag-status--loading .ct-rag-status-dot {
-  background: #38bdf8;
-  animation: ct-pulse 1.2s ease-in-out infinite;
-}
-@keyframes ct-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-// ── Prompt history popover ──
-.ct-history-pop { font-size: 12px; max-height: 360px; overflow-y: auto; }
-.ct-history-recent {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-}
-.ct-history-recent-label {
-  font-size: 10px;
-  color: var(--text-secondary, #d4d0e8);
-  margin-right: 2px;
-}
-.ct-history-chip {
-  display: inline-flex;
-  align-items: center;
-  max-width: 200px;
-  padding: 1px 4px 1px 8px;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25);
-  border-radius: 10px;
-  font-size: 11px;
-  color: var(--text-primary, #f5f3ff);
-  cursor: pointer;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-
-  &:hover {
-    border-color: var(--primary-light, #818cf8);
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-    .ct-history-chip-copy { opacity: 1; }
-    .ct-history-chip-text { color: var(--primary-light, #818cf8); }
-  }
-}
-.ct-history-chip-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ct-history-chip-copy {
-  opacity: 0;
-  transition: opacity 0.15s;
-  padding: 0 2px;
-  height: 16px;
-  min-height: 16px;
-  &:hover { opacity: 1; }
-}
-.ct-history-search { margin-bottom: 8px; }
-.ct-history-empty {
-  padding: 16px 8px;
-  text-align: center;
-  color: var(--text-secondary, #d4d0e8);
-  font-style: italic;
-  line-height: 1.5;
-}
-.ct-history-similar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-}
-.ct-history-similar-label {
-  font-size: 11px;
-  color: var(--text-secondary, #d4d0e8);
-  font-style: italic;
-}
-.ct-history-similar-score {
-  margin-left: 4px;
-  font-size: 10px;
-  color: var(--text-secondary, #d4d0e8);
-  font-variant-numeric: tabular-nums;
-}
-.ct-history-chip-text--sim {
-  cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-  font-size: 12px;
-  color: var(--text-primary, #f5f3ff);
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.12); color: var(--primary-light, #818cf8); }
-}
-
-.ct-history-rows {
-  max-height: 240px;
-  overflow-y: auto;
-}
-.ct-history-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  &:last-child { border-bottom: 0; }
-}
-.ct-history-idx {
-  flex: 0 0 24px;
-  font-size: 10px;
-  color: var(--text-secondary, #d4d0e8);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-}
-.ct-history-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-  color: var(--text-primary, #f5f3ff);
-  font-size: 12px;
-  &:hover { color: var(--primary-light, #818cf8); }
-}
-.ct-history-actions {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-.ct-history-row:hover .ct-history-actions { opacity: 1; }
-.ct-history-footer {
-  position: sticky;
-  bottom: 0;
-  margin-top: 8px;
-  padding: 8px 0 0;
-  border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  text-align: right;
-  background: var(--bg-elevated, rgba(20, 18, 40, 0.96));
-}
-
-// ── Search highlight ──
-.ct-skill-match {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.25);
-  color: var(--primary-light, #818cf8);
-  padding: 0 1px;
-  border-radius: 2px;
-  font-weight: 600;
-}
-
-// ── Context files popover ──
-.ct-context-list { max-height: 240px; overflow-y: auto; }
-.ct-context-item {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  padding: 4px 0;
-  font-size: 12px;
-  font-family: 'SF Mono', 'Menlo', monospace;
-  & + & { border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
-}
-.ct-context-item-path {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--primary-light, #818cf8);
-  &.is-clickable { cursor: pointer; &:hover { text-decoration: underline; } }
-}
-.ct-context-item-detail {
-  font-size: 10px;
-  color: var(--text-secondary, #d4d0e8);
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ct-context-empty {
-  padding: 12px 8px;
-  text-align: center;
-  color: var(--text-secondary, #d4d0e8);
-  font-size: 12px;
-  font-style: italic;
-}
-
-// ── Popover animation ──
-@keyframes ct-pop-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-// ── RAG settings popover ──
-.ct-rag-settings-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  margin-left: -4px;
-  cursor: pointer;
-  color: var(--text-secondary, #d4d0e8);
-  border-radius: 4px;
-  transition: all 0.15s;
-  &:hover { color: var(--primary-light, #818cf8); background: rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
-  &.is-active { color: var(--primary-light, #818cf8); }
-}
-
-.ct-rag-settings {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-  padding: 4px 0;
-}
-
-.ct-rag-setting-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-.ct-rag-setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 5px 0;
-  border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-}
-
-.ct-rag-setting-label {
-  font-size: 11px;
-  color: var(--text-secondary, #d4d0e8);
-  font-weight: 500;
-}
-
-.ct-rag-ctx-count {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 22px; height: 22px; padding: 0 6px;
-  font-family: 'SF Mono', monospace; font-size: 11px; font-weight: 700;
-  color: #fff; background: var(--primary,#6366f1); border-radius: 11px;
-}
-
-.ct-context-tabs :deep(.el-tabs__header) { margin-bottom: 6px; }
-.ct-context-tabs :deep(.el-tabs__nav-wrap::after) { background: rgba(var(--primary-rgb,99,102,241),.15); }
-.ct-context-tabs :deep(.el-tabs__item) { font-size: 12px; height: 30px; line-height: 30px; color: var(--text-secondary,#d4d0e8); }
-.ct-context-tabs :deep(.el-tabs__item.is-active) { color: var(--primary-light,#818cf8); }
-.ct-browse-search { margin-bottom: 6px; }
-.ct-browse-tree { max-height: 260px; overflow-y: auto; padding-right: 4px; }
-.ct-browse-item {
-  display: flex; align-items: center; gap: 4px; height: 26px;
-  font-size: 12px; color: var(--text-primary,#f5f3ff);
-  border-radius: 4px; cursor: default;
-  &:hover { background: rgba(var(--primary-rgb,99,102,241),.08); }
-}
-.ct-browse-caret { width: 14px; display: inline-flex; justify-content: center; cursor: pointer; flex-shrink: 0; }
-.ct-browse-label {
-  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.ct-browse-label--file { cursor: pointer; &:hover { color: var(--primary-light,#818cf8); text-decoration: underline; } }
-.ct-browse-empty {
-  padding: 16px 8px; text-align: center; color: var(--text-secondary,#d4d0e8);
-  font-size: 12px; font-style: italic;
-}
-
-.ct-running-tools {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 28px; padding: 0 10px;
-  background: rgba(var(--primary-rgb,99,102,241),.1);
-  border: 1px solid rgba(var(--primary-rgb,99,102,241),.25);
-  border-radius: 14px;
-  font-size: 11px; color: var(--primary-light,#818cf8);
-  max-width: 220px;
-}
-.ct-running-label {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-weight: 500;
-}
-.ct-running-dot { color: var(--primary-light,#818cf8); }
-.ct-running-dot { animation: ct-spin 0.8s linear infinite; }
-.ct-pop-in-enter-active, .ct-pop-in-leave-active { transition: all .2s; }
-.ct-pop-in-enter-from, .ct-pop-in-leave-to { opacity: 0; transform: translateX(6px); max-width: 0; padding-left: 0; padding-right: 0; border: 0; }
-
-.ct-skills-panel { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
-.ct-skills-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-secondary,#d4d0e8);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-.ct-skills-empty {
-  padding: 12px 8px; text-align: center;
-  color: var(--text-secondary,#d4d0e8); font-style: italic;
-  background: rgba(var(--primary-rgb,99,102,241),.04);
-  border-radius: 6px;
-}
-.ct-skills-list {
-  display: flex; flex-direction: column; gap: 2px;
-  max-height: 260px; overflow-y: auto; padding-right: 4px;
-}
-.ct-skill-item {
-  display: flex; align-items: flex-start; gap: 8px;
-  padding: 6px 8px; border-radius: 6px;
-  border: 1px solid transparent;
-  transition: all .15s;
-  &:hover { background: rgba(var(--primary-rgb,99,102,241),.06); border-color: rgba(var(--primary-rgb,99,102,241),.15); }
-  &.is-on { background: rgba(34,197,94,.06); border-color: rgba(34,197,94,.2); }
-}
-.ct-skill-main { flex: 1; min-width: 0; }
-.ct-skill-name { font-weight: 600; color: var(--text-primary,#f5f3ff); font-size: 12px; }
-.ct-skill-sub {
-  font-family: 'SF Mono', monospace; font-size: 10px;
-  color: var(--text-secondary,#d4d0e8); opacity: .6; margin-left: 6px;
-}
-.ct-skill-desc {
-  margin: 2px 0 0; font-size: 11px; color: var(--text-secondary,#d4d0e8);
-  line-height: 1.5;
-}
-.ct-tool-calls {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 4px;
-  border-top: 1px solid rgba(var(--primary-rgb,99,102,241),.1);
-}
-.ct-tool-call-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 180px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-.ct-tool-call-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  border-radius: 8px;
-  background: rgba(var(--primary-rgb,99,102,241),.05);
-  border: 1px solid rgba(var(--primary-rgb,99,102,241),.12);
-}
-.ct-tool-call-item.is-error {
-  background: rgba(239,68,68,.08);
-  border-color: rgba(239,68,68,.18);
-}
-.ct-tool-call-item.speed-slow {
-  border-color: rgba(234,179,8,.28);
-}
-.ct-tool-call-item.speed-very-slow {
-  border-color: rgba(239,68,68,.28);
-  background: rgba(239,68,68,.04);
-}
-.ct-tool-call-item.speed-fast {
-  border-color: rgba(34,197,94,.18);
-}
-.ct-tool-call-speed {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 0 6px;
-  height: 14px;
-  line-height: 14px;
-  border-radius: 7px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .02em;
-  vertical-align: middle;
-  color: var(--text-secondary,#d4d0e8);
-  background: rgba(var(--primary-rgb,99,102,241),.12);
-  &.is-fast { color: #22c55e; background: rgba(34,197,94,.12); }
-  &.is-ok { color: #818cf8; background: rgba(var(--primary-rgb,99,102,241),.14); }
-  &.is-slow { color: #eab308; background: rgba(234,179,8,.14); }
-  &.is-very-slow { color: #ef4444; background: rgba(239,68,68,.14); }
-}
-.ct-tool-call-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.ct-tool-call-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary,#f5f3ff);
-}
-.ct-tool-call-meta {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  flex-shrink: 0;
-  font-family: 'SF Mono', monospace;
-  font-size: 10px;
-  color: var(--text-secondary,#d4d0e8);
-}
-.ct-tool-call-status {
-  text-transform: uppercase;
-  color: #22c55e;
-}
-.ct-tool-call-item.is-error .ct-tool-call-status {
-  color: #f87171;
-}
-.ct-tool-call-preview {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--text-secondary,#d4d0e8);
-  text-overflow: ellipsis;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-.ct-skills-footer {
-  display: flex; justify-content: space-around;
-  border-top: 1px solid rgba(var(--primary-rgb,99,102,241),.1);
-  padding-top: 8px; margin-top: 4px;
-}
-.ct-skills-toolperf {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-}
-.ct-skills-toolperf-label {
-  font-size: 10px; color: var(--text-secondary,#d4d0e8); text-transform: uppercase; letter-spacing: .04em;
-}
-.ct-skills-toolperf-value {
-  font-family: 'SF Mono', monospace; font-size: 14px; font-weight: 700;
-  color: var(--text-secondary,#d4d0e8);
-  &.is-on { color: #22c55e; }
-  &.is-err { color: #ef4444; }
-  &.is-slow { color: #eab308; }
-}
-
-// ── Context DnD zone ──
-.ct-context-drop-zone {
-  position: relative;
-  min-height: 80px;
-  border-radius: 8px;
-  border: 1px dashed rgba(var(--primary-rgb,99,102,241),.15);
-  padding: 4px;
-  transition: border-color .15s, background .15s;
-  &.is-dragging {
-    border-color: rgba(var(--primary-rgb,99,102,241),.55);
-    background: rgba(var(--primary-rgb,99,102,241),.06);
-  }
-}
-.ct-context-drop-hint {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 24px 8px;
-  color: var(--primary-light,#818cf8);
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-}
-.ct-context-drop-icon { font-size: 22px; line-height: 1; }
-
-// ── Inline context editor ──
-.ct-ctx-editor-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.ct-ctx-editor-ta :deep(.el-textarea__inner) {
-  font-family: 'SF Mono', 'Menlo', monospace;
-  font-size: 12px;
-  line-height: 1.55;
-  background: rgba(var(--primary-rgb,99,102,241),.04);
-  border-color: rgba(var(--primary-rgb,99,102,241),.18);
-}
-.ct-ctx-editor-meta {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  font-family: 'SF Mono', monospace;
-  font-size: 11px;
-  color: var(--text-secondary,#d4d0e8);
-  padding: 2px 4px;
-}
-.ct-ctx-editor-dirty {
-  color: #eab308;
-  font-weight: 600;
-}
+@use "./styles/toolbar.scss";
 </style>
-
 <style lang="scss">
-// ── Popover z-index + dark theme (must be global — popovers teleport to body) ──
-.ct-tb-popper {
-  z-index: 2147483647 !important;
-
-  // Dark-themed popover content
-  --el-bg-color: var(--bg-elevated, rgba(20, 18, 40, 0.98));
-  --el-bg-color-overlay: var(--bg-elevated, rgba(20, 18, 40, 0.98));
-  --el-border-color-light: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-  --el-text-color-primary: var(--text-primary, #f5f3ff);
-  --el-text-color-regular: var(--text-primary, #f5f3ff);
-  --el-text-color-secondary: var(--text-secondary, #d4d0e8);
-  --el-text-color-placeholder: var(--text-secondary, #d4d0e8);
-  --el-fill-color-blank: var(--bg-elevated, rgba(20, 18, 40, 0.98));
-  --el-fill-color-light: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-  --el-color-primary: var(--primary-light, #818cf8);
-  --el-color-primary-light-9: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-
-  .el-popover {
-    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25) !important;
-    background: var(--bg-elevated, rgba(20, 18, 40, 0.98)) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
-  }
-
-  .el-popover__title {
-    color: var(--text-primary, #f5f3ff);
-    font-size: 13px;
-  }
-}
-
-// Dark-themed select dropdown
-.el-select-dropdown {
-  background: var(--bg-elevated, rgba(20, 18, 40, 0.98)) !important;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25) !important;
-
-  .el-select-dropdown__item {
-    color: var(--text-primary, #f5f3ff);
-
-    &.is-selected { color: var(--primary-light, #818cf8); }
-    &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
-  }
-}
+@use "./styles/global.scss";
 </style>

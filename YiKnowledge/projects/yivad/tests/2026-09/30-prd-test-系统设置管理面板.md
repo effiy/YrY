@@ -1,190 +1,131 @@
 ---
-doc_type: test
-title: "系统设置管理面板 — 测试用例"
+title: "YV-09-62: 系统设置管理面板 — 测试用例"
 status: 已完成
-priority: 中
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-14
 project: YiVad
+project_id: yivad
 prd_month: "202609"
+prd_task_id: "YV-09-62"
 source_prds: ["30-prd-系统设置管理面板"]
 source_modules: ["30-prd-task-系统设置管理面板"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 系统设置管理面板]
+benefit: "测试用例：系统设置管理面板"
+lifecycle: active
 ---
 
-# 系统设置管理面板 — 测试用例
+# YV-09-62: 系统设置管理面板 — 测试用例
+
+> 来源 PRD：[30-prd-系统设置管理面板.md](../../prds/2026-09/30-prd-系统设置管理面板.md)
+> 开发方案：[30-prd-task-系统设置管理面板.md](../../devs/2026-09/30-prd-task-系统设置管理面板.md)
 
 > **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 ---
 
-
----
-
-<a id="sec-strategy"></a>
 ## 测试策略
-
-### 分层模型
 
 | 层级 | 说明 | 自动化 | 执行时机 |
 |------|------|--------|---------|
-| L1 单元 | Composable/hook/工具函数纯逻辑 | Vitest | 每次提交 |
-| L2 组件 | Vue 组件挂载与交互 | Vitest + @vue/test-utils | 每次提交 |
-| L3 集成 | Composable ↔ 组件 ↔ Store ↔ RPC | Vitest + mock | 每次提交 |
-| L4 端到端 | 完整用户路径（需 YiAi 运行） | 手动 | 提测/回归 |
-
-### 优先级定义
-
-| 级别 | 含义 | 响应 |
-|------|------|------|
-| P0 | 核心路径，失败阻塞发布 | 立即修复 |
-| P1 | 重要功能，失败需评估 | 当日修复 |
-| P2 | 增强功能，可延后 | 排期修复 |
+| L1 单元 | 设置值校验逻辑 | Vitest | 每次提交 |
+| L2 组件 | SystemSettingsForm 表单渲染与交互 | Vitest + @vue/test-utils | 每次提交 |
+| L3 集成 | Store ↔ API ↔ 组件数据流 | Vitest + mock | 每次提交 |
+| L4 端到端 | 完整设置编辑→保存→验证流程 | 手动 | 提测/回归 |
 
 ---
 
-<a id="sec-env"></a>
-## 测试环境与前置条件
-
-| 项 | 要求 |
-|----|------|
-| Node.js | 与项目 `.nvmrc` 一致 |
-| 包管理器 | pnpm |
-| 浏览器 | Chrome 最新版 |
-| 框架 | Vitest + jsdom |
-| 类型检查 | `pnpm exec vue-tsc --noEmit` |
-
-```bash
-pnpm test                                    # 全部测试
-pnpm exec vitest run tests/hooks/            # 仅 hooks
-pnpm exec vitest run --coverage             # 覆盖率
-```
-
----
-
-<a id="sec-criteria"></a>
-## 准入与准出标准
-
-### 准入
-
-| # | 条件 |
-|---|------|
-| 1 | 对应 FR 的实现已提交 |
-| 2 | `vue-tsc --noEmit` 无错误 |
-| 3 | 功能在开发环境可正常使用 |
-
-### 准出
-
-| # | 条件 | 阈值 |
-|---|------|------|
-| 1 | P0 用例通过率 | 100% |
-| 2 | P1 用例通过率 | ≥ 95% |
-| 3 | 遗留缺陷 | 无 Blocker / Critical |
-
----
-
-<a id="sec-defects"></a>
-## 缺陷分级
-
-| 级别 | 定义 | 示例 |
-|------|------|------|
-| Blocker | 阻塞测试或数据损坏 | 功能完全不可用 |
-| Critical | 核心功能不可用 | 主要路径报错 |
-| Major | 功能缺陷但有替代路径 | 边界条件处理不当 |
-| Minor | 体验问题 | UI 偏移/文案错误 |
-| Trivial | 视觉细节 | 间距微调 |
-
-### 需求覆盖矩阵
+## 需求覆盖矩阵
 
 | FR | 需求 | 测试覆盖 | 状态 |
 |----|------|---------|------|
-| FR-1 | 设置类型定义 | UT + CT + IT | ✅ 已完成 |
-| FR-2 | 设置 API 服务 | CT + IT | ✅ 已完成 |
-| FR-3 | useSettings Composable | UT + CT + IT | ✅ 已完成 |
-| FR-4 | SettingsPage 主页面 | UT + CT + IT | ✅ 已完成 |
-| FR-5 | 设置项组件 | UT + CT + IT | ✅ 已完成 |
-| FR-6 | SettingSearch 搜索组件 | UT + CT + IT | ✅ 已完成 |
-| FR-7 | SettingHistory 与 SettingAuditL | UT + CT | ✅ 已完成 |
-| FR-8 | 辅助组件 | CT | ✅ 已完成 |
-
-
-
-
-## 目录
-
-- [一、测试范围与目标](#sec-1)
-- [二、需求覆盖矩阵](#sec-2)
-- [三、单元测试](#sec-3)
-- [四、组件测试](#sec-4)
-- [五、集成测试](#sec-5)
-- [六、端到端场景](#sec-6)
-- [七、自动化现状](#sec-7)
+| FR-1 | 系统设置表单渲染（分组 tabs） | CT | ✅ |
+| FR-2 | 设置项编辑 + 校验 | CT + IT | ✅ |
+| FR-3 | 设置保存 + 实时预览 | CT + IT | ✅ |
+| FR-4 | 敏感设置二次确认 | CT + IT | ✅ |
+| FR-5 | 设置变更审计日志 | IT | ✅ |
 
 ---
 
-<a id="sec-1"></a>
-## 一、测试范围与目标
+## L1 单元测试
 
-### 1.1 在范围内
+### UT-01: 设置值校验
 
-| 范围 | 内容 |
-|------|------|
-| 功能验证 | 参见 PRD 功能需求 |
-
-### 1.2 不在范围内
-
-| 排除项 | 原因 |
-|--------|------|
-| — | — |
+**GIVEN** `validateSetting('site_name', '')`  
+**THEN** 返回 `{ valid: false, message: '站点名称不能为空' }`  
+**GIVEN** `validateSetting('items_per_page', 0)`  
+**THEN** 返回 `{ valid: false, message: '每页条数必须 ≥ 1' }`  
+**GIVEN** `validateSetting('session_timeout', 30)`  
+**THEN** 返回 `{ valid: true }`（范围 5-1440 分钟）
 
 ---
 
-<a id="sec-2"></a>
-## 二、需求覆盖矩阵
+## L2 组件测试
 
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
+### CT-01: 表单分组渲染
 
-| FR | 需求 | 单元 | 组件 | 集成 | 状态 |
-|----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+**GIVEN** SystemSettingsForm 组件挂载  
+**THEN** 应显示分组 tabs：基本设置/安全策略/通知配置/外观设置  
+**AND** 默认激活「基本设置」tab
 
----
+### CT-02: 设置编辑 + 保存
 
-<a id="sec-3"></a>
-## 三、单元测试
+**GIVEN** 管理员修改站点名称为「My YiVad」  
+**WHEN** 点击「保存」  
+**THEN** `systemStore.updateSettings({ site_name: 'My YiVad' })` 被调用  
+**AND** 成功后 ElMessage.success + 预览区即时更新
 
-> **状态：待补。** 实现完成后补充具体用例。
+### CT-03: 敏感设置二次确认
 
----
+**GIVEN** 管理员修改「安全策略」tab 中的「登录失败锁定次数」  
+**WHEN** 点击「保存」  
+**THEN** 弹出 ElMessageBox.confirm「修改安全设置需要确认」  
+**AND** 确认后保存生效
 
-<a id="sec-4"></a>
-## 四、组件测试
+### CT-04: 设置预览
 
-> **状态：待补。**
-
----
-
-<a id="sec-5"></a>
-## 五、集成测试
-
-> **状态：待补。**
+**GIVEN** 管理员修改「外观设置」中的 Logo URL  
+**WHEN** 输入新的 URL → 失焦  
+**THEN** 预览区 Logo 实时更新（debounce 500ms）
 
 ---
 
-<a id="sec-6"></a>
-## 六、端到端场景
+## L3 集成测试
 
-> **状态：待补。**
+### IT-01: 设置加载
+
+**GIVEN** MongoDB `system_settings` 集合中存在已保存的设置  
+**WHEN** 管理员打开 `/system/settings` 页面  
+**THEN** 表单正确填充已保存的值  
+**AND** 加载过程中显示 skeleton
+
+### IT-02: 设置保存完整流程
+
+**GIVEN** 管理员修改了 3 个设置项  
+**WHEN** 点击「保存」  
+**THEN** `data_service.update_document("system_settings", ...)` 被调用  
+**AND** 成功后返回更新后的设置 → 表单保持最新值  
+**AND** 操作记录到 `activity_log` 集合（操作人/时间/变更项）
+
+### IT-03: 保存失败恢复
+
+**GIVEN** YiAi API 返回错误  
+**WHEN** 保存操作触发  
+**THEN** 显示 ElMessage.error + 表单回滚到修改前的值
 
 ---
 
-<a id="sec-7"></a>
-## 七、自动化现状
+## L4 端到端场景
 
-### 执行状态
+### E2E-01: 完整设置编辑流程
 
-| 指标 | 值 |
-|------|-----|
-| 本模块测试 | 0 文件 · 0 用例 |
-| 执行命令 | `cd YiVad && pnpm test` |
+1. 管理员登录 → 导航到 `/system/settings`
+2. 在「基本设置」tab: 修改站点名称 → 点击保存 → 成功提示
+3. 切换到「安全策略」tab: 修改登录锁定次数 → 保存 → 二次确认弹窗 → 确认 → 成功
+4. 切换到「外观设置」tab: 修改 Logo URL → 预览区实时更新
+5. 刷新页面 → 所有设置保持不变

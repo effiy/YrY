@@ -7,7 +7,9 @@ period: 2026 Q3
 owner: Engineering Lead
 project: YiVad
 progress: 100
-updated: 2026-09-10---
+tags: [okr, build, debug, engineering, yivad]
+updated: 2026-09-10
+---
 
 # ⚡ 代码编写与调试自闭环
 

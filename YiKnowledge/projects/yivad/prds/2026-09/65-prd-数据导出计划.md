@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-135: 数据导出计划 — 定时导出配置、周期导出任务、导出格式/筛选/目标、导出历史、导出失败告警、导出配额管理"
 tags: [需求文档, 数据导出, 定时任务, 导出历史, 失败告警, 配额管理, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["65-prd-task-数据导出计划"]
+related_tests: ["65-prd-test-数据导出计划"]
+benefit: "产品需求：数据导出计划"
+lifecycle: active
 ---
 
 # YV-09-135: 数据导出计划 — 定时导出配置、周期导出任务、导出格式/筛选/目标、导出历史、导出失败告警、导出配额管理

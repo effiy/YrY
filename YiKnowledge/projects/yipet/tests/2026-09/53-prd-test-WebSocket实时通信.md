@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "WebSocket 实时通信 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["53-架构设计-WebSocket实时通信"]
+source_prds: ["53-架构设计-WebSocket实时通信.md"]
+source_modules: ["53-prd-task-WebSocket实时通信.md"]
+
+type: test
 ---
 
 # WebSocket 实时通信 — 测试用例
@@ -20,3 +26,4 @@ source_prds: ["53-架构设计-WebSocket实时通信"]
 | TC-WS02 | 双向消息 | send/onmessage 正常 | P1 |
 | TC-WS03 | 断线重连 | 自动重连+指数退避 | P1 |
 | TC-WS04 | vs SSE 对比 | 延迟更低 | P2 |
+

@@ -12,10 +12,12 @@ routes mirroring the file routes' style:
   - /knowledge-files         → read metadata from DB mirror (no disk scan)
   - /knowledge-export        → zip a knowledge directory and stream the download
 """
+
 import asyncio
 import io
 import logging
 import os
+from typing import Any
 import zipfile
 
 import aiofiles
@@ -24,7 +26,11 @@ from fastapi.responses import StreamingResponse
 
 from domain.knowledge import (
     delete_entry_markdown,
+    get_project_knowledge_stats,
+    issue_stats,
     list_bugs,
+    list_goals,
+    list_issues,
     list_knowledge_files,
     list_stories,
     read_bug_markdown,
@@ -41,6 +47,10 @@ from models.schemas import (
     KnowledgeDeleteRequest,
     KnowledgeExportRequest,
     KnowledgeFilesRequest,
+    KnowledgeGoalsRequest,
+    KnowledgeIssuesRequest,
+    KnowledgeIssuesStatsRequest,
+    KnowledgeProjectsStatsRequest,
     KnowledgeReadRequest,
     KnowledgeScanRequest,
     KnowledgeSearchRequest,
@@ -50,6 +60,7 @@ from models.schemas import (
 )
 from shared.cache import cache
 from shared.cache_keys import CACHE_TTL
+from shared.config import settings
 from shared.response import success
 
 logger = logging.getLogger(__name__)
@@ -107,12 +118,101 @@ async def knowledge_bug_read_route(request: KnowledgeBugReadRequest):
     return success(data=data, cache_ttl=30)
 
 
+@router.post("/knowledge-issues", operation_id="knowledge_issues")
+async def knowledge_issues_route(request: KnowledgeIssuesRequest):
+    """Return YiKnowledge project files (bugs/devs/prds/tests/requires) as Issue records.
+
+    Queries the knowledge_files DB mirror (kept real-time by the watcher) for
+    fast, accurate metadata without disk I/O. Skips template directories.
+    Results cached for 30s.
+    """
+    cache_key = (
+        f"knowledge:issues:{request.project or 'all'}:{request.issue_type or 'all'}:"
+        f"{request.status or 'all'}:{request.priority or 'all'}:"
+        f"{request.search or 'none'}:{request.pageNum}:{request.pageSize}"
+    )
+
+    async def _factory():
+        return await list_issues(
+            project=request.project,
+            issue_type=request.issue_type,
+            status=request.status,
+            priority=request.priority,
+            search=request.search,
+            page_num=request.pageNum,
+            page_size=request.pageSize,
+        )
+
+    data = await cache.get_or_set(cache_key, _factory, ttl=CACHE_TTL["knowledge:issues"])
+    return success(data=data, cache_ttl=CACHE_TTL["knowledge:issues"])
+
+
+@router.post("/knowledge-issues-stats", operation_id="knowledge_issues_stats")
+async def knowledge_issues_stats_route(request: KnowledgeIssuesStatsRequest):
+    """Return pre-aggregated stats for the issue list.
+
+    Same filters as /knowledge-issues but returns distributions, completeness
+    scores, and attention flags instead of paginated records. Cached for 30s.
+    """
+    cache_key = (
+        f"knowledge:issues-stats:{request.project or 'all'}:{request.issue_type or 'all'}:"
+        f"{request.status or 'all'}:{request.priority or 'all'}:{request.search or 'none'}"
+    )
+
+    async def _factory():
+        return await issue_stats(
+            project=request.project,
+            issue_type=request.issue_type,
+            status=request.status,
+            priority=request.priority,
+            search=request.search,
+        )
+
+    data = await cache.get_or_set(cache_key, _factory, ttl=CACHE_TTL["knowledge:issues-stats"])
+    return success(data=data, cache_ttl=CACHE_TTL["knowledge:issues-stats"])
+
+
+@router.post("/knowledge-projects-stats", operation_id="knowledge_projects_stats")
+async def knowledge_projects_stats_route(request: KnowledgeProjectsStatsRequest):
+    """Count .md files per project under YiKnowledge/projects/.
+
+    Returns ``{ projects: { project_key: { category: count } } }``
+    for each project's subdirectories (okrs/prds/devs/tests/bugs/workflows/requires).
+    Template directories (``/模板/``) are excluded from counts.
+    """
+    cache_key = f"knowledge:projects-stats:{request.project or 'all'}"
+
+    async def _factory():
+        return await asyncio.to_thread(get_project_knowledge_stats, project=request.project)
+
+    data = await cache.get_or_set(cache_key, _factory, ttl=CACHE_TTL["knowledge:projects-stats"])
+    return success(data=data, cache_ttl=CACHE_TTL["knowledge:projects-stats"])
+
+
+@router.post("/knowledge-goals", operation_id="knowledge_goals")
+async def knowledge_goals_route(request: KnowledgeGoalsRequest):
+    """Return live OKR goals with progress derived from knowledge_files.
+
+    Queries the knowledge_files DB mirror for OKR goal and KR-evidence files,
+    reading frontmatter ``progress`` fields to compute accurate, timely goal
+    progress. Results cached for 30s (aligned with watcher poll interval).
+    """
+    cache_key = f"knowledge:goals:{request.year or 'current'}:{request.period or 'all'}"
+
+    async def _factory():
+        return await list_goals(year=request.year, period=request.period)
+
+    data = await cache.get_or_set(cache_key, _factory, ttl=CACHE_TTL["knowledge:goals"])
+    return success(data=data, cache_ttl=CACHE_TTL["knowledge:goals"])
+
+
 @router.post("/knowledge-sync", operation_id="knowledge_sync")
 async def knowledge_sync_route():
     data = await sync_knowledge_full()
     # Best-effort RAG rebuild — failures must not fail the sync itself.
     try:
         from domain.rag import rag_status, rebuild_index_async
+
         await rebuild_index_async()
         data["rag"] = rag_status()
     except Exception as e:
@@ -163,6 +263,7 @@ async def knowledge_write_route(request: KnowledgeWriteRequest):
     await cache.delete_pattern("knowledge:*")
     return success(data={"path": written_path})
 
+
 @router.post("/knowledge-delete", operation_id="knowledge_delete")
 async def knowledge_delete_route(request: KnowledgeDeleteRequest):
     """Delete a knowledge markdown file from disk.
@@ -179,6 +280,7 @@ async def knowledge_delete_route(request: KnowledgeDeleteRequest):
         logger.debug("Knowledge sync failed during delete operation", exc_info=True)
     await cache.delete_pattern("knowledge:*")
     return success(data={"deleted": deleted})
+
 
 @router.post("/knowledge-search", operation_id="knowledge_search")
 async def knowledge_search_route(request: KnowledgeSearchRequest):
@@ -245,12 +347,14 @@ async def knowledge_search_route(request: KnowledgeSearchRequest):
                                 title = line.split(":", 1)[1].strip().strip('"').strip("'")
                                 break
 
-                results.append({
-                    "path": rel_path,
-                    "title": title,
-                    "snippet": snippet,
-                    "size": os.path.getsize(full_path),
-                })
+                results.append(
+                    {
+                        "path": rel_path,
+                        "title": title,
+                        "snippet": snippet,
+                        "size": os.path.getsize(full_path),
+                    }
+                )
 
                 if len(results) >= request.max_results:
                     break
@@ -264,6 +368,83 @@ async def knowledge_search_route(request: KnowledgeSearchRequest):
     return success(data=data)
 
 
+@router.post("/knowledge-orphaned-issues", operation_id="knowledge_orphaned_issues")
+async def knowledge_orphaned_issues_route():
+    """Detect issues in MongoDB that lack a corresponding YiKnowledge file.
+
+    Queries the ``issues`` collection and checks whether each issue's
+    ``kb_file_path`` points to an existing file on disk. Returns the list
+    of orphaned issue keys with their titles and (missing) file paths.
+    """
+    from data.database import db
+    from data.helpers import _validate_collection_name
+
+    await db.initialize()
+    collection = db.db[_validate_collection_name("issues")]
+    base_dir = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
+
+    orphaned: list[dict[str, Any]] = []
+    async for doc in collection.find({}):
+        kb_path = (doc.get("kb_file_path") or "").strip()
+        if not kb_path:
+            orphaned.append(
+                {
+                    "key": doc.get("key", ""),
+                    "title": doc.get("title", ""),
+                    "kb_file_path": "",
+                    "reason": "no_kb_file_path",
+                }
+            )
+            continue
+        full_path = os.path.join(base_dir, kb_path)
+        if not os.path.isfile(full_path):
+            orphaned.append(
+                {
+                    "key": doc.get("key", ""),
+                    "title": doc.get("title", ""),
+                    "kb_file_path": kb_path,
+                    "reason": "file_not_found",
+                }
+            )
+
+    return success(data={"orphaned": orphaned, "count": len(orphaned)})
+
+
+@router.post("/knowledge-cleanup-orphaned", operation_id="knowledge_cleanup_orphaned")
+async def knowledge_cleanup_orphaned_route():
+    """Delete issues from MongoDB that lack a corresponding YiKnowledge file.
+
+    Performs the same check as ``/knowledge-orphaned-issues`` and deletes
+    matching documents from the ``issues`` collection. Returns the count
+    of deleted documents.
+    """
+    from data.database import db
+    from data.helpers import _validate_collection_name
+
+    await db.initialize()
+    collection = db.db[_validate_collection_name("issues")]
+    base_dir = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
+
+    to_delete: list[str] = []
+    async for doc in collection.find({}):
+        kb_path = (doc.get("kb_file_path") or "").strip()
+        key = doc.get("key", "")
+        if not kb_path:
+            to_delete.append(key)
+            continue
+        full_path = os.path.join(base_dir, kb_path)
+        if not os.path.isfile(full_path):
+            to_delete.append(key)
+
+    deleted = 0
+    for key in to_delete:
+        result = await collection.delete_one({"key": key})
+        deleted += result.deleted_count
+
+    logger.info(f"Cleaned up {deleted} orphaned issues from MongoDB")
+    return success(data={"deleted": deleted})
+
+
 @router.post("/knowledge-export", operation_id="knowledge_export")
 async def knowledge_export_route(request: KnowledgeExportRequest):
     """Export a knowledge directory as a zip archive."""
@@ -271,6 +452,7 @@ async def knowledge_export_route(request: KnowledgeExportRequest):
     if not os.path.isdir(dir_path):
         from shared.error_codes import ErrorCode
         from shared.exceptions import BusinessException
+
         raise BusinessException(ErrorCode.KNOWLEDGE_FILE_NOT_FOUND, message="Directory not found")
 
     buf = io.BytesIO()

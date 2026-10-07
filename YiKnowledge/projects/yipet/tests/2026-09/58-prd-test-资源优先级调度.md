@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "资源优先级调度 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["58-性能-资源优先级调度"]
+source_prds: ["58-架构设计-资源优先级调度.md"]
+source_modules: ["58-prd-task-资源优先级调度.md"]
+
+type: test
 ---
 
 # 资源优先级调度 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["58-性能-资源优先级调度"]
 |------|------|------|--------|
 | TC-PRI01 | Critical 优先 | Pet CSS/图片同步 | P2 |
 | TC-PRI02 | Low idle 加载 | 工具 JS 延迟 | P2 |
+

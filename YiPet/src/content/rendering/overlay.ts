@@ -8,35 +8,16 @@
  */
 
 import { PET_DEFAULTS } from '@/config/defaults';
-import { CDN_CATALOG, type CdnEntry, catalogByKey } from '../cdn/catalog';
+import { CDN_CATALOG } from '../cdn/catalog';
 import { createInjector } from '../cdn/injector';
 import { applyThemeColors } from '../config/theme-config';
+import { injectPetStylesheet } from './animation-styles';
+import { attachYiPetApi } from './yipetApi';
 
 // ── Log Helpers ─────────────────────────────────────────────────────────
 
 function _ok(msg: string) {
-  console.log(
-    '%c[YiPet]%c ✓ %c' + msg,
-    'color:#6366f1;font-weight:bold',
-    'color:#22c55e;font-weight:bold',
-    'color:#888',
-  );
-}
-function _skip(msg: string) {
-  console.log(
-    '%c[YiPet]%c ⊘ %c' + msg,
-    'color:#6366f1;font-weight:bold',
-    'color:#f59e0b;font-weight:bold',
-    'color:#888',
-  );
-}
-function _err(msg: string) {
-  console.log(
-    '%c[YiPet]%c ✗ %c' + msg,
-    'color:#6366f1;font-weight:bold',
-    'color:#ef4444;font-weight:bold',
-    'color:#888',
-  );
+  console.log('%c[YiPet]%c ✓ %c' + msg, 'color:#6366f1;font-weight:bold', 'color:#22c55e;font-weight:bold', 'color:#888');
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────
@@ -47,221 +28,6 @@ function rand(min: number, max: number): number {
 
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// ── Animation Stylesheet Injection ──────────────────────────────────────
-
-let _stylesheetInjected = false;
-
-function injectPetStylesheet(): void {
-  if (_stylesheetInjected) return;
-  if (!document.head) return;
-
-  const cfg = PET_DEFAULTS.animation.pet;
-  const style = document.createElement('style');
-  style.id = 'yipet-animations';
-  style.textContent = `
-/* ── Keyframes ─────────────────────────── */
-
-@keyframes yipet-float {
-  0%, 100% { transform: translateY(0) translateZ(0); }
-  50%      { transform: translateY(-8px) translateZ(0); }
-}
-
-@keyframes yipet-glow-pulse {
-  0%, 100% { opacity: 0.6; }
-  50%      { opacity: 1; }
-}
-
-@keyframes yipet-bounce {
-  0%   { transform: scale(1) translateZ(0); }
-  30%  { transform: scale(1.12) translateZ(0); }
-  60%  { transform: scale(0.95) translateZ(0); }
-  100% { transform: scale(1) translateZ(0); }
-}
-
-@keyframes yipet-wiggle {
-  0%   { transform: rotate(0deg) translateZ(0); }
-  25%  { transform: rotate(-6deg) translateZ(0); }
-  75%  { transform: rotate(6deg) translateZ(0); }
-  100% { transform: rotate(0deg) translateZ(0); }
-}
-
-@keyframes yipet-blink-img {
-  0%, 90%, 100% { transform: scaleY(1) translateZ(0); }
-  95%           { transform: scaleY(0.1) translateZ(0); }
-}
-
-@keyframes yipet-tilt {
-  0%   { transform: rotate(0deg) translateZ(0); }
-  40%  { transform: rotate(-10deg) translateZ(0); }
-  80%  { transform: rotate(10deg) translateZ(0); }
-  100% { transform: rotate(0deg) translateZ(0); }
-}
-
-@keyframes yipet-sparkle {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.9; }
-  100% { transform: translate(var(--sx), var(--sy)) scale(0); opacity: 0; }
-}
-
-@keyframes yipet-bubble-in {
-  0%   { transform: translate(-50%, 8px) scale(0.8); opacity: 0; }
-  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-}
-
-@keyframes yipet-bubble-out {
-  0%   { transform: translate(-50%, 0) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -12px) scale(0.8); opacity: 0; }
-}
-
-@keyframes yipet-entrance {
-  0%   { transform: scale(0.3) translateZ(0); opacity: 0; }
-  60%  { transform: scale(1.08) translateZ(0); opacity: 1; }
-  100% { transform: scale(1) translateZ(0); opacity: 1; }
-}
-
-/* ── Container ──────────────────────────── */
-
-#yipet-overlay {
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-}
-
-#yipet-overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  box-shadow:
-    0 10px 30px rgba(var(--primary-rgb), 0.4),
-    0 0 0 1px rgba(255,255,255,0.08) inset;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-}
-
-/* ── Always-on ambient class ───────────── */
-
-#yipet-overlay.yipet-ambient {
-  animation:
-    yipet-float var(--yipet-float-dur, 3000ms) cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-#yipet-overlay.yipet-ambient::after {
-  animation: yipet-glow-pulse var(--yipet-glow-dur, 3000ms) ease-in-out infinite;
-}
-
-/* ── Idle action classes (override ambient) ─ */
-
-#yipet-overlay.yipet-wiggle {
-  animation: yipet-wiggle var(--yipet-wag-dur, 2000ms) cubic-bezier(0.45, 0, 0.55, 1);
-}
-
-#yipet-overlay.yipet-bounce {
-  animation: yipet-bounce 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-#yipet-overlay.yipet-tilt {
-  animation: yipet-tilt 600ms cubic-bezier(0.45, 0, 0.55, 1);
-}
-
-#yipet-pet-img.yipet-blink {
-  animation: yipet-blink-img var(--yipet-blink-dur, 4000ms) ease-in-out;
-}
-
-/* Entrance animation on first show */
-#yipet-overlay.yipet-entrance {
-  animation: yipet-entrance 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* ── Hover ─────────────────────────────── */
-
-#yipet-overlay:hover {
-  box-shadow: 0 10px 45px rgba(var(--primary-rgb), 0.7), 0 0 0 1px rgba(255,255,255,0.12) inset !important;
-  transform: scale(1.03);
-}
-
-#yipet-overlay:hover::after {
-  opacity: 1;
-}
-
-#yipet-overlay:hover #yipet-pet-img {
-  transform: scale(${cfg.hoverScale});
-  filter: brightness(1.15) drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.6));
-}
-
-#yipet-pet-img {
-  will-change: transform, filter;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
-}
-
-/* ── Sparkle particles ─────────────────── */
-
-.yipet-sparkle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(var(--primary-rgb), 0.9);
-  pointer-events: none;
-  filter: blur(0.5px);
-  will-change: transform, opacity;
-  animation: yipet-sparkle ${cfg.sparkleDuration}ms cubic-bezier(0, 0.7, 0.3, 1) forwards;
-}
-
-/* ── Thought bubble ────────────────────── */
-
-.yipet-thought-bubble {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #fff;
-  padding: 5px 14px;
-  border-radius: 16px;
-  font-size: 16px;
-  line-height: 1.3;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, 0);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  will-change: transform, opacity;
-}
-
-.yipet-thought-bubble.in {
-  animation: yipet-bubble-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.yipet-thought-bubble.out {
-  animation: yipet-bubble-out 300ms ease-in forwards;
-}
-
-/* ── Accessibility ─────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  #yipet-overlay,
-  #yipet-overlay *,
-  #yipet-overlay::before,
-  #yipet-overlay::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-`;
-
-  document.head.appendChild(style);
-  _stylesheetInjected = true;
 }
 
 // ── Idle Behavior ───────────────────────────────────────────────────────
@@ -471,199 +237,12 @@ export function createPetOverlay(
     if (Date.now() - detail.__timestamp > 5000) return false;
     return true;
   }
-
-  // Inject animation stylesheet (once, idempotent)
-  injectPetStylesheet();
+  // Animation stylesheet is injected lazily in _ensureAnimationsReady()
+  // when the pet first becomes visible — not on every page load.
 
   // ── window.YiPet API ────────────────────────────────────────────────
 
-  const YiPet = {
-    version: '1.2.0',
-
-    cdn(path: string): string {
-      return BASE + path;
-    },
-
-    async load(path: string): Promise<boolean> {
-      const entry = catalogByKey[path];
-      const realPath = entry ? entry.path : path;
-      try {
-        const loaded = await injector.loadJS(realPath);
-        loaded
-          ? _ok(entry ? entry.desc : realPath)
-          : _skip((entry ? entry.desc : realPath) + ' — already loaded');
-        return loaded;
-      } catch (e) {
-        _err((entry ? entry.key : path) + ' — ' + (e as Error).message);
-        return false;
-      }
-    },
-
-    css(path: string): boolean {
-      const entry = catalogByKey[path];
-      const realPath = entry ? entry.path : path;
-      const ok = injector.loadCSS(realPath);
-      const label = entry ? entry.desc : realPath;
-      ok ? _ok(label) : _skip(label + ' — already loaded');
-      return ok;
-    },
-
-    loaded(): string[] {
-      return injector.getLoadedKeys();
-    },
-
-    list(filter?: string): void {
-      const q = (filter || '').toLowerCase();
-      const rows: Record<string, string>[] = [];
-      for (const c of CDN_CATALOG) {
-        if (
-          q &&
-          c.key.indexOf(q) === -1 &&
-          c.desc.toLowerCase().indexOf(q) === -1 &&
-          c.path.toLowerCase().indexOf(q) === -1
-        )
-          continue;
-        let loaded = injector.isLoaded(c.path);
-        if (c.global && (root as unknown as Record<string, unknown>)[c.global] !== undefined)
-          loaded = true;
-        rows.push({
-          Key: c.key,
-          Type: c.type.toUpperCase(),
-          Status: loaded ? '✓ Loaded' : '-',
-          Description: c.desc,
-        });
-      }
-      if (!rows.length) {
-        if (import.meta.env.DEV) {
-          console.log(
-            '%c[YiPet]%c No resources matching "%s"',
-            'color:#6366f1;font-weight:bold',
-            'color:inherit',
-            filter || '',
-          );
-        }
-        return;
-      }
-      if (import.meta.env.DEV) {
-        console.group(
-          '%c[YiPet]%c CDN Resources' +
-            (filter ? ' (matching "' + filter + '")' : '') +
-            ' — ' +
-            rows.length +
-            ' items',
-          'color:#6366f1;font-weight:bold',
-          'color:inherit',
-        );
-        console.table(rows, ['Key', 'Type', 'Status', 'Description']);
-        console.log(
-          '%c  Usage: YiPet.load("key")%c or %cawait YiPet.key()',
-          'color:#22c55e',
-          'color:#888',
-          'color:#22c55e',
-        );
-        console.groupEnd();
-      }
-    },
-
-    help(): void {
-      if (!import.meta.env.DEV) return;
-      console.group(
-        '%c🐾 YiPet CDN Bootstrap %c v1.2.0',
-        'font-size:16px;color:#6366f1;font-weight:bold',
-        'color:#888;font-size:12px',
-      );
-      console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color:#444');
-      console.log(
-        '%c  YiPet.cdn(path)%c          — Get full URL of a CDN resource',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.load(path)%c         — Dynamically load JS file (returns Promise)',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.css(path)%c          — Dynamically load CSS file',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.list(filter?)%c      — List available resources, supports keyword filtering',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.loaded()%c           — List of loaded resources',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.help()%c             — Show this help',
-        'color:#22c55e;font-weight:bold',
-        'color:inherit',
-      );
-      console.log('');
-      console.log('%c  Shorthand methods (common libraries):', 'color:#f59e0b;font-weight:bold');
-      console.log(
-        '%c  await YiPet.vue()         YiPet.jquery()      YiPet.bootstrap()',
-        'color:inherit',
-      );
-      console.log(
-        '%c  await YiPet.react()       YiPet.dayjs()       YiPet.gsap()',
-        'color:inherit',
-      );
-      console.log(
-        '%c  await YiPet.anime()       YiPet.swiper()      YiPet.apexcharts()',
-        'color:inherit',
-      );
-      console.log(
-        '%c  await YiPet.mermaid()     YiPet.marked()      YiPet.xlsx()',
-        'color:inherit',
-      );
-      console.log(
-        '%c  await YiPet.html2canvas() YiPet.turndown()    YiPet.feather()',
-        'color:inherit',
-      );
-      console.log(
-        '%c  YiPet.animateCSS()        YiPet.bootstrapCSS() YiPet.fancybox()',
-        'color:inherit',
-      );
-      console.log('');
-      console.log('%c  Examples:', 'color:#f59e0b;font-weight:bold');
-      console.log(
-        '%c  > YiPet.list("vue")%c          // Search Vue-related resources',
-        'color:#a78bfa',
-        'color:#888',
-      );
-      console.log(
-        '%c  > await YiPet.vue()%c          // Load Vue 3 to current page',
-        'color:#a78bfa',
-        'color:#888',
-      );
-      console.log(
-        '%c  > YiPet.css("animate-css")%c   // Load Animate.css',
-        'color:#a78bfa',
-        'color:#888',
-      );
-      console.log(
-        '%c  > YiPet.cdn("vendor/jquery@3.7.1/jquery.min.js")%c',
-        'color:#a78bfa',
-        'color:#888',
-      );
-      console.groupEnd();
-    },
-  };
-
-  // Attach shortcut methods
-  for (const entry of CDN_CATALOG) {
-    const method = entry.key.replace(/-([a-z])/g, (_match: string, c: string) => c.toUpperCase());
-    if (!(method in YiPet)) {
-      (YiPet as Record<string, unknown>)[method] = () => injector.loadByKey(entry.key);
-    }
-  }
-
-  (root as unknown as Record<string, unknown>).YiPet = YiPet;
+  attachYiPetApi(root, BASE, injector);
 
   // ── Pet Overlay DOM ──────────────────────────────────────────────────
 
@@ -716,15 +295,46 @@ export function createPetOverlay(
     });
   }
 
-  // ── Idle behavior & thought bubbles ──────────────────────────────────
+  // ── Idle behavior & thought bubbles (lazy) ─────────────────────────────
+  // Only initialized when the pet first becomes visible, so pages that
+  // never show the pet don't pay the cost of timers or stylesheet injection.
 
-  const idleCtrl = startIdleBehavior(petContainer, petImg);
-  const bubbleCtrl = startThoughtBubbles(petContainer);
+  let _animationsReady = false;
+  let idleCtrl: ReturnType<typeof startIdleBehavior> | null = null;
+  let bubbleCtrl: ReturnType<typeof startThoughtBubbles> | null = null;
 
-  if (!initialVisible) {
-    idleCtrl.pause();
-    bubbleCtrl.pause();
+  function _ensureAnimationsReady() {
+    if (_animationsReady) return;
+    _animationsReady = true;
+    injectPetStylesheet();
+    idleCtrl = startIdleBehavior(petContainer, petImg);
+    bubbleCtrl = startThoughtBubbles(petContainer);
   }
+
+  // Only init animations when pet first becomes visible
+  if (initialVisible) {
+    _ensureAnimationsReady();
+  }
+
+  // Pause animations when tab is hidden to reduce GPU/CPU usage
+  function _onVisChange() {
+    if (document.visibilityState === 'hidden') {
+      petContainer.classList.remove('yipet-ambient');
+      idleCtrl?.pause();
+      bubbleCtrl?.pause();
+    } else if (initialVisible || petContainer.style.opacity !== '0') {
+      _ensureAnimationsReady();
+      petContainer.classList.add('yipet-ambient');
+      idleCtrl?.resume();
+      bubbleCtrl?.resume();
+    }
+  }
+  document.addEventListener('visibilitychange', _onVisChange);
+  window.addEventListener('pagehide', () => {
+    idleCtrl?.stop();
+    bubbleCtrl?.stop();
+    document.removeEventListener('visibilitychange', _onVisChange);
+  }, { once: true });
 
   // ── Drag Handling ────────────────────────────────────────────────────
 
@@ -742,6 +352,7 @@ export function createPetOverlay(
     petContainer.style.top = rect.top + 'px';
     petContainer.style.right = 'auto';
     petContainer.style.bottom = 'auto';
+    petContainer.style.willChange = 'transform';
     dragState = {
       startX: clientX,
       startY: clientY,
@@ -785,6 +396,7 @@ export function createPetOverlay(
     petImg.style.cursor = 'grab';
     delete petContainer.dataset.dragging;
     petContainer.classList.remove('yipet-hover');
+    petContainer.style.willChange = 'auto';
     document.removeEventListener('mousemove', onDocMouseMove);
     document.removeEventListener('mouseup', endDrag);
     document.removeEventListener('touchmove', onDocTouchMove);
@@ -845,6 +457,7 @@ export function createPetOverlay(
     ensureOverlayInDOM();
     const visible = e.detail.data.visible;
     if (visible) {
+      _ensureAnimationsReady();
       petContainer.classList.add('yipet-entrance');
       petContainer.addEventListener('animationend', function onEntrance(e: AnimationEvent) {
         if (e.animationName && e.animationName.indexOf('yipet-entrance') === 0) {
@@ -853,16 +466,16 @@ export function createPetOverlay(
           petContainer.removeEventListener('animationend', onEntrance);
         }
       });
-      idleCtrl.resume();
-      bubbleCtrl.resume();
+      idleCtrl?.resume();
+      bubbleCtrl?.resume();
     } else {
       petContainer.classList.remove(
         'yipet-ambient', 'yipet-entrance',
         'yipet-wiggle', 'yipet-bounce', 'yipet-tilt',
       );
       petImg.classList.remove('yipet-blink');
-      idleCtrl.pause();
-      bubbleCtrl.pause();
+      idleCtrl?.pause();
+      bubbleCtrl?.pause();
     }
   }) as EventListener);
 
@@ -876,67 +489,8 @@ export function createPetOverlay(
     }
   }) as EventListener);
 
-  // ── Auto-load JS ─────────────────────────────────────────────────────
-
-  function showUpdateNotification(): void {
-    if (document.getElementById('yipet-update-banner')) return;
-
-    const banner = document.createElement('div');
-    banner.id = 'yipet-update-banner';
-    banner.style.cssText =
-      'position:fixed;bottom:16px;right:16px;z-index:2147483647;' +
-      'background:#fff3cd;border:1px solid #ffc107;border-radius:8px;' +
-      'padding:12px 16px;font-family:system-ui;font-size:13px;' +
-      'max-width:320px;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-
-    banner.innerHTML =
-      '<div style="display:flex;align-items:flex-start;gap:8px;">' +
-      '<span style="font-size:18px;">🐾</span>' +
-      '<div>' +
-      '<strong style="color:#856404;">YiPet 扩展已更新</strong>' +
-      '<p style="margin:4px 0;color:#856404;font-size:12px;">' +
-      '扩展已更新到新版本，请刷新页面以继续使用。' +
-      '</p>' +
-      '<button onclick="location.reload()" style="' +
-      'margin-top:6px;padding:4px 12px;background:#ffc107;' +
-      'border:none;border-radius:4px;cursor:pointer;font-size:12px;' +
-      'font-weight:500;' +
-      '">刷新页面</button>' +
-      '</div></div>';
-
-    document.body.appendChild(banner);
-    setTimeout(() => {
-      banner.style.opacity = '0';
-      banner.style.transition = 'opacity 0.5s ease';
-      setTimeout(() => banner.remove(), 500);
-    }, 10_000);
-  }
-
-  let _loadFailures = 0;
-  const LOAD_FAILURE_THRESHOLD = 3;
-
-  const jsEntries = CDN_CATALOG.filter((e: CdnEntry) => e.type === 'js');
-  (function loadSeq(i: number) {
-    if (i >= jsEntries.length) {
-      console.log(
-        '%c🐾%c CDN Bootstrap ready — type YiPet.help() for usage guide',
-        'color:#6366f1;font-weight:bold',
-        'color:#888',
-      );
-      return;
-    }
-    injector
-      .loadJS(jsEntries[i].path)
-      .then(() => {
-        _loadFailures = 0;
-        loadSeq(i + 1);
-      })
-      .catch(() => {
-        _loadFailures++;
-        if (_loadFailures >= LOAD_FAILURE_THRESHOLD) {
-          showUpdateNotification();
-        }
-        loadSeq(i + 1);
-      });
-  })(0);
+  // CDN JS resources are loaded on-demand via window.YiPet.load(), not
+  // auto-loaded — loading 40+ libraries (Vue, jQuery, Bootstrap, etc.) on
+  // every page visit would slow down host page loading.
+  // The injector + window.YiPet API are already wired above via attachYiPetApi.
 }

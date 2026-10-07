@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: API调试控制台
 tags:
 - API调试
@@ -28,6 +27,10 @@ roles:
 - engineer
 - developer
 source_okr: [yivad-003]
+related_modules: ["22-prd-task-API调试控制台"]
+related_tests: ["22-prd-test-API调试控制台"]
+benefit: "产品需求：API调试控制台"
+lifecycle: active
 ---
 
 # API调试控制台

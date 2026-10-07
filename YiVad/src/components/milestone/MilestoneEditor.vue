@@ -42,7 +42,8 @@
 import { ref, reactive } from "vue";
 import { createMilestone, updateMilestone, deleteMilestone } from "@/api/modules/milestoneService";
 import { MILESTONE_STATUS_MAP, type Milestone, type MilestoneFormData } from "@/types/milestone";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 
 const props = defineProps<{
   milestone: Milestone | null;
@@ -82,13 +83,10 @@ async function handleSave() {
 
 async function handleDelete() {
   if (!props.milestone) return;
-  try {
-    await ElMessageBox.confirm("确定要删除此里程碑吗？", "确认删除", { type: "warning" });
-    await deleteMilestone(props.milestone.key);
-    ElMessage.success("已删除");
-    emit("saved");
-  } catch {
-    // Cancelled or error
-  }
+  const ok = await confirm("确定要删除此里程碑吗？", "确认删除");
+  if (!ok) return;
+  await deleteMilestone(props.milestone.key);
+  ElMessage.success("已删除");
+  emit("saved");
 }
 </script>

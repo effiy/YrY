@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-136: 文档版本对比 — 版本并列对比、行内差异高亮、版本时间线、回退到指定版本、变更作者归属 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-136"
 source_prds: ["66-prd-文档版本对比"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 文档版本对比]
+benefit: "测试用例：文档版本对比"
+lifecycle: active
 ---
 # YV-09-136: 文档版本对比 — 版本并列对比、行内差异高亮、版本时间线、回退到指定版本、变更作者归属 — 测试规格
 

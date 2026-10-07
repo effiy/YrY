@@ -5,8 +5,10 @@ stage: technical-review
 title: <技术评审主题>
 role: leader
 goalId: lead-XXX
-status: in-progress
-created: YYYY-MM-DD
+category: curator/okr/loop
+source: internal
+status: draft
+created: "YYYY-MM-DD"
 updated: 2026-09-10
 tags: [loop-record, technical-review, adr]
 ---

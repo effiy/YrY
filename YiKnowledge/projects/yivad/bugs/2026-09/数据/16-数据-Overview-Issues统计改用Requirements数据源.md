@@ -21,6 +21,8 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-Overview-Issues统计改用Requirements数据源"
+lifecycle: active
 ---
 
 ## Description
@@ -103,13 +105,12 @@ Overview 侧边栏 Issues 统计数与 Requirements Tab 表格数据不一致。
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 同一实体（如 Issues 总数）在多个位置的统计必须来源于同一数据源，通过共享 composable 确保一致性 |
+| 测试 | 为 Overview 侧边栏统计添加断言：`totalIssues === requirementsTab.rowCount` |
+| 流程 | 新增统计指标时，PR 描述必须注明数据源，Reviewer 验证与关联页面数据源一致 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **双数据源导致的不一致是静默 bug**：Overview 用 API `allIssues`，Requirements Tab 用 markdown 文件，两者数据模型不同（所有 Issue vs 仅需求），统计数必然不一致。同一概念（"Issue 数量"）在系统中只能有一个权威数据源
+- **API 数据 ≠ markdown 数据**：`allIssues` 来自 MongoDB，包含所有类型的 Issue；`reqItems` 来自 YiKnowledge 目录，仅包含需求类型。选择哪个作为 "Issues 总数" 取决于用户期望看到什么——此处选择与 Tab 内容一致的 markdown 数据源
 

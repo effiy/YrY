@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-03"
 title: "YV-07-03: 布局与动态路由 — 三栏布局 + 菜单驱动的动态路由 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202607"
 estimate_frontend: 4.0
 source_prd: "03-prd-布局与动态路由.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 布局与动态路由]
+benefit: "开发方案：task-布局与动态路由"
+lifecycle: active
 ---
 
 # YV-07-03: 布局与动态路由 — 三栏布局 + 菜单驱动的动态路由 — 开发方案

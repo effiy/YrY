@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { nanoid } from "nanoid";
 
 export interface FormDraft {
   id: string;
@@ -21,7 +22,7 @@ const DRAFT_PREFIX = "yivad-form-draft-";
 const DEFAULT_EXPIRY_DAYS = 30;
 
 function generateId(): string {
-  return `draft-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return `draft-${nanoid(12)}`;
 }
 
 export const useFormDraftStore = defineStore("formDraft", () => {

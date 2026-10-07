@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "页面过渡动画 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-39"
 source_prds: ["15-prd-页面过渡动画"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 页面过渡动画]
+benefit: "测试用例：页面过渡动画"
+lifecycle: active
 ---
 # 页面过渡动画 — 测试规格
 

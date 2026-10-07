@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-CSS-important和z-index不一致"
+lifecycle: active
 ---
 
 # CSS 中大量使用 !important 和 z-index 值不统一
@@ -84,7 +86,6 @@ z-index 值在一个项目中分散在 100 到 9999 之间，无统一层级管�
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **z-index 竞争是设计系统的缺失**：4 个不同组件使用 `z-index: 9999`，不是因为它们需要最高层级，而是因为开发者不知道现有层级体系（因为根本不存在体系）。建立 SCSS 变量体系（`$z-dropdown` → `$z-modal` → `$z-toast`...）比逐个修复更有价值
+- **`!important` 是技术债务的信号**：大多数 `!important` 用于覆盖 Element Plus 默认样式，说明组件库的样式定制机制（CSS 变量、主题覆盖）未被充分利用
 

@@ -113,7 +113,7 @@ export const PERMISSION_MODULES: PermissionModule[] = [
 
 // ── Default role permission matrix ──
 
-export type RoleKey = "admin" | "engineer" | "producter" | "analyst" | "viewer";
+export type RoleKey = "admin" | "engineer" | "product" | "analyst" | "viewer";
 
 export const DEFAULT_ROLE_PERMISSIONS: Record<RoleKey, PermissionCode[]> = {
   admin: [
@@ -146,7 +146,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleKey, PermissionCode[]> = {
     "chat:view",
     "chat:create"
   ],
-  producter: [
+  product: [
     "project:view",
     "project:create",
     "project:edit",

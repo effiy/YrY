@@ -10,7 +10,7 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [leader, srer, executiver]
+roles: [leader, sre, executive]
 benefit: "技术负责人通过结构化的 FinOps 审查识别成本浪费、优化资源使用并将支出与业务价值对齐"
 acceptance_criteria:
   - "5 步审查流程：盘点、分析、识别浪费、优化、追踪"
@@ -18,8 +18,8 @@ acceptance_criteria:
   - "YiAi 专属成本优化模式"
 related:
   - ./README.md
-  - ../../srer/observability/capacity-and-cost.md
-  - ../../executiver/roadmap/quarterly-business-review.md
+  - ../../sre/observability/capacity-and-cost.md
+  - ../../executive/roadmap/quarterly-business-review.md
 ---
 
 # FinOps 审查方法论

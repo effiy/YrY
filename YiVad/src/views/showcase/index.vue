@@ -1,15 +1,11 @@
 <template>
-  <div class="showcase-home">
-    <el-page-header @back="$router.back()" title="Back">
-      <template #content>
-        <span class="sc-title">Component Showcase</span>
-      </template>
-    </el-page-header>
-
-    <p class="sc-subtitle">
-      A gallery of reusable components, directives, and patterns available in YiVad.
-      Each section includes live demos and usage guidance.
-    </p>
+  <div class="showcase-home page">
+    <PageHeaderCard
+      :icon="Grid"
+      icon-bg="linear-gradient(135deg, #409eff, #6366f1)"
+      title="Component Showcase"
+      description="A gallery of reusable components, directives, and patterns available in YiVad. Each section includes live demos and usage guidance."
+    />
 
     <el-row :gutter="20">
       <el-col v-for="card in cards" :key="card.key" :md="8" :sm="12" :xs="24">
@@ -30,6 +26,7 @@
 
 <script setup lang="ts" name="showcase">
 import { Grid, MagicStick, TrendCharts, EditPen } from "@element-plus/icons-vue";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 
 const cards = [
   {
@@ -73,18 +70,8 @@ const cards = [
 
 <style scoped>
 .showcase-home {
-  padding: 24px;
   max-width: 960px;
   margin: 0 auto;
-}
-.sc-title {
-  font-size: 22px;
-  font-weight: 700;
-}
-.sc-subtitle {
-  color: var(--el-text-color-secondary);
-  margin: 16px 0 24px;
-  line-height: 1.6;
 }
 .sc-card {
   margin-bottom: 20px;

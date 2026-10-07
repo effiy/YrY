@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M17: 内容创作与编辑工具 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-M17"
 source_prds: ["01-功能实现-内容创作与编辑工具"]
 source_modules: ["01-prd-task-内容创作与编辑工具"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # M17: 内容创作与编辑工具 — 测试用例

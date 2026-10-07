@@ -6,6 +6,149 @@
       <el-button size="small" text type="primary" @click="clearFilterDate">{{ $t("project.detail.dateBanner.clear") }}</el-button>
     </div>
 
+    <!-- Project Summary -->
+    <div class="do-card">
+      <div class="do-summary">
+        <div class="do-summary__main">
+          <h2 class="do-summary__name">{{ project?.name }}</h2>
+          <p class="do-summary__desc">{{ project?.description || $t("project.overview.summary.noDesc") }}</p>
+          <div class="do-summary__meta">
+            <span v-if="project?.status" class="do-summary__status" :class="`is-${project?.status}`">
+              {{ project?.status === "archived" ? $t("project.dialog.statusArchived") : $t("project.dialog.statusActive") }}
+            </span>
+            <span class="do-summary__item">
+              <el-icon :size="12"><Document /></el-icon>
+              {{ prdCount }} {{ $t("project.overview.stats.prds") }}
+            </span>
+            <span class="do-summary__item">
+              <el-icon :size="12"><Grid /></el-icon>
+              {{ ykModules.length }} {{ $t("project.overview.stats.devs") }}
+            </span>
+            <span class="do-summary__item">
+              <el-icon :size="12"><Checked /></el-icon>
+              {{ testSpecs.length }} {{ $t("project.overview.stats.tests") }}
+            </span>
+            <span v-if="okrSummary.totalGoals" class="do-summary__item">
+              <el-icon :size="12"><Aim /></el-icon>
+              {{ okrSummary.completedCount }}/{{ okrSummary.totalGoals }} Goals
+            </span>
+          </div>
+        </div>
+        <div v-if="okrSummary.totalGoals" class="do-summary__okr">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="var(--el-border-color-light)" stroke-width="5" />
+            <circle
+              cx="32" cy="32" r="28" fill="none"
+              :stroke="okrSummary.avgProgress >= 100 ? 'var(--el-color-success)' : 'var(--el-color-primary)'"
+              stroke-width="5"
+              stroke-linecap="round"
+              :stroke-dasharray="2 * Math.PI * 28"
+              :stroke-dashoffset="2 * Math.PI * 28 * (1 - okrSummary.avgProgress / 100)"
+              transform="rotate(-90 32 32)"
+            />
+            <text x="32" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">
+              {{ okrSummary.avgProgress }}%
+            </text>
+          </svg>
+          <span class="do-summary__okr-label">{{ $t("project.overview.okr.title") }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="do-stats-strip">
+      <button
+        v-for="tile in statTiles"
+        :key="tile.key"
+        class="do-stat-tile"
+        :class="`do-stat-tile--${tile.variant}`"
+        :disabled="!tile.clickable"
+        @click="tile.onClick?.()"
+      >
+        <span class="do-stat-tile__value">{{ tile.value }}<small v-if="tile.suffix">{{ tile.suffix }}</small></span>
+        <span class="do-stat-tile__label">{{ tile.label }}</span>
+        <span v-if="tile.sub" class="do-stat-tile__sub">{{ tile.sub }}</span>
+      </button>
+    </div>
+
+    <!-- Bug severity breakdown -->
+    <div v-if="bugSevBars.length" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.bugSeverity.title") }}</h3>
+        <span class="do-card__head-sub">{{ $t("project.overview.bugSeverity.openCount", { n: openBugCount }) }}</span>
+      </div>
+      <div class="do-bug-sev-bars">
+        <div v-for="bar in bugSevBars" :key="bar.label" class="do-bug-sev-row">
+          <span class="do-bug-sev__label">{{ bar.label }}</span>
+          <div class="do-bug-sev__track">
+            <div class="do-bug-sev__fill" :class="bar.cls" :style="{ width: bar.pct + '%' }" />
+          </div>
+          <span class="do-bug-sev__val">{{ bar.count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data quality -->
+    <div v-if="dataQualityIssues.length" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.dataQuality.title") }}</h3>
+        <span class="do-card__head-sub">{{ $t("project.overview.dataQuality.summary", { n: dataQualityTotal }) }}</span>
+      </div>
+      <div class="do-dq-grid">
+        <div v-for="dq in dataQualityIssues" :key="dq.key" class="do-dq-item" :class="'do-dq-item--' + dq.severity" @click="router.push('/issue')">
+          <el-icon :size="16"><component :is="dq.icon" /></el-icon>
+          <span class="do-dq-item__count">{{ dq.count }}</span>
+          <span class="do-dq-item__label">{{ dq.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WIP Breakdown -->
+    <div v-if="wipTotal > 0" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.wip.title") }}</h3>
+        <span class="do-card__head-sub">{{ $t("project.overview.wip.totalItems", { n: wipTotal }) }}</span>
+      </div>
+      <div class="do-wip-bars">
+        <div v-for="w in wipBars" :key="w.status" class="do-wip-row">
+          <span class="do-wip-row__label">{{ w.label }}</span>
+          <div class="do-wip-row__track">
+            <div class="do-wip-row__fill" :style="{ width: w.pct + '%', background: w.color }" />
+          </div>
+          <span class="do-wip-row__count">{{ w.count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due health -->
+    <div v-if="dueItems.length" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.dueHealth.title") }}</h3>
+        <span class="do-card__head-sub">{{ $t("project.overview.dueHealth.summary", { upcoming: dueUpcoming, overdue: dueOverdue }) }}</span>
+      </div>
+      <div class="do-due-list">
+        <div v-for="item in dueItems" :key="item.key" class="do-due-item" :class="{ 'is-overdue': item.isOverdue }" @click="openFile(item.path!)">
+          <span class="do-due-item__dot" :class="item.isOverdue ? 'is-overdue' : 'is-upcoming'" />
+          <span class="do-due-item__title">{{ item.title }}</span>
+          <span class="do-due-item__date" :class="{ 'is-overdue': item.isOverdue }">{{ item.dueLabel }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Completed -->
+    <div v-if="recentlyCompleted.length" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.recentlyCompleted.title") }}</h3>
+      </div>
+      <div class="do-recent-list">
+        <div v-for="item in recentlyCompleted" :key="item.key" class="do-recent-item" @click="openIssueDetail(item.key)">
+          <span class="do-recent-item__check"><el-icon :size="14"><Check /></el-icon></span>
+          <span class="do-recent-item__title">{{ item.title }}</span>
+          <span class="do-recent-item__time">{{ item.timeAgo }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- README.md -->
     <div class="do-card do-card--flush">
       <div class="do-card__head">
@@ -48,49 +191,156 @@
       </div>
     </div>
 
-    <!-- Activity + Todo two-column row -->
-    <div class="do-row">
-      <!-- Activity timeline (left) -->
-      <div class="do-card do-row__left">
-        <div class="do-card__head-row">
-          <h3 class="do-card__title">{{ $t("project.overview.activity.title") }}</h3>
-          <div class="do-card__head-right">
-            <span v-if="lastUpdated" class="do-activity-updated">
-              {{ $t("project.overview.activity.updatedAgo", { time: updatedAgo }) }}
-            </span>
-            <el-button size="small" text :icon="Refresh" :loading="loading" @click="retry" />
+    <!-- OKR Progress -->
+    <div v-if="okrGoals.length" class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.okr.title") }}</h3>
+        <span class="do-card__head-sub">
+          {{ $t("project.overview.okr.summary", { done: okrSummary.completedCount, total: okrSummary.totalGoals, pct: okrSummary.avgProgress }) }}
+        </span>
+      </div>
+      <div class="do-okr-grid">
+        <div
+          v-for="goal in okrGoals"
+          :key="goal.id"
+          class="do-okr-card"
+          :class="{ 'is-done': goal.progress >= 100 }"
+          @click="openFile(goal.path)"
+        >
+          <div class="do-okr-card__head">
+            <span class="do-okr-card__id">{{ goal.id }}</span>
+            <span class="do-okr-card__pct" :class="{ 'is-done': goal.progress >= 100 }">{{ goal.progress }}%</span>
+          </div>
+          <div class="do-okr-card__title">{{ goal.title }}</div>
+          <div class="do-okr-card__bar">
+            <div class="do-okr-card__fill" :style="{ width: goal.progress + '%' }" />
+          </div>
+          <div class="do-okr-card__meta">
+            <span>{{ goal.krCount }} KRs</span>
+            <span v-if="goal.metricCount"> · {{ goal.metricCount }} Metrics</span>
           </div>
         </div>
-        <div v-if="overviewActivity.length" class="do-timeline">
-          <template v-for="(group, gIdx) in activityGroups" :key="group.label">
-            <div class="do-timeline-group">
-              <div class="do-timeline-group-label">{{ group.label }}</div>
-              <div
-                v-for="(a, i) in group.items"
-                :key="a.id"
-                class="do-timeline-item"
-                :class="{ 'do-timeline-item--last': i === group.items.length - 1 && gIdx === activityGroups.length - 1 }"
-                @click="handleActivityClick(a)"
-              >
-                <div class="do-timeline-dot" :style="{ background: activityColor(a.type) }" />
-                <div v-if="i < group.items.length - 1 || gIdx < activityGroups.length - 1" class="do-timeline-line" />
-                <div class="do-timeline-content">
-                  <span class="do-timeline-action">{{ a.action }}</span>
-                  <span class="do-timeline-target">{{ a.target }}</span>
-                  <span class="do-timeline-time">{{ a.timeAgo }}</span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
-        <el-empty v-else :description="$t('project.overview.activity.empty')" :image-size="48" />
       </div>
+    </div>
+
+    <!-- Document Directory -->
+    <div class="do-card">
+      <div class="do-card__head-row">
+        <h3 class="do-card__title">{{ $t("project.overview.docs.title") }}</h3>
+        <div class="do-docs-tabs">
+          <button
+            v-for="dt in docTabs"
+            :key="dt.key"
+            class="do-docs-tab"
+            :class="{ 'is-active': docTab === dt.key }"
+            @click="docTab = dt.key"
+          >
+            {{ dt.label }}
+            <span class="do-docs-tab__count">{{ dt.count }}</span>
+          </button>
+        </div>
+      </div>
+      <div v-if="docTabItems.length" class="do-docs-list">
+        <div
+          v-for="item in docTabItems.slice(0, docLimit)"
+          :key="item.path"
+          class="do-docs-item"
+        >
+          <div class="do-docs-item__row" @click="openFile(item.path)">
+            <span class="do-docs-item__seq">{{ item.seq }}</span>
+            <span class="do-docs-item__status" :style="{ background: statusColor(item.status), color: '#fff' }">{{ statusLabel(item.status) }}</span>
+            <span class="do-docs-item__title">{{ item.title }}</span>
+            <span v-if="item.owner" class="do-docs-item__owner">{{ item.owner }}</span>
+            <span v-if="item.estimate" class="do-docs-item__est">{{ item.estimate }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-else class="do-docs-empty">{{ $t("project.overview.docs.empty") }}</div>
+      <button
+        v-if="docTabItems.length > docLimit"
+        class="do-docs-toggle"
+        @click="docLimit = docTabItems.length"
+      >
+        {{ $t("project.overview.docs.showAll", { n: docTabItems.length }) }}
+        <el-icon><ArrowDown /></el-icon>
+      </button>
+    </div>
+
+    <!-- Activity + Todo two-column row -->
+    <div class="do-row">
+      <ActivityTimeline
+        :all-issues="allIssues"
+        :all-bugs="allBugs"
+        :all-modules="allModules"
+        :knowledge-files="knowledgeFiles"
+        :project-key="project?.key || ''"
+        :filter-date-str="filterDateStr"
+        :now="now"
+        :loading="loading"
+        :last-updated="lastUpdated"
+        :updated-ago="updatedAgo"
+        @refresh="retry"
+        @item-click="handleActivityClick"
+      />
 
       <!-- Todo List (right) -->
       <div class="do-card do-row__right">
         <div class="do-card__head-row">
           <h3 class="do-card__title">{{ $t("project.overview.todo.title") }}</h3>
-          <span v-if="todoItems.length" class="do-todo-count">{{ todoItems.length }}</span>
+          <span v-if="todoItems.length" class="do-todo-count">{{ filteredTodoCount }}</span>
+          <span v-if="todoOverdueCount" class="do-todo-overdue-badge">
+            <el-icon><Warning /></el-icon>
+            {{ todoOverdueCount }} {{ $t("project.overview.todo.overdue") }}
+          </span>
+          <div class="do-todo-toggle">
+            <button class="do-todo-toggle__btn" :class="{ 'is-active': todoPriority === 'high' }" @click="todoPriority = 'high'">
+              P0-P1
+              <span class="do-todo-toggle__count">{{ highPriorityCount }}</span>
+            </button>
+            <button class="do-todo-toggle__btn" :class="{ 'is-active': todoType === 'issues' && todoPriority === 'all' }" @click="todoType = 'issues'; todoPriority = 'all'">
+              {{ $t("project.overview.todo.requirement") }}
+              <span class="do-todo-toggle__count">{{ issueTodoCount }}</span>
+            </button>
+            <button class="do-todo-toggle__btn" :class="{ 'is-active': todoType === 'dev' && todoPriority === 'all' }" @click="todoType = 'dev'; todoPriority = 'all'">
+              {{ $t("project.overview.todo.toggleDev") }}
+              <span class="do-todo-toggle__count">{{ devTodoCount }}</span>
+            </button>
+            <button class="do-todo-toggle__btn" :class="{ 'is-active': todoType === 'test' && todoPriority === 'all' }" @click="todoType = 'test'; todoPriority = 'all'">
+              {{ $t("project.overview.todo.toggleTest") }}
+              <span class="do-todo-toggle__count">{{ testTodoCount }}</span>
+            </button>
+            <button class="do-todo-toggle__btn" :class="{ 'is-active': todoType === 'all' && todoPriority === 'all' }" @click="todoType = 'all'; todoPriority = 'all'">
+              {{ $t("project.overview.todo.toggleAll") }}
+              <span class="do-todo-toggle__count">{{ todoItems.length }}</span>
+            </button>
+          </div>
+        </div>
+        <div v-if="todoStats.devTotal" class="do-todo-progress">
+          <div class="do-todo-progress__bar">
+            <div
+              class="do-todo-progress__seg is-done"
+              :style="{ width: (todoStats.done / todoStats.devTotal * 100) + '%' }"
+            />
+            <div
+              v-if="todoStats.inProgress"
+              class="do-todo-progress__seg is-active"
+              :style="{ width: (todoStats.inProgress / todoStats.devTotal * 100) + '%' }"
+            />
+            <div
+              v-if="todoStats.pending"
+              class="do-todo-progress__seg is-pending"
+              :style="{ width: (todoStats.pending / todoStats.devTotal * 100) + '%' }"
+            />
+          </div>
+          <span class="do-todo-progress__text">
+            {{ todoStats.done }}/{{ todoStats.devTotal }} {{ $t("project.overview.todo.completed") }}
+            <template v-if="todoStats.inProgress"> · {{ todoStats.inProgress }} {{ $t("project.overview.todo.inProgress") }}</template>
+            <template v-if="todoStats.p0 || todoStats.p1">
+              · <span class="do-todo-progress__prio">P0: {{ todoStats.p0 }}</span>
+              <template v-if="todoStats.p1"> <span class="do-todo-progress__prio-p1">P1: {{ todoStats.p1 }}</span></template>
+            </template>
+            · {{ $t("project.overview.todo.toggleTest") }}: {{ todoStats.testsDone }}/{{ todoStats.testTotal }}
+          </span>
         </div>
 
         <!-- loading -->
@@ -125,10 +375,17 @@
                 :class="{ 'is-overdue': item.isOverdue, 'is-updating': updatingKeys.has(item.id) }"
                 @click="handleTodoClick(item)"
               >
-                <div class="do-todo-item__accent" :style="{ background: activityColor(item.type) }" />
+                <div class="do-todo-item__accent" :style="{ background: todoAccentColor(item) }" />
                 <div class="do-todo-item__body">
-                  <div class="do-todo-item__title">{{ item.target }}</div>
+                  <div class="do-todo-item__title">
+                    <span class="do-todo-item__type-badge" :style="{ background: todoAccentColor(item), color: '#fff' }">
+                      {{ item.issueTypeLabel }}
+                    </span>
+                    {{ item.target }}
+                    <span v-if="item.prdRef" class="do-todo-item__prd-ref">← {{ shortPrdRef(item.prdRef) }}</span>
+                  </div>
                   <div class="do-todo-item__meta">
+                    <span v-if="item.estimate" class="do-todo-item__estimate">{{ item.estimate }}</span>
                     <span v-if="item.priorityLabel" class="do-todo-item__prio">
                       <span class="do-todo-item__prio-dot" :style="{ background: item.priorityColor }" />
                       {{ item.priorityLabel }}
@@ -137,7 +394,19 @@
                     <span v-if="item.dueDate" class="do-todo-item__due" :class="{ 'is-overdue': item.isOverdue }">{{
                       item.dueDate
                     }}</span>
-                    <span v-if="!item.assignee && !item.dueDate && !item.priorityLabel" class="do-todo-item__due">&mdash;</span>
+                    <span v-if="!item.assignee && !item.dueDate && !item.priorityLabel && !item.estimate" class="do-todo-item__due">&mdash;</span>
+                  </div>
+                  <div v-if="item.filePath" class="do-todo-item__links">
+                    <span
+                      v-if="getLinkedDev(item.filePath)"
+                      class="do-todo-item__link do-todo-item__link--dev"
+                      @click.stop="openLinkFile(getLinkedDev(item.filePath)!)"
+                    >🔧 开发方案</span>
+                    <span
+                      v-if="getLinkedTest(item.filePath)"
+                      class="do-todo-item__link do-todo-item__link--test"
+                      @click.stop="openLinkFile(getLinkedTest(item.filePath)!)"
+                    >🧪 测试规格</span>
                   </div>
                 </div>
                 <div class="do-todo-item__actions" @click.stop>
@@ -176,20 +445,26 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
-import { Calendar, Document, Edit, ArrowUp, ArrowDown, Refresh, VideoPlay, Check } from "@element-plus/icons-vue";
+import { Calendar, Document, Edit, ArrowUp, ArrowDown, VideoPlay, Check, Grid, Checked, Aim, Warning, Flag, User, Timer, Collection, PriceTag } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useNow } from "@/hooks/useNow";
 import { readProjectFile } from "@/api/modules/fileService";
 import { getIssueFilePath, updateIssue } from "@/api/modules/issueService";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { formatRelativeTime } from "@/utils/datetime";
+import { timeAgo } from "@/utils/time";
 import { PREVIEW_DLG_KEY, useProjectDetail, type ActivityItem } from "@/views/project/types";
 import { activityColor } from "@/views/project/composables/useProjectStats";
 import { PRIORITY_COLORS } from "@/views/project/constants";
-import { ISSUE_PRIORITY_MAP } from "@/api/modules/issueService";
+import { ISSUE_PRIORITY_MAP, ISSUE_TYPE_MAP } from "@/api/modules/issueService";
 import { BUG_PRIORITY_MAP, updateBug } from "@/api/modules/bug";
+import { useYiKnowledgeModules } from "@/views/project/composables/useYiKnowledgeModules";
+import { useTestSpecs } from "@/views/project/composables/useTestSpecs";
+import ActivityTimeline from "@/views/project/components/ActivityTimeline.vue";
 
 const { t } = useI18n();
+const router = useRouter();
 
 const { renderWithHtml } = useMarkdown();
 
@@ -200,6 +475,7 @@ const {
   allIssues,
   allBugs,
   allModules,
+  knowledgeFiles,
   filterDate,
   filterDateStr,
   project,
@@ -211,14 +487,133 @@ const {
 } = ctx;
 
 // ── Todo data (derived from injected allIssues/allBugs — no separate API calls) ──
-const todoRequirements = computed(() => allIssues.value.filter(i => i.issue_type !== "bug" && i.status === "backlog"));
+const todoRequirements = computed(() => allIssues.value.filter(i => i.issue_type !== "bug" && (i.status === "backlog" || i.status === "todo")));
 const todoBugs = computed(() => allBugs.value.filter(b => b.status === "open" || b.status === "reopened"));
 const todoLoading = computed(() => loading.value);
+
+// YiKnowledge dev tasks & test specs
+const { items: ykModules, deriveFrom: deriveModules } = useYiKnowledgeModules();
+const { items: testSpecs, deriveFrom: deriveTests } = useTestSpecs();
+watch(() => knowledgeFiles.value, files => {
+  const key = project.value?.key;
+  if (key && files.length) { deriveModules(files, key); deriveTests(files, key); }
+}, { immediate: true });
+
+const PENDING_DEV_STATUS = new Set(["待开始", "需求已编写", "进行中", "planned", "in_progress"]);
+const PENDING_TEST_STATUS = new Set(["待开始", "planned"]);
+const todoDevs = computed(() => ykModules.value.filter(m => PENDING_DEV_STATUS.has(m.status)));
+const todoTests = computed(() => testSpecs.value.filter(t => PENDING_TEST_STATUS.has(t.status)));
 
 const { label: filterDateLabel } = useDateFilter(filterDate);
 const now = useNow(30_000);
 
 const updatedAgo = computed(() => formatRelativeTime(lastUpdated.value, now.value));
+
+// ── Bug severity breakdown ──
+const openBugCount = computed(() => allBugs.value.filter(b => b.status === "open" || b.status === "reopened").length);
+
+const bugSeverityData = computed(() => {
+  const sev: Record<string, number> = {};
+  for (const b of allBugs.value) {
+    if (b.status !== "open" && b.status !== "reopened" && b.status !== "in_progress") continue;
+    const s = (b.severity || "unknown").toLowerCase();
+    sev[s] = (sev[s] || 0) + 1;
+  }
+  return sev;
+});
+
+const SEV_ORDER = ["critical", "urgent", "major", "high", "medium", "minor", "low", "trivial"];
+const SEV_CLASS: Record<string, string> = {
+  critical: "is-critical", urgent: "is-critical",
+  major: "is-major", high: "is-major",
+  medium: "is-medium", minor: "is-minor", low: "is-minor", trivial: "is-trivial"
+};
+
+const bugSevBars = computed(() => {
+  const data = bugSeverityData.value;
+  const maxCount = Math.max(1, ...Object.values(data));
+  return SEV_ORDER
+    .filter(k => data[k])
+    .map(k => ({
+      label: k.charAt(0).toUpperCase() + k.slice(1),
+      count: data[k],
+      pct: Math.round((data[k] / maxCount) * 100),
+      cls: SEV_CLASS[k] || "is-minor"
+    }));
+});
+
+// ── Data quality ──
+const dataQualityIssues = computed(() => {
+  const openIssues = allIssues.value.filter(i => i.status !== "done" && i.status !== "cancelled");
+  const noPrio = openIssues.filter(i => !i.priority || i.priority === "none").length;
+  const noDue = openIssues.filter(i => !i.due_date).length;
+  const unassigned = openIssues.filter(i => !i.assignee).length;
+  const noType = openIssues.filter(i => !i.issue_type).length;
+  const items: { key: string; count: number; label: string; icon: any; severity: string }[] = [];
+  if (noPrio > 0) items.push({ key: "noPriority", count: noPrio, label: t("project.overview.dataQuality.noPriority"), icon: Flag, severity: noPrio > 20 ? "warn" : "info" });
+  if (noDue > 0) items.push({ key: "noDueDate", count: noDue, label: t("project.overview.dataQuality.noDueDate"), icon: Timer, severity: noDue > 20 ? "warn" : "info" });
+  if (noType > 0) items.push({ key: "noType", count: noType, label: t("project.overview.dataQuality.noType"), icon: Collection, severity: noType > 20 ? "warn" : "info" });
+  const noLabels = openIssues.filter(i => !i.labels || i.labels.length === 0).length;
+  if (noLabels > 0) items.push({ key: "noLabels", count: noLabels, label: t("project.overview.dataQuality.noLabels"), icon: PriceTag, severity: noLabels > 20 ? "warn" : "info" });
+  if (unassigned > 0) items.push({ key: "unassigned", count: unassigned, label: t("project.overview.dataQuality.unassigned"), icon: User, severity: unassigned > 5 ? "warn" : "info" });
+  return items.sort((a, b) => b.count - a.count);
+});
+const dataQualityTotal = computed(() => dataQualityIssues.value.reduce((s, d) => s + d.count, 0));
+
+// ── WIP Breakdown ──
+const wipTotal = computed(() => {
+  return allIssues.value.filter(i => i.status !== "done" && i.status !== "cancelled" && i.status !== "backlog").length;
+});
+const wipBars = computed(() => {
+  const active = ["in_progress", "in_review", "todo"];
+  const colors: Record<string, string> = { in_progress: "#5470c6", in_review: "#fac858", todo: "#909399" };
+  const labels: Record<string, string> = { in_progress: t("project.overview.wip.inProgress"), in_review: t("project.overview.wip.inReview"), todo: t("project.overview.wip.todo") };
+  const maxCount = Math.max(1, ...active.map(s => allIssues.value.filter(i => i.status === s).length));
+  return active.map(s => {
+    const count = allIssues.value.filter(i => i.status === s).length;
+    return { status: s, label: labels[s], count, color: colors[s], pct: Math.round((count / maxCount) * 100) };
+  });
+});
+
+// ── Due Health ──
+const dueItems = computed(() => {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
+  return allIssues.value
+    .filter(i => i.status !== "done" && i.status !== "cancelled" && i.due_date)
+    .map(i => {
+      const d = new Date(i.due_date!);
+      return {
+        key: i.key, title: i.title,
+        dueDate: d,
+        isOverdue: d < today,
+        dueLabel: d < today ? t("project.overview.dueHealth.overdue", { n: Math.floor((today.getTime() - d.getTime()) / 86400000) }) :
+          d.toDateString() === today.toDateString() ? t("project.overview.dueHealth.today") :
+          t("project.overview.dueHealth.daysLeft", { n: Math.ceil((d.getTime() - today.getTime()) / 86400000) }),
+        path: i.kb_file_path || ""
+      };
+    })
+    .filter(i => i.isOverdue || i.dueDate <= nextWeek)
+    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
+    .slice(0, 8);
+});
+const dueOverdue = computed(() => dueItems.value.filter(i => i.isOverdue).length);
+const dueUpcoming = computed(() => dueItems.value.filter(i => !i.isOverdue).length);
+
+// ── Recently Completed ──
+const recentlyCompleted = computed(() => {
+  return allIssues.value
+    .filter(i => i.status === "done" && i.updated_at)
+    .sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))
+    .slice(0, 5)
+    .map(i => {
+      return { key: i.key, title: i.title, timeAgo: timeAgo(i.updated_at!) };
+    });
+});
+
+function openIssueDetail(key: string) {
+  router.push("/issue");
+}
 
 // ── README ──
 const descContent = ref("");
@@ -226,6 +621,8 @@ const descExpanded = ref(false);
 const descOverflows = ref(false);
 const descHtml = computed(() => renderWithHtml(descContent.value || ""));
 const descPreviewRef = ref<HTMLElement | null>(null);
+const todoPriority = ref<"high" | "all">("high");
+const todoType = ref<"issues" | "all" | "dev" | "test">("issues");
 
 function stripFrontmatter(md: string): string {
   const trimmed = md.trimStart();
@@ -280,76 +677,212 @@ watch(lastUpdated, () => {
   loadDescFile();
 });
 
-// ── Activity timeline ──
-const overviewActivity = computed<ActivityItem[]>(() => {
-  const date = filterDateStr.value;
+// ── Stats strip ──
 
-  const reqIssues = date
-    ? allIssues.value.filter(i => i.issue_type === "requirement" && (i.updated_at || "").slice(0, 10) === date)
-    : allIssues.value.filter(i => i.issue_type === "requirement");
-  const bugs = date ? allBugs.value.filter(b => new Date(b.updatedAt).toISOString().slice(0, 10) === date) : allBugs.value;
-  const modules = date ? allModules.value.filter(m => (m.updated_at || "").slice(0, 10) === date) : allModules.value;
-
-  const activity: ActivityItem[] = [];
-
-  reqIssues.slice(0, 20).forEach(i => {
-    activity.push({
-      id: i.key,
-      type: "requirement",
-      action:
-        i.status === "done"
-          ? t("project.overview.activity.completed")
-          : i.status === "in_progress"
-            ? t("project.overview.activity.started")
-            : t("project.overview.activity.created"),
-      target: i.title,
-      timeAgo: formatRelativeTime(i.updated_at, now.value),
-      updatedAt: i.updated_at,
-      filePath: getIssueFilePath(i)
-    });
-  });
-
-  bugs.slice(0, 10).forEach(b => {
-    activity.push({
-      id: b.key,
-      type: "bug",
-      action:
-        b.status === "resolved" || b.status === "closed"
-          ? t("project.overview.activity.resolved")
-          : b.status === "in_progress"
-            ? t("project.overview.activity.started")
-            : t("project.overview.activity.reported"),
-      target: b.title,
-      timeAgo: formatRelativeTime(b.updatedAt, now.value),
-      updatedAt: new Date(b.updatedAt).toISOString(),
-      filePath: b.contentPath || ""
-    });
-  });
-
-  modules.slice(0, 10).forEach(m => {
-    activity.push({
-      id: m.key,
-      type: "module",
-      action:
-        m.created_at === m.updated_at
-          ? t("project.overview.activity.moduleCreated")
-          : t("project.overview.activity.moduleUpdated"),
-      target: m.name,
-      timeAgo: formatRelativeTime(m.updated_at, now.value),
-      updatedAt: m.updated_at,
-      link: `/project/${m.project_key}?tab=devs`
-    });
-  });
-
-  activity.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-  return activity.slice(0, 20);
+const prdFiles = computed(() => {
+  const prefix = `projects/${project.value?.key}/prds/`;
+  return knowledgeFiles.value
+    .filter(f => f.path.startsWith(prefix) && f.path.endsWith(".md") && f.name !== "README.md" && !f.name.startsWith("00-"));
 });
 
-function handleActivityClick(a: ActivityItem) {
-  if (a.filePath) {
-    previewDlg?.value?.open(a.filePath);
-    return;
+const prdCount = computed(() => prdFiles.value.length);
+const prdDone = computed(() => prdFiles.value.filter(f => {
+  const s = ((f.meta || {}) as Record<string, unknown>).status as string;
+  return s === "已完成" || s === "done" || s === "completed";
+}).length);
+
+const devDone = computed(() => ykModules.value.filter(m => m.status === "已完成" || m.status === "done" || m.status === "已合并").length);
+const testDone = computed(() => testSpecs.value.filter(t => t.status === "已完成" || t.status === "done").length);
+
+const workflowCount = computed(() => {
+  const prefix = `projects/${project.value?.key}/workflows/`;
+  return knowledgeFiles.value.filter(f => f.path.startsWith(prefix) && f.path.endsWith(".md")).length;
+});
+
+interface OkrGoalCard {
+  id: string;
+  title: string;
+  progress: number;
+  krCount: number;
+  metricCount: number;
+  path: string;
+}
+
+const okrGoals = computed<OkrGoalCard[]>(() => {
+  const prefix = `projects/${project.value?.key}/okrs/`;
+  return knowledgeFiles.value
+    .filter(f => f.path.startsWith(prefix) && f.name.startsWith("goal-") && f.path.endsWith(".md"))
+    .map(f => {
+      const meta = (f.meta || {}) as Record<string, unknown>;
+      const krCount = Object.keys(meta).filter(k => /^kr\d+$/.test(k)).length;
+      const metricCount = Object.keys(meta).filter(k => /^metric\d+_id$/.test(k)).length;
+      return {
+        id: (meta.id as string) || "",
+        title: (meta.title as string) || f.name.replace(/\.md$/, ""),
+        progress: (meta.progress as number) || 0,
+        krCount,
+        metricCount,
+        path: f.path
+      };
+    })
+    .sort((a, b) => a.id.localeCompare(b.id));
+});
+
+const okrSummary = computed(() => {
+  const goals = okrGoals.value;
+  if (!goals.length) return { totalGoals: 0, avgProgress: 0, completedCount: 0 };
+  return {
+    totalGoals: goals.length,
+    avgProgress: Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length),
+    completedCount: goals.filter(g => g.progress >= 100).length
+  };
+});
+
+// ── Document Directory ──
+
+interface DocItem {
+  seq: string;
+  title: string;
+  path: string;
+  status: string;
+  owner: string;
+  estimate: string;
+}
+
+const docTab = ref<"prds" | "devs" | "tests">("prds");
+const docLimit = ref(12);
+
+const docTabs = computed(() => [
+  { key: "prds" as const, label: t("project.overview.stats.prds"), count: prdCount.value },
+  { key: "devs" as const, label: t("project.overview.stats.devs"), count: ykModules.value.length },
+  { key: "tests" as const, label: t("project.overview.stats.tests"), count: testSpecs.value.length }
+]);
+
+const docTabItems = computed<DocItem[]>(() => {
+  const prefix = `projects/${project.value?.key}/`;
+  if (docTab.value === "prds") {
+    return prdFiles.value.map(f => {
+      const meta = (f.meta || {}) as Record<string, unknown>;
+      return {
+        seq: f.name.match(/^(\d+)/)?.[1] || "",
+        title: (meta.title as string) || f.name.replace(/\.md$/, ""),
+        path: f.path,
+        status: (meta.status as string) || "",
+        owner: (meta.owner as string) || "",
+        estimate: ""
+      };
+    });
   }
+  if (docTab.value === "devs") {
+    return ykModules.value.map(m => ({
+      seq: m.seq,
+      title: m.title,
+      path: m.path,
+      status: m.status,
+      owner: m.owner,
+      estimate: m.estimate_frontend ? `${m.estimate_frontend}d` : ""
+    }));
+  }
+  return testSpecs.value.map(t => ({
+    seq: (t as any).seq || "",
+    title: t.title,
+    path: t.path,
+    status: t.status,
+    owner: t.owner || "",
+    estimate: ""
+  }));
+});
+
+function statusLabel(s: string): string {
+  return DOC_STATUS_LABELS[s] || s || "—";
+}
+function statusColor(s: string): string {
+  return DOC_STATUS_COLORS[s] || "#909399";
+}
+
+const statTiles = computed(() => {
+  const p = project.value;
+  if (!p) return [];
+  const bugOpen = allBugs.value.filter(b => b.status === "open" || b.status === "reopened").length;
+  const bugResolved = allBugs.value.filter(b => b.status === "resolved" || b.status === "closed").length;
+  const bugResolvePct = allBugs.value.length ? Math.round(bugResolved / allBugs.value.length * 100) : 0;
+  const bugResolveMedianH = (() => {
+    const times: number[] = [];
+    for (const b of allBugs.value) {
+      if (b.status !== "resolved" && b.status !== "closed") continue;
+      const ca = b.createdAt ? new Date(b.createdAt) : null;
+      const ua = b.updatedAt ? new Date(b.updatedAt) : null;
+      if (!ca || !ua || isNaN(ca.getTime()) || isNaN(ua.getTime())) continue;
+      times.push((ua.getTime() - ca.getTime()) / 3600000);
+    }
+    if (!times.length) return 0;
+    times.sort((a, b) => a - b);
+    return Math.round(times[Math.floor(times.length / 2)]);
+  })();
+  const prdPct = prdCount.value ? Math.round(prdDone.value / prdCount.value * 100) : 0;
+  const devPct = ykModules.value.length ? Math.round(devDone.value / ykModules.value.length * 100) : 0;
+  const testPct = testSpecs.value.length ? Math.round(testDone.value / testSpecs.value.length * 100) : 0;
+  const knowledgeCountVal = knowledgeFiles.value.filter(f => f.path.startsWith(`projects/${project.value?.key}/`)).length;
+  const nowTs = Date.now();
+  const knowledgeFresh = knowledgeFiles.value.filter(f => {
+    if (!f.path.startsWith(`projects/${project.value?.key}/`)) return false;
+    if (!f.updatedAt) return false;
+    return (nowTs - new Date(f.updatedAt).getTime()) < 30 * 86400000;
+  }).length;
+  const knowledgeFreshPct = knowledgeCountVal ? Math.round(knowledgeFresh / knowledgeCountVal * 100) : 0;
+  return [
+    { key: "prds", value: prdCount.value, suffix: "", label: t("project.overview.stats.prds"), sub: `${prdPct}% ${t("project.overview.stats.completed")}`, variant: "purple", clickable: true, onClick: () => navigateTab("prds") },
+    { key: "devs", value: ykModules.value.length, suffix: "", label: t("project.overview.stats.devs"), sub: `${devPct}% ${t("project.overview.stats.completed")} · ${todoDevs.value.length} ${t("project.overview.stats.pending")}`, variant: "blue", clickable: true, onClick: () => navigateTab("devs") },
+    { key: "tests", value: testSpecs.value.length, suffix: "", label: t("project.overview.stats.tests"), sub: `${testPct}% ${t("project.overview.stats.completed")} · ${todoTests.value.length} ${t("project.overview.stats.pending")}`, variant: "green", clickable: true, onClick: () => navigateTab("tests") },
+    { key: "bugs", value: bugOpen, suffix: "", label: t("project.overview.stats.bugs"), sub: `${bugResolvePct}% resolved · ${bugResolved}/${allBugs.value.length}`, variant: bugResolvePct >= 80 ? "green" : bugOpen > 0 ? "red" : "green", clickable: true, onClick: () => navigateTab("bugs") },
+    { key: "docs", value: knowledgeCountVal, suffix: "", label: t("project.overview.stats.docs"), sub: `${knowledgeFreshPct}% ${t("project.overview.stats.fresh")}`, variant: "teal", clickable: knowledgeCountVal > 0, onClick: () => navigateTab("prds") },
+    { key: "mttr", value: bugResolveMedianH, suffix: "h", label: t("project.overview.stats.mttr"), sub: t("project.overview.stats.medianFixTime"), variant: bugResolveMedianH < 24 ? "green" : "blue", clickable: true, onClick: () => navigateTab("bugs") },
+    { key: "okrs", value: okrSummary.value.totalGoals, suffix: "", label: t("project.overview.stats.okrs"), sub: okrSummary.value.totalGoals ? `${okrSummary.value.avgProgress}%` : "", variant: "orange", clickable: okrGoals.value.length > 0, onClick: () => navigateTab("okr") }
+  ];
+});
+
+function openFile(path: string) {
+  previewDlg?.value?.open(path);
+}
+
+// ── Shared doc status maps (used by Document Directory + Activity composable) ──
+
+const DOC_STATUS_LABELS: Record<string, string> = {
+  draft: "Draft",
+  review: "In Review",
+  active: "Active",
+  done: "Done",
+  completed: "Completed",
+  deprecated: "Deprecated",
+  archived: "Archived",
+  "已合并": "Merged",
+  "待开始": "Pending",
+  "需求已编写": "Spec Ready",
+  "进行中": "In Progress",
+  "已完成": "Done",
+  "已取消": "Cancelled",
+  "待评审": "Review"
+};
+
+const DOC_STATUS_COLORS: Record<string, string> = {
+  draft: "#909399",
+  review: "#e6a23c",
+  active: "#67c23a",
+  done: "#409eff",
+  completed: "#409eff",
+  deprecated: "#f56c6c",
+  archived: "#c0c4cc",
+  "已合并": "#67c23a",
+  "待开始": "#909399",
+  "需求已编写": "#409eff",
+  "进行中": "#e6a23c",
+  "已完成": "#67c23a",
+  "已取消": "#f56c6c",
+  "待评审": "#e6a23c"
+};
+
+function handleActivityClick(a: ActivityItem) {
+  if (a.filePath) previewDlg?.value?.open(a.filePath);
 }
 
 // ── Todo list ──
@@ -364,17 +897,21 @@ interface TodoItem {
   assignee: string;
   dueDate: string;
   isOverdue: boolean;
+  issueType: string;
+  issueTypeLabel: string;
+  estimate: string;
+  prdRef: string;
 }
 
 const PRIORITY_RANK: Record<string, number> = {
   urgent: 0,
-  p0: 0,
+  p0: 0, P0: 0,
   high: 1,
-  p1: 1,
+  p1: 1, P1: 1,
   medium: 2,
-  p2: 2,
+  p2: 2, P2: 2,
   low: 3,
-  p3: 3,
+  p3: 3, P3: 3,
   none: 4
 };
 
@@ -388,7 +925,7 @@ function formatDueDate(iso: string | undefined): string {
 }
 
 function bugPriorityColor(p: string): string {
-  const map: Record<string, string> = { p0: "urgent", p1: "high", p2: "medium", p3: "low" };
+  const map: Record<string, string> = { p0: "urgent", p1: "high", p2: "medium", p3: "low", urgent: "urgent", high: "high", medium: "medium", low: "low" };
   return PRIORITY_COLORS[map[p] as keyof typeof PRIORITY_COLORS] || PRIORITY_COLORS.none;
 }
 
@@ -399,13 +936,19 @@ function isOverdue(iso: string | undefined): boolean {
   return d < new Date();
 }
 
+function ykPriorityColor(p: string): string {
+  const m: Record<string, string> = { P0: "#f56c6c", P1: "#e6a23c", P2: "#409eff", P3: "#909399" };
+  return m[p] || "#909399";
+}
+
 const todoItems = computed<TodoItem[]>(() => {
   const items: TodoItem[] = [];
 
   todoRequirements.value.forEach(i => {
+    const est = i.story_points || i.estimate_points;
     items.push({
       id: i.key,
-      type: "requirement",
+      type: i.issue_type,
       target: i.title,
       filePath: getIssueFilePath(i),
       priorityLabel: ISSUE_PRIORITY_MAP[i.priority] || i.priority,
@@ -413,8 +956,12 @@ const todoItems = computed<TodoItem[]>(() => {
       priorityRank: PRIORITY_RANK[i.priority] ?? 4,
       assignee: i.assignee || "",
       dueDate: formatDueDate(i.due_date),
-      isOverdue: isOverdue(i.due_date)
-    });
+      isOverdue: isOverdue(i.due_date),
+      issueType: i.issue_type,
+      issueTypeLabel: ISSUE_TYPE_MAP[i.issue_type] || i.issue_type,
+      estimate: est ? `${est} pts` : "",
+        prdRef: ""
+      });
   });
 
   todoBugs.value.forEach(b => {
@@ -428,27 +975,110 @@ const todoItems = computed<TodoItem[]>(() => {
       priorityRank: PRIORITY_RANK[b.priority] ?? 4,
       assignee: b.assignee || "",
       dueDate: b.dueDate ? formatDueDate(new Date(b.dueDate).toISOString()) : "",
-      isOverdue: b.dueDate ? isOverdue(new Date(b.dueDate).toISOString()) : false
+      isOverdue: b.dueDate ? isOverdue(new Date(b.dueDate).toISOString()) : false,
+      issueType: "bug",
+      issueTypeLabel: t("project.overview.todo.bug"),
+      estimate: "",
+      prdRef: ""
+    });
+  });
+
+  // Dev tasks from YiKnowledge devs/ directory
+  todoDevs.value.forEach(d => {
+    items.push({
+      id: d.path,
+      type: "dev",
+      target: d.title,
+      filePath: d.path,
+      priorityLabel: d.priority,
+      priorityColor: ykPriorityColor(d.priority),
+      priorityRank: PRIORITY_RANK[d.priority] ?? 4,
+      assignee: d.owner,
+      dueDate: "",
+      isOverdue: false,
+      issueType: "dev",
+      issueTypeLabel: t("project.overview.todo.dev"),
+      estimate: d.estimate_frontend ? `${d.estimate_frontend}d` : "",
+      prdRef: d.source_prd
+    });
+  });
+
+  // Test tasks from YiKnowledge tests/ directory
+  todoTests.value.forEach(spec => {
+    items.push({
+      id: spec.path,
+      type: "testing",
+      target: spec.title,
+      filePath: spec.path,
+      priorityLabel: spec.priority,
+      priorityColor: ykPriorityColor(spec.priority),
+      priorityRank: PRIORITY_RANK[spec.priority] ?? 4,
+      assignee: spec.owner,
+      dueDate: "",
+      isOverdue: false,
+      issueType: "testing",
+      issueTypeLabel: t("project.overview.todo.testing"),
+      estimate: "",
+      prdRef: spec.source_prds[0] || ""
     });
   });
 
   items.sort((a, b) => {
-    if (a.priorityRank !== b.priorityRank) return a.priorityRank - b.priorityRank;
     if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1;
+    if (a.priorityRank !== b.priorityRank) return a.priorityRank - b.priorityRank;
     return a.dueDate.localeCompare(b.dueDate);
   });
   return items;
 });
 
+// PRD basename → { dev: path, test: path } linkage map for Todo items
+const prdToLinks = computed(() => {
+  const map = new Map<string, { dev: string; test: string }>();
+  for (const m of ykModules.value) {
+    const prdName = (m.source_prd || "").replace(/\.md$/, "");
+    if (!prdName) continue;
+    const entry = map.get(prdName) || { dev: "", test: "" };
+    entry.dev = m.path;
+    map.set(prdName, entry);
+  }
+  for (const t of testSpecs.value) {
+    for (const prd of t.source_prds || []) {
+      const prdName = prd.replace(/\.md$/, "");
+      if (!prdName) continue;
+      const entry = map.get(prdName) || { dev: "", test: "" };
+      entry.test = t.path;
+      map.set(prdName, entry);
+    }
+  }
+  return map;
+});
+
 const todoGroups = computed(() => {
   const groups: { label: string; items: TodoItem[] }[] = [];
-  const typeLabels: Record<string, string> = {
-    requirement: t("project.overview.todo.requirement"),
-    bug: t("project.overview.todo.bug")
-  };
+  const groupOrder = [
+    t("project.overview.todo.bug"),
+    t("project.overview.todo.dev"),
+    t("project.overview.todo.testing"),
+    t("project.overview.todo.requirement"),
+    t("project.overview.todo.feature"),
+    t("project.overview.todo.task"),
+    t("project.overview.todo.improvement")
+  ];
 
-  for (const item of todoItems.value) {
-    const label = typeLabels[item.type] || item.type;
+  const filtered =
+    todoPriority.value === "high"
+      ? todoItems.value.filter(i => i.priorityRank <= 1)
+      : todoItems.value;
+  const filteredByType =
+    todoType.value === "all"
+      ? filtered
+      : todoType.value === "issues"
+        ? filtered.filter(i => i.type !== "dev" && i.type !== "testing")
+        : todoType.value === "dev"
+          ? filtered.filter(i => i.type === "dev")
+          : filtered.filter(i => i.type === "testing");
+  for (const item of filteredByType) {
+    const label = item.issueTypeLabel;
     let group = groups.find(g => g.label === label);
     if (!group) {
       group = { label, items: [] };
@@ -456,7 +1086,46 @@ const todoGroups = computed(() => {
     }
     group.items.push(item);
   }
+
+  groups.sort((a, b) => {
+    const ai = groupOrder.indexOf(a.label);
+    const bi = groupOrder.indexOf(b.label);
+    if (ai === -1 && bi === -1) return a.label.localeCompare(b.label);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
   return groups;
+});
+
+const filteredTodoCount = computed(() => {
+  const byPriority =
+    todoPriority.value === "high"
+      ? todoItems.value.filter(i => i.priorityRank <= 1)
+      : todoItems.value;
+  if (todoType.value === "all") return byPriority.length;
+  if (todoType.value === "issues") return byPriority.filter(i => i.type !== "dev" && i.type !== "testing").length;
+  if (todoType.value === "dev") return byPriority.filter(i => i.type === "dev").length;
+  return byPriority.filter(i => i.type === "testing").length;
+});
+
+const todoOverdueCount = computed(() => todoItems.value.filter(i => i.isOverdue).length);
+
+  const highPriorityCount = computed(() => todoItems.value.filter(i => i.priorityRank <= 1).length);
+  const issueTodoCount = computed(() => todoItems.value.filter(i => i.type !== 'dev' && i.type !== 'testing').length);
+  const devTodoCount = computed(() => todoItems.value.filter(i => i.type === 'dev').length);
+  const testTodoCount = computed(() => todoItems.value.filter(i => i.type === 'testing').length);
+
+const todoStats = computed(() => {
+  const devs = ykModules.value;
+  const tests = testSpecs.value;
+  const done = devs.filter(d => d.status === "已完成" || d.status === "done" || d.status === "已合并").length;
+  const inProgress = devs.filter(d => d.status === "进行中" || d.status === "in_progress" || d.status === "迭代中").length;
+  const pending = devs.length - done - inProgress;
+  const testsDone = tests.filter(t => t.status === "已完成" || t.status === "done").length;
+  const p0 = devs.filter(d => d.priority === "P0").length;
+  const p1 = devs.filter(d => d.priority === "P1").length;
+  return { devTotal: devs.length, done, inProgress, pending, testTotal: tests.length, testsDone, p0, p1 };
 });
 
 function handleTodoClick(a: TodoItem) {
@@ -467,10 +1136,52 @@ function handleTodoClick(a: TodoItem) {
 
 function groupColor(label: string): string {
   const m: Record<string, string> = {
+    [t("project.overview.todo.bug")]: activityColor("bug"),
+    [t("project.overview.todo.dev")]: "#36cfc9",
+    [t("project.overview.todo.testing")]: "#9a60b4",
     [t("project.overview.todo.requirement")]: activityColor("requirement"),
-    [t("project.overview.todo.bug")]: activityColor("bug")
+    [t("project.overview.todo.feature")]: "#67c23a",
+    [t("project.overview.todo.task")]: "#e6a23c",
+    [t("project.overview.todo.improvement")]: "#9a60b4"
   };
   return m[label] || "#909399";
+}
+
+function todoAccentColor(item: TodoItem): string {
+  const m: Record<string, string> = {
+    requirement: "#409eff",
+    feature: "#67c23a",
+    task: "#e6a23c",
+    improvement: "#9a60b4",
+    bug: "#f56c6c",
+    dev: "#36cfc9",
+    testing: "#9a60b4"
+  };
+  return m[item.issueType] || "#909399";
+}
+
+function shortPrdRef(ref: string): string {
+  return ref.replace(/\.md$/, "").split("/").pop() || ref;
+}
+
+function prdBaseName(filePath: string): string {
+  return (filePath.split("/").pop() || "").replace(/\.md$/, "");
+}
+
+function getLinkedDev(filePath: string): string | null {
+  const name = prdBaseName(filePath);
+  const links = prdToLinks.value.get(name);
+  return links?.dev || null;
+}
+
+function getLinkedTest(filePath: string): string | null {
+  const name = prdBaseName(filePath);
+  const links = prdToLinks.value.get(name);
+  return links?.test || null;
+}
+
+function openLinkFile(path: string) {
+  previewDlg?.value?.open(path);
 }
 
 const updatingKeys = ref(new Set<string>());
@@ -480,6 +1191,15 @@ async function transitionTodo(item: TodoItem, action: "start" | "complete") {
   updatingKeys.value = new Set([...updatingKeys.value, item.id]);
 
   try {
+    if (item.type === "dev" || item.type === "testing") {
+      if (item.filePath) {
+        previewDlg?.value?.open(item.filePath);
+      }
+      const next = new Set(updatingKeys.value);
+      next.delete(item.id);
+      updatingKeys.value = next;
+      return;
+    }
     if (item.type === "bug") {
       const newStatus = action === "start" ? "in_progress" : "resolved";
       await updateBug(item.id, { status: newStatus } as any);
@@ -496,594 +1216,9 @@ async function transitionTodo(item: TodoItem, action: "start" | "complete") {
     updatingKeys.value = next;
   }
 }
-
-const activityGroups = computed(() => {
-  const todayStart = new Date(now.value);
-  todayStart.setHours(0, 0, 0, 0);
-  const today = todayStart.toISOString().slice(0, 10);
-  const yesterdayStart = new Date(todayStart.getTime() - 86400000);
-  const yesterday = yesterdayStart.toISOString().slice(0, 10);
-
-  const groups: { label: string; items: ActivityItem[] }[] = [];
-  for (const item of overviewActivity.value) {
-    const day = (item.updatedAt || "").slice(0, 10);
-    let label: string;
-    if (day === today) label = t("project.overview.activity.today");
-    else if (day === yesterday) label = t("project.overview.activity.yesterday");
-    else label = day || t("project.overview.activity.unknownDate");
-
-    let group = groups.find(g => g.label === label);
-    if (!group) {
-      group = { label, items: [] };
-      groups.push(group);
-    }
-    group.items.push(item);
-  }
-  return groups;
-});
 </script>
 
+
 <style scoped lang="scss">
-.do-date-banner {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 14px;
-  margin-bottom: 16px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-color-warning-light-9);
-  border: 1px solid var(--el-color-warning-light-5);
-  border-radius: 9px;
-  .el-icon {
-    flex-shrink: 0;
-    font-size: 14px;
-    color: var(--el-color-warning);
-  }
-  .el-button {
-    margin-left: auto;
-  }
-}
-.do-card {
-  padding: 20px;
-  margin-bottom: 20px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  &--flush {
-    padding: 0;
-    overflow: hidden;
-  }
-}
-.do-card__title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-}
-.do-card__head-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.do-card__head-right {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-left: auto;
-}
-.do-activity-updated {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-}
-.do-card__empty {
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-}
-.do-card__head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  background: var(--el-fill-color-lighter);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.do-card__icon {
-  font-size: 16px;
-  color: var(--el-color-primary);
-}
-.do-card__head-right {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  margin-left: auto;
-}
-.do-card__body {
-  padding: 16px;
-}
-.do-desc-preview {
-  position: relative;
-  padding: 12px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--el-text-color-primary);
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 6px;
-  &.is-clamped {
-    max-height: 600px;
-    overflow: hidden;
-  }
-}
-.do-desc-mask {
-  position: relative;
-  height: 40px;
-  margin-top: -40px;
-  pointer-events: none;
-  background: linear-gradient(transparent, var(--el-bg-color));
-  border-radius: 0 0 6px 6px;
-  &.is-hidden {
-    display: none;
-  }
-}
-.do-desc-toggle {
-  display: block;
-  margin: 6px auto 0;
-  font-size: 12px;
-}
-.do-empty {
-  padding: 24px 16px;
-  text-align: center;
-}
-.do-empty__icon {
-  margin-bottom: 8px;
-  font-size: 28px;
-  color: var(--el-text-color-placeholder);
-}
-.do-empty__text {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-secondary);
-}
-.do-empty__hint {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.do-timeline {
-  display: flex;
-  flex-direction: column;
-}
-.do-timeline-group {
-  display: flex;
-  flex-direction: column;
-}
-.do-timeline-group-label {
-  padding: 4px 0 8px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.do-timeline-item {
-  position: relative;
-  display: flex;
-  gap: 12px;
-  padding: 0 0 16px 20px;
-  cursor: pointer;
-  &:hover {
-    .do-timeline-target {
-      color: var(--el-color-primary);
-    }
-  }
-  &--last {
-    padding-bottom: 0;
-  }
-}
-.do-timeline-dot {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  z-index: 1;
-  flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  transition: transform 0.15s;
-  .do-timeline-item:hover & {
-    transform: scale(1.4);
-  }
-}
-.do-timeline-line {
-  position: absolute;
-  top: 18px;
-  bottom: 0;
-  left: 4px;
-  width: 2px;
-  background: var(--el-border-color-light);
-}
-.do-timeline-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 2px 8px;
-  font-size: 13px;
-  border-radius: 6px;
-  transition: background 0.15s;
-  .do-timeline-item:hover & {
-    background: var(--el-fill-color-lighter);
-  }
-}
-.do-timeline-action {
-  font-weight: 600;
-}
-.do-timeline-target {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--el-color-primary);
-  white-space: nowrap;
-  transition: color 0.15s;
-}
-.do-timeline-time {
-  margin-left: auto;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Two-column row ──
-.do-row {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.do-row__left {
-  flex: 1;
-  min-width: 0;
-}
-.do-row__right {
-  flex: 1;
-  min-width: 0;
-}
-
-// ── Todo list ──
-.do-todo-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9);
-  border-radius: 999px;
-}
-.do-todo-skeleton {
-  padding: 4px 0;
-}
-.do-todo-skel-item {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 8px 10px;
-}
-.do-todo-skel-bar {
-  flex-shrink: 0;
-  width: 2px;
-  height: 28px;
-  background: var(--el-fill-color);
-  border-radius: 1px;
-}
-.do-todo-skel-line {
-  flex: 1;
-  height: 10px;
-  background: var(--el-fill-color);
-  border-radius: 5px;
-  animation: do-todo-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes do-todo-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-.do-todo-empty {
-  padding: 32px 16px 24px;
-  text-align: center;
-}
-.do-todo-empty__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: var(--el-color-success);
-  background: var(--el-color-success-light-9);
-  border-radius: 50%;
-}
-.do-todo-empty__text {
-  margin: 0;
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-}
-.do-todo-list {
-  display: flex;
-  flex-direction: column;
-  max-height: 600px;
-  overflow-y: auto;
-}
-.do-todo-group {
-  padding: 0 0 10px;
-  & + & {
-    padding-top: 10px;
-    border-top: 1px solid var(--el-border-color-lighter);
-  }
-  &--last {
-    padding-bottom: 0;
-  }
-}
-.do-todo-group-label {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 0 2px;
-  margin-bottom: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-  letter-spacing: 0.2px;
-}
-.do-todo-group-dot {
-  flex-shrink: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-.do-todo-group-count {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-placeholder);
-}
-.do-todo-item {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.15s ease;
-  & + & {
-    margin-top: 1px;
-  }
-  &:hover {
-    background: var(--el-fill-color-lighter);
-    .do-todo-item__accent {
-      width: 3px;
-    }
-    .do-todo-item__title {
-      color: var(--el-color-primary);
-    }
-    .do-todo-item__actions {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  &.is-overdue .do-todo-item__accent {
-    background: #f56c6c !important;
-  }
-  &.is-updating {
-    pointer-events: none;
-    opacity: 0.4;
-  }
-}
-.do-todo-item__accent {
-  flex-shrink: 0;
-  width: 2px;
-  margin: 5px 0;
-  border-radius: 0 2px 2px 0;
-  opacity: 0.55;
-  transition:
-    width 0.15s ease,
-    opacity 0.15s;
-  .do-todo-item:hover &,
-  .do-todo-item.is-overdue & {
-    opacity: 1;
-  }
-}
-.do-todo-item__body {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-}
-.do-todo-item__title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-  transition: color 0.15s;
-}
-.do-todo-item__meta {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 4px;
-  font-size: 11px;
-}
-.do-todo-item__prio {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  font-weight: 500;
-  color: var(--el-text-color-placeholder);
-}
-.do-todo-item__prio-dot {
-  flex-shrink: 0;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
-.do-todo-item__assignee {
-  max-width: 72px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-  &::before {
-    content: "· ";
-  }
-}
-.do-todo-item__due {
-  color: var(--el-text-color-placeholder);
-  &::before {
-    content: "· ";
-  }
-  &.is-overdue {
-    font-weight: 600;
-    color: #f56c6c;
-  }
-}
-.do-todo-item__actions {
-  display: flex;
-  flex-shrink: 0;
-  gap: 2px;
-  align-items: center;
-  padding: 0 6px 0 0;
-  opacity: 0;
-  transform: translateX(3px);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-.do-todo-act {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: 5px;
-  transition:
-    background 0.12s,
-    color 0.12s;
-  .el-icon {
-    font-size: 14px;
-  }
-  &:disabled {
-    pointer-events: none;
-    opacity: 0.35;
-  }
-  &--start:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-  &--done:hover {
-    color: var(--el-color-success);
-    background: var(--el-color-success-light-9);
-  }
-}
-:deep(.do-desc-preview) {
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin: 1em 0 0.5em;
-  }
-  h1 {
-    font-size: 1.5em;
-  }
-  h2 {
-    font-size: 1.3em;
-  }
-  h3 {
-    font-size: 1.15em;
-  }
-  p {
-    margin: 0.5em 0;
-  }
-  pre {
-    padding: 12px;
-    overflow-x: auto;
-    font-size: 13px;
-    background: var(--el-fill-color);
-    border-radius: 6px;
-    code {
-      padding: 0;
-      background: none;
-    }
-  }
-  code {
-    font-family: "SF Mono", Menlo, monospace;
-    font-size: 0.9em;
-  }
-  blockquote {
-    padding: 4px 12px;
-    margin: 0.5em 0;
-    color: var(--el-text-color-secondary);
-    border-left: 3px solid var(--el-color-primary-light-5);
-  }
-  table {
-    border-collapse: collapse;
-  }
-  th,
-  td {
-    padding: 6px 12px;
-    border: 1px solid var(--el-border-color-lighter);
-  }
-  th {
-    font-weight: 600;
-    background: var(--el-fill-color-light);
-  }
-  ul,
-  ol {
-    padding-left: 22px;
-    margin: 0.5em 0;
-  }
-  li {
-    margin-bottom: 2px;
-  }
-  a {
-    color: var(--el-color-primary);
-  }
-  hr {
-    margin: 16px 0;
-    border: none;
-    border-top: 1px solid var(--el-border-color-lighter);
-  }
-  img {
-    max-width: 100%;
-  }
-  pre.mermaid {
-    all: unset;
-    display: block;
-    margin: 12px 0;
-    overflow-x: auto;
-    svg {
-      display: block;
-      max-width: 100%;
-      height: auto;
-      margin: 0 auto;
-    }
-  }
-}
+@use "../../../styles/DetailOverview.scss";
 </style>

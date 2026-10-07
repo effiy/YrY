@@ -400,8 +400,8 @@ class RAGEngine:
 
 #### Scenario: 角色过滤
 - **Given** 检索 `query="部署流程"`
-- **When** 设置 `filter_roles=["srer"]`
-- **Then** 仅返回 `roles` 包含 `srer` 的文件
+- **When** 设置 `filter_roles=["sre"]`
+- **Then** 仅返回 `roles` 包含 `sre` 的文件
 
 #### Scenario: 分类过滤
 - **Given** 检索 `query="代码规范"`

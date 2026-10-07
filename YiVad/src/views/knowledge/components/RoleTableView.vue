@@ -89,9 +89,9 @@
           <span class="role-table-view__size">{{ formatSize(row.size) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" width="80" fixed="right">
+      <el-table-column :label="$t('common.operation')" width="80" fixed="right">
         <template #default="{ row }">
-          <el-button size="small" text type="danger" @click="$emit('delete', row.file)">Del</el-button>
+          <el-button size="small" text type="danger" @click="$emit('delete', row.file)">{{ $t("common.delete") }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -103,6 +103,7 @@
 
 <script setup lang="ts" name="RoleTableView">
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
+import { filesize } from "filesize";
 
 interface FileRow {
   file: KnowledgeFileEntry;
@@ -182,9 +183,7 @@ function reviewCycleTagType(r: string): "success" | "warning" | "info" | "primar
 }
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return String(filesize(bytes));
 }
 </script>
 

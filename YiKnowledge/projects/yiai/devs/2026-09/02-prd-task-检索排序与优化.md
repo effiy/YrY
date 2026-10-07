@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YA-09-02"
 title: "YA-09-02: 检索排序与优化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 5.7
 source_prd: "02-需求-检索排序与优化.md"
 source_okr: [yiai-001]
 related_tests: ["02-prd-test-检索排序与优化"]
+
+type: task
 ---
 
 # YA-09-02: 检索排序与优化 — 开发方案

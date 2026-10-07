@@ -1,78 +1,59 @@
-"""Tests for shared/logging.py."""
+"""Tests for shared/logging.py — loguru-based implementation."""
+from shared.logging import setup_logging, get_logger, _InterceptHandler
 import logging
-from unittest.mock import patch, MagicMock
-from shared.logging import setup_logging, get_logger
 
 
 class TestSetupLogging:
     def test_returns_none(self):
-        """setup_logging configures the root logger, returns None."""
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "INFO"
-            mock_settings.logging_format = "%(levelname)s %(message)s"
-            mock_settings.logging_datefmt = "%Y-%m-%d %H:%M:%S"
-            with patch("shared.logging.os.path.exists", return_value=True):
-                result = setup_logging()
-                assert result is None
+        """setup_logging configures loguru globally, returns None."""
+        result = setup_logging()
+        assert result is None
 
-    def test_creates_log_dir_when_missing(self):
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "DEBUG"
-            mock_settings.logging_format = "%(message)s"
-            mock_settings.logging_datefmt = ""
-            with patch("shared.logging.os.path.exists", return_value=False):
-                with patch("shared.logging.os.makedirs") as mock_mkdir:
-                    setup_logging()
-                    args, kwargs = mock_mkdir.call_args
-                    assert args[0].endswith("logs")
-                    assert kwargs.get("exist_ok") is True
+    def test_idempotent(self):
+        """Calling setup_logging twice should not crash."""
+        setup_logging()
+        setup_logging()  # second call removes existing handlers first
 
-    def test_sets_root_logger_level(self):
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "WARNING"
-            mock_settings.logging_format = "%(message)s"
-            mock_settings.logging_datefmt = ""
-            with patch("shared.logging.os.path.exists", return_value=True):
-                setup_logging()
-                assert logging.getLogger().level == logging.WARNING
+    def test_intercept_handler_is_logging_handler(self):
+        """_InterceptHandler is a stdlib logging.Handler."""
+        assert isinstance(_InterceptHandler(), logging.Handler)
 
-    def test_fallback_to_info_on_invalid_level(self):
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "INVALID_LEVEL"
-            mock_settings.logging_format = "%(message)s"
-            mock_settings.logging_datefmt = ""
-            with patch("shared.logging.os.path.exists", return_value=True):
-                setup_logging()
-                assert logging.getLogger().level == logging.INFO
-
-    def test_clears_existing_handlers(self):
-        root = logging.getLogger()
-        root.handlers = [logging.StreamHandler()]
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "INFO"
-            mock_settings.logging_format = "%(message)s"
-            mock_settings.logging_datefmt = ""
-            with patch("shared.logging.os.path.exists", return_value=True):
-                setup_logging()
-                # Should have console + file handler = 2
-                assert len(root.handlers) == 2
+    def test_intercept_handler_emit(self):
+        """_InterceptHandler.emit routes log records without error."""
+        handler = _InterceptHandler()
+        record = logging.LogRecord(
+            name="test", level=logging.INFO, pathname="test.py",
+            lineno=1, msg="hello", args=(), exc_info=None
+        )
+        # Should not raise
+        handler.emit(record)
 
     def test_suppresses_uvicorn_logs(self):
-        with patch("shared.logging.settings") as mock_settings:
-            mock_settings.logging_level = "INFO"
-            mock_settings.logging_format = "%(message)s"
-            mock_settings.logging_datefmt = ""
-            with patch("shared.logging.os.path.exists", return_value=True):
-                setup_logging()
-                assert logging.getLogger("uvicorn.access").level == logging.WARNING
-                assert logging.getLogger("uvicorn.error").level == logging.ERROR
+        """Uvicorn access/error loggers are intercepted with _InterceptHandler."""
+        setup_logging()
+        for name in ("uvicorn.access", "uvicorn.error", "uvicorn.asgi"):
+            uvicorn_logger = logging.getLogger(name)
+            assert not uvicorn_logger.propagate
+            assert len(uvicorn_logger.handlers) >= 1
+
+    def test_stdout_handler_added(self):
+        """setup_logging adds a stdout handler."""
+        from loguru import logger
+        setup_logging()
+        handlers = logger._core.handlers
+        assert len(handlers) >= 1  # at least stdout
 
 
 class TestGetLogger:
     def test_returns_logger_instance(self):
-        logger = get_logger("test.module")
-        assert isinstance(logger, logging.Logger)
+        """get_logger returns a loguru Logger (bound with name)."""
+        result = get_logger("test.module")
+        # Should be a loguru Logger — check it has the bind we expect
+        assert hasattr(result, "bind")
 
-    def test_logger_name_matches(self):
-        logger = get_logger("my.custom.logger")
-        assert logger.name == "my.custom.logger"
+    def test_logger_is_callable(self):
+        """Logger can be used for logging without error."""
+        logger = get_logger("test.module")
+        # Just verify it doesn't raise on basic operations
+        assert callable(logger.info)
+        assert callable(logger.debug)

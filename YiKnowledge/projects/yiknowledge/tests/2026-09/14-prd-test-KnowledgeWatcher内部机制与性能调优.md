@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-11: Knowledge Watcher 内部机制与性能调优 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-11"
 source_prds: ["14-架构设计-KnowledgeWatcher内部机制与性能调优"]
 source_modules: ["14-prd-task-KnowledgeWatcher内部机制与性能调优"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-11: Knowledge Watcher 内部机制与性能调优 — 测试用例

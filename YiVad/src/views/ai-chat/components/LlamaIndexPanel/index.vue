@@ -225,7 +225,7 @@ function handleSwitchToQuery(_question: string) {
   border-radius: 4px;
   transition: background 0.1s;
   &:hover {
-    color: #ffffff;
+    color: var(--el-color-white);
     background: var(--el-color-primary-light-6);
   }
 }

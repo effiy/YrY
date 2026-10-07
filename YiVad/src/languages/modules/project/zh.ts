@@ -25,6 +25,10 @@ export default {
       newProject: "新建项目",
       viewMode: { grid: "网格", list: "列表" },
       updated: "更新于 {time}",
+      live: "实时",
+      liveHint: "自动刷新数据",
+      liveOff: "关闭",
+      serverComputed: "服务端计算数据的新鲜度",
       empty: {
         noProjects: "暂无项目",
         createFirst: "创建第一个项目",
@@ -62,7 +66,10 @@ export default {
       noneCritical: "无严重问题",
       total: "共 {n} 项",
       critical: "{n} 项严重",
-      of: "/"
+      of: "/",
+      docs: "文档",
+      acrossProjects: "覆盖 {n} 个项目",
+      noDocs: "无已索引文档"
     },
     analytics: {
       title: "分析",
@@ -71,6 +78,7 @@ export default {
       typeDistribution: "类型分布",
       topProjects: "热门项目",
       activity: "活跃度",
+      weeklyVelocity: "周完成速度",
       open: "待处理",
       done: "已完成",
       expand: "展开",
@@ -177,6 +185,64 @@ export default {
         expand: "展开",
         collapse: "收起"
       },
+      stats: {
+        prds: "需求文档",
+        devs: "开发任务",
+        tests: "测试方案",
+        bugs: "缺陷",
+        docs: "知识文档",
+        workflows: "开发规范",
+        okrs: "OKR 目标",
+        pending: "待处理",
+        total: "总计",
+        completed: "已完成",
+        mttr: "MTTR",
+        medianFixTime: "中位修复时间",
+        fresh: "新鲜"
+      },
+      docs: {
+        title: "文档目录",
+        empty: "暂无文档",
+        showAll: "展开全部 {n} 条",
+        loading: "加载中..."
+      },
+      okr: {
+        title: "OKR 进度",
+        summary: "{done}/{total} 达成 · {pct}%"
+      },
+      bugSeverity: {
+        title: "Bug 严重度分布",
+        openCount: "未关闭 {n} 个"
+      },
+      dataQuality: {
+        title: "数据质量",
+        summary: "共 {n} 个缺口待修复",
+        noPriority: "缺少优先级",
+        noDueDate: "缺少截止日期",
+        noType: "缺少类型",
+        noLabels: "缺少标签",
+        unassigned: "未分配负责人"
+      },
+      wip: {
+        title: "在途任务",
+        totalItems: "共 {n} 项活跃",
+        inProgress: "进行中",
+        inReview: "评审中",
+        todo: "待办"
+      },
+      dueHealth: {
+        title: "交付健康",
+        summary: "{upcoming} 项即将到期 · {overdue} 项已逾期",
+        overdue: "逾期 {n}天",
+        today: "今天",
+        daysLeft: "{n}天后到期"
+      },
+      recentlyCompleted: {
+        title: "最近完成"
+      },
+      summary: {
+        noDesc: "暂无项目描述"
+      },
       sidebar: {
         overview: "概览",
         documentation: "文档",
@@ -212,33 +278,69 @@ export default {
       activity: {
         title: "最近动态",
         empty: "暂无动态",
-        completed: "已完成",
+        emptyFiltered: "暂无 {type} 相关动态",
+        sparklineTitle: "近7天动态",
+        completed: "已交付",
         started: "已开始",
         created: "已创建",
         planned: "已规划",
         resolved: "已解决",
         reported: "已报告",
+        fixing: "修复中",
+        reopened: "已重开",
+        closed: "已关闭",
+        rejected: "已拒绝",
+        inReview: "评审中",
+        cancelled: "已取消",
         moduleCreated: "新增模块",
         moduleUpdated: "更新模块",
+        docCreated: "新建",
+        docUpdated: "更新",
         today: "今天",
         yesterday: "昨天",
+        thisWeek: "本周",
+        earlier: "更早",
         unknownDate: "未知日期",
         refresh: "刷新",
         refreshing: "刷新中...",
-        updatedAgo: "更新于 {time}"
+        updatedAgo: "更新于 {time}",
+        filterAll: "全部",
+        filterRequirements: "需求",
+        filterBugs: "缺陷",
+        filterModules: "模块",
+        filterDocs: "文档",
+        heatmapLabel: "8 周活跃度",
+        heatmapTooltip: "{date}: {count} 项更新",
+        heatmapEmpty: "{date}: 无活动",
+        unknownAssignee: "未知",
+        kpiAll: "全部",
+        kpiReqs: "需求",
+        kpiBugs: "缺陷",
+        kpiDocs: "文档",
+        kpiMods: "模块",
+        showingCount: "{visible}/{total}"
       },
       todo: {
         title: "待办列表",
         empty: "暂无待办",
         requirement: "需求",
+        feature: "功能",
+        task: "任务",
+        improvement: "改进",
         bug: "缺陷",
-        testing: "测试",
+        dev: "开发任务",
+        testing: "测试任务",
+        toggleAll: "全部",
+        toggleDev: "开发",
+        toggleTest: "测试",
         start: "开始处理",
         complete: "标记完成",
         resolve: "标记解决",
         noAssignee: "未分配",
         noDueDate: "无截止日",
-        overdue: "已逾期"
+        overdue: "已逾期",
+        completed: "已完成",
+        inProgress: "进行中"
       },
       epic: "史诗",
       quality: {
@@ -418,13 +520,13 @@ export default {
       },
       role: {
         project: "项目",
-        producter: "产品",
+        product: "产品",
         engineer: "工程",
         leader: "技术负责人",
         curator: "知识管理",
-        srer: "SRE",
+        sre: "SRE",
         aier: "AI 工程",
-        executiver: "经营"
+        executive: "经营"
       },
       viewInKnowledge: "在知识库中查看"
     },

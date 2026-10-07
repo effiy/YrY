@@ -1,21 +1,21 @@
 <template>
   <div class="notif-prefs">
-    <h2 class="notif-prefs__title">通知偏好设置</h2>
+    <h2 class="notif-prefs__title">{{ $t("notification.preferences.title") }}</h2>
 
     <el-card class="notif-prefs__card">
-      <template #header><span>浏览器通知</span></template>
+      <template #header><span>{{ $t("notification.preferences.browserTitle") }}</span></template>
       <div class="pref-row">
         <div>
-          <span class="pref-label">桌面通知</span>
-          <p class="pref-desc">当页面不在前台时，通过浏览器通知提醒您</p>
+          <span class="pref-label">{{ $t("notification.preferences.desktopLabel") }}</span>
+          <p class="pref-desc">{{ $t("notification.preferences.desktopDesc") }}</p>
         </div>
         <el-switch v-model="browserEnabled" @change="handleBrowserToggle" />
       </div>
-      <p v-if="browserDenied" class="pref-warning">浏览器通知已被阻止，请在浏览器设置中重新开启</p>
+      <p v-if="browserDenied" class="pref-warning">{{ $t("notification.preferences.blockedWarning") }}</p>
     </el-card>
 
     <el-card class="notif-prefs__card">
-      <template #header><span>通知类型</span></template>
+      <template #header><span>{{ $t("notification.preferences.typeTitle") }}</span></template>
       <div class="pref-row" v-for="item in typeItems" :key="item.key">
         <div>
           <span class="pref-label">{{ item.label }}</span>
@@ -26,33 +26,33 @@
     </el-card>
 
     <el-card class="notif-prefs__card">
-      <template #header><span>免打扰时段</span></template>
+      <template #header><span>{{ $t("notification.preferences.quietTitle") }}</span></template>
       <div class="pref-row">
-        <span>启用免打扰</span>
+        <span>{{ $t("notification.preferences.enableQuiet") }}</span>
         <el-switch v-model="store.quietHours.enabled" @change="store.savePreferences()" />
       </div>
       <div class="pref-row" v-if="store.quietHours.enabled">
-        <span>开始时间</span>
+        <span>{{ $t("notification.preferences.startTime") }}</span>
         <el-time-picker v-model="quietStart" format="HH:mm" placeholder="22:00" @change="onQuietHoursChange" />
       </div>
       <div class="pref-row" v-if="store.quietHours.enabled">
-        <span>结束时间</span>
+        <span>{{ $t("notification.preferences.endTime") }}</span>
         <el-time-picker v-model="quietEnd" format="HH:mm" placeholder="08:00" @change="onQuietHoursChange" />
       </div>
-      <p class="pref-desc" style="margin-top: 8px">免打扰时段内不会弹出通知，通知仍会被保存可在通知中心查看</p>
+      <p class="pref-desc" style="margin-top: 8px">{{ $t("notification.preferences.quietHint") }}</p>
     </el-card>
 
     <el-card class="notif-prefs__card">
-      <template #header><span>连接状态</span></template>
+      <template #header><span>{{ $t("notification.preferences.connectionTitle") }}</span></template>
       <div class="pref-row">
-        <span>实时通知连接</span>
+        <span>{{ $t("notification.preferences.realtimeLabel") }}</span>
         <el-tag :type="sseConnected ? 'success' : 'danger'" size="small">
-          {{ sseConnected ? "已连接" : "未连接" }}
+          {{ sseConnected ? $t("notification.preferences.connected") : $t("notification.preferences.disconnected") }}
         </el-tag>
       </div>
       <div class="pref-row" v-if="sseError">
         <span class="pref-error">{{ sseError }}</span>
-        <el-button size="small" @click="sseReconnect()">重新连接</el-button>
+        <el-button size="small" @click="sseReconnect()">{{ $t("notification.preferences.reconnect") }}</el-button>
       </div>
     </el-card>
   </div>
@@ -60,9 +60,11 @@
 
 <script setup lang="ts" name="notificationPrefs">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useNotificationStore, type NotificationType } from "@/stores/modules/notification";
 import { useNotificationSSE } from "@/hooks/useNotificationSSE";
 
+const { t } = useI18n();
 const store = useNotificationStore();
 const { connected: sseConnected, error: sseError, reconnect: sseReconnect } = useNotificationSSE();
 
@@ -80,7 +82,7 @@ const quietEnd = computed({
 });
 
 const typeItems: { key: NotificationType; label: string; desc: string }[] = [
-  { key: "system", label: "系统通知", desc: "部署状态、备份完成、服务更新" },
+  { key: "system", label: t("notification.filters.system"), desc: "部署状态、备份完成、服务更新" },
   { key: "user_action", label: "用户协作", desc: "被提及、任务分配、评论回复" },
   { key: "ai", label: "AI 通知", desc: "聊天完成、Agent 执行完毕、RAG 索引更新" },
   { key: "error", label: "错误告警", desc: "API 异常、构建失败、服务不可用" }

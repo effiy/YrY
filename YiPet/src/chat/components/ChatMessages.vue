@@ -6,6 +6,7 @@
  */
 import { computed, nextTick, ref, watch } from 'vue';
 import { Loading } from '@element-plus/icons-vue';
+import { formatDateTimeFromTs } from '@/utils/datetime';
 import { useChatStore } from '../stores/chat';
 import type { Message, PageInfo } from '../types';
 import MessageBubble from './MessageBubble/MessageBubble.vue';
@@ -19,9 +20,10 @@ function dateLabel(ts: number): string {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today.getTime() - 86400000);
   const msgDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  if (msgDate.getTime() === today.getTime()) return 'Today';
-  if (msgDate.getTime() === yesterday.getTime()) return 'Yesterday';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });
+  if (msgDate.getTime() === today.getTime()) return `Today · ${weekday}`;
+  if (msgDate.getTime() === yesterday.getTime()) return `Yesterday · ${weekday}`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
 }
 
 /** Build list mixing messages with date separators. */
@@ -80,31 +82,63 @@ function scrollToBottom() {
   });
 }
 
+// ── Scroll-to-bottom button ──
+const showScrollBtn = ref(false);
+const newMsgCount = ref(0);
+
+function onScroll() {
+  const near = isNearBottom();
+  showScrollBtn.value = !near;
+  if (near) newMsgCount.value = 0;
+}
+
+// Track new messages when user is scrolled up
 watch(
   () => [s.scrollTick, s.messages[s.messages.length - 1]?.content, s.messages.length] as const,
   () => {
-    if (isNearBottom()) scrollToBottom();
+    if (isNearBottom()) { scrollToBottom(); }
+    else if (s.isProcessing) { newMsgCount.value++; }
   },
   { flush: 'post' },
 );
 
-// ── Scroll-to-bottom button ──
-const showScrollBtn = ref(false);
+const SOURCE_LABEL: Record<string, string> = { leader: "TL", "code-review": "CR", story: "Story", rag: "RAG", aichat: "AI" };
 
-function onScroll() {
-  showScrollBtn.value = !isNearBottom();
+function deriveSourceLabel(sourceUrl: string): string {
+  if (!sourceUrl) return '';
+  // Handle YiVad-style path patterns (e.g. /code-review/bugs/...)
+  const pathMatch = sourceUrl.match(/^\/([^/?#]+)/);
+  if (pathMatch) {
+    const head = pathMatch[1];
+    if (head === 'code-review') return sourceUrl.startsWith('/code-review/bugs') ? 'Bug' : 'CR';
+    return SOURCE_LABEL[head] || head.toUpperCase();
+  }
+  // Handle yipet:// protocol (knowledge-file-based sessions)
+  if (sourceUrl.startsWith('yipet://')) return 'YP';
+  // Handle full URLs — extract hash-based routes (e.g. http://localhost:8848/#/ai-chat)
+  const hashIdx = sourceUrl.indexOf('#');
+  if (hashIdx >= 0) {
+    const hashPath = sourceUrl.slice(hashIdx + 1);
+    const hashMatch = hashPath.match(/^\/([^/?#]+)/);
+    if (hashMatch) {
+      const head = hashMatch[1];
+      if (head === 'code-review') return hashPath.startsWith('/code-review/bugs') ? 'Bug' : 'CR';
+      return SOURCE_LABEL[head] || head.toUpperCase();
+    }
+  }
+  return '';
 }
 
 const welcomeInfo = computed(() => {
   const ses = session.value;
   if (!ses) return null;
   let host = '';
-  let path = '';
+  let mainPath = '';
   if (ses.url) {
     try {
       const u = new URL(ses.url);
       host = u.hostname;
-      path = u.pathname + (u.hash || '');
+      mainPath = u.pathname + (u.hash || '');
     } catch {
       host = ses.url;
     }
@@ -112,23 +146,32 @@ const welcomeInfo = computed(() => {
   const firstUserMsg = s.messages.find((m) => m.type === 'user');
   const ctxTags = (ses.tags || []).filter((t) => typeof t === 'string' && t.startsWith('ctx:'));
   const normalTags = (ses.tags || []).filter((t) => typeof t === 'string' && !t.startsWith('ctx:') && !t.startsWith('from:') && !t.startsWith('source:'));
+  const fromTag = (ses.tags || []).find((t) => typeof t === 'string' && t.startsWith('from:'));
+  const sourceUrl = fromTag ? (fromTag as string).slice(5) : '';
+  const sourceLabel = deriveSourceLabel(sourceUrl);
 
   return {
     title: ses.title,
     host,
-    path,
+    path: mainPath,
     url: ses.url,
+    pageTitle: ses.pageTitle || '',
+    pageDescription: ses.pageDescription || '',
     firstUserMessage: firstUserMsg?.content || '',
     messageCount: s.messages.length,
     createdAt: ses.createdAt,
     updatedAt: ses.updatedAt,
+    filePath: ses.filePath || '',
     ctxTags,
     normalTags,
+    sourceLabel,
+    sourceUrl,
     isFavorite: ses.isFavorite,
   };
 });
 
 const separatedMessages = computed(() => withDateSeparators(props.messages));
+
 </script>
 
 <template>
@@ -137,18 +180,32 @@ const separatedMessages = computed(() => withDateSeparators(props.messages));
 
   <!-- Error -->
   <div v-else-if="viewState === 'error'" class="cm-alert cm-alert--error">
-    <strong>Error occurred</strong>
-    <p>Please retry shortly</p>
+    <strong>An error occurred loading conversations</strong>
+    <p>Please check your connection and retry</p>
   </div>
 
   <!-- No session -->
   <div v-else-if="viewState === 'empty' && !session" class="cm-state">
     <div class="cm-welcome-empty">
-      <div class="cm-welcome-empty-icon">🐾</div>
+      <div class="cm-welcome-empty-icon">💬</div>
       <h2 class="cm-welcome-empty-title">YiPet Chat</h2>
       <p class="cm-welcome-empty-desc">
-        Select a conversation from the sidebar or browse a new page to start.
+        Select a conversation from the sidebar or start a new one.
+        Ask me about project management, bug analysis, code review, or anything else.
       </p>
+      <div class="cm-welcome-empty-actions">
+        <el-button type="primary" @click="store.createEmptySession?.()">Start new chat</el-button>
+      </div>
+      <div class="cm-welcome-empty-browse">
+        <span class="cm-welcome-empty-browse-label">Browse sessions in the sidebar</span>
+      </div>
+      <div class="cm-welcome-empty-shortcuts">
+        <span class="cm-shortcut"><kbd>Enter</kbd> Send</span>
+        <span class="cm-shortcut"><kbd>Shift</kbd>+<kbd>Enter</kbd> Newline</span>
+        <span class="cm-shortcut"><kbd>Esc</kbd> Cancel</span>
+        <span class="cm-shortcut"><kbd>↑</kbd><kbd>↓</kbd> History</span>
+        <span class="cm-shortcut"><kbd>⌘K</kbd> Clear</span>
+      </div>
     </div>
   </div>
 
@@ -167,7 +224,7 @@ const separatedMessages = computed(() => withDateSeparators(props.messages));
       </div>
     </div>
     <div class="cm-state">
-      <p>No messages yet — type a message to start</p>
+      <p>No messages yet — type a message to begin</p>
     </div>
   </div>
 
@@ -183,8 +240,9 @@ const separatedMessages = computed(() => withDateSeparators(props.messages));
             title="Toggle favorite"
             @click.stop="toggleFavorite"
           >{{ welcomeInfo.isFavorite ? '\u2605' : '\u2606' }}</span>
+          <span v-if="welcomeInfo.sourceLabel" class="cm-welcome-source">{{ welcomeInfo.sourceLabel }}</span>
           <span class="cm-welcome-title">{{ welcomeInfo.title || 'Untitled' }}</span>
-          <span class="cm-welcome-msg-count">{{ welcomeInfo.messageCount }} msgs</span>
+          <span class="cm-welcome-msg-count">{{ welcomeInfo.messageCount }} messages</span>
           <button class="cm-welcome-toggle" :title="welcomeCollapsed ? 'Expand' : 'Collapse'" @click.stop="toggleWelcome">
             {{ welcomeCollapsed ? '\u25B8' : '\u25BE' }}
           </button>
@@ -196,22 +254,35 @@ const separatedMessages = computed(() => withDateSeparators(props.messages));
           <div v-if="welcomeInfo.host" class="cm-welcome-url">
             <span class="cm-welcome-host">{{ welcomeInfo.host }}</span>
             <span v-if="welcomeInfo.path" class="cm-welcome-path">{{ welcomeInfo.path }}</span>
+            <a
+              v-if="welcomeInfo.url && welcomeInfo.url.startsWith('http')"
+              class="cm-welcome-url-link"
+              :href="welcomeInfo.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open source page"
+              @click.stop
+            >↗</a>
           </div>
+          <div v-if="welcomeInfo.pageTitle" class="cm-welcome-page-title">{{ welcomeInfo.pageTitle }}</div>
+          <div v-if="welcomeInfo.pageDescription" class="cm-welcome-page-desc">{{ welcomeInfo.pageDescription }}</div>
           <div v-if="welcomeInfo.firstUserMessage" class="cm-welcome-summary">{{ welcomeInfo.firstUserMessage }}</div>
           <div v-if="welcomeInfo.ctxTags.length" class="cm-welcome-ctx">
-            <span
-              v-for="t in welcomeInfo.ctxTags"
-              :key="t"
-              class="cm-welcome-ctx-tag"
-              :title="t.slice(4)"
-              @click="store.openKnowledgePreview?.(t.slice(4))"
-            >{{ t.slice(4) }}</span>
+            <div class="cm-welcome-ctx-list">
+              <span
+                v-for="t in welcomeInfo.ctxTags"
+                :key="t"
+                class="cm-welcome-ctx-tag"
+                :title="t.slice(4)"
+              >{{ t.slice(4) }}</span>
+            </div>
           </div>
-          <div class="cm-welcome-footer">
+                    <div class="cm-welcome-footer">
+            <div v-if="welcomeInfo.filePath" class="cm-welcome-file">{{ welcomeInfo.filePath }}</div>
             <span class="cm-welcome-stats">
-              Created {{ new Date(welcomeInfo.createdAt).toLocaleDateString() }}
+              Created {{ formatDateTimeFromTs(welcomeInfo.createdAt) }}
               <template v-if="welcomeInfo.updatedAt && welcomeInfo.updatedAt !== welcomeInfo.createdAt">
-                · Updated {{ new Date(welcomeInfo.updatedAt).toLocaleDateString() }}
+                · Updated {{ formatDateTimeFromTs(welcomeInfo.updatedAt) }}
               </template>
             </span>
             <div v-if="welcomeInfo.normalTags.length" class="cm-welcome-tags">
@@ -240,236 +311,17 @@ const separatedMessages = computed(() => withDateSeparators(props.messages));
       </div>
     </div>
 
-    <!-- Scroll-to-bottom button -->
+    <!-- Scroll-to-bottom button (YiVad pill style) -->
     <Transition name="cm-scroll-fade">
-      <button v-if="showScrollBtn" class="cm-scroll-btn" title="Scroll to bottom" @click="scrollToBottom(); showScrollBtn = false">
+      <button v-if="showScrollBtn" class="cm-scroll-btn" title="Scroll to bottom" @click="scrollToBottom(); showScrollBtn = false; newMsgCount = 0">
         <span class="cm-scroll-arrow">↓</span>
+        <span v-if="newMsgCount" class="cm-scroll-badge">{{ newMsgCount }}</span>
       </button>
     </Transition>
   </div>
 </template>
 
+
 <style lang="scss" scoped>
-.cm-container {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 12px;
-  background: #13122a;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 2px;
-    &:hover { background: rgba(99, 102, 241, 0.4); }
-  }
-}
-
-.cm-messages-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 0 16px;
-}
-
-// States
-.cm-state {
-  text-align: center;
-  padding: 32px 24px;
-  color: #d4d0e8;
-  font-size: 13px;
-  p { margin: 0; }
-}
-
-.cm-alert {
-  margin: 16px;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  &--error {
-    background: rgba(255, 77, 79, 0.1);
-    border: 1px solid rgba(255, 77, 79, 0.3);
-    color: #ff4d4f;
-  }
-}
-
-// Empty state
-.cm-welcome-empty {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  max-width: 420px;
-  padding: 32px 0;
-  margin: 0 auto;
-  text-align: center;
-}
-.cm-welcome-empty-icon { font-size: 52px; line-height: 1; }
-.cm-welcome-empty-title {
-  margin: 0; font-size: 22px; font-weight: 700;
-  color: #f5f3ff;
-}
-.cm-welcome-empty-desc {
-  margin: 0; font-size: 14px; line-height: 1.6;
-  color: #d4d0e8;
-}
-
-// Web search status
-.cm-search-status {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 14px;
-  margin-top: 4px;
-  font-size: 13px;
-  color: #818cf8;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 8px;
-  animation: cm-search-in 0.2s ease-out;
-}
-@keyframes cm-search-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-// Scroll-to-bottom button
-.cm-scroll-btn {
-  position: sticky;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 50%;
-  background: #141228;
-  color: #818cf8;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 5;
-  transition: all 0.15s;
-  &:hover {
-    background: rgba(99, 102, 241, 0.12);
-    border-color: #818cf8;
-    transform: translateX(-50%) scale(1.1);
-  }
-}
-.cm-scroll-arrow { font-size: 18px; line-height: 1; }
-.cm-scroll-fade-enter-active,
-.cm-scroll-fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
-.cm-scroll-fade-enter-from,
-.cm-scroll-fade-leave-to { opacity: 0; transform: translateX(-50%) scale(0.8); }
-
-// Date separators
-.cm-date-sep {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 0 4px;
-  &:first-child { padding-top: 0; }
-}
-.cm-date-sep-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #d4d0e8;
-  background: #141228;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  padding: 2px 12px;
-  border-radius: 10px;
-  letter-spacing: 0.3px;
-}
-
-// Welcome card (session metadata)
-.cm-welcome {
-  max-width: 100%;
-  margin-bottom: 16px;
-  font-size: 13px;
-  background: #141228;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-left: 3px solid rgba(99, 102, 241, 0.5);
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: padding 0.2s, border-color 0.2s;
-  animation: cm-welcome-in 0.35s ease-out;
-  &.is-collapsed {
-    padding: 6px 10px;
-    border-left-color: rgba(99, 102, 241, 0.2);
-  }
-  &:not(.is-collapsed) { padding: 10px 14px; }
-}
-@keyframes cm-welcome-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.cm-welcome-top { display: flex; gap: 6px; align-items: center; }
-.cm-welcome-star {
-  flex-shrink: 0; font-size: 14px; line-height: 1;
-  color: #d4d0e8; cursor: pointer;
-  transition: color 0.15s;
-  &:hover { color: #f5a623; }
-  &.is-fav { color: #f5a623; }
-}
-.cm-welcome-title {
-  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
-  font-size: 13px; font-weight: 600; line-height: 1.4;
-  color: #f5f3ff; white-space: nowrap;
-}
-.cm-welcome-msg-count { flex-shrink: 0; font-size: 11px; color: #d4d0e8; }
-.cm-welcome-toggle {
-  flex-shrink: 0; width: 20px; height: 20px; padding: 0;
-  font-size: 10px; line-height: 20px; color: #d4d0e8;
-  text-align: center; cursor: pointer; background: none;
-  border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 4px;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
-  &:hover {
-    color: #818cf8;
-    background: rgba(99, 102, 241, 0.12);
-    border-color: #818cf8;
-  }
-}
-.cm-welcome-collapsed-preview {
-  margin-top: 4px; overflow: hidden; text-overflow: ellipsis;
-  font-size: 11px; line-height: 1.4; color: #d4d0e8;
-  white-space: nowrap;
-}
-.cm-welcome-url { display: flex; gap: 4px; align-items: center; min-width: 0; margin-top: 8px; font-size: 11px; }
-.cm-welcome-host { flex-shrink: 0; font-weight: 500; color: #d4d0e8; }
-.cm-welcome-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: #d4d0e8; white-space: nowrap; }
-.cm-welcome-summary {
-  display: -webkit-box; padding: 8px 10px; margin-top: 8px; overflow: hidden;
-  -webkit-line-clamp: 3; font-size: 12px; line-height: 1.5;
-  color: #d4d0e8;
-  background: rgba(99, 102, 241, 0.06); border-radius: 6px;
-  -webkit-box-orient: vertical;
-}
-.cm-welcome-ctx { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 3px; }
-.cm-welcome-ctx-tag {
-  max-width: 200px; padding: 1px 6px; overflow: hidden; text-overflow: ellipsis;
-  font-family: 'SF Mono', 'Menlo', monospace; font-size: 10px; line-height: 1.6;
-  color: #22c55e; white-space: nowrap; cursor: pointer;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  border-radius: 3px; transition: all 0.15s;
-  &:hover { background: rgba(34, 197, 94, 0.2); transform: translateY(-1px); }
-}
-.cm-welcome-footer {
-  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-  padding-top: 8px; margin-top: 8px;
-  border-top: 1px solid rgba(99, 102, 241, 0.2);
-}
-.cm-welcome-stats { flex: 1; min-width: 0; font-size: 11px; color: #d4d0e8; white-space: nowrap; }
-.cm-welcome-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.cm-welcome-tag {
-  max-width: 140px; padding: 1px 8px; overflow: hidden; text-overflow: ellipsis;
-  font-size: 10px; line-height: 1.6; color: #d4d0e8;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 10px; white-space: nowrap;
-}
+@use "./ChatMessages_styles/messages.scss";
 </style>

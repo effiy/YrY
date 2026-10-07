@@ -446,7 +446,7 @@ function onResultKeydown(e: KeyboardEvent, idx: number) {
     background: #ede9fe;
   }
   &.rep-official {
-    color: #ffffff;
+    color: var(--el-color-white);
     background: var(--el-color-success);
   }
   &.rep-news {
@@ -461,7 +461,7 @@ function onResultKeydown(e: KeyboardEvent, idx: number) {
     display: none;
   }
   &.rep-low {
-    color: #ffffff;
+    color: var(--el-color-white);
     background: var(--el-color-warning);
   }
 }
@@ -673,7 +673,7 @@ function onResultKeydown(e: KeyboardEvent, idx: number) {
   height: 40px;
   padding: 0;
   font-size: 24px;
-  color: #ffffff;
+  color: var(--el-color-white);
   cursor: pointer;
   background: rgba(255, 255, 255, 0.15);
   border: none;

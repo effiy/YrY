@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-226: 项目克隆复制 — 深度克隆项目、克隆选项配置、克隆进度与历史管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-226"
 source_prds: ["80-prd-项目克隆复制"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目克隆复制]
+benefit: "测试用例：项目克隆复制"
+lifecycle: active
 ---
 # YV-09-226: 项目克隆复制 — 深度克隆项目、克隆选项配置、克隆进度与历史管理 — 测试规格
 

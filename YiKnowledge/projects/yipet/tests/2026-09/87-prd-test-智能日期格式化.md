@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "智能日期格式化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["87-架构设计-智能日期格式化.md"]
+source_modules: ["87-prd-task-智能日期格式化.md"]
+
+type: test
 ---
 
 # 智能日期格式化 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-DT01 | RelativeTimeFormat | "3分钟前" | P1 |
 | TC-DT02 | DateTimeFormat | 按 locale | P1 |
+

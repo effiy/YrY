@@ -14,6 +14,8 @@ from .ai import router as ai_router
 from .rag import router as rag_router
 from .service import router as service_router
 from .performance import router as performance_router
+from .live import router as live_router
+from .summary import router as summary_router
 
 router = APIRouter()
 router.include_router(health_router)
@@ -24,3 +26,5 @@ router.include_router(ai_router)
 router.include_router(rag_router)
 router.include_router(service_router)
 router.include_router(performance_router)
+router.include_router(live_router)
+router.include_router(summary_router)

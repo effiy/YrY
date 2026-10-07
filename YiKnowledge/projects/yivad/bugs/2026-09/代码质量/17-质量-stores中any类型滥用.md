@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p3
+benefit: "缺陷记录：质量-stores中any类型滥用"
+lifecycle: active
 ---
 
 # Store 和 util 模块中 `as any` 类型断言过多
@@ -68,7 +70,7 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`as any` 的传染性**：一处 `as any` 会导致下游所有消费方失去类型安全。`editIssue` 的参数经过 `as any` 后，IDE 自动补全和类型检查全部失效，一个接口的类型问题扩散到所有调用方
+- **Options API Store 的类型短板**：`$patch` 在 Options API store 中类型推断不完整是导致 `as any` 使用的根因之一。迁移到 Setup Store 语法可以从根源上消除这类断言
+- **分模块清理策略**：50+ 处 `as any` 不可能一次性修复。优先级：`api/modules/`（数据入口）→ `stores/`（数据中心）→ `views/`（消费方）。入口层的类型精确后，下游的 `as any` 会自然减少
 

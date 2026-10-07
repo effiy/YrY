@@ -15,6 +15,8 @@ import PetPreview from './components/PetPreview.vue';
 import ColorPicker from './components/ColorPicker.vue';
 import RolePicker from './components/RolePicker.vue';
 import AboutCard from './components/AboutCard.vue';
+import DashboardSummary from './components/DashboardSummary.vue';
+import ProviderHealth from './components/ProviderHealth.vue';
 import { usePopupStore } from './stores/popup';
 import { MODELS, POPUP_CONFIG } from './data';
 
@@ -173,6 +175,10 @@ function resetDefaults() {
           </el-form>
         </el-card>
 
+        <DashboardSummary />
+
+        <ProviderHealth />
+
         <AboutCard />
       </el-main>
       <el-footer class="popup-footer" height="auto">
@@ -244,7 +250,7 @@ function resetDefaults() {
 .popup-select :deep(.el-input__wrapper) {
   background: var(--yp-surface-sunken, #1c1926);
   box-shadow: none;
-  border: 1px solid var(--yp-border-subtle, rgba(196, 181, 253, 0.15));
+  border: 1px solid var(--yp-border-subtle, rgba(196, 181, 253, 0.2));
   border-radius: 8px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -255,7 +261,7 @@ function resetDefaults() {
 
 .popup-select :deep(.el-input__wrapper.is-focus) {
   border-color: var(--yp-border-focus, #a78bfa);
-  box-shadow: 0 0 0 2px var(--yp-color-primary-alpha, rgba(167, 139, 250, 0.2));
+  box-shadow: 0 0 0 2px var(--yp-color-primary-alpha, rgba(167, 139, 250, 0.12));
 }
 
 .popup-select :deep(.el-input__inner) {
@@ -289,7 +295,7 @@ function resetDefaults() {
 }
 
 .page-theme-slider :deep(.el-slider__bar) {
-  background: var(--yp-gradient-primary, linear-gradient(90deg, #a78bfa, #8b5cf6));
+  background: var(--yp-gradient-primary, linear-gradient(135deg, #a78bfa, #8b5cf6));
   height: 4px;
   border-radius: 2px;
 }
@@ -320,13 +326,13 @@ function resetDefaults() {
 
 /* Divider styling */
 :deep(.el-divider) {
-  border-color: var(--yp-border-subtle, rgba(196, 181, 253, 0.12));
+  border-color: var(--yp-border-subtle, rgba(196, 181, 253, 0.2));
   margin: 18px 0;
 }
 
 /* Switch styling */
 :deep(.el-switch.is-checked .el-switch__core) {
-  background: var(--yp-gradient-primary, linear-gradient(90deg, #a78bfa, #8b5cf6));
+  background: var(--yp-gradient-primary, linear-gradient(135deg, #a78bfa, #8b5cf6));
   border-color: transparent;
 }
 

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-97"
 title: "YV-09-97: 部署追踪面板 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "45-prd-部署追踪面板.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 部署追踪面板]
+roles: [engineer]
+benefit: "开发方案：task-部署追踪面板"
+lifecycle: active
 ---
 
 # YV-09-97: 部署追踪面板 — 开发方案
@@ -38,6 +44,25 @@ source_prd: "45-prd-部署追踪面板.md"
 
 > 依赖 CI/CD 集成。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/deployments`)，ProTable + 时间线视图，状态流转可视化
+
+**数据模型**：
+```
+MongoDB `deployments` 集合；关联 `projects` 和 `issues`（部署关联的 Issue）
+```
+
+**组件树**：
+```
+DeploymentList.vue + DeploymentTimeline.vue (ECharts 甘特图) + DeploymentDetail.vue (关联 Issue/变更日志)
+```
+
+**关键决策**：
+状态流转遵循：pending → deploying → deployed → failed/rolled_back；WebSocket 推送部署进度（可选，初版可用轮询）
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -47,12 +72,8 @@ source_prd: "45-prd-部署追踪面板.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

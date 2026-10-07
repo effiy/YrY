@@ -5,8 +5,10 @@ reach into internal modules.
 """
 from domain.rag.indexer import (
     build_kb_index,
+    ensure_kb_index,
     get_kb_index,
     is_index_available,
+    is_index_building,
     load_kb_index,
     preload_kb_index,
     rebuild_index,
@@ -16,6 +18,7 @@ from domain.rag.indexer import (
     rag_status,
     rag_categories,
     build_file_index,
+    trigger_background_build,
 )
 from domain.rag.engine import (
     rag_query,
@@ -41,9 +44,11 @@ __all__ = [
     "close_http_client",
     "clear_chat_history",
     "clear_history",
+    "ensure_kb_index",
     "ensure_settings_configured",
     "get_kb_index",
     "is_index_available",
+    "is_index_building",
     "list_chat_history",
     "list_history",
     "load_kb_index",
@@ -62,4 +67,5 @@ __all__ = [
     "refresh_index_async",
     "refresh_index_for_changes",
     "resolve_safe",
+    "trigger_background_build",
 ]

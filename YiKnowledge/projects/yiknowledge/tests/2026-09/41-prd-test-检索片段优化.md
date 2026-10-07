@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-38: 检索片段优化 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-38"
 source_prds: ["41-架构设计-检索片段优化"]
 source_modules: ["41-prd-task-检索片段优化"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-38: 检索片段优化 — 测试用例

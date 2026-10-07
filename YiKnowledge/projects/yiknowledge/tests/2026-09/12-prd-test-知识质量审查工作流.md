@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-09: 知识质量审查工作流 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-09"
 source_prds: ["12-架构设计-知识质量审查工作流"]
 source_modules: ["12-prd-task-知识质量审查工作流"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-09: 知识质量审查工作流 — 测试用例

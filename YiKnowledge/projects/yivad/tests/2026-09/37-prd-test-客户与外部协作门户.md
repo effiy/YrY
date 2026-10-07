@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-82"
 source_prds: ["37-prd-客户与外部协作门户"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 客户与外部协作门户]
+benefit: "测试用例：客户与外部协作门户"
+lifecycle: active
 ---
 # YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志 — 测试规格
 

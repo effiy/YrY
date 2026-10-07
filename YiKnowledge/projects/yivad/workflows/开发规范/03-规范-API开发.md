@@ -9,6 +9,7 @@ type: conventions
 roles: [engineer]
 benefit: "RequestHttp 封装、RPC 信封、SSE 流式、错误处理模式"
 status: active
+lifecycle: active
 ---
 
 # API 开发

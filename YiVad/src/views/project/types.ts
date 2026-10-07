@@ -185,6 +185,20 @@ export interface ActivityItem {
   updatedAt: string;
   link?: string;
   filePath?: string;
+  /** Who performed the action */
+  assignee?: string;
+  /** Priority label, e.g. "P0" / "High" */
+  priority?: string;
+  /** Priority dot color */
+  priorityColor?: string;
+  /** Small colored badge label, e.g. "Critical" / "In Progress" */
+  badge?: string;
+  /** Badge background color */
+  badgeColor?: string;
+  /** Secondary context line, e.g. module name / issue count */
+  subtitle?: string;
+  /** Inline content preview (first ~120 chars), loaded async for doc items */
+  contentPreview?: string;
 }
 
 export interface DocItem {

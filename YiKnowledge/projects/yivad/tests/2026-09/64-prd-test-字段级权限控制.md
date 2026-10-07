@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-134: 字段级权限控制 — 按角色显隐字段、只读字段、数据脱敏、字段访问审计、项目级字段权限 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-134"
 source_prds: ["64-prd-字段级权限控制"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 字段级权限控制]
+benefit: "测试用例：字段级权限控制"
+lifecycle: active
 ---
 # YV-09-134: 字段级权限控制 — 按角色显隐字段、只读字段、数据脱敏、字段访问审计、项目级字段权限 — 测试规格
 

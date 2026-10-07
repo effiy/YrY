@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: YiAi 测试文档索引
 category: 项目/后端/测试
 created: 2026-09-11
 updated: 2026-09-14
 project: YiAi
+
+type: test
+status: 待开始
 ---
 
 # YiAi 测试文档索引

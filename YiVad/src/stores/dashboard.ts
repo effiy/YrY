@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
+import { nanoid } from "nanoid";
 
 export interface WidgetLayout {
   x: number;
@@ -57,7 +58,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   watch(dashboards, val => saveDashboards(val), { deep: true });
 
   function generateId(): string {
-    return `w-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    return `w-${nanoid(10)}`;
   }
 
   function createDashboard(name: string, description?: string): DashboardConfig {

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-114: 数据架构图生成 — MongoDB 集合数据模型/Schema 可视化、实体关系图、字段级详情、关系连线、导出为图表、自动检测集合关系"
 tags: [需求文档, 数据架构, ER图, Schema可视化, MongoDB, 实体关系, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["53-prd-task-数据架构图生成"]
+related_tests: ["53-prd-test-数据架构图生成"]
+benefit: "产品需求：数据架构图生成"
+lifecycle: active
 ---
 
 # YV-09-114: 数据架构图生成 — MongoDB 集合数据模型/Schema 可视化、实体关系图、字段级详情、关系连线、导出为图表、自动检测集合关系

@@ -11,6 +11,8 @@ severity: major
 priority: p1
 project: YiVad
 module: typings/components.d.ts
+benefit: "缺陷记录：质量-components.d.ts数字命名类型错误"
+lifecycle: active
 ---
 
 # components.d.ts 数字命名组件类型错误
@@ -60,13 +62,11 @@ error TS1005: ';' expected.
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 组件文件命名禁止以数字开头，ESLint `vue/component-name` 规则可配置正则验证 |
+| 测试 | `vue-tsc --noEmit` 必须在 CI 中阻断，此类错误在构建阶段即可发现 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **自动生成代码的工具假设**：`unplugin-vue-components` 假设文件名即为组件名，当文件名以数字开头时生成无效 TypeScript。使用代码生成工具时，输入必须符合输出语言的标识符规则
+- **文件名约束的传导效应**：`403.vue` 这种命名在 Vue SFC 中完全合法，但向下游工具（unplugin-vue-components → TypeScript）传导时暴露了不兼容
 

@@ -26,6 +26,10 @@ roles:
 - engineer
 source_okr:
   - "yivad-001"
+related_modules: ["07-prd-task-首页仪表盘"]
+related_tests: ["07-prd-test-首页仪表盘"]
+benefit: "产品需求：首页仪表盘"
+lifecycle: active
 ---
 
 # 首页仪表盘 — 快速导航 + OKR 推荐面板
@@ -127,12 +131,12 @@ home/index.vue (231 行)
     │                 ├── 🤖 aier → /aier
     │                 ├── 📚 curator → /curator
     │                 ├── ⚙️ engineer → /engineer
-    │                 ├── 🏆 executiver → /executiver
+    │                 ├── 🏆 executive → /executive
     │                 ├── ⭐ leader → /leader
-    │                 ├── 📦 producter → /producter
+    │                 ├── 📦 product → /product
     │                 ├── 🔄 pipeline → /pipeline
     │                 ├── 🛠️ skills → /skills
-    │                 └── 🛡️ srer → /srer
+    │                 └── 🛡️ sre → /sre
     │
     └── OkrRecommendPanel (1345 行)
           ├── 角色筛选 (el-checkbox-group)
@@ -1370,12 +1374,12 @@ export const QUICK_NAV_GROUPS: NavGroup[] = [
           { id: 'aier', label: 'AI 助手', emoji: '🤖', route: '/aier' },
           { id: 'curator', label: '策展人', emoji: '📚', route: '/curator' },
           { id: 'engineer', label: '工程师', emoji: '⚙️', route: '/engineer' },
-          { id: 'executiver', label: '执行者', emoji: '🏆', route: '/executiver' },
+          { id: 'executive', label: '执行者', emoji: '🏆', route: '/executive' },
           { id: 'leader', label: '领导者', emoji: '⭐', route: '/leader' },
-          { id: 'producter', label: '产品', emoji: '📦', route: '/producter' },
+          { id: 'product', label: '产品', emoji: '📦', route: '/product' },
           { id: 'pipeline', label: '流水线', emoji: '🔄', route: '/pipeline' },
           { id: 'skills', label: '技能', emoji: '🛠️', route: '/skills' },
-          { id: 'srer', label: 'SRE', emoji: '🛡️', route: '/srer' },
+          { id: 'sre', label: 'SRE', emoji: '🛡️', route: '/sre' },
         ],
       },
     ],

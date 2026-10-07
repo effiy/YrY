@@ -6,6 +6,7 @@ category: 记录
 framework: OKR
 trend: up
 progress: 100
+tags: [okr, curation, templates, knowledge]
 created: 2026-08-16
 updated: 2026-09-10
 title: Curator M01 记录模板数

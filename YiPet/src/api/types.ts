@@ -126,6 +126,7 @@ export interface SessionRecord {
   id?: string;
   title?: string;
   url?: string;
+  pageTitle?: string;
   pageDescription?: string;
   pageContent?: string;
   messages?: ChatMessage[];
@@ -135,6 +136,8 @@ export interface SessionRecord {
   lastAccessTime?: number;
   isFavorite?: boolean;
   messageCount?: number;
+  filePath?: string;
+  file_path?: string;
   /** Nested data field — some MongoDB docs store session info inside a `data` wrapper. */
   data?: SessionData;
 }
@@ -148,6 +151,37 @@ export interface ChatMessage {
   imageDataUrls?: string[];
   error?: boolean;
   aborted?: boolean;
+  /** RAG sources — from grounded chat responses (YiVad compatible). */
+  sources?: RagSource[];
+  /** RAG metadata — retrieval config used for this message. */
+  ragMeta?: Record<string, unknown>;
+  /** Time-to-first-token latency in ms. */
+  firstTokenLatencyMs?: number;
+  /** Web search context injected alongside the message. */
+  searchContext?: string;
+  /** Web search results for this turn. */
+  searchResults?: WebSearchResult[];
+  /** Web search image results. */
+  searchImages?: WebImageResult[];
+  /** True when this message used web search grounding. */
+  searchGrounded?: boolean;
+  /** Refined web query for this turn. */
+  searchQuery?: string;
+  /** Web search elapsed time. */
+  searchTimingMs?: number;
+  /** Tool calls fired during this turn. */
+  toolCalls?: Array<{
+    name: string;
+    label: string;
+    args?: Record<string, unknown>;
+    content?: string;
+    error?: string;
+    durationMs?: number;
+  }>;
+  /** RAG retrieval grade A/B/C/D. */
+  retrievalGrade?: 'A' | 'B' | 'C' | 'D';
+  /** RAG summary text. */
+  ragContentSummary?: string;
 }
 
 // ── Files ─────────────────────────────────────────────────────────────
@@ -235,70 +269,7 @@ export interface WeWorkSendMessageResult {
   message?: string;
 }
 
-// ── Knowledge base (YiKnowledge markdown tree) ─────────────────────────
-
-/** A flat knowledge file as returned by /knowledge-scan (grouped by category). */
-export interface KnowledgeFileEntry {
-  path: string;
-  name: string;
-  category: string;
-  isMarkdown?: boolean;
-  mime?: string;
-  meta?: Record<string, unknown>;
-  size?: number;
-  updatedAt?: number | null;
-}
-
-/** A node in the nested knowledge tree (file or folder), built from the flat scan. */
-export interface KnowledgeTreeNode {
-  path: string;
-  name: string;
-  type: 'file' | 'folder';
-  children?: KnowledgeTreeNode[];
-  size?: number;
-  updated_at?: string;
-}
-
-export interface KnowledgeScanResponse {
-  categories: { category: string; files: KnowledgeFileEntry[] }[];
-}
-
-/** Parsed YAML frontmatter from a knowledge markdown file. */
-export interface KnowledgeFrontmatter {
-  [key: string]: unknown;
-}
-
-export interface KnowledgeReadResponse {
-  path: string;
-  name?: string;
-  content: string;
-  meta?: KnowledgeFrontmatter;
-  category?: string;
-}
-
-export interface KnowledgeStory {
-  project: string;
-  name: string;
-  path: string;
-  title?: string;
-}
-
-export interface KnowledgeStoriesResponse {
-  stories: KnowledgeStory[];
-  total: number;
-}
-
-export interface KnowledgeSyncResponse {
-  synced: number;
-  deleted: number;
-  rag?: { status?: string; error?: string; [key: string]: unknown };
-}
-
-export interface KnowledgeWriteResponse {
-  path: string;
-}
-
-// ── RAG (llama_index over YiKnowledge) ─────────────────────────────────
+// ── RAG (shared types - kept for chat message sources) ─────────────────
 
 export interface RagSource {
   path: string;
@@ -307,76 +278,90 @@ export interface RagSource {
   metadata?: Record<string, unknown>;
 }
 
-export interface RagQueryResponse {
-  sources: RagSource[];
-  question?: string;
+export interface RagIndexConfig {
+  embed_model: string;
+  llm_model: string;
+  chunk_size: number;
+  chunk_overlap: number;
+  top_k: number;
+  hybrid_retrieval: boolean;
+  rerank_enabled: boolean;
+  inline_citations: boolean;
+  auto_rebuild: boolean;
+  knowledge_base_dir: string;
 }
 
 export interface RagStatusResponse {
   built: boolean;
-  num_docs?: number;
+  num_docs: number;
   last_built_at?: string;
-  [key: string]: unknown;
+  persist_dir?: string;
+  persist_dir_size?: number;
+  config?: RagIndexConfig;
+  error?: string;
 }
 
-export interface RagBuildResponse {
-  started: boolean;
-  status?: string;
-  [key: string]: unknown;
-}
-
-export interface RagCategory {
-  name: string;
-  file_count: number;
-}
-
-export interface RagCategoriesResponse {
-  categories: RagCategory[];
-  tags: Record<string, number>;
-  total_files: number;
-}
-
-export interface RagChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
-
-export interface RagChatPayload {
-  messages: RagChatMessage[];
-  scope?: string;
-  top_k?: number;
-  hybrid?: boolean;
-  rerank?: boolean;
-  citations?: boolean;
-  num_queries?: number;
-  chat_mode?: string;
-  category?: string;
-  tags?: string[];
-}
-
-export interface RagFileChatPayload {
-  target_file: string;
+export interface RagQueryResponse {
+  sources: RagSource[];
   question: string;
 }
 
-export interface RagFileQueryResponse {
-  sources: RagSource[];
-  answer?: string;
-}
-
-/** A sub-question + its synthesized answer + sources (from rag.decompose). */
 export interface RagSubQuestion {
   sub_q: string;
   answer: string;
   sources: RagSource[];
 }
 
-/** Response shape of POST /rag-decompose — SubQuestionQueryEngine output. */
 export interface RagDecomposeResponse {
   original: string;
   synthesis: string;
   sub_questions: RagSubQuestion[];
   error?: string;
+}
+
+export interface RagHistoryRecord {
+  question: string;
+  sources: RagSource[];
+  grade?: string;
+  timestamp: string;
+}
+
+export interface RagChatTurnRecord {
+  messages: Array<{ role: string; content: string }>;
+  sources: RagSource[];
+  grade?: string;
+  timestamp: string;
+}
+
+export interface RagAnalyticsResponse {
+  scopePopularity?: Array<{ scope: string; count: number }>;
+  topRepeatedQuestions?: Array<{ question: string; count: number }>;
+  topStaleFiles?: Array<{ path: string; last_used: string }>;
+  topScoringFiles?: Array<{ path: string; avg_score: number }>;
+  coverageGap?: Array<{ scope: string; missing_files: string[] }>;
+}
+
+export interface RagChatPayload {
+  messages: Array<{ role: string; content: string }>;
+  model?: string;
+  scope?: string;
+  category?: string;
+  stream?: boolean;
+  hybrid?: boolean;
+  rerank?: boolean;
+  citations?: boolean;
+  hyde_enabled?: boolean;
+  fast?: boolean;
+  chat_mode?: string;
+  num_queries?: number;
+  file_paths?: string[];
+}
+
+export interface RagFileChatPayload {
+  target_file: string;
+  messages: Array<{ role: string; content: string }>;
+  model?: string;
+  stream?: boolean;
 }
 
 // ── Search (web search + page fetch) ───────────────────────────────────
@@ -411,60 +396,6 @@ export interface WebFetchResponse {
   error?: string;
 }
 
-// ── Bug tracking (YiVad /bug page backend) ────────────────────────────
-
-export type BugSeverity = 'critical' | 'major' | 'minor' | 'trivial';
-export type BugPriority = 'p0' | 'p1' | 'p2' | 'p3';
-export type BugStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'rejected' | 'reopened';
-export type BugType =
-  | 'functional'
-  | 'performance'
-  | 'ui'
-  | 'security'
-  | 'compatibility'
-  | 'regression'
-  | 'data'
-  | 'other';
-export type BugFrequency = 'always' | 'sometimes' | 'rarely' | 'once' | 'unable';
-
-/** Bug metadata — persisted in MongoDB `bugs` collection. Long-form fields
- *  live in the markdown body at `contentPath`. Mirrors YiVad's BugDocument. */
-export interface BugDocument {
-  key: string;
-  title: string;
-  project: string;
-  module: string;
-  iteration?: string;
-  defectUrl?: string;
-  severity: BugSeverity;
-  priority: BugPriority;
-  status: BugStatus;
-  type: BugType;
-  frequency: BugFrequency;
-  assignee: string;
-  reporter: string;
-  environment: string;
-  affectedVersion: string;
-  fixedVersion: string;
-  tags: string[];
-  dueDate: number | null;
-  contentPath: string;
-  createdAt: number;
-  updatedAt: number;
-  resolvedAt: number | null;
-  closedAt: number | null;
-}
-
-/** Bug long-form body — persisted as markdown, parsed back by section. */
-export interface BugContent {
-  description: string;
-  stepsToReproduce: string[];
-  expectedResult: string;
-  actualResult: string;
-  causeProblem?: string;
-  solution?: string;
-}
-
 // ── Agent (Pi-inspired multi-turn tool-calling loop) ─────────────────────
 
 export type TodoItemStatus = 'pending' | 'in_progress' | 'completed';
@@ -474,4 +405,32 @@ export interface TodoItem {
   id: string;
   content: string;
   status: TodoItemStatus;
+}
+
+// ── Knowledge (YiKnowledge markdown tree) ──────────────────────────────
+
+export interface KnowledgeFileEntry {
+  name: string;
+  path: string;
+  meta?: Record<string, unknown>;
+  updated?: string;
+}
+
+export interface KnowledgeScanResponse {
+  categories: Array<{
+    category: string;
+    files: KnowledgeFileEntry[];
+  }>;
+}
+
+export interface KnowledgeReadResponse {
+  path: string;
+  name: string;
+  content: string;
+  meta?: Record<string, unknown>;
+}
+
+export interface KnowledgeWriteResponse {
+  path: string;
+  name: string;
 }

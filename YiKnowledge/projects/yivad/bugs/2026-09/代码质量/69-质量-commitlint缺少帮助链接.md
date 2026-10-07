@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-commitlint缺少帮助链接"
+lifecycle: active
 ---
 
 # 缺少 commitlint 的 helpUrl 和说明注释
@@ -38,7 +40,5 @@ commitlint 强制 Conventional Commits 但缺少 helpUrl 指向团队的 commit 
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **错误消息应该是可操作的**：commitlint 拒绝不合规的 commit 时，如果只显示「不符合 Conventional Commits」，新开发者不知道什么是正确的格式。`helpUrl` 指向团队的 commit 规范文档，将阻塞性错误转化为学习机会
 

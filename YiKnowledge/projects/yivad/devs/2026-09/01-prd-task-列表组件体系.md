@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-M08"
 title: "列表组件体系 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202609"
 estimate_frontend: 9
 source_prd: "01-prd-列表组件体系.md"
 related_tests: ["YV-09-M08"]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 列表组件体系]
+benefit: "开发方案：task-列表组件体系"
+lifecycle: active
 ---
 
 # 列表组件体系 — 开发方案

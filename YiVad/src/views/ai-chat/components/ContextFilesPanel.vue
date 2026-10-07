@@ -331,6 +331,8 @@ const ctxCount = computed(() => {
   return tags.filter(t => typeof t === "string" && t.startsWith(CTX_PREFIX)).length;
 });
 
+const ragScopedToContext = computed(() => store.ragEnabled && ctxCount.value > 0);
+
 function onOpenRag() {
   store.ragEnabled = true;
   store.openLlamaIndex();
@@ -518,6 +520,7 @@ async function onSave() {
         {{ mode === "new" ? "New session" : "Context files" }}
         <span v-if="fileCount" class="cfp-count">{{ fileCount }}</span>
       </span>
+      <span v-if="ragScopedToContext" class="cfp-rag-badge" title="RAG retrieval scoped to these files">RAG</span>
     </div>
 
     <div class="cfp-body">
@@ -646,6 +649,18 @@ async function onSave() {
   display: flex;
   gap: 4px;
   align-items: center;
+}
+.cfp-rag-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  height: 16px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--el-color-white);
+  background: var(--el-color-primary);
+  border-radius: 3px;
+  letter-spacing: 0.5px;
 }
 .cfp-rag-count {
   margin-left: 2px;

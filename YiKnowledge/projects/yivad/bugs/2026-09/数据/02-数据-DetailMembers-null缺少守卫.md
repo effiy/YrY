@@ -11,6 +11,8 @@ severity: minor
 priority: p2
 project: YiVad
 module: views/project/components/DetailMembers.vue
+benefit: "缺陷记录：数据-DetailMembers-null缺少守卫"
+lifecycle: active
 ---
 
 # DetailMembers project 可能为 null 缺少守卫
@@ -57,13 +59,12 @@ error TS18047: 'project.value' is possibly 'null'.
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | `inject` 返回值类型包含 `| null` 时，模板首层必须 `v-if` 守卫，函数入口必须 early return |
+| 测试 | 为 `inject` 返回 null 的场景编写组件测试（provide 空值 → 验证不崩溃） |
+| 流程 | `vue-tsc --noEmit` 报告的 `possibly 'null'` 错误必须归零，不可通过 `!` 非空断言绕过 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **inject 的默认值陷阱**：`inject(key, defaultValue)` 仅在 key 未被 provide 时返回默认值，但如果 provide 的值本身就是 `null`，默认值不会生效。对外部注入的响应式数据（特别是 `Ref<T | null>`），消费方必须自行守卫
+- **`vue-tsc` 类型错误是真实的运行时风险**：`possibly 'null'` 不只是类型体操——`project` 在某些生命周期（组件挂载但父组件数据未就绪）确实可能为 null
 

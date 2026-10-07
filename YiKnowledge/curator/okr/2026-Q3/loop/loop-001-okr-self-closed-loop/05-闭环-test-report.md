@@ -3,9 +3,10 @@ type: loop-record
 loopId: loop-001
 stage: test-report
 title: OKR 自闭环 + 流程记录页 测试报告
-role: srer
+role: sre
 goalId: sre-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [loop-record, test-report]
@@ -40,7 +41,7 @@ tags: [loop-record, test-report]
 
 | 场景 | 步骤 | 预期 | 实际 | 结论 |
 |---|---|---|---|---|
-| 新页路由 | 访问 `/executiver/process` | 加载 processRecord.vue | 路由已注册（staticRouter.ts），构建产物含该 chunk | ✅（编译级） |
+| 新页路由 | 访问 `/executive/process` | 加载 processRecord.vue | 路由已注册（staticRouter.ts），构建产物含该 chunk | ✅（编译级） |
 | 新页渲染 | `pnpm dev` 浏览器打开 | 列出 loop-001 五类记录 | 未做交互式浏览器验证（无浏览器环境） | ⚠️ 待补 |
 
 ## 缺陷汇总

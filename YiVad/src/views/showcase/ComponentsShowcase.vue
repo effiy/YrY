@@ -176,7 +176,7 @@ const scoreSamples = [
   { label: "Poor", score: 0.28 },
 ];
 
-const sampleMarkdown = `### Quick Start
+const sampleMarkdown = ref(`### Quick Start
 
 \`\`\`ts
 import { useAuthStore } from "@/stores/modules/auth";
@@ -188,7 +188,7 @@ await auth.getAuthMenuList();
 - Syntax highlighting
 - Mermaid diagrams
 - Responsive tables
-`;
+`);
 </script>
 
 <style scoped lang="scss">

@@ -1,0 +1,153 @@
+// ── Chat window global styles ──
+// Theme colors (--el-*) are injected on #yipet-chat-root by the theme system
+// and inherited by #yipet-chat-window. Do NOT hardcode --el-* defaults here —
+// they would override the inherited theme values.
+#yipet-chat-window {
+  // Static design tokens (not theme-dependent)
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 4px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --transition-fast: 0.15s ease;
+  --el-spacing-sm: 8px;
+  --el-font-size-base: 14px;
+
+  // YiPet custom tokens — delegate to Element Plus vars (inherited from root)
+  --text-primary: var(--el-text-color-primary);
+  --text-secondary: var(--el-text-color-secondary);
+  --bg-elevated: var(--el-bg-color);
+  --primary-light: var(--el-color-primary-light-3);
+  --primary: var(--el-color-primary);
+  --primary-rgb: var(--el-color-primary-rgb);
+  --accent-rgb: var(--el-color-primary-rgb);
+  --input-bg: var(--el-bg-color);
+}
+
+// Model selector popover (global — teleported)
+.yipet-model-pop {
+  padding: 0 !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--el-border-color) !important;
+  background: var(--el-bg-color-overlay) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+.yipet-model-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 360px;
+  overflow: hidden;
+}
+.yipet-model-search {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.yipet-model-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  overflow-y: auto;
+}
+.yipet-model-card {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+  &:hover { background: var(--el-fill-color-lighter); }
+  &.is-selected { background: var(--el-color-primary-light-9); }
+}
+.yipet-model-card-left {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.yipet-model-card-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+}
+.yipet-model-card-tag {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+}
+.yipet-model-card-check { flex-shrink: 0; color: var(--el-color-primary); }
+.yipet-model-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 24px 16px;
+  font-size: 13px;
+  color: var(--el-text-color-placeholder);
+  text-align: center;
+}
+.yipet-model-empty-icon { font-size: 28px; line-height: 1; }
+
+// Model loading skeleton
+.yipet-model-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+.yipet-model-skel {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+}
+.yipet-model-skel-name {
+  flex: 1;
+  height: 14px;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+  animation: yipet-skel-pulse 1.5s ease-in-out infinite;
+}
+.yipet-model-skel-tag {
+  width: 48px;
+  height: 16px;
+  background: var(--el-fill-color-light);
+  border-radius: var(--radius-xs);
+  animation: yipet-skel-pulse 1.5s ease-in-out infinite;
+}
+@keyframes yipet-skel-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+// Dark-themed popover overrides — scoped to YiPet containers
+#yipet-chat-root .ct-tb-popper {
+  z-index: 2147483647 !important;
+}
+
+// Select dropdown — scoped to YiPet containers only
+#yipet-chat-root .el-select-dropdown {
+  background: var(--el-bg-color-overlay) !important;
+  border: 1px solid var(--el-border-color) !important;
+
+  .el-select-dropdown__item {
+    color: var(--el-text-color-primary);
+    &.is-selected { color: var(--el-color-primary); }
+    &:hover { background: var(--el-color-primary-light-9); }
+  }
+}

@@ -10,11 +10,12 @@
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiAi";
 import type { ReqPage, User, UserDocument } from "@/api/interface/index";
+import { nanoid } from "nanoid";
 
 const CNAME = "users";
 
 function newKey(): string {
-  return `user_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `user_${nanoid(12)}`;
 }
 
 // ── User CRUD ──

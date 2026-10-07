@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: YV-09-01
 title: YiVad 九月迭代 — Project 页面功能模块重构 — 开发任务
 status: 已完成
@@ -13,11 +12,17 @@ project: YiVad
 project_id: yivad
 prd_month: '202609'
 estimate_frontend: 24.25
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 需求总览]
+benefit: "当月开发模块索引与可追溯矩阵"
+lifecycle: active
 ---
 
 # YiVad 九月迭代 — Project 页面功能模块重构 — 开发任务
 
-> 来源 PRD：[00-prd-需求总览.md](../prds/2026-09/00-prd-需求总览.md)
+> 来源 PRD：[00-prd-需求总览.md](../../prds/2026-09/00-prd-需求总览.md)
 
 > **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 > 需求编号：YV-09-01 · 优先级：高 · 人天：24.25d

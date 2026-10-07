@@ -3,6 +3,7 @@ import { ref, computed, watch } from "vue";
 import type { UploadUserFile } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import FilePreview from "./FilePreview.vue";
+import { filesize } from "filesize";
 
 interface FileItem {
   uid: string;
@@ -65,9 +66,7 @@ function toggleSelect(uid: string) {
 }
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return String(filesize(bytes));
 }
 </script>
 

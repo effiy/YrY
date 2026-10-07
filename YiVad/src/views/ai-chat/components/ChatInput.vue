@@ -1,6 +1,6 @@
 <script setup lang="ts" name="aiChatInput">
-import { ref, watch, nextTick, computed, onUnmounted } from "vue";
-import { Promotion, CircleClose } from "@element-plus/icons-vue";
+import { ref, watch, nextTick, computed } from "vue";
+import { Promotion, CircleClose, WarningFilled } from "@element-plus/icons-vue";
 import { ElInput, ElMessage } from "element-plus";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useAiChatShortcuts } from "@/hooks/useAiChatShortcuts";
@@ -9,67 +9,26 @@ import ChatToolbar from "./ChatToolbar/index.vue";
 import DraftImageList from "./DraftImageList.vue";
 import FileMentionDropdown from "./FileMentionDropdown.vue";
 
+// ── Slash commands ────────────────────────────────────────────────────
+const SLASH_COMMANDS = [
+  { name: "clear", desc: "Clear current conversation", hint: "" },
+  { name: "compact", desc: "Compact conversation to reduce tokens", hint: "" },
+  { name: "retry", desc: "Retry the last failed message", hint: "" },
+  { name: "stop", desc: "Stop current generation", hint: "" },
+  { name: "new", desc: "Create a new conversation", hint: "" },
+  { name: "find", desc: "Search and switch conversation", hint: "query" },
+  { name: "rename", desc: "Rename current conversation", hint: "title" },
+  { name: "delete", desc: "Delete current conversation", hint: "" },
+  { name: "export", desc: "Export conversation as HTML", hint: "" },
+  { name: "model", desc: "Show current model info", hint: "" },
+  { name: "skills", desc: "List available tools and skills", hint: "" },
+] as const;
+
 const store = useAiChatStore();
 const imageInput = ref<HTMLInputElement | null>(null);
 const textareaRef = ref<InstanceType<typeof ElInput> | null>(null);
 
 const { onCompositionStart, onCompositionEnd, onKeydown: baseOnKeydown, onPaste } = useAiChatShortcuts(store);
-
-// ── Streaming status ──
-const streamStartTime = ref(0);
-const elapsedMs = ref(0);
-let elapsedTimer: ReturnType<typeof setInterval> | null = null;
-
-watch(
-  () => store.sending,
-  v => {
-    if (v) {
-      streamStartTime.value = Date.now();
-      elapsedMs.value = 0;
-      elapsedTimer = setInterval(() => {
-        elapsedMs.value = Date.now() - streamStartTime.value;
-      }, 100);
-    } else {
-      if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
-    }
-  }
-);
-onUnmounted(() => { if (elapsedTimer) clearInterval(elapsedTimer); });
-
-const streamingElapsed = computed(() => {
-  if (!store.sending) return "";
-  const ms = elapsedMs.value;
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
-});
-
-const streamingChars = computed(() => {
-  if (!store.sending) return "";
-  const len = store.activeConversation?.messages?.at(-1)?.message?.length ?? 0;
-  if (!len) return "";
-  if (len < 1000) return `${len}c`;
-  return `${(len / 1000).toFixed(1)}kc`;
-});
-
-const streamingSpeed = computed(() => {
-  if (!store.sending) return "";
-  const ms = elapsedMs.value;
-  if (ms < 500) return "";
-  const len = store.activeConversation?.messages?.at(-1)?.message?.length ?? 0;
-  if (!len) return "";
-  const cps = Math.round(len / (ms / 1000));
-  if (cps < 1000) return `${cps}c/s`;
-  return `${(cps / 1000).toFixed(1)}k/s`;
-});
-
-const streamingPhaseLabel = computed(() => {
-  if (!store.sending) return "";
-  if (store.streamingPhase === "preparing") return "Preparing";
-  if (store.streamingPhase === "retrieving") return "Retrieving";
-  if (store.streamingPhase === "thinking") return "Thinking";
-  if (store.streamingPhase === "streaming") return "Generating";
-  return "Processing";
-});
 
 // ── Auto-focus input when switching conversations ──
 watch(
@@ -105,25 +64,15 @@ watch(
 // ── Input placeholder ──
 
 const inputPlaceholder = computed(() => {
-  if (store.sending) {
-    if (store.streamingPhase === "thinking")
-      return store.ragEnabled && store.ragActive ? "RAG · Searching knowledge base..." : "AI is thinking...";
-    if (store.streamingPhase === "retrieving") return "Retrieving knowledge...";
-    if (store.streamingPhase === "streaming")
-      return store.ragEnabled && store.ragActive ? "RAG · Generating response..." : "AI is responding...";
-    return "Waiting...";
-  }
-  if (store.input.startsWith("/")) return "/compact /clear /retry /stop — type a command";
-  if (store.webSearching) return "Searching the web...";
+  if (store.sending) return "AI is responding...";
+  const p = store.contextPressure;
+  if (p.level === "critical") return "Context nearly full — send to compact or start new";
+  if (p.level === "high") return `Context ${p.pct}% full · Shift+Enter for newline`;
   if (store.ragEnabled && store.ragActive) {
-    const ctxCount = (store.activeConversation?.tags ?? []).filter(t => typeof t === "string" && t.startsWith("ctx:")).length;
-    if (store.webSearchEnabled) {
-      return ctxCount ? `RAG + Web · ${ctxCount} file(s) — Ask anything...` : "RAG + Web · Ask anything...";
-    }
-    return ctxCount ? `RAG mode · ${ctxCount} file(s) in context — Ask anything...` : "RAG mode · Ask anything...";
+    return store.webSearchEnabled ? "RAG + Web · Ask anything..." : "RAG · Ask anything...";
   }
-  if (store.webSearchEnabled) return "Web search on — Ask anything...";
-  return "Ask anything... (Enter to send, Shift+Enter for newline)";
+  if (store.webSearchEnabled) return "Web · Ask anything...";
+  return "Ask anything...";
 });
 
 // ── Can send: user has text, images, or is not currently sending ──
@@ -169,6 +118,7 @@ watch(
   () => store.input,
   () => {
     updateMentionState();
+    updateSlashState();
   }
 );
 
@@ -205,6 +155,55 @@ function onMentionClose() {
   mentionQuery.value = "";
 }
 
+// ── Slash command menu ──────────────────────────────────────────────
+const slashVisible = ref(false);
+const slashQuery = ref("");
+const slashIdx = ref(0);
+
+const filteredSlashCommands = computed(() => {
+  const q = slashQuery.value.toLowerCase();
+  if (!q) return SLASH_COMMANDS.slice();
+  return SLASH_COMMANDS.filter(c => c.name.startsWith(q));
+});
+
+function updateSlashState() {
+  if (mentionVisible.value) { slashVisible.value = false; return; }
+  const text = store.input;
+  const cursorPos = text.lastIndexOf("/");
+  if (cursorPos < 0 || (cursorPos > 0 && !/\s/.test(text[cursorPos - 1]))) {
+    slashVisible.value = false;
+    slashQuery.value = "";
+    return;
+  }
+  const after = text.slice(cursorPos + 1);
+  if (after.includes(" ")) {
+    slashVisible.value = false;
+    slashQuery.value = "";
+    return;
+  }
+  slashQuery.value = after;
+  slashIdx.value = 0;
+  slashVisible.value = true;
+}
+
+function onSlashSelect(cmd: typeof SLASH_COMMANDS[number]) {
+  const text = store.input;
+  const slashPos = text.lastIndexOf("/");
+  if (slashPos < 0) return;
+  store.input = text.slice(0, slashPos) + "/" + cmd.name + (cmd.hint ? " " : "");
+  slashVisible.value = false;
+  slashQuery.value = "";
+}
+
+function onSlashKeydown(e: KeyboardEvent) {
+  if (!slashVisible.value) return;
+  const n = filteredSlashCommands.value.length;
+  if (e.key === "ArrowDown") { e.preventDefault(); slashIdx.value = (slashIdx.value + 1) % n; }
+  else if (e.key === "ArrowUp") { e.preventDefault(); slashIdx.value = (slashIdx.value - 1 + n) % n; }
+  else if (e.key === "Enter" && n > 0) { e.preventDefault(); onSlashSelect(filteredSlashCommands.value[slashIdx.value]); }
+  else if (e.key === "Escape") { e.preventDefault(); slashVisible.value = false; }
+}
+
 // ── Prompt history (Pi-inspired: shell-style ArrowUp/ArrowDown recall) ──
 // State + persistence live in usePromptHistory (singleton shared with
 // ChatToolbar's history sub-panel). Navigation index stays local to input.
@@ -235,7 +234,7 @@ function recallPrompt(delta: number): void {
   });
 }
 
-// ── Keyboard with mention support ──
+// ── Keyboard with mention and slash support ──
 
 function onKeydown(e: KeyboardEvent) {
   // If mention dropdown is open, let it handle navigation keys
@@ -244,6 +243,12 @@ function onKeydown(e: KeyboardEvent) {
       mentionDropdownRef.value.onKeydown(e);
       return;
     }
+  }
+
+  // If slash menu is open, handle navigation
+  if (slashVisible.value && ["ArrowDown", "ArrowUp", "Enter", "Escape"].includes(e.key)) {
+    onSlashKeydown(e);
+    return;
   }
 
   // ── Keyboard shortcuts (Pi-inspired: setKeybinding) ──────────────
@@ -350,20 +355,17 @@ async function onImageChange(e: Event) {
 
 <template>
   <div class="ci-input">
+    <!-- Context overflow warning -->
+    <div v-if="store.contextPressure.level === 'critical'" class="ci-context-warn">
+      <el-icon :size="14"><WarningFilled /></el-icon>
+      <span>Context window {{ store.contextPressure.pct }}% full. Use <kbd>/compact</kbd> to summarize or <kbd>/new</kbd> for fresh conversation.</span>
+    </div>
     <ChatToolbar
       :faq-active="store.faqVisible"
       :sending="store.sending"
       :streaming-type="store.streamingType"
       :rag-toggle="store.ragEnabled"
-      :rag-available="store.ragActive"
       :web-search-toggle="store.webSearchEnabled"
-      :rag-hybrid="store.ragHybrid"
-      :rag-rerank="store.ragRerank"
-      :rag-citations="store.ragCitations"
-      :rag-hyde="store.ragHyde"
-      :rag-scope="store.ragScope"
-      :rag-num-queries="store.ragNumQueries"
-      :rag-chat-mode="store.ragChatMode"
       :context-files="
         store.activeConversation?.tags
           ?.filter(t => typeof t === 'string' && t.startsWith('ctx:'))
@@ -377,27 +379,10 @@ async function onImageChange(e: Event) {
       @open-wechat="store.openWeChat()"
       @toggle-rag="store.ragEnabled = !store.ragEnabled"
       @toggle-web-search="store.webSearchEnabled = !store.webSearchEnabled"
-      @toggle-rag-hybrid="store.ragHybrid = !store.ragHybrid"
-      @toggle-rag-rerank="store.ragRerank = !store.ragRerank"
-      @toggle-rag-citations="store.ragCitations = !store.ragCitations"
-      @toggle-rag-hyde="store.ragHyde = !store.ragHyde"
-      @update-rag-scope="store.ragScope = $event"
-      @update-rag-num-queries="store.ragNumQueries = $event"
-      @update-rag-chat-mode="store.ragChatMode = $event"
       @stop="store.stopSending()"
       @remove-context-file="p => store.removeContextFile(p)"
       @update-selected-model="m => (store.selectedModel = m)"
     />
-    <!-- Streaming status bar -->
-    <transition name="ci-status-fade">
-      <div v-if="store.sending" class="ci-status">
-        <span class="ci-status-dot" />
-        <span class="ci-status-phase">{{ streamingPhaseLabel }}</span>
-        <span class="ci-status-time">{{ streamingElapsed }}</span>
-        <span v-if="streamingChars" class="ci-status-chars">{{ streamingChars }}</span>
-        <button class="ci-status-stop" @click="store.stopSending()">Stop</button>
-      </div>
-    </transition>
     <input ref="imageInput" type="file" accept="image/*" multiple class="ci-file-input" @change="onImageChange" />
     <DraftImageList :images="store.draftImages" @remove="store.removeDraftImage" @clear="store.clearDraftImages" />
     <div class="ci-row">
@@ -409,6 +394,21 @@ async function onImageChange(e: Event) {
           @select="onMentionSelect"
           @close="onMentionClose"
         />
+        <!-- Slash command menu -->
+        <div v-if="slashVisible && filteredSlashCommands.length" class="ci-slash-menu">
+          <div
+            v-for="(cmd, i) in filteredSlashCommands"
+            :key="cmd.name"
+            class="ci-slash-item"
+            :class="{ 'is-active': i === slashIdx }"
+            @click="onSlashSelect(cmd)"
+            @mouseenter="slashIdx = i"
+          >
+            <span class="ci-slash-item-name">/{{ cmd.name }}</span>
+            <span v-if="cmd.hint" class="ci-slash-item-hint">{{ cmd.hint }}</span>
+            <span class="ci-slash-item-desc">{{ cmd.desc }}</span>
+          </div>
+        </div>
         <el-input
           v-model="store.input"
           type="textarea"
@@ -446,99 +446,48 @@ async function onImageChange(e: Event) {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: var(--space-sm) 12px 12px;
+  padding: 12px 16px 16px;
   background: var(--el-bg-color);
   border-top: 1px solid var(--el-border-color-lighter);
-
-  @supports (backdrop-filter: blur(1px)) {
-    background: color-mix(in srgb, var(--el-bg-color) 88%, transparent);
-    border-top-color: transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
 }
 
-// Streaming status bar
-.ci-status {
+.ci-context-warn {
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 4px 16px 2px;
+  padding: 8px 12px;
   font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.ci-status-dot {
-  width: 7px;
-  height: 7px;
-  background: var(--el-color-primary);
-  border-radius: 50%;
-  animation: ci-status-pulse 1.2s ease-in-out infinite;
-}
-@keyframes ci-status-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-.ci-status-phase {
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.ci-status-time {
-  font-family: "SF Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-placeholder);
-}
-.ci-status-stop {
-  margin-left: auto;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 500;
+  line-height: 1.5;
   color: var(--el-color-danger);
-  cursor: pointer;
-  background: none;
+  background: var(--el-color-danger-light-9);
   border: 1px solid var(--el-color-danger-light-5);
-  border-radius: var(--radius-xs);
-  transition: all var(--transition-fast);
-
-  &:hover {
-    color: #fff;
-    background: var(--el-color-danger);
-    border-color: var(--el-color-danger);
+  border-radius: var(--radius-sm);
+  animation: slide-up 0.25s ease-out;
+  kbd {
+    padding: 0 4px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-7);
+    border-radius: 3px;
   }
 }
-.ci-status-fade-enter-active,
-.ci-status-fade-leave-active {
-  transition: all var(--transition-fast);
-}
-.ci-status-fade-enter-from,
-.ci-status-fade-leave-to {
-  opacity: 0;
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.ci-status-fade-enter-to,
-.ci-status-fade-leave-from {
-  opacity: 1;
-  max-height: 30px;
-}
+
 .ci-row {
   display: flex;
-  gap: var(--space-sm);
+  gap: 8px;
   align-items: flex-end;
-  padding: 6px 14px;
-  margin: 0 4px;
+  padding: 4px 6px 4px 16px;
   background: var(--el-fill-color-lighter);
   border: 1px solid var(--el-border-color-light);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   &:focus-within {
     border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 0 0 3px rgb(var(--el-color-primary-rgb, 64 158 255) / 12%);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 3px rgb(var(--el-color-primary-rgb, 64 158 255) / 10%);
   }
 }
 .ci-row .ci-textarea-wrap {
@@ -561,26 +510,85 @@ async function onImageChange(e: Event) {
 .ci-file-input {
   display: none;
 }
+
+// ── Slash command menu ──
+.ci-slash-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  z-index: 30;
+  width: 320px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+  margin-bottom: 4px;
+}
+.ci-slash-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  &:first-child { border-radius: 7px 7px 0 0; }
+  &:last-child { border-radius: 0 0 7px 7px; }
+  &:only-child { border-radius: 7px; }
+  &:hover,
+  &.is-active {
+    background: var(--el-color-primary-light-9);
+  }
+}
+.ci-slash-item-name {
+  flex-shrink: 0;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+}
+.ci-slash-item-hint {
+  flex-shrink: 0;
+  padding: 0 5px;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color-light);
+  border-radius: 3px;
+}
+.ci-slash-item-desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
 .ci-send-btn {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   transition:
-    transform 0.15s,
-    box-shadow 0.15s;
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
   &:hover {
-    transform: scale(1.08);
+    transform: scale(1.06);
   }
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.94);
   }
   &:where(.el-button--primary) {
-    background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
+    background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-2));
     border: none;
-    box-shadow: 0 2px 6px rgb(var(--el-color-primary-rgb, 64 158 255) / 30%);
+    box-shadow: 0 2px 8px rgb(var(--el-color-primary-rgb, 64 158 255) / 25%);
     &:hover {
-      box-shadow: 0 4px 12px rgb(var(--el-color-primary-rgb, 64 158 255) / 40%);
+      box-shadow: 0 4px 14px rgb(var(--el-color-primary-rgb, 64 158 255) / 35%);
     }
   }
 }
@@ -588,7 +596,7 @@ async function onImageChange(e: Event) {
   display: block;
   width: 12px;
   height: 12px;
-  background: #ffffff;
+  background: var(--el-color-white);
   border-radius: 2px;
   animation: ci-stop-pulse 2s ease-in-out infinite;
 }

@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "设置跨设备同步 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["73-功能实现-设置跨设备同步"]
+source_prds: ["73-架构设计-设置跨设备同步.md"]
+source_modules: ["73-prd-task-设置跨设备同步.md"]
+
+type: test
 ---
 
 # 设置跨设备同步 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["73-功能实现-设置跨设备同步"]
 |------|------|------|--------|
 | TC-SYN01 | chrome.storage.sync | 100KB 配额内同步 | P2 |
 | TC-SYN02 | 角色/颜色同步 | 跨设备一致 | P2 |
+

@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-07)
 frequency: always
+benefit: "缺陷记录：数据-逾期统计错误计入已取消Issue"
+lifecycle: active
 ---
 
 ## Description
@@ -59,13 +61,11 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 状态过滤必须使用常量集（`CLOSED_ISSUE_STATUSES`）而非硬编码单值（`!== "done"`），新增状态时只需修改常量定义 |
+| 测试 | 为 `overdueIssues` 计算属性添加单元测试：已取消 + 逾期 → 不计入；进行中 + 逾期 → 计入 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **已定义的常量未被使用**：文件内已存在 `CLOSED_ISSUE_STATUSES` 常量，但 `overdueIssues` 仍硬编码了 `i.status !== "done"`。常量存在的价值在于统一引用——如果某处硬编码了单值，常量就失去了意义
+- **状态枚举的扩展性**：`done` 和 `cancelled` 都是终态，逾期统计应排除所有终态 Issue。用 `Set.has()` 替代 `===` 比较，在新增终态类型时只需修改常量定义
 

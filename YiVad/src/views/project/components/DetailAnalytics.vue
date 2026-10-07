@@ -39,6 +39,21 @@
           <span class="da-kpi__label">{{ $t("project.analytics.kpiModules") }}</span>
           <span class="da-kpi__sub">{{ modulesWithBugs }} {{ $t("project.overview.quality.withBugs") }}</span>
         </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--warn">{{ aged7d }}</span>
+          <span class="da-kpi__label">&gt;7d Open</span>
+          <span class="da-kpi__sub">{{ aged7dPct }}% of open</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--warn">{{ aged30d }}</span>
+          <span class="da-kpi__label">&gt;30d Open</span>
+          <span class="da-kpi__sub">{{ aged30dPct }}% of open</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--danger">{{ aged90d }}</span>
+          <span class="da-kpi__label">&gt;90d Open</span>
+          <span class="da-kpi__sub">{{ aged90dPct }}% of open</span>
+        </div>
       </div>
     </section>
 
@@ -54,6 +69,30 @@
           <div class="da-card__body">
             <ECharts v-if="hasStatuses" :option="statusOption" />
             <p v-else class="da-card__empty">{{ $t("project.analytics.emptyIssues") }}</p>
+          </div>
+        </div>
+
+        <div class="da-card">
+          <div class="da-card__head">
+            <span>{{ $t("project.analytics.priorityDistribution") }}</span>
+            <span class="da-card__total">{{ $t("project.stats.open", { n: openIssues }) }}</span>
+          </div>
+          <div class="da-card__body">
+            <ECharts v-if="hasOpenPriorities" :option="priorityOption" />
+            <p v-else class="da-card__empty">{{ $t("project.analytics.emptyIssues") }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="da-grid da-grid--2col" style="margin-top: 12px">
+        <div class="da-card">
+          <div class="da-card__head">
+            <span>{{ $t("project.analytics.weeklyVelocity") }}</span>
+            <span class="da-card__total">{{ weeklyDoneTotal }} done</span>
+          </div>
+          <div class="da-card__body">
+            <ECharts v-if="velocityData.length" :option="velocityOption" />
+            <p v-else class="da-card__empty">No activity data</p>
           </div>
         </div>
 
@@ -112,17 +151,105 @@
 
     <!-- ═══ Section 4: 代码健康大盘 ═══ -->
     <CodeHealthPanel v-if="projectKey" :project-key="projectKey" />
+
+    <!-- ═══ Section 5: 研发效率 ═══ -->
+    <section v-if="eff" class="da-section">
+      <h3 class="da-section__title">研发效率</h3>
+      <div class="da-kpis">
+        <div class="da-kpi">
+          <span class="da-kpi__value">{{ eff.avg_cycle_time }}</span>
+          <span class="da-kpi__label">Avg Cycle Time (d)</span>
+          <span class="da-kpi__sub">p50: {{ eff.cycle_time_p50 }}d · p80: {{ eff.cycle_time_p80 }}d</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--info">{{ eff.throughput_per_week }}</span>
+          <span class="da-kpi__label">Throughput / wk</span>
+          <span class="da-kpi__sub">{{ eff.throughput }} done · Flow {{ eff.flow_efficiency }}%</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value">{{ eff.current_wip }}</span>
+          <span class="da-kpi__label">Current WIP</span>
+          <span class="da-kpi__sub">{{ eff.done_count }} done of {{ eff.total_issues }}</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--warn">{{ eff.avg_lead_time }}</span>
+          <span class="da-kpi__label">Avg Lead Time (d)</span>
+          <span class="da-kpi__sub">p50: {{ eff.lead_time_p50 }}d</span>
+        </div>
+      </div>
+      <div class="da-grid da-grid--2col" style="margin-top: 12px">
+        <div class="da-card">
+          <div class="da-card__head"><span>Cycle Time Trend</span></div>
+          <div class="da-card__body">
+            <ECharts v-if="eff.cycle_time_trend.length" :option="ctTrendOption" />
+            <p v-else class="da-card__empty">No data</p>
+          </div>
+        </div>
+        <div class="da-card">
+          <div class="da-card__head"><span>Weekly Throughput</span></div>
+          <div class="da-card__body">
+            <ECharts v-if="eff.weekly_throughput.length" :option="tpOption" />
+            <p v-else class="da-card__empty">No data</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Section 6: 质量大盘 ═══ -->
+    <section v-if="qual" class="da-section">
+      <h3 class="da-section__title">质量大盘</h3>
+      <div class="da-kpis">
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--danger">{{ qual.bug_rate }}%</span>
+          <span class="da-kpi__label">Bug Rate</span>
+          <span class="da-kpi__sub">{{ qual.bug_count }} bugs / {{ qual.issue_count }} issues</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value">{{ qual.quality_score }}</span>
+          <span class="da-kpi__label">Quality Score</span>
+          <span class="da-kpi__sub">/ 100</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value">{{ qual.mttr_hours }}</span>
+          <span class="da-kpi__label">MTTR (h)</span>
+          <span class="da-kpi__sub">{{ qual.resolved_count }} resolved</span>
+        </div>
+        <div class="da-kpi">
+          <span class="da-kpi__value da-kpi__value--info">{{ qual.sla_compliance }}%</span>
+          <span class="da-kpi__label">SLA Compliance</span>
+          <span class="da-kpi__sub">Rework {{ qual.rework_rate }}%</span>
+        </div>
+      </div>
+      <div class="da-grid da-grid--2col" style="margin-top: 12px">
+        <div class="da-card">
+          <div class="da-card__head"><span>Bug Rate Trend</span></div>
+          <div class="da-card__body">
+            <ECharts v-if="qual.bug_trend.length" :option="bugRateTrendOption" />
+            <p v-else class="da-card__empty">No data</p>
+          </div>
+        </div>
+        <div class="da-card">
+          <div class="da-card__head"><span>Bug Inflow vs Outflow</span></div>
+          <div class="da-card__body">
+            <ECharts v-if="qual.inflow_outflow?.inflow?.length" :option="inflowOutflowOption" />
+            <p v-else class="da-card__empty">No data</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts" name="DetailAnalytics">
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { Refresh, Loading } from "@element-plus/icons-vue";
 import ECharts from "@/components/ECharts/index.vue";
 import CodeHealthPanel from "./CodeHealthPanel.vue";
 import { useCodeHealth } from "@/hooks/useCodeHealth";
 import { useProjectDetail, CLOSED_STATUSES, ACTIVITY_DAYS, isoDay } from "@/views/project/types";
-import { buildStatusBar, buildTypeBar, buildActivityArea } from "@/views/project/charts";
+import { buildStatusBar, buildTypeBar, buildActivityArea, buildCycleTimeTrend, buildThroughputBar, buildBugRateTrend, buildInflowOutflow } from "@/views/project/charts";
+import { getProjectDashboard } from "@/api/modules/analyticsService";
+import type { EfficiencyMetrics, QualityMetrics } from "@/types/analytics";
 
 const ctx = useProjectDetail();
 const { allIssues, allBugs, allModules, project } = ctx;
@@ -222,6 +349,66 @@ const donePct = computed(() => {
 const openPct = computed(() => (totalIssues.value ? Math.round((openIssues.value / totalIssues.value) * 100) : 0));
 const overduePct = computed(() => (openIssues.value ? Math.round((overdueIssues.value / openIssues.value) * 100) : 0));
 
+// Issue aging
+const ageBuckets = computed(() => {
+  const now = new Date();
+  const buckets = { d7: 0, d30: 0, d90: 0 };
+  for (const i of allIssues.value) {
+    if (i.status === "done" || i.status === "cancelled") continue;
+    const created = i.created_at ? new Date(i.created_at) : null;
+    if (!created || isNaN(created.getTime())) continue;
+    const days = Math.floor((now.getTime() - created.getTime()) / 86400000);
+    if (days > 90) buckets.d90++;
+    else if (days > 30) buckets.d30++;
+    else if (days > 7) buckets.d7++;
+  }
+  return buckets;
+});
+const aged7d = computed(() => ageBuckets.value.d7);
+const aged30d = computed(() => ageBuckets.value.d30);
+const aged90d = computed(() => ageBuckets.value.d90);
+const aged7dPct = computed(() => openIssues.value ? Math.round(aged7d.value / openIssues.value * 100) : 0);
+const aged30dPct = computed(() => openIssues.value ? Math.round(aged30d.value / openIssues.value * 100) : 0);
+const aged90dPct = computed(() => openIssues.value ? Math.round(aged90d.value / openIssues.value * 100) : 0);
+
+// Weekly velocity: done issues per week
+const velocityData = computed(() => {
+  const weeks = new Map<string, number>();
+  const today = new Date();
+  for (let w = 0; w < 8; w++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - w * 7);
+    const key = `${d.getFullYear()}-W${Math.ceil((d.getDate() + new Date(d.getFullYear(), d.getMonth(), 1).getDay()) / 7)}`;
+    weeks.set(key, 0);
+  }
+  for (const i of allIssues.value) {
+    if (i.status !== "done" || !i.updated_at) continue;
+    const d = new Date(i.updated_at);
+    if (isNaN(d.getTime())) continue;
+    const diffDays = Math.floor((today.getTime() - d.getTime()) / 86400000);
+    if (diffDays > 56) continue;
+    const weekNum = Math.floor(diffDays / 7);
+    const d2 = new Date(today);
+    d2.setDate(d2.getDate() - weekNum * 7);
+    const key = `${d2.getFullYear()}-W${Math.ceil((d2.getDate() + new Date(d2.getFullYear(), d2.getMonth(), 1).getDay()) / 7)}`;
+    weeks.set(key, (weeks.get(key) || 0) + 1);
+  }
+  return [...weeks.entries()].reverse().map(([label, count]) => ({ label, count }));
+});
+const weeklyDoneTotal = computed(() => velocityData.value.reduce((s, v) => s + v.count, 0));
+
+// Open issue priority distribution
+const openPriorities = computed(() => {
+  const acc: Record<string, number> = {};
+  for (const i of allIssues.value) {
+    if (i.status === "done" || i.status === "cancelled") continue;
+    const p = i.priority || "none";
+    acc[p] = (acc[p] || 0) + 1;
+  }
+  return acc;
+});
+const hasOpenPriorities = computed(() => Object.values(openPriorities.value).some(v => v > 0));
+
 // ══════════════════════════════════════════════
 // Charts
 // ══════════════════════════════════════════════
@@ -231,6 +418,62 @@ const hasTypes = computed(() => Object.values(types.value).some(v => v > 0));
 const statusOption = computed(() => buildStatusBar(statuses.value));
 const typeOption = computed(() => buildTypeBar(types.value));
 const activityOption = computed(() => buildActivityArea(activity.value));
+
+const priorityOption = computed(() => {
+  const data = openPriorities.value;
+  const priorityColors: Record<string, string> = { urgent: "#ee6666", high: "#fc8452", medium: "#fac858", low: "#73c0de", none: "#c0c4cc" };
+  const priorityLabels: Record<string, string> = { urgent: "P0", high: "P1", medium: "P2", low: "P3", none: "—" };
+  return {
+    tooltip: { trigger: "item" as const },
+    legend: { orient: "vertical" as const, left: "left", textStyle: { fontSize: 11 } },
+    series: [{
+      type: "pie" as const, radius: ["45%", "70%"], center: ["60%", "50%"],
+      label: { show: true, formatter: "{b}: {c}" },
+      data: Object.entries(data).map(([k, v]) => ({ name: priorityLabels[k] || k, value: v, itemStyle: { color: priorityColors[k] || "#909399" } }))
+    }]
+  };
+});
+
+const velocityOption = computed(() => {
+  const data = velocityData.value;
+  return {
+    tooltip: { trigger: "axis" as const },
+    xAxis: { type: "category" as const, data: data.map(d => d.label.slice(-6)), axisLabel: { fontSize: 10 } },
+    yAxis: { type: "value" as const, minInterval: 1 },
+    series: [{
+      type: "bar" as const, data: data.map(d => d.count), itemStyle: { color: "#91cc75", borderRadius: [3, 3, 0, 0] }, barMaxWidth: 32
+    }],
+    grid: { top: 8, right: 8, bottom: 20, left: 30 }
+  };
+});
+
+// ══════════════════════════════════════════════
+// Server-computed efficiency & quality
+// ══════════════════════════════════════════════
+const eff = ref<EfficiencyMetrics | null>(null);
+const qual = ref<QualityMetrics | null>(null);
+
+async function loadDashboard() {
+  if (!projectKey.value) return;
+  try {
+    const data = await getProjectDashboard({ project_key: projectKey.value });
+    eff.value = data.efficiency;
+    qual.value = data.quality;
+  } catch {
+    // Dashboard is optional — keep client-computed KPIs as fallback
+  }
+}
+
+watch(projectKey, key => { if (key) loadDashboard(); }, { immediate: true });
+
+const ctTrendOption = computed(() => eff.value ? buildCycleTimeTrend(eff.value.cycle_time_trend) : {});
+const tpOption = computed(() => eff.value ? buildThroughputBar(eff.value.weekly_throughput) : {});
+const bugRateTrendOption = computed(() => qual.value ? buildBugRateTrend(qual.value.bug_trend) : {});
+const inflowOutflowOption = computed(() =>
+  qual.value?.inflow_outflow
+    ? buildInflowOutflow(qual.value.inflow_outflow.inflow, qual.value.inflow_outflow.outflow)
+    : {}
+);
 </script>
 
 <style scoped lang="scss">

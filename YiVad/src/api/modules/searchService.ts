@@ -212,3 +212,63 @@ export async function compactConversation(
 }> {
   return _rpcCall<any>("/compact", { messages, keep_last: keepLast });
 }
+
+// ── Unified internal search ────────────────────────────────────────────────
+
+export interface UnifiedSearchBadge {
+  label: string;
+  type?: "primary" | "success" | "warning" | "danger" | "info" | "";
+  effect?: "plain" | "dark";
+}
+
+export interface UnifiedSearchItem {
+  id: string;
+  type: "issue" | "project" | "module" | "bug" | "page";
+  title: string;
+  subtitle: string;
+  detail?: string;
+  project: string;
+  link: string;
+  badges: UnifiedSearchBadge[];
+  date: string;
+  score: number;
+  _ts: number;
+  _idx: number;
+}
+
+export interface UnifiedSearchTiming {
+  total_ms: number;
+  per_collection?: Record<string, { count: number; ms: number }>;
+  error?: string;
+}
+
+export interface UnifiedSearchResponse {
+  results: UnifiedSearchItem[];
+  timing: UnifiedSearchTiming;
+}
+
+/**
+ * Search across all internal collections via YiAi's /search/unified endpoint.
+ * Runs all collection searches in parallel with relevance scoring.
+ */
+export async function unifiedSearch(
+  query: string,
+  collections?: string[],
+  limit?: number,
+  signal?: AbortSignal
+): Promise<UnifiedSearchResponse> {
+  const body: Record<string, unknown> = { query };
+  if (collections?.length) body.collections = collections;
+  if (limit) body.limit = limit;
+
+  const resp = await fetch(buildYiAiUrl("/search/unified"), {
+    method: "POST",
+    headers: yiAiAuthHeaders(),
+    body: JSON.stringify(body),
+    signal
+  });
+  if (!resp.ok) throw new Error(`Unified search failed: HTTP ${resp.status}`);
+  const data = (await resp.json()) as YiAiEnvelope<UnifiedSearchResponse>;
+  if (data.code !== 0) throw new Error(data.message || "Unified search failed");
+  return data.data;
+}

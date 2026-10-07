@@ -49,6 +49,8 @@ export interface RagQueryRequest {
   top_k?: number;
   /** Substring filter on file_path metadata (e.g. "engineer/learn/projects/yivad"). */
   scope?: string;
+  /** Exact file paths to restrict retrieval to (OR-combined CONTAINS filters). */
+  file_paths?: string[];
   /** Per-call override of settings.rag_hybrid_retrieval_enabled. */
   hybrid?: boolean;
   /** Per-call override of settings.rag_rerank_enabled. */
@@ -71,7 +73,13 @@ export interface RagQueryResponse {
 
 export interface RagChatPayload {
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }>;
+  /** Model name override — falls back to settings.rag_llm_model on the backend. */
+  model?: string;
   scope?: string;
+  /** Exact file paths to restrict retrieval to (OR-combined CONTAINS filters). */
+  file_paths?: string[];
+  /** Overview of user's context files — injected into the RAG system prompt. */
+  context_notes?: string;
   /** Per-call override of settings.rag_top_k. */
   top_k?: number;
   /** Per-call override of settings.rag_hybrid_retrieval_enabled. */
@@ -90,6 +98,8 @@ export interface RagChatPayload {
   tags?: string[];
   /** HyDE — generate hypothetical answer for better retrieval accuracy. */
   hyde_enabled?: boolean;
+  /** Fast mode — skip retrieval, answer directly with compact prompt. */
+  fast?: boolean;
 }
 
 export interface RagFileChatPayload {

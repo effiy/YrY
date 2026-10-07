@@ -5,7 +5,8 @@ stage: requirement-review
 title: 定义流程记录模板复用规范与三要素编排需求
 role: curator
 goalId: cur-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, requirement-review, template-reuse, orchestration]

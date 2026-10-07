@@ -4,16 +4,18 @@
  * Mirrors YiVad AiChatBox: inline chat header, light theme, clean layout.
  */
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue';
-import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Search, Check, DataBoard } from '@element-plus/icons-vue';
+import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Search, Check } from '@element-plus/icons-vue';
 import { useChatStore } from '../stores/chat';
 import { keyboardRegistry } from '@/shared/shortcuts';
+
+import { estimateTokens } from '../utils';
 
 function phaseLabel(phase: string | undefined): string {
   if (phase === 'preparing') return 'Preparing';
   if (phase === 'fetching') return 'Fetching';
   if (phase === 'retrieving') return 'Retrieving';
   if (phase === 'thinking') return 'Thinking';
-  if (phase === 'streaming') return 'Writing';
+  if (phase === 'streaming') return 'Generating';
   return 'Processing';
 }
 function formatElapsed(ms: number): string {
@@ -23,31 +25,24 @@ function formatElapsed(ms: number): string {
 }
 import ChatHeader from './ChatHeader.vue';
 import ChatSidebar from './ChatSidebar.vue';
-import KnowledgeSidebar from './KnowledgeSidebar.vue';
 import ChatMessages from './ChatMessages.vue';
 import ChatInput from './ChatInput.vue';
 import QuickButtons from './QuickButtons.vue';
-import BugReportDialog from './BugReportDialog.vue';
-import FaqDialog from './FaqDialog.vue';
-import KnowledgePreviewDialog from './KnowledgePreviewDialog/KnowledgePreviewDialog.vue';
-import RagDecomposeDialog from './RagDecomposeDialog.vue';
-import RagSourcesPreviewDialog from './RagSourcesPreviewDialog.vue';
 import CheatSheetOverlay from './CheatSheetOverlay.vue';
 import ShortcutBindingEditor from './ShortcutBindingEditor.vue';
-import SaveToKnowledgeDialog from './SaveToKnowledgeDialog.vue';
 import SessionEditDialog from './SessionEditDialog.vue';
 import SessionSummaryDialog from './SessionSummaryDialog.vue';
 import TagManagerDialog from './TagManagerDialog.vue';
 import WeChatSettingsModal from './WeChatSettingsModal.vue';
 import LlamaIndexPanel from './LlamaIndexPanel/index.vue';
+import KnowledgePreviewDialog from './KnowledgePreviewDialog/KnowledgePreviewDialog.vue';
+import StatsBar from './StatsBar.vue';
+import ProjectHealthCard from './ProjectHealthCard.vue';
 
 const RESIZE_HANDLES = ['n', 's', 'w', 'e', 'se', 'sw', 'ne', 'nw'] as const;
 
 const store = useChatStore();
 const s = store.state;
-
-const isDragOver = ref(false);
-const dragOverCounter = ref(0);
 
 const fullscreen = computed(() => s.ws.isFullscreen);
 
@@ -79,7 +74,7 @@ const contextFileCount = computed(() => {
   return tags.filter((t: string) => typeof t === 'string' && t.startsWith('ctx:')).length;
 });
 
-// ── Header streaming timer (mirrors YiVad chat-hdr streaming pill parity) ──
+// ── Header streaming timer ──
 const hdrStreamStart = ref(0);
 const hdrStreamElapsed = ref(0);
 let _hdrTimer: ReturnType<typeof setInterval> | null = null;
@@ -101,7 +96,7 @@ const perf = computed(() => {
   let totalChars = 0, totalTok = 0, petTok = 0, usrTok = 0, turns = 0;
   for (const m of msgs) {
     const c = (m.content || '').length;
-    const t = Math.ceil(c / 4);
+    const t = estimateTokens(m.content || '');
     totalChars += c; totalTok += t;
     if (m.type === 'pet') { petTok += t; turns++; }
     else usrTok += t;
@@ -112,7 +107,7 @@ const perf = computed(() => {
     totalTok, petTok, usrTok, turns,
     rate,
     costText: costUsd >= 0.01 ? `$${costUsd.toFixed(2)}` : costUsd >= 0.0001 ? `${(costUsd*100).toFixed(2)}¢` : '<0.01¢',
-    perTurn: rate ? `${rate} t/t` : '0',
+    perTurn: rate ? `${rate} tok/turn` : '0',
   };
 });
 
@@ -142,7 +137,7 @@ function onModelSelectOpen() {
 function modelTag(name: string): { label: string; color: string } {
   const lower = name.toLowerCase();
   if (lower.includes('vision') || lower.includes('vl')) return { label: 'vision', color: '#8b5cf6' };
-  if (lower.includes('think') || lower.includes('reason')) return { label: 'reasoning', color: '#f59e0b' };
+  if (lower.includes('think') || lower.includes('reason')) return { label: 'reasoning', color: 'var(--el-color-warning)' };
   if (lower.includes('large') || /\b(70|72|405)b\b/.test(lower)) return { label: 'large', color: '#ef4444' };
   if (lower.includes('small') || /\b(7|8|13)b\b/.test(lower)) return { label: 'compact', color: '#10b981' };
   return { label: 'general', color: '#6366f1' };
@@ -158,38 +153,6 @@ function selectModelAndClose(m: string) {
   s.selectedModel = m;
   modelSelectVisible.value = false;
   modelSearch.value = '';
-}
-
-// Drag-and-drop knowledge file
-function isKnowledgeDrag(e: DragEvent): boolean {
-  return e.dataTransfer?.types.includes('application/x-yipet-knowledge-file') ?? false;
-}
-
-function onDragOver(e: DragEvent) {
-  if (!isKnowledgeDrag(e)) return;
-  e.preventDefault();
-  if (e.dataTransfer) e.dataTransfer.dropEffect = 'link';
-}
-
-function onDragEnter(e: DragEvent) {
-  if (!isKnowledgeDrag(e)) return;
-  e.preventDefault();
-  dragOverCounter.value += 1;
-  isDragOver.value = true;
-}
-
-function onDragLeave(e: DragEvent) {
-  e.preventDefault();
-  dragOverCounter.value -= 1;
-  if (dragOverCounter.value <= 0) { dragOverCounter.value = 0; isDragOver.value = false; }
-}
-
-function onDrop(e: DragEvent) {
-  e.preventDefault();
-  dragOverCounter.value = 0;
-  isDragOver.value = false;
-  const path = e.dataTransfer?.getData('application/x-yipet-knowledge-file');
-  if (path) store.createSessionFromKnowledgeFile?.(path);
 }
 
 function onResizeMouseDown(dir: string, e: MouseEvent) {
@@ -240,13 +203,6 @@ onUnmounted(() => {
     <div class="yipet-chat-body">
       <!-- Session sidebar -->
       <template v-if="!s.sidebarCollapsed">
-        <aside
-          v-if="s.contextEditingId"
-          class="yipet-knowledge-col"
-          :style="{ width: s.sidebarWidth + 'px' }"
-        >
-          <KnowledgeSidebar />
-        </aside>
         <aside class="yipet-sidebar-sider" :style="{ width: s.sidebarWidth + 'px' }">
           <ChatSidebar />
         </aside>
@@ -262,20 +218,7 @@ onUnmounted(() => {
       </template>
 
       <!-- Chat main column -->
-      <div
-        class="yipet-chat-main"
-        @dragenter="onDragEnter"
-        @dragover="onDragOver"
-        @dragleave="onDragLeave"
-        @drop="onDrop"
-      >
-        <!-- Drag-and-drop overlay -->
-        <div v-if="isDragOver" class="yipet-chat-drop-overlay">
-          <div class="yipet-chat-drop-overlay-inner">
-            <span class="drop-icon">📄</span>
-            <div>Drop knowledge file to start a session</div>
-          </div>
-        </div>
+      <div class="yipet-chat-main">
 
         <!-- Inline chat header bar (mirrors YiVad ai-chat-box__chat-hdr) -->
         <div v-if="currentSession" class="yipet-chat-hdr">
@@ -338,7 +281,14 @@ onUnmounted(() => {
                     clearable
                   />
                 </div>
-                <div v-if="!s.availableModels.length" class="yipet-model-empty">
+                <!-- Loading skeleton (mirrors YiVad) -->
+                <div v-if="store.modelsLoading" class="yipet-model-loading">
+                  <div v-for="i in 3" :key="i" class="yipet-model-skel">
+                    <span class="yipet-model-skel-name" />
+                    <span class="yipet-model-skel-tag" />
+                  </div>
+                </div>
+                <div v-else-if="!s.availableModels.length" class="yipet-model-empty">
                   <span class="yipet-model-empty-icon">📡</span>
                   <span>No models available</span>
                   <el-button size="small" text type="primary" @click="store.fetchModels?.()">Retry</el-button>
@@ -372,25 +322,28 @@ onUnmounted(() => {
             </el-button>
             <el-tooltip
               placement="bottom"
-              :content="`${perf.totalTok} tok (user ${perf.usrTok} + assistant ${perf.petTok}) · ${perf.turns} turns · est. ${perf.costText}`"
+              :content="`${perf.totalTok} tokens (${perf.usrTok} input + ${perf.petTok} output) · ${perf.turns} turns · est. cost ${perf.costText}`"
             >
               <span class="perf-pill">
                 <svg viewBox="0 0 14 14" class="perf-pill-spark"><path d="M1 11 L4 7 L6 9 L10 3 L13 5" stroke-width="1.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="perf-pill-tok">{{ perf.totalTok }}t</span>
+                <span class="perf-pill-tok">{{ perf.totalTok }} tok</span>
                 <span class="perf-pill-sep">·</span>
                 <span class="perf-pill-rate">{{ perf.perTurn }}</span>
                 <span class="perf-pill-sep">·</span>
                 <span class="perf-pill-cost">{{ perf.costText }}</span>
               </span>
             </el-tooltip>
-            <el-button size="small" text title="RAG Console" @click="store.toggleLlamaIndex?.()">
-              <el-icon><DataBoard /></el-icon>
-            </el-button>
             <el-button size="small" text title="Export as HTML" @click="store.exportConversationHtml?.()">
               <el-icon><Download /></el-icon>
             </el-button>
           </div>
         </div>
+
+        <!-- Personal stats bar (mirrors YiVad Home stat cards) -->
+        <StatsBar />
+
+        <!-- Project health summary (only on YiVad project pages) -->
+        <ProjectHealthCard />
 
         <!-- Messages area -->
         <div id="yipet-chat-messages" role="log" aria-live="polite" class="yipet-chat-messages-wrap">
@@ -414,14 +367,13 @@ onUnmounted(() => {
     <WeChatSettingsModal />
     <SessionEditDialog />
     <TagManagerDialog />
-    <FaqDialog />
-    <LlamaIndexPanel @close="store.toggleLlamaIndex?.()" />
-    <KnowledgePreviewDialog />
-    <SaveToKnowledgeDialog />
-    <RagSourcesPreviewDialog />
-    <RagDecomposeDialog />
-    <BugReportDialog />
     <SessionSummaryDialog />
+    <LlamaIndexPanel
+      v-if="s.llamaIndexVisible"
+      :scope-title="s.sessions.find(x => x.id === s.currentSessionId)?.title || ''"
+      @close="store.closeLlamaIndex?.()"
+    />
+    <KnowledgePreviewDialog />
     <CheatSheetOverlay />
     <ShortcutBindingEditor />
 
@@ -438,431 +390,10 @@ onUnmounted(() => {
   </div>
 </template>
 
+
 <style lang="scss" scoped>
-#yipet-chat-window {
-  position: fixed;
-  z-index: 2147483646;
-  display: flex;
-  flex-direction: column;
-  background:
-    radial-gradient(circle at top right, rgba(var(--primary-rgb, 99, 102, 241), 0.18), transparent 32%),
-    radial-gradient(circle at bottom left, rgba(var(--accent-rgb, 129, 140, 248), 0.12), transparent 28%),
-    var(--bg-elevated, rgba(24, 27, 58, 0.92));
-  border-radius: 18px;
-  box-shadow:
-    0 24px 72px rgba(3, 7, 18, 0.38),
-    0 12px 28px rgba(var(--primary-rgb, 99, 102, 241), 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  overflow: hidden;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.22);
-  color: var(--text-primary, #f5f3ff);
-  backdrop-filter: blur(20px) saturate(130%);
-  -webkit-backdrop-filter: blur(20px) saturate(130%);
-  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
-
-  &.fullscreen {
-    left: 0 !important;
-    top: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    border-radius: 0;
-    border: none;
-  }
-
-  &.dragging { user-select: none; cursor: move; }
-  &.resizing { user-select: none; }
-}
-
-.yipet-chat-body {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
-    var(--bg-gradient, #13122a);
-  display: flex;
-  position: relative;
-}
-
-.yipet-chat-main {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  position: relative;
-  overflow: hidden !important;
-}
-
-// Sidebar
-.yipet-sidebar-sider {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.05);
-  border-right: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
-  flex-shrink: 0;
-  overflow: hidden;
-  backdrop-filter: blur(12px);
-}
-
-.yipet-knowledge-col {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.04);
-  border-right: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
-  flex-shrink: 0;
-  overflow: hidden;
-  backdrop-filter: blur(12px);
-}
-
-.yipet-sidebar-resizer {
-  flex-shrink: 0;
-  width: 4px;
-  cursor: col-resize;
-  background: linear-gradient(180deg, transparent, rgba(var(--primary-rgb, 99, 102, 241), 0.25), transparent);
-  transition: background 0.2s;
-  z-index: 5;
-  &:hover { background: linear-gradient(180deg, transparent, rgba(var(--primary-rgb, 99, 102, 241), 0.5), transparent); }
-}
-
-// ── Inline chat header bar (mirrors YiVad ai-chat-box__chat-hdr) ──
-.yipet-chat-hdr {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px 10px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.03), transparent 30%),
-    linear-gradient(180deg, rgba(var(--primary-rgb, 99, 102, 241), 0.07) 0%, transparent 100%);
-  border-bottom: 1px solid var(--yp-header-border, var(--header-border, rgba(129,140,248,0.22)));
-  backdrop-filter: blur(14px) saturate(125%);
-  -webkit-backdrop-filter: blur(14px) saturate(125%);
-  z-index: 1;
-}
-
-.yipet-chat-hdr-left {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
-}
-
-.yipet-chat-hdr-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 3px;
-  align-items: center;
-}
-
-.yipet-chat-hdr-title {
-  max-width: 280px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--yp-header-text-primary, var(--header-text-primary, #eef2ff));
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.yipet-chat-hdr-ctx {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--yp-header-accent, var(--header-accent, #a5b4fc));
-  white-space: nowrap;
-  background: rgba(var(--accent-rgb, 129, 140, 248), 0.12);
-  border: 1px solid rgba(var(--accent-rgb, 129, 140, 248), 0.20);
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-
-.yipet-chat-hdr-streaming {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--yp-header-accent, var(--header-accent, #a5b4fc));
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.10);
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.20);
-  border-radius: 999px;
-  white-space: nowrap;
-  backdrop-filter: blur(4px);
-  transition: all 0.18s ease;
-  &:hover {
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.16);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.34);
-    transform: translateY(-1px);
-  }
-  &.phase-retrieving {
-    color: #38bdf8;
-    background: rgba(56,189,248,0.13);
-    border-color: rgba(56,189,248,0.27);
-  }
-  &.phase-thinking {
-    color: #f59e0b;
-    background: rgba(245,158,11,0.13);
-    border-color: rgba(245,158,11,0.27);
-  }
-  &.phase-streaming {
-    color: #22c55e;
-    background: rgba(34,197,94,0.13);
-    border-color: rgba(34,197,94,0.27);
-  }
-  &.phase-preparing, &.phase-fetching {
-    color: #a78bfa;
-    background: rgba(167,139,250,0.13);
-    border-color: rgba(167,139,250,0.27);
-  }
-}
-.yipet-chat-hdr-streaming-phase { font-weight: 700; letter-spacing: 0.2px; }
-.yipet-chat-hdr-streaming-elapsed {
-  font-family: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-  padding: 0 5px;
-  height: 15px;
-  line-height: 15px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 8px;
-  color: inherit;
-  opacity: 0.88;
-  font-weight: 600;
-}
-
-.yipet-chat-hdr-streaming-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: hdr-dot-pulse 1.2s ease-in-out infinite;
-  box-shadow: 0 0 7px currentColor;
-}
-
-@keyframes hdr-dot-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(0.78); }
-  50% { opacity: 1; transform: scale(1.28); }
-}
-
-// Model selector button
-.yipet-chat-hdr-model-btn {
-  gap: 4px;
-  padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--yp-header-text-secondary, var(--header-text-secondary, rgba(199,210,254,0.75)));
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.07);
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.16);
-  border-radius: 999px;
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  &:hover {
-    color: var(--yp-header-accent, var(--header-accent, #a5b4fc));
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.13);
-    border-color: rgba(var(--primary-rgb, 99, 102, 241), 0.32);
-    transform: translateY(-1px);
-  }
-}
-
-// Messages area
-#yipet-chat-messages,
-.yipet-chat-messages-wrap {
-  flex: 1 1 0;
-  min-height: 0;
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 18%),
-    rgba(7, 10, 24, 0.1);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(var(--primary-rgb, 99, 102, 241), .35) transparent;
-}
-#yipet-chat-messages::-webkit-scrollbar,
-.yipet-chat-messages-wrap::-webkit-scrollbar { width: 6px; }
-#yipet-chat-messages::-webkit-scrollbar-thumb,
-.yipet-chat-messages-wrap::-webkit-scrollbar-thumb {
-  background: rgba(var(--primary-rgb, 99, 102, 241), .35);
-  border-radius: 3px;
-}
-
-// Resize handles (keep dark for contrast against any page)
-.yipet-resize-handle {
-  position: absolute;
-  z-index: 10;
-  background: transparent;
-}
-.yipet-resize-n { left: 8px; right: 8px; top: 0; height: 4px; cursor: ns-resize; z-index: 11; }
-.yipet-resize-s { left: 8px; right: 8px; bottom: 0; height: 4px; cursor: ns-resize; }
-.yipet-resize-w { left: 0; top: 8px; bottom: 8px; width: 4px; cursor: w-resize; }
-.yipet-resize-e { right: 0; top: 8px; bottom: 8px; width: 4px; cursor: e-resize; }
-.yipet-resize-se { right: 0; bottom: 0; width: 16px; height: 16px; cursor: se-resize; }
-.yipet-resize-sw { left: 0; bottom: 0; width: 16px; height: 16px; cursor: sw-resize; }
-.yipet-resize-ne { right: 0; top: 0; width: 16px; height: 16px; cursor: ne-resize; }
-.yipet-resize-nw { left: 0; top: 0; width: 16px; height: 16px; cursor: nw-resize; }
-
-.yipet-resize-n:hover, .yipet-resize-s:hover, .yipet-resize-w:hover, .yipet-resize-e:hover {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.24);
-}
-#yipet-chat-window.resizing .yipet-resize-n,
-#yipet-chat-window.resizing .yipet-resize-s,
-#yipet-chat-window.resizing .yipet-resize-w,
-#yipet-chat-window.resizing .yipet-resize-e {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.24);
-}
-.yipet-resize-se:hover, .yipet-resize-sw:hover, .yipet-resize-ne:hover, .yipet-resize-nw:hover {
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-}
-
-// Drag-and-drop overlay
-.yipet-chat-drop-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
-  border: 2px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.45);
-  border-radius: 16px;
-  pointer-events: none;
-  animation: dropFadeIn 0.2s ease-out;
-}
-@keyframes dropFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.yipet-chat-drop-overlay-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px 32px;
-  font-size: 13px;
-  color: var(--primary-light, #818cf8);
-  background: var(--bg-elevated, #141228);
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
-  border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
-  .drop-icon { font-size: 28px; }
-}
-
-// ── Responsive ──
-@media (width <= 767px) {
-  .yipet-chat-hdr { gap: 4px; padding: 6px 8px; }
-  .yipet-chat-hdr-title { max-width: 140px; font-size: 12px; }
-}
-
-.perf-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  height: 25px; padding: 0 11px;
-  border-radius: 999px;
-  background: rgba(var(--accent-rgb, 129, 140, 248), 0.09);
-  border: 1px solid rgba(var(--accent-rgb, 129, 140, 248), 0.20);
-  color: var(--yp-header-accent, var(--header-accent, #a5b4fc));
-  font-size: 11px; font-weight: 600;
-  font-family: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
-  cursor: default;
-  backdrop-filter: blur(4px);
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  &:hover {
-    background: rgba(var(--accent-rgb, 129, 140, 248), 0.14);
-    border-color: rgba(var(--accent-rgb, 129, 140, 248), 0.32);
-    transform: translateY(-1px);
-  }
-}
-.perf-pill-spark { width: 14px; height: 14px; color: var(--yp-color-accent, var(--accent, #c4b5fd)); }
-.perf-pill-tok { color: var(--yp-header-text-primary, var(--header-text-primary, #f5f3ff)); font-weight: 700; }
-.perf-pill-sep { opacity: 0.5; color: var(--yp-header-accent, var(--header-accent, #a5b4fc)); }
-.perf-pill-rate { color: var(--yp-header-accent, var(--header-accent, #a5b4fc)); }
-.perf-pill-cost { color: var(--yp-color-accent, var(--accent, #c4b5fd)); font-weight: 700; }
+@use "./ChatWindow/window.scss";
 </style>
-
 <style lang="scss">
-// Model selector popover (global — teleported)
-.yipet-model-pop {
-  padding: 0 !important;
-  border-radius: 16px !important;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18) !important;
-  background: var(--bg-elevated, rgba(24, 27, 58, 0.96)) !important;
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28) !important;
-  backdrop-filter: blur(20px);
-}
-.yipet-model-panel {
-  display: flex;
-  flex-direction: column;
-  max-height: 360px;
-  overflow: hidden;
-}
-.yipet-model-search {
-  padding: 10px 12px 8px;
-  border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.14);
-}
-.yipet-model-items {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px;
-  overflow-y: auto;
-}
-.yipet-model-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 10px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: 12px;
-  transition: background 0.15s;
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.08); }
-  &.is-selected { background: rgba(var(--primary-rgb, 99, 102, 241), 0.12); }
-}
-.yipet-model-card-left {
-  display: flex;
-  flex: 1;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
-}
-.yipet-model-card-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary, #f5f3ff);
-  white-space: nowrap;
-}
-.yipet-model-card-tag {
-  flex-shrink: 0;
-  padding: 1px 6px;
-  font-family: "SF Mono", Menlo, monospace;
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: 3px;
-}
-.yipet-model-card-check { flex-shrink: 0; color: var(--primary-light, #818cf8); }
-.yipet-model-empty {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  padding: 24px 16px;
-  font-size: 13px;
-  color: var(--text-secondary, #d4d0e8);
-  text-align: center;
-}
-.yipet-model-empty-icon {
-  font-size: 28px;
-  line-height: 1;
-}
+@use "./ChatWindow/global.scss";
 </style>

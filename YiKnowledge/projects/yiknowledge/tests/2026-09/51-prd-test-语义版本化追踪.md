@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-48: 语义版本化追踪 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-48"
 source_prds: ["51-架构设计-语义版本化追踪"]
 source_modules: ["51-prd-task-语义版本化追踪"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-48: 语义版本化追踪 — 测试用例

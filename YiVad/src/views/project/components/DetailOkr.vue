@@ -129,13 +129,13 @@ watch([totalGoals, avgProgress, completedCount], () => {
 
 const ROLE_COLORS: Record<string, string> = {
   project: "#6366f1",
-  producter: "#f56c6c",
+  product: "#f56c6c",
   engineer: "#409eff",
   leader: "#67c23a",
   curator: "#9b59b6",
-  srer: "#e6a23c",
+  sre: "#e6a23c",
   aier: "#73c0de",
-  executiver: "#fc8452"
+  executive: "#fc8452"
 };
 
 function roleColor(role: string): string {

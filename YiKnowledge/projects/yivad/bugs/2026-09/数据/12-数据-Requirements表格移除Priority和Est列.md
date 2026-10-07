@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-Requirements表格移除Priority和Est列"
+lifecycle: active
 ---
 
 ## Description
@@ -75,13 +77,10 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 列定义逻辑中，不同 `filterIssueType` 分支的列集合差异应有注释说明设计意图 |
+| 流程 | UI 简化类变更需在 PR 描述中明确「移除原因」，避免未来维护者误以为是遗漏而加回 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **UI 简化也是变更**：移除列虽然不涉及复杂逻辑，但会影响用户既有操作习惯。此类变更需要明确记录决策原因（Priority/Est 在需求列表中的信息密度低），而非仅提交代码 diff
 

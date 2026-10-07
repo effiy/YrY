@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-205: 用户帮助与支持 — FAQ、文档链接、视频教程、支持工单、工单跟踪、反馈提交、社区论坛"
 tags: [需求文档, 用户中心, 帮助中心, FAQ, 支持工单, 文档链接, 反馈提交, 视频教程]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["79-prd-task-用户帮助与支持"]
+related_tests: ["79-prd-test-用户帮助与支持"]
+benefit: "产品需求：用户帮助与支持"
+lifecycle: active
 ---
 
 # YV-09-205: 用户帮助与支持 — FAQ、文档链接、视频教程、支持工单、工单跟踪、反馈提交、社区论坛

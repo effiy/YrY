@@ -1,5 +1,6 @@
 <template>
   <div class="search-page">
+    <!-- Date Navigation -->
     <HeroDateNav
       :filter-date="filterDate"
       :label="filterDateLabel"
@@ -9,31 +10,38 @@
       @today="goToFilterToday"
       @clear="clearFilterDate"
     />
+
     <!-- Search Header -->
     <div class="search-page__head">
       <div class="search-page__input-area">
-        <div class="search-page__input-wrap">
-          <el-icon class="search-page__input-icon" :size="18"><Search /></el-icon>
+        <div class="search-page__input-wrap" :class="{ 'is-focused': inputFocused }">
+          <el-icon class="search-page__input-icon" :size="18">
+            <component :is="searching ? Loading : Search" :class="{ 'is-spinning': searching }" />
+          </el-icon>
           <input
             ref="inputRef"
             v-model="query"
             class="search-page__input"
-            placeholder="Search across issues, projects, bugs, pages..."
+            :placeholder="$t('search.placeholder') || 'Search across projects, issues, modules, bugs, pages...'"
             @input="onInput"
-            @focus="onInputFocus"
-            @blur="onInputBlur"
+            @focus="inputFocused = true"
+            @blur="inputFocused = false"
             @keydown="onInputKeydown"
           />
-          <el-icon v-if="query" class="search-page__clear" :size="16" @mousedown.prevent="clearSearch">
+          <span v-if="searching" class="search-page__searching-dot" />
+          <el-icon v-else-if="query" class="search-page__clear" :size="16" @mousedown.prevent="clearSearch">
             <CircleClose />
           </el-icon>
-          <kbd class="search-page__kbd">Ctrl K</kbd>
+          <kbd class="search-page__kbd">⌘K</kbd>
         </div>
 
-        <!-- Suggestions Dropdown -->
+        <!-- Recent Suggestions -->
         <Transition name="suggest">
           <div v-if="showSuggestions && suggestionItems.length" class="search-page__suggestions">
-            <div class="search-page__suggestions-head">Recent searches</div>
+            <div class="search-page__suggestions-head">
+              {{ query ? 'Suggestions' : 'Recent searches' }}
+              <button v-if="!query && recentSearches.length" class="search-page__suggestions-clear" @click="clearRecent">Clear</button>
+            </div>
             <button
               v-for="(s, i) in suggestionItems"
               :key="i"
@@ -41,14 +49,17 @@
               @mousedown.prevent="pickSuggestion(s)"
               @mouseenter="suggestionIdx = i"
             >
-              <el-icon :size="14"><Clock /></el-icon>
+              <el-icon :size="14"><Clock v-if="!query" /><Search v-else /></el-icon>
               <span v-html="highlightSuggestion(s)" />
+              <span v-if="!query" class="search-page__suggestion-remove" @mousedown.stop.prevent="removeRecent(i)">
+                <el-icon :size="12"><Close /></el-icon>
+              </span>
             </button>
           </div>
         </Transition>
       </div>
 
-      <!-- Toolbar -->
+      <!-- Active Filters Bar -->
       <div v-if="query" class="search-page__toolbar">
         <div class="search-page__type-filters">
           <button
@@ -64,7 +75,7 @@
         </div>
         <div class="search-page__toolbar-right">
           <select v-if="projectOptions.length > 1" v-model="projectFilter" class="search-page__project-select">
-            <option value="">All projects</option>
+            <option value="">All Projects</option>
             <option v-for="p in projectOptions" :key="p.key" :value="p.key">{{ p.name }}</option>
           </select>
           <div class="search-page__sort">
@@ -79,50 +90,67 @@
       </div>
     </div>
 
-    <!-- Loading -->
+    <!-- Loading State -->
     <div v-if="searching" class="search-page__loading">
+      <p class="search-page__loading-text">
+        Searching<template v-if="query"> for "<strong>{{ query }}</strong>"</template
+        ><span class="search-page__loading-dots"><span>.</span><span>.</span><span>.</span></span>
+      </p>
       <div v-for="i in 4" :key="i" class="search-page__skeleton">
         <div class="search-page__skeleton-icon" />
         <div class="search-page__skeleton-lines">
-          <div class="search-page__skeleton-line w-50" />
-          <div class="search-page__skeleton-line w-35" />
+          <div class="search-page__skeleton-line w-40" />
+          <div class="search-page__skeleton-line w-60" />
+          <div class="search-page__skeleton-line w-25" />
         </div>
       </div>
     </div>
 
+    <!-- Error State -->
+    <div v-else-if="searchError" class="search-page__error">
+      <div class="search-page__error-icon">
+        <el-icon :size="24"><WarningFilled /></el-icon>
+      </div>
+      <p class="search-page__error-text">Search failed. Please try again.</p>
+      <button class="search-page__error-retry" @click="doSearch">Retry</button>
+    </div>
+
     <!-- Results -->
     <div v-else-if="query && !searching" class="search-page__results">
+      <!-- Summary Bar -->
       <div class="search-page__summary">
         <template v-if="totalResults">
           <span class="search-page__summary-count">{{ totalResults }}</span>
-          {{ totalResults === 1 ? "result" : "results" }} for "<strong>{{ query }}</strong
-          >"
+          {{ totalResults === 1 ? 'result' : 'results' }} for "<strong>{{ query }}</strong>"
           <span v-if="searchMs !== null" class="search-page__summary-time">in {{ searchMs }}ms</span>
         </template>
         <span v-else class="search-page__summary-empty">
-          No results for "<strong>{{ query }}</strong
-          >"
+          No results for "<strong>{{ query }}</strong>"
           <span v-if="searchMs !== null" class="search-page__summary-time"> — searched in {{ searchMs }}ms</span>
         </span>
       </div>
 
+      <!-- Distribution Bar -->
       <div v-if="totalResults > 0 && !activeTypeFilter" class="search-page__distro">
         <button
           v-for="seg in distribution"
           :key="seg.type"
           class="search-page__distro-seg"
           :style="{ width: seg.pct + '%', background: seg.color }"
-          :title="`${seg.label}: ${seg.count} — click to filter`"
+          :title="`${seg.label}: ${seg.count}`"
           @click="activeTypeFilter = seg.type"
         />
       </div>
+
+      <!-- Active Filter Indicator -->
       <div v-if="activeTypeFilter" class="search-page__filter-active">
-        Filtered by <strong>{{ groupConfigs[activeTypeFilter]?.label }}</strong>
-        <button class="search-page__filter-clear" @click="activeTypeFilter = ''">Clear</button>
+        Show: <strong>{{ groupConfigs[activeTypeFilter]?.label }}</strong>
+        <button class="search-page__filter-clear" @click="activeTypeFilter = ''">× Clear</button>
       </div>
 
+      <!-- No Results with Actions -->
       <div v-if="totalResults === 0" class="search-page__no-results">
-        <p class="search-page__no-results-text">Try a different term, or create something new:</p>
+        <p class="search-page__no-results-text">Try a different term, or jump to:</p>
         <div class="search-page__no-results-links">
           <a v-for="ql in noResultsActions" :key="ql.path" class="search-page__no-results-link" :href="'#' + ql.path">
             <el-icon :size="14"><component :is="ql.icon" /></el-icon>
@@ -131,6 +159,7 @@
         </div>
       </div>
 
+      <!-- Result Groups -->
       <TransitionGroup name="group">
         <div v-for="group in sortedGroups" :key="group.type" class="search-page__group">
           <button class="search-page__group-head" @click="toggleGroup(group.type)">
@@ -163,6 +192,7 @@
                 <div class="search-page__item-title">
                   <span v-html="highlight(item.title)" />
                   <span class="search-page__item-key">{{ extractKey(item.id) }}</span>
+                  <span v-if="item.score != null" class="search-page__item-score">{{ Math.round(item.score) }}%</span>
                 </div>
                 <div class="search-page__item-meta">
                   <code v-if="item.project">{{ item.project }}</code>
@@ -172,14 +202,14 @@
                   <el-tag
                     v-for="b in item.badges"
                     :key="b.label"
-                    :type="b.type"
+                    :type="b.type || undefined"
                     size="small"
                     :effect="b.effect || 'plain'"
                     :disable-transitions="true"
                   >
                     {{ b.label }}
                   </el-tag>
-                  <span v-if="item.date" class="search-page__item-date">{{ item.date }}</span>
+                  <span v-if="item.date" class="search-page__item-date">{{ formatDate(item.date) }}</span>
                 </div>
                 <div v-if="item.detail" class="search-page__item-detail" v-html="highlight(truncate(item.detail, 140))" />
               </div>
@@ -190,15 +220,32 @@
       </TransitionGroup>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty State (no query) -->
     <div v-else class="search-page__empty">
       <div class="search-page__empty-icon">
         <el-icon :size="40"><Search /></el-icon>
       </div>
       <p class="search-page__scope">
-        Searching <strong>7</strong> collections across <strong>{{ projectStore.projects.length || "all" }}</strong> projects
+        Search across <strong>{{ typeFilters.length }}</strong> collections
+        <template v-if="projectStore.projects.length"> in <strong>{{ projectStore.projects.length }}</strong> projects</template>
       </p>
 
+      <!-- Example Searches -->
+      <div v-if="exampleSearches.length" class="search-page__examples">
+        <div class="search-page__recent-title">Try searching for</div>
+        <div class="search-page__examples-list">
+          <button
+            v-for="ex in exampleSearches"
+            :key="ex"
+            class="search-page__example-chip"
+            @click="searchRecent(ex)"
+          >
+            {{ ex }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Searches -->
       <div v-if="recentSearches.length" class="search-page__recent">
         <div class="search-page__recent-head">
           <span class="search-page__recent-title">Recent</span>
@@ -215,6 +262,7 @@
         </div>
       </div>
 
+      <!-- Quick Navigation -->
       <div class="search-page__quick-links">
         <div class="search-page__recent-title">Quick Navigation</div>
         <div class="search-page__quick-grid">
@@ -225,14 +273,14 @@
         </div>
       </div>
 
-      <p class="search-page__hint">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> from anywhere to focus search</p>
+      <p class="search-page__hint">Press <kbd>/</kbd> or <kbd>⌘</kbd> + <kbd>K</kbd> from anywhere to focus search</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts" name="globalSearch">
 import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute, onBeforeRouteLeave } from "vue-router";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import {
@@ -244,31 +292,18 @@ import {
   Plus,
   Tickets,
   Folder,
-  Calendar,
   Box,
   WarningFilled,
   Document,
-  Collection
+  Collection,
+  Loading
 } from "@element-plus/icons-vue";
-import {
-  getIssueList,
-  ISSUE_STATUS_MAP,
-  ISSUE_TYPE_MAP,
-  ISSUE_PRIORITY_MAP,
-  issueStatusTag,
-  issueTypeTag
-} from "@/api/modules/issueService";
-import type { Issue, IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
-import { getModuleList, MODULE_STATUS_MAP } from "@/api/modules/moduleService";
-import type { Module, ModuleStatus } from "@/api/modules/moduleService";
-import { getPageList } from "@/api/modules/pageService";
-import type { Page } from "@/api/modules/pageService";
-import { getBugList } from "@/api/modules/bug";
-import type { BugDocument, BugSeverity, BugStatus } from "@/api/modules/bug";
+import { unifiedSearch } from "@/api/modules/searchService";
+import type { UnifiedSearchItem, UnifiedSearchBadge } from "@/api/modules/searchService";
 import { useProjectStore } from "@/stores/modules/project";
 
 const RECENT_KEY = "global_search_recent";
-const MAX_RECENT = 6;
+const MAX_RECENT = 8;
 
 const router = useRouter();
 const route = useRoute();
@@ -276,32 +311,33 @@ const projectStore = useProjectStore();
 
 // ── State ──
 const query = ref("");
+const inputFocused = ref(false);
+const searching = ref(false);
+const searchError = ref(false);
+const searchMs = ref<number | null>(null);
+const inputRef = ref<HTMLInputElement | null>(null);
+const itemRefs: Record<number, HTMLElement> = {};
+const activeTypeFilter = ref("");
+const activeIdx = ref(-1);
+const sortBy = ref<"relevance" | "recent">("relevance");
+const projectFilter = ref("");
+const collapsedGroups = reactive(new Set<string>());
+const showSuggestions = ref(false);
+const suggestionIdx = ref(-1);
+let abortController: AbortController | null = null;
+let searchSeq = 0;
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 // ── Date filter ──
 const filterDate = ref<Date | null>(null);
 const {
   label: filterDateLabel,
   isToday: isFilterToday,
-  filterDateStr,
   goToPrevDay,
   goToNextDay,
   goToFilterToday,
   clearFilterDate
 } = useDateFilter(filterDate);
-const searching = ref(false);
-const activeTypeFilter = ref("");
-const activeIdx = ref(-1);
-const sortBy = ref<"relevance" | "recent">("relevance");
-const projectFilter = ref("");
-const searchMs = ref<number | null>(null);
-const inputRef = ref<HTMLInputElement | null>(null);
-const itemRefs: Record<number, HTMLElement> = {};
-const collapsedGroups = reactive(new Set<string>());
-const showSuggestions = ref(false);
-const suggestionIdx = ref(-1);
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-let searchSeq = 0;
-let blurTimer: ReturnType<typeof setTimeout> | null = null;
 
 // ── URL sync ──
 const initialQ = (route.query.q as string) || "";
@@ -322,30 +358,54 @@ watch(query, val => {
 // ── Project options ──
 const projectOptions = computed(() => projectStore.projects.map(p => ({ key: p.key, name: p.name })));
 
+// ── Type config ──
+const typeFilters = [
+  { key: "issue", label: "Issues", icon: Tickets },
+  { key: "project", label: "Projects", icon: Folder },
+  { key: "module", label: "Modules", icon: Collection },
+  { key: "bug", label: "Bugs", icon: WarningFilled },
+  { key: "page", label: "Pages", icon: Document }
+];
+
+const groupConfigs: Record<string, { label: string; icon: any; color: string }> = {
+  issue: { label: "Issues", icon: Tickets, color: "#409eff" },
+  project: { label: "Projects", icon: Folder, color: "#5470c6" },
+  module: { label: "Modules", icon: Collection, color: "#9b59b6" },
+  bug: { label: "Bugs", icon: WarningFilled, color: "#f56c6c" },
+  page: { label: "Pages", icon: Document, color: "#67c23a" }
+};
+
+const quickLinks = [
+  { label: "Issues", icon: Tickets, path: "/issue" },
+  { label: "Projects", icon: Folder, path: "/project" },
+  { label: "Kanban", icon: Box, path: "/kanban" },
+  { label: "Pages", icon: Document, path: "/page" },
+  { label: "Bugs", icon: WarningFilled, path: "/bug" },
+  { label: "Modules", icon: Collection, path: "/module" }
+];
+
+const exampleSearches = ["login bug", "API performance", "user dashboard", "deployment error", "database schema"];
+
+const noResultsActions = [
+  { label: "New Issue", icon: Plus, path: "/issue" },
+  { label: "New Bug", icon: Plus, path: "/bug" },
+  { label: "All Issues", icon: Tickets, path: "/issue" },
+  { label: "All Bugs", icon: WarningFilled, path: "/bug" },
+  { label: "All Pages", icon: Document, path: "/page" }
+];
+
 // ── Suggestions ──
 const suggestionItems = computed(() => {
   const q = query.value.trim().toLowerCase();
-  if (!q) return recentSearches.value.slice(0, 5);
-  return recentSearches.value.filter(r => r.toLowerCase().includes(q)).slice(0, 5);
+  if (!q) return recentSearches.value.slice(0, 8);
+  return recentSearches.value.filter(r => r.toLowerCase().includes(q)).slice(0, 8);
 });
 
 function onInput() {
   suggestionIdx.value = -1;
   showSuggestions.value = true;
+  searchError.value = false;
   debouncedSearch();
-}
-
-function onInputFocus() {
-  if (blurTimer) clearTimeout(blurTimer);
-  if (!query.value || suggestionItems.value.length) {
-    showSuggestions.value = true;
-  }
-}
-
-function onInputBlur() {
-  blurTimer = setTimeout(() => {
-    showSuggestions.value = false;
-  }, 150);
 }
 
 function pickSuggestion(s: string) {
@@ -356,10 +416,9 @@ function pickSuggestion(s: string) {
 
 function highlightSuggestion(text: string): string {
   const q = query.value.trim();
-  if (!q) return text;
-  const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  if (!q) return escapeHtml(text);
   const qe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return escaped.replace(new RegExp(`(${qe})`, "gi"), "<mark>$1</mark>");
+  return escapeHtml(text).replace(new RegExp(`(${qe})`, "gi"), "<mark>$1</mark>");
 }
 
 // ── Recent Searches ──
@@ -395,206 +454,70 @@ function removeRecent(idx: number) {
 
 function searchRecent(q: string) {
   query.value = q;
+  showSuggestions.value = false;
   doSearch();
 }
 
-// ── Config ──
-const typeFilters = [
-  { key: "issue", label: "Issues", icon: Tickets },
-  { key: "project", label: "Projects", icon: Folder },
-  { key: "module", label: "Modules", icon: Collection },
-  { key: "bug", label: "Bugs", icon: WarningFilled },
-  { key: "page", label: "Pages", icon: Document }
-];
-
-const quickLinks = [
-  { label: "Issues", icon: Tickets, path: "/issue" },
-  { label: "Projects", icon: Folder, path: "/project" },
-  { label: "Kanban", icon: Box, path: "/kanban" },
-  { label: "Pages", icon: Document, path: "/page" },
-  { label: "Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "Modules", icon: Collection, path: "/module" }
-];
-
-const noResultsActions = [
-  { label: "New Issue", icon: Plus, path: "/issue" },
-  { label: "New Bug", icon: Plus, path: "/bug" },
-  { label: "Open Issues", icon: Tickets, path: "/issue" },
-  { label: "Open Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "Open Pages", icon: Document, path: "/page" }
-];
-
-const groupConfigs: Record<string, { label: string; icon: any; color: string }> = {
-  issue: { label: "Issues", icon: Tickets, color: "#409eff" },
-  project: { label: "Projects", icon: Folder, color: "#5470c6" },
-  module: { label: "Modules", icon: Collection, color: "#9b59b6" },
-  bug: { label: "Bugs", icon: WarningFilled, color: "#f56c6c" },
-  page: { label: "Pages", icon: Document, color: "#909399" }
-};
-
-function toggleGroup(type: string) {
-  if (collapsedGroups.has(type)) collapsedGroups.delete(type);
-  else collapsedGroups.add(type);
-}
-
-function extractKey(id: string): string {
-  const parts = id.split("-");
-  return parts.length > 1 ? parts.slice(1).join("-") : id;
-}
-
-// ── Badge helpers ──
-type Badge = { label: string; type?: "primary" | "success" | "warning" | "danger" | "info"; effect?: "plain" | "dark" };
-
-const BUG_SEVERITY_TAG: Record<BugSeverity, Badge["type"]> = {
-  critical: "danger",
-  major: "warning",
-  minor: "info",
-  trivial: undefined
-};
-const BUG_STATUS_TAG: Record<BugStatus, Badge["type"]> = {
-  open: "danger",
-  in_progress: "warning",
-  resolved: "success",
-  closed: "info",
-  rejected: "danger",
-  reopened: "warning"
-};
-const MODULE_STATUS_TAG: Record<ModuleStatus, Badge["type"]> = {
-  planned: "info",
-  in_progress: "primary",
-  completed: "success",
-  cancelled: "danger"
-};
-
-function issueBadges(i: Issue): Badge[] {
-  const badges: Badge[] = [];
-  if (i.issue_type) badges.push({ label: ISSUE_TYPE_MAP[i.issue_type] || i.issue_type, type: issueTypeTag(i.issue_type) });
-  if (i.status) badges.push({ label: ISSUE_STATUS_MAP[i.status] || i.status, type: issueStatusTag(i.status) });
-  if (i.priority && i.priority !== "none")
-    badges.push({
-      label: ISSUE_PRIORITY_MAP[i.priority] || i.priority,
-      type: i.priority === "urgent" ? "danger" : i.priority === "high" ? "warning" : "info"
-    });
-  return badges;
-}
-
-function bugBadges(b: BugDocument): Badge[] {
-  const badges: Badge[] = [];
-  if (b.severity) badges.push({ label: b.severity, type: BUG_SEVERITY_TAG[b.severity], effect: "dark" });
-  if (b.status) badges.push({ label: b.status.replace(/_/g, " "), type: BUG_STATUS_TAG[b.status] });
-  if (b.priority)
-    badges.push({ label: b.priority, type: b.priority === "p0" ? "danger" : b.priority === "p1" ? "warning" : "info" });
-  return badges;
-}
-
-function moduleBadges(m: Module): Badge[] {
-  return m.status ? [{ label: MODULE_STATUS_MAP[m.status] || m.status, type: MODULE_STATUS_TAG[m.status] }] : [];
-}
-
-// ── Relative time ──
-const REL_TIME = new Intl.RelativeTimeFormat("en", { numeric: "auto", style: "narrow" });
-
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return REL_TIME.format(-mins, "minute");
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return REL_TIME.format(-hours, "hour");
-  const days = Math.floor(hours / 24);
-  if (days < 30) return REL_TIME.format(-days, "day");
-  const months = Math.floor(days / 30);
-  return REL_TIME.format(-months, "month");
-}
-
-function dateFromTs(ts: number): string {
-  return relativeTime(new Date(ts).toISOString());
-}
-
-// ── Data types ──
-interface SearchItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  detail?: string;
-  project: string;
-  link: string;
-  badges: Badge[];
-  date: string;
-  _idx: number;
-  _ts: number;
-}
-
-interface ResultGroup {
-  type: string;
-  label: string;
-  icon: any;
-  color: string;
-  items: SearchItem[];
-}
-
 // ── Results ──
-const allResults = ref<SearchItem[]>([]);
+const allResults = ref<UnifiedSearchItem[]>([]);
 
 const filteredResults = computed(() => {
-  if (!projectFilter.value) return allResults.value;
-  return allResults.value.filter(item => item.project === projectFilter.value);
+  let results = allResults.value;
+  if (projectFilter.value) {
+    results = results.filter(item => item.project === projectFilter.value);
+  }
+  if (activeTypeFilter.value) {
+    results = results.filter(item => item.type === activeTypeFilter.value);
+  }
+  return results;
 });
 
 const typeCounts = computed(() => {
   const counts: Record<string, number> = {};
-  filteredResults.value.forEach(item => {
-    const type = classifyType(item.id);
-    counts[type] = (counts[type] || 0) + 1;
+  allResults.value.forEach(item => {
+    counts[item.type] = (counts[item.type] || 0) + 1;
   });
   return counts;
 });
 
 const distribution = computed(() => {
-  const total = filteredResults.value.length;
-  if (!total) return [];
+  if (!allResults.value.length) return [];
   return ["issue", "project", "module", "bug", "page"]
     .map(type => ({ type, count: typeCounts.value[type] || 0 }))
     .filter(s => s.count > 0)
     .map(s => {
       const cfg = groupConfigs[s.type];
-      return { ...s, label: cfg.label, color: cfg.color, pct: Math.max((s.count / total) * 100, 2) };
+      return { ...s, label: cfg.label, color: cfg.color, pct: Math.max((s.count / allResults.value.length) * 100, 2) };
     });
 });
 
-function classifyType(id: string): string {
-  const prefix = id.split("-")[0].toLowerCase();
-  const map: Record<string, string> = { iss: "issue", proj: "project", mod: "module", bug: "bug", pag: "page" };
-  return map[prefix] || "page";
-}
-
-const resultGroups = computed<ResultGroup[]>(() => {
-  const groups: Record<string, SearchItem[]> = {};
+const resultGroups = computed(() => {
+  const groups: Record<string, UnifiedSearchItem[]> = {};
   filteredResults.value.forEach(item => {
-    const type = classifyType(item.id);
-    (groups[type] ||= []).push(item);
+    (groups[item.type] ||= []).push(item);
   });
 
   return ["issue", "project", "module", "bug", "page"]
     .map(type => ({ ...groupConfigs[type], type, items: groups[type] || [] }))
-    .filter(g => {
-      if (activeTypeFilter.value && g.type !== activeTypeFilter.value) return false;
-      return g.items.length > 0;
-    });
+    .filter(g => g.items.length > 0);
 });
 
 const sortedGroups = computed(() => {
   return resultGroups.value.map(g => {
     const items = [...g.items];
-    if (sortBy.value === "recent") items.sort((a, b) => b._ts - a._ts);
+    if (sortBy.value === "recent") {
+      items.sort((a, b) => b._ts - a._ts);
+    } else {
+      items.sort((a, b) => (b.score || 0) - (a.score || 0));
+    }
     return { ...g, items };
   });
 });
 
 const totalResults = computed(() => filteredResults.value.length);
 
-function flattenItems(): SearchItem[] {
-  const items: SearchItem[] = [];
+function flattenItems(): UnifiedSearchItem[] {
+  const items: UnifiedSearchItem[] = [];
   sortedGroups.value.forEach(g => {
     if (!collapsedGroups.has(g.type)) items.push(...g.items);
   });
@@ -619,16 +542,22 @@ function scrollToActive() {
   });
 }
 
-// ── Search ──
+function toggleGroup(type: string) {
+  if (collapsedGroups.has(type)) collapsedGroups.delete(type);
+  else collapsedGroups.add(type);
+}
+
+// ── Search Logic ──
 function debouncedSearch() {
   if (debounceTimer) clearTimeout(debounceTimer);
   if (!query.value.trim()) {
     allResults.value = [];
     activeIdx.value = -1;
     searchMs.value = null;
+    searchError.value = false;
     return;
   }
-  debounceTimer = setTimeout(doSearch, 250);
+  debounceTimer = setTimeout(doSearch, 200);
 }
 
 async function doSearch() {
@@ -639,8 +568,13 @@ async function doSearch() {
     return;
   }
 
+  // Cancel previous request
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+
   const seq = ++searchSeq;
   searching.value = true;
+  searchError.value = false;
   activeTypeFilter.value = "";
   projectFilter.value = "";
   collapsedGroups.clear();
@@ -648,131 +582,25 @@ async function doSearch() {
   const t0 = performance.now();
 
   try {
-    const results: SearchItem[] = [];
-    const lower = q.toLowerCase();
-
-    if (projectStore.projects.length) {
-      projectStore.projects.forEach(p => {
-        if (p.name.toLowerCase().includes(lower) || p.identifier.toLowerCase().includes(lower)) {
-          results.push({
-            id: `proj-${p.key}`,
-            title: p.name,
-            subtitle: p.identifier,
-            detail: p.description,
-            project: p.key,
-            link: `/project/${p.key}`,
-            badges: p.status === "archived" ? [{ label: "Archived", type: "info" }] : [{ label: "Active", type: "success" }],
-            date: relativeTime(p.updated_at),
-            _idx: 0,
-            _ts: new Date(p.updated_at).getTime()
-          });
-        }
-      });
-    }
-
-    try {
-      const issueRes = await getIssueList({ search: q, pageSize: 30 });
-      if (seq !== searchSeq) return;
-      ((issueRes.data?.list as Issue[]) ?? []).forEach(i => {
-        results.push({
-          id: `iss-${i.key}`,
-          title: i.title,
-          subtitle: [i.assignee, i.due_date ? `Due ${i.due_date}` : ""].filter(Boolean).join(" · ") || i.issue_type,
-          detail: i.description,
-          project: i.project_key,
-          link: `/issue/${i.key}`,
-          badges: issueBadges(i),
-          date: relativeTime(i.updated_at),
-          _idx: 0,
-          _ts: new Date(i.updated_at).getTime()
-        });
-      });
-    } catch {
-      /* ignore */
-    }
+    const data = await unifiedSearch(q, undefined, 40, abortController.signal);
     if (seq !== searchSeq) return;
 
-    try {
-      const modRes = await getModuleList({ pageSize: 50 });
-      if (seq !== searchSeq) return;
-      ((modRes.data?.list as Module[]) ?? [])
-        .filter(m => m.name.toLowerCase().includes(lower) || (m.description || "").toLowerCase().includes(lower))
-        .forEach(m => {
-          results.push({
-            id: `mod-${m.key}`,
-            title: m.name,
-            subtitle: [m.lead ? `Lead: ${m.lead}` : "", m.issue_keys?.length ? `${m.issue_keys.length} issues` : ""]
-              .filter(Boolean)
-              .join(" · "),
-            detail: m.description,
-            project: m.project_key,
-            link: `/module/${m.key}`,
-            badges: moduleBadges(m),
-            date: relativeTime(m.updated_at),
-            _idx: 0,
-            _ts: new Date(m.updated_at).getTime()
-          });
-        });
-    } catch {
-      /* ignore */
-    }
-    if (seq !== searchSeq) return;
+    allResults.value = data.results || [];
+    searchMs.value = data.timing?.total_ms ?? Math.round(performance.now() - t0);
 
-    try {
-      const pageRes = await getPageList({ search: q, pageSize: 30 });
-      if (seq !== searchSeq) return;
-      ((pageRes.data?.list as Page[]) ?? []).forEach(p => {
-        results.push({
-          id: `pag-${p.key}`,
-          title: p.title,
-          subtitle: p.project_key,
-          detail: p.content?.slice(0, 200),
-          project: p.project_key,
-          link: `/page`,
-          badges: [],
-          date: relativeTime(p.updated_at),
-          _idx: 0,
-          _ts: new Date(p.updated_at).getTime()
-        });
-      });
-    } catch {
-      /* ignore */
-    }
+    if (allResults.value.length > 0) saveRecent(q);
+  } catch (e: any) {
+    if (e?.name === "AbortError") return;
     if (seq !== searchSeq) return;
-
-    if (seq !== searchSeq) return;
-
-    try {
-      const bugRes = await getBugList({ search: q, pageSize: 30 });
-      if (seq !== searchSeq) return;
-      ((bugRes.data?.list as BugDocument[]) ?? []).forEach(b => {
-        results.push({
-          id: `bug-${b.key}`,
-          title: b.title,
-          subtitle: [b.assignee ? `Assignee: ${b.assignee}` : "", b.module].filter(Boolean).join(" · "),
-          detail: b.description,
-          project: b.project_key || b.project,
-          link: `/bug/${b.key}`,
-          badges: bugBadges(b),
-          date: dateFromTs(b.updatedAt),
-          _idx: 0,
-          _ts: b.updatedAt
-        });
-      });
-    } catch {
-      /* ignore */
-    }
-    if (seq !== searchSeq) return;
-
-    allResults.value = results;
-    searchMs.value = Math.round(performance.now() - t0);
-    if (results.length > 0) saveRecent(q);
+    searchError.value = true;
+    allResults.value = [];
+    searchMs.value = null;
   } finally {
     if (seq === searchSeq) searching.value = false;
   }
 }
 
-// ── Actions ──
+// ── Utilities ──
 function clearSearch() {
   query.value = "";
   allResults.value = [];
@@ -780,13 +608,18 @@ function clearSearch() {
   projectFilter.value = "";
   activeIdx.value = -1;
   searchMs.value = null;
+  searchError.value = false;
   collapsedGroups.clear();
   inputRef.value?.focus();
 }
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function highlight(text: string | undefined): string {
   if (!text || !query.value) return text || "";
-  const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const escaped = escapeHtml(text);
   const q = query.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return escaped.replace(new RegExp(`(${q})`, "gi"), "<mark>$1</mark>");
 }
@@ -795,12 +628,35 @@ function truncate(text: string, max: number): string {
   return text.length > max ? text.slice(0, max) + "..." : text;
 }
 
+function extractKey(id: string): string {
+  const parts = id.split("-");
+  return parts.length > 1 ? parts.slice(1).join("-") : id;
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days}d ago`;
+    if (days < 30) return `${Math.floor(days / 7)}w ago`;
+    return dateStr;
+  } catch {
+    return dateStr;
+  }
+}
+
 function goTo(link: string) {
   router.push(link);
 }
 
 // ── Keyboard ──
 function onInputKeydown(e: KeyboardEvent) {
+  // Suggestions navigation
   if (showSuggestions.value && suggestionItems.value.length) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -819,6 +675,7 @@ function onInputKeydown(e: KeyboardEvent) {
     }
   }
 
+  // Results navigation
   const flat = flattenItems();
   if (e.key === "ArrowDown") {
     e.preventDefault();
@@ -832,10 +689,18 @@ function onInputKeydown(e: KeyboardEvent) {
       activeIdx.value = (activeIdx.value - 1 + flat.length) % flat.length;
       scrollToActive();
     }
-  } else if (e.key === "Enter") {
+  } else if (e.key === "Enter" && !(showSuggestions.value && suggestionIdx.value >= 0)) {
     e.preventDefault();
     const item = flat[activeIdx.value];
     if (item) goTo(item.link);
+  } else if (e.key === "Escape") {
+    if (showSuggestions.value) {
+      showSuggestions.value = false;
+    } else if (query.value) {
+      clearSearch();
+    } else {
+      inputRef.value?.blur();
+    }
   }
 }
 
@@ -843,765 +708,68 @@ function globalKeydown(e: KeyboardEvent) {
   if ((e.metaKey || e.ctrlKey) && e.key === "k") {
     e.preventDefault();
     inputRef.value?.focus();
+    return;
+  }
+  // "/" shortcut — only when not already typing in an input
+  if (e.key === "/" && !isEditingInput(e.target as HTMLElement)) {
+    e.preventDefault();
+    inputRef.value?.focus();
+  }
+}
+
+function isEditingInput(el: HTMLElement | null): boolean {
+  if (!el) return false;
+  const tag = el.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  return (el as HTMLElement).isContentEditable ?? false;
+}
+
+const SCROLL_KEY = "global_search_scroll";
+
+function onClickOutside(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  if (showSuggestions.value && !target.closest(".search-page__suggestions") && !target.closest(".search-page__input-wrap")) {
+    showSuggestions.value = false;
+  }
+}
+
+function saveScrollPosition() {
+  const el = document.querySelector(".search-page");
+  if (el) sessionStorage.setItem(SCROLL_KEY, String(el.scrollTop));
+}
+
+function restoreScrollPosition() {
+  const saved = sessionStorage.getItem(SCROLL_KEY);
+  if (saved) {
+    nextTick(() => {
+      const el = document.querySelector(".search-page");
+      if (el) el.scrollTop = Number(saved);
+    });
+    sessionStorage.removeItem(SCROLL_KEY);
   }
 }
 
 onMounted(() => {
-  if (!initialQ) inputRef.value?.focus();
+  if (!initialQ) {
+    inputRef.value?.focus();
+  } else {
+    restoreScrollPosition();
+  }
   document.addEventListener("keydown", globalKeydown);
+  document.addEventListener("mousedown", onClickOutside);
 });
 
 onUnmounted(() => {
   document.removeEventListener("keydown", globalKeydown);
+  document.removeEventListener("mousedown", onClickOutside);
+});
+
+onBeforeRouteLeave((_to, _from, next) => {
+  saveScrollPosition();
+  next();
 });
 </script>
 
 <style scoped lang="scss">
-.search-page {
-  max-width: 740px;
-  height: calc(100vh - 95px);
-  padding: 32px 24px 48px;
-  margin: 0 auto;
-  overflow-y: auto;
-}
-
-// -- Input --
-.search-page__head {
-  margin-bottom: 24px;
-}
-.search-page__input-area {
-  position: relative;
-}
-.search-page__input-wrap {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 12px;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-  &:focus-within {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 0 0 3px var(--el-color-primary-light-8);
-  }
-}
-.search-page__input-icon {
-  flex-shrink: 0;
-  color: var(--el-text-color-placeholder);
-}
-.search-page__input {
-  flex: 1;
-  font-size: 16px;
-  color: var(--el-text-color-primary);
-  outline: none;
-  background: transparent;
-  border: none;
-  &::placeholder {
-    font-size: 15px;
-    color: var(--el-text-color-placeholder);
-  }
-}
-.search-page__clear {
-  flex-shrink: 0;
-  padding: 4px;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  border-radius: 4px;
-  &:hover {
-    color: var(--el-text-color-secondary);
-    background: var(--el-fill-color);
-  }
-}
-.search-page__kbd {
-  flex-shrink: 0;
-  padding: 2px 8px;
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
-  border-radius: 4px;
-}
-
-// -- Suggestions dropdown --
-.search-page__suggestions {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  left: 0;
-  z-index: 100;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
-}
-.search-page__suggestions-head {
-  padding: 10px 14px 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-placeholder);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.search-page__suggestion {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  width: 100%;
-  padding: 8px 14px;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-  text-align: left;
-  cursor: pointer;
-  background: none;
-  border: none;
-  transition: background 0.1s;
-  :deep(mark) {
-    padding: 0 2px;
-    color: inherit;
-    background: var(--el-color-warning-light-5);
-    border-radius: 2px;
-  }
-  &:hover,
-  &.is-active {
-    color: var(--el-text-color-primary);
-    background: var(--el-fill-color-light);
-  }
-}
-.suggest-enter-active {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-.suggest-leave-active {
-  transition: opacity 0.1s ease;
-}
-.suggest-enter-from {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-.suggest-leave-to {
-  opacity: 0;
-}
-
-// -- Toolbar --
-.search-page__toolbar {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-top: 12px;
-}
-.search-page__type-filters {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.search-page__filter-btn {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    color: var(--el-color-primary);
-    border-color: var(--el-color-primary-light-5);
-  }
-  &.is-active {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary);
-  }
-}
-.search-page__filter-count {
-  min-width: 18px;
-  padding: 0 5px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-  text-align: center;
-  background: var(--el-fill-color);
-  border-radius: 10px;
-  .is-active & {
-    color: #ffffff;
-    background: var(--el-color-primary);
-  }
-}
-.search-page__toolbar-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 8px;
-  align-items: center;
-}
-.search-page__project-select {
-  max-width: 140px;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  appearance: none;
-  cursor: pointer;
-  outline: none;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  transition: border-color 0.15s;
-  &:hover {
-    border-color: var(--el-color-primary-light-5);
-  }
-  &:focus {
-    border-color: var(--el-color-primary);
-  }
-}
-.search-page__sort {
-  display: flex;
-  flex-shrink: 0;
-  gap: 2px;
-  padding: 2px;
-  background: var(--el-fill-color);
-  border-radius: 8px;
-}
-.search-page__sort-btn {
-  padding: 4px 10px;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  transition: all 0.15s;
-  &.is-active {
-    color: var(--el-text-color-primary);
-    background: var(--el-bg-color);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
-  }
-  &:hover:not(.is-active) {
-    color: var(--el-text-color-secondary);
-  }
-}
-
-// -- Loading --
-.search-page__loading {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.search-page__skeleton {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 12px;
-}
-.search-page__skeleton-icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  background: var(--el-fill-color);
-  border-radius: 8px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-.search-page__skeleton-lines {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-}
-.search-page__skeleton-line {
-  height: 12px;
-  background: var(--el-fill-color);
-  border-radius: 4px;
-  animation: pulse 1.5s ease-in-out infinite;
-  &.w-50 {
-    width: 50%;
-  }
-  &.w-35 {
-    width: 35%;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-// -- Results --
-.search-page__results {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.search-page__summary {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  strong {
-    color: var(--el-text-color-primary);
-  }
-}
-.search-page__summary-count {
-  margin-right: 2px;
-  font-weight: 700;
-  color: var(--el-color-primary);
-}
-.search-page__summary-time {
-  margin-left: 6px;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-.search-page__summary-empty {
-  color: var(--el-text-color-placeholder);
-}
-
-// Distribution bar
-.search-page__distro {
-  display: flex;
-  gap: 1px;
-  height: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--el-fill-color);
-  border-radius: 3px;
-}
-.search-page__distro-seg {
-  display: block;
-  min-width: 2px;
-  padding: 0;
-  cursor: pointer;
-  border: none;
-  border-radius: 3px;
-  transition:
-    width 0.3s ease,
-    opacity 0.15s;
-  &:hover {
-    opacity: 0.8;
-  }
-}
-.search-page__filter-active {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  strong {
-    color: var(--el-text-color-primary);
-  }
-}
-.search-page__filter-clear {
-  padding: 0;
-  font-size: 11px;
-  color: var(--el-color-primary);
-  cursor: pointer;
-  background: none;
-  border: none;
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-// No results
-.search-page__no-results {
-  padding: 8px 0;
-}
-.search-page__no-results-text {
-  margin: 0 0 12px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-}
-.search-page__no-results-links {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-.search-page__no-results-link {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  text-decoration: none;
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-
-// Group
-.search-page__group {
-  display: flex;
-  flex-direction: column;
-}
-.search-page__group-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 6px 4px 8px;
-  margin-bottom: 4px;
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  &:hover {
-    .search-page__group-title {
-      color: var(--el-text-color-primary);
-    }
-  }
-}
-.search-page__group-label {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-.search-page__group-chevron {
-  flex-shrink: 0;
-  color: var(--el-text-color-placeholder);
-  transition: transform 0.2s;
-  &.is-open {
-    transform: rotate(90deg);
-  }
-}
-.search-page__group-dot {
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.search-page__group-title {
-  transition: color 0.15s;
-}
-.search-page__group-count {
-  padding: 1px 8px;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
-  border-radius: 10px;
-}
-.search-page__group-items {
-  display: flex;
-  flex-direction: column;
-}
-
-// Item
-.search-page__item {
-  --accent: var(--el-border-color);
-
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 10px 8px 10px 10px;
-  color: inherit;
-  text-decoration: none;
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  border-radius: 8px;
-  transition:
-    background 0.1s,
-    box-shadow 0.15s;
-  &:hover {
-    background: var(--el-bg-color);
-    border-left-color: var(--accent);
-    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
-  }
-  &.is-active {
-    background: var(--el-color-primary-light-9);
-    border-left-color: var(--accent);
-  }
-}
-.search-page__item-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
-  color: #ffffff;
-  border-radius: 8px;
-}
-.search-page__item-body {
-  flex: 1;
-  min-width: 0;
-}
-.search-page__item-title {
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
-  :deep(mark) {
-    padding: 0 2px;
-    color: inherit;
-    background: var(--el-color-warning-light-5);
-    border-radius: 2px;
-  }
-}
-.search-page__item-key {
-  flex-shrink: 0;
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  opacity: 0;
-  transition: opacity 0.15s;
-  .search-page__item:hover & {
-    opacity: 1;
-  }
-}
-.search-page__item-meta {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 3px;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  code {
-    padding: 0 5px;
-    font-size: 11px;
-    color: var(--el-text-color-secondary);
-    background: var(--el-fill-color);
-    border-radius: 3px;
-  }
-}
-.search-page__item-subtitle {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.search-page__item-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  align-items: center;
-  margin-top: 5px;
-}
-.search-page__item-date {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-.search-page__item-detail {
-  display: -webkit-box;
-  margin-top: 4px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--el-text-color-secondary);
-  -webkit-box-orient: vertical;
-  :deep(mark) {
-    padding: 0 2px;
-    color: inherit;
-    background: var(--el-color-warning-light-5);
-    border-radius: 2px;
-  }
-}
-.search-page__item-enter {
-  flex-shrink: 0;
-  margin-top: 10px;
-  color: var(--el-text-color-placeholder);
-}
-
-// -- Transitions --
-.group-enter-active {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-.group-leave-active {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-.group-enter-from {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-.group-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-.item-enter-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-.item-leave-active {
-  transition: opacity 0.15s ease;
-}
-.item-enter-from {
-  opacity: 0;
-  transform: translateX(-6px);
-}
-.item-leave-to {
-  opacity: 0;
-}
-
-// -- Empty State --
-.search-page__empty {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  padding: 40px 0 0;
-}
-.search-page__empty-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color-light);
-  border-radius: 20px;
-}
-.search-page__scope {
-  margin: 0;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  strong {
-    color: var(--el-text-color-primary);
-  }
-}
-.search-page__recent {
-  width: 100%;
-  max-width: 480px;
-}
-.search-page__recent-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.search-page__recent-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--el-text-color-placeholder);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.search-page__recent-clear {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: none;
-  border: none;
-  &:hover {
-    color: var(--el-color-danger);
-  }
-}
-.search-page__recent-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.search-page__recent-item {
-  display: inline-flex;
-  gap: 0;
-  align-items: center;
-  overflow: hidden;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.search-page__recent-clock {
-  flex-shrink: 0;
-  margin: 0 6px;
-  color: var(--el-text-color-placeholder);
-}
-.search-page__recent-text {
-  padding: 6px 0;
-  cursor: pointer;
-  &:hover {
-    color: var(--el-color-primary);
-  }
-}
-.search-page__recent-remove {
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  justify-content: center;
-  width: 26px;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-left: 1px solid var(--el-border-color);
-  &:hover {
-    color: var(--el-color-danger);
-    background: var(--el-color-danger-light-9);
-  }
-}
-.search-page__quick-links {
-  width: 100%;
-  max-width: 480px;
-}
-.search-page__quick-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-.search-page__quick-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  padding: 14px 8px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  text-decoration: none;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 10px;
-  transition: all 0.15s;
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.search-page__hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  kbd {
-    padding: 1px 5px;
-    font-family: ui-monospace, monospace;
-    font-size: 11px;
-    background: var(--el-fill-color);
-    border-radius: 3px;
-  }
-}
+@use "./styles/search.scss";
 </style>

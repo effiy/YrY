@@ -22,6 +22,12 @@ related_prds:
   - projects/yivad/prds/2026-09/01-prd-列表组件体系.md
   - projects/yivad/prds/2026-09/02-prd-表单组件体系.md
   - projects/yivad/prds/2026-09/85-prd-多语言专项优化与补充.md
+source: YiVad
+category: projects/yivad/okrs
+tags: [yivad, okr]
+created: 2026-09-02
+benefit: "OKR 目标与关键结果"
+lifecycle: active
 ---
 
 # 全项目视图优化与体验提升

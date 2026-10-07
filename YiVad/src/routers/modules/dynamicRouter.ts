@@ -42,19 +42,25 @@ export const initDynamicRouter = async () => {
     // 3. Add dynamic routes
     authStore.flatMenuListGet.forEach(item => {
       item.children && delete item.children;
+
+      const route = {
+        path: item.path,
+        name: item.name,
+        meta: item.meta as any
+      } as RouteRecordRaw;
+
       if (item.component && typeof item.component == "string") {
         const resolved = modules["/src/views" + item.component + ".vue"];
-        // Skip menu entries whose view file is missing — a static route with the same name/path will handle them, otherwise 404.
         if (!resolved) return;
-        item.component = resolved;
+        route.component = resolved;
       } else if (item.redirect && !item.component) {
-        // Menu group headers — redirect-only, no component needed.
-        delete item.component;
+        route.redirect = item.redirect;
       }
+
       if (item.meta.isFull) {
-        router.addRoute(item as unknown as RouteRecordRaw);
+        router.addRoute(route);
       } else {
-        router.addRoute("layout", item as unknown as RouteRecordRaw);
+        router.addRoute("layout", route);
       }
     });
   } catch (error) {

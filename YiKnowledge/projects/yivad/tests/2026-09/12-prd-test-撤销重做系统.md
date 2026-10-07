@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "撤销重做系统 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-33"
 source_prds: ["12-prd-撤销重做系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 撤销重做系统]
+benefit: "测试用例：撤销重做系统"
+lifecycle: active
 ---
 # 撤销重做系统 — 测试规格
 

@@ -83,16 +83,16 @@ export interface RoleMeta {
 }
 
 // ── Role IDs ───────────────────────────────────
-export const ROLE_IDS = ["executiver", "producter", "leader", "engineer", "srer", "aier", "curator"] as const;
+export const ROLE_IDS = ["executive", "product", "leader", "engineer", "sre", "aier", "curator"] as const;
 export type RoleId = (typeof ROLE_IDS)[number];
 
 // ── Role accent colors (shared across RSS pages) ──
 export const ROLE_COLORS: Record<string, string> = {
-  executiver: "#ee6666",
-  producter: "#fac858",
+  executive: "#ee6666",
+  product: "#fac858",
   leader: "#73c0de",
   engineer: "#5470c6",
-  srer: "#ea7ccc",
+  sre: "#ea7ccc",
   aier: "#91cc75",
   curator: "#3ba272"
 };
@@ -113,21 +113,21 @@ export const rolesData: Record<
     categories: string[];
   }
 > = {
-  executiver: {
-    id: "executiver",
+  executive: {
+    id: "executive",
     name: "Executive",
     icon: "🏢",
-    dir: "executiver/",
+    dir: "executive/",
     description:
       "经营战略拥有者：提供市场情报（market-intel）、经营战略与组织路线（org-strategy）、经营阅读（reading-list）三类跨管线 Business 上下文，让战略决策基于市场现实。",
     projects: ["YiAi", "YiVad", "YiPet"],
     categories: ["市场情报", "经营战略", "组织路线"]
   },
-  producter: {
-    id: "producter",
+  product: {
+    id: "product",
     name: "Product",
     icon: "📋",
-    dir: "producter/",
+    dir: "product/",
     description:
       "需求评审拥有者：为每条需求产出 PRD（背景/目标/范围/非目标/干系人）、可验证验收标准与 WSJF 优先级（价值×紧迫÷难度），评审记录落知识库（01-requirement-review），需求→任务拆解模板可复用。",
     projects: ["YiAi", "YiVad", "YiPet"],
@@ -151,11 +151,11 @@ export const rolesData: Record<
     projects: ["YiAi", "YiVad", "YiPet"],
     categories: ["编码", "调试", "构建"]
   },
-  srer: {
-    id: "srer",
+  sre: {
+    id: "sre",
     name: "SRE",
     icon: "🔧",
-    dir: "srer/",
+    dir: "sre/",
     description: "测试与上线拥有者：产出测试报告与上线记录，typecheck/build 门禁通过才上线。",
     projects: ["YiAi"],
     categories: ["测试", "上线", "门禁"]
@@ -181,7 +181,7 @@ export const rolesData: Record<
 };
 
 export const goalsData: Record<string, GoalItem[]> = {
-  executiver: [
+  executive: [
     {
       id: "exec-001",
       icon: "📊",
@@ -196,22 +196,22 @@ export const goalsData: Record<string, GoalItem[]> = {
         {
           text: "竞品分析覆盖 LLM 供应商 / SaaS 头部 / 区域竞对",
           progress: 100,
-          file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
+          file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
         },
         {
           text: "第三方行业报告摘要（Gartner/McKinsey/a16z/CAICT/IDC）落知识库",
           progress: 67,
-          file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-report-summaries.md"
+          file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-report-summaries.md"
         },
         {
           text: "半年度市场趋势复盘 + 新兴赛道追踪",
           progress: 60,
-          file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-market-trends.md"
+          file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-market-trends.md"
         },
         {
           text: "竞品与行业信息可被 RAG 检索，过时条目标记 deprecated",
           progress: 70,
-          file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-rag-retrievability.md"
+          file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-rag-retrievability.md"
         }
       ]
     },
@@ -229,22 +229,22 @@ export const goalsData: Record<string, GoalItem[]> = {
         {
           text: "战略框架与商业模型（BMC/价值主张/第二曲线）落地到产品战略实例",
           progress: 100,
-          file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
+          file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
         },
         {
           text: "年度战略规划 + 季度经营复盘（QBR）产出",
           progress: 60,
-          file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-annual-qbr.md"
+          file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-annual-qbr.md"
         },
         {
           text: "组织级 OKR 跟踪 + 编制/预算规划落地",
           progress: 75,
-          file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-okr-budget.md"
+          file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-okr-budget.md"
         },
         {
           text: "合规与数据留存策略（regulatory change / retention review）有据可查",
           progress: 80,
-          file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-compliance.md"
+          file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-compliance.md"
         }
       ]
     },
@@ -261,22 +261,22 @@ export const goalsData: Record<string, GoalItem[]> = {
         {
           text: "月度阅读清单滚动更新",
           progress: 70,
-          file: "executiver/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-list.md"
+          file: "executive/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-list.md"
         },
         {
           text: "读书笔记含可执行 takeaway（High Output Management）",
           progress: 100,
-          file: "executiver/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-notes.md"
+          file: "executive/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-notes.md"
         },
         {
           text: "有价值观点蒸馏到方法论/技术语义叶",
           progress: 50,
-          file: "executiver/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-knowledge-distillation.md"
+          file: "executive/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-knowledge-distillation.md"
         }
       ]
     }
   ],
-  producter: [
+  product: [
     {
       id: "prod-001",
       icon: "📋",
@@ -296,12 +296,12 @@ export const goalsData: Record<string, GoalItem[]> = {
         {
           text: "验收标准可被测试门禁直接判定",
           progress: 100,
-          file: "producter/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
+          file: "product/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
         },
         {
           text: "WSJF 优先级（价值×紧迫÷难度）打分排序",
           progress: 100,
-          file: "producter/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
+          file: "product/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
         },
         {
           text: "需求评审记录落知识库（01-requirement-review）",
@@ -411,7 +411,7 @@ export const goalsData: Record<string, GoalItem[]> = {
       ]
     }
   ],
-  srer: [
+  sre: [
     {
       id: "sre-001",
       icon: "🔧",
@@ -433,7 +433,7 @@ export const goalsData: Record<string, GoalItem[]> = {
           progress: 100,
           file: "curator/okr/2026-Q3/loop/loop-001-okr-self-closed-loop/07-launch-record.md"
         },
-        { text: "typecheck/build 门禁通过才上线", progress: 100, file: "srer/okr/2026-Q3/sre-001-test-launch-loop/goal.md" },
+        { text: "typecheck/build 门禁通过才上线", progress: 100, file: "sre/okr/2026-Q3/sre-001-test-launch-loop/goal.md" },
         {
           text: "上线可回滚/可追溯",
           progress: 100,
@@ -512,7 +512,7 @@ export const goalsData: Record<string, GoalItem[]> = {
 };
 
 export const metricsData: Record<string, MetricItem[]> = {
-  executiver: [
+  executive: [
     {
       id: "exec-m01",
       icon: "🎯",
@@ -584,7 +584,7 @@ export const metricsData: Record<string, MetricItem[]> = {
       progress: 50
     }
   ],
-  producter: [
+  product: [
     {
       id: "prod-m01",
       icon: "📋",
@@ -688,7 +688,7 @@ export const metricsData: Record<string, MetricItem[]> = {
       progress: 100
     }
   ],
-  srer: [
+  sre: [
     {
       id: "sre-m01",
       icon: "🧪",
@@ -861,14 +861,14 @@ export function getGoalMetrics(goalId: string): MetricItem[] {
 }
 
 export const roleDailyDataMap: Record<string, DailyRoleData> = {
-  executiver: {
+  executive: {
     yesterday: ["更新 LLM 供应商竞品格局", "摘要一份第三方行业报告", "审阅年度战略规划框架"],
     today: ["跑半年度市场趋势复盘", "落地 Business Model Canvas 到产品战略实例", "更新月度阅读清单"],
     blocker: "",
     mood: "Strategic",
     moodType: "primary"
   },
-  producter: {
+  product: {
     yesterday: [
       "复盘 loop-001 需求评审：对照 PRD 与验收标准，记录可判定/需人工判据",
       "产出 loop-002 PRD（背景/目标/范围/非目标）",
@@ -897,7 +897,7 @@ export const roleDailyDataMap: Record<string, DailyRoleData> = {
     mood: "Building",
     moodType: "primary"
   },
-  srer: {
+  sre: {
     yesterday: ["定测试门禁：vue-tsc + build", "定上线记录字段（artifact/version/env）", "定回滚/追溯口径"],
     today: ["跑 typecheck/build 验证", "写 loop-001 测试报告", "写 loop-001 上线记录"],
     blocker: "",
@@ -924,14 +924,14 @@ export const roleDailyDataMap: Record<string, DailyRoleData> = {
 // Role-specific Daily Checklist
 
 export const roleChecklistMap: Record<string, ChecklistItem[]> = {
-  executiver: [
+  executive: [
     { id: "e1", text: "竞品分析覆盖 LLM/SaaS/区域竞对", done: true, value: "3 类" },
     { id: "e2", text: "第三方行业报告摘要落知识库", done: false },
     { id: "e3", text: "战略框架（Porter/Blue Ocean/BMC）落地", done: true },
     { id: "e4", text: "年度规划 + QBR + OKR 跟踪就位", done: false },
     { id: "e5", text: "月度阅读清单滚动更新", done: false }
   ],
-  producter: [
+  product: [
     { id: "p1", text: "loop-001 PRD（背景/目标/范围/非目标/干系人）", done: true },
     { id: "p2", text: "验收标准可被测试门禁直接判定", done: true },
     { id: "p3", text: "WSJF 优先级（价值×紧迫÷难度）打分", done: true },
@@ -952,7 +952,7 @@ export const roleChecklistMap: Record<string, ChecklistItem[]> = {
     { id: "en4", text: "清零 23 个既有类型错误", done: true },
     { id: "en5", text: "调试记录落知识库（04-build-debug）", done: true }
   ],
-  srer: [
+  sre: [
     { id: "sr1", text: "typecheck/build 门禁验证", done: true },
     { id: "sr2", text: "测试报告（04-test-report）", done: true },
     { id: "sr3", text: "上线记录（05-launch-record）", done: true },
@@ -979,50 +979,50 @@ export const roleChecklistMap: Record<string, ChecklistItem[]> = {
 // Role-specific Weekly Data
 
 export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
-  executiver: {
+  executive: {
     status: "On Track",
     statusType: "success",
     done: [
       {
         text: "更新 LLM 供应商竞品格局",
-        file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
+        file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
       },
       {
         text: "摘要 Gartner/McKinsey 行业报告",
-        file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-report-summaries.md"
+        file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-report-summaries.md"
       },
       {
         text: "落地 Business Model Canvas 战略实例",
-        file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
+        file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
       }
     ],
     blockers: [],
     nextWeek: [
-      { text: "跑季度经营复盘（QBR）", file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-annual-qbr.md" },
-      { text: "更新月度阅读清单与读书笔记", file: "executiver/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-list.md" }
+      { text: "跑季度经营复盘（QBR）", file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-annual-qbr.md" },
+      { text: "更新月度阅读清单与读书笔记", file: "executive/okr/2026-Q3/exec-003-经营学习与阅读/kr-exec-003-reading-list.md" }
     ],
     decisions: [
       {
         text: "定位：Business Strategy 跨管线上下文",
-        file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
+        file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-strategy-frameworks.md"
       },
       {
         text: "三芯片：market-intel / org-strategy / reading-list",
-        file: "executiver/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
+        file: "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/kr-exec-001-competitor-coverage.md"
       },
       {
         text: "路线：战略框架 → 合成 → 规划 → 执行",
-        file: "executiver/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-okr-budget.md"
+        file: "executive/okr/2026-Q3/exec-002-经营战略与组织路线/kr-exec-002-okr-budget.md"
       }
     ]
   },
-  producter: {
+  product: {
     status: "On Track",
     statusType: "success",
     done: [
       {
         text: "产出 loop-001 需求评审（PRD + 6 验收标准 + WSJF）",
-        file: "producter/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
+        file: "product/okr/2026-Q3/prod-001-requirement-review-loop/goal.md"
       },
       {
         text: "需求评审记录落知识库（01-requirement-review）",
@@ -1047,7 +1047,7 @@ export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
         text: "每需求一条 01-requirement-review 记录",
         file: "curator/okr/2026-Q3/loop/loop-001-okr-self-closed-loop/01-requirement-review.md"
       },
-      { text: "验收标准必须可被测试门禁直接判定", file: "producter/okr/2026-Q3/prod-001-requirement-review-loop/goal.md" }
+      { text: "验收标准必须可被测试门禁直接判定", file: "product/okr/2026-Q3/prod-001-requirement-review-loop/goal.md" }
     ]
   },
   leader: {
@@ -1090,11 +1090,11 @@ export const roleWeeklyDataMap: Record<string, WeeklyRoleData> = {
       { text: "清零 23 个既有错误纳入本轮 engineer 收尾目标", file: "engineer/okr/2026-Q3/eng-005-build-health-zero/goal.md" }
     ]
   },
-  srer: {
+  sre: {
     status: "On Track",
     statusType: "success",
     done: [
-      { text: "定测试门禁（vue-tsc + build）", file: "srer/okr/2026-Q3/sre-001-test-launch-loop/goal.md" },
+      { text: "定测试门禁（vue-tsc + build）", file: "sre/okr/2026-Q3/sre-001-test-launch-loop/goal.md" },
       { text: "定上线记录字段", file: "curator/okr/2026-Q3/loop/loop-001-okr-self-closed-loop/07-launch-record.md" },
       { text: "定回滚/追溯口径", file: "curator/okr/2026-Q3/loop/loop-001-okr-self-closed-loop/07-launch-record.md" }
     ],

@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-03: 命名规范自动化 — 测试用例"
 status: 已完成
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-03"
 source_prds: ["06-自动化-命名规范检查"]
 source_modules: ["06-prd-task-命名规范检查"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-03: 命名规范自动化 — 测试用例

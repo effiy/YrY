@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "回顾与复盘工具 — 测试用例"
 status: 待开始
 priority: P3
@@ -11,6 +10,12 @@ project: YiVad
 prd_month: "202609"
 source_prds: ["27-prd-回顾与复盘工具"]
 source_modules: ["27-prd-task-回顾与复盘工具"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 回顾与复盘工具]
+benefit: "测试用例：回顾与复盘工具"
+lifecycle: active
 ---
 
 # 回顾与复盘工具 — 测试用例
@@ -38,24 +43,24 @@ source_modules: ["27-prd-task-回顾与复盘工具"]
 
 | 范围 | 内容 |
 |------|------|
-| 功能验证 | 参见 PRD 功能需求 |
+| 功能验证 | 复盘 CRUD 操作（创建/编辑/删除）、Action items 转 Issue、协作编辑冲突检测、历史回溯查看 |
 
 ### 1.2 不在范围内
 
 | 排除项 | 原因 |
 |--------|------|
-| — | — |
+| WebSocket 实时同步（初版使用轮询） | 超出初版范围 |
 
 ---
 
 <a id="sec-2"></a>
 ## 二、需求覆盖矩阵
 
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
-
 | FR | 需求 | 单元 | 组件 | 集成 | 状态 |
 |----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+| FR-1 | 创建复盘 | 选择项目+迭代 → 模板填充 → 保存 | 单元 | 待开始 |
+| FR-2 | 编辑复盘 | 打开已有复盘 → 修改 → 保存 | 集成 | 待开始 |
+| FR-3 | Action 转 Issue | 点击 Action item → 转换为 Issue → 关联回复盘 | 集成 | 待开始 |
 
 ---
 

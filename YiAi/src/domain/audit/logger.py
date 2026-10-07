@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime, timezone
 import logging
-from typing import Any, Dict
+from typing import Any
 import uuid
 
 from data.database import db

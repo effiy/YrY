@@ -5,7 +5,8 @@ stage: technical-review
 title: 数据模型与记录载体选型（ADR）+ 页面结构与 KB 目录规范
 role: leader
 goalId: lead-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [okr, self-closed-loop, technical-review, adr]

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-48"
 title: "YK-09-48: 语义版本化追踪 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "51-架构设计-语义版本化追踪.md"
 source_okr: [yiknowledge-001]
 related_tests: ["51-prd-test-语义版本化追踪"]
+
+type: task
 ---
 
 # YK-09-48: 语义版本化追踪 — 开发方案

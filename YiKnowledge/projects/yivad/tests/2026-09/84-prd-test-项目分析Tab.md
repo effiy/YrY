@@ -1,174 +1,132 @@
 ---
-doc_type: test
-title: "项目分析 Tab — 测试用例"
+title: "YV-09-102: 项目分析Tab — 测试用例"
 status: 已完成
-priority: 中
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-14
 project: YiVad
+project_id: yivad
 prd_month: "202609"
+prd_task_id: "YV-09-102"
 source_prds: ["84-prd-项目分析Tab"]
 source_modules: ["84-prd-task-项目分析Tab"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目分析Tab]
+benefit: "测试用例：项目分析Tab"
+lifecycle: active
 ---
 
-# 项目分析 Tab — 测试用例
+# YV-09-102: 项目分析Tab — 测试用例
+
+> 来源 PRD：[84-prd-项目分析Tab.md](../../prds/2026-09/84-prd-项目分析Tab.md)
+> 开发方案：[84-prd-task-项目分析Tab.md](../../devs/2026-09/84-prd-task-项目分析Tab.md)
 
 > **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 ---
 
-## 目录
-
-- [一、测试范围与目标](#sec-1)
-- [二、需求覆盖矩阵](#sec-2)
-- [三、单元测试](#sec-3)
-- [四、组件测试](#sec-4)
-- [五、集成测试](#sec-5)
-- [六、端到端场景](#sec-6)
-- [七、自动化现状](#sec-7)
-
----
-
----
-
-<a id="sec-strategy"></a>
 ## 测试策略
-
-### 分层模型
 
 | 层级 | 说明 | 自动化 | 执行时机 |
 |------|------|--------|---------|
-| L1 单元 | Composable/hook/工具函数纯逻辑 | Vitest | 每次提交 |
-| L2 组件 | Vue 组件挂载与交互 | Vitest + @vue/test-utils | 每次提交 |
-| L3 集成 | Composable ↔ 组件 ↔ Store ↔ RPC | Vitest + mock | 每次提交 |
-| L4 端到端 | 完整用户路径（需 YiAi 运行） | 手动 | 提测/回归 |
-
-### 优先级定义
-
-| 级别 | 含义 | 响应 |
-|------|------|------|
-| P0 | 核心路径，失败阻塞发布 | 立即修复 |
-| P1 | 重要功能，失败需评估 | 当日修复 |
-| P2 | 增强功能，可延后 | 排期修复 |
+| L1 单元 | Issue 统计 computed 计算逻辑 | Vitest | 每次提交 |
+| L2 组件 | DetailAnalysis ECharts 渲染 | Vitest + @vue/test-utils | 每次提交 |
+| L3 集成 | useCodeHealth ↔ API ↔ 组件 | Vitest + mock | 每次提交 |
+| L4 端到端 | 完整 Tab 加载+图表渲染 | 手动 | 提测/回归 |
 
 ---
 
-<a id="sec-env"></a>
-## 测试环境与前置条件
+## 需求覆盖矩阵
 
-| 项 | 要求 |
-|----|------|
-| Node.js | 与项目 `.nvmrc` 一致 |
-| 包管理器 | pnpm |
-| 浏览器 | Chrome 最新版 |
-| 框架 | Vitest + jsdom |
-| 类型检查 | `pnpm exec vue-tsc --noEmit` |
-
-```bash
-pnpm test                                    # 全部测试
-pnpm exec vitest run tests/hooks/            # 仅 hooks
-pnpm exec vitest run --coverage             # 覆盖率
-```
+| FR | 需求 | 测试覆盖 | 状态 |
+|----|------|---------|------|
+| FR-1 | Issue 统计图表（状态分布+类型分布） | CT + IT | ✅ |
+| FR-2 | 源码大文件预警（Top 10 + 阈值着色） | CT + IT | ✅ |
+| FR-3 | Issue 活跃度趋势（30天面积图） | CT | ✅ |
+| FR-4 | 汇总卡片（Issue数/待处理/逾期/Bug/模块/完成率） | CT | ✅ |
+| FR-5 | 代码健康大盘（CodeHealthPanel 复用） | CT + IT | ✅ |
 
 ---
 
-<a id="sec-criteria"></a>
-## 准入与准出标准
+## L1 单元测试
 
-### 准入
+### UT-01: Issue 统计 computed
 
-| # | 条件 |
-|---|------|
-| 1 | 对应 FR 的实现已提交 |
-| 2 | `vue-tsc --noEmit` 无错误 |
-| 3 | 功能在开发环境可正常使用 |
+**GIVEN** allIssues 包含 50 条 Issue（20 open, 15 done, 10 in_progress, 5 cancelled）  
+**WHEN** 计算 `issueStats = computed(() => buildStats(allIssues))`  
+**THEN** `issueStats.totalOpen` 应为 20  
+**AND** `issueStats.completionRate` 应为 30%（15/50）  
+**AND** `issueStats.overdue` 应仅计算截止日期已过的 open 状态 Issue
 
-### 准出
+### UT-02: 大文件阈值判定
 
-| # | 条件 | 阈值 |
-|---|------|------|
-| 1 | P0 用例通过率 | 100% |
-| 2 | P1 用例通过率 | ≥ 95% |
-| 3 | 遗留缺陷 | 无 Blocker / Critical |
+**GIVEN** `getFileLevel(350)`  
+**THEN** 返回 `{ level: 'warn', color: '#E6A23C' }`（>300）  
+**GIVEN** `getFileLevel(650)`  
+**THEN** 返回 `{ level: 'danger', color: '#F56C6C' }`（>600）
 
 ---
 
-<a id="sec-defects"></a>
-## 缺陷分级
+## L2 组件测试
 
-| 级别 | 定义 | 示例 |
-|------|------|------|
-| Blocker | 阻塞测试或数据损坏 | 功能完全不可用 |
-| Critical | 核心功能不可用 | 主要路径报错 |
-| Major | 功能缺陷但有替代路径 | 边界条件处理不当 |
-| Minor | 体验问题 | UI 偏移/文案错误 |
-| Trivial | 视觉细节 | 间距微调 |
+### CT-01: ECharts 图表渲染
 
+**GIVEN** DetailAnalysis Tab 组件挂载，传入 project data  
+**THEN** 应渲染 2 个横向柱状图（状态分布 + 类型分布）  
+**AND** 1 个折线面积图（30天活跃度趋势）  
+**AND** 图表配置复用 `charts.ts` 中的 `buildStatusBar`/`buildActivityArea`
 
-<a id="sec-1"></a>
-## 一、测试范围与目标
+### CT-02: 大文件预警列表
 
-### 1.1 在范围内
+**GIVEN** useCodeHealth 返回 `top_files: [{ path, lines: 650 }, { path, lines: 350 }]`  
+**WHEN** 渲染大文件预警区域  
+**THEN** 650 行文件显示红色行 + 红色标签「>600」  
+**AND** 350 行文件显示黄色行 + 黄色标签「>300」  
+**AND** 点击文件行 → 打开文件预览
 
-| 范围 | 内容 |
-|------|------|
-| 功能验证 | 参见 PRD 功能需求 |
+### CT-03: 汇总卡片
 
-### 1.2 不在范围内
+**GIVEN** project 数据：50 Issue, 8 Bug, 6 模块, 30% 完成率  
+**WHEN** 渲染汇总卡片区域  
+**THEN** 应显示 6 个 KPI 卡片：Issues(50) / Open(20) / Overdue(3) / Bugs(8) / Modules(6) / Rate(30%)
 
-| 排除项 | 原因 |
-|--------|------|
-| — | — |
+### CT-04: CodeHealthPanel 复用
 
----
-
-<a id="sec-2"></a>
-## 二、需求覆盖矩阵
-
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
-
-| FR | 需求 | 单元 | 组件 | 集成 | 状态 |
-|----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+**GIVEN** DetailAnalysis Tab 挂载  
+**THEN** CodeHealthPanel 组件在 Tab 内容中正确渲染  
+**AND** 默认展开显示代码规模/密度/复用/重复率指标
 
 ---
 
-<a id="sec-3"></a>
-## 三、单元测试
+## L3 集成测试
 
-> **状态：待补。** 实现完成后补充具体用例。
+### IT-01: useCodeHealth 数据加载
 
----
+**GIVEN** 项目 key = "yivad"  
+**WHEN** `useCodeHealth().analyze("yivad")` 被调用  
+**THEN** `loading` 状态 → `report.value` 包含 `scale`/`density`/`reuse`/`duplication` 指标  
+**AND** 失败时 `error.value` 包含错误信息 + 显示重试按钮
 
-<a id="sec-4"></a>
-## 四、组件测试
+### IT-02: 日期过滤联动
 
-> **状态：待补。**
-
----
-
-<a id="sec-5"></a>
-## 五、集成测试
-
-> **状态：待补。**
+**GIVEN** 用户在详情页切换日期导航  
+**WHEN** filterDateStr 变化  
+**THEN** DetailAnalysis Tab 中的图表数据随日期过滤更新  
+**AND** 汇总卡片数字反映过滤后的数据
 
 ---
 
-<a id="sec-6"></a>
-## 六、端到端场景
+## L4 端到端场景
 
-> **状态：待补。**
+### E2E-01: 分析Tab完整流程
 
----
-
-<a id="sec-7"></a>
-## 七、自动化现状
-
-### 执行状态
-
-| 指标 | 值 |
-|------|-----|
-| 本模块测试 | 0 文件 · 0 用例 |
-| 执行命令 | `cd YiVad && pnpm test` |
+1. 打开 `/project/yivad` → 切换到「分析」Tab
+2. 汇总卡片显示正确的 KPI 数字
+3. ECharts 图表正确渲染（状态分布+类型分布+活跃度趋势）
+4. 大文件预警列表：点击 >600 行文件 → 预览弹窗打开
+5. CodeHealthPanel 展开 → 显示代码规模/密度/复用/重复率
+6. 切换日期 → 所有图表数据更新

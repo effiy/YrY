@@ -1,0 +1,17 @@
+// Dialog sizing — non-scoped because el-dialog uses append-to-body,
+// which teleports the dialog outside the component DOM tree.
+.kpd-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
+.kpd-dialog .el-dialog__header { display: none; }
+.kpd-dialog .el-dialog__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 16px;
+  overflow: hidden;
+}

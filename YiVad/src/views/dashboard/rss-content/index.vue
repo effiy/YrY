@@ -1,5 +1,5 @@
 <template>
-  <div class="rss-content-box">
+  <div class="rss-content-box page">
     <RssSkeleton v-if="loading && !stats" />
     <RssError v-else-if="error" :message="error" @retry="retry" />
 

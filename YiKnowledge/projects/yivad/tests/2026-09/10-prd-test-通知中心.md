@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "通知中心 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-27"
 source_prds: ["10-prd-通知中心"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 通知中心]
+benefit: "测试用例：通知中心"
+lifecycle: active
 ---
 # 通知中心 — 测试规格
 

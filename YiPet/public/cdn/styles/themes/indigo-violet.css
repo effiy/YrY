@@ -3,7 +3,7 @@
  * Deep indigo-purple gradient with cooler undertones.
  */
 
-:root {
+:is(:root, #yipet-overlay, #yipet-chat-root) {
   --primary: #6366f1;
   --primary-hover: #4f46e5;
   --primary-light: #818cf8;

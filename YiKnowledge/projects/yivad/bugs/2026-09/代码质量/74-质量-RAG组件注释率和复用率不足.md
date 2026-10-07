@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p3
+benefit: "缺陷记录：质量-RAG组件注释率和复用率不足"
+lifecycle: active
 ---
 
 # RAG 组件注释率 4.9% 和复用率 0.9x 不达标

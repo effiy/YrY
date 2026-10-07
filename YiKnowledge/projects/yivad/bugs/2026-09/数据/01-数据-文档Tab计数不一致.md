@@ -21,6 +21,8 @@ affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-07)
 frequency: always
 source_prd: "YV-09-01"
+benefit: "缺陷记录：数据-文档Tab计数不一致"
+lifecycle: active
 ---
 
 ## Description
@@ -62,13 +64,12 @@ return count + 1; // +1 for CLAUDE.md
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 计数逻辑与列表渲染使用同一数据源计算函数，消除手动同步偏移量 |
+| 测试 | 为 Tab 计数徽章添加断言：`expect(badgeCount).toEqual(renderedRowCount)` |
+| 流程 | 特殊条目（如 CLAUDE.md）的增删需同时更新所有引用点的计数逻辑 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **单一数据源原则**：Tab 计数和列表渲染应共享同一个计算函数，而非各自独立计算再手动对齐。当特殊条目需要 `unshift` 插入时，计数逻辑必须同步感知
+- **CLAUDE.md 特殊处理**：项目详情页多个组件对 CLAUDE.md 有特殊逻辑（Tab 计数 +1、Docs 列表首行、Overview 独立加载），应考虑统一封装为 `useClaudeMd()` composable 消除分散的特殊判断
 

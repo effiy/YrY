@@ -6,6 +6,7 @@
 
 /** Base URL for the YiAi data-service RPC endpoint */
 export const YIAI_API_URL: string = import.meta.env.RSBUILD_ENV_API_URL as string;
+export const yiAiBaseUrl = YIAI_API_URL;
 
 /** Base URL for Ollama model listing */
 export const YIAI_OLLAMA_URL: string = import.meta.env.RSBUILD_ENV_YIAI_OLLAMA_URL as string;

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标"
 tags: [需求文档, 事件管理, 值班系统, 升级策略, MTTD, MTTR]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["46-prd-task-事件管理与值班"]
+related_tests: ["46-prd-test-事件管理与值班"]
+benefit: "产品需求：事件管理与值班"
+lifecycle: active
 ---
 
 # YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标

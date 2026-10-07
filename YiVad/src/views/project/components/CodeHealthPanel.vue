@@ -7,7 +7,7 @@
         <span v-if="report" class="chp-header__time">{{
           $t("project.health.analyzedAt", { time: formatTime(report.analyzed_at) })
         }}</span>
-        <el-button link size="small" :icon="Refresh" @click.stop="analyze" :loading="loading" />
+        <el-button link size="small" :icon="Refresh" @click.stop="analyze" :loading="loading" title="Re-analyze code health" />
         <el-icon :class="{ 'is-collapsed': collapsed }" class="chp-header__arrow"><ArrowDown /></el-icon>
       </span>
     </div>

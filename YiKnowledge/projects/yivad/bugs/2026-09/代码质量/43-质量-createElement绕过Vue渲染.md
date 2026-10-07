@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-createElement绕过Vue渲染"
+lifecycle: active
 ---
 
 # hooks 中 createElement 绕过 Vue 渲染管道
@@ -63,7 +65,6 @@ overlay = document.createElement("div");
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **命令式 DOM 有合理场景**：文件下载（`<a download>`）、全屏遮罩 overlay、Mermaid SVG 容器——这些场景用 `document.createElement` 比 Vue 模板更简单。关键是「创建即清理」——每个 `createElement` 必须配对的清理逻辑
+- **Teleport 是更安全的替代**：对于遮罩和工具栏，Vue `<Teleport>` 组件可以声明式地将内容渲染到 body，组件卸载时自动移除，无需手动 `remove()`
 

@@ -1,8 +1,11 @@
 """Zero-downtime migration helpers for MongoDB."""
 
 import asyncio
+import logging
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
+
+logger = logging.getLogger(__name__)
 
 
 async def batch_update(
@@ -26,7 +29,7 @@ async def batch_update(
             await db[collection].update_one({"_id": doc["_id"]}, update)
             processed += 1
         pct = processed / total * 100 if total else 100
-        print(f"  [batch_update] {collection}: {processed}/{total} ({pct:.1f}%)")
+        logger.info("  [batch_update] %s: %s/%s (%.1f%%)", collection, processed, total, pct)
         await asyncio.sleep(sleep_between)
 
 
@@ -41,17 +44,17 @@ async def add_field_with_default(
     result = await db[collection].update_many(
         {field: {"$exists": False}}, {"$set": {field: default_value}}
     )
-    print(f"  [add_field] {collection}.{field}: updated {result.modified_count} docs")
+    logger.info("  [add_field] %s.%s: updated %s docs", collection, field, result.modified_count)
     if index:
         await db[collection].create_index(field, background=True)
-        print(f"  [add_field] Created index: {collection}.{field}")
+        logger.info("  [add_field] Created index: %s.%s", collection, field)
 
 
 async def remove_field(db: AsyncIOMotorDatabase, collection: str, field: str):
     result = await db[collection].update_many(
         {field: {"$exists": True}}, {"$unset": {field: ""}}
     )
-    print(f"  [remove_field] {collection}.{field}: updated {result.modified_count} docs")
+    logger.info("  [remove_field] %s.%s: updated %s docs", collection, field, result.modified_count)
 
 
 async def rename_field(
@@ -60,8 +63,8 @@ async def rename_field(
     result = await db[collection].update_many(
         {old_field: {"$exists": True}}, {"$rename": {old_field: new_field}}
     )
-    print(
-        f"  [rename_field] {collection}: {old_field} -> {new_field}: updated {result.modified_count} docs"
+    logger.info(
+        "  [rename_field] %s: %s -> %s: updated %s docs", collection, old_field, new_field, result.modified_count
     )
 
 
@@ -75,17 +78,17 @@ async def ensure_index(
     existing = await db[collection].index_information()
     index_name = name or "_".join(f"{k}_{d}" for k, d in keys)
     if index_name in existing:
-        print(f"  [ensure_index] {collection}.{index_name}: already exists, skip")
+        logger.info("  [ensure_index] %s.%s: already exists, skip", collection, index_name)
         return
     spec = [(k, d) for k, d in keys]
     await db[collection].create_index(spec, unique=unique, name=name, background=True)
-    print(f"  [ensure_index] {collection}.{index_name}: created")
+    logger.info("  [ensure_index] %s.%s: created", collection, index_name)
 
 
 async def drop_index(db: AsyncIOMotorDatabase, collection: str, index_name: str):
     existing = await db[collection].index_information()
     if index_name not in existing:
-        print(f"  [drop_index] {collection}.{index_name}: not found, skip")
+        logger.info("  [drop_index] %s.%s: not found, skip", collection, index_name)
         return
     await db[collection].drop_index(index_name)
-    print(f"  [drop_index] {collection}.{index_name}: dropped")
+    logger.info("  [drop_index] %s.%s: dropped", collection, index_name)

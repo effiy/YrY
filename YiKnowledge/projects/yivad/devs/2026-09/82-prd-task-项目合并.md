@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-228"
 title: "YV-09-228: 项目合并 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "82-prd-项目合并.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目合并]
+roles: [engineer]
+benefit: "开发方案：task-项目合并"
+lifecycle: active
 ---
 
 # YV-09-228: 项目合并 — 开发方案
@@ -35,6 +41,25 @@ source_prd: "82-prd-项目合并.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：项目管理操作 → 合并向导（选择源项目 + 目标项目 + 选择合并范围）
+
+**数据模型**：
+```
+涉及 `projects`, `issues`, `modules`, `bugs` 集合的批量迁移
+```
+
+**组件树**：
+```
+ProjectMergeWizard.vue (三步向导：源项目 → 目标项目 → 确认)
+```
+
+**关键决策**：
+合并为不可逆操作，需二次确认 + 输入项目名验证；合并后源项目标记为 archived；Issue key 冲突时保留目标项目 key
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -44,12 +69,8 @@ source_prd: "82-prd-项目合并.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志"
 tags: [需求文档, 权限矩阵, 角色管理, RBAC, 权限继承, 审计日志]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发, 后端开发]
 source_okr: [yivad-003]
+related_modules: ["50-prd-task-用户角色与权限矩阵"]
+related_tests: ["50-prd-test-用户角色与权限矩阵"]
+benefit: "产品需求：用户角色与权限矩阵"
+lifecycle: active
 ---
 
 # YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志

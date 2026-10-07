@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-13"
 title: "YK-09-13: 知识库检索增强 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "16-架构设计-知识库检索增强与同义词扩展.md"
 source_okr: [yiknowledge-001]
 related_tests: ["16-prd-test-知识库检索增强与同义词扩展"]
+
+type: task
 ---
 
 # YK-09-13: 知识库检索增强 — 开发方案

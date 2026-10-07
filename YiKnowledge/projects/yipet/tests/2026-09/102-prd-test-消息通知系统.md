@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "消息通知系统 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["102-功能实现-消息通知系统"]
-source_modules: ["102-prd-task-消息通知系统"]
+source_prds: ["102-功能实现-消息通知系统.md"]
+source_modules: ["102-prd-task-消息通知系统.md"]
+
+type: test
 ---
 
 # 消息通知系统 — 测试用例
@@ -28,3 +31,4 @@ source_modules: ["102-prd-task-消息通知系统"]
 ## 出口准则
 
 - [ ] P1 用例 100% 通过
+

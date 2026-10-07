@@ -1,5 +1,5 @@
 <template>
-  <div class="project-detail">
+  <div class="project-detail page">
     <!-- 状态 1: 加载失败 -->
     <DetailError v-if="error" :message="error" @retry="retry" />
 
@@ -234,9 +234,8 @@ function goBack() {
 <style scoped lang="scss">
 .project-detail {
   height: calc(100vh - 146px);
-  padding: 24px;
   overflow: auto;
-  background: var(--el-bg-color-page);
+  // padding + background come from global .page class
 }
 .project-detail__head {
   display: flex;
@@ -266,7 +265,8 @@ function goBack() {
   font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
   color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border: 1px solid var(--el-border-color-light);
   border-radius: 4px;
 }
@@ -310,31 +310,35 @@ function goBack() {
 .pd-head-skel__back {
   width: 56px;
   height: 28px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 6px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-head-skel__title {
   width: 160px;
   height: 28px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 6px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-head-skel__key {
   width: 64px;
   height: 20px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 4px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-head-skel__nav {
   width: 180px;
   height: 28px;
   margin-left: auto;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 6px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-tabs-skel {
   display: flex;
@@ -346,9 +350,10 @@ function goBack() {
 .pd-tabs-skel__item {
   width: 56px;
   height: 20px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 4px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-content-skel {
   display: flex;
@@ -357,9 +362,10 @@ function goBack() {
 }
 .pd-content-skel__row {
   height: 14px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 7px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-content-skel__block {
   display: flex;
@@ -371,15 +377,17 @@ function goBack() {
 }
 .pd-content-skel__block-head {
   height: 40px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 6px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-content-skel__line {
   height: 12px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 6px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 .pd-content-skel__cols {
   display: flex;
@@ -398,20 +406,12 @@ function goBack() {
   width: 80px;
   height: 18px;
   margin-bottom: 4px;
-  background: var(--el-fill-color-light);
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
   border-radius: 4px;
-  animation: pd-pulse 1.4s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
-
-@keyframes pd-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
+// skeleton-shimmer keyframes come from global styles/skeleton.scss
 
 // ── Transitions ──
 .fade-enter-active,

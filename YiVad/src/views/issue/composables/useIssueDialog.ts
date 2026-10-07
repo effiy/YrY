@@ -3,6 +3,8 @@ import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import type { useIssueStore } from "@/stores/modules/issue";
 import type { Issue, IssueStatus, IssuePriority, IssueType } from "@/api/modules/issueService";
+import { getIssueFilePath } from "@/api/modules/issueService";
+import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 
 export interface IssueForm {
   title: string;
@@ -116,12 +118,15 @@ export function useIssueDialog(
           review_status: (commonPayload.review_status as Issue["review_status"]) || undefined,
           acceptance_criteria: (commonPayload.acceptance_criteria as Issue["acceptance_criteria"]) || undefined
         });
+
+        // Sync knowledge file for existing issues
+        await syncKnowledgeFile(dialog.editKey, dialog.form.project_key || props.projectKey || "");
         ElMessage.success("Issue updated successfully");
       } else {
         const newIssueKey = `ISS-${Date.now().toString(36).toUpperCase()}`;
         const projectKey = dialog.form.project_key || props.projectKey || "";
 
-        await opts.store.addIssue({
+        const newIssue: any = {
           key: newIssueKey,
           project_key: projectKey,
           sequence_id: Date.now(),
@@ -130,8 +135,13 @@ export function useIssueDialog(
           source: (dialog.form.source as Issue["source"]) || undefined,
           review_status: (dialog.form.review_status as Issue["review_status"]) || undefined,
           acceptance_criteria: (dialog.form.acceptance_criteria as Issue["acceptance_criteria"]) || undefined
-        });
+        };
+
+        await opts.store.addIssue(newIssue);
         ElMessage.success("Issue created successfully");
+
+        // Create knowledge file for new issue
+        await createKnowledgeFile(newIssue);
       }
 
       dialog.visible = false;
@@ -142,6 +152,96 @@ export function useIssueDialog(
     } finally {
       dialog.submitting = false;
     }
+  }
+
+  async function syncKnowledgeFile(key: string, projectKey: string) {
+    try {
+      const issue = opts.allIssues.value.find(i => i.key === key);
+      if (!issue) return;
+      const filePath = getIssueFilePath(issue);
+      const header = buildMarkdownHeader(issue);
+      try {
+        const res = await readKnowledgeFile(filePath);
+        const updated = updateMarkdownFrontmatter(res.content, issue);
+        await writeKnowledgeFile(filePath, updated, {
+          title: issue.title,
+          status: issue.status,
+          priority: issue.priority,
+          type: issue.issue_type,
+          assignee: issue.assignee || "",
+          due_date: issue.due_date || "",
+          project: projectKey,
+          created: (issue.created_at || "").slice(0, 10)
+        });
+      } catch {
+        await writeKnowledgeFile(filePath, header + (issue.description || ""), {
+          title: issue.title,
+          status: issue.status,
+          priority: issue.priority,
+          type: issue.issue_type,
+          assignee: issue.assignee || "",
+          due_date: issue.due_date || "",
+          project: projectKey,
+          created: new Date().toISOString().slice(0, 10)
+        });
+      }
+    } catch { /* best effort */ }
+  }
+
+  async function createKnowledgeFile(issue: Issue) {
+    try {
+      const filePath = getIssueFilePath(issue);
+      const header = buildMarkdownHeader(issue);
+      await writeKnowledgeFile(filePath, header + (issue.description || ""), {
+        title: issue.title,
+        status: issue.status,
+        priority: issue.priority,
+        type: issue.issue_type,
+        assignee: issue.assignee || "",
+        due_date: issue.due_date || "",
+        project: issue.project_key || "",
+        created: new Date().toISOString().slice(0, 10)
+      });
+    } catch { /* best effort */ }
+  }
+
+  function buildMarkdownHeader(issue: Issue): string {
+    const rows: Array<[string, string]> = [
+      ["Key", issue.key],
+      ["Type", issue.issue_type],
+      ["Status", issue.status],
+      ["Priority", issue.priority],
+      ["Assignee", issue.assignee || "—"],
+      ["Start Date", issue.start_date || "—"],
+      ["Due Date", issue.due_date || "—"],
+      ["Source", issue.source || "—"],
+      ["Review", issue.review_status || "—"],
+      ["Estimate", issue.estimate_points != null ? `${issue.estimate_points} pts` : "—"]
+    ];
+    if (issue.labels?.length) rows.push(["Labels", issue.labels.join(", ")]);
+    return `# ${issue.title}\n\n| Field | Value |\n|-------|-------|\n${rows.map(([k, v]) => `| ${k} | ${v} |`).join("\n")}\n\n`;
+  }
+
+  function updateMarkdownFrontmatter(content: string, issue: Issue): string {
+    const lines = content.split("\n");
+    const fieldMap: Record<string, string> = {
+      "Status": issue.status,
+      "Priority": issue.priority,
+      "Assignee": issue.assignee || "—",
+      "Due Date": issue.due_date || "—",
+      "Start Date": issue.start_date || "—",
+      "Source": issue.source || "—",
+      "Review": issue.review_status || "—",
+      "Estimate": issue.estimate_points != null ? `${issue.estimate_points} pts` : "—"
+    };
+    return lines.map(line => {
+      for (const [field, value] of Object.entries(fieldMap)) {
+        if (line.startsWith(`| ${field} |`)) {
+          return `| ${field} | ${value} |`;
+        }
+      }
+      return line;
+    }).join("\n");
   }
 
   return {

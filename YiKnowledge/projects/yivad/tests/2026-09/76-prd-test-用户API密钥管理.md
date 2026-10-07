@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-202: 用户API密钥管理 — 创建/查看/吊销密钥、权限范围、最后使用时间、使用统计、安全提示 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-202"
 source_prds: ["76-prd-用户API密钥管理"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户API密钥管理]
+benefit: "测试用例：用户API密钥管理"
+lifecycle: active
 ---
 # YV-09-202: 用户API密钥管理 — 创建/查看/吊销密钥、权限范围、最后使用时间、使用统计、安全提示 — 测试规格
 

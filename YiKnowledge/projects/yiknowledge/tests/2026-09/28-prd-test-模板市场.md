@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-25: 模板市场 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-25"
 source_prds: ["28-架构设计-模板市场"]
 source_modules: ["28-prd-task-模板市场"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-25: 模板市场 — 测试用例

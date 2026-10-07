@@ -9,7 +9,7 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [leader, srer]
+roles: [leader, sre]
 benefit: "技术负责人可快速导航容量与成本子目录，执行 FinOps 审查、追踪成本趋势或审计依赖"
 acceptance_criteria:
   - "覆盖容量/成本/依赖三大领域"
@@ -18,7 +18,7 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../README.md
-  - ../../srer/observability/
+  - ../../sre/observability/
 ---
 
 # 技术负责人 — 容量与成本
@@ -58,8 +58,8 @@ related:
 ```
 capacity/ (成本 + 容量)
     │
-    ├── FinOps 审查 ──→ srer/observability/ (成本监控仪表盘)
-    ├── 成本追踪 ──→ executiver/roadmap/ (季度业务审查)
+    ├── FinOps 审查 ──→ sre/observability/ (成本监控仪表盘)
+    ├── 成本追踪 ──→ executive/roadmap/ (季度业务审查)
     └── 容量规划 ──→ roadmap/05-容量规划 (容量估算方法论)
 ```
 

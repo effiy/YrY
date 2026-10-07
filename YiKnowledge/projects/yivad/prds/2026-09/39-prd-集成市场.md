@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手"
 tags: [需求文档, 集成市场, 第三方集成, Slack, GitHub, Jira, OAuth, Webhook, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["39-prd-task-集成市场"]
+related_tests: ["39-prd-test-集成市场"]
+benefit: "产品需求：集成市场"
+lifecycle: active
 ---
 
 # YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手

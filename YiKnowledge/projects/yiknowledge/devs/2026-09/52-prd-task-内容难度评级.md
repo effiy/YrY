@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-49"
 title: "YK-09-49: 内容难度评级 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "52-架构设计-内容难度评级.md"
 source_okr: [yiknowledge-001]
 related_tests: ["52-prd-test-内容难度评级"]
+
+type: task
 ---
 
 # YK-09-49: 内容难度评级 — 开发方案

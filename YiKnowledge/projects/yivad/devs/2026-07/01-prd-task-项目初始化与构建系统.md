@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-01"
 title: "YV-07-01: 项目初始化与构建系统 — Vue 3.5 + TypeScript strict + Rsbuild + 工具链 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202607"
 estimate_frontend: 5.0
 source_prd: "01-prd-项目初始化与构建系统.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目初始化与构建系统]
+benefit: "开发方案：task-项目初始化与构建系统"
+lifecycle: active
 ---
 
 # YV-07-01: 项目初始化与构建系统 — 开发方案

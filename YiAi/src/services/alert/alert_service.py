@@ -1,6 +1,6 @@
 """Alert notification service — WeCom bot + email fallback."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 
@@ -28,7 +28,7 @@ class AlertService:
             return False
 
         emoji = {"critical": "🔴", "warning": "🟡", "info": "🔵"}.get(severity, "🟡")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
         # Escape HTML special chars in message for WeCom markdown
         safe_message = message.replace("<", "&lt;").replace(">", "&gt;")

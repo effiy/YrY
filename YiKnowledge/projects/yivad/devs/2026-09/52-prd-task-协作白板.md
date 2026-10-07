@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-112"
 title: "YV-09-112: 协作白板 — Canvas + Yjs 实时多人协同 + 导出 — 开发方案"
 status: 需求已编写
@@ -13,11 +12,17 @@ project_id: yivad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "52-prd-协作白板.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 协作白板]
+benefit: "开发方案：task-协作白板"
+lifecycle: active
 ---
 
 # YV-09-112: 协作白板 — Canvas + Yjs 实时多人协同 + 导出 — 开发方案
 
-> 来源 PRD：[52-prd-协作白板.md](../prds/2026-09/52-prd-协作白板.md)
+> 来源 PRD：[52-prd-协作白板.md](../../prds/2026-09/52-prd-协作白板.md)
 
 > **文档职责**：本文档定义**怎么做、为什么这么做、实际做成什么样**（HOW），不含产品目标与测试用例。
 > 需求编号：YV-09-112 · 优先级：P2 · 人天：1.0d · 状态：需求已编写
@@ -63,12 +68,8 @@ flowchart LR
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

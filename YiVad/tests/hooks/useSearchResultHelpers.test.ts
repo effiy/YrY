@@ -184,8 +184,12 @@ describe("repClass", () => {
 });
 
 describe("repLabel", () => {
-  it("returns 'High authority' for .gov", () => {
-    expect(repLabel("https://example.gov")).toBe("High authority");
+  it("returns 'Official' for .gov", () => {
+    expect(repLabel("https://example.gov")).toBe("Official");
+  });
+
+  it("returns 'Scholarly' for .edu", () => {
+    expect(repLabel("https://example.edu")).toBe("Scholarly");
   });
 
   it("returns 'Low quality' for pinterest", () => {

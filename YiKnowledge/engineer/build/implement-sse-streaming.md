@@ -20,7 +20,7 @@ acceptance_criteria:
   - "Timeout and reconnection strategies covered"
 related:
   - ./cross-project-rpc-protocol.md
-  - ../learn/lessons/gotchas/03-陷阱-SSE-onDone守卫.md
+  - ../learn/lessons/07-陷阱-SSE-onDone守卫.md
 ---
 
 # 实现 SSE 流式传输
@@ -218,7 +218,7 @@ function stopChat() {
 
 ## 关键陷阱：onDone 守卫模式
 
-> **这是 YiVad 和 YiPet 都踩过的坑。** 详见 [SSE onDone 守卫陷阱](../learn/lessons/gotchas/03-陷阱-SSE-onDone守卫.md)
+> **这是 YiVad 和 YiPet 都踩过的坑。** 详见 [SSE onDone 守卫陷阱](../learn/lessons/07-陷阱-SSE-onDone守卫.md)
 
 ### 问题
 

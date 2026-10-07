@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-30: 静态站点生成 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-30"
 source_prds: ["33-架构设计-静态站点生成"]
 source_modules: ["33-prd-task-静态站点生成"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-30: 静态站点生成 — 测试用例

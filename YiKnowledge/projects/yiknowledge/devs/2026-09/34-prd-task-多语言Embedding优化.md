@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-31"
 title: "YK-09-31: 多语言 Embedding 优化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "34-架构设计-多语言Embedding优化.md"
 source_okr: [yiknowledge-001]
 related_tests: ["34-prd-test-多语言Embedding优化"]
+
+type: task
 ---
 
 # YK-09-31: 多语言 Embedding 优化 — 开发方案

@@ -21,126 +21,99 @@ import { uploadImg, uploadVideo } from "@/api/modules/upload";
 import "@wangeditor/editor/dist/css/style.css";
 import { formContextKey, formItemContextKey } from "element-plus";
 
-// Rich text DOM element
 const editorRef = shallowRef();
 
-// Initialize editor
 const handleCreated = (editor: any) => {
   editorRef.value = editor;
 };
 
-// Accept parent component params and set defaults
 interface RichEditorProps {
-  value: string; // Rich text value ==> required
-  toolbarConfig?: Partial<IToolbarConfig>; // Toolbar config ==> optional (default empty)
-  editorConfig?: Partial<IEditorConfig>; // Editor config ==> optional (default empty)
-  height?: string; // Rich text height ==> optional (default 500px)
-  mode?: "default" | "simple"; // Rich text mode ==> optional (default "default")
-  hideToolBar?: boolean; // Whether to hide toolbar ==> optional (default false)
-  disabled?: boolean; // Whether to disable editor ==> optional (default false)
+  value: string;
+  toolbarConfig?: Partial<IToolbarConfig>;
+  editorConfig?: Partial<IEditorConfig>;
+  height?: string;
+  mode?: "default" | "simple";
+  hideToolBar?: boolean;
+  disabled?: boolean;
 }
 const props = withDefaults(defineProps<RichEditorProps>(), {
-  toolbarConfig: () => {
-    return {
-      excludeKeys: []
-    };
-  },
-  editorConfig: () => {
-    return {
-      placeholder: "Please enter content...",
-      MENU_CONF: {}
-    };
-  },
+  toolbarConfig: () => ({ excludeKeys: [] }),
+  editorConfig: () => ({
+    placeholder: "Please enter content...",
+    MENU_CONF: {}
+  }),
   height: "500px",
   mode: "default",
   hideToolBar: false,
   disabled: false
 });
 
-// Get el-form component context
 const formContext = inject(formContextKey, void 0);
-// Get el-form-item component context
 const formItemContext = inject(formItemContextKey, void 0);
-// Determine if upload and delete are disabled
+
 const self_disabled = computed(() => {
   return props.disabled || formContext?.disabled;
 });
 
-// Determine if current rich text editor is disabled
-if (self_disabled.value) nextTick(() => editorRef.value.disable());
+if (self_disabled.value) nextTick(() => editorRef.value?.disable());
 
-// Watch rich text content, trigger parent component update for two-way binding
 const emit = defineEmits<{
   "update:value": [value: string];
   "check-validate": [];
 }>();
+
 const valueHtml = computed({
   get() {
     return props.value;
   },
   set(val: string) {
-    // Prevent validation failure when rich text content is empty
-    if (editorRef.value.isEmpty()) val = "";
+    if (editorRef.value?.isEmpty()) val = "";
     emit("update:value", val);
   }
 });
 
-/**
- * @description Custom image upload
- * @param file Uploaded file
- * @param insertFn Callback after upload success (insert into rich text editor)
- * */
+const uploadImgValidate = (_file: File): boolean => {
+  return true;
+};
+
+const uploadVideoValidate = (_file: File): boolean => {
+  return true;
+};
+
 type InsertFnTypeImg = (url: string, alt?: string, href?: string) => void;
 props.editorConfig.MENU_CONF!["uploadImage"] = {
   async customUpload(file: File, insertFn: InsertFnTypeImg) {
     if (!uploadImgValidate(file)) return;
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     try {
       const { data } = await uploadImg(formData);
       insertFn(data.fileUrl);
     } catch (error) {
-      console.error(error);
+      console.error("[WangEditor] Image upload failed:", error);
     }
   }
 };
 
-// Validate before image upload
-const uploadImgValidate = (file: File): boolean => {
-  return true;
-};
-
-/**
- * @description Custom video upload
- * @param file Uploaded file
- * @param insertFn Callback after upload success (insert into rich text editor)
- * */
 type InsertFnTypeVideo = (url: string, poster?: string) => void;
 props.editorConfig.MENU_CONF!["uploadVideo"] = {
   async customUpload(file: File, insertFn: InsertFnTypeVideo) {
     if (!uploadVideoValidate(file)) return;
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     try {
       const { data } = await uploadVideo(formData);
       insertFn(data.fileUrl);
     } catch (error) {
-      console.error(error);
+      console.error("[WangEditor] Video upload failed:", error);
     }
   }
 };
 
-// Validate before video upload
-const uploadVideoValidate = (file: File): boolean => {
-  return true;
-};
-
-// Trigger on editor blur
 const handleBlur = () => {
   formItemContext?.prop && formContext?.validateField([formItemContext.prop as string]);
 };
 
-// Also destroy editor when component is destroyed
 onBeforeUnmount(() => {
   if (!editorRef.value) return;
   editorRef.value.destroy();

@@ -10,6 +10,8 @@ export default {
     save: "Save",
     delete: "Delete",
     deleteConfirm: 'Delete conversation "{name}"? This cannot be undone.',
+    bulkDeleteConfirm: "Delete {count} selected conversations? This cannot be undone.",
+    bulkFavoriteDone: "Toggled favorite for {count} sessions",
     confirm: "Delete",
     cancel: "Cancel",
     placeholder: "Ask anything (Enter to send, Shift+Enter for newline)",

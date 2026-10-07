@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志"
 tags: [需求文档, 客户门户, 外部协作, 权限控制, 文件共享, 品牌化, 活动日志, 前端, API]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["37-prd-task-客户与外部协作门户"]
+related_tests: ["37-prd-test-客户与外部协作门户"]
+benefit: "产品需求：客户与外部协作门户"
+lifecycle: active
 ---
 
 # YV-09-82: 客户与外部协作门户 — 受限权限客户访问、共享项目视图、反馈收集、安全文件共享、品牌化门户、外部活动日志

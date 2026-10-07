@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "消息搜索与过滤 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["50-功能实现-消息搜索与过滤"]
+source_prds: ["50-架构设计-消息搜索与过滤.md"]
+source_modules: ["50-prd-task-消息搜索与过滤.md"]
+
+type: test
 ---
 
 # 消息搜索与过滤 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["50-功能实现-消息搜索与过滤"]
 | TC-SR01 | 全文搜索 | 所有会话消息匹配 | P1 |
 | TC-SR02 | 按角色过滤 | user/ai 筛选 | P1 |
 | TC-SR03 | 高亮+跳转 | 点击跳到消息位置 | P2 |
+

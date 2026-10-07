@@ -1,0 +1,87 @@
+/* ── Shared Keyframe Animations ──
+   Import per-component with: @use "@/styles/animations.scss";
+   Apply with: animation: animations.$name $duration $easing; */
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fade out */
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Pulse — subtle attention draw */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Pulse glow — used for stop-button ring */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--el-color-primary-light-5); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Skeleton loading pulse */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Slide up + fade */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide down + fade */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in — for popovers/dialogs */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Spin — rotating loader */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Progress bar shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Warning pulse — red glow for critical states */
+@keyframes warning-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--el-color-danger-rgb, 245 108 108) / 40%); }
+  50% { box-shadow: 0 0 0 6px rgb(var(--el-color-danger-rgb, 245 108 108) / 0%); }
+}

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-40"
 title: "YV-09-40: 水印系统 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "16-prd-水印系统.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 水印系统]
+benefit: "开发方案：task-水印系统"
+lifecycle: active
 ---
 
 # YV-09-40: 水印系统 — 开发方案

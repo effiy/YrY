@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { Star, StarFilled, Edit, Delete } from "@element-plus/icons-vue";
+import dayjs from "dayjs";
 import type { SessionDocument } from "@/api/interface/yiAi";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 
@@ -75,16 +76,16 @@ const SOURCE_COLORS: Record<string, string> = {
 
 function relativeTime(ts?: number): string {
   if (!ts) return "";
-  const delta = Date.now() - ts;
-  const mins = Math.floor(delta / 60000);
-  if (mins < 1) return "now";
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d`;
-  const d = new Date(ts);
-  return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const d = dayjs(ts);
+  if (!d.isValid()) return "";
+  const diffMins = dayjs().diff(d, "minute");
+  if (diffMins < 1) return "now";
+  if (diffMins < 60) return `${diffMins}m`;
+  const diffHrs = dayjs().diff(d, "hour");
+  if (diffHrs < 24) return `${diffHrs}h`;
+  const diffDays = dayjs().diff(d, "day");
+  if (diffDays < 7) return `${diffDays}d`;
+  return d.format("MM-DD");
 }
 
 function backToSource() {

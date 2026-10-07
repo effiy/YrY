@@ -1,9 +1,11 @@
 <script setup lang="ts" name="aiChatMessageActions">
-import { computed } from "vue";
-import { ElMessageBox } from "element-plus";
-import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search } from "@element-plus/icons-vue";
+import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { confirm } from "@/hooks/useConfirmAction";
+import { CopyDocument, RefreshRight, Delete, Edit, Promotion, Search, Check } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import type { ChatMessage } from "@/api/interface/yiAi";
+import FeedbackButtons from "./FeedbackButtons.vue";
+import type { ChatMessage } from "@/api/interface/yiAi/chat";
 
 const props = defineProps<{
   message: ChatMessage;
@@ -19,11 +21,15 @@ const emit = defineEmits<{
 }>();
 
 const store = useAiChatStore();
+const { t } = useI18n();
 
 const showRetryLabel = computed(() => !!(props.message.error || props.message.aborted));
+const copied = ref(false);
 
 async function onCopy() {
   await store.copyMessage(props.message);
+  copied.value = true;
+  setTimeout(() => { copied.value = false; }, 2000);
 }
 
 function onEdit() {
@@ -36,15 +42,8 @@ async function onRegenerate() {
 }
 
 async function onDelete() {
-  try {
-    await ElMessageBox.confirm("Delete this message?", "Confirm delete", {
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      type: "warning"
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(t("aiChat.deleteMessageConfirm"), t("aiChat.confirm"));
+  if (!ok) return;
   await store.deleteMessage(props.index);
 }
 
@@ -60,8 +59,8 @@ function onSearchWeb() {
 
 <template>
   <div v-if="!isUser" class="mb-actions">
-    <el-tooltip content="Copy" placement="top" :show-after="400">
-      <el-button size="small" text :icon="CopyDocument" class="mb-act-btn" @click="onCopy" />
+    <el-tooltip :content="copied ? 'Copied' : 'Copy'" placement="top" :show-after="400">
+      <el-button size="small" text :icon="copied ? Check : CopyDocument" class="mb-act-btn" :class="{ 'is-copied': copied }" @click="onCopy" />
     </el-tooltip>
     <el-tooltip content="Edit" placement="top" :show-after="400">
       <el-button size="small" text :icon="Edit" class="mb-act-btn" :disabled="sending" @click="onEdit" />
@@ -80,6 +79,8 @@ function onSearchWeb() {
     <el-tooltip content="Delete" placement="top" :show-after="400">
       <el-button size="small" text :icon="Delete" class="mb-act-btn" :disabled="sending" @click="onDelete" />
     </el-tooltip>
+    <span class="mb-actions-sep" />
+    <FeedbackButtons :message="props.message" />
   </div>
   <div v-else class="mb-actions">
     <el-tooltip content="Edit" placement="top" :show-after="400">
@@ -111,6 +112,12 @@ function onSearchWeb() {
   gap: 0;
   align-items: center;
 }
+.mb-actions-sep {
+  width: 1px;
+  height: 14px;
+  margin: 0 6px;
+  background: var(--el-border-color-lighter);
+}
 .mb-act-btn {
   width: 28px;
   height: 28px;
@@ -128,6 +135,9 @@ function onSearchWeb() {
   }
   &.is-on {
     color: var(--el-color-primary);
+  }
+  &.is-copied {
+    color: var(--el-color-success) !important;
   }
 }
 </style>

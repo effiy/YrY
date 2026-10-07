@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-08-01"
 title: "YP-08-01: 提示词历史与分支管理 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202608"
 estimate_frontend: 4.0
 source_prd: "01-聊天核心-提示词历史与分支管理"
 source_okr: [yipet-002]
+
+type: task
 ---
 
 # YP-08-01: 提示词历史与分支管理 — 开发方案

@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p3
+benefit: "缺陷记录：质量-LlamaIndexPanel组件体积过大"
+lifecycle: active
 ---
 
 # LlamaIndexPanel: 组件体积从 4556 行拆分为 6 个模块

@@ -7,7 +7,7 @@ unified ``{code,message,data}`` envelope.
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from domain.rag import rag_query, rag_status, rebuild_index
 

@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 架构
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["05-prd-task-API层设计"]
+related_tests: ["05-prd-test-API层设计"]
+benefit: "产品需求：API层设计"
+lifecycle: active
 ---
 
 # YV-07-05: API 层设计 — RequestHttp RPC 拦截器 + 错误处理 + 认证集成
@@ -1366,8 +1370,8 @@ export function getErrorAction(code: number): "toast" | "redirect" | "silent" {
 
 ---
 
-*PRD 来源: [00-需求总览](./00-需求-需求总览.md)*
-*关联需求: [YV-07-01: 项目初始化与构建系统](./01-需求-项目初始化与构建系统.md)*
+*PRD 来源: 00-需求总览*
+*关联需求: YV-07-01: 项目初始化与构建系统*
 ---
 
 ## 附录 E：RequestHttp 拦截器时序图

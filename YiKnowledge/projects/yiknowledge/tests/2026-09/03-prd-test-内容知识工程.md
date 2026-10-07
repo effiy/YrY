@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M21: 内容知识工程 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-M21"
 source_prds: ["03-功能实现-内容知识工程"]
 source_modules: ["03-prd-task-内容知识工程"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # M21: 内容知识工程 — 测试用例

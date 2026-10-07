@@ -1,10 +1,16 @@
 ---
-doc_type: index
 title: 2026-09 开发模块索引
-category: 项目/管理后台/开发模块
+category: projects/yivad/devs
 created: 2026-09-02
-updated: 2026-09-14
+updated: 2026-10-07
 project: YiVad
+type: index
+status: stable
+source: YiVad
+tags: [yivad, dev]
+roles: [engineer]
+benefit: "开发方案：README"
+lifecycle: active
 ---
 
 # 2026-09 开发模块索引
@@ -23,25 +29,39 @@ flowchart LR
 
 | Module ID | 标题 | 状态 | 来源 OKR | 来源 PRD | 关联测试 |
 |-----------|------|------|----------|----------|----------|
-| YV-09-01-0 | [九月架构设计](./00-module-九月架构设计.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-1 | [Detail Tab 组件拆分](./01-module-组件拆分.md) | 已完成 | yivad-001 | YV-09-01 | YV-09-22 |
-| YV-09-01-2 | [useProjectInsights 分层](./02-module-composable分层.md) | 已完成 | yivad-001 | YV-09-01 | YV-09-22 |
-| YV-09-01-3 | [Docs Tab 功能实现](./03-module-文档标签页.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-4 | [Tab 独立加载状态](./04-module-加载状态.md) | 已完成 | yivad-002 | YV-09-01 | — |
-| YV-09-01-6 | [Project 页面国际化](./06-module-国际化.md) | 已完成 | yivad-002 | YV-09-01 | — |
-| YV-09-01-9 | [样式效果改造](./09-module-样式改造.md) | 进行中 | yivad-001 | YV-09-01 | — |
-| YV-09-01-10 | [RSS Content 优化](./10-module-RSS优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-11 | [AI Chat 优化](./11-module-AI聊天优化.md) | 需求已编写 | yivad-001 | YV-09-01 | — |
-| YV-09-01-12 | [Knowledge 页面优化](./12-module-Knowledge优化.md) | 已完成 | yivad-002 | YV-09-01 | — |
-| YV-09-01-13 | [Issue 页面优化](./13-module-Issue优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-14 | [RAG 页面优化](./17-module-RAG页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-15 | [Module 页面优化](./18-module-Module页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-16 | [Bug 页面优化](./19-module-Bug页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-17 | [Kanban 页面优化](./20-module-Kanban页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-18 | [Roadmap 页面优化](./21-module-Roadmap页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-19 | [全局搜索页面优化](./22-module-全局搜索页面优化.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-20 | [项目健康大盘](./20-module-健康大盘.md) | 已完成 | yivad-001 | YV-09-01 | — |
-| YV-09-01-21 | [数据导入](./21-module-数据导入.md) | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-0 | 九月架构设计 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-1 | Detail Tab 组件拆分 | 已完成 | yivad-001 | YV-09-01 | YV-09-22 |
+| YV-09-01-2 | useProjectInsights 分层 | 已完成 | yivad-001 | YV-09-01 | YV-09-22 |
+| YV-09-01-3 | Docs Tab 功能实现 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-4 | Tab 独立加载状态 | 已完成 | yivad-002 | YV-09-01 | — |
+| YV-09-01-6 | Project 页面国际化 | 已完成 | yivad-002 | YV-09-01 | — |
+| YV-09-01-9 | 样式效果改造 | 进行中 | yivad-001 | YV-09-01 | — |
+| YV-09-01-10 | RSS Content 优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-11 | AI Chat 优化 | 需求已编写 | yivad-001 | YV-09-01 | — |
+| YV-09-01-12 | Knowledge 页面优化 | 已完成 | yivad-002 | YV-09-01 | — |
+| YV-09-01-13 | Issue 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-14 | RAG 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-15 | Module 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-16 | Bug 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-17 | Kanban 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-18 | Roadmap 页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-19 | 全局搜索页面优化 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-20 | 项目健康大盘 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-01-21 | 数据导入 | 已完成 | yivad-001 | YV-09-01 | — |
+| YV-09-89-1 | [系统页面样式与交互优化](../prds/2026-09/89-prd-系统页面样式与交互优化.md) | 已完成 | yivad-003 | YV-09-89 | YV-09-89 |
+| YV-09-91-1 | [共享 FilterPills 组件](./91-prd-task-跨页面组件统一与代码去重.md) | 已完成 | yivad-003 | YV-09-91 | YV-09-91 |
+| YV-09-91-2 | [共享 RecentlyViewed 组件](./91-prd-task-跨页面组件统一与代码去重.md) | 已完成 | yivad-003 | YV-09-91 | YV-09-91 |
+| YV-09-91-3 | [BugSidebar 组件提取](./91-prd-task-跨页面组件统一与代码去重.md) | 已完成 | yivad-003 | YV-09-91 | YV-09-91 |
+| YV-09-91-4 | [全局 CSS 工具类与动画统一](./91-prd-task-跨页面组件统一与代码去重.md) | 已完成 | yivad-003 | YV-09-91 | YV-09-91 |
+| YV-09-90-1 | [项目数据规范化](./90-prd-task-项目数据规范化.md) | 已完成 | yivad-003 | YV-09-90 | YV-09-90 |
+| YV-09-92-1 | [项目数据看板聚合修复](./92-prd-task-项目数据看板聚合修复.md) | 已完成 | yivad-003 | YV-09-92 | YV-09-92 |
+| YV-09-94-1 | [首页数据看板优化](./94-prd-task-首页数据看板优化.md) | 已完成 | yivad-003 | YV-09-94 | YV-09-94 |
+| YV-09-93-1 | [TypeScript编译修复与代码质量提升](./93-prd-task-TypeScript编译修复与代码质量提升.md) | 已完成 | — | YV-09-93 | YV-09-93 |
+| YV-09-95-1 | [效率/质量看板聚合修复](./95-prd-task-效率质量看板聚合修复.md) | 已完成 | yivad-003 | YV-09-95 | YV-09-95 |
+| YV-09-96-1 | [广告内容清理与代码专业性提升](./96-prd-task-广告内容清理与代码专业性提升.md) | 已完成 | yivad-003 | YV-09-96 | YV-09-96 |
+| YV-09-97-1 | [项目详情页文档目录重构](./97-prd-task-项目详情页文档目录重构.md) | 已完成 | — | YV-09-97 | YV-09-97 |
+| YV-09-98-1 | [项目详情页文档目录文件预览弹框](./98-prd-task-项目详情页文档目录文件预览弹框.md) | 已完成 | — | YV-09-98 | YV-09-98 |
+| YV-09-99-1 | [Recent Activity 模块渲染优化](./99-prd-task-项目详情页Recent-Activity模块渲染优化.md) | 已完成 | — | YV-09-99 | YV-09-99 |
 
 <a id="sec-2"></a>
 ## 二、Dev 文档结构
@@ -65,7 +85,6 @@ flowchart LR
 ## 三、Frontmatter 规范
 
 ```yaml
-doc_type: module
 prd_task_id: "YV-09-01-1"              # 对应 PRD 中的需求编号
 title: "YV-09-01-1: {模块名} — 开发方案"
 status: {待开始|进行中|已完成}

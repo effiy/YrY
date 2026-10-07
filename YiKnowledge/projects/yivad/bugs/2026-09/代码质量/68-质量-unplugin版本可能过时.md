@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-unplugin版本可能过时"
+lifecycle: active
 ---
 
 # unplugin 插件版本锁定在 package.json 中可能过时
@@ -38,7 +40,5 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **unplugin 插件与组件库的隐式版本耦合**：`unplugin-vue-components` 的 Element Plus resolver 需要匹配 Element Plus 的组件导出结构。升级 Element Plus 时如果不同步升级 unplugin 插件，自动导入可能静默失效
 

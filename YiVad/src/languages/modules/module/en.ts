@@ -43,6 +43,10 @@ export default {
         noDescription: "No description",
         lead: "Lead",
         noLead: "Unassigned",
+        leadUpdated: "Lead updated",
+        schedule: "Schedule",
+        scheduleUpdated: "Schedule updated",
+        statusChanged: "Status changed to {status}",
         members: "Members",
         noMembers: "No members",
         addMember: "Add member",
@@ -118,6 +122,7 @@ export default {
       createSuccess: "Module created",
       updateSuccess: "Module updated",
       deleteSuccess: "Module deleted",
+      cloneSuccess: "Module cloned",
       deleteConfirm: 'Delete module "{name}"? Associated issues and bugs will also be removed.'
     },
     messages: {

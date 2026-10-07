@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "动画渲染 GPU 加速 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["28-性能-动画渲染GPU加速"]
+source_prds: ["28-架构设计-动画渲染GPU加速.md"]
+source_modules: ["28-prd-task-动画渲染GPU加速.md"]
+
+type: test
 ---
 
 # 动画渲染 GPU 加速 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["28-性能-动画渲染GPU加速"]
 | TC-GPU01 | transform+opacity | Composite 层 60fps | P1 |
 | TC-GPU02 | will-change | 预提升合成层 | P1 |
 | TC-GPU03 | 避免 Layout 动画 | width/height/top/left 不触发重排 | P2 |
+

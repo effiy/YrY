@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "诊断信息收集 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["76-工具-诊断信息收集"]
+source_prds: ["76-架构设计-诊断信息收集.md"]
+source_modules: ["76-prd-task-诊断信息收集.md"]
+
+type: test
 ---
 
 # 诊断信息收集 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["76-工具-诊断信息收集"]
 | TC-DIAG01 | Chrome 版本 | navigator.userAgent | P1 |
 | TC-DIAG02 | Storage 用量 | getBytesInUse | P1 |
 | TC-DIAG03 | 一键复制 | 诊断信息到剪贴板 | P1 |
+

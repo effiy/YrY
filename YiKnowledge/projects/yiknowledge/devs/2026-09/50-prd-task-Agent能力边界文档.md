@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-47"
 title: "YK-09-47: Agent 能力边界文档 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "50-架构设计-Agent能力边界文档.md"
 source_okr: [yiknowledge-001]
 related_tests: ["50-prd-test-Agent能力边界文档"]
+
+type: task
 ---
 
 # YK-09-47: Agent 能力边界文档 — 开发方案

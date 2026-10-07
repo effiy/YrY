@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "系统管理模块 — RBAC 权限管理面板 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-06"
 source_prds: ["06-prd-系统管理模块"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 系统管理模块]
+benefit: "测试用例：系统管理模块"
+lifecycle: active
 ---
 # 系统管理模块 — RBAC 权限管理面板 — 测试规格
 
@@ -66,8 +71,8 @@ source_modules: []
 
 **TC-USER-02: 分配角色**
 - GIVEN 用户 "zhangsan" 当前角色为 `["engineer"]`
-- WHEN 点击"分配角色"，勾选 "admin" 和 "producter"，点击"确定"
-- THEN API 调用 `editUser({ key, roles: ["admin", "producter"] })`，列表刷新后角色标签更新
+- WHEN 点击"分配角色"，勾选 "admin" 和 "product"，点击"确定"
+- THEN API 调用 `editUser({ key, roles: ["admin", "product"] })`，列表刷新后角色标签更新
 
 **TC-USER-03: 删除用户确认**
 - GIVEN 用户列表中有用户 "testuser"

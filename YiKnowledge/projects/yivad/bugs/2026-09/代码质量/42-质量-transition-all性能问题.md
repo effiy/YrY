@@ -1,5 +1,5 @@
 ---
-title: transition: all 导致不必要的布局属性动画
+title: "transition: all 导致不必要的布局属性动画"
 tags: [yivad, code-quality, css-performance]
 category: projects/yivad/bugs/code-quality
 created: 2026-09-09
@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-transition-all性能问题"
+lifecycle: active
 ---
 
 # transition: all 导致不必要的布局属性动画
@@ -61,7 +63,6 @@ transition: opacity 0.2s, transform 0.2s, color 0.2s;
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`transition: all` 的隐形成本**：浏览器在 `transition: all` 期间需要监听所有 CSS 属性变化（200+），其中 `width`/`height`/`margin`/`padding` 等布局属性会触发 Layout → Paint → Composite 的完整渲染管道。`opacity`/`transform` 仅触发 Composite，性能差距可达 10 倍以上
+- **Stylelint 的自动化防护**：`declaration-property-value-disallowed-list` 规则可以全局禁止 `transition: all`，比人工审查更可靠
 

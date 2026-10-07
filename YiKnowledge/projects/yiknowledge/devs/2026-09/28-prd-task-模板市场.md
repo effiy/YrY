@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-25"
 title: "YK-09-25: 模板市场 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "28-架构设计-模板市场.md"
 source_okr: [yiknowledge-001]
 related_tests: ["28-prd-test-模板市场"]
+
+type: task
 ---
 
 # YK-09-25: 模板市场 — 开发方案

@@ -1,5 +1,5 @@
 <template>
-  <div class="pl">
+  <div class="pl page">
     <PageHeaderCard
       :icon="Tickets"
       icon-bg="linear-gradient(135deg, #409eff, #1d4ed8)"
@@ -43,6 +43,9 @@
       :total-issues="viewRollup.issues"
       :project-count="filteredProjects.length"
       :date-label="filterDate ? filterDateLabel : ''"
+      :health-counts="healthCounts"
+      :efficiency="dashboard?.efficiency ?? null"
+      :quality="dashboard?.quality ?? null"
       @filter="setFilter"
     />
 
@@ -72,7 +75,7 @@
         class="pl-search"
         size="small"
         clearable
-        :placeholder="$t('project.list.searchPlaceholder')"
+        :placeholder="$t('project.list.searchPlaceholder') + ' (⌘K)'"
         :prefix-icon="Search"
       />
       <div class="pl-sort-group">
@@ -106,15 +109,45 @@
         {{ $t("project.list.starred") }}
       </el-button>
       <div class="pl-toolbar-right">
-        <span v-if="lastUpdated" class="pl-updated">{{ $t("project.list.updated", { time: lastUpdated }) }}</span>
+        <span v-if="lastUpdated" class="pl-updated">
+          {{ $t("project.list.updated", { time: lastUpdated }) }}
+          <span v-if="relativeUpdated" class="pl-updated-rel"> ({{ relativeUpdated }})</span>
+          <el-tooltip v-if="dashboardGeneratedAt" :content="$t('project.list.serverComputed') + ': ' + serverFreshness" placement="top">
+            <span class="pl-fresh-dot" :class="freshnessDotClass" />
+          </el-tooltip>
+        </span>
         <el-button size="small" :icon="Refresh" :loading="loading" :title="$t('project.list.refresh')" @click="refreshAll" />
-        <el-button
-          size="small"
-          :icon="Download"
-          :disabled="!displayedProjects.length"
-          :title="$t('project.list.export')"
-          @click="exportCSV"
-        />
+        <el-dropdown trigger="click">
+          <el-button size="small" :title="$t('project.list.more')">
+            <el-icon :size="14"><MoreFilled /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <div class="pl-more-section">
+                <span class="pl-more-label">{{ $t('project.list.liveHint') }}</span>
+                <el-select :model-value="pollInterval" size="small" @change="setPollInterval">
+                  <el-option v-for="opt in pollOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+                </el-select>
+              </div>
+              <el-dropdown-item
+                v-for="h in healthItems"
+                :key="h.key"
+                :command="h.key"
+                @click="setFilter('health', h.key)"
+              >
+                <el-badge :value="h.count" :type="h.badgeType" />
+                <span style="margin-left: 4px">{{ h.label }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item
+                :disabled="!displayedProjects.length"
+                @click="exportCSV"
+              >
+                <el-icon><Download /></el-icon>
+                <span style="margin-left: 4px">{{ $t('project.list.export') }}</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button type="primary" size="small" :icon="Plus" @click="openCreate">{{ $t("project.list.newProject") }}</el-button>
         <el-radio-group v-model="viewMode" size="small">
           <el-radio-button value="grid"
@@ -151,12 +184,15 @@
           :risks="risksFor(p.key)"
           :health="healthFor(p.key)"
           :desc-html="descHtml(p)"
+          :knowledge-count="knowledgeCount(p.key)"
           :starred="starredKeys.has(p.key)"
           :selected="selectedKeys.has(p.key)"
+          :deleting="deletingKeys.has(p.key)"
           @open="goDetail(p.key)"
           @edit="openEdit(p)"
           @archive="setStatus([p.key], 'archived')"
           @restore="setStatus([p.key], 'active')"
+          @delete="deleteSingleProject(p.key, p.name)"
           @toggle-star="toggleStar(p.key)"
           @toggle-select="toggleSelect(p.key)"
           @copy-id="copyIdentifier(p)"
@@ -175,10 +211,12 @@
           :health="healthFor(p.key)"
           :starred="starredKeys.has(p.key)"
           :selected="selectedKeys.has(p.key)"
+          :deleting="deletingKeys.has(p.key)"
           @open="goDetail(p.key)"
           @edit="openEdit(p)"
           @archive="setStatus([p.key], 'archived')"
           @restore="setStatus([p.key], 'active')"
+          @delete="deleteSingleProject(p.key, p.name)"
           @toggle-star="toggleStar(p.key)"
           @toggle-select="toggleSelect(p.key)"
           @copy-id="copyIdentifier(p)"
@@ -203,7 +241,7 @@
       </div>
     </div>
 
-    <!-- Batch bar — archive/restore only; bulk delete is intentionally absent. -->
+    <!-- Batch bar -->
     <Transition name="pl-batch">
       <div v-if="selectedKeys.size" class="pl-batch">
         <span class="pl-batch-count">{{ $t("project.list.batch.selected", { n: selectedKeys.size }) }}</span>
@@ -213,6 +251,7 @@
         <el-button size="small" type="success" plain @click="setStatus([...selectedKeys], 'active')">{{
           $t("project.list.batch.restore")
         }}</el-button>
+        <el-button size="small" type="danger" plain @click="batchDeleteProjects([...selectedKeys])">Delete</el-button>
         <el-button size="small" text @click="selectedKeys.clear()">{{ $t("project.list.batch.clear") }}</el-button>
       </div>
     </Transition>
@@ -230,6 +269,7 @@
             :placeholder="$t('project.dialog.namePlaceholder')"
             maxlength="80"
             show-word-limit
+            autofocus
           />
         </el-form-item>
         <el-form-item :label="$t('project.dialog.identifier')" prop="identifier">
@@ -267,6 +307,7 @@ import {
   Download,
   Grid,
   List,
+  MoreFilled,
   Plus,
   Refresh,
   Search,
@@ -278,15 +319,16 @@ import {
   Warning,
   WarningFilled
 } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 import { useProjectStore } from "@/stores/modules/project";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { loadBool, loadStr, saveBool, saveStr } from "@/utils/storage";
-import { createProject, updateProject } from "@/api/modules/projectService";
+import { createProject, updateProject, deleteProject } from "@/api/modules/projectService";
 import type { Project, ProjectMember } from "@/api/modules/projectService";
 import { useProjectInsights } from "./composables/useProjectInsights";
 import type { StatTile } from "./types";
+import { confirm } from "@/hooks/useConfirmAction";
 import ProjectStatTiles from "./components/ProjectStatTiles.vue";
 import ProjectAnalytics from "./components/ProjectAnalytics.vue";
 import ProjectAttention from "./components/ProjectAttention.vue";
@@ -321,7 +363,13 @@ const {
   loading,
   lastUpdated,
   projects,
+  knowledgeStats,
+  dashboard,
+  serverStatsByKey,
+  dashboardGeneratedAt,
   load: loadInsights,
+  startPolling,
+  stopPolling,
   statsFor,
   completionPct,
   risksFor,
@@ -363,9 +411,66 @@ watch(analyticsExpanded, v => saveBool(PREF.analytics, v));
 const searchText = ref("");
 const searchRef = ref<{ focus: () => void }>();
 
+// ── Auto-refresh polling ──────────────────────────────────────────────────
+const POLL_PREF_KEY = "project.pollIntervalMs";
+const pollOptions = [
+  { label: t("project.list.liveOff"), value: 0 },
+  { label: "30s", value: 30_000 },
+  { label: "1m", value: 60_000 },
+  { label: "2m", value: 120_000 },
+  { label: "5m", value: 300_000 }
+];
+const pollInterval = ref(Number(localStorage.getItem(POLL_PREF_KEY)) || 0);
+const isPolling = computed(() => pollInterval.value > 0);
+
+function setPollInterval(ms: number) {
+  pollInterval.value = ms;
+  localStorage.setItem(POLL_PREF_KEY, String(ms));
+  if (ms > 0) startPolling(ms);
+  else stopPolling();
+}
+
+// Relative "last updated" display that auto-updates every 15s.
+const relativeUpdated = ref("");
+let relativeTimer: ReturnType<typeof setInterval> | undefined;
+
+function updateRelativeTime() {
+  if (!lastUpdated.value) return;
+  const [h, m, s] = lastUpdated.value.split(":").map(Number);
+  const then = new Date();
+  then.setHours(h, m, s, 0);
+  const diff = Math.floor((Date.now() - then.getTime()) / 1000);
+  if (diff < 60) relativeUpdated.value = t("project.health.timeJustNow");
+  else if (diff < 3600) relativeUpdated.value = t("project.health.timeMinutesAgo", { n: Math.floor(diff / 60) });
+  else relativeUpdated.value = t("project.health.timeHoursAgo", { n: Math.floor(diff / 3600) });
+}
+
+/** Human-readable server dashboard freshness. */
+function formatServerFreshness(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60) return t("project.health.timeJustNow");
+  if (diff < 3600) return t("project.health.timeMinutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("project.health.timeHoursAgo", { n: Math.floor(diff / 3600) });
+  return t("project.health.timeDaysAgo", { n: Math.floor(diff / 86400) });
+}
+
+const serverFreshness = computed(() => {
+  const ts = dashboardGeneratedAt.value;
+  return ts ? formatServerFreshness(ts) : "";
+});
+
+const freshnessDotClass = computed(() => {
+  if (!dashboardGeneratedAt.value) return "";
+  const diff = Math.floor((Date.now() - new Date(dashboardGeneratedAt.value).getTime()) / 1000);
+  if (diff < 60) return "pl-fresh-dot--live";
+  if (diff < 300) return "pl-fresh-dot--recent";
+  return "pl-fresh-dot--stale";
+});
+
 const formRef = ref<FormInstance>();
 const starredKeys = ref<Set<string>>(new Set(JSON.parse(localStorage.getItem("starred_projects") || "[]")));
 const selectedKeys = ref<Set<string>>(new Set());
+const deletingKeys = ref<Set<string>>(new Set());
 
 // The status select drives `activeFilter` so the pill bar reflects every narrowing.
 const statusFilter = computed<string>({
@@ -433,6 +538,28 @@ const topProjects = computed(() =>
 
 const criticalCount = computed(() => projects.value.filter(p => healthFor(p.key) === "poor").length);
 
+/** Total YiKnowledge files across all projects. */
+const totalKnowledgeFiles = computed(() => {
+  if (!knowledgeStats.value?.projects) return 0;
+  let total = 0;
+  for (const cats of Object.values(knowledgeStats.value.projects)) {
+    total += Object.values(cats).reduce((a, b) => a + b, 0);
+  }
+  return total;
+});
+
+const healthCounts = computed(() => {
+  const counts = { good: 0, warn: 0, poor: 0 };
+  for (const p of projects.value) counts[healthFor(p.key)]++;
+  return counts;
+});
+
+const healthItems = computed(() => [
+  { key: "good", count: healthCounts.value.good, label: t("project.risks.health.good"), badgeType: "success" as const },
+  { key: "warn", count: healthCounts.value.warn, label: t("project.risks.health.warn"), badgeType: "warning" as const },
+  { key: "poor", count: healthCounts.value.poor, label: t("project.risks.health.poor"), badgeType: "danger" as const },
+]);
+
 const countLabel = computed(() =>
   t("project.list.countLabel", { shown: displayedProjects.value.length, total: projects.value.length })
 );
@@ -446,7 +573,7 @@ const emptyDescription = computed(() => {
 const tiles = computed<StatTile[]>(() => {
   const all = allRollup.value;
   const completion = all.issues ? Math.round((all.done / all.issues) * 100) : 0;
-  return [
+  const tiles: StatTile[] = [
     {
       key: "issues",
       value: all.issues,
@@ -496,8 +623,19 @@ const tiles = computed<StatTile[]>(() => {
       variant: "risk",
       clickable: true,
       active: activeFilter.value.flagged === "1"
+    },
+    {
+      key: "docs",
+      value: totalKnowledgeFiles.value,
+      label: t("project.stats.docs"),
+      sub: knowledgeStats.value?.projects
+        ? t("project.stats.acrossProjects", { n: Object.keys(knowledgeStats.value.projects).length })
+        : t("project.stats.noDocs"),
+      icon: Document,
+      variant: "docs"
     }
   ];
+    return tiles;
 });
 
 function onTileSelect(key: string) {
@@ -546,6 +684,14 @@ function descHtml(project: Project): string {
   return descHtmlMap.value.get(project.key) || "";
 }
 
+/** Total YiKnowledge files for a project across all categories. */
+function knowledgeCount(key: string): number {
+  if (!knowledgeStats.value?.projects) return 0;
+  const cats = knowledgeStats.value.projects[key];
+  if (!cats) return 0;
+  return Object.values(cats).reduce((a, b) => a + b, 0);
+}
+
 // ── Selection + starring ──────────────────────────────────────────────────
 function toggleSelect(key: string) {
   const next = new Set(selectedKeys.value);
@@ -590,9 +736,7 @@ async function setStatus(keys: string[], status: "active" | "archived") {
       status === "archived"
         ? t("project.list.archiveConfirm", { n: targets.length })
         : t("project.list.restoreConfirm", { n: targets.length });
-    const ok = await ElMessageBox.confirm(confirmMsg, verb, {
-      type: "warning"
-    }).catch(() => false);
+    const ok = await confirm(confirmMsg, verb);
     if (!ok) return;
   }
   await Promise.all(targets.map(k => updateProject(k, { status })));
@@ -605,7 +749,98 @@ async function setStatus(keys: string[], status: "active" | "archived") {
   );
 }
 
-const rules: FormRules = {
+async function batchDeleteProjects(keys: string[]) {
+    if (!keys.length) return;
+    const targets = keys.map(k => projects.value.find(p => p.key === k)).filter(Boolean);
+    const names = targets.map(p => p!.name).join(", ");
+    const ok = await confirm(`Delete ${keys.length} project(s): ${names}? This cannot be undone.`, "Delete Projects", "error");
+    if (!ok) return;
+
+    // Mark all as deleting
+    const next = new Set(deletingKeys.value);
+    for (const k of keys) next.add(k);
+    deletingKeys.value = next;
+
+    let successCount = 0;
+    let totalDeleted: Record<string, number> = {};
+    for (const k of keys) {
+      try {
+        const res = await deleteProject(k);
+        successCount++;
+        if (res.data?.deleted) {
+          for (const [col, n] of Object.entries(res.data.deleted)) {
+            totalDeleted[col] = (totalDeleted[col] || 0) + (n as number);
+          }
+        }
+      } catch { /* continue */ }
+    }
+
+    // Remove from deleting set
+    const remaining = new Set(deletingKeys.value);
+    for (const k of keys) remaining.delete(k);
+    deletingKeys.value = remaining;
+
+    selectedKeys.value = new Set();
+    await refreshAll();
+
+    const parts: string[] = [];
+    if (totalDeleted["issues"]) parts.push(`${totalDeleted["issues"]} issues`);
+    if (totalDeleted["bugs"]) parts.push(`${totalDeleted["bugs"]} bugs`);
+    if (totalDeleted["modules"]) parts.push(`${totalDeleted["modules"]} modules`);
+    if (totalDeleted["milestones"]) parts.push(`${totalDeleted["milestones"]} milestones`);
+    if (totalDeleted["knowledge_files"] || totalDeleted["knowledge_stories"]) parts.push("knowledge docs");
+    ElMessage.success(`Deleted ${successCount} project(s)${parts.length ? " + " + parts.join(", ") : ""}`);
+  }
+
+  async function deleteSingleProject(key: string, name: string) {
+    const ok = await confirm(
+      `Delete project "${name}" and all related issues, bugs, modules, milestones, and knowledge files? This cannot be undone.`,
+      "Delete Project",
+      "error"
+    );
+    if (!ok) return;
+
+    const next = new Set(deletingKeys.value);
+    next.add(key);
+    deletingKeys.value = next;
+
+    try {
+      const res = await deleteProject(key);
+      const deleted = res.data?.deleted || {};
+      const parts: string[] = [];
+      if (deleted["issues"]) parts.push(`${deleted["issues"]} issues`);
+      if (deleted["bugs"]) parts.push(`${deleted["bugs"]} bugs`);
+      if (deleted["modules"]) parts.push(`${deleted["modules"]} modules`);
+      if (deleted["milestones"]) parts.push(`${deleted["milestones"]} milestones`);
+      if (deleted["knowledge_files"] || deleted["knowledge_stories"]) parts.push("knowledge docs");
+      ElMessage.success(`Deleted "${name}"${parts.length ? " + " + parts.join(", ") : ""}`);
+    } catch {
+      ElMessage.error(`Failed to delete "${name}"`);
+    } finally {
+      const remaining = new Set(deletingKeys.value);
+      remaining.delete(key);
+      deletingKeys.value = remaining;
+    }
+
+    selectedKeys.value = new Set();
+    await refreshAll();
+  }
+
+  function copyAsTemplate(project: Project) {
+    dialog.isEdit = false;
+    dialog.editKey = "";
+    dialog.form = {
+      name: `${project.name} (Copy)`,
+      identifier: "",
+      description: project.description || "",
+      status: "active" as const,
+      members: [],
+      cover_image: project.cover_image || ""
+    };
+    dialog.visible = true;
+  }
+
+  const rules: FormRules = {
   name: [{ required: true, message: t("project.dialog.nameRequired"), trigger: "blur" }],
   identifier: [
     { required: true, message: t("project.dialog.identifierRequired"), trigger: "blur" },
@@ -764,10 +999,15 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   refreshAll();
+  if (pollInterval.value > 0) startPolling(pollInterval.value);
+  updateRelativeTime();
+  relativeTimer = setInterval(updateRelativeTime, 15_000);
   window.addEventListener("keydown", onKeydown);
 });
 
 onBeforeUnmount(() => {
+  stopPolling();
+  if (relativeTimer) clearInterval(relativeTimer);
   window.removeEventListener("keydown", onKeydown);
 });
 
@@ -783,175 +1023,7 @@ watch(projects, list => {
 });
 </script>
 
+
 <style scoped lang="scss">
-.pl {
-  height: calc(100vh - 146px);
-  padding: 24px;
-  overflow: auto;
-  background: var(--el-bg-color-page);
-}
-.pl-updated {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-placeholder);
-}
-.pl-analytics {
-  margin-top: 16px;
-}
-.pl-date-banner {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 14px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-color-warning-light-9);
-  border: 1px solid var(--el-color-warning-light-5);
-  border-radius: 9px;
-  .el-icon {
-    flex-shrink: 0;
-    font-size: 14px;
-    color: var(--el-color-warning);
-  }
-  strong {
-    color: var(--el-text-color-primary);
-  }
-  .el-button {
-    margin-left: auto;
-  }
-}
-.pl-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.pl-search {
-  width: 220px;
-}
-.pl-sort {
-  width: 140px;
-}
-.pl-sort-group {
-  display: flex;
-  gap: 0;
-  align-items: center;
-  .pl-sort {
-    width: 130px;
-    :deep(.el-input__wrapper) {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-  }
-}
-.pl-sort-dir {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border-left: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.pl-status {
-  width: 120px;
-}
-.pl-toolbar-right {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-left: auto;
-}
-.pl-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-  gap: 18px;
-}
-.pl-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pl-results {
-  min-height: 200px;
-}
-
-/* Skeleton cards — pulse animation matching the grid layout. */
-.pl-skeleton-card {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-}
-.pl-skeleton-cover {
-  height: 104px;
-  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
-  background-size: 200% 100%;
-  animation: pl-shimmer 1.5s ease-in-out infinite;
-}
-.pl-skeleton-body {
-  padding: 14px 16px 16px;
-}
-.pl-skeleton-line {
-  height: 12px;
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
-  background-size: 200% 100%;
-  border-radius: 6px;
-  animation: pl-shimmer 1.5s ease-in-out infinite;
-  &--title {
-    width: 60%;
-    height: 16px;
-  }
-  &--short {
-    width: 35%;
-  }
-}
-
-@keyframes pl-shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-.pl-empty {
-  padding: 56px 0;
-}
-
-/* Floating batch bar — only appears once something is selected. */
-.pl-batch {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  z-index: 20;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 9px 16px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 999px;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 16%);
-  transform: translateX(-50%);
-}
-.pl-batch-count {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--el-text-color-regular);
-}
-.pl-batch-enter-active,
-.pl-batch-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-.pl-batch-enter-from,
-.pl-batch-leave-to {
-  opacity: 0;
-  transform: translate(-50%, 12px);
-}
+@use "./index.scss";
 </style>

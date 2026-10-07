@@ -7,7 +7,8 @@ period: 2026 Q3
 owner: AI Engineer
 project: YiAi
 progress: 100
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # 🧩 编排三要素落地
 
@@ -45,7 +46,7 @@ updated: 2026-09-10---
 | 决策 | 说明 |
 |------|------|
 | skill/agent/mcp 三要素显式指派 | 每个推荐任务的 `.claude/skills/` 配置中显式定义使用的 skill、agent worker、MCP 工具，不再依赖 AI 自行组装 |
-| 7 角色覆盖映射 | engineer、aier、leader、producter、srer、curator、executiver 七个角色各有专属的 skill 映射清单 |
+| 7 角色覆盖映射 | engineer、aier、leader、product、sre、curator、executive 七个角色各有专属的 skill 映射清单 |
 | WSJF 可复现推荐 | AI 推荐任务时基于 WSJF（价值×紧迫度/难度）排序，结果可被日志审计复现 |
 | 编排结果落盘 | 编排配置和推荐结果写入 YiKnowledge，可被 RAG 检索和人工审查 |
 

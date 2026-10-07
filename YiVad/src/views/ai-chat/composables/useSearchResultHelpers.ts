@@ -2,6 +2,8 @@
  * useSearchResultHelpers — pure helper functions for search result display.
  * Extracted from WebSearchResults.vue for reusability and testability.
  */
+import dayjs from "dayjs";
+import "@/utils/datetime"; // loads relativeTime plugin + custom locale
 import type { WebSearchResult } from "@/api/modules/searchService";
 import { getDomain } from "@/api/modules/searchService";
 
@@ -103,20 +105,12 @@ export function extractDate(snippet: string): string {
 
 export function relativeTime(dateStr: string): string {
   if (!dateStr) return "";
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const diff = Date.now() - d.getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days < 0) return dateStr;
-    if (days === 0) return "today";
-    if (days === 1) return "1d ago";
-    if (days < 30) return `${days}d ago`;
-    if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-    return `${Math.floor(days / 365)}y ago`;
-  } catch {
-    return dateStr;
-  }
+  const d = dayjs(dateStr);
+  if (!d.isValid()) return dateStr;
+  const diffDays = dayjs().diff(d, "day");
+  if (diffDays < 0) return dateStr;
+  if (diffDays === 0) return "today";
+  return d.fromNow();
 }
 
 // ── Reading time ───────────────────────────────────────────────────────

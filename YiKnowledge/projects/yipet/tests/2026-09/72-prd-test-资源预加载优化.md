@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "资源预加载优化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["72-性能-资源预加载优化"]
+source_prds: ["72-架构设计-资源预加载优化.md"]
+source_modules: ["72-prd-task-资源预加载优化.md"]
+
+type: test
 ---
 
 # 资源预加载优化 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["72-性能-资源预加载优化"]
 |------|------|------|--------|
 | TC-PRE01 | Vue/ElementPlus preload | link rel=preload | P1 |
 | TC-PRE02 | 角色图片 prefetch | 悬停预加载 | P2 |
+

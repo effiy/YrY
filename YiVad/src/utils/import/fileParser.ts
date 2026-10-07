@@ -1,7 +1,9 @@
 /**
- * File parser for import operations.
- * Supports CSV, TSV, JSON, and Excel-like formats.
+ * File parser for import operations — backed by PapaParse for robust CSV/TSV parsing.
+ * Supports CSV, TSV, and JSON formats.
  */
+import Papa from "papaparse";
+
 export interface ParsedData {
   headers: string[];
   rows: Record<string, string>[];
@@ -25,44 +27,26 @@ export function detectFormat(text: string, fileName?: string): "csv" | "tsv" | "
 }
 
 export function parseCSV(text: string): ParsedData {
-  const lines = text
-    .trim()
-    .split("\n")
-    .filter(l => l.trim());
-  if (lines.length === 0) return { headers: [], rows: [], rawText: text, detectedFormat: "csv" };
+  const result = Papa.parse<string[]>(text, { skipEmptyLines: true });
+  if (result.data.length === 0 || result.errors.length === result.data.length) {
+    return { headers: [], rows: [], rawText: text, detectedFormat: "csv" };
+  }
 
-  const delimiter = detectDelimiter(text);
-  const parseLine = (line: string): string[] => {
-    const result: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    for (const ch of line) {
-      if (ch === '"') {
-        inQuotes = !inQuotes;
-        continue;
-      }
-      if (ch === delimiter && !inQuotes) {
-        result.push(current.trim());
-        current = "";
-        continue;
-      }
-      current += ch;
-    }
-    result.push(current.trim());
-    return result;
-  };
-
-  const headers = parseLine(lines[0]);
-  const rows = lines.slice(1).map(line => {
-    const values = parseLine(line);
+  const headers = result.data[0];
+  const rows = result.data.slice(1).map(line => {
     const record: Record<string, string> = {};
     headers.forEach((h, i) => {
-      record[h] = values[i] || "";
+      record[h] = line[i] || "";
     });
     return record;
   });
 
-  return { headers, rows, rawText: text, detectedFormat: delimiter === "\t" ? "tsv" : "csv" };
+  return {
+    headers,
+    rows,
+    rawText: text,
+    detectedFormat: text.includes("\t") ? "tsv" : "csv",
+  };
 }
 
 export function parseJSON(text: string): ParsedData {
@@ -80,17 +64,6 @@ export function parseJSON(text: string): ParsedData {
   });
 
   return { headers, rows, rawText: text, detectedFormat: "json" };
-}
-
-function detectDelimiter(text: string): string {
-  const firstLine = text.split("\n")[0] || "";
-  const counts = { ",": 0, "\t": 0, "|": 0 };
-  for (const ch of firstLine) {
-    if (ch in counts) counts[ch as keyof typeof counts]++;
-  }
-  const max = Math.max(...Object.values(counts));
-  if (max === 0) return ",";
-  return (Object.entries(counts).find(([, v]) => v === max) as [string, number])[0];
 }
 
 export async function parseFile(file: File): Promise<ParsedData> {

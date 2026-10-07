@@ -1,77 +1,93 @@
 <script setup lang="ts">
 /**
- * YiPet Chat — DraftImageList (Vue 3 SFC)
+ * YiPet Chat — DraftImageList
+ * Mirrors YiVad aiChat's DraftImageList: hover effects, preview, polished actions.
  */
-import { t } from '@/shared/i18n';
+import { Close, DeleteFilled } from '@element-plus/icons-vue';
 
 defineProps<{
   images: string[];
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   remove: [index: number];
   clear: [];
+  preview: [src: string];
 }>();
 </script>
 
 <template>
-  <div class="draft-images">
-    <div v-for="(src, idx) in images" :key="`draft-${idx}`" class="draft-image-wrap">
-      <img :src="src" :alt="`Draft ${idx + 1}`" class="draft-image" />
-      <button type="button" class="draft-remove" :title="t('chatRemove')" @click="$emit('remove', idx)">✕</button>
+  <div v-if="images.length" class="di-list">
+    <div v-for="(src, idx) in images" :key="`${idx}-${src.slice(0, 24)}`" class="di-item" @click="emit('preview', src)">
+      <img :src="src" class="di-img" :alt="`Pending image ${idx + 1}`" />
+      <el-button class="di-remove" size="small" circle :icon="Close" @click.stop="emit('remove', idx)" />
     </div>
-    <button v-if="images.length > 0" type="button" class="draft-clear" @click="$emit('clear')">{{ t('chatClearAll') }}</button>
+    <el-button class="di-clear" size="small" text :icon="DeleteFilled" @click="emit('clear')">
+      Clear images ({{ images.length }})
+    </el-button>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.draft-images {
+.di-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 4px 0;
+  align-items: center;
+  padding: 4px 16px 0;
 }
 
-.draft-image-wrap {
+.di-item {
   position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
+  cursor: zoom-in;
+  border: 2px solid rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+  border-radius: 6px;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: var(--primary-light, var(--el-color-primary));
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
 }
 
-.draft-image {
+.di-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.draft-remove {
+.di-remove {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 18px;
-  height: 18px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: -2px;
+  right: -2px;
+  width: 20px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 !important;
+  background: var(--bg-elevated, #1e293b) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.15s;
 }
 
-.draft-clear {
-  font-size: 11px;
-  padding: 2px 8px;
-  border: none;
-  background: rgba(255, 77, 79, 0.1);
-  color: #ff4d4f;
-  border-radius: 4px;
-  cursor: pointer;
-  align-self: center;
+.di-item:hover .di-remove {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.di-clear {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--text-secondary, #d4d0e8);
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--el-color-danger);
+  }
 }
 </style>

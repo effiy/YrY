@@ -9,6 +9,8 @@ export interface ConversationCompactDeps {
   activeConversation: Ref<SessionItem | null>;
   setActiveMessages: (msgs: Message[]) => void;
   persistActive: () => Promise<void> | void;
+  /** RPC call function — routes through the API client for auth + base URL. */
+  rpcCall?: <T>(module: string, method: string, params?: Record<string, unknown>) => Promise<{ ok: boolean; data: T; error?: string }>;
 }
 
 function estimateTokens(messages: Message[]): number {
@@ -22,29 +24,30 @@ function estimateTokens(messages: Message[]): number {
 
 async function callCompactApi(
   messages: Message[],
+  rpcCall?: ConversationCompactDeps['rpcCall'],
   signal?: AbortSignal,
 ): Promise<Message[] | null> {
   try {
-    const body = {
-      module_name: 'services.ai.chat_service',
-      method_name: 'compactConversation',
-      parameters: {
-        messages: messages.map(m => ({
-          role: m.type === 'user' ? 'user' : 'assistant',
-          content: m.content || '',
-          timestamp: m.timestamp,
-        })),
-      },
+    const params = {
+      messages: messages.map(m => ({
+        role: m.type === 'user' ? 'user' : 'assistant',
+        content: m.content || '',
+        timestamp: m.timestamp,
+      })),
     };
-    const res = await fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal,
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const result = data?.result ?? data?.data;
+
+    let result: Record<string, unknown> | null = null;
+
+    if (rpcCall) {
+      const res = await rpcCall<{ messages?: Array<{ role: string; content: string }> }>(
+        'services.ai.chat_service',
+        'compactConversation',
+        params,
+      );
+      if (res.ok && res.data) {
+        result = res.data as Record<string, unknown>;
+      }
+    }
     if (!result) return null;
     const compacted = Array.isArray(result?.messages) ? result.messages : Array.isArray(result) ? result : null;
     if (!compacted) return null;
@@ -79,7 +82,7 @@ export function useConversationCompact(deps: ConversationCompactDeps) {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 15_000);
-      const compacted = await callCompactApi(currentMessages, controller.signal);
+      const compacted = await callCompactApi(currentMessages, deps.rpcCall, controller.signal);
       clearTimeout(timer);
 
       if (Array.isArray(compacted) && compacted.length > 0 && compacted.length < beforeCount) {

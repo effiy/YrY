@@ -6,13 +6,16 @@ export interface GanttTask {
   title: string;
   start_date: string;
   end_date: string;
+  durationDays: number;
   progress: number;
   status: string;
+  overdue: boolean;
+  isMilestone: boolean;
   assignee?: string;
-  assigneeName?: string;
   dependencies: string[];
   color?: string;
   parentId?: string;
+  category: string;
 }
 
 export interface GanttDependency {
@@ -25,6 +28,7 @@ export interface GanttViewOptions {
   showWeekends: boolean;
   showCriticalPath: boolean;
   showToday: boolean;
+  groupBy: "none" | "assignee" | "type";
 }
 
 export interface GanttTimeRange {

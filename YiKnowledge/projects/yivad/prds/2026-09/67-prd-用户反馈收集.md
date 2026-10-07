@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-137: 用户反馈收集 — 应用内反馈组件、反馈分类、截图附件、反馈分类面板、反馈转Issue、反馈分析"
 tags: [需求文档, 用户反馈, 反馈收集, 截图, 分类面板, Issue转换, 反馈分析, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["67-prd-task-用户反馈收集"]
+related_tests: ["67-prd-test-用户反馈收集"]
+benefit: "产品需求：用户反馈收集"
+lifecycle: active
 ---
 
 # YV-09-137: 用户反馈收集 — 应用内反馈组件、反馈分类、截图附件、反馈分类面板、反馈转Issue、反馈分析

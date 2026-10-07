@@ -249,7 +249,7 @@ export const skills: SkillDef[] = [
     name: "agile-defect",
     title: "Agile Defect",
     icon: "🐛",
-    description: "Agile platform defect management — search, triage, and inspect defects from the Zeekr Agile MP system.",
+    description: "Agile platform defect management — search, triage.",
     files: 2,
     lifecycle: "active",
     user_invocable: true,

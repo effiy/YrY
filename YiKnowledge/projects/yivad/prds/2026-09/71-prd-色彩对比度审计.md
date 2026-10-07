@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-141: 色彩对比度审计 — 自动化色彩对比度审计、扫描UI元素WCAG合规性、对比度问题报告含严重级别、推荐可访问颜色替代、回归检查"
 tags: [需求文档, 色彩对比度, WCAG, 可访问性, 自动审计, 颜色替代, 回归检查, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["71-prd-task-色彩对比度审计"]
+related_tests: ["71-prd-test-色彩对比度审计"]
+benefit: "产品需求：色彩对比度审计"
+lifecycle: active
 ---
 
 # YV-09-141: 色彩对比度审计 — 自动化色彩对比度审计、扫描UI元素WCAG合规性、对比度问题报告含严重级别、推荐可访问颜色替代、回归检查

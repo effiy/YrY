@@ -5,7 +5,8 @@ stage: code-review
 title: 审查 OKR 重定义 + processRecord.vue + 类型错误清零
 role: leader
 goalId: lead-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [loop-record, code-review, okr, process-record, type-safety]

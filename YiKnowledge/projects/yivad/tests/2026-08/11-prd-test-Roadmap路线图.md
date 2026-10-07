@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "Roadmap 路线图 — 多项目模块进度可视化 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-11"
 source_prds: ["11-prd-Roadmap路线图"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, Roadmap路线图]
+benefit: "测试用例：Roadmap路线图"
+lifecycle: active
 ---
 # Roadmap 路线图 — 多项目模块进度可视化 — 测试规格
 

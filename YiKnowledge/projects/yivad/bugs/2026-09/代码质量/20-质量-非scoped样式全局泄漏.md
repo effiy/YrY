@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-非scoped样式全局泄漏"
+lifecycle: active
 ---
 
 # 4 个视图文件中存在非 scoped 样式造成全局 CSS 泄漏
@@ -20,7 +22,7 @@ priority: p3
 | 文件 | 非 scoped 样式 |
 |------|---------------|
 | `views/issue/detail.vue:768` | `issue/detail.vue` |
-| `views/knowledge/executiver/okr.vue:840` | `okr.vue` |
+| `views/knowledge/executive/okr.vue:840` | `okr.vue` |
 | `views/aiChat/components/ChatToolbar/index.vue:3198` | ChatToolbar |
 | `views/home/QuickNav.vue:283` | QuickNav |
 
@@ -35,7 +37,7 @@ priority: p3
 ## 涉及文件
 
 - `src/views/issue/detail.vue` — 非 scoped 样式
-- `src/views/knowledge/executiver/okr.vue` — 非 scoped 样式
+- `src/views/knowledge/executive/okr.vue` — 非 scoped 样式
 - `src/views/aiChat/components/ChatToolbar/index.vue` — 非 scoped 样式
 - `src/views/home/QuickNav.vue` — 非 scoped 样式
 
@@ -59,7 +61,6 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **非 scoped 样式的合法需求**：Markdown 渲染内容（`v-html`）无法被 Vue scoped 选择器命中（`data-v-xxx` 属性不会添加到动态 HTML 中），因此 markdown 样式确实需要全局样式。但这不意味着每个组件各自写非 scoped 块——应统一提取到 `src/styles/markdown.scss`
+- **`:deep()` 的局限性**：`:deep()` 可以穿透子组件，但不能穿透 `v-html` 动态内容。对于 `v-html` 的样式，全局样式表 + 唯一前缀类名是唯一可靠的方案
 

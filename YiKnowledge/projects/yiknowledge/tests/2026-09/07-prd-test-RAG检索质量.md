@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-04: RAG 检索质量监控 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-04"
 source_prds: ["07-监控-RAG检索质量"]
 source_modules: ["07-prd-task-RAG检索质量"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-04: RAG 检索质量监控 — 测试用例

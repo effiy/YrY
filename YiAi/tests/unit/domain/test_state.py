@@ -2,6 +2,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from domain.state.service import StateStoreService
+from shared.exceptions import BusinessException
 
 
 @pytest.fixture
@@ -114,7 +115,7 @@ class TestStateStoreUpdate:
         mock_col.update_one = AsyncMock(return_value=MagicMock(matched_count=0))
 
         with patch("domain.state.service.db", mock_db_inst):
-            with pytest.raises(ValueError, match="not found"):
+            with pytest.raises(BusinessException, match="not found"):
                 await svc.update("nonexistent", {"title": "X"})
 
 
@@ -135,5 +136,5 @@ class TestStateStoreDelete:
         mock_col.delete_one = AsyncMock(return_value=MagicMock(deleted_count=0))
 
         with patch("domain.state.service.db", mock_db_inst):
-            with pytest.raises(ValueError, match="not found"):
+            with pytest.raises(BusinessException, match="not found"):
                 await svc.delete("nonexistent")

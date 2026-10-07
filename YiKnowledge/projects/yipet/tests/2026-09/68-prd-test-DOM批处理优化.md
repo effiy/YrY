@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "DOM 批处理优化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["68-性能-DOM批处理优化"]
+source_prds: ["68-架构设计-DOM批处理优化.md"]
+source_modules: ["68-prd-task-DOM批处理优化.md"]
+
+type: test
 ---
 
 # DOM 批处理优化 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["68-性能-DOM批处理优化"]
 |------|------|------|--------|
 | TC-DOM01 | DocumentFragment | 批量插入 | P1 |
 | TC-DOM02 | rAF 合并 | 样式更新 | P2 |
+

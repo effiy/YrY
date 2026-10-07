@@ -6,9 +6,9 @@
     :close-on-click-modal="false"
     destroy-on-close
   >
-    <el-form :model="form" label-position="top" size="small">
+    <el-form :model="form" label-position="top" size="small" @keyup.enter="emit('submit', form)">
       <el-form-item :label="t('kanban.createDialog.formTitle')" prop="title" required>
-        <el-input v-model="form.title" :placeholder="t('kanban.createDialog.formTitlePlaceholder')" />
+        <el-input v-model="form.title" :placeholder="t('kanban.createDialog.formTitlePlaceholder')" autofocus />
       </el-form-item>
       <el-row :gutter="12">
         <el-col :span="8">

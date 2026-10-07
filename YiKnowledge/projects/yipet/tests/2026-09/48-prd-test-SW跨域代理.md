@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "SW 跨域代理 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["48-架构设计-SW跨域代理"]
+source_prds: ["48-架构设计-SW跨域代理.md"]
+source_modules: ["48-prd-task-SW跨域代理.md"]
+
+type: test
 ---
 
 # SW 跨域代理 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["48-架构设计-SW跨域代理"]
 | TC-PRX01 | fetch 拦截 | SW 层处理请求 | P2 |
 | TC-PRX02 | Token 注入 | 自动添加 X-Token | P2 |
 | TC-PRX03 | 缓存策略 | Cache API | P2 |
+

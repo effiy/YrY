@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
   - ./README.md
   - ../INDEX.md
-  - ../../executiver/roadmap/README.md
+  - ../../executive/roadmap/README.md
 ---
 
 # leader/roadmap/ — 工程路线图与生命周期管理
@@ -159,6 +159,6 @@ roadmap/
 
 | 目标 | 相关性 |
 |---|---|
-| [../../executiver/roadmap/](../../executiver/roadmap/) | 高管规划——为技术路线图提供输入 |
-| [../../executiver/strategy/](../../executiver/strategy/) | 业务战略——指导产品优先级 |
-| [../../producter/strategy/](../../producter/strategy/) | 产品策略——与技术路线图对齐 |
+| [../../executive/roadmap/](../../executive/roadmap/) | 高管规划——为技术路线图提供输入 |
+| [../../executive/strategy/](../../executive/strategy/) | 业务战略——指导产品优先级 |
+| [../../product/strategy/](../../product/strategy/) | 产品策略——与技术路线图对齐 |

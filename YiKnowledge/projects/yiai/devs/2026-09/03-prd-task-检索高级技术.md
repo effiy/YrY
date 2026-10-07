@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YA-09-03"
 title: "YA-09-03: 检索高级技术 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 6.6
 source_prd: "03-需求-检索高级技术.md"
 source_okr: [yiai-002]
 related_tests: ["03-prd-test-检索高级技术"]
+
+type: task
 ---
 
 # YA-09-03: 检索高级技术 — 开发方案

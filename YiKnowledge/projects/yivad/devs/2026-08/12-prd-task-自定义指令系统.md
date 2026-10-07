@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-12"
 title: "YV-08-12: 自定义指令系统 — 8 个 Vue 3 指令 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 1.0
 source_prd: "12-prd-自定义指令系统.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 自定义指令系统]
+benefit: "开发方案：task-自定义指令系统"
+lifecycle: active
 ---
 
 # YV-08-12: 自定义指令系统 — 开发方案

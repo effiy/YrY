@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-10: 知识文件迁移与路径重构 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-10"
 source_prds: ["13-架构设计-知识文件迁移与路径重构"]
 source_modules: ["13-prd-task-知识文件迁移与路径重构"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-10: 知识文件迁移与路径重构 — 测试用例

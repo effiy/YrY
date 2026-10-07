@@ -9,6 +9,7 @@ type: conventions
 roles: [engineer]
 benefit: "Composable 分层、状态管理、副作用处理、测试策略"
 status: active
+lifecycle: active
 ---
 
 # Composable 开发

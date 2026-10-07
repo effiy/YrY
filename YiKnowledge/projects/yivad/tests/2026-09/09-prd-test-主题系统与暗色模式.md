@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "主题系统与暗色模式 — 测试用例"
 status: 已完成
 priority: 中
@@ -11,6 +10,12 @@ project: YiVad
 prd_month: "202609"
 source_prds: ["09-prd-主题系统与暗色模式"]
 source_modules: ["09-prd-task-主题系统与暗色模式"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 主题系统与暗色模式]
+benefit: "测试用例：主题系统与暗色模式"
+lifecycle: active
 ---
 
 # 主题系统与暗色模式 — 测试用例

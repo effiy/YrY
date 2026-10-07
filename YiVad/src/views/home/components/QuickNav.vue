@@ -117,12 +117,12 @@ const knowledgeSubPages = computed(() => [
   { icon: "🤖", label: t("home.knowledgeSubPages.aier"), path: "/knowledge/aier" },
   { icon: "📚", label: t("home.knowledgeSubPages.curator"), path: "/knowledge/curator" },
   { icon: "⚙️", label: t("home.knowledgeSubPages.engineer"), path: "/knowledge/engineer" },
-  { icon: "🏆", label: t("home.knowledgeSubPages.executiver"), path: "/knowledge/executive" },
+  { icon: "🏆", label: t("home.knowledgeSubPages.executive"), path: "/knowledge/executive" },
   { icon: "⭐", label: t("home.knowledgeSubPages.leader"), path: "/knowledge/leader" },
-  { icon: "📦", label: t("home.knowledgeSubPages.producter"), path: "/knowledge/product" },
+  { icon: "📦", label: t("home.knowledgeSubPages.product"), path: "/knowledge/product" },
   { icon: "🔄", label: t("home.knowledgeSubPages.pipeline"), path: "/knowledge/pipeline" },
   { icon: "🛠️", label: t("home.knowledgeSubPages.skills"), path: "/knowledge/skills" },
-  { icon: "🛡️", label: t("home.knowledgeSubPages.srer"), path: "/knowledge/sre" }
+  { icon: "🛡️", label: t("home.knowledgeSubPages.sre"), path: "/knowledge/sre" }
 ]);
 
 const quickNavGroups = computed(() => [

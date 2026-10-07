@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-03"
 title: "YK-09-03: 命名规范自动化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 2.0
 source_prd: "06-自动化-命名规范检查.md"
 source_okr: [yiknowledge-001]
 related_tests: ["06-prd-test-命名规范检查"]
+
+type: task
 ---
 
 # YK-09-03: 命名规范自动化 — 开发方案

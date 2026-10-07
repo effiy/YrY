@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p2
+benefit: "缺陷记录：质量-useKnowledgeBase组合式函数过大"
+lifecycle: active
 ---
 
 # useKnowledgeBase composable 达 1693 行需拆分
@@ -61,7 +63,6 @@ priority: p2
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **God Composable 与 God Component 是共生问题**：1693 行的 composable + 1369 行的组件 = 3000+ 行逻辑集中在一个页面。两者必须同步拆分，否则拆了组件但 composable 仍是单体，只是把复杂度从一个文件移到另一个
+- **按功能域拆分 composable 的启发式**：当一个 composable 同时处理数据加载、过滤排序、图表交互、键盘快捷键时，这些功能域有清晰的边界——它们共享数据但操作独立，天然适合拆分为独立 composable
 

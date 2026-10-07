@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-01: 项目初始化与构建系统 — Vue 3.5 + TypeScript strict + Rsbuild — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-01"
 source_prds: ["01-prd-项目初始化与构建系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目初始化与构建系统]
+benefit: "测试用例：项目初始化与构建系统"
+lifecycle: active
 ---
 # YV-07-01: 项目初始化与构建系统 — Vue 3.5 + TypeScript strict + Rsbuild — 测试规格
 

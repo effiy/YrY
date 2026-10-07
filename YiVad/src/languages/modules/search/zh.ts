@@ -1,9 +1,9 @@
 export default {
   search: {
     title: "全局搜索",
-    placeholder: "搜索模块、页面、功能…",
+    placeholder: "搜索 Issue、项目、模块、Bug、页面…",
     noResults: "无搜索结果",
-    noResultsHint: "尝试使用不同的关键词或调整搜索范围",
+    noResultsHint: "尝试使用不同的关键词或减少筛选条件",
     searching: "搜索中…",
     searchFailed: "搜索失败，请重试",
     resultCount: "共 {total} 条结果（{time}ms）",
@@ -20,14 +20,11 @@ export default {
       bugs: "Bug",
       projects: "项目",
       modules: "模块",
+      pages: "页面",
       stories: "故事",
       knowledge: "知识库",
       documents: "文档",
-      members: "成员",
-      code: "代码",
-      prds: "PRD",
-      workflows: "工作流",
-      sessions: "对话记录"
+      members: "成员"
     },
     filters: {
       project: "项目",
@@ -54,9 +51,9 @@ export default {
       hint: "按 {key} 打开全局搜索"
     },
     recent: {
-      title: "最近访问",
-      empty: "暂无最近访问",
-      clear: "清空最近访问"
+      title: "最近搜索",
+      empty: "暂无搜索记录",
+      clear: "清空"
     },
     resultCard: {
       project: "项目",

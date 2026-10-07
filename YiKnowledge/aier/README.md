@@ -28,7 +28,7 @@ related:
 >
 > **作为** AI 工程师，**我希望**浏览 AI 基础理论、工程方法、平台工具和 ML 实践资源，**以便**构建高效、可靠、可评估的 AI 系统。
 >
-> Aier 是 AI 专属知识域。不覆盖通用软件工程（→ [engineer/](../engineer/)）、架构决策（→ [leader/](../leader/)）或生产运维（→ [srer/](../srer/)）。
+> Aier 是 AI 专属知识域。不覆盖通用软件工程（→ [engineer/](../engineer/)）、架构决策（→ [leader/](../leader/)）或生产运维（→ [sre/](../sre/)）。
 
 ## 子目录
 
@@ -36,7 +36,7 @@ related:
 |---|---|
 | [foundations/](./foundations/) | AI/ML 理论基础：Transformer 架构、注意力机制、MoE、RLHF、模型量化、RAG 设计模式 |
 | [methods/](./methods/) | AI 工程方法：提示词工程、Agent 架构模式、LLM 评估、Agent 评估、Harness 插件架构 |
-| [methods/prompts/](./methods/prompts/) | 生产级 Prompt 模板：Agent 工具调用、思维链推理、代码审查、多语言翻译、RAG 系统、SQL 生成、周报生成 |
+| [prompts/](./prompts/) | 生产级 Prompt 模板：Agent 工具调用、思维链推理、代码审查、多语言翻译、RAG 系统、SQL 生成、周报生成 |
 | [platform/](./platform/) | AI 平台选型：LLM 模型对比与选型、Embedding 模型选型、向量数据库选型 |
 | [machine-learning/](./machine-learning/) | 传统 ML 模式：分类、聚类、回归、异常检测 — LLM 之外的轻量级方案 |
 
@@ -65,9 +65,9 @@ related:
 ### 超出范围（委托给其他角色）
 - 通用数据库设计和迁移 → [engineer/ship/](../engineer/ship/)
 - 通用 API 设计和系统架构 → [engineer/build/](../engineer/build/)
-- AI 产品需求和用户故事 → [producter/discovery/](../producter/discovery/)
+- AI 产品需求和用户故事 → [product/discovery/](../product/discovery/)
 - AI 相关架构决策记录（ADR） → [leader/decisions/](../leader/decisions/)
-- AI 服务事件响应和可观测性 → [srer/incident-response/](../srer/incident-response/)
+- AI 服务事件响应和可观测性 → [sre/incident-response/](../sre/incident-response/)
 - 通用代码质量和测试策略 → [engineer/ship/](../engineer/ship/)
 
 ## 快速参考
@@ -78,7 +78,7 @@ related:
 | 设计或优化 RAG 检索策略 | [foundations/02-基础-RAG设计模式.md](./foundations/02-基础-RAG设计模式.md) |
 | 设计 Agent 架构和工具调用模式 | [methods/01-方法-Agent架构模式.md](./methods/01-方法-Agent架构模式.md) |
 | 评估 Agent 或 LLM 的输出质量 | [methods/02-方法-Agent评估.md](./methods/02-方法-Agent评估.md) / [methods/04-方法-LLM评估.md](./methods/04-方法-LLM评估.md) |
-| 写好 Prompt 或找 Prompt 模板 | [methods/05-方法-提示词工程.md](./methods/05-方法-提示词工程.md) / [methods/prompts/](./methods/prompts/) |
+| 写好 Prompt 或找 Prompt 模板 | [methods/05-方法-提示词工程.md](./methods/05-方法-提示词工程.md) / [prompts/](./prompts/) |
 | 对比和选择 LLM 模型 | [platform/02-平台-LLM对比.md](./platform/02-平台-LLM对比.md) |
 | 选择 Embedding 模型或向量数据库 | [platform/01-平台-Embedding模型选型.md](./platform/01-平台-Embedding模型选型.md) / [platform/03-平台-向量数据库选型.md](./platform/03-平台-向量数据库选型.md) |
 | 了解 AI 安全风险和防护措施 | [foundations/03-基础-AI安全与防护.md](./foundations/03-基础-AI安全与防护.md) |
@@ -88,5 +88,5 @@ related:
 
 - [INDEX.md](./INDEX.md) — 此分类的完整文件索引
 - [../engineer/build/](../engineer/build/) — 工程工具和模式
-- [../leader/decisions/yiai/](../leader/decisions/yiai/) — YiAi 架构决策记录
-- [../srer/observability/](../srer/observability/) — 生产可观测性
+- [../leader/decisions/](../leader/decisions/) — YiAi 架构决策记录
+- [../sre/observability/](../sre/observability/) — 生产可观测性

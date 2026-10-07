@@ -2,7 +2,7 @@
 title: Engineering Domain Index
 aliases: [engineering-index, architecture-patterns, dev-practices, quality-engineering]
 tags: [domain-index, engineering, architecture, quality, deployment, data, reliability, tools, lessons]
-category: root
+category: engineer
 created: 2026-08-06
 updated: 2026-09-18
 last_verified: 2026-09-18
@@ -11,10 +11,10 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [engineer, leader, aier, srer]
+roles: [engineer, leader, aier, sre]
 benefit: "All engineering content — architecture, development, quality, data, reliability, deployment, tools, and lessons — reachable from a single cross-role index"
 acceptance_criteria:
-  - "Aggregates engineering content from engineer/, leader/, srer/, aier/"
+  - "Aggregates engineering content from engineer/, leader/, sre/, aier/"
   - "Organized by 8 subdomains with verified file paths"
   - "Each entry describes what the reader will find"
   - "Covers both BUILD (design+construct) and SHIP (quality+release) phases"
@@ -24,7 +24,7 @@ related:
   - ./SECURITY.md
   - ../curator/COLLABORATION.md
   - ../leader/README.md
-  - ../srer/README.md
+  - ../sre/README.md
 ---
 
 # 工程领域聚合索引
@@ -39,8 +39,8 @@ related:
 | [开发实践](#开发实践) | 工具链、DX、代码规范、环境配置 | engineer |
 | [质量保障](#质量保障) | 测试策略、代码审查、技术债管理 | engineer |
 | [数据工程](#数据工程) | 数据库设计、数据迁移、缓存策略 | engineer |
-| [可靠性工程](#可靠性工程) | 退避重试、熔断降级、容量规划 | engineer, srer |
-| [部署与发布](#部署与发布) | CI/CD、发布流程、金丝雀部署 | engineer, srer |
+| [可靠性工程](#可靠性工程) | 退避重试、熔断降级、容量规划 | engineer, sre |
+| [部署与发布](#部署与发布) | CI/CD、发布流程、金丝雀部署 | engineer, sre |
 | [经验教训](#经验教训) | 成功案例、失败复盘、陷阱记录 | engineer |
 | [团队协作](#团队协作) | 入职指南、项目文档、协作流程 | engineer, curator |
 
@@ -53,9 +53,9 @@ related:
 | 资源 | 位置 | 描述 |
 |------|------|------|
 | ADR 模板 | [../leader/architecture/01-架构-架构决策设计.md](../leader/architecture/01-架构-架构决策设计.md) | 12 节 ADR 模板：上下文→决策→后果→替代方案 |
-| YiAi ADR | [../leader/decisions/yiai/](../leader/decisions/yiai/) | 知识监听器、LLM 路由、pytest、RAG 评估等 5 项决策 |
-| YiVad ADR | [../leader/decisions/yivad/](../leader/decisions/yivad/) | AICR 移植、Rsbuild 迁移、Vitest 引入等 3 项决策 |
-| YiPet ADR | [../leader/decisions/yipet/](../leader/decisions/yipet/) | Biome、双世界架构、跨项目 Hub 等 6 项决策 |
+| YiAi ADR | [../leader/decisions/](../leader/decisions/) | 知识监听器、LLM 路由、pytest、RAG 评估等 5 项决策 |
+| YiVad ADR | [../leader/decisions/](../leader/decisions/) | AICR 移植、Rsbuild 迁移、Vitest 引入等 3 项决策 |
+| YiPet ADR | [../leader/decisions/](../leader/decisions/) | Biome、双世界架构、跨项目 Hub 等 6 项决策 |
 
 ### 架构全景与评估
 
@@ -93,7 +93,7 @@ related:
 | 资源 | 位置 | 描述 |
 |------|------|------|
 | 代码审查标准 | [../leader/architecture/10-架构-代码审查标准.md](../leader/architecture/10-架构-代码审查标准.md) | 各项目的代码审查检查清单 |
-| AI 代码审查提示词 | [../aier/methods/prompts/03-提示词-代码审查.md](../aier/methods/prompts/03-提示词-代码审查.md) | 用于 Claude 辅助代码审查的提示词模板 |
+| AI 代码审查提示词 | [../aier/prompts/03-提示词-代码审查.md](../aier/prompts/03-提示词-代码审查.md) | 用于 Claude 辅助代码审查的提示词模板 |
 
 ### 技术选型参考
 
@@ -126,9 +126,9 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| SLO/SLI 定义 | [../srer/observability/08-可观测-SLO与SLI定义.md](../srer/observability/08-可观测-SLO与SLI定义.md) | 服务等级目标和指标定义方法 |
-| 错误预算策略 | [../srer/observability/12-可观测-错误预算策略.md](../srer/observability/12-可观测-错误预算策略.md) | 错误预算消耗与发布冻结的联动策略 |
-| 性能测试指南 | [../srer/observability/13-可观测-性能测试指南.md](../srer/observability/13-可观测-性能测试指南.md) | 负载测试、压力测试、基准测试方法 |
+| SLO/SLI 定义 | [../sre/observability/08-可观测-SLO与SLI定义.md](../sre/observability/08-可观测-SLO与SLI定义.md) | 服务等级目标和指标定义方法 |
+| 错误预算策略 | [../sre/observability/12-可观测-错误预算策略.md](../sre/observability/12-可观测-错误预算策略.md) | 错误预算消耗与发布冻结的联动策略 |
+| 性能测试指南 | [../sre/observability/13-可观测-性能测试指南.md](../sre/observability/13-可观测-性能测试指南.md) | 负载测试、压力测试、基准测试方法 |
 
 ---
 
@@ -137,7 +137,7 @@ related:
 | 资源 | 位置 | 描述 |
 |------|------|------|
 | 数据迁移指南 | [ship/03-交付-数据迁移.md](./ship/03-交付-数据迁移.md) | 四阶段安全迁移：双写→回填→切换→清理 |
-| 数据库备份恢复 | [../srer/observability/11-可观测-数据库备份恢复.md](../srer/observability/11-可观测-数据库备份恢复.md) | MongoDB 备份策略、恢复验证、RPO/RTO |
+| 数据库备份恢复 | [../sre/observability/11-可观测-数据库备份恢复.md](../sre/observability/11-可观测-数据库备份恢复.md) | MongoDB 备份策略、恢复验证、RPO/RTO |
 | MongoDB 模式设计 | [build/04-构建-MongoDB模式设计.md](./build/04-构建-MongoDB模式设计.md) | 文档模型设计：嵌入 vs 引用、索引策略、查询优化 |
 
 ### YrY 数据存储总览
@@ -175,12 +175,12 @@ related:
 | 资源 | 位置 | 描述 |
 |------|------|------|
 | 部署指南 | [ship/08-交付-部署指南.md](./ship/08-交付-部署指南.md) | 三项目部署流程：YiAi (uvicorn)、YiVad (静态站点)、YiPet (Chrome Web Store) |
-| 发布流程 | [../srer/release/04-发布-发布流程.md](../srer/release/04-发布-发布流程.md) | 标准发布协调流程 |
-| 金丝雀发布 | [../srer/release/01-发布-金丝雀发布.md](../srer/release/01-发布-金丝雀发布.md) | 渐进式流量切换 |
-| 热修复发布 | [../srer/release/02-发布-热修复发布.md](../srer/release/02-发布-热修复发布.md) | 紧急修复的加速发布通道 |
-| 回滚演练 | [../srer/release/05-发布-回滚演练.md](../srer/release/05-发布-回滚演练.md) | 回滚方案设计和定期演练 |
-| 发布冻结 | [../srer/release/03-发布-发布冻结.md](../srer/release/03-发布-发布冻结.md) | 冻结窗口的沟通、审批和例外流程 |
-| 生产就绪审查 | [../srer/release/07-发布-生产就绪审查.md](../srer/release/07-发布-生产就绪审查.md) | 上线前检查清单 |
+| 发布流程 | [../sre/release/04-发布-发布流程.md](../sre/release/04-发布-发布流程.md) | 标准发布协调流程 |
+| 金丝雀发布 | [../sre/release/01-发布-金丝雀发布.md](../sre/release/01-发布-金丝雀发布.md) | 渐进式流量切换 |
+| 热修复发布 | [../sre/release/02-发布-热修复发布.md](../sre/release/02-发布-热修复发布.md) | 紧急修复的加速发布通道 |
+| 回滚演练 | [../sre/release/05-发布-回滚演练.md](../sre/release/05-发布-回滚演练.md) | 回滚方案设计和定期演练 |
+| 发布冻结 | [../sre/release/03-发布-发布冻结.md](../sre/release/03-发布-发布冻结.md) | 冻结窗口的沟通、审批和例外流程 |
+| 生产就绪审查 | [../sre/release/07-发布-生产就绪审查.md](../sre/release/07-发布-生产就绪审查.md) | 上线前检查清单 |
 
 ---
 
@@ -190,9 +190,9 @@ related:
 
 | 类别 | 位置 | 描述 |
 |------|------|------|
-| 成功案例 (Wins) | [learn/lessons/wins/](./learn/lessons/wins/) | 可复用的成功模式 |
-| 失败复盘 (Failures) | [learn/lessons/failures/](./learn/lessons/failures/) | 从失败中提取的教训 |
-| 踩坑记录 (Gotchas) | [learn/lessons/gotchas/](./learn/lessons/gotchas/) | 已知陷阱和意外行为 |
+| 成功案例 (Wins) | [learn/lessons/](./learn/lessons/) | 可复用的成功模式 |
+| 失败复盘 (Failures) | [learn/lessons/](./learn/lessons/) | 从失败中提取的教训 |
+| 踩坑记录 (Gotchas) | [learn/lessons/](./learn/lessons/) | 已知陷阱和意外行为 |
 
 ### 典型经验条目
 
@@ -220,9 +220,9 @@ related:
 
 | 资源 | 位置 | 适用对象 |
 |------|------|----------|
-| YiAi 后端入职 | [run/onboarding/01-入职-YiAi入职.md](./run/onboarding/01-入职-YiAi入职.md) | Python 后端开发者 |
-| YiPet 扩展入职 | [run/onboarding/02-入职-YiPet入职.md](./run/onboarding/02-入职-YiPet入职.md) | Chrome 扩展开发者 |
-| YiVad 前端入职 | [run/onboarding/03-入职-YiVad入职.md](./run/onboarding/03-入职-YiVad入职.md) | Vue 3 前端开发者 |
+| YiAi 后端入职 | [run/01-入职-YiAi入职.md](./run/01-入职-YiAi入职.md) | Python 后端开发者 |
+| YiPet 扩展入职 | [run/02-入职-YiPet入职.md](./run/02-入职-YiPet入职.md) | Chrome 扩展开发者 |
+| YiVad 前端入职 | [run/03-入职-YiVad入职.md](./run/03-入职-YiVad入职.md) | Vue 3 前端开发者 |
 
 ### 项目管理
 

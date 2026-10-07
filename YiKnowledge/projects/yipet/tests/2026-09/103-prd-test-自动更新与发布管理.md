@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "自动更新与发布 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["103-基础设施-自动更新与发布管理.md"]
+source_modules: ["103-prd-task-自动更新与发布管理.md"]
+
+type: test
 ---
 
 # 自动更新与发布 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-AU01 | 版本检测 | onInstalled 事件 | P1 |
 | TC-AU02 | 更新日志 | CHANGELOG 展示 | P2 |
+

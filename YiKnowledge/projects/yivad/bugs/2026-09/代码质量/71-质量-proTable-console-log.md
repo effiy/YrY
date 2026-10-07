@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-proTable-console-log"
+lifecycle: active
 ---
 
 # complexProTable 点击行遗留 console.log(row) 调试代码
@@ -55,13 +57,10 @@ const rowClick = (row: User.ResUserList, column: TableColumnCtx<User.ResUserList
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | ESLint `no-console` 规则设为 warn，CI 中阻止 `console.log` 进入生产分支 |
+| 流程 | pre-commit hook 中检测新增的 `console.log` 并提示移除 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`console.log` 是最常见的调试残留**：开发时添加、调试完忘记移除。ESLint `no-console` 规则 + pre-commit hook 可以自动化拦截。一行 `console.log(row)` 虽然无害，但在生产环境的浏览器控制台中输出用户数据是隐私风险
 

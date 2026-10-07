@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-confirmationAnswer-continuation来源缺失"
+lifecycle: active
 ---
 
 # code-quality: confirmationAnswer 和 continuation 源码模块缺失
@@ -90,7 +92,6 @@ Error: Failed to resolve import "@/utils/continuation"
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **测试文件不应先于源模块提交**：2 个测试文件在 8 月预创建，但对应源模块直到 9 月才实现。这期间 CI 中测试加载失败（`Failed to resolve import`），但这些失败被标记为已知问题而忽略，降低了 CI 的信任度
+- **需求拆分的粒度**：「创建测试文件」和「实现源模块」应该是同一个交付增量，分属两个月的迭代导致中间态持续数周。TDD 的前提是测试和实现同步交付
 

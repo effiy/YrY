@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-08"
 title: "YK-09-08: 跨项目知识依赖图谱 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.5
 source_prd: "11-架构设计-跨项目知识依赖图谱.md"
 source_okr: [yiknowledge-001]
 related_tests: ["11-prd-test-跨项目知识依赖图谱"]
+
+type: task
 ---
 
 # YK-09-08: 跨项目知识依赖图谱 — 开发方案

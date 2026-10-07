@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 功能实现-项目分析Tab
 tags:
 - 需求文档
@@ -27,6 +26,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-003]
+related_modules: ["84-prd-task-项目分析Tab"]
+related_tests: ["84-prd-test-项目分析Tab"]
+benefit: "产品需求：项目分析Tab"
+lifecycle: active
 ---
 
 # 项目分析 Tab
@@ -97,14 +100,12 @@ source_okr: [yivad-003]
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 图表配置和统计计算应复用现有 composable（`charts.ts`、`useCodeHealth`），避免在组件内重复实现 ECharts 配置 |
+| 流程 | 新增 Tab 时同步更新 `useDetailTabs.ts` 配置和 README 的 Tab 列表 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **分析 Tab 的数据聚合依赖已有 composable**：所有 Issue/Bug/Module 数据通过 `useProjectDetail` 注入，统计计算使用 `computed` 完成，无需额外 API 调用。这是在已有数据基础设施上「低成本新增功能」的范例
+- **大文件预警的阈值选择**：>600 行红色、>300 行黄色——这些阈值应根据项目实际文件分布校准，而非直接采用业界通用值（如 500/250）。校准方法：统计项目中位数文件大小，阈值设为中位数的 3x/6x
 
 

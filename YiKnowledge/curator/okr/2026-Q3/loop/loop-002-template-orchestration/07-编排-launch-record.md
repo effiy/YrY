@@ -5,7 +5,8 @@ stage: launch
 title: 模板扩展与编排清单上线
 role: curator
 goalId: cur-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, launch, templates, orchestration]
@@ -60,6 +61,6 @@ tags: [loop-record, launch, templates, orchestration]
 |---|---|---|
 | 1 | `pnpm type:check` 0 错误 | ✅ |
 | 2 | `pnpm build:dev` 成功 | ✅ |
-| 3 | `/executiver/process` 展示 loop-002 卡片 | ✅ |
+| 3 | `/executive/process` 展示 loop-002 卡片 | ✅ |
 | 4 | `/home/index` 三要素列正常 | ✅ |
 | 5 | 模板文件格式正确 | ✅ |

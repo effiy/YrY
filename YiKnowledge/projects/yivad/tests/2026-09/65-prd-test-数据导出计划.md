@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-135: 数据导出计划 — 定时导出配置、周期导出任务、导出格式/筛选/目标、导出历史、导出失败告警、导出配额管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-135"
 source_prds: ["65-prd-数据导出计划"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 数据导出计划]
+benefit: "测试用例：数据导出计划"
+lifecycle: active
 ---
 # YV-09-135: 数据导出计划 — 定时导出配置、周期导出任务、导出格式/筛选/目标、导出历史、导出失败告警、导出配额管理 — 测试规格
 

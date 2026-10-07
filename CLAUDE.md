@@ -227,7 +227,7 @@ cd YiPet && npm run build
 - Frontmatter 是必需的：`title`、`tags`、`category`、`created`、`updated`、`source`、`type`、`status`。
 - 文件命名：kebab-case，不使用下划线或数字。
 - 最多 3 级目录：`role/problem-domain/file.md`。
-- 在添加新内容之前，运行[就绪检查清单](YiKnowledge/curator/governance/readiness-checklist.md)。
+- 在添加新内容之前，运行[就绪检查清单](YiKnowledge/curator/governance/04-治理-就绪检查清单.md)。
 
 ## 项目约束
 
@@ -365,4 +365,4 @@ YiPet（扩展）──┘      │                 Ollama（自托管）
 | [YiKnowledge/projects/INDEX.md](YiKnowledge/projects/INDEX.md) | 项目知识中心索引 |
 | [YiKnowledge/curator/governance/](YiKnowledge/curator/governance/) | 知识治理、生命周期、就绪检查清单 |
 | Memory 文件 | `~/.claude/projects/-Users-ruiyi-YrY/memory/`——用户角色、反馈、项目参考 |
-| 自定义 Skills | `.claude/skills/`（17 个，详见 [README](.claude/skills/README.md) + [SKILLS.md](.claude/skills/SKILLS.md)）——编排：`workflow` / 核心：`code-quality`、`git-commit`、`rpc-contract` / 跨项目：`cross-project`、`architecture-review`、`data-model` / 质量：`test-writer`、`pr-review`、`knowledge-audit` / 专项：`yiknowledge-writer`、`bug-tracker`、`agent-debug`、`deploy` / 平台：`dual-world`、`sse-debug`、`rag-pipeline` |
+| 自定义 Skills | `YiKnowledge/skills/`（详见 YiKnowledge/skills/ 目录）

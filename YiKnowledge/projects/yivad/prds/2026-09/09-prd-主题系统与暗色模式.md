@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 主题系统与暗色模式
 tags: [主题, 暗色模式, 图表主题, Mermaid主题]
 category: 项目/管理后台/需求
@@ -25,6 +24,8 @@ related_modules:
 - YV-09-26
 related_tests:
 - YV-09-26
+benefit: "产品需求：主题系统与暗色模式"
+lifecycle: active
 ---
 
 # 主题系统与暗色模式

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-04"
 title: "YK-09-04: RAG 检索质量监控 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 3.0
 source_prd: "07-监控-RAG检索质量.md"
 source_okr: [yiknowledge-001]
 related_tests: ["07-prd-test-RAG检索质量"]
+
+type: task
 ---
 
 # YK-09-04: RAG 检索质量监控 — 开发方案

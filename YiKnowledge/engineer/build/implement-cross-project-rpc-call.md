@@ -20,7 +20,7 @@ acceptance_criteria:
   - "Verification checklist included"
 related:
   - ./cross-project-rpc-protocol.md
-  - ../learn/lessons/gotchas/02-陷阱-RPC参数名不匹配.md
+  - ../learn/lessons/06-陷阱-RPC参数名不匹配.md
 ---
 
 # 实施跨项目 RPC 调用

@@ -1,5 +1,5 @@
 <template>
-  <div class="okr">
+  <div class="okr page">
     <div class="okr__head">
       <RoleNav v-model="selectedRoles" multiple all />
       <div class="okr__filters">
@@ -194,8 +194,10 @@
 <script setup lang="ts" name="okrIndex">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 import { Delete, House, Connection, Aim, Odometer } from "@element-plus/icons-vue";
+import { confirm } from "@/hooks/useConfirmAction";
 import dayjs from "dayjs";
 import { scanKnowledge, deleteKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import { loadBool, saveBool } from "@/utils/storage";
@@ -212,6 +214,7 @@ import AgentTag from "@/components/OkrRecommend/fields/AgentTag.vue";
 import McpTag from "@/components/OkrRecommend/fields/McpTag.vue";
 
 const router = useRouter();
+const { t } = useI18n();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -541,25 +544,21 @@ onMounted(loadActionItems);
 const viewMode = ref<"card" | "list" | "table">("table");
 
 async function handleDelete(item: ActionItem) {
-  try {
-    await ElMessageBox.confirm(`Delete "${item.action}"? This action cannot be undone.`, "Confirm Delete", {
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      type: "warning"
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(
+    t("knowledge.common.deleteFileConfirm", { path: item.action }),
+    t("knowledge.common.deleteFileTitle")
+  );
+  if (!ok) return;
   if (item.filePath) {
     try {
       await deleteKnowledgeFile(item.filePath);
     } catch {
-      ElMessage.error("Failed to delete file");
+      ElMessage.error(t("knowledge.common.fileDeleteFailed"));
       return;
     }
   }
   actionItems.value = actionItems.value.filter(a => a.id !== item.id);
-  ElMessage.success("Action item deleted");
+  ElMessage.success(t("knowledge.common.actionItemDeleted"));
 }
 
 function priorityTypeOf(priority: string): ActionItem["priorityType"] {
@@ -570,337 +569,10 @@ function priorityTypeOf(priority: string): ActionItem["priorityType"] {
 }
 </script>
 
+
 <style scoped lang="scss">
-.okr {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 95px);
-  min-height: 0;
-  padding: 24px;
-  overflow: auto;
-  background: var(--el-bg-color-page);
-}
-.okr__breadcrumb {
-  margin-bottom: 4px;
-}
-.okr__head {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.okr__nav {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.okr__filters {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-left: auto;
-}
-.okr__view-toggle {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.okr__view-label {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.okr__action-text {
-  font-size: 13px;
-  line-height: 1.4;
-}
-.okr__action-text--link {
-  color: var(--el-color-primary);
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-}
-.okr__role-cell {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.85;
-  }
-}
-.okr__role-cell-icon {
-  font-size: 16px;
-}
-.okr__role-cell-name {
-  font-size: 12px;
-  font-weight: 600;
-}
-.okr__deadline {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  font-variant-numeric: tabular-nums;
-}
-.okr__deadline-hint {
-  font-size: 11px;
-  font-style: normal;
-  color: var(--el-text-color-secondary);
-}
-.okr__deadline-overdue {
-  font-weight: 700;
-  color: var(--el-color-danger);
-  .okr__deadline-hint {
-    color: var(--el-color-danger);
-  }
-}
-.okr__progress-cell {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  :deep(.el-progress) {
-    flex: 1;
-    min-width: 0;
-  }
-}
-.okr__progress-num {
-  flex-shrink: 0;
-  min-width: 34px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-secondary);
-  text-align: right;
-}
-.okr__empty {
-  padding: 32px;
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  text-align: center;
-}
-.okr__subtask-count {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.okr__subtask-count--link {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  color: var(--el-color-primary);
-  cursor: pointer;
-  b {
-    font-weight: 700;
-  }
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-// Card view
-.okr__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
-}
-.okr__card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.okr__card-actions {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 1;
-  display: flex;
-  gap: 0;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-2px);
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-}
-.okr__card:hover .okr__card-actions {
-  pointer-events: auto;
-  opacity: 1;
-  transform: translateY(0);
-}
-.okr__card-top {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.okr__card-action {
-  min-height: 40px;
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-}
-.okr__card-role {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.85;
-  }
-}
-.okr__card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.okr__card-deadline {
-  font-variant-numeric: tabular-nums;
-}
-
-// List view
-.okr__list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.okr__list-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 14px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition: box-shadow 0.2s;
-  &:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-  }
-}
-.okr__list-priority {
-  flex-shrink: 0;
-}
-.okr__list-action {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  line-height: 1.4;
-}
-.okr__list-role {
-  display: flex;
-  flex-shrink: 0;
-  gap: 6px;
-  align-items: center;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.85;
-  }
-}
-.okr__list-owner {
-  flex-shrink: 0;
-  width: 110px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.okr__list-deadline {
-  flex-shrink: 0;
-  width: 90px;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-.okr__list-status {
-  flex-shrink: 0;
-}
-.okr__list-progress {
-  flex-shrink: 0;
-  width: 120px;
-}
-.okr__list-actions {
-  display: flex;
-  flex-shrink: 0;
-  gap: 0;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateX(4px);
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-}
-.okr__list-row:hover .okr__list-actions {
-  pointer-events: auto;
-  opacity: 1;
-  transform: translateX(0);
-}
+@use "./styles/okr.scss";
 </style>
-
-<!-- Subtasks 弹出层内容（el-popover 默认 teleport 到 body，scoped 样式无法命中，需全局样式） -->
 <style lang="scss">
-.okr__subtask-pop {
-  padding: 4px 2px;
-}
-.okr__subtask-pop .okr__subtask-head {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.okr__subtask-pop .okr__subtask-head__icon {
-  font-size: 15px;
-}
-.okr__subtask-pop .okr__subtask-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 360px;
-  overflow-y: auto;
-}
-.okr__subtask-pop .okr__subtask-item {
-  padding-left: 10px;
-  border-left: 2px solid var(--el-border-color);
-}
-.okr__subtask-pop .okr__subtask-item__title {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.okr__subtask-pop .okr__subtask-item__idx {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 18px;
-  color: var(--el-color-primary);
-  text-align: center;
-  background: var(--el-color-primary-light-9);
-  border-radius: 50%;
-}
-.okr__subtask-pop .okr__subtask-item__name {
-  line-height: 1.4;
-}
-.okr__subtask-pop .okr__subtask-item__meta {
-  display: flex;
-  gap: 6px;
-  margin-top: 3px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--el-text-color-regular);
-}
-.okr__subtask-pop .okr__subtask-item__meta--acceptance {
-  color: var(--el-text-color-secondary);
-}
-.okr__subtask-pop .okr__subtask-item__label {
-  flex-shrink: 0;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
+@use "./styles/okrGlobal.scss";
 </style>

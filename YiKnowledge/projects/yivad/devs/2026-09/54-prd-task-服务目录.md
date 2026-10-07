@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-115"
 title: "YV-09-115: 服务目录 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "54-prd-服务目录.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 服务目录]
+roles: [engineer]
+benefit: "开发方案：task-服务目录"
+lifecycle: active
 ---
 
 # YV-09-115: 服务目录 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "54-prd-服务目录.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/services`)，卡片网格 + 搜索 + 状态指示，类似微服务注册中心 UI
+
+**数据模型**：
+```
+MongoDB `services` 集合；字段：`name`, `url`, `status`, `health_check`, `owner_team`, `dependencies[]`, `docs_url`
+```
+
+**组件树**：
+```
+ServiceCatalog.vue (卡片网格 + 依赖拓扑图) + ServiceDetail.vue (健康指标/依赖/SLA)
+```
+
+**关键决策**：
+依赖拓扑图使用 ECharts 力导向图或 Mermaid 流程图；健康检查由 YiAi 后端定时探测
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "54-prd-服务目录.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

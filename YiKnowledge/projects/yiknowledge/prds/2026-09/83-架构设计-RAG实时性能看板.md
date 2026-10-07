@@ -16,7 +16,7 @@ prd_task_id: YK-09-80
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
-roles: [srer, aier]
+roles: [sre, aier]
 ---
 
 # YK-09-80: RAG 检索实时性能仪表盘 — Grafana 集成监控看板

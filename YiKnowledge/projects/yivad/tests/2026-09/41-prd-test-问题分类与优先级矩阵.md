@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-91: 问题分类与优先级矩阵 — 艾森豪威尔矩阵视图(紧急/重要)、象限间拖拽问题、按优先级+截止日期自动分类、象限容量限制、优先级热力图、批量重排优先级 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-91"
 source_prds: ["41-prd-问题分类与优先级矩阵"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 问题分类与优先级矩阵]
+benefit: "测试用例：问题分类与优先级矩阵"
+lifecycle: active
 ---
 # YV-09-91: 问题分类与优先级矩阵 — 艾森豪威尔矩阵视图(紧急/重要)、象限间拖拽问题、按优先级+截止日期自动分类、象限容量限制、优先级热力图、批量重排优先级 — 测试规格
 

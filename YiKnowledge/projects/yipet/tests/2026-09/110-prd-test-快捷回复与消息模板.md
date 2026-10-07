@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "快捷回复与消息模板 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["110-功能实现-快捷回复与消息模板.md"]
+source_modules: ["110-prd-task-快捷回复与消息模板.md"]
+
+type: test
 ---
 
 # 快捷回复与消息模板 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-QR01 | 预设模板 | 翻译/总结/审查 | P2 |
 | TC-QR02 | 自定义模板 | 创建/编辑/删除 | P2 |
+

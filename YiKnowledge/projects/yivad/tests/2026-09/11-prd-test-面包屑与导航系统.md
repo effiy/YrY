@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "面包屑与导航系统 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-31"
 source_prds: ["11-prd-面包屑与导航系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 面包屑与导航系统]
+benefit: "测试用例：面包屑与导航系统"
+lifecycle: active
 ---
 # 面包屑与导航系统 — 测试规格
 

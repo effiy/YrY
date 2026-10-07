@@ -1,7 +1,7 @@
 ---
 title: "PRD 模板 — 产品需求文档"
 aliases: [prd-template, product-requirements-template]
-tags: [template, prd, product, requirements, producter]
+tags: [template, prd, product, requirements, product]
 category: curator/templates
 created: 2026-08-24
 updated: 2026-09-15
@@ -10,7 +10,7 @@ type: template
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [producter, leader, engineer]
+roles: [product, leader, engineer]
 benefit: "产品经理编写一致的 PRD，下游角色（leader、engineer）可直接消费"
 acceptance_criteria:
   - "6 个部分：Background、User Problem、Scope、Success Metrics、Risks、Timeline"
@@ -19,7 +19,7 @@ acceptance_criteria:
 related:
   - ./README.md
   - ./02-模板-知识叶子模板.md
-  - ../../producter/discovery/prd/
+  - ../../product/discovery/
 ---
 
 # PRD 模板 — 产品需求文档

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-86"
 title: "YV-09-86: 集成市场 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "39-prd-集成市场.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 集成市场]
+roles: [engineer]
+benefit: "开发方案：task-集成市场"
+lifecycle: active
 ---
 
 # YV-09-86: 集成市场 — 开发方案
@@ -36,6 +42,25 @@ source_prd: "39-prd-集成市场.md"
 
 > 当前阶段：低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/integrations`)，卡片网格展示可用集成 + 已安装状态，配置面板
+
+**数据模型**：
+```
+MongoDB `integrations` 集合 + 静态集成定义文件（可用集成目录）
+```
+
+**组件树**：
+```
+IntegrationMarket.vue (卡片网格 + 搜索/分类过滤) + IntegrationConfig.vue (OAuth 配置/API Key 管理)
+```
+
+**关键决策**：
+OAuth 流程需后端回调端点；API Key 存储使用加密字段
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -45,12 +70,8 @@ source_prd: "39-prd-集成市场.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

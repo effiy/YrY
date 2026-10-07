@@ -25,6 +25,10 @@ export default {
       newProject: "New Project",
       viewMode: { grid: "Grid", list: "List" },
       updated: "Updated {time}",
+      live: "Live",
+      liveHint: "Auto-refresh data",
+      liveOff: "Off",
+      serverComputed: "Server-computed data freshness",
       empty: {
         noProjects: "No projects yet",
         createFirst: "Create your first project",
@@ -62,7 +66,10 @@ export default {
       noneCritical: "none critical",
       total: "{n} total",
       critical: "{n} critical",
-      of: "of"
+      of: "of",
+      docs: "Docs",
+      acrossProjects: "across {n} projects",
+      noDocs: "No docs indexed"
     },
     analytics: {
       title: "Analytics",
@@ -71,6 +78,7 @@ export default {
       typeDistribution: "Type Distribution",
       topProjects: "Top Projects",
       activity: "Activity",
+      weeklyVelocity: "Weekly Velocity",
       open: "Open",
       done: "Done",
       expand: "Expand",
@@ -177,6 +185,64 @@ export default {
         expand: "Expand",
         collapse: "Collapse"
       },
+      stats: {
+        prds: "PRDs",
+        devs: "Dev Tasks",
+        tests: "Test Specs",
+        bugs: "Bugs",
+        docs: "Docs",
+        workflows: "Workflows",
+        okrs: "OKR Goals",
+        pending: "pending",
+        total: "total",
+        completed: "done",
+        mttr: "MTTR",
+        medianFixTime: "Median fix time",
+        fresh: "fresh"
+      },
+      docs: {
+        title: "Documents",
+        empty: "No documents",
+        showAll: "Show all {n} items",
+        loading: "Loading..."
+      },
+      okr: {
+        title: "OKR Progress",
+        summary: "{done}/{total} done · {pct}%"
+      },
+      bugSeverity: {
+        title: "Bug Severity",
+        openCount: "{n} open"
+      },
+      dataQuality: {
+        title: "Data Quality",
+        summary: "{n} gaps to fix",
+        noPriority: "No priority",
+        noDueDate: "No due date",
+        noType: "No type",
+        noLabels: "No labels",
+        unassigned: "Unassigned"
+      },
+      wip: {
+        title: "Work in Progress",
+        totalItems: "{n} active items",
+        inProgress: "In Progress",
+        inReview: "In Review",
+        todo: "To Do"
+      },
+      dueHealth: {
+        title: "Due Health",
+        summary: "{upcoming} upcoming · {overdue} overdue",
+        overdue: "Overdue {n}d",
+        today: "Today",
+        daysLeft: "{n}d left"
+      },
+      recentlyCompleted: {
+        title: "Recently Completed"
+      },
+      summary: {
+        noDesc: "No description"
+      },
       sidebar: {
         overview: "Overview",
         documentation: "Documentation",
@@ -212,33 +278,69 @@ export default {
       activity: {
         title: "Recent Activity",
         empty: "No recent activity",
-        completed: "Completed",
+        emptyFiltered: "No {type} activity in this view",
+        sparklineTitle: "7-day activity",
+        completed: "Delivered",
         started: "Started",
         created: "Created",
         planned: "Planned",
         resolved: "Resolved",
         reported: "Reported",
+        fixing: "Fixing",
+        reopened: "Reopened",
+        closed: "Closed",
+        rejected: "Rejected",
+        inReview: "In Review",
+        cancelled: "Cancelled",
         moduleCreated: "Module created",
         moduleUpdated: "Module updated",
+        docCreated: "Created",
+        docUpdated: "Updated",
         today: "Today",
         yesterday: "Yesterday",
+        thisWeek: "This Week",
+        earlier: "Earlier",
         unknownDate: "Unknown",
         refresh: "Refresh",
         refreshing: "Refreshing...",
-        updatedAgo: "Updated {time}"
+        updatedAgo: "Updated {time}",
+        filterAll: "All",
+        filterRequirements: "Requirements",
+        filterBugs: "Bugs",
+        filterModules: "Modules",
+        filterDocs: "Docs",
+        heatmapLabel: "8-Week Activity",
+        heatmapTooltip: "{date}: {count} updates",
+        heatmapEmpty: "{date}: No activity",
+        unknownAssignee: "Unknown",
+        kpiAll: "All",
+        kpiReqs: "Reqs",
+        kpiBugs: "Bugs",
+        kpiDocs: "Docs",
+        kpiMods: "Mods",
+        showingCount: "{visible} of {total}"
       },
       todo: {
         title: "Todo List",
         empty: "No todo items",
         requirement: "Requirements",
+        feature: "Feature",
+        task: "Task",
+        improvement: "Improvement",
         bug: "Bugs",
+        dev: "Dev Task",
         testing: "Testing",
+        toggleAll: "All",
+        toggleDev: "Dev",
+        toggleTest: "Test",
         start: "Start",
         complete: "Complete",
         resolve: "Resolve",
         noAssignee: "Unassigned",
         noDueDate: "No due date",
-        overdue: "Overdue"
+        overdue: "Overdue",
+        completed: "Completed",
+        inProgress: "In progress"
       },
       epic: "Epic",
       quality: {
@@ -418,13 +520,13 @@ export default {
       },
       role: {
         project: "Project",
-        producter: "Product",
+        product: "Product",
         engineer: "Engineering",
         leader: "Tech Lead",
         curator: "Curator",
-        srer: "SRE",
+        sre: "SRE",
         aier: "AI Eng",
-        executiver: "Executive"
+        executive: "Executive"
       },
       viewInKnowledge: "View in Knowledge Base"
     },

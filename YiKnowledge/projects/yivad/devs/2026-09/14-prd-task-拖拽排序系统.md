@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-37"
 title: "YV-09-37: 拖拽排序系统 — 开发方案"
 status: 已完成
@@ -13,6 +12,12 @@ project_id: yivad
 prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "14-prd-拖拽排序系统.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 拖拽排序系统]
+benefit: "开发方案：task-拖拽排序系统"
+lifecycle: active
 ---
 
 # YV-09-37: 拖拽排序系统 — 开发方案
@@ -47,6 +52,20 @@ interface DragSortOptions {
 | 3 | Kanban + 列表页集成 | 0.5 |
 
 **合计：1.5d**
+
+
+### 架构方案
+
+**技术路线**：集成 `vuedraggable` (基于 SortableJS)，为列表/卡片/表格行提供拖拽排序能力
+
+**组件树**：
+```
+DraggableList.vue (通用拖拽包装) + 各页面集成 (ProTable 行拖拽 + 模块卡片拖拽)
+```
+
+**关键决策**：
+拖拽后通过 API 批量更新 `order` 字段；动画使用 CSS transition 而非 JS 动画；移动端降级为手动排序按钮
+
 
 ---
 

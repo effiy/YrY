@@ -7,7 +7,7 @@
  *                    Borders · Interactive
  */
 
-:root {
+:is(:root, #yipet-overlay, #yipet-chat-root) {
   /* ── Brand ───────────────────────────────────────────── */
   --primary: #667eea;
   --primary-hover: #5a67d8;

@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-34: 内容新鲜度扫描 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-34"
 source_prds: ["37-架构设计-内容新鲜度扫描"]
 source_modules: ["37-prd-task-内容新鲜度扫描"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-34: 内容新鲜度扫描 — 测试用例

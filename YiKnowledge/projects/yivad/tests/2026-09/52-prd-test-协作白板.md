@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-112"
 source_prds: ["52-prd-协作白板"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 协作白板]
+benefit: "测试用例：协作白板"
+lifecycle: active
 ---
 # YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式 — 测试规格
 

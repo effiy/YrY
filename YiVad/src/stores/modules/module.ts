@@ -9,7 +9,7 @@ export const useModuleStore = defineStore("module", () => {
   const total = ref(0);
   const loading = ref(false);
 
-  async function fetchModules(params: { project_key?: string; status?: string } = {}) {
+  async function fetchModules(params: { project_key?: string; status?: string; pageSize?: number; pageNum?: number } = {}) {
     loading.value = true;
     try {
       const res = await getModuleList(params);

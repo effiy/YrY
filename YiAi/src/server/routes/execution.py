@@ -11,8 +11,8 @@ from pydantic import BaseModel
 from domain.audit.decorator import set_audit_context
 from domain.execution import execute_module
 from models.schemas import ExecuteRequest
+from shared.error_codes import ErrorCode
 from shared.response import success
-from shared.sse_utils import format_sse as _format_sse
 from shared.sse_utils import stream_async as _stream_async
 from shared.sse_utils import stream_sync as _stream_sync
 
@@ -89,10 +89,10 @@ async def _execute_single(module_name: str, method_name: str, parameters: dict[s
     try:
         result = await execute_module(module_name, method_name, parameters)
         if inspect.isasyncgen(result) or hasattr(result, "__aiter__") or isinstance(result, types.GeneratorType):
-            return {"code": 1001, "message": "Streaming endpoints are not supported in batch mode", "data": None}
+            return {"code": ErrorCode.BUSINESS_ERROR.business, "message": "Streaming endpoints are not supported in batch mode", "data": None}
         return {"code": 0, "message": "ok", "data": result}
     except Exception as e:
-        return {"code": 9999, "message": str(e), "data": None}
+        return {"code": ErrorCode.UNKNOWN_INTERNAL_ERROR.business, "message": str(e), "data": None}
 
 
 @router.post("/batch", operation_id="execute_module_batch")
@@ -138,5 +138,11 @@ async def execute_module_batch(http_request: Request, request: BatchExecuteReque
         _execute_single(call.module_name, call.method_name, call.parameters)
         for call in request.calls
     ]
-    results = await asyncio.gather(*tasks, return_exceptions=False)
-    return success(data={"results": results})
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    normalized = []
+    for r in results:
+        if isinstance(r, BaseException):
+            normalized.append({"code": ErrorCode.UNKNOWN_INTERNAL_ERROR.business, "message": str(r), "data": None})
+        else:
+            normalized.append(r)
+    return success(data={"results": normalized})

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-27"
 title: "YV-09-27: 通知中心 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "10-prd-通知中心.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 通知中心]
+benefit: "开发方案：task-通知中心"
+lifecycle: active
 ---
 
 # YV-09-27: 通知中心 — 开发方案
@@ -66,6 +71,20 @@ source_prd: "10-prd-通知中心.md"
 | 3 | 标记已读/全部已读 + 30s 轮询 | 0.5 |
 
 **合计：1.5d**
+
+
+### 架构方案
+
+**技术路线**：独立路由页面，ProTable + 通知列表 + 偏好设置面板
+
+**组件树**：
+```
+NotificationCenter.vue (ProTable + 已读/未读过滤) + NotificationPreferences.vue (复选框矩阵: 渠道×事件类型)
+```
+
+**关键决策**：
+通知存储到 MongoDB `notifications` 集合；未读计数通过 computed 从 store 派生；WebSocket 实时推送（可选，初版用轮询）
+
 
 ---
 

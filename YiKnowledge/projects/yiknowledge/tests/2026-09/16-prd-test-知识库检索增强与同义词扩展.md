@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-13: 知识库检索增强 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-13"
 source_prds: ["16-架构设计-知识库检索增强与同义词扩展"]
 source_modules: ["16-prd-task-知识库检索增强与同义词扩展"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-13: 知识库检索增强 — 测试用例

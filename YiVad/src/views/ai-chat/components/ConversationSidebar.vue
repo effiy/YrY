@@ -5,6 +5,7 @@ import { ElMessage } from "element-plus";
 import { useKnowledgeTreeStore } from "@/stores/modules/knowledgeTree";
 import { syncKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
+import { filesize } from "filesize";
 
 const knowledgeStore = useKnowledgeTreeStore();
 const openPreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
@@ -179,9 +180,7 @@ function onFileDragStart(e: DragEvent, data: TreeNode) {
 
 function fmtSize(bytes?: number) {
   if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return String(filesize(bytes));
 }
 </script>
 

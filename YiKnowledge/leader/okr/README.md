@@ -17,7 +17,7 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../README.md
-  - ../../executiver/strategy/
+  - ../../executive/strategy/
 ---
 
 # 技术负责人 — OKR 追踪

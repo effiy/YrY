@@ -26,6 +26,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-001]
+related_modules: ["06-prd-task-系统管理模块"]
+related_tests: ["06-prd-test-系统管理模块"]
+benefit: "产品需求：系统管理模块"
+lifecycle: active
 ---
 
 # 系统管理模块 — RBAC 权限管理面板
@@ -251,7 +255,7 @@ audit (2):    audit:view, audit:export
 5 个默认角色：
   admin     — 全部 17 个权限
   engineer  — 13 个（无 user:manage, role:manage, 无 project:delete, knowledge:delete）
-  producter — 11 个（无 data:export, user:manage, role:manage, audit:*, 无删除权限）
+  product — 11 个（无 data:export, user:manage, role:manage, audit:*, 无删除权限）
   analyst   — 6 个（仅 view + data:export + chat）
   viewer    — 5 个（仅 view + chat）
 ```
@@ -572,8 +576,8 @@ graph TD
 
 **TC-USER-02: 分配角色**
 - GIVEN 用户 "zhangsan" 当前角色为 `["engineer"]`
-- WHEN 点击"分配角色"，勾选 "admin" 和 "producter"，点击"确定"
-- THEN API 调用 `editUser({ key, roles: ["admin", "producter"] })`，列表刷新后角色标签更新
+- WHEN 点击"分配角色"，勾选 "admin" 和 "product"，点击"确定"
+- THEN API 调用 `editUser({ key, roles: ["admin", "product"] })`，列表刷新后角色标签更新
 
 **TC-USER-03: 删除用户确认**
 - GIVEN 用户列表中有用户 "testuser"

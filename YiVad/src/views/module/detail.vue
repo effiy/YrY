@@ -12,15 +12,15 @@
             <el-tooltip :content="focusMode ? 'Show sidebar' : 'Focus mode'" placement="bottom">
               <el-button size="small" :icon="focusMode ? Rank : FullScreen" @click="focusMode = !focusMode" />
             </el-tooltip>
-            <el-select :model-value="mod.status" placeholder="Status" size="small" @change="changeStatus" style="width: 130px">
+            <el-select :model-value="mod.status" :placeholder="$t('module.table.status')" size="small" @change="changeStatus" style="width: 130px">
               <el-option v-for="(label, val) in MODULE_STATUS_MAP" :key="val" :label="label" :value="val" />
             </el-select>
             <el-dropdown trigger="click">
               <el-button :icon="MoreFilled" size="small" />
               <template #dropdown>
-                <el-dropdown-item :icon="Edit" @click="openEdit">Edit</el-dropdown-item>
+                <el-dropdown-item :icon="Edit" @click="openEdit">{{ $t("common.edit") }}</el-dropdown-item>
                 <el-dropdown-item :icon="CopyDocument" @click="cloneModule">Clone</el-dropdown-item>
-                <el-dropdown-item :icon="Delete" divided @click="handleDelete">Delete</el-dropdown-item>
+                <el-dropdown-item :icon="Delete" divided @click="handleDelete">{{ $t("common.delete") }}</el-dropdown-item>
               </template>
             </el-dropdown>
           </div>
@@ -42,6 +42,9 @@
             <div class="md-card__head">
               <el-icon class="md-card__icon"><Tickets /></el-icon>
               <span>Issues ({{ issues.length }})</span>
+              <span class="md-card__head-right">
+                <span class="md-card__stat">{{ doneCount }} done · {{ inProgressCount }} active</span>
+              </span>
             </div>
             <div class="md-card__body">
               <div v-if="issues.length" class="md-issues">
@@ -313,6 +316,7 @@
 <script setup lang="ts" name="moduleDetail">
 import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import {
   Edit,
   Delete,
@@ -329,7 +333,8 @@ import {
   MoreFilled,
   CopyDocument
 } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 import type { FormInstance, FormRules } from "element-plus";
 import { READMECard } from "@/components";
 import DetailSkeleton from "@/components/DetailSkeleton.vue";
@@ -349,6 +354,7 @@ const route = useRoute();
 const router = useRouter();
 const store = useModuleStore();
 const { render: renderMarkdown } = useMarkdown();
+const { t } = useI18n();
 
 const loading = ref(true);
 const mod = computed(() => store.currentModule);
@@ -430,7 +436,7 @@ async function saveLead() {
   savingLead.value = true;
   try {
     await store.editModule(mod.value.key, { lead: leadEdit.value || undefined } as any);
-    ElMessage.success("Lead updated");
+    ElMessage.success(t("module.detail.overview.updated"));
     editingLead.value = false;
   } finally {
     savingLead.value = false;
@@ -456,7 +462,7 @@ async function saveSchedule() {
       start_date: scheduleEdit.start_date || undefined,
       due_date: scheduleEdit.due_date || undefined
     } as any);
-    ElMessage.success("Schedule updated");
+    ElMessage.success(t("module.detail.overview.scheduleUpdated"));
     editingSchedule.value = false;
   } finally {
     savingSchedule.value = false;
@@ -466,7 +472,7 @@ async function saveSchedule() {
 async function changeStatus(newStatus: string) {
   if (!mod.value) return;
   await store.editModule(mod.value.key, { status: newStatus as ModuleStatus });
-  ElMessage.success(`Status changed to ${MODULE_STATUS_MAP[newStatus as ModuleStatus]}`);
+  ElMessage.success(t("module.detail.overview.statusChanged", { status: MODULE_STATUS_MAP[newStatus as ModuleStatus] }));
 }
 
 // ── Description (file-based) ─────────────────────────────────────────
@@ -580,7 +586,7 @@ async function submitEdit() {
       start_date: editDialog.form.start_date || undefined,
       due_date: editDialog.form.due_date || undefined
     } as any);
-    ElMessage.success("Module updated");
+    ElMessage.success(t("module.dialog.updateSuccess"));
     editDialog.visible = false;
   } finally {
     editDialog.submitting = false;
@@ -589,14 +595,11 @@ async function submitEdit() {
 
 async function handleDelete() {
   if (!mod.value) return;
-  try {
-    await ElMessageBox.confirm(`Delete module "${mod.value.name}"?`, "Delete", { type: "error" });
-    await store.removeModule(mod.value.key, mod.value.project_key);
-    ElMessage.success("Module deleted");
-    goBack();
-  } catch {
-    /* cancelled */
-  }
+  const ok = await confirm(t("module.dialog.deleteConfirm", { name: mod.value.name }), t("common.deleteTitle"), "error");
+  if (!ok) return;
+  await store.removeModule(mod.value.key, mod.value.project_key);
+  ElMessage.success(t("module.dialog.deleteSuccess"));
+  goBack();
 }
 
 async function cloneModule() {
@@ -613,7 +616,7 @@ async function cloneModule() {
     start_date: mod.value.start_date,
     due_date: mod.value.due_date
   } as any);
-  ElMessage.success("Module cloned");
+  ElMessage.success(t("module.dialog.cloneSuccess"));
   router.push(`/module/${newKey}`);
 }
 
@@ -672,460 +675,7 @@ onUnmounted(() => {
 });
 </script>
 
+
 <style scoped lang="scss">
-.md-page {
-  min-height: calc(100vh - 95px);
-  padding: 24px;
-  outline: none;
-  background: var(--el-bg-color-page);
-}
-
-// ── Header ──
-.md-header {
-  padding: 20px 24px;
-  margin-bottom: 20px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-left: 4px solid #9b59b6;
-  border-radius: 12px;
-}
-.md-header__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.md-header__actions {
-  display: flex;
-  flex-shrink: 0;
-  gap: 8px;
-  align-items: center;
-}
-.md-header__title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-// ── Body ──
-.md-body {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-}
-.md-main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-}
-
-// ── Cards ──
-.md-card {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.md-card__head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  background: var(--el-fill-color-lighter);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.md-card__icon {
-  font-size: 16px;
-  color: var(--el-color-primary);
-}
-.md-card__head-right {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-}
-.md-card__body {
-  padding: 16px;
-}
-
-// ── Empty States ──
-.md-empty {
-  padding: 24px 16px;
-  text-align: center;
-  &__icon {
-    margin-bottom: 8px;
-    font-size: 28px;
-    color: var(--el-text-color-placeholder);
-  }
-  &__text {
-    margin: 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--el-text-color-secondary);
-  }
-  &__hint {
-    margin: 4px 0 0;
-    font-size: 12px;
-    color: var(--el-text-color-placeholder);
-  }
-}
-
-// ── Issues ──
-.md-issues {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.md-issue {
-  position: relative;
-  padding: 10px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 6px;
-  transition:
-    box-shadow 0.15s,
-    transform 0.12s;
-  &:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-  }
-}
-.md-issue__accent {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 3px;
-  border-radius: 6px 0 0 6px;
-}
-.md-issue__head {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.md-issue__key {
-  padding: 1px 5px;
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: var(--el-fill-color);
-  border-radius: 3px;
-  transition: color 0.12s;
-  &:hover {
-    color: var(--el-color-primary);
-  }
-}
-.md-issue__status {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.md-issue__title {
-  display: -webkit-box;
-  margin-bottom: 5px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  -webkit-box-orient: vertical;
-  &:hover {
-    color: var(--el-color-primary);
-  }
-}
-.md-issue__foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.md-issue__foot-item {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--el-text-color-secondary);
-  .el-icon {
-    font-size: 11px;
-  }
-  &--overdue {
-    font-weight: 600;
-    color: var(--el-color-danger);
-  }
-}
-.md-issue__labels {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-}
-.md-issue__label {
-  max-width: 72px;
-  padding: 0 5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 10px;
-  line-height: 1.7;
-  color: var(--el-color-primary);
-  white-space: nowrap;
-  background: var(--el-color-primary-light-9);
-  border-radius: 3px;
-}
-
-// ── Sidebar ──
-.md-sidebar {
-  position: sticky;
-  top: 20px;
-  display: flex;
-  flex-shrink: 0;
-  flex-direction: column;
-  gap: 12px;
-  width: 280px;
-}
-.md-sb-group {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.md-sb-group__title {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  padding: 10px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  background: var(--el-fill-color-lighter);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  .el-icon {
-    font-size: 13px;
-  }
-}
-.md-sb-edit {
-  display: flex;
-  align-items: center;
-  padding: 2px;
-  margin-left: auto;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  transition: all 0.12s;
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-fill-color);
-  }
-}
-.md-sb-edit-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 4px 0;
-  & + & {
-    border-top: 1px solid var(--el-border-color-lighter);
-  }
-}
-.md-sb-edit-row__label {
-  flex-shrink: 0;
-  width: 42px;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.md-sb-edit-actions {
-  display: flex;
-  gap: 6px;
-  padding-top: 8px;
-}
-.md-sb-group__body {
-  padding: 8px 14px;
-}
-.md-sb-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
-  & + & {
-    border-top: 1px solid var(--el-border-color-lighter);
-  }
-}
-.md-sb-row__label {
-  flex-shrink: 0;
-  font-weight: 500;
-  color: var(--el-text-color-secondary);
-}
-.md-sb-row__value {
-  text-align: right;
-  &--muted {
-    font-size: 12px;
-    color: var(--el-text-color-placeholder);
-  }
-  &--overdue {
-    font-weight: 600;
-    color: var(--el-color-danger);
-  }
-  &--empty {
-    font-style: italic;
-    color: var(--el-text-color-placeholder);
-  }
-}
-.md-sb-dep {
-  margin-bottom: 8px;
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-.md-sb-dep__label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-.md-sb-dep__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  .el-tag {
-    cursor: pointer;
-  }
-}
-.md-not-found {
-  padding: 80px 0;
-}
-
-// ── Focus Mode ──
-.md-sidebar--hidden {
-  display: none;
-}
-
-// ── Sticky Bottom Bar ──
-.md-sticky-bar {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  padding: 10px 24px;
-  background: var(--el-bg-color);
-  border-top: 1px solid var(--el-border-color);
-  box-shadow: 0 -4px 20px rgb(0 0 0 / 8%);
-  transform: translateY(100%);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  &--visible {
-    transform: translateY(0);
-  }
-}
-.md-sticky-bar__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-.md-sticky-bar__left {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  min-width: 0;
-}
-.md-sticky-bar__key {
-  flex-shrink: 0;
-  padding: 2px 8px;
-  font-family: monospace;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.md-sticky-bar__title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.md-sticky-bar__actions {
-  display: flex;
-  flex-shrink: 0;
-  gap: 8px;
-  align-items: center;
-}
-
-// ── Edit Dialog Sections ──
-.md-edit-section {
-  margin-bottom: 8px;
-}
-.md-edit-section__title {
-  padding: 0 0 8px 100px;
-  margin-bottom: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-
-// ── Print Styles ──
-@media print {
-  .md-page {
-    height: auto;
-    padding: 0;
-    overflow: visible;
-    background: #ffffff;
-  }
-  .md-header__actions {
-    display: none;
-  }
-  .md-sidebar {
-    display: none;
-  }
-  .md-sticky-bar {
-    display: none;
-  }
-  .md-header {
-    padding: 0 0 16px;
-    margin-bottom: 16px;
-    border: none;
-    border-bottom: 2px solid #000000;
-    border-left: none;
-    border-radius: 0;
-  }
-  .md-header__title {
-    font-size: 18px;
-  }
-  .md-card {
-    margin-bottom: 12px;
-    border: none;
-    border-bottom: 1px solid #eeeeee;
-    border-radius: 0;
-    break-inside: avoid;
-  }
-  .md-card__head {
-    background: transparent;
-    border-bottom: 1px solid #eeeeee;
-  }
-  .md-card__body {
-    padding: 12px 0;
-  }
-  .md-body {
-    display: block;
-  }
-  .md-main {
-    max-width: 100%;
-  }
-}
+@use "../../styles/detail.scss";
 </style>

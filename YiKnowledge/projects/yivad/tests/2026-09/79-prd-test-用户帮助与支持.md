@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-205: 用户帮助与支持 — FAQ、文档链接、视频教程、支持工单、工单跟踪、反馈提交、社区论坛 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-205"
 source_prds: ["79-prd-用户帮助与支持"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户帮助与支持]
+benefit: "测试用例：用户帮助与支持"
+lifecycle: active
 ---
 # YV-09-205: 用户帮助与支持 — FAQ、文档链接、视频教程、支持工单、工单跟踪、反馈提交、社区论坛 — 测试规格
 

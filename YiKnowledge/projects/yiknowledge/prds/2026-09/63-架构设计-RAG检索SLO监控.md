@@ -16,7 +16,7 @@ prd_task_id: YK-09-60
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
-roles: [srer, aier]
+roles: [sre, aier]
 ---
 
 # YK-09-60: 知识库 RAG 检索延迟 SLO 定义与监控 — 服务质量等级协议

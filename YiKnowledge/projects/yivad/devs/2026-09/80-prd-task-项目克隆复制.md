@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-226"
 title: "YV-09-226: 项目克隆复制 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "80-prd-项目克隆复制.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目克隆复制]
+roles: [engineer]
+benefit: "开发方案：task-项目克隆复制"
+lifecycle: active
 ---
 
 # YV-09-226: 项目克隆复制 — 开发方案
@@ -36,6 +42,31 @@ source_prd: "80-prd-项目克隆复制.md"
 
 > 低优先级。
 
+### 架构方案
+
+**技术路线**：项目详情页操作菜单 → 克隆向导（el-dialog 三步流程），通过 YiAi `data_service` 批量复制文档
+
+**数据模型**：
+```
+复制流程：
+  1. 选择复制范围（project settings / issues / modules / members）
+  2. 生成新 project key（原 key + '-copy' 或用户自定义）
+  3. 批量 upsert MongoDB 文档（新 key，保持原数据内容）
+```
+
+**组件树**：
+```
+ProjectCloneWizard.vue (三步 dialog)
+├── Step 1: 新项目信息（名称/标识符/描述）
+├── Step 2: 复制范围选择（checkbox 列表）
+└── Step 3: 预览 + 确认
+```
+
+**关键决策**：
+- Issue key 处理：复制后生成新 key（原 key 前缀 + 新项目标识符），保持追溯关系
+- 关联数据清理：复制时清除 `created_at`/`updated_at` 时间戳，重置为新项目创建时间
+- 大项目复制：若 Issue > 500 条，使用异步任务（创建后台 job → 轮询状态 → 完成后通知）
+
 ---
 
 <a id="sec-gap"></a>
@@ -45,12 +76,8 @@ source_prd: "80-prd-项目克隆复制.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

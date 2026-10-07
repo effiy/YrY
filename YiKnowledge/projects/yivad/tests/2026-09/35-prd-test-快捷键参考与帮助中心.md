@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-70: 快捷键参考与帮助中心 — 上下文感知帮助面板、可搜索文档、快捷键速查、更新日志 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-70"
 source_prds: ["35-prd-快捷键参考与帮助中心"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 快捷键参考与帮助中心]
+benefit: "测试用例：快捷键参考与帮助中心"
+lifecycle: active
 ---
 # YV-09-70: 快捷键参考与帮助中心 — 上下文感知帮助面板、可搜索文档、快捷键速查、更新日志 — 测试规格
 

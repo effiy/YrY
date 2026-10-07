@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-09"
 title: "YK-09-09: 知识质量审查工作流 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.5
 source_prd: "12-架构设计-知识质量审查工作流.md"
 source_okr: [yiknowledge-001]
 related_tests: ["12-prd-test-知识质量审查工作流"]
+
+type: task
 ---
 
 # YK-09-09: 知识质量审查工作流 — 开发方案

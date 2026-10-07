@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-29: 变更日志自动生成 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-29"
 source_prds: ["32-架构设计-变更日志自动生成"]
 source_modules: ["32-prd-task-变更日志自动生成"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-29: 变更日志自动生成 — 测试用例

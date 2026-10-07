@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-60"
 title: "YV-09-60: API 令牌管理 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "28-prd-API令牌管理.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, API令牌管理]
+benefit: "开发方案：task-API令牌管理"
+lifecycle: active
 ---
 
 # YV-09-60: API 令牌管理 — 开发方案
@@ -52,6 +57,20 @@ interface ApiToken {
 ### 实施步骤：0.5d
 
 - Token 生成/列表/撤销页面
+
+
+### 架构方案
+
+**技术路线**：用户设置子页面 (`/settings/api-keys`)，ProTable + 创建/撤销对话框 + 复制按钮
+
+**组件树**：
+```
+ApiKeyList.vue (ProTable + 掩码显示) + CreateApiKeyDialog.vue (名称 + 权限选择 + 一次性显示 token)
+```
+
+**关键决策**：
+Token 仅在创建时显示一次（安全考虑）；撤销后 token 立即失效；权限粒度：按模块 (read/write/admin)
+
 
 ---
 

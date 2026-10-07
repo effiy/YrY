@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-31: 多语言 Embedding 优化 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-31"
 source_prds: ["34-架构设计-多语言Embedding优化"]
 source_modules: ["34-prd-task-多语言Embedding优化"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-31: 多语言 Embedding 优化 — 测试用例

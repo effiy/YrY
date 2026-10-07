@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-97: 部署追踪面板 — 部署历史、环境状态、部署成功率和变更日志"
 tags: [需求文档, 部署追踪, CI/CD, 环境管理, 回滚追踪, 部署指标]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["45-prd-task-部署追踪面板"]
+related_tests: ["45-prd-test-部署追踪面板"]
+benefit: "产品需求：部署追踪面板"
+lifecycle: active
 ---
 
 # YV-09-97: 部署追踪面板 — 部署历史、环境状态、部署成功率和变更日志

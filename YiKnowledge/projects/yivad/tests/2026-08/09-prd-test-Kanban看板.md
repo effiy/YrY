@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "Kanban 看板 — 拖拽式项目任务管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-09"
 source_prds: ["09-prd-Kanban看板"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, Kanban看板]
+benefit: "测试用例：Kanban看板"
+lifecycle: active
 ---
 # Kanban 看板 — 拖拽式项目任务管理 — 测试规格
 

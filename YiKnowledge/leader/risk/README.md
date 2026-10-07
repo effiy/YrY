@@ -9,15 +9,15 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [leader, srer, engineer]
+roles: [leader, sre, engineer]
 benefit: "技术负责人可快速导航风险子目录，执行上线前风险评估、管理依赖风险或撰写事后复盘"
 acceptance_criteria:
   - "覆盖风险识别、评估、登记、复盘、事故指挥五大环节"
-  - "区分方法论 (leader/) 和实操记录 (srer/)"
+  - "区分方法论 (leader/) 和实操记录 (sre/)"
 related:
   - ../INDEX.md
   - ../README.md
-  - ../../srer/incident-response/
+  - ../../sre/incident-response/
 ---
 
 # 技术负责人 — 风险管理
@@ -44,7 +44,7 @@ related:
 | 如何评估风险（本文档） | leader/risk/ | 方法论 |
 | 如何写复盘（本文档） | leader/risk/ | 方法论 |
 | 实际的风险登记册 | leader/risk/ | 模板 + 实例 |
-| 具体事故的复盘报告 | srer/incident-response/ | 实操记录 |
+| 具体事故的复盘报告 | sre/incident-response/ | 实操记录 |
 | 从复盘中提取的通用教训 | engineer/learn/lessons/ | 知识沉淀 |
 
 ## 风险管理闭环
@@ -75,8 +75,8 @@ related:
 ```
 risk/ (方法论 + 模板)
     │
-    ├── 上线风险评估 ──→ srer/release/ (发布流程)
-    ├── 事后复盘 ──→ srer/incident-response/ (实际复盘记录)
+    ├── 上线风险评估 ──→ sre/release/ (发布流程)
+    ├── 事后复盘 ──→ sre/incident-response/ (实际复盘记录)
     ├── 风险登记册 ──→ roadmap/ (影响路线图优先级)
     └── 依赖风险 ──→ capacity/ (依赖审计)
 ```

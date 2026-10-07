@@ -7,7 +7,9 @@ framework: OKR
 trend: up
 progress: 100
 title: Engineer M02 构建通过
-updated: 2026-09-10---
+tags: [okr, build, ci, engineering, yivad]
+updated: 2026-09-10
+---
 
 # 🏗️ 构建通过
 

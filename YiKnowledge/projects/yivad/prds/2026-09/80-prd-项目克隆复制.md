@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-226: 项目克隆复制 — 深度克隆项目、克隆选项配置、克隆进度与历史管理"
 tags: [需求文档, 项目克隆, 项目复制, 克隆选项, 克隆进度, 克隆历史]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["80-prd-task-项目克隆复制"]
+related_tests: ["80-prd-test-项目克隆复制"]
+benefit: "产品需求：项目克隆复制"
+lifecycle: active
 ---
 
 # YV-09-226: 项目克隆复制 — 深度克隆项目、克隆选项配置、克隆进度与历史管理

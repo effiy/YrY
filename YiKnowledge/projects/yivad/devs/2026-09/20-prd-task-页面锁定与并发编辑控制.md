@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-45"
 title: "YV-09-45: 页面锁定与并发编辑控制 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "20-prd-页面锁定与并发编辑控制.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 页面锁定与并发编辑控制]
+benefit: "开发方案：task-页面锁定与并发编辑控制"
+lifecycle: active
 ---
 
 # YV-09-45: 页面锁定与并发编辑控制 — 开发方案
@@ -53,6 +58,20 @@ async function save(data: Record<string, unknown>, currentVersion: number) {
 
 - 乐观锁 `version` 字段 + 条件更新
 - 冲突检测 + 用户提示
+
+
+### 架构方案
+
+**技术路线**：并发编辑控制：打开编辑页面时获取锁（乐观锁或悲观锁），防止多用户同时编辑同一资源
+
+**组件树**：
+```
+EditLock.vue (锁状态指示器) + LockWarningDialog.vue (冲突提示)
+```
+
+**关键决策**：
+锁机制选择：初版用乐观锁（`updated_at` 版本检查），后续引入 WebSocket 实时锁通知；锁超时 5min 自动释放
+
 
 ---
 

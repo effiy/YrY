@@ -3,9 +3,10 @@
  * Projects are stored in the YiAi `projects` collection via the data service RPC.
  */
 import http from "@/api/index";
-import { callService, queryDocuments, createDocument, updateDocument, deleteDocument } from "@/api/modules/dataService";
+import { callService, queryDocuments, createDocument, updateDocument } from "@/api/modules/dataService";
 
 const COLLECTION = "projects";
+const DATA_SERVICE = "services.database.data_service";
 
 export interface ProjectMember {
   user_id: string;
@@ -74,5 +75,9 @@ export function updateProject(key: string, data: Partial<Project>) {
 }
 
 export function deleteProject(key: string) {
-  return deleteDocument(COLLECTION, key);
+  return callService<{ key: string; deleted: Record<string, number> }>(
+    DATA_SERVICE,
+    "delete_project_cascade",
+    { key }
+  );
 }

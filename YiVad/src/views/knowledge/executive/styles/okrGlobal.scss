@@ -1,0 +1,66 @@
+.okr__subtask-pop {
+  padding: 4px 2px;
+}
+.okr__subtask-pop .okr__subtask-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.okr__subtask-pop .okr__subtask-head__icon {
+  font-size: 15px;
+}
+.okr__subtask-pop .okr__subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.okr__subtask-pop .okr__subtask-item {
+  padding-left: 10px;
+  border-left: 2px solid var(--el-border-color);
+}
+.okr__subtask-pop .okr__subtask-item__title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.okr__subtask-pop .okr__subtask-item__idx {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--el-color-primary);
+  text-align: center;
+  background: var(--el-color-primary-light-9);
+  border-radius: 50%;
+}
+.okr__subtask-pop .okr__subtask-item__name {
+  line-height: 1.4;
+}
+.okr__subtask-pop .okr__subtask-item__meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+.okr__subtask-pop .okr__subtask-item__meta--acceptance {
+  color: var(--el-text-color-secondary);
+}
+.okr__subtask-pop .okr__subtask-item__label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}

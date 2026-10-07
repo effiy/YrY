@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "兼容性工具链 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["77-基础设施-兼容性工具链"]
+source_prds: ["77-架构设计-兼容性工具链.md"]
+source_modules: ["77-prd-task-兼容性工具链.md"]
+
+type: test
 ---
 
 # 兼容性工具链 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["77-基础设施-兼容性工具链"]
 |------|------|------|--------|
 | TC-CMP01 | Chrome 版本检测 | >=88 MV3 支持 | P1 |
 | TC-CMP02 | API 特性检测 | 降级方案 | P2 |
+

@@ -22,6 +22,8 @@ affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-12)
 frequency: always
 source_prd: "YV-08-06"
+benefit: "缺陷记录：路由-菜单未按order字段排序"
+lifecycle: active
 ---
 
 ## Description

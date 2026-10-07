@@ -3,11 +3,13 @@ type: okr-metric
 id: eng-m06
 name: 构建健康度
 category: 构建
+tags: [okr, build, health, engineering]
 framework: OKR
 trend: down
 progress: 100
 title: Engineer M06 构建健康度
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # 📉 构建健康度
 

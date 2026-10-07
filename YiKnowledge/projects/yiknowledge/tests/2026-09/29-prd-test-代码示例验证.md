@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-26: 代码示例验证 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-26"
 source_prds: ["29-架构设计-代码示例验证"]
 source_modules: ["29-prd-task-代码示例验证"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-26: 代码示例验证 — 测试用例

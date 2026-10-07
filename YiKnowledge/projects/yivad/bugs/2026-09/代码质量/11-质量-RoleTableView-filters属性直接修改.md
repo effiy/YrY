@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-RoleTableView-filters属性直接修改"
+lifecycle: active
 ---
 
 # code-quality: RoleTableView Filters Prop 被直接修改
@@ -87,7 +89,6 @@ src/views/knowledge/components/RoleTableView.vue
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **同一反模式在同一批次中重复出现**：此 bug 与 #10（OkrRecommendTable columnFilters）是同一问题模式——`defineProps` 的 prop 被 `v-model` 直接修改。这说明 ESLint `vue/no-mutating-props` 规则被启用后能批量发现之前未检测到的问题，体现 lint 规则作为「安全网」的价值
+- **批量修复的效率**：同一类问题（prop mutation）在多个组件中存在，使用 `defineModel` 的迁移模式可以模板化处理
 

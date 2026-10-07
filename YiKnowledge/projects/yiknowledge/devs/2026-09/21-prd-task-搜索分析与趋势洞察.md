@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-18"
 title: "YK-09-18: 搜索分析与趋势洞察 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "21-架构设计-搜索分析与趋势洞察.md"
 source_okr: [yiknowledge-001]
 related_tests: ["21-prd-test-搜索分析与趋势洞察"]
+
+type: task
 ---
 
 # YK-09-18: 搜索分析与趋势洞察 — 开发方案

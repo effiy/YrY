@@ -44,7 +44,7 @@
 >
 > 工程规范：`@/` 路径别名、桶导出（`index.ts`）、Vue SFC（`<script setup lang="ts">`）、**组件样式就近放置** — 组件的样式与组件放在同一目录或使用 scoped CSS。Element Plus 组件通过 `unplugin-vue-components` 自动导入。
 >
-> 另见：[../../rules/architecture-direction.md](../../rules/architecture-direction.md)
+> 另见：`CLAUDE.md` — 架构方向
 
 ## 项目概况
 
@@ -222,6 +222,21 @@ chatStore 在发送/接收/编辑/删除时
 - **双世界边界。** `chrome.runtime.*` 仅在 ISOLATED 中可用。页面上下文全局变量仅在 MAIN 中。不要尝试从 MAIN 世界代码中调用 chrome API。
 
 ## 近期变更
+
+### 2026-09-23 — 自进化：CSS 一致性 + 翻译智能选择 + Dashboard 汇总
+
+- **`src/api/services/translation.ts`**：新增 `getProviderRecommend()` — 调用 YiAi `provider_recommend` RPC，基于 24h 健康数据实时排名推荐最佳翻译引擎。
+- **`src/api/services/dashboard.ts`**（新增）：`DashboardService` — `getSummary()`（项目健康概览）+ `getLiveSnapshot()`（实时 KPI 快照）。已在 `services/index.ts` 注册。
+- **`src/popup/App.vue` + `src/popup/index.css`**：10 处 CSS 回退值统一为 Lavender 调色板实际值 — border-subtle alpha、surface-sunken、gradient-primary 方向、primary-alpha。
+
+### 2026-09-23 — 即时翻译功能：选中文本 YiAi RPC 翻译
+
+- **`src/api/services/translation.ts`**（新增）：`TranslationService` — 通过 YiAi RPC 调用 `services.translation.translate_service.translate`，支持多引擎并行翻译 + 记忆缓存。提供 `translate(params)`、`queryHistory(params)`、`feedback(params)` 三个方法。
+- **`src/api/services/index.ts`**：`ApiServices` 接口新增 `translation` 字段，`createApiServices` 工厂注入翻译服务。
+- **`src/chat/stores/services.ts`**：新增 `getTranslation()` 访问器 + `injectServices` 参数扩展。
+- **`src/chat/stores/chat.ts`**：新增 `translateSelection()` 操作 — 获取页面选中文本 → 调用翻译 API → 将译文写入聊天输入框（支持编辑后发送）/ 自动打开聊天窗口。
+- **`src/chat/index.ts`**：启动时注入 `api.translation`。
+- **知识库文档**：新增 PRD（100-基础设施-即时翻译功能.md）+ 开发方案（100-prd-task-即时翻译功能.md）+ 测试方案（100-prd-test-即时翻译功能.md）
 
 ### 2026-08-15 — 弹窗皮肤中心重构 + 宠物覆盖层皮肤环
 
@@ -555,13 +570,13 @@ chatStore 在发送/接收/编辑/删除时
 
 | 要做这个 | 看这里 |
 |------------|-----------|
-| [YiKnowledge/projects/yipet/architecture/](../YiKnowledge/projects/yipet/architecture/) | 架构规范（API 层、双世界、核心模块、认证） |
-| [YiKnowledge/projects/yipet/patterns/](../YiKnowledge/projects/yipet/patterns/) | 模式模板（聊天控制器、IPC 桥接、CDN 注入） |
+| [YiKnowledge/projects/yipet/workflows/架构设计/](../YiKnowledge/projects/yipet/workflows/架构设计/) | 架构规范（API 层、双世界、核心模块、认证） |
+| [YiKnowledge/projects/yipet/workflows/功能模式/](../YiKnowledge/projects/yipet/workflows/功能模式/) | 模式模板（聊天控制器、IPC 桥接、CDN 注入） |
 | [YiKnowledge/projects/yipet/workflows/](../YiKnowledge/projects/yipet/workflows/) | 任务工作流（添加功能、发布扩展） |
 | 了解整体架构 | [CLAUDE.md](./CLAUDE.md)（本文件） |
 | 构建和类型检查项目 | `npm run build`、`npm run typecheck` — 见 [package.json](./package.json) |
 | 运行单元测试 | `npm test` — 见 [vitest.config.ts](./vitest.config.ts) |
-| 代码检查 / 格式化 | `npm run lint:eslint`、`npm run lint:prettier` — 见 [eslint.config.mjs](./eslint.config.mjs) |
+| 代码检查 / 格式化 | `npm run lint:eslint`、`npm run lint:prettier` |
 | 了解 Rsbuild 多入口设置 | [rsbuild.config.ts](./rsbuild.config.ts)、[rsbuild.config.chat.ts](./rsbuild.config.chat.ts)、[rsbuild.config.cdn.ts](./rsbuild.config.cdn.ts)、[rsbuild.config.bootstrap.ts](./rsbuild.config.bootstrap.ts) |
 | 了解内容脚本双世界注入 | [src/content/bootstrap.ts](./src/content/bootstrap.ts) + [src/content/ipc/](./src/content/ipc/) |
 | 了解 CDN 资源目录 | [src/content/cdn/catalog.ts](./src/content/cdn/catalog.ts) |
@@ -588,10 +603,10 @@ chatStore 在发送/接收/编辑/删除时
 | 添加新的 CDN 资源 | [src/content/cdn/catalog.ts](./src/content/cdn/catalog.ts)（CDN_CATALOG 数组） |
 | 了解共享辅助函数 | [src/shared/](./src/shared/) |
 | 查找桶导出索引 | [src/shared/index.ts](./src/shared/index.ts) + [src/popup/components/index.ts](./src/popup/components/index.ts) + [src/chat/components/index.ts](./src/chat/components/index.ts) |
-| API 层架构 | [../YiKnowledge/projects/yipet/architecture/api-layer.md](../YiKnowledge/projects/yipet/architecture/api-layer.md) |
-| 双世界执行 | [../YiKnowledge/projects/yipet/architecture/dual-world.md](../YiKnowledge/projects/yipet/architecture/dual-world.md) |
-| Chat Store 架构 | [../YiKnowledge/projects/yipet/patterns/chat-controller-internals.md](../YiKnowledge/projects/yipet/patterns/chat-controller-internals.md) |
-| 添加功能 | [../YiKnowledge/projects/yipet/workflows/adding-feature.md](../YiKnowledge/projects/yipet/workflows/adding-feature.md) |
-| 模块类型声明（*.css、*.png） | [src/types/globals.d.ts](./src/types/globals.d.ts) |
+| API 层架构 | [../YiKnowledge/projects/yipet/workflows/架构设计/01-架构-架构概览.md](../YiKnowledge/projects/yipet/workflows/架构设计/01-架构-架构概览.md) |
+| 双世界执行 | [../YiKnowledge/projects/yipet/workflows/架构设计/03-架构-双世界执行模型.md](../YiKnowledge/projects/yipet/workflows/架构设计/03-架构-双世界执行模型.md) |
+| Chat Store 架构 | [../YiKnowledge/projects/yipet/workflows/功能模式/01-模式-ChatStore状态管理.md](../YiKnowledge/projects/yipet/workflows/功能模式/01-模式-ChatStore状态管理.md) |
+| 添加功能 | [../YiKnowledge/projects/yipet/workflows/操作指南/02-指南-添加新功能.md](../YiKnowledge/projects/yipet/workflows/操作指南/02-指南-添加新功能.md) |
+| 模块类型声明（*.css、*.png） | `typings.d.ts` |
 | 编辑器设置（缩进、字符集等） | [.editorconfig](./.editorconfig) |
-| 架构方向规则 | `../../rules/architecture-direction.md` |
+| 架构方向 | `CLAUDE.md` — 架构方向章节 |

@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "流式渲染虚拟化结合 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["94-架构设计-流式渲染虚拟化结合.md"]
+source_modules: ["94-prd-task-流式渲染虚拟化结合.md"]
+
+type: test
 ---
 
 # 流式渲染虚拟化结合 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-SV01 | 新消息自动滚底 | 最新 N 条渲染 | P1 |
 | TC-SV02 | 历史消息虚拟化 | 可视区渲染 | P2 |
+

@@ -60,7 +60,9 @@ export function setupGlobalErrorHandler(app: App): void {
     const error = err instanceof Error ? err : new Error(String(err));
 
     // Filter HTTP request errors to avoid duplicate handling
-    if ((error as any).status !== undefined || (error as any).status === 0) return;
+    // (Axios errors have `status` on network failures or `response.status` on HTTP errors)
+    const httpStatus = (error as any).status ?? (error as any).response?.status;
+    if (httpStatus !== undefined) return;
 
     const ctx: ErrorContext = {
       type: "RENDER",

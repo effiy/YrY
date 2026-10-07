@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-200: 用户外观设置 — 主题(亮色/暗色/自动)、语言、日期格式、时区、密度(舒适/紧凑)、字号 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-200"
 source_prds: ["74-prd-用户外观设置"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户外观设置]
+benefit: "测试用例：用户外观设置"
+lifecycle: active
 ---
 # YV-09-200: 用户外观设置 — 主题(亮色/暗色/自动)、语言、日期格式、时区、密度(舒适/紧凑)、字号 — 测试规格
 

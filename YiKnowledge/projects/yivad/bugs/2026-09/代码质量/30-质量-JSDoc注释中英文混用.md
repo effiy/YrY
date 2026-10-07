@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-JSDoc注释中英文混用"
+lifecycle: active
 ---
 
 # routers/index.ts JSDoc 注释混用中文和英文
@@ -62,7 +64,6 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **混合注释是渐进式熵增**：最初是全英文注释，后续开发者在原注释上追加中文说明而非替换。结果是每个 `@param` 同时有两种语言——阅读成本翻倍而信息冗余。应选择一种语言并保持一致
+- **`@description` 中的 emoji 也是风格问题**：`📚 Route parameter configuration reference` 中的 emoji 在非 Mac 平台上渲染效果差异大，且在代码审查 diff 中不可检索
 

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 表单组件体系
 tags:
 - 表单
@@ -49,6 +48,8 @@ related_modules:
 - YV-09-M09
 related_tests:
 - YV-09-M09
+benefit: "产品需求：表单组件体系"
+lifecycle: active
 ---
 
 # 表单组件体系

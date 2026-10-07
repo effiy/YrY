@@ -6,6 +6,7 @@
  * live here.
  */
 import type { RagSource } from "@/api/interface/rag";
+import { formatAbsolute } from "@/utils/datetime";
 
 // ── Score formatting ────────────────────────────────────────────────────────
 
@@ -59,12 +60,7 @@ export function truncateText(text: string | undefined | null, maxLen: number): s
 
 /** Timestamp (number or ISO string) → locale string. */
 export function formatTimestamp(ts: number | string | undefined | null): string {
-  if (!ts) return "—";
-  try {
-    return new Date(ts).toLocaleString();
-  } catch {
-    return String(ts);
-  }
+  return formatAbsolute(ts);
 }
 
 // Re-exported from the shared util so RAG pages can keep importing from
@@ -92,15 +88,15 @@ export function stripSourcePrefix(text: string): string {
 export function categoryTagType(cat: string | undefined): "success" | "warning" | "info" | "primary" | "danger" {
   if (!cat) return "info";
   const top = cat.split("/")[0];
-  // Top-level = one of the 7 role directories (producter/leader/engineer/
-  // srer/executiver/aier/curator) or `static` / `__root__`. Assign
+  // Top-level = one of the 7 role directories (product/leader/engineer/
+  // sre/executive/aier/curator) or `static` / `__root__`. Assign
   // distinct tag colors per role so the source list is scannable at a glance.
   const map: Record<string, "success" | "warning" | "info" | "primary" | "danger"> = {
-    producter: "danger",
+    product: "danger",
     leader: "primary",
     engineer: "primary",
-    srer: "primary",
-    executiver: "danger",
+    sre: "primary",
+    executive: "danger",
     aier: "success",
     curator: "success"
   };

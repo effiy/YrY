@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "SW 生命周期状态机 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["19-架构设计-SW生命周期状态机"]
-source_modules: ["19-prd-task-SW生命周期状态机"]
+source_prds: ["19-架构设计-SW生命周期状态机.md"]
+source_modules: ["19-prd-task-SW生命周期状态机.md"]
+
+type: test
 ---
 
 # SW 生命周期状态机 — 测试用例
@@ -29,3 +32,4 @@ source_modules: ["19-prd-task-SW生命周期状态机"]
 ## 出口准则
 
 - [ ] P0 用例 100% 通过
+

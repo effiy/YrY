@@ -7,7 +7,8 @@ period: 2026 Q3
 owner: Tech Lead
 project: YiAi
 progress: 100
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # 技术评审可闭环
 

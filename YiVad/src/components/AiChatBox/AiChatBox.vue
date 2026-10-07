@@ -1,7 +1,7 @@
 <script setup lang="ts" name="AiChatBox">
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { ArrowLeft, ArrowRight, Plus, Download, Cpu, Loading, Search, Check } from "@element-plus/icons-vue";
+import { ArrowLeft, ArrowRight, Plus, Download } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { useResizable } from "@/hooks/useResizable";
 import MessageList from "@/views/ai-chat/components/MessageList.vue";
@@ -9,6 +9,8 @@ import QuickButtons from "@/views/ai-chat/components/QuickButtons.vue";
 import ChatInput from "@/views/ai-chat/components/ChatInput.vue";
 import ConversationSessionSidebar from "@/views/ai-chat/components/ConversationSessionSidebar.vue";
 import LlamaIndexPanel from "@/views/ai-chat/components/LlamaIndexPanel/index.vue";
+import TokenUsageBar from "@/views/ai-chat/components/ChatToolbar/ContextIndicator.vue";
+import ModelSelector from "@/views/ai-chat/components/ChatToolbar/ModelSelector.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -165,40 +167,7 @@ provide("aiChatSessionSidebar", {
 
 function onNewChat() {
   store.createConversation();
-}
-
-// ── Model selector ──
-
-const modelSelectVisible = ref(false);
-
-function onModelSelectOpen() {
-  if (!store.availableModels.length) store.fetchModels();
-}
-
-// ── Model selector helpers ──
-
-const modelSearch = ref("");
-
-function modelTag(name: string): { label: string; color: string } {
-  const lower = name.toLowerCase();
-  if (lower.includes("vision") || lower.includes("vl")) return { label: "vision", color: "#8b5cf6" };
-  if (lower.includes("think") || lower.includes("reason")) return { label: "reasoning", color: "#f59e0b" };
-  if (lower.includes("large") || /\b(70|72|405)b\b/.test(lower)) return { label: "large", color: "#ef4444" };
-  if (lower.includes("small") || /\b(7|8|13)b\b/.test(lower)) return { label: "compact", color: "#10b981" };
-  return { label: "general", color: "#6366f1" };
-}
-
-const filteredModels = computed(() => {
-  const q = modelSearch.value.trim().toLowerCase();
-  if (!q) return store.availableModels;
-  return store.availableModels.filter(m => m.toLowerCase().includes(q));
-});
-
-function selectModelAndClose(m: string) {
-  store.selectedModel = m;
-  modelSelectVisible.value = false;
-  modelSearch.value = "";
-}
+	}
 
 const contextCount = computed(() => {
   const tags = store.activeConversation?.tags ?? [];
@@ -264,80 +233,13 @@ const contextCount = computed(() => {
                 <span class="ai-chat-box__chat-title" :title="store.activeConversation.title">
                   {{ store.activeConversation.title || "Untitled" }}
                 </span>
+                <TokenUsageBar />
                 <span v-if="contextCount" class="ai-chat-box__chat-ctx-badge">
                   {{ contextCount }} file{{ contextCount !== 1 ? "s" : "" }}
                 </span>
               </div>
               <div class="ai-chat-box__chat-hdr-right">
-                <el-popover
-                  v-model:visible="modelSelectVisible"
-                  placement="bottom-end"
-                  :width="280"
-                  trigger="click"
-                  :teleported="true"
-                  popper-class="ai-chat-box__model-pop"
-                  @show="onModelSelectOpen"
-                >
-                  <template #reference>
-                    <el-button size="small" text class="ai-chat-box__model-btn">
-                      <el-icon><Cpu /></el-icon>
-                      <span>{{ store.selectedModel }}</span>
-                    </el-button>
-                  </template>
-                  <div class="ai-chat-box__model-panel">
-                    <!-- Search -->
-                    <div class="ai-chat-box__model-search">
-                      <el-input
-                        v-model="modelSearch"
-                        size="small"
-                        placeholder="Filter models..."
-                        :prefix-icon="Search"
-                        clearable
-                      />
-                    </div>
-                    <!-- Loading skeleton -->
-                    <div v-if="store.modelsLoading" class="ai-chat-box__model-loading">
-                      <div v-for="i in 3" :key="i" class="ai-chat-box__model-skel">
-                        <span class="ai-chat-box__model-skel-name" />
-                        <span class="ai-chat-box__model-skel-tag" />
-                      </div>
-                    </div>
-                    <!-- Empty -->
-                    <div v-else-if="!store.availableModels.length" class="ai-chat-box__model-empty">
-                      <span class="ai-chat-box__model-empty-icon">📡</span>
-                      <span>No models available</span>
-                      <el-button size="small" text type="primary" @click="store.fetchModels()">Retry</el-button>
-                    </div>
-                    <!-- No match -->
-                    <div v-else-if="!filteredModels.length" class="ai-chat-box__model-empty">
-                      <span class="ai-chat-box__model-empty-icon">🔍</span>
-                      <span>No models match "{{ modelSearch }}"</span>
-                    </div>
-                    <!-- Model list -->
-                    <div v-else class="ai-chat-box__model-items">
-                      <button
-                        v-for="m in filteredModels"
-                        :key="m"
-                        class="ai-chat-box__model-card"
-                        :class="{ 'is-selected': m === store.selectedModel }"
-                        @click="selectModelAndClose(m)"
-                      >
-                        <div class="ai-chat-box__model-card-left">
-                          <span class="ai-chat-box__model-card-name">{{ m }}</span>
-                          <span
-                            class="ai-chat-box__model-card-tag"
-                            :style="{ color: modelTag(m).color, background: modelTag(m).color + '18' }"
-                          >
-                            {{ modelTag(m).label }}
-                          </span>
-                        </div>
-                        <el-icon v-if="m === store.selectedModel" class="ai-chat-box__model-card-check" :size="16">
-                          <Check />
-                        </el-icon>
-                      </button>
-                    </div>
-                  </div>
-                </el-popover>
+                <ModelSelector />
                 <el-button size="small" text title="New chat" @click="onNewChat">
                   <el-icon><Plus /></el-icon>
                 </el-button>
@@ -558,148 +460,6 @@ const contextCount = computed(() => {
   background: var(--el-color-success-light-9);
   border-radius: var(--radius-pill);
 }
-.ai-chat-box__model-btn {
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.ai-chat-box__model-panel {
-  display: flex;
-  flex-direction: column;
-  max-height: 360px;
-  overflow: hidden;
-}
-.ai-chat-box__model-search {
-  padding: 10px 12px 8px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.ai-chat-box__model-items {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px;
-  overflow-y: auto;
-}
-.ai-chat-box__model-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 10px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
-
-  &:hover {
-    background: var(--el-fill-color-lighter);
-  }
-  &.is-selected {
-    background: var(--el-color-primary-light-9);
-  }
-}
-.ai-chat-box__model-card-left {
-  display: flex;
-  flex: 1;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
-}
-.ai-chat-box__model-card-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-}
-.ai-chat-box__model-card-tag {
-  flex-shrink: 0;
-  padding: 1px 6px;
-  font-family: "SF Mono", Menlo, monospace;
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: var(--radius-xs);
-}
-.ai-chat-box__model-card-check {
-  flex-shrink: 0;
-  color: var(--el-color-primary);
-}
-
-// Loading skeleton
-.ai-chat-box__model-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-}
-.ai-chat-box__model-skel {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-}
-.ai-chat-box__model-skel-name {
-  flex: 1;
-  height: 14px;
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-  animation: model-skel-pulse 1.5s ease-in-out infinite;
-}
-.ai-chat-box__model-skel-tag {
-  width: 48px;
-  height: 16px;
-  background: var(--el-fill-color-light);
-  border-radius: var(--radius-xs);
-  animation: model-skel-pulse 1.5s ease-in-out infinite;
-}
-@keyframes model-skel-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-// Empty state
-.ai-chat-box__model-empty {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  padding: 24px 16px;
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-  text-align: center;
-}
-.ai-chat-box__model-empty-icon {
-  font-size: 28px;
-  line-height: 1;
-}
-
-// Remove old radio-group styles
-.ai-chat-box__model-item {
-  display: flex;
-  padding: 6px 0;
-  margin: 0;
-}
 .ai-chat-box__expand {
   position: absolute;
   top: 50%;
@@ -720,7 +480,7 @@ const contextCount = computed(() => {
     color var(--transition-fast);
 }
 .ai-chat-box__expand:hover {
-  color: #ffffff;
+  color: var(--el-color-white);
   background: var(--el-color-primary);
   border-color: var(--el-color-primary);
 }

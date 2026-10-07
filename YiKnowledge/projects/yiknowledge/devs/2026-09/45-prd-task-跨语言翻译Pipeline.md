@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-42"
 title: "YK-09-42: 跨语言翻译 Pipeline — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "45-架构设计-跨语言翻译Pipeline.md"
 source_okr: [yiknowledge-001]
 related_tests: ["45-prd-test-跨语言翻译Pipeline"]
+
+type: task
 ---
 
 # YK-09-42: 跨语言翻译 Pipeline — 开发方案

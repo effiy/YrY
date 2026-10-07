@@ -5,7 +5,8 @@ stage: build-debug
 title: 新增流程记录页 processRecord.vue + 清零 23 个 vue-tsc 既有类型错误
 role: engineer
 goalId: eng-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [loop-record, build-debug, vue-tsc]
@@ -19,9 +20,9 @@ tags: [loop-record, build-debug, vue-tsc]
 
 | 文件 | 改动类型 | 说明 |
 |---|---|---|
-| `YiVad/src/views/knowledge/executiver/processRecord.vue` | 新增 | 流程记录整合页：扫描 loop/ 目录，按闭环聚合 4+1 类记录 |
-| `YiVad/src/routers/modules/staticRouter.ts` | 修改 | 新增 `/executiver/process` 路由 |
-| `YiVad/src/views/knowledge/executiver/index.vue` | 修改 | 新增「Process Records」quick-nav 卡片 |
+| `YiVad/src/views/knowledge/executive/processRecord.vue` | 新增 | 流程记录整合页：扫描 loop/ 目录，按闭环聚合 4+1 类记录 |
+| `YiVad/src/routers/modules/staticRouter.ts` | 修改 | 新增 `/executive/process` 路由 |
+| `YiVad/src/views/knowledge/executive/index.vue` | 修改 | 新增「Process Records」quick-nav 卡片 |
 | `YiVad/src/views/dashboard/knowledgeBase/index.vue` | 修改 | 修 17 个类型错误：补 Refresh/Search 图标导入 + DefaultRow→KnowledgeFileSummary 收窄 |
 | `YiVad/src/views/proTable/complexProTable/index.vue` | 修改 | 修 1 个泛型约束错误（TS2344） |
 | `YiVad/src/views/rag/history.vue` | 修改 | 修 2 个类型错误（row→HistoryEntry） |

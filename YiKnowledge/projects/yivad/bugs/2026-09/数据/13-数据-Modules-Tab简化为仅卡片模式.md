@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-Modules-Tab简化为仅卡片模式"
+lifecycle: active
 ---
 
 ## Description
@@ -89,13 +91,11 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 组件在嵌入上下文（详情页 Tab）和独立路由中的展示逻辑应通过 `projectKey` prop 区分，而非复制组件代码 |
+| 流程 | UI 简化变更需确认独立路由不受影响——`projectKey` 为 undefined 时所有原有功能必须完整保留 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **组件复用优于功能裁剪**：`ModuleList` 在详情页和独立页面中复用，通过条件渲染（`v-if="!props.projectKey"`）隐藏非必要 UI 比创建两个组件版本更可维护
+- **条件渲染的测试覆盖**：`projectKey` 有无两种场景需分别验证，确保裁剪逻辑不影响独立路由的完整功能
 

@@ -22,6 +22,8 @@ import logging
 import os
 import sys
 
+import httpx
+
 logger = logging.getLogger(__name__)
 
 
@@ -131,3 +133,32 @@ def _loop_running() -> bool:
         return True
     except RuntimeError:
         return False
+
+
+# ── Shared HTTP client (connection pooling) ───────────────────────────
+
+_shared_http_client: httpx.AsyncClient | None = None
+
+
+def get_shared_client() -> httpx.AsyncClient:
+    """Return a shared httpx.AsyncClient with connection pooling.
+
+    Reuses the same TCP connections across all translation providers,
+    avoiding the overhead of creating a new client per request.
+    """
+    global _shared_http_client
+    if _shared_http_client is None or _shared_http_client.is_closed:
+        _shared_http_client = httpx.AsyncClient(
+            timeout=httpx.Timeout(30.0),
+            limits=httpx.Limits(max_connections=50, max_keepalive_connections=20),
+            http2=False,
+        )
+    return _shared_http_client
+
+
+async def close_shared_client():
+    """Close the shared HTTP client — called during app shutdown."""
+    global _shared_http_client
+    if _shared_http_client is not None and not _shared_http_client.is_closed:
+        await _shared_http_client.aclose()
+        _shared_http_client = None

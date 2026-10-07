@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-121"
 title: "YV-09-121: 系统公告管理 — 开发方案"
 status: 已完成
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "55-prd-系统公告管理.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 系统公告管理]
+roles: [engineer]
+benefit: "开发方案：task-系统公告管理"
+lifecycle: active
 ---
 
 # YV-09-121: 系统公告管理 — 开发方案
@@ -48,6 +54,20 @@ source_prd: "55-prd-系统公告管理.md"
 ### 实施步骤：0.5d
 
 - 公告 CRUD + Header 公告条
+
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/announcements`)，ProTable + 富文本编辑器 + 发布/撤回
+
+**组件树**：
+```
+AnnouncementList.vue (ProTable) + AnnouncementEditor.vue (WangEditor + 定时发布)
+```
+
+**关键决策**：
+公告展示方式：全局顶部横幅 + 通知中心；定时发布使用 `publish_at` 字段 + 前端定时检查
+
 
 ---
 

@@ -9,7 +9,7 @@ import inspect
 import json
 import logging
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from shared.config import settings
 from shared.error_codes import ErrorCode
@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 EXEC_LOG_TRUNCATION = 500  # max chars for parameter/result recording
 
 allowlist = settings.module_allowlist
+if allowlist is None:
+    allowlist = []
 if isinstance(allowlist, str):
     allowlist = [x.strip() for x in allowlist.split(',') if x.strip()]
 EXEC_ALLOWLIST = set(allowlist)
@@ -188,10 +190,12 @@ async def execute_module(module_path: str, function_name: str, parameters: dict[
         try:
             if inspect.isasyncgenfunction(target_function) or inspect.isgeneratorfunction(target_function):
                 result = target_function(parameters_dict)
-            elif asyncio.iscoroutinefunction(target_function):
-                result = await _run_function(target_function, parameters_dict)
             else:
                 result = await _run_function(target_function, parameters_dict)
+        except BusinessException as e:
+            status = "failed"
+            error_message = e.message
+            raise
         except Exception as e:
             status = "failed"
             error_message = str(e)

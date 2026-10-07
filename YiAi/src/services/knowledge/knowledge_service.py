@@ -10,7 +10,7 @@ RPC. These wrappers accept a single dict and delegate — mirroring how
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from domain.knowledge.scanner import (
     list_bugs as _list_bugs,

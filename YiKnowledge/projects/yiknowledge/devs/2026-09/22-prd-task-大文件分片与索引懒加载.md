@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-19"
 title: "YK-09-19: 大文件分片与索引懒加载 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "22-架构设计-大文件分片与索引懒加载.md"
 source_okr: [yiknowledge-001]
 related_tests: ["22-prd-test-大文件分片与索引懒加载"]
+
+type: task
 ---
 
 # YK-09-19: 大文件分片与索引懒加载 — 开发方案

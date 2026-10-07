@@ -63,9 +63,9 @@ YrY 是一个快速迭代的单体仓库，三个前端项目共享同一个后�
 
 | 类别 | 目录 | 描述 | 代表性经验 |
 |---|---|---|---|
-| 成功案例 | [lessons/wins/](./lessons/wins/) | 成功的架构决策和可复用的设计模式 | YiPet 跨项目 Hub：浏览器扩展作为多项目集成中心 |
-| 失败复盘 | [lessons/failures/](./lessons/failures/) | 生产级失误和事后分析 | YiVad AICR 端口幻觉：AI 生成虚假交付报告未被验证 |
-| 陷阱记录 | [lessons/gotchas/](./lessons/gotchas/) | 工程实践中的坑点和注意事项 | RPC 参数名不匹配、SSE onDone 守卫、macOS FSEvents 静默丢弃、YiPet jsxDEV 生产模式 |
+| 成功案例 | [lessons/](./lessons/) | 成功的架构决策和可复用的设计模式 | YiPet 跨项目 Hub：浏览器扩展作为多项目集成中心 |
+| 失败复盘 | [lessons/](./lessons/) | 生产级失误和事后分析 | YiVad AICR 端口幻觉：AI 生成虚假交付报告未被验证 |
+| 陷阱记录 | [lessons/](./lessons/) | 工程实践中的坑点和注意事项 | RPC 参数名不匹配、SSE onDone 守卫、macOS FSEvents 静默丢弃、YiPet jsxDEV 生产模式 |
 
 ## 项目一览
 

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-36"
 title: "YK-09-36: 多模态向量对齐 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "39-架构设计-多模态向量对齐.md"
 source_okr: [yiknowledge-001]
 related_tests: ["39-prd-test-多模态向量对齐"]
+
+type: task
 ---
 
 # YK-09-36: 多模态向量对齐 — 开发方案

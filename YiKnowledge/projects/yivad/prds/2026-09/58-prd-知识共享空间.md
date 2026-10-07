@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-128: 功能实现-知识共享空间 — 团队知识共享中心、共享书签/链接、Wiki 集成、操作指南、最佳实践集、知识共享动态流"
 tags: [需求文档, 知识共享, 书签管理, Wiki集成, 最佳实践, 团队协作, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["58-prd-task-知识共享空间"]
+related_tests: ["58-prd-test-知识共享空间"]
+benefit: "产品需求：知识共享空间"
+lifecycle: active
 ---
 
 # YV-09-128: 功能实现-知识共享空间 — 团队知识共享中心、共享书签/链接、Wiki 集成、操作指南、最佳实践集、知识共享动态流

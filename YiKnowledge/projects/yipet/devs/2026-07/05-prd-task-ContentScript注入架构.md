@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-05"
 title: "YP-07-05: Content Script 注入架构 — Shadow DOM 隔离 + 生命周期管理 + 页面兼容 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 3.0
 source_prd: "05-架构设计-ContentScript注入架构.md"
 source_okr: [yipet-001]
+
+type: task
 ---
 
 # YP-07-05: Content Script 注入架构 — 开发方案

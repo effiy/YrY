@@ -1,14 +1,19 @@
 ---
+
 doc_type: test
 title: "扩展构建优化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["20-基础设施-扩展构建优化与代码分割"]
-source_modules: ["20-prd-task-扩展构建优化与代码分割"]
+source_prds: ["20-架构设计-扩展构建优化与代码分割.md"]
+source_modules: ["20-prd-task-扩展构建优化与代码分割.md"]
+
+type: test
 ---
 
 # 扩展构建优化 — 测试用例
@@ -19,3 +24,4 @@ source_modules: ["20-prd-task-扩展构建优化与代码分割"]
 | TC-BO01 | Tree Shaking | Element Plus 按需 <2MB | P1 |
 | TC-BO02 | Vendor chunk | 缓存命中率提升 | P2 |
 | TC-BO03 | 禁用 filenameHash | manifest 固定引用 | P0 |
+

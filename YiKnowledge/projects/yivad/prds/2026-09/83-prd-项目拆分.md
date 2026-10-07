@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-229: 项目拆分 — 单项目拆分为多项目、Issue 选择、成员分配与配置复制"
 tags: [需求文档, 项目拆分, Issue 选择, 成员分配, 配置复制, 拆分预览]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["83-prd-task-项目拆分"]
+related_tests: ["83-prd-test-项目拆分"]
+benefit: "产品需求：项目拆分"
+lifecycle: active
 ---
 
 # YV-09-229: 项目拆分 — 单项目拆分为多项目、Issue 选择、成员分配与配置复制

@@ -10,7 +10,6 @@
  * Usage:
  *   import { createApiServices } from '@/api';
  *   const api = createApiServices({ baseUrl: 'http://localhost:10086' });
- *   const result = await api.sessions.list();
  */
 
 export {
@@ -24,11 +23,8 @@ export {
 export * as endpoints from './endpoints';
 export type {
   AuthService,
-  BugService,
   ChatService,
   DatabaseService,
-  KnowledgeService,
-  RagService,
   SearchService,
   SessionService,
   WeWorkService,

@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-SCSS变量重复注入"
+lifecycle: active
 ---
 
 # 全局注入的 var.scss 各组件重复引入基础变量
@@ -39,7 +41,6 @@ Rsbuild `additionalData` 全局注入 SCSS 变量，组件通过 `<style scoped 
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`additionalData` 注入后组件不应再手动导入变量文件**：如果 Rsbuild 已经全局注入了 `@use 'var' as *`，组件的 `<style scoped>` 中重复 `@import 'var.scss'` 会导致变量被多次解析和注入，增加 CSS bundle 大小
+- **`additionalData` 与 `@use` 的明确分工**：`additionalData` 注入变量和 mixin（设计为在每个 scoped 块中可用），而全局样式（如 markdown 样式）通过独立的非 scoped `<style>` 块或单独的全局样式表引入
 

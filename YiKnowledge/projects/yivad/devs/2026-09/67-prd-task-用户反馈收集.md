@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-137"
 title: "YV-09-137: 用户反馈收集 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "67-prd-用户反馈收集.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 用户反馈收集]
+roles: [engineer]
+benefit: "开发方案：task-用户反馈收集"
+lifecycle: active
 ---
 
 # YV-09-137: 用户反馈收集 — 开发方案
@@ -43,6 +49,25 @@ source_prd: "67-prd-用户反馈收集.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：全局反馈入口（浮动按钮/帮助菜单 → 反馈表单弹窗），提交后写入 MongoDB + 可选截图
+
+**数据模型**：
+```
+MongoDB `user_feedback` 集合；字段：`type` (bug/feature/praise), `message`, `screenshot_base64`, `url`, `user_agent`, `status`
+```
+
+**组件树**：
+```
+FeedbackButton.vue (全局浮动) + FeedbackDialog.vue (分类 + 描述 + 截图上传) + FeedbackList.vue (管理视图)
+```
+
+**关键决策**：
+截图功能使用 `html2canvas`；反馈自动附带当前页面 URL 和用户信息
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -52,12 +77,8 @@ source_prd: "67-prd-用户反馈收集.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

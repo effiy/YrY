@@ -1,5 +1,5 @@
 <template>
-  <div class="rss-overview">
+  <div class="rss-overview page">
     <div class="rss-overview__head">
       <RoleNav v-model="selectedRoles" multiple all :counts="roleCounts" />
     </div>
@@ -109,7 +109,7 @@ onMounted(loadStats);
   min-height: 0;
   padding: 24px;
   overflow: auto;
-  background: var(--el-bg-color-page);
+  // background comes from global .page class
 }
 .rss-overview__head {
   display: flex;

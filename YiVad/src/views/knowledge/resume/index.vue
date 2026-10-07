@@ -1,5 +1,5 @@
 <template>
-  <div class="resume-container">
+  <div class="resume-container page">
     <!-- Header -->
     <div class="resume-header">
       <div class="header-avatar">

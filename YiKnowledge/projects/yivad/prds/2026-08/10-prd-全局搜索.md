@@ -24,6 +24,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-001]
+related_modules: ["10-prd-task-全局搜索"]
+related_tests: ["10-prd-test-全局搜索"]
+benefit: "产品需求：全局搜索"
+lifecycle: active
 ---
 
 # 全局搜索 — 7 集合跨域全文检索

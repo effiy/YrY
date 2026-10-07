@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M06: 图片转换与导出 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M06"
-source_prds: ["06-功能实现-图片转换与导出工具"]
-source_modules: ["06-prd-task-图片转换与导出工具"]
+source_prds: ["06-功能实现-图片转换与导出工具.md"]
+source_modules: ["06-prd-task-图片转换与导出工具.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M06: 图片转换与导出 — 测试用例
@@ -40,4 +43,3 @@ source_okr: [yipet-004]
 | S1 — 严重 | 格式转换后图片损坏/无法打开 |
 | S2 — 一般 | EXIF 保留模式丢失 GPS 数据 |
 
----

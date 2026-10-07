@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-139: 键盘导航优化 — 全站键盘导航审计与增强、模态框焦点陷阱、跳过内容链接、Tab顺序优化、焦点可见指示器、快捷键可发现性 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-139"
 source_prds: ["69-prd-键盘导航优化"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 键盘导航优化]
+benefit: "测试用例：键盘导航优化"
+lifecycle: active
 ---
 # YV-09-139: 键盘导航优化 — 全站键盘导航审计与增强、模态框焦点陷阱、跳过内容链接、Tab顺序优化、焦点可见指示器、快捷键可发现性 — 测试规格
 

@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-22: AI 辅助知识写作 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-22"
 source_prds: ["25-架构设计-AI辅助知识写作"]
 source_modules: ["25-prd-task-AI辅助知识写作"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-22: AI 辅助知识写作 — 测试用例

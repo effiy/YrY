@@ -3,7 +3,7 @@
  * Warm amber-pink-purple gradient evoking a vibrant sunset sky.
  */
 
-:root {
+:is(:root, #yipet-overlay, #yipet-chat-root) {
   --primary: #f59e0b;
   --primary-hover: #d97706;
   --primary-light: #fbbf24;

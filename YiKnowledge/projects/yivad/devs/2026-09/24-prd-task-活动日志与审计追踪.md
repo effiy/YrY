@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-50"
 title: "YV-09-50: 活动日志与审计追踪 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "24-prd-活动日志与审计追踪.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 活动日志与审计追踪]
+benefit: "开发方案：task-活动日志与审计追踪"
+lifecycle: active
 ---
 
 # YV-09-50: 活动日志与审计追踪 — 开发方案

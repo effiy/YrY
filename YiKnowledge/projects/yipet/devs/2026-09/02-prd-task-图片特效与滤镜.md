@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-M02"
 title: "YP-M02: 图片特效与滤镜 — 13 合 1 开发方案"
@@ -7,14 +8,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 2.6
 source_prd: "02-功能实现-图片特效与滤镜.md"
 source_okr: [yipet-004]
-related_tests: ["02-prd-test-图片特效与滤镜"]
+related_tests: ["02-prd-test-图片特效与滤镜.md"]
+
+type: task
 ---
 
 # YP-M02: 图片特效与滤镜 — 开发方案

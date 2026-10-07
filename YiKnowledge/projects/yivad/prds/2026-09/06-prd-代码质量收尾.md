@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 代码质量收尾
 tags: [代码质量, ESLint, TypeScript, 技术债]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ implementation_updated: '2026-09-15'
 issue_type: 技术债
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["06-prd-task-代码质量收尾"]
+related_tests: ["06-prd-test-代码质量收尾"]
+benefit: "产品需求：代码质量收尾"
+lifecycle: active
 ---
 
 # 代码质量收尾

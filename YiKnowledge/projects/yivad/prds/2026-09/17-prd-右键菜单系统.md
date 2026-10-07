@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 右键菜单系统
 tags:
 - 右键菜单
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["17-prd-task-右键菜单系统"]
+related_tests: ["17-prd-test-右键菜单系统"]
+benefit: "产品需求：右键菜单系统"
+lifecycle: active
 ---
 
 # 右键菜单系统

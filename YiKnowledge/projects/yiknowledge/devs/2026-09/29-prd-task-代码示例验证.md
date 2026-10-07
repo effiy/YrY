@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-26"
 title: "YK-09-26: 代码示例验证 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "29-架构设计-代码示例验证.md"
 source_okr: [yiknowledge-001]
 related_tests: ["29-prd-test-代码示例验证"]
+
+type: task
 ---
 
 # YK-09-26: 代码示例验证 — 开发方案

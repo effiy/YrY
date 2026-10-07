@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from domain.ai.tools.core import ToolDefinition, ToolRegistry
 

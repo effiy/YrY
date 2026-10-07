@@ -1,6 +1,6 @@
 """Sessions maintenance service layer — encapsulates database access for use by routes"""
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from data.database import db
 from shared.config import settings

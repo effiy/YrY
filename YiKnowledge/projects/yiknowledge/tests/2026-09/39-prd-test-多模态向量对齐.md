@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-36: 多模态向量对齐 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-36"
 source_prds: ["39-架构设计-多模态向量对齐"]
 source_modules: ["39-prd-task-多模态向量对齐"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-36: 多模态向量对齐 — 测试用例

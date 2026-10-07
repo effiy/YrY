@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-OkrRecommendTable-columnFilters属性直接修改"
+lifecycle: active
 ---
 
 # code-quality: OkrRecommendTable ColumnFilters Prop 被直接修改
@@ -84,7 +86,6 @@ src/components/OkrRecommend/components/OkrRecommendTable.vue
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`defineModel` vs `defineProps` 的选择**：当 prop 需要双向绑定时（子组件通过 `v-model` 修改），应使用 Vue 3.4+ 的 `defineModel` 而非 `defineProps`。`defineProps` 定义的 prop 是只读的，直接修改会触发 ESLint `vue/no-mutating-props` 错误
+- **Props 向下，Events 向上**：这是 Vue 单向数据流的核心原则。`columnFilters` 作为 prop 传入后，子组件不应直接修改其属性，而应通过 emit 通知父组件更新
 

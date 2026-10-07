@@ -58,7 +58,8 @@
 <script setup lang="ts" name="TagAdmin">
 import { ref, reactive, computed, onMounted } from "vue";
 import { listTags, createTag, updateTag, deleteTag, cleanupUnusedTags, getTagUsageStats } from "@/api/modules/tagService";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 import type { Tag, TagUsageStats } from "@/types/tag";
 
 const tags = ref<Tag[]>([]);
@@ -121,25 +122,19 @@ async function handleSave() {
 }
 
 async function handleDelete(key: string) {
-  try {
-    await ElMessageBox.confirm("删除此标签将取消其所有关联，确定继续？", "确认删除", { type: "warning" });
-    await deleteTag(key);
-    ElMessage.success("已删除");
-    await fetchTags();
-  } catch {
-    // Cancelled
-  }
+  const ok = await confirm("删除此标签将取消其所有关联，确定继续？", "确认删除");
+  if (!ok) return;
+  await deleteTag(key);
+  ElMessage.success("已删除");
+  await fetchTags();
 }
 
 async function handleCleanup() {
-  try {
-    await ElMessageBox.confirm("将删除所有使用次数为 0 的标签", "确认清理", { type: "warning" });
-    const res = await cleanupUnusedTags();
-    ElMessage.success(`已清理 ${res.data?.deleted || 0} 个标签`);
-    await fetchTags();
-  } catch {
-    // Cancelled
-  }
+  const ok = await confirm("将删除所有使用次数为 0 的标签", "确认清理");
+  if (!ok) return;
+  const res = await cleanupUnusedTags();
+  ElMessage.success(`已清理 ${res.data?.deleted || 0} 个标签`);
+  await fetchTags();
 }
 
 async function fetchTags() {

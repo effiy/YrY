@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-93"
 title: "YV-09-93: 决策记录管理 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "42-prd-决策记录管理.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 决策记录管理]
+roles: [engineer]
+benefit: "开发方案：task-决策记录管理"
+lifecycle: active
 ---
 
 # YV-09-93: 决策记录管理 — 开发方案
@@ -46,6 +52,25 @@ ADR (Architecture Decision Record) 管理工具：创建/查看/关联决策记�
 
 > 当前阶段：低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/decisions`)，类似于 ADR 管理器：Markdown 模板 → 渲染 → 关联 Issue/项目
+
+**数据模型**：
+```
+待定义
+```
+
+**组件树**：
+```
+待定义
+```
+
+**关键决策**：
+待定义
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -55,12 +80,8 @@ ADR (Architecture Decision Record) 管理工具：创建/查看/关联决策记�
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

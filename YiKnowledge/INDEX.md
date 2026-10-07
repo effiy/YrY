@@ -4,7 +4,7 @@ aliases: [知识库目录, kb-toc, 导航索引]
 tags: [index, navigation, toc, role-tree]
 category: root
 created: 2026-01-01
-updated: 2026-09-18
+updated: 2026-10-07
 last_verified: 2026-09-18
 source: internal
 type: summary
@@ -32,16 +32,16 @@ related:
 
 | 角色 | 流水线阶段 | 核心问题 | 概览 | 详细索引 |
 |---|---|---|---|---|
-| [producter/](./producter/) | 阶段 1：需求 | 构建什么产品？ | [README](./producter/README.md) | [INDEX](./producter/INDEX.md) |
+| [product/](./product/) | 阶段 1：需求 | 构建什么产品？ | [README](./product/README.md) | [INDEX](./product/INDEX.md) |
 | [leader/](./leader/) | 阶段 2：决策 | 走哪条技术路线？ | [README](./leader/README.md) | [INDEX](./leader/INDEX.md) |
 | [engineer/](./engineer/) | 阶段 3：设计 + 构建 | 如何实现？ | [README](./engineer/README.md) | [INDEX](./engineer/INDEX.md) |
-| [srer/](./srer/) | 阶段 4-5：交付 + 运营 | 如何保障稳定性？ | [README](./srer/README.md) | [INDEX](./srer/INDEX.md) |
+| [sre/](./sre/) | 阶段 4-5：交付 + 运营 | 如何保障稳定性？ | [README](./sre/README.md) | [INDEX](./sre/INDEX.md) |
 
 ## 贯穿层 —— 跨流水线角色
 
 | 角色 | 层 | 核心问题 | 概览 | 详细索引 |
 |---|---|---|---|---|
-| [executiver/](./executiver/) | 业务战略层 | 为何做这个业务？ | [README](./executiver/README.md) | [INDEX](./executiver/INDEX.md) |
+| [executive/](./executive/) | 业务战略层 | 为何做这个业务？ | [README](./executive/README.md) | [INDEX](./executive/INDEX.md) |
 | [aier/](./aier/) | AI 赋能层 | AI 如何加速每个阶段？ | [README](./aier/README.md) | [INDEX](./aier/INDEX.md) |
 | [curator/](./curator/) | 知识治理层 | 知识库自身如何维护？ | [README](./curator/README.md) | [INDEX](./curator/INDEX.md) |
 
@@ -49,7 +49,7 @@ related:
 
 | 项目 | 定位 | 概览 | 详细索引 |
 |---|---|---|---|
-| [projects/](./projects/) | 4 个项目的统一知识中心 | [README](./projects/README.md) | [INDEX](./projects/INDEX.md) |
+| [projects/](./projects/) | 5 个项目的统一知识中心 | [README](./projects/README.md) | [INDEX](./projects/INDEX.md) |
 
 ## 跨领域索引
 
@@ -77,10 +77,10 @@ related:
 ## 检索策略
 
 1. **按流水线阶段检索**（推荐）—— 从你所在的阶段出发，前往对应的角色目录。
-   - 需求阶段 → producter/
+   - 需求阶段 → product/
    - 技术决策 → leader/
    - 编码实现 → engineer/
-   - 发布运维 → srer/
+   - 发布运维 → sre/
    - 不确定阶段 → 使用 [README.md](./README.md) 中的角色决策树
 
 2. **按角色目录检索** —— 进入对应角色的 INDEX.md，查看子目录导航和文件列表。

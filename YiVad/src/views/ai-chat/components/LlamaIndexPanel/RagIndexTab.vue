@@ -8,7 +8,7 @@
  * Analytics cards (top files, stale files, coverage gaps, repeated questions)
  * aggregate across both retrieval records and chat turns from the History tab.
  */
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { Refresh, Cpu, Files, FolderOpened, Search, DataAnalysis, Document } from "@element-plus/icons-vue";
 import { ragStatus, ragBuild, ragCategories, type RagCategories } from "@/api/modules/ragService";
 import type { RagStatusResponse } from "@/api/interface/rag";
@@ -42,10 +42,30 @@ const building = ref(false);
 async function loadStatus() {
   try {
     status.value = await ragStatus();
+    lastRefreshed.value = Date.now();
   } catch {
     /* */
   }
 }
+
+// ── Auto-refresh polling (30s interval) ──
+const lastRefreshed = ref(Date.now());
+const refreshSecondsAgo = ref(0);
+let _refreshTimer: ReturnType<typeof setInterval> | null = null;
+let _ageTimer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  _refreshTimer = setInterval(() => { void loadStatus(); }, 30_000);
+  _ageTimer = setInterval(() => {
+    refreshSecondsAgo.value = Math.round((Date.now() - lastRefreshed.value) / 1000);
+  }, 1000);
+});
+
+onUnmounted(() => {
+  if (_refreshTimer) clearInterval(_refreshTimer);
+  if (_ageTimer) clearInterval(_ageTimer);
+});
+
 async function doRebuild() {
   building.value = true;
   try {
@@ -152,6 +172,8 @@ loadStatus();
           }}</el-button>
         </el-tooltip>
         <el-button size="small" :icon="Refresh" @click="loadStatus" />
+        <span class="rc-ix-refresh-age" v-if="refreshSecondsAgo < 120">{{ refreshSecondsAgo }}s ago</span>
+        <span class="rc-ix-refresh-age rc-ix-refresh-age--stale" v-else-if="refreshSecondsAgo < 3600">{{ Math.floor(refreshSecondsAgo / 60) }}m ago</span>
         <el-button size="small" type="primary" :icon="Cpu" :loading="building" @click="doRebuild">{{
           building ? "Building…" : "Rebuild"
         }}</el-button>
@@ -335,6 +357,14 @@ loadStatus();
   font-variant-numeric: tabular-nums;
   border: 1px solid currentColor;
   border-radius: 4px;
+}
+.rc-ix-refresh-age {
+  font-size: 10px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+  &--stale {
+    color: var(--el-color-warning);
+  }
 }
 .rc-ix-acts {
   display: flex;
@@ -526,7 +556,7 @@ loadStatus();
   text-overflow: ellipsis;
   font-size: 9px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--el-color-white);
   white-space: nowrap;
 }
 .rc-ix-cov-legend {

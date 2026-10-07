@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 环境标识与切换器
 tags:
 - 环境切换
@@ -28,6 +27,10 @@ roles:
 - engineer
 - admin
 source_okr: [yivad-003]
+related_modules: ["23-prd-task-环境标识与切换器"]
+related_tests: ["23-prd-test-环境标识与切换器"]
+benefit: "产品需求：环境标识与切换器"
+lifecycle: active
 ---
 
 # 环境标识与切换器

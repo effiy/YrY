@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 性能监控与优化
 tags: [性能, WebVitals, 路由性能, 代码分割, 懒加载]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ implementation_updated: '2026-09-15'
 issue_type: 功能
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["08-prd-task-性能监控与优化"]
+related_tests: ["08-prd-test-性能监控与优化"]
+benefit: "产品需求：性能监控与优化"
+lifecycle: active
 ---
 
 # 性能监控与优化

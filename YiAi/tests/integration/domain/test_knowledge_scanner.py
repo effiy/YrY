@@ -102,8 +102,8 @@ class TestNormalizeMeta:
 class TestConstants:
     def test_well_known_categories(self):
         assert "engineer" in _WELL_KNOWN_CATEGORIES
-        assert "producter" in _WELL_KNOWN_CATEGORIES
-        assert len(_WELL_KNOWN_CATEGORIES) == 7  # producter, leader, engineer, srer, executiver, aier, curator
+        assert "product" in _WELL_KNOWN_CATEGORIES
+        assert len(_WELL_KNOWN_CATEGORIES) == 7  # product, leader, engineer, sre, executive, aier, curator
 
     def test_skip_dirs(self):
         assert ".git" in _SKIP_DIRS

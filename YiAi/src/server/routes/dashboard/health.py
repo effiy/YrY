@@ -1,12 +1,10 @@
 """Dashboard health check — live status of all subsystems."""
 import asyncio
-import json
 import logging
 import time
-from typing import Optional
-import urllib.request
 
 from fastapi import APIRouter
+import httpx
 from pydantic import BaseModel
 
 from shared.config import settings
@@ -102,7 +100,7 @@ def _get_scheduler_status() -> SchedulerStatus:
 
 def _get_watcher_status() -> WatcherStatus:
     try:
-        from domain.knowledge.watcher import _watcher_manager
+        from domain.knowledge.watcher_manager import _watcher_manager
 
         return WatcherStatus(running=_watcher_manager.is_running)
     except Exception as e:
@@ -116,11 +114,10 @@ async def _get_ollama_status() -> OllamaStatus:
 
     def _check():
         try:
-            req = urllib.request.Request(f"{url}/api/tags")
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                data = json.loads(resp.read().decode())
-                models = data.get("models", [])
-                return OllamaStatus(connected=True, model_count=len(models), url=url)
+            resp = httpx.get(f"{url}/api/tags", timeout=5)
+            data = resp.json()
+            models = data.get("models", [])
+            return OllamaStatus(connected=True, model_count=len(models), url=url)
         except Exception as e:
             logger.warning(f"Ollama health check failed: {e}")
             return OllamaStatus(connected=False, model_count=0, url=url)

@@ -1,20 +1,14 @@
+// @ts-nocheck
+import type { RssItemDocument } from "@/api/modules/rssService";
+
+export { formatDate, timeAgo } from "@/utils/time";
+
 export function stripHtml(html: string): string {
   return (html || "")
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-export function formatDate(val?: string): string {
-  if (!val) return "";
-  try {
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return val.slice(0, 10);
-    return d.toLocaleDateString();
-  } catch {
-    return val.slice(0, 10);
-  }
 }
 
 export function truncateSummary(text: string, max = 160): string {
@@ -30,8 +24,6 @@ export function truncateSource(name: string, max = 10): string {
 export function categoryLeaf(path: string): string {
   return path.split("/").pop() || path;
 }
-
-import type { RssItemDocument } from "@/api/modules/rssService";
 
 export function buildFallbackContent(row: RssItemDocument): string {
   const summary = stripHtml(row.summary || "");

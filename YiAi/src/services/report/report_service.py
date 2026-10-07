@@ -9,9 +9,9 @@ RPC methods:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 from data.database import db
@@ -57,7 +57,7 @@ async def save_report(params: dict[str, Any]) -> dict[str, Any]:
     ``params``: ``{ report_id?, name, type?, description?, layout?, components?, schedule? }``
     """
     report_id: str = params.get("report_id") or str(uuid4())[:8]
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     existing = await db.db["reports"].find_one({"report_id": report_id})
 
@@ -132,7 +132,7 @@ async def generate_report(params: dict[str, Any]) -> dict[str, Any]:
     return {
         "report_id": report_id,
         "format": fmt,
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "components": results,
     }
 

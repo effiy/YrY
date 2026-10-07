@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-09-97"
 title: "YP-09-97: 键盘快捷键系统 — CheatSheetOverlay 速查面板与 ChatInput 集成 — 开发方案"
@@ -7,13 +8,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 0.3
 source_prd: "104-功能实现-键盘快捷键系统.md"
+related_tests: ["104-prd-test-键盘快捷键系统.md"]
 source_okr: [yipet-002]
+
+type: task
 ---
 
 # YP-09-97: 键盘快捷键系统 — CheatSheetOverlay 与 ChatInput 集成 — 开发方案

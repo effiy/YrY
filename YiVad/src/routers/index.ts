@@ -62,7 +62,7 @@ router.beforeEach(async (to, from) => {
   document.title = to.meta.title ? `${to.meta.title} - ${title}` : title;
 
   // 3. Check if accessing login page: if token exists go to home, otherwise reset routes
-  if (to.path.toLocaleLowerCase() === LOGIN_URL) {
+  if (to.path.toLowerCase() === LOGIN_URL) {
     if (userStore.token) return from.fullPath;
     resetRouter();
     return;
@@ -77,7 +77,7 @@ router.beforeEach(async (to, from) => {
   // 6. If no menu list, re-request menu list and add dynamic routes
   if (!authStore.authMenuListGet.length) {
     await initDynamicRouter();
-    return { ...to, replace: true };
+    return { path: to.path, query: to.query, hash: to.hash, replace: true };
   }
 
   // 7. Store routerName for button permission filtering

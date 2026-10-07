@@ -133,3 +133,4 @@ const radarOption = _radarOption;
 
 <style scoped lang="scss">
 @use "./showcase.scss";
+</style>

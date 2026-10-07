@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-09"
 title: "YV-08-09: Kanban 看板 — 拖拽排序 + 状态流转 + 泳道视图 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 2.0
 source_prd: "09-prd-Kanban看板.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, Kanban看板]
+benefit: "开发方案：task-Kanban看板"
+lifecycle: active
 ---
 
 # YV-08-09: Kanban 看板 — 开发方案

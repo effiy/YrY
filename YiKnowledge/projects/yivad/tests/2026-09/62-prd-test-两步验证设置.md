@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-132: 两步验证设置 — TOTP 配置与 QR 码、备用码生成与管理、2FA 恢复流程、2FA 启用统计 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-132"
 source_prds: ["62-prd-两步验证设置"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 两步验证设置]
+benefit: "测试用例：两步验证设置"
+lifecycle: active
 ---
 # YV-09-132: 两步验证设置 — TOTP 配置与 QR 码、备用码生成与管理、2FA 恢复流程、2FA 启用统计 — 测试规格
 

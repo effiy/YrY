@@ -5,13 +5,14 @@
  */
 import { computed, type Ref } from 'vue';
 import { useChatStore } from '../stores/chat';
+import { estimateTokens } from '../utils';
 import type { Message } from '../types';
 
 export function useTokenTrend(msg: Message, index: Ref<number>) {
   const store = useChatStore();
   const s = store.state;
 
-  const tokenEstimate = computed(() => Math.ceil((msg.content || '').length / 4));
+  const tokenEstimate = computed(() => estimateTokens(msg.content || ''));
   const charCount = computed(() => (msg.content || '').length);
   const wordCount = computed(() => {
     const text = (msg.content || '').trim();
@@ -32,7 +33,7 @@ export function useTokenTrend(msg: Message, index: Ref<number>) {
       if (msgs[j].type === msg.type) {
         const text = msgs[j].content || '';
         const snippet = text.length > 80 ? text.slice(0, 79) + '...' : text;
-        return { tokens: Math.ceil(text.length / 4), snippet: snippet.replace(/\s+/g, ' '), idx: j };
+        return { tokens: estimateTokens(text), snippet: snippet.replace(/\s+/g, ' '), idx: j };
       }
     }
     return null;

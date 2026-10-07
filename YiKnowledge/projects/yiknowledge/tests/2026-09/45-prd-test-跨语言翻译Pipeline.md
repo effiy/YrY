@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-42: 跨语言翻译 Pipeline — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-42"
 source_prds: ["45-架构设计-跨语言翻译Pipeline"]
 source_modules: ["45-prd-task-跨语言翻译Pipeline"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-42: 跨语言翻译 Pipeline — 测试用例

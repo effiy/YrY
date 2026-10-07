@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 功能
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["07-prd-task-权限系统与动态菜单"]
+related_tests: ["07-prd-test-权限系统与动态菜单"]
+benefit: "产品需求：权限系统与动态菜单"
+lifecycle: active
 ---
 
 # YV-07-07: 权限系统与动态菜单 — RBAC 权限码 + v-auth 按钮级鉴权 + 菜单驱动动态路由
@@ -42,7 +46,7 @@ YiVad 是多项目共用的管理后台，不同角色对本仓库四个项目�
 |------|---------|------|---------|
 | 管理员 | `admin` | 系统配置、用户与角色管理、审计 | 1-2 人 |
 | 工程师 | `engineer` | 项目开发、知识沉淀、数据导出 | 3-5 人 |
-| 产品经理 | `producter` | 需求梳理、项目推进、知识编辑 | 1-2 人 |
+| 产品经理 | `product` | 需求梳理、项目推进、知识编辑 | 1-2 人 |
 | 分析师 | `analyst` | 只读分析 + 数据导出 | 1-2 人 |
 | 访客 | `viewer` | 只读浏览 | 不限 |
 
@@ -269,7 +273,7 @@ flowchart TD
 |------|-------|---------|-----------|------|------|------|------|-------|
 | `admin` | 16 | 全部 | 全部 | 全部 | 全部 | ✅ | ✅ | 全部 |
 | `engineer` | 10 | view/create/edit | view/create/edit | view/export | view/create | — | — | — |
-| `producter` | 9 | view/create/edit | view/create/edit | view | view/create | — | — | — |
+| `product` | 9 | view/create/edit | view/create/edit | view | view/create | — | — | — |
 | `analyst` | 6 | view | view | view/export | view/create | — | — | — |
 | `viewer` | 5 | view | view | view | view/create | — | — | — |
 

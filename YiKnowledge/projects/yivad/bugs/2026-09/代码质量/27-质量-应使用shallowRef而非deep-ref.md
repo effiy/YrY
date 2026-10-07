@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-应使用shallowRef而非deep-ref"
+lifecycle: active
 ---
 
 # 数据列表和图表配置使用深响应 ref() 而非 shallowRef()
@@ -57,7 +59,6 @@ Vue 3 的 `ref()` 默认执行深度响应式转换（`deep: true`），对于�
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`ref()` 的默认深度响应是有代价的**：对于「整体替换」模式的数据（表格列表 `data.value = newRows`、图表配置 `option.value = {...}`），深度代理产生的 Proxy 开销是纯粹浪费。`shallowRef()` + 整体替换或 `.value =` 重新赋值是更优选择
+- **大规模列表的性能差异**：知识库文件树数千个节点全部被 `ref()` 深度代理，即使这些节点只是展示数据、永不被局部修改。在数据量大且只读的场景下，`shallowRef` 可显著降低内存和初始化开销
 

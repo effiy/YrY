@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-缺少browserslist"
+lifecycle: active
 ---
 
 # 缺少 browserslist 配置
@@ -40,7 +42,5 @@ Rsbuild 依赖 `browserslist` 来确定 JS/CSS 的 polyfill 和降级目标，�
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **browserslist 影响构建产物但不影响本地开发**：缺少 browserslist 时 Rsbuild 使用默认值，polyfill 和 CSS 前缀可能与实际用户浏览器不匹配。这种差异在本地开发中不可见，只在生产环境中暴露
 

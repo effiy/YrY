@@ -2,10 +2,12 @@
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 import logging
+import os
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from domain.knowledge.watcher import get_last_scan_time
 from shared.config import settings
 from shared.response import success
 
@@ -43,6 +45,9 @@ class KnowledgeHealthSummary(BaseModel):
     stale_count: int = 0
     no_review_cycle_count: int = 0
     review_coverage_pct: float = 0.0
+    eligible_count: int = 0
+    unmaintained_count: int = 0
+    orphan_count: int = 0
 
 
 class KnowledgeDataQuality(BaseModel):
@@ -56,6 +61,9 @@ class KnowledgeDataQuality(BaseModel):
     no_benefit: int = 0
     no_title: int = 0
     complete: int = 0
+    unknown_status: int = 0
+    unknown_type: int = 0
+    unknown_lifecycle: int = 0
 
 
 class KnowledgeFileSummary(BaseModel):
@@ -70,17 +78,21 @@ class KnowledgeFileSummary(BaseModel):
     type: str = ""
     review_cycle: str = ""
     updated: str = ""
+    created: str = ""
     tacit: bool = False
     roles: list[str] = []
     tags: list[str] = []
     benefit: str = ""
     related_count: int = 0
     related: list[str] = []
+    snippet: str = ""
 
 
 class KnowledgeRecentFile(BaseModel):
     title: str
     path: str
+    category: str = ""
+    module: str = ""
     status: str = ""
     lifecycle: str = ""
     review_cycle: str = ""
@@ -89,6 +101,21 @@ class KnowledgeRecentFile(BaseModel):
 
 class KnowledgeRoleStats(BaseModel):
     name: str
+    count: int
+
+
+class KnowledgeTagStats(BaseModel):
+    name: str
+    count: int
+
+
+class KnowledgeSizeDist(BaseModel):
+    label: str
+    count: int
+
+
+class KnowledgeAgeDist(BaseModel):
+    label: str
     count: int
 
 
@@ -125,11 +152,15 @@ class KnowledgeStatsResponse(BaseModel):
     types: list[KnowledgeTypeStats]
     review_cycles: list[KnowledgeReviewCycleStats] = []
     roles: list[KnowledgeRoleStats] = []
+    tags: list[KnowledgeTagStats] = []
     health: KnowledgeHealthSummary = KnowledgeHealthSummary()
     data_quality: KnowledgeDataQuality = KnowledgeDataQuality()
     files: list[KnowledgeFileSummary] = []
     recent: list[KnowledgeRecentFile]
     modules: list[KnowledgeModuleStats] = []
+    size_distribution: list[KnowledgeSizeDist] = []
+    age_distribution: list[KnowledgeAgeDist] = []
+    last_scan_time: str = ""
 
 
 _REVIEW_CYCLE_DAYS = {
@@ -139,6 +170,71 @@ _REVIEW_CYCLE_DAYS = {
     "half-yearly": 180,
     "yearly": 365,
 }
+
+_SIZE_BUCKETS = [
+    ("<1KB", 0, 1024),
+    ("1-5KB", 1024, 5120),
+    ("5-20KB", 5120, 20480),
+    ("20-50KB", 20480, 51200),
+    ("50-100KB", 51200, 102400),
+    (">100KB", 102400, float("inf")),
+]
+
+_AGE_BUCKETS = [
+    ("<7d", 0, 7),
+    ("7-30d", 7, 30),
+    ("1-3mo", 30, 90),
+    ("3-6mo", 90, 180),
+    ("6-12mo", 180, 365),
+    (">1y", 365, float("inf")),
+]
+
+
+def _bucket_count(value: float, buckets: list[tuple[str, float, float]]) -> str:
+    for label, lo, hi in buckets:
+        if lo <= value < hi:
+            return label
+    return buckets[-1][0]
+
+
+def _extract_snippet(abs_path: str, max_chars: int = 200) -> str:
+    """Read first meaningful text from a markdown file, skipping frontmatter."""
+    try:
+        with open(abs_path, encoding="utf-8", errors="replace") as f:
+            head = f.read(8192)
+    except Exception:
+        return ""
+
+    # Skip YAML frontmatter (between --- delimiters)
+    lines = head.split("\n")
+    in_fm = False
+    body_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped == "---":
+            in_fm = not in_fm
+            continue
+        if in_fm:
+            continue
+        # Skip headings, blockquotes, empty lines at the start
+        if not body_lines and (not stripped or stripped.startswith("# ") or stripped.startswith("> ")):
+            continue
+        body_lines.append(line)
+
+    text = "\n".join(body_lines).strip()
+    if len(text) > max_chars:
+        text = text[:max_chars] + "…"
+    return text
+
+
+def _parse_updated(meta: dict, f: dict) -> str:
+    """Best-effort ISO string from file metadata or mongo doc."""
+    return str(f.get("updatedTime", f.get("updatedAt", "")))
+
+
+def _parse_created(f: dict) -> str:
+    """Best-effort ISO string for creation time."""
+    return str(f.get("createdTime", f.get("createdAt", "")))
 
 
 @router.get("/knowledge-stats", operation_id="dashboard_knowledge_stats")
@@ -153,8 +249,9 @@ async def knowledge_stats():
         files = await cursor.to_list(length=None)
 
         now = datetime.now(timezone.utc)
+        base = os.path.realpath(os.path.abspath(settings.knowledge_base_dir))
 
-        categories = Counter(f.get("category", "") for f in files)
+        categories = Counter(f.get("category", "") for f in files if f.get("category", "") != "rss")
         category_stats = [KnowledgeCategoryStats(name=k, count=v) for k, v in categories.most_common(20)]
 
         statuses = Counter()
@@ -165,6 +262,9 @@ async def knowledge_stats():
         tacit_count = 0
         stale_count = 0
         no_review_cycle_count = 0
+        unmaintained_count = 0
+        orphan_count = 0
+        tag_counts: Counter = Counter()
 
         dq_total = 0
         dq_no_status = 0
@@ -176,6 +276,12 @@ async def knowledge_stats():
         dq_no_benefit = 0
         dq_no_title = 0
         dq_complete = 0
+        dq_unknown_status = 0
+        dq_unknown_type = 0
+        dq_unknown_lifecycle = 0
+
+        size_dist = Counter()
+        age_dist = Counter()
 
         file_summaries = []
         module_map: dict[tuple[str, str], dict] = defaultdict(lambda: {
@@ -186,6 +292,13 @@ async def knowledge_stats():
             "count": 0, "statuses": Counter(), "types": Counter(),
             "lifecycles": Counter(), "stale": 0, "tacit": 0, "no_review": 0,
         })
+
+        # Check for orphan files (in DB but missing on disk)
+        for f in files:
+            path = f.get("path", "")
+            abs_path = os.path.realpath(os.path.join(base, path)) if path else ""
+            if path and not os.path.isfile(abs_path):
+                orphan_count += 1
 
         for f in files:
             meta = f.get("meta", {}) or {}
@@ -223,15 +336,40 @@ async def knowledge_stats():
             else:
                 file_tags = []
 
+            for t in file_tags:
+                tag_counts[t] += 1
+
             path = f.get("path", "")
-            if path.endswith(".md") and ftype != "rss":
+            is_md = path.endswith(".md")
+            size = f.get("size", 0) or 0
+            updated_str = _parse_updated(meta, f)
+
+            # Size distribution (all files)
+            size_dist[_bucket_count(size, _SIZE_BUCKETS)] += 1
+
+            # Age distribution (files with update dates)
+            if updated_str:
+                try:
+                    updated_dt = datetime.fromisoformat(updated_str.replace("Z", "+00:00"))
+                    age_days = (now - updated_dt).days
+                    age_dist[_bucket_count(age_days, _AGE_BUCKETS)] += 1
+                except (ValueError, TypeError):
+                    pass
+
+            if is_md and ftype != "rss":
                 dq_total += 1
                 if not status:
                     dq_no_status += 1
+                elif status == "unknown":
+                    dq_unknown_status += 1
                 if not ftype:
                     dq_no_type += 1
+                elif ftype == "unknown":
+                    dq_unknown_type += 1
                 if not lifecycle:
                     dq_no_lifecycle += 1
+                elif lifecycle == "unknown":
+                    dq_unknown_lifecycle += 1
                 if not review_cycle:
                     dq_no_review_cycle += 1
                 if not file_roles:
@@ -250,12 +388,19 @@ async def knowledge_stats():
 
             if review_cycle in _REVIEW_CYCLE_DAYS:
                 max_age = _REVIEW_CYCLE_DAYS[review_cycle]
-                updated_str = str(f.get("updatedTime", f.get("updatedAt", "")))
                 if updated_str:
                     try:
                         updated_dt = datetime.fromisoformat(updated_str.replace("Z", "+00:00"))
                         if now - updated_dt > timedelta(days=max_age):
                             stale_count += 1
+                    except (ValueError, TypeError):
+                        pass
+            elif is_md and ftype != "rss":
+                if updated_str:
+                    try:
+                        updated_dt = datetime.fromisoformat(updated_str.replace("Z", "+00:00"))
+                        if now - updated_dt > timedelta(days=90):
+                            unmaintained_count += 1
                     except (ValueError, TypeError):
                         pass
 
@@ -270,25 +415,27 @@ async def knowledge_stats():
             else:
                 sub_mod_name = "__root__"
 
-            if path.endswith(".md"):
+            if is_md:
                 file_summaries.append(KnowledgeFileSummary(
                     path=path,
                     title=(meta.get("title", "")) or f.get("name", ""),
                     category=f.get("category", ""),
                     module=mod_name,
                     sub_module=sub_mod_name,
-                    size=f.get("size", 0),
+                    size=size,
                     status=status,
                     lifecycle=lifecycle,
                     type=ftype,
                     review_cycle=review_cycle,
-                    updated=str(f.get("updatedTime", f.get("updatedAt", ""))),
+                    updated=updated_str,
+                    created=_parse_created(f),
                     tacit=bool(tacit),
                     roles=file_roles,
                     tags=file_tags,
                     benefit=str(meta.get("benefit", "")) if meta.get("benefit") else "",
                     related_count=len(meta.get("related", [])) if isinstance(meta.get("related"), list) else 0,
                     related=meta.get("related", []) if isinstance(meta.get("related"), list) else [],
+                    snippet="",  # populated below for small subset
                 ))
 
             key = (f.get("category", ""), mod_name)
@@ -305,7 +452,6 @@ async def knowledge_stats():
                 m["no_review"] += 1
             if review_cycle in _REVIEW_CYCLE_DAYS:
                 max_age = _REVIEW_CYCLE_DAYS[review_cycle]
-                updated_str = str(f.get("updatedTime", f.get("updatedAt", "")))
                 if updated_str:
                     try:
                         updated_dt = datetime.fromisoformat(updated_str.replace("Z", "+00:00"))
@@ -326,7 +472,6 @@ async def knowledge_stats():
                 sm["no_review"] += 1
             if review_cycle in _REVIEW_CYCLE_DAYS:
                 max_age = _REVIEW_CYCLE_DAYS[review_cycle]
-                updated_str = str(f.get("updatedTime", f.get("updatedAt", "")))
                 if updated_str:
                     try:
                         updated_dt = datetime.fromisoformat(updated_str.replace("Z", "+00:00"))
@@ -334,6 +479,13 @@ async def knowledge_stats():
                             sm["stale"] += 1
                     except (ValueError, TypeError):
                         pass
+
+        # Populate snippets for the 50 most recently updated files
+        sorted_files = sorted(file_summaries, key=lambda fs: fs.updated, reverse=True)
+        for fs in sorted_files[:50]:
+            abs_path = os.path.realpath(os.path.join(base, fs.path))
+            if os.path.isfile(abs_path):
+                fs.snippet = _extract_snippet(abs_path)
 
         module_stats = []
         for (cat, name), m in module_map.items():
@@ -366,26 +518,38 @@ async def knowledge_stats():
             ))
 
         review_coverage_pct = (
-            round((len(files) - no_review_cycle_count) / len(files) * 100, 1)
-            if files else 0.0
+            round((dq_total - dq_no_review_cycle) / dq_total * 100, 1)
+            if dq_total else 0.0
         )
 
         def _k_sort_key(f: dict) -> str:
             u = f.get("updatedAt", f.get("updated", 0))
             return str(u) if u is not None else ""
 
-        sorted_files = sorted(files, key=_k_sort_key, reverse=True)
+        sorted_mongo_files = sorted(files, key=_k_sort_key, reverse=True)
         recent = [
             KnowledgeRecentFile(
                 title=((f.get("meta") or {}).get("title", "")) or f.get("name", ""),
                 path=f.get("path", ""),
+                category=f.get("category", ""),
+                module=(
+                    (parts := f.get("path", "").split("/"))[1]
+                    if len(parts) > 1 and not parts[1].endswith(".md")
+                    else "__root__"
+                ),
                 status=(f.get("meta") or {}).get("status", ""),
                 lifecycle=(f.get("meta") or {}).get("lifecycle", ""),
                 review_cycle=(f.get("meta") or {}).get("review_cycle", ""),
                 updated=str(f.get("updatedTime", f.get("updatedAt", ""))),
             )
-            for f in sorted_files[:10]
-        ]
+            for f in sorted_mongo_files
+            if f.get("category", "") != "rss"
+            and f.get("path", "").endswith(".md")
+        ][:10]
+
+        # Build size/age distribution lists in order
+        size_dist_list = [KnowledgeSizeDist(label=label, count=size_dist.get(label, 0)) for label, _, _ in _SIZE_BUCKETS]
+        age_dist_list = [KnowledgeAgeDist(label=label, count=age_dist.get(label, 0)) for label, _, _ in _AGE_BUCKETS]
 
         return success(data=KnowledgeStatsResponse(
             total=len(file_summaries),
@@ -395,19 +559,29 @@ async def knowledge_stats():
             types=[KnowledgeTypeStats(name=k, count=v) for k, v in types.most_common()],
             review_cycles=[KnowledgeReviewCycleStats(name=k, count=v) for k, v in review_cycles.most_common()],
             roles=[KnowledgeRoleStats(name=k, count=v) for k, v in roles.most_common(20)],
+            tags=[KnowledgeTagStats(name=k, count=v) for k, v in tag_counts.most_common(30)],
             health=KnowledgeHealthSummary(
                 tacit_count=tacit_count,
                 stale_count=stale_count,
-                no_review_cycle_count=no_review_cycle_count,
+                no_review_cycle_count=dq_no_review_cycle,
                 review_coverage_pct=review_coverage_pct,
+                eligible_count=dq_total,
+                unmaintained_count=unmaintained_count,
+                orphan_count=orphan_count,
             ),
             data_quality=KnowledgeDataQuality(
                 total=dq_total, no_status=dq_no_status, no_type=dq_no_type,
                 no_lifecycle=dq_no_lifecycle, no_review_cycle=dq_no_review_cycle,
                 no_roles=dq_no_roles, no_tags=dq_no_tags, no_benefit=dq_no_benefit,
                 no_title=dq_no_title, complete=dq_complete,
+                unknown_status=dq_unknown_status,
+                unknown_type=dq_unknown_type,
+                unknown_lifecycle=dq_unknown_lifecycle,
             ),
             files=file_summaries, recent=recent, modules=module_stats,
+            size_distribution=size_dist_list,
+            age_distribution=age_dist_list,
+            last_scan_time=get_last_scan_time(),
         ).model_dump())
     except Exception as e:
         logger.warning(f"Knowledge stats failed: {e}")
@@ -416,4 +590,6 @@ async def knowledge_stats():
             types=[], review_cycles=[], roles=[], health=KnowledgeHealthSummary(),
             data_quality=KnowledgeDataQuality(),
             files=[], recent=[], modules=[],
+            size_distribution=[], age_distribution=[],
+            last_scan_time="",
         ).model_dump())

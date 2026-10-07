@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-133: 安全事件日志 — 登录失败/密码修改/权限变更/API 密钥使用记录、严重度分级、实时告警、安全仪表盘"
 tags: [需求文档, 安全事件, 审计日志, 登录失败, 权限变更, API密钥, 实时告警, 安全仪表盘, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["63-prd-task-安全事件日志"]
+related_tests: ["63-prd-test-安全事件日志"]
+benefit: "产品需求：安全事件日志"
+lifecycle: active
 ---
 
 # YV-09-133: 安全事件日志 — 登录失败/密码修改/权限变更/API 密钥使用、严重度分级、实时告警、安全仪表盘

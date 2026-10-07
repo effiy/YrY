@@ -1,7 +1,9 @@
 <script setup lang="ts" name="knowledgeChatPanel">
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
 import { Promotion, CircleClose, CopyDocument, Edit, Delete, RefreshRight, Search } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useMermaidRender } from "@/hooks/useMermaidRender";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
@@ -26,6 +28,7 @@ const props = withDefaults(
   { ragScope: "" }
 );
 
+const { t } = useI18n();
 const { render } = useMarkdown();
 const { openInAiChat } = useAiChatBridge();
 const store = useAiChatStore();
@@ -598,15 +601,8 @@ async function editMessage(idx: number) {
 async function deleteMessage(idx: number) {
   const msg = messages.value[idx];
   if (!msg) return;
-  try {
-    await ElMessageBox.confirm("Delete this message?", "Confirm delete", {
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      type: "warning"
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(t("aiChat.deleteMessageConfirm"), t("aiChat.confirm"));
+  if (!ok) return;
 
   messages.value.splice(idx, 1);
   saveMessages();
@@ -698,6 +694,19 @@ function onKeydown(e: KeyboardEvent) {
 
 const hasMessages = computed(() => messages.value.length > 0);
 const isStreaming = (msg: LocalMessage, idx: number) => sending.value && idx === messages.value.length - 1 && msg.type === "pet";
+
+function ragSummary(msg: LocalMessage) {
+  if (!msg.sources?.length) return null;
+  const top = msg.sources[0];
+  const title = top.metadata?.title || top.file_path?.split("/").pop()?.replace(/\.md$/, "") || "";
+  const count = msg.sources.length;
+  const files = new Set(msg.sources.map(s => s.file_path)).size;
+  const preview = (top.text || "").replace(/\n+/g, " ").trim().slice(0, 120);
+  const category = top.metadata?.category || "";
+  const type = top.metadata?.type || "";
+  const funcDesc = [category, type].filter(Boolean).join(" · ");
+  return { title, count, files, preview, funcDesc };
+}
 </script>
 
 <template>
@@ -726,6 +735,18 @@ const isStreaming = (msg: LocalMessage, idx: number) => sending.value && idx ===
         <div v-else class="kcp-msg-body kcp-msg-body--plain">{{ msg.message }}</div>
         <div v-if="msg.error" class="kcp-msg-error-tag">Generation failed</div>
         <div v-else-if="msg.aborted" class="kcp-msg-aborted-tag">Stopped</div>
+        <div v-if="ragSummary(msg)" class="kcp-rag-summary">
+          <span class="kcp-rag-summary-text">
+            检索到 <strong>{{ ragSummary(msg)?.files }}</strong> 个文件中的 <strong>{{ ragSummary(msg)?.count }}</strong> 个片段
+            <template v-if="ragSummary(msg)?.title"
+              >，最佳匹配：<em>{{ ragSummary(msg)?.title }}</em></template
+            >
+            <template v-if="ragSummary(msg)?.funcDesc"
+              ><span class="kcp-rag-summary-func">{{ ragSummary(msg)?.funcDesc }}</span></template
+            >
+          </span>
+          <span v-if="ragSummary(msg)?.preview" class="kcp-rag-summary-preview">{{ ragSummary(msg)?.preview }}</span>
+        </div>
         <RagSources v-if="msg.sources?.length" :sources="dedupSources(msg.sources)" />
         <!-- Actions (matches MessageBubble) -->
         <div class="kcp-msg-meta">
@@ -864,7 +885,7 @@ const isStreaming = (msg: LocalMessage, idx: number) => sending.value && idx ===
             resize="none"
             @compositionstart="onCompositionStart"
             @compositionend="onCompositionEnd"
-            @keydown="e => onKeydown(e as KeyboardEvent)"
+            @keydown="(e: Event) => onKeydown(e as KeyboardEvent)"
           />
         </div>
         <el-tooltip content="Clear input" placement="bottom">
@@ -896,339 +917,7 @@ const isStreaming = (msg: LocalMessage, idx: number) => sending.value && idx ===
   </div>
 </template>
 
+
 <style scoped lang="scss">
-// ── Root ──
-.kcp-root {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-  background: var(--el-bg-color);
-}
-
-// ── File input (hidden) ──
-.kcp-file-input {
-  display: none;
-}
-
-// ── FAQ dropdown ──
-.kcp-faq-drop {
-  display: flex;
-  flex-direction: column;
-  max-height: 260px;
-  overflow: hidden;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.kcp-faq-search {
-  padding: 6px 10px;
-}
-.kcp-faq-empty {
-  padding: 12px 10px;
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-  text-align: center;
-}
-.kcp-faq-list {
-  flex: 1;
-  padding: 0 10px 6px;
-  overflow-y: auto;
-}
-.kcp-faq-item {
-  padding: 6px 0;
-  border-top: 1px solid var(--el-border-color-lighter);
-  &:first-child {
-    border-top: none;
-  }
-}
-.kcp-faq-item-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.kcp-faq-item-prompt {
-  max-height: 40px;
-  margin-top: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.kcp-faq-item-actions {
-  display: flex;
-  gap: 2px;
-  justify-content: flex-end;
-  margin-top: 2px;
-}
-
-// ── Tag manager ──
-.kcp-tag-manager {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.kcp-tag-manager-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-.kcp-tag-manager-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.kcp-tag-manager-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.kcp-tag-manager-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.kcp-tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.kcp-tag-list :deep(.el-tag) {
-  max-width: 200px;
-}
-.kcp-tag-list :deep(.el-tag__content) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.kcp-tag-empty {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── WeChat dialog ──
-.kcp-wechat-empty {
-  padding: 16px 0;
-  font-size: 13px;
-  color: var(--el-text-color-placeholder);
-  text-align: center;
-}
-.kcp-wechat-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 13px;
-}
-
-// ── Messages (matches MessageBubble styles) ──
-.kcp-messages {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 12px;
-  overflow-y: auto;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-scrollbar-thumb);
-    border-radius: 2px;
-    &:hover { background: var(--el-border-color-darker); }
-  }
-}
-.kcp-center {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-}
-.kcp-msg {
-  display: flex;
-  flex-direction: column;
-  max-width: 85%;
-  padding: 10px 14px;
-  margin-bottom: 6px;
-  font-size: 14px;
-  line-height: 1.6;
-  border-radius: var(--radius-md);
-  animation: kcp-slide-in 0.25s ease-out;
-
-  &--user {
-    align-self: flex-end;
-    background: var(--el-color-primary-light-9);
-    border-radius: var(--radius-md) var(--radius-md) var(--radius-xs);
-    box-shadow: var(--shadow-sm);
-  }
-  &--pet {
-    align-self: flex-start;
-    background: var(--el-fill-color-light);
-    border-radius: var(--radius-md) var(--radius-md) var(--radius-md) var(--radius-xs);
-    box-shadow: var(--shadow-sm);
-  }
-  &--error {
-    border: 1px solid var(--el-color-danger);
-  }
-}
-
-@keyframes kcp-slide-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.kcp-msg-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-.kcp-msg-img {
-  max-width: 200px;
-  max-height: 200px;
-  border-radius: var(--radius-sm);
-}
-.kcp-msg-web-badge {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  padding: 2px 8px;
-  margin-bottom: 6px;
-  font-size: 11px;
-  color: var(--el-color-success);
-  background: var(--el-color-success-light-9);
-  border-radius: 10px;
-}
-.kcp-msg-typing {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  color: var(--el-text-color-secondary);
-  span {
-    width: 7px; height: 7px;
-    background: var(--el-color-primary);
-    border-radius: 50%;
-    animation: kcp-pulse 1.4s ease-in-out infinite;
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.4s; }
-  }
-}
-
-@keyframes kcp-pulse {
-  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
-}
-.kcp-msg-body {
-  overflow-wrap: anywhere;
-  line-height: 1.65;
-  &--plain { white-space: pre-wrap; }
-  :deep(p) { margin: 0 0 6px; &:last-child { margin-bottom: 0; } }
-  :deep(pre) {
-    padding: 10px 14px; margin: 6px 0; overflow-x: auto; font-size: 12px;
-    background: var(--el-fill-color);
-    border: 1px solid var(--el-border-color-lighter); border-radius: var(--radius-sm);
-    code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; line-height: 1.55; background: none; border: none; padding: 0; }
-  }
-  :deep(code):not(pre code) {
-    padding: 1px 5px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.9em;
-    color: var(--el-color-danger); background: var(--el-color-danger-light-9);
-    border: 1px solid var(--el-color-danger-light-7); border-radius: var(--radius-xs);
-  }
-  :deep(blockquote) {
-    padding: 6px 14px; margin: 6px 0; color: var(--el-text-color-secondary);
-    border-left: 3px solid var(--el-color-primary-light-5);
-    background: var(--el-color-primary-light-9); border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-  }
-  :deep(a) { color: var(--el-color-primary); text-decoration: none; }
-  :deep(h1) { margin: 14px 0 6px; font-size: 1.3em; font-weight: 700; }
-  :deep(h2) { margin: 12px 0 6px; font-size: 1.15em; font-weight: 700; }
-  :deep(h3) { margin: 10px 0 4px; font-size: 1.05em; font-weight: 600; }
-  :deep(ul), :deep(ol) { padding-left: 20px; margin: 4px 0; }
-  :deep(li) { margin: 2px 0; &::marker { color: var(--el-text-color-placeholder); } }
-  :deep(strong) { font-weight: 700; color: var(--el-text-color-primary); }
-  :deep(hr) { height: 1px; margin: 10px 0; background: var(--el-border-color-lighter); border: none; }
-  :deep(img) { max-width: 100%; border-radius: var(--radius-sm); }
-
-  // Mermaid
-  :deep(pre.mermaid) {
-    all: unset; display: block; margin: 8px 0; overflow-x: auto;
-    svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
-  }
-}
-.kcp-msg-error-tag {
-  margin-top: 4px; font-size: 12px; color: var(--el-color-danger);
-}
-.kcp-msg-aborted-tag {
-  margin-top: 4px; font-size: 12px; color: var(--el-text-color-secondary);
-}
-.kcp-msg-meta {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--space-sm);
-  padding-top: var(--space-xs);
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.kcp-msg-actions {
-  display: flex;
-  gap: 2px;
-}
-.kcp-msg-time {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-}
-
-// ── Input area (matches ChatInput styles) ──
-.kcp-input-area {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: var(--space-sm) 12px 12px;
-  background: var(--el-bg-color);
-  border-top: 1px solid var(--el-border-color-lighter);
-
-  @supports (backdrop-filter: blur(1px)) {
-    background: color-mix(in srgb, var(--el-bg-color) 88%, transparent);
-    border-top-color: transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-}
-.kcp-input-row {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: flex-end;
-  padding: 6px 14px;
-  margin: 0 4px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: var(--radius-md);
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
-  &:focus-within {
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 0 0 3px rgb(var(--el-color-primary-rgb, 64 158 255) / 12%);
-    transform: translateY(-1px);
-  }
-}
-.kcp-textarea-wrap {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  :deep(.el-textarea__inner) {
-    padding: 8px 0;
-    font-size: 14px;
-    line-height: 1.6;
-    resize: none;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    &:focus { box-shadow: none; }
-  }
-}
+@use "../../../styles/KnowledgeChatPanel.scss";
 </style>

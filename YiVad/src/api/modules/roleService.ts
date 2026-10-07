@@ -4,6 +4,7 @@
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiAi";
+import { nanoid } from "nanoid";
 
 const CNAME = "roles";
 
@@ -56,7 +57,7 @@ export async function createRole(params: {
   permissions: string[];
 }): Promise<YiAiEnvelope> {
   const now = Date.now();
-  const key = `role_${now}_${Math.random().toString(36).slice(2, 8)}`;
+  const key = `role_${now}_${nanoid(8)}`;
   return createDocument(CNAME, {
     key,
     ...params,

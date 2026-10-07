@@ -40,24 +40,24 @@ related:
 | ADR | 状态 | 说明 |
 |---|---|---|
 | [Agent 上线](../../../leader/decisions/yiai-agent-launch.md) | 进行中 | Agent 多轮对话和工具调用能力上线 |
-| [LLM 多供应商推展](../../../leader/decisions/yiai/llm-multi-provider-rollout.md) | 已实施 | 从单一 Ollama 扩展到 OpenAI/Anthropic 多后端 |
-| [RAG 评估基础设施](../../../leader/decisions/yiai/rag-evaluation-infra.md) | 规划中 | RAG 检索质量的自动化评估 |
-| [Pytest 引入](../../../leader/decisions/yiai/pytest-introduction.md) | 规划中 | 从 0 测试到 pytest 测试框架的引入路线 |
-| [知识库监听器部署](../../../leader/decisions/yiai/knowledge-watcher-deployment.md) | 已实施 | apscheduler 轮询替代 FSEvents 的决策 |
-| [Agent 模式 — 通用数据工具](../../../leader/decisions/yiai/agent-mode-generic-data-tools.md) | 已实施 | Agent 中通用 CRUD 工具的设计与安全控制 |
+| [LLM 多供应商推展](../../../leader/decisions/llm-multi-provider-rollout.md) | 已实施 | 从单一 Ollama 扩展到 OpenAI/Anthropic 多后端 |
+| [RAG 评估基础设施](../../../leader/decisions/rag-evaluation-infra.md) | 规划中 | RAG 检索质量的自动化评估 |
+| [Pytest 引入](../../../leader/decisions/pytest-introduction.md) | 规划中 | 从 0 测试到 pytest 测试框架的引入路线 |
+| [知识库监听器部署](../../../leader/decisions/knowledge-watcher-deployment.md) | 已实施 | apscheduler 轮询替代 FSEvents 的决策 |
+| [Agent 模式 — 通用数据工具](../../../leader/decisions/agent-mode-generic-data-tools.md) | 已实施 | Agent 中通用 CRUD 工具的设计与安全控制 |
 
 ## 跨项目链接
 
 - [YiAi CLAUDE.md](../../../../YiAi/CLAUDE.md) — 实时项目档案（模块边界、约束、近期变更）
 - [RPC 协议](../../build/cross-project-rpc-protocol.md) — RPC 信封规范、参数名契约、已知 Bug 模式
-- [产品管理](../../../producter/projects/yiai/project-management.md) — 迭代节奏、交付物
-- [入职指南](../../run/onboarding/01-入职-YiAi入职.md) — 新人第一天快速上手
+- [产品管理](../../../product/projects/yiai/project-management.md) — 迭代节奏、交付物
+- [入职指南](../../run/01-入职-YiAi入职.md) — 新人第一天快速上手
 
 ## 快速导航
 
 ### 我是 YiAi 新人开发者
 
-1. 先读 [入职指南](../../run/onboarding/01-入职-YiAi入职.md) 完成环境搭建
+1. 先读 [入职指南](../../run/01-入职-YiAi入职.md) 完成环境搭建
 2. 再读 [架构设计](./01-项目-架构设计.md) 理解分层架构
 3. 然后读 [开发规范](./02-项目-开发规范.md) 了解关键约束
 4. 最后查 [功能模块](./03-项目-功能模块.md) 定位你要修改的模块

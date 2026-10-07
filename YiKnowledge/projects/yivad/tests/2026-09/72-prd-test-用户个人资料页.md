@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-198: 用户个人资料页 — 头像/姓名/角色/团队/简介、活动摘要、贡献图、技能标签、联系方式、资料编辑 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-198"
 source_prds: ["72-prd-用户个人资料页"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户个人资料页]
+benefit: "测试用例：用户个人资料页"
+lifecycle: active
 ---
 # YV-09-198: 用户个人资料页 — 头像/姓名/角色/团队/简介、活动摘要、贡献图、技能标签、联系方式、资料编辑 — 测试规格
 

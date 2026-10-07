@@ -2,7 +2,8 @@
   <div class="showcase-page">
     <el-page-header @back="$router.back()" title="Showcase" content="Forms" />
 
-    <el-alert type="info" :closable="false" show-icon class="sc-alert"
+    <el-alert
+type="info" :closable="false" show-icon class="sc-alert"
       title="Form components in src/components/Form/. All forms use Element Plus validation under the hood." />
 
     <!-- ProForm -->

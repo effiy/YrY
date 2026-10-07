@@ -7,10 +7,15 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import ElementPlus from 'element-plus';
 import { applyLocale, resolveLocale } from '@/shared/i18n/locale';
+import { createApiServices } from '@/api';
 import App from './App.vue';
 import './index.css';
 
 async function bootstrap() {
+  // Initialize API services layer for popup components
+  const api = createApiServices({ baseUrl: 'http://localhost:10086' });
+  (window as any).__yipet_services = api;
+
   const app = createApp(App);
   app.use(createPinia());
   app.use(ElementPlus);

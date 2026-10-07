@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-01"
 title: "YK-09-01: Frontmatter 质量治理 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 2.0
 source_prd: "04-质量治理-Frontmatter规范.md"
 source_okr: [yiknowledge-001]
 related_tests: ["04-prd-test-Frontmatter规范"]
+
+type: task
 ---
 
 # YK-09-01: Frontmatter 质量治理 — 开发方案

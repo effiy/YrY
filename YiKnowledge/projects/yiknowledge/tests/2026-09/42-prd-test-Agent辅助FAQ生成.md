@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-39: Agent 辅助 FAQ 生成 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-39"
 source_prds: ["42-架构设计-Agent辅助FAQ生成"]
 source_modules: ["42-prd-task-Agent辅助FAQ生成"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-39: Agent 辅助 FAQ 生成 — 测试用例

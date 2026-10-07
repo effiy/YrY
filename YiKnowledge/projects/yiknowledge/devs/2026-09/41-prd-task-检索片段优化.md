@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-38"
 title: "YK-09-38: 检索片段优化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "41-架构设计-检索片段优化.md"
 source_okr: [yiknowledge-001]
 related_tests: ["41-prd-test-检索片段优化"]
+
+type: task
 ---
 
 # YK-09-38: 检索片段优化 — 开发方案

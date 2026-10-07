@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 拖拽排序系统
 tags:
 - 拖拽
@@ -28,6 +27,10 @@ roles:
 - engineer
 - designer
 source_okr: [yivad-003]
+related_modules: ["14-prd-task-拖拽排序系统"]
+related_tests: ["14-prd-test-拖拽排序系统"]
+benefit: "产品需求：拖拽排序系统"
+lifecycle: active
 ---
 
 # 拖拽排序系统

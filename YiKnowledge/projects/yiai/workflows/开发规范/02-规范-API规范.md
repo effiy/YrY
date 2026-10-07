@@ -3,29 +3,28 @@ title: API 规范
 tags: [yiai, api, rpc, fastapi, sse, error-codes]
 category: projects/yiai/workflows
 created: 2026-09-02
-updated: 2026-09-15
+updated: 2026-09-20
 source: internal
 type: spec
 status: stable
 lifecycle: active
 review_cycle: quarterly
 roles: [engineer]
-benefit: "RPC 信封协议、SSE 流式、错误码、端点速查"
+benefit: "RPC 信封协议、SSE 流式、实际错误码、完整端点速查"
 related:
   - ../架构设计/04-架构-模块结构规范.md
   - ./04-规范-数据库规范.md
   - ./03-规范-认证规范.md
+  - ./05-规范-RPC协议规范.md
 ---
 
 # API 规范
 
-> **读完你将能够**：掌握 RPC 信封协议、SSE 流式响应、错误码体系
-
-> YiAi 使用两种 API 模式：RPC 信封（通用服务调用，`POST /`）和 RESTful 端点（文件、认证、Agent 等）。
+> YiAi 使用两种 API 模式：RPC 信封（`POST /` 通用服务调用）和 REST 端点（文件、认证、知识库等）。
 
 ## 一、RPC 信封协议
 
-所有前端调用使用统一信封：
+所有前端数据操作使用统一信封：
 
 ```json
 // 请求: POST /
@@ -34,14 +33,14 @@ related:
   "parameters": { "cname": "projects", "filter": {"status": "active"}, "pageNum": 1, "pageSize": 20 } }
 
 // 成功: { "code": 0, "message": "ok", "data": { "list": [...], "total": 100 } }
-// 错误: { "code": 1001, "message": "参数不完整", "data": null }
+// 错误: { "code": 1004, "message": "Resource Not Found", "data": null }
 ```
 
-根路由 `/` 作为 RPC 分发器：`_resolve_service(module_name)` → `getattr(service, method_name)(**parameters)`。
+`POST /` 和 `POST /batch` 由 `execution.py` 的 RPC 分发器处理：`importlib.import_module(module_name)` → `getattr(module, method_name)(**parameters)`。
 
 ## 二、RPC 方法清单
 
-### data_service（通用 CRUD）
+### data_service（通用 CRUD）— `services.database.data_service`
 | method_name | 关键参数 |
 |-------------|---------|
 | `query_documents` | `cname`, `filter`, `pageNum`, `pageSize`, `orderBy`, `orderType`, `fields`, `excludeFields` |
@@ -51,55 +50,63 @@ related:
 | `get_document` | `cname`, `key` |
 | `count_documents` | `cname`, `filter` |
 
-### chat_service（AI 聊天）
-`chat`（SSE 流式）、`chat_rag`（RAG 增强）、`get_models`
+### chat_service（AI 聊天）— `services.ai.chat_service`
+| method_name | 说明 |
+|-------------|------|
+| `chat` | SSE 流式聊天（支持多模型） |
+| `chat_rag` | RAG 增强聊天 |
+| `get_models` | 获取可用模型列表 |
 
-### session_service
-`create_session`, `get_session`, `list_sessions`, `update_session`, `delete_session`
+### knowledge_service — `services.knowledge.knowledge_service`
+| method_name | 说明 |
+|-------------|------|
+| `scan_knowledge` | 扫描知识库目录树 |
+| `read_file` | 读取知识文件内容 |
+| `write_file` | 写入知识文件 |
+| `list_files` | 列出知识文件 |
+| `search_knowledge` | 搜索知识库 |
 
-### knowledge_service
-`scan_knowledge`, `read_file`, `write_file`, `list_files`, `write_entry_markdown`, `delete_entry_markdown`
-
-### rag_service
-`query`, `chat`, `build_index`, `decompose_question`, `status`
+### rag_service — `services.rag.rag_service`
+| method_name | 说明 |
+|-------------|------|
+| `query` | RAG 检索 |
+| `chat` | RAG 聊天（SSE 流式） |
+| `build_index` | 构建/重建索引 |
+| `status` | 索引状态 |
+| `file_query` | 单文件 RAG 查询 |
+| `file_chat` | 单文件 RAG 聊天 |
 
 ## 三、SSE 流式响应
 
 ```python
 # StreamingResponse + text/event-stream
-# async generator yield "data: {json}\n\n"
-# 结束标记 "data: [DONE]\n\n"
+# 使用 shared/sse_utils.py 的统一工具函数
+#   format_sse(data) — orjson 序列化，2-5× 快于 json.dumps
+#   stream_async(gen) — 异步生成器 → SSE 帧
+#   stream_sync(gen)  — 同步生成器 → SSE 帧
 ```
 
 Agent 事件类型：`thinking`、`tool_call`、`tool_result`、`token`、`done`、`error`。
 
-```python
-# 流式错误处理
-try:
-    async for event in agent.run(request):
-        yield event
-except BusinessException as e:
-    yield f"data: {json.dumps({'type': 'error', 'code': e.error_code, 'message': e.detail})}\n\n"
-finally:
-    yield "data: [DONE]\n\n"
-```
+## 四、错误码（src/shared/error_codes.py）
 
-## 四、错误码
+| 错误码 | 枚举名 | HTTP 状态 | 含义 |
+|--------|--------|-----------|------|
+| `0` | `OK` | 200 | 成功 |
+| `1000` | `INVALID_REQUEST` | 400 | 请求格式无效 |
+| `1001` | `BUSINESS_ERROR` | 400 | 业务逻辑错误 |
+| `1002` | `INVALID_PARAMS` | 400 | 参数验证失败 |
+| `1003` | `RATE_LIMITED` | 429 | 请求频率超限 |
+| `1004` | `DATA_NOT_FOUND` | 404 | 资源不存在 |
+| `1008` | `PERMISSION_DENIED` | 403 | 权限不足 |
+| `1009` | `UNAUTHORIZED` | 401 | 认证失败 |
+| `5000` | `SERVER_ERROR` | 500 | 服务器繁忙 |
+| `5001` | `INTERNAL_ERROR` | 500 | 内部错误 |
+| `5002` | `DATA_STORE_FAIL` | 500 | 数据创建失败 |
+| `5003` | `DATA_UPDATE_FAIL` | 500 | 数据更新失败 |
+| `5004` | `DATA_DESTROY_FAIL` | 500 | 数据删除失败 |
 
-| 码 | 含义 | 场景 |
-|----|------|------|
-| `0` | 成功 | 正常响应 |
-| `1001` | 参数验证失败 | 缺少必填字段 |
-| `1002` | 资源不存在 | 查询不存在文档 |
-| `1003` | 资源已存在 | 创建重复文档 |
-| `2001` | AI 服务不可用 | Ollama 连接失败 |
-| `2002` | AI 推理超时 | LLM 调用超时 |
-| `3001` | 文件读写失败 | 磁盘 I/O 错误 |
-| `3002` | 文件不存在 | 读取不存在文件 |
-| `4001` | 认证失败 | Token 无效或过期 |
-| `4002` | 权限不足 | 无权限访问 |
-| `5001` | 数据库错误 | MongoDB 异常 |
-| `9999` | 未知错误 | 未分类异常 |
+业务异常通过 `BusinessException(ErrorCode.XXX, detail="...")` 抛出。
 
 ## 五、关键参数名（写错会静默失败）
 
@@ -107,28 +114,126 @@ finally:
 |------|------|--------|
 | `filter` | `query` | data_service 查询过滤（后端静默忽略 query） |
 | `target_file` | `path` | 文件读写（后端返回 422） |
-| `cname` | `collection_name` | MongoDB 集合名（后端返回 422） |
+| `cname` | `collection_name` | MongoDB 集合名 |
 | `module_name` | `moduleName` | RPC 信封（必须 snake_case） |
 
 ## 六、REST 端点速查
 
+### RPC + 核心
 | 路径 | 方法 | 说明 |
 |------|------|------|
-| `/` | POST | RPC 分发器 |
-| `/health` | GET | 健康检查（MongoDB + Ollama） |
-| `/about` | GET | 服务信息 |
-| `/read-file` | POST | 读文件（`target_file`） |
-| `/write-file` | POST | 写文件（`target_file`, `content`） |
-| `/auth/login` | POST | 登录 |
-| `/agent/chat` | POST | Agent 聊天（SSE） |
-| `/agent/confirm` | POST | 确认工具调用 |
-| `/agent/steer` | POST | 引导 Agent |
+| `/` | GET/POST | RPC 分发器（单次调用） |
+| `/batch` | POST | RPC 并发批量调用 |
+| `/health` | GET | 完整健康检查（MongoDB + Ollama） |
+| `/health/live` | GET | 存活探针 |
+| `/health/ready` | GET | 就绪探针 |
+| `/about/index` | GET | 服务信息 |
+
+### 认证（/auth）
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/login` | POST | 用户登录 |
+| `/logout` | POST | 用户登出 |
+| `/menu/list` | GET | 菜单权限列表 |
+| `/buttons` | GET | 按钮权限 |
+
+### 文件（/）
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/read-file` | POST | 读文件 |
+| `/write-file` | POST | 写文件 |
+| `/delete-file` | POST | 删除文件 |
+| `/rename-file` | POST | 重命名文件 |
+| `/delete-folder` | POST | 删除目录 |
+| `/rename-folder` | POST | 重命名目录 |
+| `/upload` | POST | 上传文件 |
+| `/upload-image-to-oss` | POST | 上传图片到 OSS |
+| `/list-directory` | POST | 列出目录内容 |
+| `/read-project-file` | POST | 读项目文件 |
+| `/write-project-file` | POST | 写项目文件 |
+
+### 知识库（/knowledge）
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/knowledge-scan` | POST | 扫描知识库 |
+| `/knowledge-read` | POST | 读取知识文件 |
+| `/knowledge-search` | POST | 搜索知识库 |
+| `/knowledge-write` | POST | 写入知识文件 |
+| `/knowledge-delete` | POST | 删除知识文件 |
+| `/knowledge-files` | POST | 列出知识文件 |
+| `/knowledge-sync` | POST | 同步知识库 |
+| `/knowledge-stories` | POST | 经验故事列表 |
+| `/knowledge-bugs` | POST | 缺陷列表 |
+| `/knowledge-export` | POST | 导出知识 |
+
+### RAG（/rag）
+| 路径 | 方法 | 说明 |
+|------|------|------|
 | `/rag-query` | POST | RAG 检索 |
-| `/rag-build` | POST | 重建索引 |
-| `/bridge/create-token` | POST | YiPet→YiVad 桥接 |
+| `/rag-chat` | POST | RAG 聊天（SSE 流式） |
+| `/rag-build` | POST | 构建/重建索引 |
+| `/rag-status` | POST | 索引状态 |
+| `/rag-categories` | POST | 知识分类 |
+| `/rag-file-query` | POST | 单文件 RAG 查询 |
+| `/rag-file-chat` | POST | 单文件 RAG 聊天（SSE 流式） |
+| `/rag-decompose` | POST | 问题分解 |
+| `/rag-history` | POST | 查询历史 |
+| `/rag-history-clear` | POST | 清除查询历史 |
+| `/rag-chat-history` | POST | 聊天历史 |
+| `/rag-chat-history-clear` | POST | 清除聊天历史 |
+| `/chat-sessions` | POST | 会话列表 |
+| `/chat-session-load` | POST | 加载会话 |
+| `/chat-session-delete` | POST | 删除会话 |
+
+### 用户管理（/users）
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/list` | POST | 用户列表 |
+| `/tree` | POST | 用户树 |
+| `` | POST | 创建用户 |
+| `/{key}` | PUT | 更新用户 |
+| `/{key}` | DELETE | 删除用户 |
+| `/batch` | POST | 批量操作 |
+| `/export` | POST | 导出用户 |
+
+### 系统管理（/menus）
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/menus` | GET | 菜单列表 |
+| `/menus` | POST | 创建菜单 |
+| `/menus/{key}` | PUT | 更新菜单 |
+| `/menus/{key}` | DELETE | 删除菜单 |
+| `/menus/bulk-reset` | POST | 批量重置菜单 |
+
+### 搜索 + AI
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/web-search` | POST | Web 搜索 |
+| `/web-fetch` | POST | Web 内容抓取 |
+| `/compact` | POST | 对话压缩 |
+| `/chat/completions` | POST | OpenAI 兼容 API |
+| `/models` | GET/POST | 模型列表（OpenAI 兼容） |
+
+### 其他
+| 路径 | 方法 | 说明 |
+|------|------|------|
+| `/bridge/create-token` | POST | YiPet→YiVad 桥接 token |
+| `/bridge/exchange-token` | POST | Token 交换 |
 | `/notification/stream` | GET | 通知 SSE 流 |
+| `/notification/unread-count` | GET | 未读通知数 |
 | `/metrics` | GET | Prometheus 指标 |
+| `/debug/performance` | GET | 性能调试（熔断器状态/inflight） |
+| `/debug/health` | GET | 调试健康检查 |
 | `/backup/full` | POST | 全量备份 |
+| `/backup/list` | GET | 备份列表 |
+| `/backup/restore/{name}` | POST | 恢复备份 |
+| `/backup/verify/{name}` | POST | 验证备份 |
+| `/mcp/tools` | GET | MCP 工具列表 |
+| `/mcp/call` | POST | 调用 MCP 工具 |
+| `/wework/send-message` | POST | 企业微信消息 |
+| `/maintenance/cleanup-unused-images` | POST | 清理未使用图片 |
+| `/scheduler` | GET | 定时任务状态 |
+| `/state/records` | GET/POST | 状态记录 CRUD |
 
 ## 七、约束
 

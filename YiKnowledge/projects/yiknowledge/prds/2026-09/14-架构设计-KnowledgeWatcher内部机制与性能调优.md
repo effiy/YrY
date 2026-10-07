@@ -17,7 +17,7 @@ prd_task_id: YK-09-11
 estimate_backend: 2.0
 review_status: 待评审
 issue_type: 架构
-roles: [engineer, srer]
+roles: [engineer, sre]
 source_okr: [yiknowledge-001]
 related_modules: [14-prd-task-KnowledgeWatcher内部机制与性能调优]
 related_tests: [14-prd-test-KnowledgeWatcher内部机制与性能调优]

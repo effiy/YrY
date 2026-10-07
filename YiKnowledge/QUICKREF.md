@@ -4,14 +4,14 @@ aliases: [quick-reference, cheat-sheet, quick-ref, lookup]
 tags: [index, quick-reference, cheat-sheet, navigation, lookup]
 category: root
 created: 2026-08-24
-updated: 2026-09-18
+updated: 2026-10-07
 source: internal
 type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
 last_verified: 2026-09-18
-roles: [engineer, leader, producter, aier, srer, executiver, curator]
+roles: [engineer, leader, product, aier, sre, executive, curator]
 benefit: "Anyone finds the right file in under 10 seconds — 'I want to X → go to file Y'"
 acceptance_criteria:
   - "50+ task → file mappings covering all 7 roles"
@@ -59,9 +59,9 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Check known gotchas | [engineer/learn/lessons/gotchas/](engineer/learn/lessons/gotchas/) |
-| Review wins (success patterns) | [engineer/learn/lessons/wins/](engineer/learn/lessons/wins/) |
-| Review failures (postmortems) | [engineer/learn/lessons/failures/](engineer/learn/lessons/failures/) |
+| Check known gotchas | [engineer/learn/lessons/](engineer/learn/lessons/) |
+| Review wins (success patterns) | [engineer/learn/lessons/](engineer/learn/lessons/) |
+| Review failures (postmortems) | [engineer/learn/lessons/](engineer/learn/lessons/) |
 | Learn YiAi architecture | [engineer/learn/projects/yiai/](engineer/learn/projects/yiai/) |
 | Learn YiVad architecture | [engineer/learn/projects/yivad/](engineer/learn/projects/yivad/) |
 | Learn YiPet architecture | [engineer/learn/projects/yipet/](engineer/learn/projects/yipet/) |
@@ -109,29 +109,29 @@ related:
 | Manage operating cadence | [leader/roadmap/13-路线图-运营节奏.md](leader/roadmap/13-路线图-运营节奏.md) |
 | Estimate engineering effort | [leader/roadmap/14-路线图-估算指南.md](leader/roadmap/14-路线图-估算指南.md) |
 
-## Producter — What to Build
+## product — What to Build
 
 | I want to... | Go to |
 |---|---|
-| Write a PRD | [producter/discovery/01-发现-编写PRD.md](producter/discovery/01-发现-编写PRD.md) |
-| Use PRD template | [producter/discovery/prd/01-需求-PRD模板.md](producter/discovery/prd/01-需求-PRD模板.md) |
-| Do user research | [producter/frameworks/01-框架-用户研究方法.md](producter/frameworks/01-框架-用户研究方法.md) |
-| Prioritize features (RICE/ICE) | [producter/frameworks/06-框架-RICE-ICE优先级.md](producter/frameworks/06-框架-RICE-ICE优先级.md) |
-| Use MoSCoW prioritization | [producter/frameworks/04-框架-MoSCoW优先级.md](producter/frameworks/04-框架-MoSCoW优先级.md) |
-| Understand JTBD framework | [producter/frameworks/02-框架-JTBD框架摘要.md](producter/frameworks/02-框架-JTBD框架摘要.md) |
-| Use Kano model | [producter/frameworks/03-框架-Kano模型摘要.md](producter/frameworks/03-框架-Kano模型摘要.md) |
-| Map user stories | [producter/frameworks/07-框架-用户故事地图.md](producter/frameworks/07-框架-用户故事地图.md) |
-| Run a sprint | [producter/delivery/01-交付-运作Sprint.md](producter/delivery/01-交付-运作Sprint.md) |
-| Define north star metric | [producter/discovery/metrics/01-指标-北极星指标.md](producter/discovery/metrics/01-指标-北极星指标.md) |
-| Design OKRs | [producter/frameworks/05-框架-OKR设计摘要.md](producter/frameworks/05-框架-OKR设计摘要.md) |
-| Analyze competitors (product) | [producter/strategy/02-战略-竞品分析方法.md](producter/strategy/02-战略-竞品分析方法.md) |
-| Design product roadmap | [producter/strategy/03-战略-产品路线图设计.md](producter/strategy/03-战略-产品路线图设计.md) |
-| Validate product-market fit | [producter/strategy/04-战略-产品市场匹配.md](producter/strategy/04-战略-产品市场匹配.md) |
-| Run beta testing | [producter/delivery/04-交付-Beta测试指南.md](producter/delivery/04-交付-Beta测试指南.md) |
-| Coordinate cross-project delivery | [producter/delivery/05-交付-跨项目协作.md](producter/delivery/05-交付-跨项目协作.md) |
-| Conduct user interviews | [producter/discovery/04-发现-用户访谈综合.md](producter/discovery/04-发现-用户访谈综合.md) |
-| Build user personas | [producter/discovery/03-发现-用户画像方法.md](producter/discovery/03-发现-用户画像方法.md) |
-| Run UX checklist | [producter/discovery/ux/01-体验-UX检查清单.md](producter/discovery/ux/01-体验-UX检查清单.md) |
+| Write a PRD | [product/discovery/01-发现-编写PRD.md](product/discovery/01-发现-编写PRD.md) |
+| Use PRD template | [product/discovery/01-需求-PRD模板.md](product/discovery/01-需求-PRD模板.md) |
+| Do user research | [product/frameworks/01-框架-用户研究方法.md](product/frameworks/01-框架-用户研究方法.md) |
+| Prioritize features (RICE/ICE) | [product/frameworks/06-框架-RICE-ICE优先级.md](product/frameworks/06-框架-RICE-ICE优先级.md) |
+| Use MoSCoW prioritization | [product/frameworks/04-框架-MoSCoW优先级.md](product/frameworks/04-框架-MoSCoW优先级.md) |
+| Understand JTBD framework | [product/frameworks/02-框架-JTBD框架摘要.md](product/frameworks/02-框架-JTBD框架摘要.md) |
+| Use Kano model | [product/frameworks/03-框架-Kano模型摘要.md](product/frameworks/03-框架-Kano模型摘要.md) |
+| Map user stories | [product/frameworks/07-框架-用户故事地图.md](product/frameworks/07-框架-用户故事地图.md) |
+| Run a sprint | [product/delivery/01-交付-运作Sprint.md](product/delivery/01-交付-运作Sprint.md) |
+| Define north star metric | [product/discovery/01-指标-北极星指标.md](product/discovery/01-指标-北极星指标.md) |
+| Design OKRs | [product/frameworks/05-框架-OKR设计摘要.md](product/frameworks/05-框架-OKR设计摘要.md) |
+| Analyze competitors (product) | [product/strategy/02-战略-竞品分析方法.md](product/strategy/02-战略-竞品分析方法.md) |
+| Design product roadmap | [product/strategy/03-战略-产品路线图设计.md](product/strategy/03-战略-产品路线图设计.md) |
+| Validate product-market fit | [product/strategy/04-战略-产品市场匹配.md](product/strategy/04-战略-产品市场匹配.md) |
+| Run beta testing | [product/delivery/04-交付-Beta测试指南.md](product/delivery/04-交付-Beta测试指南.md) |
+| Coordinate cross-project delivery | [product/delivery/05-交付-跨项目协作.md](product/delivery/05-交付-跨项目协作.md) |
+| Conduct user interviews | [product/discovery/04-发现-用户访谈综合.md](product/discovery/04-发现-用户访谈综合.md) |
+| Build user personas | [product/discovery/03-发现-用户画像方法.md](product/discovery/03-发现-用户画像方法.md) |
+| Run UX checklist | [product/discovery/01-体验-UX检查清单.md](product/discovery/01-体验-UX检查清单.md) |
 
 ## SRE — How to Operate
 
@@ -139,53 +139,53 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Respond to an incident | [srer/incident-response/04-事件-响应事件.md](srer/incident-response/04-事件-响应事件.md) |
-| Handle a data breach | [srer/incident-response/01-事件-处理数据泄露.md](srer/incident-response/01-事件-处理数据泄露.md) |
-| Run a war room | [srer/incident-response/05-事件-作战室运作.md](srer/incident-response/05-事件-作战室运作.md) |
-| Write a postmortem (guide) | [srer/incident-response/07-事件-事后复盘指南.md](srer/incident-response/07-事件-事后复盘指南.md) |
-| See postmortem example | [srer/incident-response/14-事件-事后复盘示例.md](srer/incident-response/14-事件-事后复盘示例.md) |
-| Facilitate postmortem meeting | [srer/incident-response/13-事件-复盘会议主持.md](srer/incident-response/13-事件-复盘会议主持.md) |
-| Write a runbook | [srer/incident-response/09-事件-Runbook模板.md](srer/incident-response/09-事件-Runbook模板.md) |
-| Use incident communication template | [srer/incident-response/10-事件-事件沟通模板.md](srer/incident-response/10-事件-事件沟通模板.md) |
-| Plan disaster recovery | [srer/incident-response/11-事件-灾难恢复计划.md](srer/incident-response/11-事件-灾难恢复计划.md) |
-| Run FMEA analysis | [srer/incident-response/16-事件-FMEA模板.md](srer/incident-response/16-事件-FMEA模板.md) |
-| Run a Game Day | [srer/incident-response/08-事件-GameDay演练.md](srer/incident-response/08-事件-GameDay演练.md) |
-| Handle on-call shift | [srer/incident-response/02-事件-处理值班轮班.md](srer/incident-response/02-事件-处理值班轮班.md) |
-| Set up on-call rotation | [srer/incident-response/06-事件-建立值班轮换.md](srer/incident-response/06-事件-建立值班轮换.md) |
-| Do shift handoff | [srer/incident-response/03-事件-值班交接.md](srer/incident-response/03-事件-值班交接.md) |
-| Reduce toil | [srer/incident-response/12-事件-减少重复劳动.md](srer/incident-response/12-事件-减少重复劳动.md) |
+| Respond to an incident | [sre/incident-response/04-事件-响应事件.md](sre/incident-response/04-事件-响应事件.md) |
+| Handle a data breach | [sre/incident-response/01-事件-处理数据泄露.md](sre/incident-response/01-事件-处理数据泄露.md) |
+| Run a war room | [sre/incident-response/05-事件-作战室运作.md](sre/incident-response/05-事件-作战室运作.md) |
+| Write a postmortem (guide) | [sre/incident-response/07-事件-事后复盘指南.md](sre/incident-response/07-事件-事后复盘指南.md) |
+| See postmortem example | [sre/incident-response/14-事件-事后复盘示例.md](sre/incident-response/14-事件-事后复盘示例.md) |
+| Facilitate postmortem meeting | [sre/incident-response/13-事件-复盘会议主持.md](sre/incident-response/13-事件-复盘会议主持.md) |
+| Write a runbook | [sre/incident-response/09-事件-Runbook模板.md](sre/incident-response/09-事件-Runbook模板.md) |
+| Use incident communication template | [sre/incident-response/10-事件-事件沟通模板.md](sre/incident-response/10-事件-事件沟通模板.md) |
+| Plan disaster recovery | [sre/incident-response/11-事件-灾难恢复计划.md](sre/incident-response/11-事件-灾难恢复计划.md) |
+| Run FMEA analysis | [sre/incident-response/16-事件-FMEA模板.md](sre/incident-response/16-事件-FMEA模板.md) |
+| Run a Game Day | [sre/incident-response/08-事件-GameDay演练.md](sre/incident-response/08-事件-GameDay演练.md) |
+| Handle on-call shift | [sre/incident-response/02-事件-处理值班轮班.md](sre/incident-response/02-事件-处理值班轮班.md) |
+| Set up on-call rotation | [sre/incident-response/06-事件-建立值班轮换.md](sre/incident-response/06-事件-建立值班轮换.md) |
+| Do shift handoff | [sre/incident-response/03-事件-值班交接.md](sre/incident-response/03-事件-值班交接.md) |
+| Reduce toil | [sre/incident-response/12-事件-减少重复劳动.md](sre/incident-response/12-事件-减少重复劳动.md) |
 
 ### Observability
 
 | I want to... | Go to |
 |---|---|
-| Set up observability | [srer/observability/07-可观测-搭建可观测性.md](srer/observability/07-可观测-搭建可观测性.md) |
-| Understand observability triad | [srer/observability/05-可观测-可观测性三支柱.md](srer/observability/05-可观测-可观测性三支柱.md) |
-| Define SLOs/SLIs | [srer/observability/08-可观测-SLO与SLI定义.md](srer/observability/08-可观测-SLO与SLI定义.md) |
-| Manage error budgets | [srer/observability/12-可观测-错误预算策略.md](srer/observability/12-可观测-错误预算策略.md) |
-| Configure alerting rules | [srer/observability/10-可观测-告警规则配置.md](srer/observability/10-可观测-告警规则配置.md) |
-| Design health checks | [srer/observability/14-可观测-健康检查设计.md](srer/observability/14-可观测-健康检查设计.md) |
-| Set up SRE metrics | [srer/observability/15-可观测-SRE指标体系.md](srer/observability/15-可观测-SRE指标体系.md) |
-| Manage SLA | [srer/observability/16-可观测-SLA管理.md](srer/observability/16-可观测-SLA管理.md) |
-| Run performance tests | [srer/observability/13-可观测-性能测试指南.md](srer/observability/13-可观测-性能测试指南.md) |
-| Monitor capacity and cost | [srer/observability/01-可观测-容量与成本.md](srer/observability/01-可观测-容量与成本.md) |
-| Backup and restore database | [srer/observability/11-可观测-数据库备份恢复.md](srer/observability/11-可观测-数据库备份恢复.md) |
-| Operate knowledge base and RAG | [srer/observability/17-可观测-知识库与RAG运维.md](srer/observability/17-可观测-知识库与RAG运维.md) |
-| Manage Ollama models | [srer/observability/18-可观测-Ollama模型管理.md](srer/observability/18-可观测-Ollama模型管理.md) |
-| Track tech debt (ops view) | [srer/observability/09-可观测-技术债清单.md](srer/observability/09-可观测-技术债清单.md) |
-| Set up CI/CD | [srer/observability/02-可观测-CICD.md](srer/observability/02-可观测-CICD.md) |
+| Set up observability | [sre/observability/07-可观测-搭建可观测性.md](sre/observability/07-可观测-搭建可观测性.md) |
+| Understand observability triad | [sre/observability/05-可观测-可观测性三支柱.md](sre/observability/05-可观测-可观测性三支柱.md) |
+| Define SLOs/SLIs | [sre/observability/08-可观测-SLO与SLI定义.md](sre/observability/08-可观测-SLO与SLI定义.md) |
+| Manage error budgets | [sre/observability/12-可观测-错误预算策略.md](sre/observability/12-可观测-错误预算策略.md) |
+| Configure alerting rules | [sre/observability/10-可观测-告警规则配置.md](sre/observability/10-可观测-告警规则配置.md) |
+| Design health checks | [sre/observability/14-可观测-健康检查设计.md](sre/observability/14-可观测-健康检查设计.md) |
+| Set up SRE metrics | [sre/observability/15-可观测-SRE指标体系.md](sre/observability/15-可观测-SRE指标体系.md) |
+| Manage SLA | [sre/observability/16-可观测-SLA管理.md](sre/observability/16-可观测-SLA管理.md) |
+| Run performance tests | [sre/observability/13-可观测-性能测试指南.md](sre/observability/13-可观测-性能测试指南.md) |
+| Monitor capacity and cost | [sre/observability/01-可观测-容量与成本.md](sre/observability/01-可观测-容量与成本.md) |
+| Backup and restore database | [sre/observability/11-可观测-数据库备份恢复.md](sre/observability/11-可观测-数据库备份恢复.md) |
+| Operate knowledge base and RAG | [sre/observability/17-可观测-知识库与RAG运维.md](sre/observability/17-可观测-知识库与RAG运维.md) |
+| Manage Ollama models | [sre/observability/18-可观测-Ollama模型管理.md](sre/observability/18-可观测-Ollama模型管理.md) |
+| Track tech debt (ops view) | [sre/observability/09-可观测-技术债清单.md](sre/observability/09-可观测-技术债清单.md) |
+| Set up CI/CD | [sre/observability/02-可观测-CICD.md](sre/observability/02-可观测-CICD.md) |
 
 ### Release Management
 
 | I want to... | Go to |
 |---|---|
-| Ship a release | [srer/release/04-发布-发布流程.md](srer/release/04-发布-发布流程.md) |
-| Do a canary release | [srer/release/01-发布-金丝雀发布.md](srer/release/01-发布-金丝雀发布.md) |
-| Ship a hotfix | [srer/release/02-发布-热修复发布.md](srer/release/02-发布-热修复发布.md) |
-| Manage release freeze | [srer/release/03-发布-发布冻结.md](srer/release/03-发布-发布冻结.md) |
-| Do a rollback drill | [srer/release/05-发布-回滚演练.md](srer/release/05-发布-回滚演练.md) |
-| Manage change process | [srer/release/06-发布-变更管理流程.md](srer/release/06-发布-变更管理流程.md) |
-| Run production readiness review | [srer/release/07-发布-生产就绪审查.md](srer/release/07-发布-生产就绪审查.md) |
+| Ship a release | [sre/release/04-发布-发布流程.md](sre/release/04-发布-发布流程.md) |
+| Do a canary release | [sre/release/01-发布-金丝雀发布.md](sre/release/01-发布-金丝雀发布.md) |
+| Ship a hotfix | [sre/release/02-发布-热修复发布.md](sre/release/02-发布-热修复发布.md) |
+| Manage release freeze | [sre/release/03-发布-发布冻结.md](sre/release/03-发布-发布冻结.md) |
+| Do a rollback drill | [sre/release/05-发布-回滚演练.md](sre/release/05-发布-回滚演练.md) |
+| Manage change process | [sre/release/06-发布-变更管理流程.md](sre/release/06-发布-变更管理流程.md) |
+| Run production readiness review | [sre/release/07-发布-生产就绪审查.md](sre/release/07-发布-生产就绪审查.md) |
 
 ## AI Engineer — How to Use AI
 
@@ -199,13 +199,13 @@ related:
 | Evaluate LLM quality | [aier/methods/04-方法-LLM评估.md](aier/methods/04-方法-LLM评估.md) |
 | Master prompt engineering | [aier/methods/05-方法-提示词工程.md](aier/methods/05-方法-提示词工程.md) |
 | Understand agent harness plugin | [aier/methods/03-方法-Agent-Harness插件架构.md](aier/methods/03-方法-Agent-Harness插件架构.md) |
-| Use agent tool calling prompt | [aier/methods/prompts/01-提示词-Agent工具使用.md](aier/methods/prompts/01-提示词-Agent工具使用.md) |
-| Apply chain-of-thought | [aier/methods/prompts/02-提示词-思维链.md](aier/methods/prompts/02-提示词-思维链.md) |
-| Review code with AI | [aier/methods/prompts/03-提示词-代码审查.md](aier/methods/prompts/03-提示词-代码审查.md) |
-| Translate with AI | [aier/methods/prompts/04-提示词-多语言翻译.md](aier/methods/prompts/04-提示词-多语言翻译.md) |
-| Use RAG system prompt | [aier/methods/prompts/05-提示词-RAG系统.md](aier/methods/prompts/05-提示词-RAG系统.md) |
-| Generate SQL with AI | [aier/methods/prompts/06-提示词-SQL生成.md](aier/methods/prompts/06-提示词-SQL生成.md) |
-| Generate weekly reports | [aier/methods/prompts/07-提示词-周报生成.md](aier/methods/prompts/07-提示词-周报生成.md) |
+| Use agent tool calling prompt | [aier/prompts/01-提示词-Agent工具使用.md](aier/prompts/01-提示词-Agent工具使用.md) |
+| Apply chain-of-thought | [aier/prompts/02-提示词-思维链.md](aier/prompts/02-提示词-思维链.md) |
+| Review code with AI | [aier/prompts/03-提示词-代码审查.md](aier/prompts/03-提示词-代码审查.md) |
+| Translate with AI | [aier/prompts/04-提示词-多语言翻译.md](aier/prompts/04-提示词-多语言翻译.md) |
+| Use RAG system prompt | [aier/prompts/05-提示词-RAG系统.md](aier/prompts/05-提示词-RAG系统.md) |
+| Generate SQL with AI | [aier/prompts/06-提示词-SQL生成.md](aier/prompts/06-提示词-SQL生成.md) |
+| Generate weekly reports | [aier/prompts/07-提示词-周报生成.md](aier/prompts/07-提示词-周报生成.md) |
 | Compare LLM models | [aier/platform/02-平台-LLM对比.md](aier/platform/02-平台-LLM对比.md) |
 | Choose embedding model | [aier/platform/01-平台-Embedding模型选型.md](aier/platform/01-平台-Embedding模型选型.md) |
 | Choose vector database | [aier/platform/03-平台-向量数据库选型.md](aier/platform/03-平台-向量数据库选型.md) |
@@ -215,23 +215,23 @@ related:
 
 | I want to... | Go to |
 |---|---|
-| Analyze competitors | [executiver/industry/competitors/01-行业-竞品分析模板.md](executiver/industry/competitors/01-行业-竞品分析模板.md) |
-| Analyze AI dev tools landscape | [executiver/industry/competitors/02-行业-AI开发工具竞品格局-2026H1.md](executiver/industry/competitors/02-行业-AI开发工具竞品格局-2026H1.md) |
-| Deep-dive Cursor competitor | [executiver/industry/competitors/03-行业-竞品分析-Cursor.md](executiver/industry/competitors/03-行业-竞品分析-Cursor.md) |
-| Deep-dive Copilot competitor | [executiver/industry/competitors/04-行业-竞品分析-Copilot.md](executiver/industry/competitors/04-行业-竞品分析-Copilot.md) |
-| Read AI industry trends 2026 | [executiver/industry/reports/02-行业-2026-AI行业关键趋势.md](executiver/industry/reports/02-行业-2026-AI行业关键趋势.md) |
-| Analyze AI market H1 2026 | [executiver/industry/market-trends/02-行业-2026H1-AI市场趋势分析.md](executiver/industry/market-trends/02-行业-2026H1-AI市场趋势分析.md) |
-| Run Porter's Five Forces | [executiver/strategy/07-战略-波特五力模型.md](executiver/strategy/07-战略-波特五力模型.md) |
-| Run SWOT analysis | [executiver/strategy/10-战略-SWOT分析.md](executiver/strategy/10-战略-SWOT分析.md) |
-| Apply Blue Ocean Strategy | [executiver/strategy/01-战略-蓝海战略.md](executiver/strategy/01-战略-蓝海战略.md) |
-| Design business model | [executiver/strategy/02-战略-商业模式画布.md](executiver/strategy/02-战略-商业模式画布.md) |
-| Make executive decisions | [executiver/strategy/18-战略-高管决策框架.md](executiver/strategy/18-战略-高管决策框架.md) |
-| Plan annual strategy | [executiver/roadmap/01-路线图-年度战略规划.md](executiver/roadmap/01-路线图-年度战略规划.md) |
-| Plan quarterly review | [executiver/roadmap/04-路线图-季度业务回顾.md](executiver/roadmap/04-路线图-季度业务回顾.md) |
-| Track organizational OKRs | [executiver/roadmap/03-路线图-组织OKR追踪.md](executiver/roadmap/03-路线图-组织OKR追踪.md) |
-| Plan headcount and budget | [executiver/roadmap/02-路线图-人员预算规划.md](executiver/roadmap/02-路线图-人员预算规划.md) |
-| Read executive book notes | [executiver/reading-list/](executiver/reading-list/) |
-| Use executive checklist | [executiver/CHECKLIST.md](executiver/CHECKLIST.md) |
+| Analyze competitors | [executive/industry/03-行业-竞品分析模板.md](executive/industry/03-行业-竞品分析模板.md) |
+| Analyze AI dev tools landscape | [executive/industry/06-行业-AI开发工具竞品格局-2026H1.md](executive/industry/06-行业-AI开发工具竞品格局-2026H1.md) |
+| Deep-dive Cursor competitor | [executive/industry/08-行业-竞品分析-Cursor.md](executive/industry/08-行业-竞品分析-Cursor.md) |
+| Deep-dive Copilot competitor | [executive/industry/09-行业-竞品分析-Copilot.md](executive/industry/09-行业-竞品分析-Copilot.md) |
+| Read AI industry trends 2026 | [executive/industry/04-行业-2026-AI行业关键趋势.md](executive/industry/04-行业-2026-AI行业关键趋势.md) |
+| Analyze AI market H1 2026 | [executive/industry/05-行业-2026H1-AI市场趋势分析.md](executive/industry/05-行业-2026H1-AI市场趋势分析.md) |
+| Run Porter's Five Forces | [executive/strategy/07-战略-波特五力模型.md](executive/strategy/07-战略-波特五力模型.md) |
+| Run SWOT analysis | [executive/strategy/10-战略-SWOT分析.md](executive/strategy/10-战略-SWOT分析.md) |
+| Apply Blue Ocean Strategy | [executive/strategy/01-战略-蓝海战略.md](executive/strategy/01-战略-蓝海战略.md) |
+| Design business model | [executive/strategy/02-战略-商业模式画布.md](executive/strategy/02-战略-商业模式画布.md) |
+| Make executive decisions | [executive/strategy/18-战略-高管决策框架.md](executive/strategy/18-战略-高管决策框架.md) |
+| Plan annual strategy | [executive/roadmap/01-路线图-年度战略规划.md](executive/roadmap/01-路线图-年度战略规划.md) |
+| Plan quarterly review | [executive/roadmap/04-路线图-季度业务回顾.md](executive/roadmap/04-路线图-季度业务回顾.md) |
+| Track organizational OKRs | [executive/roadmap/03-路线图-组织OKR追踪.md](executive/roadmap/03-路线图-组织OKR追踪.md) |
+| Plan headcount and budget | [executive/roadmap/02-路线图-人员预算规划.md](executive/roadmap/02-路线图-人员预算规划.md) |
+| Read executive book notes | [executive/reading-list/](executive/reading-list/) |
+| Use executive checklist | [executive/CHECKLIST.md](executive/CHECKLIST.md) |
 
 ## Curator — Knowledge Governance
 

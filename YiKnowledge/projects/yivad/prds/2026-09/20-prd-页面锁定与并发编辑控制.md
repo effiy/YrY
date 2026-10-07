@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 页面锁定与并发编辑控制
 tags:
 - 锁定
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["20-prd-task-页面锁定与并发编辑控制"]
+related_tests: ["20-prd-test-页面锁定与并发编辑控制"]
+benefit: "产品需求：页面锁定与并发编辑控制"
+lifecycle: active
 ---
 
 # 页面锁定与并发编辑控制

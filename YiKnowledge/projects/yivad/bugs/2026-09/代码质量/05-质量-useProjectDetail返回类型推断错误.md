@@ -11,6 +11,8 @@ severity: major
 priority: p1
 project: YiVad
 module: hooks/useProjectDetail.ts
+benefit: "缺陷记录：质量-useProjectDetail返回类型推断错误"
+lifecycle: active
 ---
 
 # useProjectDetail 返回类型推断错误
@@ -56,13 +58,11 @@ error TS2345: Argument of type '... | null' is not assignable to parameter of ty
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 不要使用 `ReturnType<typeof useXxxStore>["field"]` 引用 Pinia store 的字段类型，应显式声明类型（`Ref<Project | null>`） |
+| 测试 | `vue-tsc --noEmit` CI 阻断 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **Pinia 的类型推断边界**：`ReturnType<typeof useProjectStore>["currentProject"]` 在 Pinia 的复杂类型系统中无法正确解析，因为 Pinia 会自动解包 ref。显式类型声明比依赖类型推断更可靠
+- **Setup Store 的 ref 解包行为**：Pinia 在返回 setup store 的返回值时会自动解包 ref，导致消费方获取的是 `Project | null` 而非 `Ref<Project | null>`。这是 Pinia 的设计特性，不是 bug——在接口定义时必须考虑这个差异
 

@@ -5,6 +5,36 @@ export default {
       subtitle:
         "七个角色，四个阶段，一个因果链——从为什么构建，到如何运行。每个阶段都有清晰的输入 → 输出契约：上游角色产出的产物供下游角色消费。",
       files: "{n} 个文件",
+      filesLabel: "个文件",
+      staleLabel: "过期",
+      tacitLabel: "隐式",
+      section: {
+        layers: "横切关注层",
+        stages: "流水线阶段"
+      },
+      overview: {
+        files: "知识文件",
+        quality: "数据质量",
+        stale: "过期文件",
+        latest: "最近更新",
+        reviewCoverage: "审查覆盖率",
+        lastScan: "上次扫描",
+        roles: "个角色",
+        complete: "完整",
+        needsReview: "需审查",
+        allFresh: "全部最新",
+        orphan: "孤儿文件",
+        unmaintained: "未维护",
+        scanStale: "扫描过期"
+      },
+      time: {
+        justNow: "刚刚",
+        secAgo: "{n} 秒前",
+        minAgo: "{n} 分钟前",
+        hourAgo: "{n} 小时前",
+        dayAgo: "{n} 天前",
+        longAgo: "较早"
+      },
       stages: {
         why: "为什么",
         what: "做什么",
@@ -21,7 +51,7 @@ export default {
           name: "需求",
           role: "产品经理",
           description: "定义要构建什么、为谁构建、以及如何衡量成功——在任何代码编写之前。",
-          boundary: "producter 定义「需要构建什么功能」，而不是「如何实现它」（→ engineer/）或「选择何种技术」（→ leader/）。"
+          boundary: "product 定义「需要构建什么功能」，而不是「如何实现它」（→ engineer/）或「选择何种技术」（→ leader/）。"
         },
         decisions: {
           name: "决策",
@@ -42,7 +72,7 @@ export default {
           role: "SRE + 工程师/复盘/教训",
           description: "安全交付并保持运行。质量门禁、发布流程、可观测性、事件响应，以及来自成功与失败的经验教训。",
           boundary:
-            "srer/release/ 拥有「发布流程与协调」；engineer/reliability/ 拥有「用于发布的技术模式」（灰度实现、特性开关）。流程 vs 实现。"
+            "sre/release/ 拥有「发布流程与协调」；engineer/reliability/ 拥有「用于发布的技术模式」（灰度实现、特性开关）。流程 vs 实现。"
         },
         businessDetail: {
           label: "业务战略",
@@ -51,7 +81,7 @@ export default {
           description:
             "定义驱动每一个下游决策的战略背景。业务战略提供市场情报、竞争格局和组织目标，它们塑造产品需求、技术决策和运维优先级。没有清晰的业务基础，产品与工程团队会迷失方向。",
           boundary:
-            "executiver/ 设定组织级的「为什么」和「做什么」——市场定位、战略目标、资源分配。它不定义「如何构建」（→ engineer/）或「优先做哪些特性」（→ producter/）。战略告知方向；执行决定细节。"
+            "executive/ 设定组织级的「为什么」和「做什么」——市场定位、战略目标、资源分配。它不定义「如何构建」（→ engineer/）或「优先做哪些特性」（→ product/）。战略告知方向；执行决定细节。"
         },
         aiDetail: {
           label: "AI 赋能",
@@ -60,7 +90,7 @@ export default {
           description:
             "AI 赋能是水平加速层，放大流水线的每一个阶段。从基础理论（Transformer、向量嵌入）到工程方法论（Prompt 设计、RAG、Agent），再到平台基础设施（模型服务、推理优化），本层确保 AI 能力不成为瓶颈，而是跨组织的倍增器。",
           boundary:
-            "aier/ 提供 AI 的「理论、方法论与平台」——即 AI 的 HOW。它不拥有产品决策（→ producter/）、技术架构选择（→ leader/）或实现模式（→ engineer/）。AI 是工具；用它构建什么属于垂直各阶段。"
+            "aier/ 提供 AI 的「理论、方法论与平台」——即 AI 的 HOW。它不拥有产品决策（→ product/）、技术架构选择（→ leader/）或实现模式（→ engineer/）。AI 是工具；用它构建什么属于垂直各阶段。"
         },
         governanceDetail: {
           label: "知识治理",
@@ -89,25 +119,30 @@ export default {
           curator: "知识库自身的结构与规则？"
         },
         roles: {
-          executiver: "战略执行者",
-          producter: "产品经理",
+          executive: "战略执行者",
+          product: "产品经理",
           leader: "技术负责人",
           engineer: "工程师",
-          srer: "SRE",
+          sre: "SRE",
           aier: "AI 工程师",
           curator: "知识管理者"
         }
+      },
+      distribution: {
+        title: "数据分布",
+        size: "文件大小分布",
+        age: "文件年龄分布"
       }
     },
     role: {
-      executiver: "执行者",
+      executive: "执行者",
       engineer: "工程师",
       curator: "管理者",
       leader: "技术负责人",
       designer: "设计师",
       tester: "测试",
       operator: "运维",
-      executiverDesc: "战略、行业分析、路线图规划和执行决策阅读清单。",
+      executiveDesc: "战略、行业分析、路线图规划和执行决策阅读清单。",
       engineerDesc: "构建、交付、运行、学习——覆盖工程团队从设计到部署到运维到学习的完整生命周期。",
       curatorDesc: "治理、模板、图表和知识库生命周期的归档。",
       leaderDesc: "架构决策、技术选型、容量规划、风险管理和技术领导路线图。",
@@ -191,8 +226,31 @@ export default {
       loading: "加载中...",
       noData: "暂无数据",
       retry: "重试",
+      deleteFileConfirm: "删除「{path}」？此操作不可撤销。",
+      deleteFileTitle: "确认删除",
+      fileDeleted: "文件已删除",
+      fileDeleteFailed: "文件删除失败",
+      actionItemDeleted: "操作项已删除",
       error: "加载失败",
       back: "返回"
+    },
+    sre: {
+      qualityScore: "质量评分",
+      mttr: "平均修复时间",
+      openBugs: "未关闭缺陷",
+      slaCompliance: "SLA 合规率",
+      criticalOpen: "严重缺陷",
+      bugTrend: "缺陷趋势",
+      severityDist: "严重程度分布",
+      moduleQuality: "模块质量",
+      bugAge: "缺陷年龄分布",
+      knowledgeBase: "知识库",
+      lastUpdated: "更新于",
+      justNow: "刚刚",
+      live: "实时",
+      recent: "近期",
+      active: "活跃",
+      stale: "延迟"
     }
   }
 };

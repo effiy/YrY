@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-02"
 title: "YK-09-02: 文件同步可靠性 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 2.0
 source_prd: "05-稳定性修复-文件同步.md"
 source_okr: [yiknowledge-001]
 related_tests: ["05-prd-test-文件同步"]
+
+type: task
 ---
 
 # YK-09-02: 文件同步可靠性 — 开发方案

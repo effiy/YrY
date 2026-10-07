@@ -11,6 +11,8 @@ severity: minor
 priority: p2
 project: YiVad
 module: views/issue/detail.vue
+benefit: "缺陷记录：质量-IssueDetail-Upload图标未导入"
+lifecycle: active
 ---
 
 # issue/detail.vue Upload 图标未导入
@@ -55,13 +57,11 @@ Element Plus 图标需要从 `@element-plus/icons-vue` 显式导入，`unplugin-
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 使用 Element Plus 图标前检查 import 语句，`unplugin-vue-components` 不自动导入图标组件 |
+| 测试 | `vue-tsc --noEmit` 必须在每次提交前运行，CI 中配置为阻断项 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`unplugin-vue-components` 的自动导入边界**：该插件只自动导入 Element Plus 组件（如 `ElButton`），不处理图标库。`@element-plus/icons-vue` 的每个图标都需要显式 `import { Upload } from "@element-plus/icons-vue"`
+- **模板中使用但未导入的变量**：Vue 模板中的 `:icon="Upload"` 引用脚本中的 `Upload` 变量，但 `vue-tsc` 的报错指向模板类型推断失败，容易误导排查方向
 

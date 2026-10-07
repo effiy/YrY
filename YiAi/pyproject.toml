@@ -5,6 +5,9 @@ description = "YiAi — FastAPI backend for the Yi family. AI chat (Ollama), dua
 license = { text = "MIT" }
 requires-python = ">=3.10"
 
+[project.optional-dependencies]
+observer = ["yi-observer>=0.1.0"]   # reliability middleware (optional)
+
 [tool.pytest.ini_options]
 # Test discovery paths — YiAi is a flat src/ tree, not a package
 pythonpath = ["src"]

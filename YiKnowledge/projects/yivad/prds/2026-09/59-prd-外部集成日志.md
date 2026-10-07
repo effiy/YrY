@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-129: 功能实现-外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志"
 tags: [需求文档, 外部集成, 日志管理, API日志, 速率限制, Webhook, 运维监控, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["59-prd-task-外部集成日志"]
+related_tests: ["59-prd-test-外部集成日志"]
+benefit: "产品需求：外部集成日志"
+lifecycle: active
 ---
 
 # YV-09-129: 外部集成日志 — 按集成维度的请求/响应日志、错误追踪、速率限制监控、集成使用分析、Webhook 投递日志

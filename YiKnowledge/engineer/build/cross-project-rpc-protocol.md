@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
   - ./implement-cross-project-rpc-call.md
   - ./implement-sse-streaming.md
-  - ../learn/lessons/gotchas/02-陷阱-RPC参数名不匹配.md
+  - ../learn/lessons/06-陷阱-RPC参数名不匹配.md
   - ../../INDEX.md
 ---
 

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 回顾与复盘工具
 tags:
 - 回顾
@@ -29,6 +28,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["27-prd-task-回顾与复盘工具"]
+related_tests: ["27-prd-test-回顾与复盘工具"]
+benefit: "产品需求：回顾与复盘工具"
+lifecycle: active
 ---
 
 # 回顾与复盘工具

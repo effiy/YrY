@@ -27,6 +27,12 @@ metric2_current: "60%"
 metric2_target: "100%"
 related_prds:
   - projects/yivad/prds/2026-09/00-prd-需求总览.md
+source: YiVad
+category: projects/yivad/okrs
+tags: [yivad, okr]
+created: 2026-09-02
+benefit: "OKR 目标与关键结果"
+lifecycle: active
 ---
 
 # 文档职责分离与知识关联

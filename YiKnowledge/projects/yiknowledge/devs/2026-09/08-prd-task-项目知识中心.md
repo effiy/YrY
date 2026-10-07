@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-05"
 title: "YK-09-05: 项目知识中心完善 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 4.0
 source_prd: "08-功能实现-项目知识中心.md"
 source_okr: [yiknowledge-001]
 related_tests: ["08-prd-test-项目知识中心"]
+
+type: task
 ---
 
 # YK-09-05: 项目知识中心完善 — 开发方案

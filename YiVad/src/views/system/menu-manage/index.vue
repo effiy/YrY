@@ -1,8 +1,14 @@
 <template>
-  <div class="table-box">
+  <div class="menu-manage page">
+    <PageHeaderCard
+      :icon="Menu"
+      icon-bg="linear-gradient(135deg, #9b59b6, #7c3aed)"
+      :title="$t('common.menu.title')"
+      :description="$t('common.menu.description')"
+    />
     <ProTable
       ref="proTable"
-      title="Menu List"
+      :title="$t('common.menu.title')"
       row-key="path"
       :pagination="false"
       :tree-props="{ children: 'children' }"
@@ -12,52 +18,47 @@
       :data="menuData"
       :height="tableHeight"
     >
-      <!-- Table header buttons -->
-      <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" @click="openAdd">Add Menu</el-button>
+      <template #tableHeader="scope">
+        <el-button type="primary" :icon="CirclePlus" @click="openAdd">{{ $t("common.menu.addMenu") }}</el-button>
         <el-button :icon="RefreshRight" :loading="resetting" @click="handleResetDefaults">Reset Defaults</el-button>
+        <el-button v-if="scope.isSelected" type="danger" :icon="Delete" @click="batchDelete(scope.selectedListIds)">
+          Delete Selected
+        </el-button>
       </template>
-      <!-- Menu icon -->
       <template #icon="scope">
         <el-icon v-if="scope.row.meta?.icon" :size="18">
           <component :is="scope.row.meta.icon"></component>
         </el-icon>
         <span v-else class="mm-dash">-</span>
       </template>
-      <!-- Redirect -->
       <template #redirect="scope">
         <span v-if="scope.row.redirect">{{ scope.row.redirect }}</span>
         <span v-else class="mm-dash">-</span>
       </template>
-      <!-- Order -->
       <template #order="scope">
         <el-tag v-if="scope.row.order != null" size="small" type="info">{{ scope.row.order }}</el-tag>
         <span v-else class="mm-dash">-</span>
       </template>
-      <!-- Parent Menu -->
       <template #parent="scope">
         <span v-if="scope.row.parent" class="mm-parent-badge">
           <el-icon><component :is="getParentIcon(scope.row.parent)" /></el-icon>
           {{ getParentTitle(scope.row.parent) }}
         </span>
-        <el-tag v-else size="small" type="info">Top Level</el-tag>
+        <el-tag v-else size="small" type="info">{{ $t("common.menu.topLevel") }}</el-tag>
       </template>
-      <!-- Visibility -->
       <template #isHide="scope">
-        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">Hidden</el-tag>
-        <el-tag v-else size="small" type="success">Visible</el-tag>
+        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">{{ $t("common.menu.hidden") }}</el-tag>
+        <el-tag v-else size="small" type="success">{{ $t("common.menu.visible") }}</el-tag>
       </template>
-      <!-- Operations -->
       <template #operation="scope">
-        <el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)"></el-button>
-        <el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)"></el-button>
+        <el-tooltip :content="$t('common.edit')" placement="top"><el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)"></el-button></el-tooltip>
+        <el-tooltip :content="$t('common.delete')" placement="top"><el-button type="primary" link :icon="Delete" @click="handleDelete(scope.row)"></el-button></el-tooltip>
       </template>
     </ProTable>
 
-    <!-- Edit / Add Menu dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isAdd ? 'Add Menu' : 'Edit Menu'"
+      :title="isAdd ? $t('common.menu.addMenu') : $t('common.menu.editMenu')"
       width="600px"
       :close-on-click-modal="false"
       append-to-body
@@ -69,69 +70,66 @@
         :rules="rules"
         label-width="110px"
         label-suffix=":"
+        @keyup.enter="handleSave"
         @keydown.meta.s.prevent="handleSave"
         @keydown.ctrl.s.prevent="handleSave"
       >
-        <el-form-item label="Menu Name" prop="title">
-          <el-input v-model="form.title" placeholder="Menu display name" clearable />
+        <el-form-item :label="$t('common.menu.fields.menuName')" prop="title">
+          <el-input v-model="form.title" :placeholder="$t('common.menu.fields.menuNamePlaceholder')" clearable autofocus />
         </el-form-item>
-        <el-form-item label="Parent Menu">
+        <el-form-item :label="$t('common.menu.fields.parentMenu')">
           <el-tree-select
             v-model="form.parent"
             :data="parentMenuOptions"
             :props="{ label: 'title', children: 'children' }"
             node-key="path"
-            placeholder="Leave empty for top-level menu"
+            :placeholder="$t('common.menu.fields.parentPlaceholder')"
             clearable
             check-strictly
             filterable
             class="mm-parent-select"
           />
-          <div class="mm-form-hint">Top-level menus appear in the sidebar root. Child menus nest under their parent.</div>
         </el-form-item>
-        <el-form-item label="Route Path" prop="path">
-          <el-input v-model="form.path" placeholder="/example/path" clearable />
-          <div class="mm-form-hint">URL path for this menu. Use kebab-case: <code>/system/menu-manage</code></div>
+        <el-form-item :label="$t('common.menu.fields.routePath')" prop="path">
+          <el-input v-model="form.path" :placeholder="$t('common.menu.fields.routePathPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="Route Name" prop="name">
-          <el-input v-model="form.name" placeholder="routeName" clearable />
-          <div class="mm-form-hint">Unique Vue Router name. camelCase, no special chars: <code>systemMenuManage</code></div>
+        <el-form-item :label="$t('common.menu.fields.routeName')" prop="name">
+          <el-input v-model="form.name" :placeholder="$t('common.menu.fields.routeNamePlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="Component Path" prop="component">
-          <el-input v-model="form.component" placeholder="/example/index" clearable />
-          <div class="mm-form-hint">Path relative to <code>src/views/</code>, without <code>.vue</code> extension. Leave empty for parent menus.</div>
+        <el-form-item :label="$t('common.menu.fields.componentPath')" prop="component">
+          <el-input v-model="form.component" :placeholder="$t('common.menu.fields.componentPathPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="Redirect">
-          <el-input v-model="form.redirect" placeholder="redirect path" clearable />
+        <el-form-item :label="$t('common.menu.fields.redirect')">
+          <el-input v-model="form.redirect" :placeholder="$t('common.menu.fields.redirectPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="Icon">
+        <el-form-item :label="$t('common.menu.fields.icon')">
           <SelectIcon v-model:icon-value="form.icon" />
         </el-form-item>
-        <el-form-item label="External Link">
-          <el-input v-model="form.isLink" placeholder="https://..." clearable />
+        <el-form-item :label="$t('common.menu.fields.externalLink')">
+          <el-input v-model="form.isLink" :placeholder="$t('common.menu.fields.externalLinkPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item label="Order">
+        <el-form-item :label="$t('common.menu.fields.order')">
           <el-input-number v-model="form.order" :min="0" />
         </el-form-item>
         <el-divider />
-        <el-form-item label="Hidden Menu">
+        <el-form-item :label="$t('common.menu.fields.hiddenMenu')">
           <el-switch v-model="form.isHide" />
         </el-form-item>
-        <el-form-item label="Full Screen">
+        <el-form-item :label="$t('common.menu.fields.fullScreen')">
           <el-switch v-model="form.isFull" />
         </el-form-item>
-        <el-form-item label="Fixed Tab">
+        <el-form-item :label="$t('common.menu.fields.fixedTab')">
           <el-switch v-model="form.isAffix" />
         </el-form-item>
-        <el-form-item label="Page Cache">
+        <el-form-item :label="$t('common.menu.fields.pageCache')">
           <el-switch v-model="form.isKeepAlive" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer-hint"><kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> save</span>
         <div>
-          <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" :loading="saving" @click="handleSave">Save</el-button>
+          <el-button @click="dialogVisible = false">{{ $t("common.menu.cancel") }}</el-button>
+          <el-button type="primary" :loading="saving" @click="handleSave">{{ $t("common.menu.save") }}</el-button>
         </div>
       </template>
     </el-dialog>
@@ -139,17 +137,20 @@
 </template>
 
 <script setup lang="ts" name="menuMange">
-import { CirclePlus, Delete, EditPen, RefreshRight } from "@element-plus/icons-vue";
+import { CirclePlus, Delete, EditPen, Menu, RefreshRight } from "@element-plus/icons-vue";
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
-
+import { useI18n } from "vue-i18n";
+import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { useAuthStore } from "@/stores/modules/auth";
 import { createMenu, updateMenu, deleteMenu, bulkResetMenus } from "@/api/modules/system";
 import ProTable from "@/components/ProTable/index.vue";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 import SelectIcon from "@/components/SelectIcon/index.vue";
 import { ColumnProps } from "@/components/ProTable/interface";
 import authMenuList from "@/assets/json/authMenuList.json";
+import { confirm } from "@/hooks/useConfirmAction";
 
+const { t } = useI18n();
 const proTable = ref();
 const formRef = ref<FormInstance>();
 const authStore = useAuthStore();
@@ -162,7 +163,6 @@ const resetting = ref(false);
 
 const tableHeight = ref<number | undefined>(undefined);
 const updateTableHeight = () => {
-  // header(55) + tabs(40) + toolbar(47) + box padding(20) + table-main padding(40) = 202
   tableHeight.value = Math.max(200, window.innerHeight - 202);
 };
 onMounted(() => {
@@ -186,7 +186,6 @@ function onKeydown(e: KeyboardEvent) {
   const target = e.target as HTMLElement | null;
   const tag = target?.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable === true) return;
-  // Esc closes the shortcuts dialog even when an overlay is open
   if (e.key === "Escape" && showShortcuts.value) {
     e.preventDefault();
     showShortcuts.value = false;
@@ -213,12 +212,10 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 import { sortMenuTree } from "@/utils";
+import { nanoid } from "nanoid";
 
-// Same tree data as the sidebar — el-table renders the hierarchy via tree-props.
-// Using authMenuListGet (raw, all items) so hidden menus are still manageable.
 const menuData = computed(() => sortMenuTree(authStore.authMenuListGet));
 
-// Tree-select options for parent menu picker — show full menu tree
 const parentMenuOptions = computed(() => {
   const addTitle = (nodes: any[]): any[] =>
     nodes.map(node => ({
@@ -229,7 +226,6 @@ const parentMenuOptions = computed(() => {
   return addTitle(menuData.value);
 });
 
-// Helper: find a menu node by path in the flat list
 function findMenuByPath(path: string): any {
   return authStore.flatMenuListGet.find((m: any) => m.path === path);
 }
@@ -242,7 +238,6 @@ function getParentIcon(parentPath: string): string {
   return node?.meta?.icon || "Menu";
 }
 
-// ── Form ──
 interface MenuForm {
   title: string;
   path: string;
@@ -278,9 +273,9 @@ const defaultForm = (): MenuForm => ({
 const form = reactive<MenuForm>(defaultForm());
 
 const rules: FormRules = {
-  title: [{ required: true, message: "Please enter menu name", trigger: "blur" }],
-  path: [{ required: true, message: "Please enter route path", trigger: "blur" }],
-  name: [{ required: true, message: "Please enter route name", trigger: "blur" }]
+  title: [{ required: true, message: () => t("common.menu.validation.menuNameRequired"), trigger: "blur" }],
+  path: [{ required: true, message: () => t("common.menu.validation.routePathRequired"), trigger: "blur" }],
+  name: [{ required: true, message: () => t("common.menu.validation.routeNameRequired"), trigger: "blur" }]
 };
 
 function populateForm(row: any) {
@@ -299,7 +294,6 @@ function populateForm(row: any) {
   form.isKeepAlive = row.meta?.isKeepAlive ?? true;
 }
 
-// ── Edit / Add ──
 function openEdit(row: any) {
   isAdd.value = false;
   editingKey.value = row.key ?? "";
@@ -321,7 +315,7 @@ async function handleSave() {
 
   saving.value = true;
   try {
-    const key = isAdd.value ? `menu_${Date.now()}_${Math.random().toString(36).slice(2, 8)}` : editingKey.value;
+    const key = isAdd.value ? `menu_${nanoid(12)}` : editingKey.value;
     const params: Record<string, any> = {
       key,
       path: form.path,
@@ -342,66 +336,50 @@ async function handleSave() {
     };
     if (isAdd.value) {
       await createMenu(params);
-      ElMessage.success("Menu created");
+      ElMessage.success(t("common.menu.messages.created"));
     } else {
       await updateMenu(key, params);
-      ElMessage.success("Menu updated");
+      ElMessage.success(t("common.menu.messages.updated"));
     }
     dialogVisible.value = false;
-    // Refresh the auth store so the sidebar picks up changes
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : "Failed to save");
+    ElMessage.error(e instanceof Error ? e.message : t("common.menu.messages.saveFailed"));
   } finally {
     saving.value = false;
   }
 }
 
-// ── Delete ──
 async function handleDelete(row: any) {
   if (!row.key) {
-    ElMessage.error("Cannot delete: menu document has no key field");
+    ElMessage.error(t("common.menu.messages.deleteFailed"));
     return;
   }
   const childCount = row.children?.length ?? 0;
-  const title = row.meta?.title ?? row.name;
-  const message =
-    childCount > 0
-      ? `Menu "${title}" has ${childCount} child menu${childCount > 1 ? "s" : ""}. Deleting it will orphan the children — they will become top-level menus after refresh. Continue?`
-      : `Are you sure you want to delete menu "${title}"? Changes take effect after page refresh.`;
-  try {
-    await ElMessageBox.confirm(message, "Confirm Delete", {
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      type: childCount > 0 ? "error" : "warning",
-      confirmButtonClass: childCount > 0 ? "el-button--danger" : undefined
-    });
-  } catch {
-    return;
-  }
+  const name = row.meta?.title ?? row.name;
+  const ok = await confirm(
+    t("common.menu.messages.deleteConfirm", { name }),
+    t("common.menu.confirmDelete"),
+    childCount > 0 ? "error" : "warning"
+  );
+  if (!ok) return;
   try {
     await deleteMenu(row.key);
-    ElMessage.success("Menu deleted");
+    ElMessage.success(t("common.menu.messages.deleted"));
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : "Failed to delete");
+    ElMessage.error(e instanceof Error ? e.message : t("common.menu.messages.deleteFailed"));
   }
 }
 
-// ── Reset to Defaults ──
 async function handleResetDefaults() {
-  try {
-    await ElMessageBox.confirm(
-      "This will replace ALL menus with the built-in defaults. Custom menus will be lost. Continue?",
-      "Reset Menus",
-      { confirmButtonText: "Reset", cancelButtonText: "Cancel", type: "warning" }
-    );
-  } catch {
-    return;
-  }
+  const ok = await confirm(
+    t("system.dialog.deleteConfirm"),
+    "Reset Menus"
+  );
+  if (!ok) return;
   resetting.value = true;
   try {
-    // Flatten the menu tree into individual documents for the backend
     const flat: Record<string, any>[] = [];
     function flatten(items: any[], parent: string | null = null) {
       for (const item of items) {
@@ -421,22 +399,41 @@ async function handleResetDefaults() {
   }
 }
 
-// Table column configuration
 const columns: ColumnProps[] = [
-  { prop: "meta.title", label: "Menu Name", align: "left", width: 180, search: { el: "input" } },
-  { prop: "meta.icon", label: "Icon", width: 80 },
-  { prop: "name", label: "Route Name", width: 150, search: { el: "input" } },
-  { prop: "path", label: "Route Path", width: 220, search: { el: "input" } },
-  { prop: "component", label: "Component Path", width: 220 },
-  { prop: "redirect", label: "Redirect", width: 180 },
-  { prop: "order", label: "Order", width: 70 },
-  { prop: "parent", label: "Parent Menu", width: 180 },
-  { prop: "meta.isHide", label: "Visibility", width: 100 },
-  { prop: "operation", label: "Operations", width: 180, fixed: "right" }
+  { type: "selection", width: 50 },
+  { prop: "meta.title", label: t("common.menu.fields.menuName"), align: "left", width: 180, search: { el: "input" } },
+  { prop: "meta.icon", label: t("common.menu.fields.icon"), width: 80 },
+  { prop: "name", label: t("common.menu.fields.routeName"), width: 150, search: { el: "input" } },
+  { prop: "path", label: t("common.menu.fields.routePath"), width: 220, search: { el: "input" } },
+  { prop: "component", label: t("common.menu.fields.componentPath"), width: 220 },
+  { prop: "redirect", label: t("common.menu.fields.redirect"), width: 180 },
+  { prop: "order", label: t("common.menu.fields.order"), width: 70 },
+  { prop: "parent", label: t("common.menu.fields.parentMenu"), width: 180 },
+  { prop: "meta.isHide", label: t("common.menu.visibility"), width: 100 },
+  { prop: "operation", label: t("common.menu.operations"), width: 180, fixed: "right" }
 ];
+
+async function batchDelete(paths: (string | number)[]) {
+  if (!paths.length) return;
+  const ok = await confirm(
+    t("common.menu.messages.deleteConfirm", { name: `${paths.length} menu(s)` }),
+    "Batch Delete Menus",
+    "error"
+  );
+  if (!ok) return;
+  for (const path of paths) {
+    try { await deleteMenu(String(path)); } catch { /* continue */ }
+  }
+  ElMessage.success(`Deleted ${paths.length} menu(s)`);
+  await authStore.getAuthMenuList();
+}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.menu-manage {
+  // padding + background come from global .page class
+  min-height: 100%;
+}
 .mm-form-hint {
   font-size: 12px;
   color: var(--el-text-color-secondary);
@@ -457,5 +454,8 @@ const columns: ColumnProps[] = [
 }
 .mm-dash {
   color: var(--el-text-color-placeholder);
+}
+.mm-parent-select {
+  width: 100%;
 }
 </style>

@@ -1,9 +1,9 @@
 export default {
   search: {
     title: "Search",
-    placeholder: "Search modules, pages, features…",
+    placeholder: "Search issues, projects, modules, bugs, pages…",
     noResults: "No results",
-    noResultsHint: "Try different keywords or adjust the search scope",
+    noResultsHint: "Try different keywords or reduce filters",
     searching: "Searching…",
     searchFailed: "Search failed, please try again",
     resultCount: "{total} results ({time}ms)",
@@ -20,14 +20,11 @@ export default {
       bugs: "Bugs",
       projects: "Projects",
       modules: "Modules",
+      pages: "Pages",
       stories: "Stories",
       knowledge: "Knowledge",
       documents: "Documents",
-      members: "Members",
-      code: "Code",
-      prds: "PRDs",
-      workflows: "Workflows",
-      sessions: "Chat Sessions"
+      members: "Members"
     },
     filters: {
       project: "Project",
@@ -54,9 +51,9 @@ export default {
       hint: "Press {key} to open search"
     },
     recent: {
-      title: "Recently visited",
-      empty: "No recent visits",
-      clear: "Clear recent"
+      title: "Recent",
+      empty: "No recent searches",
+      clear: "Clear"
     },
     resultCard: {
       project: "Project",

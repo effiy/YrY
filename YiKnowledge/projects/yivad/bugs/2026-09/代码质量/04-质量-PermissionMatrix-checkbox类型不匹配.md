@@ -11,6 +11,8 @@ severity: minor
 priority: p2
 project: YiVad
 module: views/system/roleManage/components/PermissionMatrix.vue
+benefit: "缺陷记录：质量-PermissionMatrix-checkbox类型不匹配"
+lifecycle: active
 ---
 
 # PermissionMatrix el-checkbox 类型不匹配
@@ -55,13 +57,11 @@ error TS2322: Type '(val: boolean) => void' is not assignable to type '(val: Che
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 组件库事件的回调参数类型应与库的类型定义一致，`el-checkbox` 的 change 事件类型为 `CheckboxValueType`（非 `boolean`） |
+| 测试 | `vue-tsc --noEmit` CI 阻断后此类错误会在提交阶段暴露 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **组件库事件类型 ≠ 直觉类型**：`el-checkbox` 的 `change` 事件直观上返回 `boolean`，但 Element Plus 的类型定义是 `CheckboxValueType = string | number | boolean`，因为 checkbox-group 模式下会返回数组。内联事件处理器的参数类型必须与库定义一致
+- **`vue-tsc` 的类型检查覆盖面**：不仅是 Props/Emits 类型，模板中的事件处理器参数类型也会被检查
 

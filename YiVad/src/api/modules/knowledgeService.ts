@@ -154,3 +154,131 @@ export async function exportKnowledgeDir(targetDir: string): Promise<void> {
   document.body.removeChild(a);
   URL.revokeObjectURL(blobUrl);
 }
+
+export interface KnowledgeIssueListItem {
+  key: string;
+  project_key: string;
+  sequence_id: number;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  issue_type: string;
+  assignee: string;
+  labels: string[];
+  estimate_points: number | null;
+  story_points: number | null;
+  start_date: string;
+  due_date: string;
+  source: string;
+  review_status: string;
+  goal_id: string;
+  kb_file_path: string;
+  severity: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KnowledgeIssuesResponse {
+  list: KnowledgeIssueListItem[];
+  total: number;
+  pageNum: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface KnowledgeIssuesParams {
+  project?: string;
+  issue_type?: string;
+  status?: string;
+  priority?: string;
+  search?: string;
+  pageNum?: number;
+  pageSize?: number;
+}
+
+/** List YiKnowledge project files as unified Issue records. */
+export function getKnowledgeIssues(params: KnowledgeIssuesParams): Promise<KnowledgeIssuesResponse> {
+  return postJson<KnowledgeIssuesResponse>("/knowledge-issues", params as Record<string, unknown>);
+}
+
+export interface KnowledgeIssuesStats {
+  stats: {
+    total: number;
+    todo: number;
+    in_progress: number;
+    in_review: number;
+    done: number;
+    backlog: number;
+    cancelled: number;
+  };
+  statusDist: Record<string, number>;
+  priorityDist: Record<string, number>;
+  typeDist: Record<string, number>;
+  assigneeDist: Record<string, number>;
+  createdByDay: Record<string, number>;
+  completeness: Array<{
+    key: string;
+    label: string;
+    filled: number;
+    pct: number;
+    missing: number;
+  }>;
+  attention: {
+    overdue: number;
+    unassigned: number;
+    blocked: number;
+  };
+}
+
+export interface KnowledgeIssuesStatsParams {
+  project?: string;
+  issue_type?: string;
+  status?: string;
+  priority?: string;
+  search?: string;
+}
+
+/** Server-side pre-aggregated issue stats — avoids fetching all records. */
+export function getKnowledgeIssueStats(params: KnowledgeIssuesStatsParams): Promise<KnowledgeIssuesStats> {
+  return postJson<KnowledgeIssuesStats>("/knowledge-issues-stats", params as Record<string, unknown>);
+}
+
+export interface OrphanedIssue {
+  key: string;
+  title: string;
+  kb_file_path: string;
+  reason: "no_kb_file_path" | "file_not_found";
+}
+
+export interface OrphanedIssuesResponse {
+  orphaned: OrphanedIssue[];
+  count: number;
+}
+
+/** Detect issues in MongoDB without corresponding YiKnowledge files. */
+export function getOrphanedIssues(): Promise<OrphanedIssuesResponse> {
+  return postJson<OrphanedIssuesResponse>("/knowledge-orphaned-issues", {});
+}
+
+export interface KnowledgeProjectsStats {
+  projects: Record<string, Record<string, number>>;
+}
+
+export interface KnowledgeProjectsStatsParams {
+  project?: string;
+}
+
+/** Count .md files per project under YiKnowledge/projects/. */
+export function getKnowledgeProjectsStats(params?: KnowledgeProjectsStatsParams): Promise<KnowledgeProjectsStats> {
+  return postJson<KnowledgeProjectsStats>("/knowledge-projects-stats", (params ?? {}) as Record<string, unknown>);
+}
+
+export interface OrphanedCleanupResponse {
+  deleted: number;
+}
+
+/** Delete orphaned issues from MongoDB. */
+export function cleanupOrphanedIssues(): Promise<OrphanedCleanupResponse> {
+  return postJson<OrphanedCleanupResponse>("/knowledge-cleanup-orphaned", {});
+}

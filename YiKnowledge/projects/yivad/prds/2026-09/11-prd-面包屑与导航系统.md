@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 面包屑与导航系统
 tags:
 - 导航
@@ -28,6 +27,10 @@ roles:
 - engineer
 - designer
 source_okr: [yivad-003]
+related_modules: ["11-prd-task-面包屑与导航系统"]
+related_tests: ["11-prd-test-面包屑与导航系统"]
+benefit: "产品需求：面包屑与导航系统"
+lifecycle: active
 ---
 
 # 面包屑与导航系统

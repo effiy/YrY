@@ -9,22 +9,24 @@
  * 5. primary 的 hover/active 通过 L 阶跃计算，soft/faint 通过 alpha 控制。
  *
  * 所有函数为纯函数，无副作用；不调用任何 UI / 全局状态。
+ *
+ * 颜色数学由 colord 提供 — hex↔rgb↔hsl 转换、WCAG 对比度、lighten/darken/saturate。
  */
 
+import { colord, extend } from 'colord';
+import a11yPlugin from 'colord/plugins/a11y';
+import mixPlugin from 'colord/plugins/mix';
 import type { RgbTuple, ThemePalette } from './colors';
 
-// ── 颜色转换原语 ─────────────────────────────────────────────────────────
+extend([a11yPlugin, mixPlugin]);
+
+// ── 颜色转换原语（colord 包装）───────────────────────────────────────────
 
 export function hexToRgb(hex: string): RgbTuple | null {
-  const m = /^\s*#?([a-f\d]{3}|[a-f\d]{6})\s*$/i.exec(hex);
-  if (!m) return null;
-  let body = m[1]!;
-  if (body.length === 3) body = body.split('').map((c) => c + c).join('');
-  return {
-    r: parseInt(body.slice(0, 2), 16),
-    g: parseInt(body.slice(2, 4), 16),
-    b: parseInt(body.slice(4, 6), 16),
-  };
+  const c = colord(hex);
+  if (!c.isValid()) return null;
+  const { r, g, b } = c.toRgb();
+  return { r, g, b };
 }
 
 interface HslTuple {
@@ -34,36 +36,12 @@ interface HslTuple {
 }
 
 export function rgbToHsl(r: number, g: number, b: number): HslTuple {
-  const nr = r / 255;
-  const ng = g / 255;
-  const nb = b / 255;
-  const max = Math.max(nr, ng, nb);
-  const min = Math.min(nr, ng, nb);
-  const l = (max + min) / 2;
-
-  if (max === min) return { h: 0, s: 0, l: l * 100 };
-
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h = 0;
-  if (max === nr) h = ((ng - nb) / d + (ng < nb ? 6 : 0)) / 6;
-  else if (max === ng) h = ((nb - nr) / d + 2) / 6;
-  else h = ((nr - ng) / d + 4) / 6;
-
-  return { h: h * 360, s: s * 100, l: l * 100 };
+  const { h, s, l } = colord({ r, g, b }).toHsl();
+  return { h, s, l };
 }
 
 export function hslToHex(h: number, s: number, l: number): string {
-  const nh = ((h % 360) + 360) % 360;
-  const ns = Math.max(0, Math.min(100, s)) / 100;
-  const nl = Math.max(0, Math.min(100, l)) / 100;
-  const a = ns * Math.min(nl, 1 - nl);
-  const f = (n: number) => {
-    const k = (n + nh / 30) % 12;
-    const c = nl - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(Math.max(0, Math.min(1, c)) * 255).toString(16).padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
+  return colord({ h, s, l }).toHex();
 }
 
 function rgba(rgb: RgbTuple, alpha: number): string {
@@ -75,31 +53,25 @@ function rgbToTupleString(rgb: RgbTuple): string {
   return `${rgb.r}, ${rgb.g}, ${rgb.b}`;
 }
 
-// ── WCAG 对比度与无障碍工具 ─────────────────────────────────────────────
+// ── WCAG 对比度与无障碍工具（colord 包装）────────────────────────────────
 
-function srgbToLinear(c: number): number {
-  const nc = c / 255;
-  return nc <= 0.03928 ? nc / 12.92 : Math.pow((nc + 0.055) / 1.055, 2.4);
+function rgbToColordStr(rgb: RgbTuple): string {
+  return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 }
 
 export function relativeLuminance(rgb: RgbTuple): number {
-  const r = srgbToLinear(rgb.r);
-  const g = srgbToLinear(rgb.g);
-  const b = srgbToLinear(rgb.b);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return colord(rgbToColordStr(rgb)).luminance();
 }
 
 export function contrastRatio(a: RgbTuple, b: RgbTuple): number {
-  const la = relativeLuminance(a);
-  const lb = relativeLuminance(b);
-  const [lighter, darker] = la >= lb ? [la, lb] : [lb, la];
-  return (lighter + 0.05) / (darker + 0.05);
+  return colord(rgbToColordStr(a)).contrast(colord(rgbToColordStr(b)));
 }
 
 export function meetsWCAG(r: RgbTuple, bg: RgbTuple, level: 'AA' | 'AAA' = 'AA', large = false): boolean {
-  const ratio = contrastRatio(r, bg);
-  const threshold = level === 'AAA' ? (large ? 4.5 : 7) : (large ? 3 : 4.5);
-  return ratio >= threshold;
+  return colord(rgbToColordStr(r)).isReadable(colord(rgbToColordStr(bg)), {
+    level,
+    size: large ? 'large' : 'normal',
+  });
 }
 
 export function findReadableText(bgHex: string, baseHue: number, sat = 14, minRatio = 4.5): string {
@@ -113,24 +85,18 @@ export function findReadableText(bgHex: string, baseHue: number, sat = 14, minRa
   return relativeLuminance(bg) > 0.4 ? '#1e293b' : '#f8fafc';
 }
 
-// ── HSL 步进工具（用于 primary/hover/active 阶跃） ────────────────────────
+// ── HSL 步进工具（colord 包装，amount 为 0-100 范围，匹配原有 API）─────
 
 export function lightenHex(hex: string, amount: number): string {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  const { h, s, l } = rgbToHsl(rgb.r, rgb.g, rgb.b);
-  return hslToHex(h, s, Math.max(0, Math.min(100, l + amount)));
+  return colord(hex).lighten(amount / 100).toHex();
 }
 
 export function darkenHex(hex: string, amount: number): string {
-  return lightenHex(hex, -amount);
+  return colord(hex).darken(amount / 100).toHex();
 }
 
 export function saturateHex(hex: string, amount: number): string {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  const { h, s, l } = rgbToHsl(rgb.r, rgb.g, rgb.b);
-  return hslToHex(h, Math.max(0, Math.min(100, s + amount)), l);
+  return colord(hex).saturate(amount / 100).toHex();
 }
 
 // ── 调色板生成 ───────────────────────────────────────────────────────────
@@ -190,9 +156,7 @@ export function generatePalette(primaryHex: string): ThemePalette | null {
   const textMutedBase = hslToHex(h, 8, 70);
   const textMutedRgb = hexToRgb(textMutedBase) ?? { r: 180, g: 180, b: 200 };
   const textMuted = rgba(textMutedRgb, 0.55);
-  const textAccentRaw = hslToHex(accentH, 42, 76);
   const textAccent = findReadableText(surfaceSunken, accentH, 38, 4.5);
-  void textAccentRaw;
 
   const borderSubtle = rgba(accentRgb, 0.20);
   const borderStrong = rgba(accentRgb, 0.38);
@@ -213,8 +177,7 @@ export function generatePalette(primaryHex: string): ThemePalette | null {
     `${headerBg} 55%, ${surfaceOverlay} 100%)`;
   const headerBorder = rgba(accentRgb, 0.27);
   const headerTextPrimary = findReadableText(surfaceBase, h, textBaseSat, 7);
-  const headerTextSecondaryRaw = rgba(textMutedRgb, 0.75);
-  const headerTextSecondary = headerTextSecondaryRaw;
+  const headerTextSecondary = rgba(textMutedRgb, 0.75);
   const headerAccent = findReadableText(surfaceSunken, accentH, 40, 4.5);
   const headerGlow =
     `0 0 40px ${rgba(primaryRgb, 0.11)}, ` +

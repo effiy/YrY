@@ -1,3 +1,5 @@
+import { nanoid } from "nanoid";
+
 export interface SyncQueueItem {
   id: string;
   type: "create" | "update" | "delete";
@@ -32,7 +34,7 @@ export async function addToQueue(
 ): Promise<string> {
   const queueItem: SyncQueueItem = {
     ...item,
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: `${Date.now()}-${nanoid(8)}`,
     timestamp: Date.now(),
     retryCount: 0,
     maxRetries: 3,

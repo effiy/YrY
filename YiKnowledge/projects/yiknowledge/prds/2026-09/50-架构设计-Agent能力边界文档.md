@@ -266,7 +266,7 @@ SEARCH_KNOWLEDGE_TOOL = ToolDescription(
         "role_filter": {
             "type": "string",
             "default": None,
-            "description": "按角色目录过滤。可选值: engineer, aier, srer, leader, producter, curator",
+            "description": "按角色目录过滤。可选值: engineer, aier, sre, leader, product, curator",
         },
     },
     examples=[

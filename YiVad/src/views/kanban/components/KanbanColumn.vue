@@ -4,7 +4,10 @@
       <div class="kanban-col__head-row">
         <span class="kanban-col__title">{{ label }}</span>
         <div class="kanban-col__head-actions">
-          <el-tag size="small" round :type="countTagType">{{ issues.length }}</el-tag>
+          <el-tag size="small" round :type="wipLimit && issues.length > wipLimit ? 'danger' : countTagType">
+            {{ issues.length }}
+            <template v-if="wipLimit && issues.length > wipLimit"> / {{ wipLimit }}</template>
+          </el-tag>
           <el-dropdown trigger="click" @command="(cmd: string) => $emit('sort', cmd)">
             <el-button size="small" text style="padding: 2px 4px; margin-left: 2px">
               <el-icon><Sort /></el-icon>
@@ -68,6 +71,7 @@ defineProps<{
   countTagType: "info" | "primary" | "warning" | "success" | "danger";
   issues: KanbanColumnItem[];
   overdueCount: number;
+  wipLimit?: number;
 }>();
 
 defineEmits<{

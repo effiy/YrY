@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-135"
 title: "YV-09-135: 数据导出计划 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "65-prd-数据导出计划.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 数据导出计划]
+roles: [engineer]
+benefit: "开发方案：task-数据导出计划"
+lifecycle: active
 ---
 
 # YV-09-135: 数据导出计划 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "65-prd-数据导出计划.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/export`)，导出任务创建 + 格式选择（CSV/JSON/Excel）+ 历史记录
+
+**数据模型**：
+```
+通过 YiAi `data_service.query_documents` 获取数据，前端格式化后触发下载
+```
+
+**组件树**：
+```
+ExportWizard.vue (集合选择 → 字段选择 → 格式选择) + ExportHistory.vue (ProTable)
+```
+
+**关键决策**：
+大数量导出（>10K 条）使用后端流式导出避免浏览器 OOM；导出任务异步化（创建任务 → 轮询状态 → 下载）
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "65-prd-数据导出计划.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

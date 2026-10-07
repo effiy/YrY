@@ -109,7 +109,11 @@ chrome.commands.onCommand.addListener(async (command) => {
 console.log('[YiPet] Service worker initializing...');
 swStateMachine.init().then(() => {
   console.log(`[YiPet] Service worker ready — state: ${swStateMachine.state}`);
+}).catch((err: unknown) => {
+  console.error('[YiPet] Service worker init failed:', err);
 });
 featureFlags.init().then(() => {
   console.log(`[YiPet] Feature flags loaded: virtual-scroll=${featureFlags.isEnabled('virtual-scroll')}, bridge-token=${featureFlags.isEnabled('bridge-token')}`);
+}).catch((err: unknown) => {
+  console.error('[YiPet] Feature flags init failed:', err);
 });

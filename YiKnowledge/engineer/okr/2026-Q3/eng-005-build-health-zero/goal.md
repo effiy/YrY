@@ -3,11 +3,13 @@ type: okr-goal
 id: eng-005
 title: 构建健康度清零
 status: active
+tags: [okr, build, health, engineering, yivad]
 period: 2026 Q3
 owner: Engineering Lead
 project: YiVad
 progress: 100
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # 🧹 构建健康度清零
 

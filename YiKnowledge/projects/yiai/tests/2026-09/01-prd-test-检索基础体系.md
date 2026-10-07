@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M13-功能实现-检索基础体系 — 查询理解、预处理与结果增强 — 测试规格"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YA-09-09"
 source_prds: ["01-需求-检索基础体系"]
 source_modules: ["01-prd-task-检索基础体系"]
 source_okr: [yiai-001]
+
+type: test
 ---
 
 # M13-功能实现-检索基础体系 — 测试规格

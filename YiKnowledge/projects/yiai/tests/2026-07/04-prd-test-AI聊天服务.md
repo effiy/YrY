@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YA-07-04: AI 聊天服务 — 测试规格"
 status: 已完成
@@ -13,6 +14,8 @@ prd_month: "202607"
 prd_task_id: "YA-07-04"
 source_prds: ["04-需求-AI聊天服务"]
 source_modules: []
+
+type: test
 ---
 
 # YA-07-04: AI 聊天服务 — 测试规格

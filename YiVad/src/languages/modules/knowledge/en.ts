@@ -5,6 +5,36 @@ export default {
       subtitle:
         "Seven roles, four stages, one causal chain — from why build it to how to run it. Each stage has a clear input → output contract: upstream roles produce artifacts that downstream roles consume.",
       files: "{n} files",
+      filesLabel: "files",
+      staleLabel: "stale",
+      tacitLabel: "tacit",
+      section: {
+        layers: "Cross-Cutting Layers",
+        stages: "Pipeline Stages"
+      },
+      overview: {
+        files: "Knowledge Files",
+        quality: "Data Quality",
+        stale: "Stale Files",
+        latest: "Latest Update",
+        reviewCoverage: "Review Coverage",
+        lastScan: "Last Scan",
+        roles: "roles",
+        complete: "complete",
+        needsReview: "needs review",
+        allFresh: "all fresh",
+        orphan: "orphan",
+        unmaintained: "unmaintained",
+        scanStale: "scan stale"
+      },
+      time: {
+        justNow: "just now",
+        secAgo: "{n}s ago",
+        minAgo: "{n}m ago",
+        hourAgo: "{n}h ago",
+        dayAgo: "{n}d ago",
+        longAgo: "long ago"
+      },
       stages: {
         why: "Why",
         what: "What",
@@ -19,10 +49,10 @@ export default {
       stagesDetail: {
         requirements: {
           name: "Requirements",
-          role: "producter/",
+          role: "product/",
           description: "Define what to build, for whom, and how to measure success — before any code is written.",
           boundary:
-            "producter defines WHAT feature to build, not HOW to implement it (→ engineer/) or WHICH technology to use (→ leader/)."
+            "product defines WHAT feature to build, not HOW to implement it (→ engineer/) or WHICH technology to use (→ leader/)."
         },
         decisions: {
           name: "Decisions",
@@ -41,20 +71,20 @@ export default {
         },
         "quality-release": {
           name: "Ship + Operate",
-          role: "srer/ + engineer/learn/lessons/",
+          role: "sre/ + engineer/learn/lessons/",
           description:
             "Ship safely and keep running. Quality gates, release procedures, observability, incident response, and lessons from wins and failures.",
           boundary:
-            "srer/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation."
+            "sre/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation."
         },
         businessDetail: {
           label: "Business Strategy",
-          role: "executiver/",
+          role: "executive/",
           desc: "Why this business · Market intelligence · Org goals · Industry trends · Roadmap",
           description:
             "Define the strategic context that drives every downstream decision. Business Strategy provides the market intelligence, competitive landscape, and organizational goals that shape product requirements, technical decisions, and operational priorities. Without a clear business foundation, product and engineering teams operate without direction.",
           boundary:
-            "executiver/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ producter/). Strategy informs; execution decides."
+            "executive/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ product/). Strategy informs; execution decides."
         },
         aiDetail: {
           label: "AI Enablement",
@@ -63,7 +93,7 @@ export default {
           description:
             "AI Enablement is the horizontal acceleration layer that amplifies every stage of the pipeline. From foundational theory (transformers, embeddings) to engineering methodology (prompt design, RAG, agents) to platform infrastructure (model serving, inference optimization), this layer ensures AI capability is not a bottleneck but a multiplier across the organization.",
           boundary:
-            "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ producter/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages."
+            "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ product/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages."
         },
         governanceDetail: {
           label: "Knowledge Governance",
@@ -92,25 +122,30 @@ export default {
           curator: "The KB's own structure and rules?"
         },
         roles: {
-          executiver: "executiver/",
-          producter: "producter/",
+          executive: "executive/",
+          product: "product/",
           leader: "leader/",
           engineer: "engineer/",
-          srer: "srer/",
+          sre: "sre/",
           aier: "aier/",
           curator: "curator/"
         }
+      },
+      distribution: {
+        title: "Data Distribution",
+        size: "File Size Distribution",
+        age: "File Age Distribution"
       }
     },
     role: {
-      executiver: "Executive",
+      executive: "Executive",
       engineer: "Engineer",
       curator: "Curator",
       leader: "Tech Lead",
       designer: "Designer",
       tester: "Tester",
       operator: "Operator",
-      executiverDesc: "Strategy, industry analysis, roadmap planning, and reading list for executive decision-making.",
+      executiveDesc: "Strategy, industry analysis, roadmap planning, and reading list for executive decision-making.",
       engineerDesc:
         "Build, Ship, Run, Learn — covering the full design → deploy → operate → learn lifecycle for engineering teams.",
       curatorDesc: "Governance, templates, diagrams, and archive for the knowledge base lifecycle.",
@@ -196,8 +231,31 @@ export default {
       loading: "Loading...",
       noData: "No data",
       retry: "Retry",
+      deleteFileConfirm: 'Delete "{path}"? This action cannot be undone.',
+      deleteFileTitle: "Confirm Delete",
+      fileDeleted: "File deleted",
+      fileDeleteFailed: "Failed to delete file",
+      actionItemDeleted: "Action item deleted",
       error: "Failed to load",
       back: "Back"
+    },
+    sre: {
+      qualityScore: "Quality Score",
+      mttr: "MTTR",
+      openBugs: "Open Bugs",
+      slaCompliance: "SLA Compliance",
+      criticalOpen: "Critical Open",
+      bugTrend: "Bug Trend",
+      severityDist: "Severity Distribution",
+      moduleQuality: "Module Quality",
+      bugAge: "Bug Age",
+      knowledgeBase: "Knowledge Base",
+      lastUpdated: "Updated",
+      justNow: "just now",
+      live: "Live",
+      recent: "Recent",
+      active: "Active",
+      stale: "Stale"
     }
   }
 };

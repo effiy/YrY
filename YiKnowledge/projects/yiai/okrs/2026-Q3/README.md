@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: 2026-Q3 YiAi OKR 索引
 category: 项目/后端/OKR
 created: 2026-09-11
 updated: 2026-09-14
 project: YiAi
+
+type: okr-summary
+status: 待开始
 ---
 
 # 2026-Q3 YiAi OKR 索引
@@ -67,13 +71,13 @@ project: YiAi
 | eng-002 | AI 基础设施稳定性建设 | engineer | 100% | YiAi |
 | aier-001 | 编排三要素落地 | aier | 100% | YiAi |
 | aier-002 | Agent 任务可靠 | aier | 100% | YiAi |
-| prod-001 | 需求评审可闭环 | producter | 100% | YiAi |
+| prod-001 | 需求评审可闭环 | product | 100% | YiAi |
 | lead-001 | 技术评审可闭环 | leader | 100% | YiAi |
-| sre-001 | 测试与上线自闭环 | srer | 100% | YiAi |
+| sre-001 | 测试与上线自闭环 | sre | 100% | YiAi |
 | cur-001 | 流程记录知识化 | curator | 100% | YiAi |
-| exec-001 | 市场情报与竞争洞察 | executiver | 100% | YiAi |
-| exec-002 | 经营战略与组织路线 | executiver | 75% | YiAi |
-| exec-003 | 经营学习与阅读 | executiver | 70% | YiAi |
+| exec-001 | 市场情报与竞争洞察 | executive | 100% | YiAi |
+| exec-002 | 经营战略与组织路线 | executive | 75% | YiAi |
+| exec-003 | 经营学习与阅读 | executive | 70% | YiAi |
 
 ## 目录规范
 

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-14"
 title: "YK-09-14: RAG 混合检索 Alpha 调优 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.5
 source_prd: "17-架构设计-RAG混合检索Alpha调优.md"
 source_okr: [yiknowledge-001]
 related_tests: ["17-prd-test-RAG混合检索Alpha调优"]
+
+type: task
 ---
 
 # YK-09-14: RAG 混合检索 Alpha 调优 — 开发方案

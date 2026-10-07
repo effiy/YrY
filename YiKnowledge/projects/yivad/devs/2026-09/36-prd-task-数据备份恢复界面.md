@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-71"
 title: "YV-09-71: 数据备份恢复界面 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "36-prd-数据备份恢复界面.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 数据备份恢复界面]
+roles: [engineer]
+benefit: "开发方案：task-数据备份恢复界面"
+lifecycle: active
 ---
 
 # YV-09-71: 数据备份恢复界面 — 开发方案
@@ -44,6 +50,25 @@ source_prd: "36-prd-数据备份恢复界面.md"
 
 > 当前阶段：依赖 YiAi 后端备份服务。
 
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/backup`)，ProTable 展示备份历史 + 操作按钮（手动备份/恢复/下载）
+
+**数据模型**：
+```
+MongoDB `backups` 集合，由 YiAi 后端 backup_service 管理；前端通过 `data_service.query_documents` 查询
+```
+
+**组件树**：
+```
+BackupList.vue (ProTable + 状态标签) + BackupRestoreDialog.vue (确认 + 进度)
+```
+
+**关键决策**：
+备份/恢复操作需二次确认（ElMessageBox + 输入项目名验证）；大文件下载使用 `useDownload` composable
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -53,12 +78,8 @@ source_prd: "36-prd-数据备份恢复界面.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

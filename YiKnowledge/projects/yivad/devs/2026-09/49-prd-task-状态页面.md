@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-102"
 title: "YV-09-102: 状态页面 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "49-prd-状态页面.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 状态页面]
+roles: [engineer]
+benefit: "开发方案：task-状态页面"
+lifecycle: active
 ---
 
 # YV-09-102: 状态页面 — 开发方案
@@ -35,6 +41,25 @@ source_prd: "49-prd-状态页面.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：公开页面 (`/status`)，无需认证，展示服务健康状态 + 历史事件
+
+**数据模型**：
+```
+MongoDB `service_status` 集合（由 YiAi 健康检查定时更新）+ `incidents` 关联
+```
+
+**组件树**：
+```
+StatusPage.vue (服务网格 + 状态指示器) + IncidentHistory.vue (历史事件时间线)
+```
+
+**关键决策**：
+状态页面为公开路由（无需登录），需独立于 MainLayout 渲染；健康数据由 YiAi 定时任务每 60s 更新
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -44,12 +69,8 @@ source_prd: "49-prd-状态页面.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

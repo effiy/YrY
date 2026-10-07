@@ -23,7 +23,7 @@ related:
 
 # Engineer — 角色索引
 
-> **流水线阶段**: 3. 设计与构建 — Engineer 角色负责**实现**。架构决策请查阅 [leader/](../leader/)。事件响应请查阅 [srer/](../srer/)。产品需求请查阅 [producter/](../producter/)。
+> **流水线阶段**: 3. 设计与构建 — Engineer 角色负责**实现**。架构决策请查阅 [leader/](../leader/)。事件响应请查阅 [sre/](../sre/)。产品需求请查阅 [product/](../product/)。
 
 ## 问题域
 
@@ -69,9 +69,9 @@ related:
 | 文档 | 用途 |
 |---|---|
 | [01-了解竞品](./run/01-运行-了解竞品.md) | 竞品分析方法论——识别、调研、框架、归档 |
-| [01-YiAi入职](./run/onboarding/01-入职-YiAi入职.md) | YiAi 后端新人第一天快速上手 |
-| [02-YiPet入职](./run/onboarding/02-入职-YiPet入职.md) | YiPet 扩展新人第一天快速上手 |
-| [03-YiVad入职](./run/onboarding/03-入职-YiVad入职.md) | YiVad 前端新人第一天快速上手 |
+| [01-YiAi入职](./run/01-入职-YiAi入职.md) | YiAi 后端新人第一天快速上手 |
+| [02-YiPet入职](./run/02-入职-YiPet入职.md) | YiPet 扩展新人第一天快速上手 |
+| [03-YiVad入职](./run/03-入职-YiVad入职.md) | YiVad 前端新人第一天快速上手 |
 | [02-开发工作流](./run/02-运行-开发工作流.md) | 全栈启动、按项目开发、常见问题排查的日常开发流程 |
 | [03-Git工作流](./run/03-运行-Git工作流.md) | 分支策略、Conventional Commits、PR 流程、合并策略 |
 | [04-CodeReview指南](./run/04-运行-CodeReview指南.md) | Code Review 清单——按语言分层的审查要点和 RPC 契约验证 |
@@ -80,20 +80,20 @@ related:
 
 | 类别 | 代表性文档 |
 |---|---|
-| 成功案例 (wins) | [YiPet 跨项目 Hub](./learn/lessons/wins/01-成果-YiPet跨项目Hub.md) — 浏览器扩展作为集成中心的架构模式 |
-| 成功案例 (wins) | [RPC 统一信封](./learn/lessons/wins/02-成果-RPC统一信封.md) — 一个端点服务三个项目，YrY 中回报率最高的架构决策 |
-| 成功案例 (wins) | [测试基础设施](./learn/lessons/wins/03-成果-测试基础设施.md) — 从零到 76 个测试，shared/ 模块 92% 覆盖率的策略 |
-| 失败复盘 (failures) | [YiVad AICR 端口幻觉](./learn/lessons/failures/01-教训-YiVad-AICR端口幻觉.md) — AI 助手生成虚假交付报告 |
-| 失败复盘 (failures) | [无锁文件供应链事故](./learn/lessons/failures/02-教训-无锁文件供应链.md) — lockfile 缺失导致构建不可重现 |
-| 陷阱记录 (gotchas) | [RPC 参数名不匹配](./learn/lessons/gotchas/02-陷阱-RPC参数名不匹配.md) — `filter` vs `query` 导致后端静默忽略 |
-| 陷阱记录 (gotchas) | [SSE onDone 守卫缺失](./learn/lessons/gotchas/03-陷阱-SSE-onDone守卫.md) — 中止的 SSE 流仍触发外发副作用 |
+| 成功案例 (wins) | [YiPet 跨项目 Hub](./learn/lessons/09-成果-YiPet跨项目Hub.md) — 浏览器扩展作为集成中心的架构模式 |
+| 成功案例 (wins) | [RPC 统一信封](./learn/lessons/10-成果-RPC统一信封.md) — 一个端点服务三个项目，YrY 中回报率最高的架构决策 |
+| 成功案例 (wins) | [测试基础设施](./learn/lessons/11-成果-测试基础设施.md) — 从零到 76 个测试，shared/ 模块 92% 覆盖率的策略 |
+| 失败复盘 (failures) | [YiVad AICR 端口幻觉](./learn/lessons/02-教训-YiVad-AICR端口幻觉.md) — AI 助手生成虚假交付报告 |
+| 失败复盘 (failures) | [无锁文件供应链事故](./learn/lessons/03-教训-无锁文件供应链.md) — lockfile 缺失导致构建不可重现 |
+| 陷阱记录 (gotchas) | [RPC 参数名不匹配](./learn/lessons/06-陷阱-RPC参数名不匹配.md) — `filter` vs `query` 导致后端静默忽略 |
+| 陷阱记录 (gotchas) | [SSE onDone 守卫缺失](./learn/lessons/07-陷阱-SSE-onDone守卫.md) — 中止的 SSE 流仍触发外发副作用 |
 
 ## 跨角色引用
 
 - [../leader/](../leader/) — 架构决策记录（ADR）、容量规划、技术风险、技术路线图
 - [../aier/](../aier/) — AI 基础理论、RAG/Agent 方法、LLM 平台
-- [../producter/](../producter/) — 产品管理框架、需求发现、交付管理
-- [../srer/](../srer/) — 事件响应流程、可观测性（监控/告警/SLO）、发布回滚
+- [../product/](../product/) — 产品管理框架、需求发现、交付管理
+- [../sre/](../sre/) — 事件响应流程、可观测性（监控/告警/SLO）、发布回滚
 - [../projects/](../projects/) — 项目运营产物（Bug 跟踪、Issue、Demo）
 - [./SECURITY.md](./SECURITY.md) — 跨角色安全领域聚合索引
 - [./ENGINEERING.md](./ENGINEERING.md) — 跨角色工程领域聚合索引

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-71: 数据备份恢复界面 — 备份配置、手动/定时备份、历史管理、一键恢复与存储追踪 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-71"
 source_prds: ["36-prd-数据备份恢复界面"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 数据备份恢复界面]
+benefit: "测试用例：数据备份恢复界面"
+lifecycle: active
 ---
 # YV-09-71: 数据备份恢复界面 — 备份配置、手动/定时备份、历史管理、一键恢复与存储追踪 — 测试规格
 

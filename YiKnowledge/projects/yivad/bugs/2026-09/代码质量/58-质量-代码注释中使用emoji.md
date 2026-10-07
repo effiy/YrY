@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-代码注释中使用emoji"
+lifecycle: active
 ---
 
 # 路由配置中部分 meta 字段使用了 emoji 图标而非 Icon 组件
@@ -45,7 +47,5 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **Emoji 作为文档装饰的问题**：`📚 Route parameter configuration` 中的 emoji 在不同平台渲染差异大（macOS 彩色、Linux 黑白、某些终端乱码），且在 `grep` 和 `git diff` 中不可检索。代码注释应依赖文字而非图标传达信息
 

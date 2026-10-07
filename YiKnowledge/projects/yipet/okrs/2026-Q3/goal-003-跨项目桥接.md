@@ -62,7 +62,7 @@ YiPet 最初是独立的浏览器伴侣扩展。随着 YiVad（管理后台）�
 
 1. **YiPet → YiVad 无缝桥接** — Session Key 认证 + window.open 实现 YiPet → YiVad aiChat 页面无缝跳转，携带当前页面上下文（URL + 标题 + body 截断至 8000 字符）。YiVad 通过 `?session=<key>` 参数自动选中已植入会话。
 2. **每条消息级别桥接** — 在宠物回复旁新增"在 YiVad aiChat 中打开"按钮。携带前置用户问题 + 宠物回复作为上下文，YiVad 中可直接继续追问。工具栏级桥接 = "讨论这个页面"，消息级桥接 = "讨论这个答案"。
-3. **跨项目缺陷报告** — BugReportDialog 表单（严重性/优先级/状态/类型/频率/项目/模块/指派人/环境/版本/标签/描述/复现步骤/预期/实际）。自动检测当前页面归属项目（8848→YiVad，10086→YiAi），元数据进 MongoDB `bugs` 集合，长文本进 YiKnowledge `lessons/failures/bugs/`。形成闭环：任意页面记录缺陷 → 在 YiVad `/bug` 列表视图中展现。
+3. **跨项目缺陷报告** — BugReportDialog 表单（严重性/优先级/状态/类型/频率/项目/模块/指派人/环境/版本/标签/描述/复现步骤/预期/实际）。自动检测当前页面归属项目（8848→YiVad，10086→YiAi），元数据进 MongoDB `bugs` 集合，长文本进 YiKnowledge `lessons/bugs/`。形成闭环：任意页面记录缺陷 → 在 YiVad `/bug` 列表视图中展现。
 4. **Recent Bugs 侧边栏** — 侧边栏第四个标签页"Bugs"，展示最近 30 条缺陷（最新优先）。每行显示标题/严重性/项目/模块。行点击深层链接到 YiVad 缺陷详情页；内联"Discuss"按钮植入聊天输入 + RAG 范围限定到缺陷 markdown。与 BugReportDialog 形成闭环：记录 → 查看 → 讨论。
 5. **工具栏跨项目导航** — 下拉菜单（GlobalOutlined 按钮）包含：在 YiVad aiChat 中讨论此页面、YiAi 后端 (:10086)、YiVad 管理后台、YiVad aiChat、YiVad Bugs、YiVad Stories。所有外部链接通过 `window.open` 打开。YiPet 工具栏成为跨项目中心——任何页面，一键导航到任何地方。
 6. **消息通知系统** — chrome.notifications（本地弹窗）+ 企微 Webhook（远程推送）双通道。支持优先级/分类/免打扰。chatStore.sendMessage 在流式完成后自动触发企微转发（非中断/非错误情况下）。

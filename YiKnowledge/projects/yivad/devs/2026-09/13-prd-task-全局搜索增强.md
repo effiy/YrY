@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-36"
 title: "YV-09-36: 全局搜索增强 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "13-prd-全局搜索增强.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 全局搜索增强]
+benefit: "开发方案：task-全局搜索增强"
+lifecycle: active
 ---
 
 # YV-09-36: 全局搜索增强 — 开发方案
@@ -60,6 +65,20 @@ function parseQuery(q: string): { text: string; filters: Record<string, string> 
 | 3 | 搜索建议 + 最近搜索 UI | 0.5 |
 
 **合计：1.0d**
+
+
+### 架构方案
+
+**技术路线**：增强现有全局搜索 → 添加搜索源 + 搜索历史 + 智能建议
+
+**组件树**：
+```
+SearchPanel.vue (CommandPalette 风格) + SearchResults.vue (分类展示) + SearchHistory.vue (localStorage)
+```
+
+**关键决策**：
+搜索结果分类：页面/Issue/文档/知识文件/API；搜索防抖 300ms；历史保留最近 20 条
+
 
 ---
 

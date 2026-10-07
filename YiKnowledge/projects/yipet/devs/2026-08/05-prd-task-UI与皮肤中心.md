@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-08-08"
 title: "YP-08-08: UI 与皮肤中心 — 开发方案"
@@ -12,6 +13,8 @@ project: YiPet
 project_id: yipet
 prd_month: "202608"
 source_prd: "05-功能实现-UI与皮肤中心.md"
+
+type: task
 ---
 
 # YP-08-08: UI 与皮肤中心 — 开发方案
@@ -60,7 +63,7 @@ Floating Pet 周围的环形角色/颜色选择器，hover/click 交互。
 
 ### 2.1 问题根因
 
-Color Theme 的 `applyThemeColors(document.documentElement, idx)` 将 CSS 变量注入到**宿主页面**的 `:root` 上，导致访问 YiVad 页面时覆盖了页面原生样式。例如 `http://localhost:8848/#/knowledge/executiver` 页面被暗色主题变量覆盖后变得不可读。
+Color Theme 的 `applyThemeColors(document.documentElement, idx)` 将 CSS 变量注入到**宿主页面**的 `:root` 上，导致访问 YiVad 页面时覆盖了页面原生样式。例如 `http://localhost:8848/#/knowledge/executive` 页面被暗色主题变量覆盖后变得不可读。
 
 ### 2.2 解决方案：容器级作用域隔离
 

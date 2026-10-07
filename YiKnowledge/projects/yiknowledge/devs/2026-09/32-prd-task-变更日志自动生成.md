@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-29"
 title: "YK-09-29: 变更日志自动生成 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "32-架构设计-变更日志自动生成.md"
 source_okr: [yiknowledge-001]
 related_tests: ["32-prd-test-变更日志自动生成"]
+
+type: task
 ---
 
 # YK-09-29: 变更日志自动生成 — 开发方案

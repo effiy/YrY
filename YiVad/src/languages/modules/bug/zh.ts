@@ -42,6 +42,8 @@ export default {
       severity: "严重程度",
       status: "状态",
       priority: "优先级",
+      type: "类型",
+      frequency: "复现频率",
       assignee: "负责人",
       reporter: "报告人",
       project: "项目",

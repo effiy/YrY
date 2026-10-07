@@ -19,6 +19,7 @@ import {
 import { getSession, upsertSession, updateSession } from "@/api/modules/sessions";
 import { useKnowledgeFiles } from "@/views/knowledge/composables/useKnowledgeFiles";
 import type { KnowledgeFileEntry, KnowledgeReadResponse, KnowledgeStoryEntry, SessionDocument } from "@/api/interface/yiAi";
+import { nanoid } from "nanoid";
 
 const CACHE_KEY = "yivad:knowledge-tree:v3";
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -202,7 +203,7 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
       }
       const fields: Partial<SessionDocument> & { key: string } = {
         key: path,
-        url: `knowledge-session://${now}-${Math.random().toString(36).slice(2, 11)}`,
+        url: `knowledge-session://${now}-${nanoid(12)}`,
         title,
         pageDescription: `Knowledge: ${path}`,
         pageContent: content || undefined,

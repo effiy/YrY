@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "列表组件体系 — 测试用例"
 status: 已完成
 priority: 中
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-M08"
 source_prds: ["01-prd-列表组件体系"]
 source_modules: ["YV-09-M08"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 列表组件体系]
+benefit: "测试用例：列表组件体系"
+lifecycle: active
 ---
 
 # 列表组件体系 — 测试用例

@@ -5,7 +5,8 @@ stage: technical-review
 title: 三要素编排映射技术方案 — 从硬编码到可读回的知识库清单
 role: aier
 goalId: aier-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, technical-review, adr, orchestration]

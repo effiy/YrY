@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-100"
 source_prds: ["47-prd-功能请求与投票"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 功能请求与投票]
+benefit: "测试用例：功能请求与投票"
+lifecycle: active
 ---
 # YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪 — 测试规格
 

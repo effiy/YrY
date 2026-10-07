@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-28"
 title: "YK-09-28: 健康仪表盘 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "31-架构设计-健康仪表盘.md"
 source_okr: [yiknowledge-001]
 related_tests: ["31-prd-test-健康仪表盘"]
+
+type: task
 ---
 
 # YK-09-28: 健康仪表盘 — 开发方案

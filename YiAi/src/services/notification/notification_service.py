@@ -8,12 +8,13 @@ URL-based EventSource connections that carry the auth token via query parameter.
 """
 import asyncio
 from datetime import datetime, timezone
-import json
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any
 
 from data.database import db
+from shared.error_codes import ErrorCode
+from shared.exceptions import BusinessException
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ async def mark_as_read(params: dict[str, Any]) -> dict[str, Any]:
     await _ensure_collection()
     notification_id = params.get("notification_id")
     if not notification_id:
-        raise ValueError("notification_id is required")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="notification_id is required")
     await db.db[COLLECTION].update_one(
         {"id": notification_id}, {"$set": {"read": True}}
     )
@@ -89,7 +90,7 @@ async def delete_notification(params: dict[str, Any]) -> dict[str, Any]:
     await _ensure_collection()
     notification_id = params.get("notification_id")
     if not notification_id:
-        raise ValueError("notification_id is required")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="notification_id is required")
     await db.db[COLLECTION].delete_one({"id": notification_id})
     return {"ok": True}
 

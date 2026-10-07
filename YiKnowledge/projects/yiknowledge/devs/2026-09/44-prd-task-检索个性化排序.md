@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-41"
 title: "YK-09-41: 检索个性化排序 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "44-架构设计-检索个性化排序.md"
 source_okr: [yiknowledge-001]
 related_tests: ["44-prd-test-检索个性化排序"]
+
+type: task
 ---
 
 # YK-09-41: 检索个性化排序 — 开发方案
@@ -25,7 +28,7 @@ related_tests: ["44-prd-test-检索个性化排序"]
 
 ## 一、架构总览
 
-基于用户角色（engineer→技术文档优先，producter→需求文档优先）和历史阅读/点击行为，动态调整 RAG 检索权重。冷启动用户使用角色默认权重，积累 10+ 次行为后切换个性化权重。
+基于用户角色（engineer→技术文档优先，product→需求文档优先）和历史阅读/点击行为，动态调整 RAG 检索权重。冷启动用户使用角色默认权重，积累 10+ 次行为后切换个性化权重。
 
 ## 二、实施步骤
 

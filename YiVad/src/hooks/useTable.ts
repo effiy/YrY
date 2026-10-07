@@ -55,12 +55,16 @@ export const useTable = (
    * @description Get table data
    * @return void
    * */
+  let _reqSeq = 0;
   const getTableList = async () => {
     if (!api) return;
+    const seq = ++_reqSeq;
     try {
       // Put initial and pagination params into total params first
       Object.assign(state.totalParam, initParam, isPageable ? pageParam.value : {});
       let { data } = await api({ ...state.searchInitParam, ...state.totalParam });
+      // Discard stale responses from rapid consecutive calls
+      if (seq !== _reqSeq) return;
       dataCallBack && (data = dataCallBack(data));
       state.tableData = isPageable ? data.list : data;
       // Destructure pagination data from backend (update if applicable)
@@ -68,6 +72,7 @@ export const useTable = (
         state.pageable.total = data.total;
       }
     } catch (error) {
+      if (seq !== _reqSeq) return;
       requestError && requestError(error);
     }
   };

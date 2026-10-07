@@ -7,11 +7,11 @@ instead, and validate it here.
 URL: GET /notification/stream?token=<jwt>
 """
 import asyncio
-import json
 import logging
 
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import StreamingResponse
+import orjson
 
 from data.database import db
 from shared.config import settings
@@ -45,8 +45,8 @@ async def notification_stream(
     # Optional auth validation
     if settings.middleware_auth_enabled and token:
         try:
-            from domain.auth.core import verify_token
-            verify_token(token)
+            from domain.auth.core import verify_jwt
+            verify_jwt(token)
         except Exception:
             from shared.error_codes import ErrorCode
             from shared.response import fail
@@ -61,7 +61,7 @@ async def notification_stream(
 
         try:
             # Send initial connection event
-            yield f"event: connected\ndata: {json.dumps({'ok': True})}\n\n".encode()
+            yield b"event: connected\ndata: " + orjson.dumps({'ok': True}) + b"\n\n"
 
             while True:
                 # Check for client disconnect
@@ -74,7 +74,7 @@ async def notification_stream(
                 new_docs = [doc async for doc in cursor]
 
                 for doc in new_docs:
-                    yield f"data: {json.dumps(doc, ensure_ascii=False)}\n\n".encode()
+                    yield b"data: " + orjson.dumps(doc) + b"\n\n"
                     if doc.get("createdAt", "") > last_seen:
                         last_seen = doc["createdAt"]
 
@@ -86,7 +86,7 @@ async def notification_stream(
             logger.info("Notification SSE stream cancelled")
         except Exception as e:
             logger.error(f"Notification SSE error: {e}", exc_info=True)
-            yield f"event: error\ndata: {json.dumps({'message': str(e)})}\n\n".encode()
+            yield b"event: error\ndata: " + orjson.dumps({'message': str(e)}) + b"\n\n"
 
     return StreamingResponse(
         event_generator(),

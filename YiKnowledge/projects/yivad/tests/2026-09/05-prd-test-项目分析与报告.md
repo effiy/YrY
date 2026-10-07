@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "项目分析与报告 — 测试用例"
 status: 进行中
 priority: 中
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-M13"
 source_prds: ["05-prd-项目分析与报告"]
 source_modules: ["YV-09-M13"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目分析与报告]
+benefit: "测试用例：项目分析与报告"
+lifecycle: active
 ---
 
 # 项目分析与报告 — 测试用例

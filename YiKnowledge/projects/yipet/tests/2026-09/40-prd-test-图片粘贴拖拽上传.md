@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "图片粘贴拖拽上传 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["40-功能实现-图片粘贴拖拽上传"]
+source_prds: ["40-架构设计-图片粘贴拖拽上传.md"]
+source_modules: ["40-prd-task-图片粘贴拖拽上传.md"]
+
+type: test
 ---
 
 # 图片粘贴拖拽上传 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["40-功能实现-图片粘贴拖拽上传"]
 | TC-UP01 | Ctrl+V 粘贴 | clipboardData.files | P0 |
 | TC-UP02 | 拖拽上传 | dataTransfer.files | P0 |
 | TC-UP03 | 大小限制 10MB | 超限提示 | P1 |
+

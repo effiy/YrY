@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "动画与过渡效果系统 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["112-功能实现-动画与过渡效果系统"]
+source_prds: ["112-功能实现-动画与过渡效果系统.md"]
+source_modules: ["112-prd-task-动画与过渡效果系统.md"]
+
+type: test
 ---
 
 # 动画与过渡效果系统 — 测试用例
@@ -19,3 +25,4 @@ source_prds: ["112-功能实现-动画与过渡效果系统"]
 | TC-ANM01 | CSS 动画 60fps | transform+opacity Composite 层 | P1 |
 | TC-ANM02 | prefers-reduced-motion | 禁用所有动画 | P1 |
 | TC-ANM03 | rAF 批量更新 | 流式渲染帧率稳定 | P1 |
+

@@ -2,7 +2,7 @@
 title: Security Domain Index
 aliases: [security-index, appsec, supply-chain-security, risk-management]
 tags: [domain-index, security, supply-chain, appsec, risk, incident-response, compliance, auth]
-category: root
+category: engineer
 created: 2026-08-06
 updated: 2026-09-18
 last_verified: 2026-09-18
@@ -11,10 +11,10 @@ type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
-roles: [engineer, leader, srer, executiver, aier]
+roles: [engineer, leader, sre, executive, aier]
 benefit: "All security-relevant content — supply chain, application security, risk management, incident response, compliance, and AI safety — reachable from a single cross-role index"
 acceptance_criteria:
-  - "Aggregates security content from engineer/, leader/, srer/, aier/, executiver/"
+  - "Aggregates security content from engineer/, leader/, sre/, aier/, executive/"
   - "Organized by 6 subdomains with verified file paths"
   - "Each entry describes what the reader will find"
   - "Covers both preventive (shift-left) and reactive (incident response) security"
@@ -24,7 +24,7 @@ related:
   - ./ENGINEERING.md
   - ../curator/COLLABORATION.md
   - ../leader/risk/README.md
-  - ../srer/incident-response/README.md
+  - ../sre/incident-response/04-事件-响应事件.md
 ---
 
 # 安全领域聚合索引
@@ -38,8 +38,8 @@ related:
 | [供应链安全](#供应链安全) | 依赖审计、锁文件完整性、构建可重现性 | engineer |
 | [应用安全](#应用安全) | 代码质量、认证授权、数据保护、安全加固 | engineer, leader |
 | [风险管理](#风险管理) | 风险登记册、上线评估、依赖风险、安全审查 | leader |
-| [事件响应](#事件响应) | 检测→定级→缓解→复盘 全流程 | srer |
-| [合规与治理](#合规与治理) | 监管合规、数据留存、安全策略 | executiver, leader |
+| [事件响应](#事件响应) | 检测→定级→缓解→复盘 全流程 | sre |
+| [合规与治理](#合规与治理) | 监管合规、数据留存、安全策略 | executive, leader |
 | [AI 安全](#ai-安全) | 提示词注入、模型安全、数据隐私、AI 防护 | aier, engineer |
 
 ---
@@ -118,15 +118,15 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 事件响应流程 | [../srer/incident-response/04-事件-响应事件.md](../srer/incident-response/04-事件-响应事件.md) | 4 阶段响应：发现→定级→缓解→学习 |
-| 处理数据泄露 | [../srer/incident-response/01-事件-处理数据泄露.md](../srer/incident-response/01-事件-处理数据泄露.md) | 数据泄露专项响应流程：隔离→评估→通知→修复 |
-| 作战室运作 | [../srer/incident-response/05-事件-作战室运作.md](../srer/incident-response/05-事件-作战室运作.md) | War room 角色分配、沟通节奏、决策升级 |
-| 事后复盘指南 | [../srer/incident-response/07-事件-事后复盘指南.md](../srer/incident-response/07-事件-事后复盘指南.md) | 无指责事后复盘：时间线→根因→行动项 |
-| 事件沟通模板 | [../srer/incident-response/10-事件-事件沟通模板.md](../srer/incident-response/10-事件-事件沟通模板.md) | 对内/对外/客户沟通模板和时机 |
-| 灾难恢复计划 | [../srer/incident-response/11-事件-灾难恢复计划.md](../srer/incident-response/11-事件-灾难恢复计划.md) | 恢复优先级、RPO/RTO 定义、演练计划 |
-| Runbook 模板 | [../srer/incident-response/09-事件-Runbook模板.md](../srer/incident-response/09-事件-Runbook模板.md) | 可执行的操作手册模板 |
-| FMEA 模板 | [../srer/incident-response/16-事件-FMEA模板.md](../srer/incident-response/16-事件-FMEA模板.md) | 故障模式与影响分析 |
-| Game Day 演练 | [../srer/incident-response/08-事件-GameDay演练.md](../srer/incident-response/08-事件-GameDay演练.md) | 混沌工程演练设计与执行 |
+| 事件响应流程 | [../sre/incident-response/04-事件-响应事件.md](../sre/incident-response/04-事件-响应事件.md) | 4 阶段响应：发现→定级→缓解→学习 |
+| 处理数据泄露 | [../sre/incident-response/01-事件-处理数据泄露.md](../sre/incident-response/01-事件-处理数据泄露.md) | 数据泄露专项响应流程：隔离→评估→通知→修复 |
+| 作战室运作 | [../sre/incident-response/05-事件-作战室运作.md](../sre/incident-response/05-事件-作战室运作.md) | War room 角色分配、沟通节奏、决策升级 |
+| 事后复盘指南 | [../sre/incident-response/07-事件-事后复盘指南.md](../sre/incident-response/07-事件-事后复盘指南.md) | 无指责事后复盘：时间线→根因→行动项 |
+| 事件沟通模板 | [../sre/incident-response/10-事件-事件沟通模板.md](../sre/incident-response/10-事件-事件沟通模板.md) | 对内/对外/客户沟通模板和时机 |
+| 灾难恢复计划 | [../sre/incident-response/11-事件-灾难恢复计划.md](../sre/incident-response/11-事件-灾难恢复计划.md) | 恢复优先级、RPO/RTO 定义、演练计划 |
+| Runbook 模板 | [../sre/incident-response/09-事件-Runbook模板.md](../sre/incident-response/09-事件-Runbook模板.md) | 可执行的操作手册模板 |
+| FMEA 模板 | [../sre/incident-response/16-事件-FMEA模板.md](../sre/incident-response/16-事件-FMEA模板.md) | 故障模式与影响分析 |
+| Game Day 演练 | [../sre/incident-response/08-事件-GameDay演练.md](../sre/incident-response/08-事件-GameDay演练.md) | 混沌工程演练设计与执行 |
 
 ---
 
@@ -134,10 +134,10 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 处理监管变更 | [../executiver/strategy/04-战略-处理监管变更.md](../executiver/strategy/04-战略-处理监管变更.md) | 监管新规的影响评估和适应计划 |
-| 数据合规处理 | [../executiver/strategy/05-战略-数据合规处理.md](../executiver/strategy/05-战略-数据合规处理.md) | 数据分类、跨境传输、用户同意管理 |
-| 数据留存审查 | [../executiver/strategy/03-战略-数据留存审查.md](../executiver/strategy/03-战略-数据留存审查.md) | 数据生命周期管理、留存策略审查 |
-| 数据保留策略 | [../srer/observability/11-可观测-数据库备份恢复.md](../srer/observability/11-可观测-数据库备份恢复.md) | 备份策略、恢复验证、保留期限 |
+| 处理监管变更 | [../executive/strategy/04-战略-处理监管变更.md](../executive/strategy/04-战略-处理监管变更.md) | 监管新规的影响评估和适应计划 |
+| 数据合规处理 | [../executive/strategy/05-战略-数据合规处理.md](../executive/strategy/05-战略-数据合规处理.md) | 数据分类、跨境传输、用户同意管理 |
+| 数据留存审查 | [../executive/strategy/03-战略-数据留存审查.md](../executive/strategy/03-战略-数据留存审查.md) | 数据生命周期管理、留存策略审查 |
+| 数据保留策略 | [../sre/observability/11-可观测-数据库备份恢复.md](../sre/observability/11-可观测-数据库备份恢复.md) | 备份策略、恢复验证、保留期限 |
 
 ### 合规检查清单
 
@@ -192,9 +192,9 @@ YiAi 提供多层安全能力，开发和生产的默认行为不同：
 |------|-----------------|
 | engineer | 供应链加固、代码审查标准、API 设计模式、部署指南 |
 | leader | 安全审查清单、上线风险评估、风险登记册、依赖风险管理 |
-| srer | 事件响应流程、数据泄露处理、灾难恢复、Game Day 演练 |
+| sre | 事件响应流程、数据泄露处理、灾难恢复、Game Day 演练 |
 | aier | AI 安全与防护、提示词注入防御、工具调用门控 |
-| executiver | 监管合规、数据留存、安全策略制定 |
+| executive | 监管合规、数据留存、安全策略制定 |
 
 ## 维护说明
 

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-09-17"
 title: "YP-09-17: 聊天窗口拖拽管理 — 开发方案"
@@ -6,10 +7,13 @@ status: 已完成
 priority: P1
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-14
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
 source_prd: "24-架构设计-聊天窗口拖拽管理.md"
+related_tests: ["24-prd-test-聊天窗口拖拽管理.md"]
+
+type: task
 ---
 
 # YP-09-17: 聊天窗口拖拽管理 — 开发方案

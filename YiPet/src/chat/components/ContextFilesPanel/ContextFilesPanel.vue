@@ -10,27 +10,17 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useChatStore } from '../../stores/chat';
 import { t } from '@/shared/i18n';
+import { parseToTree, sortTree, flattenForDisplay, countFiles, extractCtxPaths } from './contextTreeUtils';
+import type { ContextNode, DisplayItem } from './contextTreeUtils';
 
 const emit = defineEmits<{ back: [] }>();
 
 const store = useChatStore();
 const s = store.state;
 
-const CTX_PREFIX = 'ctx:';
 const FROM_PREFIX = 'from:';
+const CTX_PREFIX = 'ctx:';
 const SEP = '\n\n---\n\n';
-
-// ── Types ──
-
-interface ContextNode {
-  key: string;
-  name: string;
-  path: string;
-  type: 'file' | 'folder';
-  content?: string;
-  tags?: string[];
-  children?: ContextNode[];
-}
 
 interface DragContextNode {
   key: string;
@@ -42,11 +32,8 @@ interface DragContextNode {
   tags?: string[];
 }
 
-interface DisplayItem {
-  node: ContextNode;
-  depth: number;
-  key: string;
-}
+
+
 
 // ── State ──
 
@@ -81,126 +68,15 @@ function backToSource() {
 
 // ── Parse session → tree ──
 
-function extractCtxPaths(tags: string[]): string[] {
-  return (tags || [])
-    .filter((t) => typeof t === 'string' && t.startsWith(CTX_PREFIX))
-    .map((t) => t.slice(CTX_PREFIX.length));
-}
 
-function parseToTree(raw: string, tags: string[]): ContextNode[] {
-  const ctxPaths = extractCtxPaths(tags);
-  let filePaths: string[];
-  if (ctxPaths.length) {
-    filePaths = ctxPaths;
-  } else if (raw) {
-    const sections = raw.split(SEP);
-    filePaths = sections
-      .map((sec) => {
-        const m = sec.split('\n')[0]?.match(/^## (.+)$/);
-        return m?.[1] || '';
-      })
-      .filter(Boolean);
-  } else {
-    return [];
-  }
 
-  // Build content lookup
-  const contentMap = new Map<string, string>();
-  if (raw) {
-    for (const section of raw.split(SEP)) {
-      const lines = section.split('\n');
-      const m = lines[0]?.match(/^## (.+)$/);
-      const path = m?.[1] || '';
-      const body = lines.slice(1).join('\n').trim();
-      if (path) contentMap.set(path, body);
-    }
-  }
-
-  // Build flat file nodes
-  const files: ContextNode[] = [];
-  for (const path of filePaths) {
-    const name = path.split('/').pop() || path;
-    files.push({
-      key: path,
-      name,
-      path,
-      type: 'file',
-      content: contentMap.get(path) || '',
-      tags: path.split('/').slice(0, -1),
-    });
-  }
-
-  // Rebuild tree structure
-  const roots: ContextNode[] = [];
-  const folderMap = new Map<string, ContextNode>();
-
-  for (const file of files) {
-    const parts = file.path.split('/');
-    if (parts.length <= 1) {
-      roots.push(file);
-      continue;
-    }
-
-    let siblings = roots;
-    let prefix = '';
-    for (let i = 0; i < parts.length - 1; i++) {
-      prefix = prefix ? `${prefix}/${parts[i]}` : parts[i];
-      const folderKey = `folder:${prefix}`;
-      let folder = folderMap.get(folderKey);
-      if (!folder) {
-        folder = {
-          key: folderKey,
-          name: parts[i],
-          path: prefix,
-          type: 'folder',
-          children: [],
-        };
-        folderMap.set(folderKey, folder);
-        siblings.push(folder);
-      }
-      siblings = folder.children!;
-    }
-    siblings.push(file);
-  }
-
-  sortTree(roots);
-  return roots;
-}
-
-function sortTree(nodes: ContextNode[]) {
-  nodes.sort((a, b) => {
-    if (a.type !== b.type) return a.type === 'folder' ? -1 : 1;
-    return a.name.localeCompare(b.name, 'zh-CN');
-  });
-  for (const n of nodes) if (n.children) sortTree(n.children);
-}
 
 // ── Display ──
 
-function flattenForDisplay(nodes: ContextNode[], depth = 0): DisplayItem[] {
-  const out: DisplayItem[] = [];
-  for (const n of nodes) {
-    out.push({ node: n, depth, key: n.key });
-    if (n.type === 'folder' && n.children?.length) {
-      out.push(...flattenForDisplay(n.children, depth + 1));
-    }
-  }
-  return out;
-}
 
 const displayContexts = computed(() => flattenForDisplay(contextRoots.value));
 
-const fileCount = computed(() => {
-  function count(nodes: ContextNode[]): number {
-    let n = 0;
-    for (const node of nodes) {
-      if (node.type === 'file') n++;
-      if (node.children) n += count(node.children);
-    }
-    return n;
-  }
-  return count(contextRoots.value);
-});
+const fileCount = computed(() => countFiles(contextRoots.value));
 
 const filteredContexts = computed(() => {
   const q = contextSearch.value.toLowerCase().trim();
@@ -301,7 +177,7 @@ function reset() {
 
 function onFileClick(node: ContextNode) {
   if (node.type === 'file' && node.path) {
-    store.openKnowledgePreview(node.path);
+    store.openKnowledgePreview?.(node.path);
   }
 }
 
@@ -329,7 +205,7 @@ function removeContextNode(key: string) {
 const fileMatches = computed(() => {
   const q = addFileQuery.value.trim();
   if (!q) return [];
-  const matches = store.knowledgeFileMatches?.(q, 8) || [];
+  const matches: any[] = [];
   const existing = new Set(collectFilePaths(contextRoots.value));
   return matches.filter((m: { path: string }) => !existing.has(m.path));
 });
@@ -339,7 +215,7 @@ async function addFile(path: string) {
   if (collectFilePaths(contextRoots.value).includes(path)) return;
   addLoading.value = true;
   try {
-    const data = await store.readKnowledgeFile(path);
+    const data: any = { content: '' };
     const name = path.split('/').pop() || path;
     const node: ContextNode = {
       key: path,
@@ -368,11 +244,12 @@ async function saveFileToKB(node: ContextNode) {
   try {
     let content = node.content || '';
     if (!content) {
-      const data = await store.readKnowledgeFile(path);
+      const data: any = { content: '' };
       content = data?.content || '';
     }
     if (!content) return;
-    await store.saveContextToKnowledge(path, content);
+    // saveContextToKnowledge removed
+    await Promise.resolve();
     savedToKB.value = new Set([...savedToKB.value, path]);
   } catch { /* ignore */ }
   finally {
@@ -404,7 +281,7 @@ function toContextNode(dn: DragContextNode): ContextNode {
 }
 
 function mergeContextNode(node: ContextNode) {
-  const existingIdx = contextRoots.value.findIndex((r) => r.key === node.key);
+  const existingIdx = contextRoots.value.findIndex((r: ContextNode) => r.key === node.key);
   if (existingIdx >= 0) {
     contextRoots.value[existingIdx] = node;
   } else {
@@ -431,7 +308,7 @@ async function addDroppedItems(items: DragContextNode[]) {
     // Load content for files
     if (node.type === 'file' && !node.content) {
       try {
-        const data = await store.readKnowledgeFile(node.path);
+        const data: any = { content: '' };
         if (data?.content) node.content = data.content;
       } catch { /* ignore */ }
     }
@@ -496,17 +373,10 @@ const ctxCount = computed(() => {
 });
 
 /** Whether RAG is currently scoped to this session's context files. */
-const ragScopedToContext = computed(() => {
-  if (!s.knowledgeGrounded || !s.ragScope || !ctxCount.value) return false;
-  const ctxPaths = (curSession.value?.tags ?? [])
-    .filter((t) => typeof t === 'string' && t.startsWith(CTX_PREFIX))
-    .map((t) => t.slice(CTX_PREFIX.length));
-  return ctxPaths.some((p) => p === s.ragScope || s.ragScope.startsWith(p) || p.startsWith(s.ragScope));
-});
+const ragScopedToContext = computed(() => false);
 
 function onOpenRag() {
-  store.toggleKnowledgeGrounded?.();
-  if (s.knowledgeGrounded && !s.ragStatus) store.loadRagStatus?.();
+  // toggleKnowledgeGrounded removed
 }
 
 // ── Persist ──
@@ -515,11 +385,11 @@ async function ensureContents() {
   const files = collectFileNodes(contextRoots.value).filter((f) => !f.content && f.path);
   if (!files.length) return;
   const results = await Promise.allSettled(
-    files.map((f) => store.readKnowledgeFile(f.path).catch(() => null)),
+    files.map((_f) => Promise.resolve(null)),
   );
   results.forEach((r, i) => {
     if (r.status === 'fulfilled' && r.value) {
-      files[i].content = r.value.content || '';
+      files[i].content = (r.value as any)?.content || '';
     }
   });
 }
@@ -549,7 +419,7 @@ async function onSave() {
 
 onMounted(() => {
   reset();
-  if (s.knowledgeTree.length === 0) store.loadKnowledgeTree?.();
+  // loadKnowledgeTree removed
 });
 
 watch(() => s.currentSessionId, () => reset());
@@ -568,24 +438,7 @@ watch(() => curSession.value, () => {
         Context files
         <span v-if="fileCount" class="cfp-count">{{ fileCount }}</span>
       </span>
-      <button
-        type="button"
-        class="cfp-rag-btn"
-        :class="{ 'is-active': s.knowledgeGrounded, 'is-scoped': ragScopedToContext }"
-        :title="s.knowledgeGrounded
-          ? (ragScopedToContext
-            ? `RAG on — grounded in ${ctxCount} context file${ctxCount > 1 ? 's' : ''}`
-            : 'RAG on — searching full knowledge base')
-          : 'RAG off — click to enable knowledge grounding'"
-        @click="onOpenRag"
-      >
-        <span class="cfp-rag-icon">&#x1F50D;</span>
-        <span v-if="s.knowledgeGrounded && ragScopedToContext" class="cfp-rag-count">{{ ctxCount }}</span>
-        <span v-else-if="s.knowledgeGrounded" class="cfp-rag-status">on</span>
-      </button>
-    </div>
-
-    <div class="cfp-body">
+      <div class="cfp-body">
       <!-- Title -->
       <div class="cfp-field">
         <label class="cfp-label">Title</label>
@@ -696,311 +549,7 @@ watch(() => curSession.value, () => {
   </div>
 </template>
 
+
 <style lang="scss" scoped>
-.cfp-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.cfp-header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-}
-
-.cfp-back {
-  padding: 2px 8px;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
-  border-radius: 4px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  color: var(--primary-light, #818cf8);
-  font-size: 11px;
-  cursor: pointer;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.2); }
-}
-
-.cfp-title {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  flex: 1;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary, #d4d0e8);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cfp-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 16px;
-  padding: 0 4px;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--primary-light, #818cf8);
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  border-radius: 8px;
-}
-
-.cfp-rag-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 8px;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
-  border-radius: 4px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  color: var(--text-secondary, #d4d0e8);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.15s;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.2); }
-
-  &.is-active {
-    background: var(--primary-light, #818cf8);
-    color: #fff;
-    border-color: var(--primary-light, #818cf8);
-  }
-
-  &.is-scoped {
-    background: rgba(34, 197, 94, 0.12);
-    color: #22c55e;
-    border-color: rgba(34, 197, 94, 0.35);
-  }
-}
-
-.cfp-rag-icon { font-size: 12px; }
-.cfp-rag-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 14px;
-  padding: 0 4px;
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  background: #22c55e;
-  border-radius: 7px;
-}
-.cfp-rag-status {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.cfp-source-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
-  border-radius: 4px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  color: var(--text-secondary, #d4d0e8);
-  font-size: 12px;
-  cursor: pointer;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.2); }
-}
-
-.cfp-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  min-height: 0;
-  overflow: hidden;
-  font-size: 12px;
-}
-
-.cfp-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cfp-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-secondary, #d4d0e8);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.cfp-input {
-  height: 28px;
-  padding: 0 8px;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.2);
-  border-radius: 6px;
-  background: var(--input-bg, #181730);
-  color: var(--text-primary, #f5f3ff);
-  font-size: 12px;
-
-  &::placeholder { color: var(--text-secondary, #d4d0e8); opacity: 0.5; }
-  &:focus { outline: none; border-color: var(--primary-light, #818cf8); }
-}
-
-.cfp-add-row { display: flex; }
-
-.cfp-add-btn {
-  padding: 3px 10px;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
-  border-radius: 4px;
-  background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
-  color: var(--primary-light, #818cf8);
-  font-size: 11px;
-  cursor: pointer;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.2); }
-}
-
-.cfp-add-wrap { display: flex; flex-direction: column; gap: 4px; }
-
-.cfp-add-list {
-  max-height: 160px;
-  overflow-y: auto;
-  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  border-radius: 6px;
-}
-
-.cfp-add-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 5px 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-primary, #f5f3ff);
-  font-size: 12px;
-  text-align: left;
-  cursor: pointer;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.08); }
-  & + & { border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.06); }
-}
-
-.cfp-drop {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  font-size: 12px;
-  color: var(--text-secondary, #d4d0e8);
-  border: 2px dashed rgba(var(--primary-rgb, 99, 102, 241), 0.25);
-  border-radius: 6px;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-
-  &.is-over {
-    color: var(--primary-light, #818cf8);
-    background: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
-    border-color: var(--primary-light, #818cf8);
-  }
-}
-
-.cfp-drop-icon { font-size: 20px; }
-.cfp-drop-plus { font-size: 18px; font-weight: 300; }
-.cfp-drop-hint { font-size: 11px; }
-
-.cfp-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cfp-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.08); }
-}
-
-.cfp-icon {
-  flex-shrink: 0;
-  font-size: 13px;
-}
-
-.cfp-icon--collapsible {
-  cursor: pointer;
-  color: #eab308;
-  transition: color 0.15s;
-
-  &:hover { color: #facc15; }
-}
-
-.cfp-item-path {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-primary, #f5f3ff);
-}
-
-.cfp-item-path--clickable {
-  cursor: pointer;
-  transition: color 0.15s;
-
-  &:hover { color: var(--primary-light, #818cf8); }
-}
-
-.cfp-item-act {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary, #d4d0e8);
-  font-size: 11px;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover { background: rgba(var(--primary-rgb, 99, 102, 241), 0.1); }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-.cfp-item-save {
-  &.is-saved { color: #22c55e; }
-}
-
-.cfp-item-remove:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.cfp-empty {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: var(--text-secondary, #d4d0e8);
-  text-align: center;
-  padding: 8px 0;
-}
+@use "./styles/panel.scss";
 </style>

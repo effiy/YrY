@@ -3,10 +3,12 @@ type: loop-template
 loopId: loop-XXX
 stage: test-report
 title: <测试报告主题>
-role: srer
+role: sre
 goalId: sre-XXX
-status: in-progress
-created: YYYY-MM-DD
+category: curator/okr/loop
+source: internal
+status: draft
+created: "YYYY-MM-DD"
 updated: 2026-09-10
 tags: [loop-record, test-report]
 ---

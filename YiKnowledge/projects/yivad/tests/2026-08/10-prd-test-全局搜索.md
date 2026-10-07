@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "全局搜索 — 7 集合跨域全文检索 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-10"
 source_prds: ["10-prd-全局搜索"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 全局搜索]
+benefit: "测试用例：全局搜索"
+lifecycle: active
 ---
 # 全局搜索 — 7 集合跨域全文检索 — 测试规格
 

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-205"
 title: "YV-09-205: 用户帮助与支持 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "79-prd-用户帮助与支持.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 用户帮助与支持]
+roles: [engineer]
+benefit: "开发方案：task-用户帮助与支持"
+lifecycle: active
 ---
 
 # YV-09-205: 用户帮助与支持 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "79-prd-用户帮助与支持.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：全局帮助入口（Header 帮助按钮 → 侧边栏/弹窗），包含：文档链接、快捷键参考、常见问题、反馈入口
+
+**数据模型**：
+```
+MongoDB `help_articles` 集合或复用 YiKnowledge markdown 文件
+```
+
+**组件树**：
+```
+HelpPanel.vue (侧边栏抽屉 + 搜索) + HelpArticle.vue (Markdown 渲染)
+```
+
+**关键决策**：
+帮助内容源：优先复用 YiKnowledge 已有文档（通过 `/read-file` 获取），避免内容复制
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "79-prd-用户帮助与支持.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

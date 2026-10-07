@@ -32,7 +32,7 @@ class TestSearch:
         assert result == []
 
     def test_max_results_capped(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([]))
             mock_ddgs.return_value = instance
@@ -41,7 +41,7 @@ class TestSearch:
             assert call_args[1]["max_results"] == 17  # per_query = max_results + 2 = 17
 
     def test_max_results_minimum(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([]))
             mock_ddgs.return_value = instance
@@ -50,7 +50,7 @@ class TestSearch:
             assert call_args[1]["max_results"] == 5  # per_query=1+2=3, ddgs_count=max(3,3+2)=5
 
     def test_returns_formatted_results(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([
                 {"title": "Test Title", "href": "https://example.com", "body": "A snippet"},
@@ -63,7 +63,7 @@ class TestSearch:
             assert results[0]["snippet"] == "A snippet"
 
     def test_skips_empty_results(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([
                 {"title": "", "href": "", "body": ""},
@@ -75,13 +75,13 @@ class TestSearch:
             assert results[0]["title"] == "Valid"
 
     def test_search_error_returns_empty(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             mock_ddgs.side_effect = RuntimeError("Network error")
             results = search("test")
             assert results == []
 
     def test_cache_hit(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([
                 {"title": "Cached", "href": "https://example.com", "body": "Cached result"},
@@ -99,7 +99,7 @@ class TestSearch:
 
 class TestClearCache:
     def test_clear_cache(self):
-        with patch("domain.search.DDGS") as mock_ddgs:
+        with patch("domain.search.web_search.DDGS") as mock_ddgs:
             instance = MagicMock()
             instance.text = MagicMock(return_value=iter([
                 {"title": "T", "href": "https://example.com", "body": "S"},

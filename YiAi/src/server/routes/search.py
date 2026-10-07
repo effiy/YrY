@@ -16,13 +16,10 @@ import asyncio
 import logging
 import re
 import time
-from typing import Dict, Optional, Tuple
 from urllib.parse import urlparse, urlunparse
 
 import aiohttp
-from bs4 import BeautifulSoup
 from fastapi import APIRouter, Body
-import html2text as h2t
 
 from domain.search import refine_query, search_images
 from domain.search import search as do_search
@@ -48,6 +45,7 @@ from domain.search.fetch import (
     fetch_via_jina as _fetch_via_jina,
 )
 from shared.response import success
+from shared.url_guard import is_private_url
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -136,6 +134,11 @@ async def web_fetch_route(
     # Basic URL validation
     if not u.startswith(("http://", "https://")):
         u = "https://" + u
+
+    # SSRF guard — block requests to private/reserved IPs
+    if is_private_url(u):
+        logger.warning(f"Blocked SSRF attempt: {u[:100]}")
+        return success(data={"text": "", "url": u, "error": "URL resolves to a private/internal address"})
 
     # Check cache
     cache_key = _normalize_url(u)
@@ -238,3 +241,30 @@ async def compact_route(
     except Exception as e:
         logger.exception(f"Compaction failed: {e}")
         return success(data={"messages": messages, "error": str(e)})
+
+
+@router.post("/search/unified", operation_id="unified_search")
+async def unified_search_route(
+    query: str = Body(..., embed=True),
+    collections: list[str] | None = Body(None, embed=True),
+    limit: int = Body(40, embed=True),
+):
+    """Search across internal collections (issues, projects, modules, bugs, pages).
+
+    Runs all collection searches in parallel with relevance scoring.
+    Returns ranked, deduplicated results with timing metadata.
+    """
+    try:
+        from domain.search.unified_search import unified_search
+
+        data = await asyncio.wait_for(
+            unified_search(query, collections=collections, limit=limit),
+            timeout=12.0,
+        )
+        return success(data=data)
+    except asyncio.TimeoutError:
+        logger.warning(f"Unified search timed out for: {query[:60]}")
+        return success(data={"results": [], "timing": {"total_ms": 0, "error": "Search timed out"}})
+    except Exception as e:
+        logger.exception(f"Unified search failed: {e}")
+        return success(data={"results": [], "timing": {"total_ms": 0, "error": str(e)}})

@@ -1,7 +1,7 @@
 import { computed, ref, watch, onMounted, onUnmounted, type Ref } from "vue";
 import { useProjectStore } from "@/stores/modules/project";
 import { listKnowledgeFiles } from "@/api/modules/knowledgeService";
-import { getIssueList } from "@/api/modules/issueService";
+import { getIssueList, normalizeIssue } from "@/api/modules/issueService";
 import { getModuleList } from "@/api/modules/moduleService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import type { Issue } from "@/api/modules/issueService";
@@ -129,7 +129,7 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
       const [filesResult, issueResult, moduleResult] = results;
 
       knowledgeFiles.value = filesResult.status === "fulfilled" ? (filesResult.value ?? []) : [];
-      allIssues.value = issueResult.status === "fulfilled" ? ((issueResult.value.data?.list as Issue[]) ?? []) : [];
+      allIssues.value = issueResult.status === "fulfilled" ? ((issueResult.value.data?.list ?? []) as unknown as Record<string, unknown>[]).map(normalizeIssue) : [];
       allModules.value = moduleResult.status === "fulfilled" ? ((moduleResult.value.data?.list as Module[]) ?? []) : [];
 
       // Derive bugs from knowledge files — no separate API call needed.

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-136"
 title: "YV-09-136: 文档版本对比 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "66-prd-文档版本对比.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 文档版本对比]
+roles: [engineer]
+benefit: "开发方案：task-文档版本对比"
+lifecycle: active
 ---
 
 # YV-09-136: 文档版本对比 — 开发方案
@@ -40,6 +46,25 @@ source_prd: "66-prd-文档版本对比.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：知识库文件版本历史查看 + diff 对比，基于 Git 或手动快照
+
+**数据模型**：
+```
+MongoDB `doc_versions` 集合；字段：`file_path`, `content_hash`, `diff`, `created_at`, `created_by`
+```
+
+**组件树**：
+```
+DocVersionHistory.vue (ProTable) + DocDiffViewer.vue (双栏 diff 渲染)
+```
+
+**关键决策**：
+Diff 渲染使用 `diff` 或 `diff2html` npm 包；快照触发：手动保存按钮 vs 自动保存（debounce 2s）
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -49,12 +74,8 @@ source_prd: "66-prd-文档版本对比.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

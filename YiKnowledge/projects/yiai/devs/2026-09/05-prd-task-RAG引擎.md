@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YA-09-01"
 title: "YA-09-01: RAG 引擎稳定性修复 — 增量索引修复 + Embedding 维度校验 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 3.0
 source_prd: "05-需求-RAG引擎.md"
 source_okr: [yiai-001]
 related_tests: ["05-prd-test-RAG引擎"]
+
+type: task
 ---
 
 # YA-09-01: RAG 引擎稳定性修复 — 增量索引修复 + Embedding 维度校验 — 开发方案

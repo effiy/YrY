@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 全局快捷键框架
 tags:
 - 快捷键
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["18-prd-task-全局快捷键框架"]
+related_tests: ["18-prd-test-全局快捷键框架"]
+benefit: "产品需求：全局快捷键框架"
+lifecycle: active
 ---
 
 # 全局快捷键框架

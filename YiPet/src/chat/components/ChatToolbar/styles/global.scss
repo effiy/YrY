@@ -1,0 +1,295 @@
+// ── Global: popover teleports to body, scoped styles won't reach it. ──
+// Scoped to .yipet-chat-loaded so YiPet's theme only applies when chat is active.
+.yipet-chat-loaded .el-popover.ct-skills-pop {
+  z-index: 2147483647 !important;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  .ct-skills-search-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 12px 12px 4px;
+    margin: -12px -12px 8px;
+    background: var(--el-bg-color);
+    border-bottom: 1px solid var(--el-border-color-lighter);
+  }
+}
+
+// ── More tools dropdown ──
+.yipet-chat-loaded .ct-more-pop {
+  z-index: 2147483647 !important;
+  padding: 4px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+.ct-more-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ct-more-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--el-text-color-regular);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+  &:hover,
+  &.is-active {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.ct-more-item-dot {
+  width: 6px;
+  height: 6px;
+  margin-left: auto;
+  background: var(--el-color-primary);
+  border-radius: 50%;
+}
+
+// ── Popover z-index + dark theme (must be global — popovers teleport to body) ──
+.yipet-chat-loaded .ct-tb-popper {
+  z-index: 2147483647 !important;
+
+  --el-bg-color: var(--bg-elevated, rgba(20, 18, 40, 0.98));
+  --el-bg-color-overlay: var(--bg-elevated, rgba(20, 18, 40, 0.98));
+  --el-border-color-light: rgba(var(--primary-rgb, 99, 102, 241), 0.2);
+  --el-text-color-primary: var(--text-primary, #f5f3ff);
+  --el-text-color-regular: var(--text-primary, #f5f3ff);
+  --el-text-color-secondary: var(--text-secondary, #d4d0e8);
+  --el-text-color-placeholder: var(--text-secondary, #d4d0e8);
+  --el-fill-color-blank: var(--bg-elevated, rgba(20, 18, 40, 0.98));
+  --el-fill-color-light: rgba(var(--primary-rgb, 99, 102, 241), 0.08);
+  --el-color-primary: var(--primary-light, var(--el-color-primary));
+  --el-color-primary-light-9: rgba(var(--primary-rgb, 99, 102, 241), 0.12);
+
+  .el-popover {
+    border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25) !important;
+    background: var(--bg-elevated, rgba(20, 18, 40, 0.98)) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .el-popover__title {
+    color: var(--text-primary, #f5f3ff);
+    font-size: 13px;
+  }
+}
+
+// Dark-themed select dropdown — scoped so it never overrides host-page Element Plus dropdowns
+.yipet-chat-loaded .el-select-dropdown {
+  background: var(--bg-elevated, rgba(20, 18, 40, 0.98)) !important;
+  border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.25) !important;
+
+  .el-select-dropdown__item {
+    color: var(--text-primary, #f5f3ff);
+
+    &.is-selected {
+      color: var(--primary-light, var(--el-color-primary));
+    }
+    &:hover {
+      background: rgba(var(--primary-rgb, 99, 102, 241), 0.1);
+    }
+  }
+}
+
+// ── RAG settings popover ──
+.yipet-chat-loaded .el-popover.ct-rag-console-pop {
+  z-index: 2147483647 !important;
+  padding: 14px 16px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+}
+.ct-rag-pop {
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  user-select: none;
+}
+.ct-rag-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.ct-rag-pop-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.ct-rag-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--el-text-color-placeholder);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  &.green {
+    background: #22c55e;
+    box-shadow: 0 0 0 2px rgb(34 197 94 / 18%), 0 0 6px rgb(34 197 94 / 35%);
+  }
+  &.orange {
+    background: #f59e0b;
+    box-shadow: 0 0 0 2px rgb(245 158 11 / 18%), 0 0 6px rgb(245 158 11 / 35%);
+  }
+  &.red {
+    background: #ef4444;
+    box-shadow: 0 0 0 2px rgb(239 68 68 / 18%), 0 0 6px rgb(239 68 68 / 35%);
+  }
+  &--lg { width: 8px; height: 8px; }
+}
+.ct-rag-pop-docs {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color);
+  border-radius: 999px;
+  &--warn {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+}
+.ct-rag-pop-empty {
+  padding: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  code {
+    padding: 1px 4px;
+    font-size: 11px;
+    background: var(--el-fill-color);
+    border-radius: 3px;
+  }
+}
+.ct-rag-pop-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  & + & { border-top: 1px solid var(--el-border-color-lighter); }
+}
+.ct-rag-pop-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--el-text-color-placeholder);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--el-border-color-lighter);
+  }
+}
+.ct-rag-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  padding: 2px 6px;
+  margin: 0 -6px;
+  border-radius: 5px;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: var(--el-fill-color-lighter);
+  }
+}
+.ct-rag-row-label {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  font-weight: 500;
+}
+.ct-rag-select { width: 138px; }
+.ct-rag-row-desc {
+  padding: 0 8px 6px 8px;
+  margin-top: -3px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  line-height: 1.45;
+}
+.ct-rag-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--el-text-color-placeholder);
+  cursor: help;
+  background: var(--el-fill-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 50%;
+  user-select: none;
+  transition: all 0.15s ease;
+  &:hover {
+    color: var(--el-color-primary);
+    border-color: var(--el-color-primary-light-5);
+    background: var(--el-color-primary-light-9);
+  }
+}
+.ct-rag-scope-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  background: var(--el-color-success-light-9);
+  border: 1px solid var(--el-color-success-light-6);
+  border-radius: 5px;
+  &-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    height: 16px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-7);
+    border-radius: 3px;
+  }
+  &-label {
+    flex: 1;
+    min-width: 0;
+    font-weight: 500;
+    color: var(--el-text-color-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &-count {
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--el-text-color-placeholder);
+  }
+}
+.ct-rag-pop-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}

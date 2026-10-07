@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-20: 贡献者激励机制 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-20"
 source_prds: ["23-架构设计-贡献者激励机制"]
 source_modules: ["23-prd-task-贡献者激励机制"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-20: 贡献者激励机制 — 测试用例

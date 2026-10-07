@@ -31,14 +31,14 @@ export const stages: Stage[] = [
   {
     id: "requirements",
     name: "Requirements",
-    role: "producter/",
-    category: "producter",
+    role: "product/",
+    category: "product",
     inputItems: [
       {
         id: "business-strategy",
         label: "Business strategy",
         keywords: ["strategy", "business"],
-        description: "Market intelligence, competitive landscape, and org-level goals from executiver/"
+        description: "Market intelligence, competitive landscape, and org-level goals from executive/"
       }
     ],
     outputItems: [
@@ -70,7 +70,7 @@ export const stages: Stage[] = [
       { label: "Projects", file: "projects/" }
     ],
     boundary:
-      "producter defines WHAT feature to build, not HOW to implement it (→ engineer/) or WHICH technology to use (→ leader/)."
+      "product defines WHAT feature to build, not HOW to implement it (→ engineer/) or WHICH technology to use (→ leader/)."
   },
   {
     id: "decisions",
@@ -82,7 +82,7 @@ export const stages: Stage[] = [
         id: "prds",
         label: "PRDs",
         keywords: ["prd", "product-requirement"],
-        description: "Product Requirement Documents from producter/ — the feature definitions to make decisions about"
+        description: "Product Requirement Documents from product/ — the feature definitions to make decisions about"
       },
       {
         id: "requirements",
@@ -140,7 +140,7 @@ export const stages: Stage[] = [
         id: "prds",
         label: "PRDs",
         keywords: ["prd", "product-requirement"],
-        description: "Product Requirement Documents from producter/ — the feature specifications to build"
+        description: "Product Requirement Documents from product/ — the feature specifications to build"
       }
     ],
     outputItems: [
@@ -192,8 +192,8 @@ export const stages: Stage[] = [
   {
     id: "quality-release",
     name: "Ship + Operate",
-    role: "srer/ + engineer/learn/lessons/",
-    category: "srer",
+    role: "sre/ + engineer/learn/lessons/",
+    category: "sre",
     inputItems: [
       {
         id: "working-software",
@@ -241,7 +241,7 @@ export const stages: Stage[] = [
       { label: "Lessons: Bugs", file: "engineer/learn/lessons/bugs/" }
     ],
     boundary:
-      "srer/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation."
+      "sre/release/ owns RELEASE PROCESS and coordination; engineer/reliability/ owns the TECHNICAL PATTERNS used for release (canary implementation, feature flags). Process vs. implementation."
   }
 ];
 
@@ -263,15 +263,15 @@ export interface CrossCuttingLayer {
 export const crossCuttingLayers: CrossCuttingLayer[] = [
   {
     id: "business",
-    category: "executiver",
+    category: "executive",
     icon: "🏢",
     label: "Business Strategy",
-    role: "executiver/",
+    role: "executive/",
     desc: "Why this business · Market intelligence · Org goals · Industry trends · Roadmap",
     description:
       "Define the strategic context that drives every downstream decision. Business Strategy provides the market intelligence, competitive landscape, and organizational goals that shape product requirements, technical decisions, and operational priorities. Without a clear business foundation, product and engineering teams operate without direction.",
     boundary:
-      "executiver/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ producter/). Strategy informs; execution decides.",
+      "executive/ sets the WHY and the WHAT at the organizational level — market positioning, strategic goals, and resource allocation. It does not define HOW to build (→ engineer/) or WHICH features to prioritize (→ product/). Strategy informs; execution decides.",
     inputItems: [],
     outputItems: [
       {
@@ -313,7 +313,7 @@ export const crossCuttingLayers: CrossCuttingLayer[] = [
     description:
       "AI Enablement is the horizontal acceleration layer that amplifies every stage of the pipeline. From foundational theory (transformers, embeddings) to engineering methodology (prompt design, RAG, agents) to platform infrastructure (model serving, inference optimization), this layer ensures AI capability is not a bottleneck but a multiplier across the organization.",
     boundary:
-      "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ producter/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages.",
+      "aier/ provides AI THEORY, METHODOLOGY, and PLATFORM — the how of AI. It does not own product decisions (→ product/), technical architecture choices (→ leader/), or implementation patterns (→ engineer/). AI is a tool; what to build with it lives in the vertical stages.",
     inputItems: [],
     outputItems: [
       {
@@ -397,11 +397,11 @@ export const crossCuttingLayers: CrossCuttingLayer[] = [
 ];
 
 export const decisionTree: DecisionRule[] = [
-  { question: "Business strategy, market, competitors?", role: "executiver/" },
-  { question: "Product requirements, user stories, priorities?", role: "producter/" },
+  { question: "Business strategy, market, competitors?", role: "executive/" },
+  { question: "Product requirements, user stories, priorities?", role: "product/" },
   { question: "Technical decisions, architecture choices, ADRs?", role: "leader/" },
   { question: "Implementation patterns, dev tools, code?", role: "engineer/" },
-  { question: "Release procedures, monitoring, incident response?", role: "srer/" },
+  { question: "Release procedures, monitoring, incident response?", role: "sre/" },
   { question: "AI/ML-specific theory and practice?", role: "aier/" },
   { question: "The KB's own structure and rules?", role: "curator/" }
 ];

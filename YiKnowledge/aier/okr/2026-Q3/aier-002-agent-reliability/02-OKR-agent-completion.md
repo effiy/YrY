@@ -7,7 +7,8 @@ framework: OKR
 trend: up
 progress: 100
 title: AI Engineer M02 Agent 任务完成率
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # ✅ Agent 任务完成率
 

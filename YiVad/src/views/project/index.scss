@@ -1,0 +1,187 @@
+.pl {
+  height: calc(100vh - 146px);
+  overflow: auto;
+  // padding + background come from global .page class
+}
+.pl-updated {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
+}
+.pl-updated-rel {
+  color: var(--el-text-color-disabled);
+}
+.pl-fresh-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  &--live { background: #67c23a; }
+  &--recent { background: #e6a23c; }
+  &--stale { background: var(--el-text-color-placeholder); }
+}
+.pl-more-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.pl-more-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.pl-analytics {
+  margin-top: 16px;
+}
+.pl-date-banner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 14px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning-light-5);
+  border-radius: 9px;
+  .el-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--el-color-warning);
+  }
+  strong {
+    color: var(--el-text-color-primary);
+  }
+  .el-button {
+    margin-left: auto;
+  }
+}
+.pl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.pl-search {
+  width: 220px;
+}
+.pl-sort {
+  width: 140px;
+}
+.pl-sort-group {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  .pl-sort {
+    width: 130px;
+    :deep(.el-input__wrapper) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+.pl-sort-dir {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.pl-status {
+  width: 120px;
+}
+.pl-toolbar-right {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+.pl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 18px;
+}
+.pl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pl-results {
+  min-height: 200px;
+}
+
+/* Skeleton cards — pulse animation matching the grid layout. */
+.pl-skeleton-card {
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+}
+.pl-skeleton-cover {
+  height: 104px;
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+.pl-skeleton-body {
+  padding: 14px 16px 16px;
+}
+.pl-skeleton-line {
+  height: 12px;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  &--title {
+    width: 60%;
+    height: 16px;
+  }
+  &--short {
+    width: 35%;
+  }
+}
+
+.pl-empty {
+  padding: 56px 0;
+}
+
+/* Floating batch bar — only appears once something is selected. */
+.pl-batch {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 16px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 16%);
+  transform: translateX(-50%);
+}
+.pl-batch-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+}
+.pl-batch-enter-active,
+.pl-batch-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.pl-batch-enter-from,
+.pl-batch-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+}

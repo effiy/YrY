@@ -18,7 +18,7 @@ acceptance_criteria:
   - "每个 deepseek-harness 概念映射到 YiAi agent.py 的具体实现"
 related:
   - ./01-方法-Agent架构模式.md
-  - ./04-LLM评估.md
+  - ./04-方法-LLM评估.md
   - ../platform/02-平台-LLM对比.md
   - ../../engineer/learn/projects/yiai/
 ---
@@ -138,6 +138,6 @@ YiAi 手写了 Agent 循环，但已经有机地生长出了与 Harness 对应�
 ## 相关资源
 
 - [./01-方法-Agent架构模式.md](./01-方法-Agent架构模式.md) — ReAct / Plan-Execute / Reflexion 等 Agent 模式层
-- [./04-LLM评估.md](./04-LLM评估.md) — 循环建成后的 Agent 评估方法
+- [./04-方法-LLM评估.md](./04-方法-LLM评估.md) — 循环建成后的 Agent 评估方法
 - [../platform/02-平台-LLM对比.md](../platform/02-平台-LLM对比.md) — 模型服务与推理平台
 - [../../engineer/learn/projects/yiai/](../../engineer/learn/projects/yiai/) — YiAi 实现细节

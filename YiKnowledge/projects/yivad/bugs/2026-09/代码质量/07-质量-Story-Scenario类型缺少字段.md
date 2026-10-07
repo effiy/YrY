@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-Story-Scenario类型缺少字段"
+lifecycle: active
 ---
 
 # code-quality: Story Scenario 类型缺少 trigger/prerequisites/expectedResult 字段
@@ -92,7 +94,6 @@ src/stores/modules/story.ts(445,25): error TS2339: Property 'expectedResult' doe
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **接口定义滞后于实际使用**：`Scenario` 接口在定义时可能只需要基础字段，但随着 `storyStore` 功能扩展（添加了 trigger/prerequisites/expectedResult），接口定义未同步更新。TypeScript 的类型系统在 CI 中通过 `vue-tsc --noEmit` 可以发现此类遗漏
+- **Store 是接口的消费者也是驱动者**：当 store 中使用接口未定义的字段时，这说明接口定义不完整。接口不应只是「创建时的最小字段集」，而应是「系统对该实体的完整认知」
 

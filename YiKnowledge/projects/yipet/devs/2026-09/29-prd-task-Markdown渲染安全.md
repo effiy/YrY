@@ -1,15 +1,20 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-09-22"
 title: "YP-09-22: Markdown 渲染安全 — 开发方案"
-status: 已完成
+status: 方案已编写
 priority: P0
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-14
+updated: 2026-09-23
 project: YiPet
+roles: [engineer]
 prd_month: "202609"
-source_prd: "29-安全-Markdown渲染安全.md"
+related_tests: ["29-prd-test-Markdown渲染安全.md"]
+source_prd: "29-架构设计-Markdown渲染安全.md"
+
+type: task
 ---
 
 # YP-09-22: Markdown 渲染安全 — 开发方案
@@ -63,3 +68,57 @@ DOMPurify.sanitize(html, {
 | # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
 |---|--------|--------|---------|------|------|
 | — | 无 | — | — | — | — |
+
+---
+
+## 一、需求背景
+
+来源 PRD：29-架构设计-Markdown渲染安全.md
+
+### 用户痛点
+
+1. **4**：
+1. **~25KB（DOMPurify）**：### 4.3 架构取舍
+1. **安装 DOMPurify 依赖**：`npm ls dompurify`
+
+## 二、功能实现
+
+| 功能 | 实现方案 |
+|------|----------|
+| 威胁 | 防护 |
+| `<script>` 注入 | DOMPurify 移除 |
+| `onclick` 事件 | DOMPurify 移除 |
+| `javascript:` URL | ALLOWED_ATTR 白名单 |
+| # | 缺口 |
+| — | 无 |
+| — | ### 技术债 |
+| 技术债 | 优先级 |
+
+## 三、关键技术决策
+
+| # | 决策 | 理由 |
+|---|------|------|
+| 1 | 纯前端浏览器 API 实现 | 无需服务端依赖，响应 < 50ms，离线可用 |
+| 2 | 独立 Vue 3 Composable 封装 | 单一职责，可复用于 Popup + Side Panel |
+
+## 四、实施步骤
+
+| 步骤 | 任务 | 预估 |
+|------|------|------|
+| 1 | Composable 核心逻辑 + 状态管理 | 0.1d |
+| 2 | Vue 3 UI 组件开发（含错误/空/加载状态） | 0.1d |
+| 3 | 边界场景处理 + 集成测试 | 0.1d |
+
+**总计：0.3d**
+
+## 五、完成记录
+
+> **状态**：方案已编写 · **日期**：2026-09-23 · 实施排期待定
+
+## 六、技术债与缺口
+
+| # | 项目 | 优先级 | 说明 | 状态 |
+|---|------|--------|------|------|
+| 1 | `src/chat/rendering/markdown.ts` | P1 | Markdown 渲染入口 | 待实施 |
+| 2 | HTML 标签透传 | P1 | `marked` html 选项默认 true | 待实施 |
+

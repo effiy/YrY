@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 用户引导与新手任务
 tags:
 - 用户引导
@@ -29,6 +28,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["31-prd-task-用户引导与新手任务"]
+related_tests: ["31-prd-test-用户引导与新手任务"]
+benefit: "产品需求：用户引导与新手任务"
+lifecycle: active
 ---
 
 # 用户引导与新手任务

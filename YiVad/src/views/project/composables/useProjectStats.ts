@@ -1,12 +1,18 @@
 /**
  * Stats aggregation layer — pure computation over project/issue/bug data.
  * No side effects, no API calls.
+ *
+ * When serverStatsByKey is provided, server-computed counts (full MongoDB aggregation)
+ * take priority over client-side counts (limited by pageSize). Distributions
+ * (statuses, priorities, types) still come from the client-side issue data since
+ * the server dashboard doesn't provide them.
  */
 import { computed, type ComputedRef, type Ref } from "vue";
 import type { Project } from "@/api/modules/projectService";
 import type { Issue } from "@/api/modules/issueService";
 import type { BugDocument } from "@/api/modules/bug";
 import type { Module } from "@/api/modules/moduleService";
+import type { ProjectBasicStats } from "@/types/analytics";
 import { ACTIVITY_DAYS, CLOSED_STATUSES, EMPTY_STATS, isoDay, type ProjectStats } from "../types";
 import { PRIORITY_COLORS } from "../constants";
 import type { TopProjectRow } from "../charts";
@@ -38,7 +44,8 @@ export function useProjectStats(
   issues: Ref<Issue[]>,
   bugs: Ref<BugDocument[]>,
   modules: Ref<Module[]>,
-  filterDateStr?: Ref<string>
+  filterDateStr?: Ref<string>,
+  serverStatsByKey?: ComputedRef<Map<string, ProjectBasicStats>>
 ): UseProjectStatsReturn {
   /** Issues filtered by the selected date — when set, only issues due on that date. */
   const dateFilteredIssues = computed(() => {
@@ -50,6 +57,7 @@ export function useProjectStats(
 
   const statsByKey = computed(() => {
     const refDate = filterDateStr?.value || isoDay(new Date());
+    const serverMap = serverStatsByKey?.value;
     const map = new Map<string, ProjectStats>();
     const ensure = (key: string): ProjectStats => {
       let s = map.get(key);
@@ -89,6 +97,27 @@ export function useProjectStats(
       if (!m.project_key) continue;
       const s = ensure(m.project_key);
       s.totalModules++;
+    }
+
+    // Merge server-side stats — server aggregation is authoritative for counts
+    // because it queries the FULL dataset. Server basic stats are now all-time
+    // (no longer 30-day windowed), making them the single source of truth.
+    if (serverMap?.size) {
+      for (const [key, server] of serverMap) {
+        const s = ensure(key);
+        // Guard: don't overwrite positive client counts with zero server counts
+        // (possible during server cache warm-up or transient failures).
+        const serverAllZero = server.issues === 0 && server.bugs === 0 && server.modules === 0;
+        const clientHasData = s.issues > 0 || s.totalBugs > 0 || s.totalModules > 0;
+        if (serverAllZero && clientHasData) continue;
+        s.issues = server.issues;
+        s.done = server.done;
+        s.open = server.open;
+        s.overdue = server.overdue;
+        s.unassigned = server.unassigned;
+        s.totalBugs = server.bugs;
+        s.totalModules = server.modules;
+      }
     }
 
     return map;
@@ -168,7 +197,7 @@ export function useProjectStats(
 
 /** Map entity type to a display color for activity dots. */
 export function activityColor(type: string): string {
-  const m: Record<string, string> = { requirement: "#409eff", bug: "#f56c6c", module: "#67c23a", testing: "#9a60b4" };
+  const m: Record<string, string> = { requirement: "#409eff", bug: "#f56c6c", module: "#67c23a", testing: "#9a60b4", doc: "#36cfc9" };
   return m[type] || "#909399";
 }
 

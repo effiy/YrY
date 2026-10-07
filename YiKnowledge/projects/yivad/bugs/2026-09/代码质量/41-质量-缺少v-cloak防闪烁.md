@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-缺少v-cloak防闪烁"
+lifecycle: active
 ---
 
 # 未使用 v-cloak 导致 Vue 挂载前出现未编译模板闪烁
@@ -55,7 +57,6 @@ YiVad 项目未使用 Vue 的 `[v-cloak]` 指令来防止 FOUC（Flash of Unstyl
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **SPA 初始化的过渡期**：Vue 挂载前，浏览器会短暂显示未编译的模板（`{{ }}` 表达式和原始 HTML）。`v-cloak` 是零成本的 3 行 CSS 方案（`[v-cloak] { display: none }`），但新项目模板中常被遗漏
+- **Rsbuild 的影响**：Rsbuild 的构建速度快，首次加载的 FOUC 窗口可能很短。但这不意味着可以省略 `v-cloak`——慢网络或低端设备上这个窗口可达数百毫秒
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="skills">
+  <div class="skills page">
     <!-- Header Card -->
     <div class="skills__header">
       <div class="skills__header-icon">
@@ -74,29 +74,15 @@
     </div>
 
     <!-- Recently Viewed -->
-    <div v-if="recentlyViewed.length" class="skills__recent">
-      <span class="skills__recent-label">Recently viewed</span>
-      <button
-        v-for="r in recentlyViewed"
-        :key="r.id"
-        type="button"
-        class="skills__recent-chip"
-        :title="r.title"
-        @click="openSkill(r)"
-      >
-        <span class="skills__recent-dot" :style="{ background: lifecycleColor(r.lifecycle) }" />
-        <span class="skills__recent-name">/{{ r.name }}</span>
-        <span class="skills__recent-title">{{ r.title }}</span>
-      </button>
-      <button type="button" class="skills__recent-clear" @click="recentlyViewed = []">✕</button>
-    </div>
+    <RecentlyViewed
+      :items="recentViewedItems"
+      label="Recently viewed"
+      @click="id => openSkill(recentlyViewed.find(r => r.id === id)!)"
+      @clear="recentlyViewed = []"
+    />
 
     <!-- Active Filter Pills -->
-    <div v-if="activePills.length" class="skills__pills">
-      <span class="skills__pills-label">Filters</span>
-      <el-tag v-for="p in activePills" :key="p.id" closable size="small" @close="p.clear()">{{ p.label }}</el-tag>
-      <el-button size="small" text type="primary" @click="clearAllFilters">Clear all</el-button>
-    </div>
+    <FilterPills :pills="activePills" @clear-all="clearAllFilters" />
 
     <div class="skills__body">
       <!-- Sidebar -->
@@ -310,6 +296,14 @@
                     categoryLabel(skill.category)
                   }}</el-tag>
                   <span v-if="skill.user_invocable" class="skills__card-tag skills__card-tag--invocable">invocable</span>
+                  <el-button
+                    v-if="skillFiles[skill.id]?.length"
+                    link
+                    size="small"
+                    :icon="Edit"
+                    title="Edit skill file"
+                    @click.stop="openFile(skillFiles[skill.id][0].path)"
+                  />
                 </div>
               </div>
               <h3 class="skills-card-item__title">{{ skill.title }}</h3>
@@ -381,13 +375,16 @@ import {
   Tickets,
   WarningFilled,
   CircleCloseFilled,
-  DocumentDelete
+  DocumentDelete,
+  Edit
 } from "@element-plus/icons-vue";
 import { scanKnowledge } from "@/api/modules/knowledgeService";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import ECharts from "@/components/ECharts/index.vue";
 import type { ECOption } from "@/components/ECharts/config";
+import RecentlyViewed from "@/components/RecentlyViewed/RecentlyViewed.vue";
+import FilterPills from "@/components/FilterPills/FilterPills.vue";
 import { categories, skills as staticSkills } from "./constants";
 import type { SkillDef } from "./constants";
 
@@ -422,6 +419,9 @@ const completionPct = computed(() => {
 
 // ── Recently viewed ──
 const recentlyViewed = ref<SkillDef[]>([]);
+const recentViewedItems = computed(() =>
+  recentlyViewed.value.map(r => ({ key: r.id, title: r.title, color: lifecycleColor(r.lifecycle) }))
+);
 function trackRecent(skill: SkillDef) {
   recentlyViewed.value = [skill, ...recentlyViewed.value.filter(r => r.id !== skill.id)].slice(0, 8);
 }
@@ -472,7 +472,7 @@ const lifecycleBarOption = computed<ECOption>(() => {
   const values = cats.map(k => lifecycleDist.value[k] ?? 0);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
+    grkey: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
     xAxis: { type: "category", data: cats.map(c => c.charAt(0).toUpperCase() + c.slice(1)), axisLabel: { fontSize: 9 } },
     yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
     series: [{ type: "bar", data: values, itemStyle: { color: "#e6a23c", borderRadius: [3, 3, 0, 0] }, barMaxWidth: 26 }]
@@ -507,7 +507,7 @@ const filesBarOption = computed<ECOption>(() => {
     .slice(0, 10);
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
+    grkey: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
     xAxis: { type: "category", data: top.map(s => s.name), axisLabel: { fontSize: 9, rotate: 30 } },
     yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
     series: [
@@ -619,11 +619,11 @@ function skillsInCat(catId: string): SkillDef[] {
 }
 
 const activePills = computed(() => {
-  const pills: Array<{ id: string; label: string; clear: () => void }> = [];
+  const pills: Array<{ key: string; label: string; clear: () => void }> = [];
   if (activeCategory.value) {
     const cat = categories.find(c => c.id === activeCategory.value);
     pills.push({
-      id: "cat",
+      key: "cat",
       label: `Category: ${cat?.label || activeCategory.value}`,
       clear: () => {
         activeCategory.value = "";
@@ -632,7 +632,7 @@ const activePills = computed(() => {
   }
   if (activeLifecycle.value) {
     pills.push({
-      id: "lc",
+      key: "lc",
       label: `Lifecycle: ${activeLifecycle.value}`,
       clear: () => {
         activeLifecycle.value = "";
@@ -641,7 +641,7 @@ const activePills = computed(() => {
   }
   if (invocableOnly.value) {
     pills.push({
-      id: "inv",
+      key: "inv",
       label: "Invocable only",
       clear: () => {
         invocableOnly.value = false;
@@ -650,7 +650,7 @@ const activePills = computed(() => {
   }
   if (showNoFiles.value) {
     pills.push({
-      id: "nofiles",
+      key: "nofiles",
       label: "Showing empty skills",
       clear: () => {
         showNoFiles.value = false;
@@ -659,7 +659,7 @@ const activePills = computed(() => {
   }
   if (searchText.value) {
     pills.push({
-      id: "search",
+      key: "search",
       label: `Search: ${searchText.value}`,
       clear: () => {
         searchText.value = "";
@@ -821,771 +821,7 @@ watch(searchText, () => {
 });
 </script>
 
+
 <style scoped lang="scss">
-.skills {
-  padding: 24px;
-  overflow-x: hidden;
-  background: var(--el-bg-color-page);
-}
-
-// ── Header Card ──
-.skills__header {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-}
-.skills__header-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  font-size: 22px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  border-radius: 10px;
-}
-.skills__header-text {
-  flex: 1;
-  min-width: 0;
-}
-.skills__header-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--el-text-color-primary);
-}
-.skills__header-desc {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.skills__header-pills {
-  display: flex;
-  flex-shrink: 0;
-  gap: 10px;
-}
-.skills__header-pill {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  align-items: center;
-  min-width: 64px;
-  padding: 6px 16px;
-  background: var(--el-fill-color-light);
-  border-radius: 8px;
-  &--accent {
-    background: var(--el-color-primary-light-9);
-  }
-}
-.skills__header-pill-val {
-  font-family: DIN, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--el-text-color-primary);
-}
-.skills__header-pill--accent .skills__header-pill-val {
-  color: var(--el-color-primary);
-}
-.skills__header-pill-lbl {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.skills__header-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 8px;
-  align-items: center;
-}
-.skills__header-search {
-  width: 200px;
-}
-
-// ── Filter Pills ──
-.skills__pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.skills__pills-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Body / Main / Sidebar ──
-.skills__body {
-  display: flex;
-  gap: 24px;
-}
-.skills__main {
-  flex: 1;
-  min-width: 0;
-}
-.skills__sidebar {
-  position: sticky;
-  top: 24px;
-  flex-shrink: 0;
-  align-self: flex-start;
-  width: 240px;
-  padding: 12px;
-  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-}
-
-// ── Sidebar View Toggle ──
-.skills__sidebar-view {
-  padding: 4px 4px 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) {
-    display: flex;
-    width: 100%;
-  }
-  :deep(.el-radio-button) {
-    flex: 1;
-  }
-  :deep(.el-radio-button__inner) {
-    width: 100%;
-    padding: 4px 0;
-    font-size: 12px;
-    text-align: center;
-  }
-}
-
-// ── Sidebar Section ──
-.skills__sidebar-section {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.skills__sidebar-section-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  padding-left: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  border-left: 2px solid var(--el-color-primary);
-}
-.skills__sidebar-section-label {
-  flex: 1;
-}
-.skills__sidebar-section-hint {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--el-text-color-placeholder);
-  text-transform: none;
-  letter-spacing: 0;
-}
-.skills__sidebar-section-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-}
-
-// ── Sidebar Card (stat item) ──
-.skills__sidebar-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.skills__sidebar-card-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
-  color: #ffffff;
-  border-radius: 7px;
-}
-.skills__sidebar-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
-}
-.skills__sidebar-card-value {
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--el-text-color-primary);
-}
-.skills__sidebar-card-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Filter Items (Categories / Lifecycle) ──
-.skills__sidebar-cat {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 6px 8px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.15s;
-  &:hover {
-    background: var(--el-fill-color);
-  }
-  &--active {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-}
-.skills__sidebar-cat-icon {
-  flex-shrink: 0;
-  font-size: 14px;
-}
-.skills__sidebar-cat-dot {
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.skills__sidebar-cat-label {
-  flex: 1;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.skills__sidebar-cat--active .skills__sidebar-cat-label {
-  font-weight: 600;
-  color: var(--el-color-primary);
-}
-.skills__sidebar-cat-count {
-  font-family: DIN, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Pagination ──
-.skills__pager {
-  justify-content: center;
-  margin-top: 16px;
-}
-
-// ── Card Grid (new style matching issue page) ──
-.skills-card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 10px;
-}
-.skills-card-item {
-  padding: 14px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  &:hover {
-    box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
-    transform: translateY(-2px);
-  }
-}
-.skills-card-item__head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.skills-card-item__icon {
-  flex-shrink: 0;
-  font-size: 16px;
-}
-.skills-card-item__dot {
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.skills-card-item__key {
-  flex: 1;
-  min-width: 0;
-  padding: 1px 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.skills-card-item__head-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 4px;
-  align-items: center;
-}
-.skills-card-item__title {
-  display: -webkit-box;
-  margin: 0 0 4px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  -webkit-box-orient: vertical;
-}
-.skills-card-item__desc {
-  display: -webkit-box;
-  margin: 0 0 8px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--el-text-color-secondary);
-  -webkit-box-orient: vertical;
-}
-.skills-card-item__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.skills-card-item__files {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  .el-icon {
-    font-size: 13px;
-  }
-}
-.skills-card-item__file-list {
-  display: flex;
-  flex-direction: column;
-  padding-top: 6px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.skills-card-item__file-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 3px 6px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.12s;
-  &:hover {
-    background: var(--el-fill-color-lighter);
-  }
-}
-.skills-card-item__file-accent {
-  flex-shrink: 0;
-  width: 3px;
-  height: 14px;
-  border-radius: 2px;
-}
-.skills-card-item__file-icon {
-  flex-shrink: 0;
-  font-size: 12px;
-}
-.skills-card-item__file-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  color: var(--el-text-color-regular);
-  white-space: nowrap;
-}
-.skills-card-item__file-type {
-  flex-shrink: 0;
-  padding: 1px 5px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
-  border-radius: 3px;
-}
-.skills-card-item__file-more {
-  padding: 2px 6px;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  text-align: center;
-}
-
-// ── List View (new style matching issue page) ──
-.skills-list-view {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.skills-list-view__row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 14px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition:
-    box-shadow 0.2s,
-    transform 0.2s;
-  &:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-    transform: translateY(-1px);
-  }
-}
-.skills-list-view__dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.skills-list-view__key {
-  flex-shrink: 0;
-  padding: 1px 6px;
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.skills-list-view__title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-}
-.skills-list-view__files {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Card meta tags ──
-.skills__card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.skills__card-tag {
-  padding: 1px 6px;
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: 3px;
-  &--invocable {
-    color: #10b981;
-    background: #e6f9f2;
-  }
-  &--active {
-    color: #1677ff;
-    background: #e6f0ff;
-  }
-  &--draft {
-    color: #f59e0b;
-    background: #fff7e6;
-  }
-  &--deprecated {
-    color: #f56c6c;
-    background: #fef0f0;
-  }
-  &--confirm {
-    color: #f59e0b;
-    background: #fff7e6;
-  }
-  &--auto {
-    color: #10b981;
-    background: #e6f9f2;
-  }
-  &--skill {
-    color: var(--el-text-color-secondary);
-    background: #f4f4f5;
-  }
-}
-
-// ── Table view ──
-.skills__table-item {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  cursor: pointer;
-}
-.skills__table-icon {
-  flex-shrink: 0;
-  margin-top: 1px;
-  font-size: 18px;
-}
-.skills__table-title-area {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.skills__table-title {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--el-text-color-primary);
-  overflow-wrap: break-word;
-}
-.skills__table-handle {
-  font-family: "SF Mono", "Fira Code", monospace;
-  font-size: 11px;
-  color: var(--el-color-primary);
-}
-.skills__table-num {
-  font-family: DIN, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--el-text-color-primary);
-}
-.skills__table-muted {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.skills__table-desc {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  -webkit-box-orient: vertical;
-}
-
-// ── Analytics Charts ──
-.skills__charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-.skills-chart {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.skills-chart--active {
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
-}
-.skills-chart__title {
-  display: flex;
-  flex-shrink: 0;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.skills-chart__badge {
-  padding: 0 5px;
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 15px;
-  color: var(--el-color-primary);
-  text-transform: none;
-  background: var(--el-color-primary-light-9);
-  border-radius: 3px;
-}
-.skills-chart__body {
-  flex: 1;
-  min-height: 0;
-  padding: 8px;
-}
-
-// ── Recently Viewed ──
-.skills__recent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-}
-.skills__recent-label {
-  margin-right: 2px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-.skills__recent-chip {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  padding: 2px 9px;
-  font-size: 12px;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 999px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-  &:hover {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
-  }
-}
-.skills__recent-dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.skills__recent-name {
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-color-primary);
-}
-.skills__recent-title {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.skills__recent-clear {
-  padding: 4px;
-  margin-left: auto;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  &:hover {
-    color: var(--el-color-danger);
-  }
-}
-
-// ── Sidebar Quality ──
-.skills__sidebar-quality {
-  padding: 4px 0;
-  & + & {
-    padding-top: 8px;
-  }
-}
-.skills__sidebar-quality-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 3px;
-}
-.skills__sidebar-quality-label {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.skills__sidebar-quality-pct {
-  font-family: DIN, sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-// ── Sidebar Progress ──
-.skills__sidebar-progress {
-  padding: 0 12px 12px;
-}
-.skills__sidebar-progress-label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Attention Cards ──
-.skills__sidebar-card--attention {
-  border-left: 2px solid transparent;
-  &:hover {
-    border-left-color: var(--el-color-primary);
-  }
-}
-.skills__sidebar-card--nodesc {
-  .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value {
-    color: var(--el-color-warning);
-  }
-}
-.skills__sidebar-card--deprecated {
-  .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value {
-    color: var(--el-color-danger);
-  }
-}
-.skills__sidebar-card--nofiles {
-  .skills__sidebar-card-accent-icon,
-  .skills__sidebar-card-accent-value {
-    color: var(--el-color-info);
-  }
-}
-.skills__sidebar-card-accent-icon {
-  flex-shrink: 0;
-  font-size: 14px;
-}
-.skills__sidebar-card-accent-value {
-  min-width: 20px;
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-}
-.skills__sidebar-card-accent-label {
-  flex: 1;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.skills__empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 0;
-}
+@use "./styles/skills.scss";
 </style>

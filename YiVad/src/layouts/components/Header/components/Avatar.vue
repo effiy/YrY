@@ -30,33 +30,24 @@ import { useRouter } from "vue-router";
 import { logoutApi } from "@/api/modules/login";
 import { clearPersistedState } from "@/stores/helper/persist";
 import { useUserStore } from "@/stores/modules/user";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { ElMessage } from "element-plus";
 import InfoDialog from "./InfoDialog.vue";
 import PasswordDialog from "./PasswordDialog.vue";
+import { confirm } from "@/hooks/useConfirmAction";
 
 const router = useRouter();
 const userStore = useUserStore();
 
 // Logout
-const logout = () => {
-  ElMessageBox.confirm("Are you sure you want to log out?", "Warning", {
-    confirmButtonText: "Confirm",
-    cancelButtonText: "Cancel",
-    type: "warning"
-  }).then(async () => {
-    // 1. Execute logout API
-    await logoutApi();
+const logout = async () => {
+  const ok = await confirm("Are you sure you want to log out?", "Warning");
+  if (!ok) return;
+  await logoutApi();
+  userStore.setToken("");
 
-    // 2. Clear Token
-    userStore.setToken("");
-
-    // 3. Clear persisted state
     clearPersistedState();
-
-    // 4. Redirect to login page
-    router.replace(LOGIN_URL);
-    ElMessage.success("Logged out successfully!");
-  });
+  router.replace(LOGIN_URL);
+  ElMessage.success("Logged out successfully!");
 };
 
 // Open change password and personal info dialog

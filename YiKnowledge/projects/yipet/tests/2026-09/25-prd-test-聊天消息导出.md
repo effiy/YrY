@@ -1,14 +1,19 @@
 ---
+
 doc_type: test
 title: "聊天消息导出 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["25-功能实现-聊天消息导出"]
-source_modules: ["25-prd-task-聊天消息导出"]
+source_prds: ["25-架构设计-聊天消息导出.md"]
+source_modules: ["25-prd-task-聊天消息导出.md"]
+
+type: test
 ---
 
 # 聊天消息导出 — 测试用例
@@ -19,3 +24,4 @@ source_modules: ["25-prd-task-聊天消息导出"]
 | TC-EX01 | Markdown 导出 | 正确格式+frontmatter | P0 |
 | TC-EX02 | JSON 导出 | 结构化数据 | P1 |
 | TC-EX03 | 日期范围导出 | 仅导出范围内消息 | P1 |
+

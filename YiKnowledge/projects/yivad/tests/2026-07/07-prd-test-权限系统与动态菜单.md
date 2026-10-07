@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-07: 权限系统与动态菜单 — RBAC 权限码 + v-auth 按钮级鉴权 + 菜单驱动动态路由 — 测试用例"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-07"
 source_prds: ["07-prd-权限系统与动态菜单"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 权限系统与动态菜单]
+benefit: "测试用例：权限系统与动态菜单"
+lifecycle: active
 ---
 
 # YV-07-07: 权限系统与动态菜单 — RBAC 权限码 + v-auth 按钮级鉴权 + 菜单驱动动态路由 — 测试用例
@@ -161,9 +166,9 @@ flowchart TD
 | TC-PERM-003 | 权限码唯一性 | `new Set(values).size` 与 `values.length` 比较 | 相等（无重复） | P0 | 待实现 |
 | TC-PERM-004 | 模块数与分组一致性 | 统计 `PERMISSION_MODULES` 及其 `permissions` 展开 | 7 个模块；展开后与 `Object.values(PERMISSIONS)` 集合相等（无遗漏、无多余） | P0 | 待实现 |
 | TC-PERM-005 | 模块分组标签完整 | 遍历 `PERMISSION_MODULES` | 每项 `module` 非空、`label` 为中文、`permissions` 非空 | P1 | 待实现 |
-| TC-PERM-006 | 角色矩阵键完整性 | 检查 `DEFAULT_ROLE_PERMISSIONS` 的键 | 恰为 `admin`/`engineer`/`producter`/`analyst`/`viewer` | P0 | 待实现 |
+| TC-PERM-006 | 角色矩阵键完整性 | 检查 `DEFAULT_ROLE_PERMISSIONS` 的键 | 恰为 `admin`/`engineer`/`product`/`analyst`/`viewer` | P0 | 待实现 |
 | TC-PERM-007 | admin 持有全部权限 | 比对 `DEFAULT_ROLE_PERMISSIONS.admin` 与全部权限码 | 集合相等（16 个） | P0 | 待实现 |
-| TC-PERM-008 | 角色权限数符合规格 | 统计各角色权限数 | admin 16 / engineer 10 / producter 9 / analyst 6 / viewer 5 | P0 | 待实现 |
+| TC-PERM-008 | 角色权限数符合规格 | 统计各角色权限数 | admin 16 / engineer 10 / product 9 / analyst 6 / viewer 5 | P0 | 待实现 |
 | TC-PERM-009 | 矩阵值均为合法权限码 | 展开全部角色的权限数组，与 `Object.values(PERMISSIONS)` 求差集 | 差集为空（无拼写错误、无已废弃权限码） | P0 | 待实现 |
 | TC-PERM-010 | 删除类权限仅 admin 持有 | 筛选含 `:delete` 的权限码 | 仅 `admin` 持有 `project:delete` / `knowledge:delete` | P1 | 待实现 |
 | TC-PERM-011 | 管理面权限仅 admin 持有 | 检查 `user:manage` / `role:manage` | 仅 `admin` 持有 | P0 | 待实现 |

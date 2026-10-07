@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-14: RAG 混合检索 Alpha 调优 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-14"
 source_prds: ["17-架构设计-RAG混合检索Alpha调优"]
 source_modules: ["17-prd-task-RAG混合检索Alpha调优"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-14: RAG 混合检索 Alpha 调优 — 测试用例

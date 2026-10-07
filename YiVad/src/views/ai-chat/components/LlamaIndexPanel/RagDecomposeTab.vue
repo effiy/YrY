@@ -663,7 +663,7 @@ function onDqAnswerClick(i: number, e: MouseEvent): void {
   font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--el-color-white);
   background: var(--el-color-primary);
   border-radius: 4px;
 }

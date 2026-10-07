@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-viewsglob插件无文档"
+lifecycle: active
 ---
 
 # viewsGlobPlugin 自定义构建插件缺少文档和错误处理
@@ -64,7 +66,6 @@ if (!resolved) return; // 跳过找不到的文件
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **迁移残留**：`viewsGlobPlugin` 是 Vite → Rsbuild 迁移时的临时方案，解决了 `import.meta.glob` 不兼容问题，但作为临时方案被长期使用。临时方案应在迁移完成后计划替换或正式化
+- **静默失败的构建插件是定时炸弹**：如果构建时 viewsGlob 生成空对象，所有动态路由会静默失效，用户看到的是全站 404 而非明确的构建错误。构建插件必须 fail loudly
 

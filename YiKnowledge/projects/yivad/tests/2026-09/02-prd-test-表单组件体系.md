@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "表单组件体系 — 测试用例"
 status: 进行中
 priority: 中
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-M09"
 source_prds: ["02-prd-表单组件体系"]
 source_modules: ["YV-09-M09"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 表单组件体系]
+benefit: "测试用例：表单组件体系"
+lifecycle: active
 ---
 
 # 表单组件体系 — 测试用例

@@ -10,7 +10,6 @@ Also buffers small responses in memory to avoid streaming overhead
 for the common case of responses under 64KB.
 """
 
-import struct
 import zlib
 
 

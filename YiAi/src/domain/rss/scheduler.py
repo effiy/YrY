@@ -182,7 +182,7 @@ class RSSSchedulerManager:
                 interval = self._config.get('interval', 3600)
 
             if interval < 60:
-                raise ValueError("Scheduler interval cannot be less than 60 seconds")
+                raise BusinessException(ErrorCode.INVALID_PARAMS, message="Scheduler interval cannot be less than 60 seconds")
 
             self._config['type'] = 'interval'
             self._config['interval'] = interval
@@ -206,7 +206,7 @@ class RSSSchedulerManager:
             for field, min_val, max_val in validations:
                 v = cron_config.get(field)
                 if isinstance(v, int) and not (min_val <= v <= max_val):
-                    raise ValueError(f"{field} must be between {min_val}-{max_val}")
+                    raise BusinessException(ErrorCode.INVALID_PARAMS, message=f"{field} must be between {min_val}-{max_val}")
 
             self._config['type'] = 'cron'
             self._config['cron'] = cron_config

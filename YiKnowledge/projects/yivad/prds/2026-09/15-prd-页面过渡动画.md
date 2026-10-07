@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 页面过渡动画
 tags:
 - 动画
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["15-prd-task-页面过渡动画"]
+related_tests: ["15-prd-test-页面过渡动画"]
+benefit: "产品需求：页面过渡动画"
+lifecycle: active
 ---
 
 # 页面过渡动画

@@ -3,6 +3,7 @@
  * Issues are stored in the YiAi `issues` collection via the data service RPC.
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "@/api/modules/dataService";
+import { getKnowledgeIssues } from "@/api/modules/knowledgeService";
 
 const COLLECTION = "issues";
 
@@ -148,53 +149,26 @@ export function getIssueList(params: IssueQueryParams) {
     status,
     priority,
     issue_type,
-    exclude_issue_type,
-    assignee,
-    labels,
-    goal_id,
     search,
-    orderBy = "updated_at",
-    orderType = "desc",
-    updated_at_start,
-    updated_at_end,
-    due_date,
-    due_date_start,
-    due_date_end
   } = params;
-  const filter: Record<string, any> = {};
-  if (project_key) filter.project_key = project_key;
-  if (status) filter.status = status;
-  if (priority) filter.priority = priority;
-  if (issue_type) {
-    filter.issue_type = issue_type;
-  } else if (exclude_issue_type) {
-    filter.issue_type = { $ne: exclude_issue_type };
-  }
-  if (assignee) filter.assignee = assignee;
-  if (goal_id) filter.goal_id = goal_id;
-  if (labels) filter.labels = { $regex: labels, $options: "i" };
-  if (due_date) filter.due_date = due_date;
-  if (due_date_start || due_date_end) {
-    filter.due_date = {};
-    if (due_date_start) filter.due_date.$gte = due_date_start;
-    if (due_date_end) filter.due_date.$lte = due_date_end;
-  }
-  if (updated_at_start || updated_at_end) {
-    filter.updated_at = {};
-    if (updated_at_start) filter.updated_at.$gte = updated_at_start;
-    if (updated_at_end) filter.updated_at.$lte = updated_at_end + "T23:59:59";
-  }
-  if (search) {
-    filter.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
-  }
-  return queryDocuments<Issue>({
-    cname: COLLECTION,
-    filter,
+
+  return getKnowledgeIssues({
+    project: project_key || undefined,
+    issue_type: issue_type || undefined,
+    status: status || undefined,
+    priority: priority || undefined,
+    search: search || undefined,
     pageNum,
     pageSize,
-    orderBy,
-    orderType
-  });
+  }).then((res) => ({
+    data: {
+      list: res.list,
+      total: res.total,
+      pageNum: res.pageNum,
+      pageSize: res.pageSize,
+      totalPages: res.totalPages,
+    },
+  }));
 }
 
 export function getIssue(key: string) {
@@ -255,4 +229,50 @@ export function getIssueFilePath(issue: {
     .replace(/^-+|-+$/g, "")
     .toLowerCase();
   return `projects/${issue.project_key}/requires/${yearMonth}/${fileName}.md`;
+}
+
+/** Known status variants from external imports mapped to canonical lowercase. */
+const STATUS_NORM: Record<string, string> = {
+  Done: "done",
+  Cancelled: "cancelled",
+  Backlog: "backlog",
+  "To Do": "todo",
+  "In Progress": "in_progress",
+  "In Review": "in_review",
+  Review: "in_review",
+};
+
+function norm(s: string): string {
+  if (!s) return "";
+  return STATUS_NORM[s] || s.toLowerCase().replace(/\s+/g, "_");
+}
+
+/**
+ * Normalize externally-imported issue fields to canonical lowercase values.
+ *
+ * Handles schema mismatches from external imports:
+ *  - `type`→`issue_type` (field name difference)
+ *  - `updatedTime`→`updated_at` / `createdAt`→`created_at` (date field naming)
+ *  - Title Case status values (Done→done, In Progress→in_progress, etc.)
+ *  - Missing priority defaults to "medium"
+ */
+export function normalizeIssue(raw: Record<string, unknown>): Issue {
+  const status = typeof raw.status === "string" ? norm(raw.status) : (raw.status ?? "");
+
+  // Imported issues use `type` for what the frontend calls `issue_type`.
+  const rawType = raw.issue_type ?? raw.type;
+  const issueType = typeof rawType === "string" ? norm(rawType) : "task";
+
+  const rawPrio = raw.priority;
+  const priority = typeof rawPrio === "string" && rawPrio
+    ? norm(rawPrio)
+    : "medium";
+
+  const assignee = typeof raw.assignee === "string" ? raw.assignee : "";
+
+  // Imported issues use camelCase date fields; map to snake_case expected by frontend.
+  const updated_at = (raw.updated_at ?? raw.updatedTime ?? raw.updatedAt) || undefined;
+  const created_at = (raw.created_at ?? raw.createdAt ?? raw.createdTime) || undefined;
+
+  return { ...raw, status, priority, issue_type: issueType, assignee, updated_at, created_at } as unknown as Issue;
 }

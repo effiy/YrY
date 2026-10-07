@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-路由meta标题未国际化"
+lifecycle: active
 ---
 
 # staticRouter 中路由 title 与 i18n 键不一致
@@ -56,7 +58,6 @@ priority: p3
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`meta.title` 有多处消费方**：文档标题（`document.title`）、面包屑导航、标签页标题都读取 `meta.title`。一处硬编码会导致 3 个位置的国际化失效。使用 `titleKey` 替代 `title` 让消费方自行 `$t()` 翻译是更灵活的设计
+- **静态路由 vs 动态路由的 i18n 差异**：动态路由的 title 来自后端，后端可返回中英文；静态路由的 title 硬编码在前端。两者的 i18n 机制不同，需要统一为 `titleKey` 模式
 

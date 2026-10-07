@@ -135,6 +135,21 @@ html.theme-transitioning *::after {
   }
 }
 
+/* ── Page-level wrapper — baseline padding + background for all content pages.
+   Pages that need height/overflow rules add them inline (e.g. project, sync). */
+.page {
+  padding: var(--page-gutter);
+  background: var(--el-bg-color-page);
+}
+
+/* ── Card container — shared surface styling for content panels.
+   Add padding as needed: .card .card--padded or inline style. */
+.card {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: var(--radius-md);
+}
+
 /* flex */
 .flx-center {
   display: flex;
@@ -175,7 +190,7 @@ html.theme-transitioning *::after {
     background 0.12s,
     transform 0.12s;
   &:hover {
-    color: #ffffff;
+    color: var(--el-color-white);
     background: var(--el-color-primary-light-7);
     transform: translateY(-1px);
   }

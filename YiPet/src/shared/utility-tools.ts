@@ -32,13 +32,15 @@
  * - Code formatter
  */
 
+import { camelCase, kebabCase, snakeCase } from "lodash-es";
+import { colord, extend } from "colord";
+import a11yPlugin from "colord/plugins/a11y";
+
+extend([a11yPlugin]);
+
 /** Generate a UUID v4. */
 export function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return crypto.randomUUID();
 }
 
 /** Generate a secure random password. */
@@ -171,20 +173,9 @@ export function parseCron(expr: string): string {
   return descriptions.join(', ') || expr;
 }
 
-/** Calculate WCAG color contrast ratio. */
+/** Calculate WCAG color contrast ratio — backed by colord. */
 export function colorContrast(hex1: string, hex2: string): { ratio: number; aa: boolean; aaa: boolean } {
-  const lum = (hex: string) => {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
-    const toSRGB = (c: number) => c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-    return 0.2126 * toSRGB(r) + 0.7152 * toSRGB(g) + 0.0722 * toSRGB(b);
-  };
-  const l1 = lum(hex1);
-  const l2 = lum(hex2);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  const ratio = (lighter + 0.05) / (darker + 0.05);
+  const ratio = colord(hex1).contrast(colord(hex2));
   return {
     ratio: Math.round(ratio * 100) / 100,
     aa: ratio >= 4.5,
@@ -210,16 +201,16 @@ export function loremIpsum(paragraphs = 1, wordsPerParagraph = 50): string {
   return result.join('\n\n');
 }
 
-/** Convert text case. */
+/** Convert text case — backed by lodash. */
 export function convertCase(text: string, mode: 'upper' | 'lower' | 'title' | 'sentence' | 'camel' | 'kebab' | 'snake'): string {
   switch (mode) {
     case 'upper': return text.toUpperCase();
     case 'lower': return text.toLowerCase();
     case 'title': return text.replace(/\b\w/g, c => c.toUpperCase());
     case 'sentence': return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    case 'camel': return text.replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '').replace(/^[A-Z]/, c => c.toLowerCase());
-    case 'kebab': return text.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[\s_]+/g, '-').toLowerCase();
-    case 'snake': return text.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[\s-]+/g, '_').toLowerCase();
+    case 'camel': return camelCase(text);
+    case 'kebab': return kebabCase(text);
+    case 'snake': return snakeCase(text);
   }
 }
 
@@ -267,9 +258,9 @@ export function encodeHTMLEntities(str: string): string {
   return div.innerHTML;
 }
 export function decodeHTMLEntities(html: string): string {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || '';
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = html;
+  return textarea.value;
 }
 
 /** Convert between number bases. */
@@ -332,38 +323,15 @@ export function generateQRDataURL(text: string, size = 256): string {
   return canvas.toDataURL();
 }
 
-/** Color picker: convert hex to HSL/RGB. */
+/** Color picker: convert hex to HSL/RGB — backed by colord. */
 export function hexToHSL(hex: string): { h: number; s: number; l: number } {
-  let r = parseInt(hex.slice(1, 3), 16) / 255;
-  let g = parseInt(hex.slice(3, 5), 16) / 255;
-  let b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
-  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  const { h, s, l } = colord(hex).toHsl();
+  return { h, s, l };
 }
 
-/** HSL to hex. */
+/** HSL to hex — backed by colord. */
 export function hslToHex(h: number, s: number, l: number): string {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color).toString(16).padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
+  return colord({ h, s, l }).toHex();
 }
 
 /** Simple text diff (line-based). */

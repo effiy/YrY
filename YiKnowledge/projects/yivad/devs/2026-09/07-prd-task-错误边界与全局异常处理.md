@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-23"
 title: "YV-09-23: 错误边界与全局异常处理 — 分层错误处理 + 优雅降级 + 错误上报 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "07-prd-错误边界与全局异常处理.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 错误边界与全局异常处理]
+benefit: "开发方案：task-错误边界与全局异常处理"
+lifecycle: active
 ---
 
 # YV-09-23: 错误边界与全局异常处理 — 开发方案

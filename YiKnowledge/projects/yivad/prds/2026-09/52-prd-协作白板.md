@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式"
 tags: [需求文档, 协作白板, 头脑风暴, 实时协作, 画布, 导出, 演示模式]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发, 后端开发]
 source_okr: [yivad-003]
+related_modules: ["52-prd-task-协作白板"]
+related_tests: ["52-prd-test-协作白板"]
+benefit: "产品需求：协作白板"
+lifecycle: active
 ---
 
 # YV-09-112: 协作白板 — 团队头脑风暴画布、画笔/形状/文本/便签工具、实时多人协作、导出图片/PDF、模板背景、演示模式

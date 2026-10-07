@@ -21,6 +21,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-project-detail-page-i18n"
+lifecycle: active
 ---
 
 ## Description

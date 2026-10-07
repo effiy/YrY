@@ -1,8 +1,16 @@
 ---
-name: prd
-description: "为功能和项目创建详细的产品需求文档 (PRD)。当用户想要规划功能、撰写规格说明、编写 PRD 或需要结构化的需求文档时使用此技能——即使他们没有明确说「PRD」。触发条件：功能规划、规格编写、需求收集、产品规格、「我们应该如何构建 X」、「规划这个功能」、「为...编写需求」。"
+name: prd-creator
+description: >
+  创建产品需求文档 (PRD)。当用户要规划功能、撰写规格、编写需求文档时使用——
+  即使没有说「PRD」这个词。触发：功能规划、规格编写、需求收集、产品规格、
+  「规划这个功能」「为...写需求」「feature spec」「product spec」「requirements doc」
+  「should we build」「how to implement this feature」「功能设计」。
+  注意：需求还不清晰→brainstorming；已有PRD要拆解执行→task-planning。
 user_invocable: true
-updated: 2026-09-10---
+updated: 2026-09-10
+lifecycle: active
+priority: high
+---
 
 # PRD 生成器
 
@@ -11,6 +19,16 @@ updated: 2026-09-10---
 **重要提示：** 不要开始实现功能。目标是产出一份清晰、可执行的 PRD，供开发人员或 AI 智能体执行。
 
 **工作流：** 逐节推进，用户以任意顺序选择章节。
+
+### 进入标准
+- [ ] 需求方向已确认（brainstorming 完成，或用户已有明确描述）
+- [ ] 需要正式的需求文档（不是口头沟通就够的简单任务）
+- [ ] 功能的用户故事、功能需求、非目标等需要结构化记录
+
+### 退出标准
+- [ ] 9 章节 PRD 已完成（必填章节全部填充）
+- [ ] PRD 已导出到 `tasks/prd-[功能名称].md`
+- [ ] 下一步：→ task-planning（拆解步骤）或 → issue-creator（拆解为 Issue）
 
 ### 阶段 1：开始
 
@@ -106,18 +124,36 @@ updated: 2026-09-10---
 
 ---
 
-## → PRD 衔接
+## 与项目文档协作
 
-如果用户已有（来自 技能或其他来源），在填充章节时引用它：
-- **引言/目标** → 从 的业务背景与目标中提取
-- **用户故事** → 从 的业务场景与核心用户中推导
-- **功能需求** → 从 的业务规则中推导
-- **非目标** → 从 的范围边界中提取
-- **成功指标** → 从 的验收标准与 KPI 中提取
+### 从项目知识提取需求
 
-始终与用户确认，而不是假设 内容可以直接迁移。
+创建 PRD 前，检查 `YiKnowledge/projects/<project>/` 中是否有可参考的文档：
 
-如果用户已有完整 想快速生成 PRD，推荐使用 `-to-prd` 技能进行系统性转换。PRD 完成后，可用 `prd-to-issues` 拆解为可执行的 Issue。
+- **现有架构** → `projects/<project>/architecture/` — 了解技术约束
+- **已有 PRD** → `projects/<project>/prds/` — 避免重复或冲突
+- **历史 Bug** → `projects/<project>/bugs/` — 了解常见问题区域
+- **开发规范** → `projects/<project>/devs/` — 了解开发流程
+
+始终与用户确认从项目文档中提取的理解，不要假设现有内容可以直接迁移。
+
+### PRD 后的下一步
+
+PRD 完成后，推荐的工作流衔接：
+
+```
+PRD（本技能产出）
+    │
+    ├── 复杂功能 → task-planning 技能
+    │   将功能需求拆解为可执行步骤
+    │   通过三文件模式管理实现过程
+    │
+    └── 明确任务 → issue-creator 技能
+        将用户故事/功能需求转为可追踪的 Issue
+        纳入看板管理和迭代计划
+```
+
+直接告知用户：「PRD 已完成。下一步可以用 **task-planning** 将功能需求拆解为执行步骤，或用 **issue-creator** 将用户故事转为可追踪的 Issue。」
 
 ---
 
@@ -144,6 +180,45 @@ updated: 2026-09-10---
 | 「说明」/「帮助」 | 说明当前状态和下一步 |
 | 「退出」/「结束」 | 结束会话 |
 
+---
+
+## YrY 实战速览
+
+### 例：列表组件体系 PRD 创建
+
+项目中 `YiKnowledge/projects/yivad/devs/2026-09/01-prd-task-列表组件体系.md`（9 人天）的 PRD 创建过程：
+
+```
+上下文提取 → 用户已描述：重构 YiVad 列表页为 ProTable 体系
+项目参考 → 检查 projects/yivad/workflows/ 了解现有规范
+逐节填充 →
+  引言：当前 3 个列表页各自实现分页/筛选/排序逻辑，代码重复率高
+  目标：抽取 4 个共享 Composable，迁移 3 个列表页
+  用户故事：
+    US-001: 作为开发者，我使用 usePage 统一分页逻辑
+    US-002: 作为开发者，我使用 useFilter 统一筛选逻辑
+    US-003: 作为开发者，我使用 useSort 统一排序逻辑
+    US-004: 作为开发者，我使用 useTable 组合上述三个
+  功能需求：FR-1 ProTable 驱动，FR-2 服务端分页对齐 RPC 契约...
+  非目标：不改变后端 API（仅前端重构）
+导出 → tasks/prd-protable-refactor.md
+```
+
+**关键教训**：PRD 的「非目标」章节（明确不做什么）与「目标」同等重要——它防止范围蔓延。
+
+### 例：从 PRD 到 task-planning 的桥接
+
+PRD 中的每个用户故事直接映射为 task_plan 的执行步骤：
+
+```
+PRD US-001 (usePage composable) → task_plan 步骤 1
+PRD US-002 (useFilter composable) → task_plan 步骤 2
+PRD US-003 (useSort composable) → task_plan 步骤 3
+PRD US-004 (useTable composable) → task_plan 步骤 4
+```
+
+验收标准从 PRD 用户故事直接提取，确保实现不偏离需求。
+
 ## 原则
 
 - **优先从上下文中提取。** 用户很可能已经描述了内容。不要让他们重复。
@@ -156,3 +231,9 @@ updated: 2026-09-10---
 ## 参考文件
 
 - `references/example-prd.md` — 完整示例 PRD（任务优先级系统）
+- `../brainstorming/SKILL.md` — 头脑风暴技能（PRD 的上游，先讨论方向再撰写需求）
+- `../task-planning/SKILL.md` — 任务规划技能（PRD 的下游，将功能需求拆解为执行步骤）
+- `../test-driven-development/SKILL.md` — TDD 技能（PRD 验收标准 → 可测试的用例）
+- `../issue-creator/SKILL.md` — Issue 追踪技能（PRD 的下游，将用户故事转为可追踪 Issue）
+- `../../YiKnowledge/projects/<project>/prds/` — 项目已有 PRD 文档（避免重复或冲突）
+- `../shared/glossary.md` — 技能共享术语表（PRD、验收标准等术语定义）

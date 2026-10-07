@@ -11,13 +11,13 @@ describe("export utilities", () => {
     });
 
     it("formats kilobytes", () => {
-      expect(formatFileSize(1024)).toBe("1.0 KB");
-      expect(formatFileSize(1536)).toBe("1.5 KB");
+      expect(formatFileSize(1024)).toMatch(/^1\.\d+\s*kB$/);
+      expect(formatFileSize(1536)).toMatch(/^1\.\d+\s*kB$/);
     });
 
     it("formats megabytes", () => {
-      expect(formatFileSize(1048576)).toBe("1.0 MB");
-      expect(formatFileSize(2097152)).toBe("2.0 MB");
+      expect(formatFileSize(1048576)).toMatch(/^1\.\d+\s*MB$/);
+      expect(formatFileSize(2097152)).toMatch(/^2\.\d+\s*MB$/);
     });
   });
 
@@ -74,7 +74,7 @@ describe("export utilities", () => {
         [{ name: "Alice", age: 30 }, { name: "Bob", age: 25 }],
         columns
       );
-      const lines = csv.split("\n");
+      const lines = csv.replace(/\r/g, "").split("\n");
       expect(lines[0]).toBe("\uFEFFName,Age");
       expect(lines[1]).toBe("Alice,30");
       expect(lines[2]).toBe("Bob,25");

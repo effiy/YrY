@@ -46,7 +46,7 @@
   background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
-  animation: detail-skel-shimmer 1.5s infinite;
+  animation: skeleton-shimmer 1.5s infinite;
   &--short {
     width: 30%;
   }
@@ -65,7 +65,7 @@
   background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 50%, var(--el-fill-color-light) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
-  animation: detail-skel-shimmer 1.5s infinite;
+  animation: skeleton-shimmer 1.5s infinite;
 }
 .detail-skel-row {
   display: flex;
@@ -95,14 +95,7 @@
   border-radius: 10px;
 }
 
-@keyframes detail-skel-shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
+// skeleton-shimmer keyframes come from global styles/skeleton.scss
 
 @keyframes detail-skel-fade-in {
   from {

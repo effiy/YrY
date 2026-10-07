@@ -53,6 +53,7 @@ export const KNOWLEDGE = {
   STORY_READ: '/knowledge-story-read',
   SYNC: '/knowledge-sync',
   WRITE: '/knowledge-write',
+  SEARCH: '/knowledge-search',
 } as const;
 
 // ── RAG (llama_index over YiKnowledge) ─────────────────────────────────
@@ -66,6 +67,13 @@ export const RAG = {
   DECOMPOSE: '/rag-decompose',
   FILE_QUERY: '/rag-file-query',
   FILE_CHAT: '/rag-file-chat',
+  HISTORY: '/rag-history',
+  CHAT_HISTORY: '/rag-chat-history',
+  HISTORY_CLEAR: '/rag-history-clear',
+  CHAT_HISTORY_CLEAR: '/rag-chat-history-clear',
+  HISTORY_PERSISTENT: '/rag-history-persistent',
+  ANALYTICS: '/rag-analytics',
+  CONFIG_UPDATE: '/rag-config-update',
 } as const;
 
 // ── Search (web search + page fetch) ───────────────────────────────────

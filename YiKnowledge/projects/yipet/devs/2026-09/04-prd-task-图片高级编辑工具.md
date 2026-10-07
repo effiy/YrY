@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-M04"
 title: "YP-M04: 图片高级编辑工具 — 18 合 1 开发方案"
@@ -7,14 +8,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 3.6
 source_prd: "04-功能实现-图片高级编辑工具.md"
 source_okr: [yipet-004]
-related_tests: ["04-prd-test-图片高级编辑工具"]
+related_tests: ["04-prd-test-图片高级编辑工具.md"]
+
+type: task
 ---
 
 # YP-M04: 图片高级编辑工具 — 开发方案

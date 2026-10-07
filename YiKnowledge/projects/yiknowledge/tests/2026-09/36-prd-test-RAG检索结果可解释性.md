@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-33: RAG 检索结果可解释性 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-33"
 source_prds: ["36-架构设计-RAG检索结果可解释性"]
 source_modules: ["36-prd-task-RAG检索结果可解释性"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-33: RAG 检索结果可解释性 — 测试用例

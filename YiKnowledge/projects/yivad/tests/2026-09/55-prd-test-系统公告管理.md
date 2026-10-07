@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-121"
 source_prds: ["55-prd-系统公告管理"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 系统公告管理]
+benefit: "测试用例：系统公告管理"
+lifecycle: active
 ---
 # YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计 — 测试规格
 

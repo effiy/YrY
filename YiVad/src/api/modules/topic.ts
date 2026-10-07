@@ -7,8 +7,9 @@
  */
 import { queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiAi";
+import { nanoid } from "nanoid";
 
-export type TopicTree = "leader" | "code-review" | "engineer" | "producter" | "aier" | "srer" | "executiver" | "curator";
+export type TopicTree = "leader" | "code-review" | "engineer" | "product" | "aier" | "sre" | "executive" | "curator";
 
 export interface TopicEntryDocument {
   key: string;
@@ -40,15 +41,15 @@ export function cnameFor(tree: TopicTree, topic: string): string {
 
 export function makeKey(tree: TopicTree, topic: string): string {
   const stamp = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
+  const rand = nanoid(8);
   const prefixMap: Record<TopicTree, string> = {
     leader: "leader",
     "code-review": "cr",
     engineer: "eng",
-    producter: "pm",
+    product: "pm",
     aier: "ai",
-    srer: "sre",
-    executiver: "exec",
+    sre: "sre",
+    executive: "exec",
     curator: "cur"
   };
   const prefix = prefixMap[tree];

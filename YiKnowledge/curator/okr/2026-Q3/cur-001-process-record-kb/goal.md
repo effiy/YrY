@@ -6,6 +6,7 @@ status: active
 period: 2026 Q3
 owner: Curator
 project: YiAi
+tags: [okr, curation, knowledge, governance]
 progress: 100
 created: 2026-08-16
 updated: 2026-09-10

@@ -21,7 +21,7 @@ export function useNotificationSSE(options: SSEOptions = {}) {
 
   function getToken(): string {
     try {
-      const raw = localStorage.getItem("user-store");
+      const raw = localStorage.getItem("yivad-user");
       if (raw) return JSON.parse(raw).token || "";
     } catch {
       /* ignore */

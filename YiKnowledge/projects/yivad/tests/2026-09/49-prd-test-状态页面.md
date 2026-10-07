@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-102: 状态页面 — 服务健康指标、事件历史、维护公告与订阅通知 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-102"
 source_prds: ["49-prd-状态页面"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 状态页面]
+benefit: "测试用例：状态页面"
+lifecycle: active
 ---
 # YV-09-102: 状态页面 — 服务健康指标、事件历史、维护公告与订阅通知 — 测试规格
 

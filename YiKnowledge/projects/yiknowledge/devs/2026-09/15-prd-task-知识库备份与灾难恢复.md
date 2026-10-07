@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-12"
 title: "YK-09-12: 知识库备份与灾难恢复 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "15-架构设计-知识库备份与灾难恢复.md"
 source_okr: [yiknowledge-001]
 related_tests: ["15-prd-test-知识库备份与灾难恢复"]
+
+type: task
 ---
 
 # YK-09-12: 知识库备份与灾难恢复 — 开发方案

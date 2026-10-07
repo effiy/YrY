@@ -97,10 +97,13 @@ function flushErrors(): void {
     timestamp: Date.now()
   });
 
+  const apiBase = import.meta.env.RSBUILD_ENV_API_URL as string || "";
+  const reportUrl = apiBase ? `${apiBase.replace(/\/+$/, "")}/api/error-report` : "/api/error-report";
+
   if (navigator.sendBeacon) {
-    navigator.sendBeacon("/api/error-report", payload);
+    navigator.sendBeacon(reportUrl, payload);
   } else {
-    fetch("/api/error-report", {
+    fetch(reportUrl, {
       method: "POST",
       body: payload,
       headers: { "Content-Type": "application/json" },

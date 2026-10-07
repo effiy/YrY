@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 架构
 roles: [engineer, leader]
 source_okr: [yivad-001]
+related_modules: ["03-prd-task-布局与动态路由"]
+related_tests: ["03-prd-test-布局与动态路由"]
+benefit: "产品需求：布局与动态路由"
+lifecycle: active
 ---
 
 # YV-07-03: 布局与动态路由 — 三栏布局 + 菜单驱动的动态路由

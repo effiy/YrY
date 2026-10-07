@@ -16,7 +16,7 @@ prd_task_id: YK-09-61
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
-roles: [aier, srer]
+roles: [aier, sre]
 ---
 
 # YK-09-61: RAG 检索索引分片 — 大规模知识库的水平扩展方案
@@ -54,7 +54,7 @@ roles: [aier, srer]
 | 分片策略 | 按什么维度拆分？角色目录？项目？时间？大小？ |
 | 跨分片排序 | 不同分片的分数不可直接比较，需要归一化 |
 | 分片数量 | 太少→扩展性不足，太多→并行查询开销超过收益 |
-| 分片均衡 | 某些角色目录文件多（engineer 180），某些少（executiver 45） |
+| 分片均衡 | 某些角色目录文件多（engineer 180），某些少（executive 45） |
 | 分片动态管理 | 新增角色目录/项目时自动创建分片 |
 
 ---
@@ -85,11 +85,11 @@ flowchart TD
 |----------|--------|------|----------|
 | engineer | 180 | 22.5% | 45MB |
 | aier | 150 | 18.8% | 38MB |
-| srer | 130 | 16.3% | 33MB |
+| sre | 130 | 16.3% | 33MB |
 | leader | 110 | 13.8% | 28MB |
-| producter | 95 | 11.9% | 24MB |
+| product | 95 | 11.9% | 24MB |
 | curator | 80 | 10.0% | 20MB |
-| executiver | 45 | 5.6% | 11MB |
+| executive | 45 | 5.6% | 11MB |
 | projects | 110 | 13.8% | 28MB |
 | **总计** | **900** | **100%** | **227MB** |
 
@@ -110,7 +110,7 @@ flowchart TD
 - 语义清晰——每个角色目录有独立的领域边界
 - 检索时可按角色目录过滤（常见需求）
 - 实现简单——目录结构与分片一一对应
-- 不均衡问题可通过合并小分片解决（executiver + leader → leadership）
+- 不均衡问题可通过合并小分片解决（executive + leader → leadership）
 
 ### D-02: 跨分片排序策略
 
@@ -201,11 +201,11 @@ class ShardedIndexManager:
     SHARD_CONFIG = {
         'engineer':    {'path': 'faiss_index/engineer',    'min_docs': 50},
         'aier':        {'path': 'faiss_index/aier',        'min_docs': 50},
-        'srer':        {'path': 'faiss_index/srer',        'min_docs': 50},
+        'sre':        {'path': 'faiss_index/sre',        'min_docs': 50},
         'leader':      {'path': 'faiss_index/leader',      'min_docs': 50},
-        'producter':   {'path': 'faiss_index/producter',   'min_docs': 50},
+        'product':   {'path': 'faiss_index/product',   'min_docs': 50},
         'curator':     {'path': 'faiss_index/curator',     'min_docs': 50},
-        'executiver':  {'path': 'faiss_index/executiver',  'min_docs': 50},
+        'executive':  {'path': 'faiss_index/executive',  'min_docs': 50},
         'projects':    {'path': 'faiss_index/projects',    'min_docs': 50},
         'default':     {'path': 'faiss_index/default',     'min_docs': 0},
     }
@@ -228,7 +228,7 @@ class ShardedIndexManager:
             if shard_name == 'default':
                 # default 分片收集不属于任何角色的文件
                 docs = await db.knowledge_files.find({
-                    'path': {'$not': {'$regex': '^(engineer|aier|srer|leader|producter|curator|executiver|projects)/'}}
+                    'path': {'$not': {'$regex': '^(engineer|aier|sre|leader|product|curator|executive|projects)/'}}
                 }).to_list(None)
             else:
                 docs = await db.knowledge_files.find({
@@ -483,9 +483,9 @@ class TestShardedIndex:
            THEN 仅检索 engineer 分片"""
 
     async def test_small_shard_merged_to_default(self):
-        """GIVEN executiver 分片仅 30 个文档 (< 50)
+        """GIVEN executive 分片仅 30 个文档 (< 50)
            WHEN 构建分片
-           THEN executiver 被合并到 default 分片"""
+           THEN executive 被合并到 default 分片"""
 
     async def test_max_shards_limit(self):
         """GIVEN 已有 10 个分片

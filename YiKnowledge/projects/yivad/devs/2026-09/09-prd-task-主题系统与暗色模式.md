@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-26"
 title: "主题系统与暗色模式 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "09-prd-主题系统与暗色模式.md"
 related_tests: ["YV-09-26"]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 主题系统与暗色模式]
+benefit: "开发方案：task-主题系统与暗色模式"
+lifecycle: active
 ---
 
 # 主题系统与暗色模式 — 开发方案

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-94: 会议纪要管理 — 会议笔记管理、会议日程集成、行动项提取、参会人员追踪、系列会议管理、决策记录、分享会议笔记、会议笔记模板 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-94"
 source_prds: ["43-prd-会议纪要管理"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 会议纪要管理]
+benefit: "测试用例：会议纪要管理"
+lifecycle: active
 ---
 # YV-09-94: 会议纪要管理 — 会议笔记管理、会议日程集成、行动项提取、参会人员追踪、系列会议管理、决策记录、分享会议笔记、会议笔记模板 — 测试规格
 

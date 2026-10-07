@@ -1,5 +1,6 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useWatermarkStore } from "@/stores/modules/watermark";
+import { escape as escapeXml } from "lodash-es";
 
 interface WatermarkConfig {
   username: string;
@@ -9,10 +10,6 @@ interface WatermarkConfig {
   fontSize: number;
   fontFamily: string;
   timestamp: Date;
-}
-
-function escapeXml(str: string): string {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 function generateWatermarkSVG(config: WatermarkConfig): string {

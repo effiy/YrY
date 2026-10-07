@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-137: 用户反馈收集 — 应用内反馈组件、反馈分类、截图附件、反馈分类面板、反馈转Issue、反馈分析 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-137"
 source_prds: ["67-prd-用户反馈收集"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户反馈收集]
+benefit: "测试用例：用户反馈收集"
+lifecycle: active
 ---
 # YV-09-137: 用户反馈收集 — 应用内反馈组件、反馈分类、截图附件、反馈分类面板、反馈转Issue、反馈分析 — 测试规格
 

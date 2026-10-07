@@ -7,7 +7,9 @@ framework: OKR
 trend: down
 progress: 100
 title: Engineer M01 0 新增类型错误
-updated: 2026-09-10---
+tags: [okr, type-safety, build, engineering, yivad]
+updated: 2026-09-10
+---
 
 # 🧹 0 新增类型错误
 

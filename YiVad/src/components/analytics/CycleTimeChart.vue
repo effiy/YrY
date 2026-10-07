@@ -10,14 +10,15 @@ import type { ECOption } from "@/components/ECharts/config";
 interface Props {
   data: { label: string; p50: number; p80: number; p95: number }[];
   title?: string;
+  showLegend?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { showLegend: true });
 
 const option = computed<ECOption>(() => ({
   tooltip: { trigger: "axis" as const },
-  legend: { data: ["P50", "P80", "P95"], top: 0 },
-  grid: { top: 40, right: 16, bottom: 24, left: 48 },
+  legend: props.showLegend ? { data: ["P50", "P80", "P95"], top: 0 } : undefined,
+  grid: { top: props.showLegend ? 40 : 16, right: 16, bottom: 24, left: 48 },
   xAxis: { type: "category" as const, data: props.data.map(d => d.label) },
   yAxis: { type: "value" as const, name: "days" },
   series: [

@@ -1,19 +1,15 @@
 <script setup lang="ts" name="aiChatQuickButtons">
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import { QUICK_BUTTONS, QUICK_BUTTONS_NEW } from "../constants";
+import { QUICK_BUTTONS } from "../constants";
 import type { QuickButton } from "../constants";
 
 const store = useAiChatStore();
 
 const btnIcons: Record<string, string> = {
-  roadmap_review: "🗺",
-  adr_review: "📋",
-  dora_metrics: "📊",
-  tech_debt: "🛠",
-  tech_selection: "🔍",
-  org_diagnose: "🏢",
-  postmortem: "🚨",
-  capacity_cost: "💰"
+  code_review: "🔍",
+  explain: "💡",
+  write_docs: "📝",
+  debug: "🐛"
 };
 
 function onClick(b: QuickButton) {
@@ -38,18 +34,6 @@ function onClick(b: QuickButton) {
     >
       <span class="qb-chip-icon">{{ btnIcons[b.value] || "💡" }}</span>
       <span class="qb-chip-label">{{ b.label }}</span>
-    </button>
-    <button
-      v-for="b in QUICK_BUTTONS_NEW"
-      :key="b.value"
-      class="qb-chip qb-chip--special"
-      :disabled="store.sending"
-      :title="b.content"
-      @click="onClick(b)"
-    >
-      <span class="qb-chip-icon">{{ btnIcons[b.value] || "✨" }}</span>
-      <span class="qb-chip-label">{{ b.label }}</span>
-      <span class="qb-chip-badge">template</span>
     </button>
   </div>
 </template>

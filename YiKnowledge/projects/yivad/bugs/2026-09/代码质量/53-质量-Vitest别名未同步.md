@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-Vitest别名未同步"
+lifecycle: active
 ---
 
 # vitest 配置中 resolve.alias 与 rsbuild 不完全一致
@@ -57,7 +59,5 @@ resolve: {
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **别名配置的单一来源原则**：tsconfig `paths` → rsbuild 和 vitest 自动解析（使用 `vite-tsconfig-paths` 插件），是消除三份独立维护的唯一可靠方案。任何手动维护的同步最终都会出现漂移
 

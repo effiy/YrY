@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-48"
 title: "YV-09-48: API 调试控制台 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "22-prd-API调试控制台.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, API调试控制台]
+benefit: "开发方案：task-API调试控制台"
+lifecycle: active
 ---
 
 # YV-09-48: API 调试控制台 — 开发方案

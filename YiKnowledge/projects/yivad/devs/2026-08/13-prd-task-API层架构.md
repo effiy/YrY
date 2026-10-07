@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-18"
 title: "YV-08-18: API 层架构增强 — 拦截器链 + 请求取消 + 指数退避重试 + 并发批处理 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 1.0
 source_prd: "13-prd-API层架构.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, API层架构]
+benefit: "开发方案：task-API层架构"
+lifecycle: active
 ---
 
 # YV-08-18: API 层架构增强 — 开发方案

@@ -1,0 +1,204 @@
+// ── Context bar ──
+.rc-ctx {
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+.rc-ctx--on {
+  background: var(--el-color-primary-light-9);
+  border-color: var(--el-color-primary-light-7);
+}
+.rc-ctx-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.rc-ctx-n {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.rc-ctx-scope {
+  padding: 1px 8px;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: var(--el-color-primary);
+  background: var(--el-color-primary-light-7);
+  border-radius: 3px;
+}
+.rc-ctx-empty-tag {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+}
+.rc-ctx-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 10px;
+}
+.rc-ctx-file {
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  background: var(--el-color-primary-light-8);
+  border-radius: 4px;
+  transition: background 0.1s;
+  &:hover {
+    color: var(--el-color-white);
+    background: var(--el-color-primary-light-6);
+  }
+}
+
+// ── Tabs ──
+.rc-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 18px;
+  border-bottom: 2px solid var(--el-border-color-lighter);
+}
+.rc-tab {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 22px;
+  margin-bottom: -2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+.rc-tab:hover {
+  color: var(--el-text-color-primary);
+}
+.rc-tab.on {
+  color: var(--el-color-primary);
+  border-bottom-color: var(--el-color-primary);
+}
+
+// ── Panels ──
+.rc-panel {
+  min-height: 200px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+// ── Query tab ──
+.rc-query-input {
+  margin-bottom: 16px;
+}
+
+// ── Results ──
+.rc-results-head {
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.rc-result-item {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition: border-color 0.15s;
+  &:hover {
+    border-color: var(--el-color-primary-light-7);
+  }
+}
+.rc-result-path {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.rc-result-score {
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+  border-radius: 4px;
+}
+.rc-result-snippet {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-regular);
+}
+
+// ── History ──
+.rc-history-item {
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+}
+.rc-history-q {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+}
+.rc-history-meta {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
+.rc-history-grade {
+  font-weight: 600;
+  color: var(--el-color-warning);
+}
+
+// ── States ──
+.rc-empty,
+.rc-loading {
+  padding: 32px 0;
+  font-size: 13px;
+  color: var(--el-text-color-placeholder);
+  text-align: center;
+}
+.rc-error {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+  border-radius: 8px;
+}
+
+// ── File preview ──
+.rc-fp-loading {
+  padding: 32px 0;
+  color: var(--el-text-color-placeholder);
+  text-align: center;
+}
+.rc-fp-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  :deep(pre) {
+    padding: 12px;
+    overflow-x: auto;
+    background: var(--el-fill-color-lighter);
+    border-radius: 6px;
+  }
+  :deep(code) {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+  }
+}

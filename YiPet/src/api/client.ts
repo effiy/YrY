@@ -94,7 +94,10 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
   const { baseUrl, headers = {}, token: configToken } = config;
   const authHeaders: Record<string, string> = {};
   const token = (configToken || '').trim();
-  if (token) authHeaders['X-Token'] = token;
+  if (token) {
+    authHeaders['Authorization'] = `Bearer ${token}`;
+    authHeaders['X-Token'] = token;
+  }
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream, application/json',
@@ -171,6 +174,33 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
   // ── SSE Streaming ────────────────────────────────────────────────────
 
   const STREAM_TIMEOUT_MS = 600_000; // 10 min — matches YiVad ragService
+  const READ_TIMEOUT_MS = 30_000;
+
+  /**
+   * Parse a single SSE frame (the text between two {@code \n\n} delimiters)
+   * into a StreamChunk. Returns null for empty frames (comments, keepalives).
+   */
+  function parseSSEFrame(raw: string): StreamChunk | null {
+    const lines = raw.split('\n');
+    let dataStr = '';
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t || t.startsWith(':')) continue;
+      if (t.startsWith('data:')) { dataStr += t[5] === ' ' ? t.slice(6) : t.slice(5); continue; }
+      if (t.startsWith('event:') && t.slice(6).trim() === 'error') return { done: true, error: 'Stream error' };
+    }
+    if (!dataStr) return null;
+    if (dataStr === '[DONE]') return { done: true };
+
+    try {
+      const parsed = JSON.parse(dataStr);
+      if (parsed.error) return { done: true, error: String(parsed.error) };
+      if (parsed.done) return { done: true };
+      return { done: false, data: parsed.data ?? parsed };
+    } catch {
+      return { done: false, data: dataStr };
+    }
+  }
 
   async function* stream(
     path: string,
@@ -207,8 +237,6 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
       const decoder = new TextDecoder();
       let buffer = '';
 
-      const READ_TIMEOUT_MS = 30_000; // 30s per-read timeout — guards against stalled connections
-
       while (true) {
         let readResult: ReadableStreamReadResult<Uint8Array>;
         try {
@@ -227,57 +255,41 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
         }
 
         const { done, value } = readResult;
-        if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
+        if (!done && value) {
+          buffer += decoder.decode(value, { stream: true });
+        }
+        if (done) {
+          buffer += decoder.decode(); // flush multi-byte sequences
+          const remaining = buffer.trim();
+          if (remaining) {
+            const frame = parseSSEFrame(remaining);
+            // On final flush, ignore terminal signals (done/error) — the
+            // stream is already ending. Only yield a last data chunk.
+            if (frame && !frame.done && !frame.error) {
+              yield frame;
+            }
+          }
+          break;
+        }
+
         const messages = buffer.split('\n\n');
         buffer = messages.pop() || '';
 
         for (const message of messages) {
-          const lines = message.split('\n');
-          let dataStr = '';
-          let hasError = false;
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith(':')) continue;
-            if (trimmed.startsWith('data: ')) {
-              dataStr += trimmed.slice(6);
-            } else if (trimmed.startsWith('event: error')) {
-              hasError = true;
-            }
-          }
-          if (hasError) {
-            yield { done: true, error: 'Stream error' };
-            return;
-          }
-          if (!dataStr) continue;
-          if (dataStr === '[DONE]') {
-            yield { done: true };
-            return;
-          }
-          try {
-            const parsed = JSON.parse(dataStr);
-            if (parsed.error) {
-              yield { done: true, error: String(parsed.error) };
-              return;
-            }
-            if (parsed.done) {
-              yield { done: true };
-              return;
-            }
-            yield { done: false, data: parsed.data ?? parsed };
-          } catch {
-            yield { done: false, data: dataStr };
-          }
+          const frame = parseSSEFrame(message);
+          if (!frame) continue;
+          yield frame;
+          if (frame.done) return;
         }
       }
       yield { done: true };
     } catch (err) {
       clearTimeout(timeoutId);
       // Preserve AbortError identity — otherwise streamWithCallback wraps the
-      // message into a fresh `new Error(...)` and the controller's
-      // `err.name === 'AbortError'` check fails, mislabeling user-initiated
-      // stops as errors (pet message marked `error: true` instead of `aborted: true`).
+      // message into a fresh Error and the err.name === 'AbortError' check
+      // fails, mislabeling user stops as errors (pet message marked error:true
+      // instead of aborted:true).
       if ((err as Error)?.name === 'AbortError') {
         if (timedOut) {
           yield { done: true, error: `Stream request timed out after ${STREAM_TIMEOUT_MS / 1000}s` };

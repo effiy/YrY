@@ -81,7 +81,7 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
 <style scoped lang="scss">
 .pst-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
 }
 .pst-tile {
@@ -192,6 +192,12 @@ onBeforeUnmount(() => clearTimeout(pulseTimer));
 }
 .pst-tile--risk .pst-value {
   color: #ee6666;
+}
+.pst-tile--docs {
+  border-left-color: #9a60b4;
+  .pst-icon {
+    background: linear-gradient(135deg, #9a60b4, #7b4da0);
+  }
 }
 
 @keyframes pst-pulse {

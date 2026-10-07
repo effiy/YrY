@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计"
 tags: [需求文档, 公告管理, 系统通知, Banner, 定向投放, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["55-prd-task-系统公告管理"]
+related_tests: ["55-prd-test-系统公告管理"]
+benefit: "产品需求：系统公告管理"
+lifecycle: active
 ---
 
 # YV-09-121: 系统公告管理 — 定向公告、定时发布、模板管理、可关闭记忆与分析统计

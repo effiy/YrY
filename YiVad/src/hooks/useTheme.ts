@@ -158,7 +158,7 @@ export const useTheme = () => {
   /** 应用 Element Plus 主色阶（基于当前 primary + 明暗状态）。 */
   function applyBrand(primaryColor: string, isDarkMode: boolean): void {
     if (!isValidHex(primaryColor)) {
-      // eslint-disable-next-line no-console
+       
       console.warn(`[useTheme] Invalid primary color: ${primaryColor}`);
       return;
     }

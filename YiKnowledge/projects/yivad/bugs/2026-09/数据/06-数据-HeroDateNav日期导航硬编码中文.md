@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-07)
 frequency: always
+benefit: "缺陷记录：数据-HeroDateNav日期导航硬编码中文"
+lifecycle: active
 ---
 
 ## Description
@@ -65,13 +67,12 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 组件模板中 `<el-button>` 文本和 `title` 属性必须使用 i18n 绑定（`:title` 而非 `title`） |
+| 测试 | 语言切换后快照测试：切换 en → 截取页面 → 断言无 CJK 字符出现在用户可见区域 |
+| 流程 | 新增组件审查清单：「所有原生 HTML title/alt/placeholder 属性是否已国际化」 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **属性国际化是常见遗漏点**：开发者容易记住 `{{ t('key') }}` 替换文本内容，但 `title`、`placeholder`、`aria-label` 等 HTML 属性常被遗漏。Vue 中动态属性需要 `:title` 前缀绑定才能使用 `$t()`
+- **i18n key 的完整性**：组件中使用了某个 i18n key（如 `dateFilter.today`），不能假定所有相关 key 都已存在。本例中 `dateFilter.clear` 需要同步添加到 zh.ts 和 en.ts
 

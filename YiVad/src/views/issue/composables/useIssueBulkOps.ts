@@ -1,6 +1,7 @@
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import i18n from "@/languages";
 import type { useIssueStore } from "@/stores/modules/issue";
+import { confirm } from "@/hooks/useConfirmAction";
 
 const t = (key: string, options?: Record<string, any>) => i18n.global.t(key, options as any);
 
@@ -8,23 +9,21 @@ export function useIssueBulkOps(opts: { store: ReturnType<typeof useIssueStore>;
   const { store, refreshTable } = opts;
 
   async function batchDelete(ids: (string | number)[]) {
-    ElMessageBox.confirm(t("issue.list.bulkDeleteConfirm", { count: ids.length }), t("issue.list.bulkDeleteTitle"), {
-      confirmButtonText: t("issue.dialog.delete"),
-      cancelButtonText: t("issue.dialog.cancel"),
-      type: "error"
-    })
-      .then(async () => {
-        for (const id of ids) {
-          try {
-            await store.removeIssue(String(id));
-          } catch {
-            /* continue */
-          }
-        }
-        ElMessage.success(t("issue.list.bulkDeleteSuccess", { count: ids.length }));
-        refreshTable();
-      })
-      .catch(() => {});
+    const ok = await confirm(
+      t("issue.list.bulkDeleteConfirm", { count: ids.length }),
+      t("issue.list.bulkDeleteTitle"),
+      "error"
+    );
+    if (!ok) return;
+    for (const id of ids) {
+      try {
+        await store.removeIssue(String(id));
+      } catch {
+        /* continue */
+      }
+    }
+    ElMessage.success(t("issue.list.bulkDeleteSuccess", { count: ids.length }));
+    refreshTable();
   }
 
   async function bulkChangeStatus(scope: { selectedListIds?: (string | number)[] }, status: string) {

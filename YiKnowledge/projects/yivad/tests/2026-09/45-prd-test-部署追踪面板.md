@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "部署追踪面板 — 测试用例"
 status: 待开始
 priority: P3
@@ -11,6 +10,12 @@ project: YiVad
 prd_month: "202609"
 source_prds: ["45-prd-部署追踪面板"]
 source_modules: ["45-prd-task-部署追踪面板"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 部署追踪面板]
+benefit: "测试用例：部署追踪面板"
+lifecycle: active
 ---
 
 # 部署追踪面板 — 测试用例
@@ -38,24 +43,24 @@ source_modules: ["45-prd-task-部署追踪面板"]
 
 | 范围 | 内容 |
 |------|------|
-| 功能验证 | 参见 PRD 功能需求 |
+| 功能验证 | 部署记录 CRUD、状态流转、部署时间线、关联 Issue 追踪 |
 
 ### 1.2 不在范围内
 
 | 排除项 | 原因 |
 |--------|------|
-| — | — |
+| CI/CD 平台直接集成（通过 Webhook 或手动录入） | 超出初版范围 |
 
 ---
 
 <a id="sec-2"></a>
 ## 二、需求覆盖矩阵
 
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
-
 | FR | 需求 | 单元 | 组件 | 集成 | 状态 |
 |----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+| FR-1 | 创建部署 | 选择项目+版本 → 填写变更说明 → 开始部署 | 集成 | 待开始 |
+| FR-2 | 状态流转 | pending→deploying→deployed→failed | 单元 | 待开始 |
+| FR-3 | 部署时间线 | ECharts 甘特图 → 按时间/项目过滤 | 组件 | 待开始 |
 
 ---
 

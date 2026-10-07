@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-M21"
 title: "YK-09-M21: 内容知识工程 — 开发方案"
@@ -16,6 +17,8 @@ estimate_backend: 4.5
 source_prd: "03-功能实现-内容知识工程.md"
 source_okr: [yiknowledge-001]
 related_tests: ["03-prd-test-内容知识工程"]
+
+type: task
 ---
 
 # YK-09-M21: 内容知识工程 — 开发方案

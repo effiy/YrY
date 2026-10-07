@@ -71,11 +71,11 @@ function onCancel() {
     width="520"
     :close-on-click-modal="false"
     append-to-body
-    @update:model-value="v => !v && onCancel()"
+    @update:model-value="(v: boolean) => !v && onCancel()"
   >
     <el-form label-position="top" class="se-form">
       <el-form-item label="Title">
-        <el-input v-model="titleDraft" placeholder="Conversation title" maxlength="200" show-word-limit clearable />
+        <el-input v-model="titleDraft" placeholder="Conversation title" maxlength="200" show-word-limit clearable autofocus />
       </el-form-item>
       <el-form-item label="Page title">
         <el-input v-model="pageTitleDraft" placeholder="Optional: page title (used for context hint)" maxlength="200" clearable />

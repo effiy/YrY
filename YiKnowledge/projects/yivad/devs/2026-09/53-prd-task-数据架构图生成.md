@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-114"
 title: "YV-09-114: 数据架构图生成 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "53-prd-数据架构图生成.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 数据架构图生成]
+roles: [engineer]
+benefit: "开发方案：task-数据架构图生成"
+lifecycle: active
 ---
 
 # YV-09-114: 数据架构图生成 — 开发方案
@@ -31,6 +37,25 @@ source_prd: "53-prd-数据架构图生成.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/data-arch`)，从数据库 Schema 自动生成 ER 图/架构图
+
+**数据模型**：
+```
+MongoDB 集合结构通过 YiAi 新端点获取；图形渲染使用 Mermaid.js 或 D3.js
+```
+
+**组件树**：
+```
+DataArchPage.vue (即时时渲染) + SchemaSelector.vue（选择集合/关系）
+```
+
+**关键决策**：
+Mermaid.js 渲染 ER 图更简单（声明式），D3.js 更灵活但开发成本高；初版用 Mermaid.js
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -40,12 +65,8 @@ source_prd: "53-prd-数据架构图生成.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

@@ -1,6 +1,6 @@
 <template>
   <DetailSkeleton v-if="store.detailLoading" />
-  <div v-else-if="store.selectedBug" class="bug-detail">
+  <div v-else-if="store.selectedBug" class="bug-detail page">
     <div class="bug-detail__head">
       <div class="bug-detail__head-left">
         <el-button text :icon="ArrowLeft" @click="goBack">Bugs</el-button>
@@ -26,6 +26,9 @@
             <el-tag type="info" size="small" effect="plain">
               {{ store.selectedBug.type }}
             </el-tag>
+            <span v-if="store.selectedBug.updatedAt" class="bug-detail__freshness" :class="{ 'is-stale': now - new Date(store.selectedBug.updatedAt).getTime() > 300000 }">
+              · {{ formatRelativeTime(store.selectedBug.updatedAt, now) }}
+            </span>
           </div>
         </div>
       </div>
@@ -42,6 +45,18 @@
           >Issue</el-button
         >
         <el-button :icon="Edit" @click="store.openEditDialog(store.selectedBug, store.selectedBugContent)">Edit</el-button>
+        <el-dropdown trigger="click" @command="(cmd: string) => quickChangeStatus(cmd)">
+          <el-button :icon="CircleCheck" type="success" plain>Change Status</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-for="s in quickStatuses(store.selectedBug.status)"
+                :key="s.value"
+                :command="s.value"
+              >{{ s.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button :icon="Delete" type="danger" plain @click="handleDelete">Delete</el-button>
       </div>
     </div>
@@ -74,7 +89,7 @@
               <el-icon><Grid /></el-icon> {{ linkedModule.name }}
             </el-button>
           </div>
-          <div class="bug-detail__field">
+          <div class="bug-detail__field" v-else>
             <span class="bug-detail__field-label">Module</span>
             <span class="bug-detail__field-value">{{ store.selectedBug.module || "-" }}</span>
           </div>
@@ -108,11 +123,17 @@
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Created</span>
-            <span class="bug-detail__field-value">{{ formatDate(store.selectedBug.createdAt) }}</span>
+            <span class="bug-detail__field-value">{{ formatAbsolute(store.selectedBug.createdAt) }}</span>
           </div>
           <div class="bug-detail__field">
             <span class="bug-detail__field-label">Updated</span>
-            <span class="bug-detail__field-value">{{ formatDate(store.selectedBug.updatedAt) }}</span>
+            <span class="bug-detail__field-value">{{ formatAbsolute(store.selectedBug.updatedAt) }}</span>
+          </div>
+          <div class="bug-detail__field">
+            <span class="bug-detail__field-label">{{ isResolved ? 'Resolved In' : 'Age' }}</span>
+            <span class="bug-detail__field-value" :class="{ 'bug-detail__field-value--warn': !isResolved && ageDays > 14 }">
+              {{ ageDisplay }}
+            </span>
           </div>
           <div class="bug-detail__field" v-if="store.selectedBug.tags.length">
             <span class="bug-detail__field-label">Tags</span>
@@ -128,44 +149,70 @@
       <div class="bug-detail__main">
         <div class="bug-detail__section">
           <h3>Description</h3>
-          <div v-if="store.selectedBugContent?.description" class="bug-detail__text">
-            {{ store.selectedBugContent.description }}
-          </div>
-          <el-empty v-else description="No description" :image-size="40" />
+          <BugContentSection :content="store.selectedBugContent?.description ?? ''" empty-text="No description" />
         </div>
 
         <div class="bug-detail__section">
           <h3>Steps to Reproduce</h3>
-          <ol v-if="store.selectedBugContent?.stepsToReproduce.length" class="bug-detail__steps">
-            <li v-for="(s, i) in store.selectedBugContent.stepsToReproduce" :key="i">{{ s }}</li>
-          </ol>
+          <BugContentSection
+            v-if="store.selectedBugContent?.stepsToReproduce.length"
+            :content="store.selectedBugContent.stepsToReproduce.map((s, i) => `${i + 1}. ${s}`).join('\n')"
+            empty-text="No steps recorded"
+          />
           <el-empty v-else description="No steps recorded" :image-size="40" />
         </div>
 
         <div class="bug-detail__section">
           <h3>Expected Result</h3>
-          <div v-if="store.selectedBugContent?.expectedResult" class="bug-detail__text">
-            {{ store.selectedBugContent.expectedResult }}
-          </div>
-          <el-empty v-else description="Not specified" :image-size="40" />
+          <BugContentSection :content="store.selectedBugContent?.expectedResult ?? ''" empty-text="Not specified" />
         </div>
 
         <div class="bug-detail__section">
           <h3>Actual Result</h3>
-          <div v-if="store.selectedBugContent?.actualResult" class="bug-detail__text">
-            {{ store.selectedBugContent.actualResult }}
-          </div>
-          <el-empty v-else description="Not specified" :image-size="40" />
+          <BugContentSection :content="store.selectedBugContent?.actualResult ?? ''" empty-text="Not specified" />
         </div>
 
         <div class="bug-detail__section" v-if="store.selectedBugContent?.causeProblem">
           <h3>Root Cause</h3>
-          <div class="bug-detail__text">{{ store.selectedBugContent.causeProblem }}</div>
+          <BugContentSection :content="store.selectedBugContent.causeProblem" />
         </div>
 
         <div class="bug-detail__section" v-if="store.selectedBugContent?.solution">
           <h3>Solution</h3>
-          <div class="bug-detail__text">{{ store.selectedBugContent.solution }}</div>
+          <BugContentSection :content="store.selectedBugContent.solution" />
+        </div>
+
+        <div class="bug-detail__section">
+          <h3>Timeline</h3>
+          <el-timeline>
+            <el-timeline-item :timestamp="formatAbsolute(store.selectedBug.createdAt)" placement="top" type="primary">
+              Created
+            </el-timeline-item>
+            <el-timeline-item
+              v-if="store.selectedBug.resolvedAt"
+              :timestamp="formatAbsolute(store.selectedBug.resolvedAt)"
+              placement="top"
+              type="success"
+            >
+              Resolved
+            </el-timeline-item>
+            <el-timeline-item
+              v-if="store.selectedBug.closedAt"
+              :timestamp="formatAbsolute(store.selectedBug.closedAt)"
+              placement="top"
+              type="info"
+            >
+              Closed
+            </el-timeline-item>
+            <el-timeline-item
+              v-if="store.selectedBug.updatedAt && store.selectedBug.updatedAt !== store.selectedBug.createdAt"
+              :timestamp="formatAbsolute(store.selectedBug.updatedAt)"
+              placement="top"
+              type="warning"
+            >
+              Last Updated
+            </el-timeline-item>
+          </el-timeline>
         </div>
       </div>
     </div>
@@ -183,17 +230,22 @@
 <script setup lang="ts" name="bugDetail">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowLeft, Edit, Delete, Link, WarningFilled, Grid } from "@element-plus/icons-vue";
+import { ArrowLeft, Edit, Delete, Link, WarningFilled, Grid, CircleCheck } from "@element-plus/icons-vue";
 import { EntityBreadcrumb } from "@/components";
 import DetailSkeleton from "@/components/DetailSkeleton.vue";
+import BugContentSection from "./components/BugContentSection.vue";
 import { useBugStore } from "@/stores/modules/bug";
 import { useProjectStore } from "@/stores/modules/project";
 import { useIssueStore } from "@/stores/modules/issue";
 import type { BugSeverity, BugPriority, BugStatus } from "@/api/modules/bug";
+import { updateBug } from "@/api/modules/bug";
 import { getIssueList } from "@/api/modules/issueService";
 import { getModuleList } from "@/api/modules/moduleService";
 import type { Issue } from "@/api/modules/issueService";
 import type { Module } from "@/api/modules/moduleService";
+import { formatAbsolute, formatRelativeTime } from "@/utils/datetime";
+import { useNow } from "@/hooks/useNow";
+import { ElMessage } from "element-plus";
 
 const route = useRoute();
 const router = useRouter();
@@ -210,6 +262,27 @@ const linkedIssue = ref<Issue | null>(null);
 const linkedModule = ref<Module | null>(null);
 const linkedDataLoading = ref(false);
 const linkedDataError = ref(false);
+const now = useNow(30_000);
+
+// Bug age / resolution time
+const RESOLVED_STATUSES = new Set(["resolved", "closed", "fixed"]);
+const isResolved = computed(() => {
+  const bug = store.selectedBug;
+  return bug ? RESOLVED_STATUSES.has(bug.status) : false;
+});
+const ageMs = computed(() => {
+  const bug = store.selectedBug;
+  if (!bug || !bug.createdAt) return 0;
+  const end = isResolved.value ? (bug.updatedAt || bug.createdAt) : now.value;
+  return end - bug.createdAt;
+});
+const ageDays = computed(() => Math.floor(ageMs.value / 86400000));
+const ageHours = computed(() => Math.floor(ageMs.value / 3600000));
+const ageDisplay = computed(() => {
+  if (ageDays.value > 0) return `${ageDays.value}d`;
+  if (ageHours.value > 0) return `${ageHours.value}h`;
+  return "< 1h";
+});
 
 async function loadLinkedEntities() {
   const bug = store.selectedBug;
@@ -269,9 +342,52 @@ function handleDelete() {
   }
 }
 
-function formatDate(ts: number): string {
-  return new Date(ts).toLocaleString("zh-CN");
+// ── Inline status change ──
+const STATUS_TRANSITIONS: Record<string, Array<{ value: string; label: string }>> = {
+  open: [
+    { value: "in_progress", label: "Start Progress" },
+    { value: "resolved", label: "Resolve" },
+    { value: "closed", label: "Close" },
+    { value: "rejected", label: "Reject" }
+  ],
+  in_progress: [
+    { value: "resolved", label: "Resolve" },
+    { value: "closed", label: "Close" },
+    { value: "rejected", label: "Reject" },
+    { value: "reopened", label: "Reopen" }
+  ],
+  resolved: [
+    { value: "closed", label: "Close" },
+    { value: "reopened", label: "Reopen" }
+  ],
+  closed: [{ value: "reopened", label: "Reopen" }],
+  rejected: [
+    { value: "open", label: "Reopen" },
+    { value: "in_progress", label: "Start Progress" }
+  ],
+  reopened: [
+    { value: "in_progress", label: "Start Progress" },
+    { value: "resolved", label: "Resolve" },
+    { value: "closed", label: "Close" }
+  ]
+};
+
+function quickStatuses(current: string) {
+  return STATUS_TRANSITIONS[current] || [];
 }
+
+async function quickChangeStatus(newStatus: string) {
+  const bug = store.selectedBug;
+  if (!bug) return;
+  try {
+    await updateBug(bug.key, { status: newStatus, updatedAt: Date.now() } as any);
+    ElMessage.success(`Bug ${bug.key} → ${newStatus}`);
+    await store.loadDetail(bug.key);
+  } catch (e: any) {
+    ElMessage.error(e?.message || "Status change failed");
+  }
+}
+// formatAbsolute comes from @/utils/datetime
 
 function severityTagType(s: BugSeverity): "danger" | "warning" | "info" {
   const map: Record<BugSeverity, "danger" | "warning" | "info"> = {
@@ -309,9 +425,8 @@ function statusTagType(s: BugStatus): "primary" | "warning" | "success" | "info"
 <style scoped lang="scss">
 .bug-detail {
   height: calc(100vh - 95px);
-  padding: 24px;
   overflow: auto;
-  background: var(--el-bg-color-page);
+  // padding + background come from global .page class
   &__head {
     display: flex;
     align-items: flex-start;
@@ -340,6 +455,10 @@ function statusTagType(s: BugStatus): "primary" | "warning" | "success" | "info"
       background: var(--el-fill-color-light);
       border-radius: 4px;
     }
+  }
+  &__freshness {
+    font-size: 11px; font-weight: 500; color: var(--el-color-success); white-space: nowrap;
+    &.is-stale { color: var(--el-text-color-placeholder); }
   }
   &__head-actions {
     display: flex;

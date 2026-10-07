@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "代码质量收尾 — 测试用例"
 status: 已完成
 priority: 中
@@ -11,6 +10,12 @@ project: YiVad
 prd_month: "202609"
 source_prds: ["06-prd-代码质量收尾"]
 source_modules: ["06-prd-task-代码质量收尾"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 代码质量收尾]
+benefit: "测试用例：代码质量收尾"
+lifecycle: active
 ---
 
 # 代码质量收尾 — 测试用例

@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "扩展遥测与统计 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["26-基础设施-扩展遥测与匿名统计"]
+source_prds: ["26-架构设计-扩展遥测与匿名统计.md"]
+source_modules: ["26-prd-task-扩展遥测与匿名统计.md"]
+
+type: test
 ---
 
 # 扩展遥测与统计 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["26-基础设施-扩展遥测与匿名统计"]
 | TC-TLM01 | DAU 统计 | 匿名计数正确 | P3 |
 | TC-TLM02 | 功能使用频率 | 各功能计数 | P3 |
 | TC-TLM03 | 遥测关闭 | 用户关闭后停止 | P2 |
+

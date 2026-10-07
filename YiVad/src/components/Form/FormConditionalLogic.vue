@@ -50,7 +50,7 @@ function addRule() {
 }
 
 function editRule(rule: ConditionalRule) {
-  editingRule.value = { ...rule, conditions: JSON.parse(JSON.stringify(rule.conditions)), actions: [...rule.actions] };
+  editingRule.value = { ...rule, conditions: structuredClone(rule.conditions), actions: [...rule.actions] };
   showEditor.value = true;
 }
 

@@ -9,51 +9,25 @@ export interface QuickButton {
 
 export const QUICK_BUTTONS: QuickButton[] = [
   {
-    label: "Tech roadmap review",
-    content:
-      "Tech roadmap review: this quarter's investment distribution and milestone alignment across platform, middleware, and business domains",
-    value: "roadmap_review"
+    label: "Code review",
+    content: "Please review this code for bugs, security issues, and style problems:",
+    value: "code_review"
   },
   {
-    label: "Architecture decision records",
-    content: "Architecture decision records: list key changes, risks, and rollback plans from recent ADRs",
-    value: "adr_review"
+    label: "Explain concept",
+    content: "Explain the following concept in simple terms:",
+    value: "explain"
   },
   {
-    label: "Engineering productivity metrics",
-    content:
-      "Engineering productivity metrics: lead time, change failure rate, MTTR, and per-capita throughput trends with attribution",
-    value: "dora_metrics"
+    label: "Write documentation",
+    content: "Write clear documentation for the following:",
+    value: "write_docs"
   },
   {
-    label: "Tech debt inventory",
-    content: "Tech debt inventory: classify core debts by domain, assess interest, and prioritize quarterly repayment",
-    value: "tech_debt"
+    label: "Debug issue",
+    content: "Help me debug this issue. Here's what happened:",
+    value: "debug"
   }
 ];
 
-export const QUICK_BUTTONS_NEW: QuickButton[] = [
-  {
-    label: "Tech selection evaluation",
-    content: "Candidate options: xxx   Evaluation dimensions: performance/cost/ecosystem/maintainability   Constraints: xxx",
-    value: "tech_selection",
-    template: true
-  },
-  {
-    label: "Org productivity diagnosis",
-    content: "Org productivity diagnosis: team topology, dependency topology, delivery bottlenecks, and Conway's law alignment",
-    value: "org_diagnose"
-  },
-  {
-    label: "Incident postmortem",
-    content: "Incident severity: P0/P1   Impact scope: xxx   Root cause chain: xxx   Action items: xxx",
-    value: "postmortem",
-    template: true
-  },
-  {
-    label: "Capacity and cost",
-    content:
-      "Capacity and cost: resource utilization, scaling thresholds, per-request cost, and quarterly FinOps optimization items",
-    value: "capacity_cost"
-  }
-];
+export const QUICK_BUTTONS_NEW: QuickButton[] = [];

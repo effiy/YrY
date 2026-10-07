@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 通知偏好中心
 tags:
 - 通知
@@ -30,6 +29,10 @@ roles:
 - designer
 - qa
 source_okr: [yivad-003]
+related_modules: ["29-prd-task-通知偏好中心"]
+related_tests: ["29-prd-test-通知偏好中心"]
+benefit: "产品需求：通知偏好中心"
+lifecycle: active
 ---
 
 # 通知偏好中心

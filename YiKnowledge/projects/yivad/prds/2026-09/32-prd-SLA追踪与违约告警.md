@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: SLA追踪与违约告警
 tags:
 - SLA追踪
@@ -29,6 +28,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["32-prd-task-SLA追踪与违约告警"]
+related_tests: ["32-prd-test-SLA追踪与违约告警"]
+benefit: "产品需求：SLA追踪与违约告警"
+lifecycle: active
 ---
 
 # SLA追踪与违约告警

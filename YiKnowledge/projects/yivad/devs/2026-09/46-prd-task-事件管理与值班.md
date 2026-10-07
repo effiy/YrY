@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-98"
 title: "YV-09-98: 事件管理与值班 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "46-prd-事件管理与值班.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 事件管理与值班]
+roles: [engineer]
+benefit: "开发方案：task-事件管理与值班"
+lifecycle: active
 ---
 
 # YV-09-98: 事件管理与值班 — 开发方案
@@ -41,6 +47,25 @@ open → investigating → identified → mitigated → resolved → postmortem
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/incidents`)，ProTable + 严重度标签 + 时间线，与值班排班集成
+
+**数据模型**：
+```
+MongoDB `incidents` 集合；字段：`severity` (P0-P4), `status` (open/acknowledged/resolved/postmortem), `timeline[]`, `assignee`, `postmortem`
+```
+
+**组件树**：
+```
+IncidentList.vue + IncidentDetail.vue (时间线 + 复盘编辑器) + IncidentTimeline.vue
+```
+
+**关键决策**：
+事件升级规则在 config 中定义：P0 → 即时通知，P1 → 30min 内通知；通知通过企业微信/邮件
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -50,12 +75,8 @@ open → investigating → identified → mitigated → resolved → postmortem
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

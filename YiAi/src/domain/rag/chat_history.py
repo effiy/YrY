@@ -13,9 +13,13 @@ Public API:
 """
 from __future__ import annotations
 
+import asyncio
+import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 import uuid
+
+logger = logging.getLogger(__name__)
 
 # Max turns kept in memory. 20 matches the retrieval ring buffer.
 MAX_CHAT_HISTORY = 20
@@ -70,6 +74,18 @@ def record_chat_turn(
     _chat_history.append(record)
     if len(_chat_history) > MAX_CHAT_HISTORY:
         del _chat_history[: len(_chat_history) - MAX_CHAT_HISTORY]
+
+    # Fire-and-forget MongoDB persistence — non-blocking
+    try:
+        from data.rag_history import save_chat_turn
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        if loop.is_running():
+            asyncio.ensure_future(save_chat_turn(record))
+        else:
+            loop.run_until_complete(save_chat_turn(record))
+    except Exception:
+        logger.debug("Failed to schedule chat turn persistence", exc_info=True)
+
     return record
 
 

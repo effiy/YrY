@@ -14,6 +14,8 @@ resolution: |
   调用处已使用可选链 (?.)，改动安全。
   - DetailDocs.vue:70: inject(PREVIEW_DLG_KEY, null)
   - DetailOverview.vue:114: inject(PREVIEW_DLG_KEY, null)
+benefit: "缺陷记录：质量-inject非空断言崩溃风险"
+lifecycle: active
 ---
 
 # inject() 使用非空断言 (!) 缺少提供者时运行时崩溃
@@ -68,7 +70,6 @@ const previewDlg = inject(PREVIEW_DLG_KEY)!;
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`!` 非空断言在 inject 上是危险模式**：`inject(key)!` 假设 provide 一定存在，但组件在单元测试、路由直接访问、或被非预期父组件包裹时，provide 缺失会导致难以调试的白屏崩溃。`inject(key, null)` + 可选链是零成本的防护
+- **隐式依赖的脆弱性**：组件设计上依赖父组件提供 `PROJECT_DETAIL_KEY`，但这个约束仅存在于开发者的心智模型中，没有任何编译器或运行时强制。提供者缺失时的错误信息（`Cannot destructure property of undefined`）对调试毫无帮助
 

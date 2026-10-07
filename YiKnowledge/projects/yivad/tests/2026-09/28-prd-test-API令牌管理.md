@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "API 令牌管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-60"
 source_prds: ["28-prd-API令牌管理"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, API令牌管理]
+benefit: "测试用例：API令牌管理"
+lifecycle: active
 ---
 # API 令牌管理 — 测试规格
 

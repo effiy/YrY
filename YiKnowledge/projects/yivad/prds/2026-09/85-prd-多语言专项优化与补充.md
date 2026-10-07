@@ -6,7 +6,6 @@ created: 2026-09-12
 updated: 2026-09-14
 source: YiVad
 type: prd
-doc_type: prd
 status: 进行中
 implementation_progress: 部分实现，详见开发方案
 implementation_updated: '2026-09-15'
@@ -21,6 +20,11 @@ estimate_frontend: 1.5
 prd_month: "202609"
 owner: ""
 source_okr: []
+roles: [engineer]
+related_modules: ["85-dev-多语言专项优化与补充"]
+related_tests: ["85-test-多语言专项优化与补充"]
+benefit: "产品需求：多语言专项优化与补充"
+lifecycle: active
 ---
 
 # PRD：多语言（i18n）专项优化与补充

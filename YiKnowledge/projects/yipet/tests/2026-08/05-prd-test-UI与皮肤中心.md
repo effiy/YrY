@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "UI 与皮肤中心 — 测试用例"
 status: 已完成
@@ -11,6 +12,8 @@ project: YiPet
 prd_month: "202608"
 source_prds: ["05-功能实现-UI与皮肤中心"]
 source_modules: ["05-prd-task-UI与皮肤中心"]
+
+type: test
 ---
 
 # UI 与皮肤中心 — 测试用例
@@ -28,7 +31,7 @@ source_modules: ["05-prd-task-UI与皮肤中心"]
 
 | 编号 | 用例 | 前置条件 | 操作 | 预期 | 优先级 |
 |------|------|---------|------|------|--------|
-| TC-CT-001 | 宿主页面不受主题影响 | 打开 YiPet 扩展，选择 Slate Pro 暗色主题 | 访问 `http://localhost:8848/#/knowledge/executiver` | 页面保持原始亮色样式，文字可读，不受 YiPet 暗色主题影响 | P0 |
+| TC-CT-001 | 宿主页面不受主题影响 | 打开 YiPet 扩展，选择 Slate Pro 暗色主题 | 访问 `http://localhost:8848/#/knowledge/executive` | 页面保持原始亮色样式，文字可读，不受 YiPet 暗色主题影响 | P0 |
 | TC-CT-002 | 弹窗皮肤中心正常应用主题 | 打开 YiPet 弹窗 | 依次切换 6 种颜色主题 | 弹窗内 UI 颜色随主题变化，ColorPicker 标签名称正确显示（Slate Pro/Indigo/Ocean/Forest/Sunset/Rose） | P0 |
 | TC-CT-003 | 聊天窗口主题隔离 | 打开聊天窗口，选择 Slate Pro 主题 | 检查聊天窗口样式 | 聊天窗口内使用 Slate Pro 色板，宿主页面不受影响 | P1 |
 | TC-CT-004 | 宠物覆盖层主题同步 | 设置主题为 Ocean | 刷新页面或切换标签 | 宠物皮肤环使用 Ocean 色板，不改变页面其他元素颜色 | P1 |

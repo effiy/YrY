@@ -38,16 +38,20 @@ def _hash(content: str) -> str:
 
 # TTL configuration (seconds)
 CACHE_TTL = {
-    "rag:query": 300,          # 5 minutes
-    "emb:doc": 86400,          # 24 hours
-    "llm:chat": 600,           # 10 minutes
-    "data:document": 60,       # 1 minute
-    "data:query": 60,          # 1 minute
-    "data:menus": 3600,        # 1 hour
-    "data:users": 300,         # 5 minutes
-    "knowledge:scan": 30,      # 30 seconds (knowledge watcher polls every 60s)
-    "knowledge:files": 30,     # 30 seconds
-    "rag:status": 10,          # 10 seconds
-    "about:index": 3600,       # 1 hour (static data)
-    "system:scheduler": 30,    # 30 seconds
+    "rag:query": 300,  # 5 minutes
+    "emb:doc": 86400,  # 24 hours
+    "llm:chat": 600,  # 10 minutes
+    "data:document": 60,  # 1 minute
+    "data:query": 60,  # 1 minute
+    "data:menus": 3600,  # 1 hour
+    "data:users": 300,  # 5 minutes
+    "knowledge:scan": 30,  # 30 seconds (knowledge watcher polls every 60s)
+    "knowledge:files": 30,  # 30 seconds
+    "knowledge:issues": 30,  # 30 seconds
+    "knowledge:issues-stats": 30,  # 30 seconds
+    "knowledge:goals": 30,  # 30 seconds (aligned with watcher poll interval)
+    "knowledge:projects-stats": 30,  # 30 seconds
+    "rag:status": 10,  # 10 seconds
+    "about:index": 3600,  # 1 hour (static data)
+    "system:scheduler": 30,  # 30 seconds
 }

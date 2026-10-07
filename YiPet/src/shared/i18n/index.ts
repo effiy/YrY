@@ -251,7 +251,6 @@ export type MessageKey =
   | 'aboutFeatureTimezone'
   | 'aboutFeatureCDN'
   | 'aboutFeatureApi'
-  | 'aboutFeatureI18n'
   | 'aboutArchitectureTitle'
   | 'aboutArchitectureDesc'
   | 'aboutArchLayerPopup'

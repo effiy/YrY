@@ -37,7 +37,7 @@ related:
 
 ## 使用说明
 
-1. 复制此模板到目标位置（如 `leader/decisions/yivad/xxx.md`）
+1. 复制此模板到目标位置（如 `leader/decisions/xxx.md`）
 2. 填写所有 `{{placeholder}}`
 3. 特别注意"Alternatives Considered"部分——这是 ADR 的核心价值
 4. Status 初始设为 `proposed`，团队评审通过后改为 `accepted`

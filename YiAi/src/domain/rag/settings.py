@@ -52,7 +52,7 @@ def ensure_settings_configured() -> None:
         Settings.embed_model = OllamaEmbedding(
             model_name=settings.rag_embed_model,
             base_url=settings.ollama_url,
-            embed_batch_size=16,
+            embed_batch_size=settings.rag_embed_batch_size,
             client_kwargs={"timeout": httpx.Timeout(_timeout, connect=10.0)},
         )
         logger.info(f"RAG embeddings: Ollama ({settings.rag_embed_model})")

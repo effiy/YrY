@@ -13,20 +13,22 @@ from domain.files.local import (
     rename_file,
     rename_folder,
     upload_file,
-    _resolve_project_path,
     read_project_file,
     write_project_file,
     delete_project_folder,
     rename_project_folder,
 )
+from domain.files.path_ops import _resolve_project_path
 from shared.exceptions import BusinessException
 
 
 def _patch_settings(temp_dir):
-    """Patch settings in both local.py and paths.py to use temp_dir."""
+    """Patch settings in all modules that reference settings directly."""
     patches = [
         patch("domain.files.local.settings"),
+        patch("domain.files.mutate_ops.settings"),
         patch("domain.files.paths.settings"),
+        patch("domain.files.path_ops.settings"),
     ]
     result = [p.start() for p in patches]
     for s in result:
@@ -213,7 +215,7 @@ class TestUploadFile:
 
 class TestResolveProjectPath:
     def test_simple_project_path(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             abs_path, proj = _resolve_project_path("YiVad", "src/App.vue")
@@ -221,7 +223,7 @@ class TestResolveProjectPath:
             assert proj == "YiVad"
 
     def test_project_prefixed_path(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             abs_path, proj = _resolve_project_path("YiVad", "YiVad/src/App.vue")
@@ -229,7 +231,7 @@ class TestResolveProjectPath:
             assert proj == "YiVad"
 
     def test_knowledge_prefixed_path(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             abs_path, proj = _resolve_project_path("YiAi", "YiKnowledge/engineer/notes/test.md")
@@ -237,21 +239,21 @@ class TestResolveProjectPath:
             assert proj == "YiAi"
 
     def test_empty_project_raises(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             with pytest.raises(BusinessException, match="Invalid project"):
                 _resolve_project_path("", "src/foo.py")
 
     def test_traversal_rejected(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             with pytest.raises(BusinessException, match="Invalid path"):
                 _resolve_project_path("YiVad", "../etc/passwd")
 
     def test_absolute_path_rejected(self):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = "/tmp/projects"
             mock_settings.knowledge_base_dir = "/tmp/yk"
             with pytest.raises(BusinessException, match="Invalid path"):
@@ -261,7 +263,7 @@ class TestResolveProjectPath:
 class TestProjectFileOps:
     @pytest.mark.asyncio
     async def test_read_project_file(self, temp_projects_root):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = temp_projects_root
             mock_settings.knowledge_base_dir = os.path.join(temp_projects_root, "..", "YiKnowledge")
 
@@ -276,7 +278,7 @@ class TestProjectFileOps:
 
     @pytest.mark.asyncio
     async def test_read_nonexistent_project_file(self, temp_projects_root):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = temp_projects_root
             mock_settings.knowledge_base_dir = os.path.join(temp_projects_root, "..", "YiKnowledge")
 
@@ -285,7 +287,7 @@ class TestProjectFileOps:
 
     @pytest.mark.asyncio
     async def test_write_project_file(self, temp_projects_root):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = temp_projects_root
             mock_settings.knowledge_base_dir = os.path.join(temp_projects_root, "..", "YiKnowledge")
 
@@ -296,7 +298,7 @@ class TestProjectFileOps:
 
     @pytest.mark.asyncio
     async def test_delete_project_folder(self, temp_projects_root):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = temp_projects_root
             mock_settings.knowledge_base_dir = os.path.join(temp_projects_root, "..", "YiKnowledge")
 
@@ -311,7 +313,7 @@ class TestProjectFileOps:
 
     @pytest.mark.asyncio
     async def test_rename_project_folder(self, temp_projects_root):
-        with patch("domain.files.local.settings") as mock_settings:
+        with patch("domain.files.path_ops.settings") as mock_settings:
             mock_settings.projects_root = temp_projects_root
             mock_settings.knowledge_base_dir = os.path.join(temp_projects_root, "..", "YiKnowledge")
 

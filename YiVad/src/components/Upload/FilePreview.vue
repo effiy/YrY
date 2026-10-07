@@ -7,6 +7,8 @@ const props = defineProps<{
   url: string;
   fileName: string;
   fileType?: string;
+  /** Raw text content — when provided, displayed instead of url for text files */
+  content?: string;
 }>();
 
 const emit = defineEmits<{
@@ -50,7 +52,7 @@ function isText(type?: string): boolean {
       <iframe v-else-if="isPDF(fileType)" :src="url" class="file-preview__pdf" frameborder="0" />
 
       <!-- Text preview -->
-      <pre v-else-if="isText(fileType)" class="file-preview__text"><code>{{ url }}</code></pre>
+      <pre v-else-if="isText(fileType)" class="file-preview__text"><code>{{ content || url }}</code></pre>
 
       <!-- Generic file -->
       <div v-else class="file-preview__generic">

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "仪表盘组件体系 — 测试用例"
 status: 进行中
 priority: 中
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-M10"
 source_prds: ["03-prd-仪表盘组件体系"]
 source_modules: ["YV-09-M10"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 仪表盘组件体系]
+benefit: "测试用例：仪表盘组件体系"
+lifecycle: active
 ---
 
 # 仪表盘组件体系 — 测试用例

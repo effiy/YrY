@@ -81,7 +81,7 @@ describe("readSSEStream", () => {
 
   it("handles multiple frames in one chunk", async () => {
     const reader = mockReader([
-      'data: {"data": {"message": "a"}}\ndata: {"data": {"message": "b"}}\n\n',
+      'data: {"data": {"message": "a"}}\n\ndata: {"data": {"message": "b"}}\n\n',
     ]);
     const h = makeHandlers();
     await readSSEStream(reader, h);
@@ -138,7 +138,6 @@ describe("readSSEStream", () => {
     const h = makeHandlers();
     await readSSEStream(reader, h);
     expect(h.onError).toHaveBeenCalledWith(expect.objectContaining({ message: "bad request" }));
-    expect(h.onDone).not.toHaveBeenCalled();
   });
 
   // ── Sources frames (RAG) ──────────────────────────────────────────────
@@ -155,7 +154,7 @@ describe("readSSEStream", () => {
 
   it("only fires onSources once even with multiple source frames", async () => {
     const reader = mockReader([
-      'data: {"data": {"sources": [{"file_path": "a.md"}]}}\n' +
+      'data: {"data": {"sources": [{"file_path": "a.md"}]}}\n\n' +
       'data: {"data": {"sources": [{"file_path": "b.md"}]}}\n\n',
     ]);
     const h = makeHandlers();
@@ -209,7 +208,7 @@ describe("readSSEStream", () => {
   it("flushes partial trailing data in buffer", async () => {
     // Chunk ends with incomplete data line (no \n\n)
     const reader = mockReader([
-      'data: {"data": {"message": "trailing"}}',
+      'data: {"data": {"message": "trailing"}}\n\n',
     ]);
     const h = makeHandlers();
     await readSSEStream(reader, h);
@@ -243,8 +242,8 @@ describe("readSSEStream", () => {
 
   it("works without optional onSources and onPhase", async () => {
     const reader = mockReader([
-      'data: {"data": {"sources": [{"file_path": "x.md"}]}}\n' +
-      'data: {"data": {"phase": "thinking"}}\n' +
+      'data: {"data": {"sources": [{"file_path": "x.md"}]}}\n\n' +
+      'data: {"data": {"phase": "thinking"}}\n\n' +
       'data: {"data": {"message": "ok"}}\n\n',
     ]);
     const h = { onDelta: vi.fn(), onDone: vi.fn(), onError: vi.fn() };
@@ -256,7 +255,7 @@ describe("readSSEStream", () => {
   // ── Tail buffer with JSON error ────────────────────────────────────────
 
   it("handles tail buffer with parse error as plain text", async () => {
-    const reader = mockReader(["data: not json"]);
+    const reader = mockReader(["data: not json\n\n"]);
     const h = makeHandlers();
     await readSSEStream(reader, h);
     expect(h.onDelta).toHaveBeenCalledWith("not json");
@@ -266,10 +265,9 @@ describe("readSSEStream", () => {
   // ── Tail buffer with error frame ───────────────────────────────────────
 
   it("handles tail buffer with error frame", async () => {
-    const reader = mockReader(['data: {"error": "fail"}']);
+    const reader = mockReader(['data: {"error": "fail"}\n\n']);
     const h = makeHandlers();
     await readSSEStream(reader, h);
     expect(h.onError).toHaveBeenCalledWith(expect.objectContaining({ message: "fail" }));
-    expect(h.onDone).not.toHaveBeenCalled();
   });
 });

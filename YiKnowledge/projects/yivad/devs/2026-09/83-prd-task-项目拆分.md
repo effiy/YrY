@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-229"
 title: "YV-09-229: 项目拆分 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "83-prd-项目拆分.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目拆分]
+roles: [engineer]
+benefit: "开发方案：task-项目拆分"
+lifecycle: active
 ---
 
 # YV-09-229: 项目拆分 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "83-prd-项目拆分.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：项目管理操作 → 拆分向导（选择要拆出的 Issue/模块 + 新项目信息）
+
+**数据模型**：
+```
+涉及 `projects` (新建), `issues`, `modules` 集合的数据分离
+```
+
+**组件树**：
+```
+ProjectSplitWizard.vue (选择拆分项 → 新项目信息 → 确认)
+```
+
+**关键决策**：
+拆分后原 Issue/模块 key 保持不变（仅更新 project_key）；新项目自动创建并继承原项目的部分设置
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "83-prd-项目拆分.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

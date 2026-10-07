@@ -1,0 +1,18 @@
+// Dialog sizing — append-to-body teleports the dialog to <body>,
+// matching YiVad's full-viewport preview. z-index is set via JS
+// (watch in component) to beat the chat window's 2147483647 max.
+.kpd-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100vh !important;
+  margin: 0 !important;
+}
+.kpd-dialog .el-dialog__header { display: none; }
+.kpd-dialog .el-dialog__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 16px;
+  overflow: hidden;
+}

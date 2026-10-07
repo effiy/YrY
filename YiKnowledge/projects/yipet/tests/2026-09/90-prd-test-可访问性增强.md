@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "可访问性增强 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["90-架构设计-可访问性增强.md"]
+source_modules: ["90-prd-task-可访问性增强.md"]
+
+type: test
 ---
 
 # 可访问性增强 — 测试用例
@@ -17,3 +24,4 @@ prd_month: "202609"
 | TC-A11Y01 | 色彩对比度 ≥4.5:1 | WCAG AA | P3 |
 | TC-A11Y02 | aria-label | 图标按钮 | P3 |
 | TC-A11Y03 | 键盘导航 | Tab 序 | P3 |
+

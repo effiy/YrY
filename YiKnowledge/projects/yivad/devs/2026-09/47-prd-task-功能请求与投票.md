@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-100"
 title: "YV-09-100: 功能请求与投票 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "47-prd-功能请求与投票.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 功能请求与投票]
+roles: [engineer]
+benefit: "开发方案：task-功能请求与投票"
+lifecycle: active
 ---
 
 # YV-09-100: 功能请求与投票 — 开发方案
@@ -40,6 +46,25 @@ interface FeatureRequest {
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/feedback`)，ProTable + 投票排序 + 状态看板 (planned/in_progress/released/declined)
+
+**数据模型**：
+```
+MongoDB `feature_requests` 集合；字段：`votes[]`, `status`, `linked_issue`, `category`
+```
+
+**组件树**：
+```
+FeatureRequestList.vue (ProTable + 投票按钮) + FeatureRequestKanban.vue (状态看板)
+```
+
+**关键决策**：
+投票防重复通过用户 ID + IP 双重校验；转为 Issue 后同步状态
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -49,12 +74,8 @@ interface FeatureRequest {
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-109: 文档协作空间 — 实时协作文档编辑、按项目/团队共享文档、文档模板、版本历史、行内评论、文件夹/标签组织 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-109"
 source_prds: ["51-prd-文档协作空间"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 文档协作空间]
+benefit: "测试用例：文档协作空间"
+lifecycle: active
 ---
 # YV-09-109: 文档协作空间 — 实时协作文档编辑、按项目/团队共享文档、文档模板、版本历史、行内评论、文件夹/标签组织 — 测试规格
 

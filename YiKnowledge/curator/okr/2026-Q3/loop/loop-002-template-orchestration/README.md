@@ -2,10 +2,12 @@
 type: loop-summary
 title: Template & Orchestration
 loopId: loop-002
-category: okr
+category: curator/okr/loop
 created: 2026-08-17
 updated: 2026-09-10
-status: done
+tags: [loop, summary, okr]
+source: internal
+status: stable
 roles: [curator, aier, engineer]
 ---
 

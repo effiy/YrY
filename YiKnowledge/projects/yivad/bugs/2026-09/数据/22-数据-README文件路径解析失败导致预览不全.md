@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-README文件路径解析失败导致预览不全"
+lifecycle: active
 ---
 
 ## Description
@@ -143,13 +145,12 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | `readProjectFile` 调用统一使用 `YiKnowledge/projects/<key>/` 前缀，封装为 `readProjectReadme(key)` helper |
+| 测试 | 为 `stripFrontmatter()` 添加单元测试：有/无 frontmatter、frontmatter 含 `---` 内部字符等边界情况 |
+| 流程 | 涉及文件路径解析的修改需同时验证小写/camelCase/PascalCase 项目 key 的场景 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **路径解析隐式规则是脆弱点**：`_resolve_project_path` 对 `YiKnowledge/` 前缀有特殊处理逻辑（跳转到 `knowledge_base_dir`），但调用方不知道这个规则。应通过 `readProjectReadme(key)` 封装隐藏路径细节
+- **DOMPurify 的输入假设**：`DOMPurify.sanitize()` 设计用于消毒 HTML，对 Markdown 源码调用会损坏内容（如将 `---` frontmatter 分隔符误判为可疑标签）。必须先 `marked.parse()` 转为 HTML 后再消毒
 

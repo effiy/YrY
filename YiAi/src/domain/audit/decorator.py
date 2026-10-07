@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from functools import wraps
 import json
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 import uuid
 
 from data.database import db

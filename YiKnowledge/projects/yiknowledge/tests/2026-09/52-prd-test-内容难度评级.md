@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-49: 内容难度评级 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-49"
 source_prds: ["52-架构设计-内容难度评级"]
 source_modules: ["52-prd-task-内容难度评级"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-49: 内容难度评级 — 测试用例

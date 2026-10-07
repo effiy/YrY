@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-console-error无统一日志"
+lifecycle: active
 ---
 
 # console.error 直接使用无统一错误报告抽象
@@ -66,7 +68,6 @@ export function logError(module: string, message: string, error?: unknown) {
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **日志格式的熵增**：没有统一 logger 时，每个开发者各自选择格式（`console.error(error)` / `console.error("msg:", e)` / `console.error("[module]", e?.message)`），日志在生产环境中既不可搜索也不可聚合
+- **日志的双重目的**：开发阶段的 `console.error` 可以随意，但生产环境需要：(1) 错误分类（按 module）、(2) 上下文信息（用户操作路径）、(3) 可上报到外部服务。统一 logger 是这三者的前提
 

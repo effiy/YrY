@@ -1,39 +1,13 @@
-/**
- * useSparkLegendToggle — shared collapse-state for sparkline legends.
- *
- * Pin sparkline (ChatToolbar) and session sparkline (SessionStatusBar) each
- * had their own ref + localStorage dance. This composable collapses both
- * into one factory: caller passes a storage key, gets back `{ collapsed, toggle }`.
- *
- * Pattern adapted from Pi's per-card legend collapse — single source of
- * truth per legend, persisted across sessions.
- */
-import { ref } from "vue";
+import { useStorage } from "@vueuse/core";
+import type { RemovableRef } from "@vueuse/core";
 
 export interface SparkLegendToggle {
-  collapsed: ReturnType<typeof ref<boolean>>;
+  collapsed: RemovableRef<boolean>;
   toggle: () => void;
 }
 
+/** Shared collapse-state for sparkline legends — backed by @vueuse/core useStorage. */
 export function useSparkLegendToggle(storageKey: string): SparkLegendToggle {
-  const collapsed = ref<boolean>(load(storageKey));
-  function load(key: string): boolean {
-    try {
-      return localStorage.getItem(key) === "1";
-    } catch {
-      return false;
-    }
-  }
-  function persist(): void {
-    try {
-      localStorage.setItem(storageKey, collapsed.value ? "1" : "0");
-    } catch {
-      /* noop */
-    }
-  }
-  function toggle(): void {
-    collapsed.value = !collapsed.value;
-    persist();
-  }
-  return { collapsed, toggle };
+  const collapsed = useStorage(storageKey, false);
+  return { collapsed, toggle: () => (collapsed.value = !collapsed.value) };
 }

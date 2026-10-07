@@ -293,3 +293,203 @@ export function buildTestPassDonut(passed: number, failed: number): ECOption {
     ]
   };
 }
+
+// ── Efficiency & Quality charts (server-computed dashboard data) ────────────
+
+/** Weekly cycle time trend (p50/p80/p95 lines). */
+export function buildCycleTimeTrend(
+  data: Array<{ label: string; p50: number; p80: number; p95: number }>
+): ECOption {
+  const AXIS_COLOR = "#909399";
+  return {
+    grid: { left: 8, right: 16, top: 16, bottom: 8, containLabel: true },
+    tooltip: { trigger: "axis", confine: true },
+    legend: {
+      bottom: 0, itemWidth: 8, itemHeight: 8,
+      textStyle: { color: AXIS_COLOR, fontSize: 10 }
+    },
+    xAxis: {
+      type: "category", data: data.map(d => d.label.slice(5)),
+      axisLine: { lineStyle: { color: "#dcdfe6" } },
+      axisTick: { show: false },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9 }
+    },
+    yAxis: {
+      type: "value", name: "days", minInterval: 0.5,
+      splitLine: { lineStyle: { color: "#f0f2f5" } },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9 }
+    },
+    series: [
+      {
+        name: "p95", type: "line", smooth: true, symbol: "none",
+        lineStyle: { width: 1, color: "#ee6666", type: "dashed" },
+        data: data.map(d => d.p95)
+      },
+      {
+        name: "p80", type: "line", smooth: true, symbol: "none",
+        lineStyle: { width: 1.5, color: "#fac858" },
+        data: data.map(d => d.p80)
+      },
+      {
+        name: "p50", type: "line", smooth: true, symbol: "circle",
+        symbolSize: 5, showSymbol: false,
+        lineStyle: { width: 2.5, color: "#5470c6" },
+        areaStyle: {
+          color: {
+            type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(84,112,198,0.18)" },
+              { offset: 1, color: "rgba(84,112,198,0.02)" }
+            ]
+          }
+        },
+        data: data.map(d => d.p50)
+      }
+    ]
+  };
+}
+
+/** Weekly throughput bar chart. */
+export function buildThroughputBar(
+  data: Array<{ period: string; count: number }>
+): ECOption {
+  const AXIS_COLOR = "#909399";
+  return {
+    grid: { left: 4, right: 8, top: 12, bottom: 4, containLabel: true },
+    tooltip: { trigger: "axis", confine: true, axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "category", data: data.map(d => d.period.slice(5)),
+      axisLine: { lineStyle: { color: "#dcdfe6" } },
+      axisTick: { show: false },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9, interval: Math.max(0, Math.floor(data.length / 8) - 1) }
+    },
+    yAxis: {
+      type: "value", minInterval: 1,
+      splitLine: { lineStyle: { color: "#f0f2f5" } },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9 }
+    },
+    series: [{
+      type: "bar", barWidth: "62%",
+      itemStyle: { color: "#5470c6", borderRadius: [4, 4, 0, 0] },
+      data: data.map(d => d.count)
+    }]
+  };
+}
+
+/** Bug rate trend line chart. */
+export function buildBugRateTrend(
+  data: Array<{ date: string; value: number }>
+): ECOption {
+  const AXIS_COLOR = "#909399";
+  return {
+    grid: { left: 8, right: 8, top: 12, bottom: 4, containLabel: true },
+    tooltip: { trigger: "axis", confine: true, formatter: "{b}: <b>{c}%</b>" },
+    xAxis: {
+      type: "category", data: data.map(d => d.date.slice(5)),
+      boundaryGap: false,
+      axisLine: { lineStyle: { color: "#dcdfe6" } },
+      axisTick: { show: false },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9, interval: Math.max(0, Math.floor(data.length / 8) - 1) }
+    },
+    yAxis: {
+      type: "value", name: "%",
+      splitLine: { lineStyle: { color: "#f0f2f5" } },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9 }
+    },
+    series: [{
+      type: "line", smooth: true, symbol: "circle",
+      symbolSize: 4, showSymbol: false,
+      lineStyle: { width: 2, color: "#f56c6c" },
+      itemStyle: { color: "#f56c6c" },
+      areaStyle: {
+        color: {
+          type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: "rgba(245,108,108,0.24)" },
+            { offset: 1, color: "rgba(245,108,108,0.02)" }
+          ]
+        }
+      },
+      data: data.map(d => d.value)
+    }]
+  };
+}
+
+/** Quality score gauge (0-100) as a horizontal progress bar. */
+export function buildQualityGauge(score: number): ECOption {
+  const color = score >= 80 ? "#67c23a" : score >= 60 ? "#e6a23c" : "#f56c6c";
+  return {
+    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+    tooltip: { show: false },
+    xAxis: { type: "value", min: 0, max: 100, show: false },
+    yAxis: { type: "category", show: false },
+    series: [{
+      type: "bar", barWidth: 14,
+      data: [{ value: score, itemStyle: { color, borderRadius: [4, 4, 4, 4] } }],
+      label: {
+        show: true, position: "insideRight",
+        fontSize: 13, fontWeight: 700, color: "#fff",
+        formatter: `{c}`
+      },
+      backgroundStyle: { color: "rgba(200,200,200,0.15)", borderRadius: [4, 4, 4, 4] }
+    }]
+  };
+}
+
+/** Bug inflow (created) vs outflow (resolved) dual-line chart. */
+export function buildInflowOutflow(
+  inflow: Array<{ date: string; value: number }>,
+  outflow: Array<{ date: string; value: number }>
+): ECOption {
+  const AXIS_COLOR = "#909399";
+  return {
+    grid: { left: 8, right: 8, top: 12, bottom: 4, containLabel: true },
+    tooltip: { trigger: "axis", confine: true },
+    legend: {
+      bottom: 0, itemWidth: 8, itemHeight: 8,
+      textStyle: { color: AXIS_COLOR, fontSize: 10 }
+    },
+    xAxis: {
+      type: "category", data: inflow.map(d => d.date.slice(5)),
+      boundaryGap: false,
+      axisLine: { lineStyle: { color: "#dcdfe6" } },
+      axisTick: { show: false },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9, interval: Math.max(0, Math.floor(inflow.length / 8) - 1) }
+    },
+    yAxis: {
+      type: "value", minInterval: 1,
+      splitLine: { lineStyle: { color: "#f0f2f5" } },
+      axisLabel: { color: AXIS_COLOR, fontSize: 9 }
+    },
+    series: [
+      {
+        name: "Created", type: "line", smooth: true, symbol: "none",
+        lineStyle: { width: 2, color: "#f56c6c" },
+        areaStyle: {
+          color: {
+            type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(245,108,108,0.20)" },
+              { offset: 1, color: "rgba(245,108,108,0.01)" }
+            ]
+          }
+        },
+        data: inflow.map(d => d.value)
+      },
+      {
+        name: "Resolved", type: "line", smooth: true, symbol: "none",
+        lineStyle: { width: 2, color: "#67c23a" },
+        areaStyle: {
+          color: {
+            type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(103,194,58,0.20)" },
+              { offset: 1, color: "rgba(103,194,58,0.01)" }
+            ]
+          }
+        },
+        data: outflow.map(d => d.value)
+      }
+    ]
+  };
+}

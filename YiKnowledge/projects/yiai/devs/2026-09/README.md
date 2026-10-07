@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: YiAi 开发模块索引
 category: 项目/后端/开发模块
 created: 2026-09-11
 updated: 2026-09-14
 project: YiAi
+
+type: task
+status: 待开始
 ---
 
 # YiAi 开发模块索引

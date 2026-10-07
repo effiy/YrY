@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-200: 用户外观设置 — 主题(亮色/暗色/自动)、语言、日期格式、时区、密度(舒适/紧凑)、字号"
 tags: [需求文档, 用户中心, 外观设置, 主题切换, 国际化, 时区, 密度, 字号]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["74-prd-task-用户外观设置"]
+related_tests: ["74-prd-test-用户外观设置"]
+benefit: "产品需求：用户外观设置"
+lifecycle: active
 ---
 
 # YV-09-200: 用户外观设置 — 主题(亮色/暗色/自动)、语言、日期格式、时区、密度(舒适/紧凑)、字号

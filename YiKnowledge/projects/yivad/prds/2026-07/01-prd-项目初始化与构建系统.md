@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 功能
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["01-prd-task-项目初始化与构建系统"]
+related_tests: ["01-prd-test-项目初始化与构建系统"]
+benefit: "产品需求：项目初始化与构建系统"
+lifecycle: active
 ---
 
 # YV-07-01: 项目初始化与构建系统 — Vue 3.5 + TypeScript strict + Rsbuild

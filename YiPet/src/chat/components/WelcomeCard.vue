@@ -122,8 +122,8 @@ const parsed = computed(() => parseUrl(props.url));
   line-height: 1;
   transition: color 0.15s;
 
-  &:hover { color: #f59e0b; }
-  &--active { color: #f59e0b; }
+  &:hover { color: var(--el-color-warning); }
+  &--active { color: var(--el-color-warning); }
 }
 
 .wc-page-title {
@@ -185,7 +185,7 @@ const parsed = computed(() => parseUrl(props.url));
   padding: 1px 6px;
   border-radius: 4px;
   background: rgba(var(--primary-rgb, 99, 102, 241), 0.15);
-  color: var(--primary-light, #818cf8);
+  color: var(--primary-light, var(--el-color-primary));
   border: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.3);
 }
 </style>

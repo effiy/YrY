@@ -5,7 +5,7 @@
 import { computed, type ComputedRef, type Ref } from "vue";
 import type { Project } from "@/api/modules/projectService";
 import type { Issue } from "@/api/modules/issueService";
-import { CLOSED_STATUSES, daysSince, RISK_ORDER, STALE_DAYS, type HealthLevel, type ProjectStats, type RiskKey } from "../types";
+import { CLOSED_STATUSES, daysSince, isoDay, RISK_ORDER, STALE_DAYS, type HealthLevel, type ProjectStats, type RiskKey } from "../types";
 
 export interface UseProjectRiskReturn {
   risksByKey: ComputedRef<Map<string, RiskKey[]>>;
@@ -24,6 +24,7 @@ export function useProjectRisk(
 ): UseProjectRiskReturn {
   const risksByKey = computed(() => {
     const map = new Map<string, RiskKey[]>();
+    const refDate = filterDateStr?.value || isoDay(new Date());
     for (const p of projects.value) {
       const s = statsByKey.value.get(p.key);
       if (!s) {
@@ -42,7 +43,7 @@ export function useProjectRisk(
       // Archived projects are dormant on purpose — only data-shape gaps apply.
       const dormant = p.status === "archived";
 
-      if (openIssues.some(i => i.due_date && new Date(i.due_date) < new Date())) {
+      if (openIssues.some(i => i.due_date && i.due_date.slice(0, 10) < refDate)) {
         risks.push("overdue");
       }
       if (!dormant && daysSince(s.lastActivity) >= STALE_DAYS) {

@@ -9,11 +9,11 @@ import { useKnowledgeFiles, fetchCategoryFiles } from "@/views/knowledge/composa
 import type { KnowledgeFileEntry, KnowledgeReadResponse } from "@/api/interface/yiAi";
 
 export const KNOWLEDGE_CATEGORIES = [
-  { key: "producter", label: "Product Manager", desc: "Requirements — frameworks, discovery, delivery, strategy, PRDs" },
+  { key: "product", label: "Product Manager", desc: "Requirements — frameworks, discovery, delivery, strategy, PRDs" },
   { key: "leader", label: "Tech Lead", desc: "Decisions — ADRs, architecture, capacity, risk, roadmap" },
   { key: "engineer", label: "Engineer", desc: "Design + Build — architecture, quality, security, data, lessons" },
-  { key: "srer", label: "Oncall SRE", desc: "Ship + Operate — incident response, observability, release" },
-  { key: "executiver", label: "Executiver", desc: "Business strategy — industry intelligence, roadmap, reading list" },
+  { key: "sre", label: "Oncall SRE", desc: "Ship + Operate — incident response, observability, release" },
+  { key: "executive", label: "executive", desc: "Business strategy — industry intelligence, roadmap, reading list" },
   { key: "aier", label: "AI Engineer", desc: "AI enablement — foundations, methodology, platform, ML" },
   { key: "curator", label: "Knowledge Curator", desc: "Knowledge governance — diagrams, templates, archive" }
 ] as const;

@@ -1,11 +1,11 @@
 """Tests for services/code_health_service.py — pure helper functions."""
 import pytest
-from services.code_health_service import (
+from services.code_health.line_counter import (
     _norm_line,
     _is_blank,
     _is_comment,
-    _generate_alerts,
 )
+from services.code_health.alerts import _generate_alerts
 
 
 class TestNormLine:

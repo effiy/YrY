@@ -20,6 +20,7 @@
 
 export {
   applyElementTheme,
+  applyElementPalette,
   clearElementTheme,
 } from './element-theme';
 

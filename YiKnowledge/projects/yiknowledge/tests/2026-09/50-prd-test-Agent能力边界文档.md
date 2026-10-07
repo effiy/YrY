@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-47: Agent 能力边界文档 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-47"
 source_prds: ["50-架构设计-Agent能力边界文档"]
 source_modules: ["50-prd-task-Agent能力边界文档"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-47: Agent 能力边界文档 — 测试用例

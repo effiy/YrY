@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-06"
 title: "YV-08-06: 系统管理模块 — RBAC 权限管理面板 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 4.0
 source_prd: "06-prd-系统管理模块.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 系统管理模块]
+benefit: "开发方案：task-系统管理模块"
+lifecycle: active
 ---
 
 # YV-08-06: 系统管理模块 — 开发方案

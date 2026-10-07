@@ -1,34 +1,37 @@
 /**
- * YiPet Chat — Pinia store.
- * Ported from the ChatController class (useSyncExternalStore → Pinia reactive state).
+ * YiPet Chat — Pinia store (main orchestrator).
  */
 import { defineStore } from 'pinia';
 import { computed, reactive, watch } from 'vue';
 import type {
-  BugService, ChatService, KnowledgeService,
-  RagService, SearchService, SessionService, WeWorkService,
-} from '@/api/services';
-import { detectPageTypeFromUrl, detectProjectFromUrl, makeBugKey } from '@/api/services/bug';
-import type {
-  BugFrequency, BugPriority, BugSeverity, BugStatus, BugType,
-  ChatMessage, KnowledgeFileEntry, KnowledgeTreeNode, RagChatMessage, RagSource,
+  ChatMessage, KnowledgeFileEntry, RagSource,
   WebImageResult, WebSearchResult, WeWorkBot,
 } from '@/api/types';
 import { DEFAULT_MODEL } from '../constants';
 import type { ChatState, Message, SessionItem } from '../types';
-import { applyThemeColors, applyThemeHex } from '@/shared/theme';
-import { redactUrlCredentials } from '@/utils/url';
+import { applyThemeColors, applyThemeHex, applyElementPalette, applyElementTheme, generatePalette } from '@/shared/theme';
 import { t } from '@/shared/i18n';
 import { useChatWindow } from './useChatWindow';
 import { injectChatService, useModelSelection } from '../composables/useModelSelection';
-import { useRagSettings } from '../composables/useRagSettings';
 import { useChatUiState } from '../composables/useChatUiState';
-import { useToolRegistry, type ToolEvent as RegistryToolEvent } from '../composables/useToolRegistry';
-import { useContextChanges } from '../composables/useContextChanges';
 import { useConversationCompact } from '../composables/useConversationCompact';
+import { injectServices as injectSharedServices, setNotifyHandler, notify, getChat, getSessions, getWework, getSearch, getRag, getKnowledge, getTranslation, getClient } from './services';
+import { useStreamingStore } from './streaming';
+import { useContextFilesStore } from './contextFiles';
+import { useToolEventsStore } from './toolEvents';
 import type { ToolCall } from '../types';
+import {
+  readPageInfo, slugifyUrl,
+  mapMessages, isSearchWorthy, formatSearchResults,
+  deduplicateByDomain, rankByReputation, ngrams, jaccard,
+  findSessionByUrl,
+} from './chatUtils';
+import { exportCurrentSessionMarkdown as _exportMarkdown, exportConversationHtml as _exportHtml } from './chatExport';
+import { warnIfQuotaLow } from '@/shared/storage/quota';
 
 export type { ChatState, Message, SessionItem };
+
+// ── Constants ──────────────────────────────────────────────────────────────
 
 const DEFAULT_WIDTH = 760;
 const MIN_WIDTH = 480;
@@ -36,287 +39,30 @@ const MIN_HEIGHT = 400;
 const DEFAULT_SIDEBAR_WIDTH = 320;
 const MIN_SIDEBAR_WIDTH = 240;
 const MAX_SIDEBAR_WIDTH = 600;
-const MAX_DRAFT_IMAGES = 4;
-
-type NotifyType = 'info' | 'success' | 'error' | 'warning';
-
-let _notifyHandler: ((message: string, type: NotifyType) => void) | null = null;
-
-function notify(message: string, type: NotifyType = 'info') {
-  if (_notifyHandler) _notifyHandler(message, type);
-}
-
-function readPageInfo() {
-  return {
-    title: document.title || '',
-    // Single capture point — every persisted URL (session record, from: tag,
-    // knowledge frontmatter) flows from here, so credentials are stripped once.
-    url: redactUrlCredentials(window.location.href || ''),
-    iconUrl: (document.querySelector('link[rel*="icon"]') as HTMLLinkElement)?.href || '',
-  };
-}
-
-/** Generate a safe filename from a URL: hostname + path, special chars replaced. */
-function slugifyUrl(url: string): string {
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\./, '').replace(/[^a-zA-Z0-9.-]/g, '_');
-    const path = u.pathname === '/' ? '' : u.pathname.replace(/\/$/, '').replace(/[^a-zA-Z0-9/._-]/g, '_');
-    const slug = path ? `${host}${path}` : host;
-    return slug.slice(0, 80) || 'unknown';
-  } catch {
-    return url.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 80);
-  }
-}
-
-/** Format page content as a markdown file with YAML frontmatter. */
-function formatPageMarkdown(title: string, url: string, content: string): string {
-  const now = new Date().toISOString();
-  return [
-    '---',
-    `title: "${title.replace(/"/g, '\\"')}"`,
-    `url: "${url}"`,
-    `captured_at: ${now}`,
-    `source: YiPet`,
-    '---',
-    '',
-    `# ${title}`,
-    '',
-    content,
-  ].join('\n');
-}
-
 const CTX_PREFIX = 'ctx:';
 
-const HIGH_REPUTATION_DOMAINS = new Set([
-  'en.wikipedia.org',
-  'github.com',
-  'stackoverflow.com',
-  'developer.mozilla.org',
-  'arxiv.org',
-  'ieeexplore.ieee.org',
-  'dl.acm.org',
-  'semanticscholar.org',
-  'docs.python.org',
-  'nodejs.org',
-  'react.dev',
-  'vuejs.org',
-  'typescriptlang.org',
-  'aws.amazon.com',
-  'cloud.google.com',
-  'learn.microsoft.com',
-  'nature.com',
-  'science.org',
-  'w3.org',
-  'whatwg.org',
-  'ecma-international.org',
-]);
-
-const LOW_REPUTATION_DOMAINS = new Set([
-  'pinterest.com',
-  'quora.com',
-  'answers.com',
-  'exampledomain.com',
-]);
-
-function getDomain(url: string): string {
-  try {
-    const u = new URL(url.startsWith('http') ? url : `https://${url}`);
-    return u.hostname.replace(/^www\./, '').toLowerCase();
-  } catch {
-    return '';
-  }
-}
-
-function domainReputation(url: string): 'high' | 'medium' | 'low' {
-  const domain = getDomain(url);
-  if (!domain) return 'medium';
-  if (HIGH_REPUTATION_DOMAINS.has(domain)) return 'high';
-  if (LOW_REPUTATION_DOMAINS.has(domain)) return 'low';
-  if (domain.endsWith('.gov') || domain.endsWith('.edu')) return 'high';
-  return 'medium';
-}
-
-function deduplicateByDomain(results: WebSearchResult[]): WebSearchResult[] {
-  const seen = new Set<string>();
-  const out: WebSearchResult[] = [];
-  for (const item of results) {
-    const domain = getDomain(item.url);
-    const key = domain || item.url;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(item);
-  }
-  return out;
-}
-
-function rankByReputation(results: WebSearchResult[]): WebSearchResult[] {
-  const tiers = {
-    high: [] as WebSearchResult[],
-    medium: [] as WebSearchResult[],
-    low: [] as WebSearchResult[],
-  };
-  for (const item of results) {
-    tiers[domainReputation(item.url)].push(item);
-  }
-  return [...tiers.high, ...tiers.medium, ...tiers.low];
-}
-
-function formatSearchResults(results: WebSearchResult[]): string {
-  if (!results.length) return '';
-  const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  const lines = [
-    `## Web Search (${results.length} results, ${now})`,
-    'Cite as `[N](url)` matching the numbers. Distinguish web sources from your own knowledge.',
-    '',
-  ];
-  results.forEach((item, idx) => {
-    const domain = getDomain(item.url);
-    const rep = domainReputation(item.url);
-    const badge = rep === 'high' ? 'STAR' : rep === 'low' ? 'WARN' : '';
-    const quality = item.quality ? `${'★'.repeat(Math.min(item.quality, 5))}` : '';
-    const qualityText = quality ? ` ${quality}` : '';
-    const dateText = item.date ? ` [${item.date}]` : '';
-    const snippet = item.snippet && item.snippet.length > 200
-      ? `${item.snippet.slice(0, 197)}...`
-      : (item.snippet || '');
-    lines.push(
-      `[${idx + 1}] ${badge}${qualityText} **${item.title}**${dateText} — ${snippet} → ${item.url} (${domain})`,
-    );
-  });
-  return lines.join('\n');
-}
-
-function formatRagSources(query: string, sources: RagSource[]): string {
-  if (!sources.length) return `No relevant knowledge documents found for: ${query}`;
-  const lines = [`Knowledge base results for "${query}":`];
-  sources.forEach((source, idx) => {
-    const path = source.path || 'unknown';
-    lines.push(`${idx + 1}. [${path}] (score: ${(source.score ?? 0).toFixed(2)})`);
-    if (source.snippet) {
-      lines.push(`   ${source.snippet.slice(0, 320)}`);
-    }
-  });
-  return lines.join('\n');
-}
-
-function buildRagSummary(sources: RagSource[]): { grade?: 'A' | 'B' | 'C' | 'D'; summary?: string } {
-  if (!sources.length) return {};
-  const scores = sources
-    .map((source) => source.score)
-    .filter((score): score is number => typeof score === 'number');
-  const top = scores.length ? Math.max(...scores) : 0;
-  const grade = top >= 0.85 ? 'A' : top >= 0.70 ? 'B' : top >= 0.50 ? 'C' : 'D';
-  const topSource = sources[0];
-  const title = String(topSource?.metadata?.title || topSource?.path?.split('/').pop() || '').replace(/\.md$/, '');
-  const fileCount = new Set(sources.map((source) => source.path)).size;
-  const summary = `检索到 ${fileCount} 个文件中的 ${sources.length} 个片段${title ? `，最佳匹配：${title}` : ''}`;
-  return { grade, summary };
-}
-
-function isSearchWorthy(query: string): boolean {
-  const q = query.trim();
-  if (q.length < 4) return false;
-  if (/^(hi|hello|hey|thanks|thank you|你好|嗨|谢谢)[!.? ]*$/i.test(q)) return false;
-  if (q.startsWith('/')) return false;
-  return true;
-}
-
-function mapMessages(raw: ChatMessage[]): Message[] {
-  return raw.map((m) => ({
-    type: (m.type === 'user' ? 'user' : 'pet') as 'user' | 'pet',
-    content: m.content || m.message || '',
-    timestamp: m.timestamp || Date.now(),
-    imageDataUrl: m.imageDataUrl,
-    imageDataUrls: Array.isArray(m.imageDataUrls) ? m.imageDataUrls : undefined,
-    toolCalls: (m as any).toolCalls,
-    searchResults: (m as any).searchResults,
-    searchImages: (m as any).searchImages,
-    searchGrounded: (m as any).searchGrounded,
-    searchQuery: (m as any).searchQuery,
-    searchTimingMs: (m as any).searchTimingMs,
-    retrievalGrade: (m as any).retrievalGrade,
-    ragContentSummary: (m as any).ragContentSummary,
-    sources: (m as any).sources,
-    ragMeta: (m as any).ragMeta,
-    firstTokenLatencyMs: (m as any).firstTokenLatencyMs,
-  }));
-}
-
-/** Build a nested knowledge tree from the flat /knowledge-scan categories. */
-function buildKnowledgeTree(
-  categories: { category: string; files: KnowledgeFileEntry[] }[],
-): KnowledgeTreeNode[] {
-  const roots: KnowledgeTreeNode[] = [];
-  const folderMap = new Map<string, KnowledgeTreeNode>();
-  const files = categories
-    .flatMap((c) => c.files)
-    .sort((a, b) => a.path.localeCompare(b.path));
-  for (const f of files) {
-    const parts = f.path.split('/').filter(Boolean);
-    if (!parts.length) continue;
-    const name = parts.pop() || f.path;
-    let siblings = roots;
-    let prefix = '';
-    for (const seg of parts) {
-      prefix = prefix ? `${prefix}/${seg}` : seg;
-      const key = `folder:${prefix}`;
-      let folder = folderMap.get(key);
-      if (!folder) {
-        folder = { path: prefix, name: seg, type: 'folder', children: [] };
-        folderMap.set(key, folder);
-        siblings.push(folder);
-      }
-      siblings = folder.children!;
-    }
-    siblings.push({ path: f.path, name: f.name || name, type: 'file', size: f.size });
-  }
-  return roots;
+function detectProject(url: string): string {
+  if (!url) return '';
+  if (url.includes('localhost:8848') || url.includes('yivad')) return 'YiVad';
+  if (url.includes('localhost:10086') || url.includes('yiai')) return 'YiAi';
+  if (url.includes('yipet://')) return 'YiPet';
+  if (url.includes('github.com')) return 'GitHub';
+  return '';
 }
 
 // ── Store ─────────────────────────────────────────────────────────────────
 
 export const useChatStore = defineStore('chat', () => {
-  // We'll set these after createApiServices is called
-  let _chat: ChatService;
-  let _sessions: SessionService;
-  let _wework: WeWorkService;
-  let _knowledge: KnowledgeService;
-  let _rag: RagService;
-  let _search: SearchService;
-  let _bug: BugService;
-  let _abortController: AbortController | null = null;
-  let _loadSessionsPromise: Promise<void> | null = null;
-  let _persistChain: Promise<void> = Promise.resolve();
+  // ── Sub-stores ────────────────────────────────────────────────────────
+  const streamingStore = useStreamingStore();
+  const ctxFilesStore = useContextFilesStore();
+  const toolEventsStore = useToolEventsStore();
 
-  function attachTurnToolCalls(petTimestamp: number, startIdx: number): void {
-    const events = state.toolEvents.slice(startIdx);
-    const byNameStart = new Map<string, RegistryToolEvent>();
-    const calls: ToolCall[] = [];
-    for (const ev of events) {
-      if (ev.phase === 'start') {
-        byNameStart.set(ev.name, ev);
-        continue;
-      }
-      const st = byNameStart.get(ev.name);
-      if (!st) continue;
-      calls.push({
-        name: ev.name,
-        label: ev.label,
-        args: st.args,
-        content: ev.content,
-        error: ev.error,
-        durationMs: ev.durationMs
-      });
-      byNameStart.delete(ev.name);
-    }
-    if (!calls.length) return;
-    const idx = state.messages.findIndex((m) => m.timestamp === petTimestamp);
-    if (idx < 0) return;
-    state.messages[idx] = { ...state.messages[idx], toolCalls: calls };
-  }
+  // ── Composables ───────────────────────────────────────────────────────
+  const { selectedModel: _selModel, availableModels: _availModels, modelsLoading, fetchModels: _fetchModels } = useModelSelection();
+  const uiState = useChatUiState();
 
-  // Drag/resize state (non-reactive)
+  // ── Drag/resize state (non-reactive) ──────────────────────────────────
   const _dragStart = { x: 0, y: 0, wx: 0, wy: 0 };
   const _resizeStart = { x: 0, y: 0, wx: 0, wy: 0, w: 0, h: 0, dir: '' };
   const _sidebarResizeStart = { x: 0, startWidth: 0 };
@@ -324,11 +70,11 @@ export const useChatStore = defineStore('chat', () => {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 900;
 
-  const { selectedModel: _selModel, availableModels: _availModels, modelsLoading, fetchModels: _fetchModels } = useModelSelection();
-  const ragSettings = useRagSettings();
-  const uiState = useChatUiState();
-  const registry = useToolRegistry();
+  // ── Session promise (module-level) ────────────────────────────────────
+  let _loadSessionsPromise: Promise<void> | null = null;
+  let _persistChain: Promise<void> = Promise.resolve();
 
+  // ── Main reactive state ───────────────────────────────────────────────
   const state = reactive<ChatState>({
     visible: false,
     title: 'Chat with me',
@@ -342,52 +88,35 @@ export const useChatStore = defineStore('chat', () => {
     searchQuery: '',
     sessionProjectFilter: '',
     sessionLoading: false,
-    sidebarCollapsed: false,
+    sessionError: '',
+    sessionsLoaded: false,
+    lastSyncTime: 0,
+    sidebarCollapsed: true,
     sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
     batchMode: false,
     selectedSessionIds: [],
-    contextEditingId: null,
     draftImages: [],
-    knowledgeGrounded: false,
+    ragSources: [],
+    ragEnabled: false,
     ragScope: '',
     ragScopeIsFile: false,
-    ragSources: [],
     ragStatus: null,
     ragStatusLoading: false,
-    sidebarView: 'sessions',
-    recentBugs: [],
-    recentBugsLoading: false,
-    recentBugsError: '',
-    knowledgeTree: [],
+    ragFast: false,
+    ragHybrid: true,
+    ragRerank: true,
+    ragCitations: true,
+    ragHyde: false,
+    ragNumQueries: 0,
+    ragChatMode: "condense_plus_context",
+    knowledgeTree: [] as Array<{ category: string; files: KnowledgeFileEntry[] }>,
     knowledgeLoading: false,
-    knowledgeSyncing: false,
     knowledgeError: '',
-    knowledgeStories: [],
-    knowledgeStoriesLoading: false,
-    knowledgeStoriesError: '',
     knowledgePreviewVisible: false,
     knowledgePreviewPath: '',
     knowledgePreviewData: null,
     knowledgePreviewLoading: false,
-    saveToKnowledgeVisible: false,
-    saveToKnowledgeDraftPath: '',
-    saveToKnowledgeDraftMetadata: { title: '', category: '', tags: '', type: '' },
-    saveToKnowledgeLoading: false,
-    saveToKnowledgeTimestamp: null,
-    ragPreviewSources: [],
-    ragPreviewLoading: false,
-    ragPreviewVisible: false,
-    ragPreviewQuestion: '',
-    ragCategories: null,
-    ragCategoriesLoading: false,
-    knowledgeCategoryFilter: '',
-    ragHybrid: true,
-    ragRerank: false,
-    ragCitations: true,
-    ragHyde: false,
-    ragChatMode: 'condense_plus_context',
-    ragNumQueries: 1,
-    ragTags: [],
+    llamaIndexVisible: false,
     webSearchEnabled: false,
     webSearchImages: [],
     webSearching: false,
@@ -395,24 +124,10 @@ export const useChatStore = defineStore('chat', () => {
     lastSearchQuery: '',
     selectedModel: DEFAULT_MODEL,
     availableModels: [],
-    ragDecomposeVisible: false,
-    ragDecomposeLoading: false,
-    ragDecomposeData: null,
-    ragDecomposeQuestion: '',
     sessionSummaryVisible: false,
     sessionSummaryLoading: false,
     sessionSummaryText: '',
     sessionSummaryError: '',
-    bugReportVisible: false,
-    bugReportLoading: false,
-    bugReportDraft: {
-      title: '', project: '', module: '', severity: 'minor' as BugSeverity,
-      priority: 'p2' as BugPriority, status: 'open' as BugStatus,
-      type: 'functional' as BugType, frequency: 'always' as BugFrequency,
-      assignee: '', reporter: '', environment: '', affectedVersion: '',
-      fixedVersion: '', tags: '', description: '', stepsToReproduce: '',
-      expectedResult: '', actualResult: '',
-    },
     weChatRobots: [],
     weChatRobotsDraft: [],
     weChatSettingsVisible: false,
@@ -427,7 +142,6 @@ export const useChatStore = defineStore('chat', () => {
     thinkingStartTs: null,
     webSearchResults: [],
     toolEvents: [],
-    llamaIndexVisible: false,
     contextEditorVisible: false,
     contextEditorDraft: '',
     contextPanelNewMode: false,
@@ -444,7 +158,9 @@ export const useChatStore = defineStore('chat', () => {
     sessionEditVisible: false,
     tagManagerVisible: false,
     inputTemplate: '',
+    inputText: '',
     promptHistory: [],
+    promptTemplates: [],
     promptHistoryVisible: false,
     ws: {
       x: Math.max(0, vw - DEFAULT_WIDTH),
@@ -457,35 +173,56 @@ export const useChatStore = defineStore('chat', () => {
     isResizing: false,
   });
 
+  // ── Bidirectional sync: sub-stores ↔ main state ──────────────────────
+
+  // Streaming store → main state
+  watch(() => streamingStore.isProcessing, v => { state.isProcessing = v; }, { flush: 'post' });
+  watch(() => streamingStore.streamingTargetTimestamp, v => { state.streamingTargetTimestamp = v; }, { flush: 'post' });
+  watch(() => streamingStore.streamingType, v => { state.streamingType = v; }, { flush: 'post' });
+  watch(() => streamingStore.streamingPhase, v => { state.streamingPhase = v; }, { flush: 'post' });
+  watch(() => streamingStore.thinkingStartTs, v => { state.thinkingStartTs = v; }, { flush: 'post' });
+  watch(() => streamingStore.webSearchResults, v => { state.webSearchResults = [...v]; }, { flush: 'post' });
+  watch(() => streamingStore.webSearchImages, v => { state.webSearchImages = [...v]; }, { flush: 'post' });
+  watch(() => streamingStore.webSearching, v => { state.webSearching = v; }, { flush: 'post' });
+  watch(() => streamingStore.searchTimingMs, v => { state.searchTimingMs = v; }, { flush: 'post' });
+  watch(() => streamingStore.lastSearchQuery, v => { state.lastSearchQuery = v; }, { flush: 'post' });
+
+  // Tool events → main state
+  watch(() => toolEventsStore.toolEvents, v => { state.toolEvents = [...v]; }, { flush: 'post' });
+
+  // Context files → main state
+  watch(() => ctxFilesStore.contextChangeHistory, v => { state.contextChangeHistory = [...v]; }, { flush: 'post' });
+  watch(() => ctxFilesStore.contextEditorVisible, v => { state.contextEditorVisible = v; }, { flush: 'post' });
+  watch(() => ctxFilesStore.contextEditorDraft, v => { state.contextEditorDraft = v; }, { flush: 'post' });
+  watch(() => ctxFilesStore.contextPanelNewMode, v => { state.contextPanelNewMode = v; }, { flush: 'post' });
+
+  // Bind context files store to active conversation
+  ctxFilesStore.bind(
+    () => state.sessions.find((s) => s.id === state.currentSessionId) || null,
+    async (key, meta) => updateSessionMeta(key, meta),
+    async (path: string) => {
+      try {
+        const knowledge = getKnowledge();
+        const res = await knowledge.read(path);
+        if (res.ok && res.data) return { content: res.data.content };
+        return null;
+      } catch { return null; }
+    },
+  );
+
+  // ── Model composable syncs ────────────────────────────────────────────
+
   watch(_selModel, v => { if (state.selectedModel !== v) state.selectedModel = v; }, { immediate: true, flush: 'post' });
   watch(() => state.selectedModel, v => { if (_selModel.value !== v) _selModel.value = v; }, { flush: 'post' });
   watch(_availModels, v => { if (state.availableModels !== v) state.availableModels = v; }, { immediate: true, flush: 'post' });
 
-  watch(ragSettings.knowledgeGrounded, v => { if (state.knowledgeGrounded !== v) state.knowledgeGrounded = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.knowledgeGrounded, v => { if (ragSettings.knowledgeGrounded.value !== v) ragSettings.knowledgeGrounded.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragHybrid, v => { if (state.ragHybrid !== v) state.ragHybrid = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragHybrid, v => { if (ragSettings.ragHybrid.value !== v) ragSettings.ragHybrid.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragRerank, v => { if (state.ragRerank !== v) state.ragRerank = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragRerank, v => { if (ragSettings.ragRerank.value !== v) ragSettings.ragRerank.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragCitations, v => { if (state.ragCitations !== v) state.ragCitations = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragCitations, v => { if (ragSettings.ragCitations.value !== v) ragSettings.ragCitations.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragHyde, v => { if (state.ragHyde !== v) state.ragHyde = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragHyde, v => { if (ragSettings.ragHyde.value !== v) ragSettings.ragHyde.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragScope, v => { if (state.ragScope !== v) state.ragScope = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragScope, v => { if (ragSettings.ragScope.value !== v) ragSettings.ragScope.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragNumQueries, v => { if (state.ragNumQueries !== v) state.ragNumQueries = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragNumQueries, v => { if (ragSettings.ragNumQueries.value !== v) ragSettings.ragNumQueries.value = v; }, { flush: 'post' });
-  watch(ragSettings.ragChatMode, v => { if (state.ragChatMode !== v) state.ragChatMode = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.ragChatMode, v => { if (ragSettings.ragChatMode.value !== v) ragSettings.ragChatMode.value = v; }, { flush: 'post' });
-
+  // UI state syncs to main state
   watch(uiState.faqVisible, v => { if (state.faqVisible !== v) state.faqVisible = v; }, { immediate: true, flush: 'post' });
   watch(() => state.faqVisible, v => { if (uiState.faqVisible.value !== v) uiState.faqVisible.value = v; }, { flush: 'post' });
   watch(uiState.faqSearch, v => { if (state.faqSearch !== v) state.faqSearch = v; }, { immediate: true, flush: 'post' });
   watch(() => state.faqSearch, v => { if (uiState.faqSearch.value !== v) uiState.faqSearch.value = v; }, { flush: 'post' });
   watch(uiState.faqApplyMode, v => { if (state.faqApplyMode !== v) state.faqApplyMode = v; }, { immediate: true, flush: 'post' });
   watch(() => state.faqApplyMode, v => { if (uiState.faqApplyMode.value !== v) uiState.faqApplyMode.value = v; }, { flush: 'post' });
-  watch(uiState.llamaIndexVisible, v => { if (state.llamaIndexVisible !== v) state.llamaIndexVisible = v; }, { immediate: true, flush: 'post' });
-  watch(() => state.llamaIndexVisible, v => { if (uiState.llamaIndexVisible.value !== v) uiState.llamaIndexVisible.value = v; }, { flush: 'post' });
   watch(uiState.sessionEditVisible, v => { if (state.sessionEditVisible !== v) state.sessionEditVisible = v; }, { immediate: true, flush: 'post' });
   watch(() => state.sessionEditVisible, v => { if (uiState.sessionEditVisible.value !== v) uiState.sessionEditVisible.value = v; }, { flush: 'post' });
   watch(uiState.tagManagerVisible, v => { if (state.tagManagerVisible !== v) state.tagManagerVisible = v; }, { immediate: true, flush: 'post' });
@@ -498,42 +235,66 @@ export const useChatStore = defineStore('chat', () => {
   watch(() => state.contextPanelNewMode, v => { if (uiState.contextPanelNewMode.value !== v) uiState.contextPanelNewMode.value = v; }, { flush: 'post' });
   watch(uiState.batchMode, v => { if (state.batchMode !== v) state.batchMode = v; }, { immediate: true, flush: 'post' });
   watch(() => state.batchMode, v => { if (uiState.batchMode.value !== v) uiState.batchMode.value = v; }, { flush: 'post' });
+  watch(uiState.llamaIndexVisible, v => { if (state.llamaIndexVisible !== v) state.llamaIndexVisible = v; }, { immediate: true, flush: 'post' });
+  watch(() => state.llamaIndexVisible, v => { if (uiState.llamaIndexVisible.value !== v) uiState.llamaIndexVisible.value = v; }, { flush: 'post' });
 
-  watch(registry.toolEvents, v => { state.toolEvents = [...v]; }, { immediate: true, flush: 'post' });
+  // ── Computed ──────────────────────────────────────────────────────────
 
   const activeConversation = computed(() => state.sessions.find((s) => s.id === state.currentSessionId) || null);
-
-  const ctxChanges = useContextChanges({
-    activeConversation: activeConversation as any,
-    updateSessionMeta: async (key, meta) => updateSessionMeta(key, meta as any)
-  });
-  watch(ctxChanges.contextChangeHistory, v => { state.contextChangeHistory = [...v]; }, { immediate: true, flush: 'post' });
 
   function setActiveMessages(next: Message[]): void {
     state.messages = next;
   }
+
   const compact = useConversationCompact({
     activeConversation: activeConversation as any,
     setActiveMessages,
-    persistActive: async () => { await persistActive(); }
+    persistActive: async () => { await persistActive(); },
+    rpcCall: async <T>(module: string, method: string, params?: Record<string, unknown>) => {
+      const client = getClient();
+      if (!client) return { ok: false, data: null as T, error: 'API client unavailable' };
+      return client.rpc<T>(module, method, params);
+    },
   });
   watch(compact.compactionLog, v => { state.compactionLog = [...v]; }, { immediate: true, flush: 'post' });
+
+  // ── Tool attachment helper ────────────────────────────────────────────
+
+  function attachTurnToolCalls(petTimestamp: number, startIdx: number): void {
+    const events = state.toolEvents.slice(startIdx);
+    const byNameStart = new Map<string, any>();
+    const calls: ToolCall[] = [];
+    for (const ev of events) {
+      if (ev.phase === 'start') {
+        byNameStart.set(ev.name, ev);
+        continue;
+      }
+      const st = byNameStart.get(ev.name);
+      if (!st) continue;
+      calls.push({
+        name: ev.name, label: ev.label, args: st.args,
+        content: ev.content, error: ev.error, durationMs: ev.durationMs,
+      });
+      byNameStart.delete(ev.name);
+    }
+    if (!calls.length) return;
+    const idx = state.messages.findIndex((m) => m.timestamp === petTimestamp);
+    if (idx < 0) return;
+    state.messages[idx] = { ...state.messages[idx], toolCalls: calls };
+  }
 
   // ── Service injection ─────────────────────────────────────────────────
 
   function injectServices(services: {
-    chat: ChatService; sessions: SessionService;
-    wework: WeWorkService; knowledge: KnowledgeService; rag: RagService; search: SearchService; bug: BugService;
+    client: any; chat: any; sessions: any; wework: any; search: any; rag: any; knowledge: any; translation: any; dashboard: any;
   }) {
-    _chat = services.chat;
-    _sessions = services.sessions;
-    _wework = services.wework;
-    _knowledge = services.knowledge;
-    _rag = services.rag;
-    _search = services.search;
-    _bug = services.bug;
-    injectChatService(_chat);
-    registry.registerTool({
+    injectSharedServices(services);
+    injectChatService(services.chat);
+
+    // Register web search tool
+    const search = getSearch();
+
+    toolEventsStore.registerTool({
       name: 'web_search',
       label: 'Web Search',
       description: 'Queries the public web for real-time information',
@@ -556,127 +317,57 @@ export const useChatStore = defineStore('chat', () => {
         const q = String((args as any).query || '').trim();
         if (!q) return { content: '' };
         if (!isSearchWorthy(q)) {
-          state.lastSearchQuery = q;
-          state.searchTimingMs = 0;
-          state.webSearchResults = [];
-          state.webSearchImages = [];
+          streamingStore.lastSearchQuery = q;
+          streamingStore.searchTimingMs = 0;
+          streamingStore.webSearchResults = [];
+          streamingStore.webSearchImages = [];
           return { content: '' };
         }
-
-        state.webSearching = true;
-        state.lastSearchQuery = q;
+        streamingStore.webSearching = true;
+        streamingStore.lastSearchQuery = q;
         const startedAt = Date.now();
         try {
-          const res = await _search.webSearch(
-            {
-              query: q,
-              max_results: Number((args as any).maxResults ?? (args as any).topK ?? 6),
-            },
+          const res = await search.webSearch(
+            { query: q, max_results: Number((args as any).maxResults ?? (args as any).topK ?? 6) },
             signal,
           );
-          state.searchTimingMs = Date.now() - startedAt;
+          streamingStore.searchTimingMs = Date.now() - startedAt;
           if (!res.ok || !res.data) {
-            state.webSearchResults = [];
-            state.webSearchImages = [];
+            streamingStore.webSearchResults = [];
+            streamingStore.webSearchImages = [];
             return { content: '', error: res.error || 'Web search failed' };
           }
-
           const rawItems = Array.isArray(res.data.results) ? res.data.results : [];
           const ranked = rankByReputation(deduplicateByDomain(rawItems));
           const images = Array.isArray(res.data.images) ? res.data.images : [];
-          state.lastSearchQuery = res.data.query || q;
-          state.webSearchResults = ranked;
-          state.webSearchImages = images;
-
+          streamingStore.lastSearchQuery = res.data.query || q;
+          streamingStore.webSearchResults = ranked;
+          streamingStore.webSearchImages = images;
           return {
             content: formatSearchResults(ranked),
-            details: {
-              items: ranked,
-              images,
-              query: state.lastSearchQuery,
-              timingMs: state.searchTimingMs,
-            },
+            details: { items: ranked, images, query: streamingStore.lastSearchQuery, timingMs: streamingStore.searchTimingMs },
           };
         } catch (err) {
-          state.searchTimingMs = Date.now() - startedAt;
-          state.webSearchResults = [];
-          state.webSearchImages = [];
-          return {
-            content: '',
-            error: err instanceof Error ? err.message : String(err),
-          };
+          streamingStore.searchTimingMs = Date.now() - startedAt;
+          streamingStore.webSearchResults = [];
+          streamingStore.webSearchImages = [];
+          return { content: '', error: err instanceof Error ? err.message : String(err) };
         } finally {
-          state.webSearching = false;
+          streamingStore.webSearching = false;
         }
-      }
-    });
-    registry.registerTool({
-      name: 'rag_search',
-      label: 'Knowledge Search',
-      description: 'Searches the shared YiKnowledge knowledge base',
-      promptSnippet: 'searches internal knowledge base for context',
-      parameters: {
-        type: 'object',
-        properties: {
-          query: { type: 'string', description: 'Query' },
-          top_k: { type: 'integer', description: 'Top results count (default 5)' },
-        },
-        required: ['query'],
       },
-      preStream: true,
-      enabled: state.knowledgeGrounded,
-      async execute(args) {
-        const q = String((args as any).query || '').trim();
-        if (!q) return { content: '' };
-        const topK = Number((args as any).top_k ?? 5);
-        try {
-          const res = await _rag.query({
-            question: q,
-            top_k: Number.isFinite(topK) ? topK : 5,
-            scope: state.ragScope || undefined,
-            hybrid: state.ragHybrid,
-            rerank: state.ragRerank,
-            citations: state.ragCitations,
-            num_queries: state.ragNumQueries,
-            category: state.knowledgeCategoryFilter || undefined,
-            tags: state.ragTags.length ? state.ragTags : undefined,
-          });
-          if (!res.ok || !res.data) {
-            return { content: '', error: res.error || 'Knowledge search failed' };
-          }
-          const sources = Array.isArray(res.data.sources) ? res.data.sources : [];
-          return {
-            content: formatRagSources(q, sources),
-            details: {
-              sources,
-              scope: state.ragScope || '',
-            },
-          };
-        } catch (err) {
-          return {
-            content: '',
-            error: err instanceof Error ? err.message : String(err),
-          };
-        }
-      }
     });
+
     watch(
-      [() => state.webSearchEnabled, () => state.knowledgeGrounded],
-      ([ws, rag]) => {
-        registry.setToolEnabled('web_search', !!ws);
-        registry.setToolEnabled('rag_search', !!rag);
-      },
+      () => state.webSearchEnabled,
+      (ws) => { toolEventsStore.setToolEnabled('web_search', !!ws); },
       { immediate: true }
     );
   }
 
-  function setNotifyHandler(handler: (message: string, type: NotifyType) => void) {
-    _notifyHandler = handler;
-  }
-
   // ── Persistence helpers ───────────────────────────────────────────────
 
-  let _persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  const _persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
   function _persistSetting(key: string, value: unknown, immediate = false) {
     if (typeof window === 'undefined') return;
     clearTimeout(_persistTimers.get(key)!);
@@ -699,59 +390,51 @@ export const useChatStore = defineStore('chat', () => {
     if (typeof chrome === 'undefined' || !chrome.storage?.local) return;
     try {
       const result = (await chrome.storage.local.get([
-        'sidebarWidth', 'sidebarCollapsed', 'knowledgeGrounded',
-        'ragScope', 'ragScopeIsFile', 'weChatRobots', 'promptHistory',
-        'windowState', 'chatColorIndex',
+        'yipet:sidebarWidth', 'yipet:sidebarCollapsed', 'weChatRobots', 'yipet:promptHistory',
+        'yipet:promptTemplates',
+        'yipet:chatWindowState', 'yipet:chatColorIndex', 'yipet:chatCustomColor',
+        'yipet:ragEnabled', 'yipet:ragScope', 'yipet:ragScopeIsFile', 'yipet:ragFast',
+        'yipet:ragHybrid', 'yipet:ragRerank', 'yipet:ragCitations', 'yipet:ragHyde',
+        'yipet:ragNumQueries', 'yipet:ragChatMode',
       ])) as Record<string, unknown>;
-      if (typeof result.sidebarWidth === 'number') state.sidebarWidth = result.sidebarWidth;
-      if (typeof result.sidebarCollapsed === 'boolean') state.sidebarCollapsed = result.sidebarCollapsed;
-      if (typeof result.knowledgeGrounded === 'boolean') state.knowledgeGrounded = result.knowledgeGrounded;
-      if (typeof result.ragScope === 'string') state.ragScope = result.ragScope;
-      if (typeof result.ragScopeIsFile === 'boolean') state.ragScopeIsFile = result.ragScopeIsFile;
+      if (typeof result['yipet:sidebarWidth'] === 'number') state.sidebarWidth = result['yipet:sidebarWidth'];
+      if (typeof result['yipet:sidebarCollapsed'] === 'boolean') state.sidebarCollapsed = result['yipet:sidebarCollapsed'];
       if (Array.isArray(result.weChatRobots)) state.weChatRobots = result.weChatRobots as WeWorkBot[];
-      if (Array.isArray(result.promptHistory)) {
-        state.promptHistory = (result.promptHistory as string[]).filter((s): s is string => typeof s === 'string').slice(-100);
+      if (Array.isArray(result['yipet:promptHistory'])) {
+        state.promptHistory = (result['yipet:promptHistory'] as string[]).filter((s): s is string => typeof s === 'string').slice(-100);
       }
-      if (result.windowState && typeof result.windowState === 'object') {
-        const ws = result.windowState as Record<string, unknown>;
+      if (Array.isArray(result['yipet:promptTemplates'])) {
+        state.promptTemplates = (result['yipet:promptTemplates'] as Array<{ name: string; content: string }>)
+          .filter(t => t && typeof t.name === 'string' && typeof t.content === 'string');
+      }
+      if (result['yipet:chatWindowState'] && typeof result['yipet:chatWindowState'] === 'object') {
+        const ws = result['yipet:chatWindowState'] as Record<string, unknown>;
         if (typeof ws.x === 'number') state.ws.x = ws.x;
         if (typeof ws.y === 'number') state.ws.y = ws.y;
         if (typeof ws.width === 'number') state.ws.width = ws.width;
         if (typeof ws.height === 'number') state.ws.height = ws.height;
         if (typeof ws.isFullscreen === 'boolean') state.ws.isFullscreen = ws.isFullscreen;
       }
+      if (typeof result['yipet:chatColorIndex'] === 'number' || typeof result['yipet:chatCustomColor'] === 'string') {
+        setColorIndex(
+          typeof result['yipet:chatColorIndex'] === 'number' ? result['yipet:chatColorIndex'] : state.colorIndex,
+          typeof result['yipet:chatCustomColor'] === 'string' ? result['yipet:chatCustomColor'] : state.customColor,
+        );
+      }
+      if (typeof result['yipet:ragEnabled'] === 'boolean') state.ragEnabled = result['yipet:ragEnabled'];
+      if (typeof result['yipet:ragScope'] === 'string') state.ragScope = result['yipet:ragScope'];
+      if (typeof result['yipet:ragScopeIsFile'] === 'boolean') state.ragScopeIsFile = result['yipet:ragScopeIsFile'];
+      if (typeof result['yipet:ragFast'] === 'boolean') state.ragFast = result['yipet:ragFast'];
+      if (typeof result['yipet:ragHybrid'] === 'boolean') state.ragHybrid = result['yipet:ragHybrid'];
+      if (typeof result['yipet:ragRerank'] === 'boolean') state.ragRerank = result['yipet:ragRerank'];
+      if (typeof result['yipet:ragCitations'] === 'boolean') state.ragCitations = result['yipet:ragCitations'];
+      if (typeof result['yipet:ragHyde'] === 'boolean') state.ragHyde = result['yipet:ragHyde'];
+      if (typeof result['yipet:ragNumQueries'] === 'number') state.ragNumQueries = result['yipet:ragNumQueries'];
+      if (typeof result['yipet:ragChatMode'] === 'string') state.ragChatMode = result['yipet:ragChatMode'];
     } catch { /* storage unavailable */ }
   }
 
   // ── Session management ───────────────────────────────────────────────
-
-  async function _loadSessions() {
-    if (_loadSessionsPromise) return _loadSessionsPromise;
-    _loadSessionsPromise = (async () => {
-      state.sessionLoading = true;
-      try {
-        const res = await _sessions.list({ pageSize: 200 });
-        if (res.ok && res.data) {
-          const list = res.data;
-          state.sessions = list.map((d) => ({
-            id: d.key || d.id || '',
-            title: d.title || d.data?.title || 'Untitled',
-            url: d.url || d.data?.url || '',
-            createdAt: d.createdAt || d.data?.createdAt || Date.now(),
-            updatedAt: d.updatedAt || d.data?.updatedAt || Date.now(),
-            messageCount: d.messageCount || d.data?.messageCount || 0,
-            messages: d.data?.messages || undefined,
-            isFavorite: d.data?.isFavorite || false,
-            tags: d.tags || d.data?.tags || [],
-            pageContent: d.pageContent || d.data?.pageContent || '',
-          }));
-          _resortSessions();
-        }
-      } catch { /* ignore */ }
-      finally { state.sessionLoading = false; _loadSessionsPromise = null; }
-    })();
-    return _loadSessionsPromise;
-  }
 
   function _resortSessions() {
     state.sessions.sort((a, b) => {
@@ -760,116 +443,194 @@ export const useChatStore = defineStore('chat', () => {
     });
   }
 
+  async function _loadSessions() {
+    if (_loadSessionsPromise) return _loadSessionsPromise;
+    _loadSessionsPromise = (async () => {
+      state.sessionLoading = true;
+      state.sessionError = '';
+      try {
+        const sessions = getSessions();
+        const res = await sessions.list();
+        if (res.ok && res.data) {
+          const list = res.data;
+          state.sessions = list.map((d) => {
+            const rawMsgs = d.messages ?? d.data?.messages;
+            const msgs = Array.isArray(rawMsgs) ? rawMsgs : [];
+            return {
+              id: d.key || d.id || '',
+              title: d.title || 'Untitled',
+              url: d.url || '',
+              createdAt: d.createdAt || Date.now(),
+              updatedAt: d.updatedAt || Date.now(),
+              messageCount: msgs.length || d.messageCount || 0,
+              messages: msgs.length ? msgs : undefined,
+              isFavorite: !!d.isFavorite,
+              tags: d.tags || [],
+              pageContent: d.pageContent || '',
+              pageTitle: (d as any).pageTitle || '',
+              pageDescription: d.pageDescription || '',
+              filePath: (d as any).filePath || (d as any).file_path || '',
+            };
+          });
+          _resortSessions();
+          state.sessionsLoaded = true;
+          state.lastSyncTime = Date.now();
+          if (state.sessions.length > 0 && !state.currentSessionId) {
+            const pageUrl = state.pageInfo.url;
+            let target = findSessionByUrl(state.sessions, pageUrl);
+            if (!target) {
+              let savedKey: string | null = null;
+              try { savedKey = window.localStorage?.getItem('yipet:activeSessionKey') ?? null; } catch { /* ignore */ }
+              target = savedKey ? state.sessions.find((s) => s.id === savedKey) : undefined;
+            }
+            if (!target) {
+              target = state.sessions.find((s) => (s.messageCount || 0) > 0) || state.sessions[0];
+            }
+            await selectSession(target!.id);
+          }
+        } else {
+          state.sessionError = `Failed to load sessions: ${res.error || 'unknown error'}`;
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        state.sessionError = `Failed to load sessions: ${msg}`;
+      }
+      finally { state.sessionLoading = false; _loadSessionsPromise = null; }
+    })();
+    return _loadSessionsPromise;
+  }
+
   async function _findOrCreateSession() {
     const url = state.pageInfo.url;
     const existing = state.sessions.find((s) => s.url === url);
     if (existing) {
       state.currentSessionId = existing.id;
       state.title = existing.title;
-      await _loadSessionMessages(existing.id);
+      if (existing.messages?.length) {
+        state.messages = mapMessages(existing.messages);
+      } else {
+        await _loadSessionMessages(existing.id);
+      }
       state.viewState = state.messages.length > 0 ? 'messages' : 'empty';
-      // Auto-save context file even for existing sessions that don't have it yet
-      await _ensurePageContext(existing);
       return;
     }
     await createSession();
   }
 
-  /** Ensure the page content is saved as a context file for the given session.
-   *  Idempotent — skips the write if the session already has the ctx: tag, but
-   *  always surfaces the page md as the first "Active context" scope. */
-  async function _ensurePageContext(session: SessionItem) {
-    const filename = slugifyUrl(session.url);
-    const ctxPath = `websites/${filename}.md`;
-    // Always make this page the active context scope so the Context pill shows
-    // the page md as its first item, independent of the knowledge write result.
-    setRagScopeFromNode(ctxPath, true);
-
-    const hasCtx = (session.tags || []).some((t) => t === `${CTX_PREFIX}${ctxPath}`);
-    if (hasCtx) return;
-
-    const rawContent = document.body?.innerText?.slice(0, 8000) || '';
-    const tags = [...(session.tags || []).filter((t) => !t.startsWith(CTX_PREFIX)), `${CTX_PREFIX}${ctxPath}`];
-    if (!tags.includes('source:YiPet')) tags.push('source:YiPet');
-    if (!tags.some((t) => t.startsWith('from:'))) tags.push(`from:${session.url}`);
-    try {
-      if (_knowledge) {
-        const existing = await _knowledge.read(ctxPath);
-        if (!existing.ok || !existing.data) {
-          const md = formatPageMarkdown(session.title, session.url, rawContent);
-          await _knowledge.write(ctxPath, md, { title: session.title, url: session.url, source: 'YiPet' });
-        }
+  function _extractMessages(rdata: Record<string, any>): Message[] {
+    for (const src of [
+      rdata.messages,
+      rdata.data?.messages,
+      rdata.data?.data?.messages,
+      rdata.document?.messages,
+      rdata.result?.messages,
+    ]) {
+      if (Array.isArray(src) && src.length > 0) {
+        return mapMessages(
+          src.map((m: any) =>
+            m && typeof m === 'object'
+              ? { ...m, message: m.message ?? m.content ?? '' }
+              : m,
+          ),
+        );
       }
-      const bodyOnly = [`# ${session.title}`, '', rawContent].join('\n');
-      await _sessions.update(session.id, {
-        pageContent: `## ${ctxPath}\n\n${bodyOnly}`,
-        tags,
-      } as unknown as Record<string, unknown>);
-      session.pageContent = `## ${ctxPath}\n\n${bodyOnly}`;
-      session.tags = tags;
-      state.contextEditingId = session.id;
-      if (state.knowledgeTree.length === 0) loadKnowledgeTree();
-    } catch (e) { /* ignore */ }
+    }
+    for (const src of [
+      rdata.messages,
+      rdata.data?.messages,
+      rdata.data?.data?.messages,
+    ]) {
+      if (Array.isArray(src)) return [];
+    }
+    return [];
   }
 
   async function _loadSessionMessages(id: string) {
     try {
-      const record = await _sessions.get(id);
+      const sessions = getSessions();
+      const record = await sessions.get(id);
       const rdata = record.data;
-      const inner = rdata?.data;
-      if (inner?.messages) {
-        state.messages = mapMessages(inner.messages);
-      } else if (rdata?.messages) {
-        state.messages = mapMessages(rdata.messages);
+      if (!rdata) {
+        state.viewState = 'error';
+        return;
       }
-      if (inner && 'pageContent' in inner) {
-        const session = state.sessions.find((s) => s.id === id);
-        if (session) session.pageContent = inner.pageContent || '';
-      }
-    } catch (_e) { /* ignore */ }
-  }
 
-  async function selectSession(id: string) {
-    state.isProcessing && stopSending();
-    const session = state.sessions.find((s) => s.id === id);
-    if (session) {
-      state.currentSessionId = id;
-      state.title = session.title;
-      state.messages = [];
-      state.viewState = 'messages';
-      await _loadSessionMessages(id);
+      state.messages = _extractMessages(rdata as Record<string, any>);
+      state.viewState = state.messages.length > 0 ? 'messages' : 'empty';
+
+      const session = state.sessions.find((s) => s.id === id);
+      if (session) {
+        if ((rdata as any).tags !== undefined) session.tags = (rdata as any).tags;
+        if ((rdata as any).pageContent !== undefined) session.pageContent = (rdata as any).pageContent;
+        if ((rdata as any).isFavorite !== undefined) session.isFavorite = (rdata as any).isFavorite;
+        session.messageCount = state.messages.length;
+        if ((rdata as any).pageTitle !== undefined) session.pageTitle = (rdata as any).pageTitle;
+        if ((rdata as any).pageDescription !== undefined) session.pageDescription = (rdata as any).pageDescription;
+        if ((rdata as any).title !== undefined) session.title = (rdata as any).title;
+        if ((rdata as any).url !== undefined) session.url = (rdata as any).url;
+      }
+
+      ctxFilesStore.loadContextText().catch(() => {});
+    } catch (e) {
+      state.viewState = 'error';
     }
   }
 
-  async function startContextEditing(id: string) {
-    await selectSession(id);
-    state.contextEditingId = id;
-    if (state.knowledgeTree.length === 0) loadKnowledgeTree();
-  }
+  async function selectSession(id: string) {
+    if (state.isProcessing) stopSending();
+    const existing = state.sessions.find((s) => s.id === id);
+    if (!existing) return;
 
-  function stopContextEditing() {
-    state.contextEditingId = null;
+    state.currentSessionId = id;
+    state.title = existing.title;
+    state.viewState = 'loading';
+
+    if (existing.messages?.length) {
+      state.messages = mapMessages(
+        existing.messages.map((m: any) =>
+          m && typeof m === 'object'
+            ? { ...m, message: m.message ?? m.content ?? '' }
+            : m,
+        ),
+      );
+      state.viewState = state.messages.length > 0 ? 'messages' : 'empty';
+      _loadSessionMessages(id).catch(() => {});
+    } else {
+      state.messages = [];
+      try {
+        await _loadSessionMessages(id);
+      } catch (_) {}
+    }
+
+    ctxFilesStore.loadContextText().catch(() => {});
+    try { window.localStorage?.setItem('yipet:activeSessionKey', id); } catch { /* ignore */ }
   }
 
   async function createSession() {
-    state.isProcessing && stopSending();
+    if (state.isProcessing) stopSending();
     const url = state.pageInfo.url;
     const title = state.pageInfo.title || 'New Chat';
     const existing = state.sessions.find((s) => s.url === url);
     if (existing) {
       state.currentSessionId = existing.id;
       state.title = existing.title;
-      await _loadSessionMessages(existing.id);
+      if (existing.messages?.length) {
+        state.messages = mapMessages(existing.messages);
+      } else {
+        await _loadSessionMessages(existing.id);
+      }
       state.viewState = state.messages.length > 0 ? 'messages' : 'empty';
       return;
     }
     try {
-      const rawContent = document.body?.innerText?.slice(0, 8000) || '';
-      const res = await _sessions.create({
-        title,
-        url,
-        tags: [`source:YiPet`, `from:${url}`],
-        pageContent: rawContent,
+      const sessions = getSessions();
+      const project = detectProject(url);
+      const tags = [`source:YiPet`, `from:${url}`];
+      if (project) tags.push(`project:${project}`);
+      const res = await sessions.create({
+        title, url,
+        tags,
+        pageContent: '',
       });
       if (res.ok && res.data?.key) {
         const id = res.data.key as string;
@@ -877,58 +638,14 @@ export const useChatStore = defineStore('chat', () => {
         state.title = title;
         state.messages = [];
         state.viewState = 'empty';
-        // Auto-save page content as markdown to YiKnowledge/websites/ and add as context file
-        const saved = await _autoSavePageContext(id, url, title, rawContent);
         await _loadSessions();
-        if (saved) {
-          state.contextEditingId = id;
-          if (state.knowledgeTree.length === 0) loadKnowledgeTree();
-        }
       }
     } catch { /* ignore */ }
   }
 
-  /** Save page content as markdown to YiKnowledge/websites/ and wire it as a session context file.
-   *  Returns true if the context file was successfully saved and wired. */
-  async function _autoSavePageContext(
-    sessionId: string,
-    url: string,
-    title: string,
-    rawContent: string,
-  ): Promise<boolean> {
-    const filename = slugifyUrl(url);
-    const ctxPath = `websites/${filename}.md`;
-    // Surface the page md as the active context scope even if the body is empty
-    // or the knowledge write later fails — keeps the Context pill visible.
-    setRagScopeFromNode(ctxPath, true);
-    if (!rawContent.trim()) return false;
-    if (!_knowledge) return false;
-    try {
-      const existing = await _knowledge.read(ctxPath);
-      if (existing.ok && existing.data) {
-        const bodyOnly = [`# ${title}`, '', rawContent].join('\n');
-        await _sessions.update(sessionId, {
-          pageContent: `## ${ctxPath}\n\n${bodyOnly}`,
-          tags: [`source:YiPet`, `from:${url}`, `${CTX_PREFIX}${ctxPath}`],
-        } as unknown as Record<string, unknown>);
-        return true;
-      }
-    } catch (e) { /* proceed to create */ }
-
-    const md = formatPageMarkdown(title, url, rawContent);
-    try {
-      await _knowledge.write(ctxPath, md, { title, url, source: 'YiPet' });
-      const bodyOnly = [`# ${title}`, '', rawContent].join('\n');
-      await _sessions.update(sessionId, {
-        pageContent: `## ${ctxPath}\n\n${bodyOnly}`,
-        tags: [`source:YiPet`, `from:${url}`, `${CTX_PREFIX}${ctxPath}`],
-      } as unknown as Record<string, unknown>);
-      return true;
-    } catch (e) { return false; }
-  }
-
   async function deleteSession(id: string) {
-    const res = await _sessions.delete(id);
+    const sessions = getSessions();
+    const res = await sessions.delete(id);
     if (res?.ok) {
       const idx = state.sessions.findIndex((s) => s.id === id);
       if (idx >= 0) state.sessions.splice(idx, 1);
@@ -936,6 +653,7 @@ export const useChatStore = defineStore('chat', () => {
         state.currentSessionId = null;
         state.messages = [];
         state.viewState = 'empty';
+        try { window.localStorage?.removeItem('yipet:activeSessionKey'); } catch { /* ignore */ }
       }
     }
   }
@@ -944,7 +662,8 @@ export const useChatStore = defineStore('chat', () => {
     const session = state.sessions.find((s) => s.id === id);
     if (!session) return;
     session.isFavorite = !session.isFavorite;
-    await _sessions.update(id, { isFavorite: session.isFavorite } as unknown as Record<string, unknown>);
+    const sessions = getSessions();
+    await sessions.update(id, { isFavorite: session.isFavorite } as unknown as Record<string, unknown>);
     _resortSessions();
   }
 
@@ -957,39 +676,47 @@ export const useChatStore = defineStore('chat', () => {
     session.title = trimmed;
     if (state.currentSessionId === id) state.title = trimmed;
     try {
-      await _sessions.update(id, { title: trimmed } as unknown as Record<string, unknown>);
+      const sessions = getSessions();
+      await sessions.update(id, { title: trimmed } as unknown as Record<string, unknown>);
     } catch {
       session.title = prev;
       if (state.currentSessionId === id) state.title = prev;
     }
   }
 
+  async function updateSessionMeta(
+    id: string,
+    meta: { title?: string; pageContent?: string; tags?: string[] },
+  ) {
+    const cur = state.sessions.find((x) => x.id === id);
+    if (!cur) return;
+    try {
+      const sessions = getSessions();
+      await sessions.update(id, meta as unknown as Record<string, unknown>);
+      if (meta.title !== undefined) {
+        cur.title = meta.title;
+        if (state.currentSessionId === id) state.title = meta.title;
+      }
+      if (meta.pageContent !== undefined) cur.pageContent = meta.pageContent;
+      if (meta.tags !== undefined) cur.tags = meta.tags;
+    } catch { /* ignore */ }
+  }
 
-  // ── Window management (extracted to useChatWindow composable) ──
+  // ── Window management ─────────────────────────────────────────────────
+
   const _windowActions = useChatWindow(
     state as any, vw, vh,
     _dragStart, _resizeStart, _sidebarResizeStart,
-    () => { _loadSessions().then(() => _findOrCreateSession()); },
+    () => { _loadSessions(); },
     _persistWindowState,
     _persistSetting,
   );
-  const {
-    open, close, toggle,
-    startDrag, onDragMove, endDrag,
-    startResize, onResizeMove, endResize,
-    toggleFullscreen,
-    startSidebarResize, onSidebarResizeMove, endSidebarResize,
-  } = _windowActions;
 
+  // ── Streaming orchestration ───────────────────────────────────────────
 
   function stopSending() {
-    _abortController?.abort();
-    _abortController = null;
+    streamingStore.stopSending();
     state.isProcessing = false;
-    state.streamingType = '';
-    state.streamingPhase = '';
-    state.thinkingStartTs = null;
-    state.streamingTargetTimestamp = null;
   }
 
   async function sendMessage(text: string, images?: string[]) {
@@ -997,8 +724,6 @@ export const useChatStore = defineStore('chat', () => {
     if (!text.trim() && imageList.length === 0) return;
     const content = text.trim();
     if (content) pushPromptHistory(text);
-
-    // ── Slash commands (mirrors YiVad aiChat) ──
 
     if (content.startsWith('/clear')) {
       state.messages = [];
@@ -1008,35 +733,202 @@ export const useChatStore = defineStore('chat', () => {
       notify(t('chatCleared'));
       return;
     }
-
     if (content.startsWith('/stop')) {
       stopSending();
       return;
     }
-
     if (content.startsWith('/retry')) {
       await retryLastMessage();
       return;
     }
-
     if (content.startsWith('/export')) {
       exportCurrentSessionMarkdown();
       return;
     }
-
     if (content.startsWith('/new')) {
       await createEmptySession();
       notify('New chat created');
       return;
     }
-
     if (content.startsWith('/compact')) {
+      const before = state.messages.reduce((sum, m) => sum + Math.ceil((m.content || '').length / 4), 0);
       await compact.maybeCompact(state.messages);
-      notify('Conversation compacted (token-reduced)');
+      const after = state.messages.reduce((sum, m) => sum + Math.ceil((m.content || '').length / 4), 0);
+      const saved = before - after;
+      notify(`Compacted: ~${before} → ~${after} tokens (saved ${saved > 0 ? saved : 0})`);
       return;
     }
-    if (content.startsWith('/help')) {
-      notify('/new · /clear · /retry · /compact · /stop · /export · /help');
+    if (content.startsWith('/stats')) {
+      const knowledgeCount = state.knowledgeTree?.reduce((sum, cat) => sum + (cat.files?.length || 0), 0) || 0;
+      const totalMsgs = state.sessions.reduce((sum, ses) => sum + (ses.messageCount || 0), 0);
+      const today = new Date().toDateString();
+      const todaySessions = state.sessions.filter((ses: any) => {
+        const ts = ses.updatedAt || ses.createdAt;
+        return ts && new Date(ts).toDateString() === today;
+      }).length;
+      const favCount = state.sessions.filter(s => s.isFavorite).length;
+      const statsMsg: Message = {
+        type: 'pet',
+        content: [
+          '## Personal Stats',
+          '',
+          `| Metric | Value |`,
+          `|--------|-------|`,
+          `| Sessions | ${state.sessions.length} (${todaySessions} today) |`,
+          `| Favorites | ${favCount} |`,
+          `| Total Messages | ${totalMsgs} |`,
+          `| Knowledge Files | ${knowledgeCount} |`,
+          `| Recent Bugs | ${(state as any).recentBugs?.length || 0} |`,
+          `| RAG Enabled | ${state.ragEnabled ? 'Yes' : 'No'} |`,
+          `| Model | ${state.selectedModel} |`,
+          '',
+          `Data synced via YiAi.`,
+        ].join('\n'),
+        timestamp: Date.now(),
+      };
+      state.messages.push(statsMsg);
+      persistActive();
+      return;
+    }
+    if (content.startsWith('/sessions')) {
+      const recent = [...state.sessions].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 10);
+      const rows = recent.map((s, i) => {
+        const project = (s.tags || []).find((t: string) => t.startsWith('project:'))?.slice(8) || '';
+        const age = s.updatedAt ? Math.floor((Date.now() - s.updatedAt) / 86400000) : null;
+        const ageStr = age === 0 ? 'today' : age === 1 ? '1d ago' : age ? `${age}d ago` : '';
+        const active = s.id === state.currentSessionId ? ' **active**' : '';
+        return `| ${i + 1} | ${(s.title || 'Untitled').slice(0, 40)} | ${s.messageCount || 0} msg | ${project || '-'} | ${ageStr}${active} |`;
+      });
+      const sessionsMsg: Message = {
+        type: 'pet',
+        content: [
+          '## Recent Sessions',
+          '',
+          '| # | Title | Msgs | Project | Age |',
+          '|---|-------|------|---------|-----|',
+          ...rows,
+          '',
+          `Total: ${state.sessions.length} sessions.`,
+        ].join('\n'),
+        timestamp: Date.now(),
+      };
+      state.messages.push(sessionsMsg);
+      persistActive();
+      return;
+    }
+    if (content.startsWith('/search ')) {
+      const searchQuery = content.slice(8).trim();
+      if (!searchQuery) { notify('Usage: /search <query>', 'info'); return; }
+      const knowledge = getKnowledge();
+      if (!knowledge) { notify('Knowledge service unavailable', 'error'); return; }
+      try {
+        const res = await knowledge.search(searchQuery);
+        if (!res.ok || !res.data?.results?.length) {
+          const noResultsMsg: Message = { type: 'pet', content: `No results for "${searchQuery}"`, timestamp: Date.now() };
+          state.messages.push(noResultsMsg); persistActive(); return;
+        }
+        const rows = res.data.results.slice(0, 8).map((r, i) =>
+          `| ${i + 1} | [${r.title || r.path.split('/').pop()}](${r.path}) | ${(r.snippet || '').slice(0, 80)} |`
+        );
+        const searchMsg: Message = {
+          type: 'pet',
+          content: [
+            `## Knowledge Search: "${searchQuery}"`,
+            '',
+            `| # | File | Snippet |`,
+            '|---|------|---------|',
+            ...rows,
+            '',
+            `${res.data.results.length} results total.`,
+          ].join('\n'),
+          timestamp: Date.now(),
+        };
+        state.messages.push(searchMsg); persistActive();
+      } catch { notify('Search failed', 'error'); }
+      return;
+    }
+    if (content.startsWith('/help') || content.startsWith('/hotkeys')) {
+      const helpMsg: Message = {
+        type: 'pet',
+        content: [
+          '## Slash Commands',
+          '',
+          '| Command | Description |',
+          '|---------|-------------|',
+          '| `/clear` | Clear all messages |',
+          '| `/retry` | Retry last failed message |',
+          '| `/stop` | Stop current stream |',
+          '| `/compact` | Compress conversation history |',
+          '| `/new` | Start new conversation |',
+          '| `/export` | Export as markdown |',
+          '| `/stats` | Show personal usage stats |',
+          '| `/sessions` | List recent sessions |',
+          '| `/search <q>` | Search YiKnowledge |',
+          '| `/name <title>` | Rename current conversation |',
+          '| `/copy` | Copy last AI message |',
+          '| `/session` | Show session info |',
+          '| `/help` | Show this help |',
+          '',
+          '## Keyboard Shortcuts',
+          '',
+          '| Shortcut | Action |',
+          '|----------|--------|',
+          '| `Enter` | Send message |',
+          '| `Shift+Enter` | Newline |',
+          '| `Escape` | Stop / Clear input |',
+          '| `Ctrl+K` | Clear conversation |',
+          '| `ArrowUp` (start) | Recall previous prompt |',
+          '| `ArrowDown` (end) | Recall next prompt |',
+        ].join('\n'),
+        timestamp: Date.now(),
+      };
+      state.messages.push(helpMsg);
+      persistActive();
+      return;
+    }
+    if (content.startsWith('/name ')) {
+      const newTitle = content.slice(6).trim();
+      if (newTitle && state.currentSessionId) {
+        renameSession(state.currentSessionId, newTitle);
+        notify(`Renamed to "${newTitle}"`);
+      } else {
+        notify('Usage: /name <new title>');
+      }
+      return;
+    }
+    if (content.startsWith('/copy')) {
+      const lastAi = [...state.messages].reverse().find(m => m.type === 'pet' && m.content);
+      if (lastAi?.content) {
+        navigator.clipboard.writeText(lastAi.content).then(
+          () => notify('Copied last AI message'),
+          () => notify('Copy failed'),
+        );
+      } else {
+        notify('No AI message to copy');
+      }
+      return;
+    }
+    if (content.startsWith('/session')) {
+      const ses = state.sessions.find(s => s.id === state.currentSessionId);
+      const info: Message = {
+        type: 'pet',
+        content: [
+          '## Session Info',
+          '',
+          `| Key | Value |`,
+          `|-----|-------|`,
+          `| Title | ${ses?.title || state.title || '—'} |`,
+          `| Session ID | \`${state.currentSessionId || '—'}\` |`,
+          `| Messages | ${state.messages.length} (${state.messages.filter(m => m.type === 'user').length} user, ${state.messages.filter(m => m.type === 'pet').length} AI) |`,
+          `| Context Files | ${(ses?.tags ?? []).filter((t: string) => t.startsWith('ctx:')).length} |`,
+          `| Tags | ${(ses?.tags ?? []).filter((t: string) => !t.startsWith('ctx:')).join(', ') || '—'} |`,
+          `| Web Search | ${state.webSearchEnabled ? 'on' : 'off'} |`,
+          `| Model | ${state.selectedModel || '—'} |`,
+        ].join('\n'),
+        timestamp: Date.now(),
+      };
+      state.messages.push(info);
+      persistActive();
       return;
     }
 
@@ -1068,27 +960,27 @@ export const useChatStore = defineStore('chat', () => {
     const slice = state.messages.slice(0, userIdx + 1);
     const lastUserMsg = slice[slice.length - 1];
     const images = lastUserMsg?.imageDataUrls ?? (lastUserMsg?.imageDataUrl ? [lastUserMsg.imageDataUrl] : []);
-    const userContent = lastUserMsg?.content || '';
+    let userContent = lastUserMsg?.content || '';
 
-    state.streamingTargetTimestamp = petTimestamp;
-    state.streamingType = type;
-    state.isProcessing = true;
-    state.streamingPhase = state.knowledgeGrounded ? 'retrieving' : 'thinking';
-    state.thinkingStartTs = Date.now();
+    const contextText = await ctxFilesStore.loadContextText();
+    if (contextText && userContent) {
+      const ref = contextText
+        .split('\n\n---\n\n')
+        .filter(Boolean)
+        .map(s => s.replace(/^## /, '').trim())
+        .join('\n\n');
+      userContent = `${userContent}\n\n---\nReference files:\n\n${ref}`;
+    }
+
+    const sig = streamingStore.resetForNewStream(type, petTimestamp, state.ragEnabled);
     state.ragSources = [];
-    state.webSearching = false;
-    state.searchTimingMs = 0;
-    state.lastSearchQuery = '';
-    state.webSearchResults = [];
-    state.webSearchImages = [];
-    _abortController = new AbortController();
     let streamed = '';
     let lastScrollAt = 0;
     let phaseFlipped = false;
     const streamStart = Date.now();
     let firstTokenAt = 0;
     let turnSearchResults: WebSearchResult[] = [];
-    let turnSearchImages: WebImageResult[] = [];
+    let turnSearchImages: any[] = [];
     let turnSearchQuery = '';
     let turnSearchTimingMs = 0;
     const SCROLL_THROTTLE_MS = 80;
@@ -1097,7 +989,7 @@ export const useChatStore = defineStore('chat', () => {
 
     const onToken = (token: string) => {
       streamed += token;
-      if (!phaseFlipped) { phaseFlipped = true; state.streamingPhase = 'streaming'; firstTokenAt = Date.now(); }
+      if (!phaseFlipped) { phaseFlipped = true; streamingStore.streamingPhase = 'streaming'; firstTokenAt = Date.now(); }
       const idx = findPetIdx();
       if (idx >= 0) {
         state.messages[idx].content = streamed;
@@ -1111,100 +1003,94 @@ export const useChatStore = defineStore('chat', () => {
       }
     };
 
+    const useRag = state.ragEnabled;
+    let ragMetaFromStream: Record<string, unknown> | null = null;
 
     try {
       const argsMap = new Map<string, Record<string, unknown>>();
       argsMap.set('web_search', { query: userContent });
-      argsMap.set('rag_search', { query: userContent });
-      const preStreamCtx = await registry.executePreStreamTools(argsMap, _abortController.signal);
-      turnSearchResults = [...state.webSearchResults];
-      turnSearchImages = [...state.webSearchImages];
-      turnSearchQuery = state.lastSearchQuery;
-      turnSearchTimingMs = state.searchTimingMs;
+      const preStreamCtx = await toolEventsStore.executePreStreamTools(argsMap, sig);
+      turnSearchResults = [...streamingStore.webSearchResults];
+      turnSearchImages = [...streamingStore.webSearchImages];
+      turnSearchQuery = streamingStore.lastSearchQuery;
+      turnSearchTimingMs = streamingStore.searchTimingMs;
 
-      if (state.knowledgeGrounded) {
-        if (!state.ragScope) {
-          const ctxFiles = getSessionContextFiles();
-          const derived = deriveScopeFromContextFiles(ctxFiles);
-          if (derived) {
-            state.ragScope = derived.scope;
-            state.ragScopeIsFile = derived.isFile;
+      const chat = useRag ? null : getChat();
+      const rag = useRag ? getRag() : null;
+      const history: Array<{ role: string; content: string }> = [];
+      if (state.systemPrompt) {
+        history.push({ role: 'system', content: state.systemPrompt });
+      }
+      for (let i = 0; i <= userIdx; i++) {
+        const m = slice[i];
+        let text = (m.content || '').trim();
+        if (!text && i !== userIdx) continue;
+        if (i === userIdx) {
+          if (preStreamCtx) {
+            text = `${text}\n\n---\n\n${preStreamCtx}`.trim();
+          }
+          if (contextText) {
+            const ref = contextText
+              .split('\n\n---\n\n')
+              .filter(Boolean)
+              .map(s => s.replace(/^## /, '').trim())
+              .join('\n\n');
+            text = `${text}\n\n---\nReference files:\n\n${ref}`;
           }
         }
-        const useFileChat = state.ragScopeIsFile && !!state.ragScope;
-        state.streamingPhase = 'retrieving';
-        if (useFileChat) {
-          let groundedQuestion = state.systemPrompt
-            ? `${state.systemPrompt}\n\n${userContent}`
-            : userContent;
-          if (preStreamCtx) {
-            groundedQuestion = `${groundedQuestion}\n\n---\n\n${preStreamCtx}`;
-          }
-          await _rag.streamFileChatWithCallback(
-            { target_file: state.ragScope, question: groundedQuestion },
+        history.push({
+          role: m.type === 'user' ? 'user' : 'assistant',
+          content: text,
+        });
+      }
+
+      if (useRag && rag) {
+        // RAG-grounded chat
+        const onSources = (sources: RagSource[]) => {
+          state.ragSources = sources;
+        };
+        const onMeta = (meta: Record<string, unknown>) => {
+          ragMetaFromStream = meta;
+        };
+        if (state.ragScopeIsFile && state.ragScope) {
+          await rag.streamFileChat(
+            {
+              target_file: state.ragScope,
+              messages: history,
+              model: state.selectedModel || DEFAULT_MODEL,
+            },
             onToken,
-            _abortController.signal,
+            streamingStore.getAbortController()?.signal,
           );
         } else {
-          const messages: RagChatMessage[] = [];
-          if (state.systemPrompt) {
-            messages.push({ role: 'system', content: state.systemPrompt });
-          }
-          const historyStart = Math.max(0, slice.length - 20);
-          for (let i = historyStart; i < slice.length; i++) {
-            const m = slice[i];
-            if (m.type === 'user') {
-              let c = m.content || '';
-              if (i === userIdx && preStreamCtx) {
-                c = `${c}\n\n---\n\n${preStreamCtx}`;
-              }
-              messages.push({ role: 'user', content: c });
-            } else if (m.type === 'pet' && m.content && !m.error && !m.aborted) {
-              messages.push({ role: 'assistant', content: m.content });
-            }
-          }
-          await _rag.streamChatWithCallback(
+          await rag.streamChat(
             {
-              messages,
+              messages: history,
+              model: state.selectedModel || DEFAULT_MODEL,
               scope: state.ragScope || undefined,
-              category: state.knowledgeCategoryFilter || undefined,
-              chat_mode: state.ragChatMode,
+              fast: state.ragFast || undefined,
               hybrid: state.ragHybrid,
               rerank: state.ragRerank,
               citations: state.ragCitations,
-              num_queries: state.ragNumQueries,
-              tags: state.ragTags.length ? state.ragTags : undefined,
+              hyde_enabled: state.ragHyde,
+              num_queries: state.ragNumQueries || undefined,
+              chat_mode: state.ragChatMode as 'condense' | 'condense_plus_context' | 'context' | 'simple',
             },
             onToken,
-            (sources) => { state.ragSources = sources; },
-            _abortController.signal,
+            onSources,
+            onMeta,
+            streamingStore.getAbortController()?.signal,
           );
         }
       } else {
-        const history: Array<{ role: string; content: string }> = [];
-        if (state.systemPrompt) {
-          history.push({ role: 'system', content: state.systemPrompt });
-        }
-        for (let i = 0; i <= userIdx; i++) {
-          const m = slice[i];
-          let text = (m.content || '').trim();
-          if (!text && i !== userIdx) continue;
-          if (i === userIdx && preStreamCtx) {
-            text = `${text}\n\n---\n\n${preStreamCtx}`.trim();
-          }
-          history.push({
-            role: m.type === 'user' ? 'user' : 'assistant',
-            content: text,
-          });
-        }
-        await _chat.streamWithCallback(
+        await chat!.streamWithCallback(
           {
             messages: history,
             model: state.selectedModel || DEFAULT_MODEL,
             images: images.length > 0 ? images : undefined,
           },
           onToken,
-          _abortController.signal,
+          streamingStore.getAbortController()?.signal,
         );
       }
     } catch (e) {
@@ -1215,12 +1101,8 @@ export const useChatStore = defineStore('chat', () => {
         state.messages[idx].aborted = isAbort;
       }
     } finally {
+      streamingStore.finishStream();
       state.isProcessing = false;
-      state.streamingType = '';
-      state.streamingPhase = '';
-      state.thinkingStartTs = null;
-      state.streamingTargetTimestamp = null;
-      _abortController = null;
       const idx = findPetIdx();
       if (idx >= 0) {
         state.messages[idx].streaming = false;
@@ -1232,21 +1114,19 @@ export const useChatStore = defineStore('chat', () => {
           state.messages[idx].searchQuery = turnSearchQuery;
           state.messages[idx].searchTimingMs = turnSearchTimingMs;
         }
-        if (state.knowledgeGrounded) {
-          state.messages[idx].sources = state.ragSources;
+        // RAG metadata — attach retrieval grade, meta, and sources to the pet message
+        if (useRag && state.ragSources.length > 0) {
+          const topScore = Math.max(...state.ragSources.map(s => s.score ?? 0));
+          const grade = topScore >= 0.85 ? 'A' : topScore >= 0.7 ? 'B' : topScore >= 0.5 ? 'C' : 'D';
+          const topSource = state.ragSources[0];
+          const topFile = topSource?.path?.split('/').pop() || 'unknown';
+          state.messages[idx].retrievalGrade = grade;
+          state.messages[idx].ragContentSummary = topFile + (state.ragSources.length > 1 ? ` +${state.ragSources.length - 1}` : '');
+          state.messages[idx].sources = [...state.ragSources];
           state.messages[idx].ragMeta = {
-            chatMode: state.ragChatMode,
-            hybrid: state.ragHybrid,
-            rerank: state.ragRerank,
-            citations: state.ragCitations,
-            numQueries: state.ragNumQueries,
-            category: state.knowledgeCategoryFilter || undefined,
-            tags: state.ragTags.length ? state.ragTags : undefined,
             scope: state.ragScope || undefined,
+            ...(ragMetaFromStream ?? {}),
           };
-          const summary = buildRagSummary(state.ragSources);
-          state.messages[idx].retrievalGrade = summary.grade;
-          state.messages[idx].ragContentSummary = summary.summary;
         }
         if (firstTokenAt > 0) {
           state.messages[idx].firstTokenLatencyMs = firstTokenAt - streamStart;
@@ -1260,6 +1140,7 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  // ── Persist active ───────────────────────────────────────────────────
 
   async function persistActive(): Promise<boolean> {
     const prev = _persistChain;
@@ -1271,7 +1152,7 @@ export const useChatStore = defineStore('chat', () => {
       if (!state.currentSessionId) return false;
       const msgs: Record<string, unknown>[] = state.messages.map((m) => ({
         type: m.type === 'user' ? 'user' : 'pet',
-        content: m.content,
+        message: m.content,
         timestamp: m.timestamp,
         ...(m.imageDataUrl ? { imageDataUrl: m.imageDataUrl } : {}),
         ...(m.imageDataUrls?.length ? { imageDataUrls: m.imageDataUrls } : {}),
@@ -1289,19 +1170,16 @@ export const useChatStore = defineStore('chat', () => {
       }));
       const target = state.sessions.find((s) => s.id === state.currentSessionId);
       if (target) target.messageCount = state.messages.length;
-      const res = await _sessions.update(state.currentSessionId, { messages: msgs } as unknown as Record<string, unknown>);
+      const sessions = getSessions();
+      const res = await sessions.update(state.currentSessionId, { messages: msgs } as unknown as Record<string, unknown>);
       ok = !!(res && res.ok);
-    } catch {
-      /* ignore */
-    } finally {
-      resolveNext!();
-    }
+      if (ok) warnIfQuotaLow(pct => notify(`Storage ${pct}% full — consider archiving old sessions`, 'warning'));
+    } catch { /* ignore */
+    } finally { resolveNext!(); }
     return ok;
   }
 
-  function scrollToBottom() {
-    state.scrollTick++;
-  }
+  function scrollToBottom() { state.scrollTick++; }
 
   // ── Prompt history ───────────────────────────────────────────────────
 
@@ -1318,383 +1196,7 @@ export const useChatStore = defineStore('chat', () => {
     }
     arr.push(s);
     if (arr.length > 120) arr.splice(0, arr.length - 120);
-    _persistSetting('promptHistory', JSON.stringify(arr));
-  }
-  function ngrams(s: string, n: number): Set<string> {
-    const set = new Set<string>();
-    if (!s) return set;
-    const pad = Math.floor(n / 2);
-    const str = ' '.repeat(pad) + s.toLowerCase() + ' '.repeat(pad);
-    for (let i = 0; i <= str.length - n; i++) set.add(str.slice(i, i + n));
-    return set;
-  }
-  function jaccard(a: Set<string>, b: Set<string>): number {
-    if (!a.size && !b.size) return 1;
-    let inter = 0;
-    for (const x of a) if (b.has(x)) inter++;
-    return inter / (a.size + b.size - inter);
-  }
-
-  // ── Color/Role ──────────────────────────────────────────────────────
-
-  function setColorIndex(idx: number, customColor = state.customColor) {
-    customColor = String(customColor || '').trim();
-    if (!Number.isFinite(idx)) return;
-    if (idx === state.colorIndex && customColor === state.customColor) {
-      const root = document.getElementById('yipet-chat-root');
-      if (root && (!customColor || !applyThemeHex(root, customColor))) {
-        applyThemeColors(root, idx);
-      }
-      return;
-    }
-    state.colorIndex = idx;
-    state.customColor = customColor;
-    _persistSetting('chatColorIndex', idx);
-    _persistSetting('chatCustomColor', customColor);
-    // Apply theme to chat root container only — never touch document.documentElement
-    // to avoid destroying host page styles (e.g. YiVad knowledge pages).
-    const root = document.getElementById('yipet-chat-root');
-    if (root && (!customColor || !applyThemeHex(root, customColor))) {
-      applyThemeColors(root, idx);
-    }
-  }
-
-  function setRole(name: string, imageUrl: string) {
-    state.roleName = name;
-    state.roleImageUrl = imageUrl;
-  }
-
-  function setSystemPrompt(prompt: string) {
-    state.systemPrompt = prompt;
-  }
-
-  // ── Knowledge / RAG ─────────────────────────────────────────────────
-
-  /** Extract context file paths from the current session's ctx: tags. */
-  function getSessionContextFiles(): string[] {
-    const cur = state.sessions.find((s) => s.id === state.currentSessionId);
-    if (!cur?.tags) return [];
-    return cur.tags
-      .filter((t) => typeof t === 'string' && t.startsWith(CTX_PREFIX))
-      .map((t) => t.slice(CTX_PREFIX.length));
-  }
-
-  /** Derive a RAG scope from session context files. Returns the common directory
-   *  prefix when multiple files share a parent, or the single file path. */
-  function deriveScopeFromContextFiles(files: string[]): { scope: string; isFile: boolean } | null {
-    if (!files.length) return null;
-    if (files.length === 1) return { scope: files[0], isFile: true };
-    // Find common directory prefix
-    const parts = files.map((f) => f.split('/'));
-    const minLen = Math.min(...parts.map((p) => p.length));
-    let commonLen = 0;
-    for (let i = 0; i < minLen - 1; i++) {
-      const seg = parts[0][i];
-      if (parts.every((p) => p[i] === seg)) commonLen = i + 1;
-      else break;
-    }
-    if (commonLen > 0) {
-      return { scope: parts[0].slice(0, commonLen).join('/'), isFile: false };
-    }
-    // No common prefix — use the first file
-    return { scope: files[0], isFile: true };
-  }
-
-  function toggleKnowledgeGrounded() {
-    state.knowledgeGrounded = !state.knowledgeGrounded;
-    _persistSetting('knowledgeGrounded', state.knowledgeGrounded);
-    // When enabling RAG, auto-scope to session context files if no explicit scope
-    if (state.knowledgeGrounded && !state.ragScope) {
-      const ctxFiles = getSessionContextFiles();
-      const derived = deriveScopeFromContextFiles(ctxFiles);
-      if (derived) {
-        state.ragScope = derived.scope;
-        state.ragScopeIsFile = derived.isFile;
-      }
-    }
-  }
-
-  function setRagScopeFromNode(path: string, isFile: boolean) {
-    state.ragScope = path;
-    state.ragScopeIsFile = isFile;
-    _persistSetting('ragScope', path);
-    _persistSetting('ragScopeIsFile', isFile);
-  }
-
-  function clearRagScope() {
-    state.ragScope = '';
-    state.ragScopeIsFile = false;
-    _persistSetting('ragScope', '');
-    _persistSetting('ragScopeIsFile', false);
-  }
-
-  /** Fetch available Ollama models from the backend. */
-  async function fetchModels() {
-    try {
-      const models = await _chat.listModels();
-      if (models.length) {
-        state.availableModels = models;
-        if (!state.selectedModel || !models.includes(state.selectedModel)) {
-          state.selectedModel = models[0];
-        }
-      }
-    } catch { /* ignore */ }
-  }
-
-  /** Create a new empty session (for header + button, no page context). */
-  async function createEmptySession() {
-    state.isProcessing && stopSending();
-    const title = 'New chat';
-    try {
-      const res = await _sessions.create({
-        title,
-        url: `yipet://new/${Date.now()}`,
-        tags: ['source:YiPet'],
-        pageContent: '',
-      });
-      if (res.ok && res.data?.key) {
-        const id = res.data.key as string;
-        await _loadSessions();
-        state.currentSessionId = id;
-        state.title = title;
-        state.messages = [];
-        state.viewState = 'empty';
-      }
-    } catch { /* ignore */ }
-  }
-
-  async function loadKnowledgeTree(category?: string) {
-    if (state.knowledgeLoading) return;
-    state.knowledgeLoading = true;
-    state.knowledgeError = '';
-    try {
-      const res = await _knowledge.scan(category || state.knowledgeCategoryFilter || undefined);
-      if (res.ok && res.data) state.knowledgeTree = buildKnowledgeTree(res.data.categories || []);
-      else if (res.error) state.knowledgeError = res.error;
-    } catch (e) {
-      state.knowledgeError = e instanceof Error ? e.message : 'Failed to load knowledge tree';
-    }
-    finally { state.knowledgeLoading = false; }
-  }
-
-  async function syncKnowledge() {
-    if (state.knowledgeSyncing) return;
-    state.knowledgeSyncing = true;
-    try {
-      const res = await _knowledge.sync();
-      if (res.ok && res.data) {
-        const parts: string[] = [];
-        if (res.data.synced > 0) parts.push(`${res.data.synced} synced`);
-        if (res.data.deleted > 0) parts.push(`${res.data.deleted} removed`);
-        if (res.data.rag?.status) parts.push(`RAG: ${res.data.rag.status}`);
-        else if (res.data.rag?.error) parts.push(`RAG: ${res.data.rag.error}`);
-        notify(
-          parts.length ? `Sync complete — ${parts.join(', ')}` : 'Sync complete — everything up to date',
-          'success',
-        );
-      } else {
-        notify(res.error || t('errorSyncFailed'), 'error');
-      }
-    } catch {
-      notify(t('errorSyncFailedRetry'), 'error');
-    } finally {
-      state.knowledgeSyncing = false;
-      await loadKnowledgeTree();
-    }
-  }
-
-  async function loadRagStatus() {
-    if (state.ragStatusLoading) return;
-    state.ragStatusLoading = true;
-    try {
-      const res = await _rag.status();
-      if (res.ok) state.ragStatus = res.data;
-    } catch { /* ignore */ }
-    finally { state.ragStatusLoading = false; }
-  }
-
-  async function loadRagCategories() {
-    if (state.ragCategoriesLoading) return;
-    state.ragCategoriesLoading = true;
-    try {
-      const res = await _rag.categories();
-      if (res.ok) state.ragCategories = res.data;
-    } catch { /* ignore */ }
-    finally { state.ragCategoriesLoading = false; }
-  }
-
-  function setKnowledgeCategoryFilter(category: string) {
-    if (category === state.knowledgeCategoryFilter) return;
-    state.knowledgeCategoryFilter = category;
-    loadKnowledgeTree(category);
-  }
-
-  function setSidebarView(view: 'sessions' | 'knowledge' | 'stories' | 'bugs') {
-    if (state.sidebarView === view) return;
-    state.sidebarView = view;
-    if (view === 'knowledge') {
-      if (state.knowledgeTree.length === 0) loadKnowledgeTree();
-      if (!state.ragCategories) loadRagCategories();
-    }
-  }
-
-  async function openKnowledgePreview(path: string) {
-    state.knowledgePreviewPath = path;
-    state.knowledgePreviewVisible = true;
-    state.knowledgePreviewLoading = true;
-    state.knowledgePreviewData = null;
-    try {
-      const res = await _knowledge.read(path);
-      if (res.ok && res.data) state.knowledgePreviewData = res.data;
-    } catch { /* ignore */ }
-    finally { state.knowledgePreviewLoading = false; }
-  }
-
-  function closeKnowledgePreview() {
-    state.knowledgePreviewVisible = false;
-    state.knowledgePreviewData = null;
-  }
-
-  // ── Modal toggles ───────────────────────────────────────────────────
-
-  function openBugReport() { state.bugReportVisible = true; }
-  function closeBugReport() { state.bugReportVisible = false; }
-  function toggleFaq() { state.faqVisible = !state.faqVisible; }
-  function toggleLlamaIndex() { state.llamaIndexVisible = !state.llamaIndexVisible; }
-  async function loadFaqs(force = false): Promise<void> {
-    try {
-      state.faqLoading = true;
-      if (typeof _bug === 'undefined' || _bug === null) return;
-      if (typeof (window as any).yiAiApi?.loadFaqs === 'function') {
-        state.faqs = await (window as any).yiAiApi.loadFaqs(force) ?? [];
-      } else {
-        state.faqs = [];
-      }
-    } catch {
-      state.faqs = [];
-    } finally {
-      state.faqLoading = false;
-    }
-  }
-  function setInputText(text: string) { state.inputTemplate = text; (window as any).__yipetInputText = text; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'replace' } })); }
-  function appendInputText(text: string) { const next = (state.inputTemplate || '') + (text || ''); state.inputTemplate = next; (window as any).__yipetInputText = next; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'append' } })); }
-  async function fetchRagStatus(): Promise<{ built: boolean; num_docs: number; last_built_at: string; queryCount?: number; avgLatencyMs?: number } | null> {
-    try {
-      await loadRagStatus();
-      return state.ragStatus as any;
-    } catch {
-      return null;
-    }
-  }
-  function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; _persistSetting('sidebarCollapsed', state.sidebarCollapsed); }
-  function setSearchInput(v: string) { state.searchInputValue = v; }
-  function setSearchQuery(q: string) { state.searchQuery = q; }
-  function toggleBatchMode() { state.batchMode = !state.batchMode; if (!state.batchMode) state.selectedSessionIds = []; }
-
-  // ── Mount ───────────────────────────────────────────────────────────
-
-  const STALE_THRESHOLD_MS = 60_000;
-  const CHROME_THROTTLE_THRESHOLD = 4.5 * 60 * 1000;
-  let _lastVisibleTime = Date.now();
-  let _hiddenTimer: ReturnType<typeof setTimeout> | null = null;
-  let _visibilityHandler: (() => void) | null = null;
-
-  function _onTabHidden(): void {
-    _lastVisibleTime = Date.now();
-    _hiddenTimer = setTimeout(() => {
-      if (state.isProcessing && document.hidden) {
-        _abortController?.abort();
-        _abortController = null;
-      }
-    }, CHROME_THROTTLE_THRESHOLD);
-  }
-
-  async function _onTabVisible(): Promise<void> {
-    if (_hiddenTimer) { clearTimeout(_hiddenTimer); _hiddenTimer = null; }
-    const hiddenDuration = Date.now() - _lastVisibleTime;
-    if (hiddenDuration < STALE_THRESHOLD_MS) return;
-    await _recoverFromBackground(hiddenDuration);
-  }
-
-  async function _recoverFromBackground(hiddenDuration: number): Promise<void> {
-    if (state.isProcessing) {
-      const lastMsg = state.messages[state.messages.length - 1];
-      if (lastMsg?.type === 'pet' && lastMsg.streaming) {
-        lastMsg.streaming = false;
-        lastMsg.error = true;
-        lastMsg.aborted = true;
-        if (!lastMsg.content.includes('Response interrupted')) {
-          lastMsg.content += '\n\n> ⚠️ Response interrupted — tab was hidden for ' +
-            Math.round(hiddenDuration / 1000) + 's.';
-        }
-      }
-      state.isProcessing = false;
-      state.streamingType = '';
-      state.streamingPhase = '';
-      state.thinkingStartTs = null;
-      state.streamingTargetTimestamp = null;
-      _abortController = null;
-    }
-    // Reload settings that may have changed in other tabs
-    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      try {
-        const result = await chrome.storage.local.get([
-          'knowledgeGrounded', 'ragScope', 'ragScopeIsFile',
-          'chatColorIndex', 'chatCustomColor',
-        ]);
-        if (typeof result.knowledgeGrounded === 'boolean') state.knowledgeGrounded = result.knowledgeGrounded;
-        if (typeof result.ragScope === 'string') state.ragScope = result.ragScope;
-        if (typeof result.ragScopeIsFile === 'boolean') state.ragScopeIsFile = result.ragScopeIsFile;
-        if (typeof result.chatColorIndex === 'number' || typeof result.chatCustomColor === 'string') {
-          setColorIndex(
-            typeof result.chatColorIndex === 'number' ? result.chatColorIndex : state.colorIndex,
-            typeof result.chatCustomColor === 'string' ? result.chatCustomColor : state.customColor,
-          );
-        }
-      } catch { /* storage unavailable */ }
-    }
-    await _loadSessions();
-    state.scrollTick++;
-  }
-
-  function _onVisibilityChange(): void {
-    if (document.hidden) {
-      _onTabHidden();
-    } else {
-      _onTabVisible();
-    }
-  }
-
-  async function mount() {
-    state.pageInfo = readPageInfo();
-    await _loadPersistedState();
-    await _loadSessions();
-    if (state.sessions.length > 0 && !state.currentSessionId) {
-      await _findOrCreateSession();
-    }
-    _visibilityHandler = _onVisibilityChange;
-    document.addEventListener('visibilitychange', _visibilityHandler);
-  }
-
-  // ── Stub methods (ported incrementally) ────────────────────────────────
-
-  function knowledgeFileMatches(query: string, limit = 8) {
-    const q = query.toLowerCase();
-    const results: { path: string; name: string }[] = [];
-    const walk = (nodes: KnowledgeTreeNode[]) => {
-      for (const node of nodes) {
-        if (results.length >= limit) return;
-        if (node.type === 'file') {
-          if (node.path.toLowerCase().includes(q) || (node.name || '').toLowerCase().includes(q)) {
-            results.push({ path: node.path, name: node.name || node.path });
-          }
-        } else if (node.children) {
-          walk(node.children);
-        }
-      }
-    };
-    walk(state.knowledgeTree);
-    return results.slice(0, limit);
+    _persistSetting('promptHistory', arr);
   }
 
   function recallPromptHistory(delta: number, currentIdx: number) {
@@ -1724,6 +1226,208 @@ export const useChatStore = defineStore('chat', () => {
     _persistSetting('promptHistory', []);
   }
 
+  // ── Prompt templates (custom, user-created) ──────────────────────────
+
+  function addPromptTemplate(name: string, content: string): boolean {
+    if (state.promptTemplates.some(t => t.name === name)) return false;
+    state.promptTemplates = [...state.promptTemplates, { name, content }];
+    _persistSetting('promptTemplates', state.promptTemplates);
+    return true;
+  }
+
+  function removePromptTemplate(name: string): boolean {
+    const before = state.promptTemplates.length;
+    state.promptTemplates = state.promptTemplates.filter(t => t.name !== name);
+    if (state.promptTemplates.length === before) return false;
+    _persistSetting('promptTemplates', state.promptTemplates);
+    return true;
+  }
+
+  // ── Knowledge tree ────────────────────────────────────────────────────
+
+  async function loadKnowledgeTree(category?: string) {
+    if (state.knowledgeLoading) return;
+    state.knowledgeLoading = true;
+    state.knowledgeError = '';
+    try {
+      const knowledge = getKnowledge();
+      const res = await knowledge.scan(category);
+      if (res.ok && res.data?.categories) {
+        state.knowledgeTree = res.data.categories;
+      } else {
+        state.knowledgeError = res.error || 'Failed to load knowledge tree';
+      }
+    } catch (e) {
+      state.knowledgeError = e instanceof Error ? e.message : String(e);
+    } finally {
+      state.knowledgeLoading = false;
+    }
+  }
+
+  /** Read a single knowledge file's content (eager load for context). */
+  async function readKnowledgeFileContent(path: string): Promise<string | null> {
+    try {
+      const knowledge = getKnowledge();
+      const res = await knowledge.read(path);
+      return res.ok && res.data?.content ? res.data.content : null;
+    } catch { return null; }
+  }
+
+  /** Open the knowledge file preview dialog for a given path. */
+  async function openKnowledgePreview(path: string) {
+    if (!path || state.knowledgePreviewLoading) return;
+    state.knowledgePreviewVisible = true;
+    state.knowledgePreviewPath = path;
+    state.knowledgePreviewData = null;
+    state.knowledgePreviewLoading = true;
+    try {
+      const knowledge = getKnowledge();
+      const res = await knowledge.read(path);
+      if (res.ok && res.data) {
+        state.knowledgePreviewData = res.data;
+      }
+    } catch { /* keep dialog open with error state */ }
+    finally {
+      state.knowledgePreviewLoading = false;
+    }
+  }
+
+  /** Navigate to a linked/internal file within the preview dialog. */
+  async function navigateKnowledgePreview(path: string) {
+    if (!path || path === state.knowledgePreviewPath || state.knowledgePreviewLoading) return;
+    state.knowledgePreviewPath = path;
+    state.knowledgePreviewData = null;
+    state.knowledgePreviewLoading = true;
+    try {
+      const knowledge = getKnowledge();
+      const res = await knowledge.read(path);
+      if (res.ok && res.data) {
+        state.knowledgePreviewData = res.data;
+      }
+    } catch { /* keep dialog open */ }
+    finally {
+      state.knowledgePreviewLoading = false;
+    }
+  }
+
+  function closeKnowledgePreview() {
+    state.knowledgePreviewVisible = false;
+    state.knowledgePreviewPath = '';
+    state.knowledgePreviewData = null;
+    state.knowledgePreviewLoading = false;
+  }
+
+  /** Save edited content back to the knowledge file. */
+  async function saveKnowledgePreview(content: string): Promise<boolean> {
+    if (!state.knowledgePreviewPath) return false;
+    try {
+      const knowledge = getKnowledge();
+      const res = await knowledge.write(state.knowledgePreviewPath, content, state.knowledgePreviewData?.meta as Record<string, unknown> | undefined);
+      if (res.ok && res.data) {
+        state.knowledgePreviewData = res.data as unknown as typeof state.knowledgePreviewData;
+        notify('Saved', 'success');
+        return true;
+      }
+      notify(res.error || 'Failed to save', 'error');
+      return false;
+    } catch (e) {
+      notify(e instanceof Error ? e.message : 'Failed to save', 'error');
+      return false;
+    }
+  }
+
+  // ── Color/Role ──────────────────────────────────────────────────────
+
+  function setColorIndex(idx: number, customColor = state.customColor) {
+    const cc = String(customColor || '').trim();
+    if (!Number.isFinite(idx)) return;
+    if (idx === state.colorIndex && cc === state.customColor) {
+      const root = document.getElementById('yipet-chat-root');
+      if (root) _applyThemeToRoot(root, idx, cc);
+      return;
+    }
+    state.colorIndex = idx;
+    state.customColor = cc;
+    _persistSetting('chatColorIndex', idx);
+    _persistSetting('chatCustomColor', cc);
+    const root = document.getElementById('yipet-chat-root');
+    if (root) _applyThemeToRoot(root, idx, cc);
+  }
+
+  function _applyThemeToRoot(root: HTMLElement, idx: number, customColor: string): void {
+    const hexOk = !!(customColor && applyThemeHex(root, customColor));
+    if (!hexOk) applyThemeColors(root, idx);
+
+    if (hexOk) {
+      const palette = generatePalette(customColor);
+      if (palette) {
+        applyElementPalette(root, palette, 'dark');
+        applyElementPalette(document.body, palette, 'dark');
+      }
+    } else {
+      applyElementTheme(root, idx);
+      applyElementTheme(document.body, idx);
+    }
+
+    if (hexOk) {
+      applyThemeHex(document.body, customColor);
+    } else {
+      applyThemeColors(document.body, idx);
+    }
+  }
+
+  function setRole(name: string, imageUrl: string) {
+    state.roleName = name;
+    state.roleImageUrl = imageUrl;
+  }
+
+  function setSystemPrompt(prompt: string) {
+    state.systemPrompt = prompt;
+  }
+
+  // ── Model ──────────────────────────────────────────────────────────
+
+  async function fetchModels() {
+    try {
+      const chat = getChat();
+      const models = await chat.listModels();
+      if (models.length) {
+        state.availableModels = models;
+        if (!state.selectedModel || !models.includes(state.selectedModel)) {
+          state.selectedModel = models[0];
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  async function createEmptySession() {
+    if (state.isProcessing) stopSending();
+    const title = 'New chat';
+    try {
+      const sessions = getSessions();
+      const pageUrl = state.pageInfo?.url || '';
+      const project = detectProject(pageUrl);
+      const tags = ['source:YiPet'];
+      if (project) tags.push(`project:${project}`);
+      const res = await sessions.create({
+        title,
+        url: `yipet://new/${Date.now()}`,
+        tags,
+        pageContent: '',
+      });
+      if (res.ok && res.data?.key) {
+        const id = res.data.key as string;
+        await _loadSessions();
+        state.currentSessionId = id;
+        state.title = title;
+        state.messages = [];
+        state.viewState = 'empty';
+      }
+    } catch { /* ignore */ }
+  }
+
+  // ── Draft images ───────────────────────────────────────────────────
+
   function addDraftImages(sources: string[]) {
     const remaining = 4 - state.draftImages.length;
     state.draftImages.push(...sources.slice(0, remaining));
@@ -1731,12 +1435,16 @@ export const useChatStore = defineStore('chat', () => {
 
   function clearDraftImages() { state.draftImages = []; }
   function removeDraftImage(idx: number) { state.draftImages.splice(idx, 1); }
+
+  // ── Message actions ────────────────────────────────────────────────
+
   function editMessage(idx: number, text: string) {
     if (idx < 0 || idx >= state.messages.length) return;
     state.messages[idx] = { ...state.messages[idx], content: text };
     persistActive();
     notify(t('chatMsgUpdated'));
   }
+
   function deleteMessage(idx: number) {
     if (idx < 0 || idx >= state.messages.length) return;
     state.messages.splice(idx, 1);
@@ -1745,6 +1453,7 @@ export const useChatStore = defineStore('chat', () => {
     persistActive();
     notify(t('chatMsgDeleted'));
   }
+
   function copyMessage(text: string, ts: number) {
     const key = String(ts);
     navigator.clipboard
@@ -1766,10 +1475,7 @@ export const useChatStore = defineStore('chat', () => {
 
     let userIdx = -1;
     for (let j = i - 1; j >= 0; j--) {
-      if (msgs[j] && msgs[j].type !== 'pet') {
-        userIdx = j;
-        break;
-      }
+      if (msgs[j] && msgs[j].type !== 'pet') { userIdx = j; break; }
     }
     if (userIdx < 0) return;
     const userMsg = msgs[userIdx];
@@ -1781,7 +1487,6 @@ export const useChatStore = defineStore('chat', () => {
     state.viewState = 'messages';
     state.isProcessing = true;
     state.scrollTick++;
-
     await _runStream(userIdx, pet.timestamp, 'regenerate');
   }
 
@@ -1802,7 +1507,6 @@ export const useChatStore = defineStore('chat', () => {
     state.viewState = 'messages';
     state.isProcessing = true;
     state.scrollTick++;
-
     await _runStream(i, petMsg.timestamp, 'resend');
   }
 
@@ -1812,10 +1516,7 @@ export const useChatStore = defineStore('chat', () => {
     if (msgs.length === 0) return;
     let petIdx = -1;
     for (let i = msgs.length - 1; i >= 0; i--) {
-      if (msgs[i] && msgs[i].type === 'pet') {
-        petIdx = i;
-        break;
-      }
+      if (msgs[i] && msgs[i].type === 'pet') { petIdx = i; break; }
     }
     if (petIdx < 0) return;
     const pet = msgs[petIdx];
@@ -1823,201 +1524,78 @@ export const useChatStore = defineStore('chat', () => {
     await regenerateMessage(petIdx);
   }
 
+  // ── Export ─────────────────────────────────────────────────────────
+
   function exportCurrentSessionMarkdown() {
-    const msgs = state.messages;
-    if (!msgs.length) { notify(t('chatNothingToExport')); return; }
     const ses = state.sessions.find((x) => x.id === state.currentSessionId);
-    const title = ses?.title || 'Untitled';
-    const now = new Date().toISOString();
-    const lines: string[] = [
-      `# ${title}`,
-      `> Exported: ${now}`,
-      `> Source: ${state.pageInfo?.url || 'unknown'}`,
-      '',
-      '---',
-      '',
-    ];
-    for (const m of msgs) {
-      const role = m.type === 'user' ? '🧑 User' : '🐾 Pet';
-      const ts = new Date(m.timestamp).toISOString();
-      lines.push(`## ${role} · ${ts}`);
-      lines.push('');
-      lines.push(m.content || '');
-      if (m.error) lines.push('> ⚠️ _Generation failed_');
-      if (m.aborted) lines.push('> ⚠️ _Stopped_');
-      lines.push('');
-      lines.push('---');
-      lines.push('');
-    }
-    const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 50)}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    notify(t('chatExported', String(msgs.length)));
+    _exportMarkdown(state.messages, ses?.title || 'Untitled', state.pageInfo?.url || '', (msg) => notify(msg));
   }
 
   function exportConversationHtml() {
-    const msgs = state.messages;
-    if (!msgs.length) { notify(t('chatNothingToExport')); return; }
     const ses = state.sessions.find((x) => x.id === state.currentSessionId);
-    const title = ses?.title || 'Chat';
-    const exported = new Date().toISOString();
-    const escapeHtml = (text: string): string => {
-      const map: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-      return text.replace(/[&<>"']/g, (c) => map[c] || c);
-    };
-    const parts: string[] = [];
-    parts.push(`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${escapeHtml(title)}</title>
-<style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
-  h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; }
-  .meta { color: #6b7280; font-size: 0.875rem; margin-bottom: 2rem; }
-  .msg { margin: 1.5rem 0; padding: 1rem; border-radius: 8px; }
-  .msg--user { background: #f3f4f6; }
-  .msg--ai { background: #eff6ff; border-left: 3px solid #3b82f6; }
-  .msg__role { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #6b7280; margin-bottom: 0.5rem; }
-  .msg__time { font-weight: 400; color: #9ca3af; }
-  .msg__content { white-space: pre-wrap; }
-  .msg__content img { max-width: 100%; }
-  details { margin-top: 0.75rem; }
-  summary { cursor: pointer; color: #3b82f6; font-size: 0.875rem; }
-  pre { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8125rem; }
-  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.875em; }
-  @media (prefers-color-scheme: dark) {
-    body { background: #111827; color: #f9fafb; }
-    .msg--user { background: #1f2937; }
-    .msg--ai { background: #1e3a5f; border-left-color: #60a5fa; }
-    .meta, .msg__role { color: #9ca3af; }
-    h1 { border-bottom-color: #374151; }
-  }
-</style>
-</head>
-<body>
-<h1>${escapeHtml(title)}</h1>
-<p class="meta">Exported: ${exported} · Source: ${escapeHtml(state.pageInfo?.url || 'unknown')}</p>`);
-
-    for (const m of msgs) {
-      const role = m.type === 'user' ? 'User' : 'AI';
-      const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : '';
-      const cls = m.type === 'user' ? 'msg--user' : 'msg--ai';
-      parts.push(`<div class="msg ${cls}">`);
-      parts.push(`<div class="msg__role">${role} <span class="msg__time">${time}</span></div>`);
-      const content = (m.content || '')
-        // Convert markdown code blocks to HTML pre/code for basic formatting
-        .replace(/```(\w*)\n([\s\S]*?)```/g, (_m: string, _lang: string, code: string) =>
-          `<pre><code>${escapeHtml(code.trim())}</code></pre>`
-        )
-        // Convert inline code
-        .replace(/`([^`]+)`/g, (_m: string, code: string) => `<code>${escapeHtml(code)}</code>`)
-        // Convert bold
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        // Convert italic
-        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      parts.push(`<div class="msg__content">${content || '(empty)'}</div>`);
-      if (m.error) parts.push('<p><em>⚠️ Generation failed</em></p>');
-      if (m.aborted) parts.push('<p><em>⚠️ Stopped</em></p>');
-      parts.push('</div>');
-    }
-
-    parts.push('</body>\n</html>');
-    const html = parts.join('\n');
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 50)}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
-    notify(`Exported ${msgs.length} messages as HTML`);
+    _exportHtml(state.messages, ses?.title || 'Chat', state.pageInfo?.url || '', (msg) => notify(msg));
   }
 
-  function openSaveToKnowledge(_ts: number) { state.saveToKnowledgeTimestamp = _ts; state.saveToKnowledgeVisible = true; }
+  // ── Bridge to YiVad ────────────────────────────────────────────────
+
   async function openMessageInYiVad(ts: number) {
     const idx = state.messages.findIndex((m) => m.timestamp === ts);
     if (idx < 0) return;
     const msg = state.messages[idx];
     const content = (msg.content || '').trim();
     if (!content) return;
-    const title = `YiPet → ${content.slice(0, 60)}`;
-    // Build seed messages: for pet responses, include the preceding user question
-    const seedMessages: { type: string; content: string }[] = [];
+    const title = `YiPet -> ${content.slice(0, 60)}`;
+    const seedMessages: { type: string; message: string }[] = [];
     if (msg.type === 'pet') {
-      // Find preceding user message
       for (let j = idx - 1; j >= 0; j--) {
         if (state.messages[j].type === 'user') {
-          seedMessages.push({ type: 'user', content: state.messages[j].content || '' });
+          seedMessages.push({ type: 'user', message: state.messages[j].content || '' });
           break;
         }
       }
-      seedMessages.push({ type: 'user', content: `Continue from this assistant response:\n\n${content}` });
+      seedMessages.push({ type: 'user', message: `Continue from this assistant response:\n\n${content}` });
     } else {
-      seedMessages.push({ type: 'user', content });
+      seedMessages.push({ type: 'user', message: content });
     }
     try {
-      const res = await _sessions.create({
+      const sessions = getSessions();
+      const res = await sessions.create({
         title,
         url: `yipet://bridge/${Date.now()}`,
         tags: ['source:YiPet', 'via:per-message-bridge'],
-        pageContent: seedMessages.map((m) => `## ${m.type === 'user' ? 'User' : 'Pet'}\n\n${m.content}`).join('\n\n---\n\n'),
+        pageContent: seedMessages.map((m) => `## ${m.type === 'user' ? 'User' : 'Pet'}\n\n${m.message}`).join('\n\n---\n\n'),
       });
       if (res.ok && res.data?.key) {
-        // Also set the messages on the session
-        await _sessions.update(res.data.key as string, { messages: seedMessages } as unknown as Record<string, unknown>);
+        await sessions.update(res.data.key as string, { messages: seedMessages } as unknown as Record<string, unknown>);
         window.open(`http://localhost:8848/#/aiChat?session=${res.data.key}`, '_blank', 'noopener,noreferrer');
         notify(t('chatOpenedInYiVad'));
       }
     } catch { /* ignore */ }
   }
+
+  // ── Modals & UI toggles ────────────────────────────────────────────
+
+  function toggleFaq() { state.faqVisible = !state.faqVisible; }
+  function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; _persistSetting('sidebarCollapsed', state.sidebarCollapsed); }
+  function setSearchInput(v: string) { state.searchInputValue = v; }
+  function setSearchQuery(q: string) { state.searchQuery = q; }
+  function toggleBatchMode() { state.batchMode = !state.batchMode; if (!state.batchMode) state.selectedSessionIds = []; }
   function openFaqManager() { state.faqVisible = true; }
   function editSessionInfo() { state.sessionEditVisible = true; }
   function openTagManager() { state.tagManagerVisible = true; }
-  /** Patch editable session meta (title / pageContent / tags) in one write. */
-  async function updateSessionMeta(
-    id: string,
-    meta: { title?: string; pageContent?: string; tags?: string[] },
-  ) {
-    const cur = state.sessions.find((x) => x.id === id);
-    if (!cur) return;
-    try {
-      await _sessions.update(id, meta as unknown as Record<string, unknown>);
-      if (meta.title !== undefined) {
-        cur.title = meta.title;
-        if (state.currentSessionId === id) state.title = meta.title;
-      }
-      if (meta.pageContent !== undefined) cur.pageContent = meta.pageContent;
-      if (meta.tags !== undefined) cur.tags = meta.tags;
-    } catch { /* ignore */ }
-  }
-
-  async function readKnowledgeFile(path: string) {
-    try {
-      const res = await _knowledge.read(path);
-      return res.ok && res.data ? res.data : null;
-    } catch { return null; }
-  }
-
-  async function saveContextToKnowledge(path: string, content: string, metadata?: Record<string, unknown>) {
-    try {
-      const res = await _knowledge.write(path, content, metadata);
-      return res.ok ? res.data : null;
-    } catch { return null; }
-  }
-
   function openWeChatSettings() { state.weChatSettingsVisible = true; }
+  function setInputText(text: string) { state.inputTemplate = text; (window as any).__yipetInputText = text; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'replace' } })); }
+  function appendInputText(text: string) { const next = (state.inputTemplate || '') + (text || ''); state.inputTemplate = next; (window as any).__yipetInputText = next; window.dispatchEvent(new CustomEvent('yipet:set-input', { detail: { text, mode: 'append' } })); }
+  async function loadFaqs(_force = false): Promise<void> {
+    try { state.faqLoading = true; state.faqs = []; } catch { state.faqs = []; }
+    finally { state.faqLoading = false; }
+  }
+
   async function bulkDeleteSessions() {
     const ids = state.selectedSessionIds;
     if (!ids.length) return;
     for (const id of ids) {
-      try { await _sessions.delete(id); } catch { /* continue */ }
+      try { await getSessions().delete(id); } catch { /* continue */ }
     }
     if (ids.includes(state.currentSessionId || '')) {
       state.currentSessionId = null;
@@ -2027,224 +1605,329 @@ export const useChatStore = defineStore('chat', () => {
     await _loadSessions();
     state.selectedSessionIds = [];
     state.batchMode = false;
-    notify(t('chatSessionsDeleted', String(ids.length)));
-  }
-  function openKnowledgeStory(story: { name: string; project: string }) {
-    state.knowledgePreviewPath = `${story.project}/${story.name}`;
-    state.knowledgePreviewLoading = true;
-    _knowledge.readStory(story.project, story.name).then((res) => {
-      state.knowledgePreviewData = res.ok && res.data ? res.data : null;
-      state.knowledgePreviewLoading = false;
-      if (res.ok) state.knowledgePreviewVisible = true;
-    }).catch(() => { state.knowledgePreviewLoading = false; });
-  }
-  function openBugInYiVad(key: string) {
-    window.open(`http://localhost:8848/#/code-review/bugs/detail/${encodeURIComponent(key)}?mode=view`, '_blank', 'noopener,noreferrer');
-  }
-  async function previewRagSources(question: string) {
-    const q = question.trim();
-    if (!q) return;
-    state.ragPreviewLoading = true;
-    state.ragPreviewQuestion = q;
-    state.ragPreviewSources = [];
-    try {
-      if (state.ragScopeIsFile && state.ragScope) {
-        const res = await _rag.fileQuery({ target_file: state.ragScope, question: q });
-        if (res.ok && res.data) {
-          state.ragPreviewSources = res.data.sources || [];
-        }
-      } else {
-        const res = await _rag.query({
-          question: q,
-          scope: state.ragScope || undefined,
-          category: state.knowledgeCategoryFilter || undefined,
-        });
-        if (res.ok && res.data) {
-          state.ragPreviewSources = res.data.sources || [];
-        }
-      }
-      state.ragPreviewVisible = true;
-    } catch { /* ignore */ }
-    finally { state.ragPreviewLoading = false; }
-  }
-  async function decomposeRagQuestion(question: string) {
-    const q = question.trim();
-    if (!q) return;
-    state.ragDecomposeLoading = true;
-    state.ragDecomposeQuestion = q;
-    state.ragDecomposeData = null;
-    try {
-      const res = await _rag.decompose({
-        question: q,
-        scope: state.ragScope || undefined,
-        category: state.knowledgeCategoryFilter || undefined,
-      });
-      if (res.ok && res.data) {
-        state.ragDecomposeData = res.data;
-        state.ragDecomposeVisible = true;
-      }
-    } catch { /* ignore */ }
-    finally { state.ragDecomposeLoading = false; }
+    notify(`Deleted ${ids.length} sessions`);
   }
 
-  // ── Context pressure (mirrors YiVad aiChat) ──
-  const CONTEXT_WINDOW_TOKENS = 8192;
-  const CHARS_PER_TOKEN = 4;
+  // ── Context pressure ────────────────────────────────────────────────
 
   const contextPressure = computed(() => {
     const msgs = state.messages;
     if (!msgs?.length) return { level: 'low' as const, estimatedTokens: 0, pct: 0 };
     const totalChars = msgs.reduce((sum, m) => sum + (m.content?.length ?? 0), 0);
-    const estimatedTokens = Math.ceil(totalChars / CHARS_PER_TOKEN);
-    const pct = Math.round((estimatedTokens / CONTEXT_WINDOW_TOKENS) * 100);
-    const level =
-      pct > 90 ? ('critical' as const) : pct > 70 ? ('high' as const) : pct > 40 ? ('mid' as const) : ('low' as const);
+    const estimatedTokens = Math.ceil(totalChars / 4);
+    const ctxWindow = 8192;
+    const pct = Math.round((estimatedTokens / ctxWindow) * 100);
+    const level = pct > 90 ? ('critical' as const) : pct > 70 ? ('high' as const) : pct > 40 ? ('mid' as const) : ('low' as const);
     return { level, estimatedTokens, pct };
   });
 
-  async function createSessionFromKnowledgeFile(path: string) {
-    try {
-      const fileData = await _knowledge.read(path);
-      if (!fileData.ok || !fileData.data) return;
-      const content = fileData.data.content || '';
-      const syntheticUrl = `yipet://knowledge/${path}`;
-      const existing = state.sessions.find((s) => s.url === syntheticUrl);
-      if (existing) {
-        existing.pageContent = content;
-        await selectSession(existing.id);
-        return;
+  // ── Mount ──────────────────────────────────────────────────────────
+
+  const STALE_THRESHOLD_MS = 60_000;
+  const CHROME_THROTTLE_THRESHOLD = 4.5 * 60 * 1000;
+  let _lastVisibleTime = Date.now();
+  let _hiddenTimer: ReturnType<typeof setTimeout> | null = null;
+  let _visibilityHandler: (() => void) | null = null;
+
+  function _onTabHidden(): void {
+    _lastVisibleTime = Date.now();
+    _hiddenTimer = setTimeout(() => {
+      if (state.isProcessing && document.hidden) {
+        streamingStore.stopSending();
       }
-      const name = path.split('/').pop() || path;
-      const res = await _sessions.create({
-        title: name,
-        url: syntheticUrl,
-        tags: ['source:YiKnowledge', `from:${path}`],
-        pageContent: content,
-      });
-      if (res.ok && res.data?.key) {
-        await _loadSessions();
-        const id = res.data.key as string;
-        state.currentSessionId = id;
-        state.title = name;
-        state.messages = [];
-        state.viewState = 'empty';
-        setRagScopeFromNode(path, true);
-        if (!state.knowledgeGrounded) toggleKnowledgeGrounded();
-      }
-    } catch { /* ignore */ }
+    }, CHROME_THROTTLE_THRESHOLD);
   }
-    function applyPageContextChip() {
-    const chip = pageContextChipValue();
-    if (!chip) return;
-    state.inputTemplate = chip.prompt;
-    if (chip.bugKey) {
-      state.ragScope = `lessons/failures/bugs/${chip.bugKey}.md`;
-      state.ragScopeIsFile = true;
-      if (!state.knowledgeGrounded) state.knowledgeGrounded = true;
+
+  async function _onTabVisible(): Promise<void> {
+    if (_hiddenTimer) { clearTimeout(_hiddenTimer); _hiddenTimer = null; }
+    const hiddenDuration = Date.now() - _lastVisibleTime;
+    if (hiddenDuration < STALE_THRESHOLD_MS) return;
+    await _recoverFromBackground(hiddenDuration);
+  }
+
+  async function _recoverFromBackground(hiddenDuration: number): Promise<void> {
+    if (state.isProcessing) {
+      const lastMsg = state.messages[state.messages.length - 1];
+      if (lastMsg?.type === 'pet' && lastMsg.streaming) {
+        lastMsg.streaming = false;
+        lastMsg.error = true;
+        lastMsg.aborted = true;
+        if (!lastMsg.content.includes('Response interrupted')) {
+          lastMsg.content += '\n\n> Response interrupted - tab was hidden for ' +
+            Math.round(hiddenDuration / 1000) + 's.';
+        }
+      }
+      streamingStore.finishStream();
+      state.isProcessing = false;
     }
+    await _loadSessions();
+    state.scrollTick++;
   }
-  function pageContextChipValue(): { label: string; prompt: string; bugKey?: string } | null {
-    const info = state.pageInfo;
-    if (!info?.url) return null;
-    const pt = detectPageTypeFromUrl(info.url);
-    switch (pt.kind) {
-      case 'yivad-bug-detail': {
-        const key = pt.key || 'unknown';
-        return {
-          label: `Discuss bug ${key.slice(0, 20)}${key.length > 20 ? '...' : ''}`,
-          prompt: `Help me understand this bug: what is the root cause, what is the impact, and what is the recommended fix plan?`,
-          bugKey: key,
-        };
-      }
-      case 'yivad-story-detail': {
-        const key = pt.key || 'unknown';
-        return {
-          label: `Walk me through ${key.slice(0, 20)}${key.length > 20 ? '...' : ''}`,
-          prompt: `Walk me through this story: what is the goal, what are the key deliverables, and what is the timeline?`,
-        };
-      }
-      default:
-        return null;
+
+  function _onVisibilityChange(): void {
+    if (document.hidden) { _onTabHidden(); } else { _onTabVisible(); }
+  }
+
+  async function mount() {
+    state.pageInfo = readPageInfo();
+    await _loadPersistedState();
+    await _loadSessions();
+    _visibilityHandler = _onVisibilityChange;
+    document.addEventListener('visibilitychange', _visibilityHandler);
+  }
+
+  // ── URL-aware open ──────────────────────────────────────────────────
+
+  function _tryMatchUrlSession() {
+    state.pageInfo = readPageInfo();
+    const url = state.pageInfo.url;
+    if (!url) return;
+    const match = findSessionByUrl(state.sessions, url);
+    if (match && match.id !== state.currentSessionId) {
+      selectSession(match.id);
     }
   }
 
-  // ── Auto-sync RAG scope when session context files change ──
-  watch(
-    () => {
-      const cur = state.sessions.find((s) => s.id === state.currentSessionId);
-      return cur?.tags?.filter((t) => typeof t === 'string' && t.startsWith(CTX_PREFIX)).sort().join('|') || '';
-    },
-    () => {
-      if (!state.knowledgeGrounded) return;
-      const ctxFiles = getSessionContextFiles();
-      const derived = deriveScopeFromContextFiles(ctxFiles);
-      if (derived) {
-        state.ragScope = derived.scope;
-        state.ragScopeIsFile = derived.isFile;
-      } else if (!ctxFiles.length && state.ragScope) {
-        // Context files were all removed — keep existing scope (user may have set it manually)
+  function open() {
+    _windowActions.open();
+    _tryMatchUrlSession();
+  }
+
+  // ── RAG ──────────────────────────────────────────────────────────────
+
+  function toggleRag() {
+    const wasEnabled = state.ragEnabled;
+    state.ragEnabled = !state.ragEnabled;
+    try { chrome.storage.local.set({ 'yipet:ragEnabled': state.ragEnabled }); } catch { /* ignore */ }
+    if (state.ragEnabled) {
+      if (!state.ragStatus) {
+        loadRagStatus();
+      } else if (!state.ragStatus.built || state.ragStatus.num_docs === 0) {
+        notify('RAG index not built — enable and ask, or build index from YiAi first', 'warning');
       }
-    },
-  );
+    }
+  }
+
+  async function loadRagStatus() {
+    state.ragStatusLoading = true;
+    try {
+      const rag = getRag();
+      const s = await rag.status();
+      state.ragStatus = s;
+    } catch {
+      state.ragStatus = { built: false, num_docs: 0, error: 'Failed to load' };
+    } finally {
+      state.ragStatusLoading = false;
+    }
+  }
+
+  function setRagScope(path: string, isFile: boolean) {
+    state.ragScope = path;
+    state.ragScopeIsFile = isFile;
+    try { chrome.storage.local.set({ 'yipet:ragScope': path, 'yipet:ragScopeIsFile': isFile }); } catch { /* ignore */ }
+  }
+
+  function clearRagScope() {
+    state.ragScope = '';
+    state.ragScopeIsFile = false;
+    try { chrome.storage.local.set({ 'yipet:ragScope': '', 'yipet:ragScopeIsFile': false }); } catch { /* ignore */ }
+  }
+
+  function openLlamaIndex() {
+    state.llamaIndexVisible = true;
+  }
+
+  function closeLlamaIndex() {
+    state.llamaIndexVisible = false;
+  }
+
+  async function translateSelection(fromLang?: string, toLang?: string) {
+    const sel = window.getSelection()?.toString()?.trim();
+    if (!sel || sel.length < 2) {
+      notify('Select text on the page first, then click translate', 'info');
+      return;
+    }
+    const translation = getTranslation();
+    if (!translation) { notify('Translation service unavailable', 'error'); return; }
+    try {
+      const targetLang = toLang || (state as any).translateTargetLang || 'zh';
+      const results = await translation.translate({
+        text: sel,
+        from_lang: fromLang || 'auto',
+        to_lang: targetLang,
+        providers: ['openai', 'ollama'],
+      });
+      const parts: string[] = [];
+      let bestProvider = '';
+      for (const r of results) {
+        if (r.text && !r.error) {
+          const label = r.cached ? `${r.provider} (cached)` : r.provider;
+          parts.push(`[${label}] ${r.text}`);
+          if (!bestProvider) bestProvider = r.provider;
+        }
+      }
+      const output = parts.length
+        ? parts.join('\n')
+        : (results?.[0]?.text || '');
+      if (!output) { notify('Translation returned empty', 'warning'); return; }
+      state.inputTemplate = `[Translate ${sel.slice(0, 40)}${sel.length > 40 ? '...' : ''}]\n${output}`;
+      // Store for feedback
+      state._lastTranslation = { source: sel, target: output, provider: bestProvider, fromLang: fromLang || 'auto', toLang: targetLang };
+      if (!state.visible) state.visible = true;
+      notify(`Translated via ${results.filter(r => r.text).length} provider(s)`, 'success');
+    } catch (e: any) {
+      notify(e?.message || 'Translation failed', 'error');
+    }
+  }
+
+  async function submitTranslationFeedback(rating: 'good' | 'bad') {
+    const last = state._lastTranslation;
+    if (!last) return;
+    try {
+      const translation = getTranslation();
+      if (translation) {
+        await translation.feedback({
+          source: last.source, target: last.target, rating,
+          provider: last.provider, from_lang: last.fromLang, to_lang: last.toLang,
+        });
+        notify(`Feedback (${rating}) recorded`, 'success');
+      }
+    } catch { /* best-effort */ }
+    state._lastTranslation = null;
+  }
+
+  function clearTranslationFeedback() {
+    state._lastTranslation = null;
+  }
+
+  function toggleRagFast() {
+    state.ragFast = !state.ragFast;
+    try { chrome.storage.local.set({ 'yipet:ragFast': state.ragFast }); } catch { /* ignore */ }
+  }
+
+  function toggleRagHybrid() {
+    state.ragHybrid = !state.ragHybrid;
+    try { chrome.storage.local.set({ 'yipet:ragHybrid': state.ragHybrid }); } catch { /* ignore */ }
+  }
+
+  function toggleRagRerank() {
+    state.ragRerank = !state.ragRerank;
+    try { chrome.storage.local.set({ 'yipet:ragRerank': state.ragRerank }); } catch { /* ignore */ }
+  }
+
+  function toggleRagCitations() {
+    state.ragCitations = !state.ragCitations;
+    try { chrome.storage.local.set({ 'yipet:ragCitations': state.ragCitations }); } catch { /* ignore */ }
+  }
+
+  function toggleRagHyde() {
+    state.ragHyde = !state.ragHyde;
+    try { chrome.storage.local.set({ 'yipet:ragHyde': state.ragHyde }); } catch { /* ignore */ }
+  }
+
+  function setRagNumQueries(n: number) {
+    state.ragNumQueries = n;
+    try { chrome.storage.local.set({ 'yipet:ragNumQueries': n }); } catch { /* ignore */ }
+  }
+
+  function setRagChatMode(mode: string) {
+    state.ragChatMode = mode;
+    try { chrome.storage.local.set({ 'yipet:ragChatMode': mode }); } catch { /* ignore */ }
+  }
+
+  function resetRagSettings() {
+    state.ragChatMode = 'condense_plus_context';
+    state.ragFast = false;
+    state.ragNumQueries = 0;
+    state.ragHybrid = true;
+    state.ragRerank = true;
+    state.ragHyde = false;
+    state.ragCitations = true;
+    try {
+      chrome.storage.local.set({
+        'yipet:ragChatMode': 'condense_plus_context',
+        'yipet:ragFast': false,
+        'yipet:ragNumQueries': 0,
+        'yipet:ragHybrid': true,
+        'yipet:ragRerank': true,
+        'yipet:ragHyde': false,
+        'yipet:ragCitations': true,
+      });
+    } catch { /* ignore */ }
+  }
+
+  // ── Return: full backward-compatible API ────────────────────────────
 
   return {
     state,
     // Service injection
     injectServices, setNotifyHandler,
     // Window
-    open, close, toggle, startDrag, onDragMove, endDrag,
-    startResize, onResizeMove, endResize, toggleFullscreen,
-    startSidebarResize, onSidebarResizeMove, endSidebarResize,
+    ..._windowActions,
+    open,
     // Sessions
-    _loadSessions, selectSession, createSession, deleteSession,
-    toggleFavorite, renameSession, startContextEditing, stopContextEditing,
+    selectSession, createSession, deleteSession,
+    toggleFavorite, renameSession,
     // Messages
     sendMessage, stopSending, scrollToBottom,
     pushPromptHistory,
     // Color/Role
     setColorIndex, setRole, setSystemPrompt,
-    // Knowledge/RAG
-    toggleKnowledgeGrounded, setRagScopeFromNode, clearRagScope,
-    loadKnowledgeTree, syncKnowledge, loadRagStatus, loadRagCategories,
-    setKnowledgeCategoryFilter, setSidebarView,
-    openKnowledgePreview, closeKnowledgePreview,
     fetchModels, createEmptySession,
     // Modals
-    openBugReport, closeBugReport, toggleFaq, toggleLlamaIndex, loadFaqs, toggleSidebar,
-    setSearchInput, setSearchQuery, toggleBatchMode, setInputText, appendInputText, fetchRagStatus,
+    toggleFaq, toggleSidebar,
+    setSearchInput, setSearchQuery, toggleBatchMode,
     // Mount
     mount,
-    // Stubs (ported incrementally)
-    knowledgeFileMatches, recallPromptHistory, removePromptHistoryAt, invokePromptHistory, clearPromptHistory,
+    // Prompt history
+    recallPromptHistory, removePromptHistoryAt, invokePromptHistory, clearPromptHistory,
+    addPromptTemplate, removePromptTemplate,
+    // Draft images
     addDraftImages, clearDraftImages, removeDraftImage,
+    // Message operations
     editMessage, deleteMessage, copyMessage,
     regenerateMessage, resendMessage, retryLastMessage, exportCurrentSessionMarkdown, exportConversationHtml,
-    openSaveToKnowledge, openMessageInYiVad,
+    openMessageInYiVad,
     openFaqManager, editSessionInfo, openTagManager, openWeChatSettings,
-    updateSessionMeta, readKnowledgeFile, saveContextToKnowledge,
+    setInputText, appendInputText, loadFaqs,
+    updateSessionMeta,
     bulkDeleteSessions,
-    openKnowledgeStory, openBugInYiVad,
-    previewRagSources, decomposeRagQuestion,
-    applyPageContextChip, createSessionFromKnowledgeFile, pageContextChip: pageContextChipValue,
     contextPressure,
-    registerTool: registry.registerTool,
-    setToolEnabled: registry.setToolEnabled,
-    getTool: registry.getTool,
-    allTools: registry.allTools,
-    activeTools: registry.activeTools,
-    toolEventsStream: registry.toolEvents,
-    emitToolEvent: registry.emitToolEvent,
-    executeTool: registry.executeTool,
-    getToolsForSystemPrompt: registry.getToolsForSystemPrompt,
-    contextChangeHistory: ctxChanges.contextChangeHistory,
-    applyContextChange: ctxChanges.applyContextChange,
-    undoLastContextChange: ctxChanges.undoLastContextChange,
-    addContextFile: ctxChanges.addContextFile,
-    removeContextFile: ctxChanges.removeContextFile,
-    getContextSectionContent: ctxChanges.getContextSectionContent,
-    deleteContextSection: ctxChanges.deleteContextSection,
+    // Tool registry (delegated to toolEventsStore)
+    registerTool: toolEventsStore.registerTool,
+    setToolEnabled: toolEventsStore.setToolEnabled,
+    getTool: toolEventsStore.getTool,
+    allTools: toolEventsStore.allTools,
+    activeTools: toolEventsStore.activeTools,
+    toolEventsStream: toolEventsStore.toolEvents,
+    emitToolEvent: toolEventsStore.emitToolEvent,
+    executeTool: toolEventsStore.executeTool,
+    getToolsForSystemPrompt: toolEventsStore.getToolsForSystemPrompt,
+    // Context files (delegated to ctxFilesStore)
+    contextChangeHistory: ctxFilesStore.contextChangeHistory,
+    applyContextChange: ctxFilesStore.applyContextChange,
+    undoLastContextChange: ctxFilesStore.undoLastContextChange,
+    addContextFile: ctxFilesStore.addContextFile,
+    removeContextFile: ctxFilesStore.removeContextFile,
+    getContextSectionContent: ctxFilesStore.getContextSectionContent,
+    deleteContextSection: ctxFilesStore.deleteContextSection,
+    // Compaction
     compactionLog: compact.compactionLog,
     maybeCompact: compact.maybeCompact,
     modelsLoading,
+    // Context files
+    loadContextText: ctxFilesStore.loadContextText,
+    loadKnowledgeTree,
+    readKnowledgeFileContent,
+    openKnowledgePreview,
+    navigateKnowledgePreview,
+    saveKnowledgePreview,
+    closeKnowledgePreview,
+    // RAG
+    toggleRag, toggleRagFast, loadRagStatus, setRagScope, clearRagScope,
+    toggleRagHybrid, toggleRagRerank, toggleRagCitations, toggleRagHyde,
+    setRagNumQueries, setRagChatMode, resetRagSettings,
+    openLlamaIndex, closeLlamaIndex,
+    translateSelection, submitTranslationFeedback, clearTranslationFeedback,
   };
 });

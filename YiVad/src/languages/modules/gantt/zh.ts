@@ -1,6 +1,9 @@
 export default {
   gantt: {
     title: "甘特图",
+    backToProject: "返回项目",
+    lastUpdated: "最近更新",
+    refreshing: "刷新中",
     today: "今天",
     views: {
       day: "日",

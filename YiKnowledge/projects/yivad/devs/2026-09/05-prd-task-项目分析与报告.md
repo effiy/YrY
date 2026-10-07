@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-M13"
 title: "项目分析与报告 — 开发方案"
 status: 进行中
@@ -14,6 +13,12 @@ prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "05-prd-项目分析与报告.md"
 related_tests: ["YV-09-M13"]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目分析与报告]
+benefit: "开发方案：task-项目分析与报告"
+lifecycle: active
 ---
 
 # 项目分析与报告 — 开发方案

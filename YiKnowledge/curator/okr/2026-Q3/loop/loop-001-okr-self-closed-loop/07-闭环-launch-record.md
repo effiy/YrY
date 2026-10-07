@@ -3,9 +3,10 @@ type: loop-record
 loopId: loop-001
 stage: launch
 title: OKR 自闭环 + 流程记录页 v1.0.0 上线
-role: srer
+role: sre
 goalId: sre-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [loop-record, launch]
@@ -30,7 +31,7 @@ tags: [loop-record, launch]
 ## 上线内容
 
 - 7 角色 OKR 重定义为北极星「AI 从需求到上线全流程自闭环」。
-- 新增「流程记录」页（`/executiver/process`）聚合 4+1 类流程记录。
+- 新增「流程记录」页（`/executive/process`）聚合 4+1 类流程记录。
 - 清零 23 个 vue-tsc 既有类型错误，恢复构建绿色。
 
 ## 上线检查清单

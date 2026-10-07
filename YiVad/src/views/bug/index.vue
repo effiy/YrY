@@ -1,589 +1,289 @@
 <template>
-  <div class="bug-list">
-    <PageHeaderCard
-      v-if="!props.projectKey"
-      :icon="WarningFilled"
-      :title="$t('bug.list.title')"
-      :description="$t('bug.list.description')"
-      :pills="headerPills"
-      :show-date-nav="!props.filterDate"
-      :filter-date="filterDate"
-      :filter-date-label="filterDateLabel"
-      :is-filter-today="isFilterToday"
-      @prev="goToPrevDay"
-      @next="goToNextDay"
-      @today="goToFilterToday"
-      @clear="clearFilterDate"
-    />
-
-    <!-- Charts -->
-    <div v-if="!props.projectKey" class="bug-list__charts">
-      <div
-        class="bug-chart"
-        :class="{
-          'bug-chart--active':
-            activeFilter === 'critical' ||
-            activeFilter === 'open' ||
-            activeFilter === 'in_progress' ||
-            activeFilter === 'resolved' ||
-            activeFilter === 'closed'
-        }"
-      >
-        <div class="bug-chart__title">
-          Status
-          <span
-            v-if="activeFilter && ['open', 'in_progress', 'resolved', 'closed'].includes(activeFilter)"
-            class="bug-chart__badge"
-            >filtered</span
-          >
-        </div>
-        <div class="bug-chart__body">
-          <ECharts :option="statusDonutOption" height="200" @chart-click="onStatusChartClick" />
-        </div>
+  <div class="bug-page">
+    <!-- Header -->
+    <div class="bug-header">
+      <div class="bug-header__left">
+        <h2 class="bug-header__title">Bugs</h2>
+        <span class="bug-header__count">{{ allBugs.length }}</span>
       </div>
-      <div class="bug-chart" :class="{ 'bug-chart--active': activeFilter === 'critical' }">
-        <div class="bug-chart__title">
-          Severity
-          <span v-if="activeFilter === 'critical'" class="bug-chart__badge">filtered</span>
-        </div>
-        <div class="bug-chart__body">
-          <ECharts :option="severityDonutOption" height="200" @chart-click="onSeverityChartClick" />
-        </div>
-      </div>
-      <div class="bug-chart">
-        <div class="bug-chart__title">Created · 14d</div>
-        <div class="bug-chart__body">
-          <ECharts :option="trendOption" height="200" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Recently Viewed -->
-    <div v-if="!props.projectKey && recentlyViewed.length" class="bug-list__recent">
-      <span class="bug-list__recent-label">{{ $t("bug.list.recentlyViewed") }}</span>
-      <button
-        v-for="b in recentlyViewed"
-        :key="b.key"
-        type="button"
-        class="bug-list__recent-chip"
-        :title="b.title"
-        @click="goDetail(b.key)"
-      >
-        <span class="bug-list__recent-dot" :style="{ background: severityColor(b.severity) }" />
-        <span class="bug-list__recent-key">{{ b.key }}</span>
-        <span class="bug-list__recent-title">{{ b.title }}</span>
-      </button>
-      <button type="button" class="bug-list__recent-clear" @click="recentlyViewed = []">✕</button>
-    </div>
-
-    <!-- Active Filter Pills -->
-    <div v-if="activePills.length" class="bug-list__pills">
-      <span class="bug-list__pills-label">{{ $t("bug.list.filters") }}</span>
-      <el-tag v-for="p in activePills" :key="p.id" closable size="small" @close="p.clear()">{{ p.label }}</el-tag>
-      <el-button size="small" text type="primary" @click="clearFilter">{{ $t("bug.list.clearAll") }}</el-button>
-    </div>
-
-    <!-- Body -->
-    <div class="bug-list__body">
-      <div v-if="!props.projectKey" class="bug-list__sidebar">
-        <div class="bug-list__sidebar-view">
-          <el-radio-group v-model="viewMode" size="small">
-            <el-radio-button value="table"
-              ><el-icon><Grid /></el-icon
-            ></el-radio-button>
-            <el-radio-button value="card"
-              ><el-icon><Postcard /></el-icon
-            ></el-radio-button>
-            <el-radio-button value="list"
-              ><el-icon><List /></el-icon
-            ></el-radio-button>
-          </el-radio-group>
-        </div>
-        <div class="bug-list__sidebar-section">
-          <div class="bug-list__sidebar-section-header">
-            <span class="bug-list__sidebar-section-label">Overview</span>
-          </div>
-          <div class="bug-list__sidebar-section-body">
-            <div class="bug-list__sidebar-card" @click="router.push('/bug')">
-              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #f56c6c, #dc2626)">
-                <el-icon><WarningFilled /></el-icon>
-              </div>
-              <div class="bug-list__sidebar-card-info">
-                <span class="bug-list__sidebar-card-value">{{ bugStats.total }}</span>
-                <span class="bug-list__sidebar-card-label">Total</span>
-              </div>
-            </div>
-            <div class="bug-list__sidebar-card" @click="applyAttentionFilter('open')">
-              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #e6a23c, #d09020)">
-                <el-icon><CircleClose /></el-icon>
-              </div>
-              <div class="bug-list__sidebar-card-info">
-                <span class="bug-list__sidebar-card-value">{{ bugStats.open }}</span>
-                <span class="bug-list__sidebar-card-label">Open</span>
-              </div>
-            </div>
-            <div class="bug-list__sidebar-card" @click="applyAttentionFilter('resolved')">
-              <div class="bug-list__sidebar-card-icon" style="background: linear-gradient(135deg, #91cc75, #7ab85e)">
-                <el-icon><CircleCheckFilled /></el-icon>
-              </div>
-              <div class="bug-list__sidebar-card-info">
-                <span class="bug-list__sidebar-card-value">{{ bugStats.resolved }}</span>
-                <span class="bug-list__sidebar-card-label">Resolved</span>
-              </div>
-            </div>
-          </div>
-          <div class="bug-list__sidebar-progress">
-            <span class="bug-list__sidebar-progress-label">Resolution</span>
-            <el-progress
-              :percentage="resolutionPct"
-              :stroke-width="6"
-              :show-text="true"
-              :color="resolutionPct >= 80 ? '#67c23a' : '#e6a23c'"
+      <div class="bug-header__right">
+        <div class="bug-header__date-nav">
+          <el-button size="small" :icon="ArrowLeft" @click="goToPrevDay" />
+          <el-popover placement="bottom" :width="180" trigger="click">
+            <template #reference>
+              <span class="bug-header__date-label" :class="{ 'bug-header__date-label--muted': !filterDateStr }">
+                {{ filterDateStr ? filterDateLabel : "All dates" }}
+              </span>
+            </template>
+            <el-date-picker
+              v-model="filterDate"
+              type="date"
+              placeholder="Pick a day"
+              size="small"
+              style="width: 100%"
+              @change="filterDateStr"
             />
-          </div>
+            <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end">
+              <el-button size="small" link @click="goToFilterToday">Today</el-button>
+              <el-button v-if="filterDateStr" size="small" link type="danger" @click="clearFilterDate">Clear</el-button>
+            </div>
+          </el-popover>
+          <el-button size="small" :icon="ArrowRight" @click="goToNextDay" />
         </div>
-        <div class="bug-list__sidebar-section" style="margin-top: 12px">
-          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-danger)">
-            <span class="bug-list__sidebar-section-label">Needs Attention</span>
-          </div>
-          <div class="bug-list__sidebar-section-body">
-            <div class="bug-list__sidebar-card bug-list__sidebar-card--critical" @click="applyAttentionFilter('critical')">
-              <el-icon class="bug-list__sidebar-card-accent-icon"><Warning /></el-icon>
-              <span class="bug-list__sidebar-card-accent-value">{{ bugStats.critical }}</span>
-              <span class="bug-list__sidebar-card-accent-label">Critical</span>
-            </div>
-            <div class="bug-list__sidebar-card bug-list__sidebar-card--unassigned" @click="applyAttentionFilter('unassigned')">
-              <el-icon class="bug-list__sidebar-card-accent-icon"><User /></el-icon>
-              <span class="bug-list__sidebar-card-accent-value">{{ attention.unassigned }}</span>
-              <span class="bug-list__sidebar-card-accent-label">Unassigned</span>
-            </div>
-            <div class="bug-list__sidebar-card bug-list__sidebar-card--stale" @click="applyAttentionFilter('stale')">
-              <el-icon class="bug-list__sidebar-card-accent-icon"><Clock /></el-icon>
-              <span class="bug-list__sidebar-card-accent-value">{{ attention.stale }}</span>
-              <span class="bug-list__sidebar-card-accent-label">Stale (&gt;30d)</span>
-            </div>
-          </div>
-        </div>
-        <div class="bug-list__sidebar-section" style="margin-top: 12px">
-          <div class="bug-list__sidebar-section-header" style="border-left-color: var(--el-color-success)">
-            <span class="bug-list__sidebar-section-label">Data Quality</span>
-            <span class="bug-list__sidebar-section-hint">{{ allBugs.length }} bugs</span>
-          </div>
-          <div class="bug-list__sidebar-section-body">
-            <div v-for="c in completeness" :key="c.key" class="bug-list__sidebar-quality">
-              <div class="bug-list__sidebar-quality-head">
-                <span class="bug-list__sidebar-quality-label">{{ c.label }}</span>
-                <span class="bug-list__sidebar-quality-pct" :style="{ color: qualityBarColor(c.pct) }">{{ c.pct }}%</span>
-              </div>
-              <el-progress :percentage="c.pct" :stroke-width="4" :show-text="false" :color="qualityBarColor(c.pct)" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bug-list__main">
-        <!-- Table View -->
-        <template v-if="props.projectKey || viewMode === 'table'">
-          <ProTable ref="proTable" title="Bugs" :columns="columns" :request-api="fetchBugs" :pagination="true" row-key="key">
-            <template #tableHeader="scope">
-              <el-button
-                type="primary"
-                :icon="Plus"
-                @click="store.openCreateDialog(props.projectKey ? projectName(props.projectKey) : '', props.projectKey)"
-                >New Bug</el-button
-              >
-              <el-button
-                :disabled="!scope.isSelected"
-                type="danger"
-                plain
-                :icon="Delete"
-                @click="batchDelete(scope.selectedListIds)"
-                >Delete Selected</el-button
-              >
-            </template>
-
-            <template #title="scope">
-              <el-button link type="primary" @click="openTitlePreview(scope.row)">{{ scope.row.title }}</el-button>
-            </template>
-
-            <template #severity="scope">
-              <el-tag :type="severityTagType(scope.row.severity)" size="small">{{ scope.row.severity }}</el-tag>
-            </template>
-
-            <template #priority="scope">
-              <el-tag :type="priorityTagType(scope.row.priority)" size="small">{{ scope.row.priority }}</el-tag>
-            </template>
-
-            <template #status="scope">
-              <el-tag :type="statusTagType(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
-            </template>
-
-            <template #labels="scope">
-              <div class="bug-list__labels">
-                <template v-if="scope.row.tags?.length">
-                  <el-button
-                    v-for="tag in scope.row.tags"
-                    :key="tag"
-                    link
-                    size="small"
-                    type="primary"
-                    @click.stop="openLabelPrd(tag)"
-                    >{{ prdLabel(tag) }}</el-button
-                  >
-                </template>
-                <span v-else class="bug-list__cell-empty">—</span>
-              </div>
-            </template>
-
-            <template #type="scope">
-              <el-tag size="small" effect="plain" :type="typeTagColor(scope.row.type)">{{ categoryLabel(scope.row) }}</el-tag>
-            </template>
-
-            <template #project="scope">
-              <el-button v-if="scope.row.project_key" link type="primary" @click="goProject(scope.row.project_key)">
-                {{ projectName(scope.row.project_key) || scope.row.project || scope.row.project_key }}
-              </el-button>
-              <span v-else class="bug-list__project-text">{{ scope.row.project || "—" }}</span>
-            </template>
-
-            <template #issue_key="scope">
-              <el-button v-if="scope.row.issue_key" link type="warning" @click="goIssue(scope.row.issue_key)">
-                {{ issueTitle(scope.row.issue_key) }}
-              </el-button>
-              <span v-else>—</span>
-            </template>
-
-            <template #module="scope">
-              <span v-if="scope.row.module" class="bug-list__cell-text">{{ scope.row.module }}</span>
-              <span v-else class="bug-list__cell-empty">—</span>
-            </template>
-
-            <template #reporter="scope">
-              <span v-if="scope.row.reporter" class="bug-list__cell-text">{{ scope.row.reporter }}</span>
-              <span v-else class="bug-list__cell-empty">—</span>
-            </template>
-
-            <template #frequency="scope">
-              <el-tag size="small" effect="plain" :type="frequencyTagType(scope.row.frequency)">{{ scope.row.frequency }}</el-tag>
-            </template>
-
-            <template #environment="scope">
-              <el-tag v-if="scope.row.environment" size="small" effect="plain" type="info">{{ scope.row.environment }}</el-tag>
-              <span v-else class="bug-list__cell-empty">—</span>
-            </template>
-
-            <template #affectedVersion="scope">
-              <span v-if="scope.row.affectedVersion" class="bug-list__cell-text">{{ scope.row.affectedVersion }}</span>
-              <span v-else class="bug-list__cell-empty">—</span>
-            </template>
-
-            <template #fixedVersion="scope">
-              <span v-if="scope.row.fixedVersion" class="bug-list__cell-text">{{ scope.row.fixedVersion }}</span>
-              <span v-else class="bug-list__cell-empty">—</span>
-            </template>
-
-            <template #updatedAt="scope">
-              {{ formatDate(scope.row.updatedAt) }}
-            </template>
-
-            <template #operation="scope">
-              <el-button type="primary" link :icon="View" @click="goDetail(scope.row.key)"></el-button>
-              <el-button type="primary" link :icon="Edit" @click="openEdit(scope.row)"></el-button>
-              <el-button
-                type="danger"
-                link
-                :icon="Delete"
-                @click="store.handleDelete(scope.row).then(() => proTable?.getTableList())"
-              ></el-button>
-            </template>
-          </ProTable>
-        </template>
-
-        <!-- Card View -->
-        <template v-else-if="!props.projectKey && viewMode === 'card'">
-          <div class="bug-grid">
-            <div v-for="bug in cardBugs" :key="bug.key" class="bug-card" @click="goDetail(bug.key)">
-              <div class="bug-card__head">
-                <span class="bug-card__dot" :style="{ background: severityColor(bug.severity) }" />
-                <code class="bug-card__key">{{ bug.key }}</code>
-                <div class="bug-card__head-right">
-                  <el-tag :type="severityTagType(bug.severity)" size="small" effect="plain">{{ bug.severity }}</el-tag>
-                  <el-tag :type="priorityTagType(bug.priority)" size="small" effect="plain">{{ bug.priority }}</el-tag>
-                </div>
-              </div>
-              <h3 class="bug-card__title">{{ bug.title }}</h3>
-              <p v-if="bug.description" class="bug-card__desc">{{ truncateDesc(bug.description) }}</p>
-              <div class="bug-card__meta">
-                <el-tag :type="statusTagType(bug.status)" size="small">{{ bug.status }}</el-tag>
-                <el-tag size="small" effect="plain" :type="frequencyTagType(bug.frequency)">{{ bug.frequency }}</el-tag>
-                <span v-if="bug.assignee" class="bug-card__assignee">
-                  <el-icon><User /></el-icon> {{ bug.assignee }}
-                </span>
-                <span v-if="bug.reporter" class="bug-card__reporter">{{ bug.reporter }}</span>
-                <span class="bug-card__module" v-if="bug.module">{{ bug.module }}</span>
-              </div>
-              <div class="bug-card__footer-row">
-                <span v-if="bug.updatedAt" class="bug-card__updated">{{ formatDate(bug.updatedAt) }}</span>
-                <div class="bug-card__footer-tags">
-                  <span v-if="bug.environment" class="bug-card__env">{{ bug.environment }}</span>
-                  <span v-if="bug.affectedVersion" class="bug-card__ver">v{{ bug.affectedVersion }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <el-pagination
-            v-if="cardTotal > cardPageSize"
-            class="bug-grid__pager"
-            layout="prev, pager, next"
-            :page-size="cardPageSize"
-            :total="cardTotal"
-            :current-page="cardPage"
-            @current-change="onCardPage"
-          />
-        </template>
-
-        <!-- List View -->
-        <template v-else>
-          <div class="bug-list-view">
-            <div v-for="bug in cardBugs" :key="bug.key" class="bug-list-view__row" @click="goDetail(bug.key)">
-              <span class="bug-list-view__dot" :style="{ background: severityColor(bug.severity) }" />
-              <code class="bug-list-view__key">{{ bug.key }}</code>
-              <span class="bug-list-view__title">{{ bug.title }}</span>
-              <el-tag :type="severityTagType(bug.severity)" size="small" effect="plain">{{ bug.severity }}</el-tag>
-              <el-tag :type="priorityTagType(bug.priority)" size="small" effect="plain">{{ bug.priority }}</el-tag>
-              <el-tag :type="statusTagType(bug.status)" size="small">{{ bug.status }}</el-tag>
-              <el-tag size="small" effect="plain" :type="frequencyTagType(bug.frequency)">{{ bug.frequency }}</el-tag>
-              <span v-if="bug.assignee" class="bug-list-view__assignee">{{ bug.assignee }}</span>
-              <span v-if="bug.reporter" class="bug-list-view__reporter">{{ bug.reporter }}</span>
-              <span v-if="bug.updatedAt" class="bug-list-view__updated">{{ formatDate(bug.updatedAt) }}</span>
-            </div>
-          </div>
-          <el-pagination
-            v-if="cardTotal > cardPageSize"
-            class="bug-grid__pager"
-            layout="prev, pager, next"
-            :page-size="cardPageSize"
-            :total="cardTotal"
-            :current-page="cardPage"
-            @current-change="onCardPage"
-          />
-        </template>
+        <el-button size="small" :icon="Refresh" @click="refresh" :loading="loading" />
       </div>
     </div>
 
-    <!-- Title Preview Dialog -->
-    <KnowledgePreviewDialog ref="titlePreviewRef" />
+    <!-- Quick Stats -->
+    <div class="bug-stats">
+      <div
+        v-for="stat in quickStats"
+        :key="stat.key"
+        class="bug-stat"
+        :class="`bug-stat--${stat.level}`"
+        @click="applyStatFilter(stat)"
+      >
+        <span class="bug-stat__icon">
+          <el-icon v-if="stat.key === 'critical'"><WarningFilled /></el-icon>
+          <el-icon v-else-if="stat.key === 'open'"><CircleCloseFilled /></el-icon>
+          <el-icon v-else-if="stat.key === 'in_progress'"><Loading /></el-icon>
+          <el-icon v-else-if="stat.key === 'resolved'"><CircleCheckFilled /></el-icon>
+          <el-icon v-else><TrendCharts /></el-icon>
+        </span>
+        <div class="bug-stat__body">
+          <span class="bug-stat__value">{{ stat.value }}</span>
+          <span class="bug-stat__label">{{ stat.label }}</span>
+        </div>
+      </div>
+    </div>
 
-    <!-- Create/Edit Dialog -->
-    <el-dialog
-      v-model="store.dialogVisible"
-      :title="store.isEdit ? 'Edit Bug' : 'New Bug'"
-      width="700px"
-      destroy-on-close
-      @closed="store.resetForm()"
-    >
-      <el-form ref="formRef" :model="store.form" :rules="rules" label-width="110px">
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="store.form.title" placeholder="Bug title" maxlength="200" show-word-limit />
-        </el-form-item>
-        <el-row :gutter="16">
-          <el-col :span="8">
-            <el-form-item label="Severity" prop="severity">
-              <el-select v-model="store.form.severity" style="width: 100%">
-                <el-option v-for="v in severities" :key="v" :label="v" :value="v" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Priority" prop="priority">
-              <el-select v-model="store.form.priority" style="width: 100%">
-                <el-option v-for="v in priorities" :key="v" :label="v" :value="v" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Status" prop="status">
-              <el-select v-model="store.form.status" style="width: 100%">
-                <el-option v-for="v in statuses" :key="v" :label="v" :value="v" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="8">
-            <el-form-item label="Type" prop="type">
-              <el-select v-model="store.form.type" style="width: 100%">
-                <el-option v-for="v in types" :key="v" :label="v" :value="v" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Frequency" prop="frequency">
-              <el-select v-model="store.form.frequency" style="width: 100%">
-                <el-option v-for="v in frequencies" :key="v" :label="v" :value="v" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="Environment">
-              <el-input v-model="store.form.environment" placeholder="e.g. production" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Project">
-              <el-select
-                v-model="store.form.project_key"
-                filterable
-                clearable
-                placeholder="Select project"
-                style="width: 100%"
-                @change="onProjectChange"
-              >
-                <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Module">
-              <el-input v-model="store.form.module" placeholder="Module name" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Issue">
-              <el-select v-model="store.form.issue_key" filterable clearable placeholder="Link to issue" style="width: 100%">
-                <el-option v-for="i in selectableIssues" :key="i.key" :label="`${i.key} · ${i.title}`" :value="i.key" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Assignee">
-              <el-input v-model="store.form.assignee" placeholder="Assignee" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Reporter">
-              <el-input v-model="store.form.reporter" placeholder="Reporter" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Affected Version">
-              <el-input v-model="store.form.affectedVersion" placeholder="e.g. 1.0.0" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Fixed Version">
-              <el-input v-model="store.form.fixedVersion" placeholder="e.g. 1.0.1" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="Description">
-          <el-input v-model="store.form.description" type="textarea" :rows="3" placeholder="Bug description" />
-        </el-form-item>
-        <el-form-item label="Steps to Reproduce">
-          <el-input v-model="store.form.stepsToReproduce" type="textarea" :rows="3" placeholder="One step per line" />
-        </el-form-item>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Expected Result">
-              <el-input v-model="store.form.expectedResult" type="textarea" :rows="2" placeholder="What should happen" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Actual Result">
-              <el-input v-model="store.form.actualResult" type="textarea" :rows="2" placeholder="What actually happened" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Root Cause">
-              <el-input v-model="store.form.causeProblem" type="textarea" :rows="2" placeholder="Technical root cause" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Solution">
-              <el-input v-model="store.form.solution" type="textarea" :rows="2" placeholder="How it was fixed" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button @click="store.dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" :loading="store.saving" @click="handleSave">Save</el-button>
-      </template>
-    </el-dialog>
+    <!-- Action Bar -->
+    <div class="bug-action-bar">
+      <div class="bug-filters">
+        <el-input
+          v-model="searchText"
+          placeholder="Search..."
+          :prefix-icon="Search"
+          clearable
+          size="small"
+          class="bug-filters__search"
+        />
+        <el-select v-model="filterStatus" placeholder="Status" multiple collapse-tags clearable size="small" class="bug-filters__select">
+          <el-option v-for="s in statusOptions" :key="s.value" :label="s.label" :value="s.value" />
+        </el-select>
+        <el-select v-model="filterSeverity" placeholder="Severity" multiple collapse-tags clearable size="small" class="bug-filters__select">
+          <el-option v-for="s in severityOptions" :key="s.value" :label="s.label" :value="s.value" />
+        </el-select>
+        <el-select v-model="filterAssignee" placeholder="Assignee" clearable filterable size="small" class="bug-filters__select">
+          <el-option v-for="a in assigneeOptions" :key="a" :label="a" :value="a" />
+        </el-select>
+        <template v-if="!projectKey">
+          <el-select v-model="filterProject" placeholder="Project" clearable size="small" class="bug-filters__select">
+            <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
+          </el-select>
+        </template>
+      </div>
+      <div class="bug-toolbar-actions">
+        <el-button type="primary" size="small" :icon="Plus" @click="store.openCreateDialog(projectKey ? projectName(projectKey) : '', projectKey)">New Bug</el-button>
+        <el-dropdown v-if="selection.length" trigger="click" @command="handleBatchCommand">
+          <el-button size="small" plain>Batch ({{ selection.length }})</el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="status">Change Status</el-dropdown-item>
+              <el-dropdown-item command="assign">Assign</el-dropdown-item>
+              <el-dropdown-item command="delete" divided>Delete</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <el-button size="small" :icon="Download" plain @click="exportCSV" />
+      </div>
+    </div>
+
+    <!-- Active Filter Chips -->
+    <div v-if="activeFilterChips.length" class="bug-filter-chips">
+      <TransitionGroup name="chip">
+        <el-tag v-for="chip in activeFilterChips" :key="chip.key" closable size="small" effect="plain" type="info" @close="removeFilterChip(chip)">{{ chip.label }}</el-tag>
+      </TransitionGroup>
+      <el-button link size="small" type="primary" @click="clearAllFilters">Clear All</el-button>
+    </div>
+
+    <!-- Table View -->
+    <div class="bug-table-wrap">
+      <ProTable ref="proTable" title="" :columns="columns" :request-api="fetchBugs" :pagination="true" row-key="key" @selection-change="onSelectionChange">
+        <template #key="scope">
+          <code class="bug-key">{{ scope.row.key }}</code>
+        </template>
+        <template #title="scope">
+          <el-button link type="primary" @click="openTitlePreview(scope.row)">{{ scope.row.title }}</el-button>
+        </template>
+        <template #severity="scope">
+          <el-tag :type="severityTagType(scope.row.severity)" size="small" effect="dark">{{ scope.row.severity }}</el-tag>
+        </template>
+        <template #priority="scope">
+          <el-tag :type="priorityTagType(scope.row.priority)" size="small">{{ scope.row.priority }}</el-tag>
+        </template>
+        <template #status="scope">
+          <el-tag :type="statusTagType(scope.row.status)" size="small" effect="dark">{{ scope.row.status }}</el-tag>
+        </template>
+        <template #type="scope">
+          <el-tag size="small" effect="plain" :type="typeTagColor(scope.row.type)">{{ scope.row.type }}</el-tag>
+        </template>
+        <template #module="scope">
+          <span v-if="scope.row.module" class="bug-module">{{ scope.row.module }}</span>
+          <span v-else class="bug-na">—</span>
+        </template>
+        <template #project="scope">
+          <el-button v-if="scope.row.project_key" link type="primary" size="small" @click="goProject(scope.row.project_key)">
+            {{ projectName(scope.row.project_key) || scope.row.project || scope.row.project_key }}
+          </el-button>
+          <span v-else>{{ scope.row.project || '—' }}</span>
+        </template>
+        <template #assignee="scope">
+          <span v-if="scope.row.assignee" class="bug-assignee">{{ scope.row.assignee }}</span>
+          <span v-else class="bug-na">—</span>
+        </template>
+        <template #reporter="scope">
+          <span v-if="scope.row.reporter" class="bug-reporter">{{ scope.row.reporter }}</span>
+          <span v-else class="bug-na">—</span>
+        </template>
+        <template #createdAt="scope">
+          {{ formatAbsolute(scope.row.createdAt) }}
+        </template>
+        <template #updatedAt="scope">
+          {{ formatAbsolute(scope.row.updatedAt) }}
+        </template>
+        <template #operation="scope">
+          <div class="bug-actions">
+            <el-tooltip content="Change Status" placement="top" :show-after="500">
+              <el-dropdown trigger="click" @command="(cmd: string) => quickChangeStatus(scope.row, cmd)">
+                <el-button size="small" :icon="CircleCheck" class="bug-action-btn" />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="s in quickStatuses(scope.row.status)" :key="s.value" :command="s.value">{{ s.label }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-tooltip>
+            <el-tooltip content="View Detail" placement="top" :show-after="500">
+              <el-button size="small" :icon="View" class="bug-action-btn" @click="goDetail(scope.row.key)" />
+            </el-tooltip>
+            <el-tooltip content="Edit" placement="top" :show-after="500">
+              <el-button size="small" :icon="Edit" class="bug-action-btn" @click="openEdit(scope.row)" />
+            </el-tooltip>
+            <el-popconfirm
+              :title="`Delete bug 「${scope.row.title}」?`"
+              confirm-button-text="Delete"
+              cancel-button-text="Cancel"
+              confirm-button-type="danger"
+              @confirm="handleDeleteRow(scope.row)"
+            >
+              <template #reference>
+                <el-button size="small" type="danger" :icon="Delete" class="bug-action-btn" :loading="deletingKeys.has(scope.row.key)" />
+              </template>
+            </el-popconfirm>
+          </div>
+        </template>
+      </ProTable>
+    </div>
+
+    <!-- Analytics -->
+    <div class="bug-analytics">
+      <div class="bug-analytics__toggle" @click="analyticsOpen = !analyticsOpen">
+        <el-icon><component :is="analyticsOpen ? ArrowUp : ArrowDown" /></el-icon>
+        <span>Analytics</span>
+        <span class="bug-analytics__summary">{{ allBugs.length }} bugs · 5 charts</span>
+      </div>
+      <div v-show="analyticsOpen" class="bug-analytics__body">
+          <div class="bug-charts">
+          <div class="bug-chart">
+            <div class="bug-chart__title">Inflow vs Outflow</div>
+            <div class="bug-chart__body">
+              <BugInflowOutflowChart v-if="allBugs.length" :data="inflowOutflow" />
+            </div>
+          </div>
+          <div class="bug-chart">
+            <div class="bug-chart__title">MTTR Trend (daily)</div>
+            <div class="bug-chart__body">
+              <MttrTrendChart v-if="allBugs.length" :data="mttrTrend" :target-hours="24" />
+            </div>
+          </div>
+          <div class="bug-chart">
+            <div class="bug-chart__title">Severity Distribution</div>
+            <div class="bug-chart__body">
+              <SeverityDonut v-if="allBugs.length" :data="severityDistribution" />
+            </div>
+          </div>
+          <div class="bug-chart">
+            <div class="bug-chart__title">Bug Age (Open)</div>
+            <div class="bug-chart__body">
+              <BugAgeChart v-if="allBugs.length" :data="bugAgeDistribution" />
+            </div>
+          </div>
+          <div class="bug-chart">
+            <div class="bug-chart__title">Status Breakdown</div>
+            <div class="bug-chart__body">
+              <StatusBreakdown v-if="allBugs.length" :data="statusBreakdown" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialogs -->
+    <KnowledgePreviewDialog ref="titlePreviewRef" />
+    <BugFormDialog ref="dialogRef" @saved="proTable?.getTableList(); loadAllBugs()" />
   </div>
 </template>
 
-<script setup lang="tsx" name="bugList">
+<script setup lang="ts" name="bugList">
 import { computed, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import {
-  Plus,
-  Delete,
-  View,
-  Edit,
-  WarningFilled,
-  CircleClose,
-  Loading,
-  CircleCheckFilled,
-  Warning,
-  Clock,
-  User,
-  Grid,
-  Postcard,
-  List
+  Plus, Delete, View, Edit, Refresh,
+  ArrowDown, ArrowUp, ArrowLeft, ArrowRight,
+  Download, Search, CircleCheck,
+  WarningFilled, CircleCloseFilled, Loading,
+  CircleCheckFilled, TrendCharts
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
+
 import { useBugStore } from "@/stores/modules/bug";
 import { useProjectStore } from "@/stores/modules/project";
-import { useIssueStore } from "@/stores/modules/issue";
-import { getBugList, readBugContent } from "@/api/modules/bug";
-import { listKnowledgeFiles, readKnowledgeFile } from "@/api/modules/knowledgeService";
-import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
-import type { BugDocument, BugSeverity, BugPriority, BugStatus } from "@/api/modules/bug";
-import { PageHeaderCard, ProTable } from "@/components";
+import { getBugList, readBugContent, updateBug } from "@/api/modules/bug";
+import type { BugDocument } from "@/api/modules/bug";
+import type { SeverityDistribution, BugStatusBreakdown, BugAgeDistribution, InflowOutflowData, TrendDataPoint } from "@/types/analytics";
+import { ProTable } from "@/components";
 import type { ColumnProps, ProTableInstance } from "@/components";
-import ECharts from "@/components/ECharts/index.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
-import { getIssueFilePath } from "@/api/modules/issueService";
+import BugInflowOutflowChart from "@/components/analytics/BugInflowOutflowChart.vue";
+import MttrTrendChart from "@/components/analytics/MttrTrendChart.vue";
+import SeverityDonut from "@/components/analytics/SeverityDonut.vue";
+import BugAgeChart from "@/components/analytics/BugAgeChart.vue";
+import StatusBreakdown from "@/components/analytics/StatusBreakdown.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
-import { useBugData, qualityBarColor } from "./composables/useBugData";
-import { useBugCharts, SEVERITY_COLOR } from "./composables/useBugCharts";
-import { useRequirements } from "@/views/project/composables/useRequirements";
+import BugFormDialog from "./components/BugFormDialog.vue";
+import { severityTagType, priorityTagType, statusTagType } from "@/hooks/useTagHelpers";
+import { formatAbsolute } from "@/utils/datetime";
+import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 
 const router = useRouter();
-const { t } = useI18n();
+const route = useRoute();
 const props = defineProps<{ projectKey?: string; filterDate?: Date | null }>();
 const store = useBugStore();
 const projectStore = useProjectStore();
-const issueStore = useIssueStore();
 const proTable = ref<ProTableInstance>();
-const formRef = ref<FormInstance>();
-const activeFilter = ref("");
-const viewMode = ref<"table" | "card" | "list">("table");
-const cardPage = ref(1);
-const cardPageSize = 20;
+const dialogRef = ref<InstanceType<typeof BugFormDialog> | null>(null);
 const allBugs = ref<BugDocument[]>([]);
-const recentlyViewed = ref<BugDocument[]>([]);
+const loading = ref(false);
+const deletingKeys = ref(new Set<string>());
+const analyticsOpen = ref(false);
+const selection = ref<any[]>([]);
 
 // ── Date filter ──
 const _filterDate = ref<Date | null>(null);
 const filterDate = computed({
   get: () => (props.filterDate !== undefined ? props.filterDate : _filterDate.value),
-  set: v => {
-    _filterDate.value = v;
-  }
+  set: v => { _filterDate.value = v; }
 });
 const {
   label: filterDateLabel,
@@ -595,982 +295,351 @@ const {
   clearFilterDate
 } = useDateFilter(filterDate);
 
-// ── Composable data ──
-const {
-  stats: bugStats,
-  headerPills,
-  resolutionPct,
-  refresh: refreshStats,
-  buildDateFilter
-} = useBugData({
-  projectKey: props.projectKey,
-  filterDateStr
+// ── Filter state ──
+const searchText = ref("");
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+watch(searchText, (val) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    proTable.value?.getTableList();
+  }, 300);
 });
+const filterStatus = ref<string[]>([]);
+const filterSeverity = ref<string[]>([]);
+const filterAssignee = ref("");
+const filterProject = ref(props.projectKey || "");
 
-const { statusDonutOption, severityDonutOption, trendOption } = useBugCharts(allBugs);
-const { items: prdItems, deriveFrom: derivePrds } = useRequirements();
+const statusOptions = [
+  { label: "Open", value: "open" }, { label: "In Progress", value: "in_progress" },
+  { label: "Resolved", value: "resolved" }, { label: "Closed", value: "closed" },
+  { label: "Rejected", value: "rejected" }, { label: "Reopened", value: "reopened" }
+];
+const severityOptions = [
+  { label: "Critical", value: "critical" }, { label: "Major", value: "major" },
+  { label: "Minor", value: "minor" }, { label: "Trivial", value: "trivial" }
+];
 
-// Pre-fetch PRD items when in project context for labels column
-watch(
-  () => props.projectKey,
-  async key => {
-    if (key) {
-      try {
-        const res = await listKnowledgeFiles("projects");
-        derivePrds((res.files || []) as KnowledgeFileEntry[], key);
-      } catch {
-        /* best-effort */
-      }
-    }
-  },
-  { immediate: true }
-);
-
-// Build PRD lookup: tag → { title, path }
-const prdLookup = computed(() => {
-  const map = new Map<string, { title: string; path: string }>();
-  for (const prd of prdItems.value) {
-    if (prd.prd_task_id) map.set(prd.prd_task_id, { title: prd.title, path: prd.path });
-    // Also index by filename without extension
-    const name = (prd.path || "").replace(/\.md$/, "");
-    if (name) map.set(name, { title: prd.title, path: prd.path });
+// ── Filter chips ──
+const activeFilterChips = computed(() => {
+  const chips: Array<{ key: string; label: string }> = [];
+  for (const s of filterStatus.value) {
+    const opt = statusOptions.find(o => o.value === s);
+    chips.push({ key: `status:${s}`, label: `Status: ${opt?.label || s}` });
   }
-  return map;
+  for (const s of filterSeverity.value) {
+    const opt = severityOptions.find(o => o.value === s);
+    chips.push({ key: `severity:${s}`, label: `Severity: ${opt?.label || s}` });
+  }
+  if (filterAssignee.value) chips.push({ key: `assignee:${filterAssignee.value}`, label: `Assignee: ${filterAssignee.value}` });
+  if (filterProject.value && !props.projectKey) chips.push({ key: `project:${filterProject.value}`, label: `Project: ${projectName(filterProject.value) || filterProject.value}` });
+  return chips;
 });
 
-const cardBugs = computed(() => {
-  const start = (cardPage.value - 1) * cardPageSize;
-  return allBugs.value.slice(start, start + cardPageSize);
+function removeFilterChip(chip: { key: string; label: string }) {
+  const [dim, val] = chip.key.split(":");
+  if (dim === "status") filterStatus.value = filterStatus.value.filter(v => v !== val);
+  else if (dim === "severity") filterSeverity.value = filterSeverity.value.filter(v => v !== val);
+  else if (dim === "assignee") filterAssignee.value = "";
+  else if (dim === "project") filterProject.value = "";
+  proTable.value?.getTableList();
+}
+
+function clearAllFilters() {
+  searchText.value = "";
+  filterStatus.value = [];
+  filterSeverity.value = [];
+  filterAssignee.value = "";
+  if (!props.projectKey) filterProject.value = "";
+  proTable.value?.getTableList();
+}
+
+// ── Status helpers ──
+const DONE_STATUSES = new Set(["resolved", "closed"]);
+const OPEN_STATUSES = new Set(["open", "in_progress", "reopened"]);
+
+// ── Quick stats ──
+const quickStats = computed(() => {
+  const bugs = allBugs.value;
+  const open = bugs.filter(b => OPEN_STATUSES.has(b.status));
+  const resolved = bugs.filter(b => DONE_STATUSES.has(b.status));
+  const pct = bugs.length ? Math.round((resolved.length / bugs.length) * 100) : 0;
+  return [
+    { key: "critical", label: "Critical", value: open.filter(b => b.severity === "critical").length, level: "danger", filter: { severity: "critical" } },
+    { key: "open", label: "Open", value: open.length, level: "warning", filter: { status: "open" } },
+    { key: "in_progress", label: "In Progress", value: bugs.filter(b => b.status === "in_progress").length, level: "primary", filter: { status: "in_progress" } },
+    { key: "resolved", label: "Resolved", value: resolved.length, level: "success", filter: { status: "resolved" } },
+    { key: "rate", label: "Resolve Rate", value: pct + "%", level: pct >= 80 ? "success" : "warning", filter: {} }
+  ];
 });
-const cardTotal = computed(() => allBugs.value.length);
 
-function onCardPage(p: number) {
-  cardPage.value = p;
+function applyStatFilter(stat: { key: string; filter: Record<string, any> }) {
+  if (stat.filter.status) {
+    if (stat.filter.status === "open") filterStatus.value = ["open", "reopened"];
+    else if (stat.filter.status === "resolved") filterStatus.value = ["resolved", "closed"];
+    else filterStatus.value = [stat.filter.status];
+  }
+  if (stat.filter.severity) filterSeverity.value = [stat.filter.severity];
+  proTable.value?.getTableList();
 }
 
-function truncateDesc(text: string): string {
-  const plain = text
-    .replace(/#{1,6}\s/g, "")
-    .replace(/\*\*/g, "")
-    .replace(/\*/g, "")
-    .replace(/`/g, "")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/>\s/g, "")
-    .replace(/[-*+]\s/g, "")
-    .replace(/\n+/g, " ")
-    .trim();
-  return plain.length > 160 ? plain.slice(0, 160) + "..." : plain;
+const assigneeOptions = computed(() => {
+  const names = new Set<string>();
+  for (const b of allBugs.value) { if (b.assignee) names.add(b.assignee); if (b.reporter) names.add(b.reporter); }
+  return [...names].sort();
+});
+
+// ── Chart data ──
+const CHART_DAYS = 30;
+
+const severityDistribution = computed((): SeverityDistribution => {
+  const dist: SeverityDistribution = { critical: 0, major: 0, minor: 0, trivial: 0 };
+  for (const b of allBugs.value) { const s = (b.severity || "trivial") as keyof SeverityDistribution; if (s in dist) dist[s]++; }
+  return dist;
+});
+
+const statusBreakdown = computed((): BugStatusBreakdown => {
+  const dist: BugStatusBreakdown = { open: 0, in_progress: 0, resolved: 0, closed: 0 };
+  for (const b of allBugs.value) {
+    const s = (b.status || "open") as keyof BugStatusBreakdown;
+    if (s in dist) dist[s]++; else (dist as Record<string, number>)[s] = 1;
+  }
+  return dist;
+});
+
+const bugAgeDistribution = computed((): BugAgeDistribution => {
+  const now = Date.now();
+  const buckets: BugAgeDistribution = { lt_1d: 0, "1_3d": 0, "3_7d": 0, "7_30d": 0, gt_30d: 0 };
+  for (const b of allBugs.value) {
+    if (DONE_STATUSES.has(b.status)) continue;
+    const h = (now - (b.createdAt || now)) / 3600000;
+    if (h < 24) buckets.lt_1d++; else if (h < 72) buckets["1_3d"]++; else if (h < 168) buckets["3_7d"]++; else if (h < 720) buckets["7_30d"]++; else buckets.gt_30d++;
+  }
+  return buckets;
+});
+
+function chartDates(days: number): string[] {
+  const dates: string[] = [];
+  for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); dates.push(d.toISOString().slice(0, 10)); }
+  return dates;
 }
 
-async function loadBugStats() {
+const inflowOutflow = computed((): InflowOutflowData => {
+  const dates = chartDates(CHART_DAYS);
+  const inflow: Record<string, number> = {}; const outflow: Record<string, number> = {};
+  for (const d of dates) { inflow[d] = 0; outflow[d] = 0; }
+  for (const b of allBugs.value) {
+    if (b.createdAt == null) continue;
+    const cd = new Date(b.createdAt).toISOString().slice(0, 10);
+    if (cd in inflow) inflow[cd]++;
+    if (b.resolvedAt) { const rd = new Date(b.resolvedAt).toISOString().slice(0, 10); if (rd in outflow) outflow[rd]++; }
+  }
+  return { inflow: dates.map(d => ({ date: d, value: inflow[d] })), outflow: dates.map(d => ({ date: d, value: outflow[d] })) };
+});
+
+const mttrTrend = computed((): TrendDataPoint[] => {
+  const dates = chartDates(CHART_DAYS);
+  const buckets: Record<string, number[]> = {};
+  for (const d of dates) buckets[d] = [];
+  for (const b of allBugs.value) {
+    if (!b.resolvedAt || !b.createdAt) continue;
+    const rd = new Date(b.resolvedAt).toISOString().slice(0, 10);
+    if (rd in buckets) buckets[rd].push((b.resolvedAt - b.createdAt) / 3600000);
+  }
+  return dates.map(d => { const vals = buckets[d]; return { date: d, value: vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : 0 }; });
+});
+
+// ── Table columns ──
+const columns = computed<ColumnProps<BugDocument>[]>(() => {
+  const cols: ColumnProps<BugDocument>[] = [
+    { type: "selection", width: 44 },
+    { prop: "key", label: "Key", width: 100 },
+    { prop: "title", label: "Title", minWidth: 260 },
+    { prop: "status", label: "Status", width: 110 },
+    { prop: "severity", label: "Severity", width: 85 },
+    { prop: "priority", label: "Priority", width: 75 },
+    { prop: "type", label: "Type", width: 110 },
+    { prop: "module", label: "Module", width: 120 },
+    { prop: "assignee", label: "Assignee", width: 90 },
+    { prop: "reporter", label: "Reporter", width: 90 },
+    { prop: "createdAt", label: "Created", width: 115 },
+    { prop: "updatedAt", label: "Updated", width: 115 },
+    { prop: "operation", label: "Actions", width: 170, fixed: "right" }
+  ];
+  if (!props.projectKey) cols.splice(8, 0, { prop: "project", label: "Project", width: 120 });
+  return cols;
+});
+
+// ── Fetch ──
+function buildDateFilter(filterDateStr: string): Record<string, any> {
+  if (!filterDateStr) return {};
+  return { createdAtStart: new Date(filterDateStr + "T00:00:00").getTime(), createdAtEnd: new Date(filterDateStr + "T23:59:59").getTime() };
+}
+
+async function fetchBugs(params: any) {
+  const { pageNum, pageSize } = params;
+  const merged: any = { pageNum, pageSize };
+  if (searchText.value) merged.title = searchText.value;
+  if (filterStatus.value.length) merged.status = filterStatus.value.join(",");
+  if (filterSeverity.value.length) merged.severity = filterSeverity.value.join(",");
+  if (filterAssignee.value) merged.assignee = filterAssignee.value;
+  if (filterProject.value && !props.projectKey) merged.project_key = filterProject.value;
+  if (props.projectKey) merged.project_key = props.projectKey;
+  const df = buildDateFilter(filterDateStr.value);
+  if (df.createdAtStart) merged.createdAtStart = df.createdAtStart;
+  if (df.createdAtEnd) merged.createdAtEnd = df.createdAtEnd;
+  loadAllBugs();
+  return await getBugList(merged);
+}
+
+async function loadAllBugs() {
   try {
     const params: any = { pageSize: 1000 };
     if (props.projectKey) params.project_key = props.projectKey;
     if (filterDateStr.value) {
-      const start = new Date(filterDateStr.value + "T00:00:00").getTime();
-      const end = new Date(filterDateStr.value + "T23:59:59").getTime();
-      params.createdAtStart = start;
-      params.createdAtEnd = end;
+      params.createdAtStart = new Date(filterDateStr.value + "T00:00:00").getTime();
+      params.createdAtEnd = new Date(filterDateStr.value + "T23:59:59").getTime();
     }
     const res = await getBugList(params);
-    allBugs.value = (res.data?.list as BugDocument[]) ?? [];
-  } catch {
-    /* best-effort */
-  }
-  refreshStats();
+    const bugs = (res.data?.list as BugDocument[]) ?? [];
+    allBugs.value = bugs.filter(b => b.contentPath);
+  } catch { /* best-effort */ }
 }
 
-const severities: BugSeverity[] = ["critical", "major", "minor", "trivial"];
-const priorities: BugPriority[] = ["p0", "p1", "p2", "p3"];
-const statuses: BugStatus[] = ["open", "in_progress", "resolved", "closed", "rejected", "reopened"];
-const types = ["functional", "performance", "ui", "security", "compatibility", "regression", "data", "other"];
-const frequencies = ["always", "sometimes", "rarely", "once", "unable"];
+async function refresh() {
+  loading.value = true;
+  try { await loadAllBugs(); proTable.value?.getTableList(); }
+  finally { loading.value = false; }
+}
 
-const rules: FormRules = {
-  title: [{ required: true, message: "Title is required", trigger: "blur" }],
-  severity: [{ required: true, message: "Severity is required", trigger: "change" }],
-  priority: [{ required: true, message: "Priority is required", trigger: "change" }],
-  status: [{ required: true, message: "Status is required", trigger: "change" }],
-  type: [{ required: true, message: "Type is required", trigger: "change" }],
-  frequency: [{ required: true, message: "Frequency is required", trigger: "change" }]
+// ── Projects ──
+const projects = computed(() => projectStore.projects);
+function projectName(key: string): string { return projects.value.find(p => p.key === key)?.name ?? ""; }
+function goProject(key: string) { router.push(`/project/${key}`); }
+
+// ── Selection ──
+function onSelectionChange(rows: any[]) { selection.value = rows; }
+
+// ── Batch operations ──
+async function handleBatchCommand(cmd: string) {
+  const ids = selection.value.map((s: any) => s.key);
+  if (!ids.length) return;
+  if (cmd === "delete") {
+    try {
+      await ElMessageBox.confirm(`Delete ${ids.length} selected bug(s)? This action cannot be undone.`, "Batch Delete", {
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        confirmButtonType: "danger",
+        type: "warning"
+      });
+    } catch { return; }
+    let failed = 0;
+    for (const id of ids) {
+      const bug = allBugs.value.find(b => b.key === id);
+      if (!bug) continue;
+      try { await store.handleDelete(bug, true); } catch { failed++; }
+    }
+    ElMessage.success(failed ? `Deleted ${ids.length - failed} bug(s), ${failed} failed` : `Deleted ${ids.length} bug(s)`);
+  } else if (cmd === "assign") {
+    try {
+      const { value } = await ElMessageBox.prompt("Enter assignee name", "Batch Assign", { confirmButtonText: "Assign", inputPlaceholder: "Assignee name" });
+      if (!value?.trim()) return;
+      for (const id of ids) { try { await updateBug(id, { assignee: value.trim(), updatedAt: Date.now() } as any); } catch { /* continue */ } }
+      ElMessage.success(`Assigned ${ids.length} bug(s) to ${value.trim()}`);
+    } catch { /* cancelled */ return; }
+  } else if (cmd === "status") {
+    try {
+      const { value } = await ElMessageBox.prompt("Enter target status (open, in_progress, resolved, closed, rejected, reopened)", "Batch Status Change", { confirmButtonText: "Change", inputPlaceholder: "e.g. resolved" });
+      const s = value?.trim().toLowerCase(); if (!s) return;
+      for (const id of ids) { try { await updateBug(id, { status: s, updatedAt: Date.now() } as any); } catch { /* continue */ } }
+      ElMessage.success(`Changed ${ids.length} bug(s) to ${s}`);
+    } catch { /* cancelled */ return; }
+  }
+  proTable.value?.getTableList(); loadAllBugs();
+}
+
+// ── Status transitions ──
+const STATUS_TRANSITIONS: Record<string, Array<{ value: string; label: string }>> = {
+  open: [{ value: "in_progress", label: "Start Progress" }, { value: "resolved", label: "Resolve" }, { value: "closed", label: "Close" }, { value: "rejected", label: "Reject" }],
+  in_progress: [{ value: "resolved", label: "Resolve" }, { value: "closed", label: "Close" }, { value: "rejected", label: "Reject" }, { value: "reopened", label: "Reopen" }],
+  resolved: [{ value: "closed", label: "Close" }, { value: "reopened", label: "Reopen" }],
+  closed: [{ value: "reopened", label: "Reopen" }],
+  rejected: [{ value: "open", label: "Reopen" }, { value: "in_progress", label: "Start Progress" }],
+  reopened: [{ value: "in_progress", label: "Start Progress" }, { value: "resolved", label: "Resolve" }, { value: "closed", label: "Close" }]
 };
+function quickStatuses(current: string) { return STATUS_TRANSITIONS[current] || []; }
 
-const columns: ColumnProps<BugDocument>[] = [
-  { type: "selection", width: 50 },
-  { prop: "type", label: "Category", width: 120 },
-  { prop: "title", label: "Title", minWidth: 320 },
-  { prop: "labels", label: "Labels", width: 200 },
-  { prop: "status", label: "Status", width: 110 },
-  { prop: "updatedAt", label: "Updated", width: 150 },
-  { prop: "operation", label: "Actions", width: 160, fixed: "right" }
-];
-
-// ── Filter pills ──
-const activePills = computed(() => {
-  const pills: Array<{ id: string; label: string; clear: () => void }> = [];
-  if (activeFilter.value) {
-    const labels: Record<string, string> = {
-      open: "Open",
-      critical: "Critical",
-      p0p1: "P0/P1",
-      mine: "My Bugs",
-      recent: "Recent",
-      in_progress: "In Progress",
-      resolved: "Resolved",
-      closed: "Closed",
-      unassigned: "Unassigned",
-      stale: "Stale >30d"
-    };
-    const label = labels[activeFilter.value] || activeFilter.value;
-    pills.push({
-      id: "qf",
-      label,
-      clear: () => {
-        activeFilter.value = "";
-        proTable.value?.getTableList();
-      }
-    });
-  }
-  return pills;
-});
-
-function applyQuickFilter(key: string) {
-  activeFilter.value = key === activeFilter.value ? "" : key;
-  proTable.value?.getTableList();
-}
-
-function clearFilter() {
-  activeFilter.value = "";
-  viewMode.value = "table";
-  proTable.value?.getTableList();
-}
-
-function applyAttentionFilter(type: "critical" | "unassigned" | "stale" | "open" | "resolved") {
-  if (type === "critical") activeFilter.value = activeFilter.value === "critical" ? "" : "critical";
-  else if (type === "unassigned") activeFilter.value = activeFilter.value === "unassigned" ? "" : "unassigned";
-  else if (type === "stale") activeFilter.value = activeFilter.value === "stale" ? "" : "stale";
-  else if (type === "open") activeFilter.value = activeFilter.value === "open" ? "" : "open";
-  else if (type === "resolved") activeFilter.value = activeFilter.value === "resolved" ? "" : "resolved";
-  proTable.value?.getTableList();
-}
-
-async function fetchBugs(params: any) {
-  const { pageNum, pageSize, ...filters } = params;
-  const merged: any = { pageNum, pageSize };
-  if (filters.title) merged.title = filters.title;
-  if (filters.project) merged.project = filters.project;
-  if (filters.module) merged.module = filters.module;
-  if (props.projectKey) merged.project_key = props.projectKey;
-  const dateFilter = buildDateFilter(filterDateStr.value);
-  if (dateFilter.createdAtStart) merged.createdAtStart = dateFilter.createdAtStart;
-  if (dateFilter.createdAtEnd) merged.createdAtEnd = dateFilter.createdAtEnd;
-  if (activeFilter.value === "open") merged.status = "open";
-  else if (activeFilter.value === "critical") merged.severity = "critical";
-  else if (activeFilter.value === "in_progress") merged.status = "in_progress";
-  else if (activeFilter.value === "resolved") merged.status = "resolved";
-  else if (activeFilter.value === "closed") merged.status = "closed";
-  else if (activeFilter.value === "unassigned") merged.assignee = "";
-  else if (activeFilter.value === "stale") merged.stale = 30;
-  else if (activeFilter.value === "mine") merged.assignee = "admin";
-  return await getBugList(merged);
-}
-
-async function openEdit(bug: BugDocument) {
-  let content = null;
+async function quickChangeStatus(bug: BugDocument, newStatus: string) {
   try {
-    if (bug.contentPath) content = await readBugContent(bug);
-  } catch {
-    /* use empty */
-  }
-  store.openEditDialog(bug, content);
+    await updateBug(bug.key, { status: newStatus, updatedAt: Date.now() } as any);
+    ElMessage.success(`Bug ${bug.key} → ${newStatus}`);
+    proTable.value?.getTableList(); loadAllBugs();
+  } catch (e: any) { ElMessage.error(e?.message || "Status change failed"); }
 }
 
+async function handleDeleteRow(bug: BugDocument) {
+  deletingKeys.value.add(bug.key);
+  try {
+    await store.handleDelete(bug, true);
+    proTable.value?.getTableList(); loadAllBugs();
+  } finally {
+    deletingKeys.value.delete(bug.key);
+  }
+}
+
+
+// ── Navigation ──
+function goDetail(key: string) { router.push(`/bug/${key}`); }
+function openEdit(bug: BugDocument) { dialogRef.value?.openEdit(bug); }
+
+// ── Title preview ──
 const titlePreviewRef = ref<{
   openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
 } | null>(null);
 async function openTitlePreview(bug: BugDocument) {
-  const filePath = bug.contentPath;
   let content = "";
-  if (filePath) {
-    try {
-      const res = await readKnowledgeFile(filePath);
-      content = res.content || "";
-    } catch {
-      try {
-        const c = await readBugContent(bug);
-        content = c.description || "";
-      } catch {
-        /* use empty */
-      }
-    }
+  if (bug.contentPath) {
+    try { const res = await readKnowledgeFile(bug.contentPath); content = res.content || ""; }
+    catch { try { const c = await readBugContent(bug); content = c.description || ""; } catch { /* use empty */ } }
   }
-  titlePreviewRef.value?.openFile({
-    path: filePath || "",
-    title: bug.title,
-    content,
-    onSave: async (_newContent: string) => {
-      /* read-only preview */
-    }
-  });
+  titlePreviewRef.value?.openFile({ path: bug.contentPath || "", title: bug.title, content, onSave: async () => {} });
 }
 
-function openLabelPrd(tag: string) {
-  const prd = prdLookup.value.get(tag);
-  if (prd) {
-    // Open the actual PRD file in the preview dialog
-    readKnowledgeFile(prd.path)
-      .then(res => {
-        titlePreviewRef.value?.openFile({
-          path: prd.path,
-          title: prd.title,
-          content: res.content || "",
-          onSave: async () => {}
-        });
-      })
-      .catch(() => {});
-  }
-}
-
-/** Show PRD title for a tag if matched, otherwise the raw tag */
-function prdLabel(tag: string): string {
-  const prd = prdLookup.value.get(tag);
-  return prd ? prd.title : tag;
-}
-
-/** Type → YiKnowledge directory name mapping, matches BUG_TYPE_DIR in @/api/modules/bug */
-const TYPE_DIR: Record<string, string> = {
-  functional: "logic",
-  performance: "performance",
-  ui: "style",
-  security: "security",
-  compatibility: "compatibility",
-  regression: "regression",
-  data: "data",
-  other: "other"
-};
-
-/** Extract category directory from bug contentPath, consistent with YiKnowledge file layout */
-function categoryLabel(bug: BugDocument): string {
-  const p = (bug as any).contentPath || "";
-  const m = p.match(/bugs\/\d{4}-\d{2}-\d{2}\/([^/]+)/);
-  if (m) return m[1];
-  return TYPE_DIR[bug.type] || "other";
-}
-
+// ── Helpers ──
 function typeTagColor(t: string): "danger" | "warning" | "primary" | "info" {
   const map: Record<string, "danger" | "warning" | "primary" | "info"> = {
-    functional: "danger",
-    logic: "danger",
-    performance: "warning",
-    ui: "primary",
-    style: "primary",
-    security: "danger",
-    compatibility: "warning",
-    regression: "info",
-    data: "info",
-    other: "info"
+    functional: "danger", logic: "danger", performance: "warning", ui: "primary",
+    style: "primary", security: "danger", compatibility: "warning", regression: "info", data: "info", other: "info"
   };
   return map[t] || "info";
 }
 
-async function handleSave() {
-  if (!formRef.value) {
-    ElMessage.warning("Form not ready, please try again");
-    return;
-  }
-  try {
-    await formRef.value.validate();
-  } catch {
-    ElMessage.warning("Please fill in all required fields (Title, Severity, Priority, Status, Type, Frequency)");
-    return;
-  }
-  await store.handleSave();
-  proTable.value?.getTableList();
+function exportCSV() {
+  const bugs = allBugs.value;
+  if (!bugs.length) { ElMessage.info("No bugs to export"); return; }
+  const headers = ["Key", "Title", "Type", "Severity", "Priority", "Status", "Assignee", "Reporter", "Module", "Project", "Updated"];
+  const escape = (v: string) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = bugs.map(b => [b.key, b.title, b.type, b.severity, b.priority, b.status, b.assignee || "", b.reporter || "", b.module || "", b.project || "", formatAbsolute(b.updatedAt)].map(escape).join(","));
+  const csv = ["\uFEFF" + headers.map(escape).join(","), ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = `bugs-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  ElMessage.success(`Exported ${rows.length} bugs`);
 }
 
-function batchDelete(ids: string[]) {
-  if (!ids.length) return;
-  ElMessageBox.confirm(`Delete ${ids.length} selected bugs?`, "Batch Delete", { type: "warning" })
-    .then(async () => {
-      for (const id of ids) {
-        const bug = allBugs.value.find(b => b.key === id);
-        if (bug) await store.handleDelete(bug, true);
-      }
-      ElMessage.success(`Deleted ${ids.length} bugs`);
-      proTable.value?.getTableList();
-    })
-    .catch(() => {});
-}
-
-function goDetail(key: string) {
-  const bug = allBugs.value.find(b => b.key === key);
-  if (bug) trackRecent(bug);
-  router.push(`/bug/${key}`);
-}
-
-function trackRecent(bug: BugDocument) {
-  recentlyViewed.value = [bug, ...recentlyViewed.value.filter(b => b.key !== bug.key)].slice(0, 8);
-}
-
-const projects = computed(() => projectStore.projects);
-function projectName(key: string): string {
-  return projects.value.find(p => p.key === key)?.name ?? "";
-}
-function goProject(key: string) {
-  router.push(`/project/${key}`);
-}
-
-const issues = computed(() => issueStore.issues);
-const selectableIssues = computed(() => {
-  const pk = store.form.project_key;
-  return pk ? issues.value.filter(i => i.project_key === pk) : issues.value;
-});
-function issueTitle(key: string): string {
-  const i = issues.value.find(x => x.key === key);
-  return i ? i.title : key;
-}
-function goIssue(key: string) {
-  const issue = issues.value.find(i => i.key === key);
-  if (!issue) return;
-  const filePath = getIssueFilePath(issue);
-  (titlePreviewRef.value as any)?.open?.(filePath);
-}
-function onProjectChange(key: string) {
-  store.form.project = key ? projectName(key) : "";
-}
-
-function onStatusChartClick(e: { name?: string }) {
-  if (!e?.name) return;
-  applyQuickFilter(e.name);
-}
-function onSeverityChartClick(e: { name?: string }) {
-  if (!e?.name) return;
-  applyQuickFilter(e.name);
-}
-
-// ── Sidebar: attention ──
-const attention = computed(() => {
-  const unassigned = allBugs.value.filter(b => !b.assignee && b.status !== "closed" && b.status !== "resolved").length;
-  const stale = allBugs.value.filter(b => {
-    if (b.status === "closed" || b.status === "resolved" || !b.updatedAt) return false;
-    const ms = Date.now() - new Date(b.updatedAt).getTime();
-    return ms > 30 * 86400000;
-  }).length;
-  return { unassigned, stale };
-});
-
-// ── Sidebar: data quality ──
-const completeness = computed(() => {
-  const total = allBugs.value.length;
-  const fields = [
-    { key: "desc", label: "Description", filled: allBugs.value.filter(b => b.description).length },
-    { key: "assignee", label: "Assignee", filled: allBugs.value.filter(b => b.assignee).length },
-    { key: "env", label: "Environment", filled: allBugs.value.filter(b => b.environment).length },
-    { key: "fixed", label: "Fixed Version", filled: allBugs.value.filter(b => b.fixedVersion).length }
-  ];
-  return fields.map(f => ({ ...f, pct: total ? Math.round((f.filled / total) * 100) : 0 }));
-});
-
-function severityColor(s: string): string {
-  return SEVERITY_COLOR[s] || "#909399";
-}
-
+// ── Init ──
 onMounted(async () => {
+  const q = route.query;
+  if (typeof q.status === "string" && q.status) filterStatus.value = q.status.split(",");
+  if (typeof q.severity === "string" && q.severity) filterSeverity.value = [q.severity];
   projectStore.fetchProjects({ pageSize: 100 });
-  issueStore.fetchIssues({ pageSize: 500 });
-  await loadBugStats();
+  await loadAllBugs();
 });
 
-watch(filterDateStr, () => {
-  loadBugStats();
-  proTable.value?.getTableList();
-});
-
-function formatDate(ts: number | null): string {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleString("zh-CN");
-}
-
-function severityTagType(s: BugSeverity): "danger" | "warning" | "info" {
-  const map: Record<BugSeverity, "danger" | "warning" | "info"> = {
-    critical: "danger",
-    major: "warning",
-    minor: "info",
-    trivial: "info"
-  };
-  return map[s];
-}
-function priorityTagType(p: BugPriority): "danger" | "warning" | "info" {
-  const map: Record<BugPriority, "danger" | "warning" | "info"> = { p0: "danger", p1: "warning", p2: "info", p3: "info" };
-  return map[p];
-}
-function statusTagType(s: BugStatus): "primary" | "warning" | "success" | "info" | "danger" {
-  const map: Record<BugStatus, "primary" | "warning" | "success" | "info" | "danger"> = {
-    open: "primary",
-    in_progress: "warning",
-    resolved: "success",
-    closed: "info",
-    rejected: "danger",
-    reopened: "warning"
-  };
-  return map[s] || "info";
-}
-function frequencyTagType(f: string): "danger" | "warning" | "info" | "primary" {
-  const map: Record<string, "danger" | "warning" | "info" | "primary"> = {
-    always: "danger",
-    sometimes: "warning",
-    rarely: "info",
-    once: "primary",
-    unable: "info"
-  };
-  return map[f] || "info";
-}
+watch(filterDateStr, () => { loadAllBugs(); proTable.value?.getTableList(); });
+watch(() => props.projectKey, () => { filterProject.value = props.projectKey || ""; loadAllBugs(); proTable.value?.getTableList(); });
 </script>
 
 <style scoped lang="scss">
-.bug-list {
-  padding: 24px;
-  background: var(--el-bg-color-page);
-}
-
-// ── Charts ──
-.bug-list__charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-.bug-chart {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.bug-chart--active {
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
-}
-.bug-chart__title {
-  display: flex;
-  flex-shrink: 0;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.bug-chart__badge {
-  padding: 0 5px;
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 15px;
-  color: var(--el-color-primary);
-  text-transform: none;
-  background: var(--el-color-primary-light-9);
-  border-radius: 3px;
-}
-.bug-chart__body {
-  flex: 1;
-  min-height: 0;
-  padding: 8px;
-}
-
-// ── Recently Viewed ──
-.bug-list__recent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-}
-.bug-list__recent-label {
-  margin-right: 2px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-.bug-list__recent-chip {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  padding: 2px 9px;
-  font-size: 12px;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 999px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-  &:hover {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
-  }
-}
-.bug-list__recent-dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.bug-list__recent-key {
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.bug-list__recent-title {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.bug-list__recent-clear {
-  padding: 4px;
-  margin-left: auto;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  &:hover {
-    color: var(--el-color-danger);
-  }
-}
-
-// ── Filter Pills ──
-.bug-list__pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.bug-list__pills-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Body / Main / Sidebar ──
-.bug-list__body {
-  display: flex;
-  gap: 24px;
-}
-.bug-list__main {
-  flex: 1;
-  min-width: 0;
-}
-.bug-list__sidebar {
-  position: sticky;
-  top: 24px;
-  flex-shrink: 0;
-  align-self: flex-start;
-  width: 240px;
-  padding: 12px;
-  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-}
-.bug-list__sidebar-view {
-  padding: 4px 4px 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) {
-    display: flex;
-    width: 100%;
-  }
-  :deep(.el-radio-button) {
-    flex: 1;
-  }
-  :deep(.el-radio-button__inner) {
-    width: 100%;
-    padding: 4px 0;
-    font-size: 12px;
-    text-align: center;
-  }
-}
-
-// ── Sidebar Section ──
-.bug-list__sidebar-section {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.bug-list__sidebar-section-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  padding-left: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  border-left: 2px solid var(--el-color-primary);
-}
-.bug-list__sidebar-section-label {
-  flex: 1;
-}
-.bug-list__sidebar-section-hint {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--el-text-color-placeholder);
-  text-transform: none;
-  letter-spacing: 0;
-}
-.bug-list__sidebar-section-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-}
-
-// ── Sidebar Card (stat item) ──
-.bug-list__sidebar-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.bug-list__sidebar-card-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
-  color: #ffffff;
-  border-radius: 7px;
-}
-.bug-list__sidebar-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
-}
-.bug-list__sidebar-card-value {
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--el-text-color-primary);
-}
-.bug-list__sidebar-card-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Card (attention variant) ──
-.bug-list__sidebar-card-accent-icon {
-  flex-shrink: 0;
-  font-size: 14px;
-}
-.bug-list__sidebar-card-accent-value {
-  min-width: 20px;
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-}
-.bug-list__sidebar-card-accent-label {
-  flex: 1;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.bug-list__sidebar-card--critical {
-  .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value {
-    color: var(--el-color-danger);
-  }
-}
-.bug-list__sidebar-card--unassigned {
-  .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value {
-    color: var(--el-color-warning);
-  }
-}
-.bug-list__sidebar-card--stale {
-  .bug-list__sidebar-card-accent-icon,
-  .bug-list__sidebar-card-accent-value {
-    color: var(--el-color-info);
-  }
-}
-
-// ── Sidebar Progress ──
-.bug-list__sidebar-progress {
-  padding: 0 12px 12px;
-}
-.bug-list__sidebar-progress-label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Quality ──
-.bug-list__sidebar-quality {
-  padding: 4px 0;
-  & + & {
-    padding-top: 8px;
-  }
-}
-.bug-list__sidebar-quality-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 3px;
-}
-.bug-list__sidebar-quality-label {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.bug-list__sidebar-quality-pct {
-  font-family: DIN, sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-// ── Card Grid ──
-.bug-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 10px;
-}
-.bug-grid__pager {
-  justify-content: center;
-  margin-top: 16px;
-}
-.bug-card {
-  padding: 14px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  &:hover {
-    box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
-    transform: translateY(-2px);
-  }
-}
-.bug-card__head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.bug-card__dot {
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.bug-card__key {
-  flex: 1;
-  min-width: 0;
-  padding: 1px 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.bug-card__head-right {
-  display: flex;
-  flex-shrink: 0;
-  gap: 4px;
-  align-items: center;
-}
-.bug-card__title {
-  display: -webkit-box;
-  margin: 0 0 4px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  -webkit-box-orient: vertical;
-}
-.bug-card__desc {
-  display: -webkit-box;
-  margin: 0 0 8px;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--el-text-color-secondary);
-  -webkit-box-orient: vertical;
-}
-.bug-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.bug-card__assignee {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  .el-icon {
-    font-size: 13px;
-  }
-}
-.bug-card__reporter {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  &::before {
-    content: "by ";
-  }
-}
-.bug-card__module {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.bug-card__footer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.bug-card__footer-tags {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-.bug-card__updated {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.bug-card__env {
-  padding: 1px 6px;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.bug-card__ver {
-  padding: 1px 6px;
-  font-size: 11px;
-  color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9);
-  border-radius: 4px;
-}
-
-// ── List View ──
-.bug-list-view {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.bug-list-view__row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 14px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition:
-    box-shadow 0.2s,
-    transform 0.2s;
-  &:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-    transform: translateY(-1px);
-  }
-}
-.bug-list-view__dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.bug-list-view__key {
-  flex-shrink: 0;
-  padding: 1px 6px;
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.bug-list-view__title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-}
-.bug-list-view__assignee {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.bug-list-view__reporter {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.bug-list-view__updated {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.bug-list-view__reporter {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Cell helpers ──
-.bug-list__cell-text {
-  font-size: 13px;
-}
-.bug-list__cell-empty {
-  color: var(--el-text-color-placeholder);
-}
-
-// ── Labels ──
-.bug-list__labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  align-items: center;
-}
+@use "./styles/bug.scss";
 </style>

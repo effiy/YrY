@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-03: 布局与动态路由 — 测试用例"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-03"
 source_prds: ["03-prd-布局与动态路由"]
 source_modules: ["03-prd-task-布局与动态路由"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 布局与动态路由]
+benefit: "测试用例：布局与动态路由"
+lifecycle: active
 ---
 
 # YV-07-03: 布局与动态路由 — 测试用例

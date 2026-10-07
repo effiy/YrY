@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 import io
 import json
 import logging
@@ -60,7 +60,7 @@ async def _process_export_task(task_id: str, cname: str, export_filter: dict, fi
                 break
 
         # Generate export content
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         file_content: str = ""
         file_name = f"{cname}_{now[:10]}.{fmt}"
 
@@ -97,11 +97,11 @@ async def _process_export_task(task_id: str, cname: str, export_filter: dict, fi
         )
         logger.info(f"Export task {task_id} completed: {len(all_docs)} rows, {fmt}")
 
-    except Exception:
-        logger.exception(f"Export task {task_id} failed")
+    except Exception as e:
+        logger.exception(f"Export task {task_id} failed: {e}")
         await tasks_coll.update_one(
             {"task_id": task_id},
-            {"$set": {"status": "failed", "error": "Export processing failed"}}
+            {"$set": {"status": "failed", "error": f"Export processing failed: {e!s}"}}
         )
 
 
@@ -117,7 +117,7 @@ async def create_export_task(params: dict[str, Any]) -> dict[str, Any]:
     limit: int = params.get("limit", 10000)
 
     task_id = str(uuid4())[:8]
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     from data.database import db
 

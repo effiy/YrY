@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-86"
 source_prds: ["39-prd-集成市场"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 集成市场]
+benefit: "测试用例：集成市场"
+lifecycle: active
 ---
 # YV-09-86: 集成市场 — 第三方集成目录、安装/配置/卸载流程、集成健康状态、使用统计、OAuth 配置助手 — 测试规格
 

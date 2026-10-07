@@ -85,10 +85,10 @@ describe("useToolExecution", () => {
     });
 
     it("formats details into context when results returned", async () => {
-      deps.executeTool.mockResolvedValue({ details: sampleResults() });
+      deps.executeTool.mockResolvedValue({ details: { items: sampleResults() } });
       const { executePreStreamTools } = useToolExecution(deps);
       const r = await executePreStreamTools("q1 format details", signal, Date.now());
-      expect(r.initialContext).toContain("Real-time Web Search Results");
+      expect(r.initialContext).toContain("## Web Search");
       expect(deps.webSearchResults.value).toHaveLength(2);
     });
 

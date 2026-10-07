@@ -50,13 +50,5 @@ const randomWidth = (seed: number) => `${60 + ((seed * 17) % 40)}%`;
   border-radius: 4px;
   animation: skeleton-shimmer 1.5s infinite;
 }
-
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
+// skeleton-shimmer keyframes come from global styles/skeleton.scss
 </style>

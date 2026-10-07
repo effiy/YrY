@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "Content Script 性能剖析 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["17-稳定性-ContentScript性能剖析与内存管理"]
-source_modules: ["17-prd-task-ContentScript性能剖析与内存管理"]
+source_prds: ["17-架构设计-ContentScript性能剖析与内存管理.md"]
+source_modules: ["17-prd-task-ContentScript性能剖析与内存管理.md"]
+
+type: test
 ---
 
 # Content Script 性能剖析 — 测试用例
@@ -23,3 +26,4 @@ source_modules: ["17-prd-task-ContentScript性能剖析与内存管理"]
 | TC-PRF02 | MutationObserver disconnect | 页面卸载时断开 | P0 |
 | TC-PRF03 | 定时器清理 | clearInterval/Timeout | P1 |
 | TC-PRF04 | DOM 引用释放 | 无闭包持有已移除节点 | P1 |
+

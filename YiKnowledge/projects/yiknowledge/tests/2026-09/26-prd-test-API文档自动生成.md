@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-23: API 文档自动生成 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-23"
 source_prds: ["26-架构设计-API文档自动生成"]
 source_modules: ["26-prd-task-API文档自动生成"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-23: API 文档自动生成 — 测试用例

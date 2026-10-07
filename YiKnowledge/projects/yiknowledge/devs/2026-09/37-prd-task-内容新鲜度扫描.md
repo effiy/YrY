@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-34"
 title: "YK-09-34: 内容新鲜度扫描 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "37-架构设计-内容新鲜度扫描.md"
 source_okr: [yiknowledge-001]
 related_tests: ["37-prd-test-内容新鲜度扫描"]
+
+type: task
 ---
 
 # YK-09-34: 内容新鲜度扫描 — 开发方案

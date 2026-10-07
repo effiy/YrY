@@ -1,0 +1,279 @@
+// ── Toolbar layout ──
+.ct-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.ct-left,
+.ct-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+// ── Circle button polish in toolbar ──
+.ct-left :deep(.el-button.is-circle),
+.ct-right :deep(.el-button.is-circle) {
+  width: 30px;
+  height: 30px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-lighter);
+  border-color: transparent;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-7);
+    transform: scale(1.06);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  &.el-button--primary {
+    color: var(--el-color-white);
+    background: var(--el-color-primary);
+  }
+}
+
+// ── Pills group (status toggles) ──
+.ct-pills-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+// ── Status pills ──
+.ct-pill {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 14px;
+  transition: all var(--transition-fast);
+  &:hover {
+    border-color: var(--el-border-color);
+  }
+  &.on {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
+  }
+  &.searching {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning-light-5);
+  }
+}
+.ct-spin {
+  animation: ct-spin 1s linear infinite;
+}
+
+@keyframes ct-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Web search pill — glow when active, pulse when searching
+.ct-pill--web {
+  &.on {
+    box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
+  }
+  &.searching {
+    box-shadow: 0 0 8px var(--el-color-warning-light-3);
+    animation: ct-web-pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes ct-web-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--el-color-warning-light-3); }
+  50% { box-shadow: 0 0 12px var(--el-color-warning-light-5); }
+}
+.ct-pill-label { line-height: 1; }
+.ct-pill-timing {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 15px;
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+  border-radius: 6px;
+}
+.ct-pill--web.combined {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+}
+.ct-pill--rag.combined {
+  border-left: 1px dashed var(--el-color-primary-light-5);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
+// ── RAG health indicator dot ──
+.ct-rag-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--el-text-color-placeholder);
+  transition: background var(--transition-fast);
+  &.green { background: #22c55e; }
+  &.orange { background: #f59e0b; }
+  &.red { background: #ef4444; }
+  &--lg { width: 9px; height: 9px; }
+}
+
+// ── RAG pill states (split-button: main + gear) ──
+.ct-pill--rag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  overflow: hidden;
+  &.on {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+    border-color: var(--el-color-primary-light-5);
+  }
+  &.retrieving {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning-light-5);
+    animation: ct-rag-pulse 1.5s ease-in-out infinite;
+  }
+  &.sourced {
+    color: #16a34a;
+    background: rgb(22 163 74 / 8%);
+    border-color: rgb(22 163 74 / 30%);
+  }
+  &.fast {
+    border-style: dashed;
+  }
+  &.unavailable {
+    opacity: 0.6;
+  }
+}
+.ct-pill--rag-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 2px 2px 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.ct-pill--rag-gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  align-self: stretch;
+  color: var(--el-text-color-placeholder);
+  cursor: pointer;
+  border-left: 1px solid var(--el-border-color-lighter);
+  transition: all var(--transition-fast);
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-7);
+  }
+}
+
+@keyframes ct-rag-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--el-color-warning-light-3); }
+  50% { box-shadow: 0 0 12px var(--el-color-warning-light-5); }
+}
+
+// ── RAG fast mode badge ──
+.ct-rag-fast-badge {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 14px;
+  color: var(--el-color-warning);
+  letter-spacing: 0.5px;
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning-light-5);
+  border-radius: 4px;
+}
+
+// ── RAG source count badge (post-response) ──
+.ct-rag-src-badge {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 15px;
+  color: #16a34a;
+  background: rgb(22 163 74 / 10%);
+  border-radius: 6px;
+  &.grade-b { color: #65a30d; background: rgb(101 163 13 / 10%); }
+  &.grade-c { color: #ca8a04; background: rgb(202 138 4 / 10%); }
+  &.grade-d { color: #dc2626; background: rgb(220 38 38 / 10%); }
+}
+
+.ct-pill-label--rag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 15px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--el-color-white);
+  background: var(--el-color-primary);
+  border-radius: 7px;
+}
+.ct-pill--noctx {
+  border-color: var(--el-color-warning-light-5);
+  &.on {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning-light-5);
+  }
+}
+.ct-pill-label--noctx {
+  display: inline-flex;
+  align-items: center;
+  height: 15px;
+  padding: 0 5px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--el-color-warning);
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning-light-5);
+  border-radius: 7px;
+}
+.ct-pill--auto {
+  border-color: rgb(34 197 94 / 35%);
+  &.on {
+    color: #22c55e;
+    background: rgb(34 197 94 / 8%);
+    border-color: rgb(34 197 94 / 30%);
+  }
+}
+
+// ── Hidden anchor for Skills popover (triggered from More menu) ──
+.ct-skills-anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}

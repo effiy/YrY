@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YP-08-01: 提示词历史与分支管理 — 测试规格"
 status: 已完成
@@ -13,6 +14,8 @@ prd_month: "202608"
 prd_task_id: "YP-08-01"
 source_prds: ["01-聊天核心-提示词历史与分支管理"]
 source_modules: ["01-prd-task-提示词历史与分支管理"]
+
+type: test
 ---
 
 # YP-08-01: 提示词历史与分支管理 — 测试规格

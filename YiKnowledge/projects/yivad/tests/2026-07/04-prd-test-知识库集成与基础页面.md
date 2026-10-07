@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-04: 知识库集成与基础页面 — 知识浏览 + RAG 聊天 + 数据/文件管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-04"
 source_prds: ["04-prd-知识库集成与基础页面"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 知识库集成与基础页面]
+benefit: "测试用例：知识库集成与基础页面"
+lifecycle: active
 ---
 # YV-07-04: 知识库集成与基础页面 — 知识浏览 + RAG 聊天 + 数据/文件管理 — 测试规格
 
@@ -43,7 +48,7 @@ source_modules: []
 #### Scenario: 知识树加载
 - **GIVEN** 用户访问知识库页面
 - **WHEN** 页面加载
-- **THEN** 左侧显示知识树（按 7 个角色目录组织：engineer/aier/producter/curator/analyst/leader/designer）
+- **THEN** 左侧显示知识树（按 7 个角色目录组织：engineer/aier/product/curator/analyst/leader/designer）
 - **AND** 点击树节点懒加载对应目录的文件列表（首次展开时显示 loading 动画）
 - **AND** 空目录节点标记为 leaf（无展开箭头）
 

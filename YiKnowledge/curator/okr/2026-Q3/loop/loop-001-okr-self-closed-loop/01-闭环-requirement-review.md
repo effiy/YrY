@@ -3,9 +3,10 @@ type: loop-record
 loopId: loop-001
 stage: requirement-review
 title: 重定义 7 角色 OKR + 建立流程记录体系，跑通首条「AI 从需求到上线」自闭环
-role: producter
+role: product
 goalId: prod-001
-status: done
+source: internal
+status: stable
 created: 2026-08-16
 updated: 2026-09-10
 tags: [okr, self-closed-loop, requirement-review, prd]
@@ -46,11 +47,11 @@ Yi 家族（YiAi / YiVad / YiPet / YiKnowledge）已有一套 OKR 系统，但�
 
 | 角色 | 诉求 | 产出 |
 |---|---|---|
-| executiver | 北极星确立、审批 | exec-001 / exec-002 |
-| producter | 需求可闭环 | 本文档 + PRD 模板 |
+| executive | 北极星确立、审批 | exec-001 / exec-002 |
+| product | 需求可闭环 | 本文档 + PRD 模板 |
 | leader | 技术可闭环 | ADR + 技术评审模板 |
 | engineer | 编码可闭环 | processRecord.vue + 路由菜单 |
-| srer | 测试上线可闭环 | 测试报告 + 上线记录 |
+| sre | 测试上线可闭环 | 测试报告 + 上线记录 |
 | aier | 编排可靠 | 三要素映射覆盖 |
 | curator | 记录知识化 | 模板 + INDEX + 合规校验 |
 

@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "长会话性能优化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["79-架构设计-长会话性能优化.md"]
+source_modules: ["79-prd-task-长会话性能优化.md"]
+
+type: test
 ---
 
 # 长会话性能优化 — 测试用例
@@ -17,3 +24,4 @@ prd_month: "202609"
 | TC-LS01 | >100条虚拟滚动 | DOM ≤20 | P1 |
 | TC-LS02 | 分页加载 | 首屏 <200ms | P1 |
 | TC-LS03 | IndexedDB | >10MB 异步 | P2 |
+

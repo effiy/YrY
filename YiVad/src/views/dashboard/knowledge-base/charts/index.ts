@@ -45,7 +45,7 @@ export function buildReviewCycleDonut(data: { name: string; count: number }[], m
       top: "center",
       itemWidth: 8,
       itemHeight: 8,
-      textStyle: { fontSize: 10 },
+      textStyle: { fontSize: 12 },
       formatter: (n: string) => (n === "__missing__" ? "No review" : n)
     },
     series: [
@@ -55,7 +55,7 @@ export function buildReviewCycleDonut(data: { name: string; count: number }[], m
         center: ["58%", "50%"],
         label: {
           show: true,
-          fontSize: 10,
+          fontSize: 12,
           formatter: (p: any) => `${p.name === "__missing__" ? "No review" : p.name}\n${p.percent}%`
         },
         emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
@@ -72,8 +72,8 @@ export function buildTypeBar(data: { name: string; count: number }[]): ECOption 
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -93,8 +93,8 @@ export function buildStatusBar(data: { name: string; count: number }[]): ECOptio
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -126,8 +126,8 @@ export function buildSizeDist(files: KnowledgeFileSummary[]): ECOption {
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: counts.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: counts.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -172,8 +172,8 @@ export function buildFileAge(files: KnowledgeFileSummary[]): ECOption {
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: buckets.map(b => b.label).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: buckets.map(b => b.label).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -193,8 +193,8 @@ export function buildLifecycleBar(data: { name: string; count: number }[]): ECOp
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: filtered.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -225,8 +225,8 @@ export function buildModuleBar(modules: KnowledgeModuleStats[], activeCategory: 
       }
     },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -250,8 +250,8 @@ export function buildRolesBar(data: { name: string; count: number }[], colors: s
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -271,8 +271,8 @@ export function buildCategoryBar(data: { name: string; count: number }[]): ECOpt
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -292,8 +292,8 @@ export function buildTagsBar(data: { name: string; count: number }[], colors: st
   return {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", axisLabel: { fontSize: 9 } },
-    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", axisLabel: { fontSize: 11 } },
+    yAxis: { type: "category", data: top.map(d => d.name).reverse(), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -329,8 +329,8 @@ export function buildMetadataCompleteness(dims: MetadataCompletenessDim[]): ECOp
       }
     },
     grid: { left: "3%", right: "8%", top: "3%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value", max: 100, axisLabel: { fontSize: 9, formatter: "{value}%" } },
-    yAxis: { type: "category", data: data.map(d => d.label), axisLabel: { fontSize: 10 } },
+    xAxis: { type: "value", max: 100, axisLabel: { fontSize: 11, formatter: "{value}%" } },
+    yAxis: { type: "category", data: data.map(d => d.label), axisLabel: { fontSize: 12 } },
     series: [
       {
         type: "bar",
@@ -342,7 +342,7 @@ export function buildMetadataCompleteness(dims: MetadataCompletenessDim[]): ECOp
             borderRadius: [0, 4, 4, 0]
           }
         })),
-        label: { show: true, position: "right", fontSize: 10, formatter: "{c}%" }
+        label: { show: true, position: "right", fontSize: 12, formatter: "{c}%" }
       }
     ]
   };
@@ -357,13 +357,13 @@ export function buildTacitDonut(tacitCount: number, explicitCount: number): ECOp
   ];
   return {
     tooltip: { trigger: "item", formatter: (p: any) => `${p.name}: ${p.value} files (${p.percent}%)` },
-    legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 10 } },
+    legend: { orient: "vertical", left: 0, top: "center", itemWidth: 8, itemHeight: 8, textStyle: { fontSize: 12 } },
     series: [
       {
         type: "pie",
         radius: ["50%", "75%"],
         center: ["58%", "50%"],
-        label: { show: true, fontSize: 10, formatter: (p: any) => `${p.name}\n${p.percent}%` },
+        label: { show: true, fontSize: 12, formatter: (p: any) => `${p.name}\n${p.percent}%` },
         emphasis: { label: { fontSize: 14, fontWeight: "bold" } },
         data: items
       }

@@ -23,7 +23,7 @@ related:
   - ../foundations/01-基础-LLM基础.md
   - ./01-平台-Embedding模型选型.md
   - ../methods/01-方法-Agent架构模式.md
-  - ../../leader/decisions/yiai/
+  - ../../leader/decisions/
 ---
 
 # LLM 模型对比与选型

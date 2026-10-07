@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪"
 tags: [需求文档, 功能请求, 投票系统, 用户反馈, 功能排名, 变更日志]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["47-prd-task-功能请求与投票"]
+related_tests: ["47-prd-test-功能请求与投票"]
+benefit: "产品需求：功能请求与投票"
+lifecycle: active
 ---
 
 # YV-09-100: 功能请求与投票 — 用户投票、权重体系、功能排名与全生命周期状态追踪

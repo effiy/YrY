@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "全局快捷键框架 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-43"
 source_prds: ["18-prd-全局快捷键框架"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 全局快捷键框架]
+benefit: "测试用例：全局快捷键框架"
+lifecycle: active
 ---
 # 全局快捷键框架 — 测试规格
 

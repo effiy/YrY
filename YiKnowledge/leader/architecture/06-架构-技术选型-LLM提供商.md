@@ -12,8 +12,8 @@ review_cycle: quarterly
 roles: [leader]
 benefit: "YiAi 中 LLM 提供商选择的标准和理由，为未来提供商评估提供决策框架"
 related:
-  - ../decisions/yiai/route-llm-traffic-across-providers.md
-  - ../decisions/yiai/llm-multi-provider-rollout.md
+  - ../decisions/route-llm-traffic-across-providers.md
+  - ../decisions/llm-multi-provider-rollout.md
 ---
 
 # 技术选型：LLM 提供商

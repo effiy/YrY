@@ -26,10 +26,10 @@ const emit = defineEmits<{
 const CATEGORY_COLORS: Record<string, string> = {
   engineer: "#5470c6",
   leader: "#91cc75",
-  producter: "#fac858",
-  executiver: "#ee6666",
+  product: "#fac858",
+  executive: "#ee6666",
   curator: "#73c0de",
-  srer: "#fc8452",
+  sre: "#fc8452",
   aier: "#9a60b4"
 };
 

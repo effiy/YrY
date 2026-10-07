@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-136: 文档版本对比 — 版本并列对比、行内差异高亮、版本时间线、回退到指定版本、变更作者归属"
 tags: [需求文档, 版本对比, 差异高亮, 版本时间线, 回退, 变更归属, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["66-prd-task-文档版本对比"]
+related_tests: ["66-prd-test-文档版本对比"]
+benefit: "产品需求：文档版本对比"
+lifecycle: active
 ---
 
 # YV-09-136: 文档版本对比 — 版本并列对比、行内差异高亮、版本时间线、回退到指定版本、变更作者归属

@@ -80,7 +80,7 @@ Curator 为 KB 做的事，就像其他角色为产品做的事。但 curator �
 |----------|---------------|
 | engineer/build/ | 目录蓝图、命名规范 |
 | engineer/ship/ | frontmatter 校验、[就绪检查清单](./governance/04-治理-就绪检查清单.md) |
-| srer/ | 收件箱/分类工作流、审查节奏 |
+| sre/ | 收件箱/分类工作流、审查节奏 |
 | leader/ | 治理规则、废弃策略 |
 
 ## Pipeline 定位
@@ -91,7 +91,7 @@ Curator 为 KB 做的事，就像其他角色为产品做的事。但 curator �
 └──────────────────────────────────────────────┘
     │ 服务于所有 pipeline 阶段
     ▼
-producter/ ──→ leader/ ──→ engineer/ ──→ srer/
+product/ ──→ leader/ ──→ engineer/ ──→ sre/
 ```
 
 Curator 位于 pipeline **之上**，为每个阶段提供模板、治理和结构。它不参与阶段流程本身——它使流程成为可能。

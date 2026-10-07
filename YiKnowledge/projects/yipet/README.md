@@ -3,10 +3,13 @@ title: YiPet 知识库索引
 tags: [yipet, index, chrome-extension, mv3, workflows]
 category: projects/yipet
 created: 2026-08-25
-updated: 2026-09-15
+updated: 2026-10-07
 source: YiPet
 type: index
-status: active
+status: stable
+lifecycle: active
+review_cycle: monthly
+benefit: "YiPet Chrome 扩展知识库的总索引，涵盖架构设计、开发规范和跨项目桥接"
 ---
 
 # YiPet 项目知识库

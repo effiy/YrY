@@ -46,11 +46,11 @@ export function normalizeMetaValue(val: any): string {
 // ── Color Maps ──
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  producter: "#fac858",
+  product: "#fac858",
   leader: "#73c0de",
   engineer: "#5470c6",
-  srer: "#ea7ccc",
-  executiver: "#ee6666",
+  sre: "#ea7ccc",
+  executive: "#ee6666",
   aier: "#91cc75",
   curator: "#3ba272",
   static: "#ff99cc",
@@ -189,11 +189,11 @@ export function formatNumber(n: number): string {
   return n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(n);
 }
 
+import { filesize } from "filesize";
+
 export function formatFileSize(bytes: number): string {
   if (!bytes || bytes < 0) return "--";
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / 1048576).toFixed(1) + " MB";
+  return String(filesize(bytes));
 }
 
 export function formatRelativeTime(dateStr: string): string {
@@ -393,6 +393,19 @@ export function aggregateMissingStats(files: KnowledgeFileSummary[]): {
     unknown_lifecycle,
     stale_count
   };
+}
+
+// ── Trend Computation ──
+
+/** Percentage change from previous to current value. Returns null if baseline is 0. */
+export function percentDelta(current: number, previous: number): number | null {
+  if (previous === 0) return current > 0 ? 100 : null;
+  return Math.round(((current - previous) / previous) * 100);
+}
+
+/** Absolute point change between two values. */
+export function deltaPoints(current: number, previous: number): number {
+  return Math.round(current - previous);
 }
 
 // ── Filter Labels ──

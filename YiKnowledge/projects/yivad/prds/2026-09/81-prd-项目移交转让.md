@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-227: 项目移交转让 — 项目所有权转移、转让流程、转让历史与审计日志"
 tags: [需求文档, 项目移交, 所有权转让, 转让流程, 转让历史, 审计日志, 批量转让]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["81-prd-task-项目移交转让"]
+related_tests: ["81-prd-test-项目移交转让"]
+benefit: "产品需求：项目移交转让"
+lifecycle: active
 ---
 
 # YV-09-227: 项目移交转让 — 项目所有权转移、转让流程、转让历史与审计日志

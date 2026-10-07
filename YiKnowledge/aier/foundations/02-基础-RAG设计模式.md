@@ -24,7 +24,7 @@ related:
   - ../methods/01-方法-Agent架构模式.md
   - ../platform/01-平台-Embedding模型选型.md
   - ../platform/03-平台-向量数据库选型.md
-  - ../methods/prompts/05-提示词-RAG系统.md
+  - ../methods/05-提示词-RAG系统.md
   - ../../engineer/learn/projects/yiai/
 ---
 

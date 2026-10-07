@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-201: 用户安全设置 — 密码修改、双因素认证、会话管理、登录历史、活动日志、安全建议"
 tags: [需求文档, 用户中心, 安全设置, 密码修改, 双因素认证, 会话管理, 登录历史, 活动日志]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["75-prd-task-用户安全设置"]
+related_tests: ["75-prd-test-用户安全设置"]
+benefit: "产品需求：用户安全设置"
+lifecycle: active
 ---
 
 # YV-09-201: 用户安全设置 — 密码修改、双因素认证、会话管理、登录历史、活动日志、安全建议

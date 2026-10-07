@@ -1,0 +1,263 @@
+.okr {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 95px);
+  min-height: 0;
+  overflow: auto;
+  // padding + background come from global .page class
+}
+.okr__breadcrumb {
+  margin-bottom: 4px;
+}
+.okr__head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.okr__nav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.okr__filters {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+.okr__view-toggle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.okr__view-label {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr__action-text {
+  font-size: 13px;
+  line-height: 1.4;
+}
+.okr__action-text--link {
+  color: var(--el-color-primary);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.okr__role-cell {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.85;
+  }
+}
+.okr__role-cell-icon {
+  font-size: 16px;
+}
+.okr__role-cell-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+.okr__deadline {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+.okr__deadline-hint {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--el-text-color-secondary);
+}
+.okr__deadline-overdue {
+  font-weight: 700;
+  color: var(--el-color-danger);
+  .okr__deadline-hint {
+    color: var(--el-color-danger);
+  }
+}
+.okr__progress-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  :deep(.el-progress) {
+    flex: 1;
+    min-width: 0;
+  }
+}
+.okr__progress-num {
+  flex-shrink: 0;
+  min-width: 34px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  text-align: right;
+}
+.okr__empty {
+  padding: 32px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+}
+.okr__subtask-count {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+.okr__subtask-count--link {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--el-color-primary);
+  cursor: pointer;
+  b {
+    font-weight: 700;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Card view
+.okr__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.okr__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.okr__card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  gap: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.okr__card:hover .okr__card-actions {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+.okr__card-top {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.okr__card-action {
+  min-height: 40px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.okr__card-role {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.85;
+  }
+}
+.okr__card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr__card-deadline {
+  font-variant-numeric: tabular-nums;
+}
+
+// List view
+.okr__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.okr__list-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  }
+}
+.okr__list-priority {
+  flex-shrink: 0;
+}
+.okr__list-action {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.okr__list-role {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.85;
+  }
+}
+.okr__list-owner {
+  flex-shrink: 0;
+  width: 110px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr__list-deadline {
+  flex-shrink: 0;
+  width: 90px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.okr__list-status {
+  flex-shrink: 0;
+}
+.okr__list-progress {
+  flex-shrink: 0;
+  width: 120px;
+}
+.okr__list-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(4px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.okr__list-row:hover .okr__list-actions {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+// Subtasks 弹出层内容（el-popover 默认 teleport 到 body，scoped 样式无法命中，需全局样式）

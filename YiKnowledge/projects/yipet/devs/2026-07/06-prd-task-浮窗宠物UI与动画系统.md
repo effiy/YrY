@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-06"
 title: "YP-07-06: 浮窗宠物 UI 与动画系统 — Shadow DOM + 关键帧动画 + 空闲状态机 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 2.5
 source_prd: "06-功能实现-浮窗宠物UI与动画系统.md"
 source_okr: [yipet-002]
+
+type: task
 ---
 
 # YP-07-06: 浮窗宠物 UI 与动画系统 — 开发方案

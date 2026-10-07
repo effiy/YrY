@@ -7,8 +7,8 @@ from services.ai.model_runtime import (
     OpenAIRuntime,
     RAGRuntime,
     get_runtime,
-    _b64,
 )
+from services.ai.model_runtime.openai import _b64
 
 
 class TestB64:
@@ -35,7 +35,7 @@ class TestGetRuntime:
         assert isinstance(runtime, OllamaRuntime)
 
     def test_openai_mode(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.openai.settings") as mock_settings:
             mock_settings.deepseek_api_key = "sk-test"
             mock_settings.deepseek_base_url = "https://api.deepseek.com/v1"
             mock_settings.deepseek_default_model = "deepseek-chat"
@@ -44,7 +44,7 @@ class TestGetRuntime:
             assert isinstance(runtime, OpenAIRuntime)
 
     def test_deepseek_mode(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.openai.settings") as mock_settings:
             mock_settings.deepseek_api_key = "sk-test"
             mock_settings.deepseek_base_url = "https://api.deepseek.com/v1"
             mock_settings.deepseek_default_model = "deepseek-chat"
@@ -63,7 +63,7 @@ class TestGetRuntime:
 
 class TestOllamaRuntime:
     def test_model_name(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.ollama.settings") as mock_settings:
             mock_settings.ollama_url = "http://localhost:11434"
             mock_settings.ollama_auth = ""
             mock_settings.ollama_chat_timeout = 300
@@ -81,7 +81,7 @@ class TestOllamaRuntime:
 
 class TestOpenAIRuntime:
     def test_model_name(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.openai.settings") as mock_settings:
             mock_settings.deepseek_api_key = "sk-test"
             mock_settings.deepseek_base_url = "https://api.deepseek.com/v1"
             mock_settings.deepseek_default_model = "deepseek-chat"
@@ -90,7 +90,7 @@ class TestOpenAIRuntime:
             assert runtime.model_name() == "deepseek-chat"
 
     def test_custom_model(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.openai.settings") as mock_settings:
             mock_settings.deepseek_api_key = "sk-test"
             mock_settings.deepseek_base_url = "https://api.deepseek.com/v1"
             mock_settings.deepseek_default_model = "deepseek-chat"
@@ -99,7 +99,7 @@ class TestOpenAIRuntime:
             assert runtime.model_name() == "gpt-4o"
 
     def test_custom_api_key(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.openai.settings") as mock_settings:
             mock_settings.deepseek_api_key = ""
             mock_settings.deepseek_base_url = "https://api.deepseek.com/v1"
             mock_settings.deepseek_default_model = "deepseek-chat"
@@ -110,7 +110,7 @@ class TestOpenAIRuntime:
 
 class TestRAGRuntime:
     def test_model_name(self):
-        with patch("services.ai.model_runtime.settings") as mock_settings:
+        with patch("services.ai.model_runtime.rag.settings") as mock_settings:
             mock_settings.rag_llm_model = "qwen3.5"
             runtime = RAGRuntime()
             assert runtime.model_name() == "qwen3.5"

@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "依赖版本管理 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["70-基础设施-依赖版本管理"]
+source_prds: ["70-架构设计-依赖版本管理.md"]
+source_modules: ["70-prd-task-依赖版本管理.md"]
+
+type: test
 ---
 
 # 依赖版本管理 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["70-基础设施-依赖版本管理"]
 |------|------|------|--------|
 | TC-DEP01 | npm audit | 0 高危漏洞 | P1 |
 | TC-DEP02 | lock 文件 | 确定性构建 | P1 |
+

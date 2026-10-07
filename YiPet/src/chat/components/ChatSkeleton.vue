@@ -35,11 +35,20 @@ defineProps<{
 
 .cs-skeleton--sidebar {
   .cs-skeleton__item {
-    padding: 12px;
-    margin-bottom: 8px;
+    padding: 14px;
+    margin-bottom: 6px;
     background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
     border-radius: 8px;
   }
+}
+
+.cs-skeleton--messages {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px 16px;
 }
 
 .cs-skeleton__line {
@@ -53,20 +62,24 @@ defineProps<{
   );
   background-size: 200% 100%;
   border-radius: 4px;
-  animation: cs-shimmer 1.5s infinite;
+  animation: cs-shimmer 1.5s ease-in-out infinite;
 
   &--title { width: 60%; }
   &--sub { width: 40%; height: 10px; }
-  &--long { width: 80%; }
-  &--mid { width: 50%; }
-  &--short { width: 30%; height: 10px; }
+  &--long { width: 85%; }
+  &--mid { width: 55%; }
+  &--short { width: 35%; height: 10px; }
 }
 
 .cs-skeleton__bubble {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 0;
 
+  &--left {
+    .cs-skeleton__content { align-items: flex-start; }
+  }
   &--right {
     flex-direction: row-reverse;
     .cs-skeleton__content { align-items: flex-end; }
@@ -75,8 +88,8 @@ defineProps<{
 
 .cs-skeleton__avatar {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.04) 25%,
@@ -84,15 +97,27 @@ defineProps<{
     rgba(255, 255, 255, 0.04) 75%
   );
   background-size: 200% 100%;
-  border-radius: 50%;
-  animation: cs-shimmer 1.5s infinite;
+  border-radius: 8px;
+  animation: cs-shimmer 1.5s ease-in-out infinite;
 }
 
 .cs-skeleton__content {
   display: flex;
-  flex: 1;
   flex-direction: column;
+  gap: 6px;
   max-width: 70%;
+  padding: 12px 14px;
+  background: rgba(var(--primary-rgb, 99, 102, 241), 0.06);
+  border-radius: 12px;
+  .cs-skeleton__bubble--right & {
+    border-radius: 12px 12px 4px 12px;
+  }
+  .cs-skeleton__bubble--left & {
+    border-radius: 12px 12px 12px 4px;
+  }
+  .cs-skeleton__line {
+    margin-bottom: 0;
+  }
 }
 
 @keyframes cs-shimmer {

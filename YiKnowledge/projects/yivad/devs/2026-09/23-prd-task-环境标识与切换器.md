@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-49"
 title: "YV-09-49: 环境标识与切换器 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "23-prd-环境标识与切换器.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 环境标识与切换器]
+benefit: "开发方案：task-环境标识与切换器"
+lifecycle: active
 ---
 
 # YV-09-49: 环境标识与切换器 — 开发方案
@@ -49,6 +54,20 @@ const envLabel = computed(() => {
 ### 实施步骤：0.5d
 
 - 环境标识组件 + 生产环境警告条
+
+
+### 架构方案
+
+**技术路线**：全局环境指示器（Header 右侧），根据 `import.meta.env.MODE` 显示不同颜色和文字
+
+**组件树**：
+```
+EnvIndicator.vue (el-tag + 颜色映射) + EnvSwitcher.vue (开发环境切换对话框)
+```
+
+**关键决策**：
+环境映射：development→黄色"DEV", staging→橙色"STG", production→不显示；环境切换仅开发模式下可用
+
 
 ---
 

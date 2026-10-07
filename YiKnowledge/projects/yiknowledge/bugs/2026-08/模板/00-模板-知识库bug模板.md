@@ -99,7 +99,7 @@ YiKnowledge/projects/...
 ### 二、复现步骤
 
 1. 定位到问题文件
-2. 检查规范要求（参考 [MEMORY.md](../../../MEMORY.md) 和 [CLAUDE.md](../../../CLAUDE.md)）
+2. 检查规范要求（参考 [MEMORY.md](../../../../../MEMORY.md) 和 [CLAUDE.md](../../../../../CLAUDE.md)）
 3. 对比实际状态与规范要求
 
 ### 三、根因分析
@@ -114,7 +114,7 @@ YiKnowledge/projects/...
 ### 五、验证方法
 
 - [ ] frontmatter 通过就绪检查清单
-- [ ] 文件命名符合 [命名规范](../../../MEMORY.md)
+- [ ] 文件命名符合 [命名规范](../../../../../MEMORY.md)
 - [ ] 目录深度 ≤ 3 级
 - [ ] YiAi 知识监视器可正常索引（检查 `knowledge_files` 集合）
 

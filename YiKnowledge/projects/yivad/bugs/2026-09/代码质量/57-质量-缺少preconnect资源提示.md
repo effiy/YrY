@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-缺少preconnect资源提示"
+lifecycle: active
 ---
 
 # YiVad 未使用 Rsbuild 的 preconnect/dns-prefetch 优化
@@ -57,7 +59,5 @@ performance: {
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **preconnect 是「免费」的性能优化**：3 行配置（`performance.preconnect: ['http://localhost:10086']`）可以在 HTML 解析阶段提前建立与 YiAi 后端的 TCP+TLS 连接，节省首次 API 调用的 RTT。这种优化的成本为零但很少被主动想到
 

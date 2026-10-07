@@ -15,6 +15,8 @@ prd_month: "202607"
 prd_task_id: YV-07-02
 source_prds: ["02-prd-AI聊天模块迁移"]
 roles: [engineer, qa]
+benefit: "测试用例：AI聊天模块迁移"
+lifecycle: active
 ---
 
 # YV-07-02: AI Chat 模块迁移 — 测试规格

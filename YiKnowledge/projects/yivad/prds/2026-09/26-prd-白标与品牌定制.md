@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 白标与品牌定制
 tags:
 - 白标
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["26-prd-task-白标与品牌定制"]
+related_tests: ["26-prd-test-白标与品牌定制"]
+benefit: "产品需求：白标与品牌定制"
+lifecycle: active
 ---
 
 # 白标与品牌定制

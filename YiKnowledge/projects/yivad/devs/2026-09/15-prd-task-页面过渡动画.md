@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-39"
 title: "YV-09-39: 页面过渡动画 — 开发方案"
 status: 已完成
@@ -13,6 +12,12 @@ project_id: yivad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "15-prd-页面过渡动画.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 页面过渡动画]
+benefit: "开发方案：task-页面过渡动画"
+lifecycle: active
 ---
 
 # YV-09-39: 页面过渡动画 — 开发方案
@@ -61,6 +66,20 @@ source_prd: "15-prd-页面过渡动画.md"
 | 3 | prefers-reduced-motion 适配 | 0.1 |
 
 **合计：0.5d**
+
+
+### 架构方案
+
+**技术路线**：Vue `<Transition>` + `<TransitionGroup>` 全局配置，页面切换 + 列表动画
+
+**组件树**：
+```
+全局 CSS transition 类 + PageTransition.vue (路由级过渡包装)
+```
+
+**关键决策**：
+过渡类型：页面切换用 fade-slide（opacity + translateX），列表用 list-enter/leave；`prefers-reduced-motion` 时禁用所有动画
+
 
 ---
 

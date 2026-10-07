@@ -3,7 +3,7 @@
  * Emerald-green gradient inspired by lush forest canopies.
  */
 
-:root {
+:is(:root, #yipet-overlay, #yipet-chat-root) {
   --primary: #22c55e;
   --primary-hover: #16a34a;
   --primary-light: #4ade80;

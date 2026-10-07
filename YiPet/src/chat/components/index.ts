@@ -1,7 +1,6 @@
 /**
  * YiPet Chat — Components barrel export (Vue 3 SFC).
  */
-export { default as BugReportDialog } from './BugReportDialog.vue';
 export { default as ChatHeader } from './ChatHeader.vue';
 export { default as ChatInput } from './ChatInput.vue';
 export { default as ChatMessages } from './ChatMessages.vue';
@@ -12,13 +11,9 @@ export { default as CheatSheetOverlay } from './CheatSheetOverlay.vue';
 export { default as DraftImageList } from './DraftImageList.vue';
 export { default as FaqDialog } from './FaqDialog.vue';
 export { default as FileMentionDropdown } from './FileMentionDropdown.vue';
-export { default as KnowledgePreviewDialog } from './KnowledgePreviewDialog/KnowledgePreviewDialog.vue';
 export { default as MessageBubble } from './MessageBubble/MessageBubble.vue';
 export { default as QuickButtons } from './QuickButtons.vue';
-export { default as RagDecomposeDialog } from './RagDecomposeDialog.vue';
-export { default as RagSourcesPreviewDialog } from './RagSourcesPreviewDialog.vue';
 export { default as RequestStatusButton } from './RequestStatusButton.vue';
-export { default as SaveToKnowledgeDialog } from './SaveToKnowledgeDialog.vue';
 export { default as SearchBar } from './SearchBar.vue';
 export { default as SessionEditDialog } from './SessionEditDialog.vue';
 export { default as SessionListItem } from './SessionListItem.vue';

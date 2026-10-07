@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "IndexedDB 持久化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["86-架构设计-IndexedDB持久化.md"]
+source_modules: ["86-prd-task-IndexedDB持久化.md"]
+
+type: test
 ---
 
 # IndexedDB 持久化 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-IDB01 | >10MB 存储 | 大消息存 IDB | P2 |
 | TC-IDB02 | 索引查询 | 按时间/会话查 | P2 |
+

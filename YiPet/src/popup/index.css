@@ -9,7 +9,7 @@ body {
 
 body {
   overflow-y: auto;
-  background: var(--yp-surface-base, #13122a);
+  background: var(--yp-surface-base, #13111a);
 }
 
 /* Subtle dot pattern overlay */
@@ -42,18 +42,18 @@ body::before {
 }
 
 .popup-card {
-  background: var(--yp-surface-sunken, #1e1a3b);
+  background: var(--yp-surface-sunken, #1c1926);
   transition: border-color 0.25s ease;
 }
 
 .popup-card .el-card__header {
-  border-bottom: 1px solid var(--yp-border-subtle, rgba(167, 139, 250, 0.3));
+  border-bottom: 1px solid var(--yp-border-subtle, rgba(196, 181, 253, 0.2));
 }
 
 .popup-footer {
   padding: 0 !important;
-  background: var(--yp-surface-sunken, #1e1a3b) !important;
-  border-top: 1px solid var(--yp-border-subtle, rgba(167, 139, 250, 0.3));
+  background: var(--yp-surface-sunken, #1c1926) !important;
+  border-top: 1px solid var(--yp-border-subtle, rgba(196, 181, 253, 0.2));
 }
 
 /* Custom scrollbar */
@@ -66,7 +66,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-  background: var(--yp-border-subtle, rgba(167, 139, 250, 0.3));
+  background: var(--yp-border-subtle, rgba(196, 181, 253, 0.2));
   border-radius: 10px;
   transition: background 0.2s ease;
 }
@@ -78,5 +78,5 @@ body::-webkit-scrollbar-thumb:hover {
 /* Smooth scrollbar for Firefox */
 body {
   scrollbar-width: thin;
-  scrollbar-color: var(--yp-border-subtle, rgba(167, 139, 250, 0.3)) transparent;
+  scrollbar-color: var(--yp-border-subtle, rgba(196, 181, 253, 0.2)) transparent;
 }

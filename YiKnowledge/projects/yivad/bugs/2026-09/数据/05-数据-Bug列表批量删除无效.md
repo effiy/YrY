@@ -23,6 +23,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-08)
 frequency: always
+benefit: "缺陷记录：数据-Bug列表批量删除无效"
+lifecycle: active
 ---
 
 ## Summary
@@ -176,13 +178,12 @@ el-table 勾选行
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | ProTable 使用前必须验证 `rowKey` 与数据源主键字段一致（`BugDocument.key` 非 `id`） |
+| 测试 | 批量删除操作需覆盖：rowKey 正确提取 ID → 找到完整文档对象 → API 调用成功 → 列表刷新 |
+| 流程 | 任何涉及 `{ key: id } as Type` 的伪造对象构造都应在 Code Review 中标记为高风险模式 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`as` 类型断言掩盖数据不完整**：`{ key: id } as BugDocument` 绕过了 TypeScript 对必填字段的检查，导致 `bug.title` 运行时为 `undefined`。对于需要完整对象的场景，必须从数据源 `find()` 获取真实对象
+- **ProTable rowKey 默认值 `"id"` 是常见陷阱**：项目中 `BugDocument` 主键为 `key`、部分集合使用 `_id`，而 ProTable 默认 `rowKey="id"`。应建立项目级约定：所有数据接口的主键字段统一为 `key`，或要求每个 ProTable 使用处显式声明 `row-key`
 

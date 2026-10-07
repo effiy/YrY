@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-06"
 title: "YK-09-06: 知识生命周期自动化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 3.0
 source_prd: "09-自动化-知识生命周期.md"
 source_okr: [yiknowledge-001]
 related_tests: ["09-prd-test-知识生命周期"]
+
+type: task
 ---
 
 # YK-09-06: 知识生命周期自动化 — 开发方案

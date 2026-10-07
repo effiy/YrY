@@ -10,6 +10,8 @@ export default {
     save: "保存",
     delete: "删除",
     deleteConfirm: "确定删除对话「{name}」吗？此操作不可撤销。",
+    bulkDeleteConfirm: "确定删除选中的 {count} 个对话吗？此操作不可撤销。",
+    bulkFavoriteDone: "已切换 {count} 个对话的收藏状态",
     confirm: "确认删除",
     cancel: "取消",
     placeholder: "输入问题（Enter 发送，Shift+Enter 换行）",

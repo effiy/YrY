@@ -3,10 +3,12 @@ type: loop-template
 loopId: loop-XXX
 stage: retrospective
 title: <复盘主题>
-role: executiver
+role: executive
 goalId: exec-XXX
-status: in-progress
-created: YYYY-MM-DD
+category: curator/okr/loop
+source: internal
+status: draft
+created: "YYYY-MM-DD"
 updated: 2026-09-10
 tags: [loop-record, retrospective]
 ---

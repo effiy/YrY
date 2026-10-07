@@ -1,0 +1,389 @@
+.rss-role__section {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  animation: rss-section-in 0.25s ease;
+}
+@keyframes rss-section-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rss-role__section-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.rss-role__section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+}
+.rss-role__section-body {
+  padding: 16px 20px;
+}
+.rss-role__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.rss-role__toolbar-right {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+}
+.rss-role__result-count {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+
+// Active filters
+.rss-role__active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+// Text helpers
+.rss-role__text-muted {
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+}
+.rss-role__date {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+.rss-role__item-source {
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
+.rss-role__item-link {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--el-text-color-primary);
+  text-decoration: none;
+  &:hover {
+    color: var(--el-color-primary);
+    text-decoration: underline;
+  }
+}
+
+// Category
+.rss-role__cat-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  vertical-align: middle;
+  border-radius: 50%;
+}
+.rss-role__cat-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+}
+
+// Briefing specific
+.rss-briefing__date-nav {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.rss-briefing__date {
+  min-width: 180px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  text-align: center;
+}
+
+// Charts
+.rss-briefing__charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.rss-briefing__chart {
+  padding: 12px 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.rss-briefing__chart-title {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--el-text-color-secondary);
+}
+.rss-briefing__chart--full {
+  grid-column: 1 / -1;
+}
+
+// Coverage
+.rss-briefing__coverage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.rss-briefing__coverage-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--el-fill-color-light);
+  border-radius: 8px;
+}
+.rss-briefing__coverage-count {
+  font-family: DIN, monospace;
+  font-size: 15px;
+  font-weight: 700;
+}
+.rss-briefing__coverage-label {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.rss-briefing__coverage-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+// Empty
+.rss-briefing__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  color: var(--el-text-color-secondary);
+}
+.rss-briefing__empty-icon {
+  font-size: 40px;
+}
+.rss-briefing__empty-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.rss-briefing__empty-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--el-text-color-placeholder);
+}
+
+// Groups
+.rss-briefing__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.rss-briefing__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  & + & {
+    padding-top: 12px;
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
+}
+.rss-briefing__group-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+  &:hover .rss-briefing__group-chevron {
+    color: var(--el-color-primary);
+  }
+}
+.rss-briefing__group-chevron {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  transition: transform 0.2s ease;
+  &.is-collapsed {
+    transform: rotate(0deg);
+  }
+  &:not(.is-collapsed) {
+    transform: rotate(90deg);
+  }
+}
+.rss-briefing__group-icon { font-size: 16px; }
+.rss-briefing__group-dot {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.rss-briefing__group-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.rss-briefing__group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color);
+  border-radius: 9px;
+}
+.rss-briefing__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  list-style: none;
+  transition: opacity 0.2s ease;
+}
+.rss-briefing__item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+  & + & { margin-top: 8px; }
+  &:hover {
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+    transform: translateY(-1px);
+  }
+}
+.rss-briefing__item-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rss-briefing__item-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.rss-briefing__item-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  .rss-briefing__item:hover & { color: var(--el-color-primary); }
+}
+.rss-briefing__item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
+.rss-briefing__item-summary {
+  display: -webkit-box;
+  margin: 4px 0 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
+}
+.rss-briefing__item-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+// Cards grid (shared)
+.rss-role__items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+.rss-role__item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.rss-role__item-card-top {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+.rss-role__item-card-date {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
+.rss-role__item-card-title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+}
+.rss-role__item-card-meta {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+}
+.rss-role__item-card-summary {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--el-text-color-secondary);
+  -webkit-box-orient: vertical;
+}
+
+// Table hover
+:deep(.el-table__body tr) {
+  transition: background-color 0.15s ease;
+}
+:deep(.el-table__body tr:hover > td) {
+  background-color: var(--el-color-primary-light-9) !important;
+}

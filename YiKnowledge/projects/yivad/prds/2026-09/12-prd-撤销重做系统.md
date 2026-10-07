@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 撤销重做系统
 tags:
 - 撤销
@@ -28,6 +27,10 @@ roles:
 - engineer
 - designer
 source_okr: [yivad-003]
+related_modules: ["12-prd-task-撤销重做系统"]
+related_tests: ["12-prd-test-撤销重做系统"]
+benefit: "产品需求：撤销重做系统"
+lifecycle: active
 ---
 
 # 撤销重做系统

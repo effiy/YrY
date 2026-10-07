@@ -12,6 +12,7 @@ source: internal
 created: 2026-08-10
 updated: 2026-09-10
 category: aier/skills/import
+priority: medium
 review_cycle: quarterly
 roles:
   - aier
@@ -105,6 +106,7 @@ performance, tests, self-loop scheduling), see
 - [sync.mjs](./sync.mjs) — executable entry: `node .claude/yry-import/sync.mjs [options]`
 - [rules/sync-rules.md](./rules/sync-rules.md) — full operational spec: API
   contract, scan rules, error model, performance, tests, conflict resolution
+- [../shared/glossary.md](../shared/glossary.md) — shared skill terminology
 
 ## Fallback
 

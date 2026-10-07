@@ -8,6 +8,8 @@ description: |
   visualization; or wants to beautify, theme, batch-convert, or make a diagram
   terminal-friendly. Runs locally without a browser or DOM, with 15 built-in
   themes and custom colors.
+user_invocable: true
+updated: 2026-09-10
 ---
 
 # Pretty Mermaid
@@ -202,3 +204,4 @@ Run both `npm test` and `npm run validate` when changing this skill, its scripts
 | `scripts/render.mjs` | Rendering one diagram |
 | `scripts/batch.mjs` | Rendering a directory in parallel |
 | `scripts/themes.mjs` | Listing installed themes |
+| `../shared/glossary.md` | Shared skill terminology |

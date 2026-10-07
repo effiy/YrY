@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-40: 文档权威性 PageRank — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-40"
 source_prds: ["43-架构设计-文档权威性PageRank"]
 source_modules: ["43-prd-task-文档权威性PageRank"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-40: 文档权威性 PageRank — 测试用例

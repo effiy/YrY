@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 文档模板管理
 tags:
 - 文档模板
@@ -29,6 +28,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-002, yivad-003]
+related_modules: ["33-prd-task-文档模板管理"]
+related_tests: ["33-prd-test-文档模板管理"]
+benefit: "产品需求：文档模板管理"
+lifecycle: active
 ---
 
 # 文档模板管理

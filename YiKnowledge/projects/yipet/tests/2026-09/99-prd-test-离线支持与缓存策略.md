@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "离线支持与缓存 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["99-基础设施-离线支持与缓存策略.md"]
+source_modules: ["99-prd-task-离线支持与缓存策略.md"]
+
+type: test
 ---
 
 # 离线支持与缓存 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-OFL01 | Cache API 静态资源 | 离线可加载 | P2 |
 | TC-OFL02 | chrome.storage 数据 | 离线可读 | P2 |
+

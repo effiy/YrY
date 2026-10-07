@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-85: 知识管理面板 — 知识库管理仪表盘、内容创建工作流、健康指标、贡献排行榜、知识缺口可视化、RAG 性能关联、YiKnowledge 同步状态"
 tags: [需求文档, 知识管理, 仪表盘, 健康指标, 贡献者, RAG, 同步, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["38-prd-task-知识管理面板"]
+related_tests: ["38-prd-test-知识管理面板"]
+benefit: "产品需求：知识管理面板"
+lifecycle: active
 ---
 
 # YV-09-85: 知识管理面板 — 知识库管理仪表盘、内容创建工作流、健康指标、贡献排行榜、知识缺口可视化、RAG 性能关联、YiKnowledge 同步状态

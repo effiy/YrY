@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-15: 多模态内容支持 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-15"
 source_prds: ["18-架构设计-多模态内容支持"]
 source_modules: ["18-prd-task-多模态内容支持"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-15: 多模态内容支持 — 测试用例

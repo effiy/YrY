@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-10"
 title: "YV-08-10: 全局搜索 — 7 集合跨域全文检索 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 2.0
 source_prd: "10-prd-全局搜索.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 全局搜索]
+benefit: "开发方案：task-全局搜索"
+lifecycle: active
 ---
 
 # YV-08-10: 全局搜索 — 开发方案

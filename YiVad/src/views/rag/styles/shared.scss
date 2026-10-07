@@ -9,8 +9,8 @@
 // ── Page container ──────────────────────────────────────────────────────────
 .rag-page {
   max-width: 1300px;
-  padding: 24px;
   margin: 0 auto;
+  // padding comes from global .page class
 }
 .rag-page--wide {
   max-width: 1400px;

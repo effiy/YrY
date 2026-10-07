@@ -1,15 +1,19 @@
 ---
+
 doc_type: test
 title: "会话分支管理 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 中
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["43-功能实现-会话分支管理"]
-source_modules: ["43-prd-task-会话分支管理"]
+source_prds: ["43-架构设计-会话分支管理.md"]
+source_modules: ["43-prd-task-会话分支管理.md"]
+
+type: test
 ---
 
 # 会话分支管理 — 测试用例
@@ -22,3 +26,4 @@ source_modules: ["43-prd-task-会话分支管理"]
 | TC-BRH02 | 分支切换 | 分支间消息互不影响 | P0 |
 | TC-BRH03 | 分支树可视化 | 树形展示所有分支 | P2 |
 | TC-BRH04 | 分支持久化 | chrome.storage 刷新恢复 | P1 |
+

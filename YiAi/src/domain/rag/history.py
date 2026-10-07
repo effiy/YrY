@@ -12,9 +12,13 @@ Public API:
 """
 from __future__ import annotations
 
+import asyncio
+import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 import uuid
+
+logger = logging.getLogger(__name__)
 
 # Max records kept in memory. Older entries drop off the front as new ones
 # are pushed. 20 matches the frontend ``RagQueryRecord`` docstring.
@@ -67,6 +71,18 @@ def record_query(
     # Trim oldest beyond MAX_HISTORY
     if len(_history) > MAX_HISTORY:
         del _history[: len(_history) - MAX_HISTORY]
+
+    # Fire-and-forget MongoDB persistence — non-blocking
+    try:
+        from data.rag_history import save_retrieval_record
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        if loop.is_running():
+            asyncio.ensure_future(save_retrieval_record(record))
+        else:
+            loop.run_until_complete(save_retrieval_record(record))
+    except Exception:
+        logger.debug("Failed to schedule retrieval record persistence", exc_info=True)
+
     return record
 
 

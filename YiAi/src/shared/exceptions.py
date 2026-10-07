@@ -1,5 +1,5 @@
 """Custom exception definitions"""
-from typing import Any, Optional
+from typing import Any
 
 from shared.error_codes import ErrorCode
 

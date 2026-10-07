@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-133: 安全事件日志 — 登录失败/密码修改/权限变更/API 密钥使用记录、严重度分级、实时告警、安全仪表盘 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-133"
 source_prds: ["63-prd-安全事件日志"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 安全事件日志]
+benefit: "测试用例：安全事件日志"
+lifecycle: active
 ---
 # YV-09-133: 安全事件日志 — 登录失败/密码修改/权限变更/API 密钥使用记录、严重度分级、实时告警、安全仪表盘 — 测试规格
 

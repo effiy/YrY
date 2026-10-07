@@ -1,6 +1,6 @@
 """Tests for domain/rss/feed.py — pure helper functions."""
 import pytest
-from domain.rss.feed import (
+from domain.rss.persistence import (
     _slugify,
     _keyword_matches,
     _classify_entry,
@@ -66,11 +66,11 @@ class TestClassifyEntry:
 
     def test_cloud_keyword_maps_to_release(self):
         result = _classify_entry("Kubernetes 1.30", "cloud infra update")
-        assert result == "srer/release"
+        assert result == "sre/release"
 
     def test_fallback_category(self):
         result = _classify_entry("Random news", "nothing special here")
-        assert result == "executiver/industry"
+        assert result == "executive/industry"
 
     def test_source_category_takes_priority(self):
         result = _classify_entry("AI news", "llm update", source_category="engineer/ship")

@@ -30,7 +30,7 @@ related:
 |---|---|---|
 | [foundations/](./foundations/) | AI/ML 理论基础：Transformer 架构、注意力机制、MoE、量化、RAG 设计模式 | 3 |
 | [methods/](./methods/) | AI 工程方法：提示词工程、Agent 架构、LLM/Agent 评估、Harness 插件架构 | 5 |
-| [methods/prompts/](./methods/prompts/) | 生产级 Prompt 模板库：7 个场景的完整 Prompt 设计 | 7 |
+| [prompts/](./prompts/) | 生产级 Prompt 模板库：7 个场景的完整 Prompt 设计 | 7 |
 | [platform/](./platform/) | AI 平台选型：LLM 对比、Embedding 模型、向量数据库 | 3 |
 | [machine-learning/](./machine-learning/) | 传统 ML 模式：分类、聚类、回归、异常检测 | 1 |
 
@@ -57,5 +57,5 @@ related:
 ## 跨角色引用
 
 - [../engineer/build/](../engineer/build/) — AI/ML 工程实现模式
-- [../leader/decisions/yiai/](../leader/decisions/yiai/) — YiAi 架构决策记录
-- [../srer/observability/](../srer/observability/) — AI 服务可观测性
+- [../leader/decisions/](../leader/decisions/) — YiAi 架构决策记录
+- [../sre/observability/](../sre/observability/) — AI 服务可观测性

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { getIssueList, getIssue, createIssue, updateIssue, deleteIssue } from "@/api/modules/issueService";
+import { getIssueList, getIssue, createIssue, updateIssue, deleteIssue, normalizeIssue } from "@/api/modules/issueService";
 import type { Issue, IssueQueryParams } from "@/api/modules/issueService";
 
 export const useIssueStore = defineStore("issue", () => {
@@ -13,7 +13,7 @@ export const useIssueStore = defineStore("issue", () => {
     loading.value = true;
     try {
       const res = await getIssueList(params);
-      issues.value = (res.data?.list as Issue[]) ?? [];
+      issues.value = ((res.data?.list ?? []) as unknown as Record<string, unknown>[]).map(normalizeIssue);
       total.value = res.data?.total ?? 0;
     } finally {
       loading.value = false;

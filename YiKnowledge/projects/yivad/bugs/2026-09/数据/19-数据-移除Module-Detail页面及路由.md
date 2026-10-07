@@ -21,13 +21,14 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-移除Module-Detail页面及路由"
+lifecycle: active
 ---
 
 ## Description
 
 移除 Module Detail 独立页面（`/module/:key` 路由）。项目详情页中 Modules Tab 的知识域卡片点击已改为文件预览组件打开对应 md 文件。
 
-**补充说明**：此问题在常规开发和测试流程中未被及时发现，建议加强对应模块的自动化测试覆盖。
 ### 变更内容
 
 | 变更 | 文件 | 说明 |
@@ -54,13 +55,10 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 路由配置中删除路由时，需用 `grep -r "router.push.*module"` 审计所有跳转引用 |
+| 流程 | 两个关联变更（Module Detail 路由移除 + 知识域卡片点击改为预览）应在同一 PR 中提交，避免中间状态 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **相关联的两个变更需原子提交**：Module Detail 路由移除和知识域卡片点击行为变更是强耦合的——如果只移除路由而不改卡片点击，用户点击卡片会得到 404
 

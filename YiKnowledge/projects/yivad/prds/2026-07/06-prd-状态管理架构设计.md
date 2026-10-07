@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 功能
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["06-prd-task-状态管理架构设计"]
+related_tests: ["06-prd-test-状态管理架构设计"]
+benefit: "产品需求：状态管理架构设计"
+lifecycle: active
 ---
 
 # YV-07-06: 状态管理架构设计 — 16 个 Pinia Store + 双语法模式 + 持久化策略 + 跨 Store 协调
@@ -671,8 +675,8 @@ graph TD
 
 ---
 
-*PRD 来源: [00-需求总览](./00-需求-需求总览.md)*
-*关联需求: [YV-07-03: 布局与动态路由](./03-需求-布局与动态路由.md)*
+*PRD 来源: 00-需求总览*
+*关联需求: YV-07-03: 布局与动态路由*
 
 ---
 

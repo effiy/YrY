@@ -15,7 +15,6 @@ import os
 import time
 import uuid
 
-from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from domain.auth import verify_jwt

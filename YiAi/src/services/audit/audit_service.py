@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from data.database import db
 from shared.config import settings

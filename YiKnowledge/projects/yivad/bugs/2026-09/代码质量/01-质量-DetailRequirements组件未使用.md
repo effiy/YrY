@@ -22,6 +22,8 @@ fixedVersion: main (post-fix 2026-09-07)
 frequency: always
 source_prd: "YV-09-01"
 source_module: "YV-09-01-1"
+benefit: "缺陷记录：质量-DetailRequirements组件未使用"
+lifecycle: active
 ---
 
 ## Description
@@ -60,13 +62,11 @@ source_module: "YV-09-01-1"
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 定期运行 `grep -r "ComponentName" src/` 审计未被引用的组件文件；新增组件时确认至少有一处 import |
+| 流程 | 目录重构后运行 `vue-tsc --noEmit` + 手动检查新建组件是否在 Tab 配置中注册 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **未引用的组件是构建工具无法检测的死代码**：`vue-tsc` 和 ESLint 可以检测未使用的导入变量，但无法检测「文件存在于目录中但无任何文件 import 它」的死组件。需要定期用 `grep -r "ComponentName" src/` 手动审计
+- **重构残留**：此组件在 YiKnowledge 目录重构时创建，但因 Tab 配置使用 `IssueList` + `filterIssueType` 过滤而非独立组件，导致新创建的 `DetailRequirements` 从未被接入
 

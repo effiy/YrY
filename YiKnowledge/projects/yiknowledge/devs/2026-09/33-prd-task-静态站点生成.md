@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-30"
 title: "YK-09-30: 静态站点生成 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "33-架构设计-静态站点生成.md"
 source_okr: [yiknowledge-001]
 related_tests: ["33-prd-test-静态站点生成"]
+
+type: task
 ---
 
 # YK-09-30: 静态站点生成 — 开发方案

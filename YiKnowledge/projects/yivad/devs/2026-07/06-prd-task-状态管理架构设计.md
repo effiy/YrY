@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-06"
 title: "YV-07-06: 状态管理架构设计 — Pinia Setup Store + 持久化策略 + 跨 Store 协调 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202607"
 estimate_frontend: 2.0
 source_prd: "06-prd-状态管理架构设计.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 状态管理架构设计]
+benefit: "开发方案：task-状态管理架构设计"
+lifecycle: active
 ---
 
 # YV-07-06: 状态管理架构设计 — Pinia Setup Store + 持久化策略 + 跨 Store 协调 — 开发方案

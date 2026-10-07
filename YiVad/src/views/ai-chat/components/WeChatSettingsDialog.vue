@@ -1,6 +1,8 @@
 <script setup lang="ts" name="aiChatWeChatSettingsDialog">
 import { computed, ref, watch } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 import { Plus, Delete } from "@element-plus/icons-vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import { loadRobots, saveRobots, sendWeChatMessage, type WeChatRobot } from "@/api/modules/weChatService";
@@ -9,6 +11,7 @@ const store = useAiChatStore();
 
 const visible = computed(() => store.weChatVisible);
 const draft = ref<WeChatRobot[]>([]);
+const { t } = useI18n();
 const saving = ref(false);
 const sendingIdx = ref<number | null>(null);
 const testContent = ref("");
@@ -31,16 +34,8 @@ function add() {
 async function remove(idx: number) {
   const r = draft.value[idx];
   const label = r.name || `#${idx + 1}`;
-  try {
-    await ElMessageBox.confirm(`Delete bot "${label}"?`, "Notice", {
-      type: "warning",
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      center: false
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(t("aiChat.deleteConfirm", { name: label }), t("aiChat.confirm"));
+  if (!ok) return;
   draft.value.splice(idx, 1);
 }
 
@@ -88,7 +83,7 @@ async function sendTest(idx: number) {
     :close-on-click-modal="false"
     append-to-body
     destroy-on-close
-    @update:model-value="v => !v && onClose()"
+    @update:model-value="(v: boolean) => !v && onClose()"
   >
     <div class="wc-head">
       <span class="wc-hint"

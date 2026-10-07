@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-101"
 source_prds: ["48-prd-公共API文档"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 公共API文档]
+benefit: "测试用例：公共API文档"
+lifecycle: active
 ---
 # YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台 — 测试规格
 

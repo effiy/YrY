@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-129"
 title: "YV-09-129: 外部集成日志 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "59-prd-外部集成日志.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 外部集成日志]
+roles: [engineer]
+benefit: "开发方案：task-外部集成日志"
+lifecycle: active
 ---
 
 # YV-09-129: 外部集成日志 — 开发方案
@@ -37,6 +43,25 @@ source_prd: "59-prd-外部集成日志.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/integrations/logs`)，展示外部 API 调用日志 + 重试状态
+
+**数据模型**：
+```
+MongoDB `integration_logs` 集合；字段：`integration`, `endpoint`, `status`, `request/response`, `duration`, `retry_count`
+```
+
+**组件树**：
+```
+IntegrationLogList.vue (ProTable + 状态/耗时过滤器) + LogDetail.vue (请求/响应 diff)
+```
+
+**关键决策**：
+日志保留周期：成功 7 天，失败 30 天；日志量大时考虑分页 + 异步导出
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ source_prd: "59-prd-外部集成日志.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

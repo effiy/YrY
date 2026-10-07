@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-08"
 title: "YV-08-08: 命令面板与键盘快捷键 — Cmd+K 全局快速导航 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 1.5
 source_prd: "08-prd-命令面板与键盘快捷键.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 命令面板与键盘快捷键]
+benefit: "开发方案：task-命令面板与键盘快捷键"
+lifecycle: active
 ---
 
 # YV-08-08: 命令面板与键盘快捷键 — 开发方案

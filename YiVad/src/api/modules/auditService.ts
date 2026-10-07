@@ -2,7 +2,7 @@
  * Audit log API — backed by YiAi data_service RPC.
  * Audit logs live in the "audit_logs" MongoDB collection.
  */
-import { queryDocuments } from "./dataService";
+import { queryDocuments, deleteDocument } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiAi";
 
 const CNAME = "audit_logs";
@@ -75,3 +75,8 @@ export const AUDIT_MODULES = [
   { label: "项目管理", value: "project" },
   { label: "知识库", value: "knowledge" }
 ];
+
+/** Delete an audit log entry. */
+export async function deleteAuditLog(key: string) {
+  return deleteDocument(CNAME, key);
+}

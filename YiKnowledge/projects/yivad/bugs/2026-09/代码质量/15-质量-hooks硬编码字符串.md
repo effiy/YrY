@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p2
+benefit: "缺陷记录：质量-hooks硬编码字符串"
+lifecycle: active
 ---
 
 # 工具 hooks 中硬编码字符串未使用 i18n
@@ -56,7 +58,6 @@ priority: p2
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **工具 hooks 的语言选择不统一**：`useHandleData`/`useDownload` 使用英文，`useOptimisticUpdate`/`useCodeHealth` 使用中文——同一个 hooks 目录下中英文混用，说明没有统一的规范
+- **hooks 中调用 i18n 的注意事项**：`useHandleData` 被多个页面调用，如果使用 `useI18n()` 必须确保调用方已注册 i18n 插件。对于在组件上下文外调用的工具函数，可以将文案作为参数传入，由调用方负责 i18n
 

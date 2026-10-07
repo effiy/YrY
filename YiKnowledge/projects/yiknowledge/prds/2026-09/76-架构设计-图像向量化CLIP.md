@@ -106,7 +106,7 @@ graph TD
 |----------|------|----------|----------|
 | 架构图 | ~45 | 200KB | projects/*/specs/ |
 | 流程图 | ~30 | 150KB | projects/*/workflows/ |
-| 截图 | ~60 | 300KB | lessons/failures/bugs/ |
+| 截图 | ~60 | 300KB | lessons/bugs/ |
 | UI 设计 | ~20 | 500KB | projects/yivad/design/ |
 | 其他 | ~15 | 100KB | 分散 |
 

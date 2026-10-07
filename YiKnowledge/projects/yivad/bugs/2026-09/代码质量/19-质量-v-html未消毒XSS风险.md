@@ -13,6 +13,8 @@ resolution: |
   - useMarkdown.ts: sanitizeHtml() 改用 DOMPurify.sanitize() 替代正则表达式
   - 配置白名单标签和属性，阻止所有事件处理器和 data- 属性
   - renderWithHtml() 管道现为: DOMPurify → marked.parse → wrapMermaidBlocks
+benefit: "缺陷记录：质量-v-html未消毒XSS风险"
+lifecycle: active
 ---
 
 # v-html 渲染未经过 XSS 消毒的用户/AI 内容
@@ -66,7 +68,7 @@ YiVad 中 **30+ 处** 使用 `v-html` 渲染内容，大多用于 Markdown 预�
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **Markdown 渲染管道的安全性**：`marked` 默认不过滤 HTML 标签，恶意 Markdown 中的 `<script>` 或 `<iframe>` 会直接注入 DOM。正确的渲染管道是 `marked.parse()` → `DOMPurify.sanitize()` → 挂载到 `v-html`，而非反过来或省略消毒步骤
+- **RAG 来源内容的信任边界**：RAG 检索的 `preview.html` 来自外部知识文件，属于不可信输入。任何来自外部数据源渲染到 `v-html` 的内容都必须经过 DOMPurify 消毒
+- **30+ 处 `v-html` 的治理**：逐个修复难以持续。应创建 `useSanitizedHtml` composable 作为唯一的 `v-html` 入口，并配置 ESLint 规则禁止直接使用 `v-html`
 

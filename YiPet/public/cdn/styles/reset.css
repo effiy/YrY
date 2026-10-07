@@ -1,6 +1,9 @@
 /*
  * YiPet Reset — modern CSS baseline + themed native elements.
  *
+ * SCOPED to #yipet-chat-root and #yipet-overlay containers.
+ * Never affects the host page outside YiPet's own DOM.
+ *
  * Layers:
  *   1. Box-model & document reset
  *   2. Typography & body setup
@@ -12,15 +15,20 @@
  */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   1. Box-model & document reset
+   1. Box-model & document reset (scoped)
    ═══════════════════════════════════════════════════════════════════════ */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+#yipet-chat-root,
+#yipet-chat-root *,
+#yipet-chat-root *::before,
+#yipet-chat-root *::after,
+#yipet-overlay,
+#yipet-overlay *,
+#yipet-overlay *::before,
+#yipet-overlay *::after { box-sizing: border-box; }
 
-html, body { height: 100%; }
+#yipet-chat-root { height: 100%; }
 
-html {
+#yipet-chat-root {
   color-scheme: dark;
   touch-action: pan-x pan-y;
   -ms-touch-action: pan-x pan-y;
@@ -29,9 +37,9 @@ html {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   2. Typography & body
+   2. Typography & body (scoped)
    ═══════════════════════════════════════════════════════════════════════ */
-body {
+#yipet-chat-root {
   margin: 0;
   font-family: var(--font);
   font-size: var(--font-size-md, 14px);
@@ -42,17 +50,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
-  min-height: 100vh;
   overflow-x: hidden;
   position: relative;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   3. Ambient background layers
+   3. Ambient background layers (scoped to chat root)
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Animated gradient overlay (z-index: -2) */
-body::after {
+#yipet-chat-root::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -64,8 +71,8 @@ body::after {
   opacity: 0.85;
 }
 
-/* Accent glow orbs (z-index: -1) — theme-aware via CSS variables */
-body::before {
+/* Accent glow orbs (z-index: -1) */
+#yipet-chat-root::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -79,16 +86,16 @@ body::before {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   4. Themed native elements
+   4. Themed native elements (scoped to YiPet containers)
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── Buttons ──────────────────────────────────────────────────────── */
-button,
-[role="button"],
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-.btn {
+#yipet-chat-root button,
+#yipet-chat-root [role="button"],
+#yipet-chat-root input[type="button"],
+#yipet-chat-root input[type="submit"],
+#yipet-chat-root input[type="reset"],
+#yipet-chat-root .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -107,44 +114,44 @@ input[type="reset"],
   transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-button:hover,
-[role="button"]:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-.btn:hover {
+#yipet-chat-root button:hover,
+#yipet-chat-root [role="button"]:hover,
+#yipet-chat-root input[type="button"]:hover,
+#yipet-chat-root input[type="submit"]:hover,
+#yipet-chat-root .btn:hover {
   background: var(--button-hover);
 }
 
-button:active,
-[role="button"]:active,
-input[type="button"]:active,
-input[type="submit"]:active,
-.btn:active {
+#yipet-chat-root button:active,
+#yipet-chat-root [role="button"]:active,
+#yipet-chat-root input[type="button"]:active,
+#yipet-chat-root input[type="submit"]:active,
+#yipet-chat-root .btn:active {
   transform: scale(0.98);
 }
 
-button:disabled,
-[role="button"][aria-disabled="true"],
-input[type="button"]:disabled,
-input[type="submit"]:disabled,
-.btn:disabled,
-.btn[aria-disabled="true"] {
+#yipet-chat-root button:disabled,
+#yipet-chat-root [role="button"][aria-disabled="true"],
+#yipet-chat-root input[type="button"]:disabled,
+#yipet-chat-root input[type="submit"]:disabled,
+#yipet-chat-root .btn:disabled,
+#yipet-chat-root .btn[aria-disabled="true"] {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
 
 /* ── Text inputs ───────────────────────────────────────────────────── */
-input:not([type]),
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="number"],
-textarea,
-select {
+#yipet-chat-root input:not([type]),
+#yipet-chat-root input[type="text"],
+#yipet-chat-root input[type="email"],
+#yipet-chat-root input[type="password"],
+#yipet-chat-root input[type="url"],
+#yipet-chat-root input[type="search"],
+#yipet-chat-root input[type="tel"],
+#yipet-chat-root input[type="number"],
+#yipet-chat-root textarea,
+#yipet-chat-root select {
   background: var(--input-bg);
   border: 1px solid var(--input-border);
   border-radius: var(--input-radius, var(--radius-sm));
@@ -156,39 +163,39 @@ select {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+#yipet-chat-root input:focus,
+#yipet-chat-root textarea:focus,
+#yipet-chat-root select:focus {
   border-color: var(--border-focus);
   outline: none;
   box-shadow: var(--input-focus-ring);
 }
 
-::placeholder { color: var(--placeholder-color); opacity: 1; }
+#yipet-chat-root ::placeholder { color: var(--placeholder-color); opacity: 1; }
 
 /* ── Text selection ────────────────────────────────────────────────── */
-::selection {
+#yipet-chat-root ::selection {
   background: var(--selection-bg);
   color: var(--text-primary);
 }
 
 /* ── Links ─────────────────────────────────────────────────────────── */
-a {
+#yipet-chat-root a {
   color: var(--link-color, var(--text-accent));
   text-decoration: none;
   transition: color 0.15s ease;
 }
-a:hover { text-decoration: underline; opacity: 0.9; }
+#yipet-chat-root a:hover { text-decoration: underline; opacity: 0.9; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    5. Focus management
    ═══════════════════════════════════════════════════════════════════════ */
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-a:focus-visible,
-[tabindex]:focus-visible {
+#yipet-chat-root button:focus-visible,
+#yipet-chat-root input:focus-visible,
+#yipet-chat-root textarea:focus-visible,
+#yipet-chat-root select:focus-visible,
+#yipet-chat-root a:focus-visible,
+#yipet-chat-root [tabindex]:focus-visible {
   outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
@@ -196,23 +203,29 @@ a:focus-visible,
 /* ═══════════════════════════════════════════════════════════════════════
    6. Utility overrides
    ═══════════════════════════════════════════════════════════════════════ */
-[hidden] { display: none !important; }
+#yipet-chat-root [hidden] { display: none !important; }
 
-body.is-imgPreviewOpen { overflow: hidden; }
-
-button, input, textarea, select { font-family: inherit; }
+#yipet-chat-root button,
+#yipet-chat-root input,
+#yipet-chat-root textarea,
+#yipet-chat-root select { font-family: inherit; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    7. Accessibility — reduced motion
    ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  #yipet-chat-root,
+  #yipet-chat-root *,
+  #yipet-chat-root *::before,
+  #yipet-chat-root *::after,
+  #yipet-overlay,
+  #yipet-overlay *,
+  #yipet-overlay *::before,
+  #yipet-overlay *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  body::after { animation: none; }
+  #yipet-chat-root::after { animation: none; }
 }

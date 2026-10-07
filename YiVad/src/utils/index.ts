@@ -1,73 +1,13 @@
-import { isArray } from "@/utils/is";
 import { FieldNamesProps } from "@/components/ProTable/interface";
+import { get as _get, cloneDeep as _cloneDeep } from "lodash-es";
 
 const mode = import.meta.env.RSBUILD_ENV_ROUTER_MODE;
 
 /**
- * @description Generate unique UUID
- * @returns {String}
+ * @description Generate unique UUID (RFC 4122 v4)
  */
-export function generateUUID() {
-  let uuid = "";
-  for (let i = 0; i < 32; i++) {
-    let random = (Math.random() * 16) | 0;
-    if (i === 8 || i === 12 || i === 16 || i === 20) uuid += "-";
-    uuid += (i === 12 ? 4 : i === 16 ? (random & 3) | 8 : random).toString(16);
-  }
-  return uuid;
-}
-
-/**
- * Check if two objects are equal
- * @param {Object} a First object to compare
- * @param {Object} b Second object to compare
- * @returns {Boolean} true if equal, false otherwise
- */
-function isObjectValueEqual(a: { [key: string]: any }, b: { [key: string]: any }) {
-  if (!a || !b) return false;
-  let aProps = Object.getOwnPropertyNames(a);
-  let bProps = Object.getOwnPropertyNames(b);
-  if (aProps.length != bProps.length) return false;
-  for (let i = 0; i < aProps.length; i++) {
-    let propName = aProps[i];
-    let propA = a[propName];
-    let propB = b[propName];
-    if (!Object.prototype.hasOwnProperty.call(b, propName)) return false;
-    if (propA instanceof Object) {
-      if (!isObjectValueEqual(propA, propB)) return false;
-    } else if (propA !== propB) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * @description Generate random number
- * @param {Number} min Minimum value
- * @param {Number} max Maximum value
- * @returns {Number}
- */
-export function randomNum(min: number, max: number): number {
-  let num = Math.floor(Math.random() * (min - max) + max);
-  return num;
-}
-
-/**
- * 根据当前时段返回「问候语」对应的 locale 键。
- *
- * ⚠️ 调用方必须通过 `t(getTimeState())` 渲染，不要直接显示返回值。
- * 对应键定义在 languages/modules/common/* → greeting: morning / afternoon1 / afternoon2 / evening / night
- *
- * @returns i18n key 字符串
- */
-export function getTimeState() {
-  const hours = new Date().getHours();
-  if (hours >= 6 && hours < 12) return "greeting.morning";
-  if (hours < 14) return "greeting.afternoon1";
-  if (hours < 18) return "greeting.afternoon2";
-  if (hours < 24) return "greeting.evening";
-  return "greeting.night";
+export function generateUUID(): string {
+  return crypto.randomUUID();
 }
 
 /**
@@ -99,7 +39,7 @@ export function getUrlWithParams() {
  * @returns {Array}
  */
 export function getFlatMenuList(menuList: Menu.MenuOptions[]): Menu.MenuOptions[] {
-  let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
+  let newMenuList: Menu.MenuOptions[] = _cloneDeep(menuList);
   return newMenuList.flatMap(item => [item, ...(item.children ? getFlatMenuList(item.children) : [])]);
 }
 
@@ -109,7 +49,7 @@ export function getFlatMenuList(menuList: Menu.MenuOptions[]): Menu.MenuOptions[
  * @returns {Array}
  * */
 export function getShowMenuList(menuList: Menu.MenuOptions[]) {
-  let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
+  let newMenuList: Menu.MenuOptions[] = _cloneDeep(menuList);
   return newMenuList.filter(item => {
     item.children?.length && (item.children = getShowMenuList(item.children));
     return !item.meta?.isHide;
@@ -157,7 +97,7 @@ export const getAllBreadcrumbList = (menuList: Menu.MenuOptions[], parent = [], 
  * */
 export function formatValue(callValue: any) {
   // If current value is array, join with / (customizable)
-  if (isArray(callValue)) return callValue.length ? callValue.join(" / ") : "--";
+  if (Array.isArray(callValue)) return callValue.length ? callValue.join(" / ") : "--";
   return callValue ?? "--";
 }
 
@@ -169,8 +109,7 @@ export function formatValue(callValue: any) {
  * */
 export function handleRowAccordingToProp(row: { [key: string]: any }, prop: string) {
   if (!prop.includes(".")) return row[prop] ?? "--";
-  prop.split(".").forEach(item => (row = row[item] ?? "--"));
-  return row;
+  return _get(row, prop, "--");
 }
 
 /**

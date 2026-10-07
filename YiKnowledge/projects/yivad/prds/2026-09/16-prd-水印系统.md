@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 水印系统
 tags:
 - 水印
@@ -29,6 +28,10 @@ roles:
 - qa
 - security
 source_okr: [yivad-003]
+related_modules: ["16-prd-task-水印系统"]
+related_tests: ["16-prd-test-水印系统"]
+benefit: "产品需求：水印系统"
+lifecycle: active
 ---
 
 # 水印系统
@@ -176,7 +179,7 @@ YiVad 管理后台包含大量敏感业务数据（项目信息、用户数据�
 
 ```
 ┌────────────────────────────────────────────┐
-│  ruiyi.cheng@zeekrlife.com                 │
+│  ruiyi.cheng@effiy.cn                 │
 │  2026-09-09 14:30:25                       │
 │  192.168.1.100                             │
 │  YiVad Management Console                  │

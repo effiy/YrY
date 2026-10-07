@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-05: 项目知识中心完善 — 测试用例"
 status: 进行中
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-05"
 source_prds: ["08-功能实现-项目知识中心"]
 source_modules: ["08-prd-task-项目知识中心"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-05: 项目知识中心完善 — 测试用例

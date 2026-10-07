@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-28: 健康仪表盘 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-28"
 source_prds: ["31-架构设计-健康仪表盘"]
 source_modules: ["31-prd-task-健康仪表盘"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-28: 健康仪表盘 — 测试用例

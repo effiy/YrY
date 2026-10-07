@@ -25,19 +25,19 @@ export interface OkrGroup {
 }
 
 const ROLE_NAMES: Record<string, string> = {
-  producter: "产品",
+  product: "产品",
   engineer: "工程",
   leader: "技术负责人",
   curator: "知识管理",
-  srer: "SRE",
+  sre: "SRE",
   aier: "AI 工程",
-  executiver: "经营"
+  executive: "经营"
 };
 
 const ROLE_DIRS = Object.keys(ROLE_NAMES);
 
 /** Roles excluded from project-level OKR views (cross-cutting business roles). */
-const EXCLUDED_ROLES = new Set(["executiver", "curator", "srer"]);
+const EXCLUDED_ROLES = new Set(["executive", "curator", "sre"]);
 
 export interface UseProjectOkrsReturn {
   groups: ComputedRef<OkrGroup[]>;

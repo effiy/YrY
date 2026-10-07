@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YA-07-01: 混合检索引擎 — 测试规格"
 status: 已完成
@@ -14,6 +15,8 @@ prd_task_id: "YA-07-01"
 source_prds: ["01-需求-混合检索引擎"]
 source_modules: ["01-prd-task-混合检索引擎"]
 source_okr: [yiai-001]
+
+type: test
 ---
 
 # YA-07-01: 混合检索引擎 — 测试规格

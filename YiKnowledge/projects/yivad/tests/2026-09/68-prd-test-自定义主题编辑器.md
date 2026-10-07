@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-138: 自定义主题编辑器 — 可视化主题编辑器、主色/辅色/强调色、圆角/字号/间距Token、实时预览示例组件、导出导入主题JSON、浅色/深色变体 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-138"
 source_prds: ["68-prd-自定义主题编辑器"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 自定义主题编辑器]
+benefit: "测试用例：自定义主题编辑器"
+lifecycle: active
 ---
 # YV-09-138: 自定义主题编辑器 — 可视化主题编辑器、主色/辅色/强调色、圆角/字号/间距Token、实时预览示例组件、导出导入主题JSON、浅色/深色变体 — 测试规格
 

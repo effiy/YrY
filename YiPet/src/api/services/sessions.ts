@@ -24,7 +24,8 @@ export class SessionService {
     const result = await this.client.rpc<QueryResult<SessionRecord>>(DB_MODULE, 'query_documents', {
       cname: COLLECTION,
       filter: {},
-      ...(params?.pageSize ? { pageSize: params.pageSize } : {}),
+      pageNum: 1,
+      pageSize: params?.pageSize ?? 100000,
     } satisfies Partial<QueryParams>);
     if (!result.ok) return result as ApiResponse<SessionRecord[]>;
     const data = result.data;
@@ -37,6 +38,7 @@ export class SessionService {
     const result = await this.client.rpc<QueryResult<SessionRecord>>(DB_MODULE, 'query_documents', {
       cname: COLLECTION,
       filter: { key: id },
+      pageSize: 1,
     } satisfies Partial<QueryParams>);
     if (!result.ok) return result as ApiResponse<SessionRecord | null>;
     const data = result.data;

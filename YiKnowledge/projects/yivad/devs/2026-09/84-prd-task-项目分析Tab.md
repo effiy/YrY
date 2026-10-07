@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-102"
 title: "YV-09-102: 项目分析 Tab — 开发方案"
 status: 已完成
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "84-prd-项目分析Tab.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 项目分析Tab]
+roles: [engineer]
+benefit: "开发方案：task-项目分析Tab"
+lifecycle: active
 ---
 
 # YV-09-102: 项目分析 Tab — 开发方案
@@ -42,6 +48,20 @@ source_prd: "84-prd-项目分析Tab.md"
 | 1 | 数据聚合 API | 0.25 |
 | 2 | ECharts 图表渲染 | 0.5 |
 | 3 | Tab 集成 + 日期联动 | 0.25 |
+
+
+### 架构方案
+
+**技术路线**：项目详情页新增 Analysis Tab，调用 `useCodeHealth` composable + ECharts 渲染代码健康指标
+
+**组件树**：
+```
+DetailAnalysis.vue (Tab 内容) + CodeHealthPanel.vue (复用) + IssueCharts.vue (ECharts)
+```
+
+**关键决策**：
+图表复用 `charts.ts` 中的 `buildStatusBar`/`buildActivityArea`；数据通过 composable 注入，无需额外 API
+
 
 ---
 

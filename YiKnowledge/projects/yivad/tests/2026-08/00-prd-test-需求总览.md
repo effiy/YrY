@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YiVad 八月迭代 — 组件化 / 测试基础设施 / 主题系统 / 权限控制 / 详情页优化 / 首页优化 / 列表页优化 / 系统管理 / 首页仪表盘 / Kanban看板 / 全局搜索 / Roadmap路线图 / 自定义指令系统 / API层架构 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-01"
 source_prds: ["00-prd-需求总览"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 需求总览]
+benefit: "当月测试用例索引与可追溯矩阵"
+lifecycle: active
 ---
 # YiVad 八月迭代 — 组件化 / 测试基础设施 / 主题系统 / 权限控制 / 详情页优化 / 首页优化 / 列表页优化 / 系统管理 / 首页仪表盘 / Kanban看板 / 全局搜索 / Roadmap路线图 / 自定义指令系统 / API层架构 — 测试规格
 

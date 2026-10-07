@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-35"
 title: "YK-09-35: API 字段一致性扫描 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "38-架构设计-API字段一致性扫描.md"
 source_okr: [yiknowledge-001]
 related_tests: ["38-prd-test-API字段一致性扫描"]
+
+type: task
 ---
 
 # YK-09-35: API 字段一致性扫描 — 开发方案

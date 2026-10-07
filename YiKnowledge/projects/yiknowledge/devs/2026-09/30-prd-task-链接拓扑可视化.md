@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-27"
 title: "YK-09-27: 链接拓扑可视化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "30-架构设计-链接拓扑可视化.md"
 source_okr: [yiknowledge-001]
 related_tests: ["30-prd-test-链接拓扑可视化"]
+
+type: task
 ---
 
 # YK-09-27: 链接拓扑可视化 — 开发方案

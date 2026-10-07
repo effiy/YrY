@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-06: 状态管理架构设计 — 测试用例"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-06"
 source_prds: ["06-prd-状态管理架构设计"]
 source_modules: ["06-prd-task-状态管理架构设计"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 状态管理架构设计]
+benefit: "测试用例：状态管理架构设计"
+lifecycle: active
 ---
 
 # YV-07-06: 状态管理架构设计 — 测试用例

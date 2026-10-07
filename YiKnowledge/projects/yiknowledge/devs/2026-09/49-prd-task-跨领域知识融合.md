@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-46"
 title: "YK-09-46: 跨领域知识融合 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "49-架构设计-跨领域知识融合.md"
 source_okr: [yiknowledge-001]
 related_tests: ["49-prd-test-跨领域知识融合"]
+
+type: task
 ---
 
 # YK-09-46: 跨领域知识融合 — 开发方案
@@ -25,7 +28,7 @@ related_tests: ["49-prd-test-跨领域知识融合"]
 
 ## 一、架构总览
 
-基于 cross_project_refs 和语义相似度，建立不同角色目录间的知识关联。复用 YK-09-08 依赖图谱技术，新增跨角色边（如 engineer/architecture 文档 ↔ producter/PRD 文档）。前端展示"多角色视角"关联面板。
+基于 cross_project_refs 和语义相似度，建立不同角色目录间的知识关联。复用 YK-09-08 依赖图谱技术，新增跨角色边（如 engineer/architecture 文档 ↔ product/PRD 文档）。前端展示"多角色视角"关联面板。
 
 ## 二、实施步骤
 

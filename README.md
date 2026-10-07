@@ -7,7 +7,7 @@
 - **YiVad** — Vue 3.5 管理后台，ProTable 声明式表格、动态路由、按钮级权限控制、4 种布局模式、完整 i18n
 - **YiAi** — FastAPI 后端，AI 聊天（Ollama + DeepSeek 多提供商）、RAG（llama_index 混合检索）、文件管理、RSS 聚合、企业微信消息、Agent 循环
 - **YiPet** — Chrome MV3 扩展，向任意页面注入交互式 AI 伴侣，多角色聊天、知识库集成、跨项目桥接
-- **YiKnowledge** — Markdown 知识库，7 个角色目录（leader/engineer/producter/srer/executiver/aier/curator），同时服务于人类和 AI（YiAi RAG 数据源）
+- **YiKnowledge** — Markdown 知识库，7 个角色目录（leader/engineer/product/sre/executive/aier/curator），同时服务于人类和 AI（YiAi RAG 数据源）
 
 ## 快速开始
 

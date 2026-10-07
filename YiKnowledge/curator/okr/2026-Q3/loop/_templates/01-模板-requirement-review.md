@@ -3,10 +3,12 @@ type: loop-template
 loopId: loop-XXX
 stage: requirement-review
 title: <一句话需求标题>
-role: producter
+role: product
 goalId: prod-XXX
-status: in-progress
-created: YYYY-MM-DD
+category: curator/okr/loop
+source: internal
+status: draft
+created: "YYYY-MM-DD"
 updated: 2026-09-10
 tags: [loop-record, requirement-review]
 ---

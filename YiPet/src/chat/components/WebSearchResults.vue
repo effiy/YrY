@@ -213,7 +213,7 @@ async function copyLink(url: string, idx: number): Promise<void> {
 }
 
 .wsr-badge {
-  color: #fbbf24;
+  color: var(--el-color-warning-light-5);
 }
 
 .wsr-copy-all {
@@ -298,11 +298,11 @@ async function copyLink(url: string, idx: number): Promise<void> {
 }
 
 .wsr-tier.is-low {
-  color: #fca5a5;
+  color: var(--el-color-danger-light-3);
 }
 
 .wsr-quality {
-  color: #fbbf24;
+  color: var(--el-color-warning-light-5);
 }
 
 .wsr-snippet {

@@ -1,5 +1,4 @@
 """Utility functions"""
-from collections.abc import Generator
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -8,7 +7,7 @@ import math
 import random
 import re
 import string
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -140,16 +139,9 @@ def is_number(value: Any) -> bool:
     return not (math.isnan(result) or math.isinf(result))
 
 def format_file_size(size_in_bytes: int) -> str:
-    """
-    Convert byte size to human-readable format (KB, MB, GB)
-    """
-    if size_in_bytes == 0:
-        return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(math.floor(math.log(size_in_bytes, 1024)))
-    p = math.pow(1024, i)
-    s = round(size_in_bytes / p, 2)
-    return f"{s} {size_name[i]}"
+    """Convert byte size to human-readable format — backed by humanize."""
+    from humanize import naturalsize
+    return naturalsize(size_in_bytes)
 
 
 def format_tokens(tokens: int) -> str:
@@ -172,9 +164,7 @@ def format_tokens_with_commas(tokens: int) -> str:
 
 # --- Collection Processing ---
 
-def chunk_list(lst: list[Any], size: int) -> Generator[list[Any], None, None]:
-    """
-    Split list into chunks of specified size
-    """
-    for i in range(0, len(lst), size):
-        yield lst[i:i + size]
+def chunk_list(lst: list[Any], size: int):
+    """Split list into chunks — backed by more_itertools."""
+    from more_itertools import chunked
+    return chunked(lst, size)

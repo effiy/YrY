@@ -5,24 +5,25 @@
  */
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import { getBugList, getBug, createBug, updateBug, deleteBug, readBugContent } from "@/api/modules/bug";
 import type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency } from "@/api/modules/bug";
+import { nanoid } from "nanoid";
+import { confirm } from "@/hooks/useConfirmAction";
+import { Status } from "@/utils/status";
 
 export type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency };
 
 function newKey(): string {
-  return `bug_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `bug_${nanoid(12)}`;
 }
 
-const _VALID_STATUSES = new Set<string>(["open", "in_progress", "resolved", "closed", "rejected", "reopened"]);
+const _VALID_STATUSES = new Set<string>([
+  Status.OPEN, Status.IN_PROGRESS, Status.RESOLVED, Status.CLOSED, Status.REJECTED, Status.REOPENED,
+]);
 const _STATUS_NORMALIZE: Record<string, BugStatus> = {
-  Open: "open",
-  "In Progress": "in_progress",
-  Resolved: "resolved",
-  Closed: "closed",
-  Rejected: "rejected",
-  Reopened: "reopened"
+  Open: Status.OPEN, "In Progress": Status.IN_PROGRESS, Resolved: Status.RESOLVED,
+  Closed: Status.CLOSED, Rejected: Status.REJECTED, Reopened: Status.REOPENED,
 };
 
 function normalizeStatus(raw: string | undefined | null): BugStatus {
@@ -220,12 +221,8 @@ export const useBugStore = defineStore("yivad-bug", () => {
 
   async function handleDelete(bug: BugDocument, skipConfirm = false) {
     if (!skipConfirm) {
-      try {
-        await ElMessageBox.confirm(`Delete bug "${bug.title}"?`, "Confirm", { type: "warning" });
-      } catch (e: unknown) {
-        if (e === "cancel" || e === "close") return;
-        throw e;
-      }
+      const ok = await confirm(`Delete bug "${bug.title}"?`, "Confirm");
+      if (!ok) return;
     }
     try {
       await deleteBug(bug.key);

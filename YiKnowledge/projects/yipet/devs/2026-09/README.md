@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: YiPet 开发模块索引
 category: 项目/浏览器扩展/开发模块
 created: 2026-09-11
 updated: 2026-09-14
 project: YiPet
+
+type: task
+status: 待开始
 ---
 
 # YiPet 开发模块索引

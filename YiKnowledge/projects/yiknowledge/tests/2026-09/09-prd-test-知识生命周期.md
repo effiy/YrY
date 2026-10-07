@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-06: 知识生命周期自动化 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-06"
 source_prds: ["09-自动化-知识生命周期"]
 source_modules: ["09-prd-task-知识生命周期"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-06: 知识生命周期自动化 — 测试用例

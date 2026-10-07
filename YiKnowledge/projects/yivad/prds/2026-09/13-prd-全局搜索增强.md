@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 全局搜索增强
 tags:
 - 搜索
@@ -28,6 +27,10 @@ roles:
 - engineer
 - designer
 source_okr: [yivad-003]
+related_modules: ["13-prd-task-全局搜索增强"]
+related_tests: ["13-prd-test-全局搜索增强"]
+benefit: "产品需求：全局搜索增强"
+lifecycle: active
 ---
 
 # 全局搜索增强

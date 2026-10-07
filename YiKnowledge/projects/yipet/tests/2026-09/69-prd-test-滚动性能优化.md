@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "滚动性能优化 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["69-性能-滚动性能优化"]
+source_prds: ["69-架构设计-滚动性能优化.md"]
+source_modules: ["69-prd-task-滚动性能优化.md"]
+
+type: test
 ---
 
 # 滚动性能优化 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["69-性能-滚动性能优化"]
 |------|------|------|--------|
 | TC-SCR01 | passive 监听 | 不阻塞滚动 | P1 |
 | TC-SCR02 | rAF 节流 | 60fps | P1 |
+

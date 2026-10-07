@@ -6,7 +6,6 @@ departments / roles / dictionaries CRUD was removed: org data lives in the
 served through the RPC `queryDocuments` surface and the dashboard.
 """
 import logging
-from typing import Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field, model_validator

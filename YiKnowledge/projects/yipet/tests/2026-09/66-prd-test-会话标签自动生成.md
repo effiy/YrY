@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "会话标签自动生成 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["66-功能实现-会话标签自动生成"]
+source_prds: ["66-架构设计-会话标签自动生成.md"]
+source_modules: ["66-prd-task-会话标签自动生成.md"]
+
+type: test
 ---
 
 # 会话标签自动生成 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["66-功能实现-会话标签自动生成"]
 |------|------|------|--------|
 | TC-TAG01 | AI 提取关键词 | 首条消息→标签 | P2 |
 | TC-TAG02 | 标签颜色 | 自定义颜色 | P3 |
+

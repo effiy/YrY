@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-M09"
 title: "表单组件体系 — 开发方案"
 status: 进行中
@@ -14,6 +13,12 @@ prd_month: "202609"
 estimate_frontend: 6.5
 source_prd: "02-prd-表单组件体系.md"
 related_tests: ["YV-09-M09"]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 表单组件体系]
+benefit: "开发方案：task-表单组件体系"
+lifecycle: active
 ---
 
 # 表单组件体系 — 开发方案

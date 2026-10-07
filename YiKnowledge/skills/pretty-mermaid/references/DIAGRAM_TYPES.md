@@ -1,4 +1,23 @@
-# Mermaid Diagram Types Reference
+---
+title: "Mermaid 图表类型参考"
+tags: [mermaid, diagram, types, reference, skill]
+category: skills/pretty-mermaid
+created: 2026-09-15
+updated: 2026-10-07
+source: external
+type: reference
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [engineer]
+benefit: 了解所有 Mermaid 图表类型及其语法和最佳实践
+related:
+  - ../SKILL.md
+  - ./api_reference.md
+  - ./THEMES.md
+---
+
+# Mermaid 图表类型参考
 
 ## Contents
 

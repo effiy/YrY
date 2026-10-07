@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YA-09-03"
 title: "YA-09-03: API 契约校验 — RPC 参数白名单 + 未知参数 WARNING — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 2.0
 source_prd: "08-需求-API契约校验.md"
 source_okr: [yiai-001]
 related_tests: ["08-prd-test-API契约校验"]
+
+type: task
 ---
 
 # YA-09-03: API 契约校验 — RPC 参数白名单 + 未知参数 WARNING — 开发方案

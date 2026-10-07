@@ -40,7 +40,7 @@
             <div class="notif-item__body">
               <div class="notif-item__title">{{ n.title }}</div>
               <div class="notif-item__msg">{{ n.message }}</div>
-              <div class="notif-item__time">{{ formatTime(n.createdAt) }}</div>
+              <div class="notif-item__time">{{ fmtTime(n.createdAt) }}</div>
             </div>
             <el-button :icon="Close" text size="small" class="notif-item__dismiss" @click.stop="store.removeNotification(n.id)" />
           </div>
@@ -57,6 +57,7 @@ import { useRouter } from "vue-router";
 import { Bell, Close, Setting, User, Cpu, Warning } from "@element-plus/icons-vue";
 import { useNotificationStore } from "@/stores/modules/notification";
 import type { Notification, NotificationType } from "@/stores/modules/notification";
+import { timeAgo } from "@/utils/time";
 
 const router = useRouter();
 const store = useNotificationStore();
@@ -124,16 +125,7 @@ function iconColor(type: string) {
   return TYPE_COLORS[type] || "#909399";
 }
 
-function formatTime(iso: string): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const now = new Date();
-  const diff = now.getTime() - d.getTime();
-  if (diff < 60000) return "刚刚";
-  if (diff < 3600000) return `${Math.floor(diff / 60000)} 分钟前`;
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)} 小时前`;
-  return d.toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
-}
+function fmtTime(iso: string): string { return timeAgo(iso, "zh"); }
 </script>
 
 <style scoped lang="scss">

@@ -3,7 +3,7 @@ title: YiKnowledge 规则手册与命名约定
 tags: [knowledge-base, rules, naming, frontmatter]
 category: root
 created: 2026-01-01
-updated: 2026-09-18
+updated: 2026-09-21
 source: internal
 type: summary
 status: stable
@@ -11,7 +11,7 @@ lifecycle: active
 review_cycle: quarterly
 roles: [curator]
 benefit: 知识库规则、Frontmatter 规范和命名约定的唯一权威来源
-last_verified: 2026-09-18
+last_verified: 2026-09-21
 related:
   - ./README.md
   - ./INDEX.md
@@ -33,10 +33,10 @@ YiKnowledge/
 ├── MEMORY.md             # 本文件：规则手册
 ├── engineer/             # 实现层：架构、开发、质量、数据、可靠性、流程、经验教训、项目
 ├── leader/               # 决策层：架构决策、技术选型、容量规划、风险评估、路线图
-├── producter/            # 需求层：框架、发现、交付、策略
+├── product/            # 需求层：框架、发现、交付、策略
 ├── aier/                 # AI 层：基础、方法论、平台、机器学习
-├── srer/                 # 运维层：事件响应、可观测性、发布
-├── executiver/           # 业务层：战略、行业、路线图、阅读清单
+├── sre/                 # 运维层：事件响应、可观测性、发布
+├── executive/           # 业务层：战略、行业、路线图、阅读清单
 ├── curator/              # 治理层：治理规范、架构图、模板、归档
 ├── projects/             # 项目中心：4 个项目的缺陷/需求/文档/示例
 └── skills/               # Claude Code 自定义技能
@@ -50,10 +50,10 @@ YiKnowledge/
 |---|---|---|
 | engineer/ | 如何实现？ | [engineer/build/05-构建-API设计模式.md](./engineer/build/05-构建-API设计模式.md) —— API 实现模式 |
 | leader/ | 如何决策？ | [leader/architecture/01-架构-架构决策设计.md](./leader/architecture/01-架构-架构决策设计.md) —— 架构决策记录 |
-| producter/ | 构建什么产品？ | [producter/discovery/01-发现-编写PRD.md](./producter/discovery/01-发现-编写PRD.md) —— PRD 编写指南 |
+| product/ | 构建什么产品？ | [product/discovery/01-发现-编写PRD.md](./product/discovery/01-发现-编写PRD.md) —— PRD 编写指南 |
 | aier/ | 如何使用 AI？ | [aier/methods/](./aier/methods/) —— RAG 模式、Agent 架构 |
-| executiver/ | 如何做业务？ | [executiver/strategy/](./executiver/strategy/) —— 企业战略、SWOT 分析 |
-| srer/ | 如何保障稳定性？ | [srer/observability/07-可观测-搭建可观测性.md](./srer/observability/07-可观测-搭建可观测性.md) —— 可观测性搭建 |
+| executive/ | 如何做业务？ | [executive/strategy/](./executive/strategy/) —— 企业战略、SWOT 分析 |
+| sre/ | 如何保障稳定性？ | [sre/observability/07-可观测-搭建可观测性.md](./sre/observability/07-可观测-搭建可观测性.md) —— 可观测性搭建 |
 | curator/ | 如何管理知识库？ | [curator/governance/04-治理-就绪检查清单.md](./curator/governance/04-治理-就绪检查清单.md) —— 就绪检查清单 |
 
 ## 文件命名约定
@@ -73,11 +73,11 @@ curator/governance/
 ├── 02-治理-治理规范.md
 ├── 04-治理-就绪检查清单.md
 
-srer/release/
+sre/release/
 ├── 01-发布-金丝雀发布.md        # 正确
 ├── 04-发布-发布流程.md
 
-producter/frameworks/
+product/frameworks/
 ├── 01-框架-用户研究方法.md      # 正确
 ├── 06-框架-RICE-ICE优先级.md
 ```
@@ -86,6 +86,7 @@ producter/frameworks/
 - 禁止使用下划线 `_` —— 使用连字符 `-` 替代
 - 禁止纯数字文件名 —— 必须包含分类和描述
 - 分类名不超过 4 个汉字
+- **例外**：`_templates/` 目录可使用下划线前缀，这是模板目录的通用约定
 
 ### 子目录命名（英文）
 
@@ -106,6 +107,8 @@ ENGINEERING.md     # 正确
 
 ## YAML Frontmatter 规范
 
+> **字段值约束以 [CLAUDE.md](./CLAUDE.md#字段值约束) 为唯一权威来源。** 本节描述字段语义和填写指南，具体允许值请查阅 CLAUDE.md 的字段值约束表。
+
 ### 完整字段定义
 
 ```yaml
@@ -116,11 +119,11 @@ tags: [标签1, 标签2, 标签3]             # 必填——3-5 个英文标签
 category: root | <角色>/<子目录>        # 必填——知识分类路径
 created: YYYY-MM-DD                   # 必填——创建日期
 updated: YYYY-MM-DD                   # 必填——最后更新日期
-source: internal | <url>              # 必填——internal（原创）或外部 URL
-type: summary | original | template | prompt  # 必填——内容类型
-status: draft | stable | deprecated   # 必填——内容状态
-lifecycle: inbox | triage | active | reference | archive  # 可选——生命周期阶段
-review_cycle: weekly | monthly | quarterly | yearly  # 外部内容必填——审查周期
+source: internal | external | ...     # 必填——参考 CLAUDE.md 字段值约束
+type: summary | analysis | ...        # 必填——参考 CLAUDE.md 字段值约束（按目录区域区分）
+status: draft | review | stable | ... # 必填——参考 CLAUDE.md 字段值约束
+lifecycle: active | ...               # 可选——参考 CLAUDE.md 字段值约束
+review_cycle: weekly | monthly | ...  # 外部内容必填——参考 CLAUDE.md 字段值约束
 last_verified: YYYY-MM-DD             # 外部内容必填——最后验证日期
 roles: [角色1, 角色2]                  # 推荐——跨角色可见性标记
 benefit: "简短描述"                    # 推荐——读者能获得什么价值
@@ -146,16 +149,16 @@ related:                              # 推荐——相关文件相对路径
 title: RICE-ICE 优先级框架
 aliases: [优先级排序, 需求优先级, 功能排序]
 tags: [priority, rice, ice, product-management]
-category: producter/frameworks
+category: product/frameworks
 created: 2026-06-15
-updated: 2026-09-10
+updated: 2026-10-07
 source: internal
 type: summary
 status: stable
 lifecycle: active
 review_cycle: quarterly
 last_verified: 2026-09-10
-roles: [producter, leader, executiver]
+roles: [product, leader, executive]
 benefit: 掌握 RICE 和 ICE 两种优先级排序框架，能够科学地排定功能开发顺序
 acceptance_criteria:
   - 能区分 RICE（四因子）和 ICE（三因子）的适用场景
@@ -227,8 +230,8 @@ grep "^## " YiKnowledge/engineer/build/implement-an-api.md
 ```
 # 正确（3 级以内）
 engineer/build/implement-an-api.md              # 2 级
-srer/observability/07-可观测-搭建可观测性.md       # 2 级
-producter/discovery/prd/template.md             # 3 级
+sre/observability/07-可观测-搭建可观测性.md       # 2 级
+product/discovery/template.md             # 3 级
 
 # 错误（超过 3 级）
 engineer/build/api/rest/authentication.md       # 4 级 —— 禁止

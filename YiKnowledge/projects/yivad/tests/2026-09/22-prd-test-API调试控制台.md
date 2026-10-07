@@ -1,189 +1,144 @@
 ---
-doc_type: test
-title: "API 调试控制台 — 测试用例"
+title: "YV-09-52: API调试控制台 — 测试用例"
 status: 已完成
-priority: P2
+priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-14
 project: YiVad
+project_id: yivad
 prd_month: "202609"
+prd_task_id: "YV-09-52"
 source_prds: ["22-prd-API调试控制台"]
 source_modules: ["22-prd-task-API调试控制台"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, API调试控制台]
+benefit: "测试用例：API调试控制台"
+lifecycle: active
 ---
 
-# API 调试控制台 — 测试用例
+# YV-09-52: API调试控制台 — 测试用例
+
+> 来源 PRD：[22-prd-API调试控制台.md](../../prds/2026-09/22-prd-API调试控制台.md)
+> 开发方案：[22-prd-task-API调试控制台.md](../../devs/2026-09/22-prd-task-API调试控制台.md)
 
 > **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
 
 ---
 
-
----
-
-<a id="sec-strategy"></a>
 ## 测试策略
-
-### 分层模型
 
 | 层级 | 说明 | 自动化 | 执行时机 |
 |------|------|--------|---------|
-| L1 单元 | Composable/hook/工具函数纯逻辑 | Vitest | 每次提交 |
-| L2 组件 | Vue 组件挂载与交互 | Vitest + @vue/test-utils | 每次提交 |
-| L3 集成 | Composable ↔ 组件 ↔ Store ↔ RPC | Vitest + mock | 每次提交 |
-| L4 端到端 | 完整用户路径（需 YiAi 运行） | 手动 | 提测/回归 |
-
-### 优先级定义
-
-| 级别 | 含义 | 响应 |
-|------|------|------|
-| P0 | 核心路径，失败阻塞发布 | 立即修复 |
-| P1 | 重要功能，失败需评估 | 当日修复 |
-| P2 | 增强功能，可延后 | 排期修复 |
+| L1 单元 | RPC 请求构造/响应解析逻辑 | Vitest | 每次提交 |
+| L2 组件 | ApiConsole 组件渲染与交互 | Vitest + @vue/test-utils | 每次提交 |
+| L3 集成 | API调用 ↔ YiAi 真实端点 | Vitest + mock | 每次提交 |
+| L4 端到端 | 完整调试流程（构造→发送→查看响应） | 手动 | 提测/回归 |
 
 ---
 
-<a id="sec-env"></a>
-## 测试环境与前置条件
-
-| 项 | 要求 |
-|----|------|
-| Node.js | 与项目 `.nvmrc` 一致 |
-| 包管理器 | pnpm |
-| 浏览器 | Chrome 最新版 |
-| 框架 | Vitest + jsdom |
-| 类型检查 | `pnpm exec vue-tsc --noEmit` |
-
-```bash
-pnpm test                                    # 全部测试
-pnpm exec vitest run tests/hooks/            # 仅 hooks
-pnpm exec vitest run --coverage             # 覆盖率
-```
-
----
-
-<a id="sec-criteria"></a>
-## 准入与准出标准
-
-### 准入
-
-| # | 条件 |
-|---|------|
-| 1 | 对应 FR 的实现已提交 |
-| 2 | `vue-tsc --noEmit` 无错误 |
-| 3 | 功能在开发环境可正常使用 |
-
-### 准出
-
-| # | 条件 | 阈值 |
-|---|------|------|
-| 1 | P0 用例通过率 | 100% |
-| 2 | P1 用例通过率 | ≥ 95% |
-| 3 | 遗留缺陷 | 无 Blocker / Critical |
-
----
-
-<a id="sec-defects"></a>
-## 缺陷分级
-
-| 级别 | 定义 | 示例 |
-|------|------|------|
-| Blocker | 阻塞测试或数据损坏 | 功能完全不可用 |
-| Critical | 核心功能不可用 | 主要路径报错 |
-| Major | 功能缺陷但有替代路径 | 边界条件处理不当 |
-| Minor | 体验问题 | UI 偏移/文案错误 |
-| Trivial | 视觉细节 | 间距微调 |
-
-### 需求覆盖矩阵
+## 需求覆盖矩阵
 
 | FR | 需求 | 测试覆盖 | 状态 |
 |----|------|---------|------|
-| FR-1 | API 控制台 Store | IT | ✅ 已完成 |
-| FR-2 | 请求构建器组件 | CT + IT | ✅ 已完成 |
-| FR-3 | JSON 语法高亮查看器 | CT + IT | ✅ 已完成 |
-| FR-4 | JsonNode 递归组件 | CT + IT | ✅ 已完成 |
-| FR-5 | 响应指标组件 | CT + IT | ✅ 已完成 |
-| FR-6 | Curl 导出器 | CT + IT | ✅ 已完成 |
-| FR-7 | 请求历史面板 | CT + IT | ✅ 已完成 |
-
-
-
-
-## 目录
-
-- [一、测试范围与目标](#sec-1)
-- [二、需求覆盖矩阵](#sec-2)
-- [三、单元测试](#sec-3)
-- [四、组件测试](#sec-4)
-- [五、集成测试](#sec-5)
-- [六、端到端场景](#sec-6)
-- [七、自动化现状](#sec-7)
+| FR-1 | RPC 信封构造器（module/method/params） | CT + IT | ✅ |
+| FR-2 | 请求发送 + 响应展示（JSON格式化） | CT + IT | ✅ |
+| FR-3 | 请求历史记录（localStorage） | CT | ✅ |
+| FR-4 | 常用请求收藏 | CT | ✅ |
+| FR-5 | 响应时间显示 | CT | ✅ |
 
 ---
 
-<a id="sec-1"></a>
-## 一、测试范围与目标
+## L1 单元测试
 
-### 1.1 在范围内
+### UT-01: RPC 信封构造
 
-| 范围 | 内容 |
-|------|------|
-| 功能验证 | 参见 PRD 功能需求 |
+**GIVEN** 用户填写 module=`data_service`, method=`query_documents`, params=`{ cname: "issues" }`  
+**WHEN** 调用 `buildRpcEnvelope(module, method, params)`  
+**THEN** 返回 `{ module_name: "data_service", method_name: "query_documents", parameters: { cname: "issues" } }`
 
-### 1.2 不在范围内
+### UT-02: JSON 响应格式化
 
-| 排除项 | 原因 |
-|--------|------|
-| — | — |
-
----
-
-<a id="sec-2"></a>
-## 二、需求覆盖矩阵
-
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
-
-| FR | 需求 | 单元 | 组件 | 集成 | 状态 |
-|----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+**GIVEN** API 返回 `{ code: 0, data: { list: [...] }, message: "ok" }`  
+**WHEN** 调用 `formatResponse(response)`  
+**THEN** 返回语法高亮的 JSON 字符串（带缩进 2 空格）  
+**AND** `code: 0` 显示为绿色，`code !== 0` 显示为红色
 
 ---
 
-<a id="sec-3"></a>
-## 三、单元测试
+## L2 组件测试
 
-> **状态：待补。** 实现完成后补充具体用例。
+### CT-01: 请求表单渲染
+
+**GIVEN** ApiConsole 组件挂载  
+**THEN** 应显示 3 个输入区：Module (el-input) / Method (el-input) / Parameters (JSON editor)  
+**AND** 「发送」按钮
+
+### CT-02: 发送请求 + 响应展示
+
+**GIVEN** 用户填写 module=`data_service`, method=`query_documents`, params=`{ "cname": "issues" }`  
+**WHEN** 点击「发送」  
+**THEN** RequestHttp POST `/rpc` 被调用  
+**AND** 响应面板显示格式化的 JSON（语法高亮）  
+**AND** 显示响应时间（如 "234ms"）
+
+### CT-03: 响应时间着色
+
+**GIVEN** API 调用耗时 50ms  
+**WHEN** 展示响应时间  
+**THEN** 文字为绿色（<200ms）  
+**GIVEN** 耗时 500ms  
+**THEN** 文字为橙色（200-1000ms）  
+**GIVEN** 耗时 2000ms  
+**THEN** 文字为红色（>1000ms）
+
+### CT-04: 请求历史
+
+**GIVEN** 用户发送了 3 次请求  
+**WHEN** 查看历史面板  
+**THEN** 显示最近 20 条记录（时间倒序）  
+**AND** 每条显示 module/method + 时间戳  
+**AND** 点击历史项 → 自动填充请求表单
+
+### CT-05: 收藏请求
+
+**GIVEN** 用户配置了一个常用请求  
+**WHEN** 点击「收藏」⭐ 按钮  
+**THEN** 该请求保存到 localStorage `yivad-api-favorites`  
+**AND** 收藏列表中显示该请求（名称+描述）
 
 ---
 
-<a id="sec-4"></a>
-## 四、组件测试
+## L3 集成测试
 
-> **状态：待补。**
+### IT-01: 真实 API 调用
 
----
+**GIVEN** YiAi 后端正在运行  
+**WHEN** 用户发送 RPC 请求 `data_service.query_documents`  
+**THEN** 返回 `{ code: 0, data: { list, total } }`  
+**AND** 响应面板正确展示数据
 
-<a id="sec-5"></a>
-## 五、集成测试
+### IT-02: API 错误处理
 
-> **状态：待补。**
-
----
-
-<a id="sec-6"></a>
-## 六、端到端场景
-
-> **状态：待补。**
+**GIVEN** 用户发送不存在的 module_name  
+**WHEN** 点击「发送」  
+**THEN** 返回 `{ code: 1002, message: "module not found" }`  
+**AND** 响应面板显示红色错误信息
 
 ---
 
-<a id="sec-7"></a>
-## 七、自动化现状
+## L4 端到端场景
 
-### 执行状态
+### E2E-01: 完整调试流程
 
-| 指标 | 值 |
-|------|-----|
-| 本模块测试 | 0 文件 · 0 用例 |
-| 执行命令 | `cd YiVad && pnpm test` |
+1. 管理员打开 `/api-console`
+2. 填写 module: `data_service`, method: `query_documents`
+3. 填写 params: `{ "cname": "issues", "pageSize": 10 }`
+4. 点击「发送」→ 响应面板显示数据（绿色 code:0）
+5. 耗时显示 "45ms"（绿色）
+6. 点击 ⭐ 收藏 → 命名「查询最近 Issues」
+7. 刷新页面 → 收藏列表保留该请求
+8. 点击收藏项 → 表单自动填充

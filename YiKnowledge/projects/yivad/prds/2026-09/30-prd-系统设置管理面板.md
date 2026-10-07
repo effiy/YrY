@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 系统设置管理面板
 tags:
 - 系统设置
@@ -28,6 +27,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-003]
+related_modules: ["30-prd-task-系统设置管理面板"]
+related_tests: ["30-prd-test-系统设置管理面板"]
+benefit: "产品需求：系统设置管理面板"
+lifecycle: active
 ---
 
 # 系统设置管理面板

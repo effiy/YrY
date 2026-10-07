@@ -37,7 +37,7 @@ export interface RssItemDocument {
   source_name: string;
   source_url: string;
   published?: string;
-  /** Auto-classification, e.g. "executiver/industry" or "aier/methodology". */
+  /** Auto-classification, e.g. "executive/industry" or "aier/methodology". */
   category_path?: string;
   /** Relative path under ~/YiKnowledge, e.g. "rss/foo-bar-1a2b3c.md". */
   file_path?: string;
@@ -71,7 +71,7 @@ export interface RssListParams {
   source_name?: string | string[];
   source_url?: string;
   category_path?: string;
-  /** Prefix match for category_path, e.g. "executiver" matches "executiver/industry". */
+  /** Prefix match for category_path, e.g. "executive" matches "executive/industry". */
   categoryPrefix?: string;
   tags?: string[];
   publishedStart?: number;

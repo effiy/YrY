@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-42"
 title: "YV-09-42: 右键菜单系统 — 开发方案"
 status: 已完成
@@ -13,6 +12,12 @@ project_id: yivad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "17-prd-右键菜单系统.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 右键菜单系统]
+benefit: "开发方案：task-右键菜单系统"
+lifecycle: active
 ---
 
 # YV-09-42: 右键菜单系统 — 开发方案

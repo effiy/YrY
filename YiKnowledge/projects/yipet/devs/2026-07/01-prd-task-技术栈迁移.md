@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-01"
 title: "YP-07-01: 技术栈迁移 — Vue 3.5 + TypeScript 5 + Rsbuild 1 + Chrome MV3 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 4.0
 source_prd: "01-基础设施-技术栈迁移.md"
 source_okr: [yipet-001]
+
+type: task
 ---
 
 # YP-07-01: 技术栈迁移 — 开发方案

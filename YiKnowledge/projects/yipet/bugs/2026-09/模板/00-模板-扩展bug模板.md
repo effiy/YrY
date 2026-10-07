@@ -6,7 +6,7 @@ created: 2026-09-14
 updated: 2026-09-14
 source: internal
 type: template
-status: active
+status: resolved
 severity: template
 priority: template
 project: template

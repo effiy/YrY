@@ -7,7 +7,8 @@ framework: OKR
 trend: up
 progress: 100
 title: Lead M02 决策可回溯率
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # 决策可回溯率
 

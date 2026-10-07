@@ -62,6 +62,7 @@
 import { ref } from "vue";
 import { Delete } from "@element-plus/icons-vue";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
+import { filesize } from "filesize";
 
 interface Subdir {
   id: string;
@@ -149,9 +150,7 @@ function reviewCycleTagType(r: string): "success" | "warning" | "info" | "primar
 }
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return String(filesize(bytes));
 }
 </script>
 

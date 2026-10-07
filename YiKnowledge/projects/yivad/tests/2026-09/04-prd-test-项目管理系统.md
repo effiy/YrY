@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "项目管理系统 — 测试用例"
 status: 进行中
 priority: 高
@@ -12,6 +11,12 @@ project_id: yivad
 prd_month: "202609"
 source_prds: ["04-prd-项目管理系统"]
 source_modules: ["04-prd-task-项目管理系统"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目管理系统]
+benefit: "测试用例：项目管理系统"
+lifecycle: active
 ---
 
 # 项目管理系统 — 测试用例

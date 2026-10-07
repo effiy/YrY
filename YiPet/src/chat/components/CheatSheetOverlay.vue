@@ -333,7 +333,7 @@ onUnmounted(() => {
   line-height: 1.5;
 
   &.conflict-high {
-    color: #fbbf24;
+    color: var(--el-color-warning-light-5);
     background: rgba(251, 191, 36, 0.08);
     border: 1px solid rgba(251, 191, 36, 0.2);
     .el-icon { margin-top: 2px; flex-shrink: 0; }

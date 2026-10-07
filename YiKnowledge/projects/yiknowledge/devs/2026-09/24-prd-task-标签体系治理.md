@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-21"
 title: "YK-09-21: 标签体系治理 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "24-架构设计-标签体系治理.md"
 source_okr: [yiknowledge-001]
 related_tests: ["24-prd-test-标签体系治理"]
+
+type: task
 ---
 
 # YK-09-21: 标签体系治理 — 开发方案

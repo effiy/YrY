@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-106"
 source_prds: ["50-prd-用户角色与权限矩阵"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户角色与权限矩阵]
+benefit: "测试用例：用户角色与权限矩阵"
+lifecycle: active
 ---
 # YV-09-106: 用户角色与权限矩阵 — 权限矩阵可视化、角色-权限网格、角色对比视图、权限继承可视化、有效权限计算器、权限审计日志 — 测试规格
 

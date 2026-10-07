@@ -198,7 +198,6 @@ gh pr create \
 - [ ] 无项目时显示空状态引导
 - [ ] 图表在不同窗口尺寸正常渲染
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
 ```

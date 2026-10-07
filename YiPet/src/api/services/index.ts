@@ -4,31 +4,32 @@
  * Layer 4 barrel export. Consume via:
  *   import { createApiServices } from '@/api';
  *   const api = createApiServices({ baseUrl: 'http://localhost:10086' });
- *   const result = await api.sessions.list();
  */
 
 export { AuthService } from './auth';
 export { BridgeService } from './bridge';
-export { BugService } from './bug';
 export { ChatService } from './chat';
 export { DatabaseService } from './database';
 export { KnowledgeService } from './knowledge';
 export { RagService } from './rag';
 export { SearchService } from './search';
 export { SessionService } from './sessions';
+export type { TranslationService } from './translation';
 export { WeWorkService } from './wework';
+export type { DashboardService, DashboardSummary, ProjectSummary, LiveSnapshot } from './dashboard';
 
 import { type ApiClient, type ApiClientConfig, createApiClient } from '../client';
 import { AuthService } from './auth';
 import { BridgeService } from './bridge';
-import { BugService } from './bug';
 import { ChatService } from './chat';
 import { DatabaseService } from './database';
 import { KnowledgeService } from './knowledge';
 import { RagService } from './rag';
 import { SearchService } from './search';
 import { SessionService } from './sessions';
+import { createTranslationService, type TranslationService } from './translation';
 import { WeWorkService } from './wework';
+import { createDashboardService, type DashboardService } from './dashboard';
 
 export interface ApiServices {
   client: ApiClient;
@@ -40,8 +41,9 @@ export interface ApiServices {
   knowledge: KnowledgeService;
   rag: RagService;
   search: SearchService;
-  bug: BugService;
+  translation: TranslationService;
   wework: WeWorkService;
+  dashboard: DashboardService;
 }
 
 /**
@@ -60,7 +62,8 @@ export function createApiServices(config: ApiClientConfig & { token?: string }):
     knowledge: new KnowledgeService(client),
     rag: new RagService(client),
     search: new SearchService(client),
-    bug: new BugService(client),
+    translation: createTranslationService(client),
     wework: new WeWorkService(client),
+    dashboard: createDashboardService(client),
   };
 }

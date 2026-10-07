@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M02: 图片特效与滤镜 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M02"
-source_prds: ["02-功能实现-图片特效与滤镜"]
-source_modules: ["02-prd-task-图片特效与滤镜"]
+source_prds: ["02-功能实现-图片特效与滤镜.md"]
+source_modules: ["02-prd-task-图片特效与滤镜.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M02: 图片特效与滤镜 — 测试用例
@@ -304,4 +307,3 @@ source_okr: [yipet-004]
 | 2 | .cube LUT 测试 fixture | LUT 相关测试 | 准备恒等/电影感/暖色 3 个 .cube 文件 |
 | 3 | Web Worker mock | Worker 集成测试 | Vitest `pool: 'threads'` |
 
----

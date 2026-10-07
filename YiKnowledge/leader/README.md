@@ -30,14 +30,14 @@ related:
 >
 > **作为**技术负责人，**我想要**理解并应用技术负责人 — 架构决策 / 技术选型 / 容量 / 路线图 / 风险工作区，**以便**跨项目技术决策可追溯，新负责人无需重新推导已有结论。
 >
-> Leader 决策技术方向。Leader 不实现模式（→ [engineer/](../engineer/)）、不响应事故（→ [srer/](../srer/)）、不定义产品需求（→ [producter/](../producter/)）。
+> Leader 决策技术方向。Leader 不实现模式（→ [engineer/](../engineer/)）、不响应事故（→ [sre/](../sre/)）、不定义产品需求（→ [product/](../product/)）。
 
 ## Pipeline chip contract
 
 | Chip | Type | Description | Knowledge area |
 |---|---|---|---|
-| PRDs | ← Input | 来自 producter/ 的产品需求文档 | [producter/discovery/prd/](../producter/discovery/prd/) |
-| requirements | ← Input | 功能和非功能需求 | [producter/discovery/](../producter/discovery/) |
+| PRDs | ← Input | 来自 product/ 的产品需求文档 | [product/discovery/](../product/discovery/) |
+| requirements | ← Input | 功能和非功能需求 | [product/discovery/](../product/discovery/) |
 | `adrs` | Output → | 架构决策记录 — 上下文/决策/后果 | [decisions/](./decisions/), [architecture/](./architecture/) |
 | `tech-selections` | Output → | 技术栈评估、对比矩阵 | [architecture/](./architecture/), [roadmap/](./roadmap/) |
 | `capacity-plans` | Output → | 容量规划、FinOps 审查、基础设施规模估算 | [capacity/](./capacity/), [roadmap/](./roadmap/) |
@@ -73,11 +73,11 @@ related:
 
 ### 范围外（委托给其他角色）
 - 实现模式和操作指南 → **[engineer/](../engineer/)**
-- 事故响应流程 → **[srer/incident-response/](../srer/incident-response/)**
-- 事后复盘记录 → **[srer/incident-response/](../srer/incident-response/)**（leader/risk/ 有方法论，srer/ 有实际复盘报告）
-- 成本监控和仪表盘 → **[srer/observability/](../srer/observability/)**
-- 产品需求和 PRD → **[producter/discovery/](../producter/discovery/)**
-- 业务战略和市场分析 → **[executiver/](../executiver/)**
+- 事故响应流程 → **[sre/incident-response/](../sre/incident-response/)**
+- 事后复盘记录 → **[sre/incident-response/](../sre/incident-response/)**（leader/risk/ 有方法论，sre/ 有实际复盘报告）
+- 成本监控和仪表盘 → **[sre/observability/](../sre/observability/)**
+- 产品需求和 PRD → **[product/discovery/](../product/discovery/)**
+- 业务战略和市场分析 → **[executive/](../executive/)**
 
 ## 边界情况决策规则
 
@@ -87,13 +87,13 @@ related:
 | 如何实现 X 模式 | `architecture-patterns` | [engineer/build/](../engineer/build/) | 实现知识 |
 | 技术选型评估 | `tech-selections` | [leader/architecture/](./architecture/) | 战略性技术选择 |
 | 事前风险评估 | `adrs` | [leader/risk/](./risk/) | 主动风险管理 |
-| 事中事故响应 | `incident-response` | [srer/incident-response/](../srer/incident-response/) | 运维流程 |
-| 事后复盘记录 | `postmortems` | [srer/incident-response/](../srer/incident-response/) | 运维记录 |
+| 事中事故响应 | `incident-response` | [sre/incident-response/](../sre/incident-response/) | 运维流程 |
+| 事后复盘记录 | `postmortems` | [sre/incident-response/](../sre/incident-response/) | 运维记录 |
 | 事后复盘方法论 | `adrs` | [leader/risk/](./risk/) | 方法论归 leader |
 | 容量规划（多少资源、多少成本） | `capacity-plans` | [leader/capacity/](./capacity/) | 战略规划 |
-| 容量监控（当前使用量） | `observability` | [srer/observability/](../srer/observability/) | 运维监控 |
+| 容量监控（当前使用量） | `observability` | [sre/observability/](../sre/observability/) | 运维监控 |
 | 技术路线图（何时用什么技术） | `tech-selections` | [leader/roadmap/](./roadmap/) | 技术领导力 |
-| 业务路线图（什么业务目标） | — | [executiver/roadmap/](../executiver/roadmap/) | 业务领导力 |
+| 业务路线图（什么业务目标） | — | [executive/roadmap/](../executive/roadmap/) | 业务领导力 |
 | 依赖风险评估 | `adrs` | [leader/risk/](./risk/) | 风险管理 |
 
 ## 子目录描述
@@ -173,10 +173,10 @@ related:
 ## 核心观点
 
 - **ADR 是决策的唯一真实来源** — 编写 ADR 不是文档负担，而是给"将来不会重新推导的审查者"的礼物；每个 ADR 包含 Context / Decision / Consequences
-- **容量规划与 FinOps 挂钩** — leader 不仅决策技术，还决策成本上限；与 [srer/observability/](../srer/observability/) 联动进行监控
-- **路线图是承诺** — 季度路线图是 leader 对 PM/executiver 的承诺；不得静默变更；季度审查确保路线图与实际一致
-- **风险登记册前置** — 事后复盘是事后行为；事前风险评估归入 `risk/`，事后回顾归入 [srer/incident-response/](../srer/incident-response/)
-- **方法论与记录分离** — leader/ 放方法论（怎么做），srer/ 放记录（实际做了什么）。不混淆两者
+- **容量规划与 FinOps 挂钩** — leader 不仅决策技术，还决策成本上限；与 [sre/observability/](../sre/observability/) 联动进行监控
+- **路线图是承诺** — 季度路线图是 leader 对 PM/executive 的承诺；不得静默变更；季度审查确保路线图与实际一致
+- **风险登记册前置** — 事后复盘是事后行为；事前风险评估归入 `risk/`，事后回顾归入 [sre/incident-response/](../sre/incident-response/)
+- **方法论与记录分离** — leader/ 放方法论（怎么做），sre/ 放记录（实际做了什么）。不混淆两者
 
 ## 常用参考
 
@@ -200,7 +200,7 @@ related:
 ## 行动建议
 
 1. **新决策走 ADR 流程**：使用 [ADR 模板](./architecture/01-架构-架构决策设计.md) 作为起点；落在 `decisions/<project>/` 目录
-2. **路线图每季度同步**：任何路线图变更必须通过 [季度审查流程](./roadmap/11-路线图-季度审查流程.md) 更新 + 通知 PM/executiver
+2. **路线图每季度同步**：任何路线图变更必须通过 [季度审查流程](./roadmap/11-路线图-季度审查流程.md) 更新 + 通知 PM/executive
 3. **风险前置登记**：通过 [风险登记册模板](./risk/03-风险-风险登记册模板.md) 识别新风险；每月审查更新
 4. **容量评估联动 FinOps**：新服务上线前必须通过 [capacity/](./capacity/) 评估 + [成本追踪](./capacity/02-容量-成本追踪模板.md) 设置基准
 5. **每月成本检查**：使用 [成本追踪模板](./capacity/02-容量-成本追踪模板.md) 记录月度成本，季度汇总汇报
@@ -208,15 +208,15 @@ related:
 
 ## 反模式
 
-- **静默变更路线图** — 后果：PM/executiver 失去信任；路线图是承诺，变更必须通过季度审查同步
+- **静默变更路线图** — 后果：PM/executive 失去信任；路线图是承诺，变更必须通过季度审查同步
 - **ADR 写了但不维护** — 后果：决策上下文丢失；后续审查者重新推导已废弃的方案
 - **事后复盘未登记为风险** — 后果：同类故障重复发生；事后必须更新 [风险登记册](./risk/03-风险-风险登记册模板.md)
 - **省略容量评估** — 后果：上线后成本超支；必须执行 [capacity/](./capacity/) 评估 + 设置上限
-- **方法论和记录混放** — 后果：leader/ 变成杂物堆；方法论放 leader/，记录放 srer/ 或 engineer/
+- **方法论和记录混放** — 后果：leader/ 变成杂物堆；方法论放 leader/，记录放 sre/ 或 engineer/
 
 ## 相关
 
-- 同类（角色目录）：[../engineer/README.md](../engineer/README.md) / [../srer/README.md](../srer/README.md) / [../producter/README.md](../producter/README.md) / [../aier/README.md](../aier/README.md)
+- 同类（角色目录）：[../engineer/README.md](../engineer/README.md) / [../sre/README.md](../sre/README.md) / [../product/README.md](../product/README.md) / [../aier/README.md](../aier/README.md)
 - 上游：[../README.md](../README.md) / [../INDEX.md](../INDEX.md)
 - 角色索引：[./INDEX.md](./INDEX.md) — 完整文件列表及数量
 - 速查卡：[./QUICKREF.md](./QUICKREF.md) — 按场景快速定位文件
@@ -225,7 +225,7 @@ related:
 ## Pipeline flow
 
 ```
-producter/ (Stage 1: Requirements)
+product/ (Stage 1: Requirements)
     │ prds, user-stories, priorities
     ▼
 ┌── leader/ (Stage 2: Decisions) ─────────┐
@@ -237,5 +237,5 @@ producter/ (Stage 1: Requirements)
 engineer/ (Stage 3: Design+Build)
     │ architecture-patterns, dev-practices
     ▼
-srer/ (Stage 4+5: Quality+Release + Operate+Learn)
+sre/ (Stage 4+5: Quality+Release + Operate+Learn)
 ```

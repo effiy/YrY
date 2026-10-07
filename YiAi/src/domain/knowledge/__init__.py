@@ -5,6 +5,9 @@ Each markdown file carries a YAML frontmatter block (title / tags / category /
 created / source / type …) — this module parses it lazily so the UI can render a
 metadata-driven tree without pulling full file bodies.
 """
+
+from domain.knowledge.goals import list_goals
+from domain.knowledge.issues import issue_stats, list_issues
 from domain.knowledge.scanner import (
     resolve_safe,
     scan_knowledge,
@@ -13,6 +16,7 @@ from domain.knowledge.scanner import (
     read_story_markdown,
     list_bugs,
     read_bug_markdown,
+    get_project_knowledge_stats,
 )
 from domain.knowledge.writer import (
     write_entry_markdown,
@@ -30,8 +34,12 @@ from domain.knowledge.watcher import (
 __all__ = [
     "delete_entry_markdown",
     "entry_exists",
+    "get_project_knowledge_stats",
     "init_knowledge_watcher",
+    "issue_stats",
     "list_bugs",
+    "list_goals",
+    "list_issues",
     "list_knowledge_files",
     "list_stories",
     "read_bug_markdown",

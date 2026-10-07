@@ -1,9 +1,11 @@
 """State store service — CRUD for state records in MongoDB."""
 import logging
 import re
-from typing import Any, Optional
+from typing import Any
 
 from data.database import db
+from shared.error_codes import ErrorCode
+from shared.exceptions import BusinessException
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +81,12 @@ class StateStoreService:
         data.pop("key", None)
         result = await col.update_one({"key": key}, {"$set": data})
         if result.matched_count == 0:
-            raise ValueError(f"Record with key {key} not found")
+            raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Record with key {key} not found")
         return await self.get(key)
 
     async def delete(self, key: str) -> dict:
         col = await self._collection()
         result = await col.delete_one({"key": key})
         if result.deleted_count == 0:
-            raise ValueError(f"Record with key {key} not found")
+            raise BusinessException(ErrorCode.DATA_NOT_FOUND, message=f"Record with key {key} not found")
         return {"key": key, "deleted": True}

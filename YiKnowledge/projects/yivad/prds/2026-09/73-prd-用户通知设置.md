@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-199: 用户通知设置 — 渠道开关、类型配置、免打扰时段、摘要频率、通知测试"
 tags: [需求文档, 用户中心, 通知设置, 免打扰, 摘要频率, 通知渠道, 用户偏好]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["73-prd-task-用户通知设置"]
+related_tests: ["73-prd-test-用户通知设置"]
+benefit: "产品需求：用户通知设置"
+lifecycle: active
 ---
 
 # YV-09-199: 用户通知设置 — 渠道开关、类型配置、免打扰时段、摘要频率、通知测试

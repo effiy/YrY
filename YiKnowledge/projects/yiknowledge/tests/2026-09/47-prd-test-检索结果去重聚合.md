@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-44: 检索结果去重聚合 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-44"
 source_prds: ["47-架构设计-检索结果去重聚合"]
 source_modules: ["47-prd-task-检索结果去重聚合"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-44: 检索结果去重聚合 — 测试用例

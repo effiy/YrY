@@ -3,21 +3,10 @@
  */
 
 import type {
-  BugDocument,
-  BugFrequency,
-  BugPriority,
-  BugSeverity,
-  BugStatus,
-  BugType,
   ChatMessage,
-  KnowledgeReadResponse,
-  KnowledgeStory,
-  KnowledgeTreeNode,
-  RagCategoriesResponse,
-  RagDecomposeResponse,
+  KnowledgeFileEntry,
   RagSource,
   RagStatusResponse,
-  TodoItem,
   WebImageResult,
   WebSearchResult,
   WeWorkBot,
@@ -150,6 +139,9 @@ export interface SessionItem {
   isFavorite?: boolean;
   tags?: string[];
   pageContent?: string;
+  pageTitle?: string;
+  pageDescription?: string;
+  filePath?: string;
 }
 
 // ── Window State ────────────────────────────────────────────────────────
@@ -182,6 +174,14 @@ export interface ChatState {
    *  'YiVad' / 'YiKnowledge' / 'YiPet' / 'unknown'. Empty string = all. */
   sessionProjectFilter: string;
   sessionLoading: boolean;
+  /** Error message from the last session list load, if any. */
+  sessionError: string;
+  /** True once sessions have been loaded at least once (even if empty). */
+  sessionsLoaded: boolean;
+  /** Timestamp of last successful session sync (Date.now()) */
+  lastSyncTime: number;
+  /** Last translation result for quality feedback */
+  _lastTranslation?: { source: string; target: string; provider: string; fromLang: string; toLang: string } | null;
   sidebarCollapsed: boolean;
   /** Sidebar width in pixels (default 320) */
   sidebarWidth: number;
@@ -189,97 +189,45 @@ export interface ChatState {
   batchMode: boolean;
   /** Session IDs selected in batch mode */
   selectedSessionIds: string[];
-  /** Session ID currently being context-edited (null = not editing). When set,
-   *  the sidebar shows the ContextFilesPanel and the window widens to reveal a
-   *  knowledge column alongside. */
-  contextEditingId: string | null;
   /** Draft images (base64 data URLs) waiting to be sent */
   draftImages: string[];
-  /** Knowledge-grounded (RAG) toggle — when enabled, sends the user's message
-   *  to /rag-chat instead of the plain chat endpoint, so the answer draws on
-   *  the shared YiKnowledge markdown tree. */
-  knowledgeGrounded: boolean;
-  /** Optional scope filter passed to /rag-chat (file_path substring). */
-  ragScope: string;
-  /** True when ragScope points at a specific file (uses /rag-file-chat
-   *  instead of /rag-chat). Set when the user scopes from a leaf node. */
-  ragScopeIsFile: boolean;
   /** Sources returned by the most recent grounded turn. Cleared on next send. */
   ragSources: RagSource[];
-  /** RAG index status — built / num_docs / last_built_at. Null until fetched. */
+  /** RAG toggle — when enabled, chat uses RAG-grounded streaming. */
+  ragEnabled: boolean;
+  /** RAG scope — file or directory path to limit retrieval. */
+  ragScope: string;
+  /** Whether the RAG scope points to a single file (vs directory). */
+  ragScopeIsFile: boolean;
+  /** RAG index status from backend. */
   ragStatus: RagStatusResponse | null;
-  /** True while ragStatus is being fetched. */
+  /** True while RAG status is being fetched. */
   ragStatusLoading: boolean;
-  /** Sidebar view mode: session list vs knowledge-tree browser. */
-  sidebarView: 'sessions' | 'knowledge' | 'stories' | 'bugs';
-  /** Recent bugs logged from any project via the BugReportDialog. */
-  recentBugs: BugDocument[];
-  /** True while a recent-bugs fetch is in flight. */
-  recentBugsLoading: boolean;
-  /** Error message from the last recent-bugs fetch, if any. */
-  recentBugsError: string;
-  /** Knowledge tree returned by KnowledgeService.scan(). Empty until loaded. */
-  knowledgeTree: KnowledgeTreeNode[];
-  /** True while a knowledge scan is in flight. */
-  knowledgeLoading: boolean;
-  /** True while a knowledge metadata sync (/knowledge-sync) is in flight. */
-  knowledgeSyncing: boolean;
-  /** Error message from the last knowledge scan, if any. */
-  knowledgeError: string;
-  /** Stories returned by KnowledgeService.listStories(). Empty until loaded. */
-  knowledgeStories: KnowledgeStory[];
-  /** True while a story list fetch is in flight. */
-  knowledgeStoriesLoading: boolean;
-  /** Error from the last story list fetch, if any. */
-  knowledgeStoriesError: string;
-  /** Whether the knowledge-file preview modal is open. */
-  knowledgePreviewVisible: boolean;
-  /** Path of the file currently loaded into the preview modal. */
-  knowledgePreviewPath: string;
-  /** Loaded KnowledgeReadResponse for the previewed file. */
-  knowledgePreviewData: KnowledgeReadResponse | null;
-  /** True while a knowledge read is in flight. */
-  knowledgePreviewLoading: boolean;
-  /** Whether the "save to YiKnowledge" modal is open. */
-  saveToKnowledgeVisible: boolean;
-  /** Target relative path (e.g. "notes/2026-08-05/summary.md"). */
-  saveToKnowledgeDraftPath: string;
-  /** Optional metadata fields surfaced as YAML frontmatter. */
-  saveToKnowledgeDraftMetadata: {
-    title: string;
-    category: string;
-    tags: string;
-    type: string;
-  };
-  /** True while the save is in flight. */
-  saveToKnowledgeLoading: boolean;
-  /** Timestamp of the pet message currently staged for save. */
-  saveToKnowledgeTimestamp: number | null;
-  /** Sources returned by the last pre-flight rag.query (no LLM call). */
-  ragPreviewSources: RagSource[];
-  /** True while a pre-flight rag.query is in flight. */
-  ragPreviewLoading: boolean;
-  /** Whether the pre-flight sources modal is open. */
-  ragPreviewVisible: boolean;
-  /** The question last used for pre-flight. */
-  ragPreviewQuestion: string;
-  /** Categories + tag counts from rag.categories(). Null until fetched. */
-  ragCategories: RagCategoriesResponse | null;
-  /** True while ragCategories is being fetched. */
-  ragCategoriesLoading: boolean;
-  /** Selected category filter — empty string means "all". */
-  knowledgeCategoryFilter: string;
-  /** RAG options — hybrid (BM25+vector), rerank, citation injection, hyde. */
+  /** Fast mode — skip retrieval for direct answer. */
+  ragFast: boolean;
+  /** Hybrid retrieval — combine BM25 keyword + vector semantic search. */
   ragHybrid: boolean;
+  /** Rerank — re-rank retrieved chunks with LLM cross-encoder. */
   ragRerank: boolean;
+  /** Inline citations — prefix chunks with [Source N] in LLM prompt. */
   ragCitations: boolean;
+  /** HyDE — generate hypothetical answer first to improve retrieval. */
   ragHyde: boolean;
-  /** RAG chat mode (condense_plus_context / condense_question / context / simple). */
-  ragChatMode: string;
-  /** Number of query rewrites for multi-query retrieval. */
+  /** Number of query variants for QueryFusionRetriever (0 = default/1). */
   ragNumQueries: number;
-  /** Frontmatter tags filter for RAG retrieval. */
-  ragTags: string[];
+  /** llama_index chat engine mode (condense, condense_plus_context, context, simple). */
+  ragChatMode: string;
+  /** Knowledge tree data from YiKnowledge scan. Categories each contain a flat file list. */
+  knowledgeTree: Array<{ category: string; files: KnowledgeFileEntry[] }>;
+  knowledgeLoading: boolean;
+  knowledgeError: string;
+  /** Knowledge file preview dialog. */
+  knowledgePreviewVisible: boolean;
+  knowledgePreviewPath: string;
+  knowledgePreviewData: import('@/api/types').KnowledgeReadResponse | null;
+  knowledgePreviewLoading: boolean;
+  /** LlamaIndex RAG console dialog visibility. */
+  llamaIndexVisible: boolean;
   /** Web search toggle — when enabled, appends web results to the LLM context. */
   webSearchEnabled: boolean;
   /** Web search image results (latest turn). */
@@ -294,51 +242,18 @@ export interface ChatState {
   selectedModel: string;
   /** Available model list from the backend. */
   availableModels: string[];
-  /** Whether the rag.decompose modal is open. */
-  ragDecomposeVisible: boolean;
-  /** True while rag.decompose is in flight (synchronous, can take a while). */
-  ragDecomposeLoading: boolean;
-  /** Decomposition result — original + synthesis + per-sub-question answers. */
-  ragDecomposeData: RagDecomposeResponse | null;
-  /** The question last decomposed. */
-  ragDecomposeQuestion: string;
   /** Session summary modal visibility + content. */
   sessionSummaryVisible: boolean;
   sessionSummaryLoading: boolean;
   sessionSummaryText: string;
   sessionSummaryError: string;
-  /** Whether the bug-report modal is open. */
-  bugReportVisible: boolean;
-  /** True while a bug report is being submitted. */
-  bugReportLoading: boolean;
-  /** Bug report draft fields. */
-  bugReportDraft: {
-    title: string;
-    project: string;
-    module: string;
-    severity: BugSeverity;
-    priority: BugPriority;
-    status: BugStatus;
-    type: BugType;
-    frequency: BugFrequency;
-    assignee: string;
-    reporter: string;
-    environment: string;
-    affectedVersion: string;
-    fixedVersion: string;
-    tags: string;
-    description: string;
-    stepsToReproduce: string;
-    expectedResult: string;
-    actualResult: string;
-  };
   /** WeCom bot list (persisted to chrome.storage.local). */
   weChatRobots: WeWorkBot[];
   /** Draft copy edited in the settings modal; committed on save. */
   weChatRobotsDraft: WeWorkBot[];
   /** Whether the WeCom bot settings modal is open. */
   weChatSettingsVisible: boolean;
-  /** Active color palette index — followss popup color changes via yipet:colorChanged. */
+  /** Active color palette index — follows popup color changes via yipet:colorChanged. */
   colorIndex: number;
   /** Optional custom hex color from the popup theme picker. */
   customColor: string;
@@ -361,8 +276,6 @@ export interface ChatState {
   /** Transient tool events fired during pre-stream execution; later coalesced
    *  into the pet message's `toolCalls` array. */
   toolEvents: ToolEvent[];
-  /** LlamaIndex analysis panel visibility. */
-  llamaIndexVisible: boolean;
   /** Context editor (ctx: file sections) popover visibility. */
   contextEditorVisible: boolean;
   /** Draft text for the context editor — modified before `undo`/`apply`. */
@@ -391,9 +304,15 @@ export interface ChatState {
   tagManagerVisible: boolean;
   /** Last template content pushed to the input bar (QuickButtons template mode). */
   inputTemplate: string;
+  /** Primary chat input text — directly bound to v-model via toRef in useChatInput.
+   *  Mirror of YiVad's `store.input`. Set directly from TemplatePicker / QuickButtons. */
+  inputText: string;
   /** Persisted prompt history (most recent last). Mirror of YiVad's
    *  `usePromptHistory` — capped at 100, dedupes consecutive duplicates. */
   promptHistory: string[];
+  /** Custom prompt templates created by the user. Persisted to chrome.storage.local.
+   *  Mirror of YiVad's `usePromptTemplates`. */
+  promptTemplates: Array<{ name: string; content: string }>;
   /** Whether the prompt-history popover is open (toolbar button). */
   promptHistoryVisible: boolean;
   /** FAQ documents fetched from backend for the current role/project. Empty

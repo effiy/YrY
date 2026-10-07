@@ -1,4 +1,5 @@
 ---
+
 doc_type: index
 title: 2026-Q3 YiPet OKR 索引
 category: 项目/浏览器扩展/OKR
@@ -9,6 +10,8 @@ project_id: yipet
 period: "2026 Q3"
 status: active
 progress: 98
+
+type: okr-summary
 ---
 
 # 2026-Q3 YiPet OKR 索引
@@ -88,8 +91,8 @@ progress: 98
 |---------|------|------|------|----------|
 | eng-003 | 跨世界通信稳定性 | engineer | 100% | YiPet |
 | eng-005 | 构建健康度清零 | engineer | 100% | YiPet |
-| prod-002 | 扩展功能完整性 | producter | 100% | YiPet |
-| sec-001 | 浏览器扩展安全审计 | srer | 100% | YiPet |
+| prod-002 | 扩展功能完整性 | product | 100% | YiPet |
+| sec-001 | 浏览器扩展安全审计 | sre | 100% | YiPet |
 
 ## 目录规范
 

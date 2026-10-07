@@ -7,7 +7,10 @@ export default {
       label: "类型",
       module: "史诗",
       modules: "史诗",
-      moduleLabel: "Epic"
+      moduleLabel: "Epic",
+      issue: "任务",
+      issues: "任务",
+      issueLabel: "Issue"
     },
     sort: {
       byDate: "按日期",
@@ -46,6 +49,29 @@ export default {
     },
     loading: "加载路线图数据…",
     loadFailed: "路线图数据加载失败",
+    partialError: "部分数据加载失败，进度可能不完整",
+    refresh: "刷新",
+    refreshing: "刷新中…",
+    refreshed: "更新于",
+    autoRefresh: "自动刷新",
+    autoRefreshOn: "自动刷新：开",
+    autoRefreshOff: "自动刷新：关",
+    nextRefresh: "{n}秒后刷新",
+    staleWarning: "数据可能已过时",
+    atRisk: "有风险",
+    dueSoon: "即将到期",
+    noDueDate: "无截止日期",
+    inProgress: "进行中",
+    noIssues: "无关联任务",
+    noLead: "无负责人",
+    issues: "{n} 个任务",
+    updated: "更新于 {time}",
+    health: {
+      label: "数据完整度",
+      missingDates: "{n} 项缺日期",
+      missingLead: "{n} 项缺负责人",
+      missingIssues: "{n} 项无任务"
+    },
     timeline: {
       zoomIn: "放大",
       zoomOut: "缩小",
@@ -63,7 +89,15 @@ export default {
       cancelled: "已取消",
       onHold: "暂停",
       atRisk: "有风险",
-      delayed: "已延期"
+      delayed: "已延期",
+      issue: {
+        backlog: "待办池",
+        todo: "待开始",
+        in_progress: "进行中",
+        in_review: "审查中",
+        done: "已完成",
+        cancelled: "已取消"
+      }
     },
     filters: {
       status: "状态",

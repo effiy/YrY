@@ -12,6 +12,8 @@ priority: p2
 resolution: |
   layouts/index.vue: 添加 onErrorCaptured 钩子，捕获子组件渲染错误并通过
   ElNotification 通知用户，阻止错误继续传播导致白屏
+benefit: "缺陷记录：质量-缺少onErrorCaptured错误边界"
+lifecycle: active
 ---
 
 # 未使用 onErrorCaptured 全局错误边界处理组件渲染错误
@@ -64,7 +66,6 @@ onErrorCaptured((err, instance, info) => {
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **错误边界的必要性**：Vue 3 的 `onErrorCaptured` 是防止「一个 ECharts 报错导致整个 SPA 白屏」的最后防线。在顶层布局组件注册一次即可保护所有子路由，成本极低
+- **第三方组件是错误的主要来源**：ECharts 初始化、Mermaid 渲染、v-html Markdown 解析都可能在运行时抛出异常。这些异常不应导致整个应用崩溃，应被错误边界捕获并降级展示
 

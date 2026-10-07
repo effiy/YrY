@@ -21,6 +21,8 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-Modules-Tab改为知识域卡片"
+lifecycle: active
 ---
 
 ## Description
@@ -81,13 +83,11 @@ Modules Tab 原先展示 MongoDB `modules` 集合中的 Epic/Module 文档，与
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 项目详情页嵌入视图的数据源应优先使用 YiKnowledge 目录结构（`knowledgeFiles`），而非 MongoDB 集合 |
+| 流程 | 数据源切换时需同步更新所有关联统计（如 Overview 侧边栏的 `totalModules`） |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **MongoDB 数据与文件系统数据的语义差异**：`modules` 集合存储的是 Epic/Module 管理实体，而 YiKnowledge 目录结构反映的是实际的知识组织方式。在项目详情页的上下文中，知识域（目录结构）比管理实体（Module 文档）更有意义
+- **变更的联动范围**：切换 Modules Tab 数据源时，Overview 侧边栏的 `totalModules` 统计、Domain Overview 面板等关联展示都需同步修改
 

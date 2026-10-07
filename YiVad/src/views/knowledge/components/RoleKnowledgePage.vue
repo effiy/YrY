@@ -90,8 +90,10 @@
 
 <script setup lang="ts" name="RoleKnowledgePage">
 import { ref, computed, onMounted, nextTick, reactive } from "vue";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 import { scanKnowledge, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
+import { confirm } from "@/hooks/useConfirmAction";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import KnowledgeError from "./KnowledgeError.vue";
@@ -118,6 +120,7 @@ const props = withDefaults(
   }>(),
   { structuralTags: () => [] }
 );
+const { t } = useI18n();
 
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
@@ -249,21 +252,17 @@ function openFile(file: KnowledgeFileEntry) {
 }
 
 async function handleDelete(file: KnowledgeFileEntry) {
-  try {
-    await ElMessageBox.confirm(`Delete "${file.path}"? This action cannot be undone.`, "Confirm Delete", {
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-      type: "warning"
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(
+    t("knowledge.common.deleteFileConfirm", { path: file.path }),
+    t("knowledge.common.deleteFileTitle")
+  );
+  if (!ok) return;
   try {
     await deleteKnowledgeFile(file.path);
-    ElMessage.success("File deleted");
+    ElMessage.success(t("knowledge.common.fileDeleted"));
     allFiles.value = allFiles.value.filter(f => f.path !== file.path);
   } catch {
-    ElMessage.error("Failed to delete file");
+    ElMessage.error(t("knowledge.common.fileDeleteFailed"));
   }
 }
 

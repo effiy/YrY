@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-Vue模板属性未使用连字符"
+lifecycle: active
 ---
 
 # code-quality: Vue 模板属性未使用 kebab-case 命名
@@ -81,7 +83,6 @@ Vue 官方风格指南要求模板中的 prop 名称使用 kebab-case。Vue 的 
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **Vue 运行时兼容 ≠ 风格指南合规**：camelCase 属性名在 Vue 模板中运行时完全正常（Vue 自动解析），但不符合 Vue 官方风格指南要求。ESLint `vue/attribute-hyphenation` 规则是风格一致性的防线
+- **kebab-case 的优势**：`:files-by-dir` 比 `:filesByDir` 更易读（词边界清晰），且与 HTML 标准属性命名（`aria-label`、`data-value`）保持一致
 

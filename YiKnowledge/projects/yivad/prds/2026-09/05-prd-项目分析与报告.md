@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 项目分析与报告
 tags: [OKR, 分析, 报告, 风险评分, 趋势, AI推荐]
 category: 项目/管理后台/需求
@@ -23,6 +22,8 @@ roles: [engineer, pm]
 source_okr: [yivad-003]
 related_modules: ["YV-09-M13"]
 related_tests: ["YV-09-M13"]
+benefit: "产品需求：项目分析与报告"
+lifecycle: active
 ---
 
 # 项目分析与报告

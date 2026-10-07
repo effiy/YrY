@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M07: 图片展示与组织 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-16
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M07"
-source_prds: ["07-功能实现-图片展示与组织工具"]
-source_modules: ["07-prd-task-图片展示与组织工具"]
+source_prds: ["07-功能实现-图片展示与组织工具.md"]
+source_modules: ["07-prd-task-图片展示与组织工具.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M07: 图片展示与组织 — 测试用例
@@ -39,4 +42,3 @@ source_okr: [yipet-004]
 | S1 — 严重 | 视图切换后图片丢失 |
 | S2 — 一般 | 瀑布流布局断裂（图片重叠） |
 
----

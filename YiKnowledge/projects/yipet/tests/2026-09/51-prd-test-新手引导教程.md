@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "新手引导教程 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["51-功能实现-新手引导教程"]
+source_prds: ["51-架构设计-新手引导教程.md"]
+source_modules: ["51-prd-task-新手引导教程.md"]
+
+type: test
 ---
 
 # 新手引导教程 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["51-功能实现-新手引导教程"]
 |------|------|------|--------|
 | TC-ONB01 | 首次安装引导 | 4 步流程展示 | P2 |
 | TC-ONB02 | 完成后不显示 | localStorage 标记 | P2 |
+

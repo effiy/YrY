@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-32"
 title: "YK-09-32: 批量知识迁移自动化 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "35-架构设计-批量知识迁移自动化.md"
 source_okr: [yiknowledge-001]
 related_tests: ["35-prd-test-批量知识迁移自动化"]
+
+type: task
 ---
 
 # YK-09-32: 批量知识迁移自动化 — 开发方案

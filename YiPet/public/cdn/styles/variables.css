@@ -1,6 +1,9 @@
 /*
  * YiPet Design Tokens — complete CSS custom-property system.
  *
+ * Scoped to YiPet containers only (#yipet-overlay, #yipet-chat-root)
+ * to avoid polluting the host page's CSS variable namespace.
+ *
  * Categories: Brand · Semantic · Gray scale · Backgrounds · Text ·
  *             Borders · Shadows · Interactive · Spacing · Typography ·
  *             Safe-area · Accessibility
@@ -8,7 +11,7 @@
  * Theme files in themes/ override the Brand and Background categories.
  */
 
-:root {
+:is(:root, #yipet-overlay, #yipet-chat-root) {
   /* ═══════════════════════════════════════════════════════════════════
      Brand — primary palette (overridden per theme)
      ═══════════════════════════════════════════════════════════════════ */
@@ -153,7 +156,8 @@
    Accessibility — high-contrast mode
    ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-contrast: high) {
-  :root {
+  #yipet-overlay,
+  #yipet-chat-root {
     --text-secondary: #f1f5f9;
     --text-muted: #cbd5e1;
     --border-primary: rgba(255, 255, 255, 0.3);
@@ -167,7 +171,8 @@
    Accessibility — reduced-motion (flat colors replace gradients)
    ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  #yipet-overlay,
+  #yipet-chat-root {
     --primary-gradient: #6366f1;
     --primary-gradient-hover: #4f46e5;
     --accent-gradient: #06b6d4;

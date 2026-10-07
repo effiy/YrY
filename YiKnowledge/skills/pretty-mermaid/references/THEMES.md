@@ -1,3 +1,22 @@
+---
+title: "Beautiful-Mermaid 主题参考"
+tags: [mermaid, themes, styling, reference, skill]
+category: skills/pretty-mermaid
+created: 2026-09-15
+updated: 2026-10-07
+source: external
+type: reference
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [engineer]
+benefit: 选择和应用 Mermaid 图表的主题配色方案
+related:
+  - ../SKILL.md
+  - ./api_reference.md
+  - ./DIAGRAM_TYPES.md
+---
+
 # Beautiful-Mermaid 主题参考
 
 Beautiful-Mermaid 提供 15 个精心设计的内置主题，涵盖亮色和暗色方案。每个主题都基于两种核心颜色（背景 `bg` 和前景 `fg`），并可通过可选的丰富色彩进行增强。

@@ -192,7 +192,10 @@ export function streamRagChat(payload: RagChatPayload, handlers: RagStreamHandle
   const body: Record<string, unknown> = {
     messages: payload.messages,
     stream: true,
+    ...(payload.model ? { model: payload.model } : {}),
     ...(payload.scope ? { scope: payload.scope } : {}),
+    ...(payload.file_paths?.length ? { file_paths: payload.file_paths } : {}),
+    ...(payload.context_notes ? { context_notes: payload.context_notes } : {}),
     ...(payload.top_k != null ? { top_k: payload.top_k } : {}),
     ...(payload.hybrid != null ? { hybrid: payload.hybrid } : {}),
     ...(payload.rerank != null ? { rerank: payload.rerank } : {}),
@@ -201,7 +204,8 @@ export function streamRagChat(payload: RagChatPayload, handlers: RagStreamHandle
     ...(payload.chat_mode ? { chat_mode: payload.chat_mode } : {}),
     ...(payload.category ? { category: payload.category } : {}),
     ...(payload.tags?.length ? { tags: payload.tags } : {}),
-    ...(payload.hyde_enabled != null ? { hyde: payload.hyde_enabled } : {})
+    ...(payload.hyde_enabled != null ? { hyde: payload.hyde_enabled } : {}),
+    ...(payload.fast ? { fast: true } : {})
   };
   return runStream(url, body, handlers);
 }

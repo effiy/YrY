@@ -262,7 +262,7 @@ onBeforeUnmount(() => { window.removeEventListener('yipet:shortcut:editor', hand
 
 .yipet-capture-conflict {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  font-size: 13px; color: #fbbf24; margin-bottom: 12px;
+  font-size: 13px; color: var(--el-color-warning-light-5); margin-bottom: 12px;
 }
 
 .yipet-capture-error { font-size: 13px; color: #ef4444; margin-bottom: 12px; }

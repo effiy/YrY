@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-M20"
 title: "YK-09-M20: 内容质量与分析 — 开发方案"
@@ -16,6 +17,8 @@ estimate_backend: 4.5
 source_prd: "02-功能实现-内容质量与分析.md"
 source_okr: [yiknowledge-001]
 related_tests: ["02-prd-test-内容质量与分析"]
+
+type: task
 ---
 
 # YK-09-M20: 内容质量与分析 — 开发方案

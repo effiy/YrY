@@ -16,7 +16,7 @@ prd_task_id: YK-09-68
 estimate_frontend: 0.5
 review_status: 待评审
 issue_type: 架构
-roles: [aier, srer]
+roles: [aier, sre]
 ---
 
 # YK-09-68: RAG 检索延迟分位统计 — 按查询复杂度分层 P50/P95/P99
@@ -84,7 +84,7 @@ flowchart TD
 |------|----------|--------|----------|
 | 查询长度（词数） | short(<=5) / medium(6-15) / long(>15) | 充足 | 高 |
 | 查询类型 | text / code / image / mixed | 中 | 高 |
-| 角色目录过滤 | engineer / aier / srer / ... | 中 | 中 |
+| 角色目录过滤 | engineer / aier / sre / ... | 中 | 中 |
 | 返回结果数 | empty / few(1-3) / many(>3) | 充足 | 中 |
 | 时间段 | 工作时间 / 非工作时间 | 充足 | 低 |
 

@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-08-07"
 title: "YV-08-07: 首页仪表盘 — 快速导航 + OKR 推荐 + 数据概览 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202608"
 estimate_frontend: 3.0
 source_prd: "07-prd-首页仪表盘.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 首页仪表盘]
+benefit: "开发方案：task-首页仪表盘"
+lifecycle: active
 ---
 
 # YV-08-07: 首页仪表盘 — 开发方案

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-203: 用户数据导出 — 数据类型选择、GDPR合规导出、导出进度、带过期时间的下载链接、导出历史 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-203"
 source_prds: ["77-prd-用户数据导出"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户数据导出]
+benefit: "测试用例：用户数据导出"
+lifecycle: active
 ---
 # YV-09-203: 用户数据导出 — 数据类型选择、GDPR合规导出、导出进度、带过期时间的下载链接、导出历史 — 测试规格
 

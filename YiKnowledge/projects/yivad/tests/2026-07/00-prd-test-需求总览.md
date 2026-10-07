@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YiVad 七月迭代 — 项目初始化 / AI Chat 迁移 / 构建系统升级 / 知识库集成 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-00"
 source_prds: ["00-prd-需求总览"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 需求总览]
+benefit: "当月测试用例索引与可追溯矩阵"
+lifecycle: active
 ---
 # YiVad 七月迭代 — 项目初始化 / AI Chat 迁移 / 构建系统升级 / 知识库集成 — 测试规格
 

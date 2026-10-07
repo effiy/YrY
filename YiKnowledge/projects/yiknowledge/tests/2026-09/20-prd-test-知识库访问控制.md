@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-17: 知识库访问控制 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-17"
 source_prds: ["20-架构设计-知识库访问控制"]
 source_modules: ["20-prd-task-知识库访问控制"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-17: 知识库访问控制 — 测试用例

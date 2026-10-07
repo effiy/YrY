@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YiVad 九月迭代 — Project 页面功能模块重构 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-01"
 source_prds: ["00-prd-需求总览"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 需求总览]
+benefit: "当月测试用例索引与可追溯矩阵"
+lifecycle: active
 ---
 # YiVad 九月迭代 — Project 页面功能模块重构 — 测试规格
 

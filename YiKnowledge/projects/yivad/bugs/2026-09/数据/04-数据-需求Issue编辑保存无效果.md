@@ -21,13 +21,14 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-08)
 frequency: always
+benefit: "缺陷记录：数据-需求Issue编辑保存无效果"
+lifecycle: active
 ---
 
 ## Description
 
 在项目详情页 (`/project/yivad`) 的需求 Tab 中，表格操作编辑需求 Issue 的状态后点击 Save 按钮，对话框关闭但表格数据未更新，状态修改无效。
 
-**补充说明**：此问题在常规开发和测试流程中未被及时发现，建议加强对应模块的自动化测试覆盖。
 ## Root Cause
 
 `useIssueDialog.ts` 的 `submit()` 函数对需求类型 Issue（`issue_type === "requirement"`）的处理存在两个问题：
@@ -78,13 +79,13 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 多数据源场景（MongoDB + markdown 文件）中，写入操作必须先确认数据归属源，避免对错误存储执行写操作 |
+| 测试 | 需求 Issue 的编辑/保存流程需集成测试覆盖：修改 status → Save → 验证 markdown 文件 frontmatter 已更新 |
+| 流程 | `submit()` 等核心函数中不同 issue_type 分支需有明确注释说明数据流向 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **双存储模型的数据归属**：需求 Issue 的权威数据源是 markdown 文件，不应走 MongoDB CRUD 路径。`submit()` 中的 `if (issue_type === "requirement")` 分支应该直接跳过 `store.editIssue()` 而非在所有分支后统一调用
+- **key 冲突导致静默错误**：用月份字符串作为 key 在 `allIssues` 中 `find()` 时，同一月份多条需求会错误匹配到第一条。唯一 key 是数据操作的基础前提
+- **upsert 的副作用**：后端 `update_document` 在找不到文档时的 upsert 行为在此场景下是反模式——它悄悄创建了不该存在的 MongoDB 文档，污染了数据库
 

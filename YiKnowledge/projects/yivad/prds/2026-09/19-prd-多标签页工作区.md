@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 多标签页工作区
 tags:
 - 标签页
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["19-prd-task-多标签页工作区"]
+related_tests: ["19-prd-test-多标签页工作区"]
+benefit: "产品需求：多标签页工作区"
+lifecycle: active
 ---
 
 # 多标签页工作区

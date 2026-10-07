@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-140: 屏幕阅读器优化 — ARIA标签/活动区域/角色、动态内容公告、表单错误播报、替代文本审计工具 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-140"
 source_prds: ["70-prd-屏幕阅读器优化"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 屏幕阅读器优化]
+benefit: "测试用例：屏幕阅读器优化"
+lifecycle: active
 ---
 # YV-09-140: 屏幕阅读器优化 — ARIA标签/活动区域/角色、动态内容公告、表单错误播报、替代文本审计工具 — 测试规格
 

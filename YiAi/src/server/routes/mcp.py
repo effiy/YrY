@@ -115,6 +115,8 @@ def _extract_content(item, out: list[str]) -> None:
             return
     except (AttributeError, TypeError):
         logger.debug("Failed to convert MCP result, using str fallback", exc_info=True)
+    # Final fallback — ensure we always output something
+    out.append(str(item))
 
 
 def _jsonable(obj):

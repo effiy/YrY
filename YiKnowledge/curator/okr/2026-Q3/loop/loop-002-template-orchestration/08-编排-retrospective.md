@@ -5,7 +5,8 @@ stage: retrospective
 title: loop-002 复盘 — 模板复用与编排规范化
 role: curator
 goalId: cur-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, retrospective, template-reuse, orchestration]

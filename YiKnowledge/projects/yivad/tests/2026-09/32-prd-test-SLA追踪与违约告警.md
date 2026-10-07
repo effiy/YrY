@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "SLA 追踪与违约告警 — 测试用例"
 status: 待开始
 priority: P2
@@ -11,6 +10,12 @@ project: YiVad
 prd_month: "202609"
 source_prds: ["32-prd-SLA追踪与违约告警"]
 source_modules: ["32-prd-task-SLA追踪与违约告警"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, SLA追踪与违约告警]
+benefit: "测试用例：SLA追踪与违约告警"
+lifecycle: active
 ---
 
 # SLA 追踪与违约告警 — 测试用例
@@ -38,24 +43,24 @@ source_modules: ["32-prd-task-SLA追踪与违约告警"]
 
 | 范围 | 内容 |
 |------|------|
-| 功能验证 | 参见 PRD 功能需求 |
+| 功能验证 | SLA 规则配置、违约检测、告警通知、SLA 达标率统计图表 |
 
 ### 1.2 不在范围内
 
 | 排除项 | 原因 |
 |--------|------|
-| — | — |
+| 外部监控系统集成（如 PagerDuty） | 超出初版范围 |
 
 ---
 
 <a id="sec-2"></a>
 ## 二、需求覆盖矩阵
 
-> 待补：对照 PRD FR-x.y 编号补充覆盖关系。
-
 | FR | 需求 | 单元 | 组件 | 集成 | 状态 |
 |----|------|------|------|------|------|
-| — | — | — | — | — | ⚠️ 待开始 |
+| FR-1 | SLA 规则配置 | 创建规则 → 设置响应/解决时间 | 单元 | 待开始 |
+| FR-2 | 违约检测 | 超时 Issue → 标记为违约 → 统计更新 | 集成 | 待开始 |
+| FR-3 | 达标率图表 | 时间范围选择 → ECharts 趋势图 | 组件 | 待开始 |
 
 ---
 

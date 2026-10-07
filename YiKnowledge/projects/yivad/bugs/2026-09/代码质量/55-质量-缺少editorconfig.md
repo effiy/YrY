@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-缺少editorconfig"
+lifecycle: active
 ---
 
 # 缺少 .editorconfig 统一编辑器配置
@@ -55,7 +57,5 @@ trim_trailing_whitespace = false
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`.editorconfig` 是编辑器无关的最后防线**：Prettier 和 ESLint 依赖项目工具链（node_modules），但 `.editorconfig` 被所有主流编辑器原生支持。团队成员使用不同 IDE 时，`.editorconfig` 确保缩进/换行符/字符集在保存时一致，无需安装任何插件
 

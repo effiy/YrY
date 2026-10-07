@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-11"
 title: "YK-09-11: Knowledge Watcher 内部机制与性能调优 — 开发方案"
@@ -15,6 +16,8 @@ estimate_backend: 2.0
 source_prd: "14-架构设计-KnowledgeWatcher内部机制与性能调优.md"
 source_okr: [yiknowledge-001]
 related_tests: ["14-prd-test-KnowledgeWatcher内部机制与性能调优"]
+
+type: task
 ---
 
 # YK-09-11: Knowledge Watcher 内部机制与性能调优 — 开发方案

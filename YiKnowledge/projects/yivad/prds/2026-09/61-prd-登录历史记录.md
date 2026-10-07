@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-131: 登录历史记录 — 用户登录日志、IP/位置/设备/浏览器记录、异地登录检测、登录趋势分析、导出"
 tags: [需求文档, 登录历史, IP追踪, 设备识别, 异地检测, 安全审计, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["61-prd-task-登录历史记录"]
+related_tests: ["61-prd-test-登录历史记录"]
+benefit: "产品需求：登录历史记录"
+lifecycle: active
 ---
 
 # YV-09-131: 登录历史记录 — 用户登录日志、IP/位置/设备/浏览器记录、异地登录检测、登录趋势分析、导出

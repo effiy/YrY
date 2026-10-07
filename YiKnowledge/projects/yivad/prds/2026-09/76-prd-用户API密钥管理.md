@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-202: 用户API密钥管理 — 创建/查看/吊销密钥、权限范围、最后使用时间、使用统计、安全提示"
 tags: [需求文档, 用户中心, API密钥, 密钥管理, 权限范围, 使用统计, 安全]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["76-prd-task-用户API密钥管理"]
+related_tests: ["76-prd-test-用户API密钥管理"]
+benefit: "产品需求：用户API密钥管理"
+lifecycle: active
 ---
 
 # YV-09-202: 用户API密钥管理 — 创建/查看/吊销密钥、权限范围、最后使用时间、使用统计、安全提示

@@ -12,6 +12,7 @@ import { HOME_URL, LOGIN_URL } from "@/config";
 export const staticRouter: RouteRecordRaw[] = [
   {
     path: "/",
+    name: "root",
     redirect: HOME_URL
   },
   {

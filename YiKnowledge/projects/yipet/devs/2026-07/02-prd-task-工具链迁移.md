@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-02"
 title: "YP-07-02: 工具链迁移 — ESLint + Prettier + Husky + commitlint + Vitest — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 1.5
 source_prd: "02-基础设施-工具链迁移.md"
 source_okr: [yipet-001]
+
+type: task
 ---
 
 # YP-07-02: 工具链迁移 — 开发方案

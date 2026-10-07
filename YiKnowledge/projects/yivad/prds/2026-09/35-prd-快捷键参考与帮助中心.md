@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-70: 快捷键参考与帮助中心 — 上下文感知帮助面板、可搜索文档、快捷键速查、更新日志"
 tags: [需求文档, 帮助中心, 快捷键参考, 上下文感知, 更新日志, 反馈提交, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["35-prd-task-快捷键参考与帮助中心"]
+related_tests: ["35-prd-test-快捷键参考与帮助中心"]
+benefit: "产品需求：快捷键参考与帮助中心"
+lifecycle: active
 ---
 
 # YV-09-70: 快捷键参考与帮助中心 — 上下文感知帮助面板、可搜索文档、快捷键速查、更新日志

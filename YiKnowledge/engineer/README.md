@@ -25,7 +25,7 @@ related:
 
 # Engineer — 工程角色主页
 
-> **流水线阶段 3：设计与构建** — Engineer 角色负责**实现**。不做架构决策（由 [leader/](../leader/) 负责）、不定义产品需求（由 [producter/](../producter/) 负责）、不运维生产环境（由 [srer/](../srer/) 负责）。Engineer 的使命是将决策和需求转化为可运行、可测试、可维护的代码。
+> **流水线阶段 3：设计与构建** — Engineer 角色负责**实现**。不做架构决策（由 [leader/](../leader/) 负责）、不定义产品需求（由 [product/](../product/) 负责）、不运维生产环境（由 [sre/](../sre/) 负责）。Engineer 的使命是将决策和需求转化为可运行、可测试、可维护的代码。
 
 ## 问题域
 
@@ -63,8 +63,8 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 |---|---|---|
 | 带权衡分析的架构决策（ADR） | leader | [../leader/decisions/](../leader/decisions/) |
 | 技术选型评估与成熟度模型 | leader | [../leader/architecture/](../leader/architecture/) |
-| 产品需求与用户故事 | producter | [../producter/discovery/](../producter/discovery/) |
-| 事件响应流程与复盘 | srer | [../srer/incident-response/](../srer/incident-response/) |
+| 产品需求与用户故事 | product | [../product/discovery/](../product/discovery/) |
+| 事件响应流程与复盘 | sre | [../sre/incident-response/](../sre/incident-response/) |
 | AI 理论与方法论基础 | aier | [../aier/foundations/](../aier/foundations/) |
 | 知识库治理与结构维护 | curator | [../curator/governance/](../curator/governance/) |
 
@@ -74,12 +74,12 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 |---|---|---|
 | 架构决策 vs 架构模式 | leader/ | 决策 = 在具体约束下选 A 不选 B；模式 = 通用的可复用设计方案 |
 | 安全加固实现 vs 安全策略制定 | engineer/ | 加固 = 代码层面的具体实现（如参数校验、依赖审计）；策略 = 组织级的安全方针 |
-| 事件发生时的应急响应 vs 事前风险预防 | srer/ | 事件响应 = 故障发生后的处理流程；风险预防 = 故障发生前的架构和流程设计 |
+| 事件发生时的应急响应 vs 事前风险预防 | sre/ | 事件响应 = 故障发生后的处理流程；风险预防 = 故障发生前的架构和流程设计 |
 | Bug 修复 vs Bug 报告规范 | engineer/ | 修复记录 = learn/lessons/；报告规范 = projects/ |
 
 ## 核心观点
 
-- **问题域优先**：内容按实际遇到的问题组织（Build 阶段 → Ship 阶段 → Run 阶段 → Learn 阶段），而非按文档类型或作者。当你想"我怎么设计这个 API？"时，去 build/；当你想"上次那个 SSE 流中断的 bug 怎么修？"时，去 learn/lessons/gotchas/。
+- **问题域优先**：内容按实际遇到的问题组织（Build 阶段 → Ship 阶段 → Run 阶段 → Learn 阶段），而非按文档类型或作者。当你想"我怎么设计这个 API？"时，去 build/；当你想"上次那个 SSE 流中断的 bug 怎么修？"时，去 learn/lessons/。
 - **实现而非决策**：engineer/ 记录的是"怎么构建"——具体的代码模式、配置方式、工具使用方法。leader/ 记录的才是"为什么选择这个方案"——包含权衡分析、替代方案评估、决策上下文。
 - **经验教训是第一类产物**：每次成功、每次失败、每次踩坑都值得记录。Lean 阶段的 wins/、failures/、gotchas/ 三个子目录共同构成 YrY 工程团队的集体记忆。不记录的经验等于浪费的经验。
 - **项目知识独立维护**：每个 YrY 子项目（YiAi、YiVad、YiPet、YiKnowledge）在 projects/ 和 learn/projects/ 下有独立的文档体系，包含架构设计、开发规范、功能模块清单、用户故事等。
@@ -88,8 +88,8 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 
 - [../leader/](../leader/) — 架构决策记录（ADR）、容量规划、技术风险、路线图
 - [../aier/](../aier/) — AI 基础理论、RAG/Agent 方法论、LLM 平台
-- [../producter/](../producter/) — 产品管理框架、需求发现、交付节奏
-- [../srer/](../srer/) — 事件响应流程、可观测性（监控/告警/SLO）、发布管理
+- [../product/](../product/) — 产品管理框架、需求发现、交付节奏
+- [../sre/](../sre/) — 事件响应流程、可观测性（监控/告警/SLO）、发布管理
 - [../projects/](../projects/) — 项目运营产物（Bug 跟踪、Issue 管理、Demo）
 - [./ENGINEERING.md](./ENGINEERING.md) — 跨角色工程领域聚合索引（架构/质量/数据/部署/经验教训）
 - [./SECURITY.md](./SECURITY.md) — 跨角色安全领域聚合索引（供应链/应用安全/风险/合规）
@@ -99,9 +99,9 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 
 ### 按角色快速跳转
 
-- 我是**新加入的工程师** → [run/onboarding/](./run/onboarding/) 按你的项目选择入职指南
+- 我是**新加入的工程师** → [run/](./run/) 按你的项目选择入职指南
 - 我要**添加新的 API 调用** → [build/](./build/) 查阅 RPC 协议和跨项目调用指南
-- 我遇到了**诡异的 bug** → [learn/lessons/gotchas/](./learn/lessons/gotchas/) 先看看有没有已知陷阱
+- 我遇到了**诡异的 bug** → [learn/lessons/](./learn/lessons/) 先看看有没有已知陷阱
 - 我要**发布新版本** → [ship/](./ship/) 查阅测试基础设施、安全加固和容量规划
 - 我想了解**某个项目的架构** → [learn/projects/](./learn/projects/) 选择目标项目查看架构设计和开发规范
 

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "命令面板与键盘快捷键系统 — Cmd+K 全局快速导航 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-08"
 source_prds: ["08-prd-命令面板与键盘快捷键"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 命令面板与键盘快捷键]
+benefit: "测试用例：命令面板与键盘快捷键"
+lifecycle: active
 ---
 # 命令面板与键盘快捷键系统 — Cmd+K 全局快速导航 — 测试规格
 

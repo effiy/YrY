@@ -50,7 +50,7 @@ class TestSetFileTags:
 
     @pytest.mark.asyncio
     async def test_set_tags_empty_raises(self):
-        with pytest.raises(ValueError, match="cannot be empty"):
+        with pytest.raises(BusinessException, match="object name cannot be empty"):
             await set_file_tags("", ["tag"])
 
 

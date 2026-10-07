@@ -81,7 +81,8 @@ import type { ColumnProps, ProTableInstance } from "@/components/ProTable/interf
 import { getTopicList, deleteTopicEntry, type TopicEntryDocument, type TopicTree } from "@/api/modules/topic";
 import { useHandleData } from "@/hooks/useHandleData";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { confirm } from "@/hooks/useConfirmAction";
 
 const { t } = useI18n();
 
@@ -310,16 +311,11 @@ const urlPageNum = computed(() => {
 
 async function handleBatchDelete(rows: { [key: string]: any }[]) {
   if (!rows.length) return;
-  try {
-    await ElMessageBox.confirm(t("topicDetail.batchDeleteConfirm", { count: rows.length }), t("topicDetail.batchDeleteTitle"), {
-      type: "warning",
-      distinguishCancelAndClose: true,
-      confirmButtonText: t("topicDetail.delete"),
-      cancelButtonText: t("topicDetail.cancel")
-    });
-  } catch {
-    return;
-  }
+  const ok = await confirm(
+    t("topicDetail.batchDeleteConfirm", { count: rows.length }),
+    t("topicDetail.batchDeleteTitle")
+  );
+  if (!ok) return;
   batchDeleting.value = true;
   let done = 0;
   let failed = 0;
@@ -370,10 +366,10 @@ const ROUTE_PREFIX_MAP: Record<string, string> = {
   leader: "leader",
   "code-review": "cr",
   engineer: "eng",
-  producter: "pm",
+  product: "pm",
   aier: "ai",
-  srer: "sre",
-  executiver: "exec",
+  sre: "sre",
+  executive: "exec",
   curator: "cur"
 };
 const routePrefix = ROUTE_PREFIX_MAP[props.tree] || "leader";

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-71: 数据备份恢复界面 — 备份配置、手动/定时备份、历史管理、一键恢复与存储追踪"
 tags: [需求文档, 数据备份, 恢复, 定时备份, 备份历史, 存储追踪]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["36-prd-task-数据备份恢复界面"]
+related_tests: ["36-prd-test-数据备份恢复界面"]
+benefit: "产品需求：数据备份恢复界面"
+lifecycle: active
 ---
 
 # YV-09-71: 数据备份恢复界面 — 备份配置、手动/定时备份、历史管理、一键恢复与存储追踪

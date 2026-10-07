@@ -1,10 +1,13 @@
 ---
 name: issue-creator
 description: >
-  Issue 追踪管理方法论。指导如何创建、分类、优先级排序、分配和追踪 Issue（任务/需求/Bug/改进），
-  涵盖状态流转、看板管理、标签分类、数据质量分析和进度追踪的最佳实践。
-  当用户提到 Issue、任务、需求、Bug、缺陷、改进项、看板任务、任务分配、状态流转、
-  工作项管理时使用。
+  Issue 追踪管理。创建/分类/流转/筛选/诊断工作项，覆盖Issue全生命周期。
+  当用户提到 Issue、任务、需求、Bug、缺陷、改进项、看板任务、工作项，
+  或者说「创建Issue」「任务分配」「状态流转」「看板」「backlog」「sprint」
+  「bug tracking」「task management」「kanban」「work item」「ticket」
+  「issue tracking」「缺陷管理」时使用。
+  5种模式自动切换：创建/流转/筛选/看板/诊断。
+  注意：发现Bug需要调试→debugging；调试完成后的Bug归档→本技能。
 user_invocable: true
 updated: 2026-09-10
 lifecycle: default-pipeline
@@ -20,6 +23,16 @@ priority: normal
 # Issues —— Issue 追踪管理
 
 一个交互式 Issue 管理助手，根据用户意图自动选择操作模式。覆盖 Issue 全生命周期：创建、分类、排期、流转、评审、交付。
+
+### 进入标准
+- [ ] 有需要追踪的工作项（任务/Bug/需求/改进）
+- [ ] 需要看板视图或数据诊断（批量管理）
+- [ ] 不是一次性、不需要追踪的临时操作
+
+### 退出标准
+- [ ] Issue 已创建/流转/诊断完成（对应所选模式）
+- [ ] 输出已确认（创建模式的 Issue 卡片、筛选模式的列表、诊断模式的仪表盘）
+- [ ] 下一步：Issue 进入执行 → task-planning 或 TDD
 
 ## 模式选择
 
@@ -349,21 +362,50 @@ backlog ──→ todo ──→ in_progress ──→ in_review ──→ done
 
 ---
 
-## 与 PRD 的关系
+## 技能协作链
+
+Issue 追踪位于开发工作流的中游，与上下游技能协作：
 
 ```
-PRD（产品规格）──→ Issue（可执行工作项）
+prd-creator          task-planning        issue-creator        debugging
+    │                     │                     │                   │
+    │  PRD                │                     │                   │
+    ├─────────────────────►                     │                   │
+    │  功能需求           │  执行步骤           │                   │
+    │                     ├─────────────────────►                   │
+    │                     │              Issue 拆解                 │
+    │                     │                     │                   │
+    │                     │                     │  Bug 报告         │
+    │                     │                     │◄──────────────────┤
+    │                     │                     │  根因分析         │
+    ▼                     ▼                     ▼                   ▼
+projects/<p>/prds/   tasks/<name>/       projects/<p>/bugs/   projects/<p>/bugs/
 ```
 
+### 与其他技能的对接
+
+**从 PRD 到 Issue（prd-creator → issue-creator）：**
 - PRD 中的需求 → 拆解为 `requirement` 类型 Issue（可选父子拆分）
 - PRD 中的功能点 → 拆解为 `feature` 或 `task` 类型 Issue
-- 测试/线上反馈 → 创建 `bug` 类型 Issue
-- 技术优化需求 → 创建 `improvement` 类型 Issue
+- 转换流程：PRD → requirement Issue → feature/task Issue（父子关系）
 
-**转换流程：**
-1. 需求拆解：PRD → 多个 requirement Issue（如有）
-2. 功能指派：requirement → 多个 feature/task Issue（父子关系）
-3. 反馈闭环：bug → 关联到原始 requirement Issue
+**从计划到 Issue（task-planning → issue-creator）：**
+- task_plan 中的执行步骤 → 可转为独立的 task Issue（便于团队协作）
+- progress.md 中发现的阻塞问题 → 可创建 bug Issue 追踪
+- findings.md 中的技术发现 → 可创建 improvement Issue 跟进
+
+**从 Bug 到 Issue（debugging → issue-creator）：**
+- 调试过程中发现的 Bug → 创建 `bug` 类型 Issue
+- 根因分析完成 → 关联到原始 requirement Issue 形成反馈闭环
+- Bug 分类参考 `YiKnowledge/skills/debugging/references/bug-taxonomy.md`
+- Bug 文档归档路径：`YiKnowledge/projects/<project>/bugs/<date>/<category>/`
+
+### 执行中任务的上下文持久化
+
+对于需要多轮对话完成的 Issue，建议结合 **task-planning** 技能的三文件模式：
+- `task_plan.md` — 记录 Issue 的实现计划（与 Issue 描述中的验收标准对齐）
+- `findings.md` — 记录实现过程中的技术发现
+- `progress.md` — 记录实现步骤的完成状态（可同步更新 Issue 状态流转）
 
 ---
 
@@ -410,7 +452,12 @@ PRD（产品规格）──→ Issue（可执行工作项）
 
 ## 参考文件
 
-- `references/issue-model.md` —— 完整的 Issue 数据模型定义、枚举值和状态流转规则
-- `README.md` —— 本技能的使用说明和文件结构概览
-- ../../YiKnowledge/projects/INDEX.md —— 各项目的实际缺陷列表与分类
-- ../../YiKnowledge/curator/governance/04-治理-就绪检查清单.md —— 知识质量就绪检查清单
+- `references/issue-model.md` — 完整的 Issue 数据模型定义、枚举值和状态流转规则
+- `README.md` — 本技能的使用说明和文件结构概览
+- `../prd-creator/SKILL.md` — PRD 生成技能（Issue 的上游输入）
+- `../task-planning/SKILL.md` — 任务规划与上下文持久化（Issue 执行阶段的配合技能）
+- `../test-driven-development/SKILL.md` — TDD 技能（测试用例可作为 Issue 验收标准）
+- `../debugging/references/bug-taxonomy.md` — Bug 分类体系（bug 类型 Issue 的分类参考）
+- `../verification-before-completion/SKILL.md` — 完成前验证（Issue 完成前的质量检查）
+- `../../YiKnowledge/projects/INDEX.md` — 各项目的实际缺陷列表与分类
+- `../shared/glossary.md` — 技能共享术语表（Issue 状态流转等术语定义）

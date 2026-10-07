@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-102: 状态页面 — 服务健康指标、事件历史、维护公告与订阅通知"
 tags: [需求文档, 状态页面, 服务健康, 事件管理, 维护公告, 正常运行时间]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["49-prd-task-状态页面"]
+related_tests: ["49-prd-test-状态页面"]
+benefit: "产品需求：状态页面"
+lifecycle: active
 ---
 
 # YV-09-102: 状态页面 — 服务健康指标、事件历史、维护公告与订阅通知

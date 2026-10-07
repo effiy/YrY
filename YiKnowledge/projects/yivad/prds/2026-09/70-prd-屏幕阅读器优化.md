@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-140: 屏幕阅读器优化 — ARIA标签/活动区域/角色、动态内容公告、表单错误播报、替代文本审计工具"
 tags: [需求文档, 屏幕阅读器, ARIA, 可访问性, 活动区域, 动态公告, 替代文本, WCAG, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["70-prd-task-屏幕阅读器优化"]
+related_tests: ["70-prd-test-屏幕阅读器优化"]
+benefit: "产品需求：屏幕阅读器优化"
+lifecycle: active
 ---
 
 # YV-09-140: 屏幕阅读器优化 — ARIA标签/活动区域/角色、动态内容公告、表单错误播报、替代文本审计工具

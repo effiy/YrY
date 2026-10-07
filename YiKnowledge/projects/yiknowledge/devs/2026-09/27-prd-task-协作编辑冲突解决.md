@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-24"
 title: "YK-09-24: 协作编辑冲突解决 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "27-架构设计-协作编辑冲突解决.md"
 source_okr: [yiknowledge-001]
 related_tests: ["27-prd-test-协作编辑冲突解决"]
+
+type: task
 ---
 
 # YK-09-24: 协作编辑冲突解决 — 开发方案

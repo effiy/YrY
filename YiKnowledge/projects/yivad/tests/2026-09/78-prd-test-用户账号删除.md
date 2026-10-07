@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-204: 用户账号删除 — 确认步骤、数据删除预览、带撤销的宽限期、最终确认、数据保留政策展示 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-204"
 source_prds: ["78-prd-用户账号删除"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 用户账号删除]
+benefit: "测试用例：用户账号删除"
+lifecycle: active
 ---
 # YV-09-204: 用户账号删除 — 确认步骤、数据删除预览、带撤销的宽限期、最终确认、数据保留政策展示 — 测试规格
 

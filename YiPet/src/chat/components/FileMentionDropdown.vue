@@ -2,7 +2,7 @@
 /**
  * YiPet Chat — FileMentionDropdown (Vue 3 SFC)
  */
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { useChatStore } from '../stores/chat';
 
 const props = defineProps<{
@@ -17,9 +17,21 @@ defineEmits<{
 
 const store = useChatStore();
 
+// Lazy-load knowledge tree when dropdown opens
+watch(() => props.visible, (v) => { if (v) store.loadKnowledgeTree(); });
+
 const matches = computed(() => {
   if (!props.visible || !props.query) return [];
-  return store.knowledgeFileMatches?.(props.query, 8) || [];
+  const q = props.query.toLowerCase();
+  const out: { path: string; name: string; type: string }[] = [];
+  for (const cat of store.state.knowledgeTree) {
+    for (const f of cat.files) {
+      if (f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q)) {
+        out.push({ path: f.path, name: f.name, type: 'file' });
+      }
+    }
+  }
+  return out.slice(0, 8);
 });
 </script>
 

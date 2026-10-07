@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  yiai:
+    build: .
+    ports: ['10086:10086']
+    environment:
+      - YIAI_MONGODB_URL=mongodb://mongo:27017
+      - YIAI_OLLAMA_URL=http://ollama:11434
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./logs:/app/logs
+      - ../YiKnowledge:/YiKnowledge:ro
+    depends_on: [mongo]
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    volumes: ['mongo_data:/data/db']
+    ports: ['27017:27017']
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes: ['ollama_data:/root/.ollama']
+    ports: ['11434:11434']
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  ollama_data:

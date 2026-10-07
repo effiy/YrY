@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-01: Frontmatter 质量治理 — 测试用例"
 status: 已完成
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-01"
 source_prds: ["04-质量治理-Frontmatter规范"]
 source_modules: ["04-prd-task-Frontmatter规范"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-01: Frontmatter 质量治理 — 测试用例

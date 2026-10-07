@@ -7,10 +7,11 @@ Runs periodic aggregation jobs to populate pre-computed metrics collections:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 from data.database import db
+from shared.status import Status, normalize_status_list
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ async def collect_efficiency_snapshot() -> None:
             async for doc in db.db["issues"].aggregate(pipeline):
                 status_counts[doc["_id"]] = doc.get("count", 0)
 
-            done = status_counts.get("Done", 0) + status_counts.get("done", 0)
+            done = sum(status_counts.get(s, 0) for s in normalize_status_list([Status.DONE]))
             total = sum(status_counts.values())
 
             # Count bugs
@@ -41,7 +42,7 @@ async def collect_efficiency_snapshot() -> None:
 
             doc = {
                 "project_key": project_key,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "total_issues": total,
                 "done_issues": done,
                 "wip_issues": total - done,
@@ -63,7 +64,7 @@ async def collect_quality_snapshot() -> None:
         projects_cursor = db.db["projects"].find({})
         projects = await projects_cursor.to_list(length=100)
 
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
 
         for project in projects:
             project_key = project.get("key", "")

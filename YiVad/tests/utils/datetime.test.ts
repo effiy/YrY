@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import { formatRelativeTime, formatAbsolute } from "@/utils/datetime";
 
 describe("formatRelativeTime", () => {
-  it('returns "just now" for very recent timestamps', () => {
+  it('returns "a few seconds ago" for very recent timestamps', () => {
     const now = Date.now();
-    expect(formatRelativeTime(now)).toBe("just now");
-    expect(formatRelativeTime(now - 30_000)).toBe("just now");
+    expect(formatRelativeTime(now)).toBe("a few seconds ago");
+    expect(formatRelativeTime(now - 30_000)).toBe("a few seconds ago");
   });
 
   it("returns minutes ago", () => {

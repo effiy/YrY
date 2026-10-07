@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "测试体系与 CI — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["96-测试-测试体系与CI"]
+source_prds: ["96-基础设施-测试体系与CI.md"]
+source_modules: ["96-prd-task-测试体系与CI.md"]
+
+type: test
 ---
 
 # 测试体系与 CI — 测试用例
@@ -20,3 +26,4 @@ source_prds: ["96-测试-测试体系与CI"]
 | TC-CI02 | tsc --noEmit | 零类型错误 | P0 |
 | TC-CI03 | npm run build | 4 入口构建成功 | P0 |
 | TC-CI04 | lint-staged | pre-commit 检查生效 | P1 |
+

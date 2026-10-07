@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-33"
 title: "YK-09-33: RAG 检索结果可解释性 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "36-架构设计-RAG检索结果可解释性.md"
 source_okr: [yiknowledge-001]
 related_tests: ["36-prd-test-RAG检索结果可解释性"]
+
+type: task
 ---
 
 # YK-09-33: RAG 检索结果可解释性 — 开发方案

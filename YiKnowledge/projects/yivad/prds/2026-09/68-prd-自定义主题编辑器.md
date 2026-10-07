@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-138: 自定义主题编辑器 — 可视化主题编辑器、主色/辅色/强调色、圆角/字号/间距Token、实时预览示例组件、导出导入主题JSON、浅色/深色变体"
 tags: [需求文档, 主题编辑器, 色彩系统, 设计Token, 实时预览, 主题导出, 深色模式, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["68-prd-task-自定义主题编辑器"]
+related_tests: ["68-prd-test-自定义主题编辑器"]
+benefit: "产品需求：自定义主题编辑器"
+lifecycle: active
 ---
 
 # YV-09-138: 自定义主题编辑器 — 可视化主题编辑器、主色/辅色/强调色、圆角/字号/间距Token、实时预览示例组件、导出导入主题JSON、浅色/深色变体

@@ -1,8 +1,9 @@
 <script setup lang="ts" name="aiChatConversationSessionSidebar">
 import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { ElMessage } from "element-plus";
 import { Search, Delete, Operation, Plus, StarFilled } from "@element-plus/icons-vue";
+import { confirm } from "@/hooks/useConfirmAction";
 import { useI18n } from "vue-i18n";
 import { useAiChatStore } from "@/stores/modules/aiChat";
 import ConversationListItem from "./ConversationListItem.vue";
@@ -56,12 +57,8 @@ async function onRename(key: string, _currentTitle: string) {
 }
 
 async function onDelete(key: string, title: string) {
-  const res = await ElMessageBox.confirm(t("aiChat.deleteConfirm", { name: title }), t("aiChat.confirm"), {
-    confirmButtonText: t("aiChat.delete"),
-    cancelButtonText: t("aiChat.cancel"),
-    type: "warning"
-  }).catch(() => null);
-  if (!res) return;
+  const ok = await confirm(t("aiChat.deleteConfirm", { name: title }), t("aiChat.confirm"));
+  if (!ok) return;
   await store.deleteConversation(key);
 }
 
@@ -71,12 +68,11 @@ async function onToggleFavorite(key: string) {
 
 async function onBulkDelete() {
   if (selectedCount.value === 0) return;
-  const res = await ElMessageBox.confirm(`Delete ${selectedCount.value} selected conversation(s)?`, "Confirm delete", {
-    confirmButtonText: "Delete",
-    cancelButtonText: "Cancel",
-    type: "warning"
-  }).catch(() => null);
-  if (!res) return;
+  const ok = await confirm(
+    t("aiChat.bulkDeleteConfirm", { count: selectedCount.value }),
+    t("aiChat.confirm")
+  );
+  if (!ok) return;
   await store.bulkDelete();
 }
 
@@ -86,7 +82,7 @@ async function onBulkFavorite() {
   for (const key of keys) {
     await store.toggleFavorite(key);
   }
-  ElMessage.success(`Toggled favorite for ${keys.length} session(s)`);
+  ElMessage.success(t("aiChat.bulkFavoriteDone", { count: keys.length }));
 }
 
 const creating = ref(false);
@@ -211,7 +207,7 @@ async function onNewSession() {
   height: 24px;
   font-size: 13px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--el-color-white);
   background: var(--el-color-primary);
   border-radius: 50%;
 }

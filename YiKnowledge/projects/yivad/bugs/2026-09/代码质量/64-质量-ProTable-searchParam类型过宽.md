@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-ProTable-searchParam类型过宽"
+lifecycle: active
 ---
 
 # ProTable 列配置中 searchParam 类型过于宽泛
@@ -46,7 +48,5 @@ searchParam: Record<string, string | number | boolean | null>;
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`{ [key: string]: any }` 是类型安全的黑洞**：这种类型允许任意键/任意值，调用方可以传入不存在的字段、错误的值类型，而 TypeScript 不会告警。应使用 `Record<string, string | number | boolean | null>` 明确限定值类型
 

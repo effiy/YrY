@@ -181,6 +181,13 @@ export default {
       updateFailed: "更新 Issue 失败",
       deleteFailed: "删除失败",
       fileCleanupFailed: "Issue 已删除，但知识库文件未能删除：{path}"
+    },
+    orphaned: {
+      warning: "{count} 个孤立 Issue 无对应知识库文件",
+      cleanup: "清理",
+      cleanupSuccess: "已清理 {count} 个孤立 Issue",
+      noFilePath: "无 kb_file_path",
+      missingFile: "文件不存在"
     }
   }
 };

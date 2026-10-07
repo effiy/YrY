@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 实时协作光标与状态
 tags:
 - 实时协作
@@ -28,6 +27,10 @@ roles:
 - engineer
 - designer
 source_okr: [yivad-003]
+related_modules: ["21-prd-task-实时协作光标与状态"]
+related_tests: ["21-prd-test-实时协作光标与状态"]
+benefit: "产品需求：实时协作光标与状态"
+lifecycle: active
 ---
 
 # 实时协作光标与状态

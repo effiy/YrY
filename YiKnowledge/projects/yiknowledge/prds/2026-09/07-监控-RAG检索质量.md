@@ -17,7 +17,7 @@ prd_task_id: YK-09-04
 estimate_frontend: 3.0
 review_status: 已评审
 issue_type: 功能
-roles: [engineer, srer]
+roles: [engineer, sre]
 source_okr: [yiknowledge-001]
 related_modules: [07-prd-task-RAG检索质量]
 related_tests: [07-prd-test-RAG检索质量]

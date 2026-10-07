@@ -1,6 +1,9 @@
 export default {
   gantt: {
     title: "Gantt Chart",
+    backToProject: "Back to Project",
+    lastUpdated: "Last updated",
+    refreshing: "Refreshing",
     today: "Today",
     views: {
       day: "Day",

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: API 令牌管理
 tags:
 - API
@@ -29,6 +28,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["28-prd-task-API令牌管理"]
+related_tests: ["28-prd-test-API令牌管理"]
+benefit: "产品需求：API令牌管理"
+lifecycle: active
 ---
 
 # API 令牌管理

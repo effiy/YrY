@@ -3,10 +3,13 @@ title: YiVad 知识库索引
 tags: [yivad, index, specs, workflows, bugs, okrs, prds, devs, tests]
 category: projects/yivad
 created: 2026-09-02
-updated: 2026-09-15
+updated: 2026-10-07
 source: YiVad
 type: index
-status: active
+status: stable
+lifecycle: active
+review_cycle: monthly
+benefit: "YiVad 管理后台知识库的总索引，涵盖架构规范、开发指南、需求追溯和缺陷追踪"
 ---
 
 # YiVad 项目知识库
@@ -27,22 +30,28 @@ YiKnowledge/projects/yivad/
 │   ├── 2026-08/               # 8 月需求（组件化、RBAC、暗色主题等）
 │   └── 2026-09/               # 9 月需求（composable 分层、国际化、样式改造等）
 ├── devs/                      # 开发模块文档（按月归档，Dev → Test 追溯）
+│   ├── 2026-07/               # 7 月开发模块
 │   ├── 2026-08/               # 8 月开发模块
 │   └── 2026-09/               # 9 月开发模块
 │       └── README.md          # OKR→PRD→Module→Test 全链路追溯矩阵
 ├── tests/                     # 测试文档（按月归档，Test → Dev 追溯）
+│   ├── 2026-07/
 │   ├── 2026-08/
 │   └── 2026-09/
 │       └── README.md          # PRD→Module→Test 可追溯矩阵
-├── workflows/                 # 开发规范 + 操作指南 + 流程规范（15 篇）
-│   ├── 开发规范/               # 8 篇 — 代码约定、项目架构、API开发、页面模式、质量构建、组件开发、Composable开发、国际化
-│   ├── 操作指南/               # 3 篇 — 环境搭建、开发任务、常见问题排查
-│   └── 流程规范/               # 4 篇 — 分支与变更、需求到上线、变更状态、代码审查
-└── bugs/                      # 缺陷（按分类归档）
+├── workflows/                 # 开发规范 + 操作指南 + 流程规范
+│   ├── 开发规范/
+│   ├── 操作指南/
+│   └── 流程规范/
+└── bugs/                      # 缺陷（按月份 → 分类归档）
     ├── README.md              # 缺陷索引 + 分类目录 + 常见模式 + 排查流程
-    ├── 代码质量/              # 代码质量类
-    ├── 数据/                  # 数据类
-    └── 模板/                  # Bug 模板
+    └── 2026-09/
+        ├── 模板/              # 缺陷模板
+        ├── 国际化/            # i18n 相关缺陷
+        ├── 代码质量/          # 代码质量类缺陷
+        ├── 数据/              # 数据/业务逻辑类缺陷
+        ├── 路由权限/          # 路由/权限类缺陷
+        └── 跨项目/            # 跨项目协作类缺陷
 ```
 
 ## 快速导航
@@ -59,7 +68,7 @@ YiKnowledge/projects/yivad/
 | 入口 | 说明 |
 |------|------|
 | [OKR 目标](./okrs/2026-Q3/README.md) | OKR → PRD 可追溯矩阵 |
-| [PRD 需求](./prds/2026-09/00-prd-九月迭代总览.md) | 九月迭代需求总览 |
+| [PRD 需求](./prds/2026-09/00-prd-需求总览.md) | 九月迭代需求总览 |
 | [Dev 开发模块](./devs/2026-09/README.md) | OKR→PRD→Module→Test 全链路追溯矩阵 |
 | [Test 测试文档](./tests/2026-09/README.md) | PRD→Module→Test 可追溯矩阵 |
 | [Bug 缺陷索引](./bugs/README.md) | 缺陷分类索引 + 追溯规范 |
@@ -74,6 +83,7 @@ YiKnowledge/projects/yivad/
 | 开发文件上传 | [页面模式 #文件上传](./workflows/开发规范/04-规范-页面模式.md) |
 | 开发 ProTable 列 | [组件开发 #ProTable](./workflows/开发规范/06-规范-组件开发.md) |
 | 开发 Composable | [Composable 开发](./workflows/开发规范/07-规范-Composable开发.md) |
+| 开发时间轴组件 | [活动时间轴组件](./workflows/开发规范/09-规范-活动时间轴组件.md) |
 | 调用后端 API | [API 开发](./workflows/开发规范/03-规范-API开发.md) |
 | 添加按钮权限 | [代码约定 #硬约束](./workflows/开发规范/01-规范-代码约定.md) |
 | 添加国际化文本 | [国际化规范](./workflows/开发规范/08-规范-国际化规范.md) |
@@ -91,6 +101,22 @@ YiKnowledge/projects/yivad/
 | 参数名是否使用 filter 而非 query | [API 开发 #参数命名契约](./workflows/开发规范/03-规范-API开发.md) |
 | 是否使用 `<script setup lang="ts">` | [代码约定](./workflows/开发规范/01-规范-代码约定.md) |
 | 完整审查流程 | [代码审查](./workflows/流程规范/04-流程-代码审查.md) |
+
+### 代码质量审计（2026-09-23）
+
+| 区域 | 文档 |
+|------|------|
+| **总览** | [PRD #100 全面优化](./prds/2026-09/100-prd-YiVad代码质量全面优化.md) · [Dev](./devs/2026-09/100-prd-task-YiVad代码质量全面优化.md) · [Test](./tests/2026-09/100-prd-test-YiVad代码质量全面优化.md) |
+| **竞态条件** | [PRD #101](./prds/2026-09/101-prd-竞态条件修复.md) · [Dev](./devs/2026-09/101-prd-task-竞态条件修复.md) · [Test](./tests/2026-09/101-prd-test-竞态条件修复.md) |
+| **防护模式** | [PRD #102](./prds/2026-09/102-prd-代码质量防护模式.md) · [Dev](./devs/2026-09/102-prd-task-代码质量防护模式.md) · [Test](./tests/2026-09/102-prd-test-代码质量防护模式.md) |
+| **最终报告** | [PRD #103](./prds/2026-09/103-prd-代码质量审计最终报告.md) · [Dev](./devs/2026-09/103-prd-task-代码质量审计执行计划.md) · [Test](./tests/2026-09/103-prd-test-代码质量审计验证方案.md) |
+| **基础设施** | [PRD #104](./prds/2026-09/104-prd-关键基础设施漏洞修复.md) · [Dev](./devs/2026-09/104-prd-task-关键基础设施漏洞修复.md) · [Test](./tests/2026-09/104-prd-test-关键基础设施漏洞修复.md) |
+| **类型安全** | [PRD #105](./prds/2026-09/105-prd-类型安全全面恢复.md) · [Dev](./devs/2026-09/105-prd-task-类型安全全面恢复.md) · [Test](./tests/2026-09/105-prd-test-类型安全全面恢复.md) |
+| **生产质量** | [PRD #106](./prds/2026-09/106-prd-生产环境质量标准化.md) · [Dev](./devs/2026-09/106-prd-task-生产环境质量标准化.md) · [Test](./tests/2026-09/106-prd-test-生产环境质量标准化.md) |
+| **Bug 文档** | [#76-81 代码质量](./bugs/2026-09/代码质量/) · [跨项目 RPC](./bugs/2026-09/跨项目/) |
+| **后端修复** | [YiAi live.py 时间戳](../yiai/bugs/2026-09/数据/01-数据-live端点时间戳类型不匹配.md) |
+
+**审计结果**: 18 bug 修复 · 0 tsc 错误 · 6 大防护模式 · 14 文件变更
 
 ### 流程操作
 
@@ -141,8 +167,6 @@ YiKnowledge/projects/yivad/
 
 ### 项目级文档
 - [YiVad/CLAUDE.md](../../../YiVad/CLAUDE.md) — YiVad 项目 CLAUDE.md（模块边界、近期变更、自约束）
-- [YiVad/docs/specs/](../../../YiVad/docs/specs/) — YiVad 架构规范（AI 代码生成用）
-- [YiVad/docs/workflows/](../../../YiVad/docs/workflows/) — YiVad 任务工作流
 - [YrY/CLAUDE.md](../../../CLAUDE.md) — 单体仓库级 CLAUDE.md（RPC 协议、跨项目关系）
 
 ### 知识库层

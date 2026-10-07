@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-35: API 字段一致性扫描 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-35"
 source_prds: ["38-架构设计-API字段一致性扫描"]
 source_modules: ["38-prd-task-API字段一致性扫描"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-35: API 字段一致性扫描 — 测试用例

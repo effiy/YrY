@@ -7,7 +7,10 @@ export default {
       label: "Kind",
       module: "Epic",
       modules: "Epics",
-      moduleLabel: "Epic"
+      moduleLabel: "Epic",
+      issue: "Issues",
+      issues: "Issues",
+      issueLabel: "Issue"
     },
     sort: {
       byDate: "By Date",
@@ -46,6 +49,29 @@ export default {
     },
     loading: "Loading roadmap data…",
     loadFailed: "Failed to load roadmap data",
+    partialError: "Some data failed to load, progress may be incomplete",
+    refresh: "Refresh",
+    refreshing: "Refreshing…",
+    refreshed: "Updated",
+    autoRefresh: "Auto-refresh",
+    autoRefreshOn: "Auto-refresh: ON",
+    autoRefreshOff: "Auto-refresh: OFF",
+    nextRefresh: "Refresh in {n}s",
+    staleWarning: "Data may be stale",
+    atRisk: "At Risk",
+    dueSoon: "Due Soon",
+    noDueDate: "No due date",
+    inProgress: "In Progress",
+    noIssues: "No issues",
+    noLead: "No lead",
+    issues: "{n} issues",
+    updated: "Updated {time}",
+    health: {
+      label: "Data health",
+      missingDates: "{n} missing dates",
+      missingLead: "{n} missing leads",
+      missingIssues: "{n} no issues"
+    },
     timeline: {
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
@@ -63,7 +89,15 @@ export default {
       cancelled: "Cancelled",
       onHold: "On Hold",
       atRisk: "At Risk",
-      delayed: "Delayed"
+      delayed: "Delayed",
+      issue: {
+        backlog: "Backlog",
+        todo: "To Do",
+        in_progress: "In Progress",
+        in_review: "In Review",
+        done: "Done",
+        cancelled: "Cancelled"
+      }
     },
     filters: {
       status: "Status",

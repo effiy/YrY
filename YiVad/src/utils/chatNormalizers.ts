@@ -1,7 +1,8 @@
 import type { SessionDocument } from "@/api/interface/yiAi";
+import { nanoid } from "nanoid";
 
 export function newKey(): string {
-  return `aichat_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `aichat_${nanoid(12)}`;
 }
 
 export function readFileAsDataUrl(file: File): Promise<string> {

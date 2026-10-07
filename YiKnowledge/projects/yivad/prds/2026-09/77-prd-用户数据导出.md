@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-203: 用户数据导出 — 数据类型选择、GDPR合规导出、导出进度、带过期时间的下载链接、导出历史"
 tags: [需求文档, 用户中心, 数据导出, GDPR, 导出进度, 下载链接, 数据隐私]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["77-prd-task-用户数据导出"]
+related_tests: ["77-prd-test-用户数据导出"]
+benefit: "产品需求：用户数据导出"
+lifecycle: active
 ---
 
 # YV-09-203: 用户数据导出 — 数据类型选择、GDPR合规导出、导出进度、带过期时间的下载链接、导出历史

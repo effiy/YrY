@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YP-07-03: 聊天框架搭建 — 测试规格"
 status: 已完成
@@ -12,6 +13,8 @@ prd_month: "202607"
 prd_task_id: "YP-07-03"
 source_prds: ["03-基础设施-聊天框架搭建"]
 source_modules: ["03-prd-task-聊天框架搭建"]
+
+type: test
 ---
 
 # YP-07-03: 聊天框架搭建 — 测试规格

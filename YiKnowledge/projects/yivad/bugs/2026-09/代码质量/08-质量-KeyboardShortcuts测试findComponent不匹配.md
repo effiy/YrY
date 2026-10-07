@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-KeyboardShortcuts测试findComponent不匹配"
+lifecycle: active
 ---
 
 # code-quality: KeyboardShortcuts 测试 findComponent 名称不匹配
@@ -77,7 +79,6 @@ AssertionError: expected false to be true
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`findComponent` 查找子组件，不匹配根组件**：`wrapper.findComponent({ name: "keyboardShortcuts" })` 在组件树中向下搜索，不会匹配 wrapper 自身的根组件。验证根组件应使用 `wrapper.vm` 直接访问实例
+- **`<script setup name>` 的插件依赖**：`name` 属性在 `<script setup>` 中需要 `unplugin-vue-define-options` 才能生效。测试中依赖 `name` 查找组件是脆弱的——组件重命名后测试可能静默失败
 

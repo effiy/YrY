@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询"
 tags: [需求文档, 命令面板, 全局搜索, 模糊搜索, 快速导航, 计算器, 单位转换, AI查询, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["34-prd-task-全局搜索命令面板"]
+related_tests: ["34-prd-test-全局搜索命令面板"]
+benefit: "产品需求：全局搜索命令面板"
+lifecycle: active
 ---
 
 # YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询

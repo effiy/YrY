@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M03: 图片批量处理工具 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M03"
-source_prds: ["03-功能实现-图片批量处理工具"]
-source_modules: ["03-prd-task-图片批量处理工具"]
+source_prds: ["03-功能实现-图片批量处理工具.md"]
+source_modules: ["03-prd-task-图片批量处理工具.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M03: 图片批量处理工具 — 测试用例
@@ -177,4 +180,3 @@ source_okr: [yipet-004]
 | 2 | Canvas API mock | 格式转换/水印需 Canvas context | `vitest-canvas-mock` |
 | 3 | AVIF 编码 polyfill 未集成 | AVIF 测试需 Chrome 85+ 原生支持 | CI 使用 Chrome 85+ |
 
----

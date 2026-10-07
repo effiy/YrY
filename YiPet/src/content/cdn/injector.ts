@@ -66,9 +66,6 @@ export function createInjector(baseUrl: string): CdnInjector {
     const el = document.createElement('link');
     el.rel = 'stylesheet';
     el.href = resolveUrl(path);
-    el.onload = () => {
-      loaded.set(path, true);
-    };
     (document.head || document.documentElement).appendChild(el);
     loaded.set(path, true);
     return true;

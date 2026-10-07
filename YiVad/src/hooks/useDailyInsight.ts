@@ -13,6 +13,7 @@ export interface DailyInsight {
   yesterdayActivityCount: Ref<number>;
   todayDue: Ref<Issue[]>;
   todayInProgress: Ref<Issue[]>;
+  todayTodo: Ref<Issue[]>;
   tomorrowDue: Ref<Issue[]>;
   overdue: Ref<Issue[]>;
   upcoming: Ref<Issue[]>;
@@ -20,6 +21,7 @@ export interface DailyInsight {
   pendingReview: Ref<Issue[]>;
 
   loading: Ref<boolean>;
+  lastUpdated: Ref<number>;
   retry: () => Promise<void>;
 }
 
@@ -50,12 +52,14 @@ export function useDailyInsight(): DailyInsight {
   const yesterdayActivityCount = ref(0);
   const todayDue = ref<Issue[]>([]);
   const todayInProgress = ref<Issue[]>([]);
+  const todayTodo = ref<Issue[]>([]);
   const tomorrowDue = ref<Issue[]>([]);
   const overdue = ref<Issue[]>([]);
   const upcoming = ref<Issue[]>([]);
   const blocked = ref<Issue[]>([]);
   const pendingReview = ref<Issue[]>([]);
   const loading = ref(true);
+  const lastUpdated = ref(0);
 
   async function fetchAll() {
     loading.value = true;
@@ -83,10 +87,12 @@ export function useDailyInsight(): DailyInsight {
         // 7. Upcoming (day 8-31)
         getIssueList({ status: "todo,in_progress,in_review", due_date_start: day8, due_date_end: day31, pageSize: 16, orderBy: "due_date", orderType: "asc" }),
         // 8. Pending review
-        getIssueList({ status: "in_review", pageSize: 8, orderBy: "updated_at", orderType: "desc" })
+        getIssueList({ status: "in_review", pageSize: 8, orderBy: "updated_at", orderType: "desc" }),
+        // 9. Todo items (not due today, not overdue — excludes items already in overdue/todayDue)
+        getIssueList({ status: "todo", pageSize: 15, orderBy: "priority", orderType: "desc" })
       ]);
 
-      const [doneRes, bugRes, todayDueRes, inProgressRes, tomorrowDueRes, overdueRes, upcomingRes, reviewRes] = results;
+      const [doneRes, bugRes, todayDueRes, inProgressRes, tomorrowDueRes, overdueRes, upcomingRes, reviewRes, todoRes] = results;
 
       const doneList = doneRes.status === "fulfilled" ? (doneRes.value.data?.list ?? []) as Issue[] : [];
       yesterdayDone.value = doneList;
@@ -97,6 +103,14 @@ export function useDailyInsight(): DailyInsight {
       overdue.value = overdueRes.status === "fulfilled" ? (overdueRes.value.data?.list ?? []) as Issue[] : [];
       upcoming.value = upcomingRes.status === "fulfilled" ? (upcomingRes.value.data?.list ?? []) as Issue[] : [];
       pendingReview.value = reviewRes.status === "fulfilled" ? (reviewRes.value.data?.list ?? []) as Issue[] : [];
+
+      // Todo — exclude items already in overdue/todayDue to avoid overlap
+      const todoAll = todoRes.status === "fulfilled" ? (todoRes.value.data?.list ?? []) as Issue[] : [];
+      const overdueKeys = new Set(overdue.value.map(i => i.key));
+      const dueKeys = new Set(todayDue.value.map(i => i.key));
+      todayTodo.value = todoAll.filter(i => !overdueKeys.has(i.key) && !dueKeys.has(i.key)).slice(0, 12);
+
+      lastUpdated.value = Date.now();
 
       // Split in_progress results into active vs blocked
       const allInProgress = inProgressRes.status === "fulfilled" ? (inProgressRes.value.data?.list ?? []) as Issue[] : [];
@@ -120,8 +134,8 @@ export function useDailyInsight(): DailyInsight {
 
   return {
     yesterdayDone, yesterdayResolvedBugs, yesterdayActivityCount,
-    todayDue, todayInProgress, tomorrowDue,
+    todayDue, todayInProgress, todayTodo, tomorrowDue,
     overdue, upcoming, blocked, pendingReview,
-    loading, retry: fetchAll
+    loading, lastUpdated, retry: fetchAll
   };
 }

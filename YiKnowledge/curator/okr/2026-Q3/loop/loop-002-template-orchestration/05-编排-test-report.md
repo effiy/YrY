@@ -5,7 +5,8 @@ stage: test-report
 title: 三要素编排可复现性验证 + 类型安全回归
 role: aier
 goalId: aier-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, test-report, orchestration, type-safety]
@@ -44,7 +45,7 @@ tags: [loop-record, test-report, orchestration, type-safety]
 |---|---|---|---|
 | loop-001 8 阶段展示 | 打开 home/index，观察 Task 列 | 8 个阶段图标 + loopId 可点击 | ✅ |
 | loop-002 聚合 | 同上 | loop-002 记录按 goalId 匹配到对应行 | ✅ |
-| 流程页跳转 | 点击 loopId | 跳转到 /executiver/process?loop=loop-XXX | ✅ |
+| 流程页跳转 | 点击 loopId | 跳转到 /executive/process?loop=loop-XXX | ✅ |
 | 阶段记录预览 | 点击阶段图标 | 打开文件预览弹框 | ✅ |
 
 ### 类型安全回归
@@ -63,11 +64,11 @@ tags: [loop-record, test-report, orchestration, type-safety]
 
 | 角色 | Skill | Agent | MCP | 状态 |
 |---|---|---|---|---|
-| executiver | strategy | Executive Agent | yiai | ✅ |
-| producter | prd | Producter Agent | yiai | ✅ |
+| executive | strategy | Executive Agent | yiai | ✅ |
+| product | prd | product Agent | yiai | ✅ |
 | leader | architecture | Leader Agent | yiai | ✅ |
 | engineer | vue | Engineer Agent | github | ✅ |
-| srer | testing | SRE Agent | yiai | ✅ |
+| sre | testing | SRE Agent | yiai | ✅ |
 | aier | skill-creator | AI Engineer Agent | yiai | ✅ |
 | curator | import | Curator Agent | yiai | ✅ |
 

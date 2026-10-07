@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: YiVad 项目管理系统 — 全面需求总览
 tags:
 - 需求文档
@@ -34,6 +33,10 @@ roles:
 - qa
 - pm
 source_okr: [yivad-001, yivad-003]
+related_modules: ["04-prd-task-项目管理系统"]
+related_tests: ["04-prd-test-项目管理系统"]
+benefit: "产品需求：项目管理系统"
+lifecycle: active
 ---
 
 # YiVad 项目管理系统 — 全面需求总览

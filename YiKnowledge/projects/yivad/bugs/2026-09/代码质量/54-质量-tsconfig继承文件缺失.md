@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p2
+benefit: "缺陷记录：质量-tsconfig继承文件缺失"
+lifecycle: active
 ---
 
 # tsconfig.json extends 了不存在的 tsconfig.base.json
@@ -55,7 +57,6 @@ priority: p2
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`extends` 指向不存在的文件在不同 TS 版本行为不同**：TS 5.0+ 会报错，旧版本可能静默忽略。这意味着 CI 环境和开发者本地环境的 TS 版本差异可能导致不同的构建结果——CI 通过但本地失败或反之
+- **`tsc --showConfig` 的价值**：此命令输出完整的解析后配置，可以验证 extends 链是否正确解析。应在 CI 中运行以确保配置一致性
 

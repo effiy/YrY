@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-24: 协作编辑冲突解决 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-24"
 source_prds: ["27-架构设计-协作编辑冲突解决"]
 source_modules: ["27-prd-task-协作编辑冲突解决"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-24: 协作编辑冲突解决 — 测试用例

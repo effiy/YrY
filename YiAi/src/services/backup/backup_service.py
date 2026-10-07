@@ -1,12 +1,11 @@
 """Database backup and recovery service."""
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 import os
 from pathlib import Path
 import shutil
-from typing import Optional
 
 from shared.config import settings
 from shared.logging import get_logger
@@ -37,7 +36,7 @@ class BackupService:
     async def full_backup(self) -> dict:
         """Execute full backup via mongodump."""
         async with self._backup_lock:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             backup_name = f"full_{timestamp}"
             backup_path = self.local_dir / backup_name
 
@@ -84,7 +83,7 @@ class BackupService:
     async def incremental_backup(self) -> dict:
         """Execute incremental backup via mongodump --oplog."""
         async with self._backup_lock:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             backup_name = f"incr_{timestamp}"
             backup_path = self.local_dir / backup_name
 
@@ -237,7 +236,7 @@ async def _sync_from_remote(remote_path: Path, local_dir: Path, backup_name: str
 
 
 async def _cleanup_old(base_dir: Path, retention_days: int):
-    cutoff = datetime.now() - timedelta(days=retention_days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=retention_days)
     for d in base_dir.iterdir():
         if not d.is_dir():
             continue

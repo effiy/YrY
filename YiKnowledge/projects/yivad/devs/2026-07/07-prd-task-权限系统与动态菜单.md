@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-07"
 title: "YV-07-07: 权限系统与动态菜单 — RBAC 权限码 + v-auth 按钮级鉴权 + 菜单驱动动态路由 — 开发方案"
 status: 已完成
@@ -13,6 +12,12 @@ project_id: yivad
 prd_month: "202607"
 estimate_frontend: 2.0
 source_prd: "07-prd-权限系统与动态菜单.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 权限系统与动态菜单]
+benefit: "开发方案：task-权限系统与动态菜单"
+lifecycle: active
 ---
 
 # YV-07-07: 权限系统与动态菜单 — RBAC 权限码 + v-auth 按钮级鉴权 + 菜单驱动动态路由 — 开发方案

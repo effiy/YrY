@@ -12,6 +12,7 @@
 import { buildYiAiStreamUrl, yiAiAuthHeaders } from "@/config/yiAi";
 import { callService } from "./dataService";
 import { readSSEStream } from "@/utils/sse";
+import { filesize } from "filesize";
 import type { ChatPayload, OllamaModel, OllamaModelListResponse } from "@/api/interface/yiAi";
 
 const CHAT_SERVICE = "services.ai.chat_service";
@@ -73,7 +74,7 @@ export function streamChat(
   })
     .then(async response => {
       clearTimeout(timeoutId);
-      console.log(
+      if (import.meta.env.DEV) console.log(
         "[streamChat] response status:",
         response.status,
         "content-type:",
@@ -154,18 +155,11 @@ export async function fetchModelList(): Promise<OllamaModel[]> {
       name: m.name ?? m.model ?? "",
       model: m.model ?? m.name ?? "",
       size: m.size ?? 0,
-      sizeFormatted: m.sizeFormatted ?? formatBytes(m.size ?? 0),
+      sizeFormatted: m.sizeFormatted ?? String(filesize(m.size ?? 0)),
       modifiedAt: m.modified_at ?? m.modifiedAt ?? "",
       modified_at: m.modified_at ?? m.modifiedAt ?? "",
       details: m.details ?? {}
     }));
   }
   throw new Error("Failed to fetch model list");
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes / Math.pow(1024, i)).toFixed(1) + " " + units[i];
 }

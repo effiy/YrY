@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-README内容过时"
+lifecycle: active
 ---
 
 # 项目 README 中引用了 CLAUDE.md 但未在 YiVad 目录中
@@ -43,7 +45,5 @@ CLAUDE.md 的指引部分说"先阅读项目 CLAUDE.md"，但 `YiVad/CLAUDE.md` 
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **CLAUDE.md 与 README 的分工不明确导致信息腐烂**：CLAUDE.md 面向 AI 助手及时更新，README 面向人类开发者但审计频率低。两者中的技术栈描述应保持同步——或在其中一个标记为权威来源，另一个仅引用
 

@@ -1,31 +1,60 @@
 ---
+
 doc_type: test
-title: "多标签页同步 — 测试用例"
+title: "YP-09-31: 多标签页同步 — chrome.storage.onChanged 事件驱动 — 测试规格"
 status: 已完成
-priority: 中
+priority: P1
 owner: 陈铭
-roles: [engineer, qa]
-created: 2026-09-11
-updated: 2026-09-15
+created: 2026-09-23
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
+prd_task_id: "YP-09-31"
 source_prds: ["38-架构设计-多标签页同步"]
 source_modules: ["38-prd-task-多标签页同步"]
+
+type: test
 ---
 
-# 多标签页同步 — 测试用例
+# YP-09-31: 多标签页同步 — 测试规格
 
-> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
+## 一、单元测试
 
-## 测试用例
+```typescript
+describe("Multi-tab sync via chrome.storage.onChanged", () => {
+  it("tab A color change → tab B receives update", async () => {
+    const listener = vi.fn();
+    chrome.storage.onChanged.addListener(listener);
+    await chrome.storage.local.set({ petConfig: { color: 3 } });
+    expect(listener).toHaveBeenCalledWith(
+      expect.objectContaining({ petConfig: expect.any(Object) }), "local"
+    );
+  });
 
-| 编号 | 用例 | 预期 | 优先级 |
-|------|------|------|--------|
-| TC-SYN01 | 皮肤同步 | 标签A改皮肤→标签B更新 | P0 |
-| TC-SYN02 | chrome.storage.onChanged | 监听正确触发 | P0 |
-| TC-SYN03 | 会话同步 | 新建会话→其他标签可见 | P1 |
-| TC-SYN04 | Pet 显隐同步 | 隐藏/显示跨标签同步 | P1 |
+  it("tab A role change → pet image updates in tab B", async () => {
+    await chrome.storage.local.set({ petConfig: { role: "cat" } });
+    const { petConfig } = await chrome.storage.local.get("petConfig");
+    expect(petConfig.role).toBe("cat");
+  });
 
-## 出口准则
+  it("tab A toggle pet visibility → tab B syncs", async () => {
+    await chrome.storage.local.set({ petVisible: false });
+    const { petVisible } = await chrome.storage.local.get("petVisible");
+    expect(petVisible).toBe(false);
+  });
 
-- [ ] P0 用例 100% 通过
+  it("concurrent writes from 2 tabs — last write wins", async () => {
+    await Promise.all([
+      chrome.storage.local.set({ petConfig: { color: 1 } }),
+      chrome.storage.local.set({ petConfig: { color: 5 } }),
+    ]);
+    const { petConfig } = await chrome.storage.local.get("petConfig");
+    expect(petConfig.color).toBeDefined();
+  });
+});
+```
+
+## 二、完成定义
+
+- [ ] 4 个同步场景全通过
+- [ ] `npm test` 全量通过

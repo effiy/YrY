@@ -1,14 +1,19 @@
 ---
+
 doc_type: test
 title: "扩展更新与版本迁移 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["21-基础设施-扩展更新与版本迁移"]
-source_modules: ["21-prd-task-扩展更新与版本迁移"]
+source_prds: ["21-架构设计-扩展更新与版本迁移.md"]
+source_modules: ["21-prd-task-扩展更新与版本迁移.md"]
+
+type: test
 ---
 
 # 扩展更新与版本迁移 — 测试用例
@@ -19,3 +24,4 @@ source_modules: ["21-prd-task-扩展更新与版本迁移"]
 | TC-UP01 | install 初始化 | 首次安装→默认配置 | P0 |
 | TC-UP02 | update 迁移 | 版本升级→数据迁移 | P0 |
 | TC-UP03 | 更新日志展示 | WhatsNew 显示 | P2 |
+

@@ -5,8 +5,10 @@ stage: build-debug
 title: <代码编写与调试主题>
 role: engineer
 goalId: eng-XXX
-status: in-progress
-created: YYYY-MM-DD
+category: curator/okr/loop
+source: internal
+status: draft
+created: "YYYY-MM-DD"
 updated: 2026-09-10
 tags: [loop-record, build-debug]
 ---

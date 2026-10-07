@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "性能监控与优化体系 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-24"
 source_prds: ["08-prd-性能监控与优化"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 性能监控与优化]
+benefit: "测试用例：性能监控与优化"
+lifecycle: active
 ---
 # 性能监控与优化体系 — 测试规格
 

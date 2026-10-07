@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "Popup 皮肤中心 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["22-功能实现-Popup皮肤中心"]
-source_modules: ["22-prd-task-Popup皮肤中心"]
+source_prds: ["22-架构设计-Popup皮肤中心.md"]
+source_modules: ["22-prd-task-Popup皮肤中心.md"]
+
+type: test
 ---
 
 # Popup 皮肤中心 — 测试用例
@@ -29,3 +32,4 @@ source_modules: ["22-prd-task-Popup皮肤中心"]
 ## 出口准则
 
 - [ ] P0 用例 100% 通过
+

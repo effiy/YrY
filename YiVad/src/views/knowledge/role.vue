@@ -1,21 +1,49 @@
 <template>
-  <RoleKnowledgePage
-    :title="role.title"
-    :domains-word="role.domainsWord"
-    :description="role.description"
-    :category="role.category"
-    :subdirs="role.subdirs"
-    :structural-tags="role.structuralTags"
-  >
-    <template #title>
-      <RoleNav :active="role.category" show-quick-nav :quick-role="role.category" sticky />
-    </template>
-  </RoleKnowledgePage>
+  <div>
+    <div v-if="ragStatus" class="role-rag-bar" :class="{ 'is-empty': !ragStatus.built }">
+      <span class="role-rag-bar__dot" :class="{ 'is-built': ragStatus.built }" />
+      <span v-if="ragStatus.built">RAG index: {{ ragStatus.num_docs }} docs · built {{ ragBuiltAgo }}</span>
+      <span v-else>RAG index not built — queries will fall back to file search</span>
+    </div>
+    <AierDashboard v-if="category === 'aier'" :role="role" />
+    <ExecutiveDashboard v-else-if="category === 'executive'" />
+    <RoleKnowledgePage
+      v-else
+      :title="role.title"
+      :domains-word="role.domainsWord"
+      :description="role.description"
+      :category="role.category"
+      :subdirs="role.subdirs"
+      :structural-tags="role.structuralTags"
+    >
+      <template #title>
+        <RoleNav :active="role.category" show-quick-nav :quick-role="role.category" sticky />
+      </template>
+    </RoleKnowledgePage>
+  </div>
 </template>
 
 <script setup lang="ts" name="RolePage">
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { ragStatus as fetchRagStatus } from "@/api/modules/ragService";
+import type { RagStatusResponse } from "@/api/interface/rag";
+import { timeAgo } from "@/utils/time";
 import RoleKnowledgePage from "./components/RoleKnowledgePage.vue";
 import RoleNav from "./components/RoleNav.vue";
+import AierDashboard from "./aier/AierDashboard.vue";
+import ExecutiveDashboard from "./executive/ExecutiveDashboard.vue";
+
+const ragStatus = ref<RagStatusResponse | null>(null);
+
+onMounted(async () => {
+  try { ragStatus.value = await fetchRagStatus(); } catch { /* offline */ }
+});
+
+const ragBuiltAgo = computed(() => {
+  if (!ragStatus.value?.last_built_at) return "";
+  return timeAgo(ragStatus.value.last_built_at, "en");
+});
 
 interface Subdir {
   id: string;
@@ -35,11 +63,11 @@ interface RoleConfig {
 }
 
 const ROLE_CONFIG: Record<string, RoleConfig> = {
-  executiver: {
+  executive: {
     title: "Executive",
     domainsWord: "domains",
     description: "strategy, industry analysis, roadmap planning, and reading list for executive decision-making.",
-    category: "executiver",
+    category: "executive",
     structuralTags: ["resources", "product", "product-management", "product-strategy"],
     subdirs: [
       {
@@ -191,11 +219,11 @@ const ROLE_CONFIG: Record<string, RoleConfig> = {
       }
     ]
   },
-  producter: {
+  product: {
     title: "Product Manager",
     domainsWord: "problem domains",
     description: "frameworks, discovery, delivery, strategy, and projects for product management.",
-    category: "producter",
+    category: "product",
     structuralTags: ["product", "product-management", "yivad", "yiai", "yipet"],
     subdirs: [
       {
@@ -235,11 +263,11 @@ const ROLE_CONFIG: Record<string, RoleConfig> = {
       }
     ]
   },
-  srer: {
+  sre: {
     title: "SRE",
     domainsWord: "problem domains",
     description: "incident response, observability, and release management for production reliability.",
-    category: "srer",
+    category: "sre",
     structuralTags: [],
     subdirs: [
       {
@@ -268,7 +296,7 @@ const ROLE_CONFIG: Record<string, RoleConfig> = {
   aier: {
     title: "AI Engineer",
     domainsWord: "knowledge areas",
-    description: "AI foundations, methodology, platform, data, and ML ops for building effective AI systems.",
+    description: "AI foundations, engineering methods, platform selection, ML patterns, and OKR tracking for building effective AI systems.",
     category: "aier",
     structuralTags: ["prompts"],
     subdirs: [
@@ -277,40 +305,66 @@ const ROLE_CONFIG: Record<string, RoleConfig> = {
         icon: "🧠",
         label: "Foundations",
         color: "#1677ff",
-        desc: "Core architectural primitives of modern LLMs: self-attention mechanisms, KV-cache optimization, MoE routing, long-context scaling, quantization, alignment, and multimodal fusion — the theoretical foundation every AI engineer must master."
+        desc: "Core architectural primitives of modern LLMs: self-attention mechanisms, KV-cache optimization, MoE routing, long-context scaling, quantization, alignment, and multimodal fusion."
       },
       {
-        id: "methodology",
+        id: "methods",
         icon: "📐",
-        label: "Methodology",
+        label: "Methods",
         color: "#10b981",
-        desc: "Engineering playbooks for building reliable AI systems: prompt engineering with defense-in-depth, RAG architecture patterns, agent orchestration, LLM evaluation frameworks, red-teaming, hallucination mitigation, and model fine-tuning decision logic."
+        desc: "Engineering playbooks and prompt templates: Agent architecture patterns, prompt engineering, LLM/Agent evaluation frameworks, harness plugin architecture, and 7 production-grade prompt templates."
       },
       {
         id: "platform",
         icon: "🖥️",
         label: "Platform",
         color: "#7c3aed",
-        desc: "Infrastructure decisions that determine cost, latency, and reliability: LLM provider selection, inference engine benchmarking, vector database trade-offs, AI gateway architecture, embedding model evaluation, and observability platform comparison."
+        desc: "Infrastructure decisions: LLM provider comparison and selection, embedding model evaluation, vector database trade-offs for RAG systems."
       },
       {
-        id: "data",
-        icon: "📊",
-        label: "Data",
+        id: "machine-learning",
+        icon: "🔬",
+        label: "ML",
         color: "#f59e0b",
-        desc: "Data engineering for AI workloads: schema design for hybrid (vector + structured) queries, ETL/ELT pipeline patterns, lakehouse architecture for feature engineering, MongoDB indexing for RAG, and Redis caching to reduce LLM inference cost."
+        desc: "Traditional ML patterns — classification, clustering, regression, anomaly detection — lightweight alternatives when LLMs are overkill."
       },
       {
-        id: "ml",
-        icon: "⚙️",
-        label: "ML Ops",
+        id: "okr",
+        icon: "🎯",
+        label: "OKR",
         color: "#ef4444",
-        desc: "Production ML operations: model serving with vLLM/Ollama, vector index construction, evaluation-driven development, content moderation guardrails, inline-citation RAG, and Chrome-extension AI safety boundaries."
+        desc: "AI team quarterly OKRs — goal tracking, key results, evidence, and confirmation gates for AI engineering initiatives."
       }
     ]
   }
 };
 
-const props = defineProps<{ category: string }>();
-const role = ROLE_CONFIG[props.category] ?? ROLE_CONFIG.engineer;
+const route = useRoute();
+const category = computed(() => {
+  const path = route.path;
+  const segments = path.split("/");
+  return segments[segments.length - 1] || "";
+});
+const role = computed(() => ROLE_CONFIG[category.value] ?? ROLE_CONFIG.engineer);
 </script>
+
+<style scoped lang="scss">
+.role-rag-bar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 6px 16px; margin-bottom: 8px;
+  font-size: 12px; font-weight: 500;
+  color: var(--el-color-success);
+  background: var(--el-color-success-light-9);
+  border: 1px solid var(--el-color-success-light-5);
+  border-radius: 8px;
+  &.is-empty {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning-light-5);
+  }
+}
+.role-rag-bar__dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--el-color-warning);
+  &.is-built { background: var(--el-color-success); box-shadow: 0 0 4px rgba(103,194,58,0.5); }
+}
+</style>

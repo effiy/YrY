@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-04"
 title: "YP-07-04: RPC 参数名契约修复 + 构建兼容性 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 1.0
 source_prd: "04-缺陷修复-RPC参数与构建.md"
 source_okr: [yipet-001]
+
+type: task
 ---
 
 # YP-07-04: RPC 参数名契约修复 + 构建兼容性 — 开发方案

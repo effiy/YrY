@@ -105,43 +105,52 @@ function dispatchSecureEvent<T>(name: string, detail: T): void {
   }));
 }
 
-// ── Self-Injection ───────────────────────────────────────────────────────
+// ── Chat lazy-load state ────────────────────────────────────────────────
 
-export function injectIntoMainWorld(
-  bootstrapUrl: string,
-  extBase: string,
-  initialRole: string,
-  initialColor: number,
-  initialCustomColor: string,
-  initialVisible: boolean,
-): void {
-  const el = document.createElement('script');
-  el.src = bootstrapUrl;
-  el.dataset.base = extBase;
-  el.dataset.role = initialRole;
-  el.dataset.color = String(initialColor);
-  el.dataset.visible = String(initialVisible);
-  el.dataset.ipcSecret = IPC_SECRET;
-  el.id = 'yipet-bootstrap';
+  let _chatLoaded = false;
+  let _chatLoading = false;
+  let _pendingChatToggle = false;
 
-  el.onload = () => {
+  /** Store bootstrap params for later chat injection. */
+  const _bootstrapParams = {
+    initialRole: '',
+    initialColor: 0,
+    initialCustomColor: '',
+    ipcSecret: '',
+  };
+
+  export function injectChatScript(): void {
+    if (_chatLoaded || _chatLoading) return;
+    _chatLoading = true;
+
     try {
       const chatUrl = chrome.runtime.getURL('assets/chat.js');
       const chatEl = document.createElement('script');
       chatEl.src = chatUrl;
       chatEl.dataset.apiBase = 'http://localhost:10086';
-      chatEl.dataset.colorIndex = String(initialColor);
-      chatEl.dataset.customColor = initialCustomColor;
-      chatEl.dataset.role = initialRole;
-      chatEl.dataset.ipcSecret = IPC_SECRET;
+      chatEl.dataset.colorIndex = String(_bootstrapParams.initialColor);
+      chatEl.dataset.customColor = _bootstrapParams.initialCustomColor;
+      chatEl.dataset.role = _bootstrapParams.initialRole;
+      chatEl.dataset.ipcSecret = _bootstrapParams.ipcSecret;
       chatEl.id = 'yipet-chat';
+
+      chatEl.onload = () => {
+        _chatLoaded = true;
+        _chatLoading = false;
+        if (_pendingChatToggle) {
+          _pendingChatToggle = false;
+          dispatchSecureEvent('yipet:chatToggled', {});
+        }
+      };
+      chatEl.onerror = () => {
+        _chatLoading = false;
+      };
 
       // Read auth token from chrome.storage.session (secure) — pass to MAIN world via dataset.
       // Falls back to localStorage for migration from YiVad.
       chrome.storage.session.get('apiToken').then((result) => {
         let token = String(result.apiToken || '').trim();
         if (!token) {
-          // Migration: read from localStorage (set by YiVad), then promote to session storage
           try {
             token = (localStorage.getItem('YiWeb.apiToken.v1') || '').trim();
             if (token) {
@@ -154,17 +163,45 @@ export function injectIntoMainWorld(
 
       (document.head || document.documentElement).appendChild(chatEl);
     } catch {
-      /* chat unavailable */
+      _chatLoading = false;
     }
-  };
+  }
 
-  (document.head || document.documentElement).appendChild(el);
-}
+  // ── Self-Injection ───────────────────────────────────────────────────────
+
+  export function injectIntoMainWorld(
+    bootstrapUrl: string,
+    extBase: string,
+    initialRole: string,
+    initialColor: number,
+    initialCustomColor: string,
+    initialVisible: boolean,
+  ): void {
+    // Store params for later chat lazy-load
+    _bootstrapParams.initialRole = initialRole;
+    _bootstrapParams.initialColor = initialColor;
+    _bootstrapParams.initialCustomColor = initialCustomColor;
+    _bootstrapParams.ipcSecret = IPC_SECRET;
+
+    const el = document.createElement('script');
+    el.src = bootstrapUrl;
+    el.dataset.base = extBase;
+    el.dataset.role = initialRole;
+    el.dataset.color = String(initialColor);
+    el.dataset.visible = String(initialVisible);
+    el.dataset.ipcSecret = IPC_SECRET;
+    el.id = 'yipet-bootstrap';
+
+    (document.head || document.documentElement).appendChild(el);
+  }
 
 // ── Message Listener ─────────────────────────────────────────────────────
 
 export function setupMessageRelay(): void {
   chrome.runtime.onMessage.addListener((msg: PopupToContent, _sender, sendResponse) => {
+    // Inject MAIN world on first interaction that needs DOM
+    if (msg.action !== 'ping') _ensureMainWorldInjected();
+
     switch (msg.action) {
       case 'ping': {
         sendResponse({
@@ -178,6 +215,7 @@ export function setupMessageRelay(): void {
       }
       case 'toggleVisibility': {
         _petVisible = !_petVisible;
+        if (_petVisible) _ensureMainWorldInjected();
         applyVisibility(_petVisible);
         persist();
         sendResponse({ success: true, visible: _petVisible });
@@ -185,6 +223,7 @@ export function setupMessageRelay(): void {
       }
       case 'setVisibility': {
         _petVisible = !!msg.visible;
+        if (_petVisible) _ensureMainWorldInjected();
         applyVisibility(_petVisible);
         persist();
         sendResponse({ success: true, visible: _petVisible });
@@ -236,16 +275,26 @@ export function setupMessageRelay(): void {
         break;
       }
       case 'toggleChat': {
-        dispatchSecureEvent('yipet:chatToggled', {});
+        if (!_chatLoaded) {
+          _pendingChatToggle = true;
+          injectChatScript();
+        } else {
+          dispatchSecureEvent('yipet:chatToggled', {});
+        }
         sendResponse({ success: true });
         break;
       }
       case 'extensionUpdated': {
-        const prev = (msg as Record<string, unknown>).previousVersion || 'unknown';
-        const curr = (msg as Record<string, unknown>).currentVersion || 'unknown';
-        console.warn(`[YiPet] Extension updated: ${prev} → ${curr}. Re-injecting...`);
+        console.warn(
+          `[YiPet] Extension updated: ${msg.previousVersion || 'unknown'} → ${msg.currentVersion || 'unknown'}. Re-injecting...`,
+        );
 
-        // Clear re-injection guard
+        // Reset all lazy-load state
+        _mainWorldInjected = false;
+        _mainWorldInjecting = false;
+        _chatLoaded = false;
+        _chatLoading = false;
+        _pendingChatToggle = false;
         const w = window as unknown as Record<string, unknown>;
         delete w.__yipetChatInit;
 
@@ -256,10 +305,8 @@ export function setupMessageRelay(): void {
         document.getElementById('yipet-chat')?.remove();
         document.getElementById('yipet-animations')?.remove();
 
-        // Re-initialize
-        initRelay().catch((err: Error) => {
-          console.error('[YiPet] Re-injection failed:', err.message);
-        });
+        // Re-inject (message relay already active, no need to re-init)
+        _ensureMainWorldInjected();
 
         sendResponse({ success: true });
         break;
@@ -274,28 +321,58 @@ export function setupMessageRelay(): void {
 
 // ── Init ─────────────────────────────────────────────────────────────────
 
-export async function initRelay(): Promise<void> {
-  const savedState = await loadSavedPetStateForPage();
-  const savedColor = await loadColorTheme();
-  if (typeof savedState.color === 'number') _petColor = savedState.color;
-  else if (savedColor !== _petColor) _petColor = savedColor;
-  if (typeof savedState.customColor === 'string') _petCustomColor = savedState.customColor;
-  if (typeof savedState.visible === 'boolean') _petVisible = savedState.visible;
-  if (typeof savedState.size === 'number') _petSize = savedState.size;
-  if (typeof savedState.role === 'string' && validateRole(savedState.role)) _petRole = savedState.role;
+  /** Whether bootstrap.js has been injected into MAIN world. */
+  let _mainWorldInjected = false;
+  let _mainWorldInjecting = false;
 
-  const savedRole = await loadSavedRole(_petRole);
-  if (savedRole && validateRole(savedRole)) {
-    _petRole = savedRole;
+  /** Bootstrap params cached before injection. */
+  let _cachedExtBase = '';
+  let _cachedSelfUrl = '';
+
+  function _ensureMainWorldInjected(): void {
+    if (_mainWorldInjected || _mainWorldInjecting) return;
+    _mainWorldInjecting = true;
+
+    injectIntoMainWorld(
+      _cachedSelfUrl, _cachedExtBase,
+      _petRole, _petColor, _petCustomColor, _petVisible,
+    );
+    _mainWorldInjected = true;
+    _mainWorldInjecting = false;
+
+    // Re-apply current state once MAIN world DOM exists (next frame)
+    requestAnimationFrame(() => {
+      applyVisibility(_petVisible);
+      applySize(_petSize);
+      applyRole(_petRole);
+      applyColor(_petColor, _petCustomColor);
+    });
   }
 
-  const extBase = chrome.runtime.getURL('cdn/');
-  const selfUrl = chrome.runtime.getURL('assets/bootstrap.js');
-  injectIntoMainWorld(selfUrl, extBase, _petRole, _petColor, _petCustomColor, _petVisible);
+  export async function initRelay(): Promise<void> {
+    const savedState = await loadSavedPetStateForPage();
+    const savedColor = await loadColorTheme();
+    if (typeof savedState.color === 'number') _petColor = savedState.color;
+    else if (savedColor !== _petColor) _petColor = savedColor;
+    if (typeof savedState.customColor === 'string') _petCustomColor = savedState.customColor;
+    if (typeof savedState.visible === 'boolean') _petVisible = savedState.visible;
+    if (typeof savedState.size === 'number') _petSize = savedState.size;
+    if (typeof savedState.role === 'string' && validateRole(savedState.role)) _petRole = savedState.role;
 
-  setupMessageRelay();
+    const savedRole = await loadSavedRole(_petRole);
+    if (savedRole && validateRole(savedRole)) {
+      _petRole = savedRole;
+    }
 
-  restorePetState(
+    _cachedExtBase = chrome.runtime.getURL('cdn/');
+    _cachedSelfUrl = chrome.runtime.getURL('assets/bootstrap.js');
+
+    setupMessageRelay();
+
+    // No MAIN world injection here — deferred to first user interaction.
+    // Pages where the user never interacts with YiPet stay completely untouched.
+
+    restorePetState(
     { visible: _petVisible, size: _petSize, role: _petRole, color: _petColor, customColor: _petCustomColor },
     (type, detail) => {
       switch (type) {

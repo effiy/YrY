@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-94: 会议纪要管理 — 会议笔记管理、会议日程集成、行动项提取、参会人员追踪、系列会议管理、决策记录、分享会议笔记、会议笔记模板"
 tags: [需求文档, 会议纪要, 行动项, 决策记录, 会议管理, 协作, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["43-prd-task-会议纪要管理"]
+related_tests: ["43-prd-test-会议纪要管理"]
+benefit: "产品需求：会议纪要管理"
+lifecycle: active
 ---
 
 # YV-09-94: 会议纪要管理 — 会议笔记管理、会议日程集成、行动项提取、参会人员追踪、系列会议管理、决策记录、分享会议笔记、会议笔记模板

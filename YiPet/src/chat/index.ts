@@ -56,6 +56,9 @@ async function initChatApp() {
   container.id = 'yipet-chat-root';
   document.body.appendChild(container);
 
+  // Mark the host page so global SCSS selectors only apply when chat is loaded
+  document.body.classList.add('yipet-chat-loaded');
+
   const api = createApiServices({
     baseUrl: API_BASE,
     token: API_TOKEN,
@@ -74,13 +77,15 @@ async function initChatApp() {
 
   const store = useChatStore();
   store.injectServices({
+    client: api.client,
     chat: api.chat,
     sessions: api.sessions,
     wework: api.wework,
-    knowledge: api.knowledge,
-    rag: api.rag,
     search: api.search,
-    bug: api.bug,
+    rag: api.rag,
+    knowledge: api.knowledge,
+    translation: api.translation,
+    dashboard: api.dashboard,
   });
   store.setColorIndex(COLOR_INDEX, CUSTOM_COLOR);
   store.setSystemPrompt(INITIAL_SYSTEM_PROMPT);
@@ -125,6 +130,9 @@ async function initChatApp() {
     if (!store.state.isProcessing) {
       const ta = _textarea(); if (ta) { ta.value = ''; ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus(); }
     }
+  });
+  window.addEventListener('yipet:shortcut:translate-selection', () => {
+    store.translateSelection();
   });
 
   app.mount(container);

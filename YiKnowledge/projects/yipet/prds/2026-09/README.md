@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: YiPet 2026-09 PRD 索引
 category: 项目/浏览器扩展/需求
 created: 2026-09-02
 updated: 2026-09-14
 project: YiPet
+
+type: 需求
+status: 待开始
 ---
 
 # 2026-09 YiPet PRD 索引

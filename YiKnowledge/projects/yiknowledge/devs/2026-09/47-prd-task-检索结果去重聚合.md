@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-44"
 title: "YK-09-44: 检索结果去重聚合 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "47-架构设计-检索结果去重聚合.md"
 source_okr: [yiknowledge-001]
 related_tests: ["47-prd-test-检索结果去重聚合"]
+
+type: task
 ---
 
 # YK-09-44: 检索结果去重聚合 — 开发方案

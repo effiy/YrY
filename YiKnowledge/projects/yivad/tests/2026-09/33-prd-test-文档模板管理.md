@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "文档模板管理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-65"
 source_prds: ["33-prd-文档模板管理"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 文档模板管理]
+benefit: "测试用例：文档模板管理"
+lifecycle: active
 ---
 # 文档模板管理 — 测试规格
 

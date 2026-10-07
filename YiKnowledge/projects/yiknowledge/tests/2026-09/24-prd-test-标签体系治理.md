@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-21: 标签体系治理 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-21"
 source_prds: ["24-架构设计-标签体系治理"]
 source_modules: ["24-prd-task-标签体系治理"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-21: 标签体系治理 — 测试用例

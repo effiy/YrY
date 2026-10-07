@@ -26,23 +26,23 @@ const SKILL_IDS = new Set(skills.map(s => s.id));
 
 /** 角色 → 主技能 + 候选（id 取自 skills/constants.ts 的 SkillDef.id）。 */
 export const ROLE_SKILL: Record<string, { skill: string; candidates: string[] }> = {
-  executiver: { skill: "business-strategy", candidates: ["business-strategy", "market-research", "mermaid"] },
-  producter: { skill: "market-research", candidates: ["market-research", "ui-ux"] },
+  executive: { skill: "business-strategy", candidates: ["business-strategy", "market-research", "mermaid"] },
+  product: { skill: "market-research", candidates: ["market-research", "ui-ux"] },
   leader: { skill: "code-quality-research", candidates: ["code-quality-research", "mermaid", "github"] },
   engineer: { skill: "fastapi", candidates: ["fastapi", "vue", "nodejs", "github"] },
-  srer: { skill: "nginx", candidates: ["nginx", "lighthouse", "tmux", "github"] },
+  sre: { skill: "nginx", candidates: ["nginx", "lighthouse", "tmux", "github"] },
   aier: { skill: "skill-creator", candidates: ["skill-creator", "mermaid", "code-quality-research"] },
   curator: { skill: "market-research", candidates: ["market-research", "import", "public-api"] }
 };
 
 /** 工程角色默认走 github MCP（代码 / 仓库操作），其余走 yiai（AI / 知识库）。 */
-const ENGINEERING_ROLES = new Set(["engineer", "leader", "srer"]);
+const ENGINEERING_ROLES = new Set(["engineer", "leader", "sre"]);
 
 /** 解析 skill：AI 给出的 id 合法则采纳，否则回退到角色主技能（风险/冲刺清单给一点倾向）。 */
 export function resolveSkill(role: string, listType?: string, aiSkill?: unknown): OkrSkill {
   const s = String(aiSkill ?? "").trim();
   if (s && SKILL_IDS.has(s)) return s;
-  if (listType === "risk" && role === "srer") return "lighthouse";
+  if (listType === "risk" && role === "sre") return "lighthouse";
   if (listType === "sprint" && role === "engineer") return "vue";
   return ROLE_SKILL[role]?.skill ?? "business-strategy";
 }

@@ -1,10 +1,15 @@
 ---
-doc_type: index
 title: 2026-Q3 项目 OKR 索引
 category: 项目/管理后台/OKR
 created: 2026-09-11
 updated: 2026-09-14
 project: YiVad
+type: index
+source: YiVad
+tags: [yivad, okr]
+status: active
+benefit: "OKR 目标与关键结果"
+lifecycle: active
 ---
 
 # 2026-Q3 项目 OKR 索引
@@ -67,7 +72,7 @@ flowchart LR
 |---------|------|------|------|----------|
 | eng-001 | 代码编写与调试自闭环 | engineer | 100% | YiVad |
 | eng-005 | 构建健康归零 | engineer | — | YiVad |
-| prod-001 | 需求评审可闭环 | producter | 100% | YiAi |
+| prod-001 | 需求评审可闭环 | product | 100% | YiAi |
 
 > 角色级 OKR 详细内容参见 `YiKnowledge/{role}/okr/2026-Q3/{goal-id}/goal.md`
 

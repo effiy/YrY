@@ -1,10 +1,14 @@
 ---
+
 doc_type: index
 title: YiPet 测试文档索引
 category: 项目/浏览器扩展/测试
 created: 2026-09-11
 updated: 2026-09-14
 project: YiPet
+
+type: test
+status: 待开始
 ---
 
 # YiPet 测试文档索引

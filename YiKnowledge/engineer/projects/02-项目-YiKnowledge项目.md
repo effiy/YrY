@@ -40,7 +40,7 @@ YiKnowledge 是 YrY 微前端的**共享知识库**，按照软件交付流水�
 cd YiKnowledge
 
 # 按角色查看
-ls engineer/ leader/ producter/ srer/ executiver/ aier/ curator/
+ls engineer/ leader/ product/ sre/ executive/ aier/ curator/
 
 # 按标签搜索
 rg "^tags:.*keyword" YiKnowledge -l
@@ -71,7 +71,7 @@ YiKnowledge/
 ├── README.md                # 知识库概述 + 流水线架构
 ├── INDEX.md                 # 全库导航索引
 ├── MEMORY.md                # 知识库规则手册
-├── producter/               # 角色 1: 需求 (Requirements)
+├── product/               # 角色 1: 需求 (Requirements)
 │   ├── README.md            # 角色概述
 │   ├── INDEX.md             # 角色索引
 │   ├── frameworks/          # 框架 (JTBD, RICE/ICE, 用户研究)
@@ -96,13 +96,13 @@ YiKnowledge/
 │   ├── run/                 # 运营 (协作, 知识共享, 入职)
 │   ├── learn/               # 学习 (经验教训, 失败, 陷阱, Bug)
 │   └── projects/            # 项目文档 (YiVad, YiAi, YiPet, YiKnowledge)
-├── srer/                    # 角色 4: 运营学习 (Operate + Learn)
+├── sre/                    # 角色 4: 运营学习 (Operate + Learn)
 │   ├── README.md
 │   ├── INDEX.md
 │   ├── observability/       # 可观测性 (监控, 告警, 仪表盘, SLO)
 │   ├── incident-response/   # 事件响应 (流程, 复盘)
 │   └── release/             # 发布 (发布, 回滚, 金丝雀)
-├── executiver/              # 跨角色层: 业务策略 (Business Strategy)
+├── executive/              # 跨角色层: 业务策略 (Business Strategy)
 │   ├── README.md
 │   ├── INDEX.md
 │   ├── strategy/            # 企业战略
@@ -153,7 +153,6 @@ YiKnowledge/
 title: 文件标题                      # 必填
 aliases: [别名1, 别名2]              # 推荐
 tags: [标签1, 标签2, 标签3]           # 必填, 3-5 个
-category: root | <role>/<subdir>     # 必填
 created: YYYY-MM-DD                  # 必填
 updated: YYYY-MM-DD                  # 必填
 source: internal | url               # 必填
@@ -205,11 +204,11 @@ inbox → triage → active → reference → archive
 
 | 角色 | 流水线阶段 | 核心问题 |
 |------|-----------|----------|
-| executiver/ | 业务策略 (跨阶段) | 为什么做？ |
-| producter/ | 1. 需求 | 做什么？ |
+| executive/ | 业务策略 (跨阶段) | 为什么做？ |
+| product/ | 1. 需求 | 做什么？ |
 | leader/ | 2. 决策 | 选哪个方案？ |
 | engineer/ | 3. 设计构建 | 怎么实现？ |
-| srer/ | 4. 质量发布 + 5. 运营学习 | 怎么运行？ |
+| sre/ | 4. 质量发布 + 5. 运营学习 | 怎么运行？ |
 | aier/ | AI 赋能 (跨阶段) | 怎么用 AI 加速？ |
 | curator/ | 知识治理 (元层) | 怎么维护 KB？ |
 
@@ -217,11 +216,11 @@ inbox → triage → active → reference → archive
 
 ```
 内容属于哪个角色？
-├── 业务策略、市场、竞品？ → executiver/
-├── 产品需求、用户故事、优先级？ → producter/
+├── 业务策略、市场、竞品？ → executive/
+├── 产品需求、用户故事、优先级？ → product/
 ├── 技术决策、架构选择、ADR？ → leader/
 ├── 实现模式、开发工具、代码？ → engineer/
-├── 发布流程、监控、事件响应？ → srer/
+├── 发布流程、监控、事件响应？ → sre/
 ├── AI/ML 理论和实践？ → aier/
 └── KB 结构和规则？ → curator/
 ```
@@ -232,8 +231,8 @@ inbox → triage → active → reference → archive
 |------|------|------|
 | 架构决策 vs 架构模式 | leader/ | 决策 = 为什么选 A 不选 B |
 | 安全加固 vs 安全策略 | engineer/ | 加固 = 代码层面实现 |
-| 事件响应 vs 风险预防 | srer/→ 中, leader/→ 前后 | 时间线区分 |
-| 产品路线图 vs 技术路线图 | producter/→ 功能, leader/→ 技术 | 做什么 vs 用什么 |
+| 事件响应 vs 风险预防 | sre/→ 中, leader/→ 前后 | 时间线区分 |
+| 产品路线图 vs 技术路线图 | product/→ 功能, leader/→ 技术 | 做什么 vs 用什么 |
 
 ---
 
@@ -243,13 +242,13 @@ inbox → triage → active → reference → archive
 
 ```
                     ┌──────────────────────────────────┐
-                    │  Business Strategy (executiver/)  │
+                    │  Business Strategy (executive/)  │
                     │  战略 / 行业 / 路线图              │
                     └──────────────────────────────────┘
                                       ↓
   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
   │ 1.需求    │ → │ 2.决策    │ → │ 3.设计构建 │ → │ 4.质量发布 │ → │ 5.运营学习 │
-  │ producter │    │ leader   │    │ engineer  │    │ srer      │    │ srer      │
+  │ product │    │ leader   │    │ engineer  │    │ sre      │    │ sre      │
   │ PRD/用户  │    │ ADR/技术 │    │ 架构/开发  │    │ 发布/监控  │    │ SLO/复盘   │
   │ 故事/优先级│    │ 选择/容量 │    │ 质量/数据  │    │ 事件响应   │    │ 经验教训   │
   └──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import dayjs from "dayjs";
 import type { DateRange } from "@/types/analytics";
 
@@ -50,8 +50,9 @@ function onCustomChange(val: [Date, Date] | null) {
   });
 }
 
-const currentRange = computed(() => presets[preset.value]?.() ?? { start: "", end: "" });
-emit("change", currentRange.value);
+onMounted(() => {
+  emit("change", presets[preset.value]());
+});
 </script>
 
 <style scoped lang="scss">

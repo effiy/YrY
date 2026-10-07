@@ -17,7 +17,7 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../README.md
-  - ../../executiver/roadmap/
+  - ../../executive/roadmap/
 ---
 
 # 技术负责人 — 路线图与生命周期管理
@@ -94,7 +94,7 @@ roadmap/ (规划 + 执行)
     │
     ├── 技术选型 ──→ architecture/ (评估框架) → decisions/ (ADR)
     ├── 容量规划 ──→ capacity/ (FinOps + 成本追踪)
-    ├── SLO ──→ srer/observability/ (监控 + 告警)
+    ├── SLO ──→ sre/observability/ (监控 + 告警)
     └── 技术债 ──→ architecture/ (技术债评估) → risk/ (风险评估)
 ```
 

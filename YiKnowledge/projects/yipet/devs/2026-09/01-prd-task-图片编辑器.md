@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-M01"
 title: "YP-M01: 图片编辑器 — 合并 21 个图片工具 — 开发方案"
@@ -7,14 +8,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 3.0
 source_prd: "01-功能实现-图片编辑器.md"
 source_okr: [yipet-004]
-related_tests: ["01-prd-test-图片编辑器"]
+related_tests: ["01-prd-test-图片编辑器.md"]
+
+type: task
 ---
 
 # YP-M01: 图片编辑器 — 开发方案

@@ -36,19 +36,32 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 onBeforeMount(() => props.collapsed && findIndex());
+
+let _resizeListener = false;
+function addResizeListener() {
+  if (_resizeListener) return;
+  window.addEventListener("resize", resize);
+  _resizeListener = true;
+}
+function removeResizeListener() {
+  if (!_resizeListener) return;
+  window.removeEventListener("resize", resize);
+  _resizeListener = false;
+}
+
 onMounted(() => {
   resize({ target: window } as unknown as UIEvent);
-  window.addEventListener("resize", resize);
+  addResizeListener();
 });
 onActivated(() => {
   resize({ target: window } as unknown as UIEvent);
-  window.addEventListener("resize", resize);
+  addResizeListener();
 });
 onUnmounted(() => {
-  window.removeEventListener("resize", resize);
+  removeResizeListener();
 });
 onDeactivated(() => {
-  window.removeEventListener("resize", resize);
+  removeResizeListener();
 });
 
 // Watch screen resize

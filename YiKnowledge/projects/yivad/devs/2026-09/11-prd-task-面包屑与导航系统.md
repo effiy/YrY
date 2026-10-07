@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-31"
 title: "YV-09-31: 面包屑与导航系统 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "11-prd-面包屑与导航系统.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 面包屑与导航系统]
+benefit: "开发方案：task-面包屑与导航系统"
+lifecycle: active
 ---
 
 # YV-09-31: 面包屑与导航系统 — 开发方案
@@ -57,6 +62,20 @@ const breadcrumbs = computed(() =>
 | 2 | 守卫中动态设置 meta.title | 0.25 |
 
 **合计：0.5d**
+
+
+### 架构方案
+
+**技术路线**：全局路由监听 → 自动生成面包屑（基于 `route.matched` + `meta.title`），props 驱动渲染
+
+**组件树**：
+```
+AppBreadcrumb.vue (全局) + BreadcrumbItem.vue (路由链接 + 当前页标识)
+```
+
+**关键决策**：
+面包屑数据源：`route.matched` 过滤 hidden 路由 → 映射 `meta.title` i18n key；首页始终作为第一级
+
 
 ---
 

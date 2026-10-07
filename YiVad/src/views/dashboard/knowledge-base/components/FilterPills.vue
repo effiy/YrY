@@ -38,15 +38,17 @@ const emit = defineEmits<{
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  padding: 6px 20px;
+  padding: 8px 20px;
+  margin: 0 20px 16px;
   background: var(--el-color-primary-light-9);
-  border-bottom: 1px solid var(--el-color-primary-light-7);
+  border: 1px solid var(--el-color-primary-light-7);
+  border-radius: 8px;
 }
 .fpb-label {
   flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 500;
-  color: #909399;
+  font-size: 12px;
+  font-weight: 600;
+  color: #86909c;
 }
 .fpb-pills {
   display: flex;
@@ -56,33 +58,31 @@ const emit = defineEmits<{
 }
 .fpb-pill {
   display: inline-flex;
-  gap: 3px;
+  gap: 4px;
   align-items: center;
-  padding: 1px 8px;
-  font-size: 10px;
-  line-height: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 22px;
   cursor: default;
   border: 1px solid;
   border-radius: 12px;
   transition: all 0.15s;
   .fpb-dim {
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 600;
   }
   .fpb-val {
-    max-width: 120px;
+    max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #303133;
+    color: #1d2129;
     white-space: nowrap;
   }
   .fpb-close {
     flex-shrink: 0;
-    color: #909399;
+    color: #86909c;
     cursor: pointer;
-    &:hover {
-      color: #f56c6c;
-    }
+    &:hover { color: #f56c6c; }
   }
 }
 .fpb-pill-enter-active,

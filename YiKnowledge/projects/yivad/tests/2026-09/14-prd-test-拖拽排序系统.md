@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "拖拽排序系统 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-37"
 source_prds: ["14-prd-拖拽排序系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 拖拽排序系统]
+benefit: "测试用例：拖拽排序系统"
+lifecycle: active
 ---
 # 拖拽排序系统 — 测试规格
 

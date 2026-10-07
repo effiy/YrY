@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M20: 内容质量与分析 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-M20"
 source_prds: ["02-功能实现-内容质量与分析"]
 source_modules: ["02-prd-task-内容质量与分析"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # M20: 内容质量与分析 — 测试用例

@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-12: 知识库备份与灾难恢复 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-12"
 source_prds: ["15-架构设计-知识库备份与灾难恢复"]
 source_modules: ["15-prd-task-知识库备份与灾难恢复"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-12: 知识库备份与灾难恢复 — 测试用例

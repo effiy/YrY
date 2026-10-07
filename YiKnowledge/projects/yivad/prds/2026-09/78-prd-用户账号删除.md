@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-204: 用户账号删除 — 确认步骤、数据删除预览、带撤销的宽限期、最终确认、数据保留政策展示"
 tags: [需求文档, 用户中心, 账号删除, 数据删除, 宽限期, 数据保留, GDPR合规]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["78-prd-task-用户账号删除"]
+related_tests: ["78-prd-test-用户账号删除"]
+benefit: "产品需求：用户账号删除"
+lifecycle: active
 ---
 
 # YV-09-204: 用户账号删除 — 确认步骤、数据删除预览、带撤销的宽限期、最终确认、数据保留政策展示

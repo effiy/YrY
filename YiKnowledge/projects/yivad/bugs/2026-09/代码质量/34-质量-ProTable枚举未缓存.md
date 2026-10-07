@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-ProTable枚举未缓存"
+lifecycle: active
 ---
 
 # ProTable 枚举数据获取结果未被缓存
@@ -56,7 +58,6 @@ const enumMap = ref(new Map<string, EnumProps[]>());
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **字典数据是天然的缓存候选**：状态、优先级、类型等枚举值变化频率极低（以天/周计），但每个 ProTable 实例挂载时都会重新请求。全局枚举缓存（Pinia dictStore + 5 分钟 TTL）可消除 90% 以上的重复枚举请求
+- **组件级作用域 vs 应用级单例**：`enumMap` 放在 ProTable 组件内部意味着缓存生命周期绑定组件实例。提升到 Store 后，同一页面的多个 ProTable 共享缓存，页面切换也不丢失
 

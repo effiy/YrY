@@ -1,4 +1,23 @@
-# beautiful-mermaid 1.1 API Reference
+---
+title: "Beautiful-Mermaid API 参考"
+tags: [mermaid, api, reference, skill]
+category: skills/pretty-mermaid
+created: 2026-09-15
+updated: 2026-10-07
+source: external
+type: reference
+status: stable
+lifecycle: active
+review_cycle: quarterly
+roles: [engineer]
+benefit: 扩展或调用 Mermaid 渲染 CLI 脚本时的 API 参考
+related:
+  - ../SKILL.md
+  - ./THEMES.md
+  - ./DIAGRAM_TYPES.md
+---
+
+# Beautiful-Mermaid 1.1 API Reference
 
 Use this reference when extending the bundled CLI scripts or calling `beautiful-mermaid` directly. The Skill currently targets `beautiful-mermaid@^1.1.3`.
 

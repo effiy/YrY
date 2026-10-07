@@ -7,7 +7,6 @@ Password flow:
 """
 from datetime import datetime, timedelta, timezone
 import logging
-from typing import Optional
 
 import bcrypt
 import jwt

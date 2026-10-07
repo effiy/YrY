@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M01: 图片编辑器 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M01"
-source_prds: ["01-功能实现-图片编辑器"]
-source_modules: ["01-prd-task-图片编辑器"]
+source_prds: ["01-功能实现-图片编辑器.md"]
+source_modules: ["01-prd-task-图片编辑器.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M01: 图片编辑器 — 测试用例
@@ -357,4 +360,3 @@ source_okr: [yipet-004]
 | 2 | Web Worker mock（jsdom 不支持 Worker） | Worker 集成测试无法执行 | Vitest `pool: 'threads'` 或 `vitest-webworker` 插件 |
 | 3 | chrome.storage API mock | 预设持久化测试无法执行 | `vitest-chrome` 或手动 mock |
 
----

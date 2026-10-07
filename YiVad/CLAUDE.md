@@ -240,10 +240,35 @@ pnpm test             # vitest run
 
 ## 近期变更
 
+### 2026-09-24 — 代码健康：WangEditor 结构修复 + 错误日志可见性
+
+- **`components/WangEditor/index.vue`**：修复严重结构错误 — `uploadImgValidate`/`uploadVideoValidate` 被错误嵌套在 `customUpload` 的 `catch` 块内部，导致 7 个 TypeScript 类型错误（TS2448/TS2454/TS2339/TS1192/TS2305）。重构为正确的声明顺序（函数定义在引用之前），添加 `editorRef.value?.disable()`/`?.isEmpty()` 空值保护，`let` → `const`，移除冗余注释。`vue-tsc --noEmit` 现已通过。
+- **`services/sortPersistence.ts`**：空 `.catch(() => {})` 替换为带 `console.warn("[sortPersistence] Failed: ...")` 的可见错误日志，排序持久化失败不再静默。
+
+### 2026-09-23 — 自进化：代码质量 + 跨项目数据打通
+
+- **代码去重与统一**：
+  - **`utils/time.ts`**（新增）：统一时间格式化 — `parseTime`、`timeAgo`、`formatDate`、`formatDateTime`、`formatDuration`。取代 12 个分散的本地 `formatTime`/`timeAgo` 实现。
+  - **`hooks/useTagHelpers.ts`**：`formatRelativeTime` 改为委托到 `utils/time.ts`（向后兼容，现有导入无需修改）。
+  - **`components/NotificationBell.vue`、`NotificationItem.vue`、`views/notification/index.vue`**：移除 3 份重复的 12 行 `formatTime` 函数 → 统一使用 `timeAgo(iso, "zh")`。
+- **首页数据新鲜度**：**`views/home/index.vue`** — 年龄显示升级为 MM:SS 格式（sub-5min "2:45"），脉冲指示器从一次性动画改为持续呼吸动画（2s 周期），过期后变灰。
+- **数据新鲜度基础设施**：
+  - **`hooks/useDataFreshness.ts`**（新增）：轻量级 composable — `dataAge`、`markFresh()`、`ageLabel`。
+  - **`components/DataFreshnessBar/DataFreshnessBar.vue`**（新增）：可复用组件 — 绿点脉冲 + 时间标签 + 刷新按钮，供各列表页使用。
+- **跨项目翻译打通**：
+  - **`api/modules/translationService.ts`**：新增 `getProviderRecommend()` — 调用 YiAi 的 `provider_recommend` RPC。
+  - **`views/dashboard/analytics/TranslationAnalytics.vue`**：新增 "Smart Provider Ranking" 面板 — 实时展示引擎健康排名，最佳引擎高亮 "Best" 标记，底部汇总统计。
+
+### 2026-09-23 — 翻译分析仪表盘：ECharts 可视化
+
+- **`views/dashboard/analytics/TranslationAnalytics.vue`**（新增）：翻译分析仪表盘 — 5 个 KPI 卡片（总翻译量/记忆缓存条目/好评数/健康供应商/活跃语言对）+ 3 个 ECharts 图表（语言分布饼图、供应商健康柱状图、7 天趋势折线图）+ 供应商明细表格（含成功率进度条）。时间范围切换（24h/3d/7d/30d）+ Refresh 刷新。
+- **`api/modules/translationService.ts`**：新增 `getProviderHealth`、`getHourlyTrend`、`getProviderBreakdown` 三个 RPC 调用函数 + `ProviderHealth`/`HourlyTrendItem`/`ProviderBreakdownItem` 类型定义。
+- **知识库文档**：新增 PRD（100-prd-翻译分析仪表盘.md）+ 开发方案（100-prd-task-翻译分析仪表盘.md）+ 测试方案（100-prd-test-翻译分析仪表盘.md）
+
 ### 2026-09-18 — Views 重构 + 菜单系统专业化
 
 - **Views 目录重组**：删除 `demo/`（40+ 死代码子目录），`analytics/` 合并入 `dashboard/analytics/`，新增 `showcase/` 组件展示（Components、Directives、Charts）
-- **菜单数据专业化**：12 个顶级菜单分区，语义化图标（系统管理各子项不再统一用 `Menu`），修复 key 拼写错误（Executiver→Executive 等），data-tools 分区收拢 import/export，reports 改为可见
+- **菜单数据专业化**：12 个顶级菜单分区，语义化图标（系统管理各子项不再统一用 `Menu`），修复 key 拼写错误（executive→Executive 等），data-tools 分区收拢 import/export，reports 改为可见
 - **菜单管理增强**：form 字段添加 hint 提示，parent 列显示菜单标题而非原始路径，新增 "Reset Defaults" 按钮（调用 `POST /system/menus/bulk-reset` 一键恢复默认菜单）
 - **YiAi 后端**：`MenuMeta` Pydantic 子模型校验（path/name 正则、parent 不自引用），新增 `POST /system/menus/bulk-reset` 批量重置端点
 - **类型完善**：`MenuOptions` 新增 `key` 和 `parent` 字段
@@ -273,10 +298,10 @@ pnpm test             # vitest run
 | [src/directives/](./src/directives/) | 10 个自定义指令 |
 | [src/routers/](./src/routers/) | 动态路由 + 权限守卫 |
 | [src/config/index.ts](./src/config/index.ts) | 应用级常量 |
-| [组件模式](../YiKnowledge/projects/yivad/patterns/component-patterns.md) | Vue 3.5 组件开发规范 |
-| [状态管理](../YiKnowledge/projects/yivad/patterns/state-management.md) | Pinia store 模式与持久化 |
-| [路由系统](../YiKnowledge/projects/yivad/architecture/routing.md) | 动态路由与权限守卫 |
-| [API 模块](../YiKnowledge/projects/yivad/architecture/api-modules.md) | 37 个 API 服务模块参考 |
-| [添加页面](../YiKnowledge/projects/yivad/workflows/adding-page.md) | 添加新页面工作流 |
+| [组件模式](../YiKnowledge/projects/yivad/workflows/开发规范/06-规范-组件开发.md) | Vue 3.5 组件开发规范 |
+| [状态管理](../YiKnowledge/projects/yivad/workflows/开发规范/02-规范-项目架构.md) | Pinia store 模式与持久化 |
+| [路由系统](../YiKnowledge/projects/yivad/workflows/开发规范/02-规范-项目架构.md) | 动态路由与权限守卫 |
+| [API 模块](../YiKnowledge/projects/yivad/workflows/开发规范/03-规范-API开发.md) | 37 个 API 服务模块参考 |
+| [添加页面](../YiKnowledge/projects/yivad/workflows/开发规范/04-规范-页面模式.md) | 添加新页面工作流 |
 | [YiAi/CLAUDE.md](../YiAi/CLAUDE.md) | 后端项目参考 |
 | [../CLAUDE.md](../CLAUDE.md) | 根级 CLAUDE.md（RPC 协议、跨项目关系） |

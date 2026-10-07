@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-15"
 title: "YK-09-15: 多模态内容支持 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "18-架构设计-多模态内容支持.md"
 source_okr: [yiknowledge-001]
 related_tests: ["18-prd-test-多模态内容支持"]
+
+type: task
 ---
 
 # YK-09-15: 多模态内容支持 — 开发方案

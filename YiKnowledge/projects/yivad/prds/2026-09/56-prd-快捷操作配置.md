@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作"
 tags: [需求文档, 快捷操作, 工具栏, 用户偏好, 拖拽排序, 快捷键, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["56-prd-task-快捷操作配置"]
+related_tests: ["56-prd-test-快捷操作配置"]
+benefit: "产品需求：快捷操作配置"
+lifecycle: active
 ---
 
 # YV-09-124: 快捷操作配置 — 可配置快捷操作工具栏、用户个性化收藏、拖拽排序、基于使用频率的操作建议、快捷键绑定到操作

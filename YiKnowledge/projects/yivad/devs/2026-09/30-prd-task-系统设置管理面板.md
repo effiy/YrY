@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-62"
 title: "YV-09-62: 系统设置管理面板 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "30-prd-系统设置管理面板.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 系统设置管理面板]
+benefit: "开发方案：task-系统设置管理面板"
+lifecycle: active
 ---
 
 # YV-09-62: 系统设置管理面板 — 开发方案
@@ -54,6 +59,20 @@ interface SystemSetting {
 |------|------|
 | 1 | 设置 CRUD API + Store |
 | 2 | 设置面板 UI (分类 Tab + 表单) |
+
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/settings`)，表单式配置编辑，存储到 MongoDB `system_settings` 集合
+
+**组件树**：
+```
+SystemSettingsForm.vue (el-form + 分组 tabs) + SettingsPreview.vue (实时预览)
+```
+
+**关键决策**：
+设置变更记录到活动日志（`activity_log` 集合）；敏感设置（如安全策略）需管理员二次确认
+
 
 ---
 

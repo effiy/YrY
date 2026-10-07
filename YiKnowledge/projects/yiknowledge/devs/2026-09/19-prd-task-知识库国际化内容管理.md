@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-16"
 title: "YK-09-16: 知识库国际化内容管理 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "19-架构设计-知识库国际化内容管理.md"
 source_okr: [yiknowledge-001]
 related_tests: ["19-prd-test-知识库国际化内容管理"]
+
+type: task
 ---
 
 # YK-09-16: 知识库国际化内容管理 — 开发方案

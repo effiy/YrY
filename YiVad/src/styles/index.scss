@@ -1,0 +1,667 @@
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 136px);
+  padding: 20px 24px;
+  overflow: hidden;
+  background: var(--el-bg-color-page);
+}
+
+// ── Head ──
+.roadmap__head {
+  display: flex;
+  flex-shrink: 0;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.roadmap__head-left {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0;
+  align-items: center;
+}
+.roadmap__head-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: center;
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  &:not(:last-child)::after {
+    position: absolute;
+    top: 15%;
+    right: 0;
+    width: 1px;
+    height: 70%;
+    content: "";
+    background: var(--el-border-color-lighter);
+  }
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
+  &.is-active {
+    background: var(--el-color-primary-light-9);
+    .roadmap__head-stat-value {
+      color: var(--el-color-primary);
+    }
+  }
+}
+.roadmap__head-stat-value {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--el-text-color-primary);
+  & &.is-module {
+    color: #9b59b6;
+  }
+  &.is-done {
+    color: var(--el-color-success);
+  }
+  &.is-progress {
+    color: #409eff;
+  }
+  &.is-overdue {
+    color: var(--el-color-danger);
+  }
+  &.is-risk {
+    color: var(--el-color-warning);
+  }
+}
+.roadmap__head-stat-label {
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
+  white-space: nowrap;
+}
+.roadmap__head-right {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+  align-items: center;
+}
+.roadmap__head-freshness {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+}
+
+.roadmap__head-countdown {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-color-success-dark-2);
+  white-space: nowrap;
+}
+.roadmap__head-countdown-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--el-color-success);
+  border-radius: 50%;
+  animation: roadmap-pulse 1.5s ease-in-out infinite;
+}
+@keyframes roadmap-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+// ── Health bar ──
+.roadmap__health {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--el-color-warning-dark-2);
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning-light-5);
+  border-radius: 6px;
+}
+.roadmap__health-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.roadmap__health-item {
+  &::before {
+    content: "·";
+    margin-right: 8px;
+  }
+}
+
+// ── Warning banner ──
+.roadmap__warning {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--el-color-warning-dark-2);
+  background: var(--el-color-warning-light-9);
+  border: 1px solid var(--el-color-warning-light-5);
+  border-radius: 6px;
+}
+
+.roadmap__stale {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--el-color-info-dark-2);
+  background: var(--el-color-info-light-9);
+  border: 1px solid var(--el-color-info-light-5);
+  border-radius: 6px;
+}
+
+// ── Filters ──
+.roadmap__filters {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+.roadmap__filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.roadmap__filter-label {
+  min-width: 32px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+// ── Stats bar ──
+.roadmap__stats {
+  display: flex;
+  flex-shrink: 0;
+  height: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: 2px;
+}
+.roadmap__stat-segment {
+  min-width: 0;
+  transition: width 0.4s ease;
+}
+
+// ── Board ──
+.roadmap__board {
+  display: flex;
+  flex: 1;
+  gap: 14px;
+  align-items: stretch;
+  padding-bottom: 8px;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--el-border-color);
+    border-radius: 3px;
+    &:hover {
+      background: var(--el-border-color-dark);
+    }
+  }
+}
+
+// ── Columns ──
+.roadmap__col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 270px;
+  max-height: 100%;
+  overflow: hidden;
+  background: var(--el-fill-color-lighter);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.roadmap__col-head {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.roadmap__col-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.roadmap__col-head-actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.roadmap__col-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
+.roadmap__col-progress {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 5px;
+  :deep(.el-progress) {
+    flex: 1;
+    max-width: 200px;
+  }
+  span {
+    font-size: 11px;
+    color: var(--el-text-color-placeholder);
+  }
+}
+.roadmap__col-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 50px;
+  padding: 8px 10px;
+  overflow: hidden auto;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--el-border-color);
+    border-radius: 2px;
+  }
+}
+.roadmap__col-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  padding: 24px;
+  font-size: 13px;
+  color: var(--el-text-color-placeholder);
+}
+
+// ── Items (kanban cards) ──
+.roadmap__item {
+  position: relative;
+  padding: 10px;
+  cursor: pointer;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s,
+    transform 0.12s;
+  &:hover {
+    border-color: var(--el-border-color);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 9%);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+  &--overdue {
+    border-color: var(--el-color-danger-light-4);
+    box-shadow: 0 0 0 1px var(--el-color-danger-light-6);
+  }
+  &--due-soon {
+    border-color: var(--el-color-warning-light-4);
+    box-shadow: 0 0 0 1px var(--el-color-warning-light-6);
+  }
+}
+.roadmap__item-accent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  border-radius: 6px 0 0 6px;
+}
+
+// Row 1: key + kind + status
+.roadmap__item-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.roadmap__item-key {
+  padding: 1px 5px;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color-light);
+  border-radius: 3px;
+}
+.roadmap__item-doc-icon {
+  flex-shrink: 0;
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.12s;
+  &:hover {
+    opacity: 1;
+  }
+}
+.roadmap__item-kind {
+  flex-shrink: 0;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+  border-radius: 8px;
+  &--module {
+    color: #9b59b6;
+    background: rgb(155 89 182 / 12%);
+  }
+}
+.roadmap__item-issue-type {
+  flex-shrink: 0;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.7;
+  border-radius: 8px;
+  &--bug { color: var(--el-color-danger); background: var(--el-color-danger-light-9); }
+  &--task { color: var(--el-color-primary); background: var(--el-color-primary-light-9); }
+  &--feature { color: var(--el-color-success); background: var(--el-color-success-light-9); }
+  &--improvement { color: var(--el-color-warning); background: var(--el-color-warning-light-9); }
+  &--requirement { color: #9b59b6; background: rgb(155 89 182 / 12%); }
+}
+.roadmap__item-risk {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.7;
+  border-radius: 8px;
+  &--overdue {
+    color: var(--el-color-danger);
+    background: var(--el-color-danger-light-9);
+  }
+  &--dueSoon {
+    color: var(--el-color-warning);
+    background: var(--el-color-warning-light-9);
+  }
+}
+.roadmap__item-status {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+// Row 2: title
+.roadmap__item-title {
+  display: -webkit-box;
+  padding: 1px 4px;
+  margin-right: -4px;
+  margin-bottom: 5px;
+  margin-left: -4px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  border-radius: 3px;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  -webkit-box-orient: vertical;
+  &:hover {
+    color: var(--el-color-primary);
+    background: var(--el-color-primary-light-9);
+  }
+}
+
+// Row 3: compact footer
+.roadmap__item-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.roadmap__item-foot-item {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--el-text-color-secondary);
+  .el-icon {
+    flex-shrink: 0;
+    font-size: 11px;
+  }
+  :deep(.el-progress) {
+    flex-shrink: 0;
+    width: 40px;
+  }
+  &--overdue {
+    font-weight: 600;
+    color: var(--el-color-danger);
+  }
+  &--due-soon {
+    font-weight: 600;
+    color: var(--el-color-warning);
+  }
+  &--muted {
+    color: var(--el-text-color-placeholder);
+  }
+}
+
+// Stacked progress bar (card level)
+.roadmap__item-progress-bar {
+  display: inline-flex;
+  width: 40px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: 2px;
+}
+.roadmap__item-progress-done {
+  height: 100%;
+  background: #67c23a;
+  border-radius: 2px 0 0 2px;
+  transition: width 0.3s ease;
+}
+.roadmap__item-progress-active {
+  height: 100%;
+  background: #409eff;
+  transition: width 0.3s ease;
+}
+.roadmap__item-progress-active-text {
+  color: #409eff;
+  font-weight: 600;
+}
+
+// Stacked progress bar (column level)
+.roadmap__col-progress-bar {
+  position: relative;
+  display: inline-flex;
+  flex: 1;
+  max-width: 200px;
+  height: 3px;
+  overflow: hidden;
+  background: var(--el-fill-color);
+  border-radius: 2px;
+}
+.roadmap__col-progress-done {
+  height: 100%;
+  background: #67c23a;
+  border-radius: 2px 0 0 2px;
+  transition: width 0.4s ease;
+}
+.roadmap__col-progress-active {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: #409eff;
+  transition: width 0.4s ease;
+}
+
+// Row 4: detail
+.roadmap__item-detail {
+  display: -webkit-box;
+  padding-top: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  border-top: 1px solid var(--el-border-color-lighter);
+  -webkit-box-orient: vertical;
+}
+
+// Last-updated timestamp
+.roadmap__item-updated {
+  padding-top: 3px;
+  margin-top: 3px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-placeholder);
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+// Issue list
+.roadmap__item-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+  margin-top: 4px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+.roadmap__item-issue-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 4px;
+  margin-right: -4px;
+  margin-left: -4px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.12s;
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
+}
+.roadmap__item-issue-key {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color);
+  border-radius: 2px;
+}
+.roadmap__item-issue-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
+}
+
+// ── Context Menu ──
+.roadmap-ctxmenu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 180px;
+  padding: 4px;
+  background: var(--el-bg-color-overlay);
+  border: 1px solid var(--el-border-color);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+}
+.roadmap-ctxmenu__item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  border-radius: 4px;
+  .el-icon {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+  }
+  &:hover {
+    background: var(--el-fill-color-light);
+  }
+  &--danger {
+    color: var(--el-color-danger);
+    .el-icon {
+      color: var(--el-color-danger);
+    }
+    &:hover {
+      background: var(--el-color-danger-light-9);
+    }
+  }
+}
+.roadmap-ctxmenu__divider {
+  height: 1px;
+  margin: 4px 8px;
+  background: var(--el-border-color-lighter);
+}
+
+// ── Skeleton loading ──
+.roadmap__skeleton {
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  overflow: hidden;
+}
+.roadmap__col--skeleton {
+  flex: 1;
+  min-width: 280px;
+  .roadmap__col-head-skeleton {
+    height: 56px;
+    background: var(--el-fill-color-light);
+    border-radius: 10px 10px 0 0;
+    animation: roadmap-shimmer 1.5s ease-in-out infinite;
+  }
+  .roadmap__item-skeleton {
+    height: 80px;
+    margin-bottom: 6px;
+    background: var(--el-fill-color-light);
+    border-radius: 6px;
+    animation: roadmap-shimmer 1.5s ease-in-out infinite;
+  }
+}
+@keyframes roadmap-shimmer {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}

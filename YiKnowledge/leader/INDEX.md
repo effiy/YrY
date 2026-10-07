@@ -29,7 +29,7 @@ related:
 
 # 技术负责人 — 角色索引
 
-> **流水线阶段**：2. 决策 — 技术负责人负责决策。实现阶段请查阅 [engineer/](../engineer/)。事故响应请查阅 [srer/](../srer/)。产品需求请查阅 [producter/](../producter/)。
+> **流水线阶段**：2. 决策 — 技术负责人负责决策。实现阶段请查阅 [engineer/](../engineer/)。事故响应请查阅 [sre/](../sre/)。产品需求请查阅 [product/](../product/)。
 
 ## 子目录
 
@@ -47,4 +47,4 @@ related:
 - [../engineer/build/](../engineer/build/) — ADR 中引用的设计模式
 - [../engineer/ship/](../engineer/ship/) — 安全决策
 - [../engineer/SECURITY.md](../engineer/SECURITY.md) — 安全领域索引
-- [../srer/incident-response/](../srer/incident-response/) — 事故复盘记录（方法论在 risk/，记录在 srer/）
+- [../sre/incident-response/](../sre/incident-response/) — 事故复盘记录（方法论在 risk/，记录在 sre/）

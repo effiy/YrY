@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-07-05: API 层设计 — RequestHttp RPC 拦截器 + 错误处理 + 认证集成 — 测试用例"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202607"
 prd_task_id: "YV-07-05"
 source_prds: ["05-prd-API层设计"]
 source_modules: ["05-prd-task-API层设计"]
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, API层设计]
+benefit: "测试用例：API层设计"
+lifecycle: active
 ---
 
 # YV-07-05: API 层设计 — 测试用例

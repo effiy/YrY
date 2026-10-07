@@ -16,6 +16,8 @@ environment: development
 affected_version: 1.0.0
 fixed_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-TopicDetailPage-contentPathFor-死代码导入"
+lifecycle: active
 ---
 
 # code-quality: TopicDetailPage 导入了不存在的 contentPathFor
@@ -82,7 +84,6 @@ src/components/TopicDetailPage/index.vue(273,3): error TS2305: Module '"@/api/mo
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **跨模块导入的复制粘贴错误**：`contentPathFor` 是 `bug.ts` 的导出，开发者可能从 bug 模块复制了导入语句到 topic 模块但忘了更新来源。IDE 自动导入功能可以减少此类错误
+- **死导入也是技术债务**：`contentPathFor` 不仅导入路径错误，且在组件中从未被调用。即使路径正确，这也是死代码。ESLint `no-unused-vars` 配合 TypeScript 可以在编辑阶段就标记此类问题
 

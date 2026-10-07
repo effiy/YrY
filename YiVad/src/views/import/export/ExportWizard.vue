@@ -1,11 +1,11 @@
 <template>
-  <div class="export-wizard">
-    <header class="page-header">
-      <div>
-        <h1>Export Wizard</h1>
-        <p class="text-muted">Export data from any collection to CSV, JSON, or Excel format.</p>
-      </div>
-    </header>
+  <div class="export-wizard page">
+    <PageHeaderCard
+      :icon="Download"
+      icon-bg="linear-gradient(135deg, #409eff, #2563eb)"
+      title="Export Wizard"
+      description="Export data from any collection to CSV, JSON, or Excel format"
+    />
 
     <el-steps :active="step" align-center class="mb24">
       <el-step title="Select Source" />
@@ -89,6 +89,7 @@ import { Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { createExportTask } from "@/api/modules/exportService";
 import { exportCSV } from "@/utils/export/csv";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 
 const step = ref(0);
 const exporting = ref(false);

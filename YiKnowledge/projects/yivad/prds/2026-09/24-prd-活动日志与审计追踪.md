@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 活动日志与审计追踪
 tags:
 - 活动日志
@@ -28,6 +27,10 @@ roles:
 - engineer
 - qa
 source_okr: [yivad-003]
+related_modules: ["24-prd-task-活动日志与审计追踪"]
+related_tests: ["24-prd-test-活动日志与审计追踪"]
+benefit: "产品需求：活动日志与审计追踪"
+lifecycle: active
 ---
 
 # 活动日志与审计追踪

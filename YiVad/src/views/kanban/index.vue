@@ -1,5 +1,5 @@
 <template>
-  <div class="kanban">
+  <div class="kanban page">
     <div class="kanban__head">
       <div class="kanban__head-left">
         <KanbanStats
@@ -10,6 +10,9 @@
           :completion-pct="completionPct"
           @clear-filters="clearFilters"
         />
+        <span v-if="lastFetched" class="kanban__freshness" :class="{ 'is-stale': now - lastFetched > 60000 }">
+          {{ formatRelativeTime(lastFetched, now) }}
+        </span>
       </div>
       <div class="kanban__head-right">
         <KanbanSearchBar
@@ -42,6 +45,7 @@
         :key="col.status"
         :status="col.status"
         :label="col.label"
+        :wip-limit="wipLimit(col.status)"
         :color="col.color"
         :header-bg="col.headerBg"
         :count-tag-type="col.countTagType"
@@ -88,7 +92,9 @@
 <script setup lang="ts" name="kanbanBoard">
 import { onMounted, onUnmounted, reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { useNow } from "@/hooks/useNow";
+import { formatRelativeTime } from "@/utils/datetime";
 import { useIssueStore } from "@/stores/modules/issue";
 import { useProjectStore } from "@/stores/modules/project";
 import { useBugStore } from "@/stores/modules/bug";
@@ -122,6 +128,8 @@ import CreateIssueDialog from "./components/CreateIssueDialog.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { useI18n } from "vue-i18n";
+import { priorityTagType } from "@/hooks/useTagHelpers";
+import { confirm, tryAction } from "@/hooks/useConfirmAction";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -130,6 +138,8 @@ const projectStore = useProjectStore();
 const bugStore = useBugStore();
 
 const loading = ref(false);
+const lastFetched = ref(0);
+const now = useNow(30_000);
 
 const filterDate = ref<Date | null>(null);
 const { label: filterDateLabel, isToday: isFilterToday, filterDateStr } = useDateFilter(filterDate);
@@ -191,6 +201,15 @@ function clearFilters() {
   priorityFilter.value = new Set();
   filterDate.value = null;
   loadBoard();
+}
+
+const WIP_LIMITS: Partial<Record<IssueStatus, number>> = {
+  todo: 30,
+  in_progress: 15,
+  in_review: 10
+};
+function wipLimit(status: IssueStatus): number | undefined {
+  return WIP_LIMITS[status];
 }
 
 interface Column {
@@ -451,39 +470,28 @@ async function ctxEditPriority(priority: IssuePriority) {
   const item = contextMenu.item;
   closeContextMenu();
   if (!item) return;
-  try {
-    if (isBug(item)) {
-      const bugPri = ISSUE_PRIORITY_TO_BUG_PRIORITY[priority];
-      await updateBug(item.key, { priority: bugPri });
-      ElMessage.success(`Bug priority changed: ${item.title} → ${BUG_PRIORITY_MAP[bugPri]}`);
-    } else {
-      await updateIssue(item.key, { priority });
-      ElMessage.success(t("kanban.message.priorityChanged", { name: item.title, priority: ISSUE_PRIORITY_MAP[priority] }));
-    }
-    loadBoard();
-  } catch {
-    loadBoard();
+  if (isBug(item)) {
+    const bugPri = ISSUE_PRIORITY_TO_BUG_PRIORITY[priority];
+    await tryAction(() => updateBug(item.key, { priority: bugPri }));
+    ElMessage.success(`Bug priority changed: ${item.title} → ${BUG_PRIORITY_MAP[bugPri]}`);
+  } else {
+    await tryAction(() => updateIssue(item.key, { priority }));
+    ElMessage.success(t("kanban.message.priorityChanged", { name: item.title, priority: ISSUE_PRIORITY_MAP[priority] }));
   }
+  loadBoard();
 }
 async function ctxDelete() {
   const item = contextMenu.item;
   closeContextMenu();
   if (!item) return;
+  const confirmed = await confirm(
+    isBug(item) ? `Delete bug "${item.title}"?` : t("kanban.createDialog.deleteConfirm.title", { name: item.title }),
+    t("kanban.createDialog.deleteConfirm.okText")
+  );
+  if (!confirmed) return;
   try {
-    await ElMessageBox.confirm(
-      isBug(item) ? `Delete bug "${item.title}"?` : t("kanban.createDialog.deleteConfirm.title", { name: item.title }),
-      t("kanban.createDialog.deleteConfirm.okText"),
-      { type: "warning" }
-    );
-  } catch {
-    return;
-  }
-  try {
-    if (isBug(item)) {
-      await deleteBug(item.key);
-    } else {
-      await deleteIssue(item.key);
-    }
+    if (isBug(item)) { await deleteBug(item.key); }
+    else { await deleteIssue(item.key); }
     ElMessage.success(t("kanban.createDialog.deleteConfirm.success"));
   } catch (e: unknown) {
     ElMessage.error(e instanceof Error ? e.message : "Delete failed");
@@ -493,20 +501,16 @@ async function ctxDelete() {
 }
 
 async function quickChangeStatus(item: KanbanColumnItem, newStatus: IssueStatus) {
-  try {
-    if (isBug(item)) {
-      const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
-      if (!bugStatus) return;
-      await updateBug(item.key, { status: bugStatus });
-      ElMessage.success(`Bug status changed: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
-    } else {
-      await updateIssue(item.key, { status: newStatus });
-      ElMessage.success(t("kanban.message.statusChanged", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
-    }
-    loadBoard();
-  } catch {
-    loadBoard();
+  if (isBug(item)) {
+    const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
+    if (!bugStatus) return;
+    await tryAction(() => updateBug(item.key, { status: bugStatus }));
+    ElMessage.success(`Bug status changed: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
+  } else {
+    await tryAction(() => updateIssue(item.key, { status: newStatus }));
+    ElMessage.success(t("kanban.message.statusChanged", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
   }
+  loadBoard();
 }
 
 // ── Load board (Issues + Bugs) ──
@@ -557,6 +561,7 @@ async function loadBoard() {
       col.overdueCount = col.issues.filter(i => isOverdue(i)).length;
     }
   } finally {
+    lastFetched.value = Date.now();
     loading.value = false;
   }
 }
@@ -588,22 +593,16 @@ function sortColumn(col: Column, cmd: string) {
 async function onDragChange(evt: { added?: { element: KanbanColumnItem } }, newStatus: IssueStatus) {
   if (!evt.added) return;
   const item = evt.added.element;
-  try {
-    if (isBug(item)) {
-      const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
-      if (!bugStatus) {
-        loadBoard();
-        return;
-      }
-      await updateBug(item.key, { status: bugStatus });
-      ElMessage.success(`Bug moved: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
-    } else {
-      await updateIssue(item.key, { status: newStatus });
-      ElMessage.success(t("kanban.message.movedTo", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
+  if (isBug(item)) {
+    const bugStatus = ISSUE_STATUS_TO_BUG_STATUS[newStatus];
+    if (!bugStatus) { loadBoard(); return; }
+    await tryAction(() => updateBug(item.key, { status: bugStatus }));
+    ElMessage.success(`Bug moved: ${item.title} → ${BUG_STATUS_MAP[bugStatus]}`);
+  } else {
+    await tryAction(() => updateIssue(item.key, { status: newStatus }));
+    ElMessage.success(t("kanban.message.movedTo", { name: item.title, status: ISSUE_STATUS_MAP[newStatus] }));
     }
-  } catch {
-    loadBoard();
-  }
+  loadBoard();
 }
 
 function goDetail(item: KanbanColumnItem) {
@@ -658,7 +657,7 @@ onMounted(async () => {
   min-height: 0;
   padding: 20px 24px;
   overflow: hidden;
-  background: var(--el-bg-color-page);
+  // background comes from global .page class
 }
 .kanban__head {
   display: flex;
@@ -672,9 +671,13 @@ onMounted(async () => {
 .kanban__head-left {
   display: flex;
   flex-shrink: 0;
-  gap: 0;
+  gap: 12px;
   align-items: center;
   min-width: 0;
+}
+.kanban__freshness {
+  font-size: 11px; font-weight: 500; color: var(--el-color-success); white-space: nowrap;
+  &.is-stale { color: var(--el-text-color-placeholder); }
 }
 .kanban__head-right {
   display: flex;

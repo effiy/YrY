@@ -4,6 +4,7 @@
  * Uses a simple textarea with live preview rendering.
  */
 import { ref, computed } from "vue";
+import { marked } from "marked";
 
 const props = withDefaults(
   defineProps<{
@@ -48,23 +49,7 @@ function insertFormat(prefix: string, suffix: string = "") {
 
 // Simple markdown to HTML (for preview)
 function renderMarkdown(md: string): string {
-  return md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/^- (.+)$/gm, "<li>$1</li>")
-    .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/^(.+)$/gm, match => {
-      if (match.startsWith("<")) return match;
-      return match;
-    });
+  return marked.parse(md, { async: false }) as string;
 }
 
 const previewHtml = computed(() => {

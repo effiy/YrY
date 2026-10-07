@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: minor
 priority: p3
+benefit: "缺陷记录：质量-useHandleData-any类型"
+lifecycle: active
 ---
 
 # useHandleData 和 useDownload 使用 `any` 类型且非真正 composable
@@ -61,7 +63,6 @@ export const useHandleData = <TParams, TResult>(
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`use*` 前缀的语义约定**：Vue 社区约定 `use*` 前缀表示 composable（包含响应式状态或生命周期钩子）。`useHandleData` 和 `useDownload` 只是普通异步函数，不符合 composable 定义，应命名为 `handleData` / `downloadFile` 或放入 `utils/`
+- **泛型是 `any` 的解药**：`(params: any) => Promise<any>` 可以轻松改为 `<TParams, TResult>(api: (params: TParams) => Promise<TResult>, ...)`，不影响调用方代码，但能提供完整的类型推断
 

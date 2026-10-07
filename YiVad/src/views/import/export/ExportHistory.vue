@@ -1,36 +1,39 @@
 <template>
-  <div class="export-history-page">
-    <header class="page-header">
-      <div>
-        <h1>Export History</h1>
-        <p class="text-muted">View and download past exports.</p>
-      </div>
-      <el-button type="primary" :icon="Plus" @click="$router.push('/export/wizard')">New Export</el-button>
-    </header>
+  <div class="export-history-page page">
+    <PageHeaderCard
+      :icon="Download"
+      icon-bg="linear-gradient(135deg, #67c23a, #059669)"
+      :title="$t('common.export.title')"
+      description="View and download past exports"
+    >
+      <template #title-tags>
+        <el-button type="primary" size="small" :icon="Plus" @click="$router.push('/export/wizard')">{{ $t("common.export.title") }}</el-button>
+      </template>
+    </PageHeaderCard>
 
     <el-card shadow="never">
-      <el-table :data="tasks" v-loading="loading" stripe>
-        <el-table-column prop="file_name" label="File" min-width="200" />
+      <el-table :data="tasks" v-loading="loading" stripe empty-text="No exports yet">
+        <el-table-column prop="file_name" :label="$t('common.export.title')" min-width="200" />
         <el-table-column prop="cname" label="Collection" width="140" />
-        <el-table-column prop="format" label="Format" width="80">
-          <template #default="{ row }"
-            ><el-tag size="small">{{ row.format?.toUpperCase() }}</el-tag></template
-          >
+        <el-table-column prop="format" :label="$t('common.export.encoding')" width="80">
+          <template #default="{ row }">
+            <el-tag size="small">{{ row.format?.toUpperCase() }}</el-tag>
+          </template>
         </el-table-column>
-        <el-table-column prop="row_count" label="Rows" width="80" />
-        <el-table-column prop="status" label="Status" width="100">
+        <el-table-column prop="row_count" :label="$t('common.rows')" width="80" />
+        <el-table-column prop="status" :label="$t('common.status')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 'completed' ? 'success' : 'warning'" size="small">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="created_at" label="Created" width="160">
+        <el-table-column prop="created_at" :label="$t('common.createTime')" width="160">
           <template #default="{ row }">{{ row.created_at?.slice(0, 16)?.replace("T", " ") }}</template>
         </el-table-column>
-        <el-table-column label="Actions" width="100">
+        <el-table-column :label="$t('common.operation')" width="100">
           <template #default="{ row }">
-            <el-button v-if="row.status === 'completed'" link type="primary" size="small" @click="downloadExport(row as any)"
-              >Download</el-button
-            >
+            <el-button v-if="row.status === 'completed'" link type="primary" size="small" @click="downloadExport(row as any)">
+              {{ $t("common.download") }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -40,10 +43,11 @@
 
 <script setup lang="ts" name="exportHistory">
 import { ref, onMounted } from "vue";
-import { Plus } from "@element-plus/icons-vue";
+import { Plus, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { listExportHistory, getExportStatus } from "@/api/modules/exportService";
 import type { ExportTask } from "@/types/analytics";
+import PageHeaderCard from "@/components/PageHeaderCard/PageHeaderCard.vue";
 
 const loading = ref(false);
 const tasks = ref<ExportTask[]>([]);
@@ -92,10 +96,7 @@ onMounted(() => fetchHistory());
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 20px;
-  h1 {
-    margin: 0 0 4px;
-    font-size: 22px;
-  }
+  h1 { margin: 0 0 4px; font-size: 22px; }
 }
 .text-muted {
   font-size: 13px;

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台"
 tags: [需求文档, API 文档, 开发者门户, 代码示例, API 控制台, SDK]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["48-prd-task-公共API文档"]
+related_tests: ["48-prd-test-公共API文档"]
+benefit: "产品需求：公共API文档"
+lifecycle: active
 ---
 
 # YV-09-101: 公共 API 文档 — 端点目录、认证指南、代码示例与交互式控制台

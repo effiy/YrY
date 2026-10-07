@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-07-04"
 title: "YV-07-04: 知识库集成与基础页面 — ProTable + 知识浏览 + RAG 聊天 + 数据管理 — 开发方案"
 status: 已完成
@@ -14,6 +13,12 @@ prd_month: "202607"
 estimate_frontend: 4.0
 source_prd: "04-prd-知识库集成与基础页面.md"
 source_okr: [yivad-001]
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 知识库集成与基础页面]
+benefit: "开发方案：task-知识库集成与基础页面"
+lifecycle: active
 ---
 
 # YV-07-04: 知识库集成与基础页面 — 开发方案
@@ -162,11 +167,11 @@ export function useTable(options: {
 
 ```
 YiKnowledge/
-├── executiver/  → 业务战略
-├── producter/   → 需求
+├── executive/  → 业务战略
+├── product/   → 需求
 ├── leader/      → 技术决策
 ├── engineer/    → 实现
-├── srer/        → 运维
+├── sre/        → 运维
 ├── aier/        → AI 赋能
 └── curator/     → 知识治理
 ```

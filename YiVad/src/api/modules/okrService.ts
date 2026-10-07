@@ -5,6 +5,7 @@
  */
 import { queryDocuments } from "./dataService";
 import type { QueryDocumentsData } from "@/api/interface/yiAi";
+import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiAi";
 
 // ── Collection names ────────────────────────────────────────────────
 
@@ -246,4 +247,53 @@ export async function fetchAllOkrMetadata(): Promise<OkrMetadata> {
       fetchExampleLaunches()
     ]);
   return { roles, goals, metrics, goalMetrics, daily, weekly, checklists, flowStages, exampleTasks, exampleLaunches };
+}
+
+// ── Live goal data (from YiKnowledge files via /knowledge-goals) ─────
+
+export interface LiveGoal {
+  key: string;
+  role: string;
+  icon: string;
+  title: string;
+  status: string;
+  description: string;
+  period: string;
+  owner: string;
+  project: string;
+  keyResults: KeyResult[];
+}
+
+export interface LiveRole {
+  key: string;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export interface LiveGoalsResponse {
+  goals: LiveGoal[];
+  roles: LiveRole[];
+  last_scan: string;
+}
+
+/** Fetch live OKR goals with progress derived from actual YiKnowledge files. */
+export async function fetchLiveGoals(year?: string, period?: string): Promise<LiveGoalsResponse> {
+  const url = buildYiAiUrl("/knowledge-goals");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { ...yiAiAuthHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ year: year ?? null, period: period ?? null }),
+      signal: controller.signal
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    if (json.code !== 0) throw new Error(json.message || "Failed to fetch live goals");
+    return json.data as LiveGoalsResponse;
+  } finally {
+    clearTimeout(timer);
+  }
 }

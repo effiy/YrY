@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-M17"
 title: "YK-09-M17: 内容创作与编辑工具 — 开发方案"
@@ -16,6 +17,8 @@ estimate_backend: 2.9
 source_prd: "01-功能实现-内容创作与编辑工具.md"
 source_okr: [yiknowledge-001]
 related_tests: ["01-prd-test-内容创作与编辑工具"]
+
+type: task
 ---
 
 # YK-09-M17: 内容创作与编辑工具 — 开发方案

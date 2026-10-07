@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-40"
 title: "YK-09-40: 文档权威性 PageRank — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 0.5
 source_prd: "43-架构设计-文档权威性PageRank.md"
 source_okr: [yiknowledge-001]
 related_tests: ["43-prd-test-文档权威性PageRank"]
+
+type: task
 ---
 
 # YK-09-40: 文档权威性 PageRank — 开发方案

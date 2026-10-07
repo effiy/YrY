@@ -1,210 +1,81 @@
 <template>
-  <div class="issue-detail" @keydown="handleKeydown">
-    <DetailSkeleton v-if="loading" />
+  <div class="issue-detail page" @keydown="ctx.handleKeydown">
+    <DetailSkeleton v-if="ctx.loading.value" />
 
-    <template v-else-if="issue">
+    <template v-else-if="ctx.issue.value">
       <IssueHeader
-        :issue="issue"
-        :focus-mode="focusMode"
-        @toggle-focus="focusMode = !focusMode"
-        @change-status="changeStatus"
-        @clone="cloneIssue"
-        @move="openMove"
-        @delete="handleDelete"
+        :issue="ctx.issue.value"
+        :focus-mode="ctx.focusMode.value"
+        @toggle-focus="ctx.focusMode.value = !ctx.focusMode.value"
+        @change-status="ctx.changeStatus"
+        @clone="ctx.cloneIssue"
+        @move="ctx.openMove"
+        @delete="ctx.handleDelete"
       />
 
       <div class="id-body" ref="bodyRef">
         <div class="id-main">
           <IssueDescription
-            :desc-content="descContent"
-            :desc-file-path="descFilePath"
-            :desc-html="descHtml"
+            :desc-content="ctx.descContent.value"
+            :desc-file-path="ctx.descFilePath.value"
+            :desc-html="ctx.descHtml.value"
             @view="openFileViewer"
             @edit="openDescDialog"
           />
 
-          <div v-if="issue.parent_key" class="id-card id-card--parent">
+          <div v-if="ctx.issue.value.parent_key" class="id-card id-card--parent">
             <div class="id-card__head">
-              <el-icon class="id-card__icon"><Link /></el-icon>
+              <el-icon class="id-card__icon"><ctx.Link /></el-icon>
               <span>{{ $t("issue.detail.parentIssue") }}</span>
             </div>
             <div class="id-card__body">
-              <el-button link type="primary" @click="router.push(`/issue/${issue.parent_key}`)">
-                {{ issue.parent_key }}
+              <el-button link type="primary" @click="router.push(`/issue/${ctx.issue.value.parent_key}`)">
+                {{ ctx.issue.value.parent_key }}
               </el-button>
             </div>
           </div>
         </div>
 
-        <div class="id-sidebar" :class="{ 'id-sidebar--hidden': focusMode }">
-          <IssueSidebarPeople :issue="issue" />
-          <IssueSidebarSchedule :issue="issue" />
-          <IssueSidebarLinks :issue="issue" :project-name="projectName" />
-          <IssueSidebarLabels :issue="issue" />
-          <IssueSidebarDependencies :issue="issue" />
-          <IssueSidebarLinkedItems :linked-modules="linkedModules" :linked-bugs="linkedBugs" />
-          <IssueSidebarMetadata :issue="issue" />
+        <div class="id-sidebar" :class="{ 'id-sidebar--hidden': ctx.focusMode.value }">
+          <IssueSidebarPeople :issue="ctx.issue.value" />
+          <IssueSidebarSchedule :issue="ctx.issue.value" />
+          <IssueSidebarLinks :issue="ctx.issue.value" :project-name="ctx.projectName.value" />
+          <IssueSidebarLabels :issue="ctx.issue.value" />
+          <IssueSidebarDependencies :issue="ctx.issue.value" />
+          <IssueSidebarLinkedItems :linked-modules="ctx.linkedModules.value" :linked-bugs="ctx.linkedBugs.value" />
+          <IssueSidebarMetadata :issue="ctx.issue.value" />
         </div>
       </div>
 
-      <div class="id-sticky-bar" :class="{ 'id-sticky-bar--visible': showStickyBar }">
+      <div class="id-sticky-bar" :class="{ 'id-sticky-bar--visible': ctx.showStickyBar.value }">
         <div class="id-sticky-bar__inner">
           <div class="id-sticky-bar__left">
-            <code class="id-sticky-bar__key">{{ issue.key }}</code>
-            <code v-if="descFilePath" class="id-sticky-bar__file" :title="descFilePath" @click="openFileViewer">{{
-              descFilePath
+            <code class="id-sticky-bar__key">{{ ctx.issue.value.key }}</code>
+            <code v-if="ctx.descFilePath.value" class="id-sticky-bar__file" :title="ctx.descFilePath.value" @click="openFileViewer">{{
+              ctx.descFilePath.value
             }}</code>
-            <span class="id-sticky-bar__title">{{ issue.title }}</span>
-            <el-tag :type="statusTagType(issue.status)" size="small">{{ statusLabel(issue.status) }}</el-tag>
+            <span class="id-sticky-bar__title">{{ ctx.issue.value.title }}</span>
+            <el-tag :type="ctx.statusTagType(ctx.issue.value.status)" size="small">{{ ctx.statusLabel(ctx.issue.value.status) }}</el-tag>
           </div>
           <div class="id-sticky-bar__actions">
-            <el-button size="small" :icon="Edit" @click="openEdit">{{ $t("issue.dialog.editTitle") }}</el-button>
-            <el-select :model-value="issue.status" size="small" @change="changeStatus" style="width: 130px">
-              <el-option v-for="(label, val) in ISSUE_STATUS_MAP" :key="val" :label="label" :value="val" />
+            <el-button size="small" :icon="ctx.Edit" @click="ctx.openEdit">{{ $t("issue.dialog.editTitle") }}</el-button>
+            <el-select :model-value="ctx.issue.value.status" size="small" @change="ctx.changeStatus" style="width: 130px">
+              <el-option v-for="(label, val) in ctx.ISSUE_STATUS_MAP" :key="val" :label="label" :value="val" />
             </el-select>
-            <el-button size="small" :icon="Upload" circle @click="scrollToTop" />
+            <el-button size="small" :icon="ctx.Upload" circle @click="ctx.scrollToTop" />
           </div>
         </div>
       </div>
 
-      <el-dialog v-model="editDialog.visible" :title="$t('issue.dialog.editTitle')" width="720px" destroy-on-close>
-        <el-form ref="editFormRef" :model="editDialog.form" :rules="rules" label-width="100px">
-          <div class="id-edit-section">
-            <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.basic") }}</div>
-            <el-form-item :label="$t('issue.dialog.title')" prop="title">
-              <el-input
-                v-model="editDialog.form.title"
-                :placeholder="$t('issue.dialog.titlePlaceholder')"
-                maxlength="200"
-                show-word-limit
-              />
-            </el-form-item>
-            <el-row :gutter="16">
-              <el-col :span="8">
-                <el-form-item :label="$t('issue.dialog.type')" prop="issue_type">
-                  <el-select v-model="editDialog.form.issue_type" style="width: 100%">
-                    <el-option v-for="(label, val) in ISSUE_TYPE_MAP" :key="val" :label="label" :value="val" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item :label="$t('issue.dialog.priority')" prop="priority">
-                  <el-select v-model="editDialog.form.priority" style="width: 100%">
-                    <el-option v-for="(label, val) in ISSUE_PRIORITY_MAP" :key="val" :label="label" :value="val" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item :label="$t('issue.dialog.status')" prop="status">
-                  <el-select v-model="editDialog.form.status" style="width: 100%">
-                    <el-option v-for="(label, val) in ISSUE_STATUS_MAP" :key="val" :label="label" :value="val" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-          <div class="id-edit-section">
-            <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.content") }}</div>
-            <el-form-item :label="$t('issue.dialog.description')">
-              <el-input
-                v-model="editDialog.form.description"
-                type="textarea"
-                :rows="4"
-                :placeholder="$t('issue.dialog.descriptionPlaceholder')"
-              />
-            </el-form-item>
-          </div>
-          <div class="id-edit-section">
-            <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.assignment") }}</div>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.assignee')">
-                  <el-input v-model="editDialog.form.assignee" :placeholder="$t('issue.dialog.assigneePlaceholder')" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.labels')">
-                  <el-select
-                    v-model="editDialog.form.labels"
-                    multiple
-                    filterable
-                    allow-create
-                    default-first-option
-                    :placeholder="$t('issue.dialog.addLabels')"
-                    style="width: 100%"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-          <div class="id-edit-section">
-            <div class="id-edit-section__title">{{ $t("issue.dialog.editSection.schedule") }}</div>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.startDate')">
-                  <el-date-picker
-                    v-model="editDialog.form.start_date"
-                    type="date"
-                    style="width: 100%"
-                    value-format="YYYY-MM-DD"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.dueDate')">
-                  <el-date-picker v-model="editDialog.form.due_date" type="date" style="width: 100%" value-format="YYYY-MM-DD" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.estimatePts')">
-                  <el-input-number v-model="editDialog.form.estimate_points" :min="0" :step="1" style="width: 100%" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.timeEstimate')">
-                  <el-input-number
-                    v-model="editDialog.form.time_estimate"
-                    :min="0"
-                    :step="0.5"
-                    :precision="1"
-                    style="width: 100%"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="16">
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.source')">
-                  <el-select
-                    v-model="editDialog.form.source"
-                    style="width: 100%"
-                    clearable
-                    :placeholder="$t('issue.dialog.sourcePlaceholder')"
-                  >
-                    <el-option v-for="(label, val) in ISSUE_SOURCE_MAP" :key="val" :label="label" :value="val" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item :label="$t('issue.dialog.review')">
-                  <el-select
-                    v-model="editDialog.form.review_status"
-                    style="width: 100%"
-                    clearable
-                    :placeholder="$t('issue.dialog.reviewPlaceholder')"
-                  >
-                    <el-option v-for="(label, val) in REVIEW_STATUS_MAP" :key="val" :label="label" :value="val" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-        </el-form>
+      <el-dialog v-model="ctx.editDialog.visible" :title="$t('issue.dialog.editTitle')" width="720px" destroy-on-close>
+        <IssueDetailForm
+          ref="detailFormCompRef"
+          :form="ctx.editDialog.form"
+          :rules="ctx.rules"
+        />
         <template #footer>
-          <el-button @click="editDialog.visible = false">{{ $t("issue.dialog.cancel") }}</el-button>
-          <el-button type="primary" :loading="editDialog.submitting" @click="submitEdit">{{ $t("issue.dialog.save") }}</el-button>
+          <el-button @click="ctx.editDialog.visible = false">{{ $t("issue.dialog.cancel") }}</el-button>
+          <el-button type="primary" :loading="ctx.editDialog.submitting" @click="ctx.submitEdit">{{ $t("issue.dialog.save") }}</el-button>
         </template>
       </el-dialog>
 
@@ -214,18 +85,18 @@
     <div v-else class="id-not-found">
       <el-result icon="error" :title="$t('issue.detail.notFound')" :sub-title="$t('issue.detail.notFoundSub')">
         <template #extra>
-          <el-button type="primary" @click="goBack">{{ $t("issue.detail.backToIssues") }}</el-button>
+          <el-button type="primary" @click="ctx.goBack">{{ $t("issue.detail.backToIssues") }}</el-button>
         </template>
       </el-result>
     </div>
 
     <Teleport to="body">
-      <div v-if="preview.visible" class="id-lightbox" @click="closePreview">
+      <div v-if="ctx.preview.visible" class="id-lightbox" @click="ctx.closePreview">
         <div class="id-lightbox__backdrop" />
         <div class="id-lightbox__content">
-          <img :src="preview.src" :alt="preview.alt" @click.stop />
-          <div class="id-lightbox__info">{{ preview.alt }}</div>
-          <el-button class="id-lightbox__close" :icon="Close" circle size="large" @click="closePreview" />
+          <img :src="ctx.preview.src" :alt="ctx.preview.alt" @click.stop />
+          <div class="id-lightbox__info">{{ ctx.preview.alt }}</div>
+          <el-button class="id-lightbox__close" :icon="ctx.Close" circle size="large" @click="ctx.closePreview" />
         </div>
       </div>
     </Teleport>
@@ -233,33 +104,11 @@
 </template>
 
 <script setup lang="ts" name="issueDetail">
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { Edit, Delete, Upload, Close, Link } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
-import { useIssueStore } from "@/stores/modules/issue";
-import {
-  ISSUE_STATUS_MAP,
-  ISSUE_PRIORITY_MAP,
-  ISSUE_TYPE_MAP,
-  ISSUE_SOURCE_MAP,
-  REVIEW_STATUS_MAP,
-  ISSUE_STATUS_TAG_MAP,
-  getIssueFilePath
-} from "@/api/modules/issueService";
-import type { IssueStatus, IssuePriority, IssueType, IssueSource, ReviewStatus, TagType } from "@/api/modules/issueService";
-import { formatRelativeTime } from "@/utils/datetime";
-import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
-import { useMarkdown } from "@/hooks/useMarkdown";
-import { getModuleList } from "@/api/modules/moduleService";
-import { getProjectList } from "@/api/modules/projectService";
-import type { Module } from "@/api/modules/moduleService";
-import type { Project } from "@/api/modules/projectService";
-import { getBugList } from "@/api/modules/bug";
-import type { BugDocument } from "@/api/modules/bug";
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
 import DetailSkeleton from "@/components/DetailSkeleton.vue";
+import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import IssueHeader from "./components/IssueHeader.vue";
 import IssueDescription from "./components/IssueDescription.vue";
 import IssueSidebarPeople from "./components/IssueSidebarPeople.vue";
@@ -269,362 +118,65 @@ import IssueSidebarLabels from "./components/IssueSidebarLabels.vue";
 import IssueSidebarDependencies from "./components/IssueSidebarDependencies.vue";
 import IssueSidebarLinkedItems from "./components/IssueSidebarLinkedItems.vue";
 import IssueSidebarMetadata from "./components/IssueSidebarMetadata.vue";
+import IssueDetailForm from "./IssueDetailForm.vue";
+import { useIssueDetail } from "./useIssueDetail";
 
-const route = useRoute();
 const router = useRouter();
-const { t } = useI18n();
-const store = useIssueStore();
+const ctx = useIssueDetail();
 
-const loading = ref(true);
-const issue = computed(() => store.currentIssue);
-const quickStatus = ref("");
-const editFormRef = ref<FormInstance>();
+// Refs used directly in template
 const bodyRef = ref<HTMLElement>();
+const descDialogRef = ctx.descDialogRef;
+const detailFormCompRef = ref<InstanceType<typeof IssueDetailForm>>();
 
-watch(
-  () => issue.value?.status,
-  s => {
-    quickStatus.value = s || "";
-  }
-);
-
-function handleKeydown(e: KeyboardEvent) {
-  if (editDialog.visible) {
-    if (e.key === "Escape") {
-      editDialog.visible = false;
-      return;
-    }
-    return;
-  }
-  const tag = (e.target as HTMLElement)?.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-  if (e.key === "e" || e.key === "E") {
-    e.preventDefault();
-    openEdit();
-  }
-}
-
-const showStickyBar = ref(false);
-function onScroll() {
-  showStickyBar.value = window.scrollY > 300;
-}
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-const focusMode = ref(false);
-
-const preview = reactive({ visible: false, src: "", alt: "" });
-function previewImage(src: string) {
-  preview.src = src;
-  preview.alt = "";
-  preview.visible = true;
-}
-function closePreview() {
-  preview.visible = false;
-}
-
-const linkedModules = ref<Module[]>([]);
-const linkedBugs = ref<BugDocument[]>([]);
-const projectName = ref("");
-
-const isOverdue = computed(() => {
-  const i = issue.value;
-  if (!i?.due_date || i.status === "done") return false;
-  return i.due_date < new Date().toISOString().slice(0, 10);
+// Sync form ref from child component to composable for validation
+watch(detailFormCompRef, (comp) => {
+  ctx.editFormRef.value = comp?.formRef;
 });
-
-async function loadLinked() {
-  if (!issue.value) return;
-  try {
-    const [moduleRes, projectRes, bugRes] = await Promise.all([
-      getModuleList({ project_key: issue.value.project_key, pageSize: 200 }),
-      getProjectList({ pageSize: 500 }),
-      getBugList({ issue_key: issue.value.key, pageSize: 100 })
-    ]);
-    const modules = (moduleRes.data?.list as Module[]) ?? [];
-    const projects = (projectRes.data?.list as Project[]) ?? [];
-    linkedModules.value = modules.filter(m => m.issue_keys?.includes(issue.value!.key));
-    linkedBugs.value = (bugRes.data?.list as BugDocument[]) ?? [];
-    projectName.value = projects.find(p => p.key === issue.value!.project_key)?.name || issue.value!.project_key;
-  } catch {
-    /* ignore */
-  }
-}
-
-const rules: FormRules = {
-  title: [{ required: true, message: t("issue.dialog.titleRequired"), trigger: "blur" }]
-};
-
-const { render: renderMarkdown } = useMarkdown();
-const descContent = ref("");
-const descFilePath = computed(() => {
-  const i = issue.value;
-  if (!i) return "";
-  return getIssueFilePath(i);
-});
-const descDialogRef = ref<{
-  openFile: (opts: { path: string; title?: string; content: string; onSave: (content: string) => Promise<void> }) => void;
-} | null>(null);
-
-const descHtml = computed(() => renderMarkdown(descContent.value || ""));
-
-async function loadDescFile() {
-  try {
-    const res = await readKnowledgeFile(descFilePath.value);
-    descContent.value = res.content || issue.value?.description || "";
-  } catch {
-    const defaultContent = issue.value?.description || `# ${issue.value?.title || ""}\n`;
-    try {
-      await writeKnowledgeFile(descFilePath.value, defaultContent);
-    } catch {
-      /* best effort */
-    }
-    descContent.value = defaultContent;
-  }
-}
 
 function openFileViewer() {
-  if (!descContent.value || !descFilePath.value) return;
+  if (!ctx.descContent.value || !ctx.descFilePath.value) return;
   descDialogRef.value?.openFile({
-    path: descFilePath.value,
-    title: issue.value?.title || "",
-    content: descContent.value,
+    path: ctx.descFilePath.value,
+    title: ctx.issue.value?.title || "",
+    content: ctx.descContent.value,
     onSave: async (content: string) => {
-      await writeKnowledgeFile(descFilePath.value, content, {
-        title: issue.value?.title || "",
+      await writeKnowledgeFile(ctx.descFilePath.value, content, {
+        title: ctx.issue.value?.title || "",
         type: "issue-description",
-        status: issue.value?.status || "",
-        project: issue.value?.project_key || "",
-        created: (issue.value?.created_at || "").slice(0, 10)
+        status: ctx.issue.value?.status || "",
+        project: ctx.issue.value?.project_key || "",
+        created: (ctx.issue.value?.created_at || "").slice(0, 10)
       });
-      descContent.value = content;
+      ctx.descContent.value = content;
     }
   });
 }
 
 function openDescDialog() {
   descDialogRef.value?.openFile({
-    path: descFilePath.value,
-    title: issue.value?.title || "",
-    content: descContent.value,
+    path: ctx.descFilePath.value,
+    title: ctx.issue.value?.title || "",
+    content: ctx.descContent.value,
     onSave: async (content: string) => {
-      await writeKnowledgeFile(descFilePath.value, content, {
-        title: issue.value?.title || "",
+      await writeKnowledgeFile(ctx.descFilePath.value, content, {
+        title: ctx.issue.value?.title || "",
         type: "issue-description",
-        status: issue.value?.status || "",
-        project: issue.value?.project_key || "",
-        created: (issue.value?.created_at || "").slice(0, 10)
+        status: ctx.issue.value?.status || "",
+        project: ctx.issue.value?.project_key || "",
+        created: (ctx.issue.value?.created_at || "").slice(0, 10)
       });
-      descContent.value = content;
+      ctx.descContent.value = content;
     }
   });
 }
-
-const timePct = computed(() => {
-  if (!issue.value?.time_estimate) return 0;
-  return Math.round(((issue.value.time_spent || 0) / issue.value.time_estimate) * 100);
-});
-
-const editDialog = reactive({
-  visible: false,
-  submitting: false,
-  form: {
-    title: "",
-    description: "",
-    status: "todo" as IssueStatus,
-    priority: "medium" as IssuePriority,
-    issue_type: "task" as IssueType,
-    assignee: "",
-    labels: [] as string[],
-    start_date: "",
-    due_date: "",
-    source: "" as IssueSource | "",
-    review_status: "" as ReviewStatus | "",
-    estimate_points: undefined as number | undefined,
-    time_estimate: undefined as number | undefined
-  }
-});
-
-function openEdit() {
-  if (!issue.value) return;
-  editDialog.form = {
-    title: issue.value.title,
-    description: issue.value.description || "",
-    status: issue.value.status,
-    priority: issue.value.priority,
-    issue_type: issue.value.issue_type,
-    assignee: issue.value.assignee || "",
-    labels: [...(issue.value.labels || [])],
-    start_date: issue.value.start_date || "",
-    due_date: issue.value.due_date || "",
-    source: issue.value.source || "",
-    review_status: issue.value.review_status || "",
-    estimate_points: issue.value.estimate_points,
-    time_estimate: issue.value.time_estimate
-  };
-  editDialog.visible = true;
-}
-
-function mapReqStatusReverse(s: string): string {
-  const m: Record<string, string> = {
-    done: "已完成",
-    in_progress: "进行中",
-    cancelled: "已取消",
-    in_review: "待评审",
-    backlog: "待排期",
-    todo: "待开始"
-  };
-  return m[s] || "待开始";
-}
-
-function mapReqPriorityReverse(p: string): string {
-  const m: Record<string, string> = {
-    urgent: "紧急",
-    high: "高",
-    medium: "中",
-    low: "低"
-  };
-  return m[p] || "中";
-}
-
-async function submitEdit() {
-  if (!issue.value) return;
-  try {
-    await editFormRef.value?.validate();
-  } catch {
-    return;
-  }
-  editDialog.submitting = true;
-  try {
-    await store.editIssue(issue.value.key, {
-      title: editDialog.form.title,
-      description: editDialog.form.description,
-      status: editDialog.form.status,
-      priority: editDialog.form.priority,
-      issue_type: editDialog.form.issue_type,
-      assignee: editDialog.form.assignee,
-      labels: editDialog.form.labels,
-      start_date: editDialog.form.start_date,
-      due_date: editDialog.form.due_date,
-      source: editDialog.form.source || undefined,
-      review_status: editDialog.form.review_status || undefined,
-      estimate_points: editDialog.form.estimate_points,
-      time_estimate: editDialog.form.time_estimate
-    } as any);
-    ElMessage.success(t("issue.dialog.updateSuccess"));
-    if (issue.value.kb_file_path) {
-      try {
-        const res = await readKnowledgeFile(issue.value.kb_file_path);
-        const updatedMeta = { ...res.meta };
-        if (editDialog.form.status) updatedMeta.status = mapReqStatusReverse(editDialog.form.status);
-        if (editDialog.form.priority) updatedMeta.priority = mapReqPriorityReverse(editDialog.form.priority);
-        if (editDialog.form.assignee !== undefined) updatedMeta.owner = editDialog.form.assignee;
-        await writeKnowledgeFile(issue.value.kb_file_path, res.content, updatedMeta);
-      } catch {
-        /* best-effort */
-      }
-    }
-    editDialog.visible = false;
-  } catch (e) {
-    ElMessage.error((e as Error).message || t("issue.error.updateFailed"));
-  } finally {
-    editDialog.submitting = false;
-  }
-}
-
-async function changeStatus(newStatus: string) {
-  if (!issue.value) return;
-  await store.editIssue(issue.value.key, { status: newStatus as IssueStatus });
-  ElMessage.success(t("issue.message.statusChanged", { status: ISSUE_STATUS_MAP[newStatus as IssueStatus] }));
-}
-
-async function handleDelete() {
-  if (!issue.value) return;
-  try {
-    await ElMessageBox.confirm(t("issue.dialog.deleteConfirm", { title: issue.value.title }), t("issue.dialog.deleteTitle"), {
-      confirmButtonText: t("issue.dialog.delete"),
-      cancelButtonText: t("issue.dialog.cancel"),
-      type: "error"
-    });
-  } catch {
-    return; // dismissed
-  }
-  try {
-    await store.removeIssue(issue.value.key, issue.value.project_key);
-    ElMessage.success(t("issue.dialog.deleteSuccess"));
-    router.push("/issue");
-  } catch (e) {
-    ElMessage.error(e instanceof Error ? e.message : t("issue.error.deleteFailed"));
-  }
-}
-
-async function cloneIssue() {
-  if (!issue.value) return;
-  const newKey = `ISS-${Date.now().toString(36).toUpperCase()}`;
-  await store.addIssue({
-    key: newKey,
-    project_key: issue.value.project_key,
-    sequence_id: Date.now(),
-    title: `[Clone] ${issue.value.title}`,
-    description: issue.value.description,
-    status: "todo",
-    priority: issue.value.priority,
-    issue_type: issue.value.issue_type,
-    labels: [...(issue.value.labels || [])],
-    assignee: issue.value.assignee,
-    estimate_points: issue.value.estimate_points
-  });
-  ElMessage.success(t("issue.dialog.cloneSuccess"));
-  router.push(`/issue/${newKey}`);
-}
-
-async function openMove() {
-  if (!issue.value) return;
-  ElMessageBox.prompt(t("issue.message.moveTarget"), t("issue.message.moveTitle"), {
-    confirmButtonText: t("issue.message.move"),
-    inputPlaceholder: t("issue.message.moveTarget")
-  })
-    .then(async ({ value }) => {
-      if (!value) return;
-      await store.editIssue(issue.value!.key, { project_key: value });
-      ElMessage.success(t("issue.message.moveSuccess", { project: value }));
-      router.push(`/project/${value}`);
-    })
-    .catch(() => {});
-}
-
-function goBack() {
-  if (issue.value?.project_key) router.push(`/project/${issue.value.project_key}`);
-  else router.push("/issue");
-}
-
-function statusLabel(s: IssueStatus) {
-  return ISSUE_STATUS_MAP[s] || s;
-}
-function statusTagType(status: IssueStatus): TagType {
-  return ISSUE_STATUS_TAG_MAP[status] || "info";
-}
-
-onMounted(async () => {
-  const key = route.params.key as string;
-  if (key) await store.fetchIssue(key);
-  loading.value = false;
-  await Promise.all([loadLinked(), loadDescFile()]);
-  window.addEventListener("scroll", onScroll, { passive: true });
-});
-
-onUnmounted(() => {
-  window.removeEventListener("scroll", onScroll);
-});
 </script>
 
 <style scoped lang="scss">
 .issue-detail {
   min-height: calc(100vh - 95px);
-  padding: 24px;
   outline: none;
-  background: var(--el-bg-color-page);
+  // padding + background come from global .page class
 }
 
 // ── Body Layout ─────────────────────────────────────────────────────

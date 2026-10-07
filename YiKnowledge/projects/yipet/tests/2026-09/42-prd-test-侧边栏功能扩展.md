@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "侧边栏功能扩展 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["42-功能实现-侧边栏功能扩展"]
+source_prds: ["42-架构设计-侧边栏功能扩展.md"]
+source_modules: ["42-prd-task-侧边栏功能扩展.md"]
+
+type: test
 ---
 
 # 侧边栏功能扩展 — 测试用例
@@ -18,3 +24,4 @@ source_prds: ["42-功能实现-侧边栏功能扩展"]
 | TC-SD01 | 会话搜索 | 实时过滤 | P1 |
 | TC-SD02 | 拖拽排序 | 会话重排 | P1 |
 | TC-SD03 | 右键菜单 | 重命名/删除/导出 | P1 |
+

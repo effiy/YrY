@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "水印系统 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-40"
 source_prds: ["16-prd-水印系统"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 水印系统]
+benefit: "测试用例：水印系统"
+lifecycle: active
 ---
 # 水印系统 — 测试规格
 

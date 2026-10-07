@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-07"
 title: "YK-09-07: 知识检索反馈闭环 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 2.0
 source_prd: "10-架构设计-知识检索反馈闭环.md"
 source_okr: [yiknowledge-001]
 related_tests: ["10-prd-test-知识检索反馈闭环"]
+
+type: task
 ---
 
 # YK-09-07: 知识检索反馈闭环 — 开发方案

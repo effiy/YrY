@@ -2,16 +2,17 @@
 - Manages connections, indexes, and common CRUD wrappers
 - Includes slow-query monitoring via PyMongo CommandListener
 """
-from datetime import datetime, timezone
 import logging
 import threading
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import monitoring
+from pymongo.write_concern import WriteConcern
 
 from shared.config import settings
+from shared.utils import get_current_time
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +51,6 @@ class _SlowQueryLogger(monitoring.CommandListener):
         if elapsed_ms >= self._threshold:
             cmd = event.command_name
             coll = getattr(event, "command", {}).get(event.command_name, "")
-            if hasattr(coll, "startswith"):
-                pass  # command value is the collection name for find/insert etc.
             logger.warning(
                 f"Slow query: {cmd} {coll} — {elapsed_ms:.0f}ms "
                 f"(threshold={self._threshold}ms)"
@@ -78,9 +77,10 @@ _LIGHTWRITE_COLLECTIONS: frozenset[str] = frozenset({
 _LIGHTWRITE_ENABLED: bool = getattr(settings, 'mongodb_lightwrite_enabled', True)
 
 
-def _write_concern(collection_name: str) -> int:
+def write_concern(collection_name: str) -> WriteConcern:
     """Return w=0 for non-critical collections, w=1 for critical ones."""
-    return 0 if (_LIGHTWRITE_ENABLED and collection_name in _LIGHTWRITE_COLLECTIONS) else 1
+    w = 0 if (_LIGHTWRITE_ENABLED and collection_name in _LIGHTWRITE_COLLECTIONS) else 1
+    return WriteConcern(w=w)
 
 
 class MongoDB:
@@ -250,9 +250,9 @@ class MongoDB:
             >>> id = await db.insert_one("users", {"name": "test"})
         """
         if 'createdTime' not in document:
-            document['createdTime'] = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+            document['createdTime'] = get_current_time()
         result = await self.db[collection_name].with_options(
-            write_concern=_write_concern(collection_name)
+            write_concern=write_concern(collection_name)
         ).insert_one(document)
         return str(result.inserted_id)
 
@@ -272,9 +272,9 @@ class MongoDB:
         """
         for doc in documents:
             if 'createdTime' not in doc:
-                doc['createdTime'] = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                doc['createdTime'] = get_current_time()
         result = await self.db[collection_name].with_options(
-            write_concern=_write_concern(collection_name)
+            write_concern=write_concern(collection_name)
         ).insert_many(documents)
         return [str(id) for id in result.inserted_ids]
 

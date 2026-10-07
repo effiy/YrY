@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-39"
 title: "YK-09-39: Agent 辅助 FAQ 生成 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "42-架构设计-Agent辅助FAQ生成.md"
 source_okr: [yiknowledge-001]
 related_tests: ["42-prd-test-Agent辅助FAQ生成"]
+
+type: task
 ---
 
 # YK-09-39: Agent 辅助 FAQ 生成 — 开发方案

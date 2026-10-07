@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-CQ"
 title: "YV-09-CQ: 代码质量收尾 — 开发方案"
 status: 进行中
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "06-prd-代码质量收尾.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 代码质量收尾]
+roles: [engineer]
+benefit: "开发方案：task-代码质量收尾"
+lifecycle: active
 ---
 
 # YV-09-CQ: 代码质量收尾 — 开发方案

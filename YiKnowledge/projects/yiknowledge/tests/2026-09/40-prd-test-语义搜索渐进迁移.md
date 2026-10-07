@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-37: 语义搜索渐进迁移 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-37"
 source_prds: ["40-架构设计-语义搜索渐进迁移"]
 source_modules: ["40-prd-task-语义搜索渐进迁移"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-37: 语义搜索渐进迁移 — 测试用例

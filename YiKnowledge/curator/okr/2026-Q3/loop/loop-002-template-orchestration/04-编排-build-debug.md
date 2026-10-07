@@ -5,7 +5,8 @@ stage: build-debug
 title: 清零 23 个 vue-tsc 既有类型错误 + 新增 3 类模板
 role: engineer
 goalId: eng-005
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, build-debug, vue-tsc, type-safety]

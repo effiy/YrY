@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-130: 用户会话管理 — 活跃会话查看、强制下线、会话超时配置、并发会话限制"
 tags: [需求文档, 用户会话管理, 会话超时, 强制下线, 并发限制, 安全, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["60-prd-task-用户会话管理"]
+related_tests: ["60-prd-test-用户会话管理"]
+benefit: "产品需求：用户会话管理"
+lifecycle: active
 ---
 
 # YV-09-130: 用户会话管理 — 活跃会话查看、强制下线、会话超时配置、并发会话限制

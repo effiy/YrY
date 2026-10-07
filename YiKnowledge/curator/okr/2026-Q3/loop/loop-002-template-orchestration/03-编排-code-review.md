@@ -5,7 +5,8 @@ stage: code-review
 title: 类型错误修复与编排映射代码审查
 role: engineer
 goalId: eng-005
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, code-review, vue-tsc, type-safety]

@@ -11,14 +11,14 @@ type: summary
 status: stable
 lifecycle: reference
 review_cycle: quarterly
-roles: [curator, engineer, producter, leader, aier]
+roles: [curator, engineer, product, leader, aier]
 benefit: "内容创建者快速找到合适的模板，确保所有知识条目结构一致"
 acceptance_criteria:
   - "索引中的所有条目均映射到已存在的文件"
   - "文件清单表完整，每项包含一句话描述"
 related:
-  - ../../aier/methods/prompts/
-  - ../../producter/discovery/prd/
+  - ../../aier/methods/
+  - ../../product/discovery/
 ---
 
 # 模板目录
@@ -58,12 +58,12 @@ related:
 
 | 角色 | 最常使用的模板 |
 |---|---|
-| producter | PRD 模板、用户研究访谈模板、可用性测试报告模板 |
+| product | PRD 模板、用户研究访谈模板、可用性测试报告模板 |
 | leader | ADR 模板、技术选型评估模板、一对一模板 |
 | engineer | 技术设计模板、回顾模板、会议记录模板 |
-| srer | 回顾模板（事故复盘）、会议记录模板 |
+| sre | 回顾模板（事故复盘）、会议记录模板 |
 | aier | 技术选型评估模板、技术设计模板 |
-| executiver | 一对一模板、会议记录模板 |
+| executive | 一对一模板、会议记录模板 |
 | curator | 知识叶子模板（所有内容的基础模板） |
 
 ## 模板的设计原则
@@ -77,10 +77,10 @@ related:
 
 | 类别 | 位置 |
 |---|---|
-| 提示词模板（AI prompt templates） | [../../aier/methods/prompts/](../../aier/methods/prompts/) |
-| 阅读清单 | [../../executiver/reading-list/](../../executiver/reading-list/) |
-| PRD 实例 | [../../producter/discovery/prd](../../producter/discovery/prd) |
-| 会议模板实例 | [../../producter/delivery](../../producter/delivery) |
+| 提示词模板（AI prompt templates） | [../../aier/methods/](../../aier/methods/) |
+| 阅读清单 | [../../executive/reading-list/](../../executive/reading-list/) |
+| PRD 实例 | [../../product/discovery/prd](../../product/discovery/prd) |
+| 会议模板实例 | [../../product/delivery](../../product/delivery) |
 
 ## 模板维护
 

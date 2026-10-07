@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-SCSS使用@import而非@use"
+lifecycle: active
 ---
 
 # 部分 SCSS 使用 @import 而非 @use
@@ -45,7 +47,6 @@ Sass 官方在 Dart Sass 2.0 中将移除 `@import` 支持。`@import` 导致全
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`@import` 的全局命名空间污染**：`@import 'var.scss'` 后所有变量全局可见，无法追踪变量来源。`@use 'var' as v` 提供命名空间隔离，`$v.primary-color` 明确表示变量的来源模块
+- **Dart Sass 2.0 的迁移窗口**：Sass 已宣布将在 2.0 中移除 `@import`。现在迁移到 `@use` 是在技术债务变成阻塞性 bug 之前的预防性投资
 

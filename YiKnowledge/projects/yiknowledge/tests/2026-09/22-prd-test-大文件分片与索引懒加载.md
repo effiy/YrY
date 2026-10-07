@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-19: 大文件分片与索引懒加载 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-19"
 source_prds: ["22-架构设计-大文件分片与索引懒加载"]
 source_modules: ["22-prd-task-大文件分片与索引懒加载"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-19: 大文件分片与索引懒加载 — 测试用例

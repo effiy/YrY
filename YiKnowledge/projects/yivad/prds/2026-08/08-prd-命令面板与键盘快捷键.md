@@ -24,6 +24,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-001]
+related_modules: ["08-prd-task-命令面板与键盘快捷键"]
+related_tests: ["08-prd-test-命令面板与键盘快捷键"]
+benefit: "产品需求：命令面板与键盘快捷键"
+lifecycle: active
 ---
 
 # 命令面板与键盘快捷键系统 — Cmd+K 全局快速导航

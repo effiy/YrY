@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-17"
 title: "YK-09-17: 知识库访问控制 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "20-架构设计-知识库访问控制.md"
 source_okr: [yiknowledge-001]
 related_tests: ["20-prd-test-知识库访问控制"]
+
+type: task
 ---
 
 # YK-09-17: 知识库访问控制 — 开发方案

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 仪表盘组件体系
 tags:
 - 仪表盘
@@ -41,6 +40,8 @@ related_modules:
 - YV-09-M10
 related_tests:
 - YV-09-M10
+benefit: "产品需求：仪表盘组件体系"
+lifecycle: active
 ---
 
 # 仪表盘组件体系

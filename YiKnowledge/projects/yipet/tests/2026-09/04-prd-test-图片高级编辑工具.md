@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "M04: 图片高级编辑工具 — 测试用例"
 status: 已完成
@@ -6,14 +7,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 prd_task_id: "YP-M04"
-source_prds: ["04-功能实现-图片高级编辑工具"]
-source_modules: ["04-prd-task-图片高级编辑工具"]
+source_prds: ["04-功能实现-图片高级编辑工具.md"]
+source_modules: ["04-prd-task-图片高级编辑工具.md"]
 source_okr: [yipet-004]
+
+type: test
 ---
 
 # M04: 图片高级编辑工具 — 测试用例
@@ -158,4 +161,3 @@ source_okr: [yipet-004]
 | 质量/构图/色彩 | 待实施 | 统计类，易测试 |
 | 集成测试 | 待实施 | Worker mock + Canvas mock |
 
----

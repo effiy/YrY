@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-134"
 title: "YV-09-134: 字段级权限控制 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "64-prd-字段级权限控制.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 字段级权限控制]
+roles: [engineer]
+benefit: "开发方案：task-字段级权限控制"
+lifecycle: active
 ---
 
 # YV-09-134: 字段级权限控制 — 开发方案
@@ -36,6 +42,25 @@ source_prd: "64-prd-字段级权限控制.md"
 
 > 依赖 YiAi 后端字段级过滤。
 
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/field-permissions`)，角色 × 字段矩阵配置
+
+**数据模型**：
+```
+MongoDB `field_permissions` 集合；字段：`role`, `collection`, `field`, `access` (read/write/hidden)
+```
+
+**组件树**：
+```
+FieldPermissionMatrix.vue (角色×字段二维表 + 下拉选择) + PermissionPreview.vue
+```
+
+**关键决策**：
+权限拦截点：前端通过 v-auth 指令扩展 → API 响应过滤（YiAi 后端 middleware 移除无权限字段）
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -45,12 +70,8 @@ source_prd: "64-prd-字段级权限控制.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

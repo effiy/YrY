@@ -41,22 +41,22 @@ related:
 
 | ADR | 状态 | 说明 |
 |---|---|---|
-| [AiCR 阶段移植](../../../leader/decisions/yivad/aicr-phase-port.md) | 已实施 | AICR 功能从 YiWeb 到 YiVad 的移植 |
-| [Vitest 引入](../../../leader/decisions/yivad/vitest-introduction.md) | 规划中 | 从 0 测试到 Vitest 测试框架的引入路线 |
-| [Vite 到 Rsbuild 迁移](../../../leader/decisions/yivad/vite-to-rsbuild-migration.md) | 已实施 | 构建工具从 Vite 迁移到 Rsbuild |
+| [AiCR 阶段移植](../../../leader/decisions/aicr-phase-port.md) | 已实施 | AICR 功能从 YiWeb 到 YiVad 的移植 |
+| [Vitest 引入](../../../leader/decisions/vitest-introduction.md) | 规划中 | 从 0 测试到 Vitest 测试框架的引入路线 |
+| [Vite 到 Rsbuild 迁移](../../../leader/decisions/vite-to-rsbuild-migration.md) | 已实施 | 构建工具从 Vite 迁移到 Rsbuild |
 
 ## 跨项目链接
 
 - [YiVad CLAUDE.md](../../../../YiVad/CLAUDE.md) — 实时项目档案（模块边界、约束、近期变更）
 - [RPC 协议](../../build/cross-project-rpc-protocol.md) — RPC 信封规范、参数名契约、已知 Bug 模式
-- [产品管理](../../../producter/projects/yivad/project-management.md) — 迭代节奏、交付物
-- [入职指南](../../run/onboarding/03-入职-YiVad入职.md) — 新人第一天快速上手
+- [产品管理](../../../product/projects/yivad/project-management.md) — 迭代节奏、交付物
+- [入职指南](../../run/03-入职-YiVad入职.md) — 新人第一天快速上手
 
 ## 快速导航
 
 ### 我是 YiVad 新人开发者
 
-1. 先读 [入职指南](../../run/onboarding/03-入职-YiVad入职.md) 完成环境搭建
+1. 先读 [入职指南](../../run/03-入职-YiVad入职.md) 完成环境搭建
 2. 再读 [架构设计](./01-项目-架构设计.md) 理解 ProTable/Router/Auth 核心组件
 3. 然后读 [开发规范](./02-项目-开发规范.md) 了解关键约束（ProTable 标准、v-auth 权限、SSE 守卫）
 4. 最后查 [功能模块](./03-项目-功能模块.md) 定位你要修改的视图或 API 模块

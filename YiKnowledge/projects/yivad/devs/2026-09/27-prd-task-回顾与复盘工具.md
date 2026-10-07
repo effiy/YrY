@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-57"
 title: "YV-09-57: 回顾与复盘工具 — 开发方案"
 status: 待开始
@@ -11,6 +10,12 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "27-prd-回顾与复盘工具.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 回顾与复盘工具]
+benefit: "开发方案：task-回顾与复盘工具"
+lifecycle: active
 ---
 
 # YV-09-57: 回顾与复盘工具 — 开发方案
@@ -52,6 +57,25 @@ source_prd: "27-prd-回顾与复盘工具.md"
 
 > 当前阶段：低优先级。
 
+
+### 架构方案
+
+**技术路线**：独立页面 (`/retrospective`)，ProTable 展示复盘列表 + Markdown 编辑器（复用 WangEditor 或 KnowledgePreviewDialog 的渲染管道）作为复盘内容编辑区
+
+**数据模型**：
+```
+MongoDB `retrospectives` 集合，字段：`key`, `project_key`, `iteration`, `went_well[]`, `didnt_go_well[]`, `action_items[{text, status, linked_issue}]`, `participants[]`, `created_by`, `created_at`
+```
+
+**组件树**：
+```
+RetrospectiveList.vue (ProTable) + RetrospectiveEditor.vue (Markdown 编辑器 + Action 追踪面板)
+```
+
+**关键决策**：
+Action items → Issue 转换复用现有 Issue 创建对话框；协作编辑通过乐观锁 (`updated_at` 版本检查) 防止覆盖
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -61,12 +85,8 @@ source_prd: "27-prd-回顾与复盘工具.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

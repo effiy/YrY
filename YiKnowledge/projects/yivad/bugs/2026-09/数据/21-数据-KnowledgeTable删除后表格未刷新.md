@@ -16,6 +16,8 @@ environment: Chrome / macOS
 affected_version: latest
 fixed_version: latest
 frequency: always
+benefit: "缺陷记录：数据-KnowledgeTable删除后表格未刷新"
+lifecycle: active
 ---
 
 # KnowledgeTable 角色页面删除文件后 ProTable 表格未刷新
@@ -110,7 +112,7 @@ frequency: always
 
 ## 影响范围
 
-- **影响模块**：`src/views/knowledge/KnowledgeTable.vue`（所有 7 个角色页面：curator/engineer/aier/srer/leader/executiver/producter）
+- **影响模块**：`src/views/knowledge/KnowledgeTable.vue`（所有 7 个角色页面：curator/engineer/aier/sre/leader/executive/product）
 - **是否影响 API 契约**：否
 - **是否影响其他前端项目**：否（YiPet 不直接使用此组件）
 
@@ -138,7 +140,6 @@ frequency: always
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **watch 副作用不可靠**：依赖 `watch(data, () => table.refresh())` 在 ProTable 的 `requestAuto: true` 场景下存在竞态——watcher 可能在 ProTable `onMounted` 前触发，此时 `proTable.value` 为 null。显式调用 `refreshTable()` 比依赖 watch 自动传播更可靠
+- **ProTable 客户端分页模式**：当 `allFiles` 由组件自行管理（非服务端分页）时，ProTable 内部无法感知数据变更。删除/新增操作后必须显式调用 `proTable.value?.getTableList()` 或 `refreshTable()`
 

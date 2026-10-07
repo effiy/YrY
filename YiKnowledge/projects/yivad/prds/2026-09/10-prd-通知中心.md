@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 通知中心
 tags: [通知, SSE, 实时推送, 消息中心]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 已评审
 issue_type: 功能
 roles: [engineer, designer]
 source_okr: [yivad-003]
+related_modules: ["10-prd-task-通知中心"]
+related_tests: ["10-prd-test-通知中心"]
+benefit: "产品需求：通知中心"
+lifecycle: active
 ---
 
 # 通知中心

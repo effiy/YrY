@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-07)
 frequency: always
+benefit: "缺陷记录：数据-DetailDocs-CLAUDE加载失败提示未国际化"
+lifecycle: active
 ---
 
 ## Description
@@ -59,13 +61,11 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 新增组件必须导入 `useI18n`，所有用户可见字符串使用 `t()` 包裹。可通过 ESLint `no-hardcoded-strings` 规则检测 |
+| 流程 | Code Review 检查项：「所有 `ElMessage`/`ElNotification` 调用是否已国际化」 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **同一功能的文案分散在多个组件**：CLAUDE.md 加载错误在两个组件（`DetailOverview`、`DetailDocs`）中各自处理，一个用了 i18n 一个没有。公共文案应提取到 composable 或常量中统一管理
+- **i18n 迁移的渐进性**：项目从零国际化逐步迁移，已存在的 i18n key 不能保证新组件已接入。需要在组件模板中建立「禁止硬编码字符串」的强制性约定
 

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-131: 登录历史记录 — 用户登录日志、IP/位置/设备/浏览器记录、异地登录检测、登录趋势分析、导出 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-131"
 source_prds: ["61-prd-登录历史记录"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 登录历史记录]
+benefit: "测试用例：登录历史记录"
+lifecycle: active
 ---
 # YV-09-131: 登录历史记录 — 用户登录日志、IP/位置/设备/浏览器记录、异地登录检测、登录趋势分析、导出 — 测试规格
 

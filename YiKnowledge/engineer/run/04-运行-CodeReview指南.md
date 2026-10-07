@@ -19,7 +19,7 @@ acceptance_criteria:
   - "Review etiquette and turnaround expectations"
 related:
   - ../build/cross-project-rpc-protocol.md
-  - ../learn/lessons/gotchas/02-陷阱-RPC参数名不匹配.md
+  - ../learn/lessons/06-陷阱-RPC参数名不匹配.md
   - ./03-运行-Git工作流.md
 ---
 

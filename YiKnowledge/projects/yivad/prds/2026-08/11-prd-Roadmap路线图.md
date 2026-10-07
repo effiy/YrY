@@ -24,6 +24,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-001]
+related_modules: ["11-prd-task-Roadmap路线图"]
+related_tests: ["11-prd-test-Roadmap路线图"]
+benefit: "产品需求：Roadmap路线图"
+lifecycle: active
 ---
 
 # Roadmap 路线图 — 多项目模块进度可视化

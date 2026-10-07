@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-98"
 source_prds: ["46-prd-事件管理与值班"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 事件管理与值班]
+benefit: "测试用例：事件管理与值班"
+lifecycle: active
 ---
 # YV-09-98: 事件管理与值班 — 事件分级、值班日历、升级策略与事件指标 — 测试规格
 

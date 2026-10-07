@@ -1,8 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import ProjectCard from "@/views/project/components/ProjectCard.vue";
 import { EMPTY_STATS } from "@/views/project/types";
 import type { Project } from "@/api/modules/projectService";
+
+// mock vue-i18n to avoid needing the plugin installed
+vi.mock("vue-i18n", () => ({
+  useI18n: () => ({
+    t: (key: string) => key.split(".").pop() || key
+  })
+}));
 
 const baseProject: Project = {
   key: "PL",

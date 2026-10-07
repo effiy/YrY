@@ -1,16 +1,16 @@
 <template>
   <div class="permission-matrix">
     <div class="permission-matrix__toolbar">
-      <el-button size="small" text type="primary" @click="selectAll">全选</el-button>
-      <el-button size="small" text @click="deselectAll">取消全选</el-button>
+      <el-button size="small" text type="primary" @click="selectAll">{{ $t("system.role.selectAll") }}</el-button>
+      <el-button size="small" text @click="deselectAll">{{ $t("system.role.deselectAll") }}</el-button>
     </div>
     <div class="permission-matrix__table">
       <table>
         <thead>
           <tr>
-            <th class="permission-matrix__module-col">模块</th>
-            <th class="permission-matrix__perm-col">权限</th>
-            <th class="permission-matrix__check-col">授予</th>
+            <th class="permission-matrix__module-col">{{ $t("system.role.permissionModule") }}</th>
+            <th class="permission-matrix__perm-col">{{ $t("system.role.permissions") }}</th>
+            <th class="permission-matrix__check-col">{{ $t("system.role.permissionGrant") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +39,10 @@
 </template>
 
 <script setup lang="ts" name="PermissionMatrix">
+import { useI18n } from "vue-i18n";
 import { PERMISSION_MODULES, PERMISSIONS, type PermissionCode } from "@/constants/permissions";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: string[];

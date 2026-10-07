@@ -1,6 +1,6 @@
 import type { ChartThemeConfig } from "./themes";
 import { getTheme } from "./themes";
-import { lttb } from "./downsampling";
+import { LTTB } from "downsample";
 
 export type EChartsRenderer = "canvas" | "svg";
 
@@ -64,18 +64,7 @@ export function buildEChartsOption(config: ChartConfig, themeId?: string): Recor
 }
 
 export function downsampleSeries(data: DataPoint[], viewportWidth: number): DataPoint[] {
-  if (!shouldDownsample(data.length, viewportWidth)) return data;
-  const threshold = getThreshold(data.length, viewportWidth);
-  const points: [number, number][] = data.map(d => [d.x, d.y]);
-  const sampled = lttb(points, threshold);
-  return sampled.map(p => data.find(d => d.x === p[0] && d.y === p[1]) ?? { x: p[0], y: p[1] });
-}
-
-function shouldDownsample(dataLength: number, viewportWidth: number): boolean {
-  const maxVisiblePoints = Math.max(100, Math.floor(viewportWidth / 1.5));
-  return dataLength > maxVisiblePoints;
-}
-
-function getThreshold(dataLength: number, viewportWidth: number): number {
-  return Math.max(100, Math.floor(viewportWidth / 1.5));
+  const threshold = Math.max(100, Math.floor(viewportWidth / 1.5));
+  if (data.length <= threshold) return data;
+  return LTTB(data, threshold) as DataPoint[];
 }

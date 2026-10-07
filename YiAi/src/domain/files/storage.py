@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import UploadFile
 import oss2
@@ -13,6 +13,7 @@ from data.database import db
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
+from shared.utils import get_current_time
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +143,7 @@ async def delete_oss_file(object_name: str):
     bucket = get_bucket(config)
 
     if not bucket.object_exists(object_name):
-        raise BusinessException(ErrorCode.DATA_NOT_FOUND, message="File not found")
+        raise BusinessException(ErrorCode.FILE_NOT_FOUND, message="File not found")
 
     bucket.delete_object(object_name)
 
@@ -173,7 +174,7 @@ async def set_file_tags(object_name: str, tags: list[str]) -> dict[str, Any]:
         GET /?module_name=services.storage.oss_client&method_name=set_file_tags&parameters={"object_name": "images/test.jpg", "tags": ["vacation", "2023"]}
     """
     if not object_name:
-        raise ValueError("File object name cannot be empty")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File object name cannot be empty")
 
     tags = [tag.strip() for tag in tags if tag.strip()]
     tags = list(set(tags))
@@ -187,7 +188,7 @@ async def set_file_tags(object_name: str, tags: list[str]) -> dict[str, Any]:
             "$set": {
                 "object_name": object_name,
                 "tags": tags,
-                "updatedTime": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                "updatedTime": get_current_time()
             }
         },
         upsert=True
@@ -202,7 +203,7 @@ async def get_file_tags(object_name: str) -> list[str]:
         GET /?module_name=services.storage.oss_client&method_name=get_file_tags&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("File object name cannot be empty")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File object name cannot be empty")
 
     await db.initialize()
     tag_doc = await db.find_one(settings.collection_oss_file_tags, {"object_name": object_name})
@@ -216,7 +217,7 @@ async def delete_file_tags(object_name: str) -> bool:
         GET /?module_name=services.storage.oss_client&method_name=delete_file_tags&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("File object name cannot be empty")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File object name cannot be empty")
 
     await db.initialize()
     deleted_count = await db.delete_one(settings.collection_oss_file_tags, {"object_name": object_name})
@@ -262,11 +263,11 @@ async def update_file_info(object_name: str, title: str | None = None, descripti
         GET /?module_name=services.storage.oss_client&method_name=update_file_info&parameters={"object_name": "images/test.jpg", "title": "New Title"}
     """
     if not object_name:
-        raise ValueError("File object name cannot be empty")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File object name cannot be empty")
 
     update_data = {
         "object_name": object_name,
-        "updatedTime": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+        "updatedTime": get_current_time()
     }
 
     if title is not None:
@@ -282,7 +283,7 @@ async def update_file_info(object_name: str, title: str | None = None, descripti
         {
             "$set": update_data,
             "$setOnInsert": {
-                "createdTime": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                "createdTime": get_current_time()
             }
         },
         upsert=True
@@ -302,7 +303,7 @@ async def get_file_info(object_name: str) -> dict[str, str]:
         GET /?module_name=services.storage.oss_client&method_name=get_file_info&parameters={"object_name": "images/test.jpg"}
     """
     if not object_name:
-        raise ValueError("File object name cannot be empty")
+        raise BusinessException(ErrorCode.INVALID_PARAMS, message="File object name cannot be empty")
 
     await db.initialize()
     info_doc = await db.find_one(settings.collection_oss_file_info, {"object_name": object_name})

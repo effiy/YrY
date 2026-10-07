@@ -194,7 +194,7 @@ onBeforeUnmount(() => {
           size="small"
           :disabled="readonly"
           @change="
-            v => {
+            (v: number | undefined) => {
               currentLat = v || 0;
               emitChange();
             }
@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
           size="small"
           :disabled="readonly"
           @change="
-            v => {
+            (v: number | undefined) => {
               currentLng = v || 0;
               emitChange();
             }

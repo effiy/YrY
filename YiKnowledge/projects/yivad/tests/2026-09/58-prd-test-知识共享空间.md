@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-128: 功能实现-知识共享空间 — 团队知识共享中心、共享书签/链接、Wiki 集成、操作指南、最佳实践集、知识共享动态流 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-128"
 source_prds: ["58-prd-知识共享空间"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 知识共享空间]
+benefit: "测试用例：知识共享空间"
+lifecycle: active
 ---
 # YV-09-128: 功能实现-知识共享空间 — 团队知识共享中心、共享书签/链接、Wiki 集成、操作指南、最佳实践集、知识共享动态流 — 测试规格
 

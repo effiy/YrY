@@ -1,20 +1,23 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-M05"
 title: "YP-M05: 图片 AI 工具 — 开发方案"
-status: 待开始
+status: 已完成
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 2.2
 source_prd: "05-功能实现-图片人工智能工具.md"
 source_okr: [yipet-004]
-related_tests: ["05-prd-test-图片人工智能工具"]
+related_tests: ["05-prd-test-图片人工智能工具.md"]
+
+type: task
 ---
 
 # YP-M05: 图片 AI 工具 — 开发方案

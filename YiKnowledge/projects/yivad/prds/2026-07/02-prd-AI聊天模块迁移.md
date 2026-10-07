@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 功能
 roles: [engineer, aier]
 source_okr: [yivad-001]
+related_modules: ["02-prd-task-AI聊天模块迁移"]
+related_tests: ["02-prd-test-AI聊天模块迁移"]
+benefit: "产品需求：AI聊天模块迁移"
+lifecycle: active
 ---
 
 # YV-07-02: AI Chat 模块迁移

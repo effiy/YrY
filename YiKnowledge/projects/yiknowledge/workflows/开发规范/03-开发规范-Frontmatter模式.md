@@ -53,7 +53,7 @@ status: string         # 内容状态 draft | review | stable | deprecated | arc
 lifecycle: string      # 生命周期 inbox | triage | active | reference | archive
 review_cycle: string   # 审查周期 weekly | monthly | quarterly | yearly
 last_verified: date    # 最后验证日期 YYYY-MM-DD
-roles: [string]        # 适用角色 executiver | producter | leader | engineer | srer | aier | curator
+roles: [string]        # 适用角色 executive | product | leader | engineer | sre | aier | curator
 benefit: string        # 知识价值描述，RAG 相关性评估
 acceptance_criteria: [string]  # 验收标准（可验证的条款）
 related: [string]      # 关联文件路径（相对路径）
@@ -84,7 +84,7 @@ related: [string]      # 关联文件路径（相对路径）
 | `lifecycle` | string | 枚举值 | `inbox` / `triage` / `active` / `reference` / `archive` | `lifecycle: active` |
 | `review_cycle` | string | 枚举值 | `weekly` / `monthly` / `quarterly` / `yearly` | `review_cycle: quarterly` |
 | `last_verified` | date | 无引号 YYYY-MM-DD | `^\d{4}-\d{2}-\d{2}$` | `last_verified: 2026-09-07` |
-| `roles` | array | 角色名，全小写 | `executiver` / `producter` / `leader` / `engineer` / `srer` / `aier` / `curator` | `roles: [leader, engineer]` |
+| `roles` | array | 角色名，全小写 | `executive` / `product` / `leader` / `engineer` / `sre` / `aier` / `curator` | `roles: [leader, engineer]` |
 | `benefit` | string | 双引号，中文 | 10-200 字符 | `benefit: "为微服务技术选型提供决策参考"` |
 | `acceptance_criteria` | array | 每个条目可验证 | 非空字符串 | `- "可通过 curl 调用"` |
 | `related` | array | 相对路径 | 以 `./` 或 `../` 开头 | `- ./related-file.md` |
@@ -160,11 +160,11 @@ enabled: true
 
 | 值 | 角色 | 目录 | 说明 |
 |----|------|------|------|
-| `executiver` | 业务策略 | `executiver/` | 市场分析、竞争策略、组织目标 |
-| `producter` | 产品需求 | `producter/` | PRD、用户故事、优先级排序 |
+| `executive` | 业务策略 | `executive/` | 市场分析、竞争策略、组织目标 |
+| `product` | 产品需求 | `product/` | PRD、用户故事、优先级排序 |
 | `leader` | 技术决策 | `leader/` | ADR、技术选型、容量规划 |
 | `engineer` | 设计构建 | `engineer/` | 架构模式、开发实践、质量安全 |
-| `srer` | 运营发布 | `srer/` | 发布流程、事件响应、可观测性 |
+| `sre` | 运营发布 | `sre/` | 发布流程、事件响应、可观测性 |
 | `aier` | AI 赋能 | `aier/` | AI 基础、RAG/Agent 方法论 |
 | `curator` | 知识治理 | `curator/` | 生命周期管理、模板、分类标准 |
 
@@ -185,7 +185,7 @@ VALID_STATUSES = {"draft", "review", "stable", "deprecated", "archived"}
 VALID_SOURCES = {"internal", "external"}
 VALID_LIFECYCLES = {"inbox", "triage", "active", "reference", "archive"}
 VALID_REVIEW_CYCLES = {"weekly", "monthly", "quarterly", "yearly"}
-VALID_ROLES = {"executiver", "producter", "leader", "engineer", "srer", "aier", "curator"}
+VALID_ROLES = {"executive", "product", "leader", "engineer", "sre", "aier", "curator"}
 
 def validate_frontmatter(frontmatter: dict, filepath: str = "") -> list[str]:
     """完整验证 frontmatter，返回错误列表"""

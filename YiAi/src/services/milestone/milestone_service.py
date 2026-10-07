@@ -11,6 +11,7 @@ from data.database import db
 from data.repository import create_document, delete_document, query_documents, update_document
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
+from shared.status import Status, normalize_status_list
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,9 @@ async def update_milestone(parameters: dict[str, Any]) -> dict[str, Any]:
     if linked is not None:
         if linked:
             total = len(linked)
-            done = await db.db["issues"].count_documents({"key": {"$in": linked}, "status": "done"})
+            done = await db.db["issues"].count_documents(
+                {"key": {"$in": linked}, "status": {"$in": normalize_status_list([Status.DONE])}}
+            )
             data["progress"] = round(done / total, 2) if total > 0 else 0.0
         else:
             data["progress"] = 0.0
@@ -144,7 +147,9 @@ async def recalc_progress(parameters: dict[str, Any]) -> dict[str, Any]:
     linked = ms.get("linked_issues", [])
     if linked:
         total = len(linked)
-        done = await db.db["issues"].count_documents({"key": {"$in": linked}, "status": "done"})
+        done = await db.db["issues"].count_documents(
+                {"key": {"$in": linked}, "status": {"$in": normalize_status_list([Status.DONE])}}
+            )
         progress = round(done / total, 2)
     else:
         progress = 0.0

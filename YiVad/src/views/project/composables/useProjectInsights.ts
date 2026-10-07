@@ -2,11 +2,13 @@
  * Composition entry — combines data, stats, risk, and filter layers.
  * Public API is fully backward-compatible with the pre-refactor version.
  */
-import type { Ref } from "vue";
+import type { ComputedRef, Ref } from "vue";
 import { useProjectData } from "./useProjectData";
 import { useProjectStats } from "./useProjectStats";
 import { useProjectRisk } from "./useProjectRisk";
 import { useProjectFilter } from "./useProjectFilter";
+import type { KnowledgeProjectsStats } from "@/api/modules/knowledgeService";
+import type { ProjectBasicStats } from "@/types/analytics";
 
 // Re-export types and constants for callers that haven't migrated to types.ts yet.
 export {
@@ -27,13 +29,14 @@ export {
 export type { Project } from "@/api/modules/projectService";
 
 export function useProjectInsights(filterDateStr?: Ref<string>) {
-  const { loading, lastUpdated, projects, issues, bugs, modules, load } = useProjectData();
+  const { loading, lastUpdated, projects, issues, bugs, modules, knowledgeStats, dashboard, serverStatsByKey, dashboardGeneratedAt, load, startPolling, stopPolling } = useProjectData();
   const { statsByKey, statsFor, completionPct, rollup, activitySeries, topProjects } = useProjectStats(
     projects,
     issues,
     bugs,
     modules,
-    filterDateStr
+    filterDateStr,
+    serverStatsByKey
   );
   const {
     risksByKey,
@@ -65,7 +68,13 @@ export function useProjectInsights(filterDateStr?: Ref<string>) {
     projects,
     issues,
     bugs,
+    knowledgeStats,
+    dashboard,
+    serverStatsByKey,
+    dashboardGeneratedAt,
     load,
+    startPolling,
+    stopPolling,
     statsByKey,
     statsFor,
     completionPct,

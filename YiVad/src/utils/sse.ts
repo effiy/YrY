@@ -2,6 +2,8 @@
  * Shared SSE (Server-Sent Events) utilities for YiAi streaming endpoints.
  */
 
+import { createParser } from "eventsource-parser";
+
 /**
  * Extract a text delta from a YiAi SSE payload. YiAi emits
  * `{"data": {"message": "..."}}`; we also tolerate OpenAI-style shapes
@@ -27,13 +29,15 @@ export interface SSEStreamHandlers {
 }
 
 /**
- * Read a streaming SSE response body — decode, split lines, parse JSON frames,
- * and dispatch typed callbacks. Shared between `chatService.streamChat` and
- * `ragService.runStream` (eliminates ~70 lines of duplicated buffer/parse logic).
+ * Read a streaming SSE response body — backed by eventsource-parser for
+ * robust buffer management, line splitting, and multi-byte character
+ * handling. Shared between chatService.streamChat and ragService.runStream.
  */
-export async function readSSEStream(reader: ReadableStreamDefaultReader<Uint8Array>, handlers: SSEStreamHandlers): Promise<void> {
+export async function readSSEStream(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  handlers: SSEStreamHandlers,
+): Promise<void> {
   const decoder = new TextDecoder();
-  let buffer = "";
   let sourcesSent = false;
   let done = false;
 
@@ -43,18 +47,11 @@ export async function readSSEStream(reader: ReadableStreamDefaultReader<Uint8Arr
     handlers.onDone();
   }
 
-  while (true) {
-    const { done: streamDone, value } = await reader.read();
-    if (streamDone) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed || !trimmed.startsWith("data: ")) continue;
-      const data = trimmed.slice(6);
-      if (data === "[DONE]") {
+  const parser = createParser({
+    onEvent(event) {
+      if (done) return;
+      const data = event.data;
+      if (!data || data === "[DONE]") {
         _done();
         return;
       }
@@ -70,17 +67,16 @@ export async function readSSEStream(reader: ReadableStreamDefaultReader<Uint8Arr
           return;
         }
 
-        // Extract optional sources/phase before delta
         const sources = _extractSources(parsed);
         if (sources && !sourcesSent) {
           sourcesSent = true;
           handlers.onSources?.(sources);
-          continue;
+          return;
         }
         const phase = _extractPhase(parsed);
         if (phase && handlers.onPhase) {
           handlers.onPhase(phase);
-          continue;
+          return;
         }
 
         const content = extractDelta(parsed);
@@ -88,33 +84,15 @@ export async function readSSEStream(reader: ReadableStreamDefaultReader<Uint8Arr
       } catch {
         if (data && data !== "[DONE]") handlers.onDelta(data);
       }
-    }
+    },
+  });
+
+  while (true) {
+    const { done: streamDone, value } = await reader.read();
+    if (streamDone) break;
+    parser.feed(decoder.decode(value, { stream: true }));
   }
 
-  // Flush trailing buffer
-  const tail = buffer.trim();
-  if (tail.startsWith("data: ")) {
-    const data = tail.slice(6);
-    if (data && data !== "[DONE]") {
-      try {
-        const parsed = JSON.parse(data);
-        if (parsed?.error) {
-          handlers.onError(new Error(String(parsed.error)));
-          return;
-        }
-        if (parsed?.done !== true) {
-          const sources = _extractSources(parsed);
-          if (sources && !sourcesSent) handlers.onSources?.(sources);
-          const phase = _extractPhase(parsed);
-          if (phase && handlers.onPhase) handlers.onPhase(phase);
-          const content = extractDelta(parsed);
-          if (content) handlers.onDelta(content);
-        }
-      } catch {
-        handlers.onDelta(data);
-      }
-    }
-  }
   _done();
 }
 

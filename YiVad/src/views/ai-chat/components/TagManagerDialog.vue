@@ -57,7 +57,7 @@ function openTag(tag: string, ev: MouseEvent) {
     :close-on-click-modal="false"
     append-to-body
     destroy-on-close
-    @update:model-value="v => !v && onClose()"
+    @update:model-value="(v: boolean) => !v && onClose()"
   >
     <div class="tm-head">
       <span class="tm-count">{{ tags.length }} tags</span>

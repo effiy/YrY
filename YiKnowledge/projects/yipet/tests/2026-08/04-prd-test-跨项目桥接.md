@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YP-08-04: 跨项目桥接 — 测试规格"
 status: 已完成
@@ -12,6 +13,8 @@ prd_month: "202608"
 prd_task_id: "YP-08-04"
 source_prds: ["04-功能实现-跨项目桥接"]
 source_modules: ["04-prd-task-跨项目桥接"]
+
+type: test
 ---
 
 # YP-08-04: 跨项目桥接 — 测试规格

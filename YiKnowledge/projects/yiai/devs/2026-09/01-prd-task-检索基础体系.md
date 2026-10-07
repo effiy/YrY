@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YA-09-09"
 title: "YA-09-09: 检索基础体系 — 查询理解 + 预处理 + 结果增强 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 6.3
 source_prd: "01-需求-检索基础体系.md"
 source_okr: [yiai-001]
 related_tests: ["01-prd-test-检索基础体系"]
+
+type: task
 ---
 
 # YA-09-09: 检索基础体系 — 查询理解 + 预处理 + 结果增强 — 开发方案

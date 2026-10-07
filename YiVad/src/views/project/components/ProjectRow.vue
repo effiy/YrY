@@ -1,9 +1,13 @@
 <template>
   <div
     class="pr-row"
-    :class="{ 'pr-row--archived': project.status === 'archived', 'pr-row--selected': selected }"
+    :class="{
+      'pr-row--archived': project.status === 'archived',
+      'pr-row--selected': selected,
+      'pr-row--deleting': deleting
+    }"
     :style="{ '--health-color': HEALTH_COLORS[health] }"
-    @click="emit('open')"
+    @click="deleting ? undefined : emit('open')"
   >
     <el-checkbox class="pr-select" :model-value="selected" @click.stop @change="emit('toggle-select')" />
 
@@ -59,6 +63,15 @@
       <el-button
         link
         size="small"
+        :icon="Delete"
+        type="danger"
+        class="pr-delete-btn"
+        title="Delete project"
+        @click.stop="emit('delete')"
+      />
+      <el-button
+        link
+        size="small"
         :icon="Star"
         :type="starred ? 'warning' : 'info'"
         title="Star"
@@ -75,6 +88,9 @@
             <el-dropdown-item v-else command="restore">
               <span style="color: var(--el-color-success)">Restore</span>
             </el-dropdown-item>
+            <el-dropdown-item command="delete" divided>
+              <span style="color: var(--el-color-danger)">Delete</span>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -84,7 +100,7 @@
 
 <script setup lang="ts" name="ProjectRow">
 import { computed } from "vue";
-import { Calendar, MoreFilled, Star, Tickets, WarningFilled } from "@element-plus/icons-vue";
+import { Calendar, Delete, MoreFilled, Star, Tickets, WarningFilled } from "@element-plus/icons-vue";
 import { formatRelativeTime } from "@/utils/datetime";
 import type { Project } from "@/api/modules/projectService";
 import { RISK_META, type HealthLevel, type ProjectStats, type RiskKey } from "../types";
@@ -97,18 +113,20 @@ const props = defineProps<{
   health: HealthLevel;
   starred: boolean;
   selected: boolean;
+  deleting?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "open"): void;
-  (e: "edit"): void;
-  (e: "archive"): void;
-  (e: "restore"): void;
-  (e: "toggle-star"): void;
-  (e: "toggle-select"): void;
-  (e: "copy-id"): void;
-  (e: "filter-risk", risk: RiskKey): void;
-  (e: "tab", tab: "issues" | "members" | "bugs" | "modules"): void;
+  open: [];
+  edit: [];
+  archive: [];
+  restore: [];
+  delete: [];
+  'toggle-star': [];
+  'toggle-select': [];
+  'copy-id': [];
+  'filter-risk': [risk: RiskKey];
+  tab: [tab: 'issues' | 'members' | 'bugs' | 'modules'];
 }>();
 
 const healthHint = computed(() =>
@@ -137,6 +155,9 @@ function handleCommand(cmd: string) {
       break;
     case "restore":
       emit("restore");
+      break;
+    case "delete":
+      emit("delete");
       break;
   }
 }
@@ -303,12 +324,35 @@ function handleCommand(cmd: string) {
   gap: 2px;
   align-items: center;
   justify-content: flex-end;
-  width: 56px;
+  width: 80px;
   opacity: 0;
   transition: opacity 0.2s;
   .pr-row:hover &,
   .pr-row:focus-within & {
     opacity: 1;
   }
+}
+.pr-delete-btn {
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+  &:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+/* Deletion state */
+.pr-row--deleting {
+  pointer-events: none;
+  opacity: 0.4;
+  filter: grayscale(0.3);
+  transition:
+    opacity 0.35s ease,
+    filter 0.35s ease;
 }
 </style>

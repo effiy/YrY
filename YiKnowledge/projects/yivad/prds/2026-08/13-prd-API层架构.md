@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 架构
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["13-prd-task-API层架构"]
+related_tests: ["13-prd-test-API层架构"]
+benefit: "产品需求：API层架构"
+lifecycle: active
 ---
 
 # YV-08-18: API 层架构 — RequestHttp 拦截器链 + 请求取消 + 指数退避重试 + 并发批处理

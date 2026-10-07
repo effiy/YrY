@@ -1,10 +1,9 @@
 """MongoDB Schema migration engine."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import importlib.util
 from pathlib import Path
-from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -135,7 +134,7 @@ class MigrationEngine:
                 "name": migration.name,
                 "status": "success",
                 "checksum": migration.checksum,
-                "executed_at": datetime.now(),
+                "executed_at": datetime.now(timezone.utc),
             })
             logger.info(f"[Migration] Success: {migration.version:03d}_{migration.name}")
             return {
@@ -153,7 +152,7 @@ class MigrationEngine:
                 "status": "failed",
                 "error": str(e),
                 "checksum": migration.checksum,
-                "executed_at": datetime.now(),
+                "executed_at": datetime.now(timezone.utc),
             })
             return {
                 "version": migration.version,

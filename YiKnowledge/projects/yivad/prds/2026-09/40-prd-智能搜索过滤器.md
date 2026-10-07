@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-87: 智能搜索过滤器 — 自然语言查询、保存过滤预设、过滤器分享、使用模式建议、语法高亮、布尔组合(AND/OR/NOT)"
 tags: [需求文档, 智能搜索, 自然语言查询, 过滤预设, 语法高亮, 布尔过滤器, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["40-prd-task-智能搜索过滤器"]
+related_tests: ["40-prd-test-智能搜索过滤器"]
+benefit: "产品需求：智能搜索过滤器"
+lifecycle: active
 ---
 
 # YV-09-87: 智能搜索过滤器 — 自然语言查询、保存过滤预设、过滤器分享、使用模式建议、语法高亮、布尔组合(AND/OR/NOT)

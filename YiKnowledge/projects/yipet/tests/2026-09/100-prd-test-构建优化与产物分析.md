@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "构建优化与产物分析 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: P2
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["100-基础设施-构建优化与产物分析"]
-source_modules: ["100-prd-task-构建优化与产物分析"]
+source_prds: ["100-基础设施-构建优化与产物分析.md"]
+source_modules: ["100-prd-task-构建优化与产物分析.md"]
+
+type: test
 ---
 
 # 构建优化与产物分析 — 测试用例
@@ -28,3 +31,4 @@ source_modules: ["100-prd-task-构建优化与产物分析"]
 ## 出口准则
 
 - [ ] P0 用例 100% 通过
+

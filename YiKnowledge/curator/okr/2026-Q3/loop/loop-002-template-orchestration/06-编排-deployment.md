@@ -5,7 +5,8 @@ stage: deployment
 title: 三要素编排清单与模板扩展部署
 role: aier
 goalId: aier-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, deployment, orchestration, templates]
@@ -23,7 +24,7 @@ tags: [loop-record, deployment, orchestration, templates]
 | 2 | 构建 | `pnpm build:dev` | ✅ 成功 |
 | 3 | 部署 KB 文件 | 3 个新模板 + INDEX 更新 + 8 个 loop-002 记录落盘 | ✅ |
 | 4 | 重启 Dev Server | `pnpm dev` | ✅ 运行正常 |
-| 5 | 冒烟验证 | 打开 home/index + executiver/process | ✅ 功能正常 |
+| 5 | 冒烟验证 | 打开 home/index + executive/process | ✅ 功能正常 |
 
 ## 部署产物
 
@@ -42,7 +43,7 @@ tags: [loop-record, deployment, orchestration, templates]
 |---|---|---|---|
 | 1 | 新模板可复制使用 | 复制模板到测试目录，填 frontmatter | ✅ |
 | 2 | INDEX.md 目录结构正确 | 读 INDEX.md 核对 8 阶段 | ✅ |
-| 3 | processRecord.vue 可解析 loop-002 | 打开 /executiver/process | ✅ |
+| 3 | processRecord.vue 可解析 loop-002 | 打开 /executive/process | ✅ |
 | 4 | 三要素编排在 home/index 正常展示 | 打开 home/index 观察 Skill/Agent/MCP 列 | ✅ |
 | 5 | 类型检查 0 错误 | `pnpm type:check` | ✅ |
 

@@ -1,6 +1,5 @@
 """Dashboard RSS endpoints — article statistics and source health."""
 import logging
-from typing import Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -57,44 +56,19 @@ async def rss_stats(start: int | None = None, end: int | None = None):
     """
     try:
         from collections import Counter
-        from datetime import datetime
-        from datetime import timezone as tz
 
         from data.database import db
+        from data.date_helpers import parse_ms_ts
 
         await db.initialize()
         collection = db.db[settings.collection_rss]
         cursor = collection.find({}, {"_id": 0})
         articles = await cursor.to_list(length=None)
 
-        def _article_ts(a: dict) -> int | None:
-            ts = a.get("published_parsed") or a.get("createdTime") or a.get("published")
-            if ts is None:
-                return None
-            if isinstance(ts, int | float):
-                i = int(ts)
-                return i * 1000 if len(str(abs(i))) <= 10 else i
-            ts_str = str(ts).strip()
-            if not ts_str:
-                return None
-            _head = ts_str.split(".")[0]
-            if _head.lstrip("-").isdigit():
-                i = int(_head)
-                return i * 1000 if len(_head.lstrip("-")) <= 10 else i
-            for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
-                try:
-                    return int(datetime.strptime(ts_str, fmt).replace(tzinfo=tz.utc).timestamp() * 1000)
-                except ValueError:
-                    continue
-            try:
-                return int(datetime.fromisoformat(ts_str.replace("Z", "+00:00")).timestamp() * 1000)
-            except Exception:
-                return None
-
         if start is not None or end is not None:
             filtered: list[dict] = []
             for a in articles:
-                ts = _article_ts(a)
+                ts = parse_ms_ts(a.get("published_parsed") or a.get("createdTime") or a.get("published"))
                 if ts is None:
                     continue
                 if start is not None and ts < start:

@@ -7,7 +7,8 @@ framework: OKR
 trend: up
 progress: 100
 title: Lead M01 ADR 覆盖率
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 # ADR 覆盖率
 

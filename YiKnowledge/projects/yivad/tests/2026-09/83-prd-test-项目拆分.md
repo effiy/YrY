@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-229: 项目拆分 — 单项目拆分为多项目、Issue 选择、成员分配与配置复制 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-229"
 source_prds: ["83-prd-项目拆分"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 项目拆分]
+benefit: "测试用例：项目拆分"
+lifecycle: active
 ---
 # YV-09-229: 项目拆分 — 单项目拆分为多项目、Issue 选择、成员分配与配置复制 — 测试规格
 

@@ -19,6 +19,8 @@ reporter: Claude
 environment: development
 affected_version: 1.0.0
 frequency: always
+benefit: "缺陷记录：质量-catch-any-丢失类型安全"
+lifecycle: active
 ---
 
 # YiVad 32 个文件中 62 处 catch (e: any) 丢失类型安全
@@ -101,13 +103,11 @@ try {
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 启用 ESLint `@typescript-eslint/no-unsafe-member-access` 和 `no-unsafe-assignment` 规则；使用统一的 `getErrorMessage(e: unknown): string` 工具函数 |
+| 流程 | 新增 try/catch 块时 Code Review 检查 catch 参数类型是否为 `unknown` 而非 `any` |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`catch (e: any)` 是系统性技术债务**：62 处分布在 32 个文件中，不是单点问题而是编码习惯问题。修复需要统一工具函数（`getErrorMessage(e: unknown): string`）和 ESLint 规则（`@typescript-eslint/no-unsafe-member-access`）双管齐下
+- **TypeScript 4.0 的 `unknown` 是更安全的选择**：`catch (e: unknown)` 强制开发者在访问 `e.message` 前做类型缩窄（`e instanceof Error`），消除了运行时 `undefined is not an object` 的风险
 

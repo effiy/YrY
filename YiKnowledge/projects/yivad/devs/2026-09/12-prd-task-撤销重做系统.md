@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-33"
 title: "YV-09-33: 撤销重做系统 — 开发方案"
 status: 已完成
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.0
 source_prd: "12-prd-撤销重做系统.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 撤销重做系统]
+benefit: "开发方案：task-撤销重做系统"
+lifecycle: active
 ---
 
 # YV-09-33: 撤销重做系统 — 开发方案

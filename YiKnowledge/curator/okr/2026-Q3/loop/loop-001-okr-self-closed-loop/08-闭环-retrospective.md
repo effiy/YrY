@@ -3,9 +3,10 @@ type: loop-record
 loopId: loop-001
 stage: retrospective
 title: 复盘 loop-001：首条 AI 全流程自闭环的得与失
-role: executiver
+role: executive
 goalId: exec-001
-status: done
+source: internal
+status: stable
 created: 2026-08-17
 updated: 2026-09-10
 tags: [loop-record, retrospective, lessons-learned]
@@ -20,7 +21,7 @@ tags: [loop-record, retrospective, lessons-learned]
 | 指标 | 值 |
 |---|---|
 | 闭环周期 | 1 个工作日（2026-08-16） |
-| 参与角色 | executiver, producter, leader, engineer, srer, aier, curator |
+| 参与角色 | executive, product, leader, engineer, sre, aier, curator |
 | 完成任务 | 9 / 9（flow-t-001 ~ flow-t-009，全部 Done） |
 | 阶段完成 | 8 / 8（需求→技术→代码审查→构建→测试→部署→上线→复盘） |
 
@@ -39,7 +40,7 @@ tags: [loop-record, retrospective, lessons-learned]
 | # | 问题 | 根因 | 改进措施 | 负责人 |
 |---|---|---|---|---|
 | 1 | 无自动化测试覆盖，验证依赖手动 | 项目级决策（CLAUDE.md 明确 Test framework: None） | loop-002 评估 Vitest 接入成本，至少覆盖 utils 纯函数 | engineer |
-| 2 | 浏览器渲染层视觉回归未做自动化验证 | 仅做静态 typecheck/build 门禁 | 引入 Playwright 截图对比或至少 checklist 手动验证模板 | srer |
+| 2 | 浏览器渲染层视觉回归未做自动化验证 | 仅做静态 typecheck/build 门禁 | 引入 Playwright 截图对比或至少 checklist 手动验证模板 | sre |
 | 3 | STAGES 常量在 processRecord.vue 和 OkrRecommendPanel.vue 两处重复定义 | 快速迭代未抽取共享常量 | 抽取为 `src/constants/processStages.ts`，两处导入 | engineer |
 | 4 | 部署与上线记录拆分后，信息有部分重叠（artifact/version 在两处出现） | 部署是执行记录，上线是审批记录，但字段有交集 | 明确边界：部署记录「怎么做」，上线记录「批没批」 | leader |
 
@@ -60,11 +61,11 @@ tags: [loop-record, retrospective, lessons-learned]
 |---|---|---|---|---|
 | 1 | 评估 Vitest 接入，跑通 utils 纯函数测试 | P1 | engineer | 2026-08-20 |
 | 2 | 抽取 STAGES 共享常量，消除重复定义 | P2 | engineer | 2026-08-20 |
-| 3 | 按 loop-002 模板启动第二条闭环（目标：增量功能 + 测试覆盖） | P0 | executiver | 2026-08-21 |
-| 4 | 引入 Playwright 或至少 checklist 模板做视觉验证 | P2 | srer | 2026-08-25 |
+| 3 | 按 loop-002 模板启动第二条闭环（目标：增量功能 + 测试覆盖） | P0 | executive | 2026-08-21 |
+| 4 | 引入 Playwright 或至少 checklist 模板做视觉验证 | P2 | sre | 2026-08-25 |
 | 5 | 明确部署 vs 上线记录的字段边界，更新两处模板 | P2 | leader | 2026-08-22 |
 
 ## 复盘签字
 
 - **主持人**: CEO
-- **参与角色**: executiver, producter, leader, engineer, srer, aier, curator
+- **参与角色**: executive, product, leader, engineer, sre, aier, curator

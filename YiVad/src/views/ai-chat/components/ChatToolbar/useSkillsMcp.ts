@@ -5,6 +5,11 @@ import { useSparkLegendToggle } from "@/hooks/useSparkLegendToggle";
 import { MCP_SERVERS, type McpServerConfig } from "../../mcpServers";
 import { listMcpTools, callMcpTool, type McpTool } from "@/api/modules/mcpService";
 import { getErrorMessage } from "@/utils/errorHandler";
+import {
+  PIN_SPARK_W, PIN_SPARK_H, PIN_SPARK_PAD,
+  sparkPathFromDurations, sparkPointsFromDurations,
+  medianDuration, formatStuckSummary, hitWidth, hitWidths,
+} from "./pinSparklines";
 
 export function useSkillsMcp() {
   const store = useAiChatStore();
@@ -190,9 +195,6 @@ export function useSkillsMcp() {
   // Per-pinned-tool call count — for the popover rows. Built-in reads from
   // toolLastCalls (already tracked); MCP reads from mcpToolResults.
   const PIN_NO_CALLS = "—";
-  const PIN_SPARK_W = 40,
-    PIN_SPARK_H = 8,
-    PIN_SPARK_PAD = 1;
   const slowThresholdMs = ref(1000); // default slow-call threshold (ms)
   // Pi-inspired: per-pin hover crosshair state. Single shared ref — mouse
   // can only be on one sparkline at a time, so we track which row+idx is

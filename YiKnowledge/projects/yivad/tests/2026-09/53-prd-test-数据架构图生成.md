@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-114: 数据架构图生成 — MongoDB 集合数据模型/Schema 可视化、实体关系图、字段级详情、关系连线、导出为图表、自动检测集合关系 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-114"
 source_prds: ["53-prd-数据架构图生成"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 数据架构图生成]
+benefit: "测试用例：数据架构图生成"
+lifecycle: active
 ---
 # YV-09-114: 数据架构图生成 — MongoDB 集合数据模型/Schema 可视化、实体关系图、字段级详情、关系连线、导出为图表、自动检测集合关系 — 测试规格
 

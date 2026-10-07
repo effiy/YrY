@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-65"
 title: "YV-09-65: 文档模板管理 — 开发方案"
 status: 已完成
@@ -11,6 +10,13 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 0.5
 source_prd: "33-prd-文档模板管理.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 文档模板管理]
+roles: [engineer]
+benefit: "开发方案：task-文档模板管理"
+lifecycle: active
 ---
 
 # YV-09-65: 文档模板管理 — 开发方案
@@ -42,6 +48,20 @@ source_prd: "33-prd-文档模板管理.md"
 ### 实施步骤：0.5d
 
 - 模板 CRUD 页面 + 新建文件时模板选择
+
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/doc-templates`)，ProTable + 模板编辑器（Markdown + 变量占位符）
+
+**组件树**：
+```
+DocTemplateList.vue (ProTable) + DocTemplateEditor.vue (Markdown + `{{variable}}` 插值)
+```
+
+**关键决策**：
+模板变量格式：`{{title}}`, `{{tags}}`, `{{category}}`, `{{created}}`, `{{author}}`；模板使用：选择模板 → 填充变量 → 生成文件
+
 
 ---
 

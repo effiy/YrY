@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-02: 文件同步可靠性 — 测试用例"
 status: 已完成
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-02"
 source_prds: ["05-稳定性修复-文件同步"]
 source_modules: ["05-prd-task-文件同步"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-02: 文件同步可靠性 — 测试用例

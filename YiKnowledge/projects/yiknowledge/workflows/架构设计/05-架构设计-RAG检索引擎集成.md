@@ -385,7 +385,7 @@ rag_query("微服务架构", scope="leader/decisions/microservices.md")
 rag_query("安全最佳实践", scope="engineer/ship/")
 
 # 按角色过滤
-rag_query("需求优先级", scope="producter/")
+rag_query("需求优先级", scope="product/")
 
 # 按项目过滤
 rag_query("ProTable 使用", scope="engineer/projects/yivad/")

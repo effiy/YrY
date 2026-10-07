@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "事件溯源与状态回放 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["60-架构设计-事件溯源与状态回放"]
+source_prds: ["60-架构设计-事件溯源与状态回放.md"]
+source_modules: ["60-prd-task-事件溯源与状态回放.md"]
+
+type: test
 ---
 
 # 事件溯源与状态回放 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["60-架构设计-事件溯源与状态回放"]
 |------|------|------|--------|
 | TC-EVT01 | 事件记录 | 状态变更时间线 | P3 |
 | TC-EVT02 | 回放 | 任意时间点恢复 | P3 |
+

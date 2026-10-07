@@ -1,11 +1,11 @@
 <template>
-  <div class="module-list">
+  <div class="module-list page">
     <PageHeaderCard
       v-if="!props.projectKey"
       :icon="Cpu"
       icon-bg="linear-gradient(135deg, #5470c6, #4460b0)"
-      title="Modules"
-      description="Organize work into functional system components"
+      :title="$t('module.list.title')"
+      :description="$t('module.list.description')"
       :pills="headerPills"
       :show-date-nav="!props.filterDate"
       :filter-date="filterDate"
@@ -35,37 +35,34 @@
         </div>
       </div>
       <div class="module-chart">
-        <div class="module-chart__title">Created · 14d</div>
+        <div class="module-chart__title">Burndown · 14d</div>
         <div class="module-chart__body">
-          <ECharts :option="trendOption" height="200" />
+          <ECharts :option="burndownOption" height="200" />
+        </div>
+      </div>
+      <div class="module-chart">
+        <div class="module-chart__title">Velocity · 8w</div>
+        <div class="module-chart__body">
+          <ECharts :option="velocityOption" height="200" />
         </div>
       </div>
     </div>
 
     <!-- Recently Viewed -->
-    <div v-if="!props.projectKey && recentlyViewed.length" class="module-list__recent">
-      <span class="module-list__recent-label">Recently viewed</span>
-      <button
-        v-for="m in recentlyViewed"
-        :key="m.key"
-        type="button"
-        class="module-list__recent-chip"
-        :title="m.name"
-        @click="goDetail(m.key)"
-      >
-        <span class="module-list__recent-dot" :style="{ background: STATUS_COLOR[m.status] || '#909399' }" />
-        <span class="module-list__recent-key">{{ m.key }}</span>
-        <span class="module-list__recent-name">{{ m.name }}</span>
-      </button>
-      <button type="button" class="module-list__recent-clear" @click="recentlyViewed = []">✕</button>
-    </div>
+    <RecentlyViewed
+      v-if="!props.projectKey"
+      :items="recentViewedItems"
+      label="Recently viewed"
+      @click="goDetail"
+      @clear="recentlyViewed = []"
+    />
 
     <!-- Active Filter Pills (standalone route only) -->
-    <div v-if="!props.projectKey && activePills.length" class="module-list__pills">
-      <span class="module-list__pills-label">Filters</span>
-      <el-tag v-for="p in activePills" :key="p.id" closable size="small" @close="p.clear()">{{ p.label }}</el-tag>
-      <el-button size="small" text type="primary" @click="clearAllFilters">Clear all</el-button>
-    </div>
+    <FilterPills
+      v-if="!props.projectKey"
+      :pills="activePills"
+      @clear-all="clearAllFilters"
+    />
 
     <!-- ====== Knowledge Domain Cards (project detail context) ====== -->
     <template v-if="props.projectKey">
@@ -162,6 +159,54 @@
                 <span class="module-list__sidebar-card-accent-value">{{ attention.stalled }}</span>
                 <span class="module-list__sidebar-card-accent-label">Stalled</span>
               </div>
+              <div class="module-list__sidebar-card module-list__sidebar-card--blocked" @click="applyAttentionFilter('blocked')">
+                <el-icon class="module-list__sidebar-card-accent-icon"><RemoveFilled /></el-icon>
+                <span class="module-list__sidebar-card-accent-value">{{ attention.blocked }}</span>
+                <span class="module-list__sidebar-card-accent-label">Blocked</span>
+              </div>
+              <div class="module-list__sidebar-card module-list__sidebar-card--empty" @click="applyAttentionFilter('unassigned')">
+                <el-icon class="module-list__sidebar-card-accent-icon"><UserFilled /></el-icon>
+                <span class="module-list__sidebar-card-accent-value">{{ attention.unassigned }}</span>
+                <span class="module-list__sidebar-card-accent-label">Unassigned</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="fileAlertsHasAlerts" class="module-list__sidebar-section" style="margin-top: 12px">
+            <div class="module-list__sidebar-section-header" style="border-left-color: var(--el-color-warning)">
+              <span class="module-list__sidebar-section-label">File Health Alerts</span>
+              <span class="module-list__sidebar-section-hint">{{ fileAlertsSummary.total }} alerts</span>
+            </div>
+            <div class="module-list__sidebar-section-body">
+              <div class="module-list__sidebar-alert-bar">
+                <span v-if="fileAlertsCriticalCount" class="module-list__sidebar-alert-badge module-list__sidebar-alert-badge--critical">
+                  {{ fileAlertsCriticalCount }} critical
+                </span>
+                <span v-if="fileAlertsWarningCount" class="module-list__sidebar-alert-badge module-list__sidebar-alert-badge--warning">
+                  {{ fileAlertsWarningCount }} warning
+                </span>
+                <span v-if="fileAlertsInfoCount" class="module-list__sidebar-alert-badge module-list__sidebar-alert-badge--info">
+                  {{ fileAlertsInfoCount }} info
+                </span>
+              </div>
+              <div v-for="domain in ['data', 'knowledge', 'code']" :key="domain">
+                <template v-if="fileAlertsAlertsByDomain[domain]?.length">
+                  <div class="module-list__sidebar-alert-domain">
+                    <span class="module-list__sidebar-alert-domain-label">{{
+                      { data: 'Modules', knowledge: 'Knowledge', code: 'Code' }[domain]
+                    }}</span>
+                  </div>
+                  <div
+                    v-for="alert in fileAlertsAlertsByDomain[domain].slice(0, 5)"
+                    :key="alert.title"
+                    class="module-list__sidebar-alert-row"
+                    :class="`module-list__sidebar-alert-row--${alert.severity}`"
+                  >
+                    <span class="module-list__sidebar-alert-row__severity" :class="`module-list__sidebar-alert-row__severity--${alert.severity}`" />
+                    <span class="module-list__sidebar-alert-row__title">{{ alert.title }}</span>
+                    <span class="module-list__sidebar-alert-row__count">{{ alert.count }}</span>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
           <div class="module-list__sidebar-section" style="margin-top: 12px">
@@ -185,8 +230,14 @@
           <div class="module-list__head">
             <div class="module-list__head-left">
               <span class="module-list__head-count">{{ countLabel }}</span>
+              <span class="module-list__head-age" :class="{ 'module-list__head-age--stale': dataAge > 60 }">
+                · Updated {{ dataAge }}s ago
+              </span>
             </div>
             <div class="module-list__head-actions">
+              <el-tooltip :content="polling ? 'Pause auto-refresh' : 'Resume auto-refresh'" placement="bottom">
+                <el-button size="small" :icon="polling ? VideoPause : VideoPlay" :title="polling ? 'Pause auto-refresh' : 'Start auto-refresh'" @click="polling = !polling" />
+              </el-tooltip>
               <el-input
                 v-model="searchText"
                 class="module-list__search"
@@ -224,7 +275,7 @@
               >
                 <el-option v-for="p in projects" :key="p.key" :label="p.name" :value="p.key" />
               </el-select>
-              <el-button type="primary" :icon="Plus" @click="openCreate">New Module</el-button>
+              <el-button type="primary" :icon="Plus" @click="openCreate">{{ $t("module.list.newModule") }}</el-button>
             </div>
           </div>
 
@@ -407,67 +458,14 @@
     </template>
 
     <!-- Create/Edit Dialog -->
-    <el-dialog v-model="dialog.visible" :title="dialog.isEdit ? 'Edit Module' : 'New Module'" width="560px" destroy-on-close>
-      <el-form ref="formRef" :model="dialog.form" :rules="rules" label-width="100px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="dialog.form.name" placeholder="Module name" maxlength="100" />
-        </el-form-item>
-        <el-form-item label="Description">
-          <el-input v-model="dialog.form.description" type="textarea" :rows="3" placeholder="Module description (Markdown)" />
-        </el-form-item>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Status">
-              <el-select v-model="dialog.form.status" style="width: 100%">
-                <el-option v-for="(label, val) in MODULE_STATUS_MAP" :key="val" :label="label" :value="val" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Lead">
-              <el-input v-model="dialog.form.lead" placeholder="Module lead" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16">
-          <el-col :span="12">
-            <el-form-item label="Start Date">
-              <el-date-picker
-                v-model="dialog.form.start_date"
-                type="date"
-                placeholder="Start date"
-                style="width: 100%"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Due Date">
-              <el-date-picker
-                v-model="dialog.form.due_date"
-                type="date"
-                placeholder="Due date"
-                style="width: 100%"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="Project">
-          <el-input v-model="dialog.form.project_key" placeholder="Project key" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialog.visible = false">Cancel</el-button>
-        <el-button type="primary" :loading="dialog.submitting" @click="submit">Save</el-button>
-      </template>
-    </el-dialog>
+    <ModuleFormDialog ref="dialogRef" :project-key="props.projectKey" @saved="refresh" />
     <KnowledgePreviewDialog ref="previewDlgRef" />
   </div>
 </template>
 
 <script setup lang="ts" name="moduleList">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import {
   Plus,
@@ -478,6 +476,8 @@ import {
   CircleCheckFilled,
   Clock,
   WarningFilled,
+  RemoveFilled,
+  UserFilled,
   Grid,
   Postcard,
   List,
@@ -486,11 +486,13 @@ import {
   Guide,
   Setting,
   Tickets,
-  Opportunity
+  Opportunity,
+  VideoPause,
+  VideoPlay
 } from "@element-plus/icons-vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import type { FormInstance, FormRules } from "element-plus";
+import { ElMessage } from "element-plus";
 import { useModuleStore } from "@/stores/modules/module";
+import { confirm } from "@/hooks/useConfirmAction";
 import { MODULE_STATUS_MAP } from "@/api/modules/moduleService";
 import type { Module, ModuleStatus } from "@/api/modules/moduleService";
 import { getModuleList } from "@/api/modules/moduleService";
@@ -503,15 +505,20 @@ import { PageHeaderCard, ProTable } from "@/components";
 import type { ColumnProps, ProTableInstance } from "@/components";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
+import RecentlyViewed from "@/components/RecentlyViewed/RecentlyViewed.vue";
+import FilterPills from "@/components/FilterPills/FilterPills.vue";
 import { useProjectDetail } from "@/views/project/types";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import { useModuleData, qualityBarColor } from "./composables/useModuleData";
 import { useModuleCharts, STATUS_COLOR } from "./composables/useModuleCharts";
+import { useFileAlerts } from "./composables/useFileAlerts";
+import ModuleFormDialog from "./components/ModuleFormDialog.vue";
 
 const props = defineProps<{ projectKey?: string; filterDate?: Date | null }>();
 const router = useRouter();
 const store = useModuleStore();
-const formRef = ref<FormInstance>();
+const { t } = useI18n();
+const dialogRef = ref<InstanceType<typeof ModuleFormDialog> | null>(null);
 const { render: renderMarkdown } = useMarkdown();
 
 const projectFilter = ref(props.projectKey || "");
@@ -519,6 +526,9 @@ const searchText = ref("");
 const statusFilter = ref("");
 const sortBy = ref<"issues" | "name" | "progress">("issues");
 const recentlyViewed = ref<Module[]>([]);
+const recentViewedItems = computed(() =>
+  recentlyViewed.value.map(m => ({ key: m.key, title: m.name, color: STATUS_COLOR[m.status] || "#909399" }))
+);
 const viewMode = ref<"table" | "card" | "list">("card");
 const effectiveViewMode = computed(() => (props.projectKey ? ("card" as const) : viewMode.value));
 const proTable = ref<ProTableInstance>();
@@ -622,14 +632,17 @@ function openDomain(d: DomainDef) {
 }
 
 // ── Composable data (standalone route) ──
-const { issueMap, projects, stats, headerPills, attention, completeness, issueCount, doneCount, progressPct, refresh, init } =
+const { issueMap, projects, stats, headerPills, attention, completeness, issueCount, doneCount, progressPct, dashboard, dataAge, polling, refresh, init } =
   useModuleData({
     projectKey: props.projectKey,
     filterDateStr,
-    isPropDate: props.filterDate !== undefined
+    isPropDate: props.filterDate !== undefined,
+    onRefresh: () => proTable.value?.getTableList()
   });
 
-const { statusDonutOption, progressBarOption, trendOption } = useModuleCharts({ progressPct });
+const { statusDonutOption, progressBarOption, burndownOption, velocityOption } = useModuleCharts({ progressPct, dashboard });
+
+const { hasAlerts: fileAlertsHasAlerts, summary: fileAlertsSummary, criticalCount: fileAlertsCriticalCount, warningCount: fileAlertsWarningCount, infoCount: fileAlertsInfoCount, alertsByDomain: fileAlertsAlertsByDomain, init: fileAlertsInit } = useFileAlerts({ projectKey: props.projectKey });
 
 function projectName(key: string) {
   return projects.value.find(p => p.key === key)?.name || key;
@@ -721,39 +734,30 @@ const countLabel = computed(() => {
 
 // ── Filter pills ──
 const activePills = computed(() => {
-  const pills: Array<{ id: string; label: string; clear: () => void }> = [];
+  const pills: Array<{ key: string; label: string; clear: () => void }> = [];
   if (searchText.value.trim())
     pills.push({
-      id: "search",
+      key: "search",
       label: `Search: ${searchText.value.trim()}`,
-      clear: () => {
-        searchText.value = "";
-        onFilterChange();
-      }
+      clear: () => { searchText.value = ""; onFilterChange(); }
     });
   if (statusFilter.value)
     pills.push({
-      id: "status",
+      key: "status",
       label: `Status: ${MODULE_STATUS_MAP[statusFilter.value as ModuleStatus] || statusFilter.value}`,
-      clear: () => {
-        statusFilter.value = "";
-        onFilterChange();
-      }
+      clear: () => { statusFilter.value = ""; onFilterChange(); }
     });
   if (sortBy.value !== "issues") {
     const labels: Record<string, string> = { name: "Name", progress: "Progress" };
     pills.push({
-      id: "sort",
+      key: "sort",
       label: `Sort: ${labels[sortBy.value] || sortBy.value}`,
-      clear: () => {
-        sortBy.value = "issues";
-        onFilterChange();
-      }
+      clear: () => { sortBy.value = "issues"; onFilterChange(); }
     });
   }
   if (projectFilter.value && !props.projectKey)
     pills.push({
-      id: "project",
+      key: "project",
       label: `Project: ${projectName(projectFilter.value)}`,
       clear: () => {
         projectFilter.value = "";
@@ -814,10 +818,10 @@ function onStatusChartClick(e: { name?: string }) {
   onFilterChange();
 }
 
-function applyAttentionFilter(type: "overdue" | "empty" | "stalled" | "in_progress" | "completed") {
+function applyAttentionFilter(type: "overdue" | "empty" | "stalled" | "blocked" | "unassigned" | "in_progress" | "completed") {
   if (type === "overdue") statusFilter.value = "in_progress";
   else if (type === "empty") statusFilter.value = statusFilter.value === "planned" ? "" : "planned";
-  else if (type === "stalled") statusFilter.value = statusFilter.value === "in_progress" ? "" : "in_progress";
+  else if (type === "stalled" || type === "blocked" || type === "unassigned") statusFilter.value = statusFilter.value === "in_progress" ? "" : "in_progress";
   else if (type === "in_progress") statusFilter.value = statusFilter.value === "in_progress" ? "" : "in_progress";
   else if (type === "completed") statusFilter.value = statusFilter.value === "completed" ? "" : "completed";
   onFilterChange();
@@ -828,107 +832,26 @@ function trackRecent(mod: Module) {
   recentlyViewed.value = [mod, ...recentlyViewed.value.filter(r => r.key !== mod.key)].slice(0, 8);
 }
 
-// ── Dialog ──
-const rules: FormRules = {
-  name: [{ required: true, message: "Module name is required", trigger: "blur" }]
-};
-
-const dialog = reactive({
-  visible: false,
-  isEdit: false,
-  submitting: false,
-  editKey: "",
-  form: {
-    name: "",
-    description: "",
-    status: "planned" as ModuleStatus,
-    lead: "",
-    project_key: props.projectKey || "",
-    issue_keys: [] as string[],
-    start_date: "",
-    due_date: ""
+  // ── Dialog ──
+  function openCreate() {
+    dialogRef.value?.openCreate(projectFilter.value);
   }
-});
 
-function openCreate() {
-  dialog.isEdit = false;
-  dialog.editKey = "";
-  dialog.form = {
-    name: "",
-    description: "",
-    status: "planned" as ModuleStatus,
-    lead: "",
-    project_key: projectFilter.value || "",
-    issue_keys: [],
-    start_date: "",
-    due_date: ""
-  };
-  dialog.visible = true;
-}
-
-function openEdit(mod: Module) {
-  dialog.isEdit = true;
-  dialog.editKey = mod.key;
-  dialog.form = {
-    name: mod.name,
-    description: mod.description || "",
-    status: mod.status,
-    lead: mod.lead || "",
-    project_key: mod.project_key,
-    issue_keys: mod.issue_keys || [],
-    start_date: mod.start_date || "",
-    due_date: mod.due_date || ""
-  };
-  dialog.visible = true;
-}
-
-async function submit() {
-  const valid = await formRef.value?.validate().catch(() => false);
-  if (!valid) return;
-  dialog.submitting = true;
-  try {
-    if (dialog.isEdit) {
-      await store.editModule(dialog.editKey, {
-        name: dialog.form.name,
-        description: dialog.form.description,
-        status: dialog.form.status,
-        lead: dialog.form.lead,
-        start_date: dialog.form.start_date,
-        due_date: dialog.form.due_date
-      });
-      ElMessage.success("Module updated");
-    } else {
-      await store.addModule({
-        key: `MOD-${Date.now().toString(36).toUpperCase()}`,
-        project_key: dialog.form.project_key || projectFilter.value || "default",
-        name: dialog.form.name,
-        description: dialog.form.description,
-        status: dialog.form.status,
-        lead: dialog.form.lead,
-        issue_keys: [],
-        start_date: dialog.form.start_date,
-        due_date: dialog.form.due_date
-      });
-      ElMessage.success("Module created");
-    }
-    dialog.visible = false;
-    refresh();
-    proTable.value?.getTableList();
-  } finally {
-    dialog.submitting = false;
+  function openEdit(mod: Module) {
+    dialogRef.value?.openEdit(mod);
   }
-}
 
 async function handleDelete(mod: Module) {
-  try {
-    await ElMessageBox.confirm(`Delete module "${mod.name}"?`, "Delete", { type: "error" });
-    await store.removeModule(mod.key, projectFilter.value || undefined);
-    ElMessage.success("Module deleted");
-    refresh();
-    proTable.value?.getTableList();
-  } catch {
-    /* cancelled */
-  }
+  const ok = await confirm(
+    t("module.dialog.deleteConfirm", { name: mod.name }),
+    t("common.deleteTitle"),
+    "error"
+  );
+  if (!ok) return;
+  await store.removeModule(mod.key, projectFilter.value || undefined);
+  ElMessage.success(t("module.dialog.deleteSuccess"));
+  refresh();
+  proTable.value?.getTableList();
 }
 
 function goDetail(key: string) {
@@ -955,6 +878,7 @@ function statusTagType(s: ModuleStatus): "success" | "warning" | "info" | "prima
 onMounted(async () => {
   if (!props.projectKey) {
     await init();
+    fileAlertsInit();
     if (effectiveViewMode.value === "table") proTable.value?.getTableList();
   }
 });
@@ -965,794 +889,7 @@ watch(filterDateStr, () => {
 });
 </script>
 
+
 <style scoped lang="scss">
-.module-list {
-  padding: 24px;
-  background: var(--el-bg-color-page);
-}
-
-// ── Knowledge Domain Cards ──
-.md-domain-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-.md-domain-card {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 18px 20px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-  transition: all 0.18s;
-  &:hover {
-    border-color: var(--el-color-primary-light-5);
-    box-shadow: 0 4px 16px rgb(0 0 0 / 6%);
-    transform: translateY(-2px);
-    .md-domain-card__icon {
-      transform: scale(1.08);
-    }
-  }
-}
-.md-domain-card__icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  color: #ffffff;
-  border-radius: 10px;
-  transition: transform 0.18s;
-}
-.md-domain-card__body {
-  flex: 1;
-  min-width: 0;
-}
-.md-domain-card__name {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.md-domain-card__desc {
-  display: block;
-  margin-top: 2px;
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--el-text-color-secondary);
-}
-.md-domain-card__count {
-  flex-shrink: 0;
-  text-align: center;
-}
-.md-domain-card__count-val {
-  display: block;
-  font-family: DIN, sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--el-text-color-primary);
-}
-.md-domain-card__count-lbl {
-  display: block;
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-// ── Charts ──
-.module-list__charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-.module-chart {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.module-chart--active {
-  border-color: var(--el-color-primary);
-  box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
-}
-.module-chart__title {
-  display: flex;
-  flex-shrink: 0;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.module-chart__badge {
-  padding: 0 5px;
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 15px;
-  color: var(--el-color-primary);
-  text-transform: none;
-  background: var(--el-color-primary-light-9);
-  border-radius: 3px;
-}
-.module-chart__body {
-  flex: 1;
-  min-height: 0;
-  padding: 8px;
-}
-
-// ── Recently Viewed ──
-.module-list__recent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  background: var(--el-fill-color-lighter);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-}
-.module-list__recent-label {
-  margin-right: 2px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-.module-list__recent-chip {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  padding: 2px 9px;
-  font-size: 12px;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 999px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-  &:hover {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
-  }
-}
-.module-list__recent-dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.module-list__recent-key {
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.module-list__recent-name {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.module-list__recent-clear {
-  padding: 4px;
-  margin-left: auto;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--el-text-color-placeholder);
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  &:hover {
-    color: var(--el-color-danger);
-  }
-}
-
-// ── Filter Pills ──
-.module-list__pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.module-list__pills-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Body / Main / Sidebar ──
-.module-list__body {
-  display: flex;
-  gap: 24px;
-}
-.module-list__main {
-  flex: 1;
-  min-width: 0;
-}
-.module-list__sidebar {
-  position: sticky;
-  top: 24px;
-  flex-shrink: 0;
-  align-self: flex-start;
-  width: 240px;
-  padding: 12px;
-  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-lighter) 100%);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-}
-.module-list__sidebar-view {
-  padding: 4px 4px 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  :deep(.el-radio-group) {
-    display: flex;
-    width: 100%;
-  }
-  :deep(.el-radio-button) {
-    flex: 1;
-  }
-  :deep(.el-radio-button__inner) {
-    width: 100%;
-    padding: 4px 0;
-    font-size: 12px;
-    text-align: center;
-  }
-}
-
-// ── Sidebar Section ──
-.module-list__sidebar-section {
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-}
-.module-list__sidebar-section-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  padding-left: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--el-text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  border-left: 2px solid var(--el-color-primary);
-}
-.module-list__sidebar-section-label {
-  flex: 1;
-}
-.module-list__sidebar-section-hint {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--el-text-color-placeholder);
-  text-transform: none;
-  letter-spacing: 0;
-}
-.module-list__sidebar-section-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-}
-
-// ── Sidebar Card (stat item) ──
-.module-list__sidebar-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition: all 0.15s;
-  &:hover {
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.module-list__sidebar-card-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
-  color: #ffffff;
-  border-radius: 7px;
-}
-.module-list__sidebar-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-width: 0;
-}
-.module-list__sidebar-card-value {
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--el-text-color-primary);
-}
-.module-list__sidebar-card-label {
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Card (attention variant) ──
-.module-list__sidebar-card-accent-icon {
-  flex-shrink: 0;
-  font-size: 14px;
-}
-.module-list__sidebar-card-accent-value {
-  min-width: 20px;
-  font-family: DIN, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-}
-.module-list__sidebar-card-accent-label {
-  flex: 1;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.module-list__sidebar-card--overdue {
-  .module-list__sidebar-card-accent-icon,
-  .module-list__sidebar-card-accent-value {
-    color: var(--el-color-danger);
-  }
-}
-.module-list__sidebar-card--empty {
-  .module-list__sidebar-card-accent-icon,
-  .module-list__sidebar-card-accent-value {
-    color: var(--el-color-warning);
-  }
-}
-.module-list__sidebar-card--stalled {
-  .module-list__sidebar-card-accent-icon,
-  .module-list__sidebar-card-accent-value {
-    color: var(--el-color-primary);
-  }
-}
-
-// ── Sidebar Progress ──
-.module-list__sidebar-progress {
-  padding: 0 12px 12px;
-}
-.module-list__sidebar-progress-label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-
-// ── Sidebar Quality ──
-.module-list__sidebar-quality {
-  padding: 4px 0;
-  & + & {
-    padding-top: 8px;
-  }
-}
-.module-list__sidebar-quality-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 3px;
-}
-.module-list__sidebar-quality-label {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.module-list__sidebar-quality-pct {
-  font-family: DIN, sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-// ── Head ──
-.module-list__head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.module-list__head-left {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.module-list__head-count {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--el-text-color-secondary);
-}
-.module-list__head-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-.module-list__search {
-  width: 190px;
-}
-.module-list__status {
-  width: 130px;
-}
-.module-list__sort {
-  width: 130px;
-}
-.module-list__project {
-  width: 190px;
-}
-
-// ── Card Grid ──
-.module-list__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-.module-list__grid--non-card {
-  display: block;
-}
-.module-card {
-  overflow: hidden;
-  cursor: pointer;
-  border-radius: 12px;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-  :deep(.el-card__body) {
-    padding: 0;
-  }
-  &:hover {
-    box-shadow: var(--el-box-shadow-light);
-    transform: translateY(-4px);
-  }
-}
-.module-card--muted {
-  opacity: 0.82;
-}
-.module-card__status-bar {
-  height: 3px;
-}
-.module-card__body {
-  padding: 16px;
-}
-.module-card__top {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.module-card__name {
-  font-size: 16px;
-  font-weight: 600;
-}
-.module-card__project {
-  display: inline-flex;
-  gap: 5px;
-  align-items: center;
-  padding: 2px 8px;
-  margin-bottom: 8px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  cursor: pointer;
-  background: var(--el-fill-color-light);
-  border: none;
-  border-radius: 6px;
-  transition:
-    color 0.15s,
-    background 0.15s;
-  .el-icon {
-    font-size: 13px;
-  }
-  &:hover {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-}
-.module-card__desc {
-  margin: 0 0 10px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--el-text-color-secondary);
-  overflow-wrap: break-word;
-  :deep(p) {
-    margin: 0 0 6px;
-  }
-  :deep(p:last-child) {
-    margin-bottom: 0;
-  }
-  :deep(strong) {
-    font-weight: 600;
-    color: var(--el-text-color-primary);
-  }
-  :deep(code) {
-    padding: 1px 5px;
-    font-family: monospace;
-    font-size: 12px;
-    color: var(--el-color-danger);
-    background: var(--el-fill-color-light);
-    border-radius: 3px;
-  }
-  :deep(ul),
-  :deep(ol) {
-    padding-left: 18px;
-    margin: 0 0 6px;
-  }
-  :deep(li) {
-    margin: 2px 0;
-  }
-}
-.module-card__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.module-card__time {
-  padding: 1px 8px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 999px;
-  &--ok {
-    color: var(--el-color-warning);
-    background: var(--el-color-warning-light-9);
-  }
-  &--overdue {
-    color: #ffffff;
-    background: var(--el-color-danger);
-  }
-  &--done {
-    color: var(--el-color-success);
-    background: var(--el-color-success-light-9);
-  }
-  &--cancelled {
-    color: var(--el-color-info);
-    background: var(--el-color-info-light-9);
-  }
-  &--active {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-  &--upcoming {
-    color: var(--el-color-info);
-    background: var(--el-color-info-light-9);
-  }
-}
-.module-card__lead {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.module-card__progress {
-  margin-bottom: 12px;
-}
-.module-card__progress-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.module-card__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.module-card__issues {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.module-card__footer-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.module-card__updated {
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-.module-card__actions {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-}
-.module-card__issues-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: 200px;
-  padding-top: 8px;
-  margin-bottom: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
-}
-.module-card__issue-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 2px 4px;
-  margin-right: -4px;
-  margin-left: -4px;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: background 0.12s;
-  &:hover {
-    background: var(--el-fill-color-light);
-  }
-}
-.module-card__issue-priority {
-  flex-shrink: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-.module-card__issue-key {
-  flex-shrink: 0;
-  padding: 0 4px;
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
-  background: var(--el-fill-color);
-  border-radius: 2px;
-}
-.module-card__issue-title {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 11px;
-  color: var(--el-text-color-regular);
-  white-space: nowrap;
-}
-.module-card__issue-assignee {
-  flex-shrink: 0;
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 10px;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-}
-.module-list__empty {
-  grid-column: 1 / -1;
-  padding: 60px 0;
-}
-
-// ── Table View ──
-.module-table__name {
-  font-weight: 500;
-  color: var(--el-color-primary);
-  cursor: pointer;
-}
-.module-table__issues {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.module-table__dates {
-  font-size: 12px;
-  &--overdue {
-    font-weight: 600;
-    color: var(--el-color-danger);
-  }
-  &--done {
-    color: var(--el-color-success);
-  }
-  &--cancelled {
-    color: var(--el-color-info);
-  }
-  &--active {
-    color: var(--el-color-primary);
-  }
-  &--ok {
-    color: var(--el-color-warning);
-  }
-  &--upcoming {
-    color: var(--el-color-info);
-  }
-}
-
-// ── List View ──
-.module-list-view {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.module-list-view__row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 14px;
-  cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  transition:
-    box-shadow 0.2s,
-    transform 0.2s;
-  &:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-    transform: translateY(-1px);
-  }
-  &--muted {
-    opacity: 0.7;
-  }
-}
-.module-list-view__dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.module-list-view__name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-}
-.module-list-view__progress {
-  display: flex;
-  flex-shrink: 0;
-  gap: 5px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-.module-list-view__lead {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.module-list-view__time {
-  flex-shrink: 0;
-  font-size: 12px;
-  &--overdue {
-    font-weight: 600;
-    color: var(--el-color-danger);
-  }
-  &--done {
-    color: var(--el-color-success);
-  }
-  &--cancelled {
-    color: var(--el-color-info);
-  }
-  &--active {
-    color: var(--el-color-primary);
-  }
-  &--ok {
-    color: var(--el-color-warning);
-  }
-  &--upcoming {
-    color: var(--el-color-info);
-  }
-}
+@use "./styles/module.scss";
 </style>

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { nextTick } from "vue";
 import { useTableView } from "@/hooks/useTableView";
 
 describe("useTableView", () => {
@@ -11,9 +12,10 @@ describe("useTableView", () => {
     expect(currentView.value).toBe("table");
   });
 
-  it("switchView changes current view and persists", () => {
+  it("switchView changes current view and persists", async () => {
     const { currentView, switchView } = useTableView("test-view", "table");
     switchView("card");
+    await nextTick();
     expect(currentView.value).toBe("card");
     expect(localStorage.getItem("yivad-view-test-view")).toBe("card");
   });
@@ -32,11 +34,12 @@ describe("useTableView", () => {
     expect(currentView.value).toBeDefined();
   });
 
-  it("independent instances have separate storage keys", () => {
+  it("independent instances have separate storage keys", async () => {
     const { switchView: switchA } = useTableView("entity-a", "table");
     const { switchView: switchB } = useTableView("entity-b", "table");
     switchA("card");
     switchB("kanban");
+    await nextTick();
     const { currentView: viewA } = useTableView("entity-a", "table");
     const { currentView: viewB } = useTableView("entity-b", "table");
     expect(viewA.value).toBe("card");

@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "文本转语音与朗读 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["107-功能实现-文本转语音与朗读.md"]
+source_modules: ["107-prd-task-文本转语音与朗读.md"]
+
+type: test
 ---
 
 # 文本转语音与朗读 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-TTS01 | SpeechSynthesis | 文字朗读 | P3 |
 | TC-TTS02 | 语速/音调可调 | rate/pitch | P3 |
+

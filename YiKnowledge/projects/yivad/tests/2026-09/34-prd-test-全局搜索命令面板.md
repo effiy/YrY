@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-68"
 source_prds: ["34-prd-全局搜索命令面板"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 全局搜索命令面板]
+benefit: "测试用例：全局搜索命令面板"
+lifecycle: active
 ---
 # YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询 — 测试规格
 

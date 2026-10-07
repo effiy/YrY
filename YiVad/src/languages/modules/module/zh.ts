@@ -43,6 +43,10 @@ export default {
         noDescription: "暂无描述",
         lead: "负责人",
         noLead: "未指定",
+        leadUpdated: "负责人已更新",
+        schedule: "排期",
+        scheduleUpdated: "排期已更新",
+        statusChanged: "状态已更改为 {status}",
         members: "成员",
         noMembers: "暂无成员",
         addMember: "添加成员",
@@ -118,6 +122,7 @@ export default {
       createSuccess: "模块已创建",
       updateSuccess: "模块已更新",
       deleteSuccess: "模块已删除",
+      cloneSuccess: "模块已克隆",
       deleteConfirm: "确认删除模块「{name}」？关联的 Issue 和 Bug 将一并移除。"
     },
     messages: {

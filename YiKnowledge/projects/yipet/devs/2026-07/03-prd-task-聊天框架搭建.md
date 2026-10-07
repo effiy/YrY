@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-07-03"
 title: "YP-07-03: 聊天框架搭建 — 四层 API 架构 + SSE 流式 + ChatStore 状态管理 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202607"
 estimate_frontend: 2.0
 source_prd: "03-基础设施-聊天框架搭建.md"
 source_okr: [yipet-002]
+
+type: task
 ---
 
 # YP-07-03: 聊天框架搭建 — 开发方案

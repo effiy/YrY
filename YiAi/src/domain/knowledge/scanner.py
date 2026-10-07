@@ -7,17 +7,21 @@ aicr page can render a metadata-driven knowledge sidebar.
 Path safety: every requested path is resolved against the knowledge base dir
 and rejected if it escapes that root (no ``..`` traversal, no abs paths).
 """
+
 from __future__ import annotations
 
-from datetime import datetime
 import logging
 import mimetypes
 import os
 import re
 from typing import Any
 
-import yaml
-
+from domain.knowledge.frontmatter import (
+    normalize_meta as _normalize_meta,
+)
+from domain.knowledge.frontmatter import (
+    parse_frontmatter as _parse_frontmatter,
+)
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
@@ -30,22 +34,17 @@ logger = logging.getLogger(__name__)
 # to 7 canonical role dirs. Additional top-level directories discovered on disk
 # are appended alphabetically after these.
 _WELL_KNOWN_CATEGORIES = (
-    "producter",
+    "product",
     "leader",
     "engineer",
-    "srer",
-    "executiver",
+    "sre",
+    "executive",
     "aier",
     "curator",
 )
 
 # Directories that should never be surfaced as knowledge categories.
 _SKIP_DIRS = frozenset({".git", "__pycache__", "node_modules", ".DS_Store", "rss"})
-
-_FRONTMATTER_RE = re.compile(
-    r"^---\s*\n(?P<yaml>.*?)\n---\s*(?P<rest>.*)$",
-    re.DOTALL,
-)
 
 
 def _base_dir() -> str:
@@ -69,96 +68,6 @@ def resolve_safe(rel_path: str) -> str:
     return abs_path
 
 
-def _parse_frontmatter(text: str) -> tuple[dict, str]:
-    """Split a markdown file into (frontmatter_dict, body_text).
-
-    Some historical markdown frontmatters contain unescaped double quotes
-    inside double-quoted strings, which cause ``yaml.safe_load`` to raise
-    ``YAMLError``. When that happens we fall back to a line-oriented
-    ``key: value`` parser that still recovers ~95 % of fields (strings,
-    numbers, booleans, and flat YAML lists).
-    """
-    match = _FRONTMATTER_RE.match(text)
-    if not match:
-        return {}, text
-    raw_yaml = match.group("yaml")
-    body = match.group("rest").lstrip("\n")
-    meta: dict = {}
-    if raw_yaml.strip():
-        try:
-            loaded = yaml.safe_load(raw_yaml)
-            if isinstance(loaded, dict):
-                meta = loaded
-        except yaml.YAMLError:
-            meta = _parse_frontmatter_lines(raw_yaml)
-    if not isinstance(meta, dict):
-        meta = {}
-    return meta, body
-
-
-def _parse_frontmatter_lines(raw_yaml: str) -> dict:
-    """Robust line-by-line fallback for when the strict YAML parser fails.
-
-    Handles the patterns that appear in existing bug markdowns:
-      ``key: "value with possible unescaped "quotes" inside"``
-      ``key: value``
-      ``key: 123``
-      ``key: true``
-      ``tags: ['a', 'b', "c's"]``
-    Values that cannot be determined are kept as strings.
-    """
-    import ast as _ast
-    import re as _re
-
-    out: dict = {}
-    list_re = _re.compile(r"^\s*\[.*\]\s*$")
-    quoted_re = _re.compile(r'^\s*(["\'])(.*)\1\s*$', _re.DOTALL)
-    for raw_line in raw_yaml.splitlines():
-        line = raw_line.rstrip()
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if ":" not in line:
-            continue
-        key_part, _, val_part = line.partition(":")
-        key = key_part.strip()
-        if not key:
-            continue
-        value = val_part.strip()
-        if value == "":
-            out[key] = ""
-            continue
-        if list_re.match(value):
-            try:
-                parsed = _ast.literal_eval(value)
-                if isinstance(parsed, list):
-                    out[key] = [str(x) for x in parsed]
-                    continue
-            except (ValueError, SyntaxError):
-                logger.debug("Failed to parse frontmatter list value", exc_info=True)
-        if value in {"true", "True"}:
-            out[key] = True
-            continue
-        if value in {"false", "False"}:
-            out[key] = False
-            continue
-        if value in {"null", "Null", "~"}:
-            continue
-        qm = quoted_re.match(value)
-        if qm:
-            out[key] = qm.group(2)
-            continue
-        try:
-            if "." in value:
-                out[key] = float(value)
-            else:
-                out[key] = int(value)
-            continue
-        except ValueError:
-            logger.debug("Failed to convert frontmatter value to int/float", exc_info=True)
-        out[key] = value
-    return out
-
-
 def _file_meta(rel_path: str, abs_path: str) -> dict:
     """Read the first ~15 lines for frontmatter only — progressive scan."""
     try:
@@ -176,16 +85,107 @@ def _file_meta(rel_path: str, abs_path: str) -> dict:
             "updatedAt": None,
         }
 
-    meta, _ = _parse_frontmatter(head)
+    raw_meta, body = _parse_frontmatter(head)
+    meta = _normalize_meta(raw_meta)
+    _enrich_body_fields(body, meta)
     stat = os.stat(abs_path)
     return {
         "path": rel_path,
         "name": os.path.basename(rel_path),
         "category": _categorize(rel_path),
-        "meta": _normalize_meta(meta),
+        "meta": meta,
         "size": stat.st_size,
         "updatedAt": int(stat.st_mtime * 1000) if stat.st_mtime else None,
     }
+
+
+def _enrich_body_fields(body: str, meta: dict) -> None:
+    """Extract description / due_date / acceptance_criteria from markdown body.
+
+    Only fills fields that are missing from frontmatter (frontmatter always wins).
+    Modifies ``meta`` in-place.
+    """
+    if not body:
+        return
+
+    lines = body.split("\n")
+
+    # ── due_date ── scan for patterns like "截止日期：2026-09-30" / "Due: 2026-09-30"
+    if not meta.get("due_date") and not meta.get("dueDate"):
+        for line in lines:
+            m = re.search(
+                r"(?:截止日期|截止|Due\s*Date|due_date|Due)[：:]\s*(\d{4}-\d{2}-\d{2})",
+                line,
+            )
+            if m:
+                meta["due_date"] = m.group(1)
+                break
+
+    # ── acceptance_criteria ── extract section containing 验收标准 / Acceptance Criteria
+    if not meta.get("acceptance_criteria"):
+        in_section = False
+        buf: list[str] = []
+        for line in lines:
+            if re.match(r"^##\s+.*(?:验收标准|Acceptance\s+Criteria)", line, re.IGNORECASE):
+                in_section = True
+                continue
+            if in_section:
+                if line.startswith("## "):
+                    break
+                buf.append(line)
+        text = "\n".join(buf).strip()
+        if text:
+            meta["acceptance_criteria"] = text
+
+    # ── description ── first substantive paragraph after title/blockquote/separator
+    if not meta.get("description"):
+        desc_parts: list[str] = []
+        started = False
+        for line in lines:
+            s = line.strip()
+            if not started:
+                if s.startswith("# "):  # title heading
+                    continue
+                if s.startswith("> "):  # metadata blockquote
+                    continue
+                if s == "---":  # horizontal rule
+                    continue
+                if not s:  # blank line
+                    continue
+                started = True
+            # Stop at any ## heading — this is the first section, not a description
+            if s.startswith("## "):
+                break
+            if s:
+                desc_parts.append(s)
+            elif desc_parts:
+                break  # blank line after content = end of first paragraph
+        if desc_parts:
+            meta["description"] = " ".join(desc_parts)[:500]
+        elif not desc_parts:
+            # Fallback: use first section body as description (skip its heading)
+            in_first_section = False
+            for line in lines:
+                s = line.strip()
+                if not in_first_section:
+                    if s.startswith("# "):  # title
+                        continue
+                    if s.startswith("> "):  # blockquote
+                        continue
+                    if s == "---":  # separator
+                        continue
+                    if not s:  # blank
+                        continue
+                    if s.startswith("## "):
+                        in_first_section = True
+                        continue
+                else:
+                    if s.startswith("## "):
+                        break
+                    if s:
+                        desc_parts.append(s)
+            if desc_parts:
+                meta["description"] = " ".join(desc_parts)[:500]
 
 
 def _extract_meta(rel_path: str, abs_path: str) -> dict:
@@ -203,8 +203,9 @@ def _extract_meta(rel_path: str, abs_path: str) -> dict:
         try:
             with open(abs_path, encoding="utf-8", errors="replace") as f:
                 head = f.read(8192)
-            raw_meta, _ = _parse_frontmatter(head)
+            raw_meta, body = _parse_frontmatter(head)
             meta = _normalize_meta(raw_meta)
+            _enrich_body_fields(body, meta)
         except Exception as e:
             logger.warning(f"Failed to read knowledge file {rel_path}: {e}")
     return {
@@ -234,35 +235,13 @@ def _categorize(rel_path: str) -> str:
     return top
 
 
-def _normalize_meta(meta: dict) -> dict:
-    """Coerce frontmatter values to JSON-friendly primitives."""
-    out: dict[str, Any] = {}
-    for k, v in (meta or {}).items():
-        if v is None:
-            continue
-        if isinstance(v, str | int | float | bool):
-            out[k] = v
-        elif isinstance(v, list):
-            out[k] = [str(x) if not isinstance(x, str | int | float | bool) else x for x in v]
-        elif isinstance(v, datetime):
-            out[k] = v.isoformat()
-        else:
-            out[k] = str(v)
-    return out
-
-
 def _discover_category_dirs(base: str) -> list[str]:
     """Return sorted top-level directory names under *base*, well-known first."""
     try:
         entries = sorted(os.listdir(base))
     except OSError:
         return []
-    dirs = [
-        e for e in entries
-        if os.path.isdir(os.path.join(base, e))
-        and not e.startswith(".")
-        and e not in _SKIP_DIRS
-    ]
+    dirs = [e for e in entries if os.path.isdir(os.path.join(base, e)) and not e.startswith(".") and e not in _SKIP_DIRS]
     # Well-known categories first (stable order), then any newly discovered ones
     known = [d for d in _WELL_KNOWN_CATEGORIES if d in dirs]
     extra = [d for d in dirs if d not in _WELL_KNOWN_CATEGORIES]
@@ -426,246 +405,66 @@ def read_story_markdown(project: str, story_name: str) -> dict:
     return read_knowledge_file(rel)
 
 
-# ── Bugs (projects/{project}/bugs/{date}/{type}/{key}.md) ──
+def get_project_knowledge_stats(project: str | None = None) -> dict:
+    """Count .md files per category per project under YiKnowledge/projects/.
 
-_BUG_TYPE_DIR_REVERSE: dict[str, str] = {
-    "logic": "functional",
-    "performance": "performance",
-    "style": "ui",
-    "security": "security",
-    "compatibility": "compatibility",
-    "regression": "regression",
-    "data": "data",
-    "other": "other",
-    # YiKnowledge custom classification directories
-    "template": "functional",
-    "validation": "functional",
-    "code-quality": "other",
-}
-
-
-def _parse_bug_frontmatter(meta: dict, rel_path: str, abs_path: str) -> dict:
-    """Coerce a bug markdown's YAML frontmatter + file stat into a BugDocument-like dict."""
-    stat = os.stat(abs_path)
-    mtime = int(stat.st_mtime * 1000) if stat.st_mtime else 0
-    ctime = int(stat.st_ctime * 1000) if stat.st_ctime else 0
-
-    # Extract project / date / typeDir from the path.
-    # 6-level: projects/{project}/bugs/{date}/{typeDir}/{key}.md (canonical)
-    # 5-level: projects/{project}/bugs/{typeDir}/{key}.md (no date segment)
-    parts = rel_path.split("/")
-    project_key = ""
-    type_dir = ""
-    key_from_name = ""
-    if len(parts) >= 5 and parts[0] == "projects" and parts[2] == "bugs":
-        project_key = parts[1]
-        if len(parts) >= 6:
-            type_dir = parts[4]
-            key_from_name = os.path.splitext(parts[5])[0]
-        else:
-            type_dir = parts[3]
-            key_from_name = os.path.splitext(parts[4])[0]
-
-    # Prefer frontmatter fields; fall back to path-derived values
-    bug_type = _BUG_TYPE_DIR_REVERSE.get(type_dir, "other")
-
-    def _as_int(v) -> int | None:
-        if v is None or v == "":
-            return None
-        if isinstance(v, int | float):
-            return int(v)
-        if isinstance(v, str):
-            try:
-                s = v.strip()
-                if len(s) >= 10 and "-" in s:  # ISO date → timestamp (ms)
-                    import datetime as _dt
-
-                    try:
-                        dt = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
-                        return int(dt.timestamp() * 1000)
-                    except (ValueError, OverflowError, OSError):
-                        return None
-                return int(s)
-            except ValueError:
-                return None
-        return None
-
-    def _ts_from_iso(field: str) -> int | None:
-        v = meta.get(field)
-        if not v:
-            return None
-        if isinstance(v, int | float):
-            return int(v)
-        if isinstance(v, str) and "-" in v:
-            import datetime as _dt
-
-            try:
-                dt = _dt.datetime.fromisoformat(v.replace("Z", "+00:00"))
-                return int(dt.timestamp() * 1000)
-            except (ValueError, OverflowError, OSError):
-                return None
-        return _as_int(v)
-
-    created_ts = _ts_from_iso("created") or ctime
-    updated_ts = _ts_from_iso("updated") or mtime
-    resolved_ts = _ts_from_iso("resolvedAt") or (
-        updated_ts if str(meta.get("status", "")).lower() in {"resolved", "closed"} else None
-    )
-    closed_ts = _ts_from_iso("closedAt") or (
-        updated_ts if str(meta.get("status", "")).lower() == "closed" else None
-    )
-
-    key = str(meta.get("key") or key_from_name or "")
-    tags = meta.get("tags")
-    if isinstance(tags, list):
-        tags = [str(t) for t in tags]
-    elif isinstance(tags, str):
-        tags = [t.strip() for t in tags.split(",") if t.strip()]
-    else:
-        tags = []
-
-    return {
-        "key": key,
-        "title": str(meta.get("title") or key_from_name or ""),
-        "project": str(meta.get("project") or project_key or ""),
-        "project_key": str(meta.get("project_key") or project_key or ""),
-        "issue_key": str(meta.get("issue_key") or meta.get("issueKey") or ""),
-        "module": str(meta.get("module") or ""),
-        "iteration": str(meta.get("iteration") or ""),
-        "defectUrl": str(meta.get("defectUrl") or meta.get("defect_url") or ""),
-        "severity": str(meta.get("severity") or "minor"),
-        "priority": str(meta.get("priority") or "p2"),
-        "status": str(meta.get("status") or "open"),
-        "type": bug_type if (str(meta.get("type") or "") in {"", "bug"}) else str(meta.get("type")),
-        "frequency": str(meta.get("frequency") or "sometimes"),
-        "assignee": str(meta.get("assignee") or ""),
-        "reporter": str(meta.get("reporter") or ""),
-        "environment": str(meta.get("environment") or ""),
-        "affectedVersion": str(meta.get("affectedVersion") or meta.get("affected_version") or ""),
-        "fixedVersion": str(meta.get("fixedVersion") or meta.get("fixed_version") or ""),
-        "tags": tags,
-        "dueDate": _as_int(meta.get("dueDate") or meta.get("due_date")),
-        "contentPath": rel_path,
-        "createdAt": created_ts,
-        "updatedAt": updated_ts,
-        "resolvedAt": resolved_ts,
-        "closedAt": closed_ts,
-    }
-
-
-def list_bugs(project: str | None = None) -> dict:
-    """List bug markdown files under ``projects/{project}/bugs/{date}/{type}/``.
-
-    Directory layout (mirrors :func:`contentPathFor` on the YiVad side):
-        ``projects/{project_key}/bugs/{YYYY-MM-DD}/{typeDir}/{key}.md``
-
-    The frontmatter of each file carries the full ``BugDocument`` fields so the
-    list view can be rendered entirely from disk — no MongoDB lookup needed.
-    Legacy ``type: bug`` in frontmatter is coerced via the ``typeDir`` segment
-    of the path (logic → functional, style → ui, …).
+    Returns ``{ projects: { project_key: { category: count } } }``.
+    Categories are the immediate subdirectories under each project dir
+    (okrs, prds, devs, tests, bugs, workflows, requires).
+    Template directories (``/模板/``) are excluded from counts.
     """
     base = _base_dir()
     projects_root = os.path.join(base, "projects")
     if not os.path.isdir(projects_root):
-        return {"bugs": [], "total": 0}
+        return {"projects": {}}
 
-    # Resolve target project dir(s) — match the case-insensitive pattern used by stories
+    project_dirs: list[str]
     if project:
         resolved = _resolve_project_dir(projects_root, project)
-        targets = [(project, resolved)] if resolved else []
+        project_dirs = [os.path.basename(resolved)] if resolved else []
     else:
-        targets = [
-            (d, os.path.join(projects_root, d))
-            for d in sorted(os.listdir(projects_root))
-            if os.path.isdir(os.path.join(projects_root, d)) and not d.startswith(".")
-        ]
+        try:
+            project_dirs = sorted(
+                d
+                for d in os.listdir(projects_root)
+                if os.path.isdir(os.path.join(projects_root, d)) and not d.startswith(".")
+            )
+        except OSError:
+            return {"projects": {}}
 
-    bugs: list[dict] = []
-    for proj, proj_dir in targets:
-        if not proj_dir or not os.path.isdir(proj_dir):
+    # Categories to count — subdirectories under each project dir
+    _count_categories = {"okrs", "prds", "devs", "tests", "bugs", "workflows", "requires"}
+    result: dict[str, dict[str, int]] = {}
+
+    for proj in project_dirs:
+        proj_root = os.path.join(projects_root, proj)
+        if not os.path.isdir(proj_root):
             continue
-        bugs_root = os.path.join(proj_dir, "bugs")
-        if not os.path.isdir(bugs_root):
+        counts: dict[str, int] = {}
+        try:
+            entries = os.listdir(proj_root)
+        except OSError:
             continue
-        for dirpath, _dirs, filenames in os.walk(bugs_root):
-            for fn in sorted(filenames):
-                if not fn.lower().endswith(".md") or fn.startswith("."):
-                    continue
-                abs_path = os.path.join(dirpath, fn)
-                rel = os.path.relpath(abs_path, base).replace(os.sep, "/")
-                # Read frontmatter — cap at 16KB head for progressivity
-                try:
-                    with open(abs_path, encoding="utf-8", errors="replace") as f:
-                        head = f.read(16384)
-                except Exception as e:
-                    logger.warning(f"Failed to read bug file {rel}: {e}")
-                    continue
-                raw_meta, _body = _parse_frontmatter(head)
-                # Skip non-bug files (README.md, index files, etc.)
-                if str(raw_meta.get("type", "")).lower() != "bug":
-                    continue
-                doc = _parse_bug_frontmatter(_normalize_meta(raw_meta), rel, abs_path)
-                doc["project_key"] = doc.get("project_key") or proj
-                bugs.append(doc)
+        for entry in entries:
+            if entry not in _count_categories:
+                continue
+            cat_dir = os.path.join(proj_root, entry)
+            if not os.path.isdir(cat_dir):
+                continue
+            # Count .md files recursively, skipping template dirs
+            n = 0
+            for _root, _dirs, files in os.walk(cat_dir):
+                _dirs[:] = [d for d in _dirs if d != "模板"]
+                n += sum(1 for f in files if f.endswith(".md") and not f.startswith("."))
+            if n:
+                counts[entry] = n
+        if counts:
+            result[proj] = counts
 
-    # Sort by updatedAt desc (newest first) — same order as the MongoDB query
-    bugs.sort(key=lambda b: b.get("updatedAt") or 0, reverse=True)
-    return {"bugs": bugs, "total": len(bugs)}
+    return {"projects": result}
 
 
-def read_bug_markdown(content_path: str) -> dict:
-    """Read a single bug markdown file.
-
-    ``content_path`` is the relative path stored on the BugDocument (e.g.
-    ``projects/yivad/bugs/2026-08-21/logic/issue-detail-comment.md``). The
-    frontmatter is coerced to the ``BugDocument`` shape via
-    :func:`_parse_bug_frontmatter` and the body is parsed into
-    ``BugContent`` (description / steps / expected / actual / cause / solution).
-    """
-    file_entry = read_knowledge_file(content_path)
-    abs_path = resolve_safe(content_path)
-    doc = _parse_bug_frontmatter(
-        _normalize_meta(file_entry.get("meta") or {}), content_path, abs_path
-    )
-    body = file_entry.get("content") or ""
-    sections: dict[str, str] = {}
-    current: str | None = None
-    buf: list[str] = []
-    for line in body.split("\n"):
-        m = re.match(r"^##\s+(.+?)\s*$", line)
-        if m:
-            if current:
-                sections[current] = "\n".join(buf).strip()
-            current = m.group(1).strip()
-            buf = []
-        elif current:
-            buf.append(line)
-    if current:
-        sections[current] = "\n".join(buf).strip()
-
-    def _strip_placeholder(s: str) -> str:
-        placeholders = {
-            "_No description provided._",
-            "_No steps recorded._",
-            "_Not specified._",
-            "_Root cause not yet recorded._",
-            "_Solution not yet recorded._",
-        }
-        return "" if s.strip() in placeholders else s
-
-    steps: list[str] = []
-    raw_steps = sections.get("Steps to Reproduce", "")
-    for line in raw_steps.split("\n"):
-        cleaned = re.sub(r"^\s*\d+\.\s*", "", line).strip()
-        if cleaned:
-            steps.append(cleaned)
-
-    content = {
-        "description": _strip_placeholder(sections.get("Description", "")),
-        "stepsToReproduce": steps,
-        "expectedResult": _strip_placeholder(sections.get("Expected Result", "")),
-        "actualResult": _strip_placeholder(sections.get("Actual Result", "")),
-        "causeProblem": _strip_placeholder(sections.get("Cause", "")),
-        "solution": _strip_placeholder(sections.get("Solution", "")),
-    }
-    return {"bug": doc, "content": content}
+# Re-export bug functions from the bugs module for backward compatibility.
+# Other modules (knowledge_service.py, routes/knowledge.py, __init__.py)
+# import list_bugs and read_bug_markdown from scanner.
+from domain.knowledge.bugs import list_bugs, read_bug_markdown  # noqa: E402, F401

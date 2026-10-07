@@ -1,32 +1,69 @@
 ---
+
 doc_type: test
-title: "Markdown 渲染安全 — 测试用例"
+title: "YP-09-22: Markdown 渲染安全 — XSS 防护 + DOMPurify 管道 — 测试规格"
 status: 已完成
-priority: 高
+priority: P0
 owner: 陈铭
-roles: [engineer, qa]
-created: 2026-09-11
-updated: 2026-09-15
+created: 2026-09-23
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["29-安全-Markdown渲染安全"]
+prd_task_id: "YP-09-22"
+source_prds: ["29-架构设计-Markdown渲染安全"]
 source_modules: ["29-prd-task-Markdown渲染安全"]
+
+type: test
 ---
 
-# Markdown 渲染安全 — 测试用例
+# YP-09-22: Markdown 渲染安全 — 测试规格
 
-> **文档职责**：本文档定义**怎么验证**（VERIFY），不含产品目标与实现方案。
+## 一、XSS 向量覆盖
 
-## 测试用例
+```typescript
+describe("Markdown XSS protection", () => {
+  it("strips <script> tags", () => {
+    const clean = DOMPurify.sanitize(marked.parse('<script>alert(1)</script>'));
+    expect(clean).not.toContain("<script>");
+  });
 
-| 编号 | 用例 | 预期 | 优先级 |
-|------|------|------|--------|
-| TC-MD01 | script 标签清洗 | `<script>` 被 DOMPurify 移除 | P0 |
-| TC-MD02 | onclick 事件清洗 | 事件处理器被移除 | P0 |
-| TC-MD03 | javascript: URL | ALLOWED_ATTR 白名单拦截 | P0 |
-| TC-MD04 | 正常 Markdown | 加粗/列表/代码块正确渲染 | P0 |
+  it("strips onerror handlers in <img>", () => {
+    const clean = DOMPurify.sanitize(marked.parse('<img src=x onerror="alert(1)">'));
+    expect(clean).not.toContain("onerror");
+  });
 
-## 出口准则
+  it("strips javascript: URLs in links", () => {
+    const clean = DOMPurify.sanitize(marked.parse('[click](javascript:alert(1))'));
+    expect(clean).not.toContain("javascript:");
+  });
 
-- [ ] P0 用例 100% 通过
-- [ ] 无 XSS 漏洞
+  it("strips <iframe> and <object> tags", () => {
+    const clean = DOMPurify.sanitize(marked.parse('<iframe src="evil.html"><object data="x">'));
+    expect(clean).not.toContain("iframe");
+    expect(clean).not.toContain("object");
+  });
+
+  it("strips data: URLs with script content", () => {
+    const clean = DOMPurify.sanitize(marked.parse('<img src="data:text/html,<script>alert(1)</script>">'));
+    expect(clean).not.toContain("data:");
+  });
+
+  it("preserves legitimate markdown formatting", () => {
+    const clean = DOMPurify.sanitize(marked.parse("**bold** `code` [link](https://safe.com)"));
+    expect(clean).toContain("<strong>bold</strong>");
+    expect(clean).toContain("<code>code</code>");
+    expect(clean).toContain('href="https://safe.com"');
+  });
+
+  it("strips CSS injection via style attribute", () => {
+    const clean = DOMPurify.sanitize(marked.parse('<span style="background:url(javascript:alert(1))">x</span>'));
+    expect(clean).not.toContain("javascript:");
+  });
+});
+```
+
+## 二、完成定义
+
+- [ ] 7 个 XSS 向量全部覆盖
+- [ ] 合法 Markdown 不被破坏
+- [ ] `tsc --noEmit` 零错误

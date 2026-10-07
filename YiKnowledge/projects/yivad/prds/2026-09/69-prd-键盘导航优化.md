@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-139: 键盘导航优化 — 全站键盘导航审计与增强、模态框焦点陷阱、跳过内容链接、Tab顺序优化、焦点可见指示器、快捷键可发现性"
 tags: [需求文档, 键盘导航, 可访问性, 焦点陷阱, Tab顺序, 焦点指示器, 快捷键, WCAG, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["69-prd-task-键盘导航优化"]
+related_tests: ["69-prd-test-键盘导航优化"]
+benefit: "产品需求：键盘导航优化"
+lifecycle: active
 ---
 
 # YV-09-139: 键盘导航优化 — 全站键盘导航审计与增强、模态框焦点陷阱、跳过内容链接、Tab顺序优化、焦点可见指示器、快捷键可发现性

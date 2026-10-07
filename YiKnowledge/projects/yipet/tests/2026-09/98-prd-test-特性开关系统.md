@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "特性开关系统 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["98-基础设施-特性开关系统.md"]
+source_modules: ["98-prd-task-特性开关系统.md"]
+
+type: test
 ---
 
 # 特性开关系统 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-FF01 | boolean 开关 | 功能即时启停 | P1 |
 | TC-FF02 | chrome.storage 配置 | 刷新保持 | P1 |
+

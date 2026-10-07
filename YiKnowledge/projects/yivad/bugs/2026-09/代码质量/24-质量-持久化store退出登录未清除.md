@@ -14,6 +14,8 @@ resolution: |
     notification-preferences, table-states, tags, aiChat.activeKey)
   - Avatar.vue logout(): 调用 clearPersistedState() 清理所有持久化数据
   - dynamicRouter.ts 已有 clearPersistedState() 调用，但注销流程缺失，现已补齐
+benefit: "缺陷记录：质量-持久化store退出登录未清除"
+lifecycle: active
 ---
 
 # 多个 Pinia Store 持久化未在注销时清理
@@ -72,7 +74,7 @@ router.replace(LOGIN_URL);
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **注销不是只清除 token**：用户注销意味着会话结束，所有该会话关联的本地数据（筛选状态、搜索历史、展开节点）都应清理。只清除 token 是「认证层面注销」，不是「数据层面注销」
+- **localStorage 的数据归属问题**：`pinia-plugin-persistedstate` 持久化的数据没有用户隔离——如果两个用户在同一浏览器先后登录，后登录者会看到前者的持久化状态。sessionStorage 或多 profile key 是更好的选择
+- **区分用户数据 vs 偏好设置**：主题、语言等偏好可以跨会话保留，但 AI 对话历史、搜索结果、筛选状态属于用户会话数据，必须在注销时清除
 

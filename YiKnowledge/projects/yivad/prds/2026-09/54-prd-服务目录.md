@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-115: 服务目录 — 微服务/API服务目录、服务列表含健康/负责人/版本、服务依赖地图、API端点浏览器、服务文档链接、服务归属追踪"
 tags: [需求文档, 服务目录, API目录, 微服务, 服务依赖, 端点浏览, 服务治理, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["54-prd-task-服务目录"]
+related_tests: ["54-prd-test-服务目录"]
+benefit: "产品需求：服务目录"
+lifecycle: active
 ---
 
 # YV-09-115: 服务目录 — 微服务/API服务目录、服务列表含健康/负责人/版本、服务依赖地图、API端点浏览器、服务文档链接、服务归属追踪
@@ -314,7 +317,7 @@ services:
     status: active
     health_check: false  # 纯逻辑服务，无外部依赖
     dependencies: [ollama_service, rag_service, tag_service]
-    docs_url: YiKnowledge/projects/yiai/specs/chat-service.md
+    docs_url: YiKnowledge/projects/yiai/workflows/架构设计/03-架构-核心模块.md
     rpc_methods:
       - chat
       - get_history
@@ -331,7 +334,7 @@ services:
     health_check: true  # 需检测 Ollama 连接
     health_endpoint: http://localhost:11434/api/tags
     dependencies: []
-    docs_url: YiKnowledge/projects/yiai/specs/ollama-service.md
+    docs_url: YiKnowledge/projects/yiai/workflows/架构设计/03-架构-核心模块.md
     rpc_methods:
       - list_models
       - generate
@@ -365,7 +368,7 @@ services:
     status: active
     health_check: true  # 需检测 RAG 索引状态
     dependencies: [ollama_service, knowledge_service]
-    docs_url: YiKnowledge/projects/yiai/specs/rag-service.md
+    docs_url: YiKnowledge/projects/yiai/workflows/架构设计/03-架构-核心模块.md
     rpc_methods:
       - query
       - retrieve

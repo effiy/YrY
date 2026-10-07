@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-96: 代码审查集成 — GitHub/GitLab PR 集成、审查自动化与审查时间分析"
 tags: [需求文档, 代码审查, PR集成, GitHub, GitLab, 审查自动化]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["44-prd-task-代码审查集成"]
+related_tests: ["44-prd-test-代码审查集成"]
+benefit: "产品需求：代码审查集成"
+lifecycle: active
 ---
 
 # YV-09-96: 代码审查集成 — GitHub/GitLab PR 集成、审查自动化与审查时间分析

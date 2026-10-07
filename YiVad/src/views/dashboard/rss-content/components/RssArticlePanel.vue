@@ -224,6 +224,7 @@ import { useSourceColor } from "../composables/useSourceColor";
 import { useArticlePagination } from "../composables/useArticlePagination";
 import { useSearchShortcut } from "../composables/useSearchShortcut";
 import { formatDate, truncateSummary, truncateSource, categoryLeaf } from "../utils";
+import { timeAgo } from "@/utils/time";
 
 interface Props {
   articles?: RssItemDocument[];
@@ -307,15 +308,6 @@ function copyLink(row: RssItemDocument) {
     .writeText(row.link)
     .then(() => ElMessage.success("Link copied"))
     .catch(() => ElMessage.error("Failed to copy"));
-}
-
-function timeAgo(ts: number | null): string {
-  if (!ts) return "";
-  const diff = Math.floor((Date.now() - ts) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
 }
 
 function fmt(n: number): string {

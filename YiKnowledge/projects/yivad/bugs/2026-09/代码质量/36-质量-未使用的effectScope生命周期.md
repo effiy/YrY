@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-未使用的effectScope生命周期"
+lifecycle: active
 ---
 
 # 未使用 Vue 的 onScopeDispose 清理 composable 副作用
@@ -71,7 +73,6 @@ onScopeDispose(() => scope.stop());
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **`onUnmounted` 手动清理的脆弱性**：每个事件/定时器/observer 都需要在 `onUnmounted` 中手动配对清理，遗漏任何一个都会造成内存泄漏。`effectScope` 的优势是一次 `scope.stop()` 清理所有副作用
+- **composable 的副作用管理是质量指标**：一个 composable 应该在 `onScopeDispose` 中声明清理逻辑，这样即使 composable 被多次调用或组件异常卸载，副作用也能被正确回收
 

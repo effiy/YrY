@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "JS 冲突检测与隔离 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 中
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["27-稳定性-JS冲突检测与隔离"]
-source_modules: ["27-prd-task-JS冲突检测与隔离"]
+source_prds: ["27-架构设计-JS冲突检测与隔离.md"]
+source_modules: ["27-prd-task-JS冲突检测与隔离.md"]
+
+type: test
 ---
 
 # JS 冲突检测与隔离 — 测试用例
@@ -23,3 +26,4 @@ source_modules: ["27-prd-task-JS冲突检测与隔离"]
 | TC-ISO02 | 原型链检测 | Array.prototype 未被修改 | P1 |
 | TC-ISO03 | 事件命名空间 | yipet: 前缀防冲突 | P1 |
 | TC-ISO04 | Symbol 私有属性 | WeakMap 避免内存冲突 | P2 |
+

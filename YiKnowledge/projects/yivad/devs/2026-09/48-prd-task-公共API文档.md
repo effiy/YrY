@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-101"
 title: "YV-09-101: 公共 API 文档 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "48-prd-公共API文档.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 公共API文档]
+roles: [engineer]
+benefit: "开发方案：task-公共API文档"
+lifecycle: active
 ---
 
 # YV-09-101: 公共 API 文档 — 开发方案
@@ -38,6 +44,25 @@ source_prd: "48-prd-公共API文档.md"
 
 > 依赖 YiAi OpenAPI 文档完善。
 
+
+### 架构方案
+
+**技术路线**：系统管理子页面 (`/system/api-docs`)，Swagger UI 嵌入 + API Key 管理
+
+**数据模型**：
+```
+MongoDB `api_keys` 集合；字段：`key`, `name`, `permissions[]`, `rate_limit`, `expires_at`
+```
+
+**组件树**：
+```
+ApiDocs.vue (Swagger UI iframe/组件) + ApiKeyManager.vue (ProTable + 创建/撤销对话框)
+```
+
+**关键决策**：
+API Key 使用 JWT 或随机生成的 Bearer token；速率限制由 YiAi 后端中间件实现
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -47,12 +72,8 @@ source_prd: "48-prd-公共API文档.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

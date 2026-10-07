@@ -1,19 +1,23 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-09-191"
 title: "YP-09-191: 快捷键绑定编辑器 — 可视化管理、按键捕获、冲突检测、导入导出 — 开发方案"
-status: 待开始
+status: 已完成
 priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 0.2
 source_prd: "198-功能实现-快捷键绑定编辑器.md"
+related_tests: ["198-prd-test-快捷键绑定编辑器.md"]
 source_okr: [yipet-004]
+
+type: task
 ---
 
 # YP-09-191: 快捷键绑定编辑器 — 开发方案

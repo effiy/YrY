@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-132"
 title: "YV-09-132: 两步验证设置 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "62-prd-两步验证设置.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 两步验证设置]
+roles: [engineer]
+benefit: "开发方案：task-两步验证设置"
+lifecycle: active
 ---
 
 # YV-09-132: 两步验证设置 — 开发方案
@@ -37,6 +43,25 @@ TOTP 两步验证：扫码绑定 → 验证码确认 → 启用/禁用。
 
 > 依赖 YiAi 后端 TOTP 服务。
 
+
+### 架构方案
+
+**技术路线**：用户设置子页面 (`/settings/security`)，TOTP 设置向导（QR 码扫描 → 验证码确认 → 恢复码生成）
+
+**数据模型**：
+```
+MongoDB `users` 增加字段：`totp_secret`, `totp_enabled`, `recovery_codes[]`
+```
+
+**组件树**：
+```
+TwoFactorSetup.vue (三步向导) + RecoveryCodes.vue (恢复码展示/重新生成)
+```
+
+**关键决策**：
+TOTP 使用标准 RFC 6238；QR 码生成使用 `qrcode` npm 包；恢复码为一次性使用，使用后标记为已用
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -46,12 +71,8 @@ TOTP 两步验证：扫码绑定 → 验证码确认 → 启用/禁用。
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

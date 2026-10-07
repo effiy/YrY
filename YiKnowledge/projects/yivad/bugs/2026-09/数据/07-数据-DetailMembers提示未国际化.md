@@ -20,6 +20,8 @@ environment: Chrome / macOS
 affectedVersion: main (pre-fix)
 fixedVersion: main (post-fix 2026-09-07)
 frequency: always
+benefit: "缺陷记录：数据-DetailMembers提示未国际化"
+lifecycle: active
 ---
 
 ## Description
@@ -63,13 +65,11 @@ frequency: always
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | `ElMessage.success(str)` 中的字符串拼接（`"Added " + username`）应改为 i18n 参数化插值 `t("key", { username })` |
+| 流程 | Code Review 中搜索 `ElMessage\.(success|warning|error|info)\(` 并验证参数是否为 `t()` 调用 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **字符串拼接破坏 i18n 插值**：`"Added " + username` 在不同语言中语序可能不同（某些语言 username 在前），必须用 `t('key', { username })` 的命名参数方式让译者自由排列语序
+- **i18n key 已存在但未被使用**：i18n 文件已定义了 `project.members.addSuccess`，但组件未接入 `useI18n`。i18n 文件的存在不代表所有组件已接入——需要强制性检查机制
 

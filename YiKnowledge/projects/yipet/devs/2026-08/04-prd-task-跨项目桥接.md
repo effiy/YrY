@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-08-04"
 title: "YP-08-04: 跨项目桥接 — 开发方案"
@@ -14,6 +15,8 @@ prd_month: "202608"
 estimate_frontend: 2.0
 source_prd: "04-功能实现-跨项目桥接"
 source_okr: [yipet-003]
+
+type: task
 ---
 
 # YP-08-04: 跨项目桥接 — 开发方案

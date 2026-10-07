@@ -42,7 +42,7 @@
 >
 > YiAi 是一个 FastAPI 后端服务器。方向是朝着更紧密的模块边界发展：每个领域子包（`domain/ai/`、`domain/files/`、`domain/rss/`、`domain/wework/`、`domain/execution/`、`domain/auth/`、`domain/state/`）拥有自己的逻辑；`services/` 层将其包装后提供给路由。新功能应落在命名的领域模块中，并具有清晰的公共 API 表面（`__init__.py` 导出可调用的契约），而不是将处理程序散落在现有文件中。
 >
-> 参考：[../../rules/architecture-direction.md](../../rules/architecture-direction.md)
+> 参考：`CLAUDE.md` — 架构方向
 
 ## 项目概况
 
@@ -235,6 +235,26 @@ success
 
 ## 近期变更
 
+### 2026-09-24 — 代码健康：日志规范化 + WangEditor 结构修复
+
+- **`shared/migration_helpers.py`**：全部 9 处 `print()` 替换为 `logging.getLogger(__name__).info()`，使迁移助手的日志可路由、可分级、可关闭。CLI 入口（`cli/migrate.py`）和启动文件（`main.py`）保留 `print()`——它们的输出面向终端用户。
+- **YiVad `components/WangEditor/index.vue`**：修复严重结构错误——`uploadImgValidate`/`uploadVideoValidate` 被错误嵌套在 `customUpload` 的 `catch` 块内部，导致 7 个 TypeScript 类型错误。重构为正确的声明顺序（函数定义在引用之前），添加 `editorRef.value?.disable()`/`?.isEmpty()` 空值保护。
+- **YiVad `services/sortPersistence.ts`**：空 `.catch(() => {})` 替换为带 `console.warn` 的可见错误日志。
+- **YiKnowledge 经验教训**：新增 `12-陷阱-静默吞错误.md` + `13-陷阱-print替代logging.md`，记录本轮扫描发现的两种跨项目坏味道模式。
+
+### 2026-09-23 — 自进化：状态规范化 + 实时端点 + 翻译智能推荐
+
+- **`shared/status.py`**（新增）：Issue/Bug 状态常量中心 — `Status` 类（DONE/IN_PROGRESS/TODO/BACKLOG 等）、`CLOSED_STATUSES`/`ACTIVE_STATUSES` 预定义分组、`normalize_status()`/`normalize_status_list()` 遗留兼容函数、`is_closed()`/`is_active()` 判断函数。统一了 6 个服务文件中分散的状态常量列表。
+  - **迁移范围**：`services/analytics/project_dashboard.py`、`aggregator/helpers.py`、`collector.py`、`file_alerts.py`、`services/milestone/milestone_service.py` — 全部改用 shared/status。
+- **`server/routes/dashboard/live.py`**（新增）：Dashboard 实时 SSE 端点 — `GET /dashboard/live`（每 5s 推送实时 KPI）、`GET /dashboard/live-snapshot`（单次快照）。
+- **`services/translation/translate_service.py`**：新增 `provider_recommend(from_lang, to_lang)` RPC 方法 — 基于近 24h 健康数据实时排名推荐最佳翻译引擎。
+
+### 2026-09-23 — 翻译分析增强：供应商健康监控 + 多维度趋势
+
+- **`services/translation/provider_health.py`**（新增）：供应商健康监控（成功率 → healthy/degraded/down 三级状态）、按小时翻译量趋势、供应商使用量统计、语言对排名。所有数据通过 MongoDB 聚合管道计算，空数据优雅降级。
+- **`services/translation/translate_service.py`**：新增 4 个 RPC 方法 — `provider_health(hours)`、`hourly_trend(days)`、`provider_breakdown(days)`、`top_language_pairs(limit)`。均可通过 RPC 信封被 YiVad/YiPet 调用。
+- **知识库文档**：新增 PRD（100-需求-翻译分析增强.md）+ 开发方案（100-prd-task-翻译分析增强.md）+ 测试方案（100-prd-test-翻译分析增强.md）
+
 ### 2026-09-17 — 性能优化（第七轮）：熔断器 + 优雅排水 + Pydantic 预编译
 
 - **`shared/circuit_breaker.py`**（新增）：时间窗口熔断器 — 当外部服务（Ollama/DeepSeek）连续失败达到阈值时，打开熔断器在冷却期内快速失败，防止资源耗尽。集成到 `LLMProviderRouter.chat_with_fallback()` 和 `embed_with_fallback()`。
@@ -323,11 +343,11 @@ success
 
 | 资源 | 位置 |
 |----------|---------|
-| [RPC 协议规范](../YiKnowledge/projects/yiai/specs/rpc-protocol.md) | RPC 协议完整规范（请求/响应、错误码、方法契约） |
-| [API 参考](../YiKnowledge/projects/yiai/specs/api-reference.md) | 完整 API 端点参考（16 个路由模块、REST + RPC） |
-| [数据模型](../YiKnowledge/projects/yiai/specs/data-model.md) | MongoDB 数据模型参考（28 个集合、字段定义、索引策略） |
-| [添加领域模块](../YiKnowledge/projects/yiai/workflows/adding-domain-module.md) | 添加领域模块工作流 |
-| [跨项目开发](../YiKnowledge/projects/yiai/workflows/cross-project-development.md) | 跨项目开发工作流 |
+| [RPC 协议规范](../YiKnowledge/projects/yiai/workflows/开发规范/05-规范-RPC协议规范.md) | RPC 协议完整规范（请求/响应、错误码、方法契约） |
+| [API 规范](../YiKnowledge/projects/yiai/workflows/开发规范/02-规范-API规范.md) | API 设计规范（REST 端点、RPC 方法、SSE 流式） |
+| [数据库规范](../YiKnowledge/projects/yiai/workflows/开发规范/04-规范-数据库规范.md) | MongoDB 数据模型参考（集合、字段定义、索引策略） |
+| [添加领域模块](../YiKnowledge/projects/yiai/workflows/操作指南/02-指南-添加领域模块.md) | 添加领域模块工作流 |
+| [跨项目开发](../YiKnowledge/projects/yiai/workflows/操作指南/03-指南-跨项目开发工作流.md) | 跨项目开发工作流 |
 | 单体仓库入口 | `../CLAUDE.md` — 跨项目关系、共享约定 |
 | 项目 README | `README.md` |
 | 服务器配置 | `config.yaml` |
@@ -340,4 +360,4 @@ success
 | 错误码 | `src/shared/error_codes.py` |
 | 响应包装器 | `src/shared/response.py` |
 | 应用工厂 | `src/app.py` |
-| 架构方向规则 | `../../rules/architecture-direction.md` |
+| 架构方向 | `CLAUDE.md` — 架构方向章节 |

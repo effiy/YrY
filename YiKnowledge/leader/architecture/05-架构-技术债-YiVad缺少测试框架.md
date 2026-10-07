@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader]
 benefit: "追踪 YiVad 测试框架技术债务及其缓解计划，评估当前风险水平"
 related:
-  - ../decisions/yivad/vitest-introduction.md
+  - ../decisions/vitest-introduction.md
   - ../../../engineer/learn/projects/yivad/README.md
 ---
 
@@ -78,7 +78,7 @@ related:
 
 | 项目 | 问题 | ADR |
 |---------|-------|-----|
-| YiAi | 零测试覆盖（部分解决：76 个测试，2026-08-21）| [pytest-introduction](../decisions/yiai/pytest-introduction.md) |
+| YiAi | 零测试覆盖（部分解决：76 个测试，2026-08-21）| [pytest-introduction](../decisions/pytest-introduction.md) |
 | YiPet | 双世界边界零集成测试 | 尚未处理 |
 
 ## 适用场景

@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-provide使用字符串而非Symbol"
+lifecycle: active
 ---
 
 # AiChatBox 组件 provide 的 key 使用字符串而非 Symbol
@@ -62,7 +64,6 @@ export const AI_CHAT_SESSION_SIDEBAR_KEY = Symbol('aiChatSessionSidebar') as Inj
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **新旧组件的模式差异是技术债务的信号**：AiChatBox（早期组件）用字符串 key，project/detail（后期组件）用 `InjectionKey`。如果不主动对齐旧组件，模式差异会随时间扩大
+- **字符串 key 的三重风险**：(1) 无类型安全——inject 返回 `unknown`；(2) 命名冲突——两个组件可能使用相同的字符串；(3) 不可重构——IDE 无法追踪字符串 key 的 provide/inject 关系
 

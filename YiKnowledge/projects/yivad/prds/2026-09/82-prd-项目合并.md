@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并"
 tags: [需求文档, 项目合并, 冲突解决, 合并预览, 数据映射, 合并历史]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["82-prd-task-项目合并"]
+related_tests: ["82-prd-test-项目合并"]
+benefit: "产品需求：项目合并"
+lifecycle: active
 ---
 
 # YV-09-228: 项目合并 — 双项目合并、冲突解决、合并预览与撤销合并

@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-SCSS架构混合注入"
+lifecycle: active
 ---
 
 # 全局 SCSS 文件未被所有组件作用域引用
@@ -57,7 +59,6 @@ YiVad 有 **26 个 SCSS 文件**，分布在 `styles/`、`layouts/`、`component
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **三种 SCSS 注入方式各有用途**：Rsbuild `additionalData`（变量注入，自动对每个 scoped style 生效）、非 scoped `<style>`（全局样式，如 markdown）、scoped `<style>`（组件私有样式）。问题不在于使用多种方式，而在于没有明确的使用规则——开发者不知道该把样式放在哪里
+- **`@import` vs `@use` 的迁移**：Sass 已计划废弃 `@import`，项目应逐步迁移到 `@use` 模块体系。`@use` 有命名空间隔离，避免了变量/mixin 名称冲突
 

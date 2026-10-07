@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-24"
 title: "YV-09-24: 性能监控与优化 — 开发方案"
 status: 进行中
@@ -12,6 +11,12 @@ project: YiVad
 prd_month: "202609"
 estimate_frontend: 1.5
 source_prd: "08-prd-性能监控与优化.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 性能监控与优化]
+benefit: "开发方案：task-性能监控与优化"
+lifecycle: active
 ---
 
 # YV-09-24: 性能监控与优化 — 开发方案

@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YK-09-22"
 title: "YK-09-22: AI 辅助知识写作 — 开发方案"
@@ -15,6 +16,8 @@ estimate_frontend: 1.0
 source_prd: "25-架构设计-AI辅助知识写作.md"
 source_okr: [yiknowledge-001]
 related_tests: ["25-prd-test-AI辅助知识写作"]
+
+type: task
 ---
 
 # YK-09-22: AI 辅助知识写作 — 开发方案

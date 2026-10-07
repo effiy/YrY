@@ -1,5 +1,4 @@
 ---
-doc_type: module
 prd_task_id: "YV-09-139"
 title: "YV-09-139: 键盘导航优化 — 开发方案"
 status: 待开始
@@ -10,6 +9,13 @@ updated: 2026-09-14
 project: YiVad
 prd_month: "202609"
 source_prd: "69-prd-键盘导航优化.md"
+type: task
+category: projects/yivad/devs
+source: YiVad
+tags: [yivad, dev, 键盘导航优化]
+roles: [engineer]
+benefit: "开发方案：task-键盘导航优化"
+lifecycle: active
 ---
 
 # YV-09-139: 键盘导航优化 — 开发方案
@@ -36,6 +42,25 @@ source_prd: "69-prd-键盘导航优化.md"
 
 > 低优先级。
 
+
+### 架构方案
+
+**技术路线**：全局键盘导航增强：焦点环可见（`:focus-visible`）、Tab 顺序优化、Skip to content 链接
+
+**数据模型**：
+```
+无新增数据集合
+```
+
+**组件树**：
+```
+SkipToContent.vue (全局) + 各组件添加 aria-label + role 属性
+```
+
+**关键决策**：
+焦点管理：模态框打开时焦点移到对话框，关闭时还原；表格内 Tab 在可聚焦元素间循环
+
+
 ---
 
 <a id="sec-gap"></a>
@@ -45,12 +70,8 @@ source_prd: "69-prd-键盘导航优化.md"
 
 ### 功能缺口
 
-| # | 缺口 | 影响 | 建议 |
-|---|------|------|------|
-| — | 待补充 | — | — |
+> 功能尚未进入实现阶段，详细缺口将在开发启动时评估和记录。
 
 ### 技术债
 
-| # | 技术债 | 优先级 | 预计人天 | 说明 | 状态 |
-|---|--------|--------|---------|------|------|
-| — | 待补充 | — | — | — | — |
+> 技术债将在首次实现时识别和记录。

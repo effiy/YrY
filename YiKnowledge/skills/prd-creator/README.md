@@ -1,6 +1,7 @@
 ---
 title: Readme
-updated: 2026-09-10---
+updated: 2026-09-10
+---
 
 ## 产品需求文档 (PRD) AI 智能体
 

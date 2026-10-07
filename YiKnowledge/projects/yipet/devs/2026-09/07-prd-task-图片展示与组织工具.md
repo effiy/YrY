@@ -1,4 +1,5 @@
 ---
+
 doc_type: module
 prd_task_id: "YP-M07"
 title: "YP-M07: 图片展示与组织工具 — 开发方案"
@@ -7,14 +8,16 @@ priority: P2
 owner: 陈铭
 roles: [engineer]
 created: 2026-09-11
-updated: 2026-09-16
+updated: 2026-09-23
 project: YiPet
 project_id: yipet
 prd_month: "202609"
 estimate_frontend: 1.2
 source_prd: "07-功能实现-图片展示与组织工具.md"
 source_okr: [yipet-004]
-related_tests: ["07-prd-test-图片展示与组织工具"]
+related_tests: ["07-prd-test-图片展示与组织工具.md"]
+
+type: task
 ---
 
 # YP-M07: 图片展示与组织工具 — 开发方案

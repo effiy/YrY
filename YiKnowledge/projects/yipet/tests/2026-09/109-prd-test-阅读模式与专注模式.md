@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "阅读模式与专注模式 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["109-功能实现-阅读模式与专注模式.md"]
+source_modules: ["109-prd-task-阅读模式与专注模式.md"]
+
+type: test
 ---
 
 # 阅读模式与专注模式 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-RD01 | Readability 提取 | 正文净化 | P3 |
 | TC-RD02 | Pomodoro 25min | 计时器 | P3 |
+

@@ -456,9 +456,15 @@ function applyBugFilters(list: BugDocument[], params: BugListParams): BugDocumen
     if (params.issue_key && b.issue_key !== params.issue_key) return false;
     if (params.module && !(b.module || "").toLowerCase().includes(params.module.toLowerCase())) return false;
     if (params.iteration && !(b.iteration || "").toLowerCase().includes(params.iteration.toLowerCase())) return false;
-    if (params.severity && b.severity !== params.severity) return false;
+    if (params.severity) {
+      const severities = params.severity.split(",");
+      if (!severities.includes(b.severity)) return false;
+    }
     if (params.priority && b.priority !== params.priority) return false;
-    if (params.status && b.status !== params.status) return false;
+    if (params.status) {
+      const statuses = params.status.split(",");
+      if (!statuses.includes(b.status)) return false;
+    }
     if (params.type && b.type !== params.type) return false;
     if (params.assignee && !(b.assignee || "").toLowerCase().includes(params.assignee.toLowerCase())) return false;
     if (params.reporter && !(b.reporter || "").toLowerCase().includes(params.reporter.toLowerCase())) return false;
@@ -506,9 +512,15 @@ export async function getBugList(
     if (params.issue_key) mongoFilter.issue_key = params.issue_key;
     if (params.module) mongoFilter.module = { $regex: params.module, $options: "i" };
     if (params.iteration) mongoFilter.iteration = { $regex: params.iteration, $options: "i" };
-    if (params.severity) mongoFilter.severity = params.severity;
+    if (params.severity) {
+      const severities = params.severity.split(",");
+      mongoFilter.severity = severities.length > 1 ? { $in: severities } : params.severity;
+    }
     if (params.priority) mongoFilter.priority = params.priority;
-    if (params.status) mongoFilter.status = params.status;
+    if (params.status) {
+      const statuses = params.status.split(",");
+      mongoFilter.status = statuses.length > 1 ? { $in: statuses } : params.status;
+    }
     if (params.type) mongoFilter.type = params.type;
     if (params.assignee) mongoFilter.assignee = { $regex: params.assignee, $options: "i" };
     if (params.reporter) mongoFilter.reporter = { $regex: params.reporter, $options: "i" };

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化"
 tags: [需求文档, ADR, 架构决策记录, 决策管理, 项目治理, 前端]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发]
 source_okr: [yivad-003]
+related_modules: ["42-prd-task-决策记录管理"]
+related_tests: ["42-prd-test-决策记录管理"]
+benefit: "产品需求：决策记录管理"
+lifecycle: active
 ---
 
 # YV-09-93: 决策记录管理 — ADR 管理、ADR 模板、ADR 状态流转(提案/已接受/已弃用/已取代)、ADR 关联 Issue/项目、ADR 搜索与筛选、ADR 时间线可视化

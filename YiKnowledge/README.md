@@ -8,7 +8,7 @@ tags:
 - pipeline
 category: root
 created: '2026-01-01'
-updated: 2026-09-18
+updated: 2026-10-07
 last_verified: '2026-09-18'
 source: internal
 type: summary
@@ -24,7 +24,7 @@ acceptance_criteria:
 - 识别出反模式或不应使用的场景
 related:
 - ./INDEX.md
-- ./curator/治理/user-story-migration-plan.md
+- ./curator/governance/04-治理-就绪检查清单.md
 - ./curator/diagrams/directory-blueprint.md
 ---
 
@@ -32,21 +32,21 @@ related:
 
 YiKnowledge 是一个围绕**软件交付流水线**组织的个人知识库。七个角色目录贯穿从需求到生产的完整旅程 —— 每个角色拥有一个阶段，每个阶段结晶出一类知识。
 
-> 不仅仅是"按角色组织"—— 而是按**软件交付的因果链**组织。从 `executiver` 的*为什么做*，到 `producter` 的*做什么*，到 `leader` 的*走哪条路*，到 `engineer` 的*怎么做*，再到 `srer` 的*怎么跑*。知识在每个阶段只存在于唯一位置；跨角色发现通过 frontmatter `roles:` 和领域索引实现，绝不通过复制内容。
+> 不仅仅是"按角色组织"—— 而是按**软件交付的因果链**组织。从 `executive` 的*为什么做*，到 `product` 的*做什么*，到 `leader` 的*走哪条路*，到 `engineer` 的*怎么做*，再到 `sre` 的*怎么跑*。知识在每个阶段只存在于唯一位置；跨角色发现通过 frontmatter `roles:` 和领域索引实现，绝不通过复制内容。
 
 ## 流水线概览
 
 ```
 业务战略层（贯穿整个流水线）
 ─────────────────────────────────────────────────────────────────────────────
-  executiver/strategy/   executiver/industry/   executiver/roadmap/
+  executive/strategy/   executive/industry/   executive/roadmap/
   "为什么做这个业务"        "市场正在发生什么"          "组织目标是什么"
 
 软件交付流水线 —— 5 个阶段，输入 → 输出芯片流转
 ─────────────────────────────────────────────────────────────────────────────
   需求             决策              设计+构建          质量+发布           运营+学习
   ────────────     ─────────        ────────────      ───────────────    ─────────────
-  producter/       leader/           engineer/         srer/              srer/
+  product/       leader/           engineer/         sre/              sre/
   │                │                 │                 │                  │
   INPUT:           INPUT:            INPUT:            INPUT:             INPUT:
   业务              PRD               ADR               可运行的           运行中的
@@ -78,10 +78,10 @@ AI 赋能层（贯穿整个流水线）
 
 ### 阶段 1：需求 —— 定义要构建什么
 
-**负责人：[producter/](./producter/README.md)** | 流水线阶段 1/5
+**负责人：[product/](./product/README.md)** | 流水线阶段 1/5
 
 **输入芯片**（来自上游）：
-- **业务战略** —— 来自 [executiver/](./executiver/README.md) 的市场情报、竞争格局、组织级目标
+- **业务战略** —— 来自 [executive/](./executive/README.md) 的市场情报、竞争格局、组织级目标
 
 **输出芯片**（交付物）：
 - **PRD** —— 产品需求文档：构建什么、为谁构建、如何衡量成功
@@ -92,23 +92,23 @@ AI 赋能层（贯穿整个流水线）
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 编写 PRD | `prds` | [producter/discovery/prd/](./producter/discovery/prd/) |
-| 定义用户故事 / JTBD | `user-stories` | [producter/frameworks/02-框架-JTBD框架摘要.md](./producter/frameworks/02-框架-JTBD框架摘要.md) |
-| 排定功能优先级（RICE/ICE） | `priorities` | [producter/frameworks/06-框架-RICE-ICE优先级.md](./producter/frameworks/06-框架-RICE-ICE优先级.md) |
-| 定义北极星指标 | `priorities` | [producter/discovery/metrics/01-指标-北极星指标.md](./producter/discovery/metrics/01-指标-北极星指标.md) |
-| 进行用户研究 | `user-stories` | [producter/frameworks/do-user-research.md](./producter/frameworks/01-框架-用户研究方法.md) |
-| 运行一个 Sprint | `priorities` | [producter/delivery/01-交付-运作Sprint.md](./producter/delivery/01-交付-运作Sprint.md) |
+| 编写 PRD | `prds` | [product/discovery/](./product/discovery/) |
+| 定义用户故事 / JTBD | `user-stories` | [product/frameworks/02-框架-JTBD框架摘要.md](./product/frameworks/02-框架-JTBD框架摘要.md) |
+| 排定功能优先级（RICE/ICE） | `priorities` | [product/frameworks/06-框架-RICE-ICE优先级.md](./product/frameworks/06-框架-RICE-ICE优先级.md) |
+| 定义北极星指标 | `priorities` | [product/discovery/01-指标-北极星指标.md](./product/discovery/01-指标-北极星指标.md) |
+| 进行用户研究 | `user-stories` | [product/frameworks/do-user-research.md](./product/frameworks/01-框架-用户研究方法.md) |
+| 运行一个 Sprint | `priorities` | [product/delivery/01-交付-运作Sprint.md](./product/delivery/01-交付-运作Sprint.md) |
 
-**上游输入**：[executiver/strategy/](./executiver/strategy/) 定义业务战略和竞争定位；[executiver/industry/](./executiver/industry/) 提供市场情报。这些是需求的*上下文*，而非需求本身。
+**上游输入**：[executive/strategy/](./executive/strategy/) 定义业务战略和竞争定位；[executive/industry/](./executive/industry/) 提供市场情报。这些是需求的*上下文*，而非需求本身。
 
-**边界规则**：producter 定义*要构建什么功能*，而非*如何实现*（→ engineer/）或*使用什么技术*（→ leader/）。
+**边界规则**：product 定义*要构建什么功能*，而非*如何实现*（→ engineer/）或*使用什么技术*（→ leader/）。
 
 ### 阶段 2：决策 —— 选择技术方向
 
 **负责人：[leader/](./leader/README.md)** | 流水线阶段 2/5
 
 **输入芯片**（来自上游）：
-- **PRD** —— 来自 [producter/](./producter/README.md) 的产品需求文档 —— 需要做出决策的功能定义
+- **PRD** —— 来自 [product/](./product/README.md) 的产品需求文档 —— 需要做出决策的功能定义
 - **需求** —— 约束技术决策的功能性和非功能性需求
 
 **输出芯片**（交付物）：
@@ -127,7 +127,7 @@ AI 赋能层（贯穿整个流水线）
 | 评估上线风险 | `adrs` | [leader/risk/](./leader/risk/) |
 | 浏览已有 ADR | `adrs` | [leader/decisions/](./leader/decisions/) —— 按项目子目录组织 |
 
-**边界规则**：leader 做出*带权衡的决策*，而非*实现模式*（→ engineer/build/）或*运维流程*（→ srer/）。关键区分：**决策 = 为什么选 A 而非 B**（leader/），**模式 = 如何实现 A**（engineer/）。
+**边界规则**：leader 做出*带权衡的决策*，而非*实现模式*（→ engineer/build/）或*运维流程*（→ sre/）。关键区分：**决策 = 为什么选 A 而非 B**（leader/），**模式 = 如何实现 A**（engineer/）。
 
 ### 阶段 3：设计 + 构建 —— 将决策转化为代码
 
@@ -135,7 +135,7 @@ AI 赋能层（贯穿整个流水线）
 
 **输入芯片**（来自上游）：
 - **ADR** —— 来自 [leader/](./leader/README.md) 的架构决策记录 —— 需要实现的技术方向
-- **PRD** —— 来自 [producter/](./producter/README.md) 的产品需求文档 —— 需要构建的功能规格
+- **PRD** —— 来自 [product/](./product/README.md) 的产品需求文档 —— 需要构建的功能规格
 
 **输出芯片**（交付物）：
 - **架构模式** —— 实现级模式：CQRS、Saga、事件驱动、API Gateway、BFF
@@ -144,25 +144,20 @@ AI 赋能层（贯穿整个流水线）
 - **数据与可靠性** —— 数据模式（迁移、缓存、流水线）和可靠性模式（重试、背压、幂等）
 - **经验教训** —— 成功、失败、陷阱和 Bug：来自真实实现经验的现场笔记
 
-流水线中最长的阶段，横跨 BUILD → SHIP。按问题域组织的八个子目录：
+流水线中最长的阶段，横跨 BUILD → SHIP。按问题域组织的六个子目录：
 
 ```
 BUILD                           SHIP
-├─ architecture/（39 个文件）      ├─ quality-security/（27 个文件）
+├─ build/（8 个文件）             ├─ ship/（8 个文件）
 │  系统设计、API 设计、              │  测试、安全加固、
-│  事件驱动、设计                     │  供应链、代码审查、
-│  模式、BFF、CQRS、Saga            │  混沌工程、威胁建模、
-│                                  │  零信任
-├─ development/（28 个文件）        │
-│  开发工具、DX、依赖                 ├─ data/（13 个文件）
-│  管理、项目                         │  数据库、迁移、缓存、
-│  脚手架、编辑器配置                 │  数据流水线、Outbox、
-│                                  │  读写分离、连接池
+│  调试排错、性能优化、              │  数据迁移、CI/CD、
+│  环境变量配置、MongoDB 模式       │  退避重试、部署指南
 │                                  │
-                                    └─ reliability/（13 个文件）
-                                       弹性、可观测性、
-                                       限流、扩缩容、
-                                       重试/退避、超时、幂等
+├─ learn/                          │
+│  lessons/（经验教训）             ├─ run/（工程流程）
+│  projects/（跨项目文档）          │  入职、Git 工作流、
+│                                  │  Code Review、竞品分析
+└─ projects/（项目级工程文档）       └─ okr/（工程 OKR）
 ```
 
 | 当你需要... | 芯片 | 前往 |
@@ -179,7 +174,7 @@ BUILD                           SHIP
 
 ### 阶段 4：质量 + 发布 —— 安全交付
 
-**负责人：[srer/release/](./srer/release/) + [engineer/ship/](./engineer/ship/)** | 流水线阶段 4/5
+**负责人：[sre/release/](./sre/release/) + [engineer/ship/](./engineer/ship/)** | 流水线阶段 4/5
 
 **输入芯片**（来自上游）：
 - **可运行的软件** —— 来自 [engineer/](./engineer/README.md) 的实现产物 —— 已通过设计和构建质量关卡的代码
@@ -193,19 +188,19 @@ BUILD                           SHIP
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 执行发布 | `release-procedures` | [srer/release/04-发布-发布流程.md](./srer/release/04-发布-发布流程.md) |
-| 执行回滚 | `release-procedures` | [srer/release/rollback-drill.md](./srer/release/05-发布-回滚演练.md) |
-| 运行金丝雀发布 | `release-procedures` | [srer/release/canary-release.md](./srer/release/01-发布-金丝雀发布.md) |
-| 响应事件 | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/04-事件-响应事件.md) |
-| 搭建可观测性 | `observability` | [srer/observability/set-up-observability.md](./srer/observability/07-可观测-搭建可观测性.md) |
+| 执行发布 | `release-procedures` | [sre/release/04-发布-发布流程.md](./sre/release/04-发布-发布流程.md) |
+| 执行回滚 | `release-procedures` | [sre/release/rollback-drill.md](./sre/release/05-发布-回滚演练.md) |
+| 运行金丝雀发布 | `release-procedures` | [sre/release/canary-release.md](./sre/release/01-发布-金丝雀发布.md) |
+| 响应事件 | `incident-response` | [sre/incident-response/respond-to-an-incident.md](./sre/incident-response/04-事件-响应事件.md) |
+| 搭建可观测性 | `observability` | [sre/observability/set-up-observability.md](./sre/observability/07-可观测-搭建可观测性.md) |
 | 进行安全审计 | `quality-security` | [engineer/ship/](./engineer/ship/) |
 | 运行性能/负载测试 | `quality-security` | [engineer/ship/](./engineer/ship/) |
 
-**边界规则**：srer/release/ 拥有*发布流程和协调*；engineer/ship/ 拥有*发布所用的技术模式*（金丝雀实现、功能开关）。流程 vs. 实现。
+**边界规则**：sre/release/ 拥有*发布流程和协调*；engineer/ship/ 拥有*发布所用的技术模式*（金丝雀实现、功能开关）。流程 vs. 实现。
 
 ### 阶段 5：运营 + 学习 —— 保持运行并从中学习
 
-**负责人：[srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/)** | 流水线阶段 5/5
+**负责人：[sre/](./sre/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/)** | 流水线阶段 5/5
 
 **输入芯片**（来自上游）：
 - **运行中的服务** —— 在生产环境中运行的服务：可观测性监控的、事件影响的真实系统
@@ -215,48 +210,48 @@ BUILD                           SHIP
 - **事后复盘** —— 免责事后复盘，包含根因分析、行动项和时间线重建
 - **经验教训** —— 运维经验：值得复制的成功、需要学习的失败和应该避免的陷阱
 
-上线之后，srer 处理可观测性和事件响应；engineer 从成功和失败中捕获经验教训。
+上线之后，sre 处理可观测性和事件响应；engineer 从成功和失败中捕获经验教训。
 
 ```
 RUN                             LEARN
-├─ srer/observability/（13）      ├─ engineer/learn/lessons/（52）
+├─ sre/observability/（13）      ├─ engineer/learn/lessons/（52）
 │  监控、告警、                      │  wins/（成功模式）
 │  仪表盘、SLO、                     │  failures/（失败复盘）
 │  可观测性三元组                    │  gotchas/（陷阱）
 │                                  │  bugs/（缺陷分析）
-├─ srer/incident-response/（17）    │
+├─ sre/incident-response/（17）    │
 │  事件响应流程、                    ├─ engineer/run/（66）
 │  值班交接、免责                     │  团队协作、知识
 │  事后复盘、行动后                   │  分享、回顾、
 │                                  │  入职、迭代 PM 手册
-├─ srer/release/（6）
+├─ sre/release/（6）
 │  发布、回滚、热修复
 ```
 
 | 当你需要... | 芯片 | 前往 |
 |---|---|---|
-| 响应生产事件 | `incident-response` | [srer/incident-response/respond-to-an-incident.md](./srer/incident-response/04-事件-响应事件.md) |
-| 搭建可观测性 | `observability` | [srer/observability/set-up-observability.md](./srer/observability/07-可观测-搭建可观测性.md) |
+| 响应生产事件 | `incident-response` | [sre/incident-response/respond-to-an-incident.md](./sre/incident-response/04-事件-响应事件.md) |
+| 搭建可观测性 | `observability` | [sre/observability/set-up-observability.md](./sre/observability/07-可观测-搭建可观测性.md) |
 | 编写事后复盘 | `postmortems` | [leader/risk/write-a-postmortem.md](./leader/risk/02-风险-事后复盘.md) |
-| 追踪 SLO/SLI 合规 | `slo-compliance` | [srer/observability/](./srer/observability/) |
-| 查看已知陷阱 | `lessons-learned` | [engineer/learn/lessons/gotchas/](./engineer/learn/lessons/gotchas/) |
+| 追踪 SLO/SLI 合规 | `slo-compliance` | [sre/observability/](./sre/observability/) |
+| 查看已知陷阱 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
 | 回顾过往经验 | `lessons-learned` | [engineer/learn/lessons/](./engineer/learn/lessons/) |
-| 为新成员入职 | `lessons-learned` | [engineer/run/onboarding/](./engineer/run/onboarding/) |
+| 为新成员入职 | `lessons-learned` | [engineer/run/](./engineer/run/) |
 
-**边界规则**：事件*发生前* → leader/risk/（风险评估）；事件*发生时* → srer/incident-response/（响应流程）；事件*发生后* → leader/risk/（复盘方法论），srer/incident-response/（具体复盘记录）。
+**边界规则**：事件*发生前* → leader/risk/（风险评估）；事件*发生时* → sre/incident-response/（响应流程）；事件*发生后* → leader/risk/（复盘方法论），sre/incident-response/（具体复盘记录）。
 
 ## 贯穿整个流水线的三个层
 
 ### 业务战略层 —— 为什么做
 
-**负责人：[executiver/](./executiver/README.md)** —— 为每个流水线阶段提供业务上下文。
+**负责人：[executive/](./executive/README.md)** —— 为每个流水线阶段提供业务上下文。
 
 | 子目录 | 回答 | 被谁消费 |
 |---|---|---|
-| [strategy/](./executiver/strategy/) | 企业战略、组织设计、SWOT | producter（需求） |
-| [industry/](./executiver/industry/) | 市场趋势、竞品分析、报告 | producter、leader（产品/技术决策） |
-| [roadmap/](./executiver/roadmap/) | 组织级目标和里程碑 | leader（技术路线对齐） |
-| [reading-list/](./executiver/reading-list/) | 高管学习资源 | 所有角色 |
+| [strategy/](./executive/strategy/) | 企业战略、组织设计、SWOT | product（需求） |
+| [industry/](./executive/industry/) | 市场趋势、竞品分析、报告 | product、leader（产品/技术决策） |
+| [roadmap/](./executive/roadmap/) | 组织级目标和里程碑 | leader（技术路线对齐） |
+| [reading-list/](./executive/reading-list/) | 高管学习资源 | 所有角色 |
 
 ### AI 赋能层 —— AI 如何加速每个阶段
 
@@ -287,7 +282,7 @@ RUN                             LEARN
 流水线中的角色并非平级 —— 它们有明确的上游/下游关系：
 
 ```
-executiver ──→ producter ──→ leader ──→ engineer ──→ srer
+executive ──→ product ──→ leader ──→ engineer ──→ sre
   （为什么）      （做什么）      （走哪条路）    （怎么做）      （怎么跑）
 
   业务            产品            技术            实现            运维
@@ -296,7 +291,7 @@ executiver ──→ producter ──→ leader ──→ engineer ──→ sre
 
 - 每个角色只生产其*下游角色*所需的知识
 - 上游变更应触发对相应下游内容的审查
-- 不要在 engineer/ 内部"随意"做出 leader 级别的决策，也不要在 producter/ 内部敲定技术栈
+- 不要在 engineer/ 内部"随意"做出 leader 级别的决策，也不要在 product/ 内部敲定技术栈
 
 ## 角色边界快速参考
 
@@ -304,11 +299,11 @@ executiver ──→ producter ──→ leader ──→ engineer ──→ sre
 
 ```
 内容是否关于...
-├─ 业务战略、市场、竞品？ ──→ executiver/
-├─ 产品需求、用户故事、优先级？ ──→ producter/
+├─ 业务战略、市场、竞品？ ──→ executive/
+├─ 产品需求、用户故事、优先级？ ──→ product/
 ├─ 技术决策、架构选择、ADR？ ──→ leader/
 ├─ 实现模式、开发工具、代码？ ──→ engineer/
-├─ 发布流程、监控、事件响应？ ──→ srer/
+├─ 发布流程、监控、事件响应？ ──→ sre/
 ├─ AI/ML 特定理论和实践？ ──→ aier/
 └─ 知识库自身的结构和规则？ ──→ curator/
 ```
@@ -319,8 +314,8 @@ executiver ──→ producter ──→ leader ──→ engineer ──→ sre
 |---|---|---|
 | 架构决策 vs. 架构模式 | leader/ | 决策 = 为什么选 A 而非 B，包含权衡和后果 |
 | 安全加固 vs. 安全策略 | engineer/ | 加固 = 如何实现（代码层面）；策略 = 风险评估（leader/risk/） |
-| 事件响应 vs. 风险预防 | srer/ → 发生时，leader/ → 发生前 | 时间线区分：发生前 / 发生时 / 发生后 |
-| 产品路线图 vs. 技术路线图 | producter/ → 功能，leader/ → 技术 | 什么功能 vs. 什么技术 |
+| 事件响应 vs. 风险预防 | sre/ → 发生时，leader/ → 发生前 | 时间线区分：发生前 / 发生时 / 发生后 |
+| 产品路线图 vs. 技术路线图 | product/ → 功能，leader/ → 技术 | 什么功能 vs. 什么技术 |
 | 数据工程 vs. AI 数据 | engineer/ → 通用，aier/ → AI 特定 | 数据库、缓存 vs. 数据集、Embedding |
 
 ## 芯片级交叉引用（pipeline__stage-flow-chip）
@@ -329,11 +324,11 @@ executiver ──→ producter ──→ leader ──→ engineer ──→ sre
 
 | 阶段 | 输入芯片 | 输出芯片 | 角色 |
 |---|---|---|---|
-| 1. 需求 | 业务战略 | PRD、用户故事、优先级 | [producter/](./producter/README.md) |
+| 1. 需求 | 业务战略 | PRD、用户故事、优先级 | [product/](./product/README.md) |
 | 2. 决策 | PRD、需求 | ADR、技术选型、容量规划 | [leader/](./leader/README.md) |
 | 3. 设计 + 构建 | ADR、PRD | 架构模式、开发实践、质量与安全、数据与可靠性、经验教训 | [engineer/](./engineer/README.md) |
-| 4. 质量 + 发布 | 可运行的软件 | 发布流程、事件响应、可观测性 | [srer/](./srer/README.md) |
-| 5. 运营 + 学习 | 运行中的服务 | SLO 合规、事后复盘、经验教训 | [srer/](./srer/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/) |
+| 4. 质量 + 发布 | 可运行的软件 | 发布流程、事件响应、可观测性 | [sre/](./sre/README.md) |
+| 5. 运营 + 学习 | 运行中的服务 | SLO 合规、事后复盘、经验教训 | [sre/](./sre/README.md) + [engineer/learn/lessons/](./engineer/learn/lessons/) |
 
 > 每个芯片在流水线 UI（`/pipeline/:stageId/:itemId`）中对应基于关键词的文件过滤。点击芯片会按芯片的关键词过滤该阶段的知识文件。
 

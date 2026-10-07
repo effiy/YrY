@@ -1,16 +1,19 @@
 ---
+
 doc_type: test
 title: "错误边界与降级 — 测试用例"
-status: 已完成
+status: 方案已编写
 priority: 高
 owner: 陈铭
 roles: [engineer, qa]
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
 project: YiPet
 prd_month: "202609"
-source_prds: ["41-稳定性-错误边界与降级"]
-source_modules: ["41-prd-task-错误边界与降级"]
+source_prds: ["41-架构设计-错误边界与降级.md"]
+source_modules: ["41-prd-task-错误边界与降级.md"]
+
+type: test
 ---
 
 # 错误边界与降级 — 测试用例
@@ -29,3 +32,4 @@ source_modules: ["41-prd-task-错误边界与降级"]
 ## 出口准则
 
 - [ ] P0 用例 100% 通过
+

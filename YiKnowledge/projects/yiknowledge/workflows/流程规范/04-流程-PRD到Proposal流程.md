@@ -152,11 +152,11 @@ proposal.md
 
 ```
 内容属于哪个角色？
-├── 业务策略、市场分析 → executiver/
-├── 产品需求、用户故事 → producter/
+├── 业务策略、市场分析 → executive/
+├── 产品需求、用户故事 → product/
 ├── 技术决策、架构选择 → leader/
 ├── 实现模式、代码质量 → engineer/
-├── 发布运维、监控告警 → srer/
+├── 发布运维、监控告警 → sre/
 ├── AI 方法论、RAG/Agent → aier/
 └── 知识治理、模板标准 → curator/
 ```

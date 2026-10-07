@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "动画帧率自适应 — 测试用例"
-status: 已完成
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["89-架构设计-动画帧率自适应.md"]
+source_modules: ["89-prd-task-动画帧率自适应.md"]
+
+type: test
 ---
 
 # 动画帧率自适应 — 测试用例
@@ -17,3 +24,4 @@ prd_month: "202609"
 | TC-FPS01 | 60fps→全帧率 | 高性能设备 | P1 |
 | TC-FPS02 | 30fps→降级 | 中性能设备 | P2 |
 | TC-FPS03 | prefers-reduced-motion | 全部禁用 | P1 |
+

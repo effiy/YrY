@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-109: 文档协作空间 — 实时协作文档编辑、按项目/团队共享文档、文档模板、版本历史、行内评论、文件夹/标签组织"
 tags: [需求文档, 文档协作, 实时编辑, 版本历史, 行内评论, 文档模板, 文件夹组织]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [前端开发, 后端开发]
 source_okr: [yivad-002, yivad-003]
+related_modules: ["51-prd-task-文档协作空间"]
+related_tests: ["51-prd-test-文档协作空间"]
+benefit: "产品需求：文档协作空间"
+lifecycle: active
 ---
 
 # YV-09-109: 文档协作空间 — 实时协作文档编辑、按项目/团队共享文档、文档模板、版本历史、行内评论、文件夹/标签组织

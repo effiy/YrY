@@ -24,7 +24,7 @@
 ## 基本信念
 
 - **单一真相来源。** 每类知识在唯一位置存在。跨角色发现通过 frontmatter `roles:` 和领域索引实现，绝不通过复制内容。
-- **流水线优先。** 知识按软件交付因果链组织 —— 从 `executiver` 的*为什么做*到 `srer` 的*怎么跑*。新增内容必先确定流水线阶段和角色归属。
+- **流水线优先。** 知识按软件交付因果链组织 —— 从 `executive` 的*为什么做*到 `sre` 的*怎么跑*。新增内容必先确定流水线阶段和角色归属。
 - **人机双读。** 每篇文档既服务于人（清晰的标题、可操作的见解），也服务于 AI（YiAi 的 RAG 引擎解析 frontmatter 元数据构建向量索引）。
 
 ## 铁律
@@ -41,7 +41,7 @@
 |-----------|-------|
 | 名称 | YiKnowledge |
 | 类型 | Markdown 知识库 |
-| 角色目录 | 7 个（executiver、producter、leader、engineer、srer、aier、curator） |
+| 角色目录 | 7 个（executive、product、leader、engineer、sre、aier、curator） |
 | 流水线阶段 | 5 个（需求 → 决策 → 设计+构建 → 交付+质量 → 运营+学习） |
 | 贯穿层 | 3 个（业务战略、AI 赋能、知识治理） |
 | 文件格式 | Markdown + YAML frontmatter |
@@ -58,38 +58,39 @@ YiKnowledge/
 ├── README.md             # 顶层概览（流水线叙事 + 角色决策树）
 ├── MEMORY.md             # 规则手册（命名、frontmatter、角色边界）
 ├── QUICKREF.md           # 快速参考（常用命令、检索策略）
-├── executiver/           # 业务战略层 — 贯穿整个流水线
+├── executive/           # 业务战略层 — 贯穿整个流水线
 │   ├── strategy/         # 业务战略
 │   ├── industry/         # 行业分析
 │   └── roadmap/          # 组织路线图
-├── producter/            # 阶段 1：需求 — "构建什么产品？"
+├── product/            # 阶段 1：需求 — "构建什么产品？"
 │   ├── frameworks/       # 需求框架
 │   ├── discovery/        # 需求发现
 │   ├── delivery/         # 需求交付
 │   └── strategy/         # 产品策略
 ├── leader/               # 阶段 2：决策 — "走哪条技术路线？"
 │   ├── decisions/        # 架构决策记录（ADR）
-│   ├── selection/        # 技术选型
+│   ├── architecture/     # 架构设计
 │   ├── capacity/         # 容量规划
 │   ├── risk/             # 风险评估
 │   └── roadmap/          # 技术路线图
 ├── engineer/             # 阶段 3：设计+构建 — "如何实现？"
-│   ├── architecture/     # 架构模式
-│   ├── development/      # 开发规范
-│   ├── quality/          # 质量保障
-│   ├── data/             # 数据工程
-│   ├── reliability/      # 可靠性设计
-│   ├── processes/        # 工程流程
-│   ├── learn/            # 经验教训 + 项目文档
+│   ├── build/            # 构建：架构模式、API 设计、开发工具
+│   ├── ship/             # 交付：质量保障、数据工程、可靠性、CI/CD
+│   ├── learn/            # 经验教训 + 跨项目文档
+│   ├── run/              # 工程流程：入职、Git 工作流、Code Review
+│   ├── projects/         # 项目级工程文档
+│   ├── okr/              # 工程 OKR
 │   ├── SECURITY.md       # 安全领域索引
 │   └── ENGINEERING.md    # 工程领域索引
-├── srer/                 # 阶段 4-5：交付+运营 — "如何保障稳定性？"
-│   ├── incidents/        # 事件响应
+├── sre/                 # 阶段 4-5：交付+运营 — "如何保障稳定性？"
+│   ├── incident-response/ # 事件响应
 │   ├── observability/    # 可观测性
-│   └── releases/         # 发布管理
+│   ├── release/          # 发布管理
+│   └── run/              # SRE 运营流程（入职、季度回顾）
 ├── aier/                 # AI 赋能层 — 贯穿整个流水线
 │   ├── foundations/      # LLM 基础
-│   ├── methods/          # Agent 方法 + 提示词
+│   ├── methods/          # Agent 架构 + 方法论
+│   ├── prompts/          # 生产级 Prompt 模板库
 │   ├── platform/         # 平台选型
 │   ├── machine-learning/ # 传统 ML
 │   └── okr/              # AI 团队 OKR
@@ -103,7 +104,6 @@ YiKnowledge/
 │   ├── yivad/            # YiVad 项目知识
 │   ├── yiai/             # YiAi 项目知识
 │   ├── yipet/            # YiPet 项目知识
-│   └── shared/           # 跨项目共享知识
 ├── skills/               # Claude Code 自定义技能
 ├── rss/                  # RSS 聚合内容（自动生成）
 └── static/               # 静态资源
@@ -114,13 +114,13 @@ YiKnowledge/
 ```
 业务战略层（贯穿整个流水线）
 ─────────────────────────────────────────────────────────
-  executiver/ "为什么做这个业务"
+  executive/ "为什么做这个业务"
 
 软件交付流水线 —— 5 个阶段
 ─────────────────────────────────────────────────────────
   需求          决策          设计+构建       交付+质量       运营+学习
   ────────      ──────        ──────────     ───────────    ────────
-  producter/    leader/       engineer/      srer/          srer/
+  product/    leader/       engineer/      sre/          sre/
   构建什么？     走哪条路线？    如何实现？      如何保障？      如何改进？
 
 AI 赋能层（贯穿整个流水线）
@@ -138,15 +138,15 @@ AI 赋能层（贯穿整个流水线）
 
 | 角色 | 核心问题 | 典型内容 |
 |------|----------|----------|
-| `executiver` | 为什么做这个业务？ | 战略分析、行业趋势、路线图 |
-| `producter` | 构建什么产品？ | PRD、用户故事、需求框架 |
+| `executive` | 为什么做这个业务？ | 战略分析、行业趋势、路线图 |
+| `product` | 构建什么产品？ | PRD、用户故事、需求框架 |
 | `leader` | 走哪条技术路线？ | ADR、技术选型、风险评估 |
 | `engineer` | 如何实现？ | 架构模式、开发规范、经验教训 |
-| `srer` | 如何保障稳定性？ | 事件响应、可观测性、发布流程 |
+| `sre` | 如何保障稳定性？ | 事件响应、可观测性、发布流程 |
 | `aier` | AI 如何加速？ | Agent 模式、提示词工程、平台选型 |
 | `curator` | 知识库如何维护？ | 治理规范、模板、健康检查 |
 
-**冲突裁决**：当内容适合多个角色时，放在**最早**的流水线阶段。如某项技术选型涉及需求和实现 —— 放在 `leader/selection/`，在 `engineer/` 中通过 frontmatter 交叉引用。
+**冲突裁决**：当内容适合多个角色时，放在**最早**的流水线阶段。如某项技术选型涉及需求和实现 —— 放在 `leader/architecture/`，在 `engineer/` 中通过 frontmatter 交叉引用。
 
 ## 文件约定
 
@@ -165,10 +165,13 @@ AI 赋能层（贯穿整个流水线）
 
 ```
 ✓ aier/methods/01-方法-Agent架构模式.md
-✓ engineer/learn/lessons/gotchas/macos-fsevents-silent-drop.md  ← 已超出，需合并到父级
-✓ projects/yivad/specs/api-reference.md
-✗ aier/methods/subcategory/deep/file.md                         ← 4 级，拒绝合并
+✓ engineer/learn/lessons/05-陷阱-macOS-FSEvents静默丢弃.md
+✓ projects/yivad/workflows/开发规范/02-规范-项目架构.md
+✓ leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md  ← OKR 目录例外
+✗ aier/methods/subcategory/deep/file.md                       ← 4 级，拒绝合并
 ```
+
+**例外**：`*/okr/` 目录树允许 `role/okr/quarter/goal/file.md` 的 5 级结构，因为每个 OKR 目标需要独立目录组织 goal + KR + 证据文件。`projects/` 目录不受 3 级限制，遵循项目管理特有的 `project/type/date/category/file.md` 结构。
 
 ## Frontmatter 规范
 
@@ -200,13 +203,26 @@ related:                            # 可选：关联文件
 
 ### 字段值约束
 
+**通用字段（所有文件）**：
+
 | 字段 | 允许值 |
 |------|--------|
-| `status` | `draft` \| `review` \| `stable` \| `archived` |
-| `lifecycle` | `active` \| `deprecated` \| `superseded` |
+| `status` | `draft` \| `review` \| `stable` \| `archived` \| `deprecated` |
+| `lifecycle` | `active` \| `deprecated` \| `superseded` \| `reference` \| `archived` |
 | `review_cycle` | `weekly` \| `monthly` \| `quarterly` \| `annual` |
-| `type` | `summary` \| `analysis` \| `howto` \| `reference` \| `decision` \| `report` |
 | `source` | `internal` \| `external` \| `personal` \| `team` \| `community` |
+
+**`type` 字段**（按目录区域区分）：
+
+| 区域 | 允许值 |
+|------|--------|
+| 角色知识文件（aier/、curator/、engineer/、executive/、leader/、product/、sre/） | `summary` \| `analysis` \| `howto` \| `reference` \| `decision` \| `report` \| `template` \| `prompt` \| `spec` \| `pattern` \| `guide` \| `conventions` \| `architecture` \| `workflow` \| `methodology` \| `index` \| `assessment` \| `improvement` |
+| 项目管理文件（projects/） | `需求` \| `bug` \| `task` \| `spec` \| `test` \| `module` \| `summary` \| `template` \| `index` \| `report` |
+| OKR 文件（各角色 okr/ 子目录） | `okr-goal` \| `okr-metric` \| `okr-kr-evidence` \| `okr-summary` \| `loop-record` \| `loop-template` \| `loop-summary` \| `loop-index` |
+
+> **双 Schema 设计**：角色知识文件（`aier/`、`engineer/` 等）使用英文 type 值供 RAG 检索；项目管理文件（`projects/`）使用中文 type 值匹配项目管理流程。两类文件的 `status` 字段也遵循各自的语义——角色文件用英文状态，项目文件可用中文工作流状态（`已完成`、`待开始`、`需求已编写`、`进行中`）。
+
+> **权威来源**：本文件（CLAUDE.md）是字段值约束的唯一权威定义。MEMORY.md 中的 frontmatter 示例仅作参考，实际允许值以此表为准。
 
 ## 与 YiAi 集成
 

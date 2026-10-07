@@ -1,11 +1,14 @@
-"""Unified cache manager — Redis primary + in-memory LRU fallback."""
+"""Unified cache manager — Redis primary + in-memory fallback with per-entry TTL.
+
+The in-memory fallback uses a dict of ``(value, expire_at)`` tuples so per-entry
+TTL is respected (unlike ``cachetools.TTLCache`` which uses a single global TTL).
+"""
 
 import asyncio
-from collections import OrderedDict
-import hashlib
-import json
 import time
-from typing import Any, Optional
+from typing import Any
+
+import orjson
 
 from shared.config import settings
 from shared.logging import get_logger
@@ -13,56 +16,16 @@ from shared.logging import get_logger
 logger = get_logger(__name__)
 
 
-class MemoryLRUCache:
-    """LRU in-memory cache with TTL support."""
-
-    def __init__(self, max_size: int = 1000):
-        self._cache: OrderedDict[str, tuple[Any, float]] = OrderedDict()
-        self.max_size = max_size
-
-    def get(self, key: str) -> Any | None:
-        if key not in self._cache:
-            return None
-        value, ttl = self._cache[key]
-        if ttl and time.time() > ttl:
-            del self._cache[key]
-            return None
-        self._cache.move_to_end(key)
-        return value
-
-    def set(self, key: str, value: Any, ttl: int = 300):
-        if key in self._cache:
-            self._cache.move_to_end(key)
-        self._cache[key] = (value, time.time() + ttl if ttl else float("inf"))
-        if len(self._cache) > self.max_size:
-            self._cache.popitem(last=False)
-
-    def delete(self, key: str):
-        self._cache.pop(key, None)
-
-    def delete_pattern(self, pattern: str):
-        prefix = pattern.rstrip("*")
-        keys = [k for k in self._cache if k.startswith(prefix)]
-        for k in keys:
-            del self._cache[k]
-
-    def flush(self):
-        self._cache.clear()
-
-    @property
-    def size(self) -> int:
-        return len(self._cache)
-
-
 class CacheManager:
-    """Unified cache: Redis primary, MemoryLRU fallback."""
+    """Unified cache: Redis primary, dict-with-expiry memory fallback."""
 
     def __init__(self):
         self._redis = None
-        self._memory = MemoryLRUCache(max_size=1000)
+        self._memory: dict[str, tuple[Any, float]] = {}
         self._redis_available = False
         self._key_prefix = "yiai:"
         self._locks: dict[str, asyncio.Lock] = {}
+        self._max_memory_entries = 1000
 
     async def initialize(self):
         """Initialize Redis connection if configured."""
@@ -93,36 +56,61 @@ class CacheManager:
             if self._redis_available:
                 value = await self._redis.get(full_key)
                 if value:
+                    import json
                     return json.loads(value)
             else:
-                return self._memory.get(full_key)
+                entry = self._memory.get(full_key)
+                if entry is not None:
+                    val, expire_at = entry
+                    if time.monotonic() < expire_at:
+                        return val
+                    del self._memory[full_key]
         except Exception as e:
             logger.warning(f"[Cache] GET failed, falling back to memory: {e}")
-            return self._memory.get(full_key)
+            entry = self._memory.get(full_key)
+            if entry is not None:
+                val, expire_at = entry
+                if time.monotonic() < expire_at:
+                    return val
+                del self._memory[full_key]
         return None
 
     async def set(self, key: str, value: Any, ttl: int = 300):
         full_key = f"{self._key_prefix}{key}"
         try:
             if self._redis_available:
-                await self._redis.setex(full_key, ttl, json.dumps(value, default=str))
+                await self._redis.setex(full_key, ttl, orjson.dumps(value, default=str).decode())
             else:
-                self._memory.set(full_key, value, ttl)
+                self._memory[full_key] = (value, time.monotonic() + ttl)
+                self._evict_if_needed()
         except Exception as e:
             logger.warning(f"[Cache] SET failed: {e}")
-            self._memory.set(full_key, value, ttl)
+            self._memory[full_key] = (value, time.monotonic() + ttl)
+
+    def _evict_if_needed(self):
+        """Remove oldest entries if memory cache exceeds max size."""
+        if len(self._memory) <= self._max_memory_entries:
+            return
+        # Evict 10% of entries (oldest by expire time)
+        excess = len(self._memory) - int(self._max_memory_entries * 0.9)
+        if excess <= 0:
+            return
+        sorted_keys = sorted(self._memory.keys(), key=lambda k: self._memory[k][1])
+        for k in sorted_keys[:excess]:
+            del self._memory[k]
 
     async def delete(self, key: str):
         full_key = f"{self._key_prefix}{key}"
         try:
             if self._redis_available:
                 await self._redis.delete(full_key)
-            self._memory.delete(full_key)
+            self._memory.pop(full_key, None)
         except Exception as e:
             logger.warning(f"[Cache] DELETE failed: {e}")
 
     async def delete_pattern(self, pattern: str):
         full_pattern = f"{self._key_prefix}{pattern}"
+        prefix = full_pattern.rstrip("*")
         try:
             if self._redis_available:
                 cursor = 0
@@ -134,7 +122,9 @@ class CacheManager:
                         await self._redis.delete(*keys)
                     if cursor == 0:
                         break
-            self._memory.delete_pattern(full_pattern)
+            keys = [k for k in self._memory if k.startswith(prefix)]
+            for k in keys:
+                del self._memory[k]
         except Exception as e:
             logger.warning(f"[Cache] DELETE_PATTERN failed: {e}")
 
@@ -176,8 +166,8 @@ class CacheManager:
     async def stats(self) -> dict:
         return {
             "backend": self.backend,
-            "memory_size": self._memory.size,
-            "memory_max_size": self._memory.max_size,
+            "memory_size": len(self._memory),
+            "memory_max_size": self._max_memory_entries,
             "redis_available": self._redis_available,
         }
 

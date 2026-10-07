@@ -21,13 +21,14 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-移除Modules-Tab"
+lifecycle: active
 ---
 
 ## Description
 
 从项目详情页移除 Modules Tab。Overview 侧边栏同步移除 Modules 统计卡片。
 
-**补充说明**：此问题在常规开发和测试流程中未被及时发现，建议加强对应模块的自动化测试覆盖。
 ### 变更内容
 
 | 变更 | 文件 | 说明 |
@@ -55,13 +56,10 @@ Overview / Requirements / Docs / Bugs / Members
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | Tab 配置变更时需同步更新 Overview 侧边栏统计卡片，保持 UI 一致性 |
+| 流程 | 移除 UI 区域的操作需先确认该区域的所有数据消费者，逐步解除依赖后再删除 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **变更的涟漪效应**：移除一个 Tab 不仅影响 `useDetailTabs.ts` 的配置数组，还影响 Overview 侧边栏的统计卡片布局。即使两个组件看似独立，共享的用户心智模型要求它们保持一致
 

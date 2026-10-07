@@ -1,205 +1,192 @@
-<script setup lang="ts">
-import { inject, ref, computed } from "vue";
-import { CollectionTag, Delete, Edit } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+<script setup lang="ts" name="aiChatContextIndicator">
+/**
+ * Context window token usage indicator.
+ * Shows a compact progress bar in the chat header with
+ * green (< 60%) / yellow (60-90%) / red (> 90%) levels.
+ * Hover reveals a detailed breakdown tooltip.
+ */
+import { computed, ref } from "vue";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-
-const props = withDefaults(
-  defineProps<{
-    contextFiles?: string[];
-    ragToggle?: boolean;
-  }>(),
-  { contextFiles: () => [], ragToggle: false }
-);
-
-const emit = defineEmits<{
-  (e: "remove-file", path: string): void;
-  (e: "open-file", path: string): void;
-}>();
+import { WarningFilled } from "@element-plus/icons-vue";
 
 const store = useAiChatStore();
-const openKnowledgePreview = inject<(path: string) => void>("openKnowledgePreview", () => {});
 
-const contextPopoverVisible = ref(false);
-const contextFileCount = computed(() => (props.contextFiles ?? []).length);
+const breakdownVisible = ref(false);
 
-const ragAutoScoped = computed(() => !!(props.ragToggle && contextFileCount.value));
-const ragNoContext = computed(() => props.ragToggle && !contextFileCount.value);
+const pct = computed(() => {
+  const u = store.tokenUsage;
+  if (!u || !u.modelWindow) return 0;
+  return Math.min(100, Math.round((u.total / u.modelWindow) * 100));
+});
 
-function handleFileClick(path: string) {
-  openKnowledgePreview(path);
-  contextPopoverVisible.value = false;
-}
+const level = computed(() => {
+  if (pct.value > 90) return "critical";
+  if (pct.value > 70) return "high";
+  if (pct.value > 40) return "mid";
+  return "low";
+});
 
-// ── Edit context file content ──
+const barColor = computed(() => {
+  if (level.value === "critical") return "var(--el-color-danger)";
+  if (level.value === "high") return "var(--el-color-warning)";
+  return "var(--el-color-success)";
+});
 
-const editingFile = ref<string | null>(null);
-const editingContent = ref("");
-
-function openEditor(path: string) {
-  editingFile.value = path;
-  editingContent.value = store.getContextSectionContent(path) || "";
-}
-
-async function saveEdit() {
-  const path = editingFile.value;
-  if (!path) return;
-  await store.applyContextChange(path, editingContent.value);
-  editingFile.value = null;
-  ElMessage.success(`Updated: ${path}`);
-}
-
-function cancelEdit() {
-  editingFile.value = null;
+function formatTokens(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+  return String(n);
 }
 </script>
 
 <template>
-  <el-popover v-if="contextFileCount > 0" v-model:visible="contextPopoverVisible" placement="bottom" :width="420" trigger="click">
+  <el-popover
+    v-model:visible="breakdownVisible"
+    placement="bottom"
+    :width="260"
+    trigger="hover"
+    :show-after="300"
+    :hide-after="200"
+  >
     <template #reference>
-      <div class="ct-pill on" title="Current context files">
-        <el-icon :size="14"><CollectionTag /></el-icon>
-        <span class="ct-pill-label">Context: {{ contextFileCount }}</span>
+      <div
+        class="ctx-token-bar"
+        :class="[`ctx-token-bar--${level}`]"
+        :title="`Context window: ${pct}% (${formatTokens(store.tokenUsage?.total ?? 0)}/${formatTokens(store.tokenUsage?.modelWindow ?? 8192)} tokens)`"
+      >
+        <div class="ctx-token-fill" :style="{ width: pct + '%', background: barColor }" />
+        <span class="ctx-token-label">{{ pct }}%</span>
+        <el-icon v-if="level === 'critical'" class="ctx-token-warn-icon" :size="12">
+          <WarningFilled />
+        </el-icon>
       </div>
     </template>
-
-    <!-- File list -->
-    <div class="ct-context-list">
-      <div v-for="file in contextFiles ?? []" :key="file" class="ct-context-item">
-        <span class="ct-context-item-path" title="Click to preview" @click="handleFileClick(file)">{{ file }}</span>
-        <el-button size="small" text :icon="Edit" title="Edit context content" @click="openEditor(file)" />
-        <el-button
-          size="small"
-          text
-          type="danger"
-          :icon="Delete"
-          title="Remove from context"
-          @click="emit('remove-file', file)"
-        />
+    <div v-if="store.tokenUsage" class="ctx-token-pop">
+      <div class="ctx-token-pop-title">Token Usage Breakdown</div>
+      <div class="ctx-token-pop-row">
+        <span>System Prompt</span>
+        <span class="ctx-token-pop-val">{{ formatTokens(store.tokenUsage.systemPrompt) }}</span>
       </div>
-      <div v-if="(contextFiles ?? []).length === 0" class="ct-context-empty">No context files loaded</div>
-    </div>
-
-    <!-- Inline edit dialog -->
-    <div v-if="editingFile" class="ct-edit-section">
-      <div class="ct-edit-header">
-        <span class="ct-edit-path">{{ editingFile }}</span>
-        <span class="ct-edit-hint">Editing context content — changes persist to this session</span>
+      <div class="ctx-token-pop-row">
+        <span>User Messages</span>
+        <span class="ctx-token-pop-val">{{ formatTokens(store.tokenUsage.userMessages) }}</span>
       </div>
-      <el-input
-        v-model="editingContent"
-        type="textarea"
-        :autosize="{ minRows: 4, maxRows: 12 }"
-        placeholder="Enter file content for context..."
-      />
-      <div class="ct-edit-actions">
-        <el-button size="small" @click="cancelEdit">Cancel</el-button>
-        <el-button size="small" type="primary" @click="saveEdit">Save</el-button>
+      <div class="ctx-token-pop-row">
+        <span>Assistant Messages</span>
+        <span class="ctx-token-pop-val">{{ formatTokens(store.tokenUsage.assistantMessages) }}</span>
+      </div>
+      <div class="ctx-token-pop-row">
+        <span>Response Reserve</span>
+        <span class="ctx-token-pop-val">{{ formatTokens(store.tokenUsage.responseReserve) }}</span>
+      </div>
+      <div class="ctx-token-pop-divider" />
+      <div class="ctx-token-pop-row ctx-token-pop-row--total">
+        <span>Total</span>
+        <span class="ctx-token-pop-val"
+          >{{ formatTokens(store.tokenUsage.total) }} / {{ formatTokens(store.tokenUsage.modelWindow) }}</span
+        >
+      </div>
+      <div v-if="level === 'critical'" class="ctx-token-pop-warn">
+        Context window nearly full. Use /compact or start a new conversation.
       </div>
     </div>
   </el-popover>
 </template>
 
 <style scoped lang="scss">
-.ct-pill {
+.ctx-token-bar {
+  position: relative;
   display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  height: 28px;
-  padding: 0 10px;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  background: var(--el-fill-color-blank);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 14px;
-  transition: all var(--transition-fast);
-
-  &:hover {
-    border-color: var(--el-border-color);
-  }
-  &.on {
-    color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-    border-color: var(--el-color-primary-light-5);
-  }
-}
-.ct-pill-label {
-  line-height: 1;
-}
-.ct-context-list {
-  max-height: 240px;
-  overflow-y: auto;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-scrollbar-thumb);
-    border-radius: 2px;
-    &:hover { background: var(--el-border-color-darker); }
-  }
-}
-.ct-context-item {
-  display: flex;
   gap: 4px;
   align-items: center;
-  padding: 6px 4px;
-  font-family: "SF Mono", Menlo, monospace;
-  font-size: 12px;
-
-  & + & {
-    border-top: 1px solid var(--el-border-color-lighter);
-  }
-}
-.ct-context-item-path {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--el-color-primary);
-  white-space: nowrap;
+  width: 64px;
+  height: 6px;
   cursor: pointer;
-  transition: opacity var(--transition-fast);
+  background: var(--el-fill-color-light);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: width 0.2s ease;
 
-  &:hover {
-    opacity: 0.8;
-  }
-}
-.ct-context-empty {
-  padding: 12px 0;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-  text-align: center;
+  &:hover { width: 80px; }
 }
 
-// ── Edit section ──
-.ct-edit-section {
+.ctx-token-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+
+.ctx-token-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--el-text-color-primary);
+  text-shadow: 0 0 2px var(--el-bg-color);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ctx-token-bar:hover .ctx-token-label,
+.ctx-token-bar--critical .ctx-token-label,
+.ctx-token-bar--high .ctx-token-label {
+  opacity: 1;
+}
+
+.ctx-token-warn-icon {
+  position: absolute;
+  right: -2px;
+  color: var(--el-color-danger);
+  animation: ctx-token-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ctx-token-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+// ── Popover content ──
+.ctx-token-pop {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 12px;
-  margin-top: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
+  gap: 6px;
+  font-size: 13px;
 }
-.ct-edit-header {
+.ctx-token-pop-title {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+.ctx-token-pop-row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--el-text-color-secondary);
 }
-.ct-edit-path {
+.ctx-token-pop-row--total {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.ctx-token-pop-val {
   font-family: "SF Mono", Menlo, monospace;
   font-size: 12px;
-  font-weight: 600;
-  color: var(--el-color-primary);
+  color: var(--el-text-color-primary);
 }
-.ct-edit-hint {
+.ctx-token-pop-divider {
+  height: 1px;
+  background: var(--el-border-color-lighter);
+}
+.ctx-token-pop-warn {
+  padding: 6px 8px;
   font-size: 11px;
-  color: var(--el-text-color-placeholder);
-}
-.ct-edit-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  color: var(--el-color-danger);
+  background: var(--el-color-danger-light-9);
+  border-radius: var(--radius-xs);
+  line-height: 1.5;
 }
 </style>

@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: "YV-09-132: 两步验证设置 — TOTP 配置与 QR 码、备用码生成与管理、2FA 恢复流程、2FA 启用统计"
 tags: [需求文档, 两步验证, 2FA, TOTP, QR码, 备用码, 恢复流程, 安全, 功能实现]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ review_status: 待评审
 issue_type: 功能实现
 roles: [engineer]
 source_okr: [yivad-003]
+related_modules: ["62-prd-task-两步验证设置"]
+related_tests: ["62-prd-test-两步验证设置"]
+benefit: "产品需求：两步验证设置"
+lifecycle: active
 ---
 
 # YV-09-132: 两步验证设置 — TOTP 配置与 QR 码、备用码生成与管理、2FA 恢复流程、2FA 启用统计

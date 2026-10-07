@@ -1,99 +1,73 @@
+"""Logging setup — backed by loguru for simpler, structured logging.
+
+Replaces ~80 lines of stdlib logging boilerplate (formatters, handlers,
+rotation, context filters) with loguru's declarative configuration.
+"""
+
 import logging
-from logging.handlers import RotatingFileHandler
-import os
 import sys
 
-from shared.config import settings
-
-# Context variable for request_id — set by RequestIdMiddleware,
-# consumed by RequestContextFilter for structured log enrichment.
-try:
-    from contextvars import ContextVar
-    _request_id_ctx: ContextVar[str] = ContextVar("request_id", default="")
-except ImportError:
-    _request_id_ctx = None  # type: ignore[assignment]
+from loguru import logger
 
 
-class SafeFormatter(logging.Formatter):
-    """Formatter that never crashes on missing fields — defaults them to '-'."""
+class _InterceptHandler(logging.Handler):
+    """Route stdlib log records (uvicorn, third-party) through loguru."""
 
-    def format(self, record: logging.LogRecord) -> str:
-        if not getattr(record, 'request_id', None):
-            record.request_id = '-'
-        return super().format(record)
-
-
-class RequestContextFilter(logging.Filter):
-    """Inject request_id into every log record when available."""
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        if _request_id_ctx is not None:
-            rid = _request_id_ctx.get()
-            record.request_id = rid if rid else "-"
-        else:
-            record.request_id = "-"
-        return True
+    def emit(self, record: logging.LogRecord) -> None:
+        level = logger.level(record.levelname).name
+        frame = logging.currentframe()
+        depth = 2
+        while frame and frame.f_code.co_filename == logging.__file__:
+            frame = frame.f_back
+            depth += 1
+        logger.opt(depth=depth, exception=record.exc_info).bind(
+            name=record.name
+        ).log(level, record.getMessage())
 
 
-def set_request_id(rid: str) -> None:
-    """Set the current request_id for the async context (called by middleware)."""
-    if _request_id_ctx is not None:
-        _request_id_ctx.set(rid)
+def setup_logging() -> None:
+    """Configure loguru globally — stdout + file with rotation."""
+    logger.remove()
 
-
-def setup_logging():
-    """
-    Configure global logging
-    - Console output
-    - File output (size-based rotation)
-    - Unified format
-    """
-    log_level = settings.logging_level
-    log_format = settings.logging_format
-    log_datefmt = settings.logging_datefmt
-
-    # Get root logger
-    root_logger = logging.getLogger()
-    # Use get_logging_level_value to get int-type log level
-    level = getattr(logging, log_level.upper(), logging.INFO)
-    root_logger.setLevel(level)
-
-    # Clear existing handlers
-    root_logger.handlers = []
-
-    # Create formatter — include request_id when available
-    fmt = log_format.replace(
-        "%(message)s", "[%(request_id)s] %(message)s"
+    # Console — colorized, compact
+    logger.add(
+        sys.stdout,
+        format=(
+            "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+            "<level>{level: <8}</level> | "
+            "<cyan>{extra[name]: <24}</cyan> | "
+            "<level>{message}</level>"
+        ),
+        level="INFO",
+        colorize=True,
+        backtrace=False,
+        diagnose=False,
     )
-    formatter = SafeFormatter(fmt=fmt, datefmt=log_datefmt)
 
-    # Register context filter on root logger
-    root_logger.addFilter(RequestContextFilter())
-
-    # 1. Console Handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
-    root_logger.addHandler(console_handler)
-
-    # 2. File Handler (if log file path is configured)
-    # Resolve logs/ relative to the YiAi project root (2 levels up from src/shared/)
-    _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    log_dir = os.path.join(_PROJECT_ROOT, "logs")
-    os.makedirs(log_dir, exist_ok=True)
-
-    log_file = os.path.join(log_dir, "app.log")
-
-    # 10MB per file, max 5 backups
-    file_handler = RotatingFileHandler(
-        log_file, maxBytes=10*1024*1024, backupCount=5, encoding="utf-8"
+    # File — 10MB rotation, 5 backups
+    logger.add(
+        "logs/app.log",
+        rotation="10 MB",
+        retention=5,
+        encoding="utf-8",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {extra[name]: <24} | {message}",
+        level="DEBUG",
+        backtrace=True,
+        diagnose=True,
     )
-    file_handler.setFormatter(formatter)
-    root_logger.addHandler(file_handler)
 
-    # Adjust third-party library log levels
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-    logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
+    # Intercept stdlib logging so uvicorn output flows through loguru
+    logging.basicConfig(handlers=[_InterceptHandler()], level=0, force=True)
 
-# Export logger for other modules (you can also use logging.getLogger(__name__) directly, but this provides some encapsulation)
-def get_logger(name: str):
-    return logging.getLogger(name)
+    # Suppress noisy uvicorn access logs
+    for name in ("uvicorn.access", "uvicorn.error", "uvicorn.asgi"):
+        logging.getLogger(name).handlers = [_InterceptHandler()]
+        logging.getLogger(name).propagate = False
+
+    logger.bind(name="shared.logging").info("Logging initialized")
+
+
+def get_logger(name: str = __name__):
+    """Return a loguru logger bound with the module name.
+    Drop-in compatible with `logging.getLogger(name)` for all callers."""
+    return logger.bind(name=name)

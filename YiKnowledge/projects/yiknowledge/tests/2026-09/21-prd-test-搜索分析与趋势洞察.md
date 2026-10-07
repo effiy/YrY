@@ -1,4 +1,5 @@
 ---
+
 doc_type: test
 title: "YK-09-18: 搜索分析与趋势洞察 — 测试用例"
 status: 待开始
@@ -14,6 +15,8 @@ prd_task_id: "YK-09-18"
 source_prds: ["21-架构设计-搜索分析与趋势洞察"]
 source_modules: ["21-prd-task-搜索分析与趋势洞察"]
 source_okr: [yiknowledge-001]
+
+type: test
 ---
 
 # YK-09-18: 搜索分析与趋势洞察 — 测试用例

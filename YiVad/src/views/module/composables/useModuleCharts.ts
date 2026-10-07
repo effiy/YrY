@@ -1,7 +1,8 @@
-import { computed } from "vue";
+import { computed, type Ref } from "vue";
 import { useModuleStore } from "@/stores/modules/module";
 import { MODULE_STATUS_MAP } from "@/api/modules/moduleService";
 import type { ModuleStatus } from "@/api/modules/moduleService";
+import type { ModuleDashboardResponse } from "@/types/analytics";
 import type { ECOption } from "@/components/ECharts/config";
 
 export const STATUS_COLOR: Record<string, string> = {
@@ -11,7 +12,10 @@ export const STATUS_COLOR: Record<string, string> = {
   cancelled: "#f56c6c"
 };
 
-export function useModuleCharts(deps: { progressPct: (m: any) => number }) {
+export function useModuleCharts(deps: {
+  progressPct: (m: any) => number;
+  dashboard: Ref<ModuleDashboardResponse | null>;
+}) {
   const store = useModuleStore();
 
   const statusDonutOption = computed<ECOption>(() => {
@@ -55,29 +59,67 @@ export function useModuleCharts(deps: { progressPct: (m: any) => number }) {
     };
   });
 
-  const trendOption = computed<ECOption>(() => {
-    const labels: string[] = [];
-    const values: number[] = [];
-    const today = new Date();
-    const createdByDay: Record<string, number> = {};
-    for (const m of store.modules) {
-      const day = (m.created_at || "").slice(0, 10);
-      if (day) createdByDay[day] = (createdByDay[day] ?? 0) + 1;
-    }
-    for (let d = 13; d >= 0; d--) {
-      const dt = new Date(today.getTime() - d * 86400000);
-      const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
-      labels.push(`${dt.getMonth() + 1}/${dt.getDate()}`);
-      values.push(createdByDay[key] ?? 0);
-    }
+  const burndownOption = computed<ECOption>(() => {
+    const bd = deps.dashboard.value?.burndown;
+    if (!bd?.length) return _emptyChart("No burndown data");
+    const dates = bd.map(d => d.date.slice(5));
+    const remaining = bd.map(d => d.remaining);
+    const ideal = bd.map(d => d.ideal);
     return {
       tooltip: { trigger: "axis" },
-      grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
-      xAxis: { type: "category", data: labels, axisLabel: { fontSize: 9, interval: 3 } },
+      legend: { bottom: 0, textStyle: { fontSize: 9 }, data: ["Remaining", "Ideal"] },
+      grid: { left: 8, right: 8, top: 8, bottom: 20, containLabel: true },
+      xAxis: { type: "category", data: dates, axisLabel: { fontSize: 9, interval: 3 } },
       yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
-      series: [{ type: "bar", data: values, itemStyle: { color: "#91cc75", borderRadius: [3, 3, 0, 0] } }]
+      series: [
+        {
+          name: "Remaining",
+          type: "line",
+          data: remaining,
+          smooth: true,
+          lineStyle: { color: "#5470c6", width: 2 },
+          itemStyle: { color: "#5470c6" },
+          symbol: "none"
+        },
+        {
+          name: "Ideal",
+          type: "line",
+          data: ideal,
+          smooth: true,
+          lineStyle: { color: "#91cc75", width: 1, type: "dashed" },
+          itemStyle: { color: "#91cc75" },
+          symbol: "none"
+        }
+      ]
     };
   });
 
-  return { statusDonutOption, progressBarOption, trendOption };
+  const velocityOption = computed<ECOption>(() => {
+    const vel = deps.dashboard.value?.velocity;
+    if (!vel?.length) return _emptyChart("No velocity data");
+    const weeks = vel.map(v => v.week.slice(6));
+    const points = vel.map(v => v.points);
+    return {
+      tooltip: { trigger: "axis" },
+      grid: { left: 8, right: 8, top: 8, bottom: 8, containLabel: true },
+      xAxis: { type: "category", data: weeks, axisLabel: { fontSize: 9 } },
+      yAxis: { type: "value", minInterval: 1, axisLabel: { fontSize: 9 } },
+      series: [
+        {
+          type: "bar",
+          data: points,
+          itemStyle: { color: "#fac858", borderRadius: [3, 3, 0, 0] },
+          barMaxWidth: 20
+        }
+      ]
+    };
+  });
+
+  return { statusDonutOption, progressBarOption, burndownOption, velocityOption };
+}
+
+function _emptyChart(msg: string): ECOption {
+  return {
+    title: { text: msg, left: "center", top: "center", textStyle: { fontSize: 11, color: "#909399" } }
+  };
 }

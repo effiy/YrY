@@ -9,6 +9,26 @@ export {
   formatDateTimeFromTs as formatTime,
 } from '@/utils/datetime';
 
+// ── Token estimation ───────────────────────────────────────────────────────
+
+const CJK_RE = /[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/g;
+
+/** Estimate token count for mixed CJK/ASCII text.
+ *  CJK characters ≈ 1.5 tokens each; ASCII/whitespace ≈ 0.25 tokens each (4 chars/token). */
+export function estimateTokens(text: string): number {
+  if (!text) return 0;
+  const cjkCount = (text.match(CJK_RE) || []).length;
+  const asciiCount = text.length - cjkCount;
+  return Math.max(1, Math.ceil(cjkCount / 1.5 + asciiCount / 4));
+}
+
+/** Format a token estimate with the approximate symbol. */
+export function formatTokenEstimate(text: string): string {
+  return `~${estimateTokens(text)} tok`;
+}
+
+// ── Markdown rendering ─────────────────────────────────────────────────────
+
 import { marked } from 'marked';
 
 /** Configure marked renderer for professional code blocks with language labels. */
@@ -139,7 +159,7 @@ export async function runMermaid(container?: HTMLElement): Promise<void> {
 
   if (!_mermaidInit) {
     try {
-      mermaid.initialize?.({ startOnLoad: false, securityLevel: 'loose', theme: 'dark' });
+      mermaid.initialize?.({ startOnLoad: false, securityLevel: 'strict', theme: 'dark' });
     } catch {
       /* ignore — non-fatal */
     }

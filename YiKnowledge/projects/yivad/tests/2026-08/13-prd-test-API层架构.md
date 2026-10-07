@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "YV-08-18: API 层架构 — RequestHttp 拦截器链 + 请求取消 + 指数退避重试 + 并发批处理 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202608"
 prd_task_id: "YV-08-18"
 source_prds: ["13-prd-API层架构"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, API层架构]
+benefit: "测试用例：API层架构"
+lifecycle: active
 ---
 # YV-08-18: API 层架构 — RequestHttp 拦截器链 + 请求取消 + 指数退避重试 + 并发批处理 — 测试规格
 

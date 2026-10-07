@@ -1,12 +1,19 @@
 ---
+
 doc_type: test
 title: "WebRTC 实时协作 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
+source_prds: ["88-架构设计-WebRTC实时协作.md"]
+source_modules: ["88-prd-task-WebRTC实时协作.md"]
+
+type: test
 ---
 
 # WebRTC 实时协作 — 测试用例
@@ -16,3 +23,4 @@ prd_month: "202609"
 |------|------|------|--------|
 | TC-RTC01 | DataChannel | P2P 数据 | P3 |
 | TC-RTC02 | 信令 | YiAi WebSocket | P3 |
+

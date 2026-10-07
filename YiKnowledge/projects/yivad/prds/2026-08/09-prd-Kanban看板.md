@@ -25,6 +25,10 @@ issue_type: 功能
 roles:
 - engineer
 source_okr: [yivad-001]
+related_modules: ["09-prd-task-Kanban看板"]
+related_tests: ["09-prd-test-Kanban看板"]
+benefit: "产品需求：Kanban看板"
+lifecycle: active
 ---
 
 # Kanban 看板 — 拖拽式项目任务管理

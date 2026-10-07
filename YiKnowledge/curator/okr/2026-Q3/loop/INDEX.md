@@ -1,10 +1,12 @@
 ---
 type: loop-index
 title: 流程记录整合索引
-category: okr
+tags: [loop, index, okr, workflow]
+category: curator/okr
 created: 2026-08-16
 updated: 2026-09-10
-status: active
+source: internal
+status: stable
 ---
 
 # 🔁 流程记录整合索引（loop）
@@ -54,7 +56,7 @@ loop/
 | loopId | `loop-XXX` | 闭环编号 |
 | stage | `requirement-review` / `technical-review` / `code-review` / `build-debug` / `test-report` / `deployment` / `launch` / `retrospective` | 闭环阶段 |
 | title | 字符串 | 记录标题 |
-| role | `producter`/`leader`/`engineer`/`srer`/`aier`/`curator`/`executiver` | 产出角色 |
+| role | `product`/`leader`/`engineer`/`sre`/`aier`/`curator`/`executive` | 产出角色 |
 | goalId | `xxx-XXX` | 关联目标 |
 | status | `done` / `in-progress` | 状态 |
 | created / updated | `YYYY-MM-DD` | 时间戳 |
@@ -64,7 +66,7 @@ loop/
 1. 复制 `_templates/` 对应模板到 `loop-XXX-<slug>/`。
 2. 改 frontmatter 的 `loopId` / `title` / `goalId` / `status` / 日期。
 3. 填正文（PRD / ADR / 审查意见 / 调试记录 / 测试 / 部署 / 上线 / 复盘）。
-4. YiVad「流程记录」页（`/executiver/process`）自动聚合展示。
+4. YiVad「流程记录」页（`/executive/process`）自动聚合展示。
 
 ## 适用场景
 

@@ -7,3 +7,5 @@ export { default as AppHeader } from './AppHeader.vue';
 export { default as ColorPicker } from './ColorPicker.vue';
 export { default as PetPreview } from './PetPreview.vue';
 export { default as RolePicker } from './RolePicker.vue';
+export { default as DashboardSummary } from './DashboardSummary.vue';
+export { default as ProviderHealth } from './ProviderHealth.vue';

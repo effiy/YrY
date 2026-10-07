@@ -1,13 +1,19 @@
 ---
+
 doc_type: test
 title: "性能火焰图诊断 — 测试用例"
-status: 待开始
+status: 方案已编写
 owner: 陈铭
 created: 2026-09-11
-updated: 2026-09-15
+updated: 2026-09-23
+priority: P2
 project: YiPet
+roles: [engineer, qa]
 prd_month: "202609"
-source_prds: ["56-性能-性能火焰图诊断"]
+source_prds: ["56-架构设计-性能火焰图诊断.md"]
+source_modules: ["56-prd-task-性能火焰图诊断.md"]
+
+type: test
 ---
 
 # 性能火焰图诊断 — 测试用例
@@ -17,3 +23,4 @@ source_prds: ["56-性能-性能火焰图诊断"]
 |------|------|------|--------|
 | TC-PFM01 | performance.mark | 自定义时间标记 | P3 |
 | TC-PFM02 | 注入耗时 < 50ms | 性能预算达标 | P2 |
+

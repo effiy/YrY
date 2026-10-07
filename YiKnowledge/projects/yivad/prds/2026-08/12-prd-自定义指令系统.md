@@ -18,6 +18,10 @@ review_status: 已评审
 issue_type: 架构
 roles: [engineer]
 source_okr: [yivad-001]
+related_modules: ["12-prd-task-自定义指令系统"]
+related_tests: ["12-prd-test-自定义指令系统"]
+benefit: "产品需求：自定义指令系统"
+lifecycle: active
 ---
 
 # YV-08-12: 自定义指令系统 — 8 个 Vue 3 指令的声明式行为增强

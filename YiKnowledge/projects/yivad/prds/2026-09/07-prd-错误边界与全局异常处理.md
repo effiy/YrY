@@ -1,5 +1,4 @@
 ---
-doc_type: prd
 title: 错误边界与全局异常处理
 tags: [错误处理, ErrorBoundary, 异常捕获, 优雅降级, 错误上报]
 category: 项目/管理后台/需求
@@ -21,6 +20,10 @@ implementation_updated: '2026-09-15'
 issue_type: 功能
 roles: [engineer, qa]
 source_okr: [yivad-001]
+related_modules: ["07-prd-task-错误边界与全局异常处理"]
+related_tests: ["07-prd-test-错误边界与全局异常处理"]
+benefit: "产品需求：错误边界与全局异常处理"
+lifecycle: active
 ---
 
 # 错误边界与全局异常处理

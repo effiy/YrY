@@ -10,14 +10,14 @@ Endpoints:
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
-import json
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 import uuid
 
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
+import orjson
 
 from services.ai.model_runtime import get_runtime
 from shared.config import settings
@@ -98,7 +98,7 @@ def _build_sse_chunk(
     }
     if usage:
         chunk["usage"] = usage
-    return f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n".encode()
+    return b"data: " + orjson.dumps(chunk) + b"\n\n"
 
 
 @router.post("/chat/completions", operation_id="openai_chat_completions")

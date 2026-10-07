@@ -9,6 +9,8 @@ type: bug
 status: resolved
 severity: trivial
 priority: p3
+benefit: "缺陷记录：质量-重复的Element样式覆盖"
+lifecycle: active
 ---
 
 # ElMessage 全局样式覆盖在多个组件中重复定义
@@ -38,7 +40,5 @@ Element Plus 的 `ElMessage`/`ElNotification` 样式覆盖在多个组件的 `<s
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **组件库样式覆盖的散落问题**：当开发者在组件 A 中需要调整 `ElMessage` 样式时，很自然地在组件的 `<style>` 中写覆盖规则。后来组件 B 也做了同样的覆盖——因为不知道组件 A 中已经有了。统一的全局样式覆盖文件（`element-overrides.scss`）是消除重复的唯一方式
 

@@ -1,5 +1,4 @@
 ---
-doc_type: test
 title: "环境标识与切换器 — 测试规格"
 status: 已完成
 priority: 高
@@ -13,6 +12,12 @@ prd_month: "202609"
 prd_task_id: "YV-09-49"
 source_prds: ["23-prd-环境标识与切换器"]
 source_modules: []
+type: test
+category: projects/yivad/tests
+source: YiVad
+tags: [yivad, test, 环境标识与切换器]
+benefit: "测试用例：环境标识与切换器"
+lifecycle: active
 ---
 # 环境标识与切换器 — 测试规格
 

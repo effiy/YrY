@@ -21,13 +21,14 @@ environment: Chrome / macOS
 affectedVersion: main
 fixedVersion: main (post-fix 2026-09-10)
 frequency: always
+benefit: "缺陷记录：数据-Docs-Tab改用ProTable"
+lifecycle: active
 ---
 
 ## Description
 
 Docs Tab 原先使用原生 `el-table`，与项目其他列表页（Issue、Module）的 ProTable 风格不一致。改用 ProTable 统一表格组件体系。
 
-**补充说明**：此问题在常规开发和测试流程中未被及时发现，建议加强对应模块的自动化测试覆盖。
 ### 变更内容
 
 | 变更 | 说明 |
@@ -79,13 +80,11 @@ Docs Tab 原先使用原生 `el-table`，与项目其他列表页（Issue、Modu
 
 | 层面 | 措施 |
 |------|------|
-| 代码 | 加强代码审查，关注此类问题模式 |
-| 测试 | 增加自动化测试覆盖对应场景 |
-| 流程 | 将此类问题纳入检查清单 |
+| 代码 | 新组件优先使用 ProTable 而非 el-table，在项目规范中明确：列表场景默认 ProTable |
+| 流程 | 新增表格 UI 的 Code Review 检查项：「是否已使用 ProTable 替代 el-table」 |
 
 ## 经验教训
 
-- 此类问题属于常见开发疏忽，可通过静态分析和自动化检查提前发现
-- 建议将典型问题模式记录到团队知识库，避免重复踩坑
-- 代码审查应重点关注此类边界情况
+- **渐进式统一**：项目早期 Docs Tab 用 `el-table` 快速搭建，后续 Issue/Module 页面统一迁移到 ProTable 后 Docs 成为不一致的例外。统一组件体系需要主动审计，而非等待挨个发现
+- **ProTable 的静态数据模式**：`:data="filteredDocItems"` + `:pagination="false"` 与常规 `requestApi` 模式不同，适用于数据量小、已在组件内完成过滤的场景
 
