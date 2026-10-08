@@ -24,3 +24,22 @@ stats.html
 *.njsproj
 *.sln
 *.sw?
+
+# 一次性调试/抓取/探查脚本（避免 check_*.mjs / debug_* / scratch_* 入库）
+check_*.mjs
+check_*.cjs
+check_*.js
+check_*.ts
+debug_*.mjs
+debug_*.js
+debug_*.ts
+scratch_*.mjs
+scratch_*.js
+scratch_*.ts
+play_*.mjs
+play_*.js
+tmp_*.mjs
+tmp_*.js
+tmp_*.ts
+*.scratch.*
+*.probe.*

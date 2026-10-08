@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts" name="projectDetail">
-import { computed, ref, provide, watch, onMounted, onBeforeUnmount } from "vue";
+import { computed, ref, provide, watch, onMounted, onBeforeUnmount, getCurrentInstance, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { syncKnowledge } from "@/api/modules/knowledgeService";
@@ -151,8 +151,12 @@ const SYNC_DELAY_MS = 6_000;
 const SYNC_TIMEOUT_MS = 20_000;
 const AUTO_SYNC_COOLDOWN_MS = 5 * 60_000;
 const RETRY_COOLDOWN_MS = 8_000;
+// ⚠️ 组件级最终 Watchdog：哪怕 Hook 内部 Promise 永不 settle / abort 链路全断，
+// 到点也必须把用户从骨架屏里放出来
+const UI_WATCHDOG_MS = 22_000;
 const AUTO_SYNC_TS_KEY = "yivad:project-detail:lastAutoKnowledgeSyncAt";
 let _syncTimer: ReturnType<typeof setTimeout> | null = null;
+let _uiWatchdogTimer: ReturnType<typeof setTimeout> | null = null;
 let _syncRunning = false;
 let _lastRetryAt = 0;
 
@@ -160,6 +164,12 @@ function clearSyncTimer() {
   if (_syncTimer !== null) {
     clearTimeout(_syncTimer);
     _syncTimer = null;
+  }
+}
+function clearUiWatchdog() {
+  if (_uiWatchdogTimer !== null) {
+    clearTimeout(_uiWatchdogTimer);
+    _uiWatchdogTimer = null;
   }
 }
 
@@ -202,14 +212,36 @@ async function safeSyncKnowledge() {
 
 onMounted(() => {
   // 延迟同步：避免首屏关键请求被重量级 disk→DB sync 抢占连接池
-  if (!shouldAutoSync()) return;
-  _syncTimer = setTimeout(() => {
-    void safeSyncKnowledge();
-  }, SYNC_DELAY_MS);
+  if (shouldAutoSync()) {
+    _syncTimer = setTimeout(() => {
+      void safeSyncKnowledge();
+    }, SYNC_DELAY_MS);
+  }
+  // UI 层 Watchdog — 组件级最终兜底出口
+  _uiWatchdogTimer = setTimeout(() => {
+    if (!headerReady.value && error.value == null) {
+      // 无论 Hook 内部发生了什么，都强制从骨架屏推出
+      error.value =
+        "加载项目信息超时，可能是网络波动或后端服务繁忙。请检查 YiAi 后端（默认 http://localhost:10086）是否正常运行后点击「重试」。";
+      loading.value = false;
+    }
+  }, UI_WATCHDOG_MS);
+  // 一旦 headerReady 成功或 error 被设置，立即清理 watchdog 释放资源
+  const unwatch = watch(
+    [headerReady, error],
+    ([hr, e]) => {
+      if (hr || e != null) {
+        clearUiWatchdog();
+        unwatch();
+      }
+    },
+    { flush: "post" }
+  );
 });
 
 onBeforeUnmount(() => {
   clearSyncTimer();
+  clearUiWatchdog();
 });
 
 // ── 日期筛选 ──
@@ -242,6 +274,8 @@ watch(activeTab, tab => {
   _lastRetryAt = now;
   retry();
 });
+
+// #endregion
 
 const tabStore = useTabsStore();
 const previewDlgRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);

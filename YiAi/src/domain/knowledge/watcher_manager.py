@@ -95,31 +95,7 @@ class KnowledgeWatcherManager:
             logger.warning(f"Knowledge base dir does not exist: {base}")
             return {"synced": 0, "deleted": 0}
 
-        _dbg_trace = f"knowledge-sync-{int(time.time() * 1000)}"
-        _snapshot_started = time.perf_counter()
         abs_paths, snapshot = _build_all_snapshot(base)
-        # #region debug-point B:sync-snapshot
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "B",
-                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:snapshot",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] knowledge-sync snapshot built",
-                    "data": {
-                        "durationMs": int((time.perf_counter() - _snapshot_started) * 1000),
-                        "fileCount": len(abs_paths),
-                    },
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
         db_snapshot = await self._load_db_snapshot(collection)
         curr_keys = set(snapshot.keys())
         prev_keys = set(db_snapshot.keys())
@@ -127,59 +103,8 @@ class KnowledgeWatcherManager:
         removed = sorted(prev_keys - curr_keys)
         to_upsert = {rel: abs_paths[rel] for rel in changed_or_added}
 
-        _upsert_started = time.perf_counter()
         synced = await self._bulk_upsert(collection, to_upsert)
-        # #region debug-point C:sync-upsert
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "C",
-                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:upsert",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] knowledge-sync bulk upsert done",
-                    "data": {
-                        "durationMs": int((time.perf_counter() - _upsert_started) * 1000),
-                        "synced": synced,
-                        "fileCount": len(abs_paths),
-                        "upsertCandidates": len(to_upsert),
-                        "dbTracked": len(db_snapshot),
-                    },
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
-        _delete_started = time.perf_counter()
         deleted = await self._bulk_delete(collection, set(abs_paths.keys()), stale_paths=removed)
-        # #region debug-point C:sync-delete
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "C",
-                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:delete",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] knowledge-sync bulk delete done",
-                    "data": {
-                        "durationMs": int((time.perf_counter() - _delete_started) * 1000),
-                        "deleted": deleted,
-                        "keepCount": len(abs_paths),
-                        "deleteCandidates": len(removed),
-                    },
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
         self._last_meta_snapshot = snapshot
 
         self._last_scan_time = _now_str()

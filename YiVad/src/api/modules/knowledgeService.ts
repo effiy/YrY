@@ -166,20 +166,6 @@ export function syncKnowledge(
     if (timer) { clearTimeout(timer); timer = null; }
     if (unsub) { unsub(); unsub = null; }
   };
-  // #region debug-point D:client-sync-request
-  fetch("http://127.0.0.1:7777/event", {
-    method: "POST",
-    body: JSON.stringify({
-      sessionId: "knowledge-sync-slow",
-      runId: "post-fix",
-      hypothesisId: "D",
-      location: "src/api/modules/knowledgeService.ts:syncKnowledge",
-      msg: "[DEBUG] knowledge-sync client request start",
-      data: { timeoutMs, hasSignal: Boolean(signal), url },
-      ts: Date.now()
-    })
-  }).catch(() => {});
-  // #endregion
   if (timeoutMs > 0) {
     timer = setTimeout(() => {
       if (!ctrl.signal.aborted) ctrl.abort(new DOMException(`Timeout after ${timeoutMs}ms: /knowledge-sync`, "AbortError"));
@@ -211,47 +197,9 @@ export function syncKnowledge(
       return data.data;
     })
     .then((result) => {
-      // #region debug-point D:client-sync-success
-      fetch("http://127.0.0.1:7777/event", {
-        method: "POST",
-        body: JSON.stringify({
-          sessionId: "knowledge-sync-slow",
-          runId: "post-fix",
-          hypothesisId: "D",
-          location: "src/api/modules/knowledgeService.ts:syncKnowledge",
-          msg: "[DEBUG] knowledge-sync client request success",
-          data: {
-            durationMs: Date.now() - startedAt,
-            synced: result?.synced ?? 0,
-            deleted: result?.deleted ?? 0,
-            ragStatus: result?.rag?.status ?? null,
-            ragError: result?.rag?.error ?? null
-          },
-          ts: Date.now()
-        })
-      }).catch(() => {});
-      // #endregion
       return result;
     })
     .catch((error: unknown) => {
-      // #region debug-point D:client-sync-fail
-      fetch("http://127.0.0.1:7777/event", {
-        method: "POST",
-        body: JSON.stringify({
-          sessionId: "knowledge-sync-slow",
-          runId: "post-fix",
-          hypothesisId: "D",
-          location: "src/api/modules/knowledgeService.ts:syncKnowledge",
-          msg: "[DEBUG] knowledge-sync client request failed",
-          data: {
-            durationMs: Date.now() - startedAt,
-            name: error instanceof Error ? error.name : typeof error,
-            message: error instanceof Error ? error.message : String(error)
-          },
-          ts: Date.now()
-        })
-      }).catch(() => {});
-      // #endregion
       throw error;
     })
     .finally(() => {

@@ -175,7 +175,11 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     const ticket = ++_lastFetchTicket;
     const isLatest = () => ticket === _lastFetchTicket && !bag.isDisposed;
 
-    bag.dispose();
+    // ⚠️ 关键修复：之前用 bag.dispose() 会把 bag.isDisposed 设为 true，
+    // 后续 bag.addFn(() => localBag.dispose()) 会立刻 dispose localBag，
+    // 进而引发 fetchBag 被 dispose，最终 ctrl 被 abort，请求被 cancel。
+    // 改用 reset() 仅清空容器内条目但保留容器处于活动状态。
+    bag.reset();
     const localBag = new DisposerBag();
     bag.addFn(() => localBag.dispose());
 
@@ -186,9 +190,29 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     error.value = null;
     stageStatus.value = { knowledge: "success", issues: "success", modules: "success" };
 
+    // ── P1 看门狗（最终兜底） ──────────────────────────────────────
+    const WATCHDOG_MS = P1_TIMEOUT + 4_000;
+    const watchdogTimer = setTimeout(() => {
+      if (!isLatest() || headerReady.value || error.value) return;
+      if (store.currentProject != null && store.currentProject.key === key) {
+        headerReady.value = true;
+      } else if (store.currentProject == null) {
+        headerReady.value = true;
+      } else {
+        store.currentProject = null;
+        headerReady.value = true;
+      }
+      loading.value = false;
+    }, WATCHDOG_MS);
+    localBag.addTimer(watchdogTimer);
+
+    let settled = false;
     const p1Started = performance.now();
     try {
+      let __attempt_counter = 0;
       await withRetry(async () => {
+        __attempt_counter++;
+        const attempt = __attempt_counter - 1;
         const fetchBag = new DisposerBag();
         localBag.addFn(() => fetchBag.dispose());
         startP1Timer(fetchBag, ticket, "project");
@@ -205,6 +229,7 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
           clearTimeout(timeoutId);
         }
       }, P1_RETRY);
+      settled = true;
       if (!isLatest()) {
         if (!silent) loading.value = false;
         return;
@@ -218,11 +243,14 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         retryCount: 0
       });
     } catch (err) {
+      settled = true;
       if (!isLatest()) {
         if (!silent) loading.value = false;
         return;
       }
-      const aborted = /AbortError|aborted|canceled/i.test(String((err as any)?.message ?? ""));
+      const errMsg = String((err as any)?.message ?? (err as any)?.code ?? "");
+      const CANCEL_PATTERNS = /AbortError|aborted|canceled|cancelled|the user aborted|ERR_CANCELED|request aborted/i;
+      const aborted = CANCEL_PATTERNS.test(errMsg);
       const dur = Math.max(0, Math.round(performance.now() - p1Started));
       pushReliabilityEvent({
         projectKey: key,
@@ -231,13 +259,22 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         durationMs: dur,
         retryCount: 0,
         errorType: classifyReliabilityError(err),
-        errorMessage: String((err as any)?.message ?? "")
+        errorMessage: errMsg
       });
       if (!aborted) {
         error.value = "加载项目失败，请检查网络后重试";
+        loading.value = false;
+        return;
+      }
+      if (store.currentProject != null && store.currentProject.key === key) {
+        error.value = null;
+        headerReady.value = true;
       } else if (store.currentProject == null) {
         error.value = null;
         headerReady.value = true;
+      } else {
+        store.currentProject = null;
+        error.value = "加载项目失败，请检查网络后重试";
       }
       loading.value = false;
       return;
@@ -340,6 +377,8 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
   watch(
     () => projectKey.value,
     (newKey, oldKey) => {
+      const isFirstFlush = oldKey === undefined;
+      if (isFirstFlush) return;
       if (newKey && newKey !== oldKey) {
         void fetchProject();
       } else if (!newKey && _didInitialFetch) {

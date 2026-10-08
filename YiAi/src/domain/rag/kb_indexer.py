@@ -871,50 +871,7 @@ def rebuild_index() -> Any:
 
 async def rebuild_index_async() -> Any:
     async with _index_lock:
-        _dbg_trace = f"knowledge-sync-rag-{int(time.time() * 1000)}"
-        _dbg_started = time.perf_counter()
-        # #region debug-point E:rag-rebuild-start
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "E",
-                    "location": "src/domain/rag/kb_indexer.py:rebuild_index_async:start",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] rag rebuild start",
-                    "data": {"buildInProgress": _build_in_progress},
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
         _result = await asyncio.to_thread(rebuild_index)
-        # #region debug-point E:rag-rebuild-finish
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "E",
-                    "location": "src/domain/rag/kb_indexer.py:rebuild_index_async:finish",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] rag rebuild finish",
-                    "data": {
-                        "durationMs": int((time.perf_counter() - _dbg_started) * 1000),
-                        "resultType": type(_result).__name__ if _result is not None else None,
-                    },
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
         return _result
 
 

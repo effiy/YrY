@@ -32,20 +32,15 @@ export async function withRetry<T>(requestFn: () => Promise<T>, config: RetryCon
       const msg = (error as any)?.message ?? "";
       const code = (error as any)?.code ?? "";
       const name = (error as any)?.name ?? "";
-      // Abort/cancel means caller intentionally ended the request (route switch,
-      // component unmount, or business timeout handled by upper layer). Retrying
-      // these only extends user-visible latency and creates noisy duplicate work.
       const isAbortLike =
         code === "ERR_CANCELED" ||
         /AbortError|aborted|canceled|cancelled/i.test(String(msg)) ||
         /AbortError|CanceledError/i.test(String(name));
-      if (isAbortLike) {
-        // Return rejected promise instead of throwing, so caller can catch it
-        // via try-catch around await. Throwing here would bypass caller's catch.
-        return Promise.reject(error);
-      }
       const shouldRetryByStatus = status ? retryOnStatus.includes(status) : false;
       const shouldRetryByMessage = retryOnMessage.test(msg);
+      if (isAbortLike) {
+        return Promise.reject(error);
+      }
       if (!shouldRetryByStatus && !shouldRetryByMessage) {
         throw error;
       }

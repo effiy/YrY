@@ -8,6 +8,7 @@
  *   - 任何创建 setTimeout/setInterval 的模块都必须把返回句柄 addTimer 到 bag；
  *   - 任何创建 AbortController 的模块都必须 addAbort 到 bag；
  *   - 组件卸载、Hook 停止、请求 cancel 触发时，统一调 bag.dispose()。
+ *   - 如果需要"清理内部条目但保持容器可继续注册"，用 reset() 而不是 dispose()。
  */
 type TimerHandle = number | ReturnType<typeof setTimeout> | ReturnType<typeof setInterval>;
 
@@ -72,6 +73,18 @@ export class DisposerBag {
       }
     }
     return true;
+  }
+
+  /**
+   * 重置容器状态：清空所有已注册条目并解除 disposed 标记。
+   *
+   * 适用于"清理内部资源但保留容器继续接收新资源"的场景。
+   * 与 dispose() 不同：reset() 不会通知已注册的 cleanup（不会主动 abort 已注册的 AbortController）。
+   * 调用方需自行负责清理需要立即终止的资源。
+   */
+  reset(): void {
+    this.entries.clear();
+    this.disposed = false;
   }
 
   /** 当前是否已清理 */

@@ -21,11 +21,32 @@ export class AxiosCanceler {
    * @return void
    */
   addPending(config: CustomAxiosRequestConfig) {
+    const url = getPendingUrl(config);
+    const hadPrevious = pendingMap.has(url);
+    const hasOuter = config.signal instanceof AbortSignal;
+    const outerAborted = hasOuter && (config.signal as AbortSignal).aborted;
     // Before the request starts, check and cancel previous requests
     this.removePending(config);
-    const url = getPendingUrl(config);
     const controller = new AbortController();
-    config.signal = controller.signal;
+    // ⚠️ NEVER blindly overwrite an external signal — combine them.
+    let combineMode: "any" | "chain" | "override" = "override";
+    if (config.signal instanceof AbortSignal && typeof (AbortSignal as any).any === "function") {
+      config.signal = (AbortSignal as any).any([config.signal, controller.signal]);
+      combineMode = "any";
+    } else if (config.signal instanceof AbortSignal) {
+      // Fallback for very old runtimes: chain via addEventListener
+      const outer = config.signal;
+      if (outer.aborted) {
+        controller.abort((outer as any).reason);
+      } else {
+        outer.addEventListener("abort", () => controller.abort((outer as any).reason), { once: true });
+      }
+      config.signal = controller.signal;
+      combineMode = "chain";
+    } else {
+      config.signal = controller.signal;
+      combineMode = "override";
+    }
     pendingMap.set(url, controller);
   }
 
@@ -37,8 +58,12 @@ export class AxiosCanceler {
     const url = getPendingUrl(config);
     // If the current request identifier exists in pending, cancel the request and delete the entry
     const controller = pendingMap.get(url);
+    const exists = !!controller;
+    let reason = "";
     if (controller) {
-      controller.abort();
+      try {
+        controller.abort();
+      } catch (e: any) { reason = String(e?.message || e); }
       pendingMap.delete(url);
     }
   }

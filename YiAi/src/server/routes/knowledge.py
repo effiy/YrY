@@ -211,52 +211,8 @@ async def knowledge_goals_route(request: KnowledgeGoalsRequest):
 
 @router.post("/knowledge-sync", operation_id="knowledge_sync")
 async def knowledge_sync_route():
-    _dbg_trace = f"knowledge-sync-{int(time.time() * 1000)}"
-    _dbg_started = time.perf_counter()
-    # #region debug-point A:route-entry
-    try:
-        urllib.request.urlopen(urllib.request.Request(
-            "http://127.0.0.1:7777/event",
-            data=json.dumps({
-                "sessionId": "knowledge-sync-slow",
-                "runId": "post-fix",
-                "hypothesisId": "A",
-                "location": "src/server/routes/knowledge.py:knowledge_sync_route:start",
-                "traceId": _dbg_trace,
-                "msg": "[DEBUG] knowledge-sync route start",
-                "data": {},
-                "ts": int(time.time() * 1000),
-            }).encode(),
-            headers={"Content-Type": "application/json"},
-        ), timeout=0.8).read()
-    except Exception:
-        pass
-    # #endregion
     _sync_started = time.perf_counter()
     data = await sync_knowledge_full()
-    # #region debug-point A:route-after-sync
-    try:
-        urllib.request.urlopen(urllib.request.Request(
-            "http://127.0.0.1:7777/event",
-            data=json.dumps({
-                "sessionId": "knowledge-sync-slow",
-                "runId": "post-fix",
-                "hypothesisId": "A",
-                "location": "src/server/routes/knowledge.py:knowledge_sync_route:after-sync",
-                "traceId": _dbg_trace,
-                "msg": "[DEBUG] knowledge-sync route sync_knowledge_full done",
-                "data": {
-                    "durationMs": int((time.perf_counter() - _sync_started) * 1000),
-                    "synced": data.get("synced", 0),
-                    "deleted": data.get("deleted", 0),
-                },
-                "ts": int(time.time() * 1000),
-            }).encode(),
-            headers={"Content-Type": "application/json"},
-        ), timeout=0.8).read()
-    except Exception:
-        pass
-    # #endregion
     # Best-effort RAG rebuild — failures must not fail the sync itself.
     try:
         from domain.rag import is_index_building, rag_status, rebuild_index_async
@@ -267,34 +223,11 @@ async def knowledge_sync_route():
             except Exception as e:
                 logger.warning(f"RAG rebuild after knowledge-sync failed: {e}", exc_info=True)
 
-        _rag_started = time.perf_counter()
         if not is_index_building():
             asyncio.create_task(_background_rebuild())
             data["rag"] = {**rag_status(), "status": "scheduled"}
         else:
             data["rag"] = {**rag_status(), "status": "building"}
-        # #region debug-point E:route-after-rag
-        try:
-            urllib.request.urlopen(urllib.request.Request(
-                "http://127.0.0.1:7777/event",
-                data=json.dumps({
-                    "sessionId": "knowledge-sync-slow",
-                    "runId": "post-fix",
-                    "hypothesisId": "E",
-                    "location": "src/server/routes/knowledge.py:knowledge_sync_route:after-rag",
-                    "traceId": _dbg_trace,
-                    "msg": "[DEBUG] knowledge-sync route rag rebuild scheduled",
-                    "data": {
-                        "durationMs": int((time.perf_counter() - _rag_started) * 1000),
-                        "status": data.get("rag", {}).get("status") if isinstance(data.get("rag"), dict) else None,
-                    },
-                    "ts": int(time.time() * 1000),
-                }).encode(),
-                headers={"Content-Type": "application/json"},
-            ), timeout=0.8).read()
-        except Exception:
-            pass
-        # #endregion
     except Exception as e:
         logger.warning(f"RAG rebuild after knowledge-sync failed: {e}", exc_info=True)
         data["rag"] = {"error": str(e)}
@@ -302,31 +235,6 @@ async def knowledge_sync_route():
     await cache.delete_pattern("knowledge:*")
     await cache.delete("rag:categories")
     await cache.delete("rag:status")
-    # #region debug-point A:route-exit
-    try:
-        urllib.request.urlopen(urllib.request.Request(
-            "http://127.0.0.1:7777/event",
-            data=json.dumps({
-                "sessionId": "knowledge-sync-slow",
-                "runId": "post-fix",
-                "hypothesisId": "A",
-                "location": "src/server/routes/knowledge.py:knowledge_sync_route:exit",
-                "traceId": _dbg_trace,
-                "msg": "[DEBUG] knowledge-sync route success",
-                "data": {
-                    "durationMs": int((time.perf_counter() - _dbg_started) * 1000),
-                    "synced": data.get("synced", 0),
-                    "deleted": data.get("deleted", 0),
-                    "ragStatus": data.get("rag", {}).get("status") if isinstance(data.get("rag"), dict) else None,
-                    "ragError": data.get("rag", {}).get("error") if isinstance(data.get("rag"), dict) else None,
-                },
-                "ts": int(time.time() * 1000),
-            }).encode(),
-            headers={"Content-Type": "application/json"},
-        ), timeout=0.8).read()
-    except Exception:
-        pass
-    # #endregion
     return success(data=data)
 
 
