@@ -60,14 +60,23 @@ async def _list_collection(name: str, sort: str = "order") -> list[dict]:
 
 
 def _build_tree(docs: list[dict], parent_field: str = "parent", id_field: str = "id") -> list[dict]:
-    """Build nested tree from flat documents with parent references."""
+    """Build nested tree from flat documents with parent references.
+
+    Treats ``parent == None``, ``parent == ""``, ``parent == "ROOT"``, or any
+    parent value that does not resolve to an existing document as a top-level
+    (root) node — so malformed or legacy parent values are surfaced instead
+    of being silently dropped.
+    """
     by_id: dict[str, dict] = {d[id_field]: d for d in docs}
     roots: list[dict] = []
+    ROOT_TOKENS = {None, "", "ROOT", "root", "/"}
     for d in docs:
         parent = d.get(parent_field)
-        if parent and parent in by_id:
+        if parent and parent not in ROOT_TOKENS and parent in by_id:
             by_id[parent].setdefault("children", []).append(d)
-        elif not parent:
+        else:
+            # Either explicitly top-level (None/"" / "ROOT") or orphaned by an
+            # unknown parent — promote to top-level so callers can see it.
             roots.append(d)
     return roots
 
@@ -80,13 +89,47 @@ async def get_menu_tree(use_cache: bool = True) -> list[dict]:
 
     Single source of truth for menu reads — used by /auth/menu/list,
     /system/menus, and the app cache warmup.
+
+    Parent-link compatibility
+    -------------------------
+    Seed data in ``authMenuList.json`` historically uses the **path** as the
+    parent pointer (``parent: "/system"``). Once menus are written through the
+    RPC CRUD (create/update_document), the stable identifier is the **key**
+    (``menu_xxx`` / a uuid). We detect which convention the dataset is using
+    on-the-fly by trying both join keys, so neither dataset is orphaned.
     """
     async def _fetch():
         docs = await _list_collection("menus")
-        has_parent = any(d.get("parent") for d in docs)
-        if has_parent:
-            return _build_tree(docs, parent_field="parent", id_field="path")
-        return docs
+        # 1) Try the legacy parent=path join first (matches seed data & bulk-reset)
+        tree_by_path = _build_tree(docs, parent_field="parent", id_field="path")
+        # 2) A dataset is "well-shaped by path" when: we have at least 1 root
+        #    and every doc with a non-null parent actually resolved (no orphans)
+        roots = [d for d in tree_by_path]
+        with_parents = sum(1 for d in docs if d.get("parent"))
+        orphans = []
+
+        def _walk(nodes: list[dict], acc: list[dict]):
+            for n in nodes:
+                acc.append(n)
+                if n.get("children"):
+                    _walk(n["children"], acc)
+        flat: list[dict] = []
+        _walk(roots, flat)
+        resolved_with_children = len(flat) - len(roots)
+        if resolved_with_children == 0 and with_parents:
+            orphans = [d for d in docs if d.get("parent")]
+        if not orphans and roots:
+            return tree_by_path
+        # 3) Fallback: parent holds a document key (the RPC/CRUD style). This
+        #    is the new canonical shape — keys are stable UUIDs, paths can be
+        #    edited by the menu admin page.
+        tree_by_key = _build_tree(docs, parent_field="parent", id_field="key")
+        flat2: list[dict] = []
+        _walk(tree_by_key, flat2)
+        if len(flat2) >= len(flat):
+            return tree_by_key
+        # 4) Pick whichever join kept more nodes visible (best-effort).
+        return tree_by_path if len(flat) >= len(flat2) else tree_by_key
 
     if use_cache:
         return await cache.get_or_set("system:menus", _fetch, ttl=CACHE_TTL["data:menus"])

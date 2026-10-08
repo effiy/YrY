@@ -90,6 +90,12 @@ def create_app(
     ]
     for router, tag in routers:
         app.include_router(router, tags=[tag])
+    # YiVad's axios baseURL is "/api", and the dev proxy usually strips that
+    # prefix before forwarding. However the exact path "/api/" (e.g. the RPC
+    # envelope POST "" from the frontend → resolves to "/api/" in the browser)
+    # can fail to match some proxy context patterns, so we mount the
+    # execution router a second time under "/api" to guarantee reachability.
+    app.include_router(execution.router, prefix="/api", tags=["ExecutionCompat"])
     app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 
     origins = settings.get_cors_origins()

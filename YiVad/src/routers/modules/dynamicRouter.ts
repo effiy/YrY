@@ -13,6 +13,59 @@ import viewsGlob from "@yivad/views-glob";
 const modules = viewsGlob as Record<string, () => Promise<any>>;
 
 /**
+ * Convert a camelCase/PascalCase path segment to kebab-case.
+ *   "menuMange"    → "menu-manage"
+ *   "accountManage" → "account-manage"
+ *   "AiChat"       → "ai-chat"
+ */
+function kebab(s: string): string {
+  return s
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+}
+
+/**
+ * Resolve a menu `component` string (e.g. "/system/menuMange/index") to a
+ * lazy view loader from `modules`.
+ *
+ * The menu tree has historically used camelCase names but the filesystem uses
+ * kebab-case. We try several fallbacks so existing seed data & DB docs still
+ * work without a migration:
+ *
+ *   1. exact:  `/src/views/${component}.vue`
+ *   2. each path segment rewritten to kebab-case
+ *   3. remove trailing `/index` (handles `/foo/index` when view is `/foo.vue`)
+ */
+function resolveComponent(component: string): (() => Promise<any>) | undefined {
+  if (!component) return undefined;
+
+  const variants = new Set<string>();
+  const normalized = component.startsWith("/") ? component : `/${component}`;
+
+  // 1) exact path
+  variants.add(`/src/views${normalized}.vue`);
+
+  // 2) each segment converted to kebab-case
+  const segmentsKebab = normalized.split("/").map(seg => (seg ? kebab(seg) : "")).join("/");
+  if (segmentsKebab !== normalized) {
+    variants.add(`/src/views${segmentsKebab}.vue`);
+  }
+
+  // 3) strip trailing /index for both forms
+  [normalized, segmentsKebab].forEach(form => {
+    if (form.endsWith("/index")) {
+      variants.add(`/src/views${form.slice(0, -"/index".length)}.vue`);
+    }
+  });
+
+  for (const key of variants) {
+    if (modules[key]) return modules[key];
+  }
+  return undefined;
+}
+
+/**
  * @description Initialize dynamic routes
  */
 export const initDynamicRouter = async () => {
@@ -50,9 +103,8 @@ export const initDynamicRouter = async () => {
       } as RouteRecordRaw;
 
       if (item.component && typeof item.component == "string") {
-        const resolved = modules["/src/views" + item.component + ".vue"];
-        if (!resolved) return;
-        route.component = resolved;
+        const resolved = resolveComponent(item.component);
+        if (resolved) route.component = resolved;
       } else if (item.redirect && !item.component) {
         route.redirect = item.redirect;
       }

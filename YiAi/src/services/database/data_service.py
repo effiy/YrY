@@ -70,6 +70,27 @@ def _fire_invalidate(collection: str, doc_key: str | None = None):
         loop.create_task(_invalidate_doc_cache(collection, doc_key))
         if collection in ("issues", "bugs"):
             loop.create_task(asyncio.to_thread(_invalidate_analytics_cache))
+        if collection == "menus":
+            # Dedicated cache key used by the menu-tree endpoints
+            # (routes/system.get_menu_tree / routes/auth.menu_list). Data RPC
+            # writes bypass those REST endpoints, so we must drop the
+            # aggregated tree entry here to keep the sidebar & menu
+            # management table in sync. Mutation layer deletes the same key
+            # too; we do it twice (once here, once there) defensively.
+            async def _drop_system_menus_key():
+                for attempt in range(3):
+                    try:
+                        await cache.delete("system:menus")
+                        return
+                    except Exception:
+                        if attempt < 2:
+                            await asyncio.sleep(0.1 * (attempt + 1))
+                        else:
+                            logger.warning(
+                                "Failed to drop cache key system:menus after 3 retries",
+                                exc_info=True,
+                            )
+            loop.create_task(_drop_system_menus_key())
     except RuntimeError:
         pass
 

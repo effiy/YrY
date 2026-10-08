@@ -108,7 +108,7 @@ class RequestHttp {
         } else if (error.message.indexOf("Network Error") !== -1) {
           ElMessage.error(friendlyMessage);
         } else if (response) {
-          checkStatus(response.status);
+          checkStatus(response.status, response.config?.url ?? error.config?.url ?? undefined);
         }
 
         // Report API errors

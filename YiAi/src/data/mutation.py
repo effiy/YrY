@@ -11,6 +11,7 @@ from bson import ObjectId
 from data.database import db, write_concern
 from data.helpers import _QUERY_MAX_TIME_MS, _resolve_bug_markdown_path, _resolve_issue_markdown_path, _validate_collection_name
 from domain.knowledge.writer import delete_entry_markdown
+from shared.cache import cache
 from shared.config import settings
 from shared.error_codes import ErrorCode
 from shared.exceptions import BusinessException
@@ -74,6 +75,9 @@ async def create_document(params: dict[str, Any]) -> dict[str, Any]:
             raise BusinessException(ErrorCode.BUSINESS_ERROR, message="Data creation failed: unique constraint violation") from e
         raise
 
+    if collection_name == "menus":
+        await cache.delete("system:menus")
+
     return {"key": data_copy["key"]}
 
 
@@ -127,6 +131,9 @@ async def update_document(params: dict[str, Any]) -> dict[str, Any]:
         query_filter, {"$set": update_data}
     )
 
+    if collection_name == "menus":
+        await cache.delete("system:menus")
+
     return {"query": query_filter, "updated": True}
 
 
@@ -171,6 +178,9 @@ async def upsert_document(params: dict[str, Any]) -> dict[str, Any]:
         filter_doc, update_doc, upsert=True
     )
 
+    if collection_name == "menus":
+        await cache.delete("system:menus")
+
     return {
         "matched_count": result.matched_count,
         "modified_count": result.modified_count,
@@ -212,6 +222,9 @@ async def delete_document(params: dict[str, Any]) -> dict[str, Any]:
                 logger.warning(f"Markdown file not found: {markdown_path}")
         except Exception as e:
             logger.warning(f"Failed to delete markdown for key={doc_id}: {e}")
+
+    if collection_name == "menus":
+        await cache.delete("system:menus")
 
     return {"key": doc_id, "deleted": True}
 

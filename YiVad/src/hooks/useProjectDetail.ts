@@ -161,6 +161,8 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     bagLocal.addTimer(t);
   }
 
+  let _lastFetchTicket = 0;
+
   async function fetchProject(silent = false): Promise<void> {
     const key = projectKey.value;
     if (!key) {
@@ -170,8 +172,9 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
       return;
     }
 
-    // 0) 新请求推进 seq → 老请求到达结果静默丢弃；同时 dispose 老请求 bag
-    const seq = mkSeq();
+    const ticket = ++_lastFetchTicket;
+    const isLatest = () => ticket === _lastFetchTicket && !bag.isDisposed;
+
     bag.dispose();
     const localBag = new DisposerBag();
     bag.addFn(() => localBag.dispose());
@@ -181,17 +184,14 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
       headerReady.value = false;
     }
     error.value = null;
-    // 默认先设各 stage 为 success；在阶段内按结果覆写
     stageStatus.value = { knowledge: "success", issues: "success", modules: "success" };
 
-    // P1: Project（单独处理，因失败需要整页 error）
-    // 可靠性增强：signal + timeout 双向传递给 axios，确保 P1_TIMEOUT 不被绕过
     const p1Started = performance.now();
     try {
       await withRetry(async () => {
         const fetchBag = new DisposerBag();
         localBag.addFn(() => fetchBag.dispose());
-        startP1Timer(fetchBag, seq, "project");
+        startP1Timer(fetchBag, ticket, "project");
         const ctrl = new AbortController();
         fetchBag.addAbort(ctrl);
         const timeoutId = setTimeout(() => ctrl.abort(new DOMException("Project fetch timeout", "AbortError")), P1_TIMEOUT);
@@ -205,7 +205,7 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
           clearTimeout(timeoutId);
         }
       }, P1_RETRY);
-      if (!isActive(seq)) return;
+      if (!isLatest()) return;
       headerReady.value = true;
       pushReliabilityEvent({
         projectKey: key,
@@ -215,33 +215,41 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         retryCount: 0
       });
     } catch (err) {
-      if (!isActive(seq)) return;
+      if (!isLatest()) return;
+      const aborted = /AbortError|aborted|canceled/i.test(String((err as any)?.message ?? ""));
       const dur = Math.max(0, Math.round(performance.now() - p1Started));
       pushReliabilityEvent({
         projectKey: key,
         phase: "P1-project",
-        status: "failed",
+        status: aborted ? "aborted" as any : "failed",
         durationMs: dur,
         retryCount: 0,
         errorType: classifyReliabilityError(err),
         errorMessage: String((err as any)?.message ?? "")
       });
-      error.value = "加载项目失败，请检查网络后重试";
+      if (!aborted) {
+        error.value = "加载项目失败，请检查网络后重试";
+      } else if (store.currentProject == null) {
+        error.value = null;
+        headerReady.value = true;
+      }
       loading.value = false;
       return;
     }
 
-    // P2: 并行三个 stage，每 stage 完成立即赋值（Partial Rendering）
-    const p2Seq = seq;
+    if (!isLatest()) {
+      loading.value = false;
+      return;
+    }
+
     const stages = [
-      makeKnowledgeStage(key, localBag, knowledgeFiles, allBugs, stageStatus, p2Seq, isActive),
-      makeIssuesStage(key, localBag, allIssues, stageStatus, p2Seq, isActive),
-      makeModulesStage(key, localBag, allModules, stageStatus, p2Seq, isActive)
+      makeKnowledgeStage(key, localBag, knowledgeFiles, allBugs, stageStatus, ticket, isLatest),
+      makeIssuesStage(key, localBag, allIssues, stageStatus, ticket, isLatest),
+      makeModulesStage(key, localBag, allModules, stageStatus, ticket, isLatest)
     ] as const;
 
-    void runParallelAndTrack(stages, localBag, p2Seq, isActive).then(outcomes => {
-      if (!isActive(p2Seq)) return;
-      // 仅在三项全失败时才触发整页 error；其余情况静默降级
+    runParallelAndTrack(stages, localBag, ticket, isLatest).then(outcomes => {
+      if (!isLatest()) return;
       const allFailed = outcomes.every(o => o.status === "failed" || o.status === "circuit-open");
       if (allFailed) {
         error.value = "概览数据暂时不可用，请稍后重试";
@@ -249,6 +257,9 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         error.value = null;
       }
       lastUpdated.value = Date.now();
+      if (!silent) loading.value = false;
+    }).catch(() => {
+      if (!isLatest()) return;
       if (!silent) loading.value = false;
     });
   }
@@ -282,14 +293,37 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     }
   }
 
+  const didMount = ref(false);
+
   onMounted(() => {
-    // 注意：watch(projectKey, { immediate:true }) 已经在 setup 阶段触发了首次调用
-    // 这里保留 onMounted 仅作为生命周期完整性保险，不再重复调用
+    didMount.value = true;
+    const boot = () => {
+      const k = projectKey.value;
+      if (!k) return false;
+      void fetchProject();
+      return true;
+    };
+    if (!boot()) {
+      const t1 = setTimeout(boot, 50);
+      bag.addTimer(t1);
+      const t2 = setTimeout(boot, 250);
+      bag.addTimer(t2);
+    }
   });
 
-  watch(projectKey, newKey => {
-    if (newKey) fetchProject();
-  }, { immediate: true });
+  watch(
+    () => projectKey.value,
+    (newKey, oldKey) => {
+      if (newKey && newKey !== oldKey && didMount.value) {
+        void fetchProject();
+      } else if (!newKey && didMount.value) {
+        loading.value = false;
+        headerReady.value = false;
+        error.value = "项目 key 缺失";
+      }
+    },
+    { flush: "post" }
+  );
 
   onUnmounted(() => {
     stopPolling();

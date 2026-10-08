@@ -9,7 +9,7 @@
     <ProTable
       ref="proTable"
       :title="$t('menu.title')"
-      row-key="path"
+      row-key="key"
       :pagination="false"
       :tree-props="{ children: 'children' }"
       :default-expand-all="false"
@@ -295,6 +295,10 @@ function populateForm(row: any) {
 }
 
 function openEdit(row: any) {
+  if (!row.key) {
+    ElMessage.error(t("menu.messages.noKeyForEdit"));
+    return;
+  }
   isAdd.value = false;
   editingKey.value = row.key ?? "";
   populateForm(row);
@@ -365,6 +369,16 @@ async function handleDelete(row: any) {
   if (!ok) return;
   try {
     await deleteMenu(row.key);
+    // 如果菜单有子项，递归清理（因为当前 RPC deleteDocument 只按 key 删除单条，不会级联）
+    async function deleteTree(items: any[]): Promise<void> {
+      for (const item of items) {
+        if (item.children?.length) await deleteTree(item.children);
+        if (item.key) {
+          try { await deleteMenu(item.key); } catch { /* continue */ }
+        }
+      }
+    }
+    if (row.children?.length) await deleteTree(row.children);
     ElMessage.success(t("menu.messages.deleted"));
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
@@ -413,18 +427,37 @@ const columns: ColumnProps[] = [
   { prop: "operation", label: t("menu.operations"), width: 180, fixed: "right" }
 ];
 
-async function batchDelete(paths: (string | number)[]) {
-  if (!paths.length) return;
+async function batchDelete(keys: (string | number)[]) {
+  if (!keys.length) return;
   const ok = await confirm(
-    t("menu.messages.deleteConfirm", { name: `${paths.length} menu(s)` }),
+    t("menu.messages.deleteConfirm", { name: `${keys.length} menu(s)` }),
     t("menu.batchDeleteTitle"),
     "error"
   );
   if (!ok) return;
-  for (const path of paths) {
-    try { await deleteMenu(String(path)); } catch { /* continue */ }
+  // 1) 收集命中的完整节点（含 key 与 children），避免传错主键
+  const keySet = new Set(keys.map(String));
+  function collectNodes(nodes: any[], out: any[]): void {
+    for (const n of nodes) {
+      if (n.key && keySet.has(String(n.key))) out.push(n);
+      if (n.children?.length) collectNodes(n.children, out);
+    }
   }
-  ElMessage.success(t("menu.messages.batchDeletedSuccess", { count: paths.length }));
+  const hit: any[] = [];
+  collectNodes(menuData.value, hit);
+
+  // 2) 级联收集所有待删 key（子项也一并删除，避免残留孤儿）
+  const toDelete = new Set<string>();
+  function walk(node: any): void {
+    if (node.key) toDelete.add(String(node.key));
+    if (node.children?.length) node.children.forEach(walk);
+  }
+  hit.forEach(walk);
+
+  for (const key of toDelete) {
+    try { await deleteMenu(key); } catch { /* continue */ }
+  }
+  ElMessage.success(t("menu.messages.batchDeletedSuccess", { count: toDelete.size }));
   await authStore.getAuthMenuList();
 }
 </script>
