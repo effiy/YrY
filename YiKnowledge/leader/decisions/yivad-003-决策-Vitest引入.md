@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解 YiVad 的 Vitest 测试策略——分阶段实施计划，从最高投资回报率的 composable 测试到全面的 agent 模式端到端测试"
 related:
-  - ../../../engineer/learn/projects/yivad/README.md
+  - ../../../engineer/projects/yivad/README.md
   - ../../yiai/pytest-introduction.md
 ---
 

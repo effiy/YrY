@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解将 AiCR（AI 代码审查）功能集成到 YiPet 聊天窗口而非构建独立视图的决策"
 related:
-  - ../../../engineer/learn/projects/yipet/README.md
+  - ../../../engineer/projects/yipet/README.md
   - ../../yivad/aicr-phase-port.md
 ---
 

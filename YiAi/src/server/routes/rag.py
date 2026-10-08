@@ -173,6 +173,9 @@ async def rag_config_update_route(
     chunk_size: int | None = Body(None, embed=True),
     chunk_overlap: int | None = Body(None, embed=True),
     auto_rebuild_enabled: bool | None = Body(None, embed=True),
+    query_embed_enabled: bool | None = Body(None, embed=True),
+    embed_cache_enabled: bool | None = Body(None, embed=True),
+    embed_cache_persist: bool | None = Body(None, embed=True),
 ):
     """Update RAG configuration at runtime without editing config.yaml.
 
@@ -204,6 +207,15 @@ async def rag_config_update_route(
     if auto_rebuild_enabled is not None:
         settings.rag_auto_rebuild_enabled = auto_rebuild_enabled
         updated.append("auto_rebuild_enabled")
+    if query_embed_enabled is not None:
+        settings.rag_query_embed_enabled = query_embed_enabled
+        updated.append("query_embed_enabled")
+    if embed_cache_enabled is not None:
+        settings.rag_embed_cache_enabled = embed_cache_enabled
+        updated.append("embed_cache_enabled")
+    if embed_cache_persist is not None:
+        settings.rag_embed_cache_persist = embed_cache_persist
+        updated.append("embed_cache_persist")
     await cache.delete("rag:status")
     return success(data={"updated": updated, "config": rag_status()["config"]})
 
@@ -330,3 +342,55 @@ async def chat_session_delete(session_id: str = Body("", embed=True)):
     except Exception as e:
         logger.exception(f"Failed to delete chat session: {e}")
         return success(data={"deleted": False, "error": str(e)})
+
+
+@router.post("/rag-embed-cache-stats", operation_id="rag_embed_cache_stats")
+async def rag_embed_cache_stats_route():
+    """Return in-memory + persisted query-embedding cache statistics."""
+    from domain.rag.embed_cache import embedding_cache_stats
+    return success(data=embedding_cache_stats())
+
+
+@router.post("/rag-embed-cache-clear", operation_id="rag_embed_cache_clear")
+async def rag_embed_cache_clear_route():
+    """Drop all in-memory and on-disk query-embedding cache entries."""
+    from domain.rag.embed_cache import clear_embedding_cache
+    cleared = clear_embedding_cache()
+    return success(data={"cleared": cleared})
+
+
+@router.post("/rag-embed-warmup", operation_id="rag_embed_warmup")
+async def rag_embed_warmup_route(
+    texts: list[str] = Body([], embed=True),
+    top_history: int = Body(0, embed=True),
+):
+    """Manually pre-compute and cache embeddings for a batch of query texts.
+
+    Two inputs are OR-combined:
+      - ``texts`` — an explicit list of query strings to warm up.
+      - ``top_history`` — if >0, takes the most recent N unique retrieval
+        queries from the in-memory history ring.
+
+    Returns a summary {total, hits, misses, computed, errors}.
+    """
+    from domain.rag.embed_cache import warmup_embeddings
+    from domain.rag.history import list_history as _list_history
+
+    combined: list[str] = list(texts or [])
+    seen: set[str] = set(t.strip().lower() for t in combined if t and t.strip())
+    if top_history and top_history > 0:
+        for rec in _list_history()[: max(0, int(top_history))]:
+            q = (rec or {}).get("question") or ""
+            q = q.strip()
+            if not q:
+                continue
+            key = q.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            combined.append(q)
+    if not combined:
+        return success(data={"total": 0, "hits": 0, "misses": 0, "computed": 0, "errors": 0, "errors_detail": []})
+    result = await warmup_embeddings(combined)
+    await cache.delete("rag:status")
+    return success(data=result)

@@ -82,7 +82,7 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 - **问题域优先**：内容按实际遇到的问题组织（Build 阶段 → Ship 阶段 → Run 阶段 → Learn 阶段），而非按文档类型或作者。当你想"我怎么设计这个 API？"时，去 build/；当你想"上次那个 SSE 流中断的 bug 怎么修？"时，去 learn/lessons/。
 - **实现而非决策**：engineer/ 记录的是"怎么构建"——具体的代码模式、配置方式、工具使用方法。leader/ 记录的才是"为什么选择这个方案"——包含权衡分析、替代方案评估、决策上下文。
 - **经验教训是第一类产物**：每次成功、每次失败、每次踩坑都值得记录。Lean 阶段的 wins/、failures/、gotchas/ 三个子目录共同构成 YrY 工程团队的集体记忆。不记录的经验等于浪费的经验。
-- **项目知识独立维护**：每个 YrY 子项目（YiAi、YiVad、YiPet、YiKnowledge）在 projects/ 和 learn/projects/ 下有独立的文档体系，包含架构设计、开发规范、功能模块清单、用户故事等。
+- **项目知识独立维护**：每个 YrY 子项目（YiAi、YiVad、YiPet、YiKnowledge）在 projects/ 和 projects/ 下有独立的文档体系，包含架构设计、开发规范、功能模块清单、用户故事等。
 
 ## 跨角色引用
 
@@ -103,7 +103,7 @@ YrY 的 Engineer 知识按软件交付生命周期组织为四个阶段，每个
 - 我要**添加新的 API 调用** → [build/](./build/) 查阅 RPC 协议和跨项目调用指南
 - 我遇到了**诡异的 bug** → [learn/lessons/](./learn/lessons/) 先看看有没有已知陷阱
 - 我要**发布新版本** → [ship/](./ship/) 查阅测试基础设施、安全加固和容量规划
-- 我想了解**某个项目的架构** → [learn/projects/](./learn/projects/) 选择目标项目查看架构设计和开发规范
+- 我想了解**某个项目的架构** → [projects/](./projects/) 选择目标项目查看架构设计和开发规范
 
 ### 按 YrY 项目快速跳转
 

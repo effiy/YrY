@@ -16,7 +16,7 @@ acceptance_criteria:
   - "决策理由和实施细节已完整记录"
 related:
   - ../../../engineer/learn/lessons/macos-fsevents-silent-drop.md
-  - ../../../engineer/learn/projects/yiai/README.md
+  - ../../../engineer/projects/yiai/README.md
 ---
 
 # ADR: 知识监听器部署

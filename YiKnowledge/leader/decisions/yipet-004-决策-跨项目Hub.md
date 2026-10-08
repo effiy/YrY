@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解跨项目 Hub 设计——通过缺陷报告、会话桥接和上下文感知导航将 YiPet 定位为 Yi 家族生态的浏览器入口"
 related:
-  - ../../../engineer/learn/projects/yipet/README.md
+  - ../../../engineer/projects/yipet/README.md
   - ./chrome-mv3-dual-world.md
 ---
 

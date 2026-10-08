@@ -114,7 +114,7 @@ Curator 位于 pipeline **之上**，为每个阶段提供模板、治理和结�
 
 | PARA 概念 | YiKnowledge 映射 |
 |---|---|
-| Projects | [engineer/learn/projects/](../engineer/learn/projects/) |
+| Projects | [engineer/projects/](../engineer/projects/) |
 | Areas | 7 个角色目录 |
 | Resources | [skills/](../skills/)、[curator/templates/](./templates/) |
 | Archives | [curator/archive/](./archive/) |

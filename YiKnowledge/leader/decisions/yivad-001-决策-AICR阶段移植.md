@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解从 YiWeb 分阶段移植 AiCR 到 YiVad 的决策——为什么将代码审查功能合并到 aiChat 组件而非创建独立的页面树"
 related:
-  - ../../../engineer/learn/projects/yivad/README.md
+  - ../../../engineer/projects/yivad/README.md
 ---
 
 # ADR: YiVad AiCR 从 YiWeb 分阶段移植

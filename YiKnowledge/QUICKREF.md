@@ -62,9 +62,9 @@ related:
 | Check known gotchas | [engineer/learn/lessons/](engineer/learn/lessons/) |
 | Review wins (success patterns) | [engineer/learn/lessons/](engineer/learn/lessons/) |
 | Review failures (postmortems) | [engineer/learn/lessons/](engineer/learn/lessons/) |
-| Learn YiAi architecture | [engineer/learn/projects/yiai/](engineer/learn/projects/yiai/) |
-| Learn YiVad architecture | [engineer/learn/projects/yivad/](engineer/learn/projects/yivad/) |
-| Learn YiPet architecture | [engineer/learn/projects/yipet/](engineer/learn/projects/yipet/) |
+| Learn YiAi architecture | [engineer/projects/yiai/](engineer/projects/yiai/) |
+| Learn YiVad architecture | [engineer/projects/yivad/](engineer/projects/yivad/) |
+| Learn YiPet architecture | [engineer/projects/yipet/](engineer/projects/yipet/) |
 
 ## Leader — How to Decide
 

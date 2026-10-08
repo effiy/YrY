@@ -57,7 +57,7 @@ YrY 是一个快速迭代的单体仓库，三个前端项目共享同一个后�
 | 目录 | 内容 | 关键文件 |
 |---|---|---|
 | [lessons/](./lessons/) | 来自 YrY 真实项目的成功案例、失败复盘、陷阱记录 | 1 个成功 + 1 个失败 + 4 个陷阱，共 6 篇 |
-| [projects/](./projects/) | 项目特定的业务和工程文档：架构设计、开发规范、功能模块清单 | 3 个项目，每个 3-5 篇核心文档 + 用户故事 |
+| [projects/](../projects/) | 项目特定的业务和工程文档：架构设计、开发规范、功能模块清单 | 3 个项目，每个 3-5 篇核心文档 + 用户故事 |
 
 ## 经验教训一览
 
@@ -71,9 +71,9 @@ YrY 是一个快速迭代的单体仓库，三个前端项目共享同一个后�
 
 | 项目 | 目录 | 技术栈 | 关键文档 |
 |---|---|---|---|
-| YiAi | [projects/yiai/](./projects/yiai/) | FastAPI + Python 3.10+，端口 10086 | 架构设计、开发规范、功能模块清单、路由分析 |
-| YiPet | [projects/yipet/](./projects/yipet/) | Chrome MV3 + Vue 3.5 + RSBuild 1 | 架构设计（双世界边界）、开发规范（关键陷阱）、功能模块清单 |
-| YiVad | [projects/yivad/](./projects/yivad/) | Vue 3.5 + TypeScript 6 + RSBuild 1，端口 8848 | 架构设计、开发规范、功能模块清单、流水线闭环 |
+| YiAi | [projects/yiai/](../projects/yiai/) | FastAPI + Python 3.10+，端口 10086 | 架构设计、开发规范、功能模块清单、路由分析 |
+| YiPet | [projects/yipet/](../projects/yipet/) | Chrome MV3 + Vue 3.5 + RSBuild 1 | 架构设计（双世界边界）、开发规范（关键陷阱）、功能模块清单 |
+| YiVad | [projects/yivad/](../projects/yivad/) | Vue 3.5 + TypeScript 6 + RSBuild 1，端口 8848 | 架构设计、开发规范、功能模块清单、流水线闭环 |
 
 ## 如何贡献经验教训
 

@@ -33,7 +33,7 @@ related:
 | 分类 | 目录 | 内容 | 子索引 |
 |---|---|---|---|
 | 经验教训 | [lessons/](./lessons/) | 来自 YrY 真实项目的成功案例、失败复盘、陷阱记录 | [INDEX](./lessons/000-INDEX.md) |
-| 项目文档 | [projects/](./projects/) | 每个子项目的工程文档（架构设计、开发规范、用户故事） | 每个项目有自己的 000-INDEX.md |
+| 项目文档 | [projects/](../projects/) | 每个子项目的工程文档（架构设计、开发规范、用户故事） | 每个项目有自己的 000-INDEX.md |
 
 ## 经验教训概览
 
@@ -56,9 +56,9 @@ related:
 
 | 项目 | 目录 | 技术栈 | 核心文档 |
 |---|---|---|---|
-| YiVad | [projects/yivad/](./projects/yivad/) | Vue 3.5 管理后台 | [架构设计](./projects/yivad/001-项目-架构设计.md), [开发规范](./projects/yivad/002-项目-开发规范.md), [功能模块](./projects/yivad/003-项目-功能模块.md), [流水线闭环](./projects/yivad/004-项目-流水线闭环.md) |
-| YiAi | [projects/yiai/](./projects/yiai/) | FastAPI 后端 | [架构设计](./projects/yiai/001-项目-架构设计.md), [开发规范](./projects/yiai/002-项目-开发规范.md), [功能模块](./projects/yiai/003-项目-功能模块.md) |
-| YiPet | [projects/yipet/](./projects/yipet/) | Chrome MV3 扩展 | [架构设计](./projects/yipet/001-项目-架构设计.md), [开发规范](./projects/yipet/002-项目-开发规范.md), [功能模块](./projects/yipet/003-项目-功能模块.md) |
+| YiVad | [projects/yivad/](../projects/yivad/) | Vue 3.5 管理后台 | [架构设计](../projects/yivad/001-项目-架构设计.md), [开发规范](../projects/yivad/002-项目-开发规范.md), [功能模块](../projects/yivad/003-项目-功能模块.md), [流水线闭环](../projects/yivad/004-项目-流水线闭环.md) |
+| YiAi | [projects/yiai/](../projects/yiai/) | FastAPI 后端 | [架构设计](../projects/yiai/001-项目-架构设计.md), [开发规范](../projects/yiai/002-项目-开发规范.md), [功能模块](../projects/yiai/003-项目-功能模块.md) |
+| YiPet | [projects/yipet/](../projects/yipet/) | Chrome MV3 扩展 | [架构设计](../projects/yipet/001-项目-架构设计.md), [开发规范](../projects/yipet/002-项目-开发规范.md), [功能模块](../projects/yipet/003-项目-功能模块.md) |
 
 ### 用户故事
 
@@ -78,7 +78,7 @@ related:
 
 ### 场景 2：我要了解某个项目的架构
 
-1. 进入对应项目的 `000-INDEX.md`（如 [projects/yivad/000-INDEX.md](./projects/yivad/000-INDEX.md)）
+1. 进入对应项目的 `000-INDEX.md`（如 [projects/yivad/000-INDEX.md](../projects/yivad/000-INDEX.md)）
 2. 先读架构设计（`0001-项目-架构设计.md`），了解技术栈和分层
 3. 再读开发规范（`0002-项目-开发规范.md`），了解编码约定和关键陷阱
 4. 最后读功能模块（`0003-项目-功能模块.md`），了解模块清单

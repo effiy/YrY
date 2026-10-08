@@ -15,7 +15,7 @@ benefit: "理解 YiAi 的 pytest 测试策略和目录结构，为后续领域�
 acceptance_criteria:
   - "测试框架、目录结构和覆盖率目标已定义"
 related:
-  - ../../../engineer/learn/projects/yiai/README.md
+  - ../../../engineer/projects/yiai/README.md
 ---
 
 # ADR: 引入 Pytest 测试框架

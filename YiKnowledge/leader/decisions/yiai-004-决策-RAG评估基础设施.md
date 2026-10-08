@@ -16,7 +16,7 @@ acceptance_criteria:
   - "评估框架、指标和数据集需求已定义"
 related:
   - ./pytest-introduction.md
-  - ../../../engineer/learn/projects/yiai/README.md
+  - ../../../engineer/projects/yiai/README.md
 ---
 
 # ADR: RAG 评估基础设施

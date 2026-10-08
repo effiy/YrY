@@ -12,8 +12,8 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解四层 API 架构的设计——为什么 4 层而非 1 层，以及构造函数注入 ApiClient 如何实现可测试性和一致性"
 related:
-  - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/0001-项目-架构设计.md
+  - ../../../engineer/projects/yipet/README.md
+  - ../../../engineer/projects/yipet/0001-项目-架构设计.md
 ---
 
 # ADR: YiPet 四层 API 架构设计

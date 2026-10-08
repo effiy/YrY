@@ -21,7 +21,7 @@ related:
   - ./0001-入职-YiAi入职.md
   - ./0002-入职-YiPet入职.md
   - ./0003-入职-YiVad入职.md
-  - ../../learn/projects/yipot/0001-项目-架构设计.md
+  - ../../projects/yipot/0001-项目-架构设计.md
 ---
 
 # YiPot 入职指南 —— 第一天快速上手
@@ -161,8 +161,8 @@ mkdir -p ~/Library/Application\ Support/com.yipot.desktop/plugins
 
 ## 后续学习
 
-- [YiPot 架构设计](../../learn/projects/yipot/0001-项目-架构设计.md) — 深层架构、插件三件套细节、跨进程通信模式
-- [YiPot 开发规范](../../learn/projects/yipot/0002-项目-开发规范.md) — Rust 错误处理禁令、插件审核流程
-- [YiPot 功能模块](../../learn/projects/yipot/0003-项目-功能模块.md) — 30+ 插件清单、窗口流转
+- [YiPot 架构设计](../../projects/yipot/0001-项目-架构设计.md) — 深层架构、插件三件套细节、跨进程通信模式
+- [YiPot 开发规范](../../projects/yipot/0002-项目-开发规范.md) — Rust 错误处理禁令、插件审核流程
+- [YiPot 功能模块](../../projects/yipot/0003-项目-功能模块.md) — 30+ 插件清单、窗口流转
 - [unwrap 安全加固](../../../projects/yipot/bugs/功能缺陷/001-unwrap.md) — Bug 001 unwrap 根因分析与替换模式
 - [APIKey 明文存储](../../../projects/yipot/bugs/安全隐私/001-APIKey明文存储.md) — 隐私 001 加密方案

@@ -421,6 +421,9 @@ def rag_status() -> dict[str, Any]:
             "sentence_window": settings.rag_sentence_window_enabled,
             "sentence_window_size": settings.rag_sentence_window_size,
             "hyde_enabled": settings.rag_hyde_enabled,
+            "query_embed_enabled": settings.rag_query_embed_enabled,
+            "embed_cache_enabled": settings.rag_embed_cache_enabled,
+            "embed_cache_persist": settings.rag_embed_cache_persist,
         },
         "ollama": _check_ollama_sync(),
     }

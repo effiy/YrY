@@ -20,7 +20,7 @@ related:
   - ./README.md
   - ./0003-入职-YiVad入职.md
   - ../../../../YiAi/CLAUDE.md
-  - ../../learn/projects/yiai/README.md
+  - ../../projects/yiai/README.md
 ---
 
 # YiAi 入职指南 —— 第一天快速上手
@@ -146,7 +146,7 @@ Domain 包外部的每个调用者只依赖公开的 API 面：
 
 ## 后续学习
 
-- [YiAi 工程文档](../../learn/projects/yiai/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
+- [YiAi 工程文档](../../projects/yiai/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiAi CLAUDE.md](../../../../YiAi/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
 - [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— 完整的 API 契约
 - [MongoDB 模式设计](../build/001-构建-MongoDB模式设计.md) —— 文档模型与索引策略

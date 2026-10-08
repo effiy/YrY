@@ -806,19 +806,6 @@ const statTiles = computed(() => {
   const bugOpen = allBugs.value.filter(b => b.status === "open" || b.status === "reopened").length;
   const bugResolved = allBugs.value.filter(b => b.status === "resolved" || b.status === "closed").length;
   const bugResolvePct = allBugs.value.length ? Math.round(bugResolved / allBugs.value.length * 100) : 0;
-  const bugResolveMedianH = (() => {
-    const times: number[] = [];
-    for (const b of allBugs.value) {
-      if (b.status !== "resolved" && b.status !== "closed") continue;
-      const ca = b.createdAt ? new Date(b.createdAt) : null;
-      const ua = b.updatedAt ? new Date(b.updatedAt) : null;
-      if (!ca || !ua || isNaN(ca.getTime()) || isNaN(ua.getTime())) continue;
-      times.push((ua.getTime() - ca.getTime()) / 3600000);
-    }
-    if (!times.length) return 0;
-    times.sort((a, b) => a - b);
-    return Math.round(times[Math.floor(times.length / 2)]);
-  })();
   const prdPct = prdCount.value ? Math.round(prdDone.value / prdCount.value * 100) : 0;
   const devPct = ykModules.value.length ? Math.round(devDone.value / ykModules.value.length * 100) : 0;
   const testPct = testSpecs.value.length ? Math.round(testDone.value / testSpecs.value.length * 100) : 0;
@@ -836,7 +823,6 @@ const statTiles = computed(() => {
     { key: "tests", value: testSpecs.value.length, suffix: "", label: t("project.overview.stats.tests"), sub: `${testPct}% ${t("project.overview.stats.completed")} · ${todoTests.value.length} ${t("project.overview.stats.pending")}`, variant: "green", clickable: true, onClick: () => navigateTab("tests") },
     { key: "bugs", value: bugOpen, suffix: "", label: t("project.overview.stats.bugs"), sub: `${bugResolvePct}% resolved · ${bugResolved}/${allBugs.value.length}`, variant: bugResolvePct >= 80 ? "green" : bugOpen > 0 ? "red" : "green", clickable: true, onClick: () => navigateTab("bugs") },
     { key: "docs", value: knowledgeCountVal, suffix: "", label: t("project.overview.stats.docs"), sub: `${knowledgeFreshPct}% ${t("project.overview.stats.fresh")}`, variant: "teal", clickable: knowledgeCountVal > 0, onClick: () => navigateTab("prds") },
-    { key: "mttr", value: bugResolveMedianH, suffix: "h", label: t("project.overview.stats.mttr"), sub: t("project.overview.stats.medianFixTime"), variant: bugResolveMedianH < 24 ? "green" : "blue", clickable: true, onClick: () => navigateTab("bugs") },
     { key: "okrs", value: okrSummary.value.totalGoals, suffix: "", label: t("project.overview.stats.okrs"), sub: okrSummary.value.totalGoals ? `${okrSummary.value.avgProgress}%` : "", variant: "orange", clickable: okrGoals.value.length > 0, onClick: () => navigateTab("okr") }
   ];
 });

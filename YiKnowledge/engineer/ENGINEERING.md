@@ -208,9 +208,9 @@ related:
 
 | 项目 | 位置 | 内容 |
 |------|------|------|
-| YiAi | [learn/projects/yiai/](./learn/projects/yiai/) | 架构设计、模块分析、Story 记录 |
-| YiVad | [learn/projects/yivad/](./learn/projects/yivad/) | 架构设计、开发规范、功能模块、AICR 分析 |
-| YiPet | [learn/projects/yipet/](./learn/projects/yipet/) | 架构设计、功能模式、Story 记录 |
+| YiAi | [projects/yiai/](./projects/yiai/) | 架构设计、模块分析、Story 记录 |
+| YiVad | [projects/yivad/](./projects/yivad/) | 架构设计、开发规范、功能模块、AICR 分析 |
+| YiPet | [projects/yipet/](./projects/yipet/) | 架构设计、功能模式、Story 记录 |
 
 ---
 

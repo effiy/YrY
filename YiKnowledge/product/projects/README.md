@@ -18,7 +18,7 @@ acceptance_criteria:
 related:
   - ../INDEX.md
   - ../../INDEX.md
-  - ../../engineer/learn/projects/
+  - ../../engineer/projects/
   - ../../projects/
 ---
 
@@ -115,7 +115,7 @@ YiPot / YiPet / YiVad
 
 ## 交叉引用
 
-- [../../engineer/learn/projects/](../../engineer/learn/projects/) — 各项目的工程文档镜像 + 5 天新人入职路线图
+- [../../engineer/projects/](../../engineer/projects/) — 各项目的工程文档镜像 + 5 天新人入职路线图
 - [../../engineer/projects/](../../engineer/projects/) — 01-YiAi 到 06-YiKnowledge 的工程视角项目介绍
 - [../delivery/0001-交付-运作Sprint.md](../delivery/001-交付-运作Sprint.md) — Sprint 管理和交付流程
 - [../discovery/0001-发现-编写PRD.md](../discovery/001-发现-编写PRD.md) — 用户研究和 PRD 模板

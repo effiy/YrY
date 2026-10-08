@@ -192,6 +192,13 @@ rag:
   num_queries: 1           # QueryFusionRetriever LLM query variants (1=fastest, no LLM calls for variants)
   exclude_dirs: ["rss"]    # skip during index build — add back later via /rag-build
   embed_batch_size: 64    # texts per Ollama /api/embed call — higher = fewer round-trips
+  # Query-time embedding control. Set query_embed_enabled=false to skip Ollama
+  # /api/embeddings on every /rag-query or /rag-chat and fall back to BM25
+  # keyword-only search (no GPU/CPU load at query time). Use /rag-embed-warmup
+  # to manually pre-cache embeddings for frequent queries.
+  query_embed_enabled: true
+  embed_cache_enabled: true
+  embed_cache_persist: false  # set true to persist cache across restarts (jsonl in rag_persist_dir)
 
 # Logging Configuration
 logging:

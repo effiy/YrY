@@ -23,7 +23,7 @@ related:
   - ./0002-方法-Agent评估.md
   - ../foundations/0001-基础-LLM基础.md
   - ../platform/0002-平台-LLM对比.md
-  - ../../engineer/learn/projects/yiai/
+  - ../../engineer/projects/yiai/
 ---
 
 # Agent Architecture Patterns

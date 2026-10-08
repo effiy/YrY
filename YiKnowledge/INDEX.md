@@ -71,7 +71,7 @@ related:
 | [curator/governance/](./curator/governance/) | 知识治理规范（[知识健康看板](./curator/governance/001-治理-知识健康看板.md)、[治理规范](./curator/governance/002-治理-治理规范.md)、[就绪检查清单](./curator/governance/004-治理-就绪检查清单.md) 等 7 篇） |
 | [curator/diagrams/](./curator/diagrams/) | 知识架构图（[看板索引](./curator/diagrams/001-图表-看板索引.md)、[目录蓝图](./curator/diagrams/002-图表-目录蓝图.md)、[知识地图](./curator/diagrams/003-图表-知识地图.md)、[用户旅程](./curator/diagrams/004-图表-用户旅程.md)） |
 | [skills/](./skills/) | Claude Code 自定义技能（[技能目录](./skills/)） |
-| [engineer/learn/projects/](./engineer/learn/projects/) | 跨项目工程文档（架构、开发规范、功能模块、Story，按 yivad/yiai/yipet 子目录组织） |
+| [engineer/projects/](./engineer/projects/) | 跨项目工程文档（架构、开发规范、功能模块、Story，按 yivad/yiai/yipet 子目录组织） |
 | [leader/decisions/](./leader/decisions/) | 架构决策记录（ADR），按项目子目录组织 |
 
 ## 检索策略

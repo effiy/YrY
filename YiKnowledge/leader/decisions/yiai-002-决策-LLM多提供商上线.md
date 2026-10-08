@@ -16,7 +16,7 @@ acceptance_criteria:
   - "5 个阶段清晰定义并附有前置条件"
 related:
   - ./route-llm-traffic-across-providers.md
-  - ../../../engineer/learn/projects/yiai/README.md
+  - ../../../engineer/projects/yiai/README.md
 ---
 
 # ADR: LLM 多提供商上线计划

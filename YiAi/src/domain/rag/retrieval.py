@@ -231,13 +231,18 @@ async def rag_query(
         logger.warning("RAG query blocked — index not built")
         return []
     k = top_k or settings.rag_top_k
-    h = settings.rag_hybrid_retrieval_enabled if hybrid is None else hybrid
+    embed_off = not settings.rag_query_embed_enabled
+    if embed_off:
+        h = False
+    else:
+        h = settings.rag_hybrid_retrieval_enabled if hybrid is None else hybrid
     r = settings.rag_rerank_enabled if rerank is None else rerank
     c = settings.rag_inline_citations_enabled if citations is None else citations
-    nq = num_queries if num_queries is not None and num_queries > 0 else settings.rag_num_queries
+    nq = 1 if embed_off else (num_queries if num_queries is not None and num_queries > 0 else settings.rag_num_queries)
     retriever = _build_retriever(
         index, top_k=k, scope=scope, hybrid=h, num_queries=nq,
         category=category, tags=tags, file_paths=file_paths,
+        force_bm25=embed_off,
     )
     t0 = time.perf_counter()
     retrieval_query = _enhance_query_for_retrieval(question)

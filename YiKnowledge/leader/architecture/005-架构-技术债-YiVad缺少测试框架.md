@@ -13,7 +13,7 @@ roles: [leader]
 benefit: "追踪 YiVad 测试框架技术债务及其缓解计划，评估当前风险水平"
 related:
   - ../decisions/vitest-introduction.md
-  - ../../../engineer/learn/projects/yivad/README.md
+  - ../../../engineer/projects/yivad/README.md
 ---
 
 # 技术债：YiVad 缺少测试框架

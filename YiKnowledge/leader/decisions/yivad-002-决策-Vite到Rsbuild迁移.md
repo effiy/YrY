@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解从 Vite 迁移到 Rsbuild 的决策——构建性能提升、生态对齐以及迁移中的具体变更"
 related:
-  - ../../../engineer/learn/projects/yivad/README.md
+  - ../../../engineer/projects/yivad/README.md
 ---
 
 # ADR: YiVad Vite 到 Rsbuild 迁移

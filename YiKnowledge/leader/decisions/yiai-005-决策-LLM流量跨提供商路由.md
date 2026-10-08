@@ -16,7 +16,7 @@ acceptance_criteria:
   - "决策的上下文、选项和理由清晰陈述"
 related:
   - ./llm-multi-provider-rollout.md
-  - ../../../engineer/learn/projects/yiai/README.md
+  - ../../../engineer/projects/yiai/README.md
 ---
 
 # ADR: 多提供商 LLM 路由

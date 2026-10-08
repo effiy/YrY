@@ -17,7 +17,7 @@ acceptance_criteria:
   - "验证 Chrome Policy/Chrome Enterprise policy 触发 storage 错误内容脚本无法写入失败 -> 降级到 in-memory + 引导用户重新同意；Chrome.deferPermissions 弹窗流程正确"
   - "覆盖 8 条断言：回滚版本号 <= 当前版本 -1、content_scripts 保留最小权限版本"
 related:
-  - ../../engineer/learn/projects/yipet/0001-项目-架构设计.md
+  - ../../engineer/projects/yipet/0001-项目-架构设计.md
   - ../../projects/yipet/prds/2026-08/03-prd-安全合规.md
   - ../../projects/yipet/prds/2026-09/13-prd-安全配置.md
   - ../../projects/yipet/prds/2026-09/78-prd-沙箱逃逸防护.md

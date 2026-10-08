@@ -21,7 +21,7 @@ related:
   - ./0003-入职-YiVad入职.md
   - ./0001-入职-YiAi入职.md
   - ../../../../YiPet/CLAUDE.md
-  - ../../learn/projects/yipet/README.md
+  - ../../projects/yipet/README.md
 ---
 
 # YiPet 入职指南 —— 第一天快速上手
@@ -136,7 +136,7 @@ Popup 到 Content Script 的通信:
 
 ## 后续学习
 
-- [YiPet 工程文档](../../learn/projects/yipet/0001-项目-架构设计.md) —— 深层架构、反模式
+- [YiPet 工程文档](../../projects/yipet/0001-项目-架构设计.md) —— 深层架构、反模式
 - [YiPet CLAUDE.md](../../../../YiPet/CLAUDE.md) —— 权威参考
 - [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— API 契约
 - [YiPet 跨项目 Hub 成功案例](../learn/lessons/009-成果-YiPet跨项目Hub.md) —— 架构模式启发

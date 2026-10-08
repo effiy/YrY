@@ -129,5 +129,5 @@ projects/<项目名>/
 - [../../YiVad/CLAUDE.md](../../YiVad/CLAUDE.md) — YiVad 项目约束与近期变更
 - [../../YiPet/CLAUDE.md](../../YiPet/CLAUDE.md) — YiPet 项目约束与近期变更
 - [../../YiPot/CLAUDE.md](../../YiPot/CLAUDE.md) — YiPot 项目约束与近期变更
-- [../engineer/learn/projects/](../engineer/learn/projects/) — 工程类项目文档
+- [../engineer/projects/](../engineer/projects/) — 工程类项目文档
 - [../leader/decisions/](../leader/decisions/) — 架构决策记录

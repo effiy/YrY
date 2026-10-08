@@ -234,8 +234,13 @@ def _patch_retriever_filters(retriever: Any) -> None:
         retriever._filters = MetadataFilters(filters=flat)
 
 
-def _build_retriever(index: Any, top_k: int, scope: str | None, hybrid: bool, num_queries: int = 1, category: str | None = None, tags: list[str] | None = None, file_paths: list[str] | None = None) -> Any:
+def _build_retriever(index: Any, top_k: int, scope: str | None, hybrid: bool, num_queries: int = 1, category: str | None = None, tags: list[str] | None = None, file_paths: list[str] | None = None, force_bm25: bool = False) -> Any:
     """Build a retriever over ``index``, optionally hybrid (vector + BM25).
+
+    When ``force_bm25`` is True, returns a BM25-only retriever regardless of
+    the ``hybrid`` flag and skips the vector retriever entirely. Use this when
+    query-time embeddings have been disabled (rag_query_embed_enabled=false)
+    to avoid hitting Ollama's /api/embeddings endpoint on every search.
 
     Hybrid uses ``QueryFusionRetriever`` with relative score fusion so
     queries with strong keywords (where BM25 excels) AND conceptual queries
@@ -256,19 +261,18 @@ def _build_retriever(index: Any, top_k: int, scope: str | None, hybrid: bool, nu
     no metadata filter is applied; ignored otherwise (mirrors the hybrid guard).
     """
     filters = _scope_filters(scope, category, tags, file_paths)
-    # Second line of defense — flatten any nested MetadataFilters that may have
-    # been introduced by Pydantic Union coercion or internal index wrapping.
     if filters is not None:
         flat = _flatten_metadata_filters(filters)
         if flat is not None:
             filters = MetadataFilters(filters=flat)
-    # BM25 doesn't support metadata filters — fall back to vector-only when filtered
+    if force_bm25:
+        bm25 = _cached_bm25(index, top_k)
+        return bm25
     if not hybrid or filters is not None:
         kwargs: dict[str, Any] = {"similarity_top_k": top_k}
         if filters is not None:
             kwargs["filters"] = filters
         retriever = index.as_retriever(**kwargs)
-        # Patch the retriever's internal _filters in case llama_index re-wrapped them
         if filters is not None:
             _patch_retriever_filters(retriever)
         return retriever
@@ -281,7 +285,7 @@ def _build_retriever(index: Any, top_k: int, scope: str | None, hybrid: bool, nu
         similarity_top_k=top_k,
         num_queries=nq,
         mode="relative_score",
-        use_async=False,  # must be False — retrieve() is called via asyncio.to_thread
+        use_async=False,
     )
 
 

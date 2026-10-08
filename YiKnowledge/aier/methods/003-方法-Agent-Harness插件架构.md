@@ -20,7 +20,7 @@ related:
   - ./0001-方法-Agent架构模式.md
   - ./0004-方法-LLM评估.md
   - ../platform/0002-平台-LLM对比.md
-  - ../../engineer/learn/projects/yiai/
+  - ../../engineer/projects/yiai/
 ---
 
 # Agent Harness 插件架构
@@ -140,4 +140,4 @@ YiAi 手写了 Agent 循环，但已经有机地生长出了与 Harness 对应�
 - [./0001-方法-Agent架构模式.md](./001-方法-Agent架构模式.md) — ReAct / Plan-Execute / Reflexion 等 Agent 模式层
 - [./0004-方法-LLM评估.md](./004-方法-LLM评估.md) — 循环建成后的 Agent 评估方法
 - [../platform/0002-平台-LLM对比.md](../platform/002-平台-LLM对比.md) — 模型服务与推理平台
-- [../../engineer/learn/projects/yiai/](../../engineer/learn/projects/yiai/) — YiAi 实现细节
+- [../../engineer/projects/yiai/](../../engineer/projects/yiai/) — YiAi 实现细节

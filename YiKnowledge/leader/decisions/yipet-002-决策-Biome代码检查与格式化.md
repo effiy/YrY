@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader, engineer]
 benefit: "理解用 Biome 替代 ESLint + Prettier 的决策——单一工具完成代码检查与格式化，更快、更简洁"
 related:
-  - ../../../engineer/learn/projects/yipet/README.md
+  - ../../../engineer/projects/yipet/README.md
 ---
 
 # ADR: YiPet 采用 Biome 代码检查与格式化

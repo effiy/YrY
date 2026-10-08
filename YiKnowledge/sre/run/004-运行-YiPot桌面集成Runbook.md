@@ -21,7 +21,7 @@ related:
   - ../../projects/yipot/prds/2026-09/14-prd-剪切板监听.md
   - ../../projects/yipot/prds/2026-09/27-prd-安全加密存储.md
   - ../../projects/yipot/prds/2026-09/51-prd-翻译历史记录.md
-  - ../../engineer/learn/projects/yipot/0001-项目-架构设计.md
+  - ../../engineer/projects/yipot/0001-项目-架构设计.md
   - ../observability/0014-可观测-健康检查设计.md
   - ../incident-response/0009-事件-Runbook模板.md
   - ../QUICKREF.md

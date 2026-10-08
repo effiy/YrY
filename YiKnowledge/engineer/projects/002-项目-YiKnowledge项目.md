@@ -143,7 +143,7 @@ YiKnowledge/
     ├── yiai/                 # prds/YYYY-MM(200+), okrs/, bugs/, devs/, tests/, workflows/
     ├── yipot/                # prds/YYYY-MM(99), okrs/, bugs/(6分类), workflows/
     ├── yipet/                # prds/YYYY-MM(200+), okrs/, bugs/, devs/, tests/, workflows/
-    ├── yivad/                # (engineer/learn/projects/yivad 互补)
+    ├── yivad/                # (engineer/projects/yivad 互补)
     ├── yiknowledge/          # okrs/, bugs/
     └── INDEX.md / README.md
 ```
@@ -168,7 +168,7 @@ YiKnowledge/
 
 | 阶段 \ 项目 | **YiAi**（AI 服务） | **YiPot**（桌面翻译） | **YiPet**（浏览器助手） | **YiVad**（项目平台） | **YiKnowledge**（自治理） |
 |-------------|---------------------|----------------------|------------------------|----------------------|--------------------------|
-| **① 收件箱**<br>`curator/governance/03` | `projects/yiai/prds/YYYY-MM/NN-*` 新建 PR，Label=`待认领` | `projects/yipot/prds/YYYY-MM/NN-*` Bugs 关联 PRD | `projects/yipet/prds/YYYY-MM/NN-*` 扩展新功能 PR | `engineer/learn/projects/yivad/NN-*` 流水线文档 | `curator/*` 规范/模板/看板升级 PR |
+| **① 收件箱**<br>`curator/governance/03` | `projects/yiai/prds/YYYY-MM/NN-*` 新建 PR，Label=`待认领` | `projects/yipot/prds/YYYY-MM/NN-*` Bugs 关联 PRD | `projects/yipet/prds/YYYY-MM/NN-*` 扩展新功能 PR | `engineer/projects/yivad/NN-*` 流水线文档 | `curator/*` 规范/模板/看板升级 PR |
 | **② 分类处理**<br>`curator/governance/07` | 打标签：`aier`/`检索`/`Agent`/`RAG`；归属 `projects/yiai/prds` | 打标签：`桌面`/`翻译`/`OCR`/`Tauri`；关联 Bugs | 打标签：`扩展`/`MV3`/`聊天`/`工具`；归属 Chrome/Edge/Firefox | 打标签：`效能`/`CI-CD`/`MongoDB`/`Rsbuild` | 打标签：`治理`/`模板`/`目录`；推进 04 就绪 |
 | **③ 就绪检查**<br>`curator/governance/04` | 15 字段 + RAG 可消费性（语义分块/引用锚点） | 15 字段 + Bug 关联（功能缺陷/平台兼容/性能） | 15 字段 + MV3 兼容清单（三端差异备注） | 15 字段 + 数据一致性/MongoDB Schema 校验 | 15 字段 + 全库扫描 + 影响面评估 |
 | **④ 归档**<br>`curator/archive/01` | 文档稳定 ≥180 天、RAG 引用量 Top 20% 标记「经典」 | v4.0 发版后冻结 PRD，迁移至 `yipot/archive` | v3.0 扩展发布后冻结，MV4 规划引用此基线 | 季度结束归档该季流水线文档 | 季度治理报告 + 模板历史版本归档 |

@@ -20,7 +20,7 @@ related:
   - ./README.md
   - ../../../../YiVad/CLAUDE.md
   - ../../../../YiVad/README.md
-  - ../../learn/projects/yivad/README.md
+  - ../../projects/yivad/README.md
 ---
 
 # YiVad 入职指南 —— 第一天快速上手
@@ -120,7 +120,7 @@ pnpm type:check # vue-tsc --noEmit --skipLibCheck
 
 ## 后续学习
 
-- [YiVad 工程文档](../../learn/projects/yivad/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
+- [YiVad 工程文档](../../projects/yivad/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiVad CLAUDE.md](../../../../YiVad/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
 - [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— YiVad 与 YiAi 之间的完整 API 契约
 - [开发工作流指南](006-运行-开发工作流.md) —— 日常开发流程与常见问题

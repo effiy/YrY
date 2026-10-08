@@ -192,6 +192,9 @@ class Settings(BaseSettings):
     rag_sentence_window_enabled: bool = Field(False, validation_alias="rag_sentence_window_enabled")
     rag_sentence_window_size: int = Field(3, validation_alias="rag_sentence_window_size")
     rag_embed_batch_size: int = Field(64, validation_alias="rag_embed_batch_size")
+    rag_query_embed_enabled: bool = Field(True, validation_alias="rag_query_embed_enabled")
+    rag_embed_cache_enabled: bool = Field(True, validation_alias="rag_embed_cache_enabled")
+    rag_embed_cache_persist: bool = Field(False, validation_alias="rag_embed_cache_persist")
 
     # Logging
     logging_level: str = Field("INFO", validation_alias="logging_level")

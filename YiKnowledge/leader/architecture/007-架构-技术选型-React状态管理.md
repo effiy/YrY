@@ -12,7 +12,7 @@ review_cycle: quarterly
 roles: [leader]
 benefit: "YiPet 中 React 状态管理方案选择的标准和理由，为 Chrome 扩展场景的状态管理提供决策参考"
 related:
-  - ../../../engineer/learn/projects/yipet/README.md
+  - ../../../engineer/projects/yipet/README.md
 ---
 
 # 技术选型：React 状态管理
