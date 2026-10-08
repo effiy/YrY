@@ -6,6 +6,7 @@ import type { BugDocument } from "@/api/modules/bug";
 import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import type { Project } from "@/api/modules/projectService";
 import type KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
+import type { StageStatus } from "@/utils/reliability/fetchPipeline";
 
 /** One KPI tile in the dashboard header strip. */
 export interface StatTile {
@@ -163,6 +164,12 @@ export interface ProjectDetailContext {
   stopPolling: () => void;
   /** OKR summary populated by DetailOkr, read by DetailOverview */
   okrSummary: Ref<OkrSummary>;
+  /** 每个 P2 stage 的最终状态，供 UI 做区块级降级提示 */
+  stageStatus: Ref<{
+    knowledge: StageStatus;
+    issues: StageStatus;
+    modules: StageStatus;
+  }>;
 }
 
 export const PROJECT_DETAIL_KEY: InjectionKey<ProjectDetailContext> = Symbol("projectDetail");

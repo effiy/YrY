@@ -72,12 +72,21 @@
     </div>
 
     <!-- Bug severity breakdown -->
-    <div v-if="bugSevBars.length" class="do-card">
-      <div class="do-card__head-row">
+    <div class="do-card">
+      <el-alert
+        v-if="knowledgeDegraded"
+        type="info"
+        :closable="true"
+        class="do-degrade-alert"
+        :title="$t('project.overview.degraded.knowledge')"
+        description=""
+        show-icon
+      />
+      <div v-if="bugSevBars.length" class="do-card__head-row">
         <h3 class="do-card__title">{{ $t("project.overview.bugSeverity.title") }}</h3>
         <span class="do-card__head-sub">{{ $t("project.overview.bugSeverity.openCount", { n: openBugCount }) }}</span>
       </div>
-      <div class="do-bug-sev-bars">
+      <div v-if="bugSevBars.length" class="do-bug-sev-bars">
         <div v-for="bar in bugSevBars" :key="bar.label" class="do-bug-sev-row">
           <span class="do-bug-sev__label">{{ bar.label }}</span>
           <div class="do-bug-sev__track">
@@ -85,6 +94,10 @@
           </div>
           <span class="do-bug-sev__val">{{ bar.count }}</span>
         </div>
+      </div>
+      <div v-else-if="knowledgeDegraded" class="do-degrade-placeholder">
+        <el-icon><InfoFilled /></el-icon>
+        <span>{{ $t("project.overview.degraded.bugSeverityEmpty") }}</span>
       </div>
     </div>
 
@@ -164,67 +177,103 @@
         </div>
       </div>
       <div class="do-card__body">
-        <div
-          v-if="descContent"
-          ref="descPreviewRef"
-          class="do-desc-preview"
-          :class="{ 'is-clamped': !descExpanded }"
-          v-html="descHtml"
-        />
-        <div v-if="descContent && descOverflows" class="do-desc-mask" :class="{ 'is-hidden': descExpanded }" />
-        <el-button
-          v-if="descContent && descOverflows"
-          link
-          size="small"
-          type="primary"
-          class="do-desc-toggle"
-          @click="descExpanded = !descExpanded"
-        >
-          {{ descExpanded ? $t("project.overview.readme.collapse") : $t("project.overview.readme.expand") }}
-          <el-icon><component :is="descExpanded ? ArrowUp : ArrowDown" /></el-icon>
-        </el-button>
-        <div v-if="!descContent" class="do-empty">
-          <el-icon class="do-empty__icon"><Document /></el-icon>
-          <p class="do-empty__text">{{ $t("project.overview.readme.noFile") }}</p>
-          <p class="do-empty__hint">{{ $t("project.overview.readme.noFileHint") }}</p>
-        </div>
+        <!-- 细粒度骨架：readmeLoading 时展示，不再占用全局 loading -->
+        <template v-if="readmeLoading && !descContent">
+          <div class="do-readme-skeleton">
+            <span class="do-readme-skel do-readme-skel--line is-long" />
+            <span class="do-readme-skel do-readme-skel--line" />
+            <span class="do-readme-skel do-readme-skel--line is-short" />
+            <span class="do-readme-skel do-readme-skel--line" />
+            <span class="do-readme-skel do-readme-skel--line is-short" />
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-if="descContent"
+            ref="descPreviewRef"
+            class="do-desc-preview"
+            :class="{ 'is-clamped': !descExpanded }"
+            v-html="descHtml"
+          />
+          <div v-if="descContent && descOverflows" class="do-desc-mask" :class="{ 'is-hidden': descExpanded }" />
+          <el-button
+            v-if="descContent && descOverflows"
+            link
+            size="small"
+            type="primary"
+            class="do-desc-toggle"
+            @click="descExpanded = !descExpanded"
+          >
+            {{ descExpanded ? $t("project.overview.readme.collapse") : $t("project.overview.readme.expand") }}
+            <el-icon><component :is="descExpanded ? ArrowUp : ArrowDown" /></el-icon>
+          </el-button>
+          <div v-if="!descContent" class="do-empty">
+            <el-icon class="do-empty__icon"><Document /></el-icon>
+            <p class="do-empty__text">{{ $t("project.overview.readme.noFile") }}</p>
+            <p class="do-empty__hint">{{ $t("project.overview.readme.noFileHint") }}</p>
+          </div>
+        </template>
       </div>
     </div>
 
     <!-- OKR Progress -->
-    <div v-if="okrGoals.length" class="do-card">
-      <div class="do-card__head-row">
-        <h3 class="do-card__title">{{ $t("project.overview.okr.title") }}</h3>
-        <span class="do-card__head-sub">
-          {{ $t("project.overview.okr.summary", { done: okrSummary.completedCount, total: okrSummary.totalGoals, pct: okrSummary.avgProgress }) }}
-        </span>
-      </div>
-      <div class="do-okr-grid">
-        <div
-          v-for="goal in okrGoals"
-          :key="goal.id"
-          class="do-okr-card"
-          :class="{ 'is-done': goal.progress >= 100 }"
-          @click="openFile(goal.path)"
-        >
-          <div class="do-okr-card__head">
-            <span class="do-okr-card__id">{{ goal.id }}</span>
-            <span class="do-okr-card__pct" :class="{ 'is-done': goal.progress >= 100 }">{{ goal.progress }}%</span>
-          </div>
-          <div class="do-okr-card__title">{{ goal.title }}</div>
-          <div class="do-okr-card__bar">
-            <div class="do-okr-card__fill" :style="{ width: goal.progress + '%' }" />
-          </div>
-          <div class="do-okr-card__meta">
-            <span>{{ goal.krCount }} KRs</span>
-            <span v-if="goal.metricCount"> · {{ goal.metricCount }} Metrics</span>
+    <div class="do-card">
+      <el-alert
+        v-if="knowledgeDegraded"
+        type="info"
+        :closable="true"
+        class="do-degrade-alert"
+        :title="$t('project.overview.degraded.knowledge')"
+        description=""
+        show-icon
+      />
+      <template v-if="okrGoals.length">
+        <div class="do-card__head-row">
+          <h3 class="do-card__title">{{ $t("project.overview.okr.title") }}</h3>
+          <span class="do-card__head-sub">
+            {{ $t("project.overview.okr.summary", { done: okrSummary.completedCount, total: okrSummary.totalGoals, pct: okrSummary.avgProgress }) }}
+          </span>
+        </div>
+        <div class="do-okr-grid">
+          <div
+            v-for="goal in okrGoals"
+            :key="goal.id"
+            class="do-okr-card"
+            :class="{ 'is-done': goal.progress >= 100 }"
+            @click="openFile(goal.path)"
+          >
+            <div class="do-okr-card__head">
+              <span class="do-okr-card__id">{{ goal.id }}</span>
+              <span class="do-okr-card__pct" :class="{ 'is-done': goal.progress >= 100 }">{{ goal.progress }}%</span>
+            </div>
+            <div class="do-okr-card__title">{{ goal.title }}</div>
+            <div class="do-okr-card__bar">
+              <div class="do-okr-card__fill" :style="{ width: goal.progress + '%' }" />
+            </div>
+            <div class="do-okr-card__meta">
+              <span>{{ goal.krCount }} KRs</span>
+              <span v-if="goal.metricCount"> · {{ goal.metricCount }} Metrics</span>
+            </div>
           </div>
         </div>
+      </template>
+      <div v-else-if="knowledgeDegraded" class="do-degrade-placeholder">
+        <el-icon><InfoFilled /></el-icon>
+        <span>{{ $t("project.overview.degraded.okrEmpty") }}</span>
       </div>
     </div>
 
     <!-- Document Directory -->
     <div class="do-card">
+      <el-alert
+        v-if="knowledgeDegraded"
+        type="info"
+        :closable="true"
+        class="do-degrade-alert"
+        :title="$t('project.overview.degraded.knowledge')"
+        description=""
+        show-icon
+      />
       <div class="do-card__head-row">
         <h3 class="do-card__title">{{ $t("project.overview.docs.title") }}</h3>
         <div class="do-docs-tabs">
@@ -255,6 +304,7 @@
           </div>
         </div>
       </div>
+      <div v-else-if="knowledgeDegraded" class="do-docs-empty">{{ $t("project.overview.degraded.docsEmpty") }}</div>
       <div v-else class="do-docs-empty">{{ $t("project.overview.docs.empty") }}</div>
       <button
         v-if="docTabItems.length > docLimit"
@@ -443,17 +493,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch, nextTick } from "vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
-import { Calendar, Document, Edit, ArrowUp, ArrowDown, VideoPlay, Check, Grid, Checked, Aim, Warning, Flag, User, Timer, Collection, PriceTag } from "@element-plus/icons-vue";
+import { Calendar, Document, Edit, ArrowUp, ArrowDown, VideoPlay, Check, Grid, Checked, Aim, Warning, Flag, User, Timer, Collection, PriceTag, InfoFilled } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useNow } from "@/hooks/useNow";
-import { readProjectFile } from "@/api/modules/fileService";
+import { readProjectFile, type ProjectFileError } from "@/api/modules/fileService";
 import { getIssueFilePath, updateIssue } from "@/api/modules/issueService";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { formatRelativeTime } from "@/utils/datetime";
 import { timeAgo } from "@/utils/time";
+import { DisposerBag } from "@/utils/disposer";
+import { typedGet, typedSet } from "@/utils/reliability/pdCache";
+import {
+  pushReliabilityEvent,
+  classifyReliabilityError
+} from "@/utils/reliability/reliabilityMetrics";
 import { PREVIEW_DLG_KEY, useProjectDetail, type ActivityItem } from "@/views/project/types";
 import { activityColor } from "@/views/project/composables/useProjectStats";
 import { PRIORITY_COLORS } from "@/views/project/constants";
@@ -483,8 +539,20 @@ const {
   lastUpdated,
   loading,
   retry,
-  navigateTab
+  navigateTab,
+  stageStatus
 } = ctx;
+
+// ── 区块级降级 ──
+const knowledgeDegraded = computed(
+  () => stageStatus?.value.knowledge === "failed" || stageStatus?.value.knowledge === "circuit-open" || stageStatus?.value.knowledge === "degraded"
+);
+const issuesDegraded = computed(
+  () => stageStatus?.value.issues === "failed" || stageStatus?.value.issues === "circuit-open" || stageStatus?.value.issues === "degraded"
+);
+const modulesDegraded = computed(
+  () => stageStatus?.value.modules === "failed" || stageStatus?.value.modules === "circuit-open" || stageStatus?.value.modules === "degraded"
+);
 
 // ── Todo data (derived from injected allIssues/allBugs — no separate API calls) ──
 const todoRequirements = computed(() => allIssues.value.filter(i => i.issue_type !== "bug" && (i.status === "backlog" || i.status === "todo")));
@@ -623,6 +691,19 @@ const descHtml = computed(() => renderWithHtml(descContent.value || ""));
 const descPreviewRef = ref<HTMLElement | null>(null);
 const todoPriority = ref<"high" | "all">("high");
 const todoType = ref<"issues" | "all" | "dev" | "test">("issues");
+const readmeLoading = ref(false);
+
+const README_CACHE_TTL = 120_000;
+const README_POLL_MIN_INTERVAL = 60_000;
+const README_TIMEOUT = 8_000;
+
+const readmeBag = new DisposerBag();
+let readmeSeq = 0;
+let _lastReadmeLoadByUpdate = 0;
+
+function readmeCacheKey(key: string): string {
+  return `readme:${key}`;
+}
 
 function stripFrontmatter(md: string): string {
   const trimmed = md.trimStart();
@@ -641,15 +722,76 @@ function checkDescOverflow() {
 
 watch(descHtml, () => nextTick(checkDescOverflow));
 
-async function loadDescFile() {
+function isActiveSeq(seq: number): boolean {
+  return seq === readmeSeq && !readmeBag.isDisposed;
+}
+
+async function loadDescFile(force = false) {
   if (!project.value) return;
-  try {
-    const content = await readProjectFile(project.value.key, `YiKnowledge/projects/${project.value.key}/README.md`);
-    descContent.value = stripFrontmatter(content || "");
-  } catch {
-    descContent.value = project.value?.description || "";
+  const key = project.value.key;
+  const seq = ++readmeSeq;
+
+  // stale-while-revalidate: fresh 缓存直接返回，不触发网络
+  const cacheKey = readmeCacheKey(key);
+  const cached = typedGet<string>(cacheKey);
+  if (!force && cached.hit && !cached.stale) {
+    descContent.value = cached.value ?? "";
+    descExpanded.value = false;
+    return;
   }
-  descExpanded.value = false;
+  if (cached.hit) {
+    // 先把 stale 内容推给 UI，避免空卡片 + 长时间骨架
+    descContent.value = cached.value ?? "";
+  }
+
+  const ctrl = new AbortController();
+  readmeBag.addAbort(ctrl);
+
+  readmeLoading.value = true;
+  const t0 = performance.now();
+  let retries = 0;
+
+  try {
+    const content = await readProjectFile(key, `YiKnowledge/projects/${key}/README.md`, {
+      timeoutMs: README_TIMEOUT,
+      signal: ctrl.signal
+    });
+    if (!isActiveSeq(seq)) return;
+    const stripped = stripFrontmatter(content || "");
+    descContent.value = stripped;
+    typedSet(cacheKey, stripped, README_CACHE_TTL);
+    pushReliabilityEvent({
+      projectKey: key,
+      phase: "P4-readme",
+      status: "success",
+      durationMs: Math.round(performance.now() - t0),
+      retryCount: retries
+    });
+  } catch (err) {
+    if (!isActiveSeq(seq)) return;
+    const errType = classifyReliabilityError(err);
+    pushReliabilityEvent({
+      projectKey: key,
+      phase: "P4-readme",
+      status: cached.hit ? "degraded" : "failed",
+      durationMs: Math.round(performance.now() - t0),
+      retryCount: retries,
+      errorType: errType,
+      errorMessage: String((err as ProjectFileError)?.message ?? "")
+    });
+    if (!cached.hit) {
+      // 无 cache → 降级 project.description
+      const fallback = project.value?.description || "";
+      descContent.value = fallback;
+      if (fallback) typedSet(cacheKey, fallback, README_CACHE_TTL);
+    }
+    // 有 cache → 已在之前赋值，保持 stale
+  } finally {
+    if (isActiveSeq(seq)) {
+      readmeLoading.value = false;
+      descExpanded.value = false;
+    }
+  }
 }
 
 function openDescDialog() {
@@ -664,17 +806,22 @@ onMounted(() => {
   loadDescFile();
 });
 
-// KeepAlive 场景：项目切换时重新加载 README.md
+onBeforeUnmount(() => {
+  readmeBag.dispose();
+});
+
 watch(
   () => project.value?.key,
-  () => {
-    loadDescFile();
+  (newKey, oldKey) => {
+    if (newKey && newKey !== oldKey) loadDescFile(true);
   }
 );
 
-// 轮询刷新时同步更新 README
 watch(lastUpdated, () => {
-  loadDescFile();
+  const now = Date.now();
+  if (now - _lastReadmeLoadByUpdate < README_POLL_MIN_INTERVAL) return;
+  _lastReadmeLoadByUpdate = now;
+  loadDescFile(true);
 });
 
 // ── Stats strip ──

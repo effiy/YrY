@@ -141,6 +141,7 @@ const {
   allIssues,
   allModules,
   allBugs,
+  stageStatus,
   lastUpdated,
   retry,
   startPolling,
@@ -211,7 +212,8 @@ provide(PROJECT_DETAIL_KEY, {
   retry,
   startPolling,
   stopPolling,
-  okrSummary
+  okrSummary,
+  stageStatus
 });
 provide(PREVIEW_DLG_KEY, previewDlgRef);
 

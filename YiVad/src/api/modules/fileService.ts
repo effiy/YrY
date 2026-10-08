@@ -22,6 +22,48 @@ export async function readFile(path: string): Promise<string> {
   return data?.content ?? data?.data?.content ?? "";
 }
 
+/** 可读错误码分类 — readProjectFile 抛出的错误对象 */
+export type ProjectFileErrorCode = "TIMEOUT" | "NOT_FOUND" | "NETWORK" | "ABORTED" | "BUSINESS";
+
+export class ProjectFileError extends Error {
+  constructor(
+    public readonly code: ProjectFileErrorCode,
+    message: string,
+    public readonly cause?: unknown
+  ) {
+    super(message);
+    this.name = "ProjectFileError";
+  }
+}
+
+export interface ReadProjectFileOptions {
+  /** 独立超时（毫秒）。默认 8000ms（README 非关键路径不阻塞主 loading）。 */
+  timeoutMs?: number;
+  /** 外部 AbortSignal；和内部 timeout 合并后生效（若浏览器不支持 any 则退化 Promise.race）。 */
+  signal?: AbortSignal;
+}
+
+function classifyError(e: unknown, status?: number): ProjectFileError {
+  const maybe = e as { name?: string; code?: unknown; message?: string } | null | undefined;
+  if (
+    maybe?.name === "AbortError" ||
+    maybe?.code === 20 ||
+    (e instanceof DOMException && e.name === "AbortError")
+  ) {
+    return new ProjectFileError("ABORTED", "读取已取消", e);
+  }
+  const msg = String(maybe?.message ?? "");
+  if (/timeout|超时|timed out/i.test(msg)) return new ProjectFileError("TIMEOUT", msg || "读取超时", e);
+  if (/NetworkError|Failed to fetch|net::|ECONN|ENOTFOUND/i.test(msg)) {
+    return new ProjectFileError("NETWORK", msg || "网络错误", e);
+  }
+  if (status === 404) return new ProjectFileError("NOT_FOUND", msg || "文件不存在", e);
+  if (status && status >= 400 && status < 600) {
+    return new ProjectFileError("BUSINESS", msg || `服务端错误 HTTP ${status}`, e);
+  }
+  return new ProjectFileError("BUSINESS", msg || "读取项目文件失败", e);
+}
+
 /**
  * Read a file directly from a project's source tree on disk.
  *
@@ -32,19 +74,63 @@ export async function readFile(path: string): Promise<string> {
  * `/read-project-file` endpoint, which resolves `<projects_root>/<project>/
  * <target_file>` with path-traversal protection and returns the file's
  * current content with no caching.
+ *
+ * 专业版增强：
+ *   - 独立超时（默认 8s），避免 30s 水桶超时阻塞 UI；
+ *   - 外部 signal 合并支持，组件卸载可确定性取消；
+ *   - 结构化错误码（TIMEOUT/NOT_FOUND/NETWORK/ABORTED/BUSINESS）。
  */
-export async function readProjectFile(project: string, path: string): Promise<string> {
-  const url = buildYiAiUrl("/read-project-file");
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: yiAiAuthHeaders(),
-    body: JSON.stringify({ project, target_file: path })
-  });
-  if (!resp.ok) {
-    throw new Error(`Failed to read project file: HTTP ${resp.status}`);
+export async function readProjectFile(
+  project: string,
+  path: string,
+  options: ReadProjectFileOptions = {}
+): Promise<string> {
+  const { timeoutMs = 8_000, signal } = options;
+
+  const ctrl = new AbortController();
+  let timerId: ReturnType<typeof setTimeout> | null = null;
+  let unsub: (() => void) | null = null;
+
+  function cleanup() {
+    if (timerId) { clearTimeout(timerId); timerId = null; }
+    if (unsub) { unsub(); unsub = null; }
   }
-  const data = await resp.json();
-  return data?.data?.content ?? data?.content ?? "";
+
+  try {
+    if (timeoutMs > 0) {
+      timerId = setTimeout(() => {
+        if (!ctrl.signal.aborted) ctrl.abort(new DOMException("Timeout", "AbortError"));
+      }, timeoutMs);
+    }
+    if (signal) {
+      if (signal.aborted) {
+        ctrl.abort(signal.reason);
+      } else {
+        unsub = () => {};
+        const handler = () => { ctrl.abort(signal.reason); };
+        signal.addEventListener("abort", handler, { once: true });
+        unsub = () => signal.removeEventListener("abort", handler);
+      }
+    }
+
+    const url = buildYiAiUrl("/read-project-file");
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: yiAiAuthHeaders(),
+      body: JSON.stringify({ project, target_file: path }),
+      signal: ctrl.signal
+    });
+    if (!resp.ok) {
+      throw classifyError(new Error(`Failed to read project file: HTTP ${resp.status}`), resp.status);
+    }
+    const data = await resp.json();
+    return data?.data?.content ?? data?.content ?? "";
+  } catch (e) {
+    if (e instanceof ProjectFileError) throw e;
+    throw classifyError(e);
+  } finally {
+    cleanup();
+  }
 }
 
 /**

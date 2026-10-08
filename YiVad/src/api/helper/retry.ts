@@ -1,6 +1,6 @@
 /**
  * Exponential-backoff retry for transient failures.
- * Only retries on server-side errors (502/503/504) by default.
+ * Only retries on server-side errors (502/503/504), timeouts, and network errors by default.
  */
 
 export interface RetryConfig {
@@ -8,11 +8,19 @@ export interface RetryConfig {
   retryDelay?: number;
   backoffMultiplier?: number;
   retryOnStatus?: number[];
+  retryOnMessage?: RegExp;
   onRetry?: (attempt: number, error: any) => void;
 }
 
 export async function withRetry<T>(requestFn: () => Promise<T>, config: RetryConfig = {}): Promise<T> {
-  const { maxRetries = 3, retryDelay = 1000, backoffMultiplier = 2, retryOnStatus = [502, 503, 504] } = config;
+  const {
+    maxRetries = 2,
+    retryDelay = 800,
+    backoffMultiplier = 1.6,
+    retryOnStatus = [502, 503, 504],
+    retryOnMessage = /timeout|network|ECONNRESET|ETIMEDOUT|aborted/i,
+    onRetry
+  } = config;
   let lastError: any;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -21,10 +29,15 @@ export async function withRetry<T>(requestFn: () => Promise<T>, config: RetryCon
     } catch (error) {
       lastError = error;
       const status = (error as any)?.response?.status;
-      if (status && !retryOnStatus.includes(status)) throw error;
+      const msg = (error as any)?.message ?? "";
+      const shouldRetryByStatus = status ? retryOnStatus.includes(status) : false;
+      const shouldRetryByMessage = retryOnMessage.test(msg);
+      if (!shouldRetryByStatus && !shouldRetryByMessage) {
+        throw error;
+      }
       if (attempt < maxRetries) {
         const delay = retryDelay * Math.pow(backoffMultiplier, attempt);
-        config.onRetry?.(attempt + 1, error);
+        onRetry?.(attempt + 1, error);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
