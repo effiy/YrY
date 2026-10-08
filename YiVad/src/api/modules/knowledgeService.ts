@@ -17,16 +17,42 @@ import type {
   YiAiEnvelope
 } from "@/api/interface/yiAi";
 
-async function postJson<T>(path: string, body: Record<string, unknown>, timeoutMs = 30_000): Promise<T> {
+async function postJson<T>(
+  path: string,
+  body: Record<string, unknown>,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<T> {
+  const { timeoutMs = 30_000, signal } = opts;
   const url = buildYiAiUrl(path);
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const ctrl = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let unsub: (() => void) | null = null;
+
+  function cleanup() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (unsub) { unsub(); unsub = null; }
+  }
+
   try {
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        if (!ctrl.signal.aborted) ctrl.abort(new DOMException(`Timeout after ${timeoutMs}ms: ${path}`, "AbortError"));
+      }, timeoutMs);
+    }
+    if (signal) {
+      if (signal.aborted) {
+        ctrl.abort(signal.reason);
+      } else {
+        const handler = () => { ctrl.abort(signal.reason); };
+        signal.addEventListener("abort", handler, { once: true });
+        unsub = () => signal.removeEventListener("abort", handler);
+      }
+    }
     const resp = await fetch(url, {
       method: "POST",
       headers: yiAiAuthHeaders(),
       body: JSON.stringify(body),
-      signal: controller.signal
+      signal: ctrl.signal
     });
     if (!resp.ok) {
       throw new Error(`Knowledge request failed: ${path} HTTP ${resp.status}`);
@@ -37,54 +63,88 @@ async function postJson<T>(path: string, body: Record<string, unknown>, timeoutM
     }
     return data.data;
   } finally {
-    clearTimeout(timer);
+    cleanup();
   }
 }
 
 /** Read metadata from the DB mirror (no disk scan). Much faster than scanKnowledge
  *  when the watcher has populated the knowledge_files collection. */
-export function listKnowledgeFiles(category?: string): Promise<KnowledgeFilesResponse> {
-  return postJson<KnowledgeFilesResponse>("/knowledge-files", { category }, 10_000);
+export function listKnowledgeFiles(
+  category?: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeFilesResponse> {
+  return postJson<KnowledgeFilesResponse>(
+    "/knowledge-files",
+    { category },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
-/** Scan the full knowledge tree, or one top-level category if `category` is set.
- *  This is a disk scan and may be slow for large knowledge repos. */
-export function scanKnowledge(category?: string): Promise<KnowledgeScanResponse> {
-  return postJson<KnowledgeScanResponse>("/knowledge-scan", { category }, 15_000);
+export function scanKnowledge(
+  category?: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeScanResponse> {
+  return postJson<KnowledgeScanResponse>(
+    "/knowledge-scan",
+    { category },
+    { timeoutMs: 15_000, ...opts }
+  );
 }
 
-/** Read a single knowledge markdown file (path + parsed frontmatter + body). */
-export function readKnowledgeFile(targetFile: string): Promise<KnowledgeReadResponse> {
-  return postJson<KnowledgeReadResponse>("/knowledge-read", { target_file: targetFile }, 10_000);
+export function readKnowledgeFile(
+  targetFile: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeReadResponse> {
+  return postJson<KnowledgeReadResponse>(
+    "/knowledge-read",
+    { target_file: targetFile },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
-/** List story.md entries under engineer/learn/projects/{project}/ — pass project to filter. */
-export function listKnowledgeStories(project?: string): Promise<KnowledgeStoriesResponse> {
-  return postJson<KnowledgeStoriesResponse>("/knowledge-stories", { project }, 10_000);
+export function listKnowledgeStories(
+  project?: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeStoriesResponse> {
+  return postJson<KnowledgeStoriesResponse>(
+    "/knowledge-stories",
+    { project },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
-/** Read a specific story's story.md. */
-export function readKnowledgeStory(project: string, storyName: string): Promise<KnowledgeReadResponse> {
-  return postJson<KnowledgeReadResponse>("/knowledge-story-read", { project, story_name: storyName }, 10_000);
+export function readKnowledgeStory(
+  project: string,
+  storyName: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeReadResponse> {
+  return postJson<KnowledgeReadResponse>(
+    "/knowledge-story-read",
+    { project, story_name: storyName },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
-/** List bug markdowns under projects/{project}/bugs/{date}/{type}/ — pass project to filter.
- *
- *  The YiAi scanner walks the YiKnowledge tree and parses each file's YAML frontmatter,
- *  returning the same BugDocument shape the MongoDB collection used. So callers get a
- *  drop-in replacement for `getBugList` without touching the store/view layer.
- */
-export function listKnowledgeBugs(project?: string): Promise<KnowledgeBugsResponse> {
-  return postJson<KnowledgeBugsResponse>("/knowledge-bugs", { project }, 10_000);
+export function listKnowledgeBugs(
+  project?: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeBugsResponse> {
+  return postJson<KnowledgeBugsResponse>(
+    "/knowledge-bugs",
+    { project },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
-/** Read a single bug file → { bug: BugDocument, content: BugContent } via its contentPath.
- *
- *  Drop-in replacement for the previous two-step dance of `getBug(key)` +
- *  `readBugContent(contentPath)` — now one round-trip and purely disk-backed.
- */
-export function readKnowledgeBug(contentPath: string): Promise<KnowledgeBugReadResponse> {
-  return postJson<KnowledgeBugReadResponse>("/knowledge-bug-read", { content_path: contentPath }, 10_000);
+export function readKnowledgeBug(
+  contentPath: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeBugReadResponse> {
+  return postJson<KnowledgeBugReadResponse>(
+    "/knowledge-bug-read",
+    { content_path: contentPath },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
 export interface KnowledgeSyncResponse {
@@ -93,9 +153,14 @@ export interface KnowledgeSyncResponse {
   rag?: { status?: string; error?: string; [key: string]: unknown };
 }
 
-/** Trigger a full disk → MongoDB reconciliation for ~/YiKnowledge. */
-export function syncKnowledge(): Promise<KnowledgeSyncResponse> {
-  return postJson<KnowledgeSyncResponse>("/knowledge-sync", {});
+export function syncKnowledge(
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeSyncResponse> {
+  return postJson<KnowledgeSyncResponse>(
+    "/knowledge-sync",
+    {},
+    { timeoutMs: 60_000, ...opts }
+  );
 }
 
 export interface KnowledgeWriteResponse {
@@ -198,8 +263,15 @@ export interface KnowledgeIssuesParams {
 }
 
 /** List YiKnowledge project files as unified Issue records. */
-export function getKnowledgeIssues(params: KnowledgeIssuesParams): Promise<KnowledgeIssuesResponse> {
-  return postJson<KnowledgeIssuesResponse>("/knowledge-issues", params as Record<string, unknown>);
+export function getKnowledgeIssues(
+  params: KnowledgeIssuesParams,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeIssuesResponse> {
+  return postJson<KnowledgeIssuesResponse>(
+    "/knowledge-issues",
+    params as Record<string, unknown>,
+    { timeoutMs: 12_000, ...opts }
+  );
 }
 
 export interface KnowledgeIssuesStats {
@@ -239,9 +311,15 @@ export interface KnowledgeIssuesStatsParams {
   search?: string;
 }
 
-/** Server-side pre-aggregated issue stats — avoids fetching all records. */
-export function getKnowledgeIssueStats(params: KnowledgeIssuesStatsParams): Promise<KnowledgeIssuesStats> {
-  return postJson<KnowledgeIssuesStats>("/knowledge-issues-stats", params as Record<string, unknown>);
+export function getKnowledgeIssueStats(
+  params: KnowledgeIssuesStatsParams,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeIssuesStats> {
+  return postJson<KnowledgeIssuesStats>(
+    "/knowledge-issues-stats",
+    params as Record<string, unknown>,
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
 export interface OrphanedIssue {
@@ -256,9 +334,14 @@ export interface OrphanedIssuesResponse {
   count: number;
 }
 
-/** Detect issues in MongoDB without corresponding YiKnowledge files. */
-export function getOrphanedIssues(): Promise<OrphanedIssuesResponse> {
-  return postJson<OrphanedIssuesResponse>("/knowledge-orphaned-issues", {});
+export function getOrphanedIssues(
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<OrphanedIssuesResponse> {
+  return postJson<OrphanedIssuesResponse>(
+    "/knowledge-orphaned-issues",
+    {},
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
 export interface KnowledgeProjectsStats {
@@ -269,16 +352,27 @@ export interface KnowledgeProjectsStatsParams {
   project?: string;
 }
 
-/** Count .md files per project under YiKnowledge/projects/. */
-export function getKnowledgeProjectsStats(params?: KnowledgeProjectsStatsParams): Promise<KnowledgeProjectsStats> {
-  return postJson<KnowledgeProjectsStats>("/knowledge-projects-stats", (params ?? {}) as Record<string, unknown>);
+export function getKnowledgeProjectsStats(
+  params?: KnowledgeProjectsStatsParams,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeProjectsStats> {
+  return postJson<KnowledgeProjectsStats>(
+    "/knowledge-projects-stats",
+    (params ?? {}) as Record<string, unknown>,
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
 export interface OrphanedCleanupResponse {
   deleted: number;
 }
 
-/** Delete orphaned issues from MongoDB. */
-export function cleanupOrphanedIssues(): Promise<OrphanedCleanupResponse> {
-  return postJson<OrphanedCleanupResponse>("/knowledge-cleanup-orphaned", {});
+export function cleanupOrphanedIssues(
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<OrphanedCleanupResponse> {
+  return postJson<OrphanedCleanupResponse>(
+    "/knowledge-cleanup-orphaned",
+    {},
+    { timeoutMs: 15_000, ...opts }
+  );
 }

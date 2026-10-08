@@ -34,15 +34,18 @@ export interface Module {
   updated_at: string;
 }
 
-export function getModuleList(params: {
-  pageNum?: number;
-  pageSize?: number;
-  project_key?: string;
-  status?: string;
-  due_date?: string;
-  updated_at_start?: string;
-  updated_at_end?: string;
-}) {
+export function getModuleList(
+  params: {
+    pageNum?: number;
+    pageSize?: number;
+    project_key?: string;
+    status?: string;
+    due_date?: string;
+    updated_at_start?: string;
+    updated_at_end?: string;
+  },
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   const { pageNum = 1, pageSize = 50, project_key, status, due_date, updated_at_start, updated_at_end } = params;
   const filter: Record<string, any> = {};
   if (project_key) filter.project_key = project_key;
@@ -60,25 +63,32 @@ export function getModuleList(params: {
     pageSize,
     orderBy: "updated_at",
     orderType: "desc"
-  });
+  }, opts);
 }
 
-export function getModule(key: string) {
-  return queryDocuments<Module>({ cname: COLLECTION, filter: { key }, pageSize: 1 });
+export function getModule(key: string, opts: { timeout?: number; signal?: AbortSignal } = {}) {
+  return queryDocuments<Module>({ cname: COLLECTION, filter: { key }, pageSize: 1 }, opts);
 }
 
-export function createModule(data: Omit<Module, "created_at" | "updated_at">) {
+export function createModule(
+  data: Omit<Module, "created_at" | "updated_at">,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   return createDocument<Module>(COLLECTION, {
     ...data,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
-  });
+  }, opts);
 }
 
-export function updateModule(key: string, data: Partial<Omit<Module, "key">>) {
-  return updateDocument<Module>(COLLECTION, key, { ...data, updated_at: new Date().toISOString() });
+export function updateModule(
+  key: string,
+  data: Partial<Omit<Module, "key">>,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
+  return updateDocument<Module>(COLLECTION, key, { ...data, updated_at: new Date().toISOString() }, opts);
 }
 
-export function deleteModule(key: string) {
-  return deleteDocument(COLLECTION, key);
+export function deleteModule(key: string, opts: { timeout?: number; signal?: AbortSignal } = {}) {
+  return deleteDocument(COLLECTION, key, opts);
 }

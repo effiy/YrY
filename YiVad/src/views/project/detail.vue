@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts" name="projectDetail">
-import { computed, ref, provide, watch, onMounted } from "vue";
+import { computed, ref, provide, watch, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { syncKnowledge } from "@/api/modules/knowledgeService";
@@ -130,7 +130,6 @@ import { PROJECT_DETAIL_KEY, PREVIEW_DLG_KEY, type OkrSummary } from "./types";
 const route = useRoute();
 const router = useRouter();
 
-// ── 数据加载 ──
 const projectKey = computed(() => (route.params.key as string) || "");
 const {
   project,
@@ -148,13 +147,47 @@ const {
   stopPolling
 } = useProjectDetail(projectKey);
 
-// Non-blocking disk→MongoDB sync on first project page visit.
-let _synced = false;
-onMounted(() => {
-  if (!_synced) {
-    _synced = true;
-    syncKnowledge().catch(() => {});
+const SYNC_DELAY_MS = 6_000;
+const SYNC_TIMEOUT_MS = 20_000;
+const RETRY_COOLDOWN_MS = 8_000;
+let _syncTimer: ReturnType<typeof setTimeout> | null = null;
+let _syncRunning = false;
+let _lastRetryAt = 0;
+
+function clearSyncTimer() {
+  if (_syncTimer !== null) {
+    clearTimeout(_syncTimer);
+    _syncTimer = null;
   }
+}
+
+async function safeSyncKnowledge() {
+  if (_syncRunning) return;
+  _syncRunning = true;
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), SYNC_TIMEOUT_MS);
+    try {
+      await syncKnowledge({ timeoutMs: SYNC_TIMEOUT_MS, signal: ctrl.signal });
+    } finally {
+      clearTimeout(tid);
+    }
+  } catch {
+    /* sync is non-blocking best-effort */
+  } finally {
+    _syncRunning = false;
+  }
+}
+
+onMounted(() => {
+  // 延迟同步：避免首屏关键请求被重量级 disk→DB sync 抢占连接池
+  _syncTimer = setTimeout(() => {
+    void safeSyncKnowledge();
+  }, SYNC_DELAY_MS);
+});
+
+onBeforeUnmount(() => {
+  clearSyncTimer();
 });
 
 // ── 日期筛选 ──
@@ -169,10 +202,8 @@ const {
   clearFilterDate
 } = useDateFilter(filterDate);
 
-// ── OKR summary (populated by DetailOkr, consumed by DetailOverview + Tab badge) ──
 const okrSummary = ref<OkrSummary>({ totalGoals: 0, avgProgress: 0, completedCount: 0 });
 
-// ── Tab 管理 ──
 const { tabs, activeTab, currentTabComponent, currentTabProps } = useDetailTabs(
   project,
   knowledgeFiles,
@@ -181,17 +212,18 @@ const { tabs, activeTab, currentTabComponent, currentTabProps } = useDetailTabs(
   allModules
 );
 
-// 切换回 Overview 时立即刷新数据
+// Tab 切换冷却：8s 内重复切回 overview 不触发请求风暴
 watch(activeTab, tab => {
-  if (tab === "overview") retry();
+  if (tab !== "overview") return;
+  const now = Date.now();
+  if (now - _lastRetryAt < RETRY_COOLDOWN_MS) return;
+  _lastRetryAt = now;
+  retry();
 });
 
 const tabStore = useTabsStore();
-
-// ── 预览弹窗 ──
 const previewDlgRef = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
-// ── 依赖注入（替代 props 透传） ──
 provide(PROJECT_DETAIL_KEY, {
   project,
   knowledgeFiles,
@@ -217,16 +249,20 @@ provide(PROJECT_DETAIL_KEY, {
 });
 provide(PREVIEW_DLG_KEY, previewDlgRef);
 
-// ── 动态更新 Tab 标题为项目名称 ──
 watch(project, p => {
   if (p?.name) tabStore.setTabsTitle(p.name);
 });
 
-// ── 恢复 URL 中的 Tab 状态 ──
-const initialTab = route.query.tab;
-if (typeof initialTab === "string") {
-  activeTab.value = initialTab;
-}
+watch(
+  () => route.query.tab,
+  initialTab => {
+    if (typeof initialTab === "string") {
+      const valid = tabs.value.some(t => t.name === initialTab);
+      if (valid) activeTab.value = initialTab;
+    }
+  },
+  { immediate: true }
+);
 
 function goBack() {
   router.push("/project");

@@ -68,9 +68,11 @@ const KF_CACHE_PREFIX = "projects/";
 let _kfGlobalCache: { files: KnowledgeFileEntry[]; ts: number } | null = null;
 const KF_GLOBAL_CACHE_TTL = 90_000;
 
-async function getKnowledgeFilesGlobal(): Promise<KnowledgeFileEntry[]> {
+async function getKnowledgeFilesGlobal(
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeFileEntry[]> {
   if (_kfGlobalCache && Date.now() - _kfGlobalCache.ts < KF_GLOBAL_CACHE_TTL) return _kfGlobalCache.files;
-  const res = await listKnowledgeFiles("projects");
+  const res = await listKnowledgeFiles("projects", opts);
   const files = (res.files as KnowledgeFileEntry[]) ?? [];
   _kfGlobalCache = { files, ts: Date.now() };
   return files;
@@ -183,6 +185,7 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     stageStatus.value = { knowledge: "success", issues: "success", modules: "success" };
 
     // P1: Project（单独处理，因失败需要整页 error）
+    // 可靠性增强：signal + timeout 双向传递给 axios，确保 P1_TIMEOUT 不被绕过
     const p1Started = performance.now();
     try {
       await withRetry(async () => {
@@ -194,7 +197,10 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         const timeoutId = setTimeout(() => ctrl.abort(new DOMException("Project fetch timeout", "AbortError")), P1_TIMEOUT);
         fetchBag.addTimer(timeoutId);
         try {
-          await store.fetchProject(key);
+          await store.fetchProject(key, {
+            timeout: P1_TIMEOUT,
+            signal: ctrl.signal
+          });
         } finally {
           clearTimeout(timeoutId);
         }
@@ -276,11 +282,14 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     }
   }
 
-  onMounted(fetchProject);
+  onMounted(() => {
+    // 注意：watch(projectKey, { immediate:true }) 已经在 setup 阶段触发了首次调用
+    // 这里保留 onMounted 仅作为生命周期完整性保险，不再重复调用
+  });
 
   watch(projectKey, newKey => {
     if (newKey) fetchProject();
-  });
+  }, { immediate: true });
 
   onUnmounted(() => {
     stopPolling();
@@ -324,8 +333,11 @@ function makeKnowledgeStage(
     projectKey,
     timeoutMs: 18_000,
     ttlMs: 15 * 60_000,
-    run: async () => {
-      const global = await getKnowledgeFilesGlobal();
+    run: async (ctrl) => {
+      const global = await getKnowledgeFilesGlobal({
+        timeoutMs: 18_000,
+        signal: ctrl.signal
+      });
       return filterProjectKnowledge(global, projectKey);
     },
     fallback: () => filesRef.value.length ? filesRef.value : [],
@@ -357,8 +369,11 @@ function makeIssuesStage(
     projectKey,
     timeoutMs: 12_000,
     ttlMs: 5 * 60_000,
-    run: async () => {
-      const r = await getIssueList({ project_key: projectKey, pageSize: 60 });
+    run: async (ctrl) => {
+      const r = await getIssueList(
+        { project_key: projectKey, pageSize: 60 },
+        { timeoutMs: 12_000, signal: ctrl.signal }
+      );
       return (((r as any)?.data?.list ?? []) as unknown as Record<string, unknown>[]).map(normalizeIssue);
     },
     fallback: () => issuesRef.value.length ? issuesRef.value : [],
@@ -389,8 +404,11 @@ function makeModulesStage(
     projectKey,
     timeoutMs: 10_000,
     ttlMs: 10 * 60_000,
-    run: async () => {
-      const r = await getModuleList({ project_key: projectKey, pageSize: 30 });
+    run: async (ctrl) => {
+      const r = await getModuleList(
+        { project_key: projectKey, pageSize: 30 },
+        { timeout: 10_000, signal: ctrl.signal }
+      );
       return ((r as any)?.data?.list as Module[]) ?? [];
     },
     fallback: () => modulesRef.value.length ? modulesRef.value : [],

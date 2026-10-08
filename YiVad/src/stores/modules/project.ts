@@ -1,7 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { getProjectList, getProject, createProject, updateProject, deleteProject } from "@/api/modules/projectService";
+import { getProjectList, getProjectByIdentifierOrKey, createProject, updateProject, deleteProject } from "@/api/modules/projectService";
 import type { Project, ProjectQueryParams, ProjectMember } from "@/api/modules/projectService";
+
+export interface FetchProjectOpts {
+  timeout?: number;
+  signal?: AbortSignal;
+}
 
 export const useProjectStore = defineStore("project", () => {
   const projects = ref<Project[]>([]);
@@ -9,10 +14,10 @@ export const useProjectStore = defineStore("project", () => {
   const total = ref(0);
   const loading = ref(false);
 
-  async function fetchProjects(params: ProjectQueryParams = {}) {
+  async function fetchProjects(params: ProjectQueryParams = {}, opts: FetchProjectOpts = {}) {
     loading.value = true;
     try {
-      const res = await getProjectList(params);
+      const res = await getProjectList(params, opts);
       projects.value = (res.data?.list as Project[]) ?? [];
       total.value = res.data?.total ?? 0;
     } finally {
@@ -20,8 +25,8 @@ export const useProjectStore = defineStore("project", () => {
     }
   }
 
-  async function fetchProject(key: string) {
-    const res = await getProject(key);
+  async function fetchProject(key: string, opts: FetchProjectOpts = {}) {
+    const res = await getProjectByIdentifierOrKey(key, opts);
     const list = (res.data?.list as Project[]) ?? [];
     currentProject.value = list[0] ?? null;
     return currentProject.value;

@@ -133,7 +133,7 @@ export async function chat(payload: ChatPayload): Promise<string> {
       ...(payload.system ? { system: payload.system } : {}),
       ...(payload.images?.length ? { images: payload.images } : {})
     },
-    120_000
+    { timeout: 120_000 }
   );
 
   if (res.code !== 0) {

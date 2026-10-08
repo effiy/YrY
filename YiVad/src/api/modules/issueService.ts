@@ -141,7 +141,10 @@ export interface IssueQueryParams {
   due_date_end?: string;
 }
 
-export function getIssueList(params: IssueQueryParams) {
+export function getIssueList(
+  params: IssueQueryParams,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+) {
   const {
     pageNum = 1,
     pageSize = 20,
@@ -160,7 +163,7 @@ export function getIssueList(params: IssueQueryParams) {
     search: search || undefined,
     pageNum,
     pageSize,
-  }).then((res) => ({
+  }, opts).then((res) => ({
     data: {
       list: res.list,
       total: res.total,
@@ -171,31 +174,31 @@ export function getIssueList(params: IssueQueryParams) {
   }));
 }
 
-export function getIssue(key: string) {
+export function getIssue(key: string, opts: { timeout?: number; signal?: AbortSignal } = {}) {
   return queryDocuments<Issue>({
     cname: COLLECTION,
     filter: { key },
     pageSize: 1
-  });
+  }, opts);
 }
 
-export function createIssue(data: Omit<Issue, "created_at" | "updated_at">) {
+export function createIssue(data: Omit<Issue, "created_at" | "updated_at">, opts: { timeout?: number; signal?: AbortSignal } = {}) {
   return createDocument<Issue>(COLLECTION, {
     ...data,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
-  });
+  }, opts);
 }
 
-export function updateIssue(key: string, data: Partial<Issue>) {
+export function updateIssue(key: string, data: Partial<Issue>, opts: { timeout?: number; signal?: AbortSignal } = {}) {
   return updateDocument<Issue>(COLLECTION, key, {
     ...data,
     updated_at: new Date().toISOString()
-  });
+  }, opts);
 }
 
-export function deleteIssue(key: string) {
-  return deleteDocument(COLLECTION, key);
+export function deleteIssue(key: string, opts: { timeout?: number; signal?: AbortSignal } = {}) {
+  return deleteDocument(COLLECTION, key, opts);
 }
 
 /**

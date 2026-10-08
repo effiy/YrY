@@ -19,71 +19,86 @@ export function callService<T = any>(
   module: string,
   method: string,
   params: Record<string, any> = {},
-  timeout?: number
+  opts: { timeout?: number; signal?: AbortSignal } = {}
 ): Promise<YiAiEnvelope<T>> {
   const payload: ServicePayload = {
     module_name: module,
     method_name: method,
     parameters: params
   };
-  // RPC calls are idempotent and frequently fired in parallel (e.g.
-  // loadSessions + loadFileTree + refreshTagUniverse all call getSessions with
-  // identical payloads). The axios canceler would otherwise abort in-flight
-  // duplicates, which breaks that pattern. Opt out at the call site.
-  return http.post<YiAiEnvelope<T>>("", payload, { cancel: false, ...(timeout ? { timeout } : {}) }) as any;
+  const cfg: Record<string, any> = { cancel: false };
+  if (opts.timeout) cfg.timeout = opts.timeout;
+  if (opts.signal) cfg.signal = opts.signal;
+  return http.post<YiAiEnvelope<T>>("", payload, cfg) as any;
 }
 
-/**
- * Query documents from a collection.
- * @param cname - collection name (e.g., "sessions", "faqs")
- */
-export function queryDocuments<T = any>(params: QueryDocumentsParams): Promise<YiAiEnvelope<QueryDocumentsData<T>>> {
-  return callService<QueryDocumentsData<T>>(DATA_SERVICE, "query_documents", params as unknown as Record<string, any>);
+export interface QueryDocumentsOpts {
+  timeout?: number;
+  signal?: AbortSignal;
 }
 
-/**
- * Create a document in a collection.
- * @param cname - collection name
- * @param data - document data (must include a unique key)
- */
-export function createDocument<T = any>(cname: string, data: Record<string, any>): Promise<YiAiEnvelope<T>> {
-  return callService<T>(DATA_SERVICE, "create_document", { cname, data });
+export function queryDocuments<T = any>(
+  params: QueryDocumentsParams,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope<QueryDocumentsData<T>>> {
+  return callService<QueryDocumentsData<T>>(
+    DATA_SERVICE,
+    "query_documents",
+    params as unknown as Record<string, any>,
+    { timeout: opts.timeout ?? 15_000, signal: opts.signal }
+  );
 }
 
-/**
- * Update a document in a collection.
- * @param cname - collection name
- * @param key - document key
- * @param data - fields to update
- *
- * YiAi's `update_document` requires the `key` field INSIDE `data` (it queries by
- * `data.key`). Callers that build `data` from a partial patch (e.g. just
- * `{ pageContent }`) would otherwise hit "Update data must contain key field".
- * We add `key` here so callers don't have to remember.
- */
-export function updateDocument<T = any>(cname: string, key: string, data: Record<string, any>): Promise<YiAiEnvelope<T>> {
-  return callService<T>(DATA_SERVICE, "update_document", { cname, key, data: { ...data, key } });
+export function createDocument<T = any>(
+  cname: string,
+  data: Record<string, any>,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope<T>> {
+  return callService<T>(
+    DATA_SERVICE,
+    "create_document",
+    { cname, data },
+    { timeout: opts.timeout ?? 15_000, signal: opts.signal }
+  );
 }
 
-/**
- * Count documents in a collection, optionally grouped by a field.
- * @param cname - collection name
- * @param filter - optional filter dict
- * @param groupBy - optional field to group counts by
- */
+export function updateDocument<T = any>(
+  cname: string,
+  key: string,
+  data: Record<string, any>,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope<T>> {
+  return callService<T>(
+    DATA_SERVICE,
+    "update_document",
+    { cname, key, data: { ...data, key } },
+    { timeout: opts.timeout ?? 15_000, signal: opts.signal }
+  );
+}
+
 export function countDocuments(
   cname: string,
   filter?: Record<string, any>,
-  groupBy?: string
+  groupBy?: string,
+  opts: QueryDocumentsOpts = {}
 ): Promise<YiAiEnvelope<{ count?: number; groups?: Array<{ value: any; count: number }>; total?: number }>> {
-  return callService(DATA_SERVICE, "count_documents", { cname, ...(filter ? { filter } : {}), ...(groupBy ? { groupBy } : {}) });
+  return callService(
+    DATA_SERVICE,
+    "count_documents",
+    { cname, ...(filter ? { filter } : {}), ...(groupBy ? { groupBy } : {}) },
+    { timeout: opts.timeout ?? 10_000, signal: opts.signal }
+  );
 }
 
-/**
- * Delete a document from a collection.
- * @param cname - collection name
- * @param key - document key
- */
-export function deleteDocument<T = any>(cname: string, key: string): Promise<YiAiEnvelope<T>> {
-  return callService<T>(DATA_SERVICE, "delete_document", { cname, key });
+export function deleteDocument<T = any>(
+  cname: string,
+  key: string,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope<T>> {
+  return callService<T>(
+    DATA_SERVICE,
+    "delete_document",
+    { cname, key },
+    { timeout: opts.timeout ?? 15_000, signal: opts.signal }
+  );
 }

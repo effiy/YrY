@@ -3,12 +3,12 @@
     <PageHeaderCard
       :icon="Menu"
       icon-bg="linear-gradient(135deg, #9b59b6, #7c3aed)"
-      :title="$t('common.menu.title')"
-      :description="$t('common.menu.description')"
+      :title="$t('menu.title')"
+      :description="$t('menu.description')"
     />
     <ProTable
       ref="proTable"
-      :title="$t('common.menu.title')"
+      :title="$t('menu.title')"
       row-key="path"
       :pagination="false"
       :tree-props="{ children: 'children' }"
@@ -19,10 +19,10 @@
       :height="tableHeight"
     >
       <template #tableHeader="scope">
-        <el-button type="primary" :icon="CirclePlus" @click="openAdd">{{ $t("common.menu.addMenu") }}</el-button>
-        <el-button :icon="RefreshRight" :loading="resetting" @click="handleResetDefaults">Reset Defaults</el-button>
+        <el-button type="primary" :icon="CirclePlus" @click="openAdd">{{ $t("menu.addMenu") }}</el-button>
+        <el-button :icon="RefreshRight" :loading="resetting" @click="handleResetDefaults">{{ $t("menu.resetDefaults") }}</el-button>
         <el-button v-if="scope.isSelected" type="danger" :icon="Delete" @click="batchDelete(scope.selectedListIds)">
-          Delete Selected
+          {{ $t("menu.deleteSelected") }}
         </el-button>
       </template>
       <template #icon="scope">
@@ -44,11 +44,11 @@
           <el-icon><component :is="getParentIcon(scope.row.parent)" /></el-icon>
           {{ getParentTitle(scope.row.parent) }}
         </span>
-        <el-tag v-else size="small" type="info">{{ $t("common.menu.topLevel") }}</el-tag>
+        <el-tag v-else size="small" type="info">{{ $t("menu.topLevel") }}</el-tag>
       </template>
       <template #isHide="scope">
-        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">{{ $t("common.menu.hidden") }}</el-tag>
-        <el-tag v-else size="small" type="success">{{ $t("common.menu.visible") }}</el-tag>
+        <el-tag v-if="scope.row.meta?.isHide" size="small" type="danger">{{ $t("menu.hidden") }}</el-tag>
+        <el-tag v-else size="small" type="success">{{ $t("menu.visible") }}</el-tag>
       </template>
       <template #operation="scope">
         <el-tooltip :content="$t('common.edit')" placement="top"><el-button type="primary" link :icon="EditPen" @click="openEdit(scope.row)"></el-button></el-tooltip>
@@ -58,7 +58,7 @@
 
     <el-dialog
       v-model="dialogVisible"
-      :title="isAdd ? $t('common.menu.addMenu') : $t('common.menu.editMenu')"
+      :title="isAdd ? $t('menu.addMenu') : $t('menu.editMenu')"
       width="600px"
       :close-on-click-modal="false"
       append-to-body
@@ -74,62 +74,62 @@
         @keydown.meta.s.prevent="handleSave"
         @keydown.ctrl.s.prevent="handleSave"
       >
-        <el-form-item :label="$t('common.menu.fields.menuName')" prop="title">
-          <el-input v-model="form.title" :placeholder="$t('common.menu.fields.menuNamePlaceholder')" clearable autofocus />
+        <el-form-item :label="$t('menu.fields.menuName')" prop="title">
+          <el-input v-model="form.title" :placeholder="$t('menu.fields.menuNamePlaceholder')" clearable autofocus />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.parentMenu')">
+        <el-form-item :label="$t('menu.fields.parentMenu')">
           <el-tree-select
             v-model="form.parent"
             :data="parentMenuOptions"
             :props="{ label: 'title', children: 'children' }"
             node-key="path"
-            :placeholder="$t('common.menu.fields.parentPlaceholder')"
+            :placeholder="$t('menu.fields.parentPlaceholder')"
             clearable
             check-strictly
             filterable
             class="mm-parent-select"
           />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.routePath')" prop="path">
-          <el-input v-model="form.path" :placeholder="$t('common.menu.fields.routePathPlaceholder')" clearable />
+        <el-form-item :label="$t('menu.fields.routePath')" prop="path">
+          <el-input v-model="form.path" :placeholder="$t('menu.fields.routePathPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.routeName')" prop="name">
-          <el-input v-model="form.name" :placeholder="$t('common.menu.fields.routeNamePlaceholder')" clearable />
+        <el-form-item :label="$t('menu.fields.routeName')" prop="name">
+          <el-input v-model="form.name" :placeholder="$t('menu.fields.routeNamePlaceholder')" clearable />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.componentPath')" prop="component">
-          <el-input v-model="form.component" :placeholder="$t('common.menu.fields.componentPathPlaceholder')" clearable />
+        <el-form-item :label="$t('menu.fields.componentPath')" prop="component">
+          <el-input v-model="form.component" :placeholder="$t('menu.fields.componentPathPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.redirect')">
-          <el-input v-model="form.redirect" :placeholder="$t('common.menu.fields.redirectPlaceholder')" clearable />
+        <el-form-item :label="$t('menu.fields.redirect')">
+          <el-input v-model="form.redirect" :placeholder="$t('menu.fields.redirectPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.icon')">
+        <el-form-item :label="$t('menu.fields.icon')">
           <SelectIcon v-model:icon-value="form.icon" />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.externalLink')">
-          <el-input v-model="form.isLink" :placeholder="$t('common.menu.fields.externalLinkPlaceholder')" clearable />
+        <el-form-item :label="$t('menu.fields.externalLink')">
+          <el-input v-model="form.isLink" :placeholder="$t('menu.fields.externalLinkPlaceholder')" clearable />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.order')">
+        <el-form-item :label="$t('menu.fields.order')">
           <el-input-number v-model="form.order" :min="0" />
         </el-form-item>
         <el-divider />
-        <el-form-item :label="$t('common.menu.fields.hiddenMenu')">
+        <el-form-item :label="$t('menu.fields.hiddenMenu')">
           <el-switch v-model="form.isHide" />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.fullScreen')">
+        <el-form-item :label="$t('menu.fields.fullScreen')">
           <el-switch v-model="form.isFull" />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.fixedTab')">
+        <el-form-item :label="$t('menu.fields.fixedTab')">
           <el-switch v-model="form.isAffix" />
         </el-form-item>
-        <el-form-item :label="$t('common.menu.fields.pageCache')">
+        <el-form-item :label="$t('menu.fields.pageCache')">
           <el-switch v-model="form.isKeepAlive" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer-hint"><kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> save</span>
+        <span class="dialog-footer-hint" v-html="$t('menu.dialogFooterSaveHint')"></span>
         <div>
-          <el-button @click="dialogVisible = false">{{ $t("common.menu.cancel") }}</el-button>
-          <el-button type="primary" :loading="saving" @click="handleSave">{{ $t("common.menu.save") }}</el-button>
+          <el-button @click="dialogVisible = false">{{ $t("menu.cancel") }}</el-button>
+          <el-button type="primary" :loading="saving" @click="handleSave">{{ $t("menu.save") }}</el-button>
         </div>
       </template>
     </el-dialog>
@@ -273,9 +273,9 @@ const defaultForm = (): MenuForm => ({
 const form = reactive<MenuForm>(defaultForm());
 
 const rules: FormRules = {
-  title: [{ required: true, message: () => t("common.menu.validation.menuNameRequired"), trigger: "blur" }],
-  path: [{ required: true, message: () => t("common.menu.validation.routePathRequired"), trigger: "blur" }],
-  name: [{ required: true, message: () => t("common.menu.validation.routeNameRequired"), trigger: "blur" }]
+  title: [{ required: true, message: () => t("menu.validation.menuNameRequired"), trigger: "blur" }],
+  path: [{ required: true, message: () => t("menu.validation.routePathRequired"), trigger: "blur" }],
+  name: [{ required: true, message: () => t("menu.validation.routeNameRequired"), trigger: "blur" }]
 };
 
 function populateForm(row: any) {
@@ -336,15 +336,15 @@ async function handleSave() {
     };
     if (isAdd.value) {
       await createMenu(params);
-      ElMessage.success(t("common.menu.messages.created"));
+      ElMessage.success(t("menu.messages.created"));
     } else {
       await updateMenu(key, params);
-      ElMessage.success(t("common.menu.messages.updated"));
+      ElMessage.success(t("menu.messages.updated"));
     }
     dialogVisible.value = false;
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : t("common.menu.messages.saveFailed"));
+    ElMessage.error(e instanceof Error ? e.message : t("menu.messages.saveFailed"));
   } finally {
     saving.value = false;
   }
@@ -352,30 +352,30 @@ async function handleSave() {
 
 async function handleDelete(row: any) {
   if (!row.key) {
-    ElMessage.error(t("common.menu.messages.deleteFailed"));
+    ElMessage.error(t("menu.messages.deleteFailed"));
     return;
   }
   const childCount = row.children?.length ?? 0;
   const name = row.meta?.title ?? row.name;
   const ok = await confirm(
-    t("common.menu.messages.deleteConfirm", { name }),
-    t("common.menu.confirmDelete"),
+    t("menu.messages.deleteConfirm", { name }),
+    t("menu.confirmDelete"),
     childCount > 0 ? "error" : "warning"
   );
   if (!ok) return;
   try {
     await deleteMenu(row.key);
-    ElMessage.success(t("common.menu.messages.deleted"));
+    ElMessage.success(t("menu.messages.deleted"));
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : t("common.menu.messages.deleteFailed"));
+    ElMessage.error(e instanceof Error ? e.message : t("menu.messages.deleteFailed"));
   }
 }
 
 async function handleResetDefaults() {
   const ok = await confirm(
     t("system.dialog.deleteConfirm"),
-    "Reset Menus"
+    t("menu.resetMenusTitle")
   );
   if (!ok) return;
   resetting.value = true;
@@ -390,10 +390,10 @@ async function handleResetDefaults() {
     }
     flatten(authMenuList.data);
     await bulkResetMenus(flat);
-    ElMessage.success(`Reset ${flat.length} menus to defaults`);
+    ElMessage.success(t("menu.messages.resetSuccess", { count: flat.length }));
     await authStore.getAuthMenuList();
   } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : "Failed to reset menus");
+    ElMessage.error(e instanceof Error ? e.message : t("menu.messages.resetFailed"));
   } finally {
     resetting.value = false;
   }
@@ -401,30 +401,30 @@ async function handleResetDefaults() {
 
 const columns: ColumnProps[] = [
   { type: "selection", width: 50 },
-  { prop: "meta.title", label: t("common.menu.fields.menuName"), align: "left", width: 180, search: { el: "input" } },
-  { prop: "meta.icon", label: t("common.menu.fields.icon"), width: 80 },
-  { prop: "name", label: t("common.menu.fields.routeName"), width: 150, search: { el: "input" } },
-  { prop: "path", label: t("common.menu.fields.routePath"), width: 220, search: { el: "input" } },
-  { prop: "component", label: t("common.menu.fields.componentPath"), width: 220 },
-  { prop: "redirect", label: t("common.menu.fields.redirect"), width: 180 },
-  { prop: "order", label: t("common.menu.fields.order"), width: 70 },
-  { prop: "parent", label: t("common.menu.fields.parentMenu"), width: 180 },
-  { prop: "meta.isHide", label: t("common.menu.visibility"), width: 100 },
-  { prop: "operation", label: t("common.menu.operations"), width: 180, fixed: "right" }
+  { prop: "meta.title", label: t("menu.fields.menuName"), align: "left", width: 180, search: { el: "input" } },
+  { prop: "meta.icon", label: t("menu.fields.icon"), width: 80 },
+  { prop: "name", label: t("menu.fields.routeName"), width: 150, search: { el: "input" } },
+  { prop: "path", label: t("menu.fields.routePath"), width: 220, search: { el: "input" } },
+  { prop: "component", label: t("menu.fields.componentPath"), width: 220 },
+  { prop: "redirect", label: t("menu.fields.redirect"), width: 180 },
+  { prop: "order", label: t("menu.fields.order"), width: 70 },
+  { prop: "parent", label: t("menu.fields.parentMenu"), width: 180 },
+  { prop: "meta.isHide", label: t("menu.visibility"), width: 100 },
+  { prop: "operation", label: t("menu.operations"), width: 180, fixed: "right" }
 ];
 
 async function batchDelete(paths: (string | number)[]) {
   if (!paths.length) return;
   const ok = await confirm(
-    t("common.menu.messages.deleteConfirm", { name: `${paths.length} menu(s)` }),
-    "Batch Delete Menus",
+    t("menu.messages.deleteConfirm", { name: `${paths.length} menu(s)` }),
+    t("menu.batchDeleteTitle"),
     "error"
   );
   if (!ok) return;
   for (const path of paths) {
     try { await deleteMenu(String(path)); } catch { /* continue */ }
   }
-  ElMessage.success(`Deleted ${paths.length} menu(s)`);
+  ElMessage.success(t("menu.messages.batchDeletedSuccess", { count: paths.length }));
   await authStore.getAuthMenuList();
 }
 </script>

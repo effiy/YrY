@@ -149,6 +149,7 @@ export default {
   },
   menu: {
     title: "菜单列表",
+    description: "配置系统导航菜单的结构、路由与权限",
     addMenu: "新增菜单",
     editMenu: "编辑菜单",
     edit: "编辑",
@@ -162,6 +163,22 @@ export default {
     visible: "显示",
     visibility: "可见性",
     operations: "操作",
+    resetDefaults: "恢复默认",
+    deleteSelected: "删除选中",
+    dialogFooterSaveHint: "<kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> 保存",
+    resetMenusTitle: "重置菜单",
+    batchDeleteTitle: "批量删除菜单",
+    messages: {
+      created: "菜单已创建",
+      updated: "菜单已更新",
+      deleted: "菜单已删除",
+      saveFailed: "保存失败",
+      deleteFailed: "删除失败",
+      deleteConfirm: "确定要删除菜单「{name}」吗？更改将在刷新页面后生效。",
+      resetSuccess: "已将 {count} 个菜单恢复为默认设置",
+      resetFailed: "重置菜单失败",
+      batchDeletedSuccess: "已删除 {count} 个菜单"
+    },
     fields: {
       menuName: "菜单名称",
       menuNamePlaceholder: "菜单显示名称",
@@ -189,14 +206,6 @@ export default {
       menuNameRequired: "请输入菜单名称",
       routePathRequired: "请输入路由路径",
       routeNameRequired: "请输入路由名称"
-    },
-    messages: {
-      created: "菜单已创建",
-      updated: "菜单已更新",
-      deleted: "菜单已删除",
-      saveFailed: "保存失败",
-      deleteFailed: "删除失败",
-      deleteConfirm: "确定要删除菜单「{name}」吗？更改将在刷新页面后生效。"
     }
   },
   menuTitles: {

@@ -149,6 +149,7 @@ export default {
   },
   menu: {
     title: "Menu List",
+    description: "Configure navigation menu structure, routing, and permissions",
     addMenu: "Add Menu",
     editMenu: "Edit Menu",
     edit: "Edit",
@@ -162,6 +163,22 @@ export default {
     visible: "Visible",
     visibility: "Visibility",
     operations: "Operations",
+    resetDefaults: "Reset Defaults",
+    deleteSelected: "Delete Selected",
+    dialogFooterSaveHint: "<kbd>⌘/Ctrl</kbd>+<kbd>S</kbd> save",
+    resetMenusTitle: "Reset Menus",
+    batchDeleteTitle: "Batch Delete Menus",
+    messages: {
+      created: "Menu created",
+      updated: "Menu updated",
+      deleted: "Menu deleted",
+      saveFailed: "Failed to save",
+      deleteFailed: "Failed to delete",
+      deleteConfirm: 'Are you sure you want to delete menu "{name}"? Changes take effect after page refresh.',
+      resetSuccess: "Reset {count} menus to defaults",
+      resetFailed: "Failed to reset menus",
+      batchDeletedSuccess: "Deleted {count} menu(s)"
+    },
     fields: {
       menuName: "Menu Name",
       menuNamePlaceholder: "Menu display name",
@@ -189,14 +206,6 @@ export default {
       menuNameRequired: "Please enter menu name",
       routePathRequired: "Please enter route path",
       routeNameRequired: "Please enter route name"
-    },
-    messages: {
-      created: "Menu created",
-      updated: "Menu updated",
-      deleted: "Menu deleted",
-      saveFailed: "Failed to save",
-      deleteFailed: "Failed to delete",
-      deleteConfirm: 'Are you sure you want to delete menu "{name}"? Changes take effect after page refresh.'
     }
   },
   menuTitles: {

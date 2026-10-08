@@ -34,7 +34,10 @@ export interface ProjectQueryParams {
   search?: string;
 }
 
-export function getProjectList(params: ProjectQueryParams) {
+export function getProjectList(
+  params: ProjectQueryParams,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   const { pageNum = 1, pageSize = 20, status, search } = params;
   const filter: Record<string, any> = {};
   if (status) filter.status = status;
@@ -48,36 +51,63 @@ export function getProjectList(params: ProjectQueryParams) {
     pageSize,
     orderBy: "updated_at",
     orderType: "desc"
-  });
+  }, opts);
 }
 
-export function getProject(key: string) {
+export function getProject(
+  key: string,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   return queryDocuments<Project>({
     cname: COLLECTION,
     filter: { key },
     pageSize: 1
-  });
+  }, opts);
 }
 
-export function createProject(data: Omit<Project, "created_at" | "updated_at">) {
+export function getProjectByIdentifierOrKey(
+  identifierOrKey: string,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
+  return queryDocuments<Project>({
+    cname: COLLECTION,
+    filter: {
+      $or: [
+        { key: identifierOrKey },
+        { identifier: { $regex: `^${identifierOrKey}$`, $options: "i" } }
+      ]
+    },
+    pageSize: 1
+  }, opts);
+}
+
+export function createProject(
+  data: Omit<Project, "created_at" | "updated_at">,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   return createDocument<Project>(COLLECTION, {
     ...data,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
-  });
+  }, opts);
 }
 
-export function updateProject(key: string, data: Partial<Project>) {
+export function updateProject(
+  key: string,
+  data: Partial<Project>,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+) {
   return updateDocument<Project>(COLLECTION, key, {
     ...data,
     updated_at: new Date().toISOString()
-  });
+  }, opts);
 }
 
-export function deleteProject(key: string) {
+export function deleteProject(key: string, opts: { timeout?: number; signal?: AbortSignal } = {}) {
   return callService<{ key: string; deleted: Record<string, number> }>(
     DATA_SERVICE,
     "delete_project_cascade",
-    { key }
+    { key },
+    opts
   );
 }
