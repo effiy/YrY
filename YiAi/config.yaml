@@ -41,8 +41,8 @@ projects:
 # Knowledge Base Settings
 knowledge:
   base_dir: "../YiKnowledge"
-  watcher_enabled: true
-  watcher_poll_seconds: 60
+  watcher_enabled: false
+  watcher_poll_seconds: 300
 
 # Menu Settings — scans YiVad src/views to auto-generate the sidebar menu
 menu:
@@ -169,8 +169,8 @@ rag:
   top_k: 8
   chunk_size: 1024
   chunk_overlap: 300
-  auto_rebuild_enabled: true
-  auto_rebuild_debounce_seconds: 30
+  auto_rebuild_enabled: false
+  auto_rebuild_debounce_seconds: 180
   hybrid_retrieval_enabled: true
   rerank_enabled: false     # LLMRerank adds ~8 LLM calls per query — enable only when retrieval quality > latency
   inline_citations_enabled: true
@@ -191,14 +191,26 @@ rag:
   hyde_enabled: false      # HyDE — adds latency, enable only when retrieval quality is priority
   num_queries: 1           # QueryFusionRetriever LLM query variants (1=fastest, no LLM calls for variants)
   exclude_dirs: ["rss"]    # skip during index build — add back later via /rag-build
-  embed_batch_size: 64    # texts per Ollama /api/embed call — higher = fewer round-trips
+  embed_batch_size: 256    # texts per Ollama /api/embed call — higher = fewer round-trips
   # Query-time embedding control. Set query_embed_enabled=false to skip Ollama
   # /api/embeddings on every /rag-query or /rag-chat and fall back to BM25
   # keyword-only search (no GPU/CPU load at query time). Use /rag-embed-warmup
   # to manually pre-cache embeddings for frequent queries.
-  query_embed_enabled: true
+  query_embed_enabled: false
   embed_cache_enabled: true
-  embed_cache_persist: false  # set true to persist cache across restarts (jsonl in rag_persist_dir)
+  embed_cache_persist: true  # set true to persist cache across restarts (jsonl in rag_persist_dir)
+  embed_kill_switch: true    # GLOBAL hard gate — when true, NO caller can call Ollama /api/embed
+                             # except the 3 manual paths wrapped in allow_embed_scope()
+                             # (kb_indexer.build_kb_index, .refresh_index_for_changes,
+                             #  embed_cache.warmup_embeddings).  Also overridable via env
+                             # var ``YIAI_RAG_EMBED_KILL_SWITCH=0``.
+  embed_throttle_ms: 3000    # Minimum gap (ms) between consecutive /api/embed calls when the
+                             # kill-switch is lifted.  Higher = friendlier to laptop batteries;
+                             # 0 to disable throttling on a dedicated GPU box.
+  include_rss_current_month: false  # true 时：从 exclude_dirs 中临时豁免 rss 根目录，但仅 walk
+                                    # rss/<当前年月 YYYY-MM>-* 的日目录（其他月份整棵剪枝）；
+                                    # false 时：完全沿用 exclude_dirs:["rss"] 把 rss 全排除。
+                                    # 即使用户误开，也不会处理历史 RSS 归档。
 
 # Logging Configuration
 logging:

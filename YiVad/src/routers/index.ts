@@ -71,13 +71,32 @@ router.beforeEach(async (to, from) => {
   // 4. Check if the target page is in the route whitelist (static routes); allow directly if so
   if (ROUTER_WHITE_LIST.includes(to.path)) return;
 
+  // 4.1 Dev mock-autoinject: when RSBUILD_ENV_USE_MOCK=true and token is missing,
+  // seed a demo token so the beforeEach guard does not bounce to /login → 404.
+  // The auth REST endpoints (/auth/menu/list etc.) work without a real JWT, so any
+  // non-empty string satisfies the client-side guard.
+  if (!userStore.token && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+    userStore.setToken("dev-mock-token-" + Date.now());
+  }
+
   // 5. Check if token exists; redirect to login page if not
   if (!userStore.token) return { path: LOGIN_URL, replace: true };
 
   // 6. If no menu list, re-request menu list and add dynamic routes
   if (!authStore.authMenuListGet.length) {
-    await initDynamicRouter();
-    return { path: to.path, query: to.query, hash: to.hash, replace: true };
+    try {
+      await initDynamicRouter();
+    } catch {
+      // initDynamicRouter may reject transiently (cancel, timeout etc.).
+      // We intentionally do NOT clear the session here — if the menu list
+      // is still empty after initDynamicRouter finishes (even via fallback
+      // baked into dynamicRouter.ts), the errorRouter will catch unknown
+      // paths, but the guard will not bounce the user to /login on every
+      // navigation.
+    }
+    if (authStore.authMenuListGet.length) {
+      return { path: to.path, query: to.query, hash: to.hash, replace: true };
+    }
   }
 
   // 7. Store routerName for button permission filtering

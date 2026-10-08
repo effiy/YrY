@@ -6,6 +6,8 @@ import { useUserStore } from "@/stores/modules/user";
 import { useAuthStore } from "@/stores/modules/auth";
 import { clearPersistedState } from "@/stores/helper/persist";
 import { useI18n } from "vue-i18n";
+import fallbackMenuJson from "@/assets/json/authMenuList.json";
+import fallbackButtonJson from "@/assets/json/authButtonList.json";
 // Map of all view files under src/views, keyed by their absolute path.
 // Backed by build/views-glob-plugin.ts (replaces vite's `import.meta.glob`).
 import viewsGlob from "@yivad/views-glob";
@@ -73,9 +75,24 @@ export const initDynamicRouter = async () => {
   const authStore = useAuthStore();
 
   try {
-    // 1. Get menu list && button permission list
-    await authStore.getAuthMenuList();
-    await authStore.getAuthButtonList();
+    // 1. Get menu list && button permission list — tolerate transient errors
+    // by falling back to the bundled JSON. Both the HTTP endpoints and the
+    // local JSON share the same { code, data } envelope so destructuring is
+    // uniform in `authStore.getAuthMenuList()`.
+    try {
+      await authStore.getAuthMenuList();
+    } catch {
+      authStore.$patch({
+        authMenuList: (fallbackMenuJson as any).data ?? []
+      });
+    }
+    try {
+      await authStore.getAuthButtonList();
+    } catch {
+      authStore.$patch({
+        authButtonList: (fallbackButtonJson as any).data ?? {}
+      });
+    }
 
     // 2. Check if the current user has menu permission
     if (!authStore.authMenuListGet.length) {
@@ -116,10 +133,25 @@ export const initDynamicRouter = async () => {
       }
     });
   } catch (error) {
-    // When button || menu request fails, redirect to login page
-    userStore.setToken("");
-    clearPersistedState();
-    router.replace(LOGIN_URL);
+    // Do not nuke the session for transient/operational failures:
+    //   • request canceled by AxiosCanceler (duplicate URL)
+    //   • AbortSignal / network timeout
+    //   • transient HTTP / network errors
+    // Only drop token and bounce to /login when the backend explicitly tells us
+    // the user is unauthorized (code maps to OVERDUE / UNAUTHORIZED) or the
+    // menu list is genuinely empty after both endpoints + fallback JSON have
+    // been exhausted.
+    const msg = String((error as any)?.message ?? (error as any)?.code ?? "");
+    const isAuthFatal =
+      /UNAUTHORIZED|OVERDUE|401|403|No permission/i.test(msg) ||
+      (error as any)?.status === 401 ||
+      (error as any)?.status === 403;
+
+    if (isAuthFatal) {
+      userStore.setToken("");
+      clearPersistedState();
+      router.replace(LOGIN_URL);
+    }
     return Promise.reject(error);
   }
 };

@@ -6,7 +6,7 @@
  * the detail drawers. All endpoints are direct REST (not the RPC envelope) to
  * mirror fileService.
  */
-import { buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiAi";
+import { buildYiAiStreamUrl, buildYiAiUrl, yiAiAuthHeaders } from "@/config/yiAi";
 import type {
   KnowledgeReadResponse,
   KnowledgeScanResponse,
@@ -156,11 +156,107 @@ export interface KnowledgeSyncResponse {
 export function syncKnowledge(
   opts: { timeoutMs?: number; signal?: AbortSignal } = {}
 ): Promise<KnowledgeSyncResponse> {
-  return postJson<KnowledgeSyncResponse>(
-    "/knowledge-sync",
-    {},
-    { timeoutMs: 60_000, ...opts }
-  );
+  const startedAt = Date.now();
+  const { timeoutMs = 60_000, signal } = opts;
+  const url = buildYiAiStreamUrl("/knowledge-sync");
+  const ctrl = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let unsub: (() => void) | null = null;
+  const cleanup = () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (unsub) { unsub(); unsub = null; }
+  };
+  // #region debug-point D:client-sync-request
+  fetch("http://127.0.0.1:7777/event", {
+    method: "POST",
+    body: JSON.stringify({
+      sessionId: "knowledge-sync-slow",
+      runId: "post-fix",
+      hypothesisId: "D",
+      location: "src/api/modules/knowledgeService.ts:syncKnowledge",
+      msg: "[DEBUG] knowledge-sync client request start",
+      data: { timeoutMs, hasSignal: Boolean(signal), url },
+      ts: Date.now()
+    })
+  }).catch(() => {});
+  // #endregion
+  if (timeoutMs > 0) {
+    timer = setTimeout(() => {
+      if (!ctrl.signal.aborted) ctrl.abort(new DOMException(`Timeout after ${timeoutMs}ms: /knowledge-sync`, "AbortError"));
+    }, timeoutMs);
+  }
+  if (signal) {
+    if (signal.aborted) {
+      ctrl.abort(signal.reason);
+    } else {
+      const handler = () => { ctrl.abort(signal.reason); };
+      signal.addEventListener("abort", handler, { once: true });
+      unsub = () => signal.removeEventListener("abort", handler);
+    }
+  }
+  return fetch(url, {
+    method: "POST",
+    headers: yiAiAuthHeaders(),
+    body: JSON.stringify({}),
+    signal: ctrl.signal
+  })
+    .then(async (resp) => {
+      if (!resp.ok) {
+        throw new Error(`Knowledge request failed: /knowledge-sync HTTP ${resp.status}`);
+      }
+      const data = (await resp.json()) as YiAiEnvelope<KnowledgeSyncResponse>;
+      if (data.code !== 0) {
+        throw new Error(data.message || "Knowledge request failed: /knowledge-sync");
+      }
+      return data.data;
+    })
+    .then((result) => {
+      // #region debug-point D:client-sync-success
+      fetch("http://127.0.0.1:7777/event", {
+        method: "POST",
+        body: JSON.stringify({
+          sessionId: "knowledge-sync-slow",
+          runId: "post-fix",
+          hypothesisId: "D",
+          location: "src/api/modules/knowledgeService.ts:syncKnowledge",
+          msg: "[DEBUG] knowledge-sync client request success",
+          data: {
+            durationMs: Date.now() - startedAt,
+            synced: result?.synced ?? 0,
+            deleted: result?.deleted ?? 0,
+            ragStatus: result?.rag?.status ?? null,
+            ragError: result?.rag?.error ?? null
+          },
+          ts: Date.now()
+        })
+      }).catch(() => {});
+      // #endregion
+      return result;
+    })
+    .catch((error: unknown) => {
+      // #region debug-point D:client-sync-fail
+      fetch("http://127.0.0.1:7777/event", {
+        method: "POST",
+        body: JSON.stringify({
+          sessionId: "knowledge-sync-slow",
+          runId: "post-fix",
+          hypothesisId: "D",
+          location: "src/api/modules/knowledgeService.ts:syncKnowledge",
+          msg: "[DEBUG] knowledge-sync client request failed",
+          data: {
+            durationMs: Date.now() - startedAt,
+            name: error instanceof Error ? error.name : typeof error,
+            message: error instanceof Error ? error.message : String(error)
+          },
+          ts: Date.now()
+        })
+      }).catch(() => {});
+      // #endregion
+      throw error;
+    })
+    .finally(() => {
+      cleanup();
+    });
 }
 
 export interface KnowledgeWriteResponse {

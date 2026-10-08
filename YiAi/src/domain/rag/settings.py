@@ -14,6 +14,8 @@ Public surface:
 from __future__ import annotations
 
 import logging
+import threading
+import time
 from typing import Any
 
 import httpx
@@ -25,6 +27,32 @@ from shared.config import settings
 logger = logging.getLogger(__name__)
 
 _configured = False
+
+_EMBED_COOLDOWN_MS = 500
+_last_embed_call_ns = 0
+_embed_lock = threading.Lock()
+
+
+def _throttle_embed_call() -> None:
+    """Ensure at least ``_EMBED_COOLDOWN_MS`` ms between consecutive
+    embedding requests hitting the Ollama server.
+
+    This prevents bursts of chunk embedding during index (re)build from
+    saturating Ollama's `/api/embed` endpoint and starving everything
+    else. The throttle is best-effort and thread-safe; concurrent callers
+    will serialize through the lock and each enforce its own delay.
+    """
+    global _last_embed_call_ns
+    if _EMBED_COOLDOWN_MS <= 0:
+        return
+    min_interval_s = _EMBED_COOLDOWN_MS / 1000.0
+    with _embed_lock:
+        now = time.monotonic_ns()
+        elapsed_s = (now - _last_embed_call_ns) / 1e9
+        wait_s = min_interval_s - elapsed_s
+        if wait_s > 0:
+            time.sleep(wait_s)
+        _last_embed_call_ns = time.monotonic_ns()
 
 
 class _CachedEmbedding(BaseEmbedding):
@@ -38,44 +66,32 @@ class _CachedEmbedding(BaseEmbedding):
     ``model_construct`` to bypass validation against the underlying
     delegate's schema.
 
-    For short texts (<2000 chars, typical user queries), consults the
-    embed_cache before delegating to the real model. Long texts
-    (document chunks during indexing) bypass the cache to save memory.
+    Caches **all** texts (user queries AND document chunks) in the
+    in-memory + on-disk embed_cache. Combined with
+    ``rag_embed_cache_persist=true`` this means an index rebuild after a
+    restart won't re-embed chunks that haven't changed — only truly new
+    chunks hit Ollama.
 
     All 6 abstract methods on BaseEmbedding are implemented here; unknown
     attributes (``model_name``, ``embed_batch_size``, Ollama client, …)
     fall through to the wrapped delegate via ``__getattr__``.
     """
 
-    # We deliberately declare zero pydantic fields so that
-    # model_construct() doesn't need any and the model isn't tempted to
-    # validate the delegate's attributes through us.
     model_config = {"arbitrary_types_allowed": True, "extra": "allow"}
 
     @classmethod
     def wrap(cls, delegate: BaseEmbedding) -> "_CachedEmbedding":
-        """Build a cached wrapper around an existing BaseEmbedding.
-
-        Using ``model_construct`` avoids pydantic running a schema-derived
-        validation pass — important because the delegate carries fields
-        (api_key, base_url, httpx client, …) we don't want to re-validate
-        at the wrapper level.
-        """
+        """Build a cached wrapper around an existing BaseEmbedding."""
         assert isinstance(delegate, BaseEmbedding), (
             f"_CachedEmbedding.wrap() requires a BaseEmbedding, got {type(delegate)!r}"
         )
         wrapper = cls.model_construct()
-        # model_construct() doesn't trigger __init__/__attrs_post_init__;
-        # stash the delegate on the instance dict directly.
         object.__setattr__(wrapper, "_delegate", delegate)
         return wrapper
 
     # ── attribute pass-through ───────────────────────────────────────
 
     def __getattr__(self, name: str) -> Any:
-        # This method only runs when normal attribute lookup fails — i.e.
-        # for properties and fields that live on the delegate, not on the
-        # pydantic wrapper.
         delegate = self.__dict__.get("_delegate")
         if delegate is None:
             raise AttributeError(name)
@@ -84,13 +100,9 @@ class _CachedEmbedding(BaseEmbedding):
     # ── cache helpers ────────────────────────────────────────────────
 
     def _cached_hit(self, text: str) -> list[float] | None:
-        if len(text or "") > 2000:
-            return None
         return get_text_embedding(text)
 
     def _cached_store(self, text: str, vec: list[float]) -> None:
-        if len(text or "") > 2000:
-            return
         set_text_embedding(text, vec)
 
     # ── BaseEmbedding abstract methods ───────────────────────────────
@@ -99,6 +111,7 @@ class _CachedEmbedding(BaseEmbedding):
         cached = self._cached_hit(text)
         if cached is not None:
             return cached
+        _throttle_embed_call()
         vec = list(self._delegate._get_text_embedding(text))
         self._cached_store(text, vec)
         return vec
@@ -115,6 +128,7 @@ class _CachedEmbedding(BaseEmbedding):
                 missing_indices.append(i)
                 missing_texts.append(t)
         if missing_texts:
+            _throttle_embed_call()
             fresh = self._delegate._get_text_embeddings(missing_texts)
             for slot, t, v in zip(missing_indices, missing_texts, fresh):
                 v_list = list(v)
@@ -126,6 +140,7 @@ class _CachedEmbedding(BaseEmbedding):
         cached = self._cached_hit(text)
         if cached is not None:
             return cached
+        _throttle_embed_call()
         vec = list(await self._delegate._aget_text_embedding(text))
         self._cached_store(text, vec)
         return vec
@@ -142,6 +157,7 @@ class _CachedEmbedding(BaseEmbedding):
                 missing_indices.append(i)
                 missing_texts.append(t)
         if missing_texts:
+            _throttle_embed_call()
             fresh = await self._delegate._aget_text_embeddings(missing_texts)
             for slot, t, v in zip(missing_indices, missing_texts, fresh):
                 v_list = list(v)
@@ -150,10 +166,10 @@ class _CachedEmbedding(BaseEmbedding):
         return [r if r is not None else [] for r in results]
 
     def _get_query_embedding(self, query: str) -> list[float]:
-        # Queries are the prime cache-hit candidates — short and repetitive.
         cached = self._cached_hit(query)
         if cached is not None:
             return cached
+        _throttle_embed_call()
         vec = list(self._delegate._get_query_embedding(query))
         self._cached_store(query, vec)
         return vec
@@ -162,6 +178,7 @@ class _CachedEmbedding(BaseEmbedding):
         cached = self._cached_hit(query)
         if cached is not None:
             return cached
+        _throttle_embed_call()
         vec = list(await self._delegate._aget_query_embedding(query))
         self._cached_store(query, vec)
         return vec

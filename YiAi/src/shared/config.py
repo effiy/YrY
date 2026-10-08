@@ -195,6 +195,9 @@ class Settings(BaseSettings):
     rag_query_embed_enabled: bool = Field(True, validation_alias="rag_query_embed_enabled")
     rag_embed_cache_enabled: bool = Field(True, validation_alias="rag_embed_cache_enabled")
     rag_embed_cache_persist: bool = Field(False, validation_alias="rag_embed_cache_persist")
+    rag_embed_kill_switch: bool = Field(True, validation_alias="rag_embed_kill_switch")
+    rag_embed_throttle_ms: int = Field(3000, validation_alias="rag_embed_throttle_ms")
+    rag_include_rss_current_month: bool = Field(False, validation_alias="rag_include_rss_current_month")
 
     # Logging
     logging_level: str = Field("INFO", validation_alias="logging_level")

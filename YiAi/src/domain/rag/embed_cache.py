@@ -9,6 +9,12 @@ Public surface:
     - ``warmup_embeddings(texts)`` -> dict{hits, misses, errors}
     - ``clear_embedding_cache()`` -> int (entries cleared)
     - ``embedding_cache_stats()`` -> dict{count, persist_enabled, persist_path}
+
+KILL-SWITCH COMPLIANCE
+======================
+``warmup_embeddings`` is one of the THREE allowed call paths that may lift the
+global ``RAG_EMBED_KILL_SWITCH`` (see ``services.ai.provider_ollama`` for the
+gory details).  Every other embed call gets ``EmbedDisabledError``.
 """
 from __future__ import annotations
 
@@ -169,11 +175,10 @@ def embedding_cache_stats() -> dict[str, Any]:
 async def warmup_embeddings(texts: list[str]) -> dict[str, Any]:
     """Pre-compute and cache embeddings for each text in *texts*.
 
-    Uses the provider router's embed_with_fallback so it respects the same
-    model + provider + fallback logic as the rest of the app.
-
-    Returns a summary: {total, hits, misses, errors, errors_detail}
+    Lifts the global ``RAG_EMBED_KILL_SWITCH`` for this single controlled batch
+    via :func:`services.ai.provider_ollama.allow_embed_scope`.
     """
+    from services.ai.provider_ollama import allow_embed_scope
     from services.ai.provider_router import provider_router
 
     hits = 0
@@ -203,7 +208,8 @@ async def warmup_embeddings(texts: list[str]) -> dict[str, Any]:
 
     tasks = [_bounded(t) for t in (texts or [])]
     if tasks:
-        await asyncio.gather(*tasks, return_exceptions=False)
+        with allow_embed_scope(reason="embed_cache.warmup_embeddings"):
+            await asyncio.gather(*tasks, return_exceptions=False)
 
     return {
         "total": total,

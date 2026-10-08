@@ -1,21 +1,31 @@
 """Knowledge file watcher — disk → MongoDB metadata sync.
 
-Walks ``settings.knowledge_base_dir`` periodically and reconciles the
-``knowledge_files`` collection against disk: upserts every on-disk file by
-relative ``path``, deletes DB docs whose path no longer exists.
+RAG REFRESH KILL-SWITCH
+=======================
+By default this module will **never** trigger an implicit RAG index
+(refresh|rebuild) call — even if ``settings.knowledge_watcher_enabled`` or
+``settings.rag_auto_rebuild_enabled`` accidentally get flipped back to
+``True`` in the YAML.
 
-Why polling instead of FSEvents/inotify: macOS FSEvents is unreliable for
-this dev box (both ``watchfiles`` and ``watchdog`` silently miss events),
-so we use periodic polling via ``apscheduler`` — same library the RSS
-scheduler uses, works everywhere, and the walk is cheap (≈ tens of ms
-for a few hundred files).
+The only gate that can schedule a RAG refresh is ``_rag_refresh_allowed()``
+and it currently returns ``False`` unconditionally.  Re-enable implicit
+refreshes only on a dedicated box with enough GPU/CPU headroom and explicit
+operator intent.
+
+Everything else in this file (disk → MongoDB metadata sync) still runs as
+configured: polling, full sync, snapshot diffs, bulk upsert/delete — those
+operations are cheap and we need them to keep the DB populated.  Only the
+``_maybe_trigger_rag_refresh`` tail-call is no-op'ed by default.
 """
 from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timezone
+import json
 import logging
 import os
+import time
+import urllib.request
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -34,6 +44,21 @@ from domain.knowledge.snapshot import (
 from shared.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+def _rag_refresh_allowed() -> bool:
+    """Hard kill-switch for implicit RAG index refreshes.
+
+    Override this (or flip the env var ``YIAI_ALLOW_RAG_REFRESH=1``) only on
+    a dedicated box.  Out of the box we do **not** let watcher_manager,
+    knowledge sync, or any timer-driven path issue a
+    ``build_kb_index / refresh_index_for_changes`` call — those paths pin
+    the CPU/GPU at 100% and drain laptop batteries in minutes.
+    """
+    env = os.getenv("YIAI_ALLOW_RAG_REFRESH", "").strip().lower()
+    if env in ("1", "true", "yes", "on"):
+        return bool(settings.rag_auto_rebuild_enabled)
+    return False
 
 
 
@@ -70,9 +95,91 @@ class KnowledgeWatcherManager:
             logger.warning(f"Knowledge base dir does not exist: {base}")
             return {"synced": 0, "deleted": 0}
 
+        _dbg_trace = f"knowledge-sync-{int(time.time() * 1000)}"
+        _snapshot_started = time.perf_counter()
         abs_paths, snapshot = _build_all_snapshot(base)
-        synced = await self._bulk_upsert(collection, abs_paths)
-        deleted = await self._bulk_delete(collection, set(abs_paths.keys()))
+        # #region debug-point B:sync-snapshot
+        try:
+            urllib.request.urlopen(urllib.request.Request(
+                "http://127.0.0.1:7777/event",
+                data=json.dumps({
+                    "sessionId": "knowledge-sync-slow",
+                    "runId": "post-fix",
+                    "hypothesisId": "B",
+                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:snapshot",
+                    "traceId": _dbg_trace,
+                    "msg": "[DEBUG] knowledge-sync snapshot built",
+                    "data": {
+                        "durationMs": int((time.perf_counter() - _snapshot_started) * 1000),
+                        "fileCount": len(abs_paths),
+                    },
+                    "ts": int(time.time() * 1000),
+                }).encode(),
+                headers={"Content-Type": "application/json"},
+            ), timeout=0.8).read()
+        except Exception:
+            pass
+        # #endregion
+        db_snapshot = await self._load_db_snapshot(collection)
+        curr_keys = set(snapshot.keys())
+        prev_keys = set(db_snapshot.keys())
+        changed_or_added = sorted(rel for rel in curr_keys if db_snapshot.get(rel) != snapshot.get(rel))
+        removed = sorted(prev_keys - curr_keys)
+        to_upsert = {rel: abs_paths[rel] for rel in changed_or_added}
+
+        _upsert_started = time.perf_counter()
+        synced = await self._bulk_upsert(collection, to_upsert)
+        # #region debug-point C:sync-upsert
+        try:
+            urllib.request.urlopen(urllib.request.Request(
+                "http://127.0.0.1:7777/event",
+                data=json.dumps({
+                    "sessionId": "knowledge-sync-slow",
+                    "runId": "post-fix",
+                    "hypothesisId": "C",
+                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:upsert",
+                    "traceId": _dbg_trace,
+                    "msg": "[DEBUG] knowledge-sync bulk upsert done",
+                    "data": {
+                        "durationMs": int((time.perf_counter() - _upsert_started) * 1000),
+                        "synced": synced,
+                        "fileCount": len(abs_paths),
+                        "upsertCandidates": len(to_upsert),
+                        "dbTracked": len(db_snapshot),
+                    },
+                    "ts": int(time.time() * 1000),
+                }).encode(),
+                headers={"Content-Type": "application/json"},
+            ), timeout=0.8).read()
+        except Exception:
+            pass
+        # #endregion
+        _delete_started = time.perf_counter()
+        deleted = await self._bulk_delete(collection, set(abs_paths.keys()), stale_paths=removed)
+        # #region debug-point C:sync-delete
+        try:
+            urllib.request.urlopen(urllib.request.Request(
+                "http://127.0.0.1:7777/event",
+                data=json.dumps({
+                    "sessionId": "knowledge-sync-slow",
+                    "runId": "post-fix",
+                    "hypothesisId": "C",
+                    "location": "src/domain/knowledge/watcher_manager.py:sync_knowledge_full:delete",
+                    "traceId": _dbg_trace,
+                    "msg": "[DEBUG] knowledge-sync bulk delete done",
+                    "data": {
+                        "durationMs": int((time.perf_counter() - _delete_started) * 1000),
+                        "deleted": deleted,
+                        "keepCount": len(abs_paths),
+                        "deleteCandidates": len(removed),
+                    },
+                    "ts": int(time.time() * 1000),
+                }).encode(),
+                headers={"Content-Type": "application/json"},
+            ), timeout=0.8).read()
+        except Exception:
+            pass
+        # #endregion
         self._last_meta_snapshot = snapshot
 
         self._last_scan_time = _now_str()
@@ -116,6 +223,20 @@ class KnowledgeWatcherManager:
             f"({synced} upserted, {deleted} deleted)"
         )
         return {"synced": synced, "deleted": deleted}
+
+    async def _load_db_snapshot(self, collection) -> dict[str, tuple[int, int]]:
+        """Load current DB mirror as ``{path: (size, updatedAt_ms)}``."""
+        snap: dict[str, tuple[int, int]] = {}
+        cursor = collection.find({}, {"path": 1, "size": 1, "updatedAt": 1, "_id": 0})
+        async for doc in cursor:
+            path = doc.get("path")
+            if not path:
+                continue
+            snap[path] = (
+                int(doc.get("size") or 0),
+                int(doc.get("updatedAt") or 0),
+            )
+        return snap
 
     async def _bulk_upsert(self, collection, abs_paths: dict[str, str]) -> int:
         """Bulk_write upsert metadata for each rel → abs_path. Returns actual write count."""
@@ -167,10 +288,18 @@ class KnowledgeWatcherManager:
                            total_failed, total_upserted, total_modified, errors[:5])
         return total_upserted + total_modified
 
-    async def _bulk_delete(self, collection, keep_paths: set[str]) -> int:
+    async def _bulk_delete(
+        self,
+        collection,
+        keep_paths: set[str],
+        *,
+        stale_paths: list[str] | None = None,
+    ) -> int:
         """Delete DB docs whose ``path`` is not in ``keep_paths``. Returns count."""
-        cursor = collection.find({}, {"path": 1, "_id": 0})
-        stale = [doc["path"] async for doc in cursor if doc.get("path") not in keep_paths]
+        stale = stale_paths
+        if stale is None:
+            cursor = collection.find({}, {"path": 1, "_id": 0})
+            stale = [doc["path"] async for doc in cursor if doc.get("path") not in keep_paths]
         if not stale:
             return 0
         ops = [DeleteOne({"path": p}) for p in stale]
@@ -184,15 +313,13 @@ class KnowledgeWatcherManager:
     async def _maybe_trigger_rag_refresh(self, base: str) -> None:
         """Schedule an incremental RAG refresh when .md files changed.
 
-        - First tick: establish baseline, no refresh (the index auto-builds
-          lazily via ``load_kb_index`` on first query).
-        - Subsequent ticks: diff against ``_last_rebuilt_snapshot``. If any
-          added/removed/changed path, schedule a debounced refresh.
-        - Coalesces bursts: if a refresh is already scheduled/in-flight,
-          further ticks within the window are ignored. The refresh recomputes
-          the diff at fire time, so changes that arrived during the wait are
-          captured.
+        **DISABLED BY DEFAULT** — see ``_rag_refresh_allowed()`` and the
+        module-level docstring.  Even when ``settings.rag_auto_rebuild_enabled``
+        is accidentally ``True``, we refuse to schedule work unless the
+        ``YIAI_ALLOW_RAG_REFRESH=1`` env var is also set.
         """
+        if not _rag_refresh_allowed():
+            return
         if not settings.rag_auto_rebuild_enabled:
             return
         curr = _build_md_snapshot(base)

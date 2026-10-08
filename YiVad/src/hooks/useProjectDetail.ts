@@ -20,7 +20,7 @@
  *   ✓ 渐进展示（Partial Rendering）：每个 P2 stage 完成立即写入响应式变量
  *   ✓ 请求序列号：项目切换 / 新请求发起时，旧请求到达结果静默丢弃
  */
-import { computed, ref, watch, onMounted, onUnmounted, type Ref } from "vue";
+import { computed, ref, watch, onUnmounted, type Ref } from "vue";
 import { useProjectStore } from "@/stores/modules/project";
 import { listKnowledgeFiles } from "@/api/modules/knowledgeService";
 import { getIssueList, normalizeIssue } from "@/api/modules/issueService";
@@ -205,7 +205,10 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
           clearTimeout(timeoutId);
         }
       }, P1_RETRY);
-      if (!isLatest()) return;
+      if (!isLatest()) {
+        if (!silent) loading.value = false;
+        return;
+      }
       headerReady.value = true;
       pushReliabilityEvent({
         projectKey: key,
@@ -215,7 +218,10 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
         retryCount: 0
       });
     } catch (err) {
-      if (!isLatest()) return;
+      if (!isLatest()) {
+        if (!silent) loading.value = false;
+        return;
+      }
       const aborted = /AbortError|aborted|canceled/i.test(String((err as any)?.message ?? ""));
       const dur = Math.max(0, Math.round(performance.now() - p1Started));
       pushReliabilityEvent({
@@ -238,7 +244,7 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     }
 
     if (!isLatest()) {
-      loading.value = false;
+      if (!silent) loading.value = false;
       return;
     }
 
@@ -249,7 +255,10 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     ] as const;
 
     runParallelAndTrack(stages, localBag, ticket, isLatest).then(outcomes => {
-      if (!isLatest()) return;
+      if (!isLatest()) {
+        if (!silent) loading.value = false;
+        return;
+      }
       const allFailed = outcomes.every(o => o.status === "failed" || o.status === "circuit-open");
       if (allFailed) {
         error.value = "概览数据暂时不可用，请稍后重试";
@@ -259,7 +268,10 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
       lastUpdated.value = Date.now();
       if (!silent) loading.value = false;
     }).catch(() => {
-      if (!isLatest()) return;
+      if (!isLatest()) {
+        if (!silent) loading.value = false;
+        return;
+      }
       if (!silent) loading.value = false;
     });
   }
@@ -293,30 +305,44 @@ export function useProjectDetail(projectKey: Ref<string>): ProjectDetailData {
     }
   }
 
-  const didMount = ref(false);
+  let _didInitialFetch = false;
 
-  onMounted(() => {
-    didMount.value = true;
-    const boot = () => {
-      const k = projectKey.value;
-      if (!k) return false;
-      void fetchProject();
-      return true;
+  function _attemptBoot(): boolean {
+    if (bag.isDisposed) return true;
+    const k = projectKey.value;
+    if (!k) return false;
+    if (_didInitialFetch) return true;
+    _didInitialFetch = true;
+    void fetchProject();
+    return true;
+  }
+
+  if (_attemptBoot()) {
+    // already started successfully in sync setup
+  } else {
+    const retries = [50, 200, 500, 1200, 2500, 4000];
+    let _attempts = 0;
+    const _tryNext = () => {
+      if (_attemptBoot()) return;
+      if (_attempts >= retries.length) {
+        loading.value = false;
+        headerReady.value = false;
+        error.value = "无法加载项目：项目 key 始终为空。请检查动态路由是否注册。";
+        return;
+      }
+      const delay = retries[_attempts++];
+      const t = setTimeout(_tryNext, delay);
+      bag.addTimer(t);
     };
-    if (!boot()) {
-      const t1 = setTimeout(boot, 50);
-      bag.addTimer(t1);
-      const t2 = setTimeout(boot, 250);
-      bag.addTimer(t2);
-    }
-  });
+    _tryNext();
+  }
 
   watch(
     () => projectKey.value,
     (newKey, oldKey) => {
-      if (newKey && newKey !== oldKey && didMount.value) {
+      if (newKey && newKey !== oldKey) {
         void fetchProject();
-      } else if (!newKey && didMount.value) {
+      } else if (!newKey && _didInitialFetch) {
         loading.value = false;
         headerReady.value = false;
         error.value = "项目 key 缺失";

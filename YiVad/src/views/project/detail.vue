@@ -149,7 +149,9 @@ const {
 
 const SYNC_DELAY_MS = 6_000;
 const SYNC_TIMEOUT_MS = 20_000;
+const AUTO_SYNC_COOLDOWN_MS = 5 * 60_000;
 const RETRY_COOLDOWN_MS = 8_000;
+const AUTO_SYNC_TS_KEY = "yivad:project-detail:lastAutoKnowledgeSyncAt";
 let _syncTimer: ReturnType<typeof setTimeout> | null = null;
 let _syncRunning = false;
 let _lastRetryAt = 0;
@@ -161,10 +163,29 @@ function clearSyncTimer() {
   }
 }
 
+function shouldAutoSync(): boolean {
+  try {
+    const raw = localStorage.getItem(AUTO_SYNC_TS_KEY);
+    const last = raw ? Number(raw) : 0;
+    return !last || Date.now() - last >= AUTO_SYNC_COOLDOWN_MS;
+  } catch {
+    return true;
+  }
+}
+
+function markAutoSyncAt() {
+  try {
+    localStorage.setItem(AUTO_SYNC_TS_KEY, String(Date.now()));
+  } catch {
+    /* ignore */
+  }
+}
+
 async function safeSyncKnowledge() {
   if (_syncRunning) return;
   _syncRunning = true;
   try {
+    markAutoSyncAt();
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), SYNC_TIMEOUT_MS);
     try {
@@ -181,6 +202,7 @@ async function safeSyncKnowledge() {
 
 onMounted(() => {
   // 延迟同步：避免首屏关键请求被重量级 disk→DB sync 抢占连接池
+  if (!shouldAutoSync()) return;
   _syncTimer = setTimeout(() => {
     void safeSyncKnowledge();
   }, SYNC_DELAY_MS);

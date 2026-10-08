@@ -120,33 +120,34 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
 
   async function fetchFresh() {
     error.value = null;
-
-    // Fire all requests in parallel — main scan, RSS scan, stories
-    const [mainResult, rssResult, storyResult] = await Promise.allSettled([
-      scanKnowledge().catch(() => ({ categories: [] })),
-      scanKnowledge("rss").catch(() => ({ categories: [] })),
+    // Prefer the DB mirror after /knowledge-sync. It is dramatically faster
+    // than re-walking disk (especially rss/) and already contains the latest
+    // metadata once syncKnowledge() returns.
+    const [dbResult, storyResult] = await Promise.allSettled([
+      listKnowledgeFiles().catch(() => ({ files: [] })),
       listKnowledgeStories()
         .then(r => r.stories ?? [])
         .catch(() => [] as KnowledgeStoryEntry[])
     ]);
 
-    const mainCats = (mainResult.status === "fulfilled" ? mainResult.value : { categories: [] }).categories ?? [];
-    const rssCats = (rssResult.status === "fulfilled" ? rssResult.value : { categories: [] }).categories ?? [];
-    const cats = [...mainCats.map(c => ({ ...c, files: c.files })), ...rssCats.map(c => ({ ...c, files: c.files }))];
+    const dbFiles = (dbResult.status === "fulfilled" ? dbResult.value : { files: [] }).files ?? [];
     const storyList = storyResult.status === "fulfilled" ? storyResult.value : [];
 
-    if (cats.length) {
+    if (dbFiles.length) {
+      const grouped = new Map<string, KnowledgeFileEntry[]>();
+      for (const f of dbFiles) {
+        const cat = f.category || "__root__";
+        if (!grouped.has(cat)) grouped.set(cat, []);
+        grouped.get(cat)!.push(f);
+      }
+      const cats = [...grouped.entries()].map(([category, files]) => ({ category, files }));
       categories.value = cats;
       stories.value = storyList;
       writeCache(cats, storyList);
-    } else if (mainResult.status === "rejected") {
-      // Only show error if the main scan failed (RSS + stories are optional)
-      error.value = "Failed to load knowledge tree — server may be busy";
+      return;
     }
-  }
 
-  async function fetchCategories(): Promise<{ category: string; files: KnowledgeFileEntry[] }[]> {
-    // Fire main scan + RSS scan in parallel
+    // Fall back to disk scan only when the DB mirror is unavailable.
     const [mainResult, rssResult] = await Promise.allSettled([
       scanKnowledge().catch(() => ({ categories: [] })),
       scanKnowledge("rss").catch(() => ({ categories: [] }))
@@ -156,9 +157,17 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
     const rssCats = (rssResult.status === "fulfilled" ? rssResult.value : { categories: [] }).categories ?? [];
     const cats = [...mainCats.map(c => ({ ...c, files: c.files })), ...rssCats.map(c => ({ ...c, files: c.files }))];
 
-    if (cats.length && cats.some(c => c.files.length > 0)) return cats;
+    if (cats.length) {
+      categories.value = cats;
+      stories.value = storyList;
+      writeCache(cats, storyList);
+    } else if (dbResult.status === "rejected" && mainResult.status === "rejected") {
+      error.value = "Failed to load knowledge tree — server may be busy";
+    }
+  }
 
-    // Fall back to DB mirror
+  async function fetchCategories(): Promise<{ category: string; files: KnowledgeFileEntry[] }[]> {
+    // Prefer the DB mirror; disk scans are the slow path.
     try {
       const dbResult = await listKnowledgeFiles();
       if (dbResult.files?.length) {
@@ -174,7 +183,14 @@ export const useKnowledgeTreeStore = defineStore("yivad-knowledge-tree", () => {
       console.warn("[knowledgeTree] DB mirror unavailable");
     }
 
-    return [];
+    const [mainResult, rssResult] = await Promise.allSettled([
+      scanKnowledge().catch(() => ({ categories: [] })),
+      scanKnowledge("rss").catch(() => ({ categories: [] }))
+    ]);
+
+    const mainCats = (mainResult.status === "fulfilled" ? mainResult.value : { categories: [] }).categories ?? [];
+    const rssCats = (rssResult.status === "fulfilled" ? rssResult.value : { categories: [] }).categories ?? [];
+    return [...mainCats.map(c => ({ ...c, files: c.files })), ...rssCats.map(c => ({ ...c, files: c.files }))];
   }
 
   async function selectFile(path: string) {
