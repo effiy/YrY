@@ -18,9 +18,9 @@ acceptance_criteria:
   - "RPC contract verification steps"
   - "Review etiquette and turnaround expectations"
 related:
-  - ../build/006-构建-跨项目RPC协议设计.md
+  - ../build/0006-构建-跨项目RPC协议设计.md
   - ../learn/lessons/0006-陷阱-RPC参数名不匹配.md
-  - ./007-运行-Git工作流.md
+  - ./0007-运行-Git工作流.md
 ---
 
 # Code Review 指南

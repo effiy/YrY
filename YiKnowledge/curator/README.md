@@ -50,10 +50,10 @@ related:
 ### 范围内（curator 拥有）
 - **KB 治理**：生命周期管理、收件箱/分类工作流、审查节奏
 - **内容质量**：frontmatter 校验、新鲜度检查、废弃策略
-- **4 张图**：[知识地图](./diagrams/00003-图表-知识地图.md)、[用户旅程](./diagrams/00004-图表-用户旅程.md)、[目录蓝图](./diagrams/00002-图表-目录蓝图.md)、[治理规范](./governance/00002-治理-治理规范.md)
-- **模板**：[知识叶子](./templates/00002-模板-知识叶子模板.md)、[ADR](./templates/00001-模板-ADR模板.md)、[PRD](./templates/00005-模板-PRD模板.md)、[技术设计](./templates/00007-模板-技术设计模板.md) 等
+- **4 张图**：[知识地图](./diagrams/003-图表-知识地图.md)、[用户旅程](./diagrams/004-图表-用户旅程.md)、[目录蓝图](./diagrams/002-图表-目录蓝图.md)、[治理规范](./governance/002-治理-治理规范.md)
+- **模板**：[知识叶子](./templates/002-模板-知识叶子模板.md)、[ADR](./templates/001-模板-ADR模板.md)、[PRD](./templates/005-模板-PRD模板.md)、[技术设计](./templates/007-模板-技术设计模板.md) 等
 - **横切领域索引**：[SECURITY](../engineer/SECURITY.md)、[COLLABORATION](./COLLABORATION.md)、[ENGINEERING](../engineer/ENGINEERING.md)
-- **日常操作**：参见 [操作速查卡](./governance/00008-治理-操作速查卡.md)
+- **日常操作**：参见 [操作速查卡](./governance/008-治理-操作速查卡.md)
 
 ### 范围外（curator 不创建）
 - 任何领域内容——架构、开发、AI、PM、SRE、战略
@@ -79,7 +79,7 @@ Curator 为 KB 做的事，就像其他角色为产品做的事。但 curator �
 | 类比角色 | curator 做什么 |
 |----------|---------------|
 | engineer/build/ | 目录蓝图、命名规范 |
-| engineer/ship/ | frontmatter 校验、[就绪检查清单](./governance/00004-治理-就绪检查清单.md) |
+| engineer/ship/ | frontmatter 校验、[就绪检查清单](./governance/004-治理-就绪检查清单.md) |
 | sre/ | 收件箱/分类工作流、审查节奏 |
 | leader/ | 治理规则、废弃策略 |
 
@@ -105,10 +105,10 @@ Curator 位于 pipeline **之上**，为每个阶段提供模板、治理和结�
 
 ## 新 curator 快速入门
 
-1. 读 [治理规范](./governance/00002-治理-治理规范.md) — 4 角色、3 节奏模型
+1. 读 [治理规范](./governance/002-治理-治理规范.md) — 4 角色、3 节奏模型
 2. 浏览 [4 张图](./diagrams/) — 建立 KB 拓扑的思维模型
-3. 跑一次 [就绪检查清单](./governance/00004-治理-就绪检查清单.md) — 10 题发布门禁
-4. 日常使用 [操作速查卡](./governance/00008-治理-操作速查卡.md) — 可复制的命令和流程
+3. 跑一次 [就绪检查清单](./governance/004-治理-就绪检查清单.md) — 10 题发布门禁
+4. 日常使用 [操作速查卡](./governance/008-治理-操作速查卡.md) — 可复制的命令和流程
 
 ## PARA / lifecycle 映射
 
@@ -127,28 +127,28 @@ inbox → triage → active → reference → archive
 
 | 状态 | 含义 | 管理位置 |
 |---|---|---|
-| `inbox` | 未分类的新内容 | [收件箱](./governance/00003-治理-收件箱.md) |
-| `triage` | 已分类但未精炼 | [分类处理](./governance/00007-治理-分类处理.md) |
+| `inbox` | 未分类的新内容 | [收件箱](./governance/003-治理-收件箱.md) |
+| `triage` | 已分类但未精炼 | [分类处理](./governance/007-治理-分类处理.md) |
 | `active` | 已精炼，活跃维护 | 角色目录 |
 | `reference` | 稳定的参考材料 | [templates/](./templates/) |
-| `archive` | 已废弃或被取代 | [归档说明](./archive/00001-归档-归档说明.md) |
+| `archive` | 已废弃或被取代 | [归档说明](./archive/001-归档-归档说明.md) |
 
 ## 4 张图
 
 | 图 | 回答的问题 |
 |------|-----------|
-| [知识地图](./diagrams/00003-图表-知识地图.md) | 存在哪些知识？显性 vs 隐性？ |
-| [用户旅程](./diagrams/00004-图表-用户旅程.md) | 知识如何流转？断点在哪？ |
-| [目录蓝图](./diagrams/00002-图表-目录蓝图.md) | 用户如何 2 跳内找到内容？ |
-| [治理规范](./governance/00002-治理-治理规范.md) | 谁维护？多久一次？ |
+| [知识地图](./diagrams/003-图表-知识地图.md) | 存在哪些知识？显性 vs 隐性？ |
+| [用户旅程](./diagrams/004-图表-用户旅程.md) | 知识如何流转？断点在哪？ |
+| [目录蓝图](./diagrams/002-图表-目录蓝图.md) | 用户如何 2 跳内找到内容？ |
+| [治理规范](./governance/002-治理-治理规范.md) | 谁维护？多久一次？ |
 
 ## 反模式 / 常见误用
 
 - **将 curator/ 当作主题分类** — 与 7 个角色目录重叠。修复：使用[决策规则](#边界情况决策规则)表。
 - **在 curator/ 中创建领域内容** — 对目标角色不可见。修复：放在正确的角色目录中。
-- **新文件缺少 lifecycle 字段** — AI 召回信号弱。修复：发布前运行[就绪检查清单](./governance/00004-治理-就绪检查清单.md)。
-- **跳过 inbox → triage → active 流程** — 未分类内容堆积。修复：每周处理[收件箱](./governance/00003-治理-收件箱.md)。
-- **画了 4 张图但从不审查** — 知识地图过时。修复：遵循[操作速查卡](./governance/00008-治理-操作速查卡.md)的季度节奏。
+- **新文件缺少 lifecycle 字段** — AI 召回信号弱。修复：发布前运行[就绪检查清单](./governance/004-治理-就绪检查清单.md)。
+- **跳过 inbox → triage → active 流程** — 未分类内容堆积。修复：每周处理[收件箱](./governance/003-治理-收件箱.md)。
+- **画了 4 张图但从不审查** — 知识地图过时。修复：遵循[操作速查卡](./governance/008-治理-操作速查卡.md)的季度节奏。
 
 ## 相关
 

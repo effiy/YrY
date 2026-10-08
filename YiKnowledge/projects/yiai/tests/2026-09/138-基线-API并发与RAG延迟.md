@@ -32,8 +32,8 @@ related:
   - ../../prds/2026-09/06-prd-数据层.md
   - ../../prds/2026-09/09-prd-审计日志.md
   - ../../prds/2026-09/105-prd-熔断器.md
-  - ../../bugs/2026-09/RAG/01-RAG-VectorStoreIndex-insert-documents方法不存在.md
-  - ../../bugs/2026-09/搜索/01-搜索-空查询未做防护导致全表扫描.md
+  - ../../bugs/2026-09/RAG/0001-RAG-VectorStoreIndex-insert-documents方法不存在.md
+  - ../../bugs/2026-09/搜索/0001-搜索-空查询未做防护导致全表扫描.md
 ---
 
 ## 一、环境说明表

@@ -161,7 +161,7 @@ related:
 - [13-运营节奏](./roadmap/013-路线图-运营节奏.md) — 技术负责人时间管理节奏
 - [14-估算指南](./roadmap/014-路线图-估算指南.md) — 工程工作量估算方法
 - [README](./roadmap/README.md) — 路线图子目录导航（含场景索引）
-- [00-INDEX](./roadmap/00-INDEX.md) — 路线图目录索引
+- [00-INDEX](./roadmap/000-INDEX.md) — 路线图目录索引
 
 ### okr/
 技术团队 OKR 追踪。包含 OKR 撰写指南、评分标准和季度组织方式。

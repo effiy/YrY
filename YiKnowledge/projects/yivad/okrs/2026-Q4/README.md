@@ -12,11 +12,11 @@ acceptance_criteria:
   - "MongoDB projects 集合 5 项目条目一致性 100%，跨项目字段漂移检测 CI 门禁接入"
   - "Rsbuild 构建发布时间从 4min30s → 2min15s，P95 发布耗时减半"
 related:
-  - ../../../engineer/learn/projects/yivad/01-项目-架构设计.md
-  - ../../../engineer/learn/projects/yivad/04-项目-流水线闭环.md
+  - ../../../engineer/learn/projects/yivad/001-项目-架构设计.md
+  - ../../../engineer/learn/projects/yivad/004-项目-流水线闭环.md
   - ../../../engineer/build/001-构建-MongoDB模式设计.md
   - ../../../leader/decisions/yivad-003-决策-Vitest引入.md
-  - ../../../engineer/ship/0007-交付-CICD流水线.md
+  - ../../../engineer/ship/007-交付-CICD流水线.md
   - ../../../leader/architecture/008-架构-技术战略-2026-Q4方向.md
 ---
 
@@ -59,10 +59,10 @@ related:
 
 | OKR | KR-1 PRD | KR-2 PRD | KR-3 PRD | KR-4 PRD | KR-5 PRD |
 |-----|-----------|-----------|-----------|-----------|-----------|
-| yivad-001 UI 体验 | [01-prd-项目页重构](../../learn/projects/yivad/01-项目-架构设计.md) | [02-prd-开发规范](../../learn/projects/yivad/02-项目-开发规范.md) | [03-prd-功能模块](../../learn/projects/yivad/03-项目-功能模块.md) | [04-prd-流水线闭环](../../learn/projects/yivad/04-项目-流水线闭环.md) | [07-构建-性能优化指南](../../build/004-构建-性能优化指南.md) |
-| yivad-002 数据一致性 | [04-构建-MongoDB模式设计](../../build/001-构建-MongoDB模式设计.md) | [35-prd-结构化日志](../../yiai/prds/2026-09/35-prd-结构化日志.md) | [52-prd-配置漂移检测](../../yiai/prds/2026-09/52-prd-配置漂移检测.md) | [122-prd-跨项目数据一致性](../../yiai/prds/2026-09/122-prd-跨项目数据一致性.md) | [03-交付-数据迁移](../../ship/0003-交付-数据迁移.md) |
-| yivad-003 Rsbuild 性能 | [07-交付-CICD流水线](../../ship/0007-交付-CICD流水线.md) | [01-决策-Vitest引入](../../leader/decisions/yivad-003-决策-Vitest引入.md) | [06-构建-调试排错指南](../../build/003-构建-调试排错指南.md) | [121-prd-容器化部署](../../yiai/prds/2026-09/121-prd-容器化部署.md) | [178-prd-冷启动优化](../../yiai/prds/2026-09/178-prd-冷启动优化.md) |
-| yivad-004 可用性 99% | [05-prd-健康度评分卡](../../yiai/prds/2026-09/51-prd-健康度评分卡.md) | [03-交付-退避重试](../../ship/0005-交付-退避重试.md) | [08-交付-部署指南](../../ship/0008-交付-部署指南.md) | [93-prd-自愈恢复机制](../../yiai/prds/2026-09/93-prd-自愈恢复机制.md) | [01-风险-上线风险评估](../../leader/risk/001-风险-上线风险评估.md) |
+| yivad-001 UI 体验 | [01-prd-项目页重构](../../../../engineer/learn/projects/yivad/001-项目-架构设计.md) | [02-prd-开发规范](../../../../engineer/learn/projects/yivad/002-项目-开发规范.md) | [03-prd-功能模块](../../../../engineer/learn/projects/yivad/003-项目-功能模块.md) | [04-prd-流水线闭环](../../../../engineer/learn/projects/yivad/004-项目-流水线闭环.md) | [07-构建-性能优化指南](../../../../engineer/build/004-构建-性能优化指南.md) |
+| yivad-002 数据一致性 | [04-构建-MongoDB模式设计](../../../../engineer/build/001-构建-MongoDB模式设计.md) | [35-prd-结构化日志](../../yiai/prds/2026-09/35-prd-结构化日志.md) | [52-prd-配置漂移检测](../../yiai/prds/2026-09/52-prd-配置漂移检测.md) | [122-prd-跨项目数据一致性](../../yiai/prds/2026-09/122-prd-跨项目数据一致性.md) | [03-交付-数据迁移](../../../../engineer/ship/003-交付-数据迁移.md) |
+| yivad-003 Rsbuild 性能 | [07-交付-CICD流水线](../../../../engineer/ship/007-交付-CICD流水线.md) | [01-决策-Vitest引入](../../../../leader/decisions/yivad-003-决策-Vitest引入.md) | [06-构建-调试排错指南](../../../../engineer/build/003-构建-调试排错指南.md) | [121-prd-容器化部署](../../yiai/prds/2026-09/121-prd-容器化部署.md) | [178-prd-冷启动优化](../../yiai/prds/2026-09/178-prd-冷启动优化.md) |
+| yivad-004 可用性 99% | [05-prd-健康度评分卡](../../yiai/prds/2026-09/51-prd-健康度评分卡.md) | [03-交付-退避重试](../../../../engineer/ship/005-交付-退避重试.md) | [08-交付-部署指南](../../../../engineer/ship/008-交付-部署指南.md) | [93-prd-自愈恢复机制](../../yiai/prds/2026-09/93-prd-自愈恢复机制.md) | [01-风险-上线风险评估](../../../../leader/risk/001-风险-上线风险评估.md) |
 
 ## 风险矩阵
 

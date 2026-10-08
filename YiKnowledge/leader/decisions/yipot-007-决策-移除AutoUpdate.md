@@ -17,13 +17,13 @@ acceptance_criteria:
   - "tauri.conf.json 中 updater 相关配置块移除或标记为 disabled，无安全告警"
 related:
   - ./README.md
-  - ./yipot-006-决策-托盘Accessory.md
-  - ../../curator/templates/00001-模板-ADR模板.md
+  - ./yipot-yipot-yipot-006-决策-托盘Accessory.md
+  - ../../curator/templates/0001-模板-ADR模板.md
   - ../../projects/yipot/prds/2026-09/26-prd-自动更新.md
   - ../../projects/yipot/bugs/README.md
   - ../../engineer/ship/0008-交付-部署指南.md
   - ../../engineer/SECURITY.md
-  - ../../sre/release/03-发布-发布冻结.md
+  - ../../sre/release/0003-发布-发布冻结.md
 ---
 
 # ADR: 移除 YiPot Tauri 内置 AutoUpdate 机制

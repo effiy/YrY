@@ -19,7 +19,7 @@ acceptance_criteria:
   - "前置条件列出每个框架所需数据"
   - "战略节奏定义各框架的刷新频率"
 related:
-  - ./00-INDEX.md
+  - ./000-INDEX.md
   - ../README.md
   - ../INDEX.md
   - ../industry/README.md

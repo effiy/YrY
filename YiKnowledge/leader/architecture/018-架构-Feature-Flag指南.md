@@ -17,9 +17,9 @@ acceptance_criteria:
   - "区分前端 flag (YiVad/YiPet) 和后端 flag (YiAi)"
   - "包含 flag 清理策略"
 related:
-  - ../risk/001-风险-上线风险评估.md
-  - ../roadmap/002-路线图-下线服务.md
-  - ../roadmap/004-路线图-废弃功能.md
+  - ../risk/0001-风险-上线风险评估.md
+  - ../roadmap/0002-路线图-下线服务.md
+  - ../roadmap/0004-路线图-废弃功能.md
 ---
 
 # Feature Flag 指南

@@ -25,9 +25,9 @@ roles: [engineer, leader, product]
 | 了解安全风险 | [安全配置审计](architecture/security-config-audit.md) |
 | 了解代码质量 | [代码质量审计报告](architecture/code-quality-audit.md) |
 | 了解 i18n 状态 | [i18n 键完整性审计](architecture/i18n-audit.md) |
-| 开发翻译引擎 | [翻译服务错误处理指南](workflows/开发规范/08-规范-翻译服务错误处理.md) |
-| 环境搭建 | [环境搭建指南](workflows/操作指南/01-指南-环境搭建.md) |
-| 架构概览 | [项目架构规范](workflows/开发规范/02-规范-项目架构.md) |
+| 开发翻译引擎 | [翻译服务错误处理指南](workflows/开发规范/008-规范-翻译服务错误处理.md) |
+| 环境搭建 | [环境搭建指南](workflows/操作指南/001-指南-环境搭建.md) |
+| 架构概览 | [项目架构规范](workflows/开发规范/002-规范-项目架构.md) |
 
 ---
 
@@ -159,7 +159,7 @@ roles: [engineer, leader, product]
 | [architecture/security-config-audit.md](architecture/security-config-audit.md) | 审计 | Tauri 安全配置审计 |
 | [architecture/i18n-audit.md](architecture/i18n-audit.md) | 审计 | i18n 键完整性审计 |
 | [architecture/audit-completion-report.md](architecture/audit-completion-report.md) | 审计 | 11 轮审计完成报告 |
-| [workflows/开发规范/08-规范-翻译服务错误处理.md](workflows/开发规范/08-规范-翻译服务错误处理.md) | 规范 | 翻译服务错误处理指南 |
+| [workflows/开发规范/0008-规范-翻译服务错误处理.md](workflows/开发规范/008-规范-翻译服务错误处理.md) | 规范 | 翻译服务错误处理指南 |
 | [migration-guide.md](migration-guide.md) | 指南 | 迁移指南 |
 
 ---

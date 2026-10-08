@@ -18,7 +18,7 @@ acceptance_criteria:
   - "各文档适用场景明确"
   - "反模式警示到位"
 related:
-  - ./00-INDEX.md
+  - ./000-INDEX.md
   - ../README.md
   - ../INDEX.md
   - ../strategy/README.md

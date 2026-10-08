@@ -74,4 +74,4 @@ npx eslint --config .eslintrc.cjs src/App.jsx 2>&1 | head -5
 | 关联类型 | 文件 |
 |----------|------|
 | PRD | `../prds/2026-09/81-prd-自动化基础设施第十九轮.md` |
-| CI 指南 | `../workflows/操作指南/04-指南-CI自动化质量检查.md` |
+| CI 指南 | `../workflows/操作指南/0004-指南-CI自动化质量检查.md` |

@@ -17,13 +17,13 @@ acceptance_criteria:
   - "接入系统原生剪贴板通知（若可用）替换轮询，作为可选优化开关"
 related:
   - ./README.md
-  - ./yipot-006-决策-托盘Accessory.md
-  - ./yipot-009-决策-Rust错误anyhow.md
-  - ../../curator/templates/00001-模板-ADR模板.md
+  - ./yipot-yipot-yipot-006-决策-托盘Accessory.md
+  - ./yipot-yipot-yipot-009-决策-Rust错误anyhow.md
+  - ../../curator/templates/0001-模板-ADR模板.md
   - ../../projects/yipot/prds/2026-09/14-prd-剪切板监听.md
   - ../../projects/yipot/bugs/性能问题/001-剪切板CPU占用高.md
-  - ../../projects/yipot/okrs/2026-Q3/goal-003-桌面集成.md
-  - ../../engineer/build/004-构建-性能优化指南.md
+  - ../../projects/yipot/okrs/2026-Q3/goal-goal-goal-003-桌面集成.md
+  - ../../engineer/build/0004-构建-性能优化指南.md
 ---
 
 # ADR: YiPot 剪贴板监听节流 CPU 占用优化

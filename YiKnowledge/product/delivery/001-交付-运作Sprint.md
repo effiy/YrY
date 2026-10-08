@@ -17,8 +17,8 @@ acceptance_criteria:
   - "包含 Sprint 周期选择指南和容量规划公式"
   - "列出常见 Sprint 反模式及纠正方法"
 related:
-  - ../frameworks/006-框架-RICE-ICE优先级.md
-  - ../discovery/001-发现-编写PRD.md
+  - ../frameworks/0006-框架-RICE-ICE优先级.md
+  - ../discovery/0001-发现-编写PRD.md
   - ../../curator/templates/retrospective.md
   - ../../curator/templates/meeting-notes.md
 ---

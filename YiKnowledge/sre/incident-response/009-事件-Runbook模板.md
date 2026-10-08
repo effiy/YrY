@@ -17,10 +17,10 @@ acceptance_criteria:
   - "包含 3 个 YrY 服务的实战 runbook 示例"
   - "覆盖 runbook 的维护和测试策略"
 related:
-  - ./004-事件-响应事件.md
-  - ./002-事件-处理值班轮班.md
-  - ../observability/007-可观测-搭建可观测性.md
-  - ../observability/010-可观测-告警规则配置.md
+  - ./0004-事件-响应事件.md
+  - ./0002-事件-处理值班轮班.md
+  - ../observability/0007-可观测-搭建可观测性.md
+  - ../observability/0010-可观测-告警规则配置.md
 ---
 
 # Runbook 编写指南 — 可执行的故障处理手册

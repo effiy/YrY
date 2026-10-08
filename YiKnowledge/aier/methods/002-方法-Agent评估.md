@@ -18,9 +18,9 @@ acceptance_criteria:
   - "包含 YiAi Agent 专项评估模式和回归检查清单"
 related:
   - ./04-LLM评估.md
-  - ./001-方法-Agent架构模式.md
-  - ./003-方法-Agent-Harness插件架构.md
-  - ../foundations/001-基础-LLM基础.md
+  - ./0001-方法-Agent架构模式.md
+  - ./0003-方法-Agent-Harness插件架构.md
+  - ../foundations/0001-基础-LLM基础.md
 ---
 
 # Agent 评估框架

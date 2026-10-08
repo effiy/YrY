@@ -51,60 +51,60 @@ YiKnowledge/projects/yiai/
 
 ### 新人入门
 
-1. [快速开始](./workflows/操作指南/01-指南-快速开始.md) — 环境搭建、安装启动
-2. [架构概览](./workflows/架构设计/01-架构-架构概览.md) — 技术栈、分层架构、数据流、请求生命周期
-3. [目录结构](./workflows/架构设计/02-架构-目录结构.md) — 完整源码目录树
-4. [编码规范](./workflows/开发规范/01-规范-编码规范.md) — 模块分层、命名、异步编程、自约束
-5. [速查卡](./workflows/操作指南/00-速查卡-YiAi开发速查.md) — 常用命令和模式速查
+1. [快速开始](./workflows/操作指南/001-指南-快速开始.md) — 环境搭建、安装启动
+2. [架构概览](./workflows/架构设计/001-架构-架构概览.md) — 技术栈、分层架构、数据流、请求生命周期
+3. [目录结构](./workflows/架构设计/002-架构-目录结构.md) — 完整源码目录树
+4. [编码规范](./workflows/开发规范/001-规范-编码规范.md) — 模块分层、命名、异步编程、自约束
+5. [速查卡](./workflows/操作指南/000-速查卡-YiAi开发速查.md) — 常用命令和模式速查
 
 ### 日常开发
 
 | 场景 | 参考文档 |
 |------|----------|
-| 新增 API 端点 | [API 规范](./workflows/开发规范/02-规范-API规范.md) |
-| 新增领域模块 | [领域服务模式](./workflows/设计模式/01-模式-领域服务模式.md) + [添加领域模块](./workflows/操作指南/02-指南-添加领域模块.md) |
-| 新增 MongoDB 集合 | [数据库规范](./workflows/开发规范/04-规范-数据库规范.md) + [Repository 模式](./workflows/设计模式/02-模式-Repository模式.md) |
-| 修改 RAG 检索 | [核心模块 #RAG 引擎](./workflows/架构设计/03-架构-核心模块.md) + [RAG 管道调试](./workflows/操作指南/05-指南-RAG管道调试.md) |
-| 添加认证逻辑 | [认证规范](./workflows/开发规范/03-规范-认证规范.md) |
-| 调用 LLM | [核心模块 #AI 聊天](./workflows/架构设计/03-架构-核心模块.md) |
-| 配置定时任务 | [核心模块 #知识库监视器](./workflows/架构设计/03-架构-核心模块.md) |
-| 处理异步操作 | [编码规范 #异步优先](./workflows/开发规范/01-规范-编码规范.md) |
-| 处理 SSE 流式响应 | [API 规范 #SSE 流式](./workflows/开发规范/02-规范-API规范.md) + [SSE 流式调试](./workflows/操作指南/06-指南-SSE流式调试.md) |
-| 添加 RPC 方法 | [RPC 协议规范](./workflows/开发规范/05-规范-RPC协议规范.md) + [API 规范](./workflows/开发规范/02-规范-API规范.md) |
-| 性能优化 | [性能优化](./workflows/开发规范/06-规范-性能优化.md) |
-| 编写测试 | [测试策略](./workflows/操作指南/07-指南-测试策略.md) |
-| 开发 Agent 工具 | [Agent 工具开发](./workflows/操作指南/04-指南-Agent工具开发.md) |
-| 跨项目开发 | [跨项目开发工作流](./workflows/操作指南/03-指南-跨项目开发工作流.md) |
+| 新增 API 端点 | [API 规范](./workflows/开发规范/002-规范-API规范.md) |
+| 新增领域模块 | [领域服务模式](./workflows/设计模式/001-模式-领域服务模式.md) + [添加领域模块](./workflows/操作指南/002-指南-添加领域模块.md) |
+| 新增 MongoDB 集合 | [数据库规范](./workflows/开发规范/004-规范-数据库规范.md) + [Repository 模式](./workflows/设计模式/002-模式-Repository模式.md) |
+| 修改 RAG 检索 | [核心模块 #RAG 引擎](./workflows/架构设计/003-架构-核心模块.md) + [RAG 管道调试](./workflows/操作指南/005-指南-RAG管道调试.md) |
+| 添加认证逻辑 | [认证规范](./workflows/开发规范/003-规范-认证规范.md) |
+| 调用 LLM | [核心模块 #AI 聊天](./workflows/架构设计/003-架构-核心模块.md) |
+| 配置定时任务 | [核心模块 #知识库监视器](./workflows/架构设计/003-架构-核心模块.md) |
+| 处理异步操作 | [编码规范 #异步优先](./workflows/开发规范/001-规范-编码规范.md) |
+| 处理 SSE 流式响应 | [API 规范 #SSE 流式](./workflows/开发规范/002-规范-API规范.md) + [SSE 流式调试](./workflows/操作指南/006-指南-SSE流式调试.md) |
+| 添加 RPC 方法 | [RPC 协议规范](./workflows/开发规范/005-规范-RPC协议规范.md) + [API 规范](./workflows/开发规范/002-规范-API规范.md) |
+| 性能优化 | [性能优化](./workflows/开发规范/006-规范-性能优化.md) |
+| 编写测试 | [测试策略](./workflows/操作指南/007-指南-测试策略.md) |
+| 开发 Agent 工具 | [Agent 工具开发](./workflows/操作指南/004-指南-Agent工具开发.md) |
+| 跨项目开发 | [跨项目开发工作流](./workflows/操作指南/003-指南-跨项目开发工作流.md) |
 
 ### 代码审查
 
 | 检查项 | 参考 |
 |--------|------|
-| 是否通过 services 层而非直接访问 data/ | [编码规范 #分层导入规则](./workflows/开发规范/01-规范-编码规范.md) |
-| 参数名是否使用 `filter` 而非 `query` | [RPC 协议规范 #参数名称契约](./workflows/开发规范/05-规范-RPC协议规范.md) |
-| 是否使用 `StandardResponse` 统一信封 | [API 规范 #RPC 协议](./workflows/开发规范/02-规范-API规范.md) |
-| RPC 信封格式是否正确 | [RPC 协议规范](./workflows/开发规范/05-规范-RPC协议规范.md) |
-| 是否遵循 `snake_case` 命名 | [编码规范 #命名约定](./workflows/开发规范/01-规范-编码规范.md) |
-| Domain 层是否导入 `server/` | [编码规范 #分层导入规则](./workflows/开发规范/01-规范-编码规范.md) |
-| 错误处理是否使用 `ErrorCode + BusinessException` | [架构概览 #错误处理](./workflows/架构设计/01-架构-架构概览.md) |
-| 是否使用 `async/await` 而非同步代码 | [编码规范 #异步优先](./workflows/开发规范/01-规范-编码规范.md) |
-| MongoDB 查询是否有分页限制 | [数据库规范](./workflows/开发规范/04-规范-数据库规范.md) |
-| 新增端点是否有 JWT 认证中间件 | [认证规范](./workflows/开发规范/03-规范-认证规范.md) |
-| Cursor 是否使用 `try/finally` 或 `async with` 关闭 | [编码规范 #异步编程](./workflows/开发规范/01-规范-编码规范.md) |
-| 安全配置是否从环境变量读取 | [认证规范](./workflows/开发规范/03-规范-认证规范.md) |
-| SSE 流中异常是否正确传播 | [API 规范 #SSE 流式](./workflows/开发规范/02-规范-API规范.md) |
-| Service 层是否有实际业务逻辑 | [领域服务模式](./workflows/设计模式/01-模式-领域服务模式.md) |
-| 是否使用 `asyncio.timeout` 包装外部 I/O | [编码规范 #异步编程](./workflows/开发规范/01-规范-编码规范.md) |
-| 性能关键路径是否有缓存 | [性能优化](./workflows/开发规范/06-规范-性能优化.md) |
+| 是否通过 services 层而非直接访问 data/ | [编码规范 #分层导入规则](./workflows/开发规范/001-规范-编码规范.md) |
+| 参数名是否使用 `filter` 而非 `query` | [RPC 协议规范 #参数名称契约](./workflows/开发规范/005-规范-RPC协议规范.md) |
+| 是否使用 `StandardResponse` 统一信封 | [API 规范 #RPC 协议](./workflows/开发规范/002-规范-API规范.md) |
+| RPC 信封格式是否正确 | [RPC 协议规范](./workflows/开发规范/005-规范-RPC协议规范.md) |
+| 是否遵循 `snake_case` 命名 | [编码规范 #命名约定](./workflows/开发规范/001-规范-编码规范.md) |
+| Domain 层是否导入 `server/` | [编码规范 #分层导入规则](./workflows/开发规范/001-规范-编码规范.md) |
+| 错误处理是否使用 `ErrorCode + BusinessException` | [架构概览 #错误处理](./workflows/架构设计/001-架构-架构概览.md) |
+| 是否使用 `async/await` 而非同步代码 | [编码规范 #异步优先](./workflows/开发规范/001-规范-编码规范.md) |
+| MongoDB 查询是否有分页限制 | [数据库规范](./workflows/开发规范/004-规范-数据库规范.md) |
+| 新增端点是否有 JWT 认证中间件 | [认证规范](./workflows/开发规范/003-规范-认证规范.md) |
+| Cursor 是否使用 `try/finally` 或 `async with` 关闭 | [编码规范 #异步编程](./workflows/开发规范/001-规范-编码规范.md) |
+| 安全配置是否从环境变量读取 | [认证规范](./workflows/开发规范/003-规范-认证规范.md) |
+| SSE 流中异常是否正确传播 | [API 规范 #SSE 流式](./workflows/开发规范/002-规范-API规范.md) |
+| Service 层是否有实际业务逻辑 | [领域服务模式](./workflows/设计模式/001-模式-领域服务模式.md) |
+| 是否使用 `asyncio.timeout` 包装外部 I/O | [编码规范 #异步编程](./workflows/开发规范/001-规范-编码规范.md) |
+| 性能关键路径是否有缓存 | [性能优化](./workflows/开发规范/006-规范-性能优化.md) |
 
 ### 流程操作
 
 | 操作 | 参考 |
 |------|------|
-| 创建新分支 | [分支管理](./workflows/流程规范/01-流程-分支管理规范.md) |
-| OpenSpec 变更 | [OpenSpec 变更管理](./workflows/流程规范/02-流程-OpenSpec变更管理.md) |
-| 变更状态推进 | [OpenSpec 工作流规范](./workflows/流程规范/04-流程-OpenSpec工作流规范.md) |
-| 发布上线 | [构建部署](./workflows/流程规范/03-流程-构建部署.md) + [分支管理](./workflows/流程规范/01-流程-分支管理规范.md) |
+| 创建新分支 | [分支管理](./workflows/流程规范/001-流程-分支管理规范.md) |
+| OpenSpec 变更 | [OpenSpec 变更管理](./workflows/流程规范/002-流程-OpenSpec变更管理.md) |
+| 变更状态推进 | [OpenSpec 工作流规范](./workflows/流程规范/004-流程-OpenSpec工作流规范.md) |
+| 发布上线 | [构建部署](./workflows/流程规范/003-流程-构建部署.md) + [分支管理](./workflows/流程规范/001-流程-分支管理规范.md) |
 
 ## 关键约束速查
 

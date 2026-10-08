@@ -60,7 +60,7 @@ bugs/
 
 示例：
 ```
-bugs/2026-09/认证/01-认证-JWT-Secret硬编码默认值.md
-bugs/2026-09/数据/01-数据-MongoDB连接池耗尽.md
-bugs/2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md
+bugs/2026-09/认证/0001-认证-JWT-Secret硬编码默认值.md
+bugs/2026-09/数据/0001-数据-MongoDB连接池耗尽.md
+bugs/2026-09/接口/0001-接口-RPC参数query-vs-filter静默忽略.md
 ```

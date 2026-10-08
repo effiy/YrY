@@ -9,14 +9,14 @@ updated: 2026-10-07
 benefit: "YiPot 桌面翻译应用 Q4 质量与体验升级：划词翻译成功率、崩溃率治理、历史搜索、智能推荐引擎，四大目标驱动 v4.0 发布"
 acceptance_criteria:
   - "划词翻译场景端到端成功率 ≥ 99%，覆盖三平台 15 种典型应用"
-  - "全局崩溃率 < 0.5%，功能缺陷 001 unwrap-panic 100% 修复并回归测试通过"
+  - "全局崩溃率 < 0.5%，功能缺陷 unwrap-panic 类（004/011/013/015/016/017/018/019）100% 修复并回归测试通过"
   - "历史搜索 55-prd 与智能推荐 61-prd 上线，搜索命中率 ≥ 90%，推荐 CTR ≥ 8%"
 related:
   - ../../../projects/yipot/prds/2026-09/55-prd-历史搜索功能.md
   - ../../../projects/yipot/prds/2026-09/61-prd-智能引擎推荐.md
-  - ../../../projects/yipot/bugs/功能缺陷/001-Rust配置读取unwrap-panic风险.md
-  - ../../../projects/yipot/bugs/功能缺陷/013-tray-托盘日志退出-unwrap-panic.md
-  - ../../../projects/yipot/bugs/功能缺陷/012-config-hotkey-unwrap-panic.md
+  - ../../../projects/yipot/bugs/2026-09/004-bug-功能缺陷-Rust配置读取unwrap-panic风险.md
+  - ../../../projects/yipot/bugs/2026-09/019-bug-功能缺陷-tray-托盘日志退出-unwrap-panic.md
+  - ../../../projects/yipot/bugs/2026-09/018-bug-功能缺陷-config-hotkey-unwrap-panic.md
   - ../../../leader/roadmap/010-路线图-审查-2026-Q4预览.md
 ---
 
@@ -29,14 +29,14 @@ related:
 | # | 目标 | 状态 | KR 达成 | 进度 |
 |---|------|------|---------|------|
 | yipot-001 | 划词翻译成功率 | ○ | 0/3 | 0% |
-| yipot-002 | 崩溃率 < 0.5%（unwrap-panic 001 风险治理） | ○ | 0/3 | 0% |
+| yipot-002 | 崩溃率 < 0.5%（unwrap-panic 004/011/013/015/016/017/018/019 风险治理） | ○ | 0/3 | 0% |
 | yipot-003 | 历史搜索 55-prd 落地 | ○ | 0/3 | 0% |
 | yipot-004 | 智能推荐 61-prd 落地 | ○ | 0/3 | 0% |
 
 | OKR | KR-1 | KR-2 | KR-3 |
 |-----|------|------|------|
 | yipot-001 划词翻译成功率 | 三平台（Win/macOS/Linux）端到端成功率 ≥ 99% | 覆盖 VSCode / Chrome / Word / IDEA 等 15 种典型应用，兼容性 100% | 划词响应延迟 P95 ≤ 350ms，端到端首屏 ≤ 1.2s |
-| yipot-002 崩溃率 < 0.5% | 全局崩溃率 < 0.5%（按千次启动统计），功能缺陷 001 全修复 | unwrap-panic 类 Bugs（001/012/013/005/007/009/010/011）100% 修复并回归 | 新增 `Result<_, AppError>` 替换所有 `unwrap()`，静态扫描通过率 100% |
+| yipot-002 崩溃率 < 0.5% | 全局崩溃率 < 0.5%（按千次启动统计），功能缺陷类 unwrap-panic 全修复 | unwrap-panic 类 Bugs（004/011/013/015/016/017/018/019）100% 修复并回归 | 新增 `Result<_, AppError>` 替换所有 `unwrap()`，静态扫描通过率 100% |
 | yipot-003 历史搜索 55-prd | 历史记录全字段搜索（原文/译文/时间/服务/标签）命中率 ≥ 90% | 搜索响应 P95 ≤ 200ms，百万级记录分页无卡顿 | 高级筛选（时间/服务/语言对）+ 批量导出 CSV，功能验收通过 |
 | yipot-004 智能推荐 61-prd | 翻译服务智能推荐准确率 ≥ 85%，用户采纳率 CTR ≥ 8% | OCR / TTS 服务场景化推荐，冷启动兜底覆盖 ≥ 95% 语言对 | 推荐反馈闭环（👍👎）入模型训练，月迭代 ≥ 2 次 |
 
@@ -59,8 +59,8 @@ related:
 
 | OKR | KR-1 PRD / Bug | KR-2 PRD / Bug | KR-3 PRD / Bug | KR-4 PRD / Bug | KR-5 PRD / Bug |
 |-----|----------------|----------------|----------------|----------------|----------------|
-| yipot-001 划词翻译 | [01-prd-划词翻译核心](../prds/2026-09/01-prd-划词翻译核心.md) | [14-prd-剪切板监听](../prds/2026-09/14-prd-剪切板监听.md) | [35-prd-翻译窗口交互](../prds/2026-09/35-prd-翻译窗口交互.md) | [48-prd-翻译性能优化](../prds/2026-09/48-prd-翻译性能优化.md) | [Bugs-性能-001-剪切板CPU占用高](../../bugs/性能问题/001-剪切板CPU占用高.md) |
-| yipot-002 崩溃率 | [62-prd-健壮性强化](../prds/2026-09/62-prd-健壮性强化.md) | [Bug-001-unwrap-panic](../../bugs/功能缺陷/001-Rust配置读取unwrap-panic风险.md) | [Bug-012-config-hotkey](../../bugs/功能缺陷/012-config-hotkey-unwrap-panic.md) | [Bug-013-tray-unwrap](../../bugs/功能缺陷/013-tray-托盘日志退出-unwrap-panic.md) | [Bug-005-007-009-010-011](../../bugs/README.md) |
+| yipot-001 划词翻译 | [01-prd-划词翻译核心](../prds/2026-09/01-prd-划词翻译核心.md) | [14-prd-剪切板监听](../prds/2026-09/14-prd-剪切板监听.md) | [35-prd-翻译窗口交互](../prds/2026-09/35-prd-翻译窗口交互.md) | [48-prd-翻译性能优化](../prds/2026-09/48-prd-翻译性能优化.md) | [Bugs-性能-002-剪切板CPU占用高](../../bugs/2026-09/002-bug-性能问题-剪切板CPU占用高.md) |
+| yipot-002 崩溃率 | [62-prd-健壮性强化](../prds/2026-09/62-prd-健壮性强化.md) | [Bug-004-unwrap-panic](../../bugs/2026-09/004-bug-功能缺陷-Rust配置读取unwrap-panic风险.md) | [Bug-018-config-hotkey](../../bugs/2026-09/018-bug-功能缺陷-config-hotkey-unwrap-panic.md) | [Bug-019-tray-unwrap](../../bugs/2026-09/019-bug-功能缺陷-tray-托盘日志退出-unwrap-panic.md) | [Bug-004/011/013/015/016/017/018/019](../../bugs/README.md) |
 | yipot-003 历史搜索 | [55-prd-历史搜索功能](../prds/2026-09/55-prd-历史搜索功能.md) | [51-prd-翻译历史记录](../prds/2026-09/51-prd-翻译历史记录.md) | [70-prd-CSV导出](../prds/2026-09/70-prd-CSV导出.md) | [56-prd-历史统计数据显示](../prds/2026-09/56-prd-历史统计数据显示.md) | [57-prd-历史记录单条删除](../prds/2026-09/57-prd-历史记录单条删除.md) |
 | yipot-004 智能推荐 | [61-prd-智能引擎推荐](../prds/2026-09/61-prd-智能引擎推荐.md) | [65-prd-翻译质量统计](../prds/2026-09/65-prd-翻译质量统计.md) | [237-prd-翻译引擎智能推荐](../../yiai/prds/2026-09/237-prd-翻译引擎智能推荐.md) | [60-prd-翻译结果RAG上下文展示](../prds/2026-09/60-prd-翻译结果RAG上下文展示.md) | [69-prd-语种分布摘要](../prds/2026-09/69-prd-语种分布摘要.md) |
 
@@ -84,7 +84,7 @@ yipot-001 (划词翻译成功率) ─────── 用户核心体验入口
   └── P95 ≤ 350ms 性能红线 ─────────────────────────────────────────┤
                                                                      │
 yipot-002 (崩溃率 < 0.5%) ─────── 质量底座 ─────────────────────────┤
-  ├── 功能缺陷 001 (unwrap-panic) 全量修复                           │
+  ├── unwrap-panic 8 类 (004~019) 全量修复                           │
   ├── AppError 替换全局 unwrap()                                    ├──────┐
   └── 静态扫描 CI 门禁 + 模糊测试                                    │      │
                                                                         │ 支撑

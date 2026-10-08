@@ -30,7 +30,7 @@ related:
 ## 前置条件
 
 - Node.js 18+ 和 pnpm（推荐使用 corepack：`corepack enable && corepack prepare pnpm@latest --activate`）
-- YiAi 后端需运行在 `http://localhost:10086`（参见 [YiAi 入职指南](./0001-入职-YiAi入职.md)）
+- YiAi 后端需运行在 `http://localhost:10086`（参见 [YiAi 入职指南](./001-入职-YiAi入职.md)）
 - Chrome 或 Edge（最新两个版本）
 
 ## 环境搭建（预计 30 分钟）
@@ -115,14 +115,14 @@ pnpm type:check # vue-tsc --noEmit --skipLibCheck
 - [ ] 打开 `src/directives/modules/auth.ts`，理解 `v-auth` 指令——从权限按钮列表匹配 → 无权限时 `remove()`
 - [ ] 做一个小改动：在任意页面组件中添加 `console.log("Hello YiVad")`，验证热更新生效
 - [ ] 运行 `pnpm type:check`，验证 0 新增错误
-- [ ] 阅读跨项目 RPC 协议：`YiKnowledge/engineer/build/006-构建-跨项目RPC协议设计.md`
+- [ ] 阅读跨项目 RPC 协议：`YiKnowledge/engineer/build/0006-构建-跨项目RPC协议设计.md`
 - [ ] 尝试`pnpm build:dev`，验证构建产出
 
 ## 后续学习
 
-- [YiVad 工程文档](../../learn/projects/yivad/01-项目-架构设计.md) —— 深层架构、反模式、操作建议
+- [YiVad 工程文档](../../learn/projects/yivad/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiVad CLAUDE.md](../../../../YiVad/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
-- [跨项目 RPC 协议](../../build/006-构建-跨项目RPC协议设计.md) —— YiVad 与 YiAi 之间的完整 API 契约
-- [开发工作流指南](../../run/006-运行-开发工作流.md) —— 日常开发流程与常见问题
-- [Git 工作流指南](../../run/007-运行-Git工作流.md) —— 分支策略与提交规范
-- [调试排错指南](../../build/003-构建-调试排错指南.md) —— 系统化诊断方法论
+- [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— YiVad 与 YiAi 之间的完整 API 契约
+- [开发工作流指南](006-运行-开发工作流.md) —— 日常开发流程与常见问题
+- [Git 工作流指南](007-运行-Git工作流.md) —— 分支策略与提交规范
+- [调试排错指南](../build/003-构建-调试排错指南.md) —— 系统化诊断方法论

@@ -17,13 +17,13 @@ acceptance_criteria:
   - "Curator 每周收件箱清空率 95%、每季 triage 队列积压 ≤ 20 项、每年误归档率 ≤ 2% 三个 SLO 指标落地"
 related:
   - ./README.md
-  - ./yiknowledge-006-决策-Frontmatter字段规范.md
-  - ./yiknowledge-007-决策-7角色目录划分.md
-  - ../../curator/governance/00002-治理-治理规范.md
-  - ../../curator/governance/00003-治理-收件箱.md
-  - ../../curator/governance/00007-治理-分类处理.md
-  - ../../curator/archive/00001-归档-归档说明.md
-  - ../../curator/governance/00001-治理-知识健康看板.md
+  - ./yiknowledge-yiknowledge-yiknowledge-006-决策-Frontmatter字段规范.md
+  - ./yiknowledge-yiknowledge-yiknowledge-007-决策-7角色目录划分.md
+  - ../../curator/governance/0002-治理-治理规范.md
+  - ../../curator/governance/0003-治理-收件箱.md
+  - ../../curator/governance/0007-治理-分类处理.md
+  - ../../curator/archive/0001-归档-归档说明.md
+  - ../../curator/governance/0001-治理-知识健康看板.md
 ---
 
 # ADR: YiKnowledge 知识生命周期四阶段标准模型与流转规则
@@ -34,11 +34,11 @@ related:
 
 ## 上下文
 
-当前 YiKnowledge 已有 5 态 `lifecycle` 字段（参考 `curator/governance/00002-治理-治理规范.md:82-112`）：`inbox/triage/active/reference/archive`，但问题：
+当前 YiKnowledge 已有 5 态 `lifecycle` 字段（参考 `curator/governance/0002-治理-治理规范.md:82-112`）：`inbox/triage/active/reference/archive`，但问题：
 1. **阶段定义含糊**：`inbox` 和 `triage` 区分标准是「有没有分到目录」，但实际操作中很多 Author 直接创建文件就放 `engineer/run/` 下但写 `lifecycle: inbox`——状态和位置矛盾
 2. **流转无强约束**：`active → archive` 可以一步到位，但也有文件从 `archive` 莫名其妙回到 `active`，缺少「必须 6 个月宽限期、必须有替代内容」这类硬规则
 3. **四阶段 vs 五态 关系不明**：README.md Pipeline 图画了四个阶段（需求/决策/构建/运营）但 governance 文档写了五个状态值，到底谁管谁——Curator 执行时困惑
-4. **SLO 缺失**：治理指标（curator/governance/00002-治理-治理规范.md:162-174）只写了度量方法，没有明确的 SLO 目标——收件箱堆积 100 个也没人知道是「超标」
+4. **SLO 缺失**：治理指标（curator/governance/0002-治理-治理规范.md:162-174）只写了度量方法，没有明确的 SLO 目标——收件箱堆积 100 个也没人知道是「超标」
 
 为什么现在定：
 - Q3 Curator OKR `cur-001` 三条都和生命周期相关：01 收件箱滞留 ≤24h、03 frontmatter 合规率、06 可检索率——没有明确的阶段和流转规则，OKR 没法算分
@@ -54,7 +54,7 @@ related:
 
 | 阶段编号 | 阶段名称 | 对应 `lifecycle` 枚举值 | 停留位置（目录/文件） | 典型时长 | 审查节奏 | 负责人 |
 |---|---|---|---|---|---|---|
-| **阶段 1** | **输入端（Inbox）** | `inbox` | curator/governance/00003-治理-收件箱.md 登记；物理文件暂存 curator/inbox/（或 Author 本地，未发布） | **≤ 24h**（SLO：95% 在 24h 内出 inbox） | 每日 | Curator 扫收件箱 + Author 自行申请 |
+| **阶段 1** | **输入端（Inbox）** | `inbox` | curator/governance/0003-治理-收件箱.md 登记；物理文件暂存 curator/inbox/（或 Author 本地，未发布） | **≤ 24h**（SLO：95% 在 24h 内出 inbox） | 每日 | Curator 扫收件箱 + Author 自行申请 |
 | **阶段 2** | **精炼端（Triage）** | `triage` | 已移到正确角色目录（engineer/run/ 等），但 Frontmatter 不全、内容没精炼、未过审查 | **≤ 7 天**（SLO：积压 ≤ 20 项） | 每周 | Curator + 对应角色 Reviewer |
 | **阶段 3** | **使用端（Operation）** | 双态：`active`（活跃维护）或 `reference`（稳定参考） | 最终停留位置：7 角色目录下对应子目录 | **active 3个月~2年；reference 1年~5年** | active 每季审；reference 每年审 | 角色 Reviewer |
 | **阶段 4** | **收尾端（Archive）** | `archive` | curator/archive/ 下，按归档年月分子目录；原始位置保留 redirect stub 6 个月 | **永久**（除非误归档召回） | 每年（核对归档索引） | Archivist（由 Curator 兼任或委派） |
@@ -77,7 +77,7 @@ related:
 | R10 | inbox → 直接删除 | ① 内容是纯空白、测试文件、重复内容（和已有某文件 90% 以上重合）；② Author 确认不要了 | ① 直接删除；② 收件箱登记中标注「已删除，原因：xxx」 | Curator + Author 双确认 |
 | R11 | archive → active/reference（误归档召回） | ① 归档后 30 天内发现误归档（替代文档其实不覆盖本内容）；② 至少 2 个不同角色的人签字确认「这个还在被使用」；③ 6 个月 stub 期间有人点 redirect 投诉「找不到内容」 | ① mv 回原始路径 + 删除 stub；② lifecycle 和 status 恢复归档前值；③ 归档索引中标注「已召回，日期 xxx」保留记录不删 | Curator + 投诉用户 + Reviewer 三方签字 |
 | R12 | triage 超时升级 | triage 停留 > 14 天仍未过审（积压严重超标） | ① 每周审查标红 + 邮件/消息通知对应 Reviewer；② >21 天未处理升级到 Curator 负责人亲自督办；③ 仍无响应移回收件箱并通知 Author | Curator 监督 |
-| R13 | 任何阶段 status 异常 | 发现 status 与 lifecycle 不符（例：lifecycle=archive 但 status=proposed——参考 yiknowledge-06 组合矩阵） | ① 脚本自动扫出异常；② Curator 一周内人工修正；③ 修正记录写入 00005-治理-审查日志.md | Curator + 治理脚本自动 |
+| R13 | 任何阶段 status 异常 | 发现 status 与 lifecycle 不符（例：lifecycle=archive 但 status=proposed——参考 yiknowledge-06 组合矩阵） | ① 脚本自动扫出异常；② Curator 一周内人工修正；③ 修正记录写入 0005-治理-审查日志.md | Curator + 治理脚本自动 |
 
 ### 8 条禁止规则（红线，违反直接打回）
 
@@ -90,7 +90,7 @@ related:
 7. ❌ **禁止 角色 Reviewer 一人拍板 active→archive**：必须 Curator + Reviewer 双签字（R6 双审规则）
 8. ❌ **禁止 不写 redirect stub**：归档后原始路径必须留 stub 跳转到 archive/，不能让老链接 404
 
-### 三个 SLO 指标量化落地（写入知识健康看板 00001-治理-知识健康看板.md）
+### 三个 SLO 指标量化落地（写入知识健康看板 0001-治理-知识健康看板.md）
 
 | SLO 编号 | 指标 | 目标值 | 度量方法 | 超标时自动告警 |
 |---|---|---|---|---|
@@ -116,7 +116,7 @@ related:
 - **"不知道这个文档还能不能用"焦虑消除**：RAG 召回时按 `lifecycle=active/reference` 过滤、status=deprecated 时自动加警告前缀、archive 只在专门查询历史档案时召回——AI 和人类都不会被过时文档误导
 - **Curator 工作从「凭感觉」→「按 SLO 走」**：3 个 SLO 自动算分、超标告警，每周不用猜「收件箱清没清完」——看仪表盘就行
 - **每周收件箱清空率 +50%**：现状收件箱有时堆 3-5 天；SLO-L1 强制 24h 95% 立即有改善
-- **与 RAG 深度协作**：aier/foundations/02-基础-RAG设计模式.md 的 metadata 过滤策略有了明确落地——召回时只看 active/reference，权重：active × 1.0、reference × 0.9、deprecated × 0.1、archive/inbox/triage × 0（默认不召回）
+- **与 RAG 深度协作**：aier/foundations/0002-基础-RAG设计模式.md 的 metadata 过滤策略有了明确落地——召回时只看 active/reference，权重：active × 1.0、reference × 0.9、deprecated × 0.1、archive/inbox/triage × 0（默认不召回）
 
 ### 负面影响
 - **一次性状态纠偏 1 人天**：现有 200 文件中 30-40 份 lifecycle 值不符合规范（例：没进过 inbox/triage 直接写 active），Curator 要批量回退 inbox→triage→active 补齐链路
@@ -138,6 +138,6 @@ related:
 
 **落地计划：**
 1. 立即：本任务 13 份新建文件的 lifecycle 全部规范——01 COLLABORATION.md（curator 协作总索引）→ 直接 triage→active，审查已在本任务过了；其余 12 份同此处理
-2. 1 周内：00001-治理-知识健康看板.md 加 3 SLO 仪表盘；curator/governance/03 收件箱.md + 07 分类处理.md 更新流程说明引用本 ADR
+2. 1 周内：0001-治理-知识健康看板.md 加 3 SLO 仪表盘；curator/governance/03 收件箱.md + 07 分类处理.md 更新流程说明引用本 ADR
 3. 2 周内：治理脚本 v0.1 上线：`linter.py` 扫 21 条规则 + 8 条禁止，输出违规报告；Curator 跑一次纠偏，30-40 文件状态修正
 4. 下季度审查：3 SLO 首次算分，低于目标立即执行超标自动告警动作

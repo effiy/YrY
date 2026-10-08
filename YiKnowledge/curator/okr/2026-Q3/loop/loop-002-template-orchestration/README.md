@@ -24,14 +24,14 @@ roles: [curator, aier, engineer]
 
 | 阶段 | 记录 | 产出角色 | 关键产物 |
 |---|---|---|---|
-| 需求评审 | [01-编排-requirement-review.md](./01-编排-requirement-review.md) | curator | PRD + 5 验收标准 + WSJF |
-| 技术评审 | [02-编排-technical-review.md](./02-编排-technical-review.md) | aier | 3 条 ADR（编排存储/模板规范/类型修复策略） |
-| 代码审查 | [03-编排-code-review.md](./03-编排-code-review.md) | engineer | 5 维度审查 + 5 条具体意见 |
-| 构建调试 | [04-编排-build-debug.md](./04-编排-build-debug.md) | engineer | 5 条问题→修复→验证 + 门禁 |
-| 测试报告 | [05-编排-test-report.md](./05-编排-test-report.md) | aier | 门禁 + 编排可复现性 + 数据契约 |
-| 部署 | [06-编排-deployment.md](./06-编排-deployment.md) | aier | 5 步部署 + 5 项验证 + 回滚预案 |
-| 上线记录 | [07-编排-launch-record.md](./07-编排-launch-record.md) | curator | 产物清单 + 审批 + 上线验证 |
-| 复盘总结 | [08-编排-retrospective.md](./08-编排-retrospective.md) | curator | 5 Keep + 4 Improve + 5 行动项 |
+| 需求评审 | [0001-编排-requirement-review.md](./001-编排-requirement-review.md) | curator | PRD + 5 验收标准 + WSJF |
+| 技术评审 | [0002-编排-technical-review.md](./002-编排-technical-review.md) | aier | 3 条 ADR（编排存储/模板规范/类型修复策略） |
+| 代码审查 | [0003-编排-code-review.md](./003-编排-code-review.md) | engineer | 5 维度审查 + 5 条具体意见 |
+| 构建调试 | [0004-编排-build-debug.md](./004-编排-build-debug.md) | engineer | 5 条问题→修复→验证 + 门禁 |
+| 测试报告 | [0005-编排-test-report.md](./005-编排-test-report.md) | aier | 门禁 + 编排可复现性 + 数据契约 |
+| 部署 | [0006-编排-deployment.md](./006-编排-deployment.md) | aier | 5 步部署 + 5 项验证 + 回滚预案 |
+| 上线记录 | [0007-编排-launch-record.md](./007-编排-launch-record.md) | curator | 产物清单 + 审批 + 上线验证 |
+| 复盘总结 | [0008-编排-retrospective.md](./008-编排-retrospective.md) | curator | 5 Keep + 4 Improve + 5 行动项 |
 
 ## 3 角色结果
 

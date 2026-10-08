@@ -13,8 +13,8 @@ review_cycle: quarterly
 roles: [product]
 benefit: "产品经理使用 Kano 模型按功能对用户满意度的影响进行分类，避免掉入'做了一大堆功能但用户无感'的陷阱"
 related:
-  - ./006-框架-RICE-ICE优先级.md
-  - ./002-框架-JTBD框架摘要.md
+  - ./0006-框架-RICE-ICE优先级.md
+  - ./0002-框架-JTBD框架摘要.md
   - ../discovery/01-需求-PRD模板.md
 ---
 

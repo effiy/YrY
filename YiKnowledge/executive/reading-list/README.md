@@ -18,7 +18,7 @@ acceptance_criteria:
   - "蒸馏流程可操作"
   - "反模式警示明确"
 related:
-  - ./001-阅读-阅读清单.md
+  - ./0001-阅读-阅读清单.md
   - ../README.md
   - ../INDEX.md
 ---

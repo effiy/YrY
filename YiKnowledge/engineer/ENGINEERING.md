@@ -52,7 +52,7 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| ADR 模板 | [../leader/architecture/001-架构-架构决策设计.md](../leader/architecture/001-架构-架构决策设计.md) | 12 节 ADR 模板：上下文→决策→后果→替代方案 |
+| ADR 模板 | [../leader/architecture/0001-架构-架构决策设计.md](../leader/architecture/001-架构-架构决策设计.md) | 12 节 ADR 模板：上下文→决策→后果→替代方案 |
 | YiAi ADR | [../leader/decisions/](../leader/decisions/) | 知识监听器、LLM 路由、pytest、RAG 评估等 5 项决策 |
 | YiVad ADR | [../leader/decisions/](../leader/decisions/) | AICR 移植、Rsbuild 迁移、Vitest 引入等 3 项决策 |
 | YiPet ADR | [../leader/decisions/](../leader/decisions/) | Biome、双世界架构、跨项目 Hub 等 6 项决策 |
@@ -61,20 +61,20 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 架构全景图 | [../leader/architecture/009-架构-架构全景图.md](../leader/architecture/009-架构-架构全景图.md) | 4 个子项目架构关系、数据流和关键决策总览 |
-| 架构成熟度模型 | [../leader/architecture/003-架构-架构成熟度模型-2026-08.md](../leader/architecture/003-架构-架构成熟度模型-2026-08.md) | 各项目架构纪律评估 |
-| 文档成熟度模型 | [../leader/architecture/004-架构-文档成熟度模型-2026-08.md](../leader/architecture/004-架构-文档成熟度模型-2026-08.md) | 各项目文档体系评估 |
-| DORA 指标基线 | [../leader/architecture/002-架构-DORA指标-2026-Q2基线.md](../leader/architecture/002-架构-DORA指标-2026-Q2基线.md) | 部署频率、变更前置时间、变更失败率、恢复时间 |
+| 架构全景图 | [../leader/architecture/0009-架构-架构全景图.md](../leader/architecture/009-架构-架构全景图.md) | 4 个子项目架构关系、数据流和关键决策总览 |
+| 架构成熟度模型 | [../leader/architecture/0003-架构-架构成熟度模型-2026-08.md](../leader/architecture/003-架构-架构成熟度模型-2026-08.md) | 各项目架构纪律评估 |
+| 文档成熟度模型 | [../leader/architecture/0004-架构-文档成熟度模型-2026-08.md](../leader/architecture/004-架构-文档成熟度模型-2026-08.md) | 各项目文档体系评估 |
+| DORA 指标基线 | [../leader/architecture/0002-架构-DORA指标-2026-Q2基线.md](../leader/architecture/002-架构-DORA指标-2026-Q2基线.md) | 部署频率、变更前置时间、变更失败率、恢复时间 |
 
 ### 系统设计模式
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| API 设计模式 | [build/002-构建-API设计模式.md](./build/002-构建-API设计模式.md) | RESTful 设计、RPC 信封规范、SSE 流式模式 |
-| MongoDB 模式设计 | [build/001-构建-MongoDB模式设计.md](./build/001-构建-MongoDB模式设计.md) | 嵌入 vs 引用、索引策略、查询优化 |
-| 跨项目 RPC 协议参考 | [build/006-构建-跨项目RPC协议设计.md](./build/006-构建-跨项目RPC协议设计.md) | 参数名称契约（filter/query, target_file/path 等曾导致 bug 的不匹配） |
-| 跨项目 RPC 调用实现 | [build/007-构建-实现跨项目RPC调用.md](./build/007-构建-实现跨项目RPC调用.md) | 前端→YiAi RPC 调用的完整实现指南 |
-| SSE 流式实现 | [build/008-构建-实现SSE流式推送.md](./build/008-构建-实现SSE流式推送.md) | Server-Sent Events 流式响应的前后端实现 |
+| API 设计模式 | [build/0002-构建-API设计模式.md](./build/002-构建-API设计模式.md) | RESTful 设计、RPC 信封规范、SSE 流式模式 |
+| MongoDB 模式设计 | [build/0001-构建-MongoDB模式设计.md](./build/001-构建-MongoDB模式设计.md) | 嵌入 vs 引用、索引策略、查询优化 |
+| 跨项目 RPC 协议参考 | [build/0006-构建-跨项目RPC协议设计.md](./build/006-构建-跨项目RPC协议设计.md) | 参数名称契约（filter/query, target_file/path 等曾导致 bug 的不匹配） |
+| 跨项目 RPC 调用实现 | [build/0007-构建-实现跨项目RPC调用.md](./build/007-构建-实现跨项目RPC调用.md) | 前端→YiAi RPC 调用的完整实现指南 |
+| SSE 流式实现 | [build/0008-构建-实现SSE流式推送.md](./build/008-构建-实现SSE流式推送.md) | Server-Sent Events 流式响应的前后端实现 |
 
 ---
 
@@ -84,24 +84,24 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 调试排错指南 | [build/003-构建-调试排错指南.md](./build/003-构建-调试排错指南.md) | 跨项目调试技巧：YiAi 日志、YiVad DevTools、YiPet content script |
-| 性能优化指南 | [build/004-构建-性能优化指南.md](./build/004-构建-性能优化指南.md) | 前端打包优化、后端查询优化、SSE 流控 |
-| 环境变量配置 | [build/005-构建-环境变量配置.md](./build/005-构建-环境变量配置.md) | 三项目环境变量管理：`.env` 规范、默认值、生产覆盖 |
+| 调试排错指南 | [build/0003-构建-调试排错指南.md](./build/003-构建-调试排错指南.md) | 跨项目调试技巧：YiAi 日志、YiVad DevTools、YiPet content script |
+| 性能优化指南 | [build/0004-构建-性能优化指南.md](./build/004-构建-性能优化指南.md) | 前端打包优化、后端查询优化、SSE 流控 |
+| 环境变量配置 | [build/0005-构建-环境变量配置.md](./build/005-构建-环境变量配置.md) | 三项目环境变量管理：`.env` 规范、默认值、生产覆盖 |
 
 ### 代码规范
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 代码审查标准 | [../leader/architecture/010-架构-代码审查标准.md](../leader/architecture/010-架构-代码审查标准.md) | 各项目的代码审查检查清单 |
-| AI 代码审查提示词 | [../aier/prompts/03-提示词-代码审查.md](../aier/prompts/03-提示词-代码审查.md) | 用于 Claude 辅助代码审查的提示词模板 |
+| 代码审查标准 | [../leader/architecture/0010-架构-代码审查标准.md](../leader/architecture/010-架构-代码审查标准.md) | 各项目的代码审查检查清单 |
+| AI 代码审查提示词 | [../aier/prompts/0003-提示词-代码审查.md](../aier/prompts/003-提示词-代码审查.md) | 用于 Claude 辅助代码审查的提示词模板 |
 
 ### 技术选型参考
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| LLM 提供商选型 | [../leader/architecture/006-架构-技术选型-LLM提供商.md](../leader/architecture/006-架构-技术选型-LLM提供商.md) | 本地 Ollama vs 云端 API 的评估矩阵 |
-| React 状态管理选型 | [../leader/architecture/007-架构-技术选型-React状态管理.md](../leader/architecture/007-架构-技术选型-React状态管理.md) | 状态管理方案对比 |
-| 技术选型流程 | [../leader/roadmap/007-路线图-技术选型.md](../leader/roadmap/007-路线图-技术选型.md) | 加权评分矩阵、PoC 验证、推荐建议模板 |
+| LLM 提供商选型 | [../leader/architecture/0006-架构-技术选型-LLM提供商.md](../leader/architecture/006-架构-技术选型-LLM提供商.md) | 本地 Ollama vs 云端 API 的评估矩阵 |
+| React 状态管理选型 | [../leader/architecture/0007-架构-技术选型-React状态管理.md](../leader/architecture/007-架构-技术选型-React状态管理.md) | 状态管理方案对比 |
+| 技术选型流程 | [../leader/roadmap/0007-路线图-技术选型.md](../leader/roadmap/007-路线图-技术选型.md) | 加权评分矩阵、PoC 验证、推荐建议模板 |
 
 ---
 
@@ -111,24 +111,24 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 搭建测试基础设施 | [ship/0006-交付-搭建测试基础设施.md](./ship/0006-交付-搭建测试基础设施.md) | pytest (YiAi) + Vitest (YiVad/YiPet) 测试框架搭建 |
-| YiVad 测试框架技术债 | [../leader/architecture/005-架构-技术债-YiVad缺少测试框架.md](../leader/architecture/005-架构-技术债-YiVad缺少测试框架.md) | YiVad 测试覆盖现状和改进路线 |
+| 搭建测试基础设施 | [ship/0006-交付-搭建测试基础设施.md](./ship/006-交付-搭建测试基础设施.md) | pytest (YiAi) + Vitest (YiVad/YiPet) 测试框架搭建 |
+| YiVad 测试框架技术债 | [../leader/architecture/0005-架构-技术债-YiVad缺少测试框架.md](../leader/architecture/005-架构-技术债-YiVad缺少测试框架.md) | YiVad 测试覆盖现状和改进路线 |
 
 ### 代码质量
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 供应链加固 | [ship/0002-交付-加固供应链.md](./ship/0002-交付-加固供应链.md) | 依赖审计、锁文件验证、构建可重现性 |
-| 季度技术债审查 | [ship/0004-交付-季度技术债.md](./ship/0004-交付-季度技术债.md) | 技术债识别、量化、优先级排序和偿还计划 |
-| 技术债管理框架 | [../leader/roadmap/008-路线图-管理技术债.md](../leader/roadmap/008-路线图-管理技术债.md) | 技术债分类（代码/架构/依赖/知识）和偿还策略 |
+| 供应链加固 | [ship/0002-交付-加固供应链.md](./ship/002-交付-加固供应链.md) | 依赖审计、锁文件验证、构建可重现性 |
+| 季度技术债审查 | [ship/0004-交付-季度技术债.md](./ship/004-交付-季度技术债.md) | 技术债识别、量化、优先级排序和偿还计划 |
+| 技术债管理框架 | [../leader/roadmap/0008-路线图-管理技术债.md](../leader/roadmap/008-路线图-管理技术债.md) | 技术债分类（代码/架构/依赖/知识）和偿还策略 |
 
 ### 生产质量
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| SLO/SLI 定义 | [../sre/observability/08-可观测-SLO与SLI定义.md](../sre/observability/08-可观测-SLO与SLI定义.md) | 服务等级目标和指标定义方法 |
-| 错误预算策略 | [../sre/observability/12-可观测-错误预算策略.md](../sre/observability/12-可观测-错误预算策略.md) | 错误预算消耗与发布冻结的联动策略 |
-| 性能测试指南 | [../sre/observability/13-可观测-性能测试指南.md](../sre/observability/13-可观测-性能测试指南.md) | 负载测试、压力测试、基准测试方法 |
+| SLO/SLI 定义 | [../sre/observability/0008-可观测-SLO与SLI定义.md](../sre/observability/008-可观测-SLO与SLI定义.md) | 服务等级目标和指标定义方法 |
+| 错误预算策略 | [../sre/observability/0012-可观测-错误预算策略.md](../sre/observability/012-可观测-错误预算策略.md) | 错误预算消耗与发布冻结的联动策略 |
+| 性能测试指南 | [../sre/observability/0013-可观测-性能测试指南.md](../sre/observability/013-可观测-性能测试指南.md) | 负载测试、压力测试、基准测试方法 |
 
 ---
 
@@ -136,9 +136,9 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 数据迁移指南 | [ship/0003-交付-数据迁移.md](./ship/0003-交付-数据迁移.md) | 四阶段安全迁移：双写→回填→切换→清理 |
-| 数据库备份恢复 | [../sre/observability/11-可观测-数据库备份恢复.md](../sre/observability/11-可观测-数据库备份恢复.md) | MongoDB 备份策略、恢复验证、RPO/RTO |
-| MongoDB 模式设计 | [build/001-构建-MongoDB模式设计.md](./build/001-构建-MongoDB模式设计.md) | 文档模型设计：嵌入 vs 引用、索引策略、查询优化 |
+| 数据迁移指南 | [ship/0003-交付-数据迁移.md](./ship/003-交付-数据迁移.md) | 四阶段安全迁移：双写→回填→切换→清理 |
+| 数据库备份恢复 | [../sre/observability/0011-可观测-数据库备份恢复.md](../sre/observability/011-可观测-数据库备份恢复.md) | MongoDB 备份策略、恢复验证、RPO/RTO |
+| MongoDB 模式设计 | [build/0001-构建-MongoDB模式设计.md](./build/001-构建-MongoDB模式设计.md) | 文档模型设计：嵌入 vs 引用、索引策略、查询优化 |
 
 ### YrY 数据存储总览
 
@@ -155,9 +155,9 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 退避重试模式 | [ship/0005-交付-退避重试.md](./ship/0005-交付-退避重试.md) | 指数退避、抖动、最大重试次数、幂等性保证 |
-| 容量规划 | [ship/0001-交付-容量规划.md](./ship/0001-交付-容量规划.md) | 资源估算、扩缩容决策、性能基线 |
-| CI/CD 流水线 | [ship/0007-交付-CICD流水线.md](./ship/0007-交付-CICD流水线.md) | 持续集成/部署流水线设计与实现 |
+| 退避重试模式 | [ship/0005-交付-退避重试.md](./ship/005-交付-退避重试.md) | 指数退避、抖动、最大重试次数、幂等性保证 |
+| 容量规划 | [ship/0001-交付-容量规划.md](./ship/001-交付-容量规划.md) | 资源估算、扩缩容决策、性能基线 |
+| CI/CD 流水线 | [ship/0007-交付-CICD流水线.md](./ship/007-交付-CICD流水线.md) | 持续集成/部署流水线设计与实现 |
 
 ### 可靠性模式速查
 
@@ -174,13 +174,13 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 部署指南 | [ship/0008-交付-部署指南.md](./ship/0008-交付-部署指南.md) | 三项目部署流程：YiAi (uvicorn)、YiVad (静态站点)、YiPet (Chrome Web Store) |
-| 发布流程 | [../sre/release/04-发布-发布流程.md](../sre/release/04-发布-发布流程.md) | 标准发布协调流程 |
-| 金丝雀发布 | [../sre/release/01-发布-金丝雀发布.md](../sre/release/01-发布-金丝雀发布.md) | 渐进式流量切换 |
-| 热修复发布 | [../sre/release/02-发布-热修复发布.md](../sre/release/02-发布-热修复发布.md) | 紧急修复的加速发布通道 |
-| 回滚演练 | [../sre/release/05-发布-回滚演练.md](../sre/release/05-发布-回滚演练.md) | 回滚方案设计和定期演练 |
-| 发布冻结 | [../sre/release/03-发布-发布冻结.md](../sre/release/03-发布-发布冻结.md) | 冻结窗口的沟通、审批和例外流程 |
-| 生产就绪审查 | [../sre/release/07-发布-生产就绪审查.md](../sre/release/07-发布-生产就绪审查.md) | 上线前检查清单 |
+| 部署指南 | [ship/0008-交付-部署指南.md](./ship/008-交付-部署指南.md) | 三项目部署流程：YiAi (uvicorn)、YiVad (静态站点)、YiPet (Chrome Web Store) |
+| 发布流程 | [../sre/release/0004-发布-发布流程.md](../sre/release/004-发布-发布流程.md) | 标准发布协调流程 |
+| 金丝雀发布 | [../sre/release/0001-发布-金丝雀发布.md](../sre/release/001-发布-金丝雀发布.md) | 渐进式流量切换 |
+| 热修复发布 | [../sre/release/0002-发布-热修复发布.md](../sre/release/002-发布-热修复发布.md) | 紧急修复的加速发布通道 |
+| 回滚演练 | [../sre/release/0005-发布-回滚演练.md](../sre/release/005-发布-回滚演练.md) | 回滚方案设计和定期演练 |
+| 发布冻结 | [../sre/release/0003-发布-发布冻结.md](../sre/release/003-发布-发布冻结.md) | 冻结窗口的沟通、审批和例外流程 |
+| 生产就绪审查 | [../sre/release/0007-发布-生产就绪审查.md](../sre/release/007-发布-生产就绪审查.md) | 上线前检查清单 |
 
 ---
 
@@ -220,16 +220,16 @@ related:
 
 | 资源 | 位置 | 适用对象 |
 |------|------|----------|
-| YiAi 后端入职 | [run/0001-入职-YiAi入职.md](./run/0001-入职-YiAi入职.md) | Python 后端开发者 |
-| YiPet 扩展入职 | [run/0002-入职-YiPet入职.md](./run/0002-入职-YiPet入职.md) | Chrome 扩展开发者 |
-| YiVad 前端入职 | [run/0003-入职-YiVad入职.md](./run/0003-入职-YiVad入职.md) | Vue 3 前端开发者 |
+| YiAi 后端入职 | [run/0001-入职-YiAi入职.md](./run/001-入职-YiAi入职.md) | Python 后端开发者 |
+| YiPet 扩展入职 | [run/0002-入职-YiPet入职.md](./run/002-入职-YiPet入职.md) | Chrome 扩展开发者 |
+| YiVad 前端入职 | [run/0003-入职-YiVad入职.md](./run/003-入职-YiVad入职.md) | Vue 3 前端开发者 |
 
 ### 项目管理
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
 | 项目知识中心 | [../projects/README.md](../projects/README.md) | 4 个项目的 Bug/PRD/Dev/Test 产物总览 |
-| 进度看板 | [../leader/roadmap/001-路线图-进度看板.md](../leader/roadmap/001-路线图-进度看板.md) | 路线图进度追踪仪表盘 |
+| 进度看板 | [../leader/roadmap/0001-路线图-进度看板.md](../leader/roadmap/001-路线图-进度看板.md) | 路线图进度追踪仪表盘 |
 | 协作领域索引 | [../curator/COLLABORATION.md](../curator/COLLABORATION.md) | 入职、会议、代码审查、知识分享、迭代流程 |
 
 ---

@@ -20,7 +20,7 @@ type: test
 # OCR Provider 适配器 — 测试方案
 
 > 来源模块：[82-prd-task-OCRProvider适配器](../../devs/2026-09/82-prd-task-OCRProvider适配器.md)
-> 父测试方案：[95-prd-test-YiAi后端集成](./95-prd-test-YiAi后端集成.md)
+> 父测试方案：[95-prd-test-YiAi后端集成](./095-prd-test-YiAi后端集成.md)
 
 ---
 

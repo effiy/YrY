@@ -13,7 +13,7 @@ roles: [leader, engineer]
 benefit: "理解 React 15→18 + Bootstrap→Ant Design 5 迁移决策——为什么在技术栈升级中还要同时替换 UI 框架"
 related:
   - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/01-项目-架构设计.md
+  - ../../../engineer/learn/projects/yipet/0001-项目-架构设计.md
   - ./biome-lint-format.md
 ---
 

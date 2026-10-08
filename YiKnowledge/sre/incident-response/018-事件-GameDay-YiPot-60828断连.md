@@ -17,13 +17,13 @@ acceptance_criteria:
   - "触发方式：`lsof -i :60828` 定位线程后 `kill -9 <TCP worker PID>` 模拟端口占用崩溃"
   - "期望：HTTP 服务 30 秒内自恢复 或托盘重开端口；实际结果区"
 related:
-  - ../../engineer/learn/projects/yipot/01-项目-架构设计.md
+  - ../../engineer/learn/projects/yipot/0001-项目-架构设计.md
   - ../../projects/yipot/prds/2026-09/62-prd-健壮性强化.md
-  - ../run/004-运行-YiPot桌面集成Runbook.md
-  - ../observability/014-可观测-健康检查设计.md
+  - ../run/0004-运行-YiPot桌面集成Runbook.md
+  - ../observability/0014-可观测-健康检查设计.md
   - ../../projects/yiai/prds/2026-09/93-prd-自愈恢复机制.md
-  - ./008-事件-GameDay演练.md
-  - ./004-事件-响应事件.md
+  - ./0008-事件-GameDay演练.md
+  - ./0004-事件-响应事件.md
   - ../QUICKREF.md
 ---
 

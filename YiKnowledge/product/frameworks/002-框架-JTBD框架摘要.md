@@ -13,10 +13,10 @@ review_cycle: quarterly
 roles: [product]
 benefit: "产品经理使用 JTBD 框架理解用户真正想要完成的任务，超越表面功能需求，找到稳定不变的用户目标"
 related:
-  - ./003-框架-Kano模型摘要.md
-  - ./008-框架-机会解决方案树.md
+  - ./0003-框架-Kano模型摘要.md
+  - ./0008-框架-机会解决方案树.md
   - ../discovery/01-需求-PRD模板.md
-  - ../discovery/003-发现-用户画像方法.md
+  - ../discovery/0003-发现-用户画像方法.md
 ---
 
 # Jobs-to-Be-Done (JTBD) 框架摘要

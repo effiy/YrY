@@ -73,9 +73,9 @@ open → analyzing → in_progress → resolved → verified → closed
 
 | 月份 | ID | 标题 | 严重度 | 优先级 | 分类 | 模块 | 状态 | 日期 |
 |------|----|------|--------|--------|------|------|------|------|
-| 2026-09 | 1 | [tags 字段使用字符串格式导致 RAG 标签过滤失效](./2026-09/Frontmatter/01-tags字符串格式导致RAG标签过滤失效-20260903.md) | major | p1 | frontmatter | YiKnowledge/engineer/build/ | resolved | 2026-09-03 |
-| 2026-09 | 2 | [Knowledge Watcher 轮询竞态导致新增文件未被索引](./2026-09/同步/01-Watcher轮询竞态导致文件未索引-20260904.md) | minor | p2 | sync | YiAi domain/knowledge/watcher.py | resolved | 2026-09-04 |
-| 2026-09 | 3 | [文件名使用下划线违反 kebab-case 规范](./2026-09/命名/01-文件名使用下划线违反kebab-case规范-20260902.md) | minor | p2 | naming | YiKnowledge/engineer/build/ | resolved | 2026-09-02 |
+| 2026-09 | 1 | [tags 字段使用字符串格式导致 RAG 标签过滤失效](./2026-09/Frontmatter/001-tags字符串格式导致RAG标签过滤失效-20260903.md) | major | p1 | frontmatter | YiKnowledge/engineer/build/ | resolved | 2026-09-03 |
+| 2026-09 | 2 | [Knowledge Watcher 轮询竞态导致新增文件未被索引](./2026-09/同步/001-Watcher轮询竞态导致文件未索引-20260904.md) | minor | p2 | sync | YiAi domain/knowledge/watcher.py | resolved | 2026-09-04 |
+| 2026-09 | 3 | [文件名使用下划线违反 kebab-case 规范](./2026-09/命名/001-文件名使用下划线违反kebab-case规范-20260902.md) | minor | p2 | naming | YiKnowledge/engineer/build/ | resolved | 2026-09-02 |
 
 ## 分类统计
 
@@ -150,4 +150,4 @@ open → analyzing → in_progress → resolved → verified → closed
 - [YiAi 缺陷索引](../yiai/bugs/README.md)
 - [YiPet 缺陷索引](../yipet/bugs/README.md)
 - [Frontmatter 规范](../workflows/开发规范/02-开发规范-Frontmatter模式.md)
-- [知识管理规范](../workflows/开发规范/01-规范-OpenSpec工作流规范.md)
+- [知识管理规范](../workflows/开发规范/001-规范-OpenSpec工作流规范.md)

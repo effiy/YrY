@@ -20,10 +20,10 @@ related:
   - ../../projects/yiai/prds/2026-09/36-prd-告警路由.md
   - ../../projects/yiai/prds/2026-09/105-prd-熔断器.md
   - ../../projects/yiai/prds/2026-09/51-prd-健康度评分卡.md
-  - ../observability/014-可观测-健康检查设计.md
-  - ../observability/010-可观测-告警规则配置.md
-  - ./001-入职-SRE入职指南.md
-  - ../incident-response/004-事件-响应事件.md
+  - ../observability/0014-可观测-健康检查设计.md
+  - ../observability/0010-可观测-告警规则配置.md
+  - ./0001-入职-SRE入职指南.md
+  - ../incident-response/0004-事件-响应事件.md
   - ../QUICKREF.md
 ---
 

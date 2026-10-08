@@ -22,8 +22,8 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [RPC 参数 query-vs-filter 静默忽略](../../YiKnowledge/projects/yiai/bugs/2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md) | YiAi | 后端忽略 `query` 参数，返回未过滤的全量数据，HTTP 200 |
-| [中间件异常处理器吞没真实错误](../../YiKnowledge/projects/yiai/bugs/2026-09/中间件/01-中间件-异常处理器吞没真实错误.md) | YiAi | 中间件 `try/except` 中 `pass`，500 变成 200 |
+| [RPC 参数 query-vs-filter 静默忽略](../../../projects/yiai/bugs/2026-09/接口/001-接口-RPC参数query-vs-filter静默忽略.md) | YiAi | 后端忽略 `query` 参数，返回未过滤的全量数据，HTTP 200 |
+| [中间件异常处理器吞没真实错误](../../../projects/yiai/bugs/2026-09/中间件/001-中间件-异常处理器吞没真实错误.md) | YiAi | 中间件 `try/except` 中 `pass`，500 变成 200 |
 
 **排查策略**：
 1. 对比前端期望和后端实际返回的数据
@@ -43,8 +43,8 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [MongoDB 连接池耗尽](../../YiKnowledge/projects/yiai/bugs/2026-09/数据/01-数据-MongoDB连接池耗尽.md) | YiAi | 偶发超时，新请求无法获取数据库连接 |
-| [企微 Token 刷新无并发保护](../../YiKnowledge/projects/yiai/bugs/2026-09/企业微信/01-企微-Token刷新无并发保护.md) | YiAi | 多个请求同时刷新 Token，创建大量重复请求 |
+| [MongoDB 连接池耗尽](../../../projects/yiai/bugs/2026-09/数据/001-数据-MongoDB连接池耗尽.md) | YiAi | 偶发超时，新请求无法获取数据库连接 |
+| [企微 Token 刷新无并发保护](../../../projects/yiai/bugs/2026-09/企业微信/001-企微-Token刷新无并发保护.md) | YiAi | 多个请求同时刷新 Token，创建大量重复请求 |
 
 **排查策略**：
 1. 检查连接/资源是否有对应的释放逻辑
@@ -64,8 +64,8 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [YAML 配置扁平化键名冲突](../../YiKnowledge/projects/yiai/bugs/2026-09/配置/01-配置-YAML配置扁平化键名冲突.md) | YiAi | 嵌套 YAML 键被扁平化后覆盖 |
-| [JWT Secret 硬编码默认值](../../YiKnowledge/projects/yiai/bugs/2026-09/认证/01-认证-JWT-Secret硬编码默认值.md) | YiAi | 生产环境使用了默认密钥 |
+| [YAML 配置扁平化键名冲突](../../../projects/yiai/bugs/2026-09/配置/001-配置-YAML配置扁平化键名冲突.md) | YiAi | 嵌套 YAML 键被扁平化后覆盖 |
+| [JWT Secret 硬编码默认值](../../../projects/yiai/bugs/2026-09/认证/001-认证-JWT-Secret硬编码默认值.md) | YiAi | 生产环境使用了默认密钥 |
 
 **排查策略**：
 1. 打印实际加载的配置值（非配置文件中的值）
@@ -85,9 +85,9 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [空查询未做防护导致全表扫描](../../YiKnowledge/projects/yiai/bugs/2026-09/搜索/01-搜索-空查询未做防护导致全表扫描.md) | YiAi | 空 `filter: {}` 导致 MongoDB 全表扫描 |
-| [执行器 allowlist=None 崩溃](../../YiKnowledge/projects/yiai/bugs/2026-09/执行/02-执行-allowlist-none-set崩溃.md) | YiAi | `allowlist` 为 `None` 时遍历崩溃 |
-| [模块执行器缺少超时和资源限制](../../YiKnowledge/projects/yiai/bugs/2026-09/执行/01-执行-模块执行器缺少超时和资源限制.md) | YiAi | 长时间运行的任务无超时控制 |
+| [空查询未做防护导致全表扫描](../../../projects/yiai/bugs/2026-09/搜索/001-搜索-空查询未做防护导致全表扫描.md) | YiAi | 空 `filter: {}` 导致 MongoDB 全表扫描 |
+| [执行器 allowlist=None 崩溃](../../../projects/yiai/bugs/2026-09/执行/002-执行-allowlist-none-set崩溃.md) | YiAi | `allowlist` 为 `None` 时遍历崩溃 |
+| [模块执行器缺少超时和资源限制](../../../projects/yiai/bugs/2026-09/执行/001-执行-模块执行器缺少超时和资源限制.md) | YiAi | 长时间运行的任务无超时控制 |
 
 **排查策略**：
 1. 列出所有可能为空的输入
@@ -107,9 +107,9 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [live 端点时间戳类型不匹配](../../YiKnowledge/projects/yiai/bugs/2026-09/数据/01-数据-live端点时间戳类型不匹配.md) | YiAi | 前端传 `int`，后端期望 `datetime` |
-| [Ollama Embedding 维度不匹配](../../YiKnowledge/projects/yiai/bugs/2026-09/大模型/01-模型-Ollama-Embedding维度不匹配.md) | YiAi | 模型切换后向量维度变化，旧索引不可用 |
-| [Watcher bulk-write 部分失败](../../YiKnowledge/projects/yiai/bugs/2026-09/知识库/01-知识-Watcher-bulk-write部分失败.md) | YiAi | 批量操作中部分文档 schema 不匹配，静默跳过 |
+| [live 端点时间戳类型不匹配](../../../projects/yiai/bugs/2026-09/数据/001-数据-live端点时间戳类型不匹配.md) | YiAi | 前端传 `int`，后端期望 `datetime` |
+| [Ollama Embedding 维度不匹配](../../../projects/yiai/bugs/2026-09/大模型/001-模型-Ollama-Embedding维度不匹配.md) | YiAi | 模型切换后向量维度变化，旧索引不可用 |
+| [Watcher bulk-write 部分失败](../../../projects/yiai/bugs/2026-09/知识库/001-知识-Watcher-bulk-write部分失败.md) | YiAi | 批量操作中部分文档 schema 不匹配，静默跳过 |
 
 **排查策略**：
 1. 打印值的 `type` 而不仅仅是 `value`
@@ -129,7 +129,7 @@ source: YiKnowledge/projects/*/bugs/
 
 | Bug | 项目 | 表现 |
 |-----|------|------|
-| [状态记录 TTL 未强制执行](../../YiKnowledge/projects/yiai/bugs/2026-09/状态/01-状态-状态记录TTL未强制执行.md) | YiAi | 过期的状态记录未被清理，累积占用存储 |
+| [状态记录 TTL 未强制执行](../../../projects/yiai/bugs/2026-09/状态/001-状态-状态记录TTL未强制执行.md) | YiAi | 过期的状态记录未被清理，累积占用存储 |
 
 **排查策略**：
 1. 重复执行同一操作 2-3 次，观察每次状态是否独立

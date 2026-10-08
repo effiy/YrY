@@ -24,7 +24,7 @@ related:
   - ./ENGINEERING.md
   - ../curator/COLLABORATION.md
   - ../leader/risk/README.md
-  - ../sre/incident-response/04-事件-响应事件.md
+  - ../sre/incident-response/0004-事件-响应事件.md
 ---
 
 # 安全领域聚合索引
@@ -48,9 +48,9 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 供应链加固指南 | [ship/0002-交付-加固供应链.md](./ship/0002-交付-加固供应链.md) | Python（pip-audit）+ Node.js（npm audit）依赖审计，锁文件完整性验证，构建可重现性 |
-| 依赖审计清单 | [../leader/capacity/003-容量-依赖审计清单.md](../leader/capacity/003-容量-依赖审计清单.md) | 季度依赖健康度审计：许可证合规、维护活跃度、安全公告 |
-| 季度技术债审查 | [ship/0004-交付-季度技术债.md](./ship/0004-交付-季度技术债.md) | 安全相关技术债跟踪与优先级决策 |
+| 供应链加固指南 | [ship/0002-交付-加固供应链.md](./ship/002-交付-加固供应链.md) | Python（pip-audit）+ Node.js（npm audit）依赖审计，锁文件完整性验证，构建可重现性 |
+| 依赖审计清单 | [../leader/capacity/0003-容量-依赖审计清单.md](../leader/capacity/003-容量-依赖审计清单.md) | 季度依赖健康度审计：许可证合规、维护活跃度、安全公告 |
+| 季度技术债审查 | [ship/0004-交付-季度技术债.md](./ship/004-交付-季度技术债.md) | 安全相关技术债跟踪与优先级决策 |
 
 ### YrY 供应链安全实践
 
@@ -68,10 +68,10 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 代码审查标准 | [../leader/architecture/010-架构-代码审查标准.md](../leader/architecture/010-架构-代码审查标准.md) | 各项目的代码审查检查清单，含安全审查要点 |
-| API 设计模式 | [build/002-构建-API设计模式.md](./build/002-构建-API设计模式.md) | 输入校验、参数化查询、错误信息脱敏 |
-| 环境变量配置 | [build/005-构建-环境变量配置.md](./build/005-构建-环境变量配置.md) | 密钥管理、配置分离、`.env` 文件安全 |
-| 部署指南 | [ship/0008-交付-部署指南.md](./ship/0008-交付-部署指南.md) | 生产环境安全配置：CORS、HTTPS、最小权限 |
+| 代码审查标准 | [../leader/architecture/0010-架构-代码审查标准.md](../leader/architecture/010-架构-代码审查标准.md) | 各项目的代码审查检查清单，含安全审查要点 |
+| API 设计模式 | [build/0002-构建-API设计模式.md](./build/002-构建-API设计模式.md) | 输入校验、参数化查询、错误信息脱敏 |
+| 环境变量配置 | [build/0005-构建-环境变量配置.md](./build/005-构建-环境变量配置.md) | 密钥管理、配置分离、`.env` 文件安全 |
+| 部署指南 | [ship/0008-交付-部署指南.md](./ship/008-交付-部署指南.md) | 生产环境安全配置：CORS、HTTPS、最小权限 |
 
 ### YrY 认证与授权架构
 
@@ -97,11 +97,11 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 安全审查清单 | [../leader/risk/006-风险-安全审查清单.md](../leader/risk/006-风险-安全审查清单.md) | 上线前/季度安全检查 15 项：认证、授权、数据保护、网络安全 |
-| 上线风险评估 | [../leader/risk/001-风险-上线风险评估.md](../leader/risk/001-风险-上线风险评估.md) | Go/No-Go 决策框架，风险矩阵评估 |
-| 风险登记册模板 | [../leader/risk/003-风险-风险登记册模板.md](../leader/risk/003-风险-风险登记册模板.md) | 风险持续追踪：概率×影响矩阵，缓解措施追踪 |
-| 依赖风险管理 | [../leader/risk/004-风险-依赖风险管理.md](../leader/risk/004-风险-依赖风险管理.md) | 依赖风险识别、评估和缓解策略 |
-| 事故指挥指南 | [../leader/risk/005-风险-事故指挥指南.md](../leader/risk/005-风险-事故指挥指南.md) | 事故中技术负责人的 IC 角色和决策框架 |
+| 安全审查清单 | [../leader/risk/0006-风险-安全审查清单.md](../leader/risk/006-风险-安全审查清单.md) | 上线前/季度安全检查 15 项：认证、授权、数据保护、网络安全 |
+| 上线风险评估 | [../leader/risk/0001-风险-上线风险评估.md](../leader/risk/001-风险-上线风险评估.md) | Go/No-Go 决策框架，风险矩阵评估 |
+| 风险登记册模板 | [../leader/risk/0003-风险-风险登记册模板.md](../leader/risk/003-风险-风险登记册模板.md) | 风险持续追踪：概率×影响矩阵，缓解措施追踪 |
+| 依赖风险管理 | [../leader/risk/0004-风险-依赖风险管理.md](../leader/risk/004-风险-依赖风险管理.md) | 依赖风险识别、评估和缓解策略 |
+| 事故指挥指南 | [../leader/risk/0005-风险-事故指挥指南.md](../leader/risk/005-风险-事故指挥指南.md) | 事故中技术负责人的 IC 角色和决策框架 |
 
 ### 风险等级定义
 
@@ -118,15 +118,15 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 事件响应流程 | [../sre/incident-response/04-事件-响应事件.md](../sre/incident-response/04-事件-响应事件.md) | 4 阶段响应：发现→定级→缓解→学习 |
-| 处理数据泄露 | [../sre/incident-response/01-事件-处理数据泄露.md](../sre/incident-response/01-事件-处理数据泄露.md) | 数据泄露专项响应流程：隔离→评估→通知→修复 |
-| 作战室运作 | [../sre/incident-response/05-事件-作战室运作.md](../sre/incident-response/05-事件-作战室运作.md) | War room 角色分配、沟通节奏、决策升级 |
-| 事后复盘指南 | [../sre/incident-response/07-事件-事后复盘指南.md](../sre/incident-response/07-事件-事后复盘指南.md) | 无指责事后复盘：时间线→根因→行动项 |
-| 事件沟通模板 | [../sre/incident-response/10-事件-事件沟通模板.md](../sre/incident-response/10-事件-事件沟通模板.md) | 对内/对外/客户沟通模板和时机 |
-| 灾难恢复计划 | [../sre/incident-response/11-事件-灾难恢复计划.md](../sre/incident-response/11-事件-灾难恢复计划.md) | 恢复优先级、RPO/RTO 定义、演练计划 |
-| Runbook 模板 | [../sre/incident-response/09-事件-Runbook模板.md](../sre/incident-response/09-事件-Runbook模板.md) | 可执行的操作手册模板 |
-| FMEA 模板 | [../sre/incident-response/16-事件-FMEA模板.md](../sre/incident-response/16-事件-FMEA模板.md) | 故障模式与影响分析 |
-| Game Day 演练 | [../sre/incident-response/08-事件-GameDay演练.md](../sre/incident-response/08-事件-GameDay演练.md) | 混沌工程演练设计与执行 |
+| 事件响应流程 | [../sre/incident-response/0004-事件-响应事件.md](../sre/incident-response/004-事件-响应事件.md) | 4 阶段响应：发现→定级→缓解→学习 |
+| 处理数据泄露 | [../sre/incident-response/0001-事件-处理数据泄露.md](../sre/incident-response/001-事件-处理数据泄露.md) | 数据泄露专项响应流程：隔离→评估→通知→修复 |
+| 作战室运作 | [../sre/incident-response/0005-事件-作战室运作.md](../sre/incident-response/005-事件-作战室运作.md) | War room 角色分配、沟通节奏、决策升级 |
+| 事后复盘指南 | [../sre/incident-response/0007-事件-事后复盘指南.md](../sre/incident-response/007-事件-事后复盘指南.md) | 无指责事后复盘：时间线→根因→行动项 |
+| 事件沟通模板 | [../sre/incident-response/0010-事件-事件沟通模板.md](../sre/incident-response/010-事件-事件沟通模板.md) | 对内/对外/客户沟通模板和时机 |
+| 灾难恢复计划 | [../sre/incident-response/0011-事件-灾难恢复计划.md](../sre/incident-response/011-事件-灾难恢复计划.md) | 恢复优先级、RPO/RTO 定义、演练计划 |
+| Runbook 模板 | [../sre/incident-response/0009-事件-Runbook模板.md](../sre/incident-response/009-事件-Runbook模板.md) | 可执行的操作手册模板 |
+| FMEA 模板 | [../sre/incident-response/0016-事件-FMEA模板.md](../sre/incident-response/016-事件-FMEA模板.md) | 故障模式与影响分析 |
+| Game Day 演练 | [../sre/incident-response/0008-事件-GameDay演练.md](../sre/incident-response/008-事件-GameDay演练.md) | 混沌工程演练设计与执行 |
 
 ---
 
@@ -134,10 +134,10 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| 处理监管变更 | [../executive/strategy/04-战略-处理监管变更.md](../executive/strategy/04-战略-处理监管变更.md) | 监管新规的影响评估和适应计划 |
-| 数据合规处理 | [../executive/strategy/05-战略-数据合规处理.md](../executive/strategy/05-战略-数据合规处理.md) | 数据分类、跨境传输、用户同意管理 |
-| 数据留存审查 | [../executive/strategy/03-战略-数据留存审查.md](../executive/strategy/03-战略-数据留存审查.md) | 数据生命周期管理、留存策略审查 |
-| 数据保留策略 | [../sre/observability/11-可观测-数据库备份恢复.md](../sre/observability/11-可观测-数据库备份恢复.md) | 备份策略、恢复验证、保留期限 |
+| 处理监管变更 | [../executive/strategy/0004-战略-处理监管变更.md](../executive/strategy/004-战略-处理监管变更.md) | 监管新规的影响评估和适应计划 |
+| 数据合规处理 | [../executive/strategy/0005-战略-数据合规处理.md](../executive/strategy/005-战略-数据合规处理.md) | 数据分类、跨境传输、用户同意管理 |
+| 数据留存审查 | [../executive/strategy/0003-战略-数据留存审查.md](../executive/strategy/003-战略-数据留存审查.md) | 数据生命周期管理、留存策略审查 |
+| 数据保留策略 | [../sre/observability/0011-可观测-数据库备份恢复.md](../sre/observability/011-可观测-数据库备份恢复.md) | 备份策略、恢复验证、保留期限 |
 
 ### 合规检查清单
 
@@ -154,9 +154,9 @@ related:
 
 | 资源 | 位置 | 描述 |
 |------|------|------|
-| AI 安全与防护 | [../aier/foundations/03-基础-AI安全与防护.md](../aier/foundations/03-基础-AI安全与防护.md) | 提示词注入、越狱攻击、数据投毒、模型盗取——攻击向量与防护 |
-| LLM 基础 | [../aier/foundations/01-基础-LLM基础.md](../aier/foundations/01-基础-LLM基础.md) | Token 消耗与隐私、本地 vs 云端的数据安全权衡 |
-| Agent 架构模式 | [../aier/methods/01-方法-Agent架构模式.md](../aier/methods/01-方法-Agent架构模式.md) | 工具调用确认门控（requires_confirmation），防止自主执行危险操作 |
+| AI 安全与防护 | [../aier/foundations/0003-基础-AI安全与防护.md](../aier/foundations/003-基础-AI安全与防护.md) | 提示词注入、越狱攻击、数据投毒、模型盗取——攻击向量与防护 |
+| LLM 基础 | [../aier/foundations/0001-基础-LLM基础.md](../aier/foundations/001-基础-LLM基础.md) | Token 消耗与隐私、本地 vs 云端的数据安全权衡 |
+| Agent 架构模式 | [../aier/methods/0001-方法-Agent架构模式.md](../aier/methods/001-方法-Agent架构模式.md) | 工具调用确认门控（requires_confirmation），防止自主执行危险操作 |
 
 ### AI 安全威胁矩阵
 

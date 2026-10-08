@@ -95,60 +95,60 @@ open → analyzing → in_progress → resolved → verified → closed
 
 | 月份 | ID | 标题 | 严重度 | 优先级 | 分类 | 模块 | 状态 | 日期 |
 |------|----|------|--------|--------|------|------|------|------|
-| 2026-09 | 1 | [RPC 参数名 query vs filter 静默忽略](./2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md) | major | p1 | api | domain/data/data_service.py | resolved | 2026-09-05 |
-| 2026-09 | 2 | [MongoDB 连接池耗尽导致高并发下请求超时](./2026-09/数据/01-数据-MongoDB连接池耗尽.md) | major | p1 | data | domain/data/database.py | resolved | 2026-09-06 |
-| 2026-09 | 3 | [Ollama Embedding 模型切换后维度不匹配](./2026-09/大模型/01-模型-Ollama-Embedding维度不匹配.md) | major | p1 | llm | domain/rag/embedder.py | resolved | 2026-09-03 |
+| 2026-09 | 1 | [RPC 参数名 query vs filter 静默忽略](./2026-09/接口/001-接口-RPC参数query-vs-filter静默忽略.md) | major | p1 | api | domain/data/data_service.py | resolved | 2026-09-05 |
+| 2026-09 | 2 | [MongoDB 连接池耗尽导致高并发下请求超时](./2026-09/数据/001-数据-MongoDB连接池耗尽.md) | major | p1 | data | domain/data/database.py | resolved | 2026-09-06 |
+| 2026-09 | 3 | [Ollama Embedding 模型切换后维度不匹配](./2026-09/大模型/001-模型-Ollama-Embedding维度不匹配.md) | major | p1 | llm | domain/rag/embedder.py | resolved | 2026-09-03 |
 | 2026-09 | 4 | [VectorStoreIndex.insert_documents 方法不存在](./2026-09/RAG/01-RAG-VectorStoreIndex-insert_documents方法不存在.md) | major | p1 | rag | domain/rag/indexer.py | resolved | 2026-09-07 |
-| 2026-09 | 5 | [JWT Secret 使用硬编码默认值，生产环境未强制覆盖](./2026-09/认证/01-认证-JWT-Secret硬编码默认值.md) | major | p1 | auth | src/shared/config.py | resolved | 2026-09-07 |
-| 2026-09 | 6 | [YAML 配置扁平化导致嵌套键名冲突](./2026-09/配置/01-配置-YAML配置扁平化键名冲突.md) | minor | p2 | config | src/shared/config.py | resolved | 2026-09-07 |
-| 2026-09 | 7 | [stream_async 中生成器异常未被捕获，客户端收到截断流](./2026-09/SSE/01-SSE-stream-async生成器异常未被捕获.md) | major | p1 | sse | src/shared/sse_utils.py | resolved | 2026-09-07 |
-| 2026-09 | 8 | [header_verification_middleware 异常处理器吞没真实错误](./2026-09/中间件/01-中间件-异常处理器吞没真实错误.md) | minor | p2 | middleware | src/server/middleware.py | resolved | 2026-09-07 |
-| 2026-09 | 9 | [Watcher bulk_write 部分失败时返回成功计数](./2026-09/知识库/01-知识-Watcher-bulk-write部分失败.md) | minor | p2 | knowledge | src/domain/knowledge/watcher.py | resolved | 2026-09-07 |
-| 2026-09 | 10 | [增量刷新与全量重建存在竞态条件](./2026-09/RAG/02-RAG-增量刷新与全量重建竞态条件.md) | major | p1 | rag | src/domain/knowledge/watcher.py | resolved | 2026-09-07 |
-| 2026-09 | 11 | [模块执行器缺少超时和资源限制](./2026-09/执行/01-执行-模块执行器缺少超时和资源限制.md) | major | p1 | execution | src/domain/execution/executor.py | resolved | 2026-09-07 |
-| 2026-09 | 12 | [WeWork Token 刷新无并发保护](./2026-09/企业微信/01-企微-Token刷新无并发保护.md) | minor | p2 | wework | src/domain/wework/client.py | resolved | 2026-09-07 |
-| 2026-09 | 13 | [状态记录 TTL 未强制执行](./2026-09/状态/01-状态-状态记录TTL未强制执行.md) | minor | p2 | state | src/domain/state/recorder.py | resolved | 2026-09-07 |
-| 2026-09 | 14 | [全局搜索空查询未做防护，导致全表扫描](./2026-09/搜索/01-搜索-空查询未做防护导致全表扫描.md) | minor | p2 | search | src/server/routes/search.py | resolved | 2026-09-07 |
-| 2026-09 | 15 | [MCP Server 工具发现失败时静默降级](./2026-09/MCP/01-MCP-MCP工具发现静默失败.md) | minor | p2 | mcp | src/server/mcp_server.py | resolved | 2026-09-07 |
-| 2026-09 | 16 | [chat.py 和 tools.py 存在未使用的 import](./2026-09/代码质量/01-质量-chat-tools未使用的导入.md) | trivial | p3 | code-quality | src/domain/ai/ | closed | 2026-09-09 |
-| 2026-09 | 17 | [repository.py 和 code_health_service.py 存在未使用变量](./2026-09/代码质量/02-质量-repository模块未使用的变量.md) | trivial | p3 | code-quality | src/data/, src/services/ | closed | 2026-09-09 |
-| 2026-09 | 18 | [code_health_service.py 使用歧义变量名 l](./2026-09/代码质量/03-质量-变量命名模糊不清.md) | trivial | p3 | code-quality | src/services/code_health_service.py | closed | 2026-09-09 |
-| 2026-09 | 19 | [第二批未使用 import 和变量清理](./2026-09/代码质量/04-质量-第二批未使用的导入.md) | trivial | p3 | code-quality | 6 个文件 | closed | 2026-09-09 |
-| 2026-09 | 20 | [except 块中 raise 未使用 from 保留异常链](./2026-09/代码质量/05-质量-except块中raise缺少from.md) | minor | p2 | code-quality | 3 个文件 | closed | 2026-09-09 |
-| 2026-09 | 21 | [循环变量未使用及 noqa 冗余](./2026-09/代码质量/06-质量-未使用的循环变量和noqa.md) | trivial | p3 | code-quality | 2 个文件 | closed | 2026-09-09 |
-| 2026-09 | 22 | [异步函数中使用阻塞 open() 调用](./2026-09/代码质量/07-质量-异步函数中使用阻塞式open.md) | major | p1 | code-quality | 4 个文件 | closed | 2026-09-09 |
-| 2026-09 | 23 | [遗留 print 语句和未引用的 asyncio 任务](./2026-09/代码质量/08-质量-print语句和悬空任务.md) | minor | p2 | code-quality | 3 个文件 | closed | 2026-09-09 |
-| 2026-09 | 24 | [try-except-pass 静默吞没异常](./2026-09/代码质量/09-质量-try-except-pass静默吞异常.md) | minor | p2 | code-quality | 9 个文件 | closed | 2026-09-09 |
-| 2026-09 | 25 | [try-except-continue 静默跳过循环异常](./2026-09/代码质量/10-质量-try-except-continue静默吞异常.md) | minor | p2 | code-quality | 5 个文件 | closed | 2026-09-09 |
-| 2026-09 | 26 | [使用裸 Exception 而非 BusinessException](./2026-09/代码质量/11-质量-抛原生异常而非业务异常.md) | minor | p2 | code-quality | src/domain/execution/executor.py | closed | 2026-09-09 |
-| 2026-09 | 27 | [state/recorder.py 整个模块为死代码桩](./2026-09/代码质量/12-质量-stub-recorder死代码模块.md) | trivial | p3 | code-quality | src/domain/state/recorder.py | open | 2026-09-09 |
-| 2026-09 | 28 | [StateStoreService 方法内部延迟导入](./2026-09/代码质量/13-质量-state-service延迟导入.md) | trivial | p3 | code-quality | src/domain/state/service.py | open | 2026-09-09 |
-| 2026-09 | 29 | [_seed_collection_if_empty 静默吞没数据库异常](./2026-09/代码质量/14-质量-seed集合错误静默忽略.md) | minor | p2 | code-quality | src/app.py | closed | 2026-09-09 |
-| 2026-09 | 30 | [_apply_rss_date_filters 原地修改输入字典](./2026-09/代码质量/15-质量-RSS日期过滤副作用.md) | minor | p2 | code-quality | src/data/repository.py | closed | 2026-09-09 |
-| 2026-09 | 31 | [delete_document 中 bug/issue 删除逻辑重复](./2026-09/代码质量/16-质量-Bug和Issue删除逻辑重复.md) | trivial | p3 | code-quality | src/data/repository.py | open | 2026-09-09 |
-| 2026-09 | 32 | [_resolve_project_path 函数过长且圈复杂度高](./2026-09/代码质量/17-质量-resolve-project-path逻辑复杂.md) | minor | p2 | code-quality | src/domain/files/local.py | open | 2026-09-09 |
-| 2026-09 | 33 | [_lookup_source_category 和 _get_enabled_sources 吞没异常](./2026-09/代码质量/18-质量-分类查找吞没异常.md) | minor | p2 | code-quality | src/domain/rss/feed.py, scheduler.py | open | 2026-09-09 |
-| 2026-09 | 34 | [is_image_file 函数在 maintenance.py 和 paths.py 中重复](./2026-09/代码质量/19-质量-is-image-file函数重复.md) | trivial | p3 | code-quality | 2 个文件 | closed | 2026-09-09 |
-| 2026-09 | 35 | [feed.py 辅助函数使用通用 Exception 捕获](./2026-09/代码质量/20-质量-feed-helpers中宽泛的except.md) | trivial | p3 | code-quality | src/domain/rss/feed.py | closed | 2026-09-09 |
-| 2026-09 | 36 | [硬编码的运维参数应移至 config.yaml](./2026-09/代码质量/21-质量-硬编码运维配置值.md) | minor | p2 | code-quality | 13 个文件 | open | 2026-09-09 |
-| 2026-09 | 37 | [模块级可变状态导致测试隔离问题](./2026-09/代码质量/22-质量-模块级可变状态.md) | minor | p2 | code-quality | 4 个文件 | open | 2026-09-09 |
-| 2026-09 | 38 | [_format_sse 和 _stream_async 在路由模块中重复](./2026-09/代码质量/23-质量-SSE格式化代码重复.md) | trivial | p3 | code-quality | 2 个路由模块 | open | 2026-09-09 |
-| 2026-09 | 39 | [Dashboard 端点 to_list(length=None) 无限制加载全量数据](./2026-09/代码质量/24-质量-无限制to-list内存风险.md) | minor | p2 | code-quality | 4 个路由文件 | open | 2026-09-09 |
-| 2026-09 | 40 | [多处 find() 查询未使用投影限制返回字段](./2026-09/代码质量/25-质量-find查询缺少字段投影.md) | trivial | p3 | code-quality | 7 个文件 | open | 2026-09-09 |
-| 2026-09 | 41 | [data_service.py 四个 RPC 方法缺失参数类型注解](./2026-09/代码质量/26-质量-RPC方法缺少类型注解.md) | trivial | p3 | code-quality | 7 个文件 | open | 2026-09-09 |
-| 2026-09 | 42 | [execute_module 路由将完整请求参数记录到日志](./2026-09/代码质量/27-质量-日志中泄露敏感数据.md) | minor | p2 | code-quality | src/server/routes/execution.py | closed | 2026-09-09 |
-| 2026-09 | 43 | [FastAPI app 未配置请求体大小限制](./2026-09/代码质量/28-质量-缺少请求体大小限制.md) | minor | p2 | code-quality | src/app.py, main.py | open | 2026-09-09 |
-| 2026-09 | 44 | [datetime.now() 未指定时区导致 naive datetime](./2026-09/代码质量/29-质量-未处理时区的datetime-now.md) | trivial | p3 | code-quality | storage.py, local.py, repository.py | closed | 2026-09-09 |
-| 2026-09 | 45 | [tools.py _ALLOWED_ROOTS 白名单包含过时路径引用](./2026-09/代码质量/30-质量-allowed-roots包含过时路径.md) | trivial | p3 | code-quality | src/domain/ai/tools.py | open | 2026-09-09 |
-| 2026-09 | 46 | [asyncio.gather 未设置 return_exceptions 单任务失败取消全部](./2026-09/代码质量/31-质量-asyncio-gather未使用return-exceptions.md) | minor | p2 | code-quality | dashboard.py, scheduler.py | closed | 2026-09-09 |
-| 2026-09 | 56 | [logging.py os.makedirs 无 exist_ok 存在竞态条件](./2026-09/代码质量/42-质量-makedirs缺exist-ok竞态条件.md) | trivial | p3 | code-quality | src/shared/logging.py | open | 2026-09-09 |
-| 2026-09 | 57 | [is 用于非 None 值比较应改为 ==](./2026-09/代码质量/43-质量-is与等于比较混用.md) | trivial | p3 | code-quality | 多个模块 | open | 2026-09-09 |
-| 2026-09 | 58 | [services/audit/__init__.py 为空文件](./2026-09/代码质量/44-质量-audit模块空init文件.md) | trivial | p3 | code-quality | src/services/audit/ | open | 2026-09-09 |
-| 2026-09 | 59 | [SSE 编码 .encode() 未显式指定 utf-8](./2026-09/代码质量/45-质量-编码未显式指定utf8.md) | trivial | p3 | code-quality | sse_utils.py, openai_compat.py, rag.py | open | 2026-09-09 |
-| 2026-09 | 60 | [audit_service.py 查询未设置 maxTimeMS 超时](./2026-09/代码质量/46-质量-audit查询缺少超时.md) | trivial | p3 | code-quality | src/services/audit/ | open | 2026-09-09 |
-| 2026-09 | 62 | [app.py 中 if __name__ 死代码从未被执行](./2026-09/代码质量/48-质量-app-py中死代码入口.md) | trivial | p3 | code-quality | src/app.py | open | 2026-09-09 |
-| 2026-09 | 91 | [未配置结构化 JSON 日志格式](./2026-09/代码质量/77-质量-缺少结构化JSON日志.md) | trivial | p3 | code-quality | shared/logging.py | open | 2026-09-09 |
-| 2026-09 | 93 | [硬编码日志路径 logs/app.log](./2026-09/代码质量/79-质量-日志路径硬编码.md) | trivial | p3 | code-quality | shared/logging.py | open | 2026-09-09 |
+| 2026-09 | 5 | [JWT Secret 使用硬编码默认值，生产环境未强制覆盖](./2026-09/认证/001-认证-JWT-Secret硬编码默认值.md) | major | p1 | auth | src/shared/config.py | resolved | 2026-09-07 |
+| 2026-09 | 6 | [YAML 配置扁平化导致嵌套键名冲突](./2026-09/配置/001-配置-YAML配置扁平化键名冲突.md) | minor | p2 | config | src/shared/config.py | resolved | 2026-09-07 |
+| 2026-09 | 7 | [stream_async 中生成器异常未被捕获，客户端收到截断流](./2026-09/SSE/001-SSE-stream-async生成器异常未被捕获.md) | major | p1 | sse | src/shared/sse_utils.py | resolved | 2026-09-07 |
+| 2026-09 | 8 | [header_verification_middleware 异常处理器吞没真实错误](./2026-09/中间件/001-中间件-异常处理器吞没真实错误.md) | minor | p2 | middleware | src/server/middleware.py | resolved | 2026-09-07 |
+| 2026-09 | 9 | [Watcher bulk_write 部分失败时返回成功计数](./2026-09/知识库/001-知识-Watcher-bulk-write部分失败.md) | minor | p2 | knowledge | src/domain/knowledge/watcher.py | resolved | 2026-09-07 |
+| 2026-09 | 10 | [增量刷新与全量重建存在竞态条件](./2026-09/RAG/002-RAG-增量刷新与全量重建竞态条件.md) | major | p1 | rag | src/domain/knowledge/watcher.py | resolved | 2026-09-07 |
+| 2026-09 | 11 | [模块执行器缺少超时和资源限制](./2026-09/执行/001-执行-模块执行器缺少超时和资源限制.md) | major | p1 | execution | src/domain/execution/executor.py | resolved | 2026-09-07 |
+| 2026-09 | 12 | [WeWork Token 刷新无并发保护](./2026-09/企业微信/001-企微-Token刷新无并发保护.md) | minor | p2 | wework | src/domain/wework/client.py | resolved | 2026-09-07 |
+| 2026-09 | 13 | [状态记录 TTL 未强制执行](./2026-09/状态/001-状态-状态记录TTL未强制执行.md) | minor | p2 | state | src/domain/state/recorder.py | resolved | 2026-09-07 |
+| 2026-09 | 14 | [全局搜索空查询未做防护，导致全表扫描](./2026-09/搜索/001-搜索-空查询未做防护导致全表扫描.md) | minor | p2 | search | src/server/routes/search.py | resolved | 2026-09-07 |
+| 2026-09 | 15 | [MCP Server 工具发现失败时静默降级](./2026-09/MCP/001-MCP-MCP工具发现静默失败.md) | minor | p2 | mcp | src/server/mcp_server.py | resolved | 2026-09-07 |
+| 2026-09 | 16 | [chat.py 和 tools.py 存在未使用的 import](./2026-09/代码质量/001-质量-chat-tools未使用的导入.md) | trivial | p3 | code-quality | src/domain/ai/ | closed | 2026-09-09 |
+| 2026-09 | 17 | [repository.py 和 code_health_service.py 存在未使用变量](./2026-09/代码质量/002-质量-repository模块未使用的变量.md) | trivial | p3 | code-quality | src/data/, src/services/ | closed | 2026-09-09 |
+| 2026-09 | 18 | [code_health_service.py 使用歧义变量名 l](./2026-09/代码质量/003-质量-变量命名模糊不清.md) | trivial | p3 | code-quality | src/services/code_health_service.py | closed | 2026-09-09 |
+| 2026-09 | 19 | [第二批未使用 import 和变量清理](./2026-09/代码质量/004-质量-第二批未使用的导入.md) | trivial | p3 | code-quality | 6 个文件 | closed | 2026-09-09 |
+| 2026-09 | 20 | [except 块中 raise 未使用 from 保留异常链](./2026-09/代码质量/005-质量-except块中raise缺少from.md) | minor | p2 | code-quality | 3 个文件 | closed | 2026-09-09 |
+| 2026-09 | 21 | [循环变量未使用及 noqa 冗余](./2026-09/代码质量/006-质量-未使用的循环变量和noqa.md) | trivial | p3 | code-quality | 2 个文件 | closed | 2026-09-09 |
+| 2026-09 | 22 | [异步函数中使用阻塞 open() 调用](./2026-09/代码质量/007-质量-异步函数中使用阻塞式open.md) | major | p1 | code-quality | 4 个文件 | closed | 2026-09-09 |
+| 2026-09 | 23 | [遗留 print 语句和未引用的 asyncio 任务](./2026-09/代码质量/008-质量-print语句和悬空任务.md) | minor | p2 | code-quality | 3 个文件 | closed | 2026-09-09 |
+| 2026-09 | 24 | [try-except-pass 静默吞没异常](./2026-09/代码质量/009-质量-try-except-pass静默吞异常.md) | minor | p2 | code-quality | 9 个文件 | closed | 2026-09-09 |
+| 2026-09 | 25 | [try-except-continue 静默跳过循环异常](./2026-09/代码质量/010-质量-try-except-continue静默吞异常.md) | minor | p2 | code-quality | 5 个文件 | closed | 2026-09-09 |
+| 2026-09 | 26 | [使用裸 Exception 而非 BusinessException](./2026-09/代码质量/011-质量-抛原生异常而非业务异常.md) | minor | p2 | code-quality | src/domain/execution/executor.py | closed | 2026-09-09 |
+| 2026-09 | 27 | [state/recorder.py 整个模块为死代码桩](./2026-09/代码质量/012-质量-stub-recorder死代码模块.md) | trivial | p3 | code-quality | src/domain/state/recorder.py | open | 2026-09-09 |
+| 2026-09 | 28 | [StateStoreService 方法内部延迟导入](./2026-09/代码质量/013-质量-state-service延迟导入.md) | trivial | p3 | code-quality | src/domain/state/service.py | open | 2026-09-09 |
+| 2026-09 | 29 | [_seed_collection_if_empty 静默吞没数据库异常](./2026-09/代码质量/014-质量-seed集合错误静默忽略.md) | minor | p2 | code-quality | src/app.py | closed | 2026-09-09 |
+| 2026-09 | 30 | [_apply_rss_date_filters 原地修改输入字典](./2026-09/代码质量/015-质量-RSS日期过滤副作用.md) | minor | p2 | code-quality | src/data/repository.py | closed | 2026-09-09 |
+| 2026-09 | 31 | [delete_document 中 bug/issue 删除逻辑重复](./2026-09/代码质量/016-质量-Bug和Issue删除逻辑重复.md) | trivial | p3 | code-quality | src/data/repository.py | open | 2026-09-09 |
+| 2026-09 | 32 | [_resolve_project_path 函数过长且圈复杂度高](./2026-09/代码质量/017-质量-resolve-project-path逻辑复杂.md) | minor | p2 | code-quality | src/domain/files/local.py | open | 2026-09-09 |
+| 2026-09 | 33 | [_lookup_source_category 和 _get_enabled_sources 吞没异常](./2026-09/代码质量/018-质量-分类查找吞没异常.md) | minor | p2 | code-quality | src/domain/rss/feed.py, scheduler.py | open | 2026-09-09 |
+| 2026-09 | 34 | [is_image_file 函数在 maintenance.py 和 paths.py 中重复](./2026-09/代码质量/019-质量-is-image-file函数重复.md) | trivial | p3 | code-quality | 2 个文件 | closed | 2026-09-09 |
+| 2026-09 | 35 | [feed.py 辅助函数使用通用 Exception 捕获](./2026-09/代码质量/020-质量-feed-helpers中宽泛的except.md) | trivial | p3 | code-quality | src/domain/rss/feed.py | closed | 2026-09-09 |
+| 2026-09 | 36 | [硬编码的运维参数应移至 config.yaml](./2026-09/代码质量/021-质量-硬编码运维配置值.md) | minor | p2 | code-quality | 13 个文件 | open | 2026-09-09 |
+| 2026-09 | 37 | [模块级可变状态导致测试隔离问题](./2026-09/代码质量/022-质量-模块级可变状态.md) | minor | p2 | code-quality | 4 个文件 | open | 2026-09-09 |
+| 2026-09 | 38 | [_format_sse 和 _stream_async 在路由模块中重复](./2026-09/代码质量/023-质量-SSE格式化代码重复.md) | trivial | p3 | code-quality | 2 个路由模块 | open | 2026-09-09 |
+| 2026-09 | 39 | [Dashboard 端点 to_list(length=None) 无限制加载全量数据](./2026-09/代码质量/024-质量-无限制to-list内存风险.md) | minor | p2 | code-quality | 4 个路由文件 | open | 2026-09-09 |
+| 2026-09 | 40 | [多处 find() 查询未使用投影限制返回字段](./2026-09/代码质量/025-质量-find查询缺少字段投影.md) | trivial | p3 | code-quality | 7 个文件 | open | 2026-09-09 |
+| 2026-09 | 41 | [data_service.py 四个 RPC 方法缺失参数类型注解](./2026-09/代码质量/026-质量-RPC方法缺少类型注解.md) | trivial | p3 | code-quality | 7 个文件 | open | 2026-09-09 |
+| 2026-09 | 42 | [execute_module 路由将完整请求参数记录到日志](./2026-09/代码质量/027-质量-日志中泄露敏感数据.md) | minor | p2 | code-quality | src/server/routes/execution.py | closed | 2026-09-09 |
+| 2026-09 | 43 | [FastAPI app 未配置请求体大小限制](./2026-09/代码质量/028-质量-缺少请求体大小限制.md) | minor | p2 | code-quality | src/app.py, main.py | open | 2026-09-09 |
+| 2026-09 | 44 | [datetime.now() 未指定时区导致 naive datetime](./2026-09/代码质量/029-质量-未处理时区的datetime-now.md) | trivial | p3 | code-quality | storage.py, local.py, repository.py | closed | 2026-09-09 |
+| 2026-09 | 45 | [tools.py _ALLOWED_ROOTS 白名单包含过时路径引用](./2026-09/代码质量/030-质量-allowed-roots包含过时路径.md) | trivial | p3 | code-quality | src/domain/ai/tools.py | open | 2026-09-09 |
+| 2026-09 | 46 | [asyncio.gather 未设置 return_exceptions 单任务失败取消全部](./2026-09/代码质量/031-质量-asyncio-gather未使用return-exceptions.md) | minor | p2 | code-quality | dashboard.py, scheduler.py | closed | 2026-09-09 |
+| 2026-09 | 56 | [logging.py os.makedirs 无 exist_ok 存在竞态条件](./2026-09/代码质量/042-质量-makedirs缺exist-ok竞态条件.md) | trivial | p3 | code-quality | src/shared/logging.py | open | 2026-09-09 |
+| 2026-09 | 57 | [is 用于非 None 值比较应改为 ==](./2026-09/代码质量/043-质量-is与等于比较混用.md) | trivial | p3 | code-quality | 多个模块 | open | 2026-09-09 |
+| 2026-09 | 58 | [services/audit/__init__.py 为空文件](./2026-09/代码质量/044-质量-audit模块空init文件.md) | trivial | p3 | code-quality | src/services/audit/ | open | 2026-09-09 |
+| 2026-09 | 59 | [SSE 编码 .encode() 未显式指定 utf-8](./2026-09/代码质量/045-质量-编码未显式指定utf8.md) | trivial | p3 | code-quality | sse_utils.py, openai_compat.py, rag.py | open | 2026-09-09 |
+| 2026-09 | 60 | [audit_service.py 查询未设置 maxTimeMS 超时](./2026-09/代码质量/046-质量-audit查询缺少超时.md) | trivial | p3 | code-quality | src/services/audit/ | open | 2026-09-09 |
+| 2026-09 | 62 | [app.py 中 if __name__ 死代码从未被执行](./2026-09/代码质量/048-质量-app-py中死代码入口.md) | trivial | p3 | code-quality | src/app.py | open | 2026-09-09 |
+| 2026-09 | 91 | [未配置结构化 JSON 日志格式](./2026-09/代码质量/077-质量-缺少结构化JSON日志.md) | trivial | p3 | code-quality | shared/logging.py | open | 2026-09-09 |
+| 2026-09 | 93 | [硬编码日志路径 logs/app.log](./2026-09/代码质量/079-质量-日志路径硬编码.md) | trivial | p3 | code-quality | shared/logging.py | open | 2026-09-09 |
 
 ## 分类统计
 
@@ -249,5 +249,5 @@ open → analyzing → in_progress → resolved → verified → closed
 - [YiVad 缺陷索引](../yivad/bugs/README.md)
 - [YiPet 缺陷索引](../yipet/bugs/README.md)
 - [API 规范](../workflows/开发规范/04-规范-认证规范.md)
-- [编码规范](../workflows/开发规范/01-规范-编码规范.md)
-- [架构概览](../workflows/架构设计/01-架构-架构概览.md)
+- [编码规范](../workflows/开发规范/001-规范-编码规范.md)
+- [架构概览](../workflows/架构设计/001-架构-架构概览.md)

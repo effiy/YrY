@@ -17,13 +17,13 @@ acceptance_criteria:
   - "MongoDB projects 集合 >=5 条断言 + /api/project 接口 JSON 结构字段级校验"
   - "10 条前端性能指标（FCP/LCP/CLS/TBT/TTI 等）采集脚本块"
 related:
-  - ../../engineer/learn/projects/yivad/01-项目-架构设计.md
-  - ../../engineer/learn/projects/yivad/03-项目-功能模块.md
+  - ../../engineer/learn/projects/yivad/0001-项目-架构设计.md
+  - ../../engineer/learn/projects/yivad/0003-项目-功能模块.md
   - ../../projects/yiai/prds/2026-09/01-prd-检索基础体系.md
-  - ../../engineer/build/004-构建-性能优化指南.md
-  - ../observability/013-可观测-性能测试指南.md
-  - ../observability/015-可观测-SRE指标体系.md
-  - ../../leader/architecture/019-架构-性能优化指南.md
+  - ../../engineer/build/0004-构建-性能优化指南.md
+  - ../observability/0013-可观测-性能测试指南.md
+  - ../observability/0015-可观测-SRE指标体系.md
+  - ../../leader/architecture/0019-架构-性能优化指南.md
   - ../QUICKREF.md
 ---
 

@@ -14,10 +14,10 @@ review_cycle: quarterly
 roles: [executive, leader]
 benefit: "基于 Gartner AI Hype Cycle 2026 分析各项 AI 技术的成熟度和采用时机，指导技术投资节奏"
 related:
-  - ./001-行业-行业报告模板.md
-  - ./004-行业-2026-AI行业关键趋势.md
-  - ../../strategy/031-战略-创新组合管理.md
-  - ../../strategy/009-战略-第二曲线.md
+  - ./0001-行业-行业报告模板.md
+  - ./0004-行业-2026-AI行业关键趋势.md
+  - ../../strategy/0031-战略-创新组合管理.md
+  - ../../strategy/0009-战略-第二曲线.md
 ---
 
 # Gartner 2026 AI 技术成熟度分析

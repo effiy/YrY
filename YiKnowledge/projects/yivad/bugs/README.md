@@ -71,7 +71,7 @@ open → analyzing → in_progress → resolved → verified → closed
 
 | ID | 标题 | 严重度 | 优先级 | 分类 | 模块 | 状态 | 日期 |
 |----|------|--------|--------|------|------|------|------|
-| 1 | [项目列表页 i18n title 未显示](./2026-09/国际化/01-国际化-项目标题未显示.md) | minor | p2 | 国际化 | views/project | resolved | 2026-09-03 |
+| 1 | [项目列表页 i18n title 未显示](./2026-09/国际化/001-国际化-项目标题未显示.md) | minor | p2 | 国际化 | views/project | resolved | 2026-09-03 |
 | 2 | DetailRequirements.vue 组件未被使用 | minor | p2 | 代码质量 | views/project | resolved | 2026-09-07 |
 | 3 | 文档 Tab 计数与实际列表不一致 | minor | p2 | 数据 | views/project | resolved | 2026-09-07 |
 | 4 | DetailDocs 与 DetailOverview 标签默认值不一致 | trivial | p3 | 数据 | views/project | resolved | 2026-09-07 |

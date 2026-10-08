@@ -17,13 +17,13 @@ acceptance_criteria:
   - "INDEX 和 README 的 Frontmatter 的 `type` 字段区分：INDEX.md 必须 `type=index`、README.md 必须 `type=summary`
 related:
   - ./README.md
-  - ./yiknowledge-007-决策-7角色目录划分.md
-  - ../../curator/governance/00002-治理-治理规范.md
-  - ../../curator/governance/00004-治理-就绪检查清单.md
+  - ./yiknowledge-yiknowledge-yiknowledge-007-决策-7角色目录划分.md
+  - ../../curator/governance/0002-治理-治理规范.md
+  - ../../curator/governance/0004-治理-就绪检查清单.md
   - ../../curator/INDEX.md
   - ../../curator/README.md
   - ../../README.md
-  - ../../curator/diagrams/00002-图表-目录蓝图.md
+  - ../../curator/diagrams/0002-图表-目录蓝图.md
 ---
 
 # ADR: YiKnowledge 每个目录强制 INDEX.md + README.md 双入口机制
@@ -43,7 +43,7 @@ related:
 结果：
 1. **人类找内容要 3-5 跳**：新人进入 `engineer/`，如果只有 README 没表格索引，要逐个点子目录看名字才能知道"CodeReview 指南在哪"
 2. **AI RAG 召回边界模糊**：没有明确的"INDEX 结构化导航"和"README 语义锚点"双信号，RAG 无法区分"这个目录的范围是什么（README）"和"这个目录下有什么文件（INDEX）"
-3. **Curator 审查无标准**：就绪检查清单（00004-治理-就绪检查清单.md）没写"新建子目录要不要加 INDEX/README"，Curator 凭感觉提醒
+3. **Curator 审查无标准**：就绪检查清单（0004-治理-就绪检查清单.md）没写"新建子目录要不要加 INDEX/README"，Curator 凭感觉提醒
 
 为什么现在定：
 - Q3 Curator OKR `cur-001 loop-retrievability`（goal.md 第 6 条）要求 2 跳内可检索率从 60%→95%，没有双入口机制做不到
@@ -124,6 +124,6 @@ related:
 
 **落地计划：**
 1. 立即：本任务要求的新建文件所在目录（curator/COLLABORATION.md、engineer/run/05-06、leader/decisions/yipot-06-10/yiknowledge-06-10）所在目录，双入口检查，缺失的记在待办里
-2. 1 周内：就绪检查清单 00004-治理-就绪检查清单.md 新增双入口 2 题门禁（type 正确吗、必含章节齐吗）
+2. 1 周内：就绪检查清单 0004-治理-就绪检查清单.md 新增双入口 2 题门禁（type 正确吗、必含章节齐吗）
 3. 2 周内：启动 18 个目录双入口补写，Curator 分配到各角色 Reviewer 并行写
 4. 月度审查：Curator 扫所有 `rg '^type: index' -g '**/README.md'` 反模式（README 错写为 index type），反之亦然

@@ -24,14 +24,14 @@ roles: [executive, product, leader, engineer, sre, aier, curator]
 
 | 阶段 | 记录 | 产出角色 | 关键产物 |
 |---|---|---|---|
-| 需求评审 | [01-编排-requirement-review.md](./01-编排-requirement-review.md) | product | PRD + 6 验收标准（AC1~AC6）+ WSJF |
-| 技术评审 | [02-编排-technical-review.md](./02-编排-technical-review.md) | leader | 3 条 ADR（记录载体 / 页面结构 / KB 目录规范） |
-| 代码审查 | [03-编排-code-review.md](./03-编排-code-review.md) | leader | 5 维度审查（架构/类型/安全/性能/可维护）+ 5 条具体意见 |
-| 构建调试 | [04-编排-build-debug.md](./04-编排-build-debug.md) | engineer | 5 条问题→修复→验证 + 门禁 |
-| 测试报告 | [05-编排-test-report.md](./05-编排-test-report.md) | sre | typecheck/build 门禁 + 数据契约 + 手动验证 |
-| 部署 | [06-编排-deployment.md](./06-编排-deployment.md) | sre | 5 步部署流水线 + 5 项验证 + 回滚预案 |
-| 上线记录 | [07-编排-launch-record.md](./07-编排-launch-record.md) | sre | artifact/version/env + 审批 |
-| 复盘总结 | [08-编排-retrospective.md](./08-编排-retrospective.md) | executive | 5 Keep + 4 Improve + 5 行动项 |
+| 需求评审 | [0001-编排-requirement-review.md](../loop-002-template-orchestration/001-编排-requirement-review.md) | product | PRD + 6 验收标准（AC1~AC6）+ WSJF |
+| 技术评审 | [0002-编排-technical-review.md](../loop-002-template-orchestration/002-编排-technical-review.md) | leader | 3 条 ADR（记录载体 / 页面结构 / KB 目录规范） |
+| 代码审查 | [0003-编排-code-review.md](../loop-002-template-orchestration/003-编排-code-review.md) | leader | 5 维度审查（架构/类型/安全/性能/可维护）+ 5 条具体意见 |
+| 构建调试 | [0004-编排-build-debug.md](../loop-002-template-orchestration/004-编排-build-debug.md) | engineer | 5 条问题→修复→验证 + 门禁 |
+| 测试报告 | [0005-编排-test-report.md](../loop-002-template-orchestration/005-编排-test-report.md) | sre | typecheck/build 门禁 + 数据契约 + 手动验证 |
+| 部署 | [0006-编排-deployment.md](../loop-002-template-orchestration/006-编排-deployment.md) | sre | 5 步部署流水线 + 5 项验证 + 回滚预案 |
+| 上线记录 | [0007-编排-launch-record.md](../loop-002-template-orchestration/007-编排-launch-record.md) | sre | artifact/version/env + 审批 |
+| 复盘总结 | [0008-编排-retrospective.md](../loop-002-template-orchestration/008-编排-retrospective.md) | executive | 5 Keep + 4 Improve + 5 行动项 |
 
 ## 7 角色结果
 
@@ -56,9 +56,9 @@ roles: [executive, product, leader, engineer, sre, aier, curator]
 ## 诚实边界
 
 - **闭环完成数 = 1 / 3**：本季度目标 3 条闭环，loop-001 是第一条，后续 loop-002 / loop-003 沿用同一套模板与机制逐条续跑。
-- 浏览器渲染层面（`pnpm dev` 打开新页的视觉回归）未做自动化验证，仅做静态 typecheck/build 门禁 + 数据契约校验（详见 [05-编排-test-report.md](./05-编排-test-report.md) 手动验证节）。
+- 浏览器渲染层面（`pnpm dev` 打开新页的视觉回归）未做自动化验证，仅做静态 typecheck/build 门禁 + 数据契约校验（详见 [0005-编排-test-report.md](../loop-002-template-orchestration/005-编排-test-report.md) 手动验证节）。
 - OKR 数据层（`okrData.ts`）的日/周叙事（`roleDailyDataMap` / `roleWeeklyDataMap`）保留为执行现场记录；**硬数据**（goals 进度 / metrics current / checklist done）已全部同步为「loop-001 已完成」的真实状态。
-- 无自动化测试覆盖（项目级决策），loop-002 将评估 Vitest 接入（详见 [08-编排-retrospective.md](./08-编排-retrospective.md) 行动项）。
+- 无自动化测试覆盖（项目级决策），loop-002 将评估 Vitest 接入（详见 [0008-编排-retrospective.md](../loop-002-template-orchestration/008-编排-retrospective.md) 行动项）。
 
 ## 复用
 

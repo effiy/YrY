@@ -41,13 +41,13 @@ related:
 
 | 场景 | 推荐入口 | 配套框架 |
 |---|---|---|
-| 我要做年度战略规划 | [roadmap/001-路线图-年度战略规划.md](./roadmap/001-路线图-年度战略规划.md) | strategy/ 下全部框架 |
-| 我需要分析竞争对手 | [industry/003-行业-竞品分析模板.md](./industry/003-行业-竞品分析模板.md) | SWOT + 波特五力 |
-| 我要评估新市场机会 | [strategy/007-战略-波特五力模型.md](./strategy/007-战略-波特五力模型.md) + [strategy/001-战略-蓝海战略.md](./strategy/001-战略-蓝海战略.md) | VRIO + 商业模式画布 |
-| 我要设定公司 OKR | [roadmap/003-路线图-组织OKR追踪.md](./roadmap/003-路线图-组织OKR追踪.md) | Now/Next/Later 路线图 |
-| 监管新规出来了 | [strategy/004-战略-处理监管变更.md](./strategy/004-战略-处理监管变更.md) | 数据合规 + 数据留存 |
-| 我要分配预算和人力 | [roadmap/002-路线图-人员预算规划.md](./roadmap/002-路线图-人员预算规划.md) | 年度规划 + OKR 追踪 |
-| 我要安排阅读计划 | [reading-list/001-阅读-阅读清单.md](./reading-list/001-阅读-阅读清单.md) | 读书笔记模板 |
+| 我要做年度战略规划 | [roadmap/0001-路线图-年度战略规划.md](./roadmap/001-路线图-年度战略规划.md) | strategy/ 下全部框架 |
+| 我需要分析竞争对手 | [industry/0003-行业-竞品分析模板.md](./industry/003-行业-竞品分析模板.md) | SWOT + 波特五力 |
+| 我要评估新市场机会 | [strategy/0007-战略-波特五力模型.md](./strategy/007-战略-波特五力模型.md) + [strategy/0001-战略-蓝海战略.md](./strategy/001-战略-蓝海战略.md) | VRIO + 商业模式画布 |
+| 我要设定公司 OKR | [roadmap/0003-路线图-组织OKR追踪.md](./roadmap/003-路线图-组织OKR追踪.md) | Now/Next/Later 路线图 |
+| 监管新规出来了 | [strategy/0004-战略-处理监管变更.md](./strategy/004-战略-处理监管变更.md) | 数据合规 + 数据留存 |
+| 我要分配预算和人力 | [roadmap/0002-路线图-人员预算规划.md](./roadmap/002-路线图-人员预算规划.md) | 年度规划 + OKR 追踪 |
+| 我要安排阅读计划 | [reading-list/0001-阅读-阅读清单.md](./reading-list/001-阅读-阅读清单.md) | 读书笔记模板 |
 
 ### 按角色定位
 
@@ -66,7 +66,7 @@ related:
 - [../leader/capacity/](../leader/capacity/) — 预算规划驱动容量管理
 
 ### 向上游（其他角色 → 高管角色）
-- [../engineer/run/005-运行-了解竞品.md](../engineer/run/005-运行-了解竞品.md) — 工程师通过竞品分析了解市场
+- [../engineer/run/0005-运行-了解竞品.md](../engineer/run/005-运行-了解竞品.md) — 工程师通过竞品分析了解市场
 - [../product/discovery/](../product/discovery/) — 产品发现需要战略输入
 
 ## 维护指引

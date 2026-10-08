@@ -17,9 +17,9 @@ acceptance_criteria:
   - "包含 YiAi Agent 的专项约束和安全边界"
   - "定义工具使用的安全边界"
 related:
-  - ../001-方法-Agent架构模式.md
-  - ../003-方法-Agent-Harness插件架构.md
-  - ./003-提示词-代码审查.md
+  - ../0001-方法-Agent架构模式.md
+  - ../0003-方法-Agent-Harness插件架构.md
+  - ./0003-提示词-代码审查.md
 ---
 
 # Agent 工具调用 Prompt

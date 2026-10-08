@@ -17,8 +17,8 @@ acceptance_criteria:
   - "包含 YrY 关键场景的 runbook 示例"
   - "区分自动化和手动操作"
 related:
-  - ./005-风险-事故指挥指南.md
-  - ./002-风险-事后复盘.md
+  - ./0005-风险-事故指挥指南.md
+  - ./0002-风险-事后复盘.md
   - ../../sre/incident-response/
 ---
 

@@ -19,7 +19,7 @@ related:
   - ./INDEX.md
   - ../INDEX.md
   - ../README.md
-  - ../curator/governance/00001-治理-知识健康看板.md
+  - ../curator/governance/0001-治理-知识健康看板.md
 ---
 
 # 项目知识中心

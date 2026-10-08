@@ -17,13 +17,13 @@ acceptance_criteria:
   - "端口占用时自动回退到 60829-60832 范围扫描，同时通知用户"
 related:
   - ./README.md
-  - ./yipot-006-决策-托盘Accessory.md
-  - ../../curator/templates/00001-模板-ADR模板.md
+  - ./yipot-yipot-yipot-006-决策-托盘Accessory.md
+  - ../../curator/templates/0001-模板-ADR模板.md
   - ../../projects/yipot/prds/2026-09/14-prd-剪切板监听.md
-  - ../../projects/yipot/okrs/2026-Q3/goal-003-桌面集成.md
-  - ../../engineer/build/002-构建-API设计模式.md
-  - ../../sre/release/02-发布-热修复发布.md
-  - ../../curator/governance/00002-治理-治理规范.md
+  - ../../projects/yipot/okrs/2026-Q3/goal-goal-goal-003-桌面集成.md
+  - ../../engineer/build/0002-构建-API设计模式.md
+  - ../../sre/release/0002-发布-热修复发布.md
+  - ../../curator/governance/0002-治理-治理规范.md
 ---
 
 # ADR: YiPot tiny_http 本地服务端口固定为 60828
@@ -54,7 +54,7 @@ thread::spawn(move || {
 2. **外部集成需要用户手动填端口**：PopClip 扩展 `.scripts/popclip/Pot.sh`、SnipDo 配置 `.scripts/snipdo/yipot.json` 都要求用户填写 YiPot 端口，新用户配置成本高
 3. **端口可被用户改到 1-65535 任意值**：`get("server_port")` 无校验，有用户改到 80/443 这种特权端口（无权限启动失败）或 0（非法）
 
-为什么现在必须定：Q3 goal-003-桌面集成.md 要推 PopClip + SnipDo + 快捷短语 3 个外部集成，如果端口不固定，每个集成的安装说明都要加"先去 YiPot 设置看端口号再填回来"——用户流失率 ≥ 50%。
+为什么现在必须定：Q3 goal-goal-goal-003-桌面集成.md 要推 PopClip + SnipDo + 快捷短语 3 个外部集成，如果端口不固定，每个集成的安装说明都要加"先去 YiPot 设置看端口号再填回来"——用户流失率 ≥ 50%。
 
 ---
 

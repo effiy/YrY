@@ -20,7 +20,7 @@ type: test
 # TTS + 生词本 Provider — 测试方案
 
 > 来源模块：[83-prd-task-TTS生词本Provider适配器](../../devs/2026-09/83-prd-task-TTS生词本Provider适配器.md)
-> 父测试方案：[95-prd-test-YiAi后端集成](./95-prd-test-YiAi后端集成.md)
+> 父测试方案：[95-prd-test-YiAi后端集成](./095-prd-test-YiAi后端集成.md)
 
 ---
 

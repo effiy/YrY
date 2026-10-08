@@ -18,9 +18,9 @@ acceptance_criteria:
   - "定义流水线健康度指标"
 related:
   - ./README.md
-  - ./007-可观测-搭建可观测性.md
-  - ../release/004-发布-发布流程.md
-  - ../release/001-发布-金丝雀发布.md
+  - ./0007-可观测-搭建可观测性.md
+  - ../release/0004-发布-发布流程.md
+  - ../release/0001-发布-金丝雀发布.md
 ---
 
 # CI/CD 流水线设计

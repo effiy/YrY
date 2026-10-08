@@ -18,8 +18,8 @@ owner: PM YiAi
 project: YiAi
 progress: 100
 related:
-  - ../../../discovery/001-发现-编写PRD.md
-  - ../../../frameworks/005-框架-OKR设计摘要.md
+  - ../../../discovery/0001-发现-编写PRD.md
+  - ../../../frameworks/0005-框架-OKR设计摘要.md
 ---
 
 # 需求评审可闭环

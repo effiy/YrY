@@ -24,11 +24,11 @@ related:
 
 | 文档 | 用途 | 适合人群 |
 |---|---|---|
-| [01-架构设计](./01-项目-架构设计.md) | 技术栈全景、分层架构、关键组件（ProTable/Router/Auth/HTTP）、数据流 | 所有开发者 |
-| [02-开发规范](./02-项目-开发规范.md) | 命名约定、标准模式（ProTable/v-auth/RequestHttp）、RPC 契约、SSE 守卫 | 开发者 |
-| [03-功能模块](./03-项目-功能模块.md) | 20+ 视图域、18 个 API 模块、11 个 Pinia Store 的完整清单 | 开发者 |
-| [04-流水线闭环](./04-项目-流水线闭环.md) | 需求到部署的完整页面流程——5 个流水线阶段 + 闭环反馈 | PM + 开发者 |
-| [05-新人入职指南](./05-新人入职指南-5天上手路线图.md) | **5 天上手路线图**（Day1 启动 → Day5 提 PR） | 新人 / Mentor |
+| [01-架构设计](./001-项目-架构设计.md) | 技术栈全景、分层架构、关键组件（ProTable/Router/Auth/HTTP）、数据流 | 所有开发者 |
+| [02-开发规范](./002-项目-开发规范.md) | 命名约定、标准模式（ProTable/v-auth/RequestHttp）、RPC 契约、SSE 守卫 | 开发者 |
+| [03-功能模块](./003-项目-功能模块.md) | 20+ 视图域、18 个 API 模块、11 个 Pinia Store 的完整清单 | 开发者 |
+| [04-流水线闭环](./004-项目-流水线闭环.md) | 需求到部署的完整页面流程——5 个流水线阶段 + 闭环反馈 | PM + 开发者 |
+| [05-新人入职指南](./005-新人入职指南-5天上手路线图.md) | **5 天上手路线图**（Day1 启动 → Day5 提 PR） | 新人 / Mentor |
 
 ## 用户故事
 
@@ -42,26 +42,26 @@ related:
 
 | ADR | 状态 | 说明 |
 |---|---|---|
-| [AiCR 阶段移植](../../../leader/decisions/aicr-phase-port.md) | 已实施 | AICR 功能从 YiWeb 到 YiVad 的移植 |
-| [Vitest 引入](../../../leader/decisions/vitest-introduction.md) | 规划中 | 从 0 测试到 Vitest 测试框架的引入路线 |
-| [Vite 到 Rsbuild 迁移](../../../leader/decisions/vite-to-rsbuild-migration.md) | 已实施 | 构建工具从 Vite 迁移到 Rsbuild |
+| [AiCR 阶段移植](../../../../leader/decisions/yivad-001-决策-AICR阶段移植.md) | 已实施 | AICR 功能从 YiWeb 到 YiVad 的移植 |
+| [Vitest 引入](../../../../leader/decisions/yivad-003-决策-Vitest引入.md) | 规划中 | 从 0 测试到 Vitest 测试框架的引入路线 |
+| [Vite 到 Rsbuild 迁移](../../../../leader/decisions/yivad-002-决策-Vite到Rsbuild迁移.md) | 已实施 | 构建工具从 Vite 迁移到 Rsbuild |
 
 ## 跨项目链接
 
 - [YiVad CLAUDE.md](../../../../YiVad/CLAUDE.md) — 实时项目档案（模块边界、约束、近期变更）
-- [RPC 协议](../../build/006-构建-跨项目RPC协议设计.md) — RPC 信封规范、参数名契约、已知 Bug 模式
-- [产品管理](../../../product/projects/yivad/project-management.md) — 迭代节奏、交付物
-- [入职指南](../../run/0003-入职-YiVad入职.md) — 新人第一天快速上手
+- [RPC 协议](../../../../engineer/build/006-构建-跨项目RPC协议设计.md) — RPC 信封规范、参数名契约、已知 Bug 模式
+- [产品管理](../../../../product/projects/yivad/001-项目-管理.md) — 迭代节奏、交付物
+- [入职指南](../../../../engineer/run/003-入职-YiVad入职.md) — 新人第一天快速上手
 
 ## 快速导航
 
 ### 我是 YiVad 新人开发者
 
-1. 先读 [入职指南](../../run/0003-入职-YiVad入职.md) 或 **[5 天上手路线图](./05-新人入职指南-5天上手路线图.md)** 完成环境搭建
-2. 再读 [架构设计](./01-项目-架构设计.md) 理解 ProTable/Router/Auth 核心组件
-3. 然后读 [开发规范](./02-项目-开发规范.md) 了解关键约束（ProTable 标准、v-auth 权限、SSE 守卫）
-4. 最后查 [功能模块](./03-项目-功能模块.md) 定位你要修改的视图或 API 模块
+1. 先读 [入职指南](../../../run/003-入职-YiVad入职.md) 或 **[5 天上手路线图](./005-新人入职指南-5天上手路线图.md)** 完成环境搭建
+2. 再读 [架构设计](./001-项目-架构设计.md) 理解 ProTable/Router/Auth 核心组件
+3. 然后读 [开发规范](./002-项目-开发规范.md) 了解关键约束（ProTable 标准、v-auth 权限、SSE 守卫）
+4. 最后查 [功能模块](./003-项目-功能模块.md) 定位你要修改的视图或 API 模块
 
 ### 我想了解 PM 模块的页面流程
 
-读 [04-流水线闭环](./04-项目-流水线闭环.md) —— 从 Issues（需求）到 Bugs（反馈）的完整五阶段闭环。
+读 [04-流水线闭环](./004-项目-流水线闭环.md) —— 从 Issues（需求）到 Bugs（反馈）的完整五阶段闭环。

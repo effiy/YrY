@@ -24,10 +24,10 @@ related:
 
 | 文档 | 用途 | 适合人群 |
 |---|---|---|
-| [01-架构设计](./01-项目-架构设计.md) | 双世界边界、四层 API、CDN 注入、四入口构建 | 所有开发者 |
-| [02-开发规范](./02-项目-开发规范.md) | 命名约定、关键陷阱（双世界/CSP/构建）、RPC 契约、国际化 | 开发者 |
-| [03-功能模块](./03-项目-功能模块.md) | Popup/聊天窗口/Content Script/API 服务/共享模块清单 | 开发者 |
-| [04-新人入职指南](./04-新人入职指南-5天上手路线图.md) | **5 天上手路线图**（Day1 扩展加载 → Day5 提 PR） | 新人 / Mentor |
+| [01-架构设计](./001-项目-架构设计.md) | 双世界边界、四层 API、CDN 注入、四入口构建 | 所有开发者 |
+| [02-开发规范](./002-项目-开发规范.md) | 命名约定、关键陷阱（双世界/CSP/构建）、RPC 契约、国际化 | 开发者 |
+| [03-功能模块](./003-项目-功能模块.md) | Popup/聊天窗口/Content Script/API 服务/共享模块清单 | 开发者 |
+| [04-新人入职指南](./004-新人入职指南-5天上手路线图.md) | **5 天上手路线图**（Day1 扩展加载 → Day5 提 PR） | 新人 / Mentor |
 
 ## 用户故事
 
@@ -39,25 +39,25 @@ related:
 
 | ADR | 状态 | 说明 |
 |---|---|---|
-| [Chrome MV3 双世界边界](../../../leader/decisions/chrome-mv3-dual-world.md) | 已实施 | ISOLATED World + MAIN World 的通信架构 |
-| [Biome Lint/Format](../../../leader/decisions/biome-lint-format.md) | 已实施 | Lint 和格式化工具链选型 |
-| [AiCR 移植](../../../leader/decisions/aicr-port.md) | 已实施 | AI 代码审查功能从 YiWeb 移植至 YiPet |
-| [React 18 + Ant Design 迁移](../../../leader/decisions/react-18-antd-migration.md) | 已实施 | UI 技术栈现代化迁移 |
-| [四层 API 层](../../../leader/decisions/four-tier-api-layer.md) | 已实施 | Client → Endpoints → Types → Services 的分层设计 |
-| [跨项目 Hub](../../../leader/decisions/cross-project-hub.md) | 已实施 | 浏览器扩展作为多项目集成中心 |
+| [Chrome MV3 双世界边界](../../../../leader/decisions/yipet-003-决策-Chrome-MV3双世界架构.md) | 已实施 | ISOLATED World + MAIN World 的通信架构 |
+| [Biome Lint/Format](../../../../leader/decisions/yipet-002-决策-Biome代码检查与格式化.md) | 已实施 | Lint 和格式化工具链选型 |
+| [AiCR 移植](../../../../leader/decisions/yipet-001-决策-AICR移植.md) | 已实施 | AI 代码审查功能从 YiWeb 移植至 YiPet |
+| [React 18 + Ant Design 迁移](../../../../leader/decisions/yipet-006-决策-React18-Antd迁移.md) | 已实施 | UI 技术栈现代化迁移 |
+| [四层 API 层](../../../../leader/decisions/yipet-005-决策-四层API架构.md) | 已实施 | Client → Endpoints → Types → Services 的分层设计 |
+| [跨项目 Hub](../../../../leader/decisions/yipet-004-决策-跨项目Hub.md) | 已实施 | 浏览器扩展作为多项目集成中心 |
 
 ## 跨项目链接
 
 - [YiPet CLAUDE.md](../../../../YiPet/CLAUDE.md) — 实时项目档案（模块边界、约束、近期变更）
-- [RPC 协议](../../build/006-构建-跨项目RPC协议设计.md) — RPC 信封规范、参数名契约、已知 Bug 模式
-- [产品管理](../../../product/projects/yipet/project-management.md) — 迭代节奏、交付物
-- [入职指南](../../run/0002-入职-YiPet入职.md) — 新人第一天快速上手
+- [RPC 协议](../../../../engineer/build/006-构建-跨项目RPC协议设计.md) — RPC 信封规范、参数名契约、已知 Bug 模式
+- [产品管理](../../../../product/projects/yipet/001-项目-管理.md) — 迭代节奏、交付物
+- [入职指南](../../../../engineer/run/002-入职-YiPet入职.md) — 新人第一天快速上手
 
 ## 快速导航
 
 ### 我是 YiPet 新人开发者
 
-1. 先读 [入职指南](../../run/0002-入职-YiPet入职.md) 或 [5 天上手路线图](./04-新人入职指南-5天上手路线图.md) 完成环境搭建和扩展加载
-2. 再读 [架构设计](./01-项目-架构设计.md) 理解双世界边界的核心概念
-3. 然后读 [开发规范](./02-项目-开发规范.md) 了解关键陷阱（`--mode production`、CDN catalog、双世界 API 隔离）
-4. 最后查 [功能模块](./03-项目-功能模块.md) 定位你要修改的模块
+1. 先读 [入职指南](../../../run/002-入职-YiPet入职.md) 或 [5 天上手路线图](./004-新人入职指南-5天上手路线图.md) 完成环境搭建和扩展加载
+2. 再读 [架构设计](./001-项目-架构设计.md) 理解双世界边界的核心概念
+3. 然后读 [开发规范](./002-项目-开发规范.md) 了解关键陷阱（`--mode production`、CDN catalog、双世界 API 隔离）
+4. 最后查 [功能模块](./003-项目-功能模块.md) 定位你要修改的模块

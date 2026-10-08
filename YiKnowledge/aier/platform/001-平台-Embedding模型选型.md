@@ -17,10 +17,10 @@ acceptance_criteria:
   - "基于语言和规模的选择决策树"
   - "覆盖 YiAi 当前的 Embedding 配置"
 related:
-  - ./002-平台-LLM对比.md
-  - ./003-平台-向量数据库选型.md
-  - ../foundations/002-基础-RAG设计模式.md
-  - ../foundations/001-基础-LLM基础.md
+  - ./0002-平台-LLM对比.md
+  - ./0003-平台-向量数据库选型.md
+  - ../foundations/0002-基础-RAG设计模式.md
+  - ../foundations/0001-基础-LLM基础.md
 ---
 
 # Embedding 模型选型指南

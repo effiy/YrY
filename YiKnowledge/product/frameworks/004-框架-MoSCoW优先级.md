@@ -13,8 +13,8 @@ review_cycle: quarterly
 roles: [product]
 benefit: "产品经理使用 MoSCoW 方法对功能进行四分类排期，强制做出明确的范围取舍决策，避免'什么都要做但什么都做不完'"
 related:
-  - ./006-框架-RICE-ICE优先级.md
-  - ../delivery/001-交付-运作Sprint.md
+  - ./0006-框架-RICE-ICE优先级.md
+  - ../delivery/0001-交付-运作Sprint.md
 ---
 
 # MoSCoW 优先级排序

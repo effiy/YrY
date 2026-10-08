@@ -42,7 +42,7 @@ flowchart LR
 - [x] KR2：抽取 6 个共享 composables（useDetailTabs, useActivityTimeLine 等）
 - [x] KR3：类型安全和 lint 零错误
 
-**关联文件：** [goal-001-架构重构.md](./goal-001-架构重构.md)
+**关联文件：** [goal-goal-goal-001-架构重构.md](./goal-goal-goal-001-架构重构.md)
 
 ### yivad-002：文档职责分离与知识关联（70%）
 
@@ -53,7 +53,7 @@ flowchart LR
 - [ ] KR2：建立文档→代码的追溯链接（进行中）
 - [x] KR3：CLAUDE.md 精简为模块边界 + 约束 + 近期变更
 
-**关联文件：** [goal-002-文档分离.md](./goal-002-文档分离.md)
+**关联文件：** [goal-goal-goal-002-文档分离.md](./goal-goal-goal-002-文档分离.md)
 
 ### yivad-003：全项目视图优化与体验提升（85%）
 
@@ -64,7 +64,7 @@ flowchart LR
 - [x] KR2：数据校验和错误处理覆盖所有表单
 - [ ] KR3：国际化覆盖率达到 100%（进行中）
 
-**关联文件：** [goal-003-视图优化与体验提升.md](./goal-003-视图优化与体验提升.md)
+**关联文件：** [goal-goal-goal-003-视图优化与体验提升.md](./goal-goal-goal-003-视图优化与体验提升.md)
 
 ## 三、关联角色 OKR
 

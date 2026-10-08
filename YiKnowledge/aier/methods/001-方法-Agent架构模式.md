@@ -19,10 +19,10 @@ acceptance_criteria:
   - "覆盖工具设计的 4 种模式：泛型工具、Schema-as-Context、Read-before-Write、Orphan Guard"
   - "覆盖 Thinker/Doer 双模转换逻辑"
 related:
-  - ./003-方法-Agent-Harness插件架构.md
-  - ./002-方法-Agent评估.md
-  - ../foundations/001-基础-LLM基础.md
-  - ../platform/002-平台-LLM对比.md
+  - ./0003-方法-Agent-Harness插件架构.md
+  - ./0002-方法-Agent评估.md
+  - ../foundations/0001-基础-LLM基础.md
+  - ../platform/0002-平台-LLM对比.md
   - ../../engineer/learn/projects/yiai/
 ---
 

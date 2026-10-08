@@ -14,9 +14,9 @@ review_cycle: quarterly
 roles: [executive, product, leader]
 benefit: "快速评估内部优势劣势和外部机会威胁，建立战略基线"
 related:
-  - ./012-战略-VRIO框架.md
-  - ./007-战略-波特五力模型.md
-  - ./008-战略-产品战略框架.md
+  - ./0012-战略-VRIO框架.md
+  - ./0007-战略-波特五力模型.md
+  - ./0008-战略-产品战略框架.md
   - ../README.md
   - ../INDEX.md
 ---

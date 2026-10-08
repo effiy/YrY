@@ -21,7 +21,7 @@ acceptance_criteria:
 related:
   - ../ship/0003-交付-数据迁移.md
   - ../projects/0001-项目-YiAi项目.md
-  - ./006-构建-跨项目RPC协议设计.md
+  - ./0006-构建-跨项目RPC协议设计.md
 ---
 
 # MongoDB 模式设计指南

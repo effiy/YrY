@@ -20,10 +20,10 @@ related:
   - ../../INDEX.md
   - ../../README.md
   - ../../curator/INDEX.md
-  - ../../curator/governance/00001-治理-知识健康看板.md
-  - ../../curator/governance/00002-治理-治理规范.md
-  - ../../curator/governance/00004-治理-就绪检查清单.md
-  - ../../aier/foundations/02-基础-RAG设计模式.md
+  - ../../curator/governance/0001-治理-知识健康看板.md
+  - ../../curator/governance/0002-治理-治理规范.md
+  - ../../curator/governance/0004-治理-就绪检查清单.md
+  - ../../aier/foundations/0002-基础-RAG设计模式.md
   - ../../projects/yiknowledge/okrs/2026-Q4/README.md
 ---
 
@@ -41,11 +41,11 @@ YiKnowledge 是 5 项目统一知识底座：以 `Markdown + YAML Frontmatter` �
 cd YiKnowledge
 
 # 1. 了解目录结构与治理规范
-cat curator/governance/00002-治理-治理规范.md
-cat curator/governance/00004-治理-就绪检查清单.md
+cat curator/governance/0002-治理-治理规范.md
+cat curator/governance/0004-治理-就绪检查清单.md
 
 # 2. 新建专业文档（复制知识叶子模板）
-cp curator/templates/00002-模板-知识叶子模板.md \
+cp curator/templates/0002-模板-知识叶子模板.md \
    projects/<yours>/<topic>/YYYY-MM/NN-prd-<主题>.md
 
 # 3. 填写 Frontmatter 15 强制字段（见下文规范）
@@ -92,14 +92,14 @@ YiKnowledge/
 │
 ├── curator/                  # 治理中枢（Curator 工作域）
 │   ├── governance/           # 四阶段治理文件
-│   │   ├── 00001-治理-知识健康看板.md      # 8 项核心指标仪表盘
-│   │   ├── 00002-治理-治理规范.md          # 四阶段定义 + SLA
-│   │   ├── 00003-治理-收件箱.md            # 待认领文档池
-│   │   ├── 00004-治理-就绪检查清单.md      # 15 字段 + 质量门槛
-│   │   ├── 00005-治理-审查日志.md          # Review 留痕
-│   │   ├── 00006-治理-隐性知识待办.md      # 专家经验沉淀池
-│   │   ├── 00007-治理-分类处理.md          # 分类/打标/归属
-│   │   └── 00008-治理-操作速查卡.md        # Curator 口袋指南
+│   │   ├── 0001-治理-知识健康看板.md      # 8 项核心指标仪表盘
+│   │   ├── 0002-治理-治理规范.md          # 四阶段定义 + SLA
+│   │   ├── 0003-治理-收件箱.md            # 待认领文档池
+│   │   ├── 0004-治理-就绪检查清单.md      # 15 字段 + 质量门槛
+│   │   ├── 0005-治理-审查日志.md          # Review 留痕
+│   │   ├── 0006-治理-隐性知识待办.md      # 专家经验沉淀池
+│   │   ├── 0007-治理-分类处理.md          # 分类/打标/归属
+│   │   └── 0008-治理-操作速查卡.md        # Curator 口袋指南
 │   ├── templates/            # 9 类文档模板（ADR/PRD/叶子/会议/1v1/回顾 等）
 │   ├── archive/              # 已归档文档（只读，≥180 天未触碰）
 │   ├── diagrams/             # 知识地图、目录蓝图、看板索引、用户旅程
@@ -192,7 +192,7 @@ YiKnowledge/
 | 8 | `roles` | string[] | 目标角色：`engineer` / `product` / `leader` / `curator` / `executive` / `sre` / `architect` | `[engineer]` |
 | 9 | `benefit` | string | **一句话业务价值**（≤80 字），明确收益 + 对象 | `"YiPot 桌面翻译应用完整开发参考：快速开始、架构、Commands、API、配置"` |
 | 10 | `acceptance_criteria` | string[] | **≥3 条可量化验收标准**，SMART 原则 | `- "新开发者 10 分钟启动"` / `- "Tauri invoke 契约明确"` |
-| 11 | `related` | string[] | **≥3 条真实相对路径**（用 `../../`，不能写占位符），grep 校验文件存在 | `- ../../curator/governance/00001-治理-知识健康看板.md` |
+| 11 | `related` | string[] | **≥3 条真实相对路径**（用 `../../`，不能写占位符），grep 校验文件存在 | `- ../../curator/governance/0001-治理-知识健康看板.md` |
 | 12 | `source` | string enum | 来源：`internal`（内部原创） / `external`（外部整理） / `mixed` | `internal` |
 | 13 | `lifecycle` | string enum | 项目/文档所处：`active` / `maintenance` / `sunset` / `incubating` | `active` |
 | 14 | `aliases` | string[] | 别名/反向链接关键词，RAG 召回增强（可选但推荐，强制字段集内占位空数组也可） | `[yipot-knowledge, tauri-desktop-translator]` |
@@ -202,7 +202,7 @@ YiKnowledge/
 
 ## 健康仪表盘引用
 
-详见 [curator/governance/00001-治理-知识健康看板.md](../../curator/governance/00001-治理-知识健康看板.md)，YiKnowledge 实时监控 8 项核心指标：
+详见 [curator/governance/0001-治理-知识健康看板.md](../../curator/governance/001-治理-知识健康看板.md)，YiKnowledge 实时监控 8 项核心指标：
 
 | # | 指标名 | 目标值 | 计算口径 | 数据来源 |
 |---|--------|--------|---------|---------|
@@ -318,7 +318,7 @@ YiAi Watcher 是 YiKnowledge → RAG 向量库的增量同步通道，基于 `in
 ### Q1. 新建文档 Frontmatter 写完后，如何快速自检 15 字段齐全？
 本地跑 Lint 脚本（依赖 Node 18+）：
 ```bash
-node curator/.scripts/lint-frontmatter.mjs engineer/projects/002-项目-YiKnowledge项目.md
+node curator/.scripts/lint-frontmatter.mjs engineer/projects/0002-项目-YiKnowledge项目.md
 # 输出 OK / 缺失字段清单 / related 不存在的文件
 ```
 CI 中已接入，PR 不合规则 `blocking`。
@@ -348,7 +348,7 @@ while read p; do [ -f "$p" ] && echo "OK $p" || echo "MISSING $p"; done \
 然后在 YiAi 引用模板中写 `related`：`#section-frontmatter-spec`，Watcher 会解析锚点写入向量 payload。
 
 ### Q6. 同一知识同时属于 engineer + product，放哪个顶层目录？tags 怎么打？
-**单一事实源原则**：以 **编写者主要视角** 选主目录，另一域通过 `related` 链接 + 双 tags 解决。例：API 设计主归 `engineer/build/002-构建-API设计模式.md`，同时 `tags: [engineer, product, api-design]`，`product/discovery/01-发现-编写PRD.md` → `related` 回链。
+**单一事实源原则**：以 **编写者主要视角** 选主目录，另一域通过 `related` 链接 + 双 tags 解决。例：API 设计主归 `engineer/build/0002-构建-API设计模式.md`，同时 `tags: [engineer, product, api-design]`，`product/discovery/0001-发现-编写PRD.md` → `related` 回链。
 
 ### Q7. 文档敏感（如内部定价、人员 1v1），不想入 RAG 索引怎么办？
 Frontmatter 加可选开关：`index: false`（第 16 字段，非强制但标准）。Watcher Diff Parser 识别 `index: false` 直接跳过分块，**不入向量库**。合规文件（个人 1v1、法务合同）**必须** 加此开关。

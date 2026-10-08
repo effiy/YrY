@@ -14,9 +14,9 @@ review_cycle: quarterly
 roles: [executive, leader]
 benefit: "识别哪些资源和能力提供可持续竞争优势 vs 临时优势或均势"
 related:
-  - ./010-战略-SWOT分析.md
-  - ./007-战略-波特五力模型.md
-  - ./008-战略-产品战略框架.md
+  - ./0010-战略-SWOT分析.md
+  - ./0007-战略-波特五力模型.md
+  - ./0008-战略-产品战略框架.md
   - ../README.md
   - ../INDEX.md
 ---

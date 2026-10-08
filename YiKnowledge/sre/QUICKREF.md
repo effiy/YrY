@@ -17,9 +17,9 @@ acceptance_criteria:
   - "命令可直接复制粘贴执行"
   - "包含服务依赖图和值班决策树"
 related:
-  - ./incident-response/004-事件-响应事件.md
-  - ./incident-response/009-事件-Runbook模板.md
-  - ./observability/007-可观测-搭建可观测性.md
+  - ./incident-response/0004-事件-响应事件.md
+  - ./incident-response/0009-事件-Runbook模板.md
+  - ./observability/0007-可观测-搭建可观测性.md
 ---
 
 # YrY 运维速查卡

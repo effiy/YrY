@@ -17,13 +17,13 @@ acceptance_criteria:
   - "main.rs 或 app.rs 增加 anyhow 错误捕获和统一日志（含 backtrace on nightly）
 related:
   - ./README.md
-  - ./yipot-008-决策-tiny_http端口60828.md
-  - ../../curator/templates/00001-模板-ADR模板.md
+  - ./yipot-yipot-yipot-008-决策-tiny_http端口60828.md
+  - ../../curator/templates/0001-模板-ADR模板.md
   - ../../projects/yipot/prds/2026-09/62-prd-健壮性强化.md
   - ../../projects/yipot/bugs/性能问题/001-剪切板CPU占用高.md
-  - ../../engineer/build/003-构建-调试排错指南.md
+  - ../../engineer/build/0003-构建-调试排错指南.md
   - ../../engineer/ship/0002-交付-加固供应链.md
-  - ../../curator/governance/00002-治理-治理规范.md
+  - ../../curator/governance/0002-治理-治理规范.md
 ---
 
 # ADR: YiPot Rust 错误处理统一使用 anyhow 替换当前 thiserror + Box<dyn Error>

@@ -74,15 +74,15 @@ related:
 
 | 我想要... | 去这里 |
 |---|---|
-| 理解 LLM 的核心概念和选型方法 | [foundations/001-基础-LLM基础.md](./foundations/001-基础-LLM基础.md) |
-| 设计或优化 RAG 检索策略 | [foundations/002-基础-RAG设计模式.md](./foundations/002-基础-RAG设计模式.md) |
-| 设计 Agent 架构和工具调用模式 | [methods/001-方法-Agent架构模式.md](./methods/001-方法-Agent架构模式.md) |
-| 评估 Agent 或 LLM 的输出质量 | [methods/002-方法-Agent评估.md](./methods/002-方法-Agent评估.md) / [methods/004-方法-LLM评估.md](./methods/004-方法-LLM评估.md) |
-| 写好 Prompt 或找 Prompt 模板 | [methods/005-方法-提示词工程.md](./methods/005-方法-提示词工程.md) / [prompts/](./prompts/) |
-| 对比和选择 LLM 模型 | [platform/002-平台-LLM对比.md](./platform/002-平台-LLM对比.md) |
-| 选择 Embedding 模型或向量数据库 | [platform/001-平台-Embedding模型选型.md](./platform/001-平台-Embedding模型选型.md) / [platform/003-平台-向量数据库选型.md](./platform/003-平台-向量数据库选型.md) |
-| 了解 AI 安全风险和防护措施 | [foundations/003-基础-AI安全与防护.md](./foundations/003-基础-AI安全与防护.md) |
-| 了解传统 ML 的适用场景 | [machine-learning/001-机器学习-传统机器学习模式.md](./machine-learning/001-机器学习-传统机器学习模式.md) |
+| 理解 LLM 的核心概念和选型方法 | [foundations/0001-基础-LLM基础.md](./foundations/001-基础-LLM基础.md) |
+| 设计或优化 RAG 检索策略 | [foundations/0002-基础-RAG设计模式.md](./foundations/002-基础-RAG设计模式.md) |
+| 设计 Agent 架构和工具调用模式 | [methods/0001-方法-Agent架构模式.md](./methods/001-方法-Agent架构模式.md) |
+| 评估 Agent 或 LLM 的输出质量 | [methods/0002-方法-Agent评估.md](./methods/002-方法-Agent评估.md) / [methods/0004-方法-LLM评估.md](./methods/004-方法-LLM评估.md) |
+| 写好 Prompt 或找 Prompt 模板 | [methods/0005-方法-提示词工程.md](./methods/005-方法-提示词工程.md) / [prompts/](./prompts/) |
+| 对比和选择 LLM 模型 | [platform/0002-平台-LLM对比.md](./platform/002-平台-LLM对比.md) |
+| 选择 Embedding 模型或向量数据库 | [platform/0001-平台-Embedding模型选型.md](./platform/001-平台-Embedding模型选型.md) / [platform/0003-平台-向量数据库选型.md](./platform/003-平台-向量数据库选型.md) |
+| 了解 AI 安全风险和防护措施 | [foundations/0003-基础-AI安全与防护.md](./foundations/003-基础-AI安全与防护.md) |
+| 了解传统 ML 的适用场景 | [machine-learning/0001-机器学习-传统机器学习模式.md](./machine-learning/001-机器学习-传统机器学习模式.md) |
 
 ## 跨角色引用
 

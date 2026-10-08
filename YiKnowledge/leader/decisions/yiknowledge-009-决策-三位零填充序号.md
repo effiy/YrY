@@ -17,13 +17,13 @@ acceptance_criteria:
   - "现有 200 文件中不规范命名的 50+ 份，3 个月内分批重命名迁移完成，所有 related 链接同步更新"
 related:
   - ./README.md
-  - ./yiknowledge-007-决策-7角色目录划分.md
-  - ./yiknowledge-008-决策-INDEX加README双入口.md
-  - ../../curator/governance/00002-治理-治理规范.md
-  - ../../curator/governance/00004-治理-就绪检查清单.md
-  - ../../curator/governance/00008-治理-操作速查卡.md
-  - ../../curator/templates/00-INDEX.md
-  - ../../aier/foundations/02-基础-RAG设计模式.md
+  - ./yiknowledge-yiknowledge-yiknowledge-007-决策-7角色目录划分.md
+  - ./yiknowledge-yiknowledge-yiknowledge-008-决策-INDEX加README双入口.md
+  - ../../curator/governance/0002-治理-治理规范.md
+  - ../../curator/governance/0004-治理-就绪检查清单.md
+  - ../../curator/governance/0008-治理-操作速查卡.md
+  - ../../curator/templates/000-INDEX.md
+  - ../../aier/foundations/0002-基础-RAG设计模式.md
 ---
 
 # ADR: YiKnowledge 文件名序号采用三位零填充（001/012/108）统一格式
@@ -35,10 +35,10 @@ related:
 ## 上下文
 
 当前 YiKnowledge 200+ 文件名序号格式混乱：
-- 有的是 `1-.../2-...` 一位数无零填充（例 engineer/build/ 下 `04-构建-xxx` vs `008-构建-实现SSE流式推送.md` 没序号）
+- 有的是 `1-.../2-...` 一位数无零填充（例 engineer/build/ 下 `04-构建-xxx` vs `0008-构建-实现SSE流式推送.md` 没序号）
 - 有的是 `01-.../02-...` 两位零填充（curator/templates/ `01-模板-ADR模板` 等）
 - 有的 `101-prd-xxx/105-prd-xxx` 三位但不是从 001 开始（projects/yiai/prds/2026-09/ 中跳号到 215 甚至 178、111）
-- 还有完全无序号的自由命名（README、INDEX、COLLABORATION 这种索引类除外正常，但 engineer/ship/007-构建-实现跨项目RPC调用.md 这种到底是没序号还是是特殊文件？）
+- 还有完全无序号的自由命名（README、INDEX、COLLABORATION 这种索引类除外正常，但 engineer/ship/0007-构建-实现跨项目RPC调用.md 这种到底是没序号还是是特殊文件？）
 
 带来问题：
 1. **文件系统排序不稳定**：`ls` 按字典序排，`10-xx.md` 会排到 `2-xx.md` 前面（因为字典序 '1' < '2'，不管十位）——新人看文件顺序混乱，以为中间漏了 8 个文件
@@ -70,21 +70,21 @@ related:
 合法示例：
 ```
 leader/decisions/
-  yiai-002-决策-LLM多提供商上线.md    ← 特殊：项目代号前缀（yiai），不是纯序号
-  yipot-006-决策-托盘Accessory.md     ← 项目代号 + 序号 + 类别（本任务新建文件都是这个）
+  yiai-yiai-yiai-002-决策-LLM多提供商上线.md    ← 特殊：项目代号前缀（yiai），不是纯序号
+  yipot-yipot-yipot-006-决策-托盘Accessory.md     ← 项目代号 + 序号 + 类别（本任务新建文件都是这个）
 
 curator/templates/
-  00-INDEX.md                        ← 00 是 INDEX 保留号（非内容序号），特殊情况接受
-  00001-模板-ADR模板.md                 ← 3位？不，当前是01；决策后统一改 001
-  000001-模板-ADR模板.md                ← 决策后的目标命名
+  000-INDEX.md                        ← 00 是 INDEX 保留号（非内容序号），特殊情况接受
+  0001-模板-ADR模板.md                 ← 3位？不，当前是01；决策后统一改 001
+  0001-模板-ADR模板.md                ← 决策后的目标命名
 
 engineer/run/
-  009-运行-Mentor一对一指南.md        ← 本任务新建：改 005（补到 3 位）
+  0009-运行-Mentor一对一指南.md        ← 本任务新建：改 005（补到 3 位）
   0009-运行-Mentor一对一指南.md       ← 决策后的目标命名
 
 executive/strategy/
-  01-战略-蓝海战略.md                ← 改 001
-  001-战略-蓝海战略.md               ← 目标
+  0001-战略-蓝海战略.md                ← 改 001
+  0001-战略-蓝海战略.md               ← 目标
 ```
 
 不合法示例（禁止）：
@@ -138,7 +138,7 @@ yiai-001-决策-xxx     ❌ 少 .md 后缀
 
 ### 负面影响
 - **一次性迁移 1 人天**：50+ 文件改名 + 改 hundreds of related 链接；虽然可用 bash 脚本，但人工 spot check 要 2 小时防止误改（比如 `01-模板` 和 `101-prd` 里同时出现 `/01-` 字符串）
-- **历史文件名和内容里的引用不兼容**：如文档正文写"详见 `001-构建-MongoDB模式设计.md`"——两位变三位后这种正文里的文字引用也要手工改，脚本无法完全覆盖（正则无法区分"正文提及 04-构建"和「related: ../../04-构建-」）
+- **历史文件名和内容里的引用不兼容**：如文档正文写"详见 `0001-构建-MongoDB模式设计.md`"——两位变三位后这种正文里的文字引用也要手工改，脚本无法完全覆盖（正则无法区分"正文提及 04-构建"和「related: ../../04-构建-」）
 - **跳号心理负担**：新人问"为什么目录里 001、003、007？002/004-006 被删了？"——INDEX.md 表头加一行"序号允许跳号，不代表文件缺失"可解决 80%
 
 ### 中性影响
@@ -156,7 +156,7 @@ yiai-001-决策-xxx     ❌ 少 .md 后缀
 
 **落地计划：**
 1. 立即：本任务新建 13 份文件中的纯序号前缀文件（engineer/run/05-、06-）先按两位发布，**1 个月内（11-07 前）统一改成三位 005、006**，批量 sed 改 related 链接
-2. 1 周内：curator/templates/ 00-INDEX.md 第 1 页加命名规范摘要 + "序号允许跳号"提示；curator/governance/04-就绪检查清单加「文件名序号是三位零填充吗？」门禁一题
+2. 1 周内：curator/templates/ 000-INDEX.md 第 1 页加命名规范摘要 + "序号允许跳号"提示；curator/governance/04-就绪检查清单加「文件名序号是三位零填充吗？」门禁一题
 3. 2 周内：第一批 curator/ 下所有 01-xx 两位文件 → 001-xx 三位，配套批量 sed 改所有 related
 4. 月度：分批迁移 engineer/ → leader/ → executive/，每目录 10 分钟脚本 + 10 分钟检查
 5. Q3 末：除项目前缀序号（yiai-01）和历史遗留跳号三位数（101-prd）外，纯序号前缀全部三位零填充

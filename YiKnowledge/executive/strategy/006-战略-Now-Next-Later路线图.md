@@ -14,9 +14,9 @@ review_cycle: quarterly
 roles: [product, executive, leader]
 benefit: "创建基于成果而非固定日期的路线图，将工作组织到三个时间视野中，实现利益相关方对齐和执行规划"
 related:
-  - ./008-战略-产品战略框架.md
-  - ./011-战略-价值主张画布.md
-  - ./002-战略-商业模式画布.md
+  - ./0008-战略-产品战略框架.md
+  - ./0011-战略-价值主张画布.md
+  - ./0002-战略-商业模式画布.md
   - ../README.md
   - ../INDEX.md
 ---

@@ -17,13 +17,13 @@ acceptance_criteria:
   - "包含行动项跟踪表，每次一对一可复制使用"
 related:
   - ../../curator/COLLABORATION.md
-  - ../../curator/templates/00004-模板-一对一模板.md
+  - ../../curator/templates/0004-模板-一对一模板.md
   - ./0001-入职-YiAi入职.md
   - ./0002-入职-YiPet入职.md
   - ./0003-入职-YiVad入职.md
-  - ./008-运行-CodeReview指南.md
-  - ../../leader/roadmap/016-路线图-入职指南.md
-  - ../../leader/roadmap/017-路线图-反馈指南.md
+  - ./0008-运行-CodeReview指南.md
+  - ../../leader/roadmap/0016-路线图-入职指南.md
+  - ../../leader/roadmap/0017-路线图-反馈指南.md
 ---
 
 # Mentor 一对一指南
@@ -113,7 +113,7 @@ related:
 
 每条行动项必须满足：
 
-- **S**pecific（具体）：不写"提升代码质量"，写"阅读 008-运行-CodeReview指南.md 并在下个 PR 中实践 3 条规则"
+- **S**pecific（具体）：不写"提升代码质量"，写"阅读 0008-运行-CodeReview指南.md 并在下个 PR 中实践 3 条规则"
 - **M**easurable（可衡量）：完成有明确的判断标准
 - **A**chievable（可达成）：在截止日期前现实可完成
 - **R**elevant（相关）：和成长目标或当前工作相关

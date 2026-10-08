@@ -17,7 +17,7 @@ acceptance_criteria:
   - "每个 ADR 遵循 12 节模板"
 related:
   - ../INDEX.md
-  - ../architecture/001-架构-架构决策设计.md
+  - ../architecture/0001-架构-架构决策设计.md
   - ../../engineer/build/
 ---
 
@@ -38,7 +38,7 @@ related:
 ## ADR 编写流程
 
 1. **识别决策需求**：当面临多种可行方案时，启动 ADR 流程
-2. **选择模板**：使用 [../architecture/001-架构-架构决策设计.md](../architecture/001-架构-架构决策设计.md) 提供的 12 节模板
+2. **选择模板**：使用 [../architecture/0001-架构-架构决策设计.md](../architecture/001-架构-架构决策设计.md) 提供的 12 节模板
 3. **撰写 ADR**：重点在上下文、替代方案和后果，而非仅描述最终决策
 4. **评审**：至少一位技术负责人和一位受影响者参与评审
 5. **归档**：按项目放到 `decisions/<项目名>/` 目录中
@@ -55,7 +55,7 @@ related:
 
 ## 交叉引用
 
-- [../architecture/001-架构-架构决策设计.md](../architecture/001-架构-架构决策设计.md) — ADR 框架和 12 节模板
+- [../architecture/0001-架构-架构决策设计.md](../architecture/001-架构-架构决策设计.md) — ADR 框架和 12 节模板
 - [../../engineer/build/](../../engineer/build/) — 系统设计模式
 
 ## 适用场景

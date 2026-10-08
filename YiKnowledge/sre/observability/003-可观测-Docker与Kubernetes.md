@@ -18,9 +18,9 @@ acceptance_criteria:
   - "生产环境的 Kubernetes 部署模式"
 related:
   - ./README.md
-  - ./002-可观测-CICD.md
-  - ./007-可观测-搭建可观测性.md
-  - ./014-可观测-健康检查设计.md
+  - ./0002-可观测-CICD.md
+  - ./0007-可观测-搭建可观测性.md
+  - ./0014-可观测-健康检查设计.md
   - ../../engineer/build/
 ---
 

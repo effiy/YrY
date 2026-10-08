@@ -295,8 +295,8 @@ superpowers 的 `/brainstorm` 是社区公认最有价值的技能——不是�
   方案 B：直接读取对方数据库（破坏模块边界 ❌）
 确认方向 → 方案 A，新增 translation_records 集合 + provider_health RPC
 产出摘要 → DDR: translation-analytics-api-spec
-  参考 YiKnowledge/projects/yiai/workflows/开发规范/08-规范-翻译分析API规范.md
-  参考 YiKnowledge/projects/yiai/workflows/架构设计/06-架构-跨项目数据流全景.md
+  参考 YiKnowledge/projects/yiai/workflows/开发规范/0008-规范-翻译分析API规范.md
+  参考 YiKnowledge/projects/yiai/workflows/架构设计/0006-架构-跨项目数据流全景.md
 ```
 
 **关键教训**：跨项目需求必须检查现有架构文档和模块边界。brainstorming 发现的「方案 B 破坏模块边界」节省了至少 2 天返工。

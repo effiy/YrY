@@ -30,11 +30,11 @@ related:
 
 | 项目 | 管理文档（01） | 指标与度量（02） | 2026 Q4 OKR | 项目定位 | 当前阶段 |
 |---|---|---|---|---|---|
-| YiAi | [yiai/001-项目-管理.md](./yiai/001-项目-管理.md) | [yiai/002-项目-指标与度量.md](./yiai/002-项目-指标与度量.md) | [projects/yiai Q4](../../projects/yiai/okrs/2026-Q4/README.md) | 后端 AI 服务平台 — RPC 信封路由、Ollama LLM 推理、RAG 引擎、数据持久化 | 持续迭代中 |
-| YiVad | [yivad/001-项目-管理.md](./yivad/001-项目-管理.md) | [yivad/002-项目-指标与度量.md](./yivad/002-项目-指标与度量.md) | [projects/yivad Q4](../../projects/yivad/okrs/2026-Q4/README.md) | Vue 3.5 管理后台 — ProTable 数据管理、aiChat、Agent、知识底座前端、项目页 | 持续迭代中 |
-| YiPet | [yipet/001-项目-管理.md](./yipet/001-项目-管理.md) | [yipet/002-项目-指标与度量.md](./yipet/002-项目-指标与度量.md) | [projects/yipet Q4](../../projects/yipet/okrs/2026-Q4/README.md) | Chrome MV3 浏览器扩展 — 知识底座对话、跨项目桥接、多角色聊天、工具集 | 持续迭代中 |
-| YiPot | [yipot/001-项目-管理.md](./yipot/001-项目-管理.md) | [yipot/002-项目-指标与度量.md](./yipot/002-项目-指标与度量.md) | [projects/yipot Q4](../../projects/yipot/okrs/2026-Q4/README.md) | Tauri 1.x 桌面翻译 — 划词/OCR/TTS/托盘/本地 HTTP 60828/21 翻译引擎 | 持续迭代中 |
-| YiKnowledge | [yiknowledge/001-项目-管理.md](./yiknowledge/001-项目-管理.md) | [yiknowledge/002-项目-指标与度量.md](./yiknowledge/002-项目-指标与度量.md) | [projects/yiknowledge Q4](../../projects/yiknowledge/okrs/2026-Q4/README.md) | 7 角色 × 5 阶段 × 5 项目知识中心 — Frontmatter 规范、模板、治理、图表 | 持续迭代中 |
+| YiAi | [yiai/0001-项目-管理.md](./yiai/001-项目-管理.md) | [yiai/0002-项目-指标与度量.md](./yiai/002-项目-指标与度量.md) | [projects/yiai Q4](../../projects/yiai/okrs/2026-Q4/README.md) | 后端 AI 服务平台 — RPC 信封路由、Ollama LLM 推理、RAG 引擎、数据持久化 | 持续迭代中 |
+| YiVad | [yivad/0001-项目-管理.md](./yivad/001-项目-管理.md) | [yivad/0002-项目-指标与度量.md](./yivad/002-项目-指标与度量.md) | [projects/yivad Q4](../../projects/yivad/okrs/2026-Q4/README.md) | Vue 3.5 管理后台 — ProTable 数据管理、aiChat、Agent、知识底座前端、项目页 | 持续迭代中 |
+| YiPet | [yipet/0001-项目-管理.md](./yipet/001-项目-管理.md) | [yipet/0002-项目-指标与度量.md](./yipet/002-项目-指标与度量.md) | [projects/yipet Q4](../../projects/yipet/okrs/2026-Q4/README.md) | Chrome MV3 浏览器扩展 — 知识底座对话、跨项目桥接、多角色聊天、工具集 | 持续迭代中 |
+| YiPot | [yipot/0001-项目-管理.md](./yipot/001-项目-管理.md) | [yipot/0002-项目-指标与度量.md](./yipot/002-项目-指标与度量.md) | [projects/yipot Q4](../../projects/yipot/okrs/2026-Q4/README.md) | Tauri 1.x 桌面翻译 — 划词/OCR/TTS/托盘/本地 HTTP 60828/21 翻译引擎 | 持续迭代中 |
+| YiKnowledge | [yiknowledge/0001-项目-管理.md](./yiknowledge/001-项目-管理.md) | [yiknowledge/0002-项目-指标与度量.md](./yiknowledge/002-项目-指标与度量.md) | [projects/yiknowledge Q4](../../projects/yiknowledge/okrs/2026-Q4/README.md) | 7 角色 × 5 阶段 × 5 项目知识中心 — Frontmatter 规范、模板、治理、图表 | 持续迭代中 |
 
 ## 跨项目依赖关系速览
 
@@ -68,7 +68,7 @@ YiPot / YiPet / YiVad
 1. YiAi API 变更 → 同时通知 YiVad / YiPet / YiPot PM，不少于 1 个 Sprint 的迁移窗口
 2. YiPet ↔ YiVad 桥接变更 → 两方 PM 对齐 session key 格式和跳转参数，变更前文档化
 3. 跨项目 Bug → 先定位根因项目，再分配修复；不明确的先由消费方 PM 牵头排查
-4. 详细协调方法见 [delivery/005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)
+4. 详细协调方法见 [delivery/0005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)
 5. 稳定性 / Runbook 问题 → 统一参考 [sre/run](../../sre/run/) 中的项目级 Runbook（YiAi 03 / YiPot 04 / YiVad 05）
 
 ## 文档使用指南
@@ -100,16 +100,16 @@ YiPot / YiPet / YiVad
 - [ ] 有没有项目在「等」另一个项目超过 1 个 Sprint？—— 等待是否必要？
 - [ ] SLO 达成率 ≥ 99%（P0/P1）？—— 消耗的错误预算是否进入下季度改进列表？
 - [ ] 5 份 STRIDE 威胁模型的 30/60/90 天缓解表 30 天已完成 ≥ 80%？
-- [ ] 下季度的联合 Sprint 规划中是否已讨论跨项目依赖？—— 参考 [delivery/005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)
+- [ ] 下季度的联合 Sprint 规划中是否已讨论跨项目依赖？—— 参考 [delivery/0005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)
 
 ### 新 PM 上手路径
 
 第一次接触 YrY 的 PM，按以下顺序在 2 小时内建立全局视角：
 
 1. **读本 README**（15 分钟）—— 理解 5 项目拓扑 + 依赖矩阵 + Q4 OKR 入口
-2. **读 5 个项目的 001-项目-管理.md**（40 分钟）—— 定位/愿景/用户/负责人/节奏/交付物
-3. **读 5 个项目的 002-项目-指标与度量.md**（40 分钟）—— 北极星/AARRR/SLO/22 行指标字典
-4. **读 [delivery/005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)**（15 分钟）—— 三类协作模式 + RPC 依赖管理
+2. **读 5 个项目的 0001-项目-管理.md**（40 分钟）—— 定位/愿景/用户/负责人/节奏/交付物
+3. **读 5 个项目的 0002-项目-指标与度量.md**（40 分钟）—— 北极星/AARRR/SLO/22 行指标字典
+4. **读 [delivery/0005-交付-跨项目协作.md](../delivery/005-交付-跨项目协作.md)**（15 分钟）—— 三类协作模式 + RPC 依赖管理
 5. **读 [INDEX.md](../INDEX.md)**（10 分钟）—— PM 角色全貌
 6. **各项目技术负责人聊 10 分钟 × 5**（50 分钟）—— 确认文档状态和阻塞项
 
@@ -117,8 +117,8 @@ YiPot / YiPet / YiVad
 
 - [../../engineer/learn/projects/](../../engineer/learn/projects/) — 各项目的工程文档镜像 + 5 天新人入职路线图
 - [../../engineer/projects/](../../engineer/projects/) — 01-YiAi 到 06-YiKnowledge 的工程视角项目介绍
-- [../delivery/001-交付-运作Sprint.md](../delivery/001-交付-运作Sprint.md) — Sprint 管理和交付流程
-- [../discovery/001-发现-编写PRD.md](../discovery/001-发现-编写PRD.md) — 用户研究和 PRD 模板
+- [../delivery/0001-交付-运作Sprint.md](../delivery/001-交付-运作Sprint.md) — Sprint 管理和交付流程
+- [../discovery/0001-发现-编写PRD.md](../discovery/001-发现-编写PRD.md) — 用户研究和 PRD 模板
 - [../../leader/decisions/](../../leader/decisions/) — 架构决策记录（本轮新增 ADR 10 份）
 - [../../sre/INDEX](../../sre/INDEX.md) — SRE 运维 + 项目级 Runbook + Gameday 演练
 - [../../curator/COLLABORATION.md](../../curator/COLLABORATION.md) — 协作总索引（入职/Mentor/会议/排期/跨项目/治理/项目管理七入口）

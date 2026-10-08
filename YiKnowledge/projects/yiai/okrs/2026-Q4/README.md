@@ -12,8 +12,8 @@ acceptance_criteria:
   - "告警看板 106-prd 与 Agent 可靠性 07-prd 验收通过，P0 告警 5 分钟响应率 ≥ 95%"
   - "插件化 151-prd 完成核心接口抽象，≥ 3 个内部插件迁移至新架构"
 related:
-  - ../../../curator/governance/00001-治理-知识健康看板.md
-  - ../../../curator/governance/00002-治理-治理规范.md
+  - ../../../curator/governance/001-治理-知识健康看板.md
+  - ../../../curator/governance/002-治理-治理规范.md
   - ../../../projects/yiai/prds/2026-09/07-prd-Agent可靠性.md
   - ../../../projects/yiai/prds/2026-09/106-prd-LLMProvider抽象.md
   - ../../../projects/yiai/prds/2026-09/151-prd-插件化扩展系统.md

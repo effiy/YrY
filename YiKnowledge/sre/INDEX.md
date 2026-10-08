@@ -76,7 +76,7 @@ SRE 角色在 YrY 单仓中的定位是：**保障生产环境稳定运行**。�
 | 需要排查 RAG 故障 | [知识库与 RAG 运维](./observability/017-可观测-知识库与RAG运维.md) |
 | 需要管理模型版本 | [Ollama 模型管理](./observability/018-可观测-Ollama模型管理.md) |
 | 需要设计 5 项目统一健康看板 | [5 项目统一健康看板设计](./observability/019-可观测-5项目统一健康看板设计.md) |
-| 需要配置告警路由到企业微信/IM | [告警路由到 IM](./observability/20-可观测-告警路由到IM.md) |
+| 需要配置告警路由到企业微信/IM | [告警路由到 IM](./observability/020-可观测-告警路由到企业微信IM.md) |
 | 需要演练熔断器 / 60828 断连 / MV3 权限撤回 | [GameDay-YiAi-RPC熔断](./incident-response/017-事件-GameDay-YiAi-RPC熔断.md) / [GameDay-YiPot-60828断连](./incident-response/018-事件-GameDay-YiPot-60828断连.md) / [GameDay-YiPet-MV3权限撤回](./incident-response/019-事件-GameDay-YiPet-MV3权限撤回.md) |
 | 需要按项目排障（YiAi/YiPot/YiVad） | [YiAi 后端健康 Runbook](./run/003-运行-YiAi后端健康Runbook.md) / [YiPot 桌面集成 Runbook](./run/004-运行-YiPot桌面集成Runbook.md) / [YiVad 前端项目页 Runbook](./run/005-运行-YiVad前端项目页Runbook.md) |
 | 需要做回滚演练 | [回滚演练](./release/005-发布-回滚演练.md) |

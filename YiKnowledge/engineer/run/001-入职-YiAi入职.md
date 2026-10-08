@@ -141,14 +141,14 @@ Domain 包外部的每个调用者只依赖公开的 API 面：
 - [ ] 打开 `src/domain/ai/chat.py`，理解聊天流式结构（SSE 生成器）
 - [ ] 打开 `src/domain/knowledge/watcher.py`，理解 apscheduler 轮询循环
 - [ ] 做一个小改动：在任意 route handler 中添加一行 `logger.info("Hello YiAi")`，重启后验证日志中出现该行
-- [ ] 阅读跨项目 RPC 协议：`YiKnowledge/engineer/build/006-构建-跨项目RPC协议设计.md`
+- [ ] 阅读跨项目 RPC 协议：`YiKnowledge/engineer/build/0006-构建-跨项目RPC协议设计.md`
 - [ ] 运行测试：`python -m pytest tests/ -v` 确保全部通过
 
 ## 后续学习
 
-- [YiAi 工程文档](../../learn/projects/yiai/01-项目-架构设计.md) —— 深层架构、反模式、操作建议
+- [YiAi 工程文档](../../learn/projects/yiai/0001-项目-架构设计.md) —— 深层架构、反模式、操作建议
 - [YiAi CLAUDE.md](../../../../YiAi/CLAUDE.md) —— 模块边界、约束、近期变更的权威参考
-- [跨项目 RPC 协议](../../build/006-构建-跨项目RPC协议设计.md) —— 完整的 API 契约
-- [MongoDB 模式设计](../../build/001-构建-MongoDB模式设计.md) —— 文档模型与索引策略
-- [API 设计模式](../../build/002-构建-API设计模式.md) —— RPC vs REST 决策
-- [调试排错指南](../../build/003-构建-调试排错指南.md) —— 系统化诊断方法论
+- [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— 完整的 API 契约
+- [MongoDB 模式设计](../build/001-构建-MongoDB模式设计.md) —— 文档模型与索引策略
+- [API 设计模式](../build/002-构建-API设计模式.md) —— RPC vs REST 决策
+- [调试排错指南](../build/003-构建-调试排错指南.md) —— 系统化诊断方法论

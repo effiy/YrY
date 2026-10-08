@@ -154,7 +154,7 @@ AI 赋能层（贯穿整个流水线）
 
 | 位置 | 约定 | 示例 |
 |------|---------|--------|
-| 角色子目录 | `{序号}-{中文描述}.md` | `01-方法-Agent架构模式.md` |
+| 角色子目录 | `{序号}-{中文描述}.md` | `0001-方法-Agent架构模式.md` |
 | 项目子目录 | `{序号}-{中文描述}.md` | `08-prd-task-命令面板.md` |
 | 目录名 | kebab-case 英文 | `machine-learning/`、`prompts/` |
 | 禁止 | 下划线 `_`、纯数字文件名、不含 frontmatter | — |
@@ -164,9 +164,9 @@ AI 赋能层（贯穿整个流水线）
 严格 3 级：`role/problem-domain/file.md`
 
 ```
-✓ aier/methods/01-方法-Agent架构模式.md
+✓ aier/methods/0001-方法-Agent架构模式.md
 ✓ engineer/learn/lessons/0005-陷阱-macOS-FSEvents静默丢弃.md
-✓ projects/yivad/workflows/开发规范/02-规范-项目架构.md
+✓ projects/yivad/workflows/开发规范/0002-规范-项目架构.md
 ✓ leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md  ← OKR 目录例外
 ✗ aier/methods/subcategory/deep/file.md                       ← 4 级，拒绝合并
 ```
@@ -252,7 +252,7 @@ RAG 检索 → 混合检索 (向量 + BM25) → YiVad/YiPet 查询
 
 ### 就绪检查清单
 
-提交新文件前必须通过 [curator/governance/00004-治理-就绪检查清单.md](curator/governance/00004-治理-就绪检查清单.md)：
+提交新文件前必须通过 [curator/governance/0004-治理-就绪检查清单.md](curator/governance/004-治理-就绪检查清单.md)：
 
 - [ ] Frontmatter 完整且有效
 - [ ] 文件名符合约定
@@ -263,7 +263,7 @@ RAG 检索 → 混合检索 (向量 + BM25) → YiVad/YiPet 查询
 
 ### 健康看板
 
-[curator/governance/00001-治理-知识健康看板.md](curator/governance/00001-治理-知识健康看板.md) 跟踪：
+[curator/governance/0001-治理-知识健康看板.md](curator/governance/001-治理-知识健康看板.md) 跟踪：
 - stale 内容（超过 review_cycle 未审核）
 - 缺失 frontmatter 的文件
 - 孤立文件（无 incoming 链接）

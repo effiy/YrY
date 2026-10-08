@@ -14,10 +14,10 @@ review_cycle: quarterly
 roles: [executive, product]
 benefit: "深入了解最重要直接竞品Cursor的战略、产品和商业模式，为YrY的差异化决策提供依据"
 related:
-  - ./003-行业-竞品分析模板.md
-  - ./006-行业-AI开发工具竞品格局-2026H1.md
-  - ../../strategy/007-战略-波特五力模型.md
-  - ../../strategy/037-战略-竞争响应策略.md
+  - ./0003-行业-竞品分析模板.md
+  - ./0006-行业-AI开发工具竞品格局-2026H1.md
+  - ../../strategy/0007-战略-波特五力模型.md
+  - ../../strategy/0037-战略-竞争响应策略.md
 ---
 
 # 竞品深度分析 — Cursor

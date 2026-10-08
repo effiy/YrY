@@ -18,9 +18,9 @@ acceptance_criteria:
   - "RICE 和 ICE 的使用场景选择指南"
   - "常见反模式识别"
 related:
-  - ./004-框架-MoSCoW优先级.md
+  - ./0004-框架-MoSCoW优先级.md
   - ../discovery/01-需求-PRD模板.md
-  - ../discovery/002-发现-数据驱动决策.md
+  - ../discovery/0002-发现-数据驱动决策.md
 ---
 
 # RICE/ICE 优先级排序框架

@@ -283,7 +283,7 @@ status: stable
         grep "AsyncIOMotorClient" → 发现每次查询都 new 一个新 client
 结论  → 根因：未使用单例模式，每个请求创建新连接池
 修复  → 改为模块级单例 + 连接池参数调优
-        参考 YiKnowledge/projects/yiai/bugs/2026-09/数据/01-数据-MongoDB连接池耗尽.md
+        参考 YiKnowledge/projects/yiai/bugs/2026-09/数据/0001-数据-MongoDB连接池耗尽.md
 ```
 
 **关键教训**：连接池耗尽的表现是偶发超时→容易被当作「网络抖动」忽略→实际是资源泄漏。

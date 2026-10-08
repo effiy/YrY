@@ -18,10 +18,10 @@ owner: CEO
 project: YiAi
 progress: 73
 related:
-  - ./03-OKR-reading-list.md
-  - ./03-OKR-reading-notes.md
-  - ./03-OKR-knowledge-distillation.md
-  - ./05-OKR-阅读蒸馏率.md
+  - ./0003-OKR-reading-list.md
+  - ./0003-OKR-reading-notes.md
+  - ./0003-OKR-knowledge-distillation.md
+  - ./0005-OKR-阅读蒸馏率.md
   - ../../../reading-list/README.md
 ---
 
@@ -51,28 +51,28 @@ related:
 
 月度阅读清单已建立并持续更新，涵盖管理、战略、技术、产品四个维度。阅读清单格式已标准化，含状态追踪、维度标签和蒸馏目标。
 
-**证据**: [03-OKR-reading-list.md](./03-OKR-reading-list.md)
+**证据**: [0003-OKR-reading-list.md](./003-OKR-reading-list.md)
 **内容目录**: [../../../reading-list/](../../../reading-list/)
 
 ### KR2: 读书笔记含可执行 takeaway（High Output Management） — 100% ✅
 
 High Output Management 读书笔记已完成，包含核心观点提炼、8 章关键摘要、5 个可执行收获、6 个蒸馏目标。阅读笔记模板已建立，可复用于后续阅读。
 
-**证据**: [03-OKR-reading-notes.md](./03-OKR-reading-notes.md)
+**证据**: [0003-OKR-reading-notes.md](./003-OKR-reading-notes.md)
 **内容目录**: [../../../reading-list/](../../../reading-list/)
 
 ### KR3: 有价值观点蒸馏到方法论/技术语义叶 — 50% 🔶
 
 High Output Management 的关键观点已蒸馏到对应方法论叶（OKR 追踪、QBR 议程、预算规划、会议治理）。其他阅读材料（加速、团队拓扑）的蒸馏率 50%，待持续提升。
 
-**证据**: [03-OKR-knowledge-distillation.md](./03-OKR-knowledge-distillation.md)
+**证据**: [0003-OKR-knowledge-distillation.md](./003-OKR-knowledge-distillation.md)
 **内容目录**: [../../../reading-list/](../../../reading-list/)
 
 ## 关联指标
 
 | 指标 | 当前值 | 目标值 | 进度 |
 |---|---|---|---|
-| [exec-m05: 阅读蒸馏率](./05-OKR-阅读蒸馏率.md) | 50% | 100% | 50% |
+| [exec-m05: 阅读蒸馏率](./005-OKR-阅读蒸馏率.md) | 50% | 100% | 50% |
 
 ## Q3 剩余工作
 

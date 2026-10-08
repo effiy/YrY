@@ -14,10 +14,10 @@ review_cycle: quarterly
 roles: [executive, product]
 benefit: "深入了解GitHub Copilot的战略、生态优势和向全流程延伸的动作——其生态壁垒是YrY最需要警惕的竞争维度"
 related:
-  - ./003-行业-竞品分析模板.md
-  - ./006-行业-AI开发工具竞品格局-2026H1.md
-  - ./008-行业-竞品分析-Cursor.md
-  - ../../strategy/037-战略-竞争响应策略.md
+  - ./0003-行业-竞品分析模板.md
+  - ./0006-行业-AI开发工具竞品格局-2026H1.md
+  - ./0008-行业-竞品分析-Cursor.md
+  - ../../strategy/0037-战略-竞争响应策略.md
 ---
 
 # 竞品分析 — GitHub Copilot

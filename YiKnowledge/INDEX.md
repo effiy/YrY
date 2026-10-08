@@ -21,7 +21,7 @@ related:
   - ./README.md
   - ./MEMORY.md
   - ./projects/INDEX.md
-  - ./curator/governance/00004-治理-就绪检查清单.md
+  - ./curator/governance/0004-治理-就绪检查清单.md
 ---
 
 # YiKnowledge 导航索引
@@ -67,9 +67,9 @@ related:
 | 目录 | 用途 |
 |---|---|
 | [projects/](./projects/) | 项目知识中心 — 4 个项目的缺陷/需求/规范/工作流（[README](./projects/README.md) \| [INDEX](./projects/INDEX.md)） |
-| [curator/templates/](./curator/templates/) | 文档模板（PRD、ADR、复盘、知识叶子、技术设计等 10 类模板，详见 [模板索引](./curator/templates/00-INDEX.md)） |
-| [curator/governance/](./curator/governance/) | 知识治理规范（[知识健康看板](./curator/governance/00001-治理-知识健康看板.md)、[治理规范](./curator/governance/00002-治理-治理规范.md)、[就绪检查清单](./curator/governance/00004-治理-就绪检查清单.md) 等 7 篇） |
-| [curator/diagrams/](./curator/diagrams/) | 知识架构图（[看板索引](./curator/diagrams/00001-图表-看板索引.md)、[目录蓝图](./curator/diagrams/00002-图表-目录蓝图.md)、[知识地图](./curator/diagrams/00003-图表-知识地图.md)、[用户旅程](./curator/diagrams/00004-图表-用户旅程.md)） |
+| [curator/templates/](./curator/templates/) | 文档模板（PRD、ADR、复盘、知识叶子、技术设计等 10 类模板，详见 [模板索引](./curator/templates/000-INDEX.md)） |
+| [curator/governance/](./curator/governance/) | 知识治理规范（[知识健康看板](./curator/governance/001-治理-知识健康看板.md)、[治理规范](./curator/governance/002-治理-治理规范.md)、[就绪检查清单](./curator/governance/004-治理-就绪检查清单.md) 等 7 篇） |
+| [curator/diagrams/](./curator/diagrams/) | 知识架构图（[看板索引](./curator/diagrams/001-图表-看板索引.md)、[目录蓝图](./curator/diagrams/002-图表-目录蓝图.md)、[知识地图](./curator/diagrams/003-图表-知识地图.md)、[用户旅程](./curator/diagrams/004-图表-用户旅程.md)） |
 | [skills/](./skills/) | Claude Code 自定义技能（[技能目录](./skills/)） |
 | [engineer/learn/projects/](./engineer/learn/projects/) | 跨项目工程文档（架构、开发规范、功能模块、Story，按 yivad/yiai/yipet 子目录组织） |
 | [leader/decisions/](./leader/decisions/) | 架构决策记录（ADR），按项目子目录组织 |

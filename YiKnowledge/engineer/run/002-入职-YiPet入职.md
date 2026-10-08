@@ -32,7 +32,7 @@ related:
 
 - Node.js 18+ 和 npm（推荐使用 nvm 管理版本）
 - Chrome 114+（支持 Manifest V3）
-- YiAi 后端需运行在 `http://localhost:10086`（参见 [YiAi 入职指南](./0001-入职-YiAi入职.md)）
+- YiAi 后端需运行在 `http://localhost:10086`（参见 [YiAi 入职指南](./001-入职-YiAi入职.md)）
 
 ## 环境搭建（预计 30 分钟）
 
@@ -77,9 +77,9 @@ npm test             # Vitest 2 + jsdom
 |---|---|---|
 | 扩展加载后页面没有宠物 | `npm run build` 失败或 dist 目录不完整 | 重新运行 `npm run build`，确认 dist/ 目录存在所有产出 |
 | 聊天窗口无法打开 | YiAi 后端未运行 | 确保 YiAi 运行在 `http://localhost:10086` |
-| 聊天窗口报 `jsxDEV is not a function` | 聊天窗口使用开发模式 JSX 编译器 | 确认 `dev:chat` 脚本带有 `--mode production`（参见 [gotcha 文档](../../learn/lessons/0008-陷阱-YiPet-jsxDEV生产模式.md)） |
+| 聊天窗口报 `jsxDEV is not a function` | 聊天窗口使用开发模式 JSX 编译器 | 确认 `dev:chat` 脚本带有 `--mode production`（参见 [gotcha 文档](../learn/lessons/008-陷阱-YiPet-jsxDEV生产模式.md)） |
 | `npm run typecheck` 报错 | TypeScript 类型不匹配 | 检查代码变更是否引入了类型错误。注意 Rsbuild 构建会**静默剥离类型**——typecheck 是唯一的检查手段 |
-| 会话列表为空或异常 | RPC 参数使用了 `query` 而非 `filter` | 检查 API 调用中 SessionService 的参数键名是否为 `filter`（参见 [RPC 参数名不匹配](../../learn/lessons/0006-陷阱-RPC参数名不匹配.md)） |
+| 会话列表为空或异常 | RPC 参数使用了 `query` 而非 `filter` | 检查 API 调用中 SessionService 的参数键名是否为 `filter`（参见 [RPC 参数名不匹配](../learn/lessons/006-陷阱-RPC参数名不匹配.md)） |
 | CDN 资源加载失败 | Vendor 库未在 catalog 中注册 | 检查 `src/content/cdn/catalog.ts` 是否包含该资源的条目 |
 
 ## 架构概览
@@ -136,9 +136,9 @@ Popup 到 Content Script 的通信:
 
 ## 后续学习
 
-- [YiPet 工程文档](../../learn/projects/yipet/01-项目-架构设计.md) —— 深层架构、反模式
+- [YiPet 工程文档](../../learn/projects/yipet/0001-项目-架构设计.md) —— 深层架构、反模式
 - [YiPet CLAUDE.md](../../../../YiPet/CLAUDE.md) —— 权威参考
-- [跨项目 RPC 协议](../../build/006-构建-跨项目RPC协议设计.md) —— API 契约
-- [YiPet 跨项目 Hub 成功案例](../../learn/lessons/0009-成果-YiPet跨项目Hub.md) —— 架构模式启发
-- [开发工作流指南](../../run/006-运行-开发工作流.md) —— 全栈启动与调试
-- [Code Review 指南](../../run/008-运行-CodeReview指南.md) —— 提交 PR 前的自查清单
+- [跨项目 RPC 协议](../build/006-构建-跨项目RPC协议设计.md) —— API 契约
+- [YiPet 跨项目 Hub 成功案例](../learn/lessons/009-成果-YiPet跨项目Hub.md) —— 架构模式启发
+- [开发工作流指南](006-运行-开发工作流.md) —— 全栈启动与调试
+- [Code Review 指南](008-运行-CodeReview指南.md) —— 提交 PR 前的自查清单

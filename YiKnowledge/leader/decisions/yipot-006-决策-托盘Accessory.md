@@ -17,13 +17,13 @@ acceptance_criteria:
   - "2 个状态开关（自动复制四选一 + 剪贴板监听）在托盘和配置页双向同步"
 related:
   - ./README.md
-  - ../../curator/templates/00001-模板-ADR模板.md
+  - ../../curator/templates/0001-模板-ADR模板.md
   - ../../projects/yipot/prds/2026-09/37-prd-设置页面架构.md
-  - ../../projects/yipot/okrs/2026-Q3/goal-003-桌面集成.md
+  - ../../projects/yipot/okrs/2026-Q3/goal-goal-goal-003-桌面集成.md
   - ../../projects/yipot/bugs/性能问题/001-剪切板CPU占用高.md
   - ../../engineer/projects/0005-项目-YiPot项目.md
-  - ./yipot-008-决策-tiny_http端口60828.md
-  - ./yipot-010-决策-剪贴板节流CPU.md
+  - ./yipot-yipot-yipot-008-决策-tiny_http端口60828.md
+  - ./yipot-yipot-yipot-010-决策-剪贴板节流CPU.md
 ---
 
 # ADR: YiPot 托盘 Accessory 菜单架构
@@ -41,7 +41,7 @@ YiPot 是 Tauri 桌面翻译工具，核心使用场景是"用户正在阅读任
 2. **状态同步分散**：剪贴板监听开关（`on_clipboard_monitor_click`，第 143-169 行）需要同时改配置文件、改内存状态、重启监听线程、更新菜单勾选——4 步分散在不同位置容易漏
 3. **无 Accessory 抽象层**：新增一个托盘菜单项需要改 12 个 `tray_menu_xx()` 函数 + 1 个事件处理分支，改动 13 处
 
-为什么必须现在解决：YiPot 2026-Q3 OKR `goal-003-桌面集成.md` 要求新增 PopClip、SnipDo、快捷短语等 3 个外部集成入口，都需要从托盘菜单触发。当前结构每加一个菜单项改 13 处，效率无法支撑。
+为什么必须现在解决：YiPot 2026-Q3 OKR `goal-goal-goal-003-桌面集成.md` 要求新增 PopClip、SnipDo、快捷短语等 3 个外部集成入口，都需要从托盘菜单触发。当前结构每加一个菜单项改 13 处，效率无法支撑。
 
 ---
 

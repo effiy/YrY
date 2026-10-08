@@ -20,10 +20,10 @@ related:
   - ../../projects/yiai/prds/2026-09/105-prd-熔断器.md
   - ../../projects/yiai/prds/2026-09/36-prd-告警路由.md
   - ../../projects/yiai/prds/2026-09/76-prd-滑动窗口限流.md
-  - ../run/003-运行-YiAi后端健康Runbook.md
-  - ../observability/010-可观测-告警规则配置.md
-  - ./008-事件-GameDay演练.md
-  - ./004-事件-响应事件.md
+  - ../run/0003-运行-YiAi后端健康Runbook.md
+  - ../observability/0010-可观测-告警规则配置.md
+  - ./0008-事件-GameDay演练.md
+  - ./0004-事件-响应事件.md
   - ../QUICKREF.md
 ---
 

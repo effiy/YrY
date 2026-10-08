@@ -12,12 +12,12 @@ acceptance_criteria:
   - "RAG 基线 MRR@5 从 当前 0.58 → +10% 达到 ≥ 0.64，Recall@10 ≥ 0.82"
   - "治理流程四阶段（收件箱→分类处理→就绪检查→归档）100% 跑通，47 份专业文档落地率 ≥ 90%"
 related:
-  - ../../../curator/governance/00001-治理-知识健康看板.md
-  - ../../../curator/governance/00002-治理-治理规范.md
-  - ../../../curator/governance/00004-治理-就绪检查清单.md
+  - ../../../curator/governance/001-治理-知识健康看板.md
+  - ../../../curator/governance/002-治理-治理规范.md
+  - ../../../curator/governance/004-治理-就绪检查清单.md
   - ../../../curator/INDEX.md
-  - ../../../aier/foundations/02-基础-RAG设计模式.md
-  - ../../../product/projects/yiknowledge/02-项目-指标与度量.md
+  - ../../../aier/foundations/002-基础-RAG设计模式.md
+  - ../../../product/projects/yiknowledge/002-项目-指标与度量.md
 ---
 
 # YiKnowledge 2026-Q4 OKR 总览
@@ -61,10 +61,10 @@ related:
 
 | OKR | KR-1 关联文件 | KR-2 关联文件 | KR-3 关联文件 | KR-4 关联文件 | KR-5 关联文件 |
 |-----|---------------|---------------|---------------|---------------|---------------|
-| yiknowledge-001 新鲜度 | [01-治理-知识健康看板](../../../curator/governance/00001-治理-知识健康看板.md) | [02-治理-治理规范](../../../curator/governance/00002-治理-治理规范.md) | [03-治理-收件箱](../../../curator/governance/00003-治理-收件箱.md) | [07-治理-分类处理](../../../curator/governance/00007-治理-分类处理.md) | [08-治理-操作速查卡](../../../curator/governance/00008-治理-操作速查卡.md) |
-| yiknowledge-002 RAG 质量 | [02-基础-RAG设计模式](../../../aier/foundations/02-基础-RAG设计模式.md) | [01-平台-向量数据库选型](../../../aier/platform/01-平台-向量数据库选型.md) | [01-检索基础体系](../../yiai/prds/2026-09/01-prd-检索基础体系.md) | [05-prd-RAG引擎](../../yiai/prds/2026-09/05-prd-RAG引擎.md) | [213-prd-RAG评估基准](../../yiai/prds/2026-09/213-prd-RAG评估基准.md) |
-| yiknowledge-003 治理四阶段 | [02-治理-治理规范](../../../curator/governance/00002-治理-治理规范.md) | [03-治理-收件箱](../../../curator/governance/00003-治理-收件箱.md) | [04-治理-就绪检查清单](../../../curator/governance/00004-治理-就绪检查清单.md) | [07-治理-分类处理](../../../curator/governance/00007-治理-分类处理.md) | [01-归档-归档说明](../../../curator/archive/00001-归档-归档说明.md) |
-| yiknowledge-004 47 份文档 | [01-项目-管理](../../../product/projects/yiknowledge/01-项目-管理.md) | [02-项目-指标与度量](../../../product/projects/yiknowledge/02-项目-指标与度量.md) | [01-模板-知识叶子模板](../../../curator/templates/00002-模板-知识叶子模板.md) | [01-治理-知识健康看板](../../../curator/governance/00001-治理-知识健康看板.md) | [04-治理-就绪检查清单](../../../curator/governance/00004-治理-就绪检查清单.md) |
+| yiknowledge-001 新鲜度 | [01-治理-知识健康看板](../../../../curator/governance/001-治理-知识健康看板.md) | [02-治理-治理规范](../../../../curator/governance/002-治理-治理规范.md) | [03-治理-收件箱](../../../../curator/governance/003-治理-收件箱.md) | [07-治理-分类处理](../../../../curator/governance/007-治理-分类处理.md) | [08-治理-操作速查卡](../../../../curator/governance/008-治理-操作速查卡.md) |
+| yiknowledge-002 RAG 质量 | [02-基础-RAG设计模式](../../../../aier/foundations/002-基础-RAG设计模式.md) | [03-平台-向量数据库选型](../../../../aier/platform/003-平台-向量数据库选型.md) | [01-检索基础体系](../../yiai/prds/2026-09/01-prd-检索基础体系.md) | [05-prd-RAG引擎](../../yiai/prds/2026-09/05-prd-RAG引擎.md) | [213-prd-RAG评估基准](../../yiai/prds/2026-09/213-prd-RAG评估基准.md) |
+| yiknowledge-003 治理四阶段 | [02-治理-治理规范](../../../../curator/governance/002-治理-治理规范.md) | [03-治理-收件箱](../../../../curator/governance/003-治理-收件箱.md) | [04-治理-就绪检查清单](../../../../curator/governance/004-治理-就绪检查清单.md) | [07-治理-分类处理](../../../../curator/governance/007-治理-分类处理.md) | [01-归档-归档说明](../../../../curator/archive/001-归档-归档说明.md) |
+| yiknowledge-004 47 份文档 | [01-项目-管理](../../../../product/projects/yiknowledge/001-项目-管理.md) | [02-项目-指标与度量](../../../../product/projects/yiknowledge/002-项目-指标与度量.md) | [01-模板-知识叶子模板](../../../../curator/templates/002-模板-知识叶子模板.md) | [01-治理-知识健康看板](../../../../curator/governance/001-治理-知识健康看板.md) | [04-治理-就绪检查清单](../../../../curator/governance/004-治理-就绪检查清单.md) |
 
 ## 风险矩阵
 

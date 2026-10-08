@@ -122,7 +122,7 @@ YrY 项目需要额外检查：
 
 #### 6. 跨项目契约（Cross-Project Contract）
 
-YrY 是共享后端的单体仓库，前端通过 RPC 信封调用 YiAi。跨项目参数名不匹配是**最频繁的 Bug 来源**（参考 `YiKnowledge/projects/yiai/bugs/2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md`）。
+YrY 是共享后端的单体仓库，前端通过 RPC 信封调用 YiAi。跨项目参数名不匹配是**最频繁的 Bug 来源**（参考 `YiKnowledge/projects/yiai/bugs/2026-09/接口/0001-接口-RPC参数query-vs-filter静默忽略.md`）。
 
 | 检查项 | 严重程度 | 说明 |
 |--------|---------|------|
@@ -272,7 +272,7 @@ YrY 是共享后端的单体仓库，前端通过 RPC 信封调用 YiAi。跨项
 + parameters: { cname: "issues", filter: { status: "open" } }
 ```
 
-**为什么是 P0**：`query` 被后端静默忽略→返回全量数据→前端显示全量→用户基于错误数据决策。参考 `YiKnowledge/projects/yiai/bugs/2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md`。
+**为什么是 P0**：`query` 被后端静默忽略→返回全量数据→前端显示全量→用户基于错误数据决策。参考 `YiKnowledge/projects/yiai/bugs/2026-09/接口/0001-接口-RPC参数query-vs-filter静默忽略.md`。
 
 ### 例 2：MongoDB 连接未释放（P1 🟠）
 
@@ -285,7 +285,7 @@ async def query_documents(self, params):
     return result  # client 未关闭，连接泄漏
 ```
 
-**为什么是 P1**：高并发下连接池耗尽。应使用单例 `AsyncIOMotorClient`。参考 `YiKnowledge/projects/yiai/bugs/2026-09/数据/01-数据-MongoDB连接池耗尽.md`。
+**为什么是 P1**：高并发下连接池耗尽。应使用单例 `AsyncIOMotorClient`。参考 `YiKnowledge/projects/yiai/bugs/2026-09/数据/0001-数据-MongoDB连接池耗尽.md`。
 
 ### 例 3：缺失空查询防护（P1 🟠）
 
@@ -312,7 +312,7 @@ results = await collection.find(filter_dict).to_list(None)
 - `../test-driven-development/SKILL.md` — TDD 技能（审查时检查是否有对应测试）
 - `../verification-before-completion/SKILL.md` — 完成前验证（审查修复完成后触发验证）
 - `../../YiKnowledge/projects/` — 各项目 bug 历史和架构文档
-- `../../YiKnowledge/projects/yiai/bugs/2026-09/接口/01-接口-RPC参数query-vs-filter静默忽略.md` — RPC 契约 Bug 参考
+- `../../YiKnowledge/projects/yiai/bugs/2026-09/接口/0001-接口-RPC参数query-vs-filter静默忽略.md` — RPC 契约 Bug 参考
 - `../finishing-a-development-branch/SKILL.md` — 开发分支收尾（审查通过后的提交规范检查）
 - `../requesting-code-review/SKILL.md` — 请求代码审查（审查的上游，如何准备和提交审查请求）
 - `../receiving-code-review/SKILL.md` — 接收审查反馈（审查的下游，如何处理审查意见）

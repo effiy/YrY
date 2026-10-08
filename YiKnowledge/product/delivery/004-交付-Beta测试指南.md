@@ -17,7 +17,7 @@ acceptance_criteria:
   - "包含参与者招募、反馈收集和毕业标准的实操方法"
   - "包含 YrY 三个项目的 Beta 测试场景说明"
 related:
-  - ./002-交付-发布检查清单.md
+  - ./0002-交付-发布检查清单.md
   - ../discovery/01-体验-UX检查清单.md
   - ../../curator/templates/usability-test-report.md
 ---

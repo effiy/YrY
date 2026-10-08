@@ -37,22 +37,22 @@ related:
 ## 建议学习路径
 
 ### 新手入门
-1. [001-基础-LLM基础.md](./foundations/001-基础-LLM基础.md) — 理解 Token、上下文窗口、Transformer 核心概念
-2. [005-方法-提示词工程.md](./methods/005-方法-提示词工程.md) — 掌握 Prompt 设计基础，立即上手
-3. [001-方法-Agent架构模式.md](./methods/001-方法-Agent架构模式.md) — 理解 YiAi Agent 循环的完整架构
+1. [0001-基础-LLM基础.md](./foundations/001-基础-LLM基础.md) — 理解 Token、上下文窗口、Transformer 核心概念
+2. [0005-方法-提示词工程.md](./methods/005-方法-提示词工程.md) — 掌握 Prompt 设计基础，立即上手
+3. [0001-方法-Agent架构模式.md](./methods/001-方法-Agent架构模式.md) — 理解 YiAi Agent 循环的完整架构
 
 ### 进阶
-4. [002-基础-RAG设计模式.md](./foundations/002-基础-RAG设计模式.md) — 混合检索、分块策略、增强技术
-5. [002-平台-LLM对比.md](./platform/002-平台-LLM对比.md) — 模型选型决策框架
-6. [004-方法-LLM评估.md](./methods/004-方法-LLM评估.md) — 建立 AI 输出的质量评估体系
-7. [002-方法-Agent评估.md](./methods/002-方法-Agent评估.md) — Agent 任务完成率、工具准确性评估
+4. [0002-基础-RAG设计模式.md](./foundations/002-基础-RAG设计模式.md) — 混合检索、分块策略、增强技术
+5. [0002-平台-LLM对比.md](./platform/002-平台-LLM对比.md) — 模型选型决策框架
+6. [0004-方法-LLM评估.md](./methods/004-方法-LLM评估.md) — 建立 AI 输出的质量评估体系
+7. [0002-方法-Agent评估.md](./methods/002-方法-Agent评估.md) — Agent 任务完成率、工具准确性评估
 
 ### 全面掌握
-8. [003-基础-AI安全与防护.md](./foundations/003-基础-AI安全与防护.md) — 注入攻击、越狱、防护策略
-9. [003-方法-Agent-Harness插件架构.md](./methods/003-方法-Agent-Harness插件架构.md) — 理解 Agent 的工具扩展机制
-10. [001-平台-Embedding模型选型.md](./platform/001-平台-Embedding模型选型.md) — RAG 检索质量的底层依赖
-11. [003-平台-向量数据库选型.md](./platform/003-平台-向量数据库选型.md) — 存储和检索架构选型
-12. [001-机器学习-传统机器学习模式.md](./machine-learning/001-机器学习-传统机器学习模式.md) — LLM 之外的轻量级方案
+8. [0003-基础-AI安全与防护.md](./foundations/003-基础-AI安全与防护.md) — 注入攻击、越狱、防护策略
+9. [0003-方法-Agent-Harness插件架构.md](./methods/003-方法-Agent-Harness插件架构.md) — 理解 Agent 的工具扩展机制
+10. [0001-平台-Embedding模型选型.md](./platform/001-平台-Embedding模型选型.md) — RAG 检索质量的底层依赖
+11. [0003-平台-向量数据库选型.md](./platform/003-平台-向量数据库选型.md) — 存储和检索架构选型
+12. [0001-机器学习-传统机器学习模式.md](./machine-learning/001-机器学习-传统机器学习模式.md) — LLM 之外的轻量级方案
 
 ## 跨角色引用
 

@@ -132,10 +132,10 @@ type: test
 ## 参考文档
 
 - [需求总览 PRD](../../../../../YiKnowledge/projects/yipot/prds/2026-09/00-prd-需求总览.md)
-- [翻译核心测试](01-prd-test-翻译核心.md)
-- [OCR 识别测试](02-prd-test-OCR识别.md)
-- [桌面集成测试](03-prd-test-桌面集成.md)
-- [快捷键系统测试](17-prd-test-快捷键.md)
+- [翻译核心测试](001-prd-test-翻译核心.md)
+- [OCR 识别测试](002-prd-test-OCR识别.md)
+- [桌面集成测试](003-prd-test-桌面集成.md)
+- [快捷键系统测试](017-prd-test-快捷键.md)
 
 ---
 
@@ -562,25 +562,25 @@ GATE-I18N 全部通过 --+
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-1.1 | 划词翻译 | TC-TR-001 ~ TC-TR-020 | [01-prd-test-翻译核心](01-prd-test-翻译核心.md) | 已覆盖 |
-| FR-1.1 | 划词翻译窗口交互 | TC-WIN-001 ~ TC-WIN-015 | [20-prd-test-翻译窗口交互](20-prd-test-翻译窗口交互.md) | 已覆盖 |
-| FR-1.2 | 输入翻译 | TC-TR-021 ~ TC-TR-030 | [01-prd-test-翻译核心](01-prd-test-翻译核心.md) | 已覆盖 |
-| FR-1.3 | 剪切板监听 | TC-CLIP-001 ~ TC-CLIP-020 | [13-prd-test-剪切板监听](13-prd-test-剪切板监听.md) | 已覆盖 |
-| FR-1.3 | Rust 剪切板模块 | TC-CLIP-001 ~ TC-CLIP-010 | [24-prd-test-Rust模块](24-prd-test-Rust模块.md) | 已覆盖 |
-| FR-1.4 | 多接口并行翻译 | TC-PARALLEL-001 ~ TC-PARALLEL-015 | [19-prd-test-并行调度](19-prd-test-并行调度.md) | 已覆盖 |
-| FR-1.4 | 并行调度策略 | TC-SCHED-001 ~ TC-SCHED-010 | [56-prd-test-并行调度策略](56-prd-test-并行调度策略.md) | 已覆盖 |
-| FR-1.4 | 百度翻译服务 | TC-BAIDU-001 ~ TC-BAIDU-015 | [11-prd-test-百度翻译](11-prd-test-百度翻译.md) / [36-prd-test-百度翻译服务](36-prd-test-百度翻译服务.md) | 已覆盖 |
-| FR-1.4 | AI 翻译服务 (OpenAI) | TC-AI-001 ~ TC-AI-015 | [12-prd-test-AI翻译](12-prd-test-AI翻译.md) / [37-prd-test-AI翻译服务](37-prd-test-AI翻译服务.md) | 已覆盖 |
-| FR-1.4 | Google 翻译 | TC-GOOG-001 ~ TC-GOOG-015 | [15-prd-test-GoogleDeepL翻译](15-prd-test-GoogleDeepL翻译.md) / [43-prd-test-Google翻译](43-prd-test-Google翻译.md) | 已覆盖 |
-| FR-1.4 | DeepL 翻译 | TC-DEEPL-001 ~ TC-DEEPL-015 | [15-prd-test-GoogleDeepL翻译](15-prd-test-GoogleDeepL翻译.md) / [42-prd-test-DeepL翻译](42-prd-test-DeepL翻译.md) / [82-prd-test-DeepL翻译](82-prd-test-DeepL翻译.md) | 已覆盖 |
-| FR-1.4 | 有道翻译 | TC-YOUDAO-001 ~ TC-YOUDAO-015 | [18-prd-test-有道翻译](18-prd-test-有道翻译.md) / [50-prd-test-有道翻译](50-prd-test-有道翻译.md) | 已覆盖 |
-| FR-1.4 | 阿里/腾讯/火山翻译 | TC-ATV-001 ~ TC-ATV-015 | [52-prd-test-阿里腾讯火山](52-prd-test-阿里腾讯火山.md) | 已覆盖 |
-| FR-1.4 | 彩云/Bing/Yandex 翻译 | TC-CBY-001 ~ TC-CBY-015 | [51-prd-test-彩云BingYandex](51-prd-test-彩云BingYandex.md) | 已覆盖 |
-| FR-1.4 | 词典/本地翻译 | TC-DICT-001 ~ TC-DICT-010 | [53-prd-test-词典本地翻译](53-prd-test-词典本地翻译.md) | 已覆盖 |
+| FR-1.1 | 划词翻译 | TC-TR-001 ~ TC-TR-020 | [01-prd-test-翻译核心](001-prd-test-翻译核心.md) | 已覆盖 |
+| FR-1.1 | 划词翻译窗口交互 | TC-WIN-001 ~ TC-WIN-015 | [20-prd-test-翻译窗口交互](020-prd-test-翻译窗口交互.md) | 已覆盖 |
+| FR-1.2 | 输入翻译 | TC-TR-021 ~ TC-TR-030 | [01-prd-test-翻译核心](001-prd-test-翻译核心.md) | 已覆盖 |
+| FR-1.3 | 剪切板监听 | TC-CLIP-001 ~ TC-CLIP-020 | [13-prd-test-剪切板监听](013-prd-test-剪切板监听.md) | 已覆盖 |
+| FR-1.3 | Rust 剪切板模块 | TC-CLIP-001 ~ TC-CLIP-010 | [24-prd-test-Rust模块](024-prd-test-Rust模块.md) | 已覆盖 |
+| FR-1.4 | 多接口并行翻译 | TC-PARALLEL-001 ~ TC-PARALLEL-015 | [19-prd-test-并行调度](019-prd-test-并行调度.md) | 已覆盖 |
+| FR-1.4 | 并行调度策略 | TC-SCHED-001 ~ TC-SCHED-010 | [56-prd-test-并行调度策略](056-prd-test-并行调度策略.md) | 已覆盖 |
+| FR-1.4 | 百度翻译服务 | TC-BAIDU-001 ~ TC-BAIDU-015 | [11-prd-test-百度翻译](011-prd-test-百度翻译.md) / [36-prd-test-百度翻译服务](036-prd-test-百度翻译服务.md) | 已覆盖 |
+| FR-1.4 | AI 翻译服务 (OpenAI) | TC-AI-001 ~ TC-AI-015 | [12-prd-test-AI翻译](012-prd-test-AI翻译.md) / [37-prd-test-AI翻译服务](037-prd-test-AI翻译服务.md) | 已覆盖 |
+| FR-1.4 | Google 翻译 | TC-GOOG-001 ~ TC-GOOG-015 | [15-prd-test-GoogleDeepL翻译](015-prd-test-GoogleDeepL翻译.md) / [43-prd-test-Google翻译](043-prd-test-Google翻译.md) | 已覆盖 |
+| FR-1.4 | DeepL 翻译 | TC-DEEPL-001 ~ TC-DEEPL-015 | [15-prd-test-GoogleDeepL翻译](015-prd-test-GoogleDeepL翻译.md) / [42-prd-test-DeepL翻译](042-prd-test-DeepL翻译.md) / [82-prd-test-DeepL翻译](082-prd-test-DeepL翻译.md) | 已覆盖 |
+| FR-1.4 | 有道翻译 | TC-YOUDAO-001 ~ TC-YOUDAO-015 | [18-prd-test-有道翻译](018-prd-test-有道翻译.md) / [50-prd-test-有道翻译](050-prd-test-有道翻译.md) | 已覆盖 |
+| FR-1.4 | 阿里/腾讯/火山翻译 | TC-ATV-001 ~ TC-ATV-015 | [52-prd-test-阿里腾讯火山](052-prd-test-阿里腾讯火山.md) | 已覆盖 |
+| FR-1.4 | 彩云/Bing/Yandex 翻译 | TC-CBY-001 ~ TC-CBY-015 | [51-prd-test-彩云BingYandex](051-prd-test-彩云BingYandex.md) | 已覆盖 |
+| FR-1.4 | 词典/本地翻译 | TC-DICT-001 ~ TC-DICT-010 | [53-prd-test-词典本地翻译](053-prd-test-词典本地翻译.md) | 已覆盖 |
 | FR-1.4 | 翻译 Provider 适配器 | TC-PROV-001 ~ TC-PROV-020 | [100-prd-test-翻译Provider适配器](100-prd-test-翻译Provider适配器.md) | 已覆盖 |
 | FR-1.4 | 翻译记忆与 RAG | TC-MEM-001 ~ TC-MEM-015 | [103-prd-test-翻译记忆与RAG上下文](103-prd-test-翻译记忆与RAG上下文.md) | 已覆盖 |
-| FR-1 | 翻译历史记录 | TC-HIST-001 ~ TC-HIST-010 | [96-prd-test-翻译历史记录](96-prd-test-翻译历史记录.md) | 已覆盖 |
-| FR-1 | YiAi 后端集成 (翻译) | TC-YIAI-001 ~ TC-YIAI-020 | [99-prd-test-YiAi后端集成](99-prd-test-YiAi后端集成.md) | 已覆盖 |
+| FR-1 | 翻译历史记录 | TC-HIST-001 ~ TC-HIST-010 | [96-prd-test-翻译历史记录](096-prd-test-翻译历史记录.md) | 已覆盖 |
+| FR-1 | YiAi 后端集成 (翻译) | TC-YIAI-001 ~ TC-YIAI-020 | [99-prd-test-YiAi后端集成](099-prd-test-YiAi后端集成.md) | 已覆盖 |
 | FR-1 | 前端 YiAi 路由降级 | TC-DEGRADE-001 ~ TC-DEGRADE-015 | [105-prd-test-前端集成YiAi路由降级](105-prd-test-前端集成YiAi路由降级.md) | 已覆盖 |
 | FR-1 | YiPot API 四层架构 | TC-API-001 ~ TC-API-020 | [104-prd-test-YiPotAPI四层架构](104-prd-test-YiPotAPI四层架构.md) | 已覆盖 |
 
@@ -588,82 +588,82 @@ GATE-I18N 全部通过 --+
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-2.1 | 截图 OCR | TC-OCR-001 ~ TC-OCR-020 | [02-prd-test-OCR识别](02-prd-test-OCR识别.md) | 已覆盖 |
-| FR-2.1 | OCR 窗口交互 | TC-OCRWIN-001 ~ TC-OCRWIN-015 | [21-prd-test-OCR窗口交互](21-prd-test-OCR窗口交互.md) / [58-prd-test-OCR窗口交互](58-prd-test-OCR窗口交互.md) | 已覆盖 |
-| FR-2.1 | 截图与选区 | TC-CROP-001 ~ TC-CROP-015 | [16-prd-test-截图与选区](16-prd-test-截图与选区.md) / [86-prd-test-截图与选区](86-prd-test-截图与选区.md) | 已覆盖 |
-| FR-2.1 | 截图选区交互 | TC-SEL-001 ~ TC-SEL-010 | [39-prd-test-截图选区](39-prd-test-截图选区.md) | 已覆盖 |
-| FR-2.2 | 截图翻译 | TC-OCR-TR-001 ~ TC-OCR-TR-015 | [02-prd-test-OCR识别](02-prd-test-OCR识别.md) / [88-prd-test-OCR截图识别](88-prd-test-OCR截图识别.md) | 已覆盖 |
-| FR-2.3 | macOS 系统 OCR (Vision) | TC-SYS-OCR-001 ~ TC-SYS-OCR-010 | [16-prd-test-系统OCR](16-prd-test-系统OCR.md) / [44-prd-test-系统OCR离线](44-prd-test-系统OCR离线.md) | 已覆盖 |
-| FR-2.3 | Windows 系统 OCR | TC-WIN-OCR-001 ~ TC-WIN-OCR-010 | [16-prd-test-系统OCR](16-prd-test-系统OCR.md) | 已覆盖 |
-| FR-2 | OCR 服务全览 | TC-OCR-SVC-001 ~ TC-OCR-SVC-015 | [05-prd-test-OCR服务接口](05-prd-test-OCR服务接口.md) / [30-prd-test-OCR服务全景](30-prd-test-OCR服务全景.md) | 已覆盖 |
-| FR-2 | 百度/腾讯 OCR | TC-BT-OCR-001 ~ TC-BT-OCR-015 | [25-prd-test-百度腾讯OCR](25-prd-test-百度腾讯OCR.md) / [54-prd-test-百度腾讯OCR](54-prd-test-百度腾讯OCR.md) | 已覆盖 |
-| FR-2 | 讯飞/合合/火山 OCR | TC-XHH-OCR-001 ~ TC-XHH-OCR-015 | [55-prd-test-讯飞合合火山OCR](55-prd-test-讯飞合合火山OCR.md) | 已覆盖 |
-| FR-2 | Tesseract 离线 OCR | TC-TESS-001 ~ TC-TESS-015 | [45-prd-test-TesseractOCR](45-prd-test-TesseractOCR.md) / [83-prd-test-Tesseract离线OCR](83-prd-test-Tesseract离线OCR.md) | 已覆盖 |
-| FR-2 | 公式/二维码 OCR | TC-FORMULA-001 ~ TC-FORMULA-010 | [26-prd-test-公式二维码OCR](26-prd-test-公式二维码OCR.md) | 已覆盖 |
-| FR-2 | Rust 截图 OCR 语言检测 | TC-RS-OCR-001 ~ TC-RS-OCR-010 | [24-prd-test-Rust模块](24-prd-test-Rust模块.md) / [64-prd-test-Rust截图OCR](64-prd-test-Rust截图OCR.md) | 已覆盖 |
+| FR-2.1 | 截图 OCR | TC-OCR-001 ~ TC-OCR-020 | [02-prd-test-OCR识别](002-prd-test-OCR识别.md) | 已覆盖 |
+| FR-2.1 | OCR 窗口交互 | TC-OCRWIN-001 ~ TC-OCRWIN-015 | [21-prd-test-OCR窗口交互](021-prd-test-OCR窗口交互.md) / [58-prd-test-OCR窗口交互](058-prd-test-OCR窗口交互.md) | 已覆盖 |
+| FR-2.1 | 截图与选区 | TC-CROP-001 ~ TC-CROP-015 | [16-prd-test-截图与选区](16-prd-test-截图与选区.md) / [86-prd-test-截图与选区](086-prd-test-截图与选区.md) | 已覆盖 |
+| FR-2.1 | 截图选区交互 | TC-SEL-001 ~ TC-SEL-010 | [39-prd-test-截图选区](039-prd-test-截图选区.md) | 已覆盖 |
+| FR-2.2 | 截图翻译 | TC-OCR-TR-001 ~ TC-OCR-TR-015 | [02-prd-test-OCR识别](002-prd-test-OCR识别.md) / [88-prd-test-OCR截图识别](088-prd-test-OCR截图识别.md) | 已覆盖 |
+| FR-2.3 | macOS 系统 OCR (Vision) | TC-SYS-OCR-001 ~ TC-SYS-OCR-010 | [16-prd-test-系统OCR](016-prd-test-系统OCR.md) / [44-prd-test-系统OCR离线](044-prd-test-系统OCR离线.md) | 已覆盖 |
+| FR-2.3 | Windows 系统 OCR | TC-WIN-OCR-001 ~ TC-WIN-OCR-010 | [16-prd-test-系统OCR](016-prd-test-系统OCR.md) | 已覆盖 |
+| FR-2 | OCR 服务全览 | TC-OCR-SVC-001 ~ TC-OCR-SVC-015 | [05-prd-test-OCR服务接口](005-prd-test-OCR服务接口.md) / [30-prd-test-OCR服务全景](030-prd-test-OCR服务全景.md) | 已覆盖 |
+| FR-2 | 百度/腾讯 OCR | TC-BT-OCR-001 ~ TC-BT-OCR-015 | [25-prd-test-百度腾讯OCR](025-prd-test-百度腾讯OCR.md) / [54-prd-test-百度腾讯OCR](054-prd-test-百度腾讯OCR.md) | 已覆盖 |
+| FR-2 | 讯飞/合合/火山 OCR | TC-XHH-OCR-001 ~ TC-XHH-OCR-015 | [55-prd-test-讯飞合合火山OCR](055-prd-test-讯飞合合火山OCR.md) | 已覆盖 |
+| FR-2 | Tesseract 离线 OCR | TC-TESS-001 ~ TC-TESS-015 | [45-prd-test-TesseractOCR](045-prd-test-TesseractOCR.md) / [83-prd-test-Tesseract离线OCR](083-prd-test-Tesseract离线OCR.md) | 已覆盖 |
+| FR-2 | 公式/二维码 OCR | TC-FORMULA-001 ~ TC-FORMULA-010 | [26-prd-test-公式二维码OCR](026-prd-test-公式二维码OCR.md) | 已覆盖 |
+| FR-2 | Rust 截图 OCR 语言检测 | TC-RS-OCR-001 ~ TC-RS-OCR-010 | [24-prd-test-Rust模块](024-prd-test-Rust模块.md) / [64-prd-test-Rust截图OCR](064-prd-test-Rust截图OCR.md) | 已覆盖 |
 | FR-2 | OCR Provider 适配器 | TC-OCR-PROV-001 ~ TC-OCR-PROV-015 | [101-prd-test-OCRProvider适配器](101-prd-test-OCRProvider适配器.md) | 已覆盖 |
 
 ### FR-3: 语音合成与生词本
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-3.1 | 多接口 TTS | TC-TTS-001 ~ TC-TTS-020 | [06-prd-test-语音合成与生词本](06-prd-test-语音合成与生词本.md) / [28-prd-test-语音合成生词本](28-prd-test-语音合成生词本.md) | 已覆盖 |
-| FR-3.1 | TTS 详细测试 | TC-TTS-DETAIL-001 ~ TC-TTS-DETAIL-015 | [41-prd-test-TTS语音合成](41-prd-test-TTS语音合成.md) / [89-prd-test-TTS语音合成](89-prd-test-TTS语音合成.md) | 已覆盖 |
-| FR-3.2 | 生词本导出 (Anki) | TC-ANKI-001 ~ TC-ANKI-015 | [06-prd-test-语音合成与生词本](06-prd-test-语音合成与生词本.md) | 已覆盖 |
-| FR-3.2 | 生词本导出详细测试 | TC-EXPORT-001 ~ TC-EXPORT-015 | [46-prd-test-生词本导出](46-prd-test-生词本导出.md) / [84-prd-test-生词本导出](84-prd-test-生词本导出.md) | 已覆盖 |
+| FR-3.1 | 多接口 TTS | TC-TTS-001 ~ TC-TTS-020 | [06-prd-test-语音合成与生词本](006-prd-test-语音合成与生词本.md) / [28-prd-test-语音合成生词本](028-prd-test-语音合成生词本.md) | 已覆盖 |
+| FR-3.1 | TTS 详细测试 | TC-TTS-DETAIL-001 ~ TC-TTS-DETAIL-015 | [41-prd-test-TTS语音合成](041-prd-test-TTS语音合成.md) / [89-prd-test-TTS语音合成](089-prd-test-TTS语音合成.md) | 已覆盖 |
+| FR-3.2 | 生词本导出 (Anki) | TC-ANKI-001 ~ TC-ANKI-015 | [06-prd-test-语音合成与生词本](006-prd-test-语音合成与生词本.md) | 已覆盖 |
+| FR-3.2 | 生词本导出详细测试 | TC-EXPORT-001 ~ TC-EXPORT-015 | [46-prd-test-生词本导出](046-prd-test-生词本导出.md) / [84-prd-test-生词本导出](084-prd-test-生词本导出.md) | 已覆盖 |
 | FR-3 | TTS 生词本 Provider | TC-TTS-PROV-001 ~ TC-TTS-PROV-015 | [102-prd-test-TTS生词本Provider](102-prd-test-TTS生词本Provider.md) | 已覆盖 |
 
 ### FR-4: 插件与服务系统
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-4.1 | 插件架构 | TC-PLUG-001 ~ TC-PLUG-030 | [29-prd-test-插件系统](29-prd-test-插件系统.md) | 已覆盖 |
-| FR-4.1 | 翻译服务全景 | TC-TSVC-001 ~ TC-TSVC-015 | [04-prd-test-翻译服务接口](04-prd-test-翻译服务接口.md) | 已覆盖 |
-| FR-4.2 | 服务配置管理 | TC-CFG-SVC-001 ~ TC-CFG-SVC-015 | [04-prd-test-翻译服务接口](04-prd-test-翻译服务接口.md) / [29-prd-test-插件系统](29-prd-test-插件系统.md) | 已覆盖 |
+| FR-4.1 | 插件架构 | TC-PLUG-001 ~ TC-PLUG-030 | [29-prd-test-插件系统](029-prd-test-插件系统.md) | 已覆盖 |
+| FR-4.1 | 翻译服务全景 | TC-TSVC-001 ~ TC-TSVC-015 | [04-prd-test-翻译服务接口](004-prd-test-翻译服务接口.md) | 已覆盖 |
+| FR-4.2 | 服务配置管理 | TC-CFG-SVC-001 ~ TC-CFG-SVC-015 | [04-prd-test-翻译服务接口](004-prd-test-翻译服务接口.md) / [29-prd-test-插件系统](029-prd-test-插件系统.md) | 已覆盖 |
 
 ### FR-5: 桌面集成
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-5.1 | 全局快捷键 | TC-HK-001 ~ TC-HK-020 | [03-prd-test-桌面集成](03-prd-test-桌面集成.md) / [17-prd-test-快捷键](17-prd-test-快捷键.md) | 已覆盖 |
-| FR-5.1 | 快捷键注册管理 | TC-HKREG-001 ~ TC-HKREG-015 | [47-prd-test-快捷键注册](47-prd-test-快捷键注册.md) | 已覆盖 |
-| FR-5.2 | 系统托盘 | TC-TRAY-001 ~ TC-TRAY-020 | [03-prd-test-桌面集成](03-prd-test-桌面集成.md) / [85-prd-test-系统托盘](85-prd-test-系统托盘.md) / [81-prd-test-系统托盘](81-prd-test-系统托盘.md) / [38-prd-test-系统托盘](38-prd-test-系统托盘.md) | 已覆盖 |
-| FR-5.2 | Rust 托盘模块 | TC-RS-TRAY-001 ~ TC-RS-TRAY-010 | [24-prd-test-Rust模块](24-prd-test-Rust模块.md) / [63-prd-test-Rust托盘](63-prd-test-Rust托盘.md) | 已覆盖 |
-| FR-5.3 | 窗口管理 | TC-WINPOS-001 ~ TC-WINPOS-015 | [40-prd-test-窗口定位](40-prd-test-窗口定位.md) / [87-prd-test-窗口定位与多显示器](87-prd-test-窗口定位与多显示器.md) | 已覆盖 |
-| FR-5 | 窗口动画过渡 | TC-ANIM-001 ~ TC-ANIM-010 | [97-prd-test-窗口动画过渡](97-prd-test-窗口动画过渡.md) | 已覆盖 |
-| FR-5 | 桌面集成全览 | TC-DESK-001 ~ TC-DESK-020 | [31-prd-test-桌面集成](31-prd-test-桌面集成.md) | 已覆盖 |
-| FR-5 | 启动与开机自启 | TC-STARTUP-001 ~ TC-STARTUP-010 | [03-prd-test-桌面集成](03-prd-test-桌面集成.md) | 已覆盖 |
+| FR-5.1 | 全局快捷键 | TC-HK-001 ~ TC-HK-020 | [03-prd-test-桌面集成](003-prd-test-桌面集成.md) / [17-prd-test-快捷键](017-prd-test-快捷键.md) | 已覆盖 |
+| FR-5.1 | 快捷键注册管理 | TC-HKREG-001 ~ TC-HKREG-015 | [47-prd-test-快捷键注册](047-prd-test-快捷键注册.md) | 已覆盖 |
+| FR-5.2 | 系统托盘 | TC-TRAY-001 ~ TC-TRAY-020 | [03-prd-test-桌面集成](003-prd-test-桌面集成.md) / [85-prd-test-系统托盘](085-prd-test-系统托盘.md) / [81-prd-test-系统托盘](081-prd-test-系统托盘.md) / [38-prd-test-系统托盘](038-prd-test-系统托盘.md) | 已覆盖 |
+| FR-5.2 | Rust 托盘模块 | TC-RS-TRAY-001 ~ TC-RS-TRAY-010 | [24-prd-test-Rust模块](024-prd-test-Rust模块.md) / [63-prd-test-Rust托盘](063-prd-test-Rust托盘.md) | 已覆盖 |
+| FR-5.3 | 窗口管理 | TC-WINPOS-001 ~ TC-WINPOS-015 | [40-prd-test-窗口定位](040-prd-test-窗口定位.md) / [87-prd-test-窗口定位与多显示器](087-prd-test-窗口定位与多显示器.md) | 已覆盖 |
+| FR-5 | 窗口动画过渡 | TC-ANIM-001 ~ TC-ANIM-010 | [97-prd-test-窗口动画过渡](097-prd-test-窗口动画过渡.md) | 已覆盖 |
+| FR-5 | 桌面集成全览 | TC-DESK-001 ~ TC-DESK-020 | [31-prd-test-桌面集成](031-prd-test-桌面集成.md) | 已覆盖 |
+| FR-5 | 启动与开机自启 | TC-STARTUP-001 ~ TC-STARTUP-010 | [03-prd-test-桌面集成](003-prd-test-桌面集成.md) | 已覆盖 |
 
 ### FR-6: 国际化
 
 | FR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |--------|------|-----------|---------|---------|
-| FR-6.1 | 多语言界面 (22 语言) | TC-I18N-001 ~ TC-I18N-020 | [07-prd-test-国际化与主题](07-prd-test-国际化与主题.md) / [32-prd-test-国际化主题](32-prd-test-国际化主题.md) | 已覆盖 |
-| FR-6.1 | RTL 布局 | TC-RTL-001 ~ TC-RTL-010 | [07-prd-test-国际化与主题](07-prd-test-国际化与主题.md) | 已覆盖 |
-| FR-6.1 | 主题系统 | TC-THEME-001 ~ TC-THEME-010 | [07-prd-test-国际化与主题](07-prd-test-国际化与主题.md) | 已覆盖 |
+| FR-6.1 | 多语言界面 (22 语言) | TC-I18N-001 ~ TC-I18N-020 | [07-prd-test-国际化与主题](007-prd-test-国际化与主题.md) / [32-prd-test-国际化主题](032-prd-test-国际化主题.md) | 已覆盖 |
+| FR-6.1 | RTL 布局 | TC-RTL-001 ~ TC-RTL-010 | [07-prd-test-国际化与主题](007-prd-test-国际化与主题.md) | 已覆盖 |
+| FR-6.1 | 主题系统 | TC-THEME-001 ~ TC-THEME-010 | [07-prd-test-国际化与主题](007-prd-test-国际化与主题.md) | 已覆盖 |
 
 ### 非功能需求 (NFR)
 
 | NFR编号 | 需求 | 测试用例ID | 测试文件 | 覆盖状态 |
 |---------|------|-----------|---------|---------|
-| NFR-PERF | 翻译响应 < 2s | TC-PERF-001 ~ TC-PERF-020 | [22-prd-test-性能基准](22-prd-test-性能基准.md) | 已覆盖 |
-| NFR-PERF | OCR 识别 < 3s | TC-PERF-OCR-001 ~ TC-PERF-OCR-010 | [22-prd-test-性能基准](22-prd-test-性能基准.md) | 已覆盖 |
-| NFR-PERF | 快捷键响应 < 200ms | TC-PERF-HK-001 ~ TC-PERF-HK-005 | [22-prd-test-性能基准](22-prd-test-性能基准.md) | 已覆盖 |
-| NFR-PLAT | macOS 平台适配 | TC-MAC-001 ~ TC-MAC-015 | [23-prd-test-平台兼容](23-prd-test-平台兼容.md) / [93-prd-test-macOS平台](93-prd-test-macOS平台.md) | 已覆盖 |
-| NFR-PLAT | Windows 平台适配 | TC-WIN-001 ~ TC-WIN-015 | [23-prd-test-平台兼容](23-prd-test-平台兼容.md) | 已覆盖 |
-| NFR-PLAT | Linux 平台适配 | TC-LINUX-001 ~ TC-LINUX-015 | [23-prd-test-平台兼容](23-prd-test-平台兼容.md) | 已覆盖 |
-| NFR-SEC | API Key 加密存储 | TC-SEC-001 ~ TC-SEC-010 | [27-prd-test-安全加密存储](27-prd-test-安全加密存储.md) / [49-prd-test-安全加密](49-prd-test-安全加密.md) / [91-prd-test-安全加密存储](91-prd-test-安全加密存储.md) | 已覆盖 |
+| NFR-PERF | 翻译响应 < 2s | TC-PERF-001 ~ TC-PERF-020 | [22-prd-test-性能基准](022-prd-test-性能基准.md) | 已覆盖 |
+| NFR-PERF | OCR 识别 < 3s | TC-PERF-OCR-001 ~ TC-PERF-OCR-010 | [22-prd-test-性能基准](022-prd-test-性能基准.md) | 已覆盖 |
+| NFR-PERF | 快捷键响应 < 200ms | TC-PERF-HK-001 ~ TC-PERF-HK-005 | [22-prd-test-性能基准](022-prd-test-性能基准.md) | 已覆盖 |
+| NFR-PLAT | macOS 平台适配 | TC-MAC-001 ~ TC-MAC-015 | [23-prd-test-平台兼容](023-prd-test-平台兼容.md) / [93-prd-test-macOS平台](093-prd-test-macOS平台.md) | 已覆盖 |
+| NFR-PLAT | Windows 平台适配 | TC-WIN-001 ~ TC-WIN-015 | [23-prd-test-平台兼容](023-prd-test-平台兼容.md) | 已覆盖 |
+| NFR-PLAT | Linux 平台适配 | TC-LINUX-001 ~ TC-LINUX-015 | [23-prd-test-平台兼容](023-prd-test-平台兼容.md) | 已覆盖 |
+| NFR-SEC | API Key 加密存储 | TC-SEC-001 ~ TC-SEC-010 | [27-prd-test-安全加密存储](027-prd-test-安全加密存储.md) / [49-prd-test-安全加密](049-prd-test-安全加密.md) / [91-prd-test-安全加密存储](091-prd-test-安全加密存储.md) | 已覆盖 |
 | NFR-SEC | 安全加密整体 | TC-SEC-001 ~ TC-SEC-008 | 本文「安全测试」章节 | 已覆盖 |
-| NFR-CFG | 配置备份恢复 | TC-CFG-001 ~ TC-CFG-020 | [08-prd-test-配置管理与备份](08-prd-test-配置管理与备份.md) / [33-prd-test-配置备份](33-prd-test-配置备份.md) | 已覆盖 |
-| NFR-CFG | WebDAV/阿里云备份 | TC-WEBDAV-001 ~ TC-WEBDAV-015 | [61-prd-test-WebDAV备份](61-prd-test-WebDAV备份.md) | 已覆盖 |
-| NFR-CFG | Rust 配置备份 | TC-RS-CFG-001 ~ TC-RS-CFG-010 | [24-prd-test-Rust模块](24-prd-test-Rust模块.md) / [65-prd-test-Rust配置备份](65-prd-test-Rust配置备份.md) | 已覆盖 |
-| NFR-HTTP | 外部 HTTP 服务 | TC-HTTP-001 ~ TC-HTTP-020 | [09-prd-test-外部HTTP服务](09-prd-test-外部HTTP服务.md) / [34-prd-test-HTTP服务](34-prd-test-HTTP服务.md) | 已覆盖 |
-| NFR-NET | 代理与网络 | TC-PROXY-001 ~ TC-PROXY-015 | [14-prd-test-代理与网络](14-prd-test-代理与网络.md) | 已覆盖 |
-| NFR-UPDATE | 自动更新 | TC-UPDATE-001 ~ TC-UPDATE-015 | [48-prd-test-自动更新](48-prd-test-自动更新.md) / [90-prd-test-自动更新](90-prd-test-自动更新.md) / [80-prd-test-自动更新](80-prd-test-自动更新.md) | 已覆盖 |
-| NFR-BUILD | 构建发布与安全 | TC-BUILD-001 ~ TC-BUILD-015 | [10-prd-test-构建发布与安全](10-prd-test-构建发布与安全.md) / [35-prd-test-构建安全](35-prd-test-构建安全.md) | 已覆盖 |
-| NFR-CLI | CLI 命令行 | TC-CLI-001 ~ TC-CLI-015 | [60-prd-test-CLI命令行](60-prd-test-CLI命令行.md) | 已覆盖 |
-| NFR-SETTING | 设置页面架构 | TC-SETTING-001 ~ TC-SETTING-015 | [59-prd-test-设置页面架构](59-prd-test-设置页面架构.md) / [92-prd-test-设置页面](92-prd-test-设置页面.md) | 已覆盖 |
-| NFR-RUST | Rust 核心模块 | TC-RUST-001 ~ TC-RUST-020 | [24-prd-test-Rust模块](24-prd-test-Rust模块.md) | 已覆盖 |
+| NFR-CFG | 配置备份恢复 | TC-CFG-001 ~ TC-CFG-020 | [08-prd-test-配置管理与备份](008-prd-test-配置管理与备份.md) / [33-prd-test-配置备份](033-prd-test-配置备份.md) | 已覆盖 |
+| NFR-CFG | WebDAV/阿里云备份 | TC-WEBDAV-001 ~ TC-WEBDAV-015 | [61-prd-test-WebDAV备份](061-prd-test-WebDAV备份.md) | 已覆盖 |
+| NFR-CFG | Rust 配置备份 | TC-RS-CFG-001 ~ TC-RS-CFG-010 | [24-prd-test-Rust模块](024-prd-test-Rust模块.md) / [65-prd-test-Rust配置备份](065-prd-test-Rust配置备份.md) | 已覆盖 |
+| NFR-HTTP | 外部 HTTP 服务 | TC-HTTP-001 ~ TC-HTTP-020 | [09-prd-test-外部HTTP服务](009-prd-test-外部HTTP服务.md) / [34-prd-test-HTTP服务](034-prd-test-HTTP服务.md) | 已覆盖 |
+| NFR-NET | 代理与网络 | TC-PROXY-001 ~ TC-PROXY-015 | [14-prd-test-代理与网络](014-prd-test-代理与网络.md) | 已覆盖 |
+| NFR-UPDATE | 自动更新 | TC-UPDATE-001 ~ TC-UPDATE-015 | [48-prd-test-自动更新](048-prd-test-自动更新.md) / [90-prd-test-自动更新](090-prd-test-自动更新.md) / [80-prd-test-自动更新](080-prd-test-自动更新.md) | 已覆盖 |
+| NFR-BUILD | 构建发布与安全 | TC-BUILD-001 ~ TC-BUILD-015 | [10-prd-test-构建发布与安全](010-prd-test-构建发布与安全.md) / [35-prd-test-构建安全](035-prd-test-构建安全.md) | 已覆盖 |
+| NFR-CLI | CLI 命令行 | TC-CLI-001 ~ TC-CLI-015 | [60-prd-test-CLI命令行](060-prd-test-CLI命令行.md) | 已覆盖 |
+| NFR-SETTING | 设置页面架构 | TC-SETTING-001 ~ TC-SETTING-015 | [59-prd-test-设置页面架构](059-prd-test-设置页面架构.md) / [92-prd-test-设置页面](092-prd-test-设置页面.md) | 已覆盖 |
+| NFR-RUST | Rust 核心模块 | TC-RUST-001 ~ TC-RUST-020 | [24-prd-test-Rust模块](024-prd-test-Rust模块.md) | 已覆盖 |
 | NFR-DOCS | 知识库文档与基础设施 | TC-DOCS-001 ~ TC-DOCS-010 | [106-prd-test-知识库文档与基础设施](106-prd-test-知识库文档与基础设施.md) | 已覆盖 |
 
 ### 覆盖率统计

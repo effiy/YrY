@@ -17,13 +17,13 @@ acceptance_criteria:
   - "Curator 治理按角色分工，每个角色有对应 Reviewer 责任人，季度审查可并行执行"
 related:
   - ./README.md
-  - ./yiknowledge-006-决策-Frontmatter字段规范.md
-  - ../../curator/governance/00002-治理-治理规范.md
+  - ./yiknowledge-yiknowledge-yiknowledge-006-决策-Frontmatter字段规范.md
+  - ../../curator/governance/0002-治理-治理规范.md
   - ../../README.md
   - ../../INDEX.md
   - ../../curator/INDEX.md
-  - ../../curator/diagrams/00002-图表-目录蓝图.md
-  - ../../curator/diagrams/00003-图表-知识地图.md
+  - ../../curator/diagrams/0002-图表-目录蓝图.md
+  - ../../curator/diagrams/0003-图表-知识地图.md
 ---
 
 # ADR: YiKnowledge 7 角色目录划分与流水线对应关系
@@ -37,7 +37,7 @@ related:
 当前 YiKnowledge 顶层目录（参考 `README.md:33-75`）有 7 个角色目录 + skills/projects 两个辅助目录，但：
 1. **7 角色边界无书面化判定规则**：新作者写 ADR 时在 `leader/decisions` vs `product/delivery` vs `engineer/build` 之间犹豫，平均要问 Curator 1-2 次才找到正确目录
 2. **文件归属漂移**：比如"排期估算"，有文件在 product/delivery/ 也有在 engineer/run/ 还有在 leader/roadmap/，重复知识 3 份且互相不一致
-3. **角色责任人缺位**：curator/governance/00002-治理-治理规范.md:30-36 定义了 Author/Reviewer/Curator/Archivist 4 种治理角色，但没说"谁是 leader 目录的 Reviewer？谁是 aier 目录的 Reviewer？"——季度审查时 Curator 一个人审 200 文件，审不完
+3. **角色责任人缺位**：curator/governance/0002-治理-治理规范.md:30-36 定义了 Author/Reviewer/Curator/Archivist 4 种治理角色，但没说"谁是 leader 目录的 Reviewer？谁是 aier 目录的 Reviewer？"——季度审查时 Curator 一个人审 200 文件，审不完
 4. **7 角色和流水线阶段的映射不明确**：README.md 画了图（第 37-75 行），但各角色的具体输入/输出、"什么内容绝对不属于我"没有写死——边界模糊导致重复
 
 为什么现在定：
@@ -94,9 +94,9 @@ Q5: 内容是"为什么这样做（架构/技术选型/容量/风险/路线）"�
     → 再 NO（纯战略/行业/组织/长期规划） → executive/
 ```
 
-**例 1：排期估算方法** → Q1 否、Q2 否、Q3 否、Q4 是（工程怎么做规划估算）→ `engineer/run/010-运行-排期估算方法.md`（本任务要求）✓
+**例 1：排期估算方法** → Q1 否、Q2 否、Q3 否、Q4 是（工程怎么做规划估算）→ `engineer/run/0010-运行-排期估算方法.md`（本任务要求）✓
 **例 2：ADR 技术选型** → Q5 是 → `leader/decisions/yipot-xx-决策-xxx.md` ✓
-**例 3：治理规范模板** → Q1 是 → `curator/governance/00002-治理-治理规范.md` ✓
+**例 3：治理规范模板** → Q1 是 → `curator/governance/0002-治理-治理规范.md` ✓
 
 ---
 
@@ -106,7 +106,7 @@ Q5: 内容是"为什么这样做（架构/技术选型/容量/风险/路线）"�
 |---|---|---|---|
 | **方案 A：按主题分类（AI/Backend/Frontend/Product/DevOps/...）** | 符合传统笔记工具习惯，用户直觉强 | 和软件交付流水线不对应；同一功能的需求/决策/实现/运维散在 4 个主题目录，跨目录找关联很痛苦；主题数量膨胀（新增 Rust/WASM/移动端 每次加新目录） | 流水线阶段视图是 YrY 的核心价值，主题分类丢掉了因果链（为什么→做什么→怎么走→怎么干→怎么跑） |
 | **方案 B：仅用 5 个流水线阶段目录，合并 executive→product、aier→engineer、curator→辅助** | 目录数少 7→5，结构更精简 | 战略层和需求层混在一起（executive 1-5 年战略 vs product 季度需求颗粒度差 10x）；AI 赋能被淹没在 engineer 中，AI 模式无人专门维护；Curator 无独立目录导致治理文档和领域内容混放 | 7 角色每个都有清晰红线，合并后边界模糊回到现状；aier 作为单独目录是 AI 时代的刚需 |
-| **方案 C（已选择）：7 角色目录 + 2 辅助目录 + 5 题决策树** | 流水线因果链完整；每个角色有明确"绝对不做"红线避免重叠；5 题决策树新作者 1 分钟判定；Curator 季度审查按角色拆 Reviewer | 新作者第一次要学 7 角色定位（约 10 分钟阅读本 ADR）；projects/ 作为视图层镜像文件会有轻度重复 | 10 分钟学习成本极低，模板（curator/templates/00-INDEX.md）第 1 页就放决策树；projects/ 镜像带来的检索收益远大于轻度重复 |
+| **方案 C（已选择）：7 角色目录 + 2 辅助目录 + 5 题决策树** | 流水线因果链完整；每个角色有明确"绝对不做"红线避免重叠；5 题决策树新作者 1 分钟判定；Curator 季度审查按角色拆 Reviewer | 新作者第一次要学 7 角色定位（约 10 分钟阅读本 ADR）；projects/ 作为视图层镜像文件会有轻度重复 | 10 分钟学习成本极低，模板（curator/templates/000-INDEX.md）第 1 页就放决策树；projects/ 镜像带来的检索收益远大于轻度重复 |
 
 ---
 
@@ -138,6 +138,6 @@ Q5: 内容是"为什么这样做（架构/技术选型/容量/风险/路线）"�
 
 **落地步骤：**
 1. 立即：本 ADR + 本任务 13 份文档全部严格遵守 7 角色边界
-2. 一周内：curator/templates/00-INDEX.md 首页放 5 题决策树；curator/governance/04-就绪检查清单第 1 题 = "目录归属对吗？跑决策树"
+2. 一周内：curator/templates/000-INDEX.md 首页放 5 题决策树；curator/governance/04-就绪检查清单第 1 题 = "目录归属对吗？跑决策树"
 3. 两周内：现有 200 文件归属审查，标错目录的 10-15 份批量移动，批量更新 related 链接
 4. 下季度审查：7 角色 Reviewer 责任人列表公开，7 人并行各自审查所属目录

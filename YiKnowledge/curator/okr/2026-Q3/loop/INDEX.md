@@ -18,8 +18,8 @@ status: stable
 
 | 闭环 | 主题 | 状态 | 记录 |
 |---|---|---|---|
-| loop-001 | OKR 自闭环 + 流程记录页 | ✅ 已上线 | [01 需求评审](loop-001-okr-self-closed-loop/01-编排-requirement-review.md) · [02 技术评审](loop-001-okr-self-closed-loop/02-编排-technical-review.md) · [03 代码审查](loop-001-okr-self-closed-loop/03-编排-code-review.md) · [04 构建调试](loop-001-okr-self-closed-loop/04-编排-build-debug.md) · [05 测试报告](loop-001-okr-self-closed-loop/05-编排-test-report.md) · [06 部署](loop-001-okr-self-closed-loop/06-编排-deployment.md) · [07 上线记录](loop-001-okr-self-closed-loop/07-编排-launch-record.md) · [08 复盘](loop-001-okr-self-closed-loop/08-编排-retrospective.md) · [📄 闭环报告](loop-001-okr-self-closed-loop/README.md) |
-| loop-002 | 模板复用与编排规范化 | ✅ 已上线 | [01 需求评审](loop-002-template-orchestration/01-编排-requirement-review.md) · [02 技术评审](loop-002-template-orchestration/02-编排-technical-review.md) · [03 代码审查](loop-002-template-orchestration/03-编排-code-review.md) · [04 构建调试](loop-002-template-orchestration/04-编排-build-debug.md) · [05 测试报告](loop-002-template-orchestration/05-编排-test-report.md) · [06 部署](loop-002-template-orchestration/06-编排-deployment.md) · [07 上线记录](loop-002-template-orchestration/07-编排-launch-record.md) · [08 复盘](loop-002-template-orchestration/08-编排-retrospective.md) · [📄 闭环报告](loop-002-template-orchestration/README.md) |
+| loop-001 | OKR 自闭环 + 流程记录页 | ✅ 已上线 | [01 需求评审](loop-002-template-orchestration/001-编排-requirement-review.md) · [02 技术评审](loop-002-template-orchestration/002-编排-technical-review.md) · [03 代码审查](loop-002-template-orchestration/003-编排-code-review.md) · [04 构建调试](loop-002-template-orchestration/004-编排-build-debug.md) · [05 测试报告](loop-002-template-orchestration/005-编排-test-report.md) · [06 部署](loop-002-template-orchestration/006-编排-deployment.md) · [07 上线记录](loop-002-template-orchestration/007-编排-launch-record.md) · [08 复盘](loop-002-template-orchestration/008-编排-retrospective.md) · [📄 闭环报告](loop-001-okr-self-closed-loop/README.md) |
+| loop-002 | 模板复用与编排规范化 | ✅ 已上线 | [01 需求评审](loop-002-template-orchestration/001-编排-requirement-review.md) · [02 技术评审](loop-002-template-orchestration/002-编排-technical-review.md) · [03 代码审查](loop-002-template-orchestration/003-编排-code-review.md) · [04 构建调试](loop-002-template-orchestration/004-编排-build-debug.md) · [05 测试报告](loop-002-template-orchestration/005-编排-test-report.md) · [06 部署](loop-002-template-orchestration/006-编排-deployment.md) · [07 上线记录](loop-002-template-orchestration/007-编排-launch-record.md) · [08 复盘](loop-002-template-orchestration/008-编排-retrospective.md) · [📄 闭环报告](loop-002-template-orchestration/README.md) |
 
 ## 目录规范
 
@@ -27,23 +27,23 @@ status: stable
 loop/
 ├── INDEX.md                          # 本索引
 ├── _templates/                       # 8 类记录模板（type: loop-template）
-│   ├── 01-编排-requirement-review.md
-│   ├── 02-编排-technical-review.md
-│   ├── 03-编排-code-review.md
-│   ├── 04-编排-build-debug.md
-│   ├── 05-编排-test-report.md
-│   ├── 06-编排-deployment.md
-│   ├── 07-编排-launch-record.md
-│   └── 08-编排-retrospective.md
+│   ├── 0001-编排-requirement-review.md
+│   ├── 0002-编排-technical-review.md
+│   ├── 0003-编排-code-review.md
+│   ├── 0004-编排-build-debug.md
+│   ├── 0005-编排-test-report.md
+│   ├── 0006-编排-deployment.md
+│   ├── 0007-编排-launch-record.md
+│   └── 0008-编排-retrospective.md
 └── loop-XXX-<slug>/                  # 每次闭环一个目录
-    ├── 01-编排-requirement-review.md      # 需求评审（PRD + 验收标准 + WSJF）
-    ├── 02-编排-technical-review.md        # 技术评审（ADR + 数据模型）
-    ├── 03-编排-code-review.md             # 代码审查（架构/类型/安全/性能/可维护）
-    ├── 04-编排-build-debug.md             # 构建调试（问题→修复→验证 + 门禁）
-    ├── 05-编排-test-report.md             # 测试报告（门禁 + 手动验证）
-    ├── 06-编排-deployment.md              # 部署（部署步骤 + 验证 + 回滚预案）
-    ├── 07-编排-launch-record.md           # 上线记录（artifact/version/env + 审批）
-    └── 08-编排-retrospective.md           # 复盘总结（Keep/Improve/行动项）
+    ├── 0001-编排-requirement-review.md      # 需求评审（PRD + 验收标准 + WSJF）
+    ├── 0002-编排-technical-review.md        # 技术评审（ADR + 数据模型）
+    ├── 0003-编排-code-review.md             # 代码审查（架构/类型/安全/性能/可维护）
+    ├── 0004-编排-build-debug.md             # 构建调试（问题→修复→验证 + 门禁）
+    ├── 0005-编排-test-report.md             # 测试报告（门禁 + 手动验证）
+    ├── 0006-编排-deployment.md              # 部署（部署步骤 + 验证 + 回滚预案）
+    ├── 0007-编排-launch-record.md           # 上线记录（artifact/version/env + 审批）
+    └── 0008-编排-retrospective.md           # 复盘总结（Keep/Improve/行动项）
 ```
 
 ## 记录 frontmatter 规范

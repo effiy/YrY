@@ -13,7 +13,7 @@ roles: [leader, engineer]
 benefit: "理解 Chrome MV3 双世界架构决策——为什么 ISOLATED 和 MAIN 世界必须分离，以及如何通过自注入模式建立桥梁"
 related:
   - ../../../engineer/learn/projects/yipet/README.md
-  - ../../../engineer/learn/projects/yipet/01-项目-架构设计.md
+  - ../../../engineer/learn/projects/yipet/0001-项目-架构设计.md
 ---
 
 # ADR: YiPet Chrome MV3 双世界边界架构

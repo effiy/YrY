@@ -17,13 +17,13 @@ acceptance_criteria:
   - "curator/governance 下就绪检查清单自动校验脚本可检测字段缺失与取值越界"
 related:
   - ./README.md
-  - ../../curator/templates/00002-模板-知识叶子模板.md
-  - ../../curator/templates/00001-模板-ADR模板.md
-  - ../../curator/governance/00002-治理-治理规范.md
-  - ../../curator/governance/00004-治理-就绪检查清单.md
+  - ../../curator/templates/0002-模板-知识叶子模板.md
+  - ../../curator/templates/0001-模板-ADR模板.md
+  - ../../curator/governance/0002-治理-治理规范.md
+  - ../../curator/governance/0004-治理-就绪检查清单.md
   - ../../curator/INDEX.md
   - ../../README.md
-  - ../../aier/foundations/02-基础-RAG设计模式.md
+  - ../../aier/foundations/0002-基础-RAG设计模式.md
 ---
 
 # ADR: YiKnowledge Frontmatter 强制字段与规范
@@ -38,13 +38,13 @@ YiKnowledge 目前 200+ 文件的 Frontmatter 字段不统一：
 - 有的文件只有 `title/tags/category` 3 项，缺少 `created/updated/lifecycle` 等关键元数据
 - `tags` 无规范：有的写 `adr`、有的写 `决策`、有的写 `category/leader` 混乱
 - `benefit/acceptance_criteria/related` 等高价值字段只有模板里有，实际文件覆盖率 < 10%
-- 参考 `curator/governance/00002-治理-治理规范.md:56-58`（每日 Frontmatter 抽查）要求抽查但没定义标准——Curator 只能凭感觉判断合不合规
+- 参考 `curator/governance/0002-治理-治理规范.md:56-58`（每日 Frontmatter 抽查）要求抽查但没定义标准——Curator 只能凭感觉判断合不合规
 
 影响面：
-1. **RAG 召回弱**：aier/foundations/02-基础-RAG设计模式.md 指出 metadata 是召回的关键信号，没有 `lifecycle/tags` 过滤器，RAG 会捞出 `deprecated` 状态的过期文件误导用户
+1. **RAG 召回弱**：aier/foundations/0002-基础-RAG设计模式.md 指出 metadata 是召回的关键信号，没有 `lifecycle/tags` 过滤器，RAG 会捞出 `deprecated` 状态的过期文件误导用户
 2. **治理不可自动化**：Curator 每周人工扫文件，无法用脚本（`rg "^lifecycle:\s*active"` 之类）批量审计
 3. **人机双读歧义**：AI（RAG 检索增强）和人类读同一个文件，对文件有效性、角色、更新时间的理解不一致
-4. **就绪检查清单（00004-治理-就绪检查清单.md）没有客观标准**
+4. **就绪检查清单（0004-治理-就绪检查清单.md）没有客观标准**
 
 为什么现在必须定：2026-Q3 curator OKR `cur-001-process-record-kb` 要求 Frontmatter 合规率从 10% → 100%（goal.md 第 3 条），没有规范就无法度量合规率。
 
@@ -71,7 +71,7 @@ YiKnowledge 目前 200+ 文件的 Frontmatter 字段不统一：
 | 11 | `roles` | list[string] | 读者角色，从 7 角色枚举取（leader/engineer/curator/product/executive/aier/sre），可多角色 | `[leader, curator]` | ✅ 必填 |
 | 12 | `benefit` | string | 一句话价值主张；≤ 50 字，读者读完知道"这文件能帮我什么"；面向用户非作者 | `"用统一 frontmatter 让 RAG 召回率 +40%"` | ✅ 必填 |
 | 13 | `acceptance_criteria` | list[string] | 可验证验收标准 3-5 条；每条以动词开头，可判定 T/F；不可写"提升质量"空话 | `["就绪检查清单含 frontmatter 校验"]` | ✅ 必填 |
-| 14 | `related` | list[string] | **5-8 个相对路径真实存在**的文件链接；含至少 1 个上游索引 + 2 个同目录 + 1 个跨目录文档；用 `../../dir/file.md` 形式 | `["../../curator/governance/00002-治理-治理规范.md", ...]` | ✅ 必填 |
+| 14 | `related` | list[string] | **5-8 个相对路径真实存在**的文件链接；含至少 1 个上游索引 + 2 个同目录 + 1 个跨目录文档；用 `../../dir/file.md` 形式 | `["../../curator/governance/0002-治理-治理规范.md", ...]` | ✅ 必填 |
 | 15 | `aliases` | list[string] | 可选字段；别名，用于 RAG 重名召回；不强制 | `[frontmatter-spec, metadata-spec]` | ⚪ 可选 |
 
 ### 约束与组合规则
@@ -112,7 +112,7 @@ YiKnowledge 目前 200+ 文件的 Frontmatter 字段不统一：
 
 ### 负面影响
 - **旧文件回填 1 人天**：200 文件缺失 benefit/acceptance_criteria/related 的 50+ 文件需要手工回填（related 要找真实文件），约 1 人天
-- **新作者学习成本**：第一次新建文件要对 15 字段列表，约多出 3-5 分钟——模板（00002-模板-知识叶子模板.md）提前填好 skeleton，实际只改 title/tags/category/benefit/related 5 项，其他默认复制即可
+- **新作者学习成本**：第一次新建文件要对 15 字段列表，约多出 3-5 分钟——模板（0002-模板-知识叶子模板.md）提前填好 skeleton，实际只改 title/tags/category/benefit/related 5 项，其他默认复制即可
 - **related 5-8 真实链接负担**：要求 5-8 个真实链接，新作者可能为凑链接乱填——Curator 审查时 grep related 字段 + `[ -f path ]` 脚本校验文件不存在直接打回
 
 ### 中性影响

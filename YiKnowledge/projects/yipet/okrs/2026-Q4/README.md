@@ -16,7 +16,7 @@ related:
   - ../../../projects/yipet/prds/2026-09/102-prd-选中文本即时翻译.md
   - ../../../projects/yipet/prds/2026-08/04-prd-跨项目桥接.md
   - ../../../projects/yipet/prds/2026-09/09-prd-ServiceWorker.md
-  - ../../../engineer/learn/lessons/0009-成果-YiPet跨项目Hub.md
+  - ../../../engineer/learn/lessons/009-成果-YiPet跨项目Hub.md
   - ../../../leader/decisions/yipet-004-决策-跨项目Hub.md
 ---
 
