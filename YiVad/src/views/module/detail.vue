@@ -337,7 +337,7 @@ import { ElMessage } from "element-plus";
 import { confirm } from "@/hooks/useConfirmAction";
 import type { FormInstance, FormRules } from "element-plus";
 import { READMECard } from "@/components";
-import DetailSkeleton from "@/components/DetailSkeleton.vue";
+import DetailSkeleton from "@/components/Skeleton/SkeletonDetail.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { useModuleStore } from "@/stores/modules/module";
 import { MODULE_STATUS_MAP } from "@/api/modules/moduleService";

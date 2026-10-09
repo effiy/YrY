@@ -5,14 +5,20 @@ import {
   resolveTimezone,
   setUserTimezone,
 } from '../../src/shared/i18n/timezone';
-import { resetChromeStorage } from '../setup';
+import { resetChromeStorage, setStorageData } from '../setup';
+
+// kv.ts routes reads through `chrome.storage.local.get([key])`, whose
+// setup.ts mock implementation pulls from a shared storageData dictionary.
+// We seed that dict directly via setStorageData() exported from setup.ts.
+// We also reset call counts (not implementations!) between tests so
+// `toHaveBeenCalledWith` assertions remain deterministic.
+
+beforeEach(() => {
+  resetChromeStorage();
+  vi.clearAllMocks();
+});
 
 describe('timezone', () => {
-  beforeEach(() => {
-    resetChromeStorage();
-    vi.restoreAllMocks();
-  });
-
   describe('getSystemTimezone()', () => {
     it('returns the browser timezone from Intl.DateTimeFormat', () => {
       const tz = getSystemTimezone();
@@ -36,34 +42,33 @@ describe('timezone', () => {
 
   describe('getUserTimezone()', () => {
     it('returns null when no preference stored', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({});
       expect(await getUserTimezone()).toBeNull();
     });
 
     it('returns stored timezone', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ user_timezone: 'Asia/Tokyo' });
+      setStorageData({ user_timezone: 'Asia/Tokyo' });
       expect(await getUserTimezone()).toBe('Asia/Tokyo');
     });
   });
 
   describe('setUserTimezone()', () => {
     it('persists timezone to chrome.storage', async () => {
-      const spy = vi.mocked(chrome.storage.local.set);
       await setUserTimezone('Asia/Shanghai');
-      expect(spy).toHaveBeenCalledWith({ user_timezone: 'Asia/Shanghai' });
+      const writes = (chrome.storage.local.set as any).mock.calls.map((c: any[]) => c[0]);
+      // kv.writeKV writes as { [key]: value } — same shape as pre-refactor
+      expect(writes).toContainEqual({ user_timezone: 'Asia/Shanghai' });
     });
   });
 
   describe('resolveTimezone()', () => {
     it('returns user override when set', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ user_timezone: 'Asia/Tokyo' });
+      setStorageData({ user_timezone: 'Asia/Tokyo' });
       const result = await resolveTimezone();
       expect(result.timeZone).toBe('Asia/Tokyo');
       expect(result.isUserOverride).toBe(true);
     });
 
     it('returns system timezone when no override', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({});
       const result = await resolveTimezone();
       // jsdom may return 'UTC' instead of an IANA timezone
       expect(typeof result.timeZone).toBe('string');

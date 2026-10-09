@@ -3,8 +3,12 @@
  *
  * Uses @tanstack/virtual for DOM-level virtualization + memory trimming
  * (keep last 200 messages in store, persist older to chrome.storage.local).
+ *
+ * Overflow persistence goes through the shared `writeKV` helper so this file
+ * does not depend on the raw chrome.storage API directly.
  */
 import { ref, computed, watch, type Ref } from 'vue';
+import { writeKV } from '@/shared/storage/kv';
 
 export interface VirtualScrollItem {
   id: string;
@@ -101,15 +105,12 @@ export function useVirtualScroll(options: UseVirtualScrollOptions) {
     }
   }
 
-  // Memory trimming: when items exceed maxInMemory, persist older to chrome.storage
+  // Memory trimming: when items exceed maxInMemory, persist older to storage
   watch(items, (val) => {
     if (val.length > maxInMemory) {
       const overflow = val.slice(0, val.length - maxInMemory);
-      try {
-        chrome.storage.local.set({ 'yipet:trimmed-messages': overflow });
-      } catch {
-        // chrome.storage may not be available in all contexts
-      }
+      // writeKV swallows context errors — no outer try/catch needed
+      void writeKV<unknown[]>('yipet:trimmed-messages', overflow as unknown[]);
     }
   }, { deep: false });
 

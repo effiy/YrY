@@ -2,14 +2,14 @@ import { readDir, BaseDirectory, readTextFile, exists } from '@tauri-apps/api/fs
 import { appConfigDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { Button } from '@nextui-org/react';
 import { BsPinFill } from 'react-icons/bs';
 import { atom, useAtom } from 'jotai';
 
 import WindowControl from '../../components/WindowControl';
-import { store } from '../../utils/store';
+import { store, whenStoreReady } from '../../utils/store';
 import { osType } from '../../utils/env';
 import { useConfig } from '../../hooks';
 import ControlArea from './ControlArea';
@@ -18,37 +18,76 @@ import TextArea from './TextArea';
 
 export const pluginListAtom = atom();
 
-let blurTimeout = null;
+/**
+ * 窗口 blur → 50ms 后关闭，并在 focus 时取消；
+ * 旧实现：用模块级变量 + 顶层 listen（HMR 后会多次订阅，且 timer 共享）；
+ * 新实现：单个 hook 统一管理 unlisten/timer cleanup，在组件 unmount 时释放。
+ */
+function useBlurAutoClose(enable) {
+    const blurTimerRef = useRef(null);
+    const unlistenBlurRef = useRef(null);
+    const unlistenFocusRef = useRef(null);
 
-const listenBlur = () => {
-    return listen('tauri://blur', () => {
-        if (appWindow.label === 'recognize') {
-            if (blurTimeout) {
-                clearTimeout(blurTimeout);
+    useEffect(() => {
+        // 先清掉旧订阅
+        const cleanup = () => {
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
             }
-            // 50ms后关闭窗口，因为在 windows 下拖动窗口时会先切换成 blur 再立即切换成 focus
-            // 如果直接关闭将导致窗口无法拖动
-            blurTimeout = setTimeout(async () => {
-                await appWindow.close();
+            const old = [unlistenBlurRef.current, unlistenFocusRef.current];
+            unlistenBlurRef.current = null;
+            unlistenFocusRef.current = null;
+            old.forEach((u) => u?.then?.((f) => f?.()).catch(() => {}));
+        };
+        cleanup();
+
+        if (!enable) return cleanup;
+
+        unlistenBlurRef.current = listen('tauri://blur', () => {
+            if (appWindow.label !== 'recognize') return;
+            if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
+            blurTimerRef.current = setTimeout(() => {
+                blurTimerRef.current = null;
+                appWindow.close().catch(() => {});
             }, 50);
+        });
+
+        unlistenFocusRef.current = listen('tauri://focus', () => {
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
+            }
+        });
+
+        return cleanup;
+    }, [enable]);
+}
+
+// 插件列表加载（单函数抽出去，便于复用）
+const loadPluginListFor = async (serviceType) => {
+    const result = {};
+    if (!(await exists(`plugins/${serviceType}`, { dir: BaseDirectory.AppConfig }))) return result;
+    const baseDirPath = await appConfigDir();
+    const pluginDirs = await readDir(`plugins/${serviceType}`, { dir: BaseDirectory.AppConfig });
+    for (const dirent of pluginDirs) {
+        if (!dirent?.name) continue;
+        try {
+            const infoStr = await readTextFile(`plugins/${serviceType}/${dirent.name}/info.json`, {
+                dir: BaseDirectory.AppConfig,
+            });
+            const info = JSON.parse(infoStr);
+            if (info?.icon) {
+                const iconPath = await join(baseDirPath, `plugins/${serviceType}/${dirent.name}/${info.icon}`);
+                info.icon = convertFileSrc(iconPath);
+            }
+            result[dirent.name] = info;
+        } catch {
+            // 单个插件损坏不影响全局
         }
-    });
-};
-
-let unlisten = listenBlur();
-// 取消 blur 监听
-const unlistenBlur = () => {
-    unlisten.then((f) => {
-        f();
-    });
-};
-
-// 监听 focus 事件取消 blurTimeout 时间之内的关闭窗口
-void listen('tauri://focus', () => {
-    if (blurTimeout) {
-        clearTimeout(blurTimeout);
     }
-});
+    return result;
+};
 
 export default function Recognize() {
     const [pluginList, setPluginList] = useAtom(pluginListAtom);
@@ -57,57 +96,46 @@ export default function Recognize() {
     const [serviceInstanceList] = useConfig('recognize_service_list', ['system', 'tesseract']);
     const [serviceInstanceConfigMap, setServiceInstanceConfigMap] = useState(null);
 
-    const loadPluginList = async () => {
-        let temp = {};
-        if (await exists(`plugins/recognize`, { dir: BaseDirectory.AppConfig })) {
-            const plugins = await readDir(`plugins/recognize`, { dir: BaseDirectory.AppConfig });
-            for (const plugin of plugins) {
-                const infoStr = await readTextFile(`plugins/recognize/${plugin.name}/info.json`, {
-                    dir: BaseDirectory.AppConfig,
-                });
-                let pluginInfo = JSON.parse(infoStr);
-                if ('icon' in pluginInfo) {
-                    const appConfigDirPath = await appConfigDir();
-                    const iconPath = await join(
-                        appConfigDirPath,
-                        `/plugins/recognize/${plugin.name}/${pluginInfo.icon}`
-                    );
-                    pluginInfo.icon = convertFileSrc(iconPath);
-                }
-                temp[plugin.name] = pluginInfo;
-            }
-        }
-        setPluginList({ ...temp });
-    };
+    useBlurAutoClose(Boolean(closeOnBlur && !pined));
+
     const loadServiceInstanceConfigMap = async () => {
+        await whenStoreReady();
         const config = {};
-        for (const serviceInstanceKey of serviceInstanceList) {
-            config[serviceInstanceKey] = (await store.get(serviceInstanceKey)) ?? {};
+        for (const key of serviceInstanceList ?? []) {
+            config[key] = (await store.get(key)) ?? {};
         }
         setServiceInstanceConfigMap({ ...config });
     };
+
     useEffect(() => {
-        if (serviceInstanceList !== null) {
-            loadServiceInstanceConfigMap();
-        }
+        if (serviceInstanceList !== null) loadServiceInstanceConfigMap();
     }, [serviceInstanceList]);
 
     useEffect(() => {
-        loadPluginList();
+        let cancelled = false;
+        loadPluginListFor('recognize').then((list) => {
+            if (!cancelled) setPluginList({ ...list });
+        });
+        return () => {
+            cancelled = true;
+        };
     }, []);
-    // 是否自动关闭窗口
-    useEffect(() => {
-        if (closeOnBlur !== null && !closeOnBlur) {
-            unlistenBlur();
-        }
-    }, [closeOnBlur]);
+
+    const togglePin = () => {
+        setPined((old) => {
+            const next = !old;
+            // pinned = true → 常驻最前并禁用 blur 自动关闭
+            appWindow.setAlwaysOnTop(next).catch(() => {});
+            return next;
+        });
+    };
 
     return (
         pluginList &&
         serviceInstanceConfigMap !== null && (
             <div
                 className={`bg-background h-screen ${
-                    osType === 'Linux' && 'rounded-[10px] border-1 border-default-100'
+                    osType === 'Linux' ? 'rounded-[10px] border-1 border-default-100' : ''
                 }`}
             >
                 <div
@@ -121,20 +149,11 @@ export default function Recognize() {
                         variant='flat'
                         disableAnimation
                         className='my-auto mx-[5px] bg-transparent'
-                        onPress={() => {
-                            if (pined) {
-                                if (closeOnBlur) {
-                                    unlisten = listenBlur();
-                                }
-                                appWindow.setAlwaysOnTop(false);
-                            } else {
-                                unlistenBlur();
-                                appWindow.setAlwaysOnTop(true);
-                            }
-                            setPined(!pined);
-                        }}
+                        onPress={togglePin}
                     >
-                        <BsPinFill className={`text-[20px] ${pined ? 'text-primary' : 'text-default-400'}`} />
+                        <BsPinFill
+                            className={`text-[20px] ${pined ? 'text-primary' : 'text-default-400'}`}
+                        />
                     </Button>
                     {osType !== 'Darwin' && <WindowControl />}
                 </div>

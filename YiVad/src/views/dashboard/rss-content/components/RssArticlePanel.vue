@@ -131,8 +131,7 @@
         </template>
         <template #empty>
           <div class="ap-empty">
-            <img src="@/assets/images/notData.png" alt="notData" />
-            <div>No articles match the current filters</div>
+            <EmptyState variant="filter" size="sm" title="No articles match the current filters" />
           </div>
         </template>
       </ProTable>
@@ -140,8 +139,7 @@
 
     <template v-else-if="viewMode === 'card'">
       <div v-if="pagedArticles.length === 0" class="ap-empty">
-        <img src="@/assets/images/notData.png" alt="notData" />
-        <div>No articles match the current filters</div>
+        <EmptyState variant="filter" size="sm" title="No articles match the current filters" />
       </div>
       <div v-else class="ap-grid">
         <div v-for="a in pagedArticles" :key="a.link || a.key" class="ap-card" @click="emit('open-detail', a)">
@@ -182,8 +180,7 @@
 
     <template v-else>
       <div v-if="pagedArticles.length === 0" class="ap-empty">
-        <img src="@/assets/images/notData.png" alt="notData" />
-        <div>No articles match the current filters</div>
+        <EmptyState variant="filter" size="sm" title="No articles match the current filters" />
       </div>
       <div v-else class="ap-list">
         <div v-for="a in pagedArticles" :key="a.link || a.key" class="ap-list__row" @click="emit('open-detail', a)">
@@ -217,6 +214,7 @@ import { ref, computed } from "vue";
 import { Search, TopRight, User, CircleCheckFilled, WarningFilled, Download, Grid, List, Link } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { ProTable } from "@/components";
+import EmptyState from "@/components/EmptyState/EmptyState.vue";
 import type { ColumnProps } from "@/components";
 import type { RssItemDocument } from "@/api/modules/rssService";
 import type { RssSourceStats, RssCategoryStats } from "@/api/interface/yiAi";

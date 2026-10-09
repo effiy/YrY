@@ -3,9 +3,18 @@
  *
  * Components share state through chrome.storage — never through
  * module-level variables (service workers only live ~30s).
+ *
+ * Implementation delegates to the unified KV wrapper (`kv.ts`) which
+ * centralises error isolation and map-keyed operations.
  */
 
 import type { PetGlobalState, UserPrefs } from '@/shared/ipc/messages';
+import {
+  readMapEntry,
+  patchMapEntry,
+  readObjectKV,
+  writeKV,
+} from './kv';
 
 const GLOBAL_STATE_KEY = 'pet_global_state';
 const PREFS_KEY = 'prefs';
@@ -14,23 +23,17 @@ const PREFS_KEY = 'prefs';
 
 export type TabStateMap = Record<number, PetGlobalState>;
 
+const EMPTY_TAB_STATE: PetGlobalState = {} as PetGlobalState;
+
 export async function getTabState(tabId: number): Promise<PetGlobalState> {
-  const result = await chrome.storage.local.get(GLOBAL_STATE_KEY);
-  const map = (result[GLOBAL_STATE_KEY] as TabStateMap) || {};
-  return map[tabId] || {};
+  return readMapEntry<PetGlobalState>(GLOBAL_STATE_KEY, tabId, EMPTY_TAB_STATE);
 }
 
 export async function setTabState(
   tabId: number,
   patch: Partial<PetGlobalState>,
 ): Promise<PetGlobalState> {
-  const result = await chrome.storage.local.get(GLOBAL_STATE_KEY);
-  const map = (result[GLOBAL_STATE_KEY] as TabStateMap) || {};
-  const current = map[tabId] || {};
-  const updated = { ...current, ...patch };
-  map[tabId] = updated;
-  await chrome.storage.local.set({ [GLOBAL_STATE_KEY]: map });
-  return updated;
+  return patchMapEntry<PetGlobalState>(GLOBAL_STATE_KEY, tabId, patch, EMPTY_TAB_STATE);
 }
 
 // ── User Prefs ──────────────────────────────────────────────────────────
@@ -42,13 +45,13 @@ const DEFAULT_PREFS: UserPrefs = {
 };
 
 export async function getPrefs(): Promise<UserPrefs> {
-  const result = await chrome.storage.local.get(PREFS_KEY);
-  return { ...DEFAULT_PREFS, ...((result[PREFS_KEY] as UserPrefs) || {}) };
+  return readObjectKV<UserPrefs>(PREFS_KEY, DEFAULT_PREFS);
 }
 
 export async function setPrefs(patch: Partial<UserPrefs>): Promise<UserPrefs> {
-  const current = await getPrefs();
-  const updated = { ...current, ...patch };
-  await chrome.storage.local.set({ [PREFS_KEY]: updated });
+  const updated = await readObjectKV<UserPrefs>(PREFS_KEY, DEFAULT_PREFS).then(
+    (current) => ({ ...current, ...patch }),
+  );
+  await writeKV<UserPrefs>(PREFS_KEY, updated);
   return updated;
 }

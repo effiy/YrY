@@ -1,6 +1,15 @@
 /**
  * URL sanitization for captured page metadata.
  *
+ * Division of responsibility with `public/cdn/utils/url.ts`:
+ *   - THIS FILE (@/utils/url) — content-security helpers: credential redaction,
+ *     URL scrubbing before persisting into session/knowledge records.
+ *   - public/cdn/utils/url.ts — construction helpers: buildUrl / buildQueryParams
+ *     / buildDatabaseUrl for building outbound request URLs.
+ *
+ * The two modules live in separate bundles (extension vs CDN IIFE) and must
+ * not cross-import, but their APIs are intentionally complementary — no overlap.
+ *
  * Rule: a URL that gets persisted anywhere — knowledge frontmatter, session
  * record, `from:` tag — must never carry credentials. OAuth implicit-flow
  * callbacks put the access token in the fragment (`#access_token=...`) and

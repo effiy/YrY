@@ -16,11 +16,13 @@ import {
   type ApiClientConfig,
   type ApiResponse,
   createApiClient as createBaseClient,
+  resolveUrl as resolveBaseUrl,
 } from '../../public/cdn/utils/api-client';
 
-// ── Re-export base types ───────────────────────────────────────────────
+// ── Re-export base types & helpers ─────────────────────────────────────
 
 export type { ApiClientConfig, ApiResponse };
+export { resolveBaseUrl as resolveUrl };
 
 // ── YiAi types ─────────────────────────────────────────────────────────
 
@@ -85,6 +87,31 @@ function unwrap<T>(res: ApiResponse<unknown>): ApiResponse<T> {
   return result;
 }
 
+/* ── Public: response unwrap helpers (used by domain services) ───────── */
+
+/**
+ * Unwrap an ApiResponse, throwing on failure.
+ *
+ * Eliminates the repeated boilerplate in every service method:
+ *   if (!res.ok) throw new Error(res.error || 'xxx failed');
+ *   return res.data;
+ *
+ * @param res  A client response (from `client.get/post/rpc/...`)
+ * @param label A short operation label used inside the thrown Error message
+ *              so callers can trace the failing call site.
+ */
+export function unwrapOrThrow<T>(res: ApiResponse<T>, label = 'Operation'): T {
+  if (res.ok) return res.data;
+  const msg = res.error || `HTTP ${res.status}`;
+  throw new Error(`${label} failed: ${msg}`);
+}
+
+/** Shorthand: unwrap and throw with a custom default message. */
+export function orThrow<T>(res: ApiResponse<T>, defaultError = 'Request failed'): T {
+  if (res.ok) return res.data;
+  throw new Error(res.error || defaultError);
+}
+
 // ── Factory ────────────────────────────────────────────────────────────
 
 export function createApiClient(config: ApiClientConfig & { token?: string }): ApiClient {
@@ -105,11 +132,9 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
     ...headers,
   };
 
-  function resolveUrl(path: string): string {
-    const b = baseUrl.replace(/\/+$/, '');
-    const p = path.startsWith('/') ? path : '/' + path;
-    return b + p;
-  }
+  // Delegate URL joining to the shared helper (avoids duplicating the
+  // slash-normalisation logic that lives in public/cdn/utils/api-client.ts).
+  const resolve = (path: string) => resolveBaseUrl(baseUrl, path);
 
   // ── JSON-RPC (YiAi execution module) ──────────────────────────────────
 
@@ -119,7 +144,7 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
     parameters: Record<string, unknown> = {},
     signal?: AbortSignal,
   ): Promise<ApiResponse<T>> {
-    const url = resolveUrl('/');
+    const url = resolve('/');
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), config.timeout ?? 30000);
     const onAbort = () => controller.abort();
@@ -207,7 +232,7 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
     body?: unknown,
     signal?: AbortSignal,
   ): AsyncGenerator<StreamChunk> {
-    const url = resolveUrl(path);
+    const url = resolve(path);
     const controller = new AbortController();
     const onAbort = () => controller.abort();
     if (signal) signal.addEventListener('abort', onAbort);
@@ -317,6 +342,6 @@ export function createApiClient(config: ApiClientConfig & { token?: string }): A
       base.delete<unknown>(path, signal).then(unwrap<T>),
     rpc,
     stream,
-    url: resolveUrl,
+    url: resolve,
   };
 }

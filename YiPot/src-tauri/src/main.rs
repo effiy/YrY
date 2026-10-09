@@ -20,7 +20,7 @@ use cmd::*;
 use config::*;
 use hotkey::*;
 use lang_detect::*;
-use log::info;
+use log::{error, info, warn};
 use once_cell::sync::OnceCell;
 use screenshot::screenshot;
 use server::*;
@@ -30,9 +30,7 @@ use tauri::api::notification::Notification;
 use tauri::Manager;
 use tauri_plugin_log::LogTarget;
 use tray::*;
-// use updater::check_update;
 use window::config_window;
-// use window::updater_window;
 
 // Global AppHandle
 pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
@@ -40,15 +38,22 @@ pub static APP: OnceCell<tauri::AppHandle> = OnceCell::new();
 // Text to be translated
 pub struct StringWrapper(pub Mutex<String>);
 
+fn notify(app: &tauri::AppHandle, title: impl Into<String>, body: impl Into<String>) {
+    let _ = Notification::new(app.config().tauri.bundle.identifier.clone())
+        .title(title)
+        .body(body)
+        .icon("yipot")
+        .show();
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, cwd| {
-            Notification::new(&app.config().tauri.bundle.identifier)
-                .title("The program is already running. Please do not start it again!")
-                .body(cwd)
-                .icon("yipot")
-                .show()
-                .unwrap();
+            notify(
+                app,
+                "The program is already running. Please do not start it again!",
+                cwd,
+            );
         }))
         .plugin(
             tauri_plugin_log::Builder::default()
@@ -68,62 +73,76 @@ fn main() {
             #[cfg(target_os = "macos")]
             {
                 app.set_activation_policy(tauri::ActivationPolicy::Accessory);
-                let trusted =
-                    macos_accessibility_client::accessibility::application_is_trusted_with_prompt();
-                info!("MacOS Accessibility Trusted: {}", trusted);
+                let trusted = macos_accessibility_client::accessibility::application_is_trusted_with_prompt();
+                info!("MacOS Accessibility Trusted: {trusted}");
             }
-            // Global AppHandle
+
             APP.get_or_init(|| app.handle());
-            // Init Config
+
             info!("Init Config Store");
             init_config(app);
-            // Check First Run
+
             if is_first_run() {
-                // Open Config Window
                 info!("First Run, opening config window");
                 config_window();
             }
+
             app.manage(StringWrapper(Mutex::new("".to_string())));
-            // Update Tray Menu
             update_tray(app.app_handle(), "".to_string(), "".to_string());
-            // Start http server
-            start_server();
-            // Register Global Shortcut
+
+            // Start HTTP server（非阻塞：失败只记 warn，不中断主流程）
+            if let Err(e) = start_server() {
+                warn!("start_server failed: {e}");
+            }
+
             match register_shortcut("all") {
                 Ok(()) => {}
-                Err(e) => Notification::new(app.config().tauri.bundle.identifier.clone())
-                    .title("Failed to register global shortcut")
-                    .body(&e)
-                    .icon("yipot")
-                    .show()
-                    .unwrap(),
-            }
-            match get("proxy_enable") {
-                Some(v) => {
-                    if v.as_bool().unwrap() && get("proxy_host").map_or(false, |host| !host.as_str().unwrap().is_empty()) {
-                        let _ = set_proxy();
-                    }
-                }
-                None => {}
-            }
-            // Check Update
-            // check_update(app.handle());
-            if let Some(engine) = get("translate_detect_engine") {
-                if engine.as_str().unwrap() == "local" {
-                    init_lang_detect();
+                Err(e) => {
+                    let handle = app.handle();
+                    notify(
+                        &handle,
+                        "Failed to register global shortcut",
+                        e,
+                    );
                 }
             }
-            let clipboard_monitor = match get("clipboard_monitor") {
-                Some(v) => v.as_bool().unwrap(),
-                None => {
+
+            // 代理：proxy_enable=true 且 proxy_host 非空时才启用
+            let proxy_enable = get("proxy_enable")
+                .as_ref()
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let proxy_host_nonempty = get("proxy_host")
+                .as_ref()
+                .and_then(|v| v.as_str())
+                .map(|s| !s.is_empty())
+                .unwrap_or(false);
+            if proxy_enable && proxy_host_nonempty {
+                if let Err(e) = set_proxy() {
+                    warn!("set_proxy on startup failed: {e}");
+                }
+            }
+
+            if get("translate_detect_engine")
+                .as_ref()
+                .and_then(|v| v.as_str())
+                == Some("local")
+            {
+                init_lang_detect();
+            }
+
+            let clipboard_monitor = get("clipboard_monitor")
+                .as_ref()
+                .and_then(|v| v.as_bool())
+                .unwrap_or_else(|| {
                     set("clipboard_monitor", false);
                     false
-                }
-            };
+                });
             app.manage(ClipboardMonitorEnableWrapper(Mutex::new(
                 clipboard_monitor.to_string(),
             )));
             start_clipboard_monitor(app.handle());
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -139,7 +158,6 @@ fn main() {
             open_devtools,
             register_shortcut_by_frontend,
             update_tray,
-            // updater_window,
             screenshot,
             lang_detect,
             webdav,
@@ -150,8 +168,12 @@ fn main() {
         ])
         .on_system_tray_event(tray_event_handler)
         .build(tauri::generate_context!())
-        .expect("error while running tauri application")
-        // 窗口关闭不退出
+        .unwrap_or_else(|e| {
+            // tauri build 失败：打到 stderr，避免 unwrap panic
+            eprintln!("error while building tauri application: {e}");
+            error!("tauri build failed: {e}");
+            std::process::exit(1);
+        })
         .run(|_app_handle, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();

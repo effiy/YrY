@@ -7,6 +7,7 @@
 
 import { localizeDOM } from './index';
 import { setActiveLocale } from './messages';
+import { readValidatedKV, writeKV } from '../storage/kv';
 
 /* ── Supported Locales ─────────────────────────────────────────────────── */
 
@@ -15,6 +16,10 @@ export const SUPPORTED_LOCALES = ['en', 'zh_CN'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 const STORAGE_KEY = 'locale';
+
+function isSupportedLocale(raw: unknown): raw is SupportedLocale {
+  return typeof raw === 'string' && SUPPORTED_LOCALES.includes(raw as SupportedLocale);
+}
 
 /* ── RTL Locales ───────────────────────────────────────────────────────── */
 
@@ -58,23 +63,12 @@ export function getChromeLocale(): SupportedLocale {
 /* ── User Preference ───────────────────────────────────────────────────── */
 
 export async function getUserLocale(): Promise<SupportedLocale | null> {
-  try {
-    if (!(typeof chrome !== 'undefined' && chrome.storage?.local?.get)) return null;
-    const result = await chrome.storage.local.get([STORAGE_KEY]);
-    const val = result[STORAGE_KEY] as string | undefined;
-    if (val && SUPPORTED_LOCALES.includes(val as SupportedLocale)) {
-      return val as SupportedLocale;
-    }
-  } catch {
-    return null;
-  }
-  return null;
+  const raw = await readValidatedKV<SupportedLocale | null>(STORAGE_KEY, null, isSupportedLocale);
+  return raw;
 }
 
 export async function setUserLocale(locale: SupportedLocale): Promise<void> {
-  if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
-    await chrome.storage.local.set({ [STORAGE_KEY]: locale });
-  }
+  await writeKV<SupportedLocale>(STORAGE_KEY, locale);
 }
 
 /* ── Combined Resolution ───────────────────────────────────────────────── */

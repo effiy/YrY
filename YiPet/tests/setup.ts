@@ -38,6 +38,11 @@ vi.stubGlobal('chrome', {
         Object.assign(storageData, items);
         return Promise.resolve();
       }),
+      remove: vi.fn((keys: string | string[]) => {
+        const list = Array.isArray(keys) ? keys : [keys];
+        for (const k of list) delete storageData[k];
+        return Promise.resolve();
+      }),
       clear: vi.fn(() => {
         Object.keys(storageData).forEach((k) => delete storageData[k]);
         return Promise.resolve();
@@ -76,4 +81,12 @@ vi.stubGlobal('chrome', {
 
 export function resetChromeStorage() {
   Object.keys(storageData).forEach((k) => delete storageData[k]);
+}
+
+export function setStorageData(entries: Record<string, unknown>) {
+  Object.assign(storageData, entries);
+}
+
+export function getStorageData(): Record<string, unknown> {
+  return { ...storageData };
 }

@@ -102,8 +102,7 @@
         <template #empty>
           <div class="table-empty">
             <slot name="empty">
-              <img src="@/assets/images/notData.png" alt="notData" />
-              <div>No data</div>
+              <EmptyState variant="data" size="sm" title="No data" />
             </slot>
           </div>
         </template>
@@ -139,6 +138,7 @@ import { BreakPoint } from "@/components/Grid/interface";
 import { ColumnProps, TypeProps } from "@/components/ProTable/interface";
 import { generateUUID, handleProp } from "@/utils";
 import SearchForm from "@/components/SearchForm/index.vue";
+import EmptyState from "@/components/EmptyState/EmptyState.vue";
 import Pagination from "./components/Pagination.vue";
 import ColSetting from "./components/ColSetting.vue";
 import TableColumn from "./components/TableColumn.vue";

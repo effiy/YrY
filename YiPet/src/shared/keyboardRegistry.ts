@@ -1,42 +1,36 @@
 import type { Ref } from 'vue';
 import { DEFAULT_BINDINGS, KNOWN_CONFLICTS, type ShortcutBinding, type ShortcutScope, type ConflictRecord, type KnownConflictRecord, parseKeys, eventToKeyString, normalizeKeys } from './shortcutTypes';
+import {
+  readSyncWithFallback,
+  writeSyncWithFallback,
+  removeSyncAndLocal,
+} from './storage/kv';
 
 export const STORAGE_KEY = 'yipet:shortcuts';
 
 // ── ShortcutStore (persistence) ─────────────────────────────────────────────
 
+/**
+ * Shortcut bindings persistence.
+ *
+ * Uses `readSyncWithFallback` / `writeSyncWithFallback` from the unified KV
+ * wrapper: preference data syncs across signed-in Chrome profiles when
+ * possible, and degrades gracefully to `chrome.storage.local` in managed /
+ * guest contexts (no more hand-written try/catch cascades in every method).
+ */
 class ShortcutStore {
   async load(): Promise<Record<string, string>> {
-    try {
-      const result = await chrome.storage.sync.get(STORAGE_KEY);
-      if (result[STORAGE_KEY]) return result[STORAGE_KEY] as Record<string, string>;
-    } catch {
-      // sync unavailable — fall through to local
-    }
-    try {
-      const result = await chrome.storage.local.get(STORAGE_KEY);
-      if (result[STORAGE_KEY]) return result[STORAGE_KEY] as Record<string, string>;
-    } catch {
-      // chrome.storage may not be available (e.g. in tests)
-    }
+    const saved = await readSyncWithFallback<Record<string, string>>(STORAGE_KEY);
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) return saved;
     return {};
   }
 
   async save(data: Record<string, string>): Promise<void> {
-    try {
-      await chrome.storage.sync.set({ [STORAGE_KEY]: data });
-    } catch {
-      try {
-        await chrome.storage.local.set({ [STORAGE_KEY]: data });
-      } catch {
-        // best effort
-      }
-    }
+    await writeSyncWithFallback<Record<string, string>>(STORAGE_KEY, data);
   }
 
   async clear(): Promise<void> {
-    try { await chrome.storage.sync.remove(STORAGE_KEY); } catch { /* ignore */ }
-    try { await chrome.storage.local.remove(STORAGE_KEY); } catch { /* ignore */ }
+    await removeSyncAndLocal(STORAGE_KEY);
   }
 }
 

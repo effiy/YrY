@@ -21,7 +21,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import type { MenuItem, MenuContext } from "./types";
 import { useMenuPosition } from "./useMenuPosition";
-import { useMenuKeyboard } from "@/composables/useMenuKeyboard";
+import { useMenuKeyboard } from "@/composables/keyboard/useMenuKeyboard";
 import ContextMenuItem from "./ContextMenuItem.vue";
 
 const props = defineProps<{
@@ -60,6 +60,8 @@ function handleItemClick(item: MenuItem) {
   if (item.type === "divider") return;
   if ((item as any).disabled) return;
   if (item.type !== "submenu") {
+    // 调用菜单项自带的 action（如果有），避免每个消费方都在 @action 里重复写分派逻辑
+    if (item.type === "action") (item as any).action?.(props.context);
     emit("action", item, props.context);
     hide();
   }

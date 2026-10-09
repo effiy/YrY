@@ -1,25 +1,40 @@
 <template>
-  <Teleport to="body">
-    <div v-if="visible" class="context-menu" :style="{ top: y + 'px', left: x + 'px' }" role="menu" @click.stop>
-      <div
-        v-for="item in items"
-        :key="item.key"
-        class="context-menu__item"
-        :class="{ 'context-menu__item--danger': item.danger, 'context-menu__item--divider': item.divider }"
-        role="menuitem"
-        @click="handleClick(item)"
-      >
-        <el-icon v-if="item.icon" class="context-menu__item-icon"><component :is="item.icon" /></el-icon>
-        {{ item.label }}
-      </div>
-    </div>
-  </Teleport>
-  <div v-if="visible" class="context-menu__backdrop" @click="close" @contextmenu.prevent="close" />
+  <UniversalContextMenu
+    :visible="cm.visible.value"
+    :position="cm.position.value"
+    :items="itemsBridge"
+    :context="(cm.context.value as any) ?? null"
+    @hide="cm.hide()"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+/**
+ * RowActions/ContextMenu — 行级右键菜单（兼容层）。
+ *
+ * 薄封装：底层统一复用 components/context-menu（通用 a11y 实现，支持子菜单/键盘导航/防溢出定位）。
+ * 本层只做一件事：
+ *   旧 API（{ key/label/icon/danger/divider/onClick }）→  桥接 →  新 API（MenuItem 联合类型）
+ *
+ * 对外 API 保持 100% 向下兼容：
+ *   const ref = ref<InstanceType<typeof RowActionsContextMenu>>()
+ *   ref.value?.open(event, items)
+ *   ref.value?.close()
+ *
+ * @deprecated 新代码建议直接使用：
+ *   import { useContextMenu } from "@/composables/menu/useContextMenu"
+ *   const cm = useContextMenu()
+ *   + <ContextMenu :visible :position :items :context />
+ */
+import { computed } from "vue";
+import UniversalContextMenu from "@/components/context-menu/ContextMenu.vue";
+import { useContextMenu } from "@/composables/menu/useContextMenu";
+import type { MenuItem, MenuContext } from "@/components/context-menu/types";
 
+/**
+ * 旧版行操作菜单项契约。
+ * @deprecated 新代码使用 MenuItem（通用联合类型）。
+ */
 export interface ContextMenuItem {
   key: string;
   label: string;
@@ -29,67 +44,29 @@ export interface ContextMenuItem {
   onClick: () => void;
 }
 
-const visible = ref(false);
-const x = ref(0);
-const y = ref(0);
-const items = ref<ContextMenuItem[]>([]);
+const cm = useContextMenu();
 
-const open = (e: MouseEvent, menuItems: ContextMenuItem[]) => {
-  e.preventDefault();
-  items.value = menuItems.filter(i => !i.divider);
-  x.value = Math.min(e.clientX, window.innerWidth - 200);
-  y.value = Math.min(e.clientY, window.innerHeight - items.value.length * 36 - 16);
-  visible.value = true;
-};
+/** 把旧契约数组 → MenuItem 数组。通用 ContextMenu 原生支持 divider/action/disabled/danger/submenu/键盘导航。 */
+const itemsBridge = computed<MenuItem[]>(() =>
+  cm.items.value.map(raw => {
+    const i = raw as unknown as ContextMenuItem;
+    return i.divider
+      ? { id: i.key, type: "divider" as const }
+      : ({
+          id: i.key,
+          type: "action" as const,
+          label: i.label,
+          danger: i.danger,
+          icon: i.icon,
+          action: () => i.onClick?.()
+        } as Extract<MenuItem, { type: "action" }>);
+  })
+);
 
-const close = () => {
-  visible.value = false;
-};
-
-const handleClick = (item: ContextMenuItem) => {
-  item.onClick();
-  close();
-};
-
-defineExpose({ open, close });
+defineExpose({
+  /** 与旧 API 100% 同签名：打开行右键菜单。 */
+  open: (event: MouseEvent, menuItems: ContextMenuItem[]) =>
+    cm.show(event, menuItems as unknown as Parameters<typeof cm.show>[1]),
+  close: cm.hide
+});
 </script>
-
-<style scoped lang="scss">
-.context-menu {
-  position: fixed;
-  z-index: 9999;
-  min-width: 160px;
-  padding: 4px 0;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 6px;
-  box-shadow: var(--el-box-shadow);
-  &__backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 9998;
-  }
-  &__item {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 16px;
-    font-size: 13px;
-    cursor: pointer;
-    &:hover {
-      background: var(--el-fill-color-light);
-    }
-    &--danger {
-      color: var(--el-color-danger);
-    }
-    &--divider {
-      padding-top: 10px;
-      margin-top: 4px;
-      border-top: 1px solid var(--el-border-color-lighter);
-    }
-    &-icon {
-      font-size: 14px;
-    }
-  }
-}
-</style>

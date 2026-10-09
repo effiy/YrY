@@ -27,7 +27,7 @@ export default defineConfig({
     pluginVueJsx(),
     pluginSass({
       sassLoaderOptions: {
-        additionalData: `@use "@/styles/var.scss" as *;`,
+        additionalData: `@use "@/styles/theme/variables.scss" as *;`,
       },
     }),
   ],

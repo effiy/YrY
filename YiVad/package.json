@@ -12,13 +12,13 @@
     "build:test": "vue-tsc && rsbuild build --mode test",
     "build:pro": "vue-tsc && rsbuild build --mode production",
     "type:check": "vue-tsc --noEmit --skipLibCheck",
-    "preview": "pnpm build:dev && rsbuild preview",
-    "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
+    "preview": "npm run build:dev && rsbuild preview",
+    "lint": "npm run lint:eslint && npm run lint:prettier && npm run lint:stylelint",
     "lint:eslint": "eslint --fix --ext .js,.ts,.vue ./src",
     "lint:prettier": "prettier --write \"src/**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint --cache --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "lint:lint-staged": "lint-staged",
-    "check": "pnpm type:check && pnpm lint && pnpm test",
+    "check": "npm run type:check && npm run lint && npm run test",
     "clean": "rm -rf dist node_modules/.cache",
     "prepare": "husky install",
     "release": "standard-version",
@@ -143,5 +143,5 @@
       "path": "node_modules/cz-git"
     }
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "pnpm@9.0.0+sha512.62e0b31137239210a5b8d0e7e331bc0a70000da44ff701e917671c976ebcf6a2ecfc5f2c1a9c7b8d1bdf28f0b375ff279194ddb3171dd8615b5753b311e3"
 }

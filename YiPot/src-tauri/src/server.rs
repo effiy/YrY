@@ -5,30 +5,31 @@ use std::thread;
 use tauri::api::notification;
 use tiny_http::{Request, Response, Server};
 
-pub fn start_server() {
+pub fn start_server() -> Result<(), String> {
     let port = match get("server_port") {
-        Some(v) => v.as_i64().unwrap(),
+        Some(v) => v.as_i64().unwrap_or(60828),
         None => {
             set("server_port", 60828);
             60828
         }
     };
+    let bind_addr = format!("127.0.0.1:{port}");
+    // 先尝试绑定端口：失败则返回 Err，让 setup 阶段及时告警
+    let server = Server::http(&bind_addr).map_err(|e| {
+        let msg = format!("Bind {bind_addr} failed: {e}");
+        let _ = notification::Notification::new("com.yipot.desktop")
+            .title("Server start failed")
+            .body("Please Change Server Port and restart the application")
+            .show();
+        warn!("{}", msg);
+        msg
+    })?;
     thread::spawn(move || {
-        let server = match Server::http(format!("127.0.0.1:{port}")) {
-            Ok(v) => v,
-            Err(e) => {
-                let _ = notification::Notification::new("com.yipot.desktop")
-                    .title("Server start failed")
-                    .body("Please Change Server Port and restart the application")
-                    .show();
-                warn!("Server start failed: {}", e);
-                return;
-            }
-        };
         for request in server.incoming_requests() {
             http_handle(request);
         }
     });
+    Ok(())
 }
 
 fn http_handle(request: Request) {

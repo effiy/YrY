@@ -23,27 +23,26 @@ let moveTimeout = null;
 
 const listenBlur = () => {
     return listen('tauri://blur', () => {
-        if (appWindow.label === 'translate') {
-            if (blurTimeout) {
-                clearTimeout(blurTimeout);
-            }
-            info('Blur');
-            // 100ms后关闭窗口，因为在 windows 下拖动窗口时会先切换成 blur 再立即切换成 focus
-            // 如果直接关闭将导致窗口无法拖动
-            blurTimeout = setTimeout(async () => {
-                info('Confirm Blur');
-                await appWindow.close();
-            }, 100);
-        }
+        if (appWindow.label !== 'translate') return;
+        if (blurTimeout) clearTimeout(blurTimeout);
+        info('Blur');
+        // 100ms后关闭窗口，因为在 windows 下拖动窗口时会先切换成 blur 再立即切换成 focus
+        // 如果直接关闭将导致窗口无法拖动
+        blurTimeout = setTimeout(async () => {
+            info('Confirm Blur');
+            await appWindow.close().catch(() => {});
+        }, 100);
+    }).catch((e) => {
+        // 当 IPC 未就绪 / 非 Tauri 窗口时，静默失败并返回 noop unlisten
+        console.warn('[Translate] listenBlur skipped:', e?.message ?? e);
+        return () => {};
     });
 };
 
-let unlisten = listenBlur();
+let unlistenP = listenBlur();
 // 取消 blur 监听
 const unlistenBlur = () => {
-    unlisten.then((f) => {
-        f();
-    });
+    unlistenP.then((f) => typeof f === 'function' && f()).catch(() => {});
 };
 
 // 监听 focus 事件取消 blurTimeout 时间之内的关闭窗口
@@ -53,7 +52,7 @@ void listen('tauri://focus', () => {
         info('Cancel Close');
         clearTimeout(blurTimeout);
     }
-});
+}).catch(() => {});
 // 监听 move 事件取消 blurTimeout 时间之内的关闭窗口
 void listen('tauri://move', () => {
     info('Move');
@@ -61,7 +60,7 @@ void listen('tauri://move', () => {
         info('Cancel Close');
         clearTimeout(blurTimeout);
     }
-});
+}).catch(() => {});
 
 export default function Translate() {
     const [closeOnBlur] = useConfig('translate_close_on_blur', true);
@@ -189,11 +188,21 @@ export default function Translate() {
         setPluginList({ ...temp });
     };
 
+    // 插件列表刷新：单份 listener（HMR 下也不会重复叠加）
+    const pluginReloadRef = React.useRef(null);
     useEffect(() => {
         loadPluginList();
-        if (!unlisten) {
-            unlisten = listen('reload_plugin_list', loadPluginList);
+        if (!pluginReloadRef.current) {
+            pluginReloadRef.current = listen('reload_plugin_list', loadPluginList).catch(() => () => {});
         }
+        return () => {
+            const ref = pluginReloadRef.current;
+            pluginReloadRef.current = null;
+            if (ref && typeof ref.then === 'function') {
+                ref.then((u) => typeof u === 'function' && u()).catch(() => {});
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadServiceInstanceConfigMap = async () => {
@@ -249,12 +258,12 @@ export default function Translate() {
                         onPress={() => {
                             if (pined) {
                                 if (closeOnBlur) {
-                                    unlisten = listenBlur();
+                                    unlistenP = listenBlur();
                                 }
-                                appWindow.setAlwaysOnTop(false);
+                                appWindow.setAlwaysOnTop(false).catch(() => {});
                             } else {
                                 unlistenBlur();
-                                appWindow.setAlwaysOnTop(true);
+                                appWindow.setAlwaysOnTop(true).catch(() => {});
                             }
                             setPined(!pined);
                         }}

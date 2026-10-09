@@ -25,6 +25,11 @@ export { default as DashboardWidget } from "./Dashboard/DashboardWidget.vue";
 export { default as DashboardToolbar } from "./Dashboard/DashboardToolbar.vue";
 export { default as WidgetPicker } from "./Dashboard/WidgetPicker.vue";
 export { default as WidgetSettings } from "./Dashboard/WidgetSettings.vue";
+/**
+ * GridLayout — 只读 12 列 CSS Grid 脚手架（原 analytics/DashboardGrid）。
+ * 与 DashboardGrid（可编辑+小部件）区分：GridLayout 只接受 cards + 插槽，不做拖拽/设置。
+ */
+export { default as GridLayout } from "./charts/GridLayout.vue";
 export { default as EntityBreadcrumb } from "./EntityBreadcrumb/EntityBreadcrumb.vue";
 export { default as ErrorPage } from "./ErrorMessage/ErrorPage.vue";
 export { default as Grid } from "./Grid/index.vue";
@@ -93,6 +98,11 @@ export { type HeaderPill } from "./PageHeaderCard/PageHeaderCard.vue";
 export { default as SkeletonTable } from "./Skeleton/SkeletonTable.vue";
 export { default as SkeletonList } from "./Skeleton/SkeletonList.vue";
 export { default as SkeletonCard } from "./Skeleton/SkeletonCard.vue";
+/**
+ * SkeletonDetail — 详情页骨架（原 components/DetailSkeleton.vue）。
+ * 与 SkeletonCard/SkeletonList/SkeletonTable 同目录，保持家族命名一致。
+ */
+export { default as SkeletonDetail } from "./Skeleton/SkeletonDetail.vue";
 
 // Empty state components
 export { default as EmptyState } from "./EmptyState/EmptyState.vue";

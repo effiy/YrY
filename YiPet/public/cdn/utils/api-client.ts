@@ -37,6 +37,15 @@ export interface ApiClient {
   url(path: string): string;
 }
 
+// ── URL helper (reusable by the extension layer too) ───────────────────
+
+/** Join a base URL and a path, normalising leading/trailing slashes. */
+export function resolveUrl(baseUrl: string, path: string): string {
+  const base = baseUrl.replace(/\/+$/, '');
+  const p = path.startsWith('/') ? path : '/' + path;
+  return base + p;
+}
+
 // ── Factory ────────────────────────────────────────────────────────────
 
 export function createApiClient(config: ApiClientConfig): ApiClient {
@@ -47,11 +56,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     ...headers,
   };
 
-  function resolveUrl(path: string): string {
-    const base = baseUrl.replace(/\/+$/, '');
-    const p = path.startsWith('/') ? path : '/' + path;
-    return base + p;
-  }
+  const resolve = (path: string) => resolveUrl(baseUrl, path);
 
   async function request<T>(
     method: string,
@@ -60,7 +65,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     signal?: AbortSignal,
     attempt = 0,
   ): Promise<ApiResponse<T>> {
-    const url = resolveUrl(path);
+    const url = resolve(path);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     const onAbort = () => controller.abort();
@@ -127,7 +132,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     post: <T>(path: string, body?: unknown, signal?: AbortSignal) => request<T>('POST', path, body, signal),
     put: <T>(path: string, body?: unknown, signal?: AbortSignal)  => request<T>('PUT', path, body, signal),
     delete: <T>(path: string, signal?: AbortSignal) => request<T>('DELETE', path, undefined, signal),
-    url: resolveUrl,
+    url: resolve,
   };
 }
 

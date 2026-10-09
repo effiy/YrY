@@ -1,43 +1,26 @@
-import * as _deepl from './deepl';
-import * as _bing from './bing';
-import * as _yandex from './yandex';
-import * as _openai from './openai';
-import * as _google from './google';
-import * as _transmart from './transmart';
-import * as _alibaba from './alibaba';
-import * as _baidu from './baidu';
-import * as _baidu_field from './baidu_field';
-import * as _tencent from './tencent';
-import * as _volcengine from './volcengine';
-import * as _niutrans from './niutrans';
-import * as _youdao from './youdao';
-import * as _bing_dict from './bing_dict';
-import * as _cambridge_dict from './cambridge_dict';
-import * as _caiyun from './caiyun';
-import * as _chatglm from './chatglm';
-import * as _geminipro from './geminipro';
-import * as _ollama from './ollama';
-import * as _ecdict from './ecdict';
-import * as _lingva from './lingva';
+// Built-in translate service registry.
+// Each service folder (./<name>) must export: { translate, Config, info }
+// Consumers rely on the namespace shape `builtinServices[serviceName]` (e.g.
+// builtinServices.openai.translate) which is preserved by namespace re-exports.
 
-export const deepl = _deepl;
-export const bing = _bing;
-export const yandex = _yandex;
-export const openai = _openai;
-export const google = _google;
-export const transmart = _transmart;
-export const alibaba = _alibaba;
-export const baidu = _baidu;
-export const baidu_field = _baidu_field;
-export const tencent = _tencent;
-export const volcengine = _volcengine;
-export const niutrans = _niutrans;
-export const youdao = _youdao;
-export const bing_dict = _bing_dict;
-export const cambridge_dict = _cambridge_dict;
-export const caiyun = _caiyun;
-export const chatglm = _chatglm;
-export const geminipro = _geminipro;
-export const ollama = _ollama;
-export const ecdict = _ecdict;
-export const lingva = _lingva;
+export * as deepl from './deepl';
+export * as bing from './bing';
+export * as yandex from './yandex';
+export * as openai from './openai';
+export * as google from './google';
+export * as transmart from './transmart';
+export * as alibaba from './alibaba';
+export * as baidu from './baidu';
+export * as baidu_field from './baidu_field';
+export * as tencent from './tencent';
+export * as volcengine from './volcengine';
+export * as niutrans from './niutrans';
+export * as youdao from './youdao';
+export * as bing_dict from './bing_dict';
+export * as cambridge_dict from './cambridge_dict';
+export * as caiyun from './caiyun';
+export * as chatglm from './chatglm';
+export * as geminipro from './geminipro';
+export * as ollama from './ollama';
+export * as ecdict from './ecdict';
+export * as lingva from './lingva';

@@ -2,10 +2,32 @@
  * Pet state persistence — chrome.storage.local helpers for
  * saving and restoring pet visibility, size, role, and color
  * across page reloads.
+ *
+ * Implementation delegates to the unified KV wrapper (`@/shared/storage/kv`)
+ * which centralises error isolation, so each exported helper below focuses on
+ * its domain logic instead of try/catch boilerplate.
  */
+
+import {
+  readKV,
+  readNumberKV,
+  readStringKV,
+  readMapEntry,
+  writeMapEntry,
+} from '@/shared/storage/kv';
 
 const PET_URL_STATE_KEY = 'pet_state_by_url';
 const ROLE_STORAGE_KEY = 'petRole';
+const COLOR_THEME_KEY = 'petColorTheme';
+
+/** In-extension-context guard — public helpers degrade to noop outside Chrome. */
+function inExtensionContext(): boolean {
+  try {
+    return !!(typeof chrome !== 'undefined' && chrome?.runtime?.id);
+  } catch {
+    return false;
+  }
+}
 
 /** Derive a stable URL key from the current page (origin + pathname, ignoring hash/query). */
 export function getPageUrlKey(): string {
@@ -20,24 +42,11 @@ export function persistPetState(state: {
   color: number;
   customColor?: string;
 }): void {
-  if (!chrome?.runtime?.id) return;
+  if (!inExtensionContext()) return;
   const urlKey = getPageUrlKey();
-  try {
-    chrome.storage.local
-      .get(PET_URL_STATE_KEY)
-      .then((result) => {
-        const map = result?.[PET_URL_STATE_KEY] || {};
-        map[urlKey] = { ...state };
-        chrome.storage.local.set({ [PET_URL_STATE_KEY]: map }).catch((err: Error) => {
-          console.warn('[YiPet] Failed to persist pet state:', err.message);
-        });
-      })
-      .catch((err: Error) => {
-        console.warn('[YiPet] Failed to read pet state for persist:', err.message);
-      });
-  } catch {
-    /* extension context invalidated — noop */
-  }
+  writeMapEntry(PET_URL_STATE_KEY, urlKey, { ...state }).catch((err: Error) => {
+    console.warn('[YiPet] Failed to persist pet state:', err.message);
+  });
 }
 
 export interface RestoredState {
@@ -62,12 +71,9 @@ export function restorePetState(
 ): void {
   const urlKey = getPageUrlKey();
 
-  chrome.storage.local
-    .get(PET_URL_STATE_KEY)
-    .then((stateResult: any) => {
-      const map = stateResult?.[PET_URL_STATE_KEY] || {};
-      const urlState = map[urlKey];
-      if (urlState) {
+  readMapEntry<Partial<RestoredState> | undefined>(PET_URL_STATE_KEY, urlKey, undefined)
+    .then((urlState) => {
+      if (urlState && typeof urlState === 'object') {
         if (typeof urlState.visible === 'boolean' && urlState.visible !== current.visible) {
           onChange('visibilityChanged', { visible: urlState.visible });
         }
@@ -95,28 +101,20 @@ export function restorePetState(
 
 /** Load saved color theme from chrome.storage. */
 export async function loadColorTheme(): Promise<number> {
-  try {
-    const result = await chrome.storage.local.get('petColorTheme');
-    const saved = result?.petColorTheme;
-    if (typeof saved === 'number') return saved;
-  } catch (err: unknown) {
-    console.warn('[YiPet] Failed to load color theme, using default:', (err as Error)?.message ?? err);
-  }
-  return 0;
+  const saved = await readNumberKV(COLOR_THEME_KEY, null);
+  return saved ?? 0;
 }
 
 /** Load per-page saved visual state when available. */
 export async function loadSavedPetStateForPage(): Promise<Partial<RestoredState>> {
-  try {
-    const urlKey = getPageUrlKey();
-    const stateResult = await chrome.storage.local.get(PET_URL_STATE_KEY);
-    const map = stateResult?.[PET_URL_STATE_KEY] || {};
-    const urlState = map[urlKey];
-    if (urlState && typeof urlState === 'object') {
-      return urlState as Partial<RestoredState>;
-    }
-  } catch (err: unknown) {
-    console.warn('[YiPet] Failed to load saved pet state for page:', (err as Error)?.message ?? err);
+  const urlKey = getPageUrlKey();
+  const urlState = await readMapEntry<Partial<RestoredState> | undefined>(
+    PET_URL_STATE_KEY,
+    urlKey,
+    undefined,
+  );
+  if (urlState && typeof urlState === 'object') {
+    return urlState as Partial<RestoredState>;
   }
   return {};
 }
@@ -124,25 +122,17 @@ export async function loadSavedPetStateForPage(): Promise<Partial<RestoredState>
 /** Load saved role from chrome.storage (global preference, then per-URL). */
 export async function loadSavedRole(currentRole: string): Promise<string> {
   // Check global preference first
-  try {
-    const result = await chrome.storage.local.get(ROLE_STORAGE_KEY);
-    const saved = result?.[ROLE_STORAGE_KEY];
-    if (saved && typeof saved === 'string') return saved;
-  } catch (err: unknown) {
-    console.warn('[YiPet] Failed to load saved role, using current:', (err as Error)?.message ?? err);
-  }
+  const globalRole = await readStringKV(ROLE_STORAGE_KEY, null);
+  if (globalRole) return globalRole;
 
   // Check per-URL state
-  try {
-    const urlKey = getPageUrlKey();
-    const stateResult = await chrome.storage.local.get(PET_URL_STATE_KEY);
-    const map = stateResult?.[PET_URL_STATE_KEY] || {};
-    const urlState = map[urlKey];
-    if (urlState?.role && typeof urlState.role === 'string') {
-      return urlState.role;
+  const urlKey = getPageUrlKey();
+  const urlState = await readKV<{ role?: string } | undefined>(PET_URL_STATE_KEY);
+  if (urlState && typeof urlState === 'object') {
+    const entry = (urlState as Record<string, { role?: string }>)[urlKey];
+    if (entry?.role && typeof entry.role === 'string') {
+      return entry.role;
     }
-  } catch (err: unknown) {
-    console.warn('[YiPet] Failed to load per-URL role, using global:', (err as Error)?.message ?? err);
   }
 
   return currentRole;

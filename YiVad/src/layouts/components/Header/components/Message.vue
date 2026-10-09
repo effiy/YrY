@@ -48,14 +48,12 @@
         </el-tab-pane>
         <el-tab-pane label="Messages(0)" name="second">
           <div class="message-empty">
-            <img src="@/assets/images/notData.png" alt="notData" />
-            <div>No messages</div>
+            <EmptyState variant="data" size="sm" title="No messages" />
           </div>
         </el-tab-pane>
         <el-tab-pane label="Todos(0)" name="third">
           <div class="message-empty">
-            <img src="@/assets/images/notData.png" alt="notData" />
-            <div>No todos</div>
+            <EmptyState variant="data" size="sm" title="No todos" />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -65,6 +63,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import EmptyState from "@/components/EmptyState/EmptyState.vue";
 const activeName = ref("first");
 </script>
 

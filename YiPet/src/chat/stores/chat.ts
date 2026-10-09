@@ -28,6 +28,7 @@ import {
 } from './chatUtils';
 import { exportCurrentSessionMarkdown as _exportMarkdown, exportConversationHtml as _exportHtml } from './chatExport';
 import { warnIfQuotaLow } from '@/shared/storage/quota';
+import { readBatchKV, writeBatchKV, writeKV } from '@/shared/storage/kv';
 
 export type { ChatState, Message, SessionItem };
 
@@ -366,17 +367,26 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // ── Persistence helpers ───────────────────────────────────────────────
+  //
+  // NOTE: These helpers write to BOTH `window.localStorage` (legacy fallback
+  // for in-chat contexts) AND `chrome.storage.local` via the unified KV
+  // wrapper. No more hand-written try/catch + capability detection here.
 
   const _persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
   function _persistSetting(key: string, value: unknown, immediate = false) {
     if (typeof window === 'undefined') return;
     clearTimeout(_persistTimers.get(key)!);
+    const storageKey = `yipet:${key}`;
     const run = () => {
       _persistTimers.delete(key);
-      try { window.localStorage?.setItem(`yipet:${key}`, typeof value === 'string' ? value : JSON.stringify(value)); } catch {}
-      if (typeof chrome !== 'undefined' && chrome.storage?.local?.set) {
-        try { chrome.storage.local.set({ [`yipet:${key}`]: value }); } catch {}
-      }
+      try {
+        window.localStorage?.setItem(
+          storageKey,
+          typeof value === 'string' ? value : JSON.stringify(value),
+        );
+      } catch { /* localStorage blocked — best effort */ }
+      // writeKV swallows context errors — no outer try/catch needed
+      void writeKV<unknown>(storageKey, value);
     };
     if (immediate) run();
     else _persistTimers.set(key, setTimeout(run, 400));
@@ -386,52 +396,56 @@ export const useChatStore = defineStore('chat', () => {
     _persistSetting('chatWindowState', { ...state.ws });
   }
 
+  /** Keys loaded in a single batch round-trip during `_loadPersistedState`. */
+  const PERSISTED_KEYS = [
+    'yipet:sidebarWidth', 'yipet:sidebarCollapsed', 'weChatRobots', 'yipet:promptHistory',
+    'yipet:promptTemplates',
+    'yipet:chatWindowState', 'yipet:chatColorIndex', 'yipet:chatCustomColor',
+    'yipet:ragEnabled', 'yipet:ragScope', 'yipet:ragScopeIsFile', 'yipet:ragFast',
+    'yipet:ragHybrid', 'yipet:ragRerank', 'yipet:ragCitations', 'yipet:ragHyde',
+    'yipet:ragNumQueries', 'yipet:ragChatMode',
+  ] as const;
+
+  type PersistedKeysMap = Record<typeof PERSISTED_KEYS[number], unknown>;
+
   async function _loadPersistedState() {
-    if (typeof chrome === 'undefined' || !chrome.storage?.local) return;
-    try {
-      const result = (await chrome.storage.local.get([
-        'yipet:sidebarWidth', 'yipet:sidebarCollapsed', 'weChatRobots', 'yipet:promptHistory',
-        'yipet:promptTemplates',
-        'yipet:chatWindowState', 'yipet:chatColorIndex', 'yipet:chatCustomColor',
-        'yipet:ragEnabled', 'yipet:ragScope', 'yipet:ragScopeIsFile', 'yipet:ragFast',
-        'yipet:ragHybrid', 'yipet:ragRerank', 'yipet:ragCitations', 'yipet:ragHyde',
-        'yipet:ragNumQueries', 'yipet:ragChatMode',
-      ])) as Record<string, unknown>;
-      if (typeof result['yipet:sidebarWidth'] === 'number') state.sidebarWidth = result['yipet:sidebarWidth'];
-      if (typeof result['yipet:sidebarCollapsed'] === 'boolean') state.sidebarCollapsed = result['yipet:sidebarCollapsed'];
-      if (Array.isArray(result.weChatRobots)) state.weChatRobots = result.weChatRobots as WeWorkBot[];
-      if (Array.isArray(result['yipet:promptHistory'])) {
-        state.promptHistory = (result['yipet:promptHistory'] as string[]).filter((s): s is string => typeof s === 'string').slice(-100);
-      }
-      if (Array.isArray(result['yipet:promptTemplates'])) {
-        state.promptTemplates = (result['yipet:promptTemplates'] as Array<{ name: string; content: string }>)
-          .filter(t => t && typeof t.name === 'string' && typeof t.content === 'string');
-      }
-      if (result['yipet:chatWindowState'] && typeof result['yipet:chatWindowState'] === 'object') {
-        const ws = result['yipet:chatWindowState'] as Record<string, unknown>;
-        if (typeof ws.x === 'number') state.ws.x = ws.x;
-        if (typeof ws.y === 'number') state.ws.y = ws.y;
-        if (typeof ws.width === 'number') state.ws.width = ws.width;
-        if (typeof ws.height === 'number') state.ws.height = ws.height;
-        if (typeof ws.isFullscreen === 'boolean') state.ws.isFullscreen = ws.isFullscreen;
-      }
-      if (typeof result['yipet:chatColorIndex'] === 'number' || typeof result['yipet:chatCustomColor'] === 'string') {
-        setColorIndex(
-          typeof result['yipet:chatColorIndex'] === 'number' ? result['yipet:chatColorIndex'] : state.colorIndex,
-          typeof result['yipet:chatCustomColor'] === 'string' ? result['yipet:chatCustomColor'] : state.customColor,
-        );
-      }
-      if (typeof result['yipet:ragEnabled'] === 'boolean') state.ragEnabled = result['yipet:ragEnabled'];
-      if (typeof result['yipet:ragScope'] === 'string') state.ragScope = result['yipet:ragScope'];
-      if (typeof result['yipet:ragScopeIsFile'] === 'boolean') state.ragScopeIsFile = result['yipet:ragScopeIsFile'];
-      if (typeof result['yipet:ragFast'] === 'boolean') state.ragFast = result['yipet:ragFast'];
-      if (typeof result['yipet:ragHybrid'] === 'boolean') state.ragHybrid = result['yipet:ragHybrid'];
-      if (typeof result['yipet:ragRerank'] === 'boolean') state.ragRerank = result['yipet:ragRerank'];
-      if (typeof result['yipet:ragCitations'] === 'boolean') state.ragCitations = result['yipet:ragCitations'];
-      if (typeof result['yipet:ragHyde'] === 'boolean') state.ragHyde = result['yipet:ragHyde'];
-      if (typeof result['yipet:ragNumQueries'] === 'number') state.ragNumQueries = result['yipet:ragNumQueries'];
-      if (typeof result['yipet:ragChatMode'] === 'string') state.ragChatMode = result['yipet:ragChatMode'];
-    } catch { /* storage unavailable */ }
+    // readBatchKV handles unavailability gracefully (empty object on failure)
+    const result = await readBatchKV<PersistedKeysMap>([...PERSISTED_KEYS]);
+
+    if (typeof result['yipet:sidebarWidth'] === 'number') state.sidebarWidth = result['yipet:sidebarWidth'];
+    if (typeof result['yipet:sidebarCollapsed'] === 'boolean') state.sidebarCollapsed = result['yipet:sidebarCollapsed'];
+    if (Array.isArray(result.weChatRobots)) state.weChatRobots = result.weChatRobots as WeWorkBot[];
+    if (Array.isArray(result['yipet:promptHistory'])) {
+      state.promptHistory = (result['yipet:promptHistory'] as string[]).filter((s): s is string => typeof s === 'string').slice(-100);
+    }
+    if (Array.isArray(result['yipet:promptTemplates'])) {
+      state.promptTemplates = (result['yipet:promptTemplates'] as Array<{ name: string; content: string }>)
+        .filter(t => t && typeof t.name === 'string' && typeof t.content === 'string');
+    }
+    if (result['yipet:chatWindowState'] && typeof result['yipet:chatWindowState'] === 'object') {
+      const ws = result['yipet:chatWindowState'] as Record<string, unknown>;
+      if (typeof ws.x === 'number') state.ws.x = ws.x;
+      if (typeof ws.y === 'number') state.ws.y = ws.y;
+      if (typeof ws.width === 'number') state.ws.width = ws.width;
+      if (typeof ws.height === 'number') state.ws.height = ws.height;
+      if (typeof ws.isFullscreen === 'boolean') state.ws.isFullscreen = ws.isFullscreen;
+    }
+    if (typeof result['yipet:chatColorIndex'] === 'number' || typeof result['yipet:chatCustomColor'] === 'string') {
+      setColorIndex(
+        typeof result['yipet:chatColorIndex'] === 'number' ? result['yipet:chatColorIndex'] : state.colorIndex,
+        typeof result['yipet:chatCustomColor'] === 'string' ? result['yipet:chatCustomColor'] : state.customColor,
+      );
+    }
+    if (typeof result['yipet:ragEnabled'] === 'boolean') state.ragEnabled = result['yipet:ragEnabled'];
+    if (typeof result['yipet:ragScope'] === 'string') state.ragScope = result['yipet:ragScope'];
+    if (typeof result['yipet:ragScopeIsFile'] === 'boolean') state.ragScopeIsFile = result['yipet:ragScopeIsFile'];
+    if (typeof result['yipet:ragFast'] === 'boolean') state.ragFast = result['yipet:ragFast'];
+    if (typeof result['yipet:ragHybrid'] === 'boolean') state.ragHybrid = result['yipet:ragHybrid'];
+    if (typeof result['yipet:ragRerank'] === 'boolean') state.ragRerank = result['yipet:ragRerank'];
+    if (typeof result['yipet:ragCitations'] === 'boolean') state.ragCitations = result['yipet:ragCitations'];
+    if (typeof result['yipet:ragHyde'] === 'boolean') state.ragHyde = result['yipet:ragHyde'];
+    if (typeof result['yipet:ragNumQueries'] === 'number') state.ragNumQueries = result['yipet:ragNumQueries'];
+    if (typeof result['yipet:ragChatMode'] === 'string') state.ragChatMode = result['yipet:ragChatMode'];
   }
 
   // ── Session management ───────────────────────────────────────────────
@@ -1698,7 +1712,7 @@ export const useChatStore = defineStore('chat', () => {
   function toggleRag() {
     const wasEnabled = state.ragEnabled;
     state.ragEnabled = !state.ragEnabled;
-    try { chrome.storage.local.set({ 'yipet:ragEnabled': state.ragEnabled }); } catch { /* ignore */ }
+    writeKV('yipet:ragEnabled', state.ragEnabled);
     if (state.ragEnabled) {
       if (!state.ragStatus) {
         loadRagStatus();
@@ -1724,13 +1738,13 @@ export const useChatStore = defineStore('chat', () => {
   function setRagScope(path: string, isFile: boolean) {
     state.ragScope = path;
     state.ragScopeIsFile = isFile;
-    try { chrome.storage.local.set({ 'yipet:ragScope': path, 'yipet:ragScopeIsFile': isFile }); } catch { /* ignore */ }
+    writeBatchKV({ 'yipet:ragScope': path, 'yipet:ragScopeIsFile': isFile });
   }
 
   function clearRagScope() {
     state.ragScope = '';
     state.ragScopeIsFile = false;
-    try { chrome.storage.local.set({ 'yipet:ragScope': '', 'yipet:ragScopeIsFile': false }); } catch { /* ignore */ }
+    writeBatchKV({ 'yipet:ragScope': '', 'yipet:ragScopeIsFile': false });
   }
 
   function openLlamaIndex() {
@@ -1802,37 +1816,37 @@ export const useChatStore = defineStore('chat', () => {
 
   function toggleRagFast() {
     state.ragFast = !state.ragFast;
-    try { chrome.storage.local.set({ 'yipet:ragFast': state.ragFast }); } catch { /* ignore */ }
+    writeKV('yipet:ragFast', state.ragFast);
   }
 
   function toggleRagHybrid() {
     state.ragHybrid = !state.ragHybrid;
-    try { chrome.storage.local.set({ 'yipet:ragHybrid': state.ragHybrid }); } catch { /* ignore */ }
+    writeKV('yipet:ragHybrid', state.ragHybrid);
   }
 
   function toggleRagRerank() {
     state.ragRerank = !state.ragRerank;
-    try { chrome.storage.local.set({ 'yipet:ragRerank': state.ragRerank }); } catch { /* ignore */ }
+    writeKV('yipet:ragRerank', state.ragRerank);
   }
 
   function toggleRagCitations() {
     state.ragCitations = !state.ragCitations;
-    try { chrome.storage.local.set({ 'yipet:ragCitations': state.ragCitations }); } catch { /* ignore */ }
+    writeKV('yipet:ragCitations', state.ragCitations);
   }
 
   function toggleRagHyde() {
     state.ragHyde = !state.ragHyde;
-    try { chrome.storage.local.set({ 'yipet:ragHyde': state.ragHyde }); } catch { /* ignore */ }
+    writeKV('yipet:ragHyde', state.ragHyde);
   }
 
   function setRagNumQueries(n: number) {
     state.ragNumQueries = n;
-    try { chrome.storage.local.set({ 'yipet:ragNumQueries': n }); } catch { /* ignore */ }
+    writeKV('yipet:ragNumQueries', n);
   }
 
   function setRagChatMode(mode: string) {
     state.ragChatMode = mode;
-    try { chrome.storage.local.set({ 'yipet:ragChatMode': mode }); } catch { /* ignore */ }
+    writeKV('yipet:ragChatMode', mode);
   }
 
   function resetRagSettings() {
@@ -1843,17 +1857,15 @@ export const useChatStore = defineStore('chat', () => {
     state.ragRerank = true;
     state.ragHyde = false;
     state.ragCitations = true;
-    try {
-      chrome.storage.local.set({
-        'yipet:ragChatMode': 'condense_plus_context',
-        'yipet:ragFast': false,
-        'yipet:ragNumQueries': 0,
-        'yipet:ragHybrid': true,
-        'yipet:ragRerank': true,
-        'yipet:ragHyde': false,
-        'yipet:ragCitations': true,
-      });
-    } catch { /* ignore */ }
+    writeBatchKV({
+      'yipet:ragChatMode': 'condense_plus_context',
+      'yipet:ragFast': false,
+      'yipet:ragNumQueries': 0,
+      'yipet:ragHybrid': true,
+      'yipet:ragRerank': true,
+      'yipet:ragHyde': false,
+      'yipet:ragCitations': true,
+    });
   }
 
   // ── Return: full backward-compatible API ────────────────────────────

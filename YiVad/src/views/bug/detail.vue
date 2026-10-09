@@ -232,7 +232,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowLeft, Edit, Delete, Link, WarningFilled, Grid, CircleCheck } from "@element-plus/icons-vue";
 import { EntityBreadcrumb } from "@/components";
-import DetailSkeleton from "@/components/DetailSkeleton.vue";
+import DetailSkeleton from "@/components/Skeleton/SkeletonDetail.vue";
 import BugContentSection from "./components/BugContentSection.vue";
 import { useBugStore } from "@/stores/modules/bug";
 import { useProjectStore } from "@/stores/modules/project";

@@ -107,7 +107,7 @@
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { writeKnowledgeFile } from "@/api/modules/knowledgeService";
-import DetailSkeleton from "@/components/DetailSkeleton.vue";
+import DetailSkeleton from "@/components/Skeleton/SkeletonDetail.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import IssueHeader from "./components/IssueHeader.vue";
 import IssueDescription from "./components/IssueDescription.vue";

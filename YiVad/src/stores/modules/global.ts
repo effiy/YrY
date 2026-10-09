@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { DEFAULT_PRIMARY } from "@/config";
 import piniaPersistConfig from "@/stores/helper/persist";
+import { useWatermarkStore } from "@/stores/modules/watermark";
 
 export const useGlobalStore = defineStore(
   "yivad-global",
@@ -19,7 +20,18 @@ export const useGlobalStore = defineStore(
     const headerInverted = ref(false);
     const isCollapse = ref(false);
     const accordion = ref(true);
-    const watermark = ref(false);
+    /**
+     * @deprecated 2026-10 Phase 2 重构：水印主开关收敛到 stores/modules/watermark（enabled = globalForced || userEnabled）。
+     * 本字段保持为「视图层的用户侧开关」并通过双向桥接与 useWatermarkStore().userEnabled 同步，
+     * 目的是：
+     *   1) 旧的 setGlobalState("watermark", bool) 写入 / ThemeDrawer 读取仍然 100% 可用；
+     *   2) 不再重复持有「同一份用户开关状态」，彻底消除 global.ts 与 watermark.ts 的双份状态漂移；
+     *   3) globalForced（强制水印）不受本字段影响，优先级高于 user。
+     */
+    const watermark = computed({
+      get: () => useWatermarkStore().userEnabled,
+      set: (v: boolean) => useWatermarkStore().toggleUser(v)
+    });
     const breadcrumb = ref(true);
     const breadcrumbIcon = ref(true);
     const tabs = ref(true);
@@ -40,7 +52,7 @@ export const useGlobalStore = defineStore(
       headerInverted,
       isCollapse,
       accordion,
-      watermark,
+      // watermark 是 computed（非 Ref），跳过直接赋值（通过 setter 正常生效）
       breadcrumb,
       breadcrumbIcon,
       tabs,
@@ -48,8 +60,23 @@ export const useGlobalStore = defineStore(
       footer
     };
 
+    // 兼容旧端（直接通过 Pinia 实例写 store.$state.watermark 绕过 setter 的反序列化路径）：
+    // 每次 watermark 本地持久化恢复后，再把值写回 watermark store，确保两份状态单向收敛。
+    watch(
+      watermark,
+      v => {
+        const ws = useWatermarkStore();
+        if (ws.userEnabled !== v) ws.toggleUser(v);
+      },
+      { flush: "sync" }
+    );
+
     function setGlobalState(...args: [string, any]) {
       const [key, value] = args;
+      if (key === "watermark") {
+        useWatermarkStore().toggleUser(Boolean(value));
+        return;
+      }
       const target = _stateMap[key];
       if (target) target.value = value;
     }

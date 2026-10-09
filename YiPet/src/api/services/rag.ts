@@ -2,9 +2,13 @@
  * RAG Service — llama_index retrieval-augmented generation over YiKnowledge.
  *
  * Wraps YiAi's /rag-* REST endpoints. SSE streaming reuses client.stream().
+ *
+ * The two SSE helpers (`streamChat` / `streamFileChat`) share a single
+ * internal `_streamTokens` implementation — the only difference is the
+ * endpoint and whether `onSources`/`onMeta` callbacks are enabled.
  */
 
-import type { ApiClient, ApiResponse } from '../client';
+import type { ApiClient, ApiResponse, StreamChunk } from '../client';
 import { RAG } from '../endpoints';
 import { pickTextFromResponse } from '../sse';
 import type {
@@ -46,41 +50,55 @@ export class RagService {
     return this.client.post<RagDecomposeResponse>(RAG.DECOMPOSE, params);
   }
 
-  /** SSE streaming RAG chat. Calls onSources when rag_sources event arrives. */
-  async streamChat(
-    params: RagChatPayload,
+  /* ── SSE streaming (shared implementation) ──────────────────────────── */
+
+  /**
+   * Shared SSE token-streaming implementation.
+   *
+   * Handles:
+   *   - Error / done frame dispatch
+   *   - Double-envelope unwrap (`obj.data → inner` fallback)
+   *   - Optional `sources` / `rag_meta` event callbacks (both envelope levels)
+   *   - Token extraction + accumulation
+   */
+  private async _streamTokens<P>(
+    endpoint: string,
+    params: P,
     onToken: (token: string) => void,
-    onSources?: (sources: RagSource[]) => void,
-    onMeta?: (meta: Record<string, unknown>) => void,
     signal?: AbortSignal,
+    callbacks?: {
+      onSources?: (sources: RagSource[]) => void;
+      onMeta?: (meta: Record<string, unknown>) => void;
+    },
   ): Promise<string> {
     let fullText = '';
-    for await (const chunk of this.client.stream(RAG.CHAT, params, signal)) {
+    const onSources = callbacks?.onSources;
+    const onMeta = callbacks?.onMeta;
+
+    for await (const chunk of this.client.stream(endpoint, params, signal)) {
       if (chunk.error) throw new Error(chunk.error);
       if (chunk.done) break;
+
       const obj = chunk.data as Record<string, unknown> | undefined;
       if (!obj) continue;
-      // YiAi envelope wraps responses in {data: {...}}, but some events
-      // may place metadata at the top level.
+
+      // YiAi envelope wraps responses in {data: {...}}; some events place
+      // metadata at the top level, so check both.
       const inner = (obj.data as Record<string, unknown> | undefined) ?? obj;
-      // Detect sources event from the backend (key: "sources")
-      if (inner.sources && onSources) {
-        onSources(inner.sources as RagSource[]);
+
+      // Sources event — both levels (envelope-wrapped & flat)
+      if (onSources) {
+        if (inner.sources) onSources(inner.sources as RagSource[]);
+        if (obj.sources && obj !== inner) onSources(obj.sources as RagSource[]);
       }
-      // Also check top-level for unwrapped events
-      if (obj.sources && obj !== inner && onSources) {
-        onSources(obj.sources as RagSource[]);
+
+      // Rag_meta event — retrieval metadata (grade, chat_mode, etc.)
+      if (onMeta) {
+        if (inner.rag_meta) onMeta(inner.rag_meta as Record<string, unknown>);
+        if (obj.rag_meta && obj !== inner) onMeta(obj.rag_meta as Record<string, unknown>);
       }
-      // Detect rag_meta event — retrieval metadata (grade, chat_mode, etc.)
-      if (inner.rag_meta && onMeta) {
-        onMeta(inner.rag_meta as Record<string, unknown>);
-      }
-      if (obj.rag_meta && obj !== inner && onMeta) {
-        onMeta(obj.rag_meta as Record<string, unknown>);
-      }
-      // Try outer envelope first, then fall back to unwrapped inner data.
-      // Some backends wrap the text delta in {data: {message: "..."}} while
-      // others place it directly in the inner object as {message: "..."}.
+
+      // Text delta — try the outer envelope first, then the unwrapped inner
       const token = pickTextFromResponse(chunk.data) ?? pickTextFromResponse(inner) ?? '';
       if (token) {
         fullText += token;
@@ -90,26 +108,27 @@ export class RagService {
     return fullText;
   }
 
+  /** SSE streaming RAG chat. Calls onSources when rag_sources event arrives. */
+  async streamChat(
+    params: RagChatPayload,
+    onToken: (token: string) => void,
+    onSources?: (sources: RagSource[]) => void,
+    onMeta?: (meta: Record<string, unknown>) => void,
+    signal?: AbortSignal,
+  ): Promise<string> {
+    return this._streamTokens<RagChatPayload>(RAG.CHAT, params, onToken, signal, {
+      onSources,
+      onMeta,
+    });
+  }
+
   /** SSE streaming file-level RAG chat. */
   async streamFileChat(
     params: RagFileChatPayload,
     onToken: (token: string) => void,
     signal?: AbortSignal,
   ): Promise<string> {
-    let fullText = '';
-    for await (const chunk of this.client.stream(RAG.FILE_CHAT, params, signal)) {
-      if (chunk.error) throw new Error(chunk.error);
-      if (chunk.done) break;
-      const obj = chunk.data as Record<string, unknown> | undefined;
-      if (!obj) continue;
-      const inner = (obj.data as Record<string, unknown> | undefined) ?? obj;
-      const token = pickTextFromResponse(chunk.data) ?? pickTextFromResponse(inner) ?? '';
-      if (token) {
-        fullText += token;
-        onToken(token);
-      }
-    }
-    return fullText;
+    return this._streamTokens<RagFileChatPayload>(RAG.FILE_CHAT, params, onToken, signal);
   }
 
   /** Query RAG history records. */

@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => ({
     pluginVueJsx(),
     pluginSass({
       sassLoaderOptions: {
-        additionalData: `@use "@/styles/var.scss" as *;`
+        additionalData: `@use "@/styles/theme/variables.scss" as *;`
       }
     }),
     yipetBuildPlugin(rootDir, mode)

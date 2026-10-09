@@ -4,6 +4,8 @@
  * Resolution order: user override (chrome.storage) → system timezone (Intl).
  */
 
+import { readStringKV, writeKV } from '../storage/kv';
+
 const STORAGE_KEY = 'user_timezone';
 
 /* ── Detection ─────────────────────────────────────────────────────────── */
@@ -20,14 +22,11 @@ export function getSystemTimezone(): string {
 /* ── User Preference ───────────────────────────────────────────────────── */
 
 export async function getUserTimezone(): Promise<string | null> {
-  const result = await chrome.storage.local.get(STORAGE_KEY);
-  const val = result[STORAGE_KEY] as string | undefined;
-  if (val && typeof val === 'string') return val;
-  return null;
+  return readStringKV(STORAGE_KEY, null);
 }
 
 export async function setUserTimezone(tz: string): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEY]: tz });
+  await writeKV<string>(STORAGE_KEY, tz);
 }
 
 /* ── Combined Resolution ───────────────────────────────────────────────── */

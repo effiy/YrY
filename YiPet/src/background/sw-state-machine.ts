@@ -6,8 +6,11 @@
  * version migration support.
  *
  * States: uninitialized → installing → waiting → activating → active → terminated
+ *
+ * Checkpoint persistence delegates to the unified KV wrapper.
  */
 import { logger } from '@/utils/log';
+import { readKV, writeKV } from '@/shared/storage/kv';
 
 export type SwState =
   | 'uninitialized'
@@ -29,6 +32,18 @@ const CHECKPOINT_KEY = 'yipet:sw-checkpoint';
 const CHECKPOINT_INTERVAL_MS = 30_000;
 const SW_VERSION = '1.2.0';
 
+function isSwCheckpoint(raw: unknown): raw is SwCheckpoint {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false;
+  const cp = raw as SwCheckpoint;
+  return (
+    typeof cp.state === 'string' &&
+    typeof cp.timestamp === 'number' &&
+    cp.version === SW_VERSION &&
+    typeof cp.activeConnections === 'number' &&
+    typeof cp.queuedMessages === 'number'
+  );
+}
+
 class SwLifecycleStateMachine {
   private _state: SwState = 'uninitialized';
   private _initialized = false;
@@ -49,7 +64,7 @@ class SwLifecycleStateMachine {
   async init(): Promise<void> {
     if (this._initialized) return;
 
-    // Restore checkpoint if available
+    // Restore checkpoint if available (version-matched only)
     await this._restoreCheckpoint();
 
     // Register lifecycle handlers (idempotent via Set tracking)
@@ -118,7 +133,7 @@ class SwLifecycleStateMachine {
 
   private _startCheckpointing(): void {
     this._checkpointTimer = setInterval(() => {
-      this._saveCheckpoint();
+      void this._saveCheckpoint();
     }, CHECKPOINT_INTERVAL_MS);
   }
 
@@ -137,24 +152,16 @@ class SwLifecycleStateMachine {
       activeConnections: this._activeConnections,
       queuedMessages: this._queuedMessages,
     };
-    try {
-      await chrome.storage.local.set({ [CHECKPOINT_KEY]: checkpoint });
-    } catch {
-      // chrome.storage may not be available in all contexts
-    }
+    // writeKV returns false on failure — no need for exception handling here
+    await writeKV<SwCheckpoint>(CHECKPOINT_KEY, checkpoint);
   }
 
   private async _restoreCheckpoint(): Promise<void> {
-    try {
-      const result = await chrome.storage.local.get(CHECKPOINT_KEY);
-      const checkpoint = result[CHECKPOINT_KEY] as SwCheckpoint | undefined;
-      if (checkpoint && checkpoint.version === SW_VERSION) {
-        this._state = checkpoint.state;
-        this._activeConnections = checkpoint.activeConnections;
-        this._queuedMessages = checkpoint.queuedMessages;
-      }
-    } catch {
-      // chrome.storage may not be available
+    const raw = await readKV<SwCheckpoint>(CHECKPOINT_KEY);
+    if (isSwCheckpoint(raw)) {
+      this._state = raw.state;
+      this._activeConnections = raw.activeConnections;
+      this._queuedMessages = raw.queuedMessages;
     }
   }
 }

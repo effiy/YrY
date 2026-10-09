@@ -3,8 +3,12 @@
  *
  * Consumes YiAi /dashboard/summary and /dashboard/live-snapshot endpoints
  * for at-a-glance project status without loading the full YiVad dashboard.
+ *
+ * Style: Class (consistent with other services) with a `createDashboardService`
+ * factory alias preserved for backwards compatibility.
  */
 import type { ApiClient } from '../client';
+import { unwrapOrThrow } from '../client';
 
 export interface ProjectSummary {
   key: string;
@@ -41,22 +45,34 @@ export interface LiveSnapshot {
   timestamp: number;
 }
 
-export function createDashboardService(client: ApiClient) {
-  return {
-    /** Lightweight project health summary — ideal for popup widgets. */
-    async getSummary(): Promise<DashboardSummary> {
-      const res = await client.get<DashboardSummary>('/dashboard/summary');
-      if (!res.ok) throw new Error(res.error || 'Summary failed');
-      return res.data;
-    },
+/* ═══════════════════════════════════════════════════════════════════════
+   Service Class
+   ═══════════════════════════════════════════════════════════════════════ */
 
-    /** Single snapshot of live KPIs (non-streaming). */
-    async getLiveSnapshot(): Promise<LiveSnapshot> {
-      const res = await client.get<LiveSnapshot>('/dashboard/live-snapshot');
-      if (!res.ok) throw new Error(res.error || 'Live snapshot failed');
-      return res.data;
-    },
-  };
+export class DashboardService {
+  constructor(private client: ApiClient) {}
+
+  /** Lightweight project health summary — ideal for popup widgets. */
+  async getSummary(): Promise<DashboardSummary> {
+    return unwrapOrThrow(
+      await this.client.get<DashboardSummary>('/dashboard/summary'),
+      'Dashboard summary',
+    );
+  }
+
+  /** Single snapshot of live KPIs (non-streaming). */
+  async getLiveSnapshot(): Promise<LiveSnapshot> {
+    return unwrapOrThrow(
+      await this.client.get<LiveSnapshot>('/dashboard/live-snapshot'),
+      'Live snapshot',
+    );
+  }
 }
 
-export type DashboardService = ReturnType<typeof createDashboardService>;
+/* ═══════════════════════════════════════════════════════════════════════
+   Backwards-compat factory alias
+   ═══════════════════════════════════════════════════════════════════════ */
+
+export function createDashboardService(client: ApiClient): DashboardService {
+  return new DashboardService(client);
+}

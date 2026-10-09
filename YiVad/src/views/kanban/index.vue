@@ -69,13 +69,12 @@
       </KanbanColumn>
     </div>
 
-    <KanbanContextMenu
-      :visible="contextMenu.visible"
-      :x="contextMenu.x"
-      :y="contextMenu.y"
-      @quick-status="ctxQuickStatus"
-      @edit-priority="ctxEditPriority"
-      @delete="ctxDelete"
+    <ContextMenu
+      :visible="ctx.visible.value"
+      :position="ctx.position.value"
+      :items="contextMenuItems"
+      :context="(ctx.context.value as any) ?? null"
+      @hide="ctx.hide()"
     />
 
     <CreateIssueDialog
@@ -90,7 +89,7 @@
 </template>
 
 <script setup lang="ts" name="kanbanBoard">
-import { onMounted, onUnmounted, reactive, ref, computed } from "vue";
+import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useNow } from "@/hooks/useNow";
@@ -123,7 +122,10 @@ import type { KanbanColumnItem } from "./components/KanbanColumn.vue";
 import KanbanFilters from "./components/KanbanFilters.vue";
 import KanbanProgressBar from "./components/KanbanProgressBar.vue";
 import KanbanSearchBar from "./components/KanbanSearchBar.vue";
-import KanbanContextMenu from "./components/KanbanContextMenu.vue";
+import ContextMenu from "@/components/context-menu/ContextMenu.vue";
+import { useContextMenu } from "@/composables/menu/useContextMenu";
+import type { MenuItem } from "@/components/context-menu/types";
+import { ArrowRight, CircleCheck, Delete } from "@element-plus/icons-vue";
 import CreateIssueDialog from "./components/CreateIssueDialog.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
@@ -447,28 +449,68 @@ async function openPreview(item: KanbanColumnItem) {
   });
 }
 
-// ── Context Menu ──
-const contextMenu = reactive({ visible: false, x: 0, y: 0, item: null as KanbanColumnItem | null });
-function openContextMenu(e: MouseEvent, item: KanbanColumnItem) {
-  contextMenu.x = Math.min(e.clientX, window.innerWidth - 180);
-  contextMenu.y = Math.min(e.clientY, window.innerHeight - 260);
-  contextMenu.item = item;
-  contextMenu.visible = true;
+// ── Context Menu（统一实现：复用通用 ContextMenu + useContextMenu 状态机）
+const ctx = useContextMenu();
+type KItem = KanbanColumnItem;
+
+function openContextMenu(e: MouseEvent, item: KItem) {
+  ctx.show(e, [] as MenuItem[], { pageContext: { item } });
 }
-function closeContextMenu() {
-  contextMenu.visible = false;
-  contextMenu.item = null;
-}
-onUnmounted(() => document.removeEventListener("click", closeContextMenu));
+
+/** 动态生成菜单项（依赖当前 ctx.context.pageContext.item + i18n）。 */
+const contextMenuItems = computed<MenuItem[]>(() => {
+  const item = ctx.context.value?.pageContext?.item as KItem | undefined;
+  if (!item) return [];
+  const QUICK_STATUSES: [IssueStatus, "todo" | "in_progress" | "in_review" | "done"][] = [
+    ["todo", "todo"],
+    ["in_progress", "in_progress"],
+    ["in_review", "in_review"],
+    ["done", "done"]
+  ];
+  const PRIORITIES: [IssuePriority, string, string][] = [
+    ["urgent", "#f56c6c", "Urgent"],
+    ["high", "#e6a23c", "High"],
+    ["medium", "#409eff", "Medium"],
+    ["low", "#909399", "Low"]
+  ];
+  const quickStatusItems: MenuItem[] = QUICK_STATUSES.map(([status, i18nKey]) => ({
+    id: `status-${status}`,
+    type: "action",
+    label: t(`kanban.contextMenu.moveTo${i18nKey === "todo" ? "Todo" : i18nKey === "in_progress" ? "InProgress" : i18nKey === "in_review" ? "InReview" : "Done"}`),
+    icon: (status === "done" ? CircleCheck : ArrowRight) as any,
+    action: () => ctxQuickStatus(status)
+  }));
+  const priorityItems: MenuItem[] = PRIORITIES.map(([pri, color, label]) => ({
+    id: `pri-${pri}`,
+    type: "action",
+    label: label,
+    action: () => ctxEditPriority(pri),
+    // 直接使用 MenuItem 的 label 前缀颜色；没有 icon 时用 label 自绘
+  }));
+  return [
+    ...quickStatusItems,
+    { id: "d1", type: "divider" },
+    ...priorityItems,
+    { id: "d2", type: "divider" },
+    {
+      id: "delete",
+      type: "action",
+      label: t("kanban.contextMenu.deleteIssue"),
+      icon: Delete as any,
+      danger: true,
+      action: () => ctxDelete()
+    }
+  ];
+});
 
 async function ctxQuickStatus(status: IssueStatus) {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as KItem | undefined;
+  ctx.hide();
   if (item) await quickChangeStatus(item, status);
 }
 async function ctxEditPriority(priority: IssuePriority) {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as KItem | undefined;
+  ctx.hide();
   if (!item) return;
   if (isBug(item)) {
     const bugPri = ISSUE_PRIORITY_TO_BUG_PRIORITY[priority];
@@ -481,8 +523,8 @@ async function ctxEditPriority(priority: IssuePriority) {
   loadBoard();
 }
 async function ctxDelete() {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as KItem | undefined;
+  ctx.hide();
   if (!item) return;
   const confirmed = await confirm(
     isBug(item) ? `Delete bug "${item.title}"?` : t("kanban.createDialog.deleteConfirm.title", { name: item.title }),
@@ -643,7 +685,6 @@ function isOverdue(item: KanbanColumnItem): boolean {
 }
 
 onMounted(async () => {
-  document.addEventListener("click", closeContextMenu);
   await loadNames();
   loadBoard();
 });

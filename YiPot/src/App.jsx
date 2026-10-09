@@ -10,7 +10,6 @@ import Screenshot from './window/Screenshot';
 import Translate from './window/Translate';
 import Recognize from './window/Recognize';
 import Updater from './window/Updater';
-import { store } from './utils/store';
 import Config from './window/Config';
 import { useConfig } from './hooks';
 import './style.css';
@@ -24,6 +23,22 @@ const windowMap = {
     updater: <Updater />,
 };
 
+// 哪些 ctrl+function keys 白名单：避免在窗口里不小心触发浏览器默认菜单/编辑
+const buildGlobalKeyHandler = (devMode) => async (e) => {
+    const allowKeys = ['c', 'v', 'x', 'a', 'z', 'y'];
+    if (e.ctrlKey && !allowKeys.includes(e.key.toLowerCase())) {
+        e.preventDefault();
+    }
+    const isFKey = e.key.startsWith('F') && e.key.length > 1;
+    if (isFKey) {
+        e.preventDefault();
+        if (devMode && e.key === 'F12') await invoke('open_devtools');
+    }
+    if (e.key === 'Escape' && !devMode) await appWindow.close();
+};
+
+const SYSTEM_THEME_MEDIA = '(prefers-color-scheme: dark)';
+
 export default function App() {
     const [devMode] = useConfig('dev_mode', false);
     const [appTheme] = useConfig('app_theme', 'system');
@@ -34,65 +49,29 @@ export default function App() {
     const { setTheme } = useTheme();
     const { i18n } = useTranslation();
 
+    // 全局 keydown：单份绑定（devMode 切换时重新绑定，unlisten 旧监听，避免多次叠加
     useEffect(() => {
-        store.load();
-    }, []);
-
-    useEffect(() => {
-        if (devMode !== null && devMode) {
-            document.addEventListener('keydown', async (e) => {
-                let allowKeys = ['c', 'v', 'x', 'a', 'z', 'y'];
-                if (e.ctrlKey && !allowKeys.includes(e.key.toLowerCase())) {
-                    e.preventDefault();
-                }
-                if (e.key === 'F12') {
-                    await invoke('open_devtools');
-                }
-                if (e.key.startsWith('F') && e.key.length > 1) {
-                    e.preventDefault();
-                }
-                if (e.key === 'Escape') {
-                    await appWindow.close();
-                }
-            });
-        } else {
-            document.addEventListener('keydown', async (e) => {
-                let allowKeys = ['c', 'v', 'x', 'a', 'z', 'y'];
-                if (e.ctrlKey && !allowKeys.includes(e.key.toLowerCase())) {
-                    e.preventDefault();
-                }
-                if (e.key.startsWith('F') && e.key.length > 1) {
-                    e.preventDefault();
-                }
-                if (e.key === 'Escape') {
-                    await appWindow.close();
-                }
-            });
-        }
+        const handler = buildGlobalKeyHandler(Boolean(devMode));
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
     }, [devMode]);
 
+    // 主题：system 模式下跟随系统，并提供 cleanup 移除监听
     useEffect(() => {
-        if (appTheme !== null) {
-            if (appTheme !== 'system') {
-                setTheme(appTheme);
-            } else {
-                try {
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        setTheme('dark');
-                    } else {
-                        setTheme('light');
-                    }
-                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                        if (e.matches) {
-                            setTheme('dark');
-                        } else {
-                            setTheme('light');
-                        }
-                    });
-                } catch {
-                    warn("Can't detect system theme.");
-                }
-            }
+        if (appTheme === null) return;
+        if (appTheme !== 'system') {
+            setTheme(appTheme);
+            return;
+        }
+        const apply = (dark) => setTheme(dark ? 'dark' : 'light');
+        try {
+            const mql = window.matchMedia(SYSTEM_THEME_MEDIA);
+            apply(mql.matches);
+            const onChange = (e) => apply(e.matches);
+            mql.addEventListener?.('change', onChange);
+            return () => mql.removeEventListener?.('change', onChange);
+        } catch {
+            warn("Can't detect system theme.");
         }
     }, [appTheme]);
 
@@ -103,11 +82,9 @@ export default function App() {
     }, [appLanguage]);
 
     useEffect(() => {
-        if (appFont !== null && appFallbackFont !== null) {
-            document.documentElement.style.fontFamily = `"${appFont === 'default' ? 'sans-serif' : appFont}","${
-                appFallbackFont === 'default' ? 'sans-serif' : appFallbackFont
-            }"`;
-        }
+        if (appFont === null || appFallbackFont === null) return;
+        const pick = (name) => (name === 'default' ? 'sans-serif' : name);
+        document.documentElement.style.fontFamily = `"${pick(appFont)}","${pick(appFallbackFont)}"`;
         if (appFontSize !== null) {
             document.documentElement.style.fontSize = `${appFontSize}px`;
         }

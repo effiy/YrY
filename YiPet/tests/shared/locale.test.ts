@@ -7,14 +7,19 @@ import {
   SUPPORTED_LOCALES,
   setUserLocale,
 } from '../../src/shared/i18n/locale';
-import { resetChromeStorage } from '../setup';
+import { resetChromeStorage, setStorageData } from '../setup';
+
+// See tests/shared/timezone.test.ts for full rationale.
+// kv.ts routes chrome.storage.local.{get,set,remove} through the shared
+// setup.ts `storageData` mock. Seed via setStorageData() from setup.ts.
+// Clear only call counts (not mock implementations!) between tests.
+
+beforeEach(() => {
+  resetChromeStorage();
+  vi.clearAllMocks();
+});
 
 describe('locale', () => {
-  beforeEach(() => {
-    resetChromeStorage();
-    vi.restoreAllMocks();
-  });
-
   describe('SUPPORTED_LOCALES', () => {
     it('includes en and zh_CN', () => {
       expect(SUPPORTED_LOCALES).toContain('en');
@@ -46,39 +51,38 @@ describe('locale', () => {
 
   describe('getUserLocale()', () => {
     it('returns null when no preference is stored', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({});
       expect(await getUserLocale()).toBeNull();
     });
 
     it('returns stored locale when valid', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'zh_CN' });
+      setStorageData({ locale: 'zh_CN' });
       expect(await getUserLocale()).toBe('zh_CN');
     });
 
     it('returns null for invalid locale value', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'fr' });
+      setStorageData({ locale: 'fr' });
       expect(await getUserLocale()).toBeNull();
     });
   });
 
   describe('setUserLocale()', () => {
     it('persists the locale to chrome.storage', async () => {
-      const spy = vi.mocked(chrome.storage.local.set);
       await setUserLocale('zh_CN');
-      expect(spy).toHaveBeenCalledWith({ locale: 'zh_CN' });
+      const writes = (chrome.storage.local.set as any).mock.calls.map((c: any[]) => c[0]);
+      // kv.writeKV writes { [key]: value } — same shape as pre-refactor
+      expect(writes).toContainEqual({ locale: 'zh_CN' });
     });
   });
 
   describe('resolveLocale()', () => {
     it('returns user override when set', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({ locale: 'zh_CN' });
+      setStorageData({ locale: 'zh_CN' });
       const result = await resolveLocale();
       expect(result.locale).toBe('zh_CN');
       expect(result.isUserOverride).toBe(true);
     });
 
     it('returns Chrome locale when no override', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValueOnce({});
       vi.mocked(chrome.i18n.getUILanguage).mockReturnValue('en-US');
       const result = await resolveLocale();
       expect(result.locale).toBe('en');

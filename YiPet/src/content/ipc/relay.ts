@@ -7,6 +7,11 @@
 import { PET_DEFAULTS } from '@/config/defaults';
 import type { PopupToContent } from '@/shared/ipc/messages';
 import { applyThemeColors, applyThemeHex } from '@/shared/theme';
+import {
+  readSessionKV,
+  writeSessionKV,
+  writeKV,
+} from '@/shared/storage/kv';
 import { applyPageTheme, removePageTheme } from '../rendering/page-theme';
 import { validateRole } from '../config/role-config';
 import {
@@ -148,13 +153,13 @@ function dispatchSecureEvent<T>(name: string, detail: T): void {
 
       // Read auth token from chrome.storage.session (secure) — pass to MAIN world via dataset.
       // Falls back to localStorage for migration from YiVad.
-      chrome.storage.session.get('apiToken').then((result) => {
-        let token = String(result.apiToken || '').trim();
+      readSessionKV<string>('apiToken').then(async (storedToken) => {
+        let token = String(storedToken || '').trim();
         if (!token) {
           try {
             token = (localStorage.getItem('YiWeb.apiToken.v1') || '').trim();
             if (token) {
-              chrome.storage.session.set({ apiToken: token }).catch(() => {});
+              await writeSessionKV<string>('apiToken', token);
             }
           } catch { /* localStorage unavailable */ }
         }
@@ -245,8 +250,9 @@ export function setupMessageRelay(): void {
         }
         _petRole = canonical;
         applyRole(_petRole);
-        chrome.storage.local.set({ petRole: _petRole }).catch((err: Error) => {
-          console.warn('[YiPet] Failed to persist role preference:', err.message);
+        // writeKV swallows context errors and returns false on failure
+        writeKV<string>('petRole', _petRole).then((ok) => {
+          if (!ok) console.warn('[YiPet] Failed to persist role preference');
         });
         persist();
         sendResponse({ success: true, role: _petRole });
@@ -259,7 +265,9 @@ export function setupMessageRelay(): void {
           : '';
         applyColor(_petColor, _petCustomColor);
         persist();
-        chrome.storage.local.set({ petColorTheme: _petColor, petCustomColor: _petCustomColor }).catch(() => {});
+        // Two independent writes — failures are tolerated (each swallows internally)
+        void writeKV<number>('petColorTheme', _petColor);
+        void writeKV<string>('petCustomColor', _petCustomColor);
         sendResponse({ success: true });
         break;
       }
@@ -270,7 +278,7 @@ export function setupMessageRelay(): void {
         } else {
           removePageTheme();
         }
-        chrome.storage.local.set({ pageThemeIntensity: intensity }).catch(() => {});
+        void writeKV<number>('pageThemeIntensity', intensity);
         sendResponse({ success: true });
         break;
       }

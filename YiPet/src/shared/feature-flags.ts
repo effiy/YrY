@@ -3,8 +3,12 @@
  *
  * Provides runtime feature toggles for gradual rollouts and A/B testing.
  * Flags persist to chrome.storage.local for cross-session consistency.
+ *
+ * Persistence delegates to the unified KV wrapper — raw `chrome.storage`
+ * API is no longer used directly in this module.
  */
 import { ref, computed, type Ref } from 'vue';
+import { readKV, writeKV } from './storage/kv';
 
 export interface FlagDefinition {
   key: string;
@@ -57,14 +61,10 @@ class FeatureFlags {
   async init(instanceId?: string): Promise<void> {
     if (this._loaded) return;
 
-    // Load persisted overrides
-    try {
-      const result = await chrome.storage.local.get(STORAGE_KEY);
-      if (result[STORAGE_KEY]) {
-        this._flags.value = { ...result[STORAGE_KEY] };
-      }
-    } catch {
-      // chrome.storage may not be available
+    // Load persisted overrides (KV helper handles context unavailability)
+    const stored = await readKV<Record<string, boolean>>(STORAGE_KEY);
+    if (stored && typeof stored === 'object') {
+      this._flags.value = { ...stored };
     }
 
     // Apply rollout for unset flags
@@ -83,14 +83,10 @@ class FeatureFlags {
     return this._flags.value[key] ?? FLAG_DEFS[key]?.defaultValue ?? false;
   }
 
-  /** Override a flag (persisted). */
+  /** Override a flag (persisted, best-effort). */
   async setEnabled(key: string, value: boolean): Promise<void> {
     this._flags.value[key] = value;
-    try {
-      await chrome.storage.local.set({ [STORAGE_KEY]: { ...this._flags.value } });
-    } catch {
-      // best effort
-    }
+    await writeKV<Record<string, boolean>>(STORAGE_KEY, { ...this._flags.value });
   }
 
   /** Get all flag definitions for debug panel. */

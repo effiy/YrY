@@ -209,56 +209,29 @@
       <el-empty v-if="!loading && !columns.length" :description="t('roadmap.empty.noRoadmapItems')" :image-size="60" />
     </div>
 
-    <teleport to="body">
-      <div
-        v-if="contextMenu.visible"
-        class="roadmap-ctxmenu"
-        :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
-        @click.stop
-      >
-        <template v-if="contextMenu.item">
-          <div class="roadmap-ctxmenu__item" @click="ctxOpen">
-            <el-icon><View /></el-icon>{{ t("roadmap.ctxMenu.open") }}
-          </div>
-          <div class="roadmap-ctxmenu__item" @click="ctxPreview">
-            <el-icon><Document /></el-icon>{{ t("roadmap.ctxMenu.preview") }}
-          </div>
-          <div class="roadmap-ctxmenu__item" @click="ctxCopyId">
-            <el-icon><CopyDocument /></el-icon>{{ t("roadmap.ctxMenu.copyId") }}
-          </div>
-          <div class="roadmap-ctxmenu__divider" />
-          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('planned')">
-            <el-icon><Calendar /></el-icon>{{ t("roadmap.ctxMenu.markPlanned") }}
-          </div>
-          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('in_progress')">
-            <el-icon><Loading /></el-icon>{{ t("roadmap.ctxMenu.markInProgress") }}
-          </div>
-          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('completed')">
-            <el-icon><CircleCheck /></el-icon>{{ t("roadmap.ctxMenu.markCompleted") }}
-          </div>
-          <div class="roadmap-ctxmenu__item" @click="ctxQuickStatus('cancelled')">
-            <el-icon><CircleClose /></el-icon>{{ t("roadmap.ctxMenu.markCancelled") }}
-          </div>
-          <div class="roadmap-ctxmenu__divider" />
-          <div class="roadmap-ctxmenu__item roadmap-ctxmenu__item--danger" @click="ctxDelete">
-            <el-icon><Delete /></el-icon>{{ t("roadmap.ctxMenu.delete") }}
-          </div>
-        </template>
-      </div>
-    </teleport>
+    <ContextMenu
+      :visible="ctx.visible.value"
+      :position="ctx.position.value"
+      :items="contextMenuItems"
+      :context="(ctx.context.value as any) ?? null"
+      @hide="ctx.hide()"
+    />
 
     <KnowledgePreviewDialog ref="descDialogRef" />
   </div>
 </template>
 
 <script setup lang="ts" name="roadmapView">
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { confirm, tryAction } from "@/hooks/useConfirmAction";
+import ContextMenu from "@/components/context-menu/ContextMenu.vue";
+import { useContextMenu } from "@/composables/menu/useContextMenu";
+import type { MenuItem } from "@/components/context-menu/types";
 import {
   Search,
   Folder,
@@ -913,41 +886,45 @@ async function openPreview(item: RoadmapItem) {
   });
 }
 
-// -- Context menu --
-const contextMenu = reactive<{
-  visible: boolean;
-  x: number;
-  y: number;
-  item: RoadmapItem | null;
-}>({ visible: false, x: 0, y: 0, item: null });
+// -- Context menu（统一实现：复用通用 ContextMenu + useContextMenu 状态机）--
+const ctx = useContextMenu();
 
 function openContextMenu(e: MouseEvent, item: RoadmapItem) {
-  contextMenu.x = Math.min(e.clientX, window.innerWidth - 200);
-  contextMenu.y = Math.min(e.clientY, window.innerHeight - 320);
-  contextMenu.item = item;
-  contextMenu.visible = true;
+  ctx.show(e, [] as MenuItem[], { pageContext: { item } });
 }
 
-function closeContextMenu() {
-  contextMenu.visible = false;
-  contextMenu.item = null;
-}
+const contextMenuItems = computed<MenuItem[]>(() => {
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  if (!item) return [];
+  return [
+    { id: "open", type: "action", label: t("roadmap.ctxMenu.open"), icon: View as any, action: ctxOpen },
+    { id: "preview", type: "action", label: t("roadmap.ctxMenu.preview"), icon: Document as any, action: ctxPreview },
+    { id: "copy-id", type: "action", label: t("roadmap.ctxMenu.copyId"), icon: CopyDocument as any, action: ctxCopyId },
+    { id: "d1", type: "divider" },
+    { id: "s-planned", type: "action", label: t("roadmap.ctxMenu.markPlanned"), icon: Calendar as any, action: () => ctxQuickStatus("planned") },
+    { id: "s-progress", type: "action", label: t("roadmap.ctxMenu.markInProgress"), icon: Loading as any, action: () => ctxQuickStatus("in_progress") },
+    { id: "s-completed", type: "action", label: t("roadmap.ctxMenu.markCompleted"), icon: CircleCheck as any, action: () => ctxQuickStatus("completed") },
+    { id: "s-cancelled", type: "action", label: t("roadmap.ctxMenu.markCancelled"), icon: CircleClose as any, action: () => ctxQuickStatus("cancelled") },
+    { id: "d2", type: "divider" },
+    { id: "delete", type: "action", label: t("roadmap.ctxMenu.delete"), icon: Delete as any, danger: true, action: ctxDelete }
+  ];
+});
 
 function ctxOpen() {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  ctx.hide();
   if (item) goTo(item.link);
 }
 
 function ctxPreview() {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  ctx.hide();
   if (item) openPreview(item);
 }
 
 async function ctxCopyId() {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  ctx.hide();
   if (!item) return;
   try {
     await navigator.clipboard.writeText(item.id);
@@ -958,8 +935,8 @@ async function ctxCopyId() {
 }
 
 async function ctxQuickStatus(status: string) {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  ctx.hide();
   if (!item) return;
   try {
     if (item.kind === "module") {
@@ -975,8 +952,8 @@ async function ctxQuickStatus(status: string) {
 }
 
 async function ctxDelete() {
-  const item = contextMenu.item;
-  closeContextMenu();
+  const item = ctx.context.value?.pageContext?.item as RoadmapItem | undefined;
+  ctx.hide();
   if (!item) return;
   const ok = await confirm(
     t("roadmap.confirm.deleteMessage", { kindLabel: item.kindLabel, name: item.name }),
@@ -998,12 +975,10 @@ onMounted(async () => {
   await projectStore.fetchProjects({ pageSize: 100 });
   await loadData();
   startPolling();
-  document.addEventListener("click", closeContextMenu);
 });
 
 onUnmounted(() => {
   stopPolling();
-  document.removeEventListener("click", closeContextMenu);
   if (searchTimer) clearTimeout(searchTimer);
 });
 

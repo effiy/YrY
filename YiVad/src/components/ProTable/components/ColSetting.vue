@@ -12,8 +12,7 @@
         </el-table-column>
         <template #empty>
           <div class="table-empty">
-            <img src="@/assets/images/notData.png" alt="notData" />
-            <div>No configurable columns</div>
+            <EmptyState variant="data" size="sm" title="No configurable columns" />
           </div>
         </template>
       </el-table>
@@ -24,6 +23,7 @@
 <script setup lang="ts" name="ColSetting">
 import { ref } from "vue";
 import { ColumnProps } from "@/components/ProTable/interface";
+import EmptyState from "@/components/EmptyState/EmptyState.vue";
 
 defineProps<{ colSetting: ColumnProps[] }>();
 

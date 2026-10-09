@@ -12,146 +12,166 @@
         }"
         @click="switchTo(tab.id)"
         @auxclick.prevent.middle="closeTab(tab.id)"
-        @contextmenu.prevent="showContextMenu($event, tab)"
+        @contextmenu.prevent="onTabContextMenu($event, tab)"
       >
         <span class="tab-bar__item-title">{{ tab.title }}</span>
-        <span v-if="tab.closable !== false && !pinnedIds.has(tab.id)" class="tab-bar__item-close" @click.stop="closeTab(tab.id)"
+        <span
+          v-if="tab.closable !== false && !pinnedIds.has(tab.id)"
+          class="tab-bar__item-close"
+          @click.stop="closeTab(tab.id)"
           >×</span
         >
       </div>
     </div>
 
-    <Teleport to="body">
-      <div v-if="contextMenu.visible" class="tab-context-menu" :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }">
-        <div class="tab-context-menu__item" @click="closeTab(contextMenu.tab!.id)">关闭</div>
-        <div class="tab-context-menu__item" @click="closeOtherTabs(contextMenu.tab!.id)">关闭其他</div>
-        <div class="tab-context-menu__item" @click="closeRightTabs(contextMenu.tab!.id)">关闭右侧</div>
-        <div class="tab-context-menu__divider" />
-        <div class="tab-context-menu__item" @click="closeAllTabs()">关闭全部</div>
-        <div class="tab-context-menu__divider" />
-        <div
-          class="tab-context-menu__item"
-          @click="pinnedIds.has(contextMenu.tab!.id) ? unpinTab(contextMenu.tab!.id) : pinTab(contextMenu.tab!.id)"
-        >
-          {{ pinnedIds.has(contextMenu.tab!.id) ? "取消固定" : "固定" }}
-        </div>
-      </div>
-    </Teleport>
+    <ContextMenu
+      :visible="tabCm.visible.value"
+      :position="tabCm.position.value"
+      :items="menuItems"
+      :context="(tabCm.context.value as any) ?? null"
+      @hide="tabCm.hide()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
-import { useTabWorkspace } from "@/composables/useTabWorkspace";
+/**
+ * TabBar — 顶部多标签工作区。
+ *
+ * 2026-10-09 Refactor (Phase 1 P1-2):
+ *   删除内部自持有 Tab 右键「Teleport + backdrop + addEventListener('click')
+ *   样板（~35 行），改为复用通用 ContextMenu + useContextMenu 状态机：
+ *   - 统一接入 useMenuKeyboard（↑↓/Enter/Esc）与菜单定位防溢出
+ *   - 消除与 Kanban/Roadmap 的三处重复样板代码
+ */
+import { computed } from "vue";
+import { useTabWorkspace } from "@/hooks/useTabWorkspace";
+import ContextMenu from "@/components/context-menu/ContextMenu.vue";
+import { useContextMenu } from "@/composables/menu/useContextMenu";
+import type { MenuItem } from "@/components/context-menu/types";
 
-const { tabs, activeId, pinnedIds, switchTo, closeTab, closeOtherTabs, closeRightTabs, closeAllTabs, pinTab, unpinTab } =
-  useTabWorkspace();
+const {
+  tabs,
+  activeId,
+  pinnedIds,
+  switchTo,
+  closeTab,
+  closeOtherTabs,
+  closeRightTabs,
+  closeAllTabs,
+  pinTab,
+  unpinTab
+} = useTabWorkspace();
 
-const contextMenu = reactive({
-  visible: false,
-  x: 0,
-  y: 0,
-  tab: null as any
+const tabCm = useContextMenu();
+
+/** 点击的 tab（从 context.pageContext 获取）。 */
+function onTabContextMenu(event: MouseEvent, tab: any) {
+  tabCm.show(event, [] as MenuItem[], { pageContext: { tab } });
+}
+
+/** 根据当前 context 中的 tab 动态生成菜单。 */
+const menuItems = computed<MenuItem[]>(() => {
+  const tab = tabCm.context.value?.pageContext?.tab;
+  if (!tab) return [];
+  const tabId: string = tab.id;
+  const isPinned = pinnedIds.value.has(tabId);
+  return [
+    { id: "close", type: "action", label: "关闭", action: () => closeTab(tabId) },
+    { id: "close-other", type: "action", label: "关闭其他", action: () => closeOtherTabs(tabId) },
+    { id: "close-right", type: "action", label: "关闭右侧", action: () => closeRightTabs(tabId) },
+    { id: "d1", type: "divider" },
+    { id: "close-all", type: "action", label: "关闭全部", action: () => closeAllTabs() },
+    { id: "d2", type: "divider" },
+    {
+      id: "pin",
+      type: "action",
+      label: isPinned ? "取消固定" : "固定",
+      action: () => (isPinned ? unpinTab(tabId) : pinTab(tabId))
+    }
+  ];
 });
-
-function showContextMenu(event: MouseEvent, tab: any) {
-  contextMenu.visible = true;
-  contextMenu.x = event.clientX;
-  contextMenu.y = event.clientY;
-  contextMenu.tab = tab;
-}
-
-function hideContextMenu() {
-  contextMenu.visible = false;
-}
-
-onMounted(() => document.addEventListener("click", hideContextMenu));
-onBeforeUnmount(() => document.removeEventListener("click", hideContextMenu));
 </script>
 
 <style scoped lang="scss">
 .tab-bar {
   display: flex;
   align-items: stretch;
-  height: 36px;
-  user-select: none;
-  background: var(--el-bg-color);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.tab-bar__scroll {
-  display: flex;
-  flex: 1;
-  overflow: auto hidden;
-  &::-webkit-scrollbar {
-    height: 2px;
-  }
-}
-.tab-bar__item {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 0 14px;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-  cursor: pointer;
-  border-right: 1px solid var(--el-border-color-lighter);
-  transition:
-    background 0.1s,
-    color 0.1s;
-  &:hover {
-    background: var(--el-fill-color-light);
-  }
-  &--active {
-    color: var(--el-color-primary);
-    background: var(--el-bg-color-page);
-    border-bottom: 2px solid var(--el-color-primary);
-  }
-  &--pinned {
-    padding-left: 10px;
-  }
-}
-.tab-bar__item-title {
-  max-width: 140px;
+  flex-wrap: nowrap;
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tab-bar__item-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 14px;
-  line-height: 1;
-  border-radius: 4px;
-  &:hover {
-    color: var(--el-color-danger);
-    background: var(--el-fill-color);
+  background: var(--el-bg-color-page, #f5f7fa);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  &__scroll {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    scrollbar-width: thin;
   }
-}
-.tab-context-menu {
-  position: fixed;
-  z-index: 10000;
-  min-width: 140px;
-  padding: 4px 0;
-  background: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 8px;
-  box-shadow: var(--el-box-shadow-light);
-}
-.tab-context-menu__item {
-  padding: 6px 14px;
-  font-size: 12px;
-  color: var(--el-text-color-primary);
-  cursor: pointer;
-  &:hover {
-    background: var(--el-fill-color-light);
+  &__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 0 14px;
+    height: 36px;
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+    cursor: pointer;
+    border-right: 1px solid var(--el-border-color-lighter);
+    transition: color 120ms, background-color 120ms;
+    &:hover {
+      color: var(--el-text-color-primary);
+      background: var(--el-fill-color-light);
+    }
+    &--active {
+      color: var(--el-color-primary);
+      background: var(--el-bg-color);
+      box-shadow: inset 0 -2px 0 var(--el-color-primary);
+    }
+    &--pinned::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--el-color-primary);
+    }
+    &--dirty::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--el-color-warning);
+    }
+    &-title {
+      white-space: nowrap;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    &-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      line-height: 1;
+      color: var(--el-text-color-secondary);
+      border-radius: 50%;
+      transition: color 120ms, background-color 120ms;
+      &:hover {
+        color: #fff;
+        background: var(--el-color-info);
+      }
+    }
   }
-}
-.tab-context-menu__divider {
-  height: 1px;
-  margin: 4px 8px;
-  background: var(--el-border-color-lighter);
 }
 </style>

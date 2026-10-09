@@ -36,7 +36,7 @@ import type { ECOption } from "@/components/ECharts/config";
 import ECharts from "@/components/ECharts/index.vue";
 import GanttToolbar from "./GanttToolbar.vue";
 import GanttLegend from "./GanttLegend.vue";
-import { useGanttChart } from "@/composables/useGanttChart";
+import { useGanttChart } from "@/composables/domain/useGanttChart";
 import type { GanttTask } from "@/types/gantt";
 
 const props = defineProps<{
