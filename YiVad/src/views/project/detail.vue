@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts" name="projectDetail">
-import { computed, ref, provide, watch, onMounted, onBeforeUnmount, getCurrentInstance, nextTick } from "vue";
+import { computed, ref, provide, watch, onMounted, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { syncKnowledge } from "@/api/modules/knowledgeService";

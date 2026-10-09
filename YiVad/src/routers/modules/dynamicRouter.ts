@@ -16,7 +16,7 @@ const modules = viewsGlob as Record<string, () => Promise<any>>;
 
 /**
  * Convert a camelCase/PascalCase path segment to kebab-case.
- *   "menuMange"    → "menu-manage"
+ *   "menuManage"   → "menu-manage"
  *   "accountManage" → "account-manage"
  *   "AiChat"       → "ai-chat"
  */
@@ -28,7 +28,7 @@ function kebab(s: string): string {
 }
 
 /**
- * Resolve a menu `component` string (e.g. "/system/menuMange/index") to a
+ * Resolve a menu `component` string (e.g. "/system/menuManage/index") to a
  * lazy view loader from `modules`.
  *
  * The menu tree has historically used camelCase names but the filesystem uses
@@ -45,25 +45,65 @@ function resolveComponent(component: string): (() => Promise<any>) | undefined {
   const variants = new Set<string>();
   const normalized = component.startsWith("/") ? component : `/${component}`;
 
-  // 1) exact path
-  variants.add(`/src/views${normalized}.vue`);
+  const normalizePath = (p: string) => `/src/views${p}.vue`;
 
-  // 2) each segment converted to kebab-case
-  const segmentsKebab = normalized.split("/").map(seg => (seg ? kebab(seg) : "")).join("/");
-  if (segmentsKebab !== normalized) {
-    variants.add(`/src/views${segmentsKebab}.vue`);
-  }
-
-  // 3) strip trailing /index for both forms
-  [normalized, segmentsKebab].forEach(form => {
+  const addVariantsFor = (form: string) => {
+    variants.add(normalizePath(form));
     if (form.endsWith("/index")) {
-      variants.add(`/src/views${form.slice(0, -"/index".length)}.vue`);
+      variants.add(normalizePath(form.slice(0, -"/index".length)));
     }
-  });
+  };
+
+  addVariantsFor(normalized);
+
+  const segmentsKebab = normalized.split("/").map(seg => (seg ? kebab(seg) : "")).join("/");
+  if (segmentsKebab !== normalized) addVariantsFor(segmentsKebab);
+
+  const commonTypos: [RegExp, string][] = [
+    [/Mange/g, "Manage"],
+    [/mange/g, "manage"],
+    [/Acount/g, "Account"],
+    [/acount/g, "account"]
+  ];
+  let corrected = normalized;
+  let anyCorrected = false;
+  for (const [re, rep] of commonTypos) {
+    if (re.test(corrected)) {
+      corrected = corrected.replace(re, rep);
+      anyCorrected = true;
+    }
+  }
+  if (anyCorrected && corrected !== normalized) {
+    addVariantsFor(corrected);
+    const correctedKebab = corrected.split("/").map(seg => (seg ? kebab(seg) : "")).join("/");
+    if (correctedKebab !== corrected) addVariantsFor(correctedKebab);
+  }
 
   for (const key of variants) {
     if (modules[key]) return modules[key];
   }
+
+  const normSegs = normalized.split("/").filter(Boolean);
+  if (normSegs.length >= 2) {
+    const tailSeg = normSegs[normSegs.length - 1].toLowerCase().replace(/[-_]/g, "");
+    const parentSegs = normSegs.slice(0, -1);
+    for (const key of Object.keys(modules)) {
+      if (!key.startsWith("/src/views/")) continue;
+      const keyParts = key.replace("/src/views/", "").replace(/\.vue$/, "").split("/").filter(Boolean);
+      if (keyParts.length < parentSegs.length) continue;
+      let parentMatch = true;
+      for (let i = 0; i < parentSegs.length - 1; i++) {
+        if (kebab(parentSegs[i]) !== kebab(keyParts[i])) {
+          parentMatch = false;
+          break;
+        }
+      }
+      if (!parentMatch) continue;
+      const keyTail = keyParts[keyParts.length - 1].toLowerCase().replace(/[-_]/g, "");
+      if (keyTail === tailSeg) return modules[key];
+    }
+  }
+
   return undefined;
 }
 

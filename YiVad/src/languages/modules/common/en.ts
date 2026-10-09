@@ -264,7 +264,7 @@ export default {
     system: "System",
     accountManage: "Account Management",
     roleManage: "Role Management",
-    menuMange: "Menu Management",
+    menuManage: "Menu Management",
     departmentManage: "Department Management",
     dictManage: "Dict Management",
     timingTask: "Scheduled Tasks",

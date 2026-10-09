@@ -264,7 +264,7 @@ export default {
     system: "系统管理",
     accountManage: "账号管理",
     roleManage: "角色管理",
-    menuMange: "菜单管理",
+    menuManage: "菜单管理",
     departmentManage: "部门管理",
     dictManage: "字典管理",
     timingTask: "定时任务",

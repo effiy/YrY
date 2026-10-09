@@ -927,9 +927,9 @@
                 }
               },
               {
-                "path": "/system/menuMange",
-                "name": "menuMange",
-                "component": "/system/menuMange/index",
+                "path": "/system/menuManage",
+                "name": "menuManage",
+                "component": "/system/menuManage/index",
                 "meta": {
                   "icon": "Menu",
                   "title": "菜单管理",

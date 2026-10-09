@@ -25,7 +25,7 @@
       "path": "/system",
       "name": "system",
       "component": "",
-      "redirect": "/system/menuMange",
+      "redirect": "/system/menuManage",
       "meta": {
         "icon": "Tools",
         "title": "System Management",
@@ -39,10 +39,10 @@
       "order": 8,
       "children": [
         {
-          "key": "menu_systemMenuMange",
-          "path": "/system/menuMange",
-          "name": "systemMenuMange",
-          "component": "/system/menuMange/index",
+          "key": "menu_systemMenuManage",
+          "path": "/system/menuManage",
+          "name": "systemMenuManage",
+          "component": "/system/menuManage/index",
           "redirect": "",
           "meta": {
             "icon": "Menu",
