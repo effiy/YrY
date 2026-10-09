@@ -5,7 +5,7 @@ import { appConfigDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { Spacer, Button } from '@nextui-org/react';
 import { AiFillCloseCircle } from 'react-icons/ai';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { BsPinFill } from 'react-icons/bs';
 
@@ -17,50 +17,137 @@ import { useConfig } from '../../hooks';
 import { store } from '../../utils/store';
 import { info } from 'tauri-plugin-log-api';
 
-let blurTimeout = null;
-let resizeTimeout = null;
-let moveTimeout = null;
+/**
+ * 窗口 blur→300ms 后关闭，在 focus/move/showing 时取消；
+ * 与 Recognize 统一的 hook：使用 per-instance ref 管理 listener/timer，
+ * 避免旧实现里模块级变量 + 顶层 listen 在 WebView 重建（HMR/关窗后重开）时多次叠加。
+ */
+// #region debug-point B:dbg-sender
+const _DBG_EV_T = (() => {
+    const URL = 'http://127.0.0.1:7777/event';
+    const SID = 'yipot-selection-translate-flicker';
+    let _seq = 0;
+    const send = (payload) => {
+        try {
+            fetch(URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: SID,
+                    runId: 'pre',
+                    ts: Date.now(),
+                    seq: ++_seq,
+                    ...payload,
+                }),
+            }).catch(() => {});
+        } catch {}
+    };
+    return { send };
+})();
+// #endregion
+function useBlurAutoClose(enable) {
+    const blurTimerRef = useRef(null);
+    const unlistenBlurRef = useRef(null);
+    const unlistenFocusRef = useRef(null);
+    const unlistenMoveRef = useRef(null);
 
-const listenBlur = () => {
-    return listen('tauri://blur', () => {
-        if (appWindow.label !== 'translate') return;
-        if (blurTimeout) clearTimeout(blurTimeout);
-        info('Blur');
-        // 100ms后关闭窗口，因为在 windows 下拖动窗口时会先切换成 blur 再立即切换成 focus
-        // 如果直接关闭将导致窗口无法拖动
-        blurTimeout = setTimeout(async () => {
-            info('Confirm Blur');
-            await appWindow.close().catch(() => {});
-        }, 100);
-    }).catch((e) => {
-        // 当 IPC 未就绪 / 非 Tauri 窗口时，静默失败并返回 noop unlisten
-        console.warn('[Translate] listenBlur skipped:', e?.message ?? e);
-        return () => {};
-    });
-};
+    useEffect(() => {
+        const cleanup = () => {
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
+            }
+            const olds = [unlistenBlurRef.current, unlistenFocusRef.current, unlistenMoveRef.current];
+            unlistenBlurRef.current = null;
+            unlistenFocusRef.current = null;
+            unlistenMoveRef.current = null;
+            olds.forEach((u) => u?.then?.((f) => f?.()).catch(() => {}));
+        };
+        cleanup();
+        if (!enable) {
+            // #region debug-point B:autoclose-disabled
+            _DBG_EV_T.send({
+                hypothesisId: 'B',
+                location: 'Translate/index.jsx:useBlurAutoClose:disabled',
+                msg: '[DEBUG] blur auto close disabled',
+                data: { enable: false, t: Date.now() },
+            });
+            // #endregion
+            return cleanup;
+        }
 
-let unlistenP = listenBlur();
-// 取消 blur 监听
-const unlistenBlur = () => {
-    unlistenP.then((f) => typeof f === 'function' && f()).catch(() => {});
-};
+        // 比 blur 延时多 20ms：彻底吸收平台的瞬时 deactivate/activate
+        const BLUR_CLOSE_MS = 300;
 
-// 监听 focus 事件取消 blurTimeout 时间之内的关闭窗口
-void listen('tauri://focus', () => {
-    info('Focus');
-    if (blurTimeout) {
-        info('Cancel Close');
-        clearTimeout(blurTimeout);
-    }
-}).catch(() => {});
-// 监听 move 事件取消 blurTimeout 时间之内的关闭窗口
-void listen('tauri://move', () => {
-    info('Move');
-    if (blurTimeout) {
-        info('Cancel Close');
-        clearTimeout(blurTimeout);
-    }
-}).catch(() => {});
+        unlistenBlurRef.current = listen('tauri://blur', () => {
+            if (appWindow.label !== 'translate') return;
+            if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
+            info('Blur (Translate, scheduled close)');
+            const firedAt = Date.now();
+            // #region debug-point B:blur-scheduled
+            _DBG_EV_T.send({
+                hypothesisId: 'B',
+                location: 'Translate/index.jsx:useBlurAutoClose:blur',
+                msg: '[DEBUG] blur scheduled close',
+                data: { delayMs: BLUR_CLOSE_MS, firedAt },
+            });
+            // #endregion
+            blurTimerRef.current = setTimeout(async () => {
+                blurTimerRef.current = null;
+                info('Confirm Blur Close (Translate)');
+                // #region debug-point B:blur-fire-close
+                _DBG_EV_T.send({
+                    hypothesisId: 'B',
+                    location: 'Translate/index.jsx:useBlurAutoClose:blur-fire',
+                    msg: '[DEBUG] blur fired close window',
+                    data: { delayMs: BLUR_CLOSE_MS, firedAt, fireAt: Date.now() },
+                });
+                // #endregion
+                await appWindow.close().catch((e) => {
+                    // #region debug-point E:close-err
+                    _DBG_EV_T.send({
+                        hypothesisId: 'E',
+                        location: 'Translate/index.jsx:useBlurAutoClose:blur-close-err',
+                        msg: '[DEBUG] appWindow.close error',
+                        data: { err: String(e) },
+                    });
+                    // #endregion
+                });
+            }, BLUR_CLOSE_MS);
+        }).catch((e) => {
+            info('listen(blur) skipped:' + (e?.message ?? e));
+            return () => {};
+        });
+
+        unlistenFocusRef.current = listen('tauri://focus', () => {
+            info('Focus (Translate, cancel close)');
+            // #region debug-point B:focus-cancel
+            const t = Date.now();
+            const armed = Boolean(blurTimerRef.current);
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
+            }
+            _DBG_EV_T.send({
+                hypothesisId: 'B',
+                location: 'Translate/index.jsx:useBlurAutoClose:focus',
+                msg: '[DEBUG] focus cancel close',
+                data: { armedBeforeCancel: armed, t },
+            });
+            // #endregion
+        }).catch(() => () => {});
+
+        unlistenMoveRef.current = listen('tauri://move', () => {
+            info('Move (Translate, cancel close)');
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
+            }
+        }).catch(() => () => {});
+
+        return cleanup;
+    }, [enable]);
+}
 
 export default function Translate() {
     const [closeOnBlur] = useConfig('translate_close_on_blur', true);
@@ -82,83 +169,92 @@ export default function Translate() {
     const [pined, setPined] = useState(false);
     const [pluginList, setPluginList] = useState(null);
     const [serviceInstanceConfigMap, setServiceInstanceConfigMap] = useState(null);
+    const moveTimerRef = useRef(null);
+    const resizeTimerRef = useRef(null);
+
+    // 自动关闭：blur 触发；关闭条件：closeOnBlur=true 且 未置顶未钉
+    useBlurAutoClose(Boolean(closeOnBlur && !pined && !alwaysOnTop));
+
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
         result.splice(endIndex, 0, removed);
         return result;
     };
-
     const onDragEnd = async (result) => {
         if (!result.destination) return;
         const items = reorder(translateServiceInstanceList, result.source.index, result.destination.index);
         setTranslateServiceInstanceList(items);
     };
-    // 是否自动关闭窗口
-    useEffect(() => {
-        if (closeOnBlur !== null && !closeOnBlur) {
-            unlistenBlur();
-        }
-    }, [closeOnBlur]);
-    // 是否默认置顶
+
+    // 是否默认置顶：钉住=禁用 blur 自动关闭
     useEffect(() => {
         if (alwaysOnTop !== null && alwaysOnTop) {
-            appWindow.setAlwaysOnTop(true);
-            unlistenBlur();
+            appWindow.setAlwaysOnTop(true).catch(() => {});
             setPined(true);
         }
     }, [alwaysOnTop]);
     // 保存窗口位置
     useEffect(() => {
-        if (windowPosition !== null && windowPosition === 'pre_state') {
-            const unlistenMove = listen('tauri://move', async () => {
-                if (moveTimeout) {
-                    clearTimeout(moveTimeout);
-                }
-                moveTimeout = setTimeout(async () => {
-                    if (appWindow.label === 'translate') {
-                        let position = await appWindow.outerPosition();
-                        const monitor = await currentMonitor();
-                        const factor = monitor.scaleFactor;
-                        position = position.toLogical(factor);
-                        await store.set('translate_window_position_x', parseInt(position.x));
-                        await store.set('translate_window_position_y', parseInt(position.y));
-                        await store.save();
-                    }
+        let unlistenFn = null;
+        let cancelled = false;
+        if (windowPosition === 'pre_state') {
+            const unlistenP = listen('tauri://move', async () => {
+                if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+                moveTimerRef.current = setTimeout(async () => {
+                    if (appWindow.label !== 'translate') return;
+                    let position = await appWindow.outerPosition();
+                    const monitor = await currentMonitor();
+                    const factor = monitor.scaleFactor;
+                    position = position.toLogical(factor);
+                    await store.set('translate_window_position_x', parseInt(position.x));
+                    await store.set('translate_window_position_y', parseInt(position.y));
+                    await store.save().catch(() => {});
                 }, 100);
             });
-            return () => {
-                unlistenMove.then((f) => {
-                    f();
-                });
-            };
+            unlistenP.then((f) => {
+                if (!cancelled) unlistenFn = f;
+            }).catch(() => {});
         }
+        return () => {
+            cancelled = true;
+            if (moveTimerRef.current) {
+                clearTimeout(moveTimerRef.current);
+                moveTimerRef.current = null;
+            }
+            if (typeof unlistenFn === 'function') unlistenFn();
+        };
     }, [windowPosition]);
     // 保存窗口大小
     useEffect(() => {
-        if (rememberWindowSize !== null && rememberWindowSize) {
-            const unlistenResize = listen('tauri://resize', async () => {
-                if (resizeTimeout) {
-                    clearTimeout(resizeTimeout);
-                }
-                resizeTimeout = setTimeout(async () => {
-                    if (appWindow.label === 'translate') {
-                        let size = await appWindow.outerSize();
-                        const monitor = await currentMonitor();
-                        const factor = monitor.scaleFactor;
-                        size = size.toLogical(factor);
-                        await store.set('translate_window_height', parseInt(size.height));
-                        await store.set('translate_window_width', parseInt(size.width));
-                        await store.save();
-                    }
+        let unlistenFn = null;
+        let cancelled = false;
+        if (rememberWindowSize) {
+            const unlistenP = listen('tauri://resize', async () => {
+                if (resizeTimerRef.current) clearTimeout(resizeTimerRef.current);
+                resizeTimerRef.current = setTimeout(async () => {
+                    if (appWindow.label !== 'translate') return;
+                    let size = await appWindow.outerSize();
+                    const monitor = await currentMonitor();
+                    const factor = monitor.scaleFactor;
+                    size = size.toLogical(factor);
+                    await store.set('translate_window_height', parseInt(size.height));
+                    await store.set('translate_window_width', parseInt(size.width));
+                    await store.save().catch(() => {});
                 }, 100);
             });
-            return () => {
-                unlistenResize.then((f) => {
-                    f();
-                });
-            };
+            unlistenP.then((f) => {
+                if (!cancelled) unlistenFn = f;
+            }).catch(() => {});
         }
+        return () => {
+            cancelled = true;
+            if (resizeTimerRef.current) {
+                clearTimeout(resizeTimerRef.current);
+                resizeTimerRef.current = null;
+            }
+            if (typeof unlistenFn === 'function') unlistenFn();
+        };
     }, [rememberWindowSize]);
 
     const loadPluginList = async () => {
@@ -256,16 +352,13 @@ export default function Translate() {
                         disableAnimation
                         className='my-auto bg-transparent'
                         onPress={() => {
-                            if (pined) {
-                                if (closeOnBlur) {
-                                    unlistenP = listenBlur();
-                                }
-                                appWindow.setAlwaysOnTop(false).catch(() => {});
-                            } else {
-                                unlistenBlur();
-                                appWindow.setAlwaysOnTop(true).catch(() => {});
-                            }
-                            setPined(!pined);
+                            setPined((old) => {
+                                const next = !old;
+                                // pinned=true: 强制最前，禁用 blur 自动关闭（由 useBlurAutoClose 联动）
+                                // pinned=false: 恢复默认层级，blur 自动关闭在 !next && closeOnBlur 时生效
+                                appWindow.setAlwaysOnTop(next).catch(() => {});
+                                return next;
+                            });
                         }}
                     >
                         <BsPinFill className={`text-[20px] ${pined ? 'text-primary' : 'text-default-400'}`} />

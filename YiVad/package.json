@@ -143,5 +143,5 @@
       "path": "node_modules/cz-git"
     }
   },
-  "packageManager": "pnpm@9.0.0+sha512.62e0b31137239210a5b8d0e7e331bc0a70000da44ff701e917671c976ebcf6a2ecfc5f2c1a9c7b8d1bdf28f0b375ff279194ddb3171dd8615b5753b311e3"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

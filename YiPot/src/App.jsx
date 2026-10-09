@@ -9,7 +9,6 @@ import { invoke } from '@tauri-apps/api/tauri';
 import Screenshot from './window/Screenshot';
 import Translate from './window/Translate';
 import Recognize from './window/Recognize';
-import Updater from './window/Updater';
 import Config from './window/Config';
 import { useConfig } from './hooks';
 import './style.css';
@@ -20,7 +19,6 @@ const windowMap = {
     screenshot: <Screenshot />,
     recognize: <Recognize />,
     config: <Config />,
-    updater: <Updater />,
 };
 
 // 哪些 ctrl+function keys 白名单：避免在窗口里不小心触发浏览器默认菜单/编辑

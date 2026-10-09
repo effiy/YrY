@@ -298,7 +298,7 @@ export const skills: SkillDef[] = [
     name: "import",
     title: "Document Import",
     icon: "📥",
-    description: "Document import/sync to remote API. Pull, scan, and upload knowledge files to the knowledge base.",
+    description: "Document import and export management. Upload files, manage export wizards, and track export history.",
     files: 12,
     lifecycle: "active",
     user_invocable: true,

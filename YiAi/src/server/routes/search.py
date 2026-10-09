@@ -248,23 +248,84 @@ async def unified_search_route(
     query: str = Body(..., embed=True),
     collections: list[str] | None = Body(None, embed=True),
     limit: int = Body(40, embed=True),
+    version: int = Body(2, embed=True),
+    include_archive: bool = Body(False, embed=True),
 ):
     """Search across internal collections (issues, projects, modules, bugs, pages).
 
     Runs all collection searches in parallel with relevance scoring.
     Returns ranked, deduplicated results with timing metadata.
+
+    Response contract (version >= 2):
+      * Backend does NOT emit `link`. The frontend Link Factory derives the URL
+        from `{type, key}` using `authMenuList` as the source of truth. This
+        decouples route refactors (:id vs :key renames, new detail pages,
+        renamed modules) from backend redeploys — the #1 historical root cause
+        of search → 404 drift in v1.
+      * Every row guarantees `key != ""` (stable synthetic keys for legacy pages
+        without real keys). Deleted/archived/tombstoned documents are filtered
+        upstream, so "ghost" entries that 404 on click stop reaching the user.
+
+    Version 1 (legacy): preserved for pre-v2.3 frontend builds. Returns the
+    original `link`-carrying envelope (wrong-links-and-all — callers accept the
+    contract in exchange for zero code change). Deployments are expected to
+    migrate to `version=2` once their frontend ships the Link Factory.
     """
+
     try:
-        from domain.search.unified_search import unified_search
+        from domain.search.unified_search import unified_search, SEARCH_INDEX_VERSION
 
         data = await asyncio.wait_for(
-            unified_search(query, collections=collections, limit=limit),
+            unified_search(
+                query,
+                collections=collections,
+                limit=limit,
+                include_archive=include_archive,
+            ),
             timeout=12.0,
         )
-        return success(data=data)
+        if (version or 2) < 2:
+            # Legacy envelope — DO NOT add new fields here. Keep the shape
+            # identical to what older YiVad frontends expect.
+            legacy: dict[str, Any] = {"results": list(data.get("results", [])), "timing": data.get("timing", {})}
+            # Backfill `link` for v1 callers. The synthetic URLs below are
+            # intentionally minimal; v1 callers already accept wrong-links as a
+            # known class of bugs. Newer callers must use version >= 2.
+            legacy_map = {
+                "issue": "issue",
+                "project": "project",
+                "module": "module",
+                "bug": "bug",
+                "page": "page",
+            }
+            for row in legacy["results"]:
+                row_type = str(row.get("type") or "")
+                key = str(row.get("key") or "")
+                row["link"] = f"/{legacy_map.get(row_type, row_type)}/{key}" if key else "/"
+            return success(data=legacy)
+
+        # Normal v2 envelope — `link` is intentionally absent. Stash index
+        # version in `meta` so the frontend can detect drift and prompt a
+        # reload when we ship contract-breaking search updates.
+        envelope = dict(data)
+        envelope.setdefault("meta", {})
+        envelope["meta"]["index_version"] = (envelope.get("meta") or {}).get("index_version") or SEARCH_INDEX_VERSION
+        return success(data=envelope)
     except asyncio.TimeoutError:
         logger.warning(f"Unified search timed out for: {query[:60]}")
-        return success(data={"results": [], "timing": {"total_ms": 0, "error": "Search timed out"}})
+        return success(
+            data={
+                "results": [],
+                "timing": {"total_ms": 0, "error": "Search timed out"},
+                "meta": {"index_version": 2, "ghost_filtered_count": 0},
+            }
+        )
     except Exception as e:
         logger.exception(f"Unified search failed: {e}")
-        return success(data={"results": [], "timing": {"total_ms": 0, "error": str(e)}})
+        return success(
+            data={
+                "results": [],
+                "timing": {"total_ms": 0, "error": str(e)},
+                "meta": {"index_version": 2, "ghost_filtered_count": 0},
+            }
+        )

@@ -46,7 +46,6 @@ lifecycle: active
 | `src/views/system/menu-manage/index.vue` | 菜单管理 — PageHeaderCard + 样式修复 | +10 / -6 |
 | `src/views/system/system-log/index.vue` | 系统日志 — PageHeaderCard | +8 / -3 |
 | `src/views/import/index.vue` | 数据导入 — PageHeaderCard | +6 / -10 |
-| `src/views/import/sync/index.vue` | 文档同步 — 修复缺失 useI18n + .page 类 | +3 / -0 |
 | `tests/hooks/useTagHelpers.test.ts` | useTagHelpers 单元测试（新建） | +230 |
 | `src/views/home/index.vue` | 首页 — 正负指标平衡 + 今日摘要 + 侧边栏去重 + 完成率修正 | +35 / -8 |
 | `src/hooks/useHomeData.ts` | HomeDeltas 扩展 overdueCount + NOT_DONE 排除 backlog | +4 / -1 |

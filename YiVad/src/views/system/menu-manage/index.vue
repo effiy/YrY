@@ -59,7 +59,8 @@
     <el-dialog
       v-model="dialogVisible"
       :title="isAdd ? $t('system.menuManage.addMenu') : $t('system.menuManage.editMenu')"
-      width="600px"
+      width="720px"
+      top="40px"
       :close-on-click-modal="false"
       append-to-body
       destroy-on-close
@@ -68,7 +69,7 @@
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="110px"
+        label-width="180px"
         label-suffix=":"
         @keyup.enter="handleSave"
         @keydown.meta.s.prevent="handleSave"
@@ -126,7 +127,6 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer-hint" v-html="$t('system.menuManage.dialogFooterSaveHint')"></span>
         <div>
           <el-button @click="dialogVisible = false">{{ $t("system.menuManage.cancel") }}</el-button>
           <el-button type="primary" :loading="saving" @click="handleSave">{{ $t("system.menuManage.save") }}</el-button>
@@ -422,8 +422,8 @@ const columns: ColumnProps[] = [
   { prop: "component", label: t("system.menuManage.fields.componentPath"), width: 220 },
   { prop: "redirect", label: t("system.menuManage.fields.redirect"), width: 180 },
   { prop: "order", label: t("system.menuManage.fields.order"), width: 70 },
-  { prop: "parent", label: t("system.menuManage.fields.parentMenu"), width: 180 },
   { prop: "meta.isHide", label: t("system.menuManage.visibility"), width: 100 },
+  { prop: "parent", label: t("system.menuManage.fields.parentMenu"), width: 180 },
   { prop: "operation", label: t("system.menuManage.operations"), width: 180, fixed: "right" }
 ];
 

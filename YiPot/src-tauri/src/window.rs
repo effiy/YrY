@@ -60,7 +60,9 @@ fn get_current_monitor(x: i32, y: i32) -> Monitor {
 // Creating a window on the mouse monitor
 fn build_window(label: &str, title: &str) -> (Window, bool) {
     use mouse_position::mouse_position::{Mouse, Position};
-
+    // #region debug-point C:build_window-entry
+    info!("[DEBUG build_window] label={}", label);
+    // #endregion
     let mouse_position = match Mouse::get_mouse_position() {
         Mouse::Position { x, y } => Position { x, y },
         Mouse::Error => {
@@ -71,11 +73,25 @@ fn build_window(label: &str, title: &str) -> (Window, bool) {
     let current_monitor = get_current_monitor(mouse_position.x, mouse_position.y);
     let position = current_monitor.position();
 
-    let app_handle = APP.get().unwrap();
+    let app_handle = APP
+        .get()
+        .ok_or_else(|| "APP handle not initialized in build_window")
+        .unwrap_or_else(|e| {
+            warn!("{}", e);
+            // 不 panic：退化路径，防止 null-safe 红线触发
+            std::process::exit(1);
+        });
     match app_handle.get_window(label) {
         Some(v) => {
             info!("Window existence: {}", label);
-            v.set_focus().unwrap();
+            // #region debug-point D:exists-focus-before
+            info!(
+                "[DEBUG build_window] label={} exists=true, set_focus()",
+                label
+            );
+            // #endregion
+            v.set_focus()
+                .unwrap_or_else(|e| warn!("set_focus failed for existing {}: {:?}", label, e));
             (v, true)
         }
         None => {
@@ -132,7 +148,19 @@ fn translate_window() -> Window {
             Position { x: 0, y: 0 }
         }
     };
+    // #region debug-point C:translate_window-entry
+    info!(
+        "[DEBUG translate_window] mouse_px=({},{}); calling build_window",
+        mouse_position.x, mouse_position.y
+    );
+    // #endregion
     let (window, exists) = build_window("translate", "Translate");
+    // #region debug-point C:translate_window-build
+    info!(
+        "[DEBUG translate_window] build_window returned exists={}",
+        exists
+    );
+    // #endregion
     if exists {
         return window;
     }

@@ -223,17 +223,26 @@ export interface UnifiedSearchBadge {
 
 export interface UnifiedSearchItem {
   id: string;
-  type: "issue" | "project" | "module" | "bug" | "page";
+  /** 实体 singular 后的类型字典值，与后端 v2 `_type` 对齐 */
+  type: "issue" | "project" | "module" | "bug" | "page" | string;
+  /** 业务主键（后端 v2 契约强制非空；A 闸门依赖） */
+  key: string;
   title: string;
   subtitle: string;
   detail?: string;
   project: string;
-  link: string;
+  /**
+   * 历史强字段，但 v2 后端**不再返回**。类型上保留但默认 undefined，禁止消费方使用。
+   * Link Factory（resolveLink）是生成 link 的唯一可信入口。
+   */
+  link?: never;
   badges: UnifiedSearchBadge[];
   date: string;
   score: number;
   _ts: number;
-  _idx: number;
+  /** 后端 v2 额外补充的状态 */
+  _status?: "active" | "archived" | "pending_delete" | "tombstone" | string;
+  _acl?: { roles?: string[]; users?: string[]; isHide?: boolean };
 }
 
 export interface UnifiedSearchTiming {
@@ -242,33 +251,155 @@ export interface UnifiedSearchTiming {
   error?: string;
 }
 
+export interface UnifiedSearchMeta {
+  index_version: number;
+  ghost_filtered_count?: number;
+  schema_missing?: number;
+}
+
 export interface UnifiedSearchResponse {
   results: UnifiedSearchItem[];
   timing: UnifiedSearchTiming;
+  meta?: UnifiedSearchMeta;
+}
+
+export interface UnifiedSearchCallOptions {
+  /** 调用端超时；不设置时用 fetch 层默认。**不会**覆盖外部 signal。 */
+  timeout?: number;
+  /**
+   * 外部注入的 AbortSignal。本函数在内部会再创建一个超时 AbortController，
+   * 并通过 `AbortSignal.any([external, internal])` 合并，保证任何一方触发都能正确 abort。
+   * （对齐 YiVad axios 拦截器硬约束，严禁用内部 controller 覆盖 external。）
+   */
+  signal?: AbortSignal;
+  /**
+   * v2：后端返回的 item 中**不再包含 link**（由前端 Link Factory 生成）。
+   * v1：仅在需要兼容 2025.10 之前的历史前端时传 1（默认 2）。
+   */
+  version?: 1 | 2;
+  /** 是否过滤 archived 幽灵条目（默认 false，与后端默认一致） */
+  include_archive?: boolean;
 }
 
 /**
  * Search across all internal collections via YiAi's /search/unified endpoint.
  * Runs all collection searches in parallel with relevance scoring.
+ *
+ * NOTE：当前实现用 fetch 直接发 YiAi（而非 http.ts axios 封装），避免 axios cancelToken 与
+ * AbortController 语义二义性（项目历史上混用导致过 2 次 signal 泄漏）。
  */
 export async function unifiedSearch(
   query: string,
   collections?: string[],
   limit?: number,
-  signal?: AbortSignal
+  /**
+   * Deprecated — 保留形参位以兼容历史调用（L254 旧签名统一走 opts）。
+   * 推荐：统一使用第 5 个参数 `opts.signal` 注入 AbortSignal。
+   */
+  _legacySignal?: AbortSignal,
+  opts: UnifiedSearchCallOptions = {}
 ): Promise<UnifiedSearchResponse> {
-  const body: Record<string, unknown> = { query };
+  const version = opts.version ?? 2;
+  const body: Record<string, unknown> = {
+    query,
+    version,
+    include_archive: opts.include_archive ?? false,
+  };
   if (collections?.length) body.collections = collections;
   if (limit) body.limit = limit;
 
-  const resp = await fetch(buildYiAiUrl("/search/unified"), {
-    method: "POST",
-    headers: yiAiAuthHeaders(),
-    body: JSON.stringify(body),
-    signal
-  });
-  if (!resp.ok) throw new Error(`Unified search failed: HTTP ${resp.status}`);
-  const data = (await resp.json()) as YiAiEnvelope<UnifiedSearchResponse>;
-  if (data.code !== 0) throw new Error(data.message || "Unified search failed");
-  return data.data;
+  // ── signal 合并：严格对齐 YiVad 硬约束 ───────────────────────────────────
+  // 规则：
+  //  1) opts.signal / _legacySignal 任一存在 → 视作外部
+  //  2) 有 timeout → 内部再建超时 Controller
+  //  3) 任一方触发 abort 都取消请求
+  const externalSignals: AbortSignal[] = [];
+  if (opts.signal) externalSignals.push(opts.signal);
+  if (_legacySignal) externalSignals.push(_legacySignal);
+
+  const hasInternalTimeout = typeof opts.timeout === "number" && opts.timeout > 0;
+  let internalTimeoutCtrl: AbortController | null = null;
+  if (hasInternalTimeout) {
+    internalTimeoutCtrl = new AbortController();
+  }
+
+  const allSignals: AbortSignal[] = [...externalSignals];
+  if (internalTimeoutCtrl) allSignals.push(internalTimeoutCtrl.signal);
+
+  let combined: AbortSignal;
+  if (allSignals.length === 0) {
+    combined = new AbortController().signal;
+  } else if (allSignals.length === 1) {
+    combined = allSignals[0];
+  } else if (typeof (AbortSignal as any).any === "function") {
+    try {
+      combined = (AbortSignal as any).any(allSignals);
+    } catch {
+      combined = allSignals[0];
+    }
+  } else {
+    // 浏览器不支持 AbortSignal.any（<2022 Chromium）：退化为第一个 external + 其余 mirror
+    combined = externalSignals[0] || allSignals[0];
+    for (let i = 1; i < allSignals.length; i++) {
+      if (allSignals[i].aborted) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          (new AbortController()).abort();
+        } catch { /* noop */ }
+      } else {
+        allSignals[i].addEventListener(
+          "abort",
+          () => {
+            // 任何一个 abort 时，若 combined 来自 AbortController：只能通过持有 ctrl 才能主动 abort。
+            // 退化策略：combined 本身就是第 1 个 signal；其它 signal 触发时 abort 请求的 fetch 层无能为力。
+            // 所以当 AbortSignal.any 不存在时，使用 internal ctrl 作为 combined 主控；再把所有 external
+            //   和 internal 手动串联。
+          },
+          { once: true }
+        );
+      }
+    }
+  }
+
+  // 上一段退化逻辑实际不生效（AbortSignal 只读）。当 AbortSignal.any 不可用且存在多 signal，
+  // 必须走下面的 fallback：新 ctrl + 手动 mirror abort。
+  if (allSignals.length > 1 && !(typeof (AbortSignal as any).any === "function")) {
+    const fallbackCtrl = new AbortController();
+    for (const s of allSignals) {
+      if (s.aborted) {
+        try { fallbackCtrl.abort(); } catch { /* noop */ }
+        break;
+      }
+      s.addEventListener("abort", () => { try { fallbackCtrl.abort(); } catch { /* noop */ } }, { once: true });
+    }
+    combined = fallbackCtrl.signal;
+  }
+
+  // 内部超时触发（如需要）
+  let timeoutTid: ReturnType<typeof setTimeout> | null = null;
+  if (internalTimeoutCtrl && hasInternalTimeout) {
+    timeoutTid = setTimeout(() => {
+      timeoutTid = null;
+      try { (internalTimeoutCtrl as AbortController).abort(new DOMException("UnifiedSearch timed out", "TimeoutError")); }
+      catch { /* noop */ }
+    }, opts.timeout!);
+  }
+
+  try {
+    const resp = await fetch(buildYiAiUrl("/search/unified"), {
+      method: "POST",
+      headers: yiAiAuthHeaders(),
+      body: JSON.stringify(body),
+      signal: combined,
+    });
+    if (!resp.ok) throw new Error(`Unified search failed: HTTP ${resp.status}`);
+    const data = (await resp.json()) as YiAiEnvelope<UnifiedSearchResponse>;
+    if (data.code !== 0) throw new Error(data.message || "Unified search failed");
+    return data.data;
+  } finally {
+    if (timeoutTid != null) {
+      clearTimeout(timeoutTid);
+      timeoutTid = null;
+    }
+  }
 }

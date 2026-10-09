@@ -28,6 +28,92 @@ export const detectLanguageAtom = atom('');
 
 let unlisten = null;
 let timer = null;
+// show/setFocus 的抑制窗口：避免同一热键按下→抬起或多次回调导致循环抖动
+let _lastActivateAt = 0;
+// #region debug-point A:activate-report
+// 调试用：将 activate / blur / new_text / showSetFocus 的事件时间序列上报 Debug Server
+const _DBG_EV = (() => {
+    let URL = 'http://127.0.0.1:7777/event';
+    let SID = 'yipot-selection-translate-flicker';
+    try {
+        // Tauri runtime 下通过 @tauri-apps/api/fs 读 env 文件不可行（BaseDirectory 不暴露 /var），
+        // 这里直接使用 probe 验证通过的默认端口；server 不可达时 fetch catch 静默吃掉。
+    } catch {}
+    const _send = (payload) => {
+        try {
+            fetch(URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: SID,
+                    runId: 'pre',
+                    ts: Date.now(),
+                    ...payload,
+                }),
+            }).catch(() => {});
+        } catch {}
+    };
+    return { send: _send };
+})();
+// #endregion
+const _activate = async () => {
+    const now = Date.now();
+    if (now - _lastActivateAt < 120) {
+        // #region debug-point A:activate-skip
+        _DBG_EV.send({
+            hypothesisId: 'A',
+            location: 'SourceArea/index.jsx:_activate:skip',
+            msg: '[DEBUG] _activate debounced skip',
+            data: { delta: now - _lastActivateAt, now },
+        });
+        // #endregion
+        return;
+    }
+    _lastActivateAt = now;
+    try {
+        const visible = await appWindow.isVisible().catch(() => false);
+        // #region debug-point B:activate-before
+        _DBG_EV.send({
+            hypothesisId: 'B',
+            location: 'SourceArea/index.jsx:_activate:before',
+            msg: '[DEBUG] _activate before show/setFocus',
+            data: { visible, now },
+        });
+        // #endregion
+        if (!visible) {
+            await appWindow.show().catch((e) => {
+                // #region debug-point B:show-err
+                _DBG_EV.send({
+                    hypothesisId: 'B',
+                    location: 'SourceArea/index.jsx:_activate:show:err',
+                    msg: '[DEBUG] show error',
+                    data: { err: String(e), now },
+                });
+                // #endregion
+            });
+        }
+        await appWindow.setFocus().catch((e) => {
+            // #region debug-point B:setfocus-err
+            _DBG_EV.send({
+                hypothesisId: 'B',
+                location: 'SourceArea/index.jsx:_activate:setFocus:err',
+                msg: '[DEBUG] setFocus error',
+                data: { err: String(e), now },
+            });
+            // #endregion
+        });
+        // #region debug-point B:activate-after
+        _DBG_EV.send({
+            hypothesisId: 'B',
+            location: 'SourceArea/index.jsx:_activate:after',
+            msg: '[DEBUG] _activate after show/setFocus',
+            data: { visible, now },
+        });
+        // #endregion
+    } catch {
+        // ignore
+    }
+};
 
 export default function SourceArea(props) {
     const { pluginList, serviceInstanceConfigMap } = props;
@@ -50,19 +136,31 @@ export default function SourceArea(props) {
     const speak = useVoice();
 
     const handleNewText = async (text) => {
+        const traceId =
+            't_' +
+            Math.random().toString(36).slice(2, 10) +
+            '_' +
+            Date.now().toString(36);
+        // #region debug-point A:new_text-entry
+        _DBG_EV.send({
+            hypothesisId: 'A',
+            location: 'SourceArea/index.jsx:handleNewText:entry',
+            msg: '[DEBUG] handleNewText called',
+            data: { traceId, len: (text || '').length, preview: (text || '').slice(0, 60) },
+            traceId,
+        });
+        // #endregion
         text = text.trim();
         if (hideWindow) {
-            appWindow.hide();
+            await appWindow.hide().catch(() => {});
         } else {
-            appWindow.show();
-            appWindow.setFocus();
+            await _activate();
         }
         // 清空检测语言
         setDetectLanguage('');
         if (text === '[INPUT_TRANSLATE]') {
             setWindowType('[INPUT_TRANSLATE]');
-            appWindow.show();
-            appWindow.setFocus();
+            await _activate();
             setSourceText('', true);
         } else if (text === '[IMAGE_TRANSLATE]') {
             setWindowType('[IMAGE_TRANSLATE]');
@@ -219,10 +317,20 @@ export default function SourceArea(props) {
                 });
             }
             unlisten = listen('new_text', (event) => {
-                appWindow.setFocus();
-                handleNewText(event.payload);
+                // #region debug-point A:new_text-event
+                _DBG_EV.send({
+                    hypothesisId: 'A',
+                    location: 'SourceArea/index.jsx:new_text:listen',
+                    msg: '[DEBUG] received new_text event from backend',
+                    data: { payload_len: String(event.payload ?? '').length },
+                });
+                // #endregion
+                _activate().then(() => handleNewText(event.payload)).catch(() => {
+                    handleNewText(event.payload);
+                });
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hideWindow]);
 
     useEffect(() => {

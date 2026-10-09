@@ -69,7 +69,6 @@ lifecycle: active
 | `src/views/system/*/index.vue` (7 files) | 重构 | -20 / +10 | 使用 `.page` 类 |
 | `src/views/knowledge/*/index.vue` (5 files) | 重构 | -15 / +5 | background 委托至 `.page` |
 | `src/views/notification/index.vue` | 重构 | -5 / +3 | 使用 `.page` + tooltip |
-| `src/views/import/sync/index.vue` | 重构 | -2 / +1 | background 委托至 `.page` |
 | `src/views/showcase/index.vue` | 重构 | -2 / +1 | 使用 `.page` |
 | `src/views/dashboard/analytics/*.vue` (2 files) | 重构 | -4 / +1 | 使用 `.page` |
 

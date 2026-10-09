@@ -686,9 +686,10 @@ $gap-lg: 18px;
   display: flex;
   flex-direction: column;
   gap: $gap-lg;
-  padding: 20px 24px 32px;
+  padding: 20px 16px 32px;
   background: var(--el-bg-color-page);
   min-height: 100%;
+  width: 100%;
 }
 
 // ── Header ──
@@ -736,7 +737,7 @@ $gap-lg: 18px;
 // ── Skeleton ──
 .pipeline__skeleton-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: $gap-md;
 }
 .pipeline__skeleton-stat {
@@ -755,17 +756,19 @@ $gap-lg: 18px;
 }
 .pipeline__skeleton-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: $gap-md;
 }
 
 // ── Overview stats ──
 .pipeline__overview {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: $gap-md;
+  width: 100%;
 }
 .pipeline__stat-card {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -824,6 +827,7 @@ $gap-lg: 18px;
   display: flex;
   flex-direction: column;
   gap: $gap-sm;
+  width: 100%;
 }
 .pipeline__section-title {
   display: flex;
@@ -848,8 +852,9 @@ $gap-lg: 18px;
 // ── Layer cards ──
 .pipeline__layers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: $gap-md;
+  width: 100%;
 }
 
 // ── Stage flow ──
@@ -859,12 +864,15 @@ $gap-lg: 18px;
   align-items: stretch;
   overflow-x: auto;
   padding: 4px 0;
+  width: 100%;
 }
 .pipeline__stage-wrap {
   display: flex;
   align-items: center;
-  min-width: 0;
+  min-width: 150px;
   flex: 1 1 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 .pipeline__stage-arrow {
   display: flex;
@@ -876,6 +884,7 @@ $gap-lg: 18px;
 // ── Cards (shared) ──
 .pipeline__layer-card,
 .pipeline__stage-card {
+  box-sizing: border-box;
   width: 100%;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
@@ -1072,10 +1081,12 @@ $gap-lg: 18px;
 // ── Decision tree ──
 .pipeline__decision-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 6px;
+  width: 100%;
 }
 .pipeline__decision-item {
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: 28px 1fr 28px max-content;
   gap: 8px;
@@ -1126,10 +1137,12 @@ $gap-lg: 18px;
 // ── Data distribution ──
 .pipeline__dist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: $gap-md;
+  width: 100%;
 }
 .pipeline__dist-panel {
+  box-sizing: border-box;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: $card-radius;

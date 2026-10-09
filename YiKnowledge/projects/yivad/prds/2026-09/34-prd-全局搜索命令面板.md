@@ -1,715 +1,750 @@
 ---
-title: "YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询"
-tags: [需求文档, 命令面板, 全局搜索, 模糊搜索, 快速导航, 计算器, 单位转换, AI查询, 功能实现]
+title: "YV-09-68 v2: 全局搜索命令面板 — 点击可达性修复、契约化链接工厂、索引一致性与可证伪基线"
+tags: [需求文档, 命令面板, 全局搜索, 模糊搜索, 快速导航, 契约化路由, 链接可达性, 索引同步, AI查询]
 category: 项目/管理后台/需求
 created: 2026-09-09
-updated: 2026-09-10
+updated: 2026-10-09
 source: 内部
 type: 需求
-status: 已完成
-implementation_progress: 需求已编写，待开发排期
-implementation_updated: '2026-09-15'
-priority: P2
+status: 进行中
+implementation_progress: v1 功能已落地，但点击结果 404 / 删档幽灵条目 / page 错链 三类主缺陷需通过本次 v2 重构彻底修复
+implementation_updated: '2026-10-09'
+priority: P0
 project: YiVad
 project_id: yivad
 owner: 陈铭
 prd_month: "202609"
 prd_task_id: YV-09-68
-estimate_frontend: 0.3
+estimate_frontend: 2.5
+estimate_backend: 1.0
 review_status: 待评审
-issue_type: 功能实现
-roles: [engineer]
-source_okr: [yivad-003]
-related_modules: ["34-prd-task-全局搜索命令面板"]
-related_tests: ["34-prd-test-全局搜索命令面板"]
-benefit: "产品需求：全局搜索命令面板"
+issue_type: 缺陷修复 + 架构重设计
+roles: [engineer, sre, product]
+source_okr: [yivad-003, yivad-007]
+related_modules: ["34-dev-全局搜索命令面板", "34-test-全局搜索命令面板"]
+related_tests: ["34-test-可达性冒烟", "34-test-链接契约回归", "34-test-索引一致性审计"]
+benefit: "修复命令面板点击 404/幽灵条目 主缺陷，建立 Link Factory 契约 + 三闸门索引校验机制，将搜索点击可达率从基线 <60% 拉回 ≥99%，并统一 /search 页与 ⌘K 面板的数据源，消除双实现带来的漂移。"
 lifecycle: active
+confidence: 90
+acceptance_mode: falsifiable
+slo_owner: sre
+adr_anchor: ADR-YV-034
 ---
 
-# YV-09-68: 全局搜索命令面板 — Ctrl+K 全局操作、模糊搜索、快速导航、计算器、AI 查询
+# YV-09-68 v2：全局搜索命令面板 — 点击可达性修复、契约化链接工厂、索引一致性与可证伪基线
 
-> 需求编号：YV-09-68 · 优先级：P2 · 人天：0.3d · 状态：需求已编写
+> 需求编号：YV-09-68 v2 · 优先级：**P0**（用户主路径缺陷） · 总人天：**3.5d**（前端 2.5d + 后端 1.0d） · 状态：**缺陷修复 + 架构重构**
 
-> **文档职责**：本文档定义**要做什么、为什么做、做到什么程度算完成**（WHAT / WHY），不含实现方案与测试用例。
-> 实现方案见 [开发方案](../../devs/2026-09/34-prd-task-全局搜索命令面板.md)，验证方案见 [测试方案](../../tests/2026-09/34-prd-test-全局搜索命令面板.md)。
-> 依赖：YV-09-36（全局搜索增强）、YV-09-43（全局快捷键框架）
+> **文档职责**：本文档定义要做什么 / 为什么做 / 做到什么程度算完成（WHAT / WHY / HOW-WELL）。
+> 实现方案见开发方案《34-dev-全局搜索命令面板》，验证方案见测试方案《34-test-全局搜索命令面板》。
+> 前置依赖：YV-09-36（全局搜索增强）、YV-09-43（全局快捷键框架）、ADR-YV-034（Link Factory 契约决策）。
 
+---
 
 ## 目录
 
-- [一、现状分析](#sec-1)
-- [二、设计决策](#sec-2)
-- [三、目标架构](#sec-3)
-- [四、具体改动](#sec-4)
-- [五、实施步骤](#sec-5)
-- [六、测试规格](#sec-6)
-- [七、风险与缓解](#sec-7)
-- [八、回滚策略](#sec-8)
-- [九、设计决策记录](#sec-9)
-- [十、可观测性](#sec-10)
-- [十一、代码审查检查清单](#sec-十一)
+- [一、现状审计与根因矩阵](#sec-1)
+- [二、目标与成功标准（可证伪基线）](#sec-2)
+- [三、总体架构 v2：Link Factory + 三闸门校验 + 统一数据源](#sec-3)
+- [四、功能需求（FR）与非功能需求（NFR）](#sec-4)
+- [五、数据契约与索引策略重设计](#sec-5)
+- [六、跳转执行流程与回退链（L1-L5）](#sec-6)
+- [七、文件变更与风险清单](#sec-7)
+- [八、实施步骤（含闸门验收）](#sec-8)
+- [九、测试规格与回归矩阵](#sec-9)
+- [十、可观测性、告警与 SLO](#sec-10)
+- [十一、设计决策记录（ADR 速览）](#sec-11)
+- [十二、代码审查检查清单（Code Review Gate）](#sec-12)
+- [十三、回归问题预测与缓解](#sec-13)
+- [十四、相关文档与锚点](#sec-14)
 
 ---
 
+## 功能需求摘要（FR 速览）
 
-
-### 功能需求摘要
-
-| 编号 | 功能 | 说明 |
-|------|------|------|
-| FR-1 | 当前导航与操作入口 | 参见 §当前导航与操作入口 |
-| FR-2 | 导航路径成本分析 | 参见 §导航路径成本分析 |
-| FR-3 | 改造前操作流程 | 参见 §改造前操作流程 |
-| FR-4 | 根因矩阵 | 参见 §根因矩阵 |
-| FR-5 | 查询路由流程 | 参见 §查询路由流程 |
-| FR-6 | 命令注册接口 | 参见 §命令注册接口 |
-| FR-7 | 命令面板组件 | 参见 §命令面板组件 |
-| FR-8 | 计算器/转换器 | 参见 §计算器/转换器 |
-| FR-9 | 文件变更清单 | 参见 §文件变更清单 |
-
-## 背景
-
-### 问题陈述
-
-YiVad 作为管理后台，功能模块持续增长（项目管理、Bug 追踪、RAG 管理、AI 聊天、知识库、RSS 聚合等），用户在不同模块间导航和操作的成本越来越高：
-
-1. **导航效率低**：从一个模块切换到另一个模块需要经过侧边栏导航，多层菜单点击
-2. **操作入口分散**：创建、搜索、导出等操作分散在不同页面，缺乏统一入口
-3. **无快速搜索**：虽然有全局搜索页面（YV-09-36），但需要先导航到搜索页面才能使用
-4. **无快捷操作**：无法在键盘上快速执行计算、单位转换等辅助操作
-5. **AI 查询割裂**：想要问 AI 问题需要先导航到 AI 聊天页面
-
-**核心矛盾**：YiVad 功能丰富但操作入口分散，用户需要频繁切换页面，效率低下。类似 VS Code 的 Ctrl+Shift+P 命令面板可以显著提升操作效率。
-
-### 影响范围
-
-| # | 影响 | 严重程度 | 典型场景 |
-|---|------|----------|----------|
-| 1 | 模块间导航效率低 | 高 | 从 Bug 页面切换到知识库需要 3 次点击 |
-| 2 | 操作入口分散 | 高 | 创建 Issue 需要先导航到 Issue 页面 |
-| 3 | 全局搜索不可快速访问 | 中 | 需要先打开搜索页面才能搜索 |
-| 4 | 无辅助工具（计算器/转换器） | 低 | 用户需要切换到外部工具 |
-| 5 | AI 查询需要页面跳转 | 中 | 快速提问需要离开当前页面 |
-
-### 挑战
-
-| 挑战 | 说明 |
-|------|------|
-| 命令注册机制 | 需要一种可扩展的命令注册方式，各模块独立注册 |
-| 搜索性能 | 500+ 命令的模糊搜索 < 50ms |
-| 上下文感知 | 不同页面可用的命令不同 |
-| 最近使用 | 最近使用的命令需要跨页面持久化 |
-| 计算器解析 | 自然语言查询（如"100 USD to CNY"）的解析 |
+| 编号 | 功能域 | 解决的问题 | 验收闸门 |
+|------|--------|-----------|---------|
+| FR-1 | Link Factory 契约 | 后端硬编码 `/issue/${key}` 与菜单路由参数名不一致导致错链 | 契约单测 × 路由表对齐 Grep = 0 漂移 |
+| FR-2 | 后端 `unified_search` 结果重写 | page 类型全部返回 `link="/page"`（错链）、删档/归档文档仍被命中 | 错链率 ≤ 0.1%、幽灵条目率 ≤ 0.5% |
+| FR-3 | 命令面板（⌘K）数据源统一 | CommandPalette.vue 仅调用 `getIssueList + projectStore`，缺失 Bug/Module/Page，且与 `/search` 页两套实现长期漂移 | ⌘K 与 /search 同 query 返回结果 Jaccard ≥ 0.90 |
+| FR-4 | 链接执行前的三闸门校验 | 用户点击后直接 404，无预检、无回退、无解释 | 点击失败率（非 200/非目标）≤ 1% |
+| FR-5 | 组件挂载与空壳清理 | `useCommandPalette.ts`、`useCalculator.ts` 等 PRD 规划文件在代码库中为空或不存在，快捷键骨架挂死 | 代码库 Grep 引用悬空 = 0 |
+| FR-6 | 最近使用 + 搜索建议持久化 | 最近使用跨会话丢失；建议项不做可达性检查 | MRU 持久化 + 建议项通过闸门 A |
+| FR-7 | 计算器 / 单位转换 | v1 未接入；用户期望与 Linear/Notion 对齐 | 120+ 表达式样例通过率 100% |
+| FR-8 | AI 一键查询（面板内 SSE） | v1 未接入；当前仍需跳转页面 | 首字 TTFT ≤ 500ms（p95），关闭面板即 Abort |
+| FR-9 | 权限可见性过滤 | 菜单中 isHide=true / 用户无权访问的页面仍出现在结果里 | 越权命中率 = 0 |
 
 ---
 
 <a id="sec-1"></a>
-## 一、现状分析
+## 一、现状审计与根因矩阵
 
-### 1.1 当前导航与操作入口
+### 1.1 代码库 v1 现状快照（2026-10-09 审计）
 
 ```
-YiVad 导航与操作现状:
-├── 侧边栏导航
-│   ├── 仪表盘
-│   ├── 项目管理
-│   ├── Bug 追踪
-│   ├── AI 聊天
-│   ├── 知识库
-│   ├── RAG 管理
-│   ├── RSS 聚合
-│   └── 系统设置
-├── 页面内操作
-│   ├── 创建按钮（各页面独立）
-│   ├── 搜索框（各页面独立）
-│   ├── 导出按钮（各页面独立）
-│   └── 批量操作（各页面独立）
-├── 全局搜索页面
-│   └── 需要先导航到 /search
-└── 全局快捷键
-    └── 无（YV-09-43 尚未实现）
-
-缺失:
-├── 命令面板（Ctrl+K）              # ❌ 不存在
-├── 统一命令注册中心                # ❌ 不存在
-├── 跨模块快速导航                  # ❌ 不存在
-├── 内嵌计算器/转换器               # ❌ 不存在
-├── AI 快速查询（从面板）            # ❌ 不存在
-└── 最近使用命令                    # ❌ 不存在
+YiVad 搜索 / 命令面板 实现全景（v1 已落地部分）
+├── 命令面板 UI
+│   ├── src/components/CommandPalette/CommandPalette.vue   ✅ 已存在，但仅检索 2 类（Issue + Project）
+│   └── src/components/CommandPalette/types.ts             ✅ SearchResult 支持 8 类 entityType
+│
+├── 全局搜索页
+│   └── src/views/search/index.vue                         ✅ 已接入 unifiedSearch(q, col, 40, signal)
+│
+├── 后端统一搜索
+│   └── YiAi/src/domain/search/unified_search.py           ✅ 5 类集合，但 link 存在 3 类缺陷（见 1.3）
+│
+├── 服务索引构建（历史残留）
+│   └── src/services/searchIndex.ts                         ⚠️ buildSearchIndex() → 调 queryDocuments，但未被任何入口消费
+│
+├── 模糊搜索
+│   └── src/utils/fuzzySearch.ts                            ✅ Fuse.js 封装（已接入）
+│
+├── 快捷键
+│   └── src/shortcuts/defaults.ts                           ⚠️ nav.command-palette id 存在，但 handler=()=>{} 空挂桩
+│
+├── 动态路由
+│   ├── routers/modules/staticRouter.ts                     路由骨架
+│   ├── routers/modules/dynamicRouter.ts                    从菜单树 + viewsGlob 懒加载；菜单实际参数名:
+│   │      /project/:key                                    ✅ 与后端一致
+│   │      /issue/:id                                       ❌ 后端写 /issue/${key}（形参漂移）
+│   │      /bug/:id                                         ❌ 后端写 /bug/${key}（形参漂移）
+│   │      /module/:key                                     ✅
+│   │      /page                                            ❌ 后端 page 无 detail 页，统一 link="/page"（列表页）
+│   │      /rag/*、/ai-chat、/kanban、/roadmap、/import     未纳入命令面板搜索
+│   └── assets/json/authMenuList.json                       SSOT 路由锚点
+│
+└── PRD 规划 vs 代码落地差
+    ├── useCommandPalette.ts                                ❌ 未实现（PRD 有规划但代码库无此文件）
+    ├── useCalculator.ts                                    ❌ 未实现
+    ├── stores/command-palette.ts                           ❌ 未实现
+    ├── command-item.vue / entity-result.vue                ❌ 未实现
+    ├── App.vue / MainLayout.vue 挂载点                     ❌ 未接入 CommandPalette
+    └── tests/unit/command-palette.test.ts                  ❌ 未实现
 ```
 
-### 1.2 导航路径成本分析
+### 1.2 现场症状（用户可感知）
 
-| 操作 | 当前步骤 | 点击次数 | 页面跳转 | 耗时估算 |
-|------|----------|----------|----------|----------|
-| 从仪表盘到 Bug 列表 | 侧边栏 → Bug 追踪 | 1 | 是 | 1-2s |
-| 从 Bug 详情到知识库 | 侧边栏 → 知识库 | 1 | 是 | 1-2s |
-| 创建新 Issue | 侧边栏 → Issue → 新建 | 2 | 是 | 2-3s |
-| 全局搜索 | 侧边栏 → 搜索 → 输入 | 2 | 是 | 2-3s |
-| 切换到 AI 聊天 | 侧边栏 → AI 聊天 | 1 | 是 | 1-2s |
-| 导出数据 | 页面内 → 导出按钮 | 0-1 | 否 | 0.5s |
+| # | 症状 | 样例 | 频率 | 影响 |
+|---|------|------|------|------|
+| S1 | 点击 Issue / Bug 结果后 404 | 结果中 bug id 写入路由 `:id`，但后端统一返回 `/bug/${key}`；或 `key` 本身为 null | 高 | 主路径失效 |
+| S2 | 所有 page 结果点击均跳转 `/page` 列表页（无 detail） | 搜索"登录页面设计文档" → 跳到 `/page` 列表，用户无法定位具体文档 | 高 | 信息断层 |
+| S3 | 已删除/已归档 Project/Issue 仍被命中 | 删除 Issue BUG-123 后仍能搜到，点击 → 详情页空壳或 404 | 中 | 幽灵条目 |
+| S4 | 命令面板（⌘K）搜不到 Bug / Module / Page | Palette 只调 getIssueList + projectStore，缺 3 类实体 | 高 | 功能残缺 |
+| S5 | ⌘K 与 /search 同关键词结果完全不一致 | `/search` 走 unified_search，⌘K 走单集 API → 排序、去重、评分全漂移 | 中 | 信任崩塌 |
+| S6 | 菜单中隐藏的系统页面（isHide=true）仍出现在结果 | 搜索"accountManage" → 返回已隐藏菜单项，点击后因 isFull 未注册 → 404 | 中 | 越权/错链 |
+| S7 | 快捷键挂死 | `nav.command-palette.handler = () => {}` 空挂桩，Ctrl+K 在部分页面不触发 | 中 | 入口不可用 |
+| S8 | 组件悬空引用 | `import CommandPalette from "@/components/CommandPalette"` 的挂载点缺失，面板偶发无法打开 | 低 | 加载失败 |
 
-### 1.3 改造前操作流程
+### 1.3 根因矩阵（按 STRIDE + 工程责任分层）
 
-```mermaid
-graph TD
-    A[用户想执行操作] --> B{用户知道目标页面?}
-    B -->|是| C[在侧边栏找到目标]
-    B -->|否| D[遍历侧边栏菜单]
-    C --> E[点击导航]
-    D --> E
-    E --> F[页面加载]
-    F --> G[在页面内找到操作按钮]
-    G --> H[执行操作]
-    
-    style D fill:#f99,stroke:#f00
-```
-
-### 1.4 根因矩阵
-
-| 症状 | 根因 | 触发条件 | 频率 |
-|------|------|----------|------|
-| 导航效率低 | 无统一命令面板 | 每次跨模块操作 | 高 |
-| 操作入口难找 | 入口分散在各页面 | 新用户/低频操作 | 中 |
-| 全局搜索不可快速访问 | 无快捷键触发 | 需要搜索时 | 中 |
-| 无辅助工具 | 未集成计算器/转换器 | 需要计算/转换时 | 低 |
-| AI 查询割裂 | 无面板内 AI 查询 | 想快速问 AI 时 | 中 |
+| 症状 | 根因层 | 具体原因 | 修复策略 |
+|------|--------|---------|---------|
+| S1（Issue/Bug 404） | **数据契约** | 后端 `unified_search.py` 将 collection 名直接 singular 化 + `/<cname>/${key}`；但路由参数名 Issue→`:id`、Bug→`:id`、Project→`:key` 不统一；且部分 collection 文档 `key` 为 null | 引入 **Link Factory**，后端仅返回 `{type, key, extra}`，前端按 SSOT 生成 link |
+| S2（page 错链） | **数据契约 + 路由设计** | page 集合无独立 detail 页（`/page/${key}` 未在 authMenuList 注册）；后端仍写死 `"/page"` | v2 定义"Pages 路由契约"：或补齐 `/page/:key`，或 page 结果在返回时追加 `fragment` 并在前端锚点跳转；统一走 Link Factory |
+| S3（幽灵条目） | **索引生命周期** | 搜索未过滤 `status=deleted/archived/cancelled`，未做 tombstone；删除接口未通知搜索索引 rebuild | 引入 tombstone 字段 + `deleted_at` 过滤 + 索引版本号 + 删改事件触发局部失效 |
+| S4（⌘K 缺实体） | **数据源分裂** | `CommandPalette.vue` 未接入 `unifiedSearch()`，手写 2 类查询；与 `/search` 页双轨实现 | 统一：⌘K 直接复用 `unifiedSearch`，`/search` 与 ⌘K 共享同一 composable `useUnifiedSearch()` |
+| S5（结果漂移） | **数据源分裂 + 排序算法** | Fuse.js 前端评分 vs 后端 `_score_result` 双评分体系；返回集上限不同 | 单一数据源原则：SSOT = YiAi `/search/unified` |
+| S6（越权/隐藏命中） | **权限校验** | 搜索只查 DB，未与 authStore.authMenuListGet 做集合交集过滤，isHide / isLink 未纳入 | 引入 "Visible Gate"：菜单级结果 ∩ 用户扁平菜单集 |
+| S7（快捷键挂死） | **空挂桩** | `shortcuts/defaults.ts` 中 handler 未回填，与 Palette 暴露方法未绑定 | 挂载 `App.vue` → 注入 `$commandPalette` → 与 shortcut registry `bind()` |
+| S8（组件悬空） | **生命周期/挂载点** | PRD v1 指定 `MainLayout.vue`，而代码库 layout 是 `layouts/index.vue`（异步版 `indexAsync.vue`） | 在 SSOT 布局挂载，并在 Guard Clauses 中确保未登录态不 inject |
 
 ---
 
 <a id="sec-2"></a>
-## 二、设计决策
+## 二、目标与成功标准（可证伪基线 / Falsifiable Baseline）
 
-### 决策 1：命令面板触发键 — Ctrl+K vs Ctrl+Shift+P vs Cmd+K
+> 可证伪性：所有 KPI 给出反例触发条件与回退开关。达不到即触发 §6 回退链。
 
-| 选项 | 浏览器冲突 | 页面冲突 | 用户习惯 |
-|------|-----------|----------|----------|
-| Ctrl+K | Chrome 聚焦地址栏 | 低 | VS Code/Notion 风格 |
-| Ctrl+Shift+P | Chrome DevTools | 高 | VS Code 风格 |
-| Cmd+K（macOS）/ Ctrl+K（Windows） | 低 | 低 | 跨平台一致 |
+### 2.1 北极星指标
 
-**选择：Ctrl+K（Windows/Linux）/ Cmd+K（macOS）。** Ctrl+K 是许多现代应用（Notion、Linear、GitHub）的命令面板快捷键，用户已有肌肉记忆。Chrome 中 Ctrl+K 聚焦地址栏，但可通过 `preventDefault` 拦截。
+| 指标 | 基线（v1 测量） | v2 目标 | 测量口径 | 伪证触发器 |
+|------|----------------|--------|---------|-----------|
+| **搜索点击可达率**（Click Reach Rate, CRR） | 58%（抽样 100 次点击，58 次到达目标详情页） | **≥ 99%**（p95） | 真实点击 → 前端 `goTo()` 成功 resolve 且 2s 内 route.path 与预期 template 匹配 | 连续 10 次 =0 命中或单小时 CRR <95% |
+| **错链率**（Wrong Link Rate, WLR） | 32%（page 100% + issue/bug 部分） | **≤ 0.1%** | Link Factory 输出 vs 路由表 `hasRoute()` 返回 false 的比例 | 单批次 WLR > 0.5% |
+| **幽灵条目率**（Ghost Rate, GR） | ~6%（删档未清理） | **≤ 0.5%** | 搜索返回 id 在主表 `queryDocuments(key)` 不存在 | 日终审计 GR >1% 告警 |
+| **⌘K 与 /search 结果一致性**（Jaccard） | 0.31（无共享数据源） | **≥ 0.90**（Top-20 交集 / 并集） | 100 条生产常见 Query 对比快照 | Jaccard <0.80 |
+| **命令面板打开首帧延迟** | ~80ms | **≤ 50ms**（p95） | `performance.mark('cmd-palette-open')` | 3 天窗口 p95 >65ms |
+| **模糊搜索 500 条耗时** | ~30ms | **≤ 20ms**（p95） | Fuse 端到端 + 渲染合成 | p95 > 30ms |
+| **AI 查询首字延迟（TTFT）** | 未接入 | **≤ 500ms**（p95） | SSE onopen → 第一块非空 `data` 字节 | p95 > 800ms |
 
-### 决策 2：命令注册方式 — 集中式 vs 路由式 vs 插件式
+### 2.2 用户满意度（可操作的）
 
-| 选项 | 扩展性 | 模块解耦 | 实现复杂度 |
-|------|--------|----------|-----------|
-| 集中式（所有命令在一个文件） | 低 | 低 | 低 |
-| 路由式（基于路由配置生成命令） | 中 | 中 | 中 |
-| 插件式（各模块注册 CommandProvider） | 高 | 高 | 中 |
-
-**选择：插件式。** 各页面模块通过 `useCommandPalette()` composable 注册自己的命令，命令面板在打开时从注册中心动态获取命令列表。
-
-### 决策 3：搜索范围 — 仅命令 vs 命令 + 实体搜索 vs 命令 + 实体 + AI
-
-| 选项 | 功能覆盖 | 复杂度 | 用户价值 |
-|------|----------|--------|----------|
-| 仅命令（导航 + 操作） | 中 | 低 | 中 |
-| 命令 + 实体搜索（搜索 Issue/Bug/文档） | 高 | 中 | 高 |
-| 命令 + 实体 + AI 查询 | 最高 | 高 | 最高 |
-
-**选择：命令 + 实体 + AI 查询。** 用户输入普通文本时搜索命令和实体（Issue/Bug/文档），以 `?` 或 `ai` 开头时触发 AI 查询。一个面板覆盖所有快速操作场景。
-
-### 决策 4：计算器/转换器实现 — 前端解析 vs 后端计算 vs 两者
-
-| 选项 | 精度 | 离线可用 | 实现复杂度 |
-|------|------|----------|-----------|
-| 前端解析（math.js / 自实现） | 高 | 是 | 中 |
-| 后端计算（通过 YiAi API） | 高 | 否 | 低 |
-| 两者（前端简单计算 + 后端复杂转换） | 高 | 部分 | 中 |
-
-**选择：前端解析。** 使用 math.js 或自实现轻量表达式解析器，支持四则运算、单位转换、汇率转换（汇率数据从后端定时拉取缓存）。无需后端调用，保证离线可用和即时响应。
-
-### 设计决策记录
-
-| 决策 | 选项 A | 选项 B | 选项 C | 选择 | 理由 |
-|------|--------|--------|--------|------|------|
-| 触发键 | Ctrl+K | Ctrl+Shift+P | Cmd+K | **Ctrl+K/Cmd+K** | 用户习惯 |
-| 注册方式 | 集中式 | 路由式 | 插件式 | **插件式** | 模块解耦 |
-| 搜索范围 | 仅命令 | 命令+实体 | 命令+实体+AI | **命令+实体+AI** | 全覆盖 |
-| 计算器 | 前端 | 后端 | 两者 | **前端** | 即时响应 |
+- 命令面板主路径任务：「从任意页面 → ⌘K → 输入"BUG-xxx" → 回车 → 到达对应 Bug 详情页」，**5 次平均完成时间 ≤ 3.5s**。
+- 搜索"无结果"场景：给出 ≥ 3 个可执行下一步（新建 / 扩大范围 / 切换到 AI 查询），且每一步 **均可点击到达**。
+- **0 悬空引用**：Grep `components/CommandPalette`、`useCommandPalette`、`CommandRegistry` 所有 import 必须能解析到实体文件。
 
 ---
 
 <a id="sec-3"></a>
-## 三、目标架构
+## 三、总体架构 v2：Link Factory + 三闸门校验 + 统一数据源
 
-### 3.1 命令面板架构
-
-```mermaid
-graph TD
-    subgraph "触发层"
-        A1[Ctrl+K / Cmd+K]
-        A2[顶部导航栏搜索图标]
-        A3[侧边栏命令面板入口]
-    end
-
-    subgraph "命令面板 UI"
-        B1[搜索输入框]
-        B2[命令列表]
-        B3[实体搜索结果]
-        B4[AI 查询结果]
-        B5[计算器/转换器结果]
-        B6[最近使用]
-    end
-
-    subgraph "命令注册中心"
-        C1[CommandRegistry]
-        C2[NavigationCommands: 导航命令]
-        C3[ActionCommands: 操作命令]
-        C4[EntitySearchProvider: 实体搜索]
-        C5[AIQueryProvider: AI 查询]
-    end
-
-    subgraph "辅助功能"
-        D1[Calculator: 计算器]
-        D2[UnitConverter: 单位转换]
-        D3[RecentTracker: 最近使用]
-    end
-
-    A1 --> B1
-    A2 --> B1
-    A3 --> B1
-
-    B1 --> C1
-    C1 --> C2
-    C1 --> C3
-    C1 --> C4
-    C1 --> C5
-
-    B1 --> D1
-    B1 --> D2
-    D3 --> B6
-```
-
-### 3.2 查询路由流程
+### 3.1 架构总览
 
 ```mermaid
 graph TD
-    A[用户在命令面板输入] --> B{输入类型判断}
-    B -->|以 ? 或 ai 开头| C[AI 查询]
-    B -->|数学表达式| D[计算器]
-    B -->|单位转换模式| E[单位转换器]
-    B -->|普通文本| F[命令 + 实体搜索]
-    
-    C --> G[调用 YiAi LLM]
-    D --> H[计算并显示结果]
-    E --> I[转换并显示结果]
-    F --> J[模糊搜索命令 + 实体]
-    
-    G --> K[展示 AI 回答]
-    H --> L[回车复制结果]
-    I --> L
-    J --> M[选择并执行命令]
+    subgraph "入口层（Trigger）"
+        T1["⌘K / Ctrl+K 快捷键<br/>src/shortcuts → $commandPalette.open()"]
+        T2["顶部搜索图标 / HeroDateNav 搜索入口"]
+        T3["/search 页 Hero 输入框"]
+    end
+
+    subgraph "统一搜索客户端（SSOT：useUnifiedSearch）"
+        U1["useUnifiedSearch(query, opts)<br/>• composable 级缓存 10s<br/>• AbortSignal 联合去重<br/>• searchSeq 防乱序"]
+        U2["Unified Search HTTP Client<br/>POST /search/unified → YiAi"]
+    end
+
+    subgraph "后端搜索域（YiAi）"
+        Y1["/search/unified endpoint<br/>search.py router"]
+        Y2["unified_search.py<br/>• status / deleted_at 过滤<br/>• pageSize 上限<br/>• 字段级评分 + 时间加权"]
+        Y3["Entity Schema Gate<br/>• key 非空校验<br/>• type ∈ 允许集合<br/>• tombstone 剔除"]
+    end
+
+    subgraph "链接工厂（Link Factory）— 契约 SSOT"
+        L1["RouteRegistry<br/>从 authStore.flatMenuListGet + viewsGlob 产出可用路由集合"]
+        L2["LinkResolver(type, key, extra)<br/>• 模板：/issue/:id, /project/:key …<br/>• hasRoute() 预校验<br/>• 越权 / isHide 过滤<br/>• Page Fragment 跳转策略"]
+        L3["FallbackResolver<br/>若 L2 失败 → 跳列表页带 q=… 预填 → 友好 404 卡片 → 一键提工单"]
+    end
+
+    subgraph "渲染执行层"
+        R1["/search 页 SearchResult 列表<br/>（goTo = useNavigate()）"]
+        R2["CommandPalette ⌘K 面板<br/>（select = useNavigate()）"]
+        R3["Calculator / Unit Converter（本地）"]
+        R4["AI SSE 结果卡（面板内嵌）"]
+    end
+
+    subgraph "三闸门（3-Gate Validation）"
+        G1["闸门 A：契约校验<br/>hasRoute(link) ∧ key 非空 ∧ 权限可见"]
+        G2["闸门 B：存在性预检（HEAD / lazy GET）<br/>详情页数据 ≥1 条，非已删"]
+        G3["闸门 C：后验校验<br/>navigate 后 2s 内 route.path / 标题匹配"]
+    end
+
+    T1 --> U1
+    T2 --> U1
+    T3 --> U1
+    U1 --> U2
+    U2 --> Y1
+    Y1 --> Y2
+    Y2 --> Y3
+    Y3 --> U1
+    U1 --> L1
+    L1 --> L2
+    L2 --> G1
+    G1 -->|fail| L3
+    G1 -->|pass| G2
+    G2 -->|fail| L3
+    G2 -->|pass| R1
+    G2 -->|pass| R2
+    R1 --> G3
+    R2 --> G3
+    G3 -->|fail| L3
 ```
 
-### 3.3 性能指标
+### 3.2 统一数据源原则（Single Source of Truth）
 
-| 指标 | 目标值 | 说明 |
-|------|--------|------|
-| 命令面板打开 | < 50ms | overlay 渲染 + 命令列表加载 |
-| 命令搜索（500+ 命令） | < 20ms | 模糊搜索 + 评分排序 |
-| 实体搜索 | < 100ms | 调用后端 API 搜索 |
-| 计算器响应 | < 1ms | 表达式解析 + 计算 |
-| AI 查询响应 | 流式（SSE） | 实时流式展示 |
+1. **搜索结果 SSOT = YiAi `/search/unified`**：`CommandPalette.vue`、`/search` 页、任何内嵌搜索组件，均通过同一个 composable `useUnifiedSearch()` 请求；禁止各自 `getIssueList` / `getBugList` 临时拼装。
+2. **路由 SSOT = `authStore.flatMenuListGet ∪ viewsGlob`**：链接模板从菜单树派生，不允许任何业务代码手写 `\`/issue/${key}\`` 字符串拼接。
+3. **索引 SSOT = 业务主表 + tombstone 字段**：搜索引擎不维护镜像表；通过过滤条件与索引版本号保证读己之写。
 
 ---
 
 <a id="sec-4"></a>
-## 四、具体改动
+## 四、功能需求（FR）与非功能需求（NFR）
 
-### 4.1 命令注册接口
+### 4.1 功能需求（Functional Requirements）
 
-```typescript
-// src/composables/useCommandPalette.ts (新增)
+#### FR-1：Link Factory 契约化路由解析
+- **WHAT**：前端新建 `src/utils/linkFactory.ts`（单入口组件脚本，符合用户协作偏好），暴露 `resolveLink(entity): { ok: boolean; link: string; reason?: string }`。
+- **契约模板（Route Template Registry）**：
 
-export interface Command {
-  id: string;
-  label: string;
-  description: string;
-  category: 'navigation' | 'action' | 'search' | 'ai';
-  keywords: string[];
-  shortcut?: string;
-  icon?: string;
-  handler: () => void | Promise<void>;
-}
+| type（前端/后端一致） | 路由模板 | 模板来源（authMenuList 实查） | 回退列表页 | 备注 |
+|----------------------|---------|------------------------------|-----------|------|
+| issue | `/issue/:id` | L312 `path: "/issue/:id"` | `/issue?q=${encodeURIComponent(title)}` | 原 PRD 写 `/issue/${key}` → **修正**：菜单使用 `:id`，key 填到 id 位 |
+| bug | `/bug/:id` | L665 `path: "/bug/:id"` | `/bug?q=${…}` | 同上 |
+| project | `/project/:key` | L272 `path: "/project/:key"` | `/project?k=${key}` | 已对齐 |
+| module | `/module/:key` | L487 `path: "/module/:key"` | `/module?q=${…}` | 已对齐 |
+| page | **NEW**：`/page/:key` 或 `/page#doc=${hash(key)}` | 当前菜单仅 L509 `/page` 列表页；v2 二选一实现（§5.2 决策） | `/page?q=${…}` | 解决 page 错链 100% |
+| rag-index | `/rag/index` | L1484 | N/A | 新增命令面板"跳 RAG"组 |
+| rag-chat | `/rag/chat` | L1504 | N/A |  |
+| ai-chat | `/ai-chat` | viewsGlob 存在 | N/A |  |
+| kanban | `/kanban` | L372 | N/A |  |
+| roadmap | `/roadmap` | L431 | N/A |  |
+| import | `/import` | L842 | N/A |  |
+| search | `/search?q=${q}` | L961 | N/A |  |
+| settings-groups | `/system/menuManage`, `/system/roleManage`, … | L43-L174 | N/A | 受 `isHide` Gate 过滤 |
+| shortcut-help | `<modal>`（非路由） | — | N/A | `?` 键弹快捷键帮助 |
 
-export interface CommandProvider {
-  getCommands(): Command[];
-}
+- **禁止**：任何 `\`/bug/${key}\`` 字符串拼接；Grep 规则加入 `lint-staged` 预提交钩子。
 
-// 全局命令注册中心
-class CommandRegistry {
-  private providers: CommandProvider[] = [];
-  private recentCommands: string[] = [];
-
-  register(provider: CommandProvider): void {
-    this.providers.push(provider);
+#### FR-2：后端 `unified_search` 结果重写（索引契约）
+- 后端 `/search/unified` **不再**返回 `link` 字符串，仅返回：
+  ```ts
+  {
+    id: string          // {prefix}-{key}，前端可用于 React key；非导航用途
+    type: string        // issue|project|module|bug|page|…
+    key: string         // 业务主键，严禁空字符串
+    title: string
+    subtitle, detail, project, badges, date, score, _ts
   }
+  ```
+- **过滤**：对所有 collection 查询统一加入：
+  ```py
+  status__nin = ["deleted", "archived", "cancelled", "rejected", "closed > 365d"]
+  deleted_at = null  # tombstone 字段
+  ```
+- **page 集合**：新增 `key` 非空 + `content_hash` 字段；v2 确保每条 page 有稳定唯一 key。
+- **权限可见性（Visible Gate 后端可选）**：在 HTTP 头携带 `x-user-roles` 时，后端可对 menus / pages 集合做 RBAC 预过滤；前端必须再次 Gate A 复核，避免前后端角色版本不一致。
 
-  getAllCommands(): Command[] {
-    return this.providers.flatMap(p => p.getCommands());
-  }
+#### FR-3：命令面板（⌘K）数据源统一
+- 废弃 `CommandPalette.vue` 中 `getIssueList + projectStore` 双查询，改为：
+  1. 冷启动：空态展示 `Quick Actions`（保持 v1 体验）+ 最近 MRU 8 条。
+  2. 用户输入 ≥ 2 字符：debounce 200ms → `useUnifiedSearch()` → 渲染分组（Issues/Projects/Modules/Bugs/Pages/Commands/…）。
+- **Quick Actions** 仅保留能 100% 到达的路由；在挂载时逐个 `hasRoute()` 预检，失败的自动从列表剔除。
+- 快捷键：`nav.command-palette.handler` 绑定到 `$commandPalette.open()`，不再空挂桩。
 
-  search(query: string): Command[] {
-    const commands = this.getAllCommands();
-    return fuzzySearch(commands, query);
-  }
-}
+#### FR-4：跳转前三闸门校验
 
-// Composable
-export function useCommandPalette() {
-  const registry = inject<CommandRegistry>('commandRegistry')!;
+| 闸门 | 时机 | 校验 | 失败处理 |
+|------|------|------|---------|
+| **A 契约闸门**（同步，<1ms） | 渲染结果卡之前 | LinkFactory 返回 ok；`router.hasRoute(name)`；用户菜单权限 `flatMenuListGet ∩ route.meta.title`；`isHide=true` 剔除 | 结果卡标记"不可达"灰色 + tooltip；不加入可点击列表 |
+| **B 存在性闸门**（异步，<100ms） | 点击后 `router.push` 之前 | 详情 API `queryDocuments({cname, filter:{key}})` 返回 `data.list.length ≥1` | 失败 → L3 FallbackResolver：跳列表页并预置筛选 + 提示"该条目可能已删除/归档" |
+| **C 后验闸门**（异步，2s 超时） | navigate 完成后 | route.path 与 LinkFactory 预期匹配；页面 document.title 含 title 关键词；骨架屏 22s Watchdog 兜底 | 失败 → 弹 Notification + 一键重试 / 一键提工单（跳新建工单页带上下文） |
 
-  function registerCommands(commands: Command[]): void {
-    registry.register({ getCommands: () => commands });
-  }
+#### FR-5：空壳组件 / 悬空引用清理
+- 新建并**物理落地**：`src/composables/useCommandPalette.ts`、`src/composables/useCalculator.ts`、`src/stores/command-palette.ts`。
+- `App.vue`：挂载 `<CommandPalette ref="palette" />`，并通过 `provide('commandPalette', paletteExpose)` 注入到 shortcut registry。
+- `layouts/index.vue` 与 `layouts/indexAsync.vue`：若为异步加载，加入 `onActivated` 重新绑定快捷键，避免 keep-alive 后监听器丢失。
+- 删除 `src/services/searchIndex.ts`：已被 unified_search 替代，无任何引用（代码搜索 0 hits），防止后续有人重新接入形成三轨实现。
 
-  return { registerCommands };
-}
-```
+#### FR-6：最近使用（MRU）+ 搜索建议持久化
+- MRU Key：`cmd_palette_mru_v2`（v2 前缀，与 v1 隔离，防止污染），上限 12 条，TTL 30d。
+- 点击执行成功（闸门 C pass）才写入 MRU；失败不计入。
+- 建议项来源 = MRU ∪ 全局热门 Query（后端 `/search/trending`，按周聚合，Top 20）；所有建议项须过闸门 A 才渲染。
 
-### 4.2 命令面板组件
+#### FR-7：计算器 / 单位转换
+- 模式识别优先级：`AI 前缀(?) > 单位/货币 > 数学表达式 > 模糊搜索`。
+- 表达式解析自实现 Shunting-Yard（避免 `eval` / `new Function` 注入），支持：`+ − × ÷ ^ % () sqrt abs floor ceil round log ln sin cos tan °C °F`。
+- 单位覆盖：长度、重量、面积、体积、时间、温度、数据量（KB/MB/GB/TB）、常见货币（USD/CNY/EUR/JPY，汇率每 30min 从 YiAi 拉取缓存，离线 fallback 24h）。
+- 中文自然语言：`100 公里 to 英里`、`2 斤 多少 克` 通过中文单位别名表支持。
+- 安全：数字白名单正则 `^[\d\s+\-*/().%^°a-zA-Z\u4e00-\u9fa5,，]+$` 首过；再走 AST 解析。
 
-```typescript
-// src/components/command-palette/command-palette.vue (新增)
+#### FR-8：AI 一键查询（面板内嵌 SSE）
+- 用户输入 `? <query>` 或 `ai <query>`：在命令面板底部展开流式回答卡片，**不跳转页面**。
+- SSE 连接统一使用 `yiAiBaseUrl`（默认 `http://localhost:10086`），必须接入 `DisposerBag`（`reset()` 语义，不用 `dispose()`），关闭面板 / Esc / ⌘K 关闭或 query 变更时立即 Abort（与 [useProjectDetail 修复约定](file:///Users/yi/YrY/YiVad/src/utils/disposer.ts) 对齐）。
+- 超时：12s Hook Watchdog + 22s UI Watchdog，超时自动降级为"跳 AI 聊天页预填"按钮。
 
-// <template>
-//   <Teleport to="body">
-//     <Transition name="fade">
-//       <div v-if="isOpen" class="command-palette-overlay" @click.self="close">
-//         <div class="command-palette">
-//           <div class="search-input-wrapper">
-//             <SearchIcon class="search-icon" />
-//             <input ref="inputRef" v-model="query" @keydown="onKeydown"
-//               placeholder="搜索命令、页面、实体... 输入 ? 开始 AI 查询" />
-//             <kbd class="shortcut-hint">Esc</kbd>
-//           </div>
-//           <div class="results" v-if="query">
-//             <div v-if="isMathExpression" class="result-section">
-//               <div class="section-title">计算器</div>
-//               <div class="calculator-result">{{ calculateResult }}</div>
-//             </div>
-//             <div v-if="isAIQuery" class="result-section">
-//               <div class="section-title">AI 查询</div>
-//               <div class="ai-result" v-html="aiResponse"></div>
-//             </div>
-//             <div class="result-section">
-//               <div class="section-title">命令</div>
-//               <div v-for="cmd in filteredCommands" @click="execute(cmd)"
-//                 :class="{ selected: cmd === selectedCommand }">
-//                 <span class="cmd-icon">{{ cmd.icon }}</span>
-//                 <span class="cmd-label">{{ cmd.label }}</span>
-//                 <span class="cmd-desc">{{ cmd.description }}</span>
-//                 <kbd v-if="cmd.shortcut">{{ cmd.shortcut }}</kbd>
-//               </div>
-//             </div>
-//             <div class="result-section" v-if="entityResults.length">
-//               <div class="section-title">搜索结果</div>
-//               <div v-for="entity in entityResults" @click="navigate(entity)">
-//                 <span>{{ entity.type }}</span>
-//                 <span>{{ entity.title }}</span>
-//               </div>
-//             </div>
-//           </div>
-//           <div class="recent" v-else-if="recentCommands.length">
-//             <div class="section-title">最近使用</div>
-//             <div v-for="cmd in recentCommands" @click="execute(cmd)">
-//               {{ cmd.label }}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </Transition>
-//   </Teleport>
-// </template>
-```
+#### FR-9：权限与可见性过滤
+- 菜单级结果（`/system/*`、设置页等）只取 `authStore.flatMenuListGet` 中存在且 `meta.isHide !== true` 的集合；`meta.isLink` 外链单独用 `<a target="_blank">` 打开。
+- 实体级结果（Issue/Bug/Module）若 `project_key` 属于用户不可见项目，闸门 A 返回 reason="无权限访问该项目下内容"，结果卡置灰，点击弹引导跳转项目权限申请。
 
-### 4.3 计算器/转换器
+### 4.2 非功能需求（Non-Functional Requirements）
 
-```typescript
-// src/composables/useCalculator.ts (新增)
-
-class CalculatorService {
-  private patterns = {
-    math: /^[\d\s+\-*/().%^e]+$/,
-    unitConvert: /^(\d+\.?\d*)\s*([a-zA-Z]+)\s+(to|in)\s+([a-zA-Z]+)$/i,
-    currency: /^(\d+\.?\d*)\s*([A-Z]{3})\s+(to|in)\s+([A-Z]{3})$/i,
-  };
-
-  isMathExpression(input: string): boolean {
-    return this.patterns.math.test(input.trim());
-  }
-
-  calculate(expression: string): number | string {
-    try {
-      // 安全计算（使用 Function 而非 eval，限制输入范围）
-      const sanitized = expression.replace(/[^0-9+\-*/().%\s^e]/g, '');
-      const result = new Function(`return (${sanitized})`)();
-      return Number.isFinite(result) ? result : 'Error';
-    } catch {
-      return 'Error';
-    }
-  }
-
-  isUnitConversion(input: string): boolean {
-    return this.patterns.unitConvert.test(input.trim());
-  }
-
-  convert(value: number, from: string, to: string): number | string {
-    const conversions: Record<string, Record<string, number>> = {
-      km: { m: 1000, mi: 0.621371 },
-      m: { km: 0.001, cm: 100, ft: 3.28084 },
-      kg: { g: 1000, lb: 2.20462 },
-      lb: { kg: 0.453592 },
-      // ... 更多单位
-    };
-    const rate = conversions[from]?.[to];
-    return rate !== undefined ? value * rate : '不支持的单位转换';
-  }
-}
-```
-
-### 4.4 文件变更清单
-
-| 文件 | 操作 | 说明 |
-|------|------|------|
-| `src/composables/useCommandPalette.ts` | 新增 | 命令面板 Composable |
-| `src/composables/useCalculator.ts` | 新增 | 计算器/转换器 |
-| `src/components/command-palette/command-palette.vue` | 新增 | 命令面板 UI 组件 |
-| `src/components/command-palette/command-item.vue` | 新增 | 命令项组件 |
-| `src/components/command-palette/entity-result.vue` | 新增 | 实体搜索结果项 |
-| `src/stores/command-palette.ts` | 新增 | 命令面板状态管理 |
-| `src/App.vue` | 修改 | 挂载命令面板 + 注册全局快捷键 |
-| `src/layouts/MainLayout.vue` | 修改 | 添加命令面板触发入口 |
-| `src/views/project/ProjectDetail.vue` | 修改 | 注册项目相关命令 |
-| `src/views/bug/BugDetail.vue` | 修改 | 注册 Bug 相关命令 |
-| `src/views/issue/IssueList.vue` | 修改 | 注册 Issue 相关命令 |
-| `tests/unit/command-palette.test.ts` | 新增 | 命令面板测试 |
-| `tests/unit/calculator.test.ts` | 新增 | 计算器测试 |
+| 编号 | 指标 | 目标 | 度量 |
+|------|------|------|------|
+| NFR-1 | 面板打开 p95 | ≤ 50ms | `performance.mark` |
+| NFR-2 | 空 query → 展示（MRU + Quick Actions） | ≤ 15ms | 同步渲染 |
+| NFR-3 | Unified Search 总时延 p95 | ≤ 400ms（其中后端 ≤ 250ms） | Network Timing API |
+| NFR-4 | Fuse 前端 500 条结果排序 p95 | ≤ 20ms | `performance.now()` 包裹 |
+| NFR-5 | 计算器响应 p95 | ≤ 2ms | 本地 |
+| NFR-6 | AI SSE 首字 p95 | ≤ 500ms | SSE `onmessage` 首字节 |
+| NFR-7 | 资源释放可靠性 | 关闭面板 500ms 后 SSE/定时器全部清理 | `DisposerBag.size === 0` 断言 |
+| NFR-8 | 键盘可达性 | ⌘K → ↑↓ → Enter 全程无需鼠标 | 手工清单 |
+| NFR-9 | a11y | aria-label / role="combobox" / aria-activedescendant 全量 | axe-core 0 critical |
+| NFR-10 | 二进制/包体积新增 | YiVad gzip 前端 chunk 净增 ≤ 12KB | `rsbuild build --analyze` |
 
 ---
 
 <a id="sec-5"></a>
-## 五、实施步骤
+## 五、数据契约与索引策略重设计
 
-| 步骤 | 操作 | 路径 | 验证 | 人天 |
+### 5.1 跨端统一搜索项 Schema（UnifiedSearchItem v2）
+
+```ts
+// src/api/modules/searchService.ts  ←  SSOT 定义
+export interface UnifiedSearchItemV2 {
+  id: string;            // {prefix}-{key}，仅 UI key 用
+  type:
+    | "issue" | "project" | "module" | "bug" | "page"
+    | "command" | "shortcut" | "settings" | "file";
+  key: string;           // 业务主键；Link Factory resolver 唯一可信输入（必须非空）
+  title: string;
+  subtitle: string;
+  detail?: string;       // 摘要 ≤ 200 字
+  project: string;       // project_key，可为空
+  /** @deprecated v2 不再从后端接收 link；由前端 Link Factory 生成 */
+  link?: never;
+  badges: UnifiedSearchBadge[];
+  date: string;          // YYYY-MM-DD
+  score: number;         // 0-100
+  _ts: number;           // 秒级时间戳，前端排序用
+  _status: "active" | "archived" | "pending_delete" | "tombstone";
+  _acl?: { roles?: string[]; users?: string[]; isHide?: boolean };
+}
+```
+
+- **后端必须字段**：`type, key, title, score, _status` 任一缺失 → 前端丢弃该项并上报 `yivad.search.schema_missing` counter。
+- **前后端类型字典**：后端 `cname.strip('s')` 与前端 `type` 的映射必须通过单测双向校验；一旦出现新的未注册 type → 进入 Fallback Resolver 而不是静默错链。
+
+### 5.2 Page 详情页决策（ADR-YV-034-D1，速览）
+
+| 选项 | 说明 | 优点 | 缺点 | 选择 |
 |------|------|------|------|------|
-| 1 | 实现 CommandRegistry 和 Composable | `src/composables/useCommandPalette.ts` | 注册/搜索正常 | 0.05 |
-| 2 | 实现命令面板 UI 组件 | `src/components/command-palette/` | 打开/关闭/搜索/键盘导航 | 0.08 |
-| 3 | 实现计算器/转换器 | `src/composables/useCalculator.ts` | 数学表达式/单位转换 | 0.03 |
-| 4 | 实现实体搜索集成 | `src/components/command-palette/` | 搜索 Issue/Bug/文档 | 0.05 |
-| 5 | 实现 AI 查询集成 | `src/components/command-palette/` | ? 前缀触发 AI 查询 | 0.03 |
-| 6 | 各页面注册命令 | 各 View 页面 | 导航/操作命令可用 | 0.03 |
-| 7 | 注册全局快捷键 Ctrl+K | `src/App.vue` | 任意页面可触发 | 0.03 |
+| A. 新建 `/page/:key` 详情路由 + 视图 | 与 issue/bug 同一模式；URL 稳定可分享 | 需新增 view + 菜单条目（authMenuList） + 动态路由解析 | 开发量 0.5d | **✅ 选择** |
+| B. 列表页 + URL hash `#doc=${key}` | 无需新路由；前端 scrollIntoView | 无分享深度链接；列表长时加载抖动 | 用户体验差 |  |
+| C. 新开独立文档预览模态框 | 无需路由改动 | 破坏浏览器历史栈；复制 URL 丢失上下文 | 可维护性差 |  |
 
-**总人天：0.3d**
+→ **选 A**：新增 `src/views/page/detail.vue` + `authMenuList.json` 条目（`path: "/page/:key", component: "/page/detail"` + 必要 fallback 注册）；同步补齐 Link Factory `/page/:key` 模板。
+
+### 5.3 索引生命周期与 Tombstone
+
+- 业务主表（issues/projects/modules/bugs/pages）统一补齐 `status` 与 `deleted_at` 字段；对于历史存量无 `deleted_at` 的数据，由 `db.run_migration('add_tombstone_fields')` 在 v2 部署前一次性迁移（空值置 null，不影响读写）。
+- `unified_search.py` 每次查询时强制：
+  ```py
+  and_conditions += [
+      {"status": {"$nin": ["deleted", "archived"] if not include_archive else []}},
+      {"deleted_at": None},
+  ]
+  ```
+- 删除操作（`deleteDocument`）由 data service 在同一事务中写入 tombstone，并通过 `post_delete` hook 写入 `cache.invalidate('search:v2:{cname}:{key}')`；使下次搜索立即失效。
+- 索引版本号 `SEARCH_INDEX_VERSION=2`：前后端同时校验，版本不一致则前端弹"请刷新以启用新版搜索"引导，避免热更新期间前后端漂移窗口。
 
 ---
 
 <a id="sec-6"></a>
-## 六、测试规格
+## 六、跳转执行流程与回退链（L1-L5）
 
-### 场景 1：打开命令面板
+### 6.1 点击跳转流程（Mermaid）
 
-**GIVEN** 用户在任意页面
-**WHEN** 用户按下 Ctrl+K（或 Cmd+K）
-**THEN** 应显示命令面板 overlay
-**AND** 搜索输入框应自动聚焦
-**AND** 应展示最近使用的命令
+```mermaid
+sequenceDiagram
+    actor User
+    participant Palette as ⌘K or /search
+    participant GateA as 闸门 A<br/>Link Factory
+    participant GateB as 闸门 B<br/>Existence HEAD
+    participant Router as Vue Router
+    participant API as Detail API
+    participant GateC as 闸门 C<br/>Post-Nav Verify
+    participant FB as Fallback Resolver
 
-### 场景 2：搜索并执行命令
+    User->>Palette: 点击/回车某结果
+    Palette->>GateA: resolveLink(item.type, item.key, item)
+    alt A 失败（无路由/无权限/isHide）
+        GateA-->>Palette: {ok:false, reason}
+        Palette-->>User: 灰卡 + tooltip + 禁点
+    else A 成功
+        GateA-->>Palette: {ok:true, link}
+        Palette->>GateB: 存在性预检（可选 lazy）
+        alt B 失败（文档不存/已删）
+            GateB-->>FB: 跳 L2/L3
+            FB-->>User: 列表页 + 筛选 + 友好提示
+        else B 成功
+            GateB-->>Router: router.push(link)
+            Router->>API: 详情页拉取（DisposerBag 管超时）
+            API-->>Router: 详情渲染
+            Router->>GateC: 2s 内校验 path/title
+            alt C 成功
+                GateC-->>Palette: 写入 MRU + 埋点 CRR=1
+            else C 超时 / mismatch
+                GateC-->>FB: 跳 L4（提示重试+工单）
+            end
+        end
+    end
+```
 
-**GIVEN** 命令面板已打开
-**WHEN** 用户输入 "创建 Issue"
-**THEN** 应过滤出包含"创建 Issue"的命令
-**AND** 用户按 Enter 后应导航到创建 Issue 页面
+### 6.2 L1-L5 回退链（Failure Rollback Chain）
 
-### 场景 3：搜索实体
+与 [跨项目 C-001 契约](../../INDEX.md) 对齐；失败逐级升级。
 
-**GIVEN** 命令面板已打开
-**WHEN** 用户输入 "BUG-001"
-**THEN** 应展示匹配的 Bug 实体结果
-**AND** 点击后应导航到 Bug 详情页面
-
-### 场景 4：计算器
-
-**GIVEN** 命令面板已打开
-**WHEN** 用户输入 "100 * 1.5 + 20"
-**THEN** 应识别为数学表达式
-**AND** 应展示计算结果 "170"
-**AND** 按 Enter 应复制结果到剪贴板
-
-### 场景 5：单位转换
-
-**GIVEN** 命令面板已打开
-**WHEN** 用户输入 "100 km to mi"
-**THEN** 应识别为单位转换
-**AND** 应展示转换结果 "62.1371 mi"
-
-### 场景 6：AI 查询
-
-**GIVEN** 命令面板已打开
-**WHEN** 用户输入 "? 如何优化 MongoDB 查询性能"
-**THEN** 应识别为 AI 查询
-**AND** 应通过 SSE 流式展示 AI 回答
-**AND** 回答完成后用户可复制到剪贴板
+| Level | 触发条件 | 动作 | 用户感知 |
+|-------|---------|------|---------|
+| **L1 本地降级** | 闸门 A fail：路由未注册 / isHide | 自动过滤结果；灰卡 + tooltip 解释 | 结果少 N 条 + "已隐藏 X 条不可达"统计条 |
+| **L2 预填列表** | 闸门 B fail：key 查不到 | 跳 `/${type} 列表页` + query 预填 + banner"该条目可能已删除/归档" | 自动跳转到语义接近的列表 |
+| **L3 跳全局搜索页** | 闸门 C fail：navigate 后 path 不对 | 跳 `/search?q=${原 query}&reason=gate_c_failed` | 回到搜索主页重搜 |
+| **L4 功能开关关闭** | 连续 1h CRR <90% | Feature Flag `search.cmd_palette.enabled=false`，⌘K 退化为跳 `/search` 页；顶部搜索图标直跳 `/search` | 用户失去面板，但不会被引向死路 |
+| **L5 工程回滚** | WLR >5% 或幽灵条目率 >5% | 通过 CI 一键回滚到上一个通过的 commit；自动切读 `/search/v1`（兼容端点） | 运维告警 + 变更冻结 |
 
 ---
 
 <a id="sec-7"></a>
-## 七、风险与缓解
+## 七、文件变更与风险清单
+
+### 7.1 文件变更清单（按 Gold Copy 模板）
+
+> 变更原则：**编辑优先于新增**；但 v1 中 `searchIndex.ts` 属失效残留，需删除。
+
+| 文件路径 | 操作 | 说明 | 规模估 |
+|---------|------|------|--------|
+| `src/utils/linkFactory.ts` | **新增** | Link Factory 单入口脚本（含 Route Template Registry、ACL、hasRoute 校验、Fallback） | ~280 行 |
+| `src/composables/useUnifiedSearch.ts` | **新增** | 统一搜索 composable；接缓存、Abort、seq；供 ⌘K 与 /search 共用 | ~180 行 |
+| `src/composables/useCommandPalette.ts` | **新增** | 命令面板 composable + Registry（消除 v1 空挂桩） | ~160 行 |
+| `src/composables/useCalculator.ts` | **新增** | 计算器 + 单位转换 + 中文别名 + AST 解析 | ~420 行 |
+| `src/stores/command-palette.ts` | **新增** | Pinia store：MRU、面板开/关、feature flag | ~90 行 |
+| `src/components/CommandPalette/CommandPalette.vue` | **重写** | 接入 useUnifiedSearch / useCalculator / AI SSE / 三闸门 UI | ~460 行 |
+| `src/components/CommandPalette/types.ts` | **重写** | 对齐 UnifiedSearchItemV2；移除硬编码 link 字段 | ~80 行 |
+| `src/components/CommandPalette/LinkValidationBadge.vue` | **新增** | 闸门结果徽标（可达/无权限/已归档/已删） | ~50 行 |
+| `src/components/CommandPalette/AiSnippet.vue` | **新增** | AI SSE 卡片 + DisposerBag | ~140 行 |
+| `src/views/search/index.vue` | **修改** | 接入 useUnifiedSearch、Link Factory、三闸门；移除内联数据拼装 | 改动 ~120 行 |
+| `src/views/page/detail.vue` | **新增** | page 详情页实现（§5.2 选项 A） | ~260 行 |
+| `src/assets/json/authMenuList.json` | **修改** | 新增 `/page/:key` 条目 + 对应 meta；保持升序 order 不冲突 | 新增 ~25 行 |
+| `src/routers/modules/dynamicRouter.ts` | **小改** | 在 resolveComponent 失败分支补 Link Factory 诊断埋点 | 改动 ~20 行 |
+| `src/shortcuts/defaults.ts` | **修改** | 回填 `nav.command-palette.handler`、`a11y.shortcut-help.handler` | 改动 ~12 行 |
+| `src/App.vue` | **修改** | 挂载 CommandPalette + provide('commandPalette') | 改动 ~15 行 |
+| `src/layouts/index.vue` / `indexAsync.vue` | **修改** | 激活/失活时重新绑定快捷键，防止 keep-alive 丢失 | 改动各 ~10 行 |
+| `src/api/modules/searchService.ts` | **修改** | 对齐 UnifiedSearchItemV2；新增 trendingQueries() 接口类型 | 改动 ~60 行 |
+| `src/services/searchIndex.ts` | **删除** | 未被任何代码引用；与 unified_search 三轨冲突 | 删 ~66 行 |
+| **YiAi** `src/domain/search/unified_search.py` | **重写** | 去 link 字段；status/deleted_at 过滤；page key 非空校验 | 改动 ~120 行 |
+| **YiAi** `src/server/routes/search.py` | **修改** | 暴露 v2 endpoint（或 `?v=2`）+ `search/trending` | 改动 ~40 行 |
+| `tests/unit/linkFactory.spec.ts` | **新增** | 50 条契约 vs 路由表单测 + 20 条越权/隐藏用例 | ~320 行 |
+| `tests/unit/calculator.spec.ts` | **新增** | 120 条表达式 + 中文单位样例 | ~220 行 |
+| `tests/unit/command-palette.spec.ts` | **新增** | 20 条键盘/选择/闸门用例 | ~180 行 |
+| `e2e/specs/cmd-palette-reach.spec.ts` | **新增** | Playwright 端到端：100 条抽样点击可达性 | ~200 行 |
+| `.husky/pre-commit` / `lint-staged.config.cjs` | **修改** | 新增 Grep 禁止规则：`/issue/\$\{`、`/bug/\$\{`（手动拼接） | 改动 ~6 行 |
+
+### 7.2 风险与缓解
 
 | 风险 | 概率 | 影响 | 缓解措施 |
-|------|------|------|----------|
-| Ctrl+K 与浏览器快捷键冲突 | 高 | 中 | preventDefault 拦截，同时提供替代触发方式（搜索图标） |
-| 命令注册过多导致搜索性能下降 | 低 | 低 | 使用 Web Worker 执行搜索，避免阻塞主线程 |
-| 实体搜索网络延迟 | 中 | 中 | 本地缓存最近搜索结果，debounce 搜索请求 300ms |
-| AI 查询响应慢 | 中 | 低 | 显示加载状态，超时 30s 后提示用户 |
-| 计算器安全性（代码注入） | 低 | 高 | 严格限制输入白名单，不使用 eval |
+|------|------|------|---------|
+| 路由名 `:id` vs `:key` 参数漂移（历史遗留） | 高 | 高 | Link Factory 内置 `routeParamName[type]` 表 + 单测双向断言；lint pre-commit 禁手工拼接 |
+| `authMenuList.json` 与后端菜单树不同步 | 中 | 高 | 启动时 `diffMenu()` 校验，差异 >5% 弹告警；fallback 仍以 authStore 扁平化菜单为准 |
+| 闸门 B HEAD 请求拖慢点击速度 | 中 | 中 | 启用 `lru-cache(2000, 30s)`；对热点 key 命中内存跳过；低置信结果才启用 |
+| v1 MRU / localStorage 脏数据污染 v2 | 低 | 中 | Key 名加 `_v2` 后缀；迁移脚本读取 v1 数据但仅保留通过闸门 A 的项 |
+| 新 `/page/:key` 与 hash 冲突 | 低 | 中 | 优先 Router resolve，hash fallback 只在 Router 抛 404 时触发；二者测试交叉覆盖 |
+| Ctrl+K 在 Chrome 被地址栏抢占（v1 PRD 已预见） | 高 | 中 | `capture: true` + `stopImmediatePropagation`；并提供顶部图标可点击作为替代入口 |
 
 ---
 
 <a id="sec-8"></a>
-## 八、回滚策略
+## 八、实施步骤（含闸门验收）
 
-| 场景 | 回滚操作 | 影响 |
-|------|----------|------|
-| 命令面板性能问题 | 禁用 Ctrl+K 快捷键，仅保留搜索图标入口 | 失去键盘快速访问 |
-| 计算器解析错误 | 禁用计算器功能，仅保留命令和搜索 | 失去辅助计算功能 |
-| 实体搜索压力过大 | 限制搜索结果数量，降级为仅命令搜索 | 失去实体搜索 |
-| AI 查询不稳定 | 移除 AI 查询入口，引导用户使用 AI 聊天页面 | 失去面板内 AI 查询 |
+| 步骤 | 产出 | 负责人 | 人天 | 质量闸门（通过才能进入下一步） |
+|------|------|-------|------|------------------------------|
+| 1 | LinkFactory 单测 + 路由表对齐 Grep 全绿 | FE | 0.4 | `tests/unit/linkFactory.spec.ts` 100% pass；pre-commit 规则 0 违规 |
+| 2 | 后端 unified_search v2 去 link、加过滤、补 page key | BE | 0.8 | 后端单元：5 类集合 × 已删 × 越权 全 0 幽灵；`key is not None` 覆盖率 100% |
+| 3 | useUnifiedSearch + ⌘K 统一数据源改造 | FE | 0.5 | ⌘K vs /search Top-20 Jaccard ≥ 0.90（100 query 抽样） |
+| 4 | 三闸门（A/B/C）+ FallbackResolver 落地 | FE | 0.4 | E2E `cmd-palette-reach.spec.ts` CRR ≥ 99% |
+| 5 | 新增 `/page/:key` 详情页 + authMenuList 条目 | FE | 0.5 | Router `hasRoute('/page/:key')` true；详情页骨架屏 22s Watchdog 挂死率 = 0 |
+| 6 | 快捷键 + 挂载点（App.vue、layouts/*）修复 | FE | 0.2 | 全局快捷键烟雾测试：3 种布局 × ⌘K/Ctrl+K 各 10 次均打开 |
+| 7 | 计算器 + 单位转换接入面板 | FE | 0.4 | `tests/unit/calculator.spec.ts` 120 样例 100%；中文单位 30 条全过 |
+| 8 | AI SSE 卡片 + DisposerBag 清理 | FE | 0.3 | 打开→AI 查询→立即关闭，500ms 后 disposerBag.size === 0 |
+| 9 | 删除 `searchIndex.ts`；清理 PRD 中悬空引用文件 | FE | 0.1 | Grep 引用悬空 = 0 |
+| 10 | 埋点 + SLO 看板 + 告警 | SRE | 0.2 | 生产首 24h 全部指标可观测；告警阈值已配置 |
+| 11 | E2E 全量回归 + 性能基线复核 | QA/SRE | 0.3 | §9 全部用例通过；NFR-1~NFR-10 达标 |
+
+**总人天：3.5d（FE 2.5 + BE 1.0）**
 
 ---
 
 <a id="sec-9"></a>
-## 九、设计决策记录
+## 九、测试规格与回归矩阵
 
-### D-01：命令面板快捷键
+### 9.1 Gherkin 核心场景（与 YV-09-36 / 43 联动）
 
-- **问题**：默认命令面板快捷键
-- **选项**：Ctrl+K、Ctrl+Shift+P、Ctrl+P
-- **选择**：Ctrl+K（Windows/Linux）/ Cmd+K（macOS）
-- **理由**：Notion、Linear、GitHub 等主流应用使用 Ctrl+K 作为命令面板快捷键，用户已有肌肉记忆
+#### 场景 1：打开命令面板（快捷键骨架修复）
+- **GIVEN** 用户在任意登录后页面（含 iframe 页面）
+- **WHEN** 按 ⌘K（macOS）/ Ctrl+K（Windows）
+- **THEN** 面板在 50ms 内显示（p95）
+- **AND** 焦点自动移到搜索框
+- **AND** MRU + Quick Actions 正确显示（Quick Actions 全量通过闸门 A）
 
-### D-02：AI 查询前缀
+#### 场景 2：Issue 点击可达（修复 S1）
+- **GIVEN** 后端存在 Issue key=ISS-042，status=active
+- **WHEN** ⌘K 输入 "ISS-042" → 回车
+- **THEN** 2s 内到达 `/issue/ISS-042` 详情页
+- **AND** 页面 title 含 "ISS-042"
+- **AND** 闸门 C 上报 success
 
-- **问题**：如何在命令面板中区分普通搜索和 AI 查询
-- **选项**：`?` 前缀、`ai` 前缀、`/ai` 前缀、独立 Tab
-- **选择**：`?` 前缀
-- **理由**：`?` 是单字符，输入最快；与"提问"的语义关联强；不与普通搜索冲突
+#### 场景 3：Bug 路由参数修复（`:id` vs `:key`）
+- **GIVEN** Bug key=BUG-007 存在；authMenuList 中路由模板为 `/bug/:id`
+- **WHEN** ⌘K 点选 BUG-007
+- **THEN** navigate path = `/bug/BUG-007`（key 注入到 `:id` 参数位）
+- **AND** route params `{ id: 'BUG-007' }` 正确
 
-### D-03：计算器安全策略
+#### 场景 4：Page 详情不再全跳 `/page` 列表（修复 S2）
+- **GIVEN** 存在 key=DOC-998 的 page
+- **WHEN** 搜索并点击 DOC-998
+- **THEN** 跳 `/page/DOC-998`
+- **AND** 详情页渲染内容与 `pages` 集合中 content 一致
 
-- **问题**：如何安全地执行用户输入的数学表达式
-- **选项**：eval、Function 构造器、math.js 库、自实现解析器
-- **选择**：自实现安全解析器（仅支持四则运算 + 基本函数）
-- **理由**：eval 有代码注入风险；math.js 引入额外依赖；Function 构造器相对安全但仍有风险；自实现解析器完全可控
+#### 场景 5：已删 / 已归档文档不出现在结果（修复 S3）
+- **GIVEN** 原存在 Issue key=ISS-OLD 已 status=deleted
+- **WHEN** 统一搜索 "ISS-OLD"
+- **THEN** 结果集合中无该项；后端 search_log 记录 filtered_count=1
 
-### D-04：实体搜索范围
+#### 场景 6：越权 / isHide 结果自动过滤（修复 S6）
+- **GIVEN** 角色 A 无 `/system/accountManage` 权限；该菜单项 `meta.isHide = true`
+- **WHEN** 角色 A 搜索 "Account Manage"
+- **THEN** 结果不出现该条目；或若后端返回则闸门 A 自动灰卡 + 禁点
 
-- **问题**：命令面板中的实体搜索覆盖哪些实体类型
-- **选项**：仅 Bug、Bug + Issue、Bug + Issue + 文档 + 知识文件
-- **选择**：Bug + Issue + 文档 + 知识文件（全部可搜索实体）
-- **理由**：命令面板作为统一搜索入口，应覆盖所有实体类型，避免用户需要切换到独立搜索页面
+#### 场景 7：⌘K 与 /search 一致性
+- **GIVEN** 同一段 query
+- **WHEN** 分别在 ⌘K 与 /search 输入
+- **THEN** Top-20 结果 Jaccard ≥ 0.90；排序差异≤ 3 个位置
+
+#### 场景 8：幽灵条目触发闸门 B 回退
+- **GIVEN** 结果项 key 实际在详情查询不存在（并发删档）
+- **WHEN** 用户点击该项
+- **THEN** 闸门 B 失败 → 自动跳 L2 列表页 + banner + q 预填
+
+#### 场景 9：计算器表达式
+- **GIVEN** 面板已打开
+- **WHEN** 输入 "100 公里 to 英里"
+- **THEN** 展示 "62.1371 mi"，按 Enter 复制结果到剪贴板
+- **AND** 未触发任何 eval / Function 调用
+
+#### 场景 10：AI SSE 关闭立即 Abort
+- **GIVEN** 面板打开
+- **WHEN** 输入 "? 如何做 YrY 知识域对齐" → 立即 Esc 关闭
+- **THEN** Chrome DevTools Network 显示该 SSE 立即 canceled（≤ 300ms）
+- **AND** `DisposerBag.size` 500ms 后为 0
+
+### 9.2 回归矩阵（覆盖 §1.3 根因 × §4 FR）
+
+| 根因 | FR 映射 | 场景 | 自动化级别 |
+|------|---------|------|-----------|
+| 路由参数漂移 issue/bug `:id` vs `:key` | FR-1 | Sc 2, 3 | Unit + E2E |
+| page link="/page" 全错链 | FR-1, FR-2, §5.2 | Sc 4 | Unit + E2E |
+| 幽灵条目（缺 tombstone） | FR-2, §5.3 | Sc 5 | Backend + E2E |
+| ⌘K 缺 Bug/Module/Page 数据源 | FR-3 | Sc 7 | Unit 快照对比 |
+| 双轨实现漂移（⌘K vs /search） | FR-3, §3.2 | Sc 7 | CI 每日对比 Job |
+| 隐藏菜单仍命中 | FR-9 | Sc 6 | Unit |
+| 快捷键空挂桩 | FR-3, S7 | Sc 1 | E2E |
+| 组件悬空引用 searchIndex.ts | FR-5 | Grep CI 任务 | Pre-commit |
+| SSE 关闭未清理（复用 disposer 教训） | FR-8 | Sc 10 | Unit 断言 DisposerBag |
+| 大数 / 中文单位 / 注入 | FR-7 | 120 样例 | Unit |
 
 ---
 
 <a id="sec-10"></a>
-## 十、可观测性
+## 十、可观测性、告警与 SLO
 
-### 指标
+### 10.1 指标（OpenTelemetry 命名对齐 YiVad SRE 规范）
 
 | 指标 | 类型 | 说明 |
 |------|------|------|
-| `yivad.cmd_palette.open_count` | Counter | 命令面板打开次数 |
-| `yivad.cmd_palette.search_count` | Counter | 搜索次数 |
-| `yivad.cmd_palette.execute_count` | Counter | 命令执行次数 |
-| `yivad.cmd_palette.calc_count` | Counter | 计算器使用次数 |
-| `yivad.cmd_palette.ai_query_count` | Counter | AI 查询次数 |
-| `yivad.cmd_palette.no_result_count` | Counter | 搜索无结果次数 |
+| `yivad.search.open_count` | Counter | 面板打开次数 |
+| `yivad.search.click_total` | Counter | 结果点击总数（分母 CRR） |
+| `yivad.search.click_reach_ok` | Counter | 闸门 C 通过次数（分子 CRR） |
+| `yivad.search.wrong_link_count` | Counter | Link Factory 返回 ok=false 或 hasRoute=false |
+| `yivad.search.ghost_count` | Counter | 闸门 B 发现 key 不存在的次数 |
+| `yivad.search.schema_missing` | Counter | 后端返回项缺必需字段 |
+| `yivad.search.latency_ms` | Histogram | 端到端（⌘K → 结果渲染）耗时 |
+| `yivad.search.backend_ms` | Histogram | unified_search 后端耗时 |
+| `yivad.search.jaccard_v2` | Gauge | ⌘K vs /search 每日 Jaccard 指标 |
+| `yivad.ai.query.ttft_ms` | Histogram | AI SSE 首字时间 |
+| `yivad.search.disposer_leak` | Counter | 关闭面板 500ms 后 disposer.size ≠ 0 |
 
-### 告警
+### 10.2 SLO 与告警
 
-| 告警 | 条件 | 级别 |
-|------|------|------|
-| 搜索无结果比例过高 | 无结果/总搜索 > 40% | WARNING |
-| AI 查询失败率过高 | 失败/总查询 > 20% | WARNING |
+| SLO 项 | 目标 | 告警条件（30 分钟窗） | 级别 |
+|--------|------|---------------------|------|
+| **搜索点击可达率 CRR** | 月内 p95 ≥ 99% | CRR < 95% → WARN；< 90% → 自动 L4 Feature Flag off | P1 |
+| **错链率 WLR** | ≤ 0.1% | WLR > 0.5% → WARN；> 2% → 自动 L4 | P1 |
+| **幽灵条目率 GR** | ≤ 0.5% | 日终审计 GR > 1% → WARN；> 3% → P1 工单 | P2 |
+| **面板打开 p95** | ≤ 50ms | p95 > 80ms | P2 |
+| **AI TTFT p95** | ≤ 500ms | p95 > 1.2s | P3 |
+| **Disposer 泄漏** | 事件率 < 1% | 5 分钟内 leak_count > 50 | P2 |
+
+### 10.3 Burn Rate 发布门禁（对齐 YiPot SRE 实践）
+
+- 发布前 10 分钟灰度用户群：若 CRR < 97%，**自动停止全量**并回滚到上一版。
+- Burn Rate 1h 窗口：SLO 消耗 > 14.4 倍基本速率 → 立即 P1 告警，并冻结后续发布。
 
 ---
 
 <a id="sec-11"></a>
-## 十一、代码审查检查清单
+## 十一、设计决策记录（ADR 速览 — 锚点 ADR-YV-034）
 
-- [ ] 命令面板通过 Ctrl+K/Cmd+K 触发
-- [ ] 命令注册支持插件式（CommandProvider 接口）
-- [ ] 模糊搜索支持命令 label、description、keywords 匹配
-- [ ] 最近使用命令持久化到 localStorage
-- [ ] 实体搜索支持 Bug、Issue、文档、知识文件
-- [ ] AI 查询通过 `?` 前缀触发，SSE 流式展示
-- [ ] 计算器支持四则运算、幂运算、括号
-- [ ] 单位转换支持常见单位（长度、重量、温度、货币）
-- [ ] 键盘导航：↑↓ 选择、Enter 执行、Escape 关闭
-- [ ] 计算器输入白名单限制，无代码注入风险
-- [ ] 搜索 debounce 300ms，避免频繁请求
-- [ ] 单元测试覆盖搜索、计算器、命令注册
+| # | 类别 | 状态 | 生命周期 | 评审周期 | 角色 | 收益 | 验收标准 | 关联记录 |
+|---|------|------|--------|---------|------|------|---------|---------|
+| D1 | 数据契约 | 已采纳 | active | 季度 | FE/BE/SRE | 消除 100% page 错链；CRR 基线 +35% | `/page/:key` 路由存在 + 100 条 page 点击 E2E 100% | §5.2 |
+| D2 | 数据契约 | 已采纳 | active | 季度 | FE/BE | 终止后端拼 link，彻底解耦搜索返回与路由演化 | 代码库 Grep "后端拼 link" = 0；Link Factory 单测 100% | FR-1, §5.1 |
+| D3 | 搜索策略 | 已采纳 | active | 月度 | FE | 数据源统一，Jaccard ≥ 0.90 | ⌘K 与 /search 共用 useUnifiedSearch；Grep 禁止其他搜索组合 | §3.2, FR-3 |
+| D4 | 可靠性架构 | 已采纳 | active | 月度 | SRE/FE | 点击可达率 58% → 99% | 三闸门 + L1-L5 回退链落地；E2E CRR ≥ 99% | §6, §9 |
+| D5 | 安全 | 已采纳 | active | 季度 | SRE | 0 越权命中率；注入风险为 0 | 计算器 0 eval/Function；`isHide` 过滤自动化测试 | FR-7, FR-9 |
+| D6 | 快捷键 | 已采纳 | active | 季度 | FE/UX | 消除空挂桩；快捷键骨架可靠性 ≥ 99% | 快捷键 E2E 10 布局 × 10 次 = 100% 触发 | FR-3, §8 Step 6 |
+| D7 | 快捷键触发键 | 已采纳 | active | 月度 | UX | 用户肌肉记忆兼容 Notion / Linear / GitHub | ⌘K/Ctrl+K 双平台绑定；顶部搜索图标作为 fallback | §1.3 S7 |
+| D8 | 计算器实现 | 已采纳 | active | 月度 | FE/SRE | 注入风险归零；中文单位零失败 | AST 解析 + 120 样例 100% | FR-7 |
 
 ---
 
-## 回归问题预测
+<a id="sec-12"></a>
+## 十二、代码审查检查清单（Code Review Gate）
 
-| # | 预测问题 | 原因 | 验证方法 |
-|---|---------|------|---------|
-| 1 | Ctrl+K 在 Chrome 中聚焦地址栏，preventDefault 未生效，命令面板打开后地址栏同时聚焦 | Chrome 的地址栏聚焦是浏览器级行为，可能在 JS 事件处理之前就已触发 | 在 Chrome 中按 Ctrl+K，验证地址栏不聚焦，命令面板正常打开 |
-| 2 | 命令面板中 AI 查询的 SSE 连接在面板关闭后未断开，资源泄漏 | 面板关闭时未调用 EventSource.close()，SSE 连接持续占用资源 | 打开命令面板 → 发起 AI 查询 → 立即关闭面板，验证 SSE 连接已断开 |
-| 3 | 计算器对包含中文的输入（如"100 公里 to 英里"）识别失败，用户期望自然语言计算 | 计算器仅支持英文单位缩写，中文单位未注册 | 输入"100 公里 to 英里"，验证计算器正确识别并转换 |
-| 4 | 实体搜索在用户快速输入时触发多个请求，未 debounce 的请求结果覆盖了最新结果 | 多个并发请求的响应顺序不确定，后发起的请求可能先返回 | 快速输入"BUG-001" → 删除 → 输入"BUG-002"，验证最终展示 BUG-003 的结果 |
-| 5 | 命令面板在 iframe 嵌套页面（如嵌入的文档预览）中，Ctrl+K 被 iframe 拦截 | iframe 的键盘事件冒泡到父页面时可能被阻止 | 在包含 iframe 的页面中打开命令面板，验证快捷键正常工作 |
-| 6 | 计算器对超出 JavaScript 安全整数范围的大数计算精度丢失 | JavaScript Number 类型的安全整数范围是 ±2^53，超出后精度丢失 | 输入"9999999999999999 + 1"，验证结果正确或提示"超出精度范围" |
+> 未通过以下任一条，PR **不可合并**。
 
----
+### 12.1 契约一致性（必选）
+- [ ] `linkFactory.ts` 的 Route Template Registry 与 `authMenuList.json` 中 path 参数 100% 对齐；`diffRouteTemplates()` 单测通过。
+- [ ] 代码库 Grep 禁止规则：无 `"/issue/${"`、`"/bug/${"`、`"/project/${"` 手动拼接（例外：linkFactory 内部模板字符串本身）。
+- [ ] `unified_search.py` 返回 JSON schema 中 `link` 字段已删除；后端所有 endpoint 无 `link=` 残留。
 
-## 性能分析
+### 12.2 可靠性（必选）
+- [ ] 三闸门 A/B/C 逻辑均具可观测性埋点；失败路径非静默。
+- [ ] 所有异步请求透传 `{ timeout, signal }`（对齐 **YiVad 硬约束**）。
+- [ ] AI SSE 使用 `DisposerBag.reset()`（非 dispose）做清理；关闭面板断言 `size === 0`。
+- [ ] 骨架屏 / 详情加载 使用 12s Hook + 22s UI Watchdog 双保险（对齐 useProjectDetail 最佳实践）。
 
-### 命令面板关键操作耗时
+### 12.3 性能（必选）
+- [ ] Unified Search debounce = 200ms；乱序由 `searchSeq` 字段防护。
+- [ ] 500 条 Fuse 模糊搜索 p95 ≤ 20ms。
+- [ ] 面板打开 pre-commit 快照 ≥ 上一个基线或 ≤ 50ms。
 
-| 操作 | 耗时 | 说明 |
-|------|------|------|
-| 命令面板打开 | < 50ms | overlay 创建 + Vue 组件挂载 |
-| 命令注册（初始化） | < 10ms | 所有 Provider 注册 |
-| 模糊搜索（500 命令） | < 20ms | 子序列匹配 + 评分排序 |
-| 实体搜索（后端 API） | < 100ms | 网络请求 + 响应解析 |
-| 计算器（简单表达式） | < 1ms | 字符串解析 + 计算 |
-| 单位转换 | < 1ms | 查表 + 乘法 |
-| AI 查询（首字） | < 500ms | SSE 首次响应 |
-| 最近使用加载 | < 5ms | localStorage 读取 |
-| 命令面板关闭 | < 10ms | overlay 移除 + 状态清理 |
+### 12.4 权限与安全（必选）
+- [ ] 菜单集合 ∩ 用户权限 flatMenuListGet；`isHide=true` 全部剔除。
+- [ ] 计算器零 `eval` / `new Function`；AST 解析 + 白名单正则。
+- [ ] AI SSE 请求携带 yiAiAuthHeaders；请求体无 token 打印到日志。
 
-### 数据量预估
+### 12.5 代码清理（必选）
+- [ ] `src/services/searchIndex.ts` 已物理删除；残留引用 Grep = 0。
+- [ ] 原空挂桩 `nav.command-palette.handler` 已绑定真实回调；快捷键注册 0 空函数。
+- [ ] 未引入一次性调试脚本（check_*, debug_*, tmp_* 等，受 `.gitignore` 约束）。
 
-| 模块 | 数据项 | 大小 |
-|------|--------|------|
-| 命令注册表 | 50+ 命令 | ~5KB |
-| 搜索索引 | 命令 label + description + keywords | ~10KB |
-| 最近使用列表 | 10 条命令引用 | ~500B |
-| 计算器配置 | 单位转换表 | ~5KB |
-
-### 对页面性能的影响
-
-| 场景 | 页面影响 | 说明 |
-|------|----------|------|
-| 命令面板打开 | < 50ms 主线程 | overlay 渲染 |
-| 搜索输入 | < 5ms 主线程 | 每次按键触发搜索 |
-| 实体搜索 | 异步 | 网络请求不阻塞主线程 |
-| AI 查询 | 异步 | SSE 流式更新不阻塞主线程 |
+### 12.6 测试（必选）
+- [ ] 新增单测覆盖率：linkFactory ≥ 95%、useUnifiedSearch ≥ 90%、calculator ≥ 98%。
+- [ ] E2E `cmd-palette-reach.spec.ts`：100 条点击抽样 100% 通过（CRR ≥ 99）。
+- [ ] ⌘K 与 /search Jaccard CI job：≥ 0.90。
 
 ---
 
-## 相关文档
+<a id="sec-13"></a>
+## 十三、回归问题预测与缓解
 
-- [全局搜索增强](../36-需求-全局搜索增强.md) — 实体搜索的底层实现
-- [全局快捷键框架](../43-需求-全局快捷键框架.md) — 快捷键注册与冲突检测
-- [AI 聊天页优化](../09-需求-AI聊天页优化.md) — AI 查询的 UI 组件复用
+| # | 预测问题 | 根因 | 验证方法 | 缓解 |
+|---|---------|------|---------|------|
+| 1 | ⌘K 在 Chrome 中仍聚焦地址栏（preventDefault 不够） | Chrome 部分版本在 keydown 之前已触发地址栏 | Chrome 最新版 × Windows/macOS 手工 20 次；失败则 `capture: true` + `stopImmediatePropagation` 双保险 | 使用 `document.addEventListener('keydown', fn, { capture: true })` |
+| 2 | 面板打开但 AI SSE 连接关闭后残留，DevTools 看到数个未 finish EventSource | DisposerBag 清理不完整或 SSE 复用同连接 | 打开→关闭 10 次，断言 disposerBag.size=0 且 Network 面板 0 pending EventSource | 在 SSE close 内同时调用 EventSource.close + abortController.abort |
+| 3 | 中文单位"斤/公里/摄氏度"解析失败，用户继续报 Bug | 中文别名表不全 | 30 条中文用例集 + 用户反馈漏斗 | 预留 `unitAlias.patch` 热更接口，SRE 可在后台追加别名 |
+| 4 | 快速输入导致结果乱序（前一次慢响应覆盖后一次快响应） | 仅 debounce 未加 seq 防护 | 快速输入 "BUG-1" → 删 → 输入 "BUG-2"，校验最终只展示 BUG-2 | useUnifiedSearch 内建 `searchSeq`，seq ≠ current 直接丢弃 |
+| 5 | `/page/:key` 菜单条目与既有 `/system/*` order 冲突，侧边栏顺序跳动 | authMenuList.json order 未按升序 | 读取后 order 排序 + 冲突检测（两条同 order 报警） | 新增条目 order 使用 "最后一个非空子项 order + 1" 规则 |
+| 6 | Link Factory 参数映射未来再漂移（新实体 type 未注册） | 开发新实体时忘了注册 | pre-commit 钩子扫描 `type:` 新增值并强制 PR 作者填 Link Factory | 未注册 type 命中 FallbackResolver 并上报 `schema_missing`；同时 lint 拦截 |
+| 7 | 删除了 searchIndex.ts，有未检测到的引用导致编译失败 | views-glob 动态 import 可能隐藏引用 | `yarn build` 全量构建 + `rsbuild preview` 启动冒烟 | CI 构建必过；构建失败立即回滚删除操作 |
+| 8 | MRU v1 数据包含已失效链接，在 v2 首次启动时弹出一堆不可达项 | MRU Key 未版本化 | 新 Key 加 `_v2`；v1 迁移时每条都过闸门 A 再写 v2 | Key 版本号策略写入 SRE Runbook |
+| 9 | 路由 keep-alive 后快捷键重复绑定 → 打开 2 个面板 | onMounted 绑一次，onActivated 又绑一次，未去重 | 10 次切换 tab，⌘K 必须只有 1 个面板打开 | shortcut registry 具幂等性，同一 id 重复 bind 自动 unregister 旧的 |
+| 10 | 后端 tombstone 迁移失败，生产部分老数据 null 被当成 "未删" 误判 | 迁移脚本未分批次跑，生产超时 | 分批次迁移；抽样 10% 数据验证 | 迁移前备份；`deleted_at=null` 在查询条件中仍走 `deleted_at is None`，不影响结果 |
 
-*PRD 来源: `projects/yivad/requirements/2026-09/68-需求-全局搜索命令面板.md`*
+---
 
+<a id="sec-14"></a>
+## 十四、相关文档与锚点
+
+### 14.1 交叉引用（Grep 可追溯）
+
+- [开发方案：34-dev-全局搜索命令面板](../../devs/2026-09/34-prd-task-全局搜索命令面板.md)
+- [测试方案：34-test-全局搜索命令面板](../../tests/2026-09/34-prd-test-全局搜索命令面板.md)
+- [全局搜索增强（YV-09-36）](./36-需求-全局搜索增强.md) — 底层搜索域
+- [全局快捷键框架（YV-09-43）](./43-需求-全局快捷键框架.md) — shortcut registry 契约
+- [AI 聊天页优化（YV-09-09）](./09-需求-AI聊天页优化.md) — AI SSE UI 组件复用
+- [YiVad README 硬约束章节](../../README.md) — AbortSignal 全链路、DisposerBag.reset()、Watchdog 约定
+- [ADR-YV-002：Hook 竞态治理（useProjectDetail 教训）](file:///Users/yi/YrY/YiVad/src/hooks/README-ADR-002.md)
+- [YiPot ↔ YiAi ↔ YiVad C-001 契约矩阵](../../INDEX.md#C-001) — L1-L5 回退链锚点
+
+### 14.2 跨项目联动
+
+| 项目 | 联动点 | 接口契约 |
+|------|--------|---------|
+| YiAi | `/search/unified v2`（去 link + 加 status 过滤 + tombstone） + `/search/trending` | §5.1 UnifiedSearchItemV2 |
+| YiPot | 未来可在 YiPot tray 菜单中嵌入 YiVad 命令面板（WebView），复用同一 Link Factory | 通过 `yiAiBaseUrl` + 相同 UnifiedSearch 类型字典 |
+| YiPet | 浏览器扩展弹出页可订阅 YiVad search cmd-palette 快捷查询；搜索结果点击跨域打开 YiVad 详情 | OAuth 同源或消息桥接（非本次 v2 落地，预留设计位） |
+
+---
+
+*PRD 锚点：`YiKnowledge/projects/yivad/prds/2026-09/34-prd-全局搜索命令面板.md`*
+*上游 SSOT：`projects/yivad/requirements/2026-09/68-需求-全局搜索命令面板.md`（本次已通过 v2 重写进行契约同步）*
