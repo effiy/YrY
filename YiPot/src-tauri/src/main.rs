@@ -12,7 +12,6 @@ mod screenshot;
 mod server;
 mod system_ocr;
 mod tray;
-// mod updater;
 mod window;
 
 use backup::*;
