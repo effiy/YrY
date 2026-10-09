@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
 export const useWatermarkStore = defineStore("watermark", () => {
-  const userEnabled = ref(true);
+  const userEnabled = ref(false);
   const globalForced = ref(false);
   const username = ref("");
   const ipAddress = ref("");
