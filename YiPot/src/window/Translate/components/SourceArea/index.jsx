@@ -30,86 +30,22 @@ let unlisten = null;
 let timer = null;
 // show/setFocus 的抑制窗口：避免同一热键按下→抬起或多次回调导致循环抖动
 let _lastActivateAt = 0;
-// #region debug-point A:activate-report
-// 调试用：将 activate / blur / new_text / showSetFocus 的事件时间序列上报 Debug Server
-const _DBG_EV = (() => {
-    let URL = 'http://127.0.0.1:7777/event';
-    let SID = 'yipot-selection-translate-flicker';
-    try {
-        // Tauri runtime 下通过 @tauri-apps/api/fs 读 env 文件不可行（BaseDirectory 不暴露 /var），
-        // 这里直接使用 probe 验证通过的默认端口；server 不可达时 fetch catch 静默吃掉。
-    } catch {}
-    const _send = (payload) => {
-        try {
-            fetch(URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sessionId: SID,
-                    runId: 'pre',
-                    ts: Date.now(),
-                    ...payload,
-                }),
-            }).catch(() => {});
-        } catch {}
-    };
-    return { send: _send };
-})();
-// #endregion
 const _activate = async () => {
     const now = Date.now();
-    if (now - _lastActivateAt < 120) {
-        // #region debug-point A:activate-skip
-        _DBG_EV.send({
-            hypothesisId: 'A',
-            location: 'SourceArea/index.jsx:_activate:skip',
-            msg: '[DEBUG] _activate debounced skip',
-            data: { delta: now - _lastActivateAt, now },
-        });
-        // #endregion
-        return;
-    }
+    if (now - _lastActivateAt < 120) return;
     _lastActivateAt = now;
     try {
         const visible = await appWindow.isVisible().catch(() => false);
-        // #region debug-point B:activate-before
-        _DBG_EV.send({
-            hypothesisId: 'B',
-            location: 'SourceArea/index.jsx:_activate:before',
-            msg: '[DEBUG] _activate before show/setFocus',
-            data: { visible, now },
-        });
-        // #endregion
         if (!visible) {
-            await appWindow.show().catch((e) => {
-                // #region debug-point B:show-err
-                _DBG_EV.send({
-                    hypothesisId: 'B',
-                    location: 'SourceArea/index.jsx:_activate:show:err',
-                    msg: '[DEBUG] show error',
-                    data: { err: String(e), now },
-                });
-                // #endregion
-            });
+            await appWindow.show().catch(() => {});
         }
-        await appWindow.setFocus().catch((e) => {
-            // #region debug-point B:setfocus-err
-            _DBG_EV.send({
-                hypothesisId: 'B',
-                location: 'SourceArea/index.jsx:_activate:setFocus:err',
-                msg: '[DEBUG] setFocus error',
-                data: { err: String(e), now },
-            });
-            // #endregion
-        });
-        // #region debug-point B:activate-after
-        _DBG_EV.send({
-            hypothesisId: 'B',
-            location: 'SourceArea/index.jsx:_activate:after',
-            msg: '[DEBUG] _activate after show/setFocus',
-            data: { visible, now },
-        });
-        // #endregion
+        await appWindow.setFocus().catch(() => {});
+        // show/setFocus 成功，通知 useBlurAutoClose：未来 500ms 内的 blur 都是我们自己触发的假阳性
+        try {
+            window.dispatchEvent(new CustomEvent('__yipot_translate_self_change__', { detail: { at: Date.now() } }));
+        } catch {
+            // ignore
+        }
     } catch {
         // ignore
     }
@@ -136,20 +72,6 @@ export default function SourceArea(props) {
     const speak = useVoice();
 
     const handleNewText = async (text) => {
-        const traceId =
-            't_' +
-            Math.random().toString(36).slice(2, 10) +
-            '_' +
-            Date.now().toString(36);
-        // #region debug-point A:new_text-entry
-        _DBG_EV.send({
-            hypothesisId: 'A',
-            location: 'SourceArea/index.jsx:handleNewText:entry',
-            msg: '[DEBUG] handleNewText called',
-            data: { traceId, len: (text || '').length, preview: (text || '').slice(0, 60) },
-            traceId,
-        });
-        // #endregion
         text = text.trim();
         if (hideWindow) {
             await appWindow.hide().catch(() => {});
@@ -317,14 +239,6 @@ export default function SourceArea(props) {
                 });
             }
             unlisten = listen('new_text', (event) => {
-                // #region debug-point A:new_text-event
-                _DBG_EV.send({
-                    hypothesisId: 'A',
-                    location: 'SourceArea/index.jsx:new_text:listen',
-                    msg: '[DEBUG] received new_text event from backend',
-                    data: { payload_len: String(event.payload ?? '').length },
-                });
-                // #endregion
                 _activate().then(() => handleNewText(event.payload)).catch(() => {
                     handleNewText(event.payload);
                 });
@@ -362,19 +276,40 @@ export default function SourceArea(props) {
         textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px';
     }, [sourceText]);
 
+    // Detect 去重：
+    // (1) detectInFlight = true 时，再调 detect_language 直接 skip
+    // (2) 相同文本 2000ms 内不再触发
+    // (3) 与 dynamicTranslate 的 1s 防抖结合，彻底塞死百度 detect 死循环
+    const detectInFlightRef = useRef(false);
+    const lastDetectKeyRef = useRef('');
+    const lastDetectAtRef = useRef(0);
+
     const detect_language = async (text) => {
-        setDetectLanguage(await detect(text));
+        if (detectInFlightRef.current) return;
+        const now = Date.now();
+        if (lastDetectKeyRef.current === text && now - lastDetectAtRef.current < 2000) {
+            return;
+        }
+        detectInFlightRef.current = true;
+        lastDetectKeyRef.current = text;
+        lastDetectAtRef.current = now;
+        try {
+            const lang = await detect(text);
+            setDetectLanguage(lang);
+        } finally {
+            detectInFlightRef.current = false;
+        }
     };
 
-    let sourceTextChangeTimer = null;
     const changeSourceText = async (text) => {
         setDetectLanguage('');
         await setSourceText(text);
         if (dynamicTranslate) {
-            if (sourceTextChangeTimer) {
-                clearTimeout(sourceTextChangeTimer);
+            if (window._sourceTranslateTimer) {
+                clearTimeout(window._sourceTranslateTimer);
             }
-            sourceTextChangeTimer = setTimeout(() => {
+            window._sourceTranslateTimer = setTimeout(() => {
+                window._sourceTranslateTimer = null;
                 detect_language(text).then(() => {
                     syncSourceText();
                 });
@@ -482,7 +417,8 @@ export default function SourceArea(props) {
                     <textarea
                         autoFocus
                         ref={textAreaRef}
-                        className={`text-[${appFontSize}px] bg-content1 h-full resize-none outline-none`}
+                        className='bg-content1 h-full resize-none outline-none'
+                        style={{ fontSize: `${appFontSize}px` }}
                         value={sourceText}
                         onKeyDown={keyDown}
                         onChange={(e) => {

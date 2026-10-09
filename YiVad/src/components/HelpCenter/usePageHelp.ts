@@ -62,7 +62,11 @@ export function usePageHelp(opts: UsePageHelpOptions = {}): PageHelpViewModel {
 
   const matchedPattern = computed(() => current.value?.routePattern ?? null);
 
-  return { current, visibleSections, matchedPattern };
+  return {
+    get current() { return current.value; },
+    get visibleSections() { return visibleSections.value as readonly any[]; },
+    get matchedPattern() { return matchedPattern.value; }
+  } as unknown as PageHelpViewModel;
 }
 
 /** 同步工具函数：在非组件上下文根据路径匹配 PageHelp。 */

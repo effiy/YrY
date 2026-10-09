@@ -253,7 +253,7 @@ const store = useBugStore();
 const projectStore = useProjectStore();
 const issueStore = useIssueStore();
 
-const key = route.params.key as string;
+const key = (route.params.id as string) || (route.params.key as string);
 
 const projects = computed(() => projectStore.projects);
 const issues = computed(() => issueStore.issues);

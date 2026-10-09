@@ -14,8 +14,8 @@ import type {
   FeedbackPayload,
   FeedbackTicket,
   HelpRequestOptions
-} from "../components/HelpCenter/types";
-import { STATIC_FAQ } from "./faq-static";
+} from "./types";
+import { STATIC_FAQ } from "@/data/help/faq-static";
 
 /* ──────────────────────────────────────────────────────────── */
 /*  HelpOS — FAQ Service                                        */
@@ -144,7 +144,7 @@ export async function submitFeedback(
 
 export interface FeedbackFallback {
   kind: "github_issue" | "clipboard_markdown";
-  reason: "rate_limited" | "too_large" | "network";
+  reason: "rate_limited" | "too_large" | "network" | "manual_copy";
   githubUrl: string;
   markdown: string;
 }

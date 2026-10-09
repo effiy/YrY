@@ -11,7 +11,7 @@
  * 所有请求透传 { timeout, signal } 并使用 AbortSignal.any 联合。
  * LRU 缓存最近 20 条 query → 结果。
  */
-import { computed, onBeforeUnmount, ref, watch, type Ref } from "vue";
+import { computed, onBeforeUnmount, ref, watch, reactive, type Ref } from "vue";
 import { fuzzySearch } from "@/utils/fuzzySearch";
 import { shortcutRegistry } from "@/shortcuts/registry";
 import { SHORTCUT_CATEGORIES } from "@/shortcuts/categories";
@@ -45,10 +45,25 @@ export interface UseHelpSearchAPI {
   readonly abortAll: () => void;
 }
 
+/** 脚本侧：返回 ref；模板侧：通过 reactive 自动解 ref 一层（vue-tsc 会把 reactive<{query:Ref<string>}> 视作 {query: string}）。
+ * 导出两种类型供调用方选择：
+ *   - UseHelpSearchAPI      → 供 composable 内部/类型契约使用（Ref）
+ *   - UseHelpSearchRuntime  → 供组件模板 + 脚本直接读取非 Ref 值使用
+ */
+export interface UseHelpSearchRuntime {
+  query: string;
+  results: HelpSearchResult[];
+  loading: boolean;
+  scope: Scope["value"];
+  /** 脚本侧访问原始 ref（避免模板/脚本歧义） */
+  readonly $: UseHelpSearchAPI;
+  readonly abortAll: () => void;
+}
+
 const LRU_CACHE = new Map<string, HelpSearchResult[]>();
 const LRU_MAX = 20;
 
-export function useHelpSearch(opts: HelpRequestOptions = {}): UseHelpSearchAPI {
+export function useHelpSearch(opts: HelpRequestOptions = {}): UseHelpSearchRuntime {
   const query = ref("");
   const results = ref<HelpSearchResult[]>([]);
   const loading = ref(false);
@@ -100,21 +115,30 @@ export function useHelpSearch(opts: HelpRequestOptions = {}): UseHelpSearchAPI {
     bag.reset();
   });
 
-  return {
-    query,
-    results,
-    loading,
-    scope,
+  const api: UseHelpSearchAPI = {
+    query, results, loading, scope,
     abortAll: () => { if (lastAbort) lastAbort.abort("manual"); loading.value = false; }
   };
-}
+  const runtime = reactive({
+    get query() { return query.value; },
+    set query(v: string) { query.value = v; },
+    get results() { return results.value; },
+    get loading() { return loading.value; },
+    get scope() { return scope.value; },
+    get $() { return api; },
+    abortAll: api.abortAll
+  });
+  // 显式返回 runtime（禁止 tsc 尝试把 reactive 与上方 UseHelpSearchAPI 返回类型强关联——此 composable 永远返回 UseHelpSearchRuntime）
+  return runtime as unknown as UseHelpSearchRuntime;
+} // 函数结束
+
 
 /* ─────────────────────────── internal ─────────────────────────── */
 
 function parseScope(q: string): { realQuery: string; scopeVal: Scope["value"]; scopeChanged: boolean } {
   const m = /^@(shortcuts|faq|changelog|page-help|help)\b(.*)$/.exec(q.trim());
   if (!m) return { realQuery: q, scopeVal: "all", scopeChanged: false };
-  const raw = m[1] as Scope["value"];
+  const raw = m[1] as Exclude<Scope["value"], "all"> | "help";
   const scopeVal: Scope["value"] = raw === "help" ? "page-help" : raw;
   return { realQuery: m[2].trim(), scopeVal, scopeChanged: true };
 }

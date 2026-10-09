@@ -64,6 +64,102 @@ function emptyForm() {
   };
 }
 
+/* ── Dev mock 种子：只有 RSBUILD_ENV_USE_MOCK=true 且后端返回空时启用 ── */
+const _MOCK_BUGS: BugDocument[] = (() => {
+  if (import.meta.env.RSBUILD_ENV_USE_MOCK !== "true") return [];
+  const now = Date.now();
+  const d = (daysAgo: number) => now - daysAgo * 864e5;
+  return [
+    {
+      key: "BUG-007",
+      title: "快捷键 Ctrl+K 被 Chrome 地址栏抢占",
+      project: "YiVad", project_key: "yivad",
+      issue_key: "ISS-001",
+      module: "搜索 (Command Palette / Search)",
+      severity: "major", priority: "p1", status: "resolved", type: "compatibility",
+      frequency: "always", assignee: "admin", reporter: "QA",
+      environment: "Chrome 120 / Windows 11",
+      affectedVersion: "v0.9.3", fixedVersion: "v1.0.0",
+      tags: ["shortcuts", "command-palette"],
+      dueDate: null,
+      contentPath: "/yivad/bugs/BUG-007.md",
+      createdAt: d(1), updatedAt: d(1), resolvedAt: d(0), closedAt: null,
+    },
+    {
+      key: "BUG-008",
+      title: "AbortSignal.any 在 Node 18 下 undefined 导致 504",
+      project: "YiAI", project_key: "yiai",
+      module: "HTTP Gateway",
+      severity: "minor", priority: "p2", status: "open", type: "compatibility",
+      frequency: "sometimes", assignee: "admin", reporter: "SRE",
+      environment: "Node 18.x SSR / Lambda",
+      affectedVersion: "v0.9.2", fixedVersion: "",
+      tags: ["ssr", "polyfill"],
+      dueDate: null,
+      contentPath: "/yiai/bugs/BUG-008.md",
+      createdAt: d(9), updatedAt: d(8), resolvedAt: null, closedAt: null,
+    },
+    {
+      key: "BUG-OLD",
+      title: "【幽灵】宠物喂食记录导入 500（已 tombstone）",
+      project: "YiPet", project_key: "yipet",
+      module: "导入/导出",
+      severity: "critical", priority: "p0", status: "closed", type: "data",
+      frequency: "once", assignee: "admin", reporter: "user-221",
+      environment: "Web 端 / Chrome",
+      affectedVersion: "v0.1.0", fixedVersion: "v0.3.0",
+      tags: ["tombstone"],
+      dueDate: null,
+      contentPath: "/yipet/bugs/BUG-OLD.md",
+      createdAt: d(220), updatedAt: d(219), resolvedAt: d(218), closedAt: d(217),
+    },
+  ];
+})();
+
+function _mockSeedBug(key: string): BugDocument | null {
+  return _MOCK_BUGS.find(b => b.key === key) ?? null;
+}
+
+function _mockSeedBugList(): { list: BugDocument[]; total: number } {
+  return { list: _MOCK_BUGS.slice(), total: _MOCK_BUGS.length };
+}
+
+function _mockBugContent(bugKey: string): BugContent {
+  if (bugKey === "BUG-007") {
+    return {
+      description:
+        "用户在 Dashboard 按下 Ctrl+K（Windows / Linux）时，被 Chrome 默认的「搜索地址栏」拦截，命令面板无法打开。",
+      stepsToReproduce: [
+        "登录 YiVad 并停留在任意非输入框页面",
+        "按 Ctrl+K",
+        "观察焦点",
+      ],
+      expectedResult: "命令面板弹出。",
+      actualResult: "地址栏获得焦点，命令面板未触发。",
+      causeProblem: "原 keydown 监听为 passive bubbling 阶段，浏览器默认行为已执行。",
+      solution: "main.ts 全局 registry 分发使用 capture:true；CommandPalette.vue 再在 capture 阶段 stopImmediatePropagation 做双层保险。",
+    };
+  }
+  if (bugKey === "BUG-008") {
+    return {
+      description: "SSR 中使用 AbortSignal.any 触发 TypeError，导致 HTTP 请求整体 504。",
+      stepsToReproduce: ["部署到 Node 18 Lambda", "打开任意依赖 unifiedSearch 的页面"],
+      expectedResult: "正常渲染。",
+      actualResult: "TypeError: AbortSignal.any is not a function → 504。",
+      causeProblem: "Node 18 尚未实现 AbortSignal.any。",
+      solution: "在信号合并点做 polyfill：手动创建 AbortController 并分别 addEventListener 到外部/内部 signal。",
+    };
+  }
+  return {
+    description: "",
+    stepsToReproduce: [],
+    expectedResult: "",
+    actualResult: "",
+    causeProblem: "",
+    solution: "",
+  };
+}
+
 export const useBugStore = defineStore("yivad-bug", () => {
   const bugs = ref<BugDocument[]>([]);
   const total = ref(0);
@@ -87,9 +183,28 @@ export const useBugStore = defineStore("yivad-bug", () => {
     loading.value = true;
     error.value = null;
     try {
-      const res = await getBugList({ pageNum: 1, pageSize: 500 });
-      bugs.value = res.data?.list ?? [];
-      total.value = res.data?.total ?? 0;
+      let list: BugDocument[] = [];
+      let t = 0;
+      try {
+        const res = await getBugList({ pageNum: 1, pageSize: 500 });
+        list = res.data?.list ?? [];
+        t = res.data?.total ?? 0;
+      } catch (e: unknown) {
+        if (import.meta.env.RSBUILD_ENV_USE_MOCK !== "true") throw e;
+        const err: any = e;
+        if (err?.name !== "AbortError" && err?.name !== "CanceledError") {
+          const s = _mockSeedBugList();
+          list = s.list; t = s.total;
+        } else {
+          throw e;
+        }
+      }
+      if (!list.length && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+        const s = _mockSeedBugList();
+        list = s.list; t = s.total;
+      }
+      bugs.value = list;
+      total.value = t;
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : "Failed to load bugs";
     } finally {
@@ -101,10 +216,46 @@ export const useBugStore = defineStore("yivad-bug", () => {
     detailLoading.value = true;
     selectedBugContent.value = null;
     try {
-      const bug = await getBug(key);
+      let bug: BugDocument | null = null;
+      try {
+        bug = await getBug(key);
+      } catch (e: unknown) {
+        if (import.meta.env.RSBUILD_ENV_USE_MOCK !== "true") throw e;
+        const err: any = e;
+        if (err?.name !== "AbortError" && err?.name !== "CanceledError") {
+          bug = _mockSeedBug(key);
+        } else {
+          throw e;
+        }
+      }
+      if (!bug && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+        bug = _mockSeedBug(key);
+      }
       selectedBug.value = bug;
       if (bug?.contentPath) {
-        selectedBugContent.value = await readBugContent(bug);
+        try {
+          selectedBugContent.value = await readBugContent(bug);
+        } catch (_e) {
+          if (import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+            selectedBugContent.value = _mockBugContent(bug.key);
+          } else {
+            throw _e;
+          }
+        }
+        // 空内容双保险：即使 readBugContent 没有抛错（比如旧 bundle 仍返回空），
+        // 所有字段都为空白时 mock 环境仍然填种子，保证 UI 四栏非空桩。
+        const sc = selectedBugContent.value;
+        const emptySc =
+          !sc ||
+          (!sc.description &&
+            (sc.stepsToReproduce || []).length === 0 &&
+            !sc.expectedResult &&
+            !sc.actualResult &&
+            !sc.causeProblem &&
+            !sc.solution);
+        if (emptySc && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+          selectedBugContent.value = _mockBugContent(bug.key);
+        }
       } else {
         selectedBugContent.value = {
           description: "",

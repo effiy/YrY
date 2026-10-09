@@ -21,8 +21,9 @@
 </template>
 
 <script setup lang="ts" name="keyboardShortcuts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onBeforeUnmount, onMounted } from "vue";
 import { Close } from "@element-plus/icons-vue";
+import mittBus from "@/utils/mittBus";
 
 const visible = ref(false);
 
@@ -57,13 +58,23 @@ const groups = [
   }
 ];
 
+function open() {
+  visible.value = true;
+}
+function close() {
+  visible.value = false;
+}
+function toggle() {
+  visible.value = !visible.value;
+}
+
 function globalKeydown(e: KeyboardEvent) {
   if (e.key === "?" && !e.ctrlKey && !e.metaKey && !isInputTarget(e)) {
     e.preventDefault();
-    visible.value = !visible.value;
+    toggle();
   }
   if (e.key === "Escape" && visible.value) {
-    visible.value = false;
+    close();
   }
 }
 
@@ -72,15 +83,19 @@ function isInputTarget(e: KeyboardEvent): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 }
 
-function close() {
-  visible.value = false;
-}
+// main.ts 里 defaultShortcuts 的 a11y.shortcut-help handler 会 emit('shortcut-help:toggle')
+mittBus.on("shortcut-help:toggle", toggle);
+mittBus.on("shortcut-help:show", open);
+mittBus.on("shortcut-help:close", close);
 
 onMounted(() => {
   document.addEventListener("keydown", globalKeydown);
 });
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.removeEventListener("keydown", globalKeydown);
+  mittBus.off("shortcut-help:toggle", toggle);
+  mittBus.off("shortcut-help:show", open);
+  mittBus.off("shortcut-help:close", close);
 });
 </script>
 

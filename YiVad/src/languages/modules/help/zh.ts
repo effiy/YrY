@@ -1,0 +1,117 @@
+/**
+ * YiVad languages — help 模块 i18n 命名空间。
+ *
+ * 新增模块按命名空间键规则：<module>.<semantic>
+ *   help.* 已覆盖 HelpOS（YV-09-70）
+ */
+export default {
+  help: {
+    panel: {
+      title: "帮助中心与快捷键参考",
+      close: "关闭帮助中心",
+      footer: {
+        version: "版本",
+        docs: "打开完整文档 ↗",
+      },
+    },
+    tabs: {
+      page_help: "页面帮助",
+      shortcuts: "快捷键",
+      faq: "常见问题",
+      changelog: "更新日志",
+      feedback: "反馈",
+    },
+    search: {
+      placeholder: "搜索帮助、快捷键、FAQ、更新日志（示例: @shortcuts / @faq / @changelog）",
+      loading: "正在加载中…",
+      empty: "没有找到匹配的内容，请尝试更短的关键词。",
+      tip_cmd_k: "或使用命令面板（Ctrl+K）进行全局搜索",
+      result_count: "已找到 {0} 条结果",
+      results: "搜索结果",
+    },
+    page: {
+      empty_title: "当前页面暂无帮助文档",
+      empty_desc: "我们已记录此页面自动生成搜索种子。请尝试 FAQ 或使用命令面板搜索。",
+      cta_faq: "查看常见问题",
+      cta_cmd: "打开命令面板搜索",
+      related_shortcuts: "⌨️ 相关快捷键",
+      related_links: "🔗 相关链接",
+    },
+    shortcuts: {
+      search: "搜索快捷键（说明或键位均可）",
+      empty: "暂无匹配的快捷键",
+      copy_md: "复制为 Markdown",
+      custom: "自定义",
+      disabled: "此快捷键当前作用域外不可用",
+      execute_error: "执行失败，请查看控制台日志获取详细错误",
+      copied: "Markdown 已复制到剪贴板",
+      copy_failed: "复制失败，请手动复制",
+    },
+    faq: {
+      degraded_hint: "知识库 FAQ 服务连接超时，当前显示本地常见问题（可离线使用",
+      empty: "暂无匹配的 FAQ。",
+      useful: "这条对您有帮助吗？",
+      yes: "有帮助",
+      no: "没帮助",
+      thanks: "感谢反馈",
+    },
+    changelog: {
+      released: "已发布",
+      unreleased: "预览版 (Unreleased",
+      copy_md: "复制本版 Markdown",
+      copied: "已复制",
+      copy_failed: "复制失败",
+    },
+    feedback: {
+      field: { type: "类型", title: "标题", description: "详细描述（请包含复现步骤环境或建议）", screenshot: "截图（可选）",
+      },
+      placeholder: {
+        title: "一句话概括您遇到的问题或建议（≤120 字）",
+        desc: "详细说说您遇到的问题或建议：步骤、实际表现、期望结果…",
+      },
+      type: {
+        bug: "缺陷 Bug",
+        feature: "功能建议 Feature",
+        question: "使用咨询 Question",
+        other: "其他 Other",
+      },
+      upload: "上传截图（Paste or select）/ 选择图片，≤ 2MB）",
+      remove_screenshot: "移截图",
+      screenshot_hint: "提示：包含 Token / 密钥等敏感信息会自动遮盖或遮盖）",
+      env_summary: "📋 环境（自动采集，已脱敏）",
+      env_url: "当前页面：URL",
+      env_ua: "浏览器 UA：",
+      env_screen: "屏幕：",
+      env_app: " YiVad 版本：",
+      env_yiai: " YiAi 服务：",
+      submit: "提交反馈",
+      submitting: "提交中…",
+      copy_md: "复制为 Markdown",
+      copy_success: "内容已复制成功",
+      copy_failed: "复制失败，",
+      success_title: "✅ 反馈提交成功",
+      ticket_id: "工单号",
+      sla: "首次响应 SLA",
+      track_on_github: "在 GitHub 追踪",
+      fallback_title: "主通道失败（{reason}）自动降级 GitHub Issue，请手动完成反馈",
+      fallback_github: "打开 GitHub Issue 模板",
+      fallback_copy: "复制 Markdown 模板",
+      err: {
+        type: "请选择反馈类型",
+        title: { required: "请填写标题", len: "标题长度 5~120 字符" },
+        desc: { required: "请填写详细描述", len: "描述长度 20~2000 字符" },
+        rate_limited: "提交过于频繁请稍后重试（3 次 / 分钟）",
+        invalid_payload: "提交内容校验失败，请检查截图大小或内容）",
+        too_large: "提交内容过大（≤ 2.5MB），请移除截图后重试",
+        screenshot_too_big: "截图超过 2MB，请压缩后再上传",
+      },
+    },
+    sla: {
+      overdue: "已过 SLA 首次响应",
+      days: "天",
+      green: "充足",
+      warn: "即将到期",
+      urgent: "紧急",
+    },
+  },
+};

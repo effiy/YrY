@@ -112,17 +112,39 @@
         <el-icon :size="24"><WarningFilled /></el-icon>
       </div>
       <p class="search-page__error-text">Search failed. Please try again.</p>
-      <button class="search-page__error-retry" @click="doSearch">Retry</button>
+      <button class="search-page__error-retry" @click="() => { searchError = null; void refresh(); }">Retry</button>
     </div>
 
     <!-- Results -->
     <div v-else-if="query && !searching" class="search-page__results">
       <!-- Summary Bar -->
       <div class="search-page__summary">
-        <template v-if="totalResults">
+        <template v-if="totalResults || autoFilteredCount > 0 || ghostFilteredCount > 0">
           <span class="search-page__summary-count">{{ totalResults }}</span>
-          {{ totalResults === 1 ? 'result' : 'results' }} for "<strong>{{ query }}</strong>"
+          {{ totalResults === 1 ? 'result' : 'results' }} for "<strong>{{ query }}</strong
+          >"
           <span v-if="searchMs !== null" class="search-page__summary-time">in {{ searchMs }}ms</span>
+
+          <div
+            v-if="autoFilteredCount + ghostFilteredCount > 0"
+            class="search-page__summary-auto-filter"
+            role="button"
+            tabindex="0"
+            @click="showFilterDetail = !showFilterDetail"
+          >
+            <el-icon size="14"><WarningFilled /></el-icon>
+            自动屏蔽 {{ autoFilteredCount + ghostFilteredCount }} 条不可达/幽灵结果
+            <el-icon :size="14" :class="{ 'is-open': showFilterDetail }"><ArrowRight /></el-icon>
+            <div v-if="showFilterDetail" class="search-page__summary-filter-detail" @click.stop>
+              <div>· 后端过滤（已删除/归档/取消）：{{ ghostFilteredCount }} 条</div>
+              <div>· 前端 Gate A（路由/权限/隐藏）：{{ autoFilteredCount }} 条</div>
+              <div class="search-page__summary-filter-actions">
+                <el-button size="small" link @click="includeUnreachable = !includeUnreachable">
+                  {{ includeUnreachable ? '恢复仅展示可达结果' : '临时包含不可达结果（仅调试）' }}
+                </el-button>
+              </div>
+            </div>
+          </div>
         </template>
         <span v-else class="search-page__summary-empty">
           No results for "<strong>{{ query }}</strong>"
@@ -179,10 +201,17 @@
               v-for="item in group.items"
               :key="item.id"
               :ref="el => setItemRef(el, item._idx)"
-              :class="['search-page__item', { 'is-active': activeIdx === item._idx }]"
+              :class="[
+                'search-page__item',
+                {
+                  'is-active': activeIdx === item._idx,
+                  'search-page__item--ghost': !item._gateA.ok
+                }
+              ]"
               :style="{ '--accent': group.color }"
-              :href="'#' + item.link"
-              @click.prevent="goTo(item.link)"
+              :href="'#' + (item._gateA.ok ? item._link : item._gateA.fallback)"
+              :aria-disabled="!item._gateA.ok ? 'true' : undefined"
+              @click.prevent="goTo(item)"
               @mouseenter="activeIdx = item._idx"
             >
               <div class="search-page__item-icon" :style="{ background: group.color }">
@@ -191,8 +220,13 @@
               <div class="search-page__item-body">
                 <div class="search-page__item-title">
                   <span v-html="highlight(item.title)" />
-                  <span class="search-page__item-key">{{ extractKey(item.id) }}</span>
+                  <span class="search-page__item-key">{{ item.key || extractKey(item.id) }}</span>
                   <span v-if="item.score != null" class="search-page__item-score">{{ Math.round(item.score) }}%</span>
+                  <LinkValidationBadge
+                    v-if="!item._gateA.ok"
+                    class="search-page__item-gate-badge"
+                    :gate-a="item._gateA"
+                  />
                 </div>
                 <div class="search-page__item-meta">
                   <code v-if="item.project">{{ item.project }}</code>
@@ -200,7 +234,7 @@
                 </div>
                 <div class="search-page__item-badges">
                   <el-tag
-                    v-for="b in item.badges"
+                    v-for="b in (item.badges || [])"
                     :key="b.label"
                     :type="b.type || undefined"
                     size="small"
@@ -209,11 +243,14 @@
                   >
                     {{ b.label }}
                   </el-tag>
+                  <span v-if="item._status && item._status !== 'active'" class="search-page__item-status">
+                    状态：{{ item._status }}
+                  </span>
                   <span v-if="item.date" class="search-page__item-date">{{ formatDate(item.date) }}</span>
                 </div>
                 <div v-if="item.detail" class="search-page__item-detail" v-html="highlight(truncate(item.detail, 140))" />
               </div>
-              <el-icon v-if="activeIdx === item._idx" class="search-page__item-enter" :size="14"><ArrowRight /></el-icon>
+              <el-icon v-if="activeIdx === item._idx && item._gateA.ok" class="search-page__item-enter" :size="14"><ArrowRight /></el-icon>
             </a>
           </TransitionGroup>
         </div>
@@ -281,8 +318,17 @@
 <script setup lang="ts" name="globalSearch">
 import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { useRouter, useRoute, onBeforeRouteLeave } from "vue-router";
+import { ElNotification } from "element-plus";
 import HeroDateNav from "@/components/HeroDateNav/HeroDateNav.vue";
+import LinkValidationBadge from "@/components/CommandPalette/LinkValidationBadge.vue";
 import { useDateFilter } from "@/hooks/useDateFilter";
+import useUnifiedSearch from "@/composables/useUnifiedSearch";
+import {
+  resolveLink,
+  gateBEntityExists,
+  gateCPostNavigate,
+  type LinkResolveOk,
+} from "@/utils/linkFactory";
 import {
   Search,
   CircleClose,
@@ -298,22 +344,28 @@ import {
   Collection,
   Loading
 } from "@element-plus/icons-vue";
-import { unifiedSearch } from "@/api/modules/searchService";
-import type { UnifiedSearchItem, UnifiedSearchBadge } from "@/api/modules/searchService";
+import type { UnifiedSearchItem } from "@/api/modules/searchService";
 import { useProjectStore } from "@/stores/modules/project";
+import { useCommandPaletteStore } from "@/stores/command-palette";
 
 const RECENT_KEY = "global_search_recent";
 const MAX_RECENT = 8;
 
+type SearchItemEnriched = UnifiedSearchItem & {
+  _idx: number;
+  _gateA: ReturnType<typeof resolveLink>;
+  _link: string;
+};
+
 const router = useRouter();
 const route = useRoute();
 const projectStore = useProjectStore();
+const cpStore = useCommandPaletteStore();
 
 // ── State ──
 const query = ref("");
 const inputFocused = ref(false);
-const searching = ref(false);
-const searchError = ref(false);
+const searchError = ref<string | null>(null);
 const searchMs = ref<number | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 const itemRefs: Record<number, HTMLElement> = {};
@@ -324,9 +376,41 @@ const projectFilter = ref("");
 const collapsedGroups = reactive(new Set<string>());
 const showSuggestions = ref(false);
 const suggestionIdx = ref(-1);
-let abortController: AbortController | null = null;
-let searchSeq = 0;
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+const includeUnreachable = ref(false);        // 临时：展示 Gate A 失败的灰卡（默认不展示）
+const showFilterDetail = ref(false);
+
+/* ── SSOT 搜索：useUnifiedSearch（v2 contract） ───────────────────────── */
+const {
+  results: _rawResults,
+  loading: searching,
+  error: usError,
+  timing: usTiming,
+  meta: usMeta,
+  refresh,
+} = useUnifiedSearch(query as any, {
+  collections: [],
+  limit: 40,
+  debounceMs: 200,
+  timeoutMs: 15_000,
+  immediate: false,
+});
+
+// 同步搜索错误到 searchError（供 UI 展示）
+watch(
+  [() => usError.value, searching],
+  ([err, l]) => {
+    searchError.value = l ? null : (err ? String(err) : null);
+    if (l) searchMs.value = null;
+  },
+  { immediate: true }
+);
+watch(
+  () => usTiming.value?.total_ms ?? null,
+  (ms) => {
+    if (typeof ms === "number") searchMs.value = Math.round(ms);
+  },
+  { immediate: true }
+);
 
 // ── Date filter ──
 const filterDate = ref<Date | null>(null);
@@ -343,15 +427,14 @@ const {
 const initialQ = (route.query.q as string) || "";
 if (initialQ) {
   query.value = initialQ;
-  doSearch();
 }
 
 watch(query, val => {
   const q = val.trim();
   if (q && q !== ((route.query.q as string) || "")) {
-    router.replace({ query: { q } });
+    router.replace({ query: { ...route.query, q } }).catch(() => {});
   } else if (!q && route.query.q) {
-    router.replace({ query: {} });
+    router.replace({ query: { ...route.query, q: undefined } }).catch(() => {});
   }
 });
 
@@ -368,30 +451,30 @@ const typeFilters = [
 ];
 
 const groupConfigs: Record<string, { label: string; icon: any; color: string }> = {
-  issue: { label: "Issues", icon: Tickets, color: "#409eff" },
-  project: { label: "Projects", icon: Folder, color: "#5470c6" },
-  module: { label: "Modules", icon: Collection, color: "#9b59b6" },
-  bug: { label: "Bugs", icon: WarningFilled, color: "#f56c6c" },
-  page: { label: "Pages", icon: Document, color: "#67c23a" }
+  issue:   { label: "Issues",   icon: Tickets,      color: "#409eff" },
+  project: { label: "Projects", icon: Folder,       color: "#5470c6" },
+  module:  { label: "Modules",  icon: Collection,   color: "#9b59b6" },
+  bug:     { label: "Bugs",     icon: WarningFilled,color: "#f56c6c" },
+  page:    { label: "Pages",    icon: Document,     color: "#67c23a" },
 };
 
 const quickLinks = [
-  { label: "Issues", icon: Tickets, path: "/issue" },
-  { label: "Projects", icon: Folder, path: "/project" },
-  { label: "Kanban", icon: Box, path: "/kanban" },
-  { label: "Pages", icon: Document, path: "/page" },
-  { label: "Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "Modules", icon: Collection, path: "/module" }
+  { label: "Issues",   icon: Tickets,      path: "/issue" },
+  { label: "Projects", icon: Folder,       path: "/project" },
+  { label: "Kanban",   icon: Box,          path: "/kanban" },
+  { label: "Pages",    icon: Document,     path: "/page" },
+  { label: "Bugs",     icon: WarningFilled,path: "/bug" },
+  { label: "Modules",  icon: Collection,   path: "/module" }
 ];
 
 const exampleSearches = ["login bug", "API performance", "user dashboard", "deployment error", "database schema"];
 
 const noResultsActions = [
   { label: "New Issue", icon: Plus, path: "/issue" },
-  { label: "New Bug", icon: Plus, path: "/bug" },
+  { label: "New Bug",   icon: Plus, path: "/bug" },
   { label: "All Issues", icon: Tickets, path: "/issue" },
-  { label: "All Bugs", icon: WarningFilled, path: "/bug" },
-  { label: "All Pages", icon: Document, path: "/page" }
+  { label: "All Bugs",   icon: WarningFilled, path: "/bug" },
+  { label: "All Pages",  icon: Document, path: "/page" }
 ];
 
 // ── Suggestions ──
@@ -404,14 +487,12 @@ const suggestionItems = computed(() => {
 function onInput() {
   suggestionIdx.value = -1;
   showSuggestions.value = true;
-  searchError.value = false;
-  debouncedSearch();
+  searchError.value = null;
 }
 
 function pickSuggestion(s: string) {
   query.value = s;
   showSuggestions.value = false;
-  doSearch();
 }
 
 function highlightSuggestion(text: string): string {
@@ -455,14 +536,47 @@ function removeRecent(idx: number) {
 function searchRecent(q: string) {
   query.value = q;
   showSuggestions.value = false;
-  doSearch();
 }
 
-// ── Results ──
-const allResults = ref<UnifiedSearchItem[]>([]);
+// 当搜索成功返回非空时记一次 recent
+watch(
+  [() => (_rawResults.value || []).length, () => query.value, searching],
+  ([len, q, loading]) => {
+    if (!loading && len > 0 && q) saveRecent(String(q).trim());
+  }
+);
 
-const filteredResults = computed(() => {
-  let results = allResults.value;
+// ── Results: Gate A + filter/sort ────────────────────────────────────────
+const ghostFilteredCount = computed(() => usMeta.value?.ghost_filtered_count ?? 0);
+
+const enrichedResults = computed<SearchItemEnriched[]>(() => {
+  const list: UnifiedSearchItem[] = (_rawResults.value as any) || [];
+  return list
+    .filter(Boolean)
+    .map((item: any) => {
+      const gateA = resolveLink({
+        type: item.type,
+        key: item.key,
+        project: item.project,
+        title: item.title,
+      });
+      return {
+        ...item,
+        _gateA: gateA,
+        _link: gateA.ok ? (gateA as LinkResolveOk).link : "",
+        _idx: -1,
+      } as SearchItemEnriched;
+    });
+});
+
+const autoFilteredCount = computed<number>(() => {
+  return enrichedResults.value.reduce((n, it) => n + (it._gateA.ok ? 0 : 1), 0);
+});
+
+const filteredResults = computed<SearchItemEnriched[]>(() => {
+  let results = enrichedResults.value;
+  // Gate A：默认过滤所有不可达结果（用户显式 includeUnreachable 才显示灰卡）
+  if (!includeUnreachable.value) results = results.filter(r => r._gateA.ok);
   if (projectFilter.value) {
     results = results.filter(item => item.project === projectFilter.value);
   }
@@ -474,25 +588,27 @@ const filteredResults = computed(() => {
 
 const typeCounts = computed(() => {
   const counts: Record<string, number> = {};
-  allResults.value.forEach(item => {
+  enrichedResults.value.forEach(item => {
+    if (!includeUnreachable.value && !item._gateA.ok) return;
     counts[item.type] = (counts[item.type] || 0) + 1;
   });
   return counts;
 });
 
 const distribution = computed(() => {
-  if (!allResults.value.length) return [];
+  const total = enrichedResults.value.filter(r => includeUnreachable.value || r._gateA.ok).length;
+  if (!total) return [];
   return ["issue", "project", "module", "bug", "page"]
     .map(type => ({ type, count: typeCounts.value[type] || 0 }))
     .filter(s => s.count > 0)
     .map(s => {
       const cfg = groupConfigs[s.type];
-      return { ...s, label: cfg.label, color: cfg.color, pct: Math.max((s.count / allResults.value.length) * 100, 2) };
+      return { ...s, label: cfg.label, color: cfg.color, pct: Math.max((s.count / total) * 100, 2) };
     });
 });
 
 const resultGroups = computed(() => {
-  const groups: Record<string, UnifiedSearchItem[]> = {};
+  const groups: Record<string, SearchItemEnriched[]> = {};
   filteredResults.value.forEach(item => {
     (groups[item.type] ||= []).push(item);
   });
@@ -506,7 +622,7 @@ const sortedGroups = computed(() => {
   return resultGroups.value.map(g => {
     const items = [...g.items];
     if (sortBy.value === "recent") {
-      items.sort((a, b) => b._ts - a._ts);
+      items.sort((a, b) => (b._ts || 0) - (a._ts || 0));
     } else {
       items.sort((a, b) => (b.score || 0) - (a.score || 0));
     }
@@ -516,8 +632,8 @@ const sortedGroups = computed(() => {
 
 const totalResults = computed(() => filteredResults.value.length);
 
-function flattenItems(): UnifiedSearchItem[] {
-  const items: UnifiedSearchItem[] = [];
+function flattenItems(): SearchItemEnriched[] {
+  const items: SearchItemEnriched[] = [];
   sortedGroups.value.forEach(g => {
     if (!collapsedGroups.has(g.type)) items.push(...g.items);
   });
@@ -528,13 +644,13 @@ function setItemRef(el: any, idx: number) {
   if (el) itemRefs[idx] = el;
 }
 
-watch([resultGroups, sortBy], () => {
+watch([sortedGroups, sortBy], () => {
   const flat = flattenItems();
   flat.forEach((item, i) => {
     item._idx = i;
   });
   activeIdx.value = flat.length > 0 ? 0 : -1;
-});
+}, { immediate: true, flush: "post" });
 
 function scrollToActive() {
   nextTick(() => {
@@ -547,69 +663,100 @@ function toggleGroup(type: string) {
   else collapsedGroups.add(type);
 }
 
-// ── Search Logic ──
-function debouncedSearch() {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  if (!query.value.trim()) {
-    allResults.value = [];
-    activeIdx.value = -1;
-    searchMs.value = null;
-    searchError.value = false;
+// ── 三闸门导航 goTo：与命令面板共用同一套 Gold Copy ───────────────────
+async function goTo(item: SearchItemEnriched) {
+  // Gate A
+  if (!item._gateA.ok) {
+    try {
+      ElNotification({
+        title: "无法跳转",
+        message: `${item._gateA.message}（${item._gateA.reason}）`,
+        type: "warning",
+        duration: 3000,
+      });
+    } catch { /* noop */ }
+    router.push(item._gateA.fallback).catch(() => {});
     return;
   }
-  debounceTimer = setTimeout(doSearch, 200);
-}
+  const gateA = item._gateA as LinkResolveOk;
+  const link = gateA.link;
 
-async function doSearch() {
-  const q = query.value.trim();
-  if (!q) {
-    allResults.value = [];
-    searchMs.value = null;
+  // Gate B
+  const needGateB = ["issue", "bug", "project", "module", "page"].includes(item.type as string);
+  if (needGateB) {
+    try {
+      const exist = await gateBEntityExists(
+        { type: item.type, key: item.key, project: item.project, title: item.title },
+        { timeoutMs: 1500 }
+      );
+      if (exist === false) {
+        try {
+          ElNotification({
+            title: "目标资源暂不可用",
+            message: `${item.title}（${item.type}: ${item.key}）在后端 HEAD 预检不存在，已为您跳转至搜索页。`,
+            type: "warning",
+            duration: 3000,
+          });
+        } catch { /* noop */ }
+        router.push(`/search?q=${encodeURIComponent(item.title || item.key || "")}`).catch(() => {});
+        return;
+      }
+    } catch {
+      /* 网络异常：Gate C 兜底 */
+    }
+  }
+
+  try { await router.push(link); }
+  catch (err: any) {
+    if (err?.name !== "NavigationDuplicated") {
+      try {
+        ElNotification({
+          title: "路由异常",
+          message: err?.message || "跳转失败，已跳回搜索页。",
+          type: "warning",
+          duration: 3000,
+        });
+      } catch { /* noop */ }
+      router.push(`/search?q=${encodeURIComponent(item.title || item.key || "")}`).catch(() => {});
+    }
     return;
   }
 
-  // Cancel previous request
-  if (abortController) abortController.abort();
-  abortController = new AbortController();
-
-  const seq = ++searchSeq;
-  searching.value = true;
-  searchError.value = false;
-  activeTypeFilter.value = "";
-  projectFilter.value = "";
-  collapsedGroups.clear();
-  showSuggestions.value = false;
-  const t0 = performance.now();
-
-  try {
-    const data = await unifiedSearch(q, undefined, 40, abortController.signal);
-    if (seq !== searchSeq) return;
-
-    allResults.value = data.results || [];
-    searchMs.value = data.timing?.total_ms ?? Math.round(performance.now() - t0);
-
-    if (allResults.value.length > 0) saveRecent(q);
-  } catch (e: any) {
-    if (e?.name === "AbortError") return;
-    if (seq !== searchSeq) return;
-    searchError.value = true;
-    allResults.value = [];
-    searchMs.value = null;
-  } finally {
-    if (seq === searchSeq) searching.value = false;
+  // Gate C：2s 后验，成功 → MRU v2；失败 → 回退搜索页
+  const cPass = await gateCPostNavigate({
+    expectedLink: link,
+    expectedParams: gateA.params,
+    timeoutMs: 2000,
+  });
+  if (cPass) {
+    cpStore.pushMRU({
+      id: item.id, type: item.type, key: item.key, title: item.title,
+      project: item.project, ts: Date.now(),
+    });
+  } else {
+    try {
+      ElNotification({
+        title: "未成功到达目标页",
+        message: `${item.title} 的详情页渲染未在预期时间内完成。可能已归档/删除；已跳回搜索页搜索。`,
+        type: "warning",
+        duration: 3000,
+      });
+    } catch { /* noop */ }
+    router.push(`/search?q=${encodeURIComponent(item.title || item.key || "")}`).catch(() => {});
   }
 }
 
 // ── Utilities ──
 function clearSearch() {
   query.value = "";
-  allResults.value = [];
   activeTypeFilter.value = "";
   projectFilter.value = "";
   activeIdx.value = -1;
   searchMs.value = null;
-  searchError.value = false;
+  searchError.value = null;
   collapsedGroups.clear();
+  showFilterDetail.value = false;
+  includeUnreachable.value = false;
   inputRef.value?.focus();
 }
 
@@ -650,10 +797,6 @@ function formatDate(dateStr: string): string {
   }
 }
 
-function goTo(link: string) {
-  router.push(link);
-}
-
 // ── Keyboard ──
 function onInputKeydown(e: KeyboardEvent) {
   // Suggestions navigation
@@ -692,7 +835,7 @@ function onInputKeydown(e: KeyboardEvent) {
   } else if (e.key === "Enter" && !(showSuggestions.value && suggestionIdx.value >= 0)) {
     e.preventDefault();
     const item = flat[activeIdx.value];
-    if (item) goTo(item.link);
+    if (item) goTo(item);
   } else if (e.key === "Escape") {
     if (showSuggestions.value) {
       showSuggestions.value = false;
@@ -753,6 +896,10 @@ onMounted(() => {
   if (!initialQ) {
     inputRef.value?.focus();
   } else {
+    // 注意：useUnifiedSearch 此处传了 immediate=false（避免与详情页回跳产生重复请求对撞），
+    // 但 URL 直接带 q 的首次进入仍需显式触发一次搜索（watch 的 post flush 与同步 query.value
+    // 赋值在同 tick 里可能被 scheduler 合并成 no-op，因此 refresh() 兜底显式驱动）。
+    void refresh();
     restoreScrollPosition();
   }
   document.addEventListener("keydown", globalKeydown);

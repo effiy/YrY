@@ -407,12 +407,36 @@ export async function readBugContent(input: BugDocument | string): Promise<BugCo
   } else {
     cp = normalizeContentPath(input, input.contentPath || "");
   }
+  let parsed: BugContent | null = null;
   try {
     const file = await readKnowledgeFile(cp);
-    return parseMarkdownBody(file.content || "");
-  } catch {
-    return { description: "", stepsToReproduce: [], expectedResult: "", actualResult: "" };
+    parsed = parseMarkdownBody(file.content || "");
+  } catch (e) {
+    // 非 mock 环境下历史约定：吞掉 IO 异常返回空对象，调用方会渲染 el-empty
+    // 占位，不影响主信息展示。mock 环境下由外层 store 做种子回填（此处只抛给
+    // 外层一个非 abort 的 Error 信号即可）。
+    if (import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+      const err = new Error(e instanceof Error ? e.message : "readBugContent fallback");
+      (err as any).name = "ReadKnowledgeFileError";
+      throw err;
+    }
+    return { description: "", stepsToReproduce: [], expectedResult: "", actualResult: "", causeProblem: "", solution: "" };
   }
+  // mock 环境下如果后端返回了空 body（知识库里还没建好文件），同样触发外层
+  // 种子兜底；生产环境保留空占位返回，避免产生大量后端噪音。
+  const isEmpty =
+    !parsed.description &&
+    (parsed.stepsToReproduce || []).length === 0 &&
+    !parsed.expectedResult &&
+    !parsed.actualResult &&
+    !parsed.causeProblem &&
+    !parsed.solution;
+  if (isEmpty && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
+    const err = new Error("readBugContent empty body");
+    (err as any).name = "ReadKnowledgeFileError";
+    throw err;
+  }
+  return parsed;
 }
 
 /** Delete the markdown body file (best-effort). */

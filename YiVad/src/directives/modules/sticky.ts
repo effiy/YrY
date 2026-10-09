@@ -85,7 +85,10 @@ function bindStuckDetection(el: StickyElement) {
   el.parentElement?.insertBefore(sentinel, el);
 
   const root = target === window ? null : (target as Element);
-  const rootMargin = `-${opts.top - 1}px 0px 0px 0px`;
+  // Guard：确保 opts.top 是有限数（避免 undefined / NaN / Infinity 生成 "-NaNpx" 之类非法 rootMargin，
+  // 会让 IntersectionObserver 构造抛 SyntaxError: rootMargin must be specified in pixels or percent.）
+  const topVal = Number.isFinite(opts.top) ? (opts.top as number) : (DEFAULTS.top as number);
+  const rootMargin = `-${Math.max(0, topVal - 1)}px 0px 0px 0px`;
 
   let rafId = 0;
   const setStuck = (stuck: boolean) => {

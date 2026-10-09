@@ -1,7 +1,13 @@
 <template>
   <section class="rss-role__section">
     <div class="rss-role__section-head">
-      <h2 class="rss-role__section-title">{{ t("rss.manager.briefing.title") }}</h2>
+      <h2 class="rss-role__section-title">
+        <span class="rss-briefing__title-glyph">📰</span>
+        {{ t("rss.manager.briefing.title") }}
+        <span v-if="briefingItems.length && viewMode !== 'table'" class="rss-briefing__title-sub">
+          {{ t("rss.manager.briefing.titleSub", { count: briefingItems.length, groups: briefingGroups.length }) }}
+        </span>
+      </h2>
       <div class="rss-briefing__date-nav">
         <el-button size="small" :icon="ArrowLeft" text @click="goToPrevDay" :disabled="briefingLoading" />
         <span class="rss-briefing__date">{{ briefingDateLabel }}</span>
@@ -15,6 +21,14 @@
         <el-radio-button value="category">{{ t("rss.manager.briefing.groupBy.category") }}</el-radio-button>
       </el-radio-group>
       <span class="rss-role__toolbar-right">
+        <el-button
+          v-if="isToday && todayCount === 0"
+          size="small"
+          type="warning"
+          plain
+          :icon="Link"
+          @click="$emit('jumpTab', 'seeds')"
+        >{{ t("rss.manager.briefing.jumpSeeds") }}</el-button>
         <span v-if="filteredBriefingCount" class="rss-role__result-count">{{
           t("rss.manager.briefing.resultCount", {
             count: filteredBriefingCount,
@@ -63,6 +77,12 @@
         <div v-for="c in briefingCoverage" :key="c.key" class="rss-briefing__coverage-item">
           <span class="rss-briefing__coverage-count" :style="{ color: coverageColor(c.pct) }">{{ c.count }}</span>
           <span class="rss-briefing__coverage-label">{{ c.label }}</span>
+          <div class="rss-briefing__coverage-bar">
+            <div
+              class="rss-briefing__coverage-bar-fill"
+              :style="{ width: `${c.pct}%`, background: coverageColor(c.pct) }"
+            ></div>
+          </div>
           <span class="rss-briefing__coverage-pct">{{ c.pct }}%</span>
         </div>
       </div>
@@ -77,24 +97,115 @@
           <ECharts :option="briefingSourceOption" height="200" />
         </div>
         <div class="rss-briefing__chart rss-briefing__chart--full">
-          <div class="rss-briefing__chart-title">
-            {{ t("rss.manager.briefing.charts.volumeTrend", { n: dailyVolume.length }) }}
+          <div class="rss-briefing__chart-head">
+            <div class="rss-briefing__chart-title">
+              {{ t("rss.manager.briefing.charts.volumeTrend", { n: dailyVolume.length }) }}
+            </div>
+            <div class="rss-briefing__chart-meta">
+              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--peak"></i>
+                {{ t("rss.manager.briefing.charts.meta.peak") }}: {{ volumePeak?.date }} · {{ volumePeak?.count }}
+              </span>
+              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--avg"></i>
+                {{ t("rss.manager.briefing.charts.meta.avg") }}: {{ volumeAvg }}
+              </span>
+              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--sum"></i>
+                {{ t("rss.manager.briefing.charts.meta.sum") }}: {{ volumeSum }}
+              </span>
+            </div>
           </div>
-          <ECharts :option="briefingVolumeOption" height="180" v-loading="volumeLoading" />
+          <div v-if="volumeAllZero" class="rss-briefing__chart-empty">
+            <div class="rss-briefing__chart-empty-glyph">📭</div>
+            <div>
+              <p class="rss-briefing__chart-empty-title">
+                {{ t("rss.manager.briefing.charts.volumeEmptyTitle") }}
+              </p>
+              <p class="rss-briefing__chart-empty-hint">
+                {{ t("rss.manager.briefing.charts.volumeEmptyHint") }}
+              </p>
+            </div>
+          </div>
+          <ECharts
+            v-else
+            :option="briefingVolumeOption"
+            height="180"
+            v-loading="volumeLoading"
+          />
         </div>
       </div>
 
-      <div v-if="!briefingLoading && !briefingItems.length" class="rss-briefing__empty">
-        <span class="rss-briefing__empty-icon">{{
-          isToday ? t("rss.manager.briefing.empty.todayIcon") : t("rss.manager.briefing.empty.dateIcon")
-        }}</span>
+      <div v-if="!briefingLoading && !briefingItems.length && isToday" class="rss-briefing__empty rss-briefing__empty--today">
+        <div class="rss-briefing__empty-hero">
+          <span class="rss-briefing__empty-icon rss-briefing__empty-icon--today">🌱</span>
+          <div>
+            <p class="rss-briefing__empty-title">
+              {{ t("rss.manager.briefing.empty.todayTitle") }}
+            </p>
+            <p class="rss-briefing__empty-hint">
+              {{ t("rss.manager.briefing.empty.todayHint") }}
+            </p>
+          </div>
+        </div>
+
+        <div v-if="suggestedSeeds.length" class="rss-briefing__suggest">
+          <div class="rss-briefing__suggest-head">
+            <div>
+              <div class="rss-briefing__suggest-title">{{ t("rss.manager.briefing.suggest.title") }}</div>
+              <div class="rss-briefing__suggest-sub">{{ t("rss.manager.briefing.suggest.sub", { n: suggestedSeeds.length }) }}</div>
+            </div>
+            <el-button
+              size="small"
+              type="primary"
+              plain
+              :icon="Link"
+              :disabled="addAllLoading"
+              :loading="addAllLoading"
+              @click="addAllSuggestedSeeds"
+            >{{ t("rss.manager.briefing.suggest.addAll") }}</el-button>
+          </div>
+          <div class="rss-briefing__suggest-grid">
+            <div
+              v-for="seed in suggestedSeeds"
+              :key="seed.key"
+              class="rss-briefing__suggest-card"
+              :class="{ 'is-added': suggestedAdded.has(seed.key) }"
+            >
+              <div class="rss-briefing__suggest-card-top">
+                <span class="rss-briefing__suggest-card-cat" :title="seed.category">
+                  <i class="rss-briefing__suggest-card-cat-dot" :style="{ background: roleColor(seed.category) }"></i>
+                  {{ subCategory(seed.category) || seed.category }}
+                </span>
+                <el-button
+                  size="small"
+                  text
+                  type="primary"
+                  :disabled="suggestedAdded.has(seed.key)"
+                  :loading="suggestedLoading === seed.key"
+                  @click="addSuggestedSeed(seed)"
+                >
+                  {{ suggestedAdded.has(seed.key)
+                    ? t("rss.manager.briefing.suggest.added")
+                    : t("rss.manager.briefing.suggest.addOne") }}
+                </el-button>
+              </div>
+              <div class="rss-briefing__suggest-card-name">{{ seed.name }}</div>
+              <div class="rss-briefing__suggest-card-url">{{ seed.url }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="!briefingLoading && !briefingItems.length" class="rss-briefing__empty">
+        <span class="rss-briefing__empty-icon">{{ t("rss.manager.briefing.empty.dateIcon") }}</span>
         <p class="rss-briefing__empty-title">
-          {{ isToday ? t("rss.manager.briefing.empty.todayTitle") : t("rss.manager.briefing.empty.dateTitle") }}
+          {{ t("rss.manager.briefing.empty.dateTitle") }}
         </p>
         <p class="rss-briefing__empty-hint">
-          {{ isToday ? t("rss.manager.briefing.empty.todayHint") : t("rss.manager.briefing.empty.dateHint") }}
+          {{ t("rss.manager.briefing.empty.dateHint") }}
         </p>
-        <el-button v-if="!isToday" size="small" type="primary" @click="goToToday">{{
+        <el-button size="small" type="primary" @click="goToToday">{{
           t("rss.manager.briefing.empty.backToday")
         }}</el-button>
       </div>
@@ -267,28 +378,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
-import { Search, Refresh, ArrowLeft, ArrowRight, View, Delete } from "@element-plus/icons-vue";
+import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
+import { Search, Refresh, ArrowLeft, ArrowRight, View, Delete, Link } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { toRef } from "vue";
 import type { RssItemDocument } from "@/api/modules/rssService";
-import { deleteRssItem, getSeedList, type RssSeedDocument } from "@/api/modules/rssService";
+import {
+  deleteRssItem,
+  getSeedList,
+  createSeed,
+  parseFeed,
+  type RssSeedDocument,
+  type RssParseResult
+} from "@/api/modules/rssService";
 import { ElMessage } from "element-plus";
 import { roleColor as roleColorFn } from "@/views/knowledge/executive/okrData";
 import ECharts from "@/components/ECharts/index.vue";
 import { useRssBriefing } from "@/views/knowledge/executive/composables/useRssBriefing";
 import { useFormatting } from "./useFormatting";
 import { loadJson, saveJson } from "@/utils/storage";
+import { EXAMPLE_SEEDS, type ExampleRssSeed } from "../data/rssSeedData";
 
-const props = defineProps<{
-  selectedRoles: string[];
-  viewMode: "list" | "card" | "table";
-}>();
+const props = withDefaults(
+  defineProps<{
+    selectedRoles: string[];
+    viewMode: "list" | "card" | "table";
+    todayCount?: number;
+  }>(),
+  { todayCount: 0 }
+);
 
 const emit = defineEmits<{
   "update:viewMode": [value: "list" | "card" | "table"];
   "viewArticle": [item: RssItemDocument];
   "briefingChanged": [];
+  "jumpTab": [tab: "briefing" | "seeds" | "items"];
 }>();
 
 const { t, localeTag, subCategory, formatDate, formatRelativeTime, trimSummary, stripHtml, roleFromCategory, errorMessage } =
@@ -300,13 +424,13 @@ const roleColor = (cat?: string) => {
 };
 
 // ── Seeds for category options ──
-const seeds = ref<RssSeedDocument[]>([]);
+const seedOptions = ref<RssSeedDocument[]>([]);
 async function loadSeedsForOptions() {
   try {
     const res = await getSeedList();
-    seeds.value = res.data?.list ?? [];
+    seedOptions.value = res.data?.list ?? [];
   } catch {
-    seeds.value = [];
+    seedOptions.value = [];
   }
 }
 
@@ -315,7 +439,7 @@ const categoryOptions = computed(() => {
   const roleSet = rolesRef.value.length ? new Set(rolesRef.value) : null;
   const seen = new Set<string>();
   const opts: { label: string; value: string; icon: string }[] = [];
-  for (const s of seeds.value) {
+  for (const s of seedOptions.value) {
     const cat = s.category || "";
     if (!cat || !cat.includes("/")) continue;
     const rid = roleFromCategory(cat);
@@ -373,6 +497,130 @@ const {
   clearBriefingFilters,
   loadBriefing
 } = useRssBriefing(briefingItems, rolesRef, t, localeTag, subCategory, roleColor);
+
+// ── Volume summary ──
+const volumeAllZero = computed(() => dailyVolume.value.length > 0 && dailyVolume.value.every(d => !d.count));
+const volumePeak = computed(() => {
+  const v = dailyVolume.value;
+  if (!v.length) return undefined;
+  let best = v[0];
+  for (const d of v) if (d.count > best.count) best = d;
+  return { date: best.date.slice(5), count: best.count };
+});
+const volumeSum = computed(() => dailyVolume.value.reduce((s, d) => s + (d.count || 0), 0));
+const volumeAvg = computed(() => {
+  if (!dailyVolume.value.length) return 0;
+  return Math.round(volumeSum.value / dailyVolume.value.length);
+});
+
+// ── Suggested seeds (when today is empty) ──
+const existingSeedKeys = computed(() => new Set(seedOptions.value.map(s => s.key).filter(Boolean)));
+const existingSeedUrls = computed(() => new Set(seedOptions.value.map(s => s.url).filter(Boolean)));
+
+const suggestedSeeds = computed<ExampleRssSeed[]>(() => {
+  const roleSet = rolesRef.value.length ? new Set(rolesRef.value) : null;
+  const pool = EXAMPLE_SEEDS.filter(seed => {
+    if (existingSeedKeys.value.has(seed.key) || existingSeedUrls.value.has(seed.url)) return false;
+    if (!roleSet) return true;
+    const rid = roleFromCategory(seed.category);
+    return roleSet.has(rid);
+  }).slice(0, 6);
+  // If role filter gives none, fall back to a cross-role highlight
+  if (pool.length > 0) return pool;
+  return EXAMPLE_SEEDS.filter(
+    s => !existingSeedKeys.value.has(s.key) && !existingSeedUrls.value.has(s.url)
+  ).slice(0, 6);
+});
+
+const suggestedAdded = reactive(new Set<string>());
+const suggestedLoading = ref<string | null>(null);
+const addAllLoading = ref(false);
+
+/** Parse a single feed URL with an explicit timeout via AbortController. */
+async function parseOneSeed(url: string, opts?: { name?: string; timeout?: number }): Promise<RssParseResult> {
+  const timeout = opts?.timeout ?? 15_000;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    // parseFeed 走 RPC callService，本身不接受 signal；这里用"超时后 Abort 丢响应 + 等 RPC 完成"的 best-effort 语义
+    const res = await Promise.race([
+      parseFeed(url, opts?.name),
+      new Promise<never>((_, reject) => {
+        ctrl.signal.addEventListener("abort", () => {
+          const err = new Error("Parse request aborted") as Error & { code?: string; name?: string };
+          err.name = "AbortError";
+          err.code = "ERR_CANCELED";
+          reject(err);
+        });
+      })
+    ]);
+    return res.data as RssParseResult;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function addSuggestedSeed(seed: ExampleRssSeed): Promise<boolean> {
+  if (suggestedAdded.has(seed.key) || suggestedLoading.value) return false;
+  suggestedLoading.value = seed.key;
+  try {
+    await createSeed({
+      key: seed.key,
+      url: seed.url,
+      name: seed.name,
+      category: seed.category,
+      enabled: seed.enabled !== false
+    });
+    // Mirror the newly added seed into seedOptions so `suggestedSeeds` instantly hides it
+    seedOptions.value = [
+      {
+        key: seed.key,
+        url: seed.url,
+        name: seed.name,
+        category: seed.category,
+        enabled: seed.enabled !== false
+      },
+      ...seedOptions.value
+    ];
+    try {
+      await parseOneSeed(seed.url, { name: seed.name, timeout: 15_000 });
+    } catch {
+      /* parse best-effort — we still show the seed as added */
+    }
+    suggestedAdded.add(seed.key);
+    ElMessage.success(t("rss.manager.briefing.suggest.addedOk", { name: seed.name }));
+    emit("briefingChanged");
+    return true;
+  } catch (e) {
+    ElMessage.error(errorMessage(e) || t("rss.manager.briefing.suggest.addFail"));
+    return false;
+  } finally {
+    suggestedLoading.value = null;
+  }
+}
+
+async function addAllSuggestedSeeds() {
+  if (addAllLoading.value) return;
+  const pending = suggestedSeeds.value.filter(s => !suggestedAdded.has(s.key));
+  if (!pending.length) {
+    ElMessage.info(t("rss.manager.briefing.suggest.allAdded"));
+    return;
+  }
+  addAllLoading.value = true;
+  try {
+    let okCount = 0;
+    for (const s of pending) {
+      if (await addSuggestedSeed(s)) okCount++;
+      await nextTick();
+    }
+    ElMessage.success(t("rss.manager.briefing.suggest.addAllOk", { n: okCount, total: pending.length }));
+    await loadSeedsForOptions();
+    await loadBriefing();
+    emit("briefingChanged");
+  } finally {
+    addAllLoading.value = false;
+  }
+}
 
 // ── Briefing groups ──
 interface BriefingGroup {

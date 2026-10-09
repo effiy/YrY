@@ -508,8 +508,10 @@ sequenceDiagram
 
 ```typescript
 // ============================================================
-//  YiVad HelpOS — Type Contract (Gold Copy, YV-09-70)
+//  YiVad HelpOS — Type Contract (Gold Copy, YV-09-70 v2.0)
 //  任何实现必须严格对齐；变更需 bump HelpOS SDK 主版本号
+//  实现锚点：YiVad/src/components/HelpCenter/types.ts
+//  CI 门禁：scripts/ci/check-help-types-goldcopy.mjs（Δ ≤ 3 → PASS）
 // ============================================================
 
 export type HelpTabId =
@@ -519,14 +521,10 @@ export type HelpTabId =
   | 'changelog'
   | 'feedback';
 
-// --- 作用域 & 分类（继承 YV-09-43，禁止自定义扩展词） --------------------
-export type ShortcutScope = 'input' | 'component' | 'page' | 'global';
-export type ShortcutCategory =
-  | 'navigation'
-  | 'editing'
-  | 'view'
-  | 'tools'
-  | 'accessibility';
+// --- 作用域 & 分类（继承 YV-09-43 单源；本文件不重复展开，仅引用） ---------
+//   export type ShortcutScope = 'input' | 'component' | 'page' | 'global';
+//   export type ShortcutCategory =
+//     | 'navigation' | 'editing' | 'view' | 'tools' | 'accessibility';
 
 // --- 快捷键引用 -------------------------------------------------------
 export interface ShortcutReference {
@@ -539,13 +537,17 @@ export interface ShortcutReference {
   readonly enabled: boolean;
   /** 自定义覆盖（用户重绑定后非空） */
   readonly overriddenKeys?: string;
+  /** 序列快捷键（如 G I 两键组合） */
+  readonly sequence?: readonly string[];
+  /** 执行函数，引用 registry 中 handler；仅当 scope 在当前上下文合法时允许调用 */
+  readonly handler?: (event: KeyboardEvent) => void;
 }
 
 // --- 页面帮助 ---------------------------------------------------------
 export interface PageHelpSection {
   readonly heading: string;
   readonly content: string;           // Markdown（需通过 XSS 白名单渲染）
-  readonly roleFilter?: Array<'admin' | 'member' | 'guest'>;
+  readonly roleFilter?: readonly Array<'admin' | 'member' | 'guest'>;
 }
 
 export interface PageHelpContent {
@@ -556,7 +558,7 @@ export interface PageHelpContent {
   readonly relatedShortcutIds: readonly string[];
   readonly relatedLinks: readonly { label: string; route: string }[];
   readonly proTips?: readonly string[];
-  readonly locale: 'zh-CN' | 'en-US';
+  readonly locale: 'zh' | 'en';       // 实现与文档在 L10N 阶段约定用 zh/en 两字母
 }
 
 // --- FAQ --------------------------------------------------------------
@@ -614,11 +616,11 @@ export interface FeedbackTicket {
 }
 
 // --- 搜索结果 ---------------------------------------------------------
-export interface SearchResult {
+export interface HelpSearchResult {
   readonly id: string;
   readonly tab: HelpTabId;
   readonly title: string;
-  readonly snippet: string;           // 已高亮
+  readonly snippet: string;           // 已高亮（SafeMarkdown 后仍允许 <mark>）
   readonly score: number;             // 0-1
   readonly open: () => void;          // 打开对应 Tab 并滚动/展开
 }
@@ -628,15 +630,23 @@ export interface HelpOSState {
   readonly open: boolean;
   readonly activeTab: HelpTabId;
   readonly query: string;
-  readonly seed?: string;             // 外部传入的搜索 seed
+  readonly searchSeed?: string;       // 外部传入的搜索 seed（命令面板 / CTA / Router）
   readonly feedbackDraft?: Partial<FeedbackPayload>;
-  readonly error?: HelpOSError | null;
+  readonly error: HelpOSError | null; // null ≡ 无错；非可选用空占位
 }
 
 export type HelpOSError =
   | { kind: 'faq_timeout'; message: string }
-  | { kind: 'feedback_rejected'; reason: 'rate_limited' | 'payload_invalid' }
+  | { kind: 'feedback_rejected'; reason: 'rate_limited' | 'payload_invalid' | 'too_large' }
   | { kind: 'registry_unavailable' };
+
+// --- Service / Composable options（YiVad 全局硬参数）────────────────────
+export interface HelpRequestOptions {
+  /** 毫秒级超时；缺省从 TIMEOUT_CONFIG 推断 */
+  readonly timeout?: number;
+  /** AbortSignal，联合内部去重控制器（必须 AbortSignal.any([...])，禁止覆盖） */
+  readonly signal?: AbortSignal;
+}
 ```
 
 ### 6.2 路由匹配算法（PageHelpMatcher，Gold Copy）
@@ -1091,6 +1101,99 @@ Phase 3（2026-12）        HelpOS Enterprise：视频教程 / 多租户白标�
 4. Google SRE Workbook Chapter 5（Burn Rate 多窗口算法）
 5. WCAG 2.1 §2.1.1 Keyboard（无障碍基线）
 6. Chase/Simon 1973 《Perception in Chess》—— 本 PRD 「分块帮助 + 模式识别」的认知科学依据（见读书笔记 008《西蒙学习法》A-05 可执行收获）
+
+---
+
+## §20 实施锚点 Trace 表（真实代码路径 / v2.0 工程落地）
+
+> 对齐 Dev §2 GC-8「单一真相源」+ Test §3 FR 覆盖矩阵。QA V-2 阶段可直接用本表逐列做端到端 trace；任一文件变更须同步更新对应条目「状态」列。
+>
+> 状态：DONE（已文件落地）/ LINK（仅 import 挂载）/ WIP（骨架待补）/ TODO（未启动）。
+
+### 20.1 Types / Composables / Services（SSOT 层）
+
+| PRD 章节 | 条目 | 真实文件路径 | 状态 | 对齐约束 / 备注 |
+|---|---|---|---|---|
+| §6.1 Gold Copy | types.ts 契约 `HelpTabId…HelpRequestOptions` 共 15 个类型 | [`types.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/types.ts) | DONE | CI：`scripts/ci/check-help-types-goldcopy.mjs` 阈值 Δ≤3 |
+| §6.2 路由匹配 | `matchPageHelp()` 最长前缀 + `:param` RegExp | [`page-help-content.ts`](file:///Users/yi/YrY/YiVad/src/data/help/page-help-content.ts) | DONE | 缓存 Map；SSR 安全返回 null |
+| §4.2 4 层架构 Entry | `useHelp()` 单例 API / open/close / DisposerBag.reset 红线 / 5 aliases | [`useHelp.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/useHelp.ts) | DONE | 禁止 dispose()（仅 L5 允许） |
+| §4.2 Context L4 | `usePageHelp()` current / visibleSections 角色过滤 | [`usePageHelp.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/usePageHelp.ts) | DONE | 订阅 route/watch（SSR 兼容） |
+| FR-07 4 域搜索 + 旧请求 Abort | `useHelpSearch()` Fuse + FAQ 200ms 熔断 + LRU 20 | [`useHelpSearch.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/useHelpSearch.ts) | DONE | FAQ ≥ 10ms 熔断 → degraded=true |
+| FR-04 / FR-06 Service 中间层 | FAQ / Feedback 中间层，UI 禁止直引 @/api/* | [`helpServices.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/helpServices.ts) | DONE | 限流 3/min；15s 超时；GitHub fallback |
+| §7.4.2 URL 脱敏工具 | 12 类敏感参数打码 / Query 白名单 route,page,lang / Fragment 删除 | [`url-sanitize.ts`](file:///Users/yi/YrY/YiVad/src/utils/url-sanitize.ts) | DONE | 数据驱动 12 条单测（P2 未启动） |
+| Barrel export（Composable 统一入口） | `index.ts` re-export useHelp / usePageHelp / useHelpSearch / *types* | [`HelpCenter/index.ts`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/index.ts) | DONE | 外部从 `@/components/HelpCenter` 取 composable |
+
+### 20.2 数据种子层
+
+| PRD 章节 | 条目 | 真实文件路径 | 状态 | 备注 |
+|---|---|---|---|---|
+| §6.2 首批 12 条 PageHelp | 核心路由页面帮助种子 | [`page-help-content.ts`](file:///Users/yi/YrY/YiVad/src/data/help/page-help-content.ts) | DONE | `matchPageHelp()` 与种子同文件，保证不漂移 |
+| §D-10 FAQ 离线兜底 20 条 | 静态 FAQ（含 CanceledError、RAG 默认关闭） | [`faq-static.ts`](file:///Users/yi/YrY/YiVad/src/data/help/faq-static.ts) | DONE | 含 popularity / updatedAt，按热度倒序 |
+| §D-10 Changelog 种子 CG-1 | Unreleased + 1.8.3 + 1.8.2，conventional commits | [`changelog-generated.ts`](file:///Users/yi/YrY/YiVad/src/data/help/changelog-generated.ts) | DONE | CI：`check-help-changelog.mjs`，scope 覆盖率 ≥0.80 |
+
+### 20.3 UI / 组件层（5 Tab Shell + 子组件）
+
+| FR 条目 | 组件 / 功能 | 真实文件路径 | 状态 | 备注 |
+|---|---|---|---|---|
+| FR-01 Shell 面板（单例 Teleport / A11y / 搜索键盘导航） | HelpCenterPanel.vue | [`HelpCenterPanel.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/HelpCenterPanel.vue) | DONE | 5 Tab + 全语义化 CSS 变量（禁 hex） |
+| FR-02 Page Help Tab | PageHelp 渲染 / RelatedShortcuts / RelatedLinks / ProTips / 空态 CTA | 见左以下 4 文件 | DONE | 含 roleFilter 过滤 |
+| → Related Shortcuts | RelatedShortcuts.vue（从 Registry 查 handler 执行） | [`tabs/RelatedShortcuts.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/RelatedShortcuts.vue) | DONE | scope 不匹配 → 禁用按钮，不 crash |
+| → Related Links | RelatedLinks.vue（路由内跳转自动关面板） | [`tabs/RelatedLinks.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/RelatedLinks.vue) | DONE | 外链 rel="noopener noreferrer" |
+| → Pro Tips 卡片 | ProTips.vue（黄底虚线边） | [`tabs/ProTips.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/ProTips.vue) | DONE | 兼容 prefers-reduced-motion |
+| → 空态 CTA | EmptyPageHelp.vue → FAQ / 命令面板 | [`tabs/EmptyPageHelp.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/EmptyPageHelp.vue) | DONE | 当前路由自动 seed 搜索 |
+| FR-03 Shortcuts Tab | ShortcutRegistry 分组 / ⌘⌥ 平台替换 / 一键 Copy Markdown | [`tabs/ShortcutsTab.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/ShortcutsTab.vue) | DONE | 禁止手写静态副本；SLI-6 CI 校验 |
+| FR-04 FAQ Tab + 有用/无用埋点 | FAQTab.vue（degraded 黄条提示 + 展开） | [`tabs/FAQTab.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/FAQTab.vue) | DONE | 埋点不阻塞 UI；await 后台 |
+| FR-05 Changelog Tab | security → 🛡 红边 + 分组按 type 色块 | [`tabs/ChangelogTab.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/ChangelogTab.vue) | DONE | Unreleased → warning 浅底 |
+| FR-06 Feedback Tab（闭环 + SLA） | FeedbackTab.vue | [`tabs/FeedbackTab.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/FeedbackTab.vue) | DONE | 限流 / 15s 超时 → GitHub Issue 预填 fallback |
+| → SLA 倒计时 | SlaCountdown.vue（绿/黄/红状态） | [`tabs/SlaCountdown.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/tabs/SlaCountdown.vue) | DONE | SLA 计算：ISO deadline 到当前的 diff ms |
+| §7.4.1 XSS SafeMarkdown 白名单 | 23 HTML 标签白名单 / DOMPurify + marked v18 | [`shared/SafeMarkdown.vue`](file:///Users/yi/YrY/YiVad/src/components/HelpCenter/shared/SafeMarkdown.vue) | DONE | 外链二次确认（confirm）；rel 三属性齐全 |
+| NFR-7.6 样式硬闸 | 全组件 SCSS：禁止 6 位 hex，全部 `var(--el-*)` / `var(--color-*)` | 上述全部 .vue <style scoped> | DONE | grep 脚本可在 CI 中二次确认（待 P2） |
+
+### 20.4 应用挂载层（Layout / i18n / 命令面板 / 组件 barrel）
+
+| 条目 | 文件路径 | 状态 | 备注 |
+|---|---|---|---|
+| 删除旧 KeyboardShortcuts，挂 HelpCenterPanel + `installHelpOS()` + `bindHelpShortcut()` | [`layouts/index.vue`](file:///Users/yi/YrY/YiVad/src/layouts/index.vue) | LINK | onMounted 安装 |
+| help 命名空间 zh 文案 | [`languages/modules/help/zh.ts`](file:///Users/yi/YrY/YiVad/src/languages/modules/help/zh.ts) | DONE | 结构严格与 en 一致 |
+| help 命名空间 en 文案 | [`languages/modules/help/en.ts`](file:///Users/yi/YrY/YiVad/src/languages/modules/help/en.ts) | DONE | i18n:check 脚本会对结构做 1:1 对比 |
+| 注册 help 模块到 messages.zh / en | [`languages/modules/index.ts`](file:///Users/yi/YrY/YiVad/src/languages/modules/index.ts) | LINK | 新增 import + ...zhHelp / ...enHelp 展开 |
+| 命令面板 5 aliases（>help / >shortcuts / >faq / >changelog / >feedback） | [`CommandPalette/CommandPalette.vue`](file:///Users/yi/YrY/YiVad/src/components/CommandPalette/CommandPalette.vue) | LINK | 单源：从 `useHelp.HELP_COMMAND_ALIASES` 动态生成；禁止双写 |
+| 组件 barrel：删除 KeyboardShortcuts，新增 HelpCenterPanel | [`components/index.ts`](file:///Users/yi/YrY/YiVad/src/components/index.ts) | LINK | 删除 line `export { default as KeyboardShortcuts } from "./KeyboardShortcuts/index.vue";` |
+
+### 20.5 i18n 文案结构（供 QA 抽查结构 1:1）
+
+命名空间：`help.*`，子节点按 `panel / tabs / search / page / shortcuts / faq / changelog / feedback / sla` 分层，完整结构在：
+- 中：[`help/zh.ts`](file:///Users/yi/YrY/YiVad/src/languages/modules/help/zh.ts)
+- 英：[`help/en.ts`](file:///Users/yi/YrY/YiVad/src/languages/modules/help/en.ts)
+
+### 20.6 CI 门禁（§11.2 HardGate / Dev §9）
+
+| 脚本（对齐 Dev §9）| 路径 | 作用 | 通过标准 |
+|---|---|---|---|
+| check-help-types-goldcopy.mjs | [`scripts/ci/check-help-types-goldcopy.mjs`](file:///Users/yi/YrY/YiVad/scripts/ci/check-help-types-goldcopy.mjs) | PRD §6.1 vs types.ts 关键字段差异数 | Δ ≤ 3 → PASS，> 3 → FAIL |
+| check-help-changelog.mjs | [`scripts/ci/check-help-changelog.mjs`](file:///Users/yi/YrY/YiVad/scripts/ci/check-help-changelog.mjs) | changelog conventional commits scope 覆盖率 | ≥ 0.80 |
+| check-shortcut-consistency.mjs | [`scripts/ci/check-shortcut-consistency.mjs`](file:///Users/yi/YrY/YiVad/scripts/ci/check-shortcut-consistency.mjs) | SLI-6：禁止静态快捷键手写副本 | 0 副本 → PASS |
+
+### 20.7 E2E 骨架（AC-01 ~ AC-06 主线 Playwright）
+
+| AC | 用例 | 路径 |
+|---|---|---|
+| AC-01 | ? 键 → Esc 关闭（三入口之一） | [`e2e/specs/help-center.spec.ts`](file:///Users/yi/YrY/YiVad/e2e/specs/help-center.spec.ts) |
+| AC-02 | /kanban 路由 → PageHelp 命中标题 | 同上 |
+| AC-03 | Shortcuts Tab ≥ 20 行 & 至少 1 个 kbd 显示 | 同上 |
+| AC-04 | FAQ 3s 延迟拦截 → degraded 黄条可见 | 同上 |
+| AC-05 | Feedback 4 次连点 → 限流提示 | 同上 |
+| AC-06 | URL 带 token/password 跳转 → env 区仅显示 `***` | 同上 |
+
+### 20.8 依赖 & 安全补丁登记
+
+| 项 | 状态 | 备注 |
+|---|---|---|
+| dompurify@^3.4.16 | DONE（`yarn add dompurify --ignore-engines` 已写入 dependencies） | 解决 SafeMarkdown 缺失问题 |
+| @types/dompurify | SKIP | dompurify 本身自带 TS 定义，不需要 @types stub（yarn add devDep 会提示 stub deprecated） |
+| marked v18、fuse.js v7.5、dayjs v1.11.21 | DONE（继承现有） | 已在 node_modules 中存在 |
+| 旧 KeyboardShortcuts 组件目录 | TODO（物理删除） | 建议 L1 发布后跑 `grep -r KeyboardShortcuts src/` 确认 0 引用，再 `rm -rf src/components/KeyboardShortcuts` |
+| Feature Flags 接入（help.center.enabled） | TODO | 挂点：`layouts/index.vue → installHelpOS({ enabled: () => featureflags.help.center.enabled })` |
 
 ---
 

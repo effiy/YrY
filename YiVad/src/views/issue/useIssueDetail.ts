@@ -324,7 +324,7 @@ export function useIssueDetail() {
 
   // ── Lifecycle ──
   onMounted(async () => {
-    const key = route.params.key as string;
+    const key = (route.params.id as string) || (route.params.key as string);
     if (key) await store.fetchIssue(key);
     loading.value = false;
     await Promise.all([loadLinked(), loadDescFile()]);

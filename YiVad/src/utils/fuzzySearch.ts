@@ -6,7 +6,8 @@ interface FuseResult<T> {
 }
 
 interface FuseOptions<T> {
-  keys: (keyof T | { name: keyof T; weight: number })[];
+  /** Fuse 原生支持 a.b.c 嵌套路径；因此 `name` 放宽为 string（不必强约束在 keyof T 内） */
+  keys: (string | { name: string; weight: number })[];
   threshold?: number;
   distance?: number;
   minMatchCharLength?: number;

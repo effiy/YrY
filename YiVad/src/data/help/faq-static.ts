@@ -4,7 +4,7 @@
  * 首批 20 条：覆盖 HelpOS 5 Tab / 命令面板 / 快捷键 / RAG 等最高频问题。
  * 若 YiKnowledge /api/v1/faq/search 不可用，展示这些兜底条目。
  */
-import type { FAQItem } from "../components/HelpCenter/types";
+import type { FAQItem } from "../../components/HelpCenter/types";
 
 function faq(
   id: string,

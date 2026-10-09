@@ -49,8 +49,11 @@ export interface QuickAction {
   route: string;
   icon: any;
   color: string;
-  /** 执行操作（默认 router.push）；返回 false 表示执行失败，UI 会 toast 提示 */
-  run?: () => void | boolean | Promise<void | boolean>;
+  /** 执行操作（默认 router.push）。
+   *  - 若返回 false：UI 层会 toast 提示"操作失败"；
+   *  - 若返回 Promise<void>（典型情况 router.push 返回 NavigationFailure Promise）：视为成功；
+   *  调用方需自行 catch navigation 异常（典型写法：router.push(x).catch(() => {})）。*/
+  run?: () => unknown;
 }
 
 /* ── 计算器 snippet（直接输入 "100 km to mi" 时直接显示结果）─────────────── */

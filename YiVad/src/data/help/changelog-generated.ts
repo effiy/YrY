@@ -5,7 +5,7 @@
  *  生产构建：CI scripts/ci/check-help-changelog.mjs 产出 changelog-generated.json 随 bundle 发布；
  *  最小降级：当外部文件缺失时，至少包含 2 条历史版本 + Unreleased 占位。
  */
-import type { ChangelogEntry, ChangelogSectionType } from "../components/HelpCenter/types";
+import type { ChangelogEntry, ChangelogSectionType } from "../../components/HelpCenter/types";
 
 const TYPES: readonly ChangelogSectionType[] = [
   "feat", "fix", "docs", "refactor", "perf", "chore", "security", "breaking"
@@ -21,7 +21,7 @@ const SEED: ChangelogEntry[] = [
       { type: "feat", description: "新增 HelpOS 帮助中心（? 键 3 入口触发）", scope: "help" },
       { type: "feat", description: "命令面板新增 > help / > shortcuts / > changelog / > feedback / > report bug aliases", scope: "command" },
       { type: "fix", description: "useProjectDetail 错误调用 DisposerBag.dispose() 导致的 CanceledError 级联触发（改用 reset）", scope: "hooks" },
-      { type: "security", description: "反馈通道 URL 脱敏新增 6 类关键字打码：token / password / key / secret / jwt / session" }
+      { type: "security", description: "反馈通道 URL 脱敏新增 6 类关键字打码：token / password / key / secret / jwt / session", scope: "feedback" }
     ]
   },
   {
@@ -33,7 +33,7 @@ const SEED: ChangelogEntry[] = [
       { type: "fix", description: "RAG 默认 BM25，Embedding 默认关闭（RAG_EMBED_KILL_SWITCH=true）", scope: "rag" },
       { type: "fix", description: "useNotificationSSE 统一用 yiAiBaseUrl 动态拼装，移除所有硬编码 127.0.0.1:7777 / :8787 残留", scope: "sse" },
       { type: "perf", description: "Rsbuild: 默认关闭 tools.tsChecker 以优化 HMR ≤ 650ms", scope: "build" },
-      { type: "docs", description: "YiVad README：补齐 24 章、三阶入门红线与 SRE GameDay 6 套演练方案" }
+      { type: "docs", description: "YiVad README：补齐 24 章、三阶入门红线与 SRE GameDay 6 套演练方案", scope: "docs" }
     ]
   },
   {
@@ -43,8 +43,11 @@ const SEED: ChangelogEntry[] = [
     released: true,
     sections: [
       { type: "feat", description: "全局快捷键注册表（YV-09-43），5 作用域 × 5 分类", scope: "shortcuts" },
-      { type: "feat", description: "命令面板 YV-09-68：支持 Issue / Project / Page 混合搜索 + Quick Actions" },
-      { type: "feat", description: "Bug 列表支持 批量归档 / 批量改派 / 批量打标签", scope: "bugs" }
+      { type: "feat", description: "命令面板 YV-09-68：支持 Issue / Project / Page 混合搜索 + Quick Actions", scope: "command" },
+      { type: "feat", description: "Bug 列表支持 批量归档 / 批量改派 / 批量打标签", scope: "bugs" },
+      { type: "perf", description: "Kanban viewport 虚拟滚动：> 500 卡片滚动 p95 从 42ms → 11ms", scope: "kanban" },
+      { type: "fix", description: "TopicDetailPage SSR 下 route.fullPath 空引用修复", scope: "topics" },
+      { type: "chore", description: "package.json 统一 packageManager=yarn@1.22.22，禁止 pnpm/yarn v3 混用", scope: "deps" }
     ]
   }
 ];

@@ -190,14 +190,13 @@ function _fail(
   };
   // 可观测性：任何闸门 A 失败都是未来 SLO 波动的信号，先打点再 return
   pushReliabilityEvent({
-    id: `link-factory-${reason}-${(item.type || "?")}-${(item.key || "?").slice(0, 12)}`,
     projectKey: item.project || "",
     phase: "search_navigate",
-    stage: "gate_a",
-    subStage: reason,
+    status: "failed",
+    durationMs: 0,
+    retryCount: 0,
     errorType: "business",
-    latencyMs: 0,
-    tags: { entityType: item.type, reason }
+    tags: { stage: "gate_a", subStage: reason, entityType: item.type, reason }
   });
   return result;
 }
@@ -401,6 +400,9 @@ export async function gateBEntityExists(input: ResolveLinkInput, opts?: { signal
   const cname = entityTypeToCollection(input.type);
   if (!cname) return true;   // 设置/静态页：不存在的已在 Gate A 拦截
   if (!input.key) return false;
+  // Mock / dev 无后端索引：Gate B 跳过后端 HEAD 预检，放行让 Gate C 在路由落地失败时回退。
+  // 避免 unifiedSearch 的 20 条种子在 gate B 阶段被真实后端 404 / 空响应误杀。
+  if (import.meta.env.RSBUILD_ENV_USE_MOCK === "true") return true;
   try {
     const body = { cname, filter: { key: input.key }, pageSize: 1 };
     const resp = await fetch(buildYiAiUrl("/data/query/documents"), {

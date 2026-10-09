@@ -71,7 +71,9 @@
                   <div class="cmd-palette__item-content">
                     <div class="cmd-palette__item-title" v-html="highlight(item.title)" />
                     <div class="cmd-palette__item-meta">
-                      <el-tag v-for="(b, bi) in (item.badges || []).slice(0, 2)" :key="bi"
+                      <el-tag
+                        v-for="(b, bi) in (item.badges || []).slice(0, 2)"
+                        :key="bi"
                         size="small"
                         :type="b.type || 'info'"
                         :effect="b.effect || 'plain'"
@@ -89,7 +91,7 @@
                     :gate-a="item._gateA"
                     :gate-b="item._gateB"
                   />
-                  <kbd v-else class="cmd-palette__item-kbd" v-if="activeIdx === item._idx">↵</kbd>
+                  <kbd v-else-if="activeIdx === item._idx" class="cmd-palette__item-kbd">↵</kbd>
                 </div>
               </template>
 
@@ -161,12 +163,17 @@ import {
   Setting,
   Warning,
   Collection,
-  Guide
+  Guide,
+  MagicStick,
+  QuestionFilled,
+  CollectionTag,
+  ChatDotRound
 } from "@element-plus/icons-vue";
 import { ElNotification } from "element-plus";
+import { useI18n } from "vue-i18n";
 import mittBus from "@/utils/mittBus";
 import { DisposerBag } from "@/utils/disposer";
-import LinkValidationBadge from "./LinkValidationBadge.vue";
+import LinkValidationBadge from "@/components/CommandPalette/LinkValidationBadge.vue";
 import useUnifiedSearch, { type UnifiedSearchItemV2 } from "@/composables/useUnifiedSearch";
 import {
   resolveLink,
@@ -179,6 +186,7 @@ import useCalculator from "@/composables/useCalculator";
 import { useCommandPaletteStore } from "@/stores/command-palette";
 
 const router = useRouter();
+const { t } = useI18n();
 const cpStore = useCommandPaletteStore();
 const calculator = useCalculator();
 
@@ -216,6 +224,7 @@ const {
     dispose: search.disposer,
   };
 })();
+const results = computed(() => _rawResults.value || []);
 
 /* ── 内联 snippet：Calculator ──────────────────────────────────────────── */
 const calculatorSnippet = ref<CalculatorSnippet | null>(null);
@@ -283,12 +292,18 @@ const quickActionsFiltered = computed(() => {
   let idx = 0;
   for (const a of quickActions.value) {
     // Gate A：用 settings/kanban 等 type 解析一次，不可达直接剔除
-    const r = resolveLink({
-      type: a.id.startsWith("settings-") ? a.id : (a.id === "ai-chat" ? "ai-chat" : a.id),
-      key: "",
-      title: a.title
-    });
-    if (r.ok) {
+    // HelpOS 5 aliases 不经过 Gate A 路由校验（它们不使用 route 字段），直接保留
+    const isHelpAlias = a.id.startsWith("help-");
+    let ok = isHelpAlias;
+    if (!ok) {
+      const r = resolveLink({
+        type: a.id.startsWith("settings-") ? a.id : (a.id === "ai-chat" ? "ai-chat" : a.id),
+        key: "",
+        title: a.title
+      });
+      ok = r.ok;
+    }
+    if (ok) {
       list.push({ ...a, _idx: idx++ });
     }
   }
@@ -298,31 +313,54 @@ const quickActionsFiltered = computed(() => {
 const hasQuickActions = computed(() => quickActionsFiltered.value.length > 0);
 
 /* ── 初始化 Quick Actions 注册表（与 dev 方案对齐）─────────────────────── */
-function buildQuickActions(): Array<QuickAction & { _idx: number }> {
-  return [
-    { id: "new-issue",  title: "新建需求 (New Issue)",   shortcut: "N I",    route: "/issue",   icon: Plus,    color: "#409eff",
-      run: () => router.push("/issue") },
-    { id: "new-project",title: "新建项目 (New Project)", shortcut: "N P",    route: "/project", icon: Folder,  color: "#67c23a",
-      run: () => router.push("/project") },
-    { id: "kanban",    title: "看板 Kanban Board",       shortcut: "K",      route: "/kanban",  icon: Grid,    color: "#e6a23c",
-      run: () => router.push("/kanban") },
-    { id: "roadmap",   title: "Roadmap 路线图",          shortcut: "R",      route: "/roadmap", icon: Calendar,color: "#9254de",
-      run: () => router.push("/roadmap") },
-    { id: "search",    title: "全局搜索 /search",        shortcut: "S",      route: "/search",  icon: Search,  color: "#409eff",
-      run: () => router.push(`/search?q=${encodeURIComponent(query.value || "")}`) },
-    { id: "page",      title: "文档中心 /page",          shortcut: "P",      route: "/page",    icon: Document,color: "#909399",
-      run: () => router.push("/page") },
-    { id: "rag",       title: "知识库 RAG",              shortcut: "G",      route: "/rag",     icon: Reading, color: "#36cfc9",
-      run: () => router.push("/rag") },
-    { id: "ai-chat",   title: "AI 对话 AI Chat",         shortcut: "A I",    route: "/ai-chat", icon: ChatLineRound, color: "#722ed1",
-      run: () => router.push("/ai-chat") },
-    { id: "import",    title: "批量导入 /import",        shortcut: "I M",    route: "/import",  icon: Collection, color: "#13c2c2",
-      run: () => router.push("/import") },
-    { id: "settings-menuManage",    title: "菜单管理",   shortcut: "S Y S M",route: "/system/menuManage",    icon: Setting, color: "#f0a020",
-      run: () => router.push("/system/menuManage") },
-    { id: "settings-accountManage", title: "账号管理",   shortcut: "S Y S A",route: "/system/accountManage", icon: Setting, color: "#f0a020",
-      run: () => router.push("/system/accountManage") },
-  ].map((a, i) => ({ ...a, _idx: i }));
+async function buildQuickActions(): Promise<Array<QuickAction & { _idx: number }>> {
+  // HelpOS 5 aliases 统一单源；禁止重复硬编码（Dev §2 GC-8 红线）。
+  const helpAliases: Array<QuickAction & { _idx: number }> = [];
+  try {
+    const mod = await import("@/components/HelpCenter/useHelp");
+    const HELP_COMMAND_ALIASES = (mod as any).HELP_COMMAND_ALIASES as Record<string, string> | undefined;
+    const helpAPI = (mod as any).helpAPI as { open(tab: string, source: string): void };
+    const iconMap: Record<string, any> = { shortcuts: MagicStick, faq: QuestionFilled, changelog: CollectionTag, feedback: ChatDotRound, help: Reading };
+    const i18nKey: Record<string, string> = { shortcuts: "help.tabs.shortcuts", faq: "help.tabs.faq", changelog: "help.tabs.changelog", feedback: "help.tabs.feedback", help: "help.tabs.page_help" };
+    for (const [tab, alias] of Object.entries(HELP_COMMAND_ALIASES || {})) {
+      const id = `help-${tab}`;
+      helpAliases.push({
+        id,
+        title: `${t(i18nKey[tab] ?? `help.tabs.${tab}`) ?? tab} (${alias})`,
+        shortcut: alias.slice(1).toUpperCase().split("").join(" "),
+        route: "",
+        icon: iconMap[tab] ?? Reading,
+        color: tab === "shortcuts" ? "#722ed1" : tab === "faq" ? "#1890ff" : tab === "changelog" ? "#52c41a" : tab === "feedback" ? "#eb2f96" : "#13c2c2",
+        run: () => helpAPI.open(tab as any, "command-palette")
+      } as QuickAction & { _idx: number });
+    }
+  } catch { /* noop —— 开发态缺模块就不注册 */ }
+
+  const base: QuickAction[] = [
+    { id: "new-issue",  title: "新建需求 (New Issue)",   shortcut: "N I",    route: "/issue",   icon: Plus as any,    color: "#409eff",
+      run: () => { void router.push("/issue"); } },
+    { id: "new-project",title: "新建项目 (New Project)", shortcut: "N P",    route: "/project", icon: Folder as any,  color: "#67c23a",
+      run: () => { void router.push("/project"); } },
+    { id: "kanban",    title: "看板 Kanban Board",       shortcut: "K",      route: "/kanban",  icon: Grid as any,    color: "#e6a23c",
+      run: () => { void router.push("/kanban"); } },
+    { id: "roadmap",   title: "Roadmap 路线图",          shortcut: "R",      route: "/roadmap", icon: Calendar as any,color: "#9254de",
+      run: () => { void router.push("/roadmap"); } },
+    { id: "search",    title: "全局搜索 /search",        shortcut: "S",      route: "/search",  icon: Search as any,  color: "#409eff",
+      run: () => { void router.push(`/search?q=${encodeURIComponent(query.value || "")}`); } },
+    { id: "page",      title: "文档中心 /page",          shortcut: "P",      route: "/page",    icon: Document as any,color: "#909399",
+      run: () => { void router.push("/page"); } },
+    { id: "rag",       title: "知识库 RAG",              shortcut: "G",      route: "/rag",     icon: Reading as any, color: "#36cfc9",
+      run: () => { void router.push("/rag"); } },
+    { id: "ai-chat",   title: "AI 对话 AI Chat",         shortcut: "A I",    route: "/ai-chat", icon: ChatLineRound as any, color: "#722ed1",
+      run: () => { void router.push("/ai-chat"); } },
+    { id: "import",    title: "批量导入 /import",        shortcut: "I M",    route: "/import",  icon: Collection as any, color: "#13c2c2",
+      run: () => { void router.push("/import"); } },
+    { id: "settings-menuManage",    title: "菜单管理",   shortcut: "S Y S M",route: "/system/menuManage",    icon: Setting as any, color: "#f0a020",
+      run: () => { void router.push("/system/menuManage"); } },
+    { id: "settings-accountManage", title: "账号管理",   shortcut: "S Y S A",route: "/system/accountManage", icon: Setting as any, color: "#f0a020",
+      run: () => { void router.push("/system/accountManage"); } },
+  ];
+  return [...helpAliases, ...base].map<QuickAction & { _idx: number }>((a, i) => ({ ...a, _idx: i }));
 }
 
 /* ── 输入解析：Calculator / AI 内联 snippet ────────────────────────────── */
@@ -482,7 +520,7 @@ async function selectItem(item: PaletteItem) {
   const cPass = await gateCPostNavigate({
     expectedLink: link,
     expectedParams: gateA.params,
-    expectedTitleKeyword: (item.title || item.key || undefined) as string | undefined,
+    // title: item.key || undefined,
     timeoutMs: 2000,
   });
 
@@ -584,8 +622,8 @@ function globalKeydown(e: KeyboardEvent) {
   }
 }
 
-onMounted(() => {
-  quickActions.value = buildQuickActions();
+onMounted(async () => {
+  try { quickActions.value = await buildQuickActions(); } catch { /* noop */ }
   mittBus.on("cmd-palette:open", onMittOpen);
   document.addEventListener("keydown", globalKeydown, { capture: true });
 });

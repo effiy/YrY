@@ -11,7 +11,7 @@
  * I18n：所有文案走 help.* 命名空间（见 src/languages/modules/help/zh.ts 与 en.ts）。
  * 这里仅存结构化骨架，实际渲染用 i18n 键值。
  */
-import type { PageHelpContent } from "../components/HelpCenter/types";
+import type { PageHelpContent } from "../../components/HelpCenter/types";
 
 /**
  * 生成一个 PageHelpContent 条目。

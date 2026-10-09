@@ -26,19 +26,10 @@
           :placeholder="t('rss.manager.items.searchPlaceholder')"
           clearable
           :prefix-icon="Search"
-          style="width: 180px"
+          style="width: 200px"
           @clear="onItemFilterChange"
           @keyup.enter="onItemFilterChange"
         />
-        <el-select
-          v-model="itemCategoryFilter"
-          :placeholder="t('rss.manager.items.categoryAll')"
-          clearable
-          style="width: 160px"
-          @change="onItemFilterChange"
-        >
-          <el-option v-for="c in categoryOptions" :key="c.value" :label="`${c.icon} ${c.label}`" :value="c.value" />
-        </el-select>
         <el-select
           v-model="itemSourceFilter"
           :placeholder="t('rss.manager.items.sourceAll')"
@@ -48,32 +39,58 @@
         >
           <el-option v-for="s in seedOptions" :key="s.value" :label="s.label" :value="s.value" />
         </el-select>
-        <el-radio-group v-model="timePreset" size="small" @change="setTimePreset">
-          <el-radio-button value="all">{{ t("rss.manager.items.timePreset.all") }}</el-radio-button>
-          <el-radio-button value="today">{{ t("rss.manager.items.timePreset.today") }}</el-radio-button>
-          <el-radio-button value="week">{{ t("rss.manager.items.timePreset.week") }}</el-radio-button>
-          <el-radio-button value="month">{{ t("rss.manager.items.timePreset.month") }}</el-radio-button>
-        </el-radio-group>
-        <el-date-picker
-          v-model="itemDateRange"
-          type="daterange"
-          range-separator="~"
-          :start-placeholder="t('rss.manager.items.dateRange.from')"
-          :end-placeholder="t('rss.manager.items.dateRange.to')"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          style="width: 220px"
-          @change="
-            timePreset = '';
-            onItemFilterChange();
-          "
-        />
-        <el-select v-model="itemSortKey" style="width: 110px" @change="onItemFilterChange">
-          <el-option :label="t('rss.manager.items.sort.newest')" value="published_parsed" />
-          <el-option :label="t('rss.manager.items.sort.oldest')" value="published_parsed-asc" />
-          <el-option :label="t('rss.manager.items.sort.source')" value="source_name" />
-          <el-option :label="t('rss.manager.items.sort.category')" value="category_path" />
-        </el-select>
+        <el-button
+          size="small"
+          text
+          type="primary"
+          @click="advancedFiltersOpen = !advancedFiltersOpen"
+          :class="{ 'is-open': advancedFiltersOpen }"
+        >
+          {{ t(advancedFiltersOpen ? "rss.manager.items.advanced.collapse" : "rss.manager.items.advanced.expand") }}
+          <span class="rss-items__advanced-caret">{{ advancedFiltersOpen ? "▴" : "▾" }}</span>
+        </el-button>
+        <template v-if="advancedFiltersOpen">
+          <el-select
+            v-model="itemCategoryFilter"
+            :placeholder="t('rss.manager.items.categoryAll')"
+            clearable
+            style="width: 160px"
+            @change="onItemFilterChange"
+          >
+            <el-option
+              v-for="c in categoryOptions"
+              :key="c.value"
+              :label="`${c.icon} ${c.label}`"
+              :value="c.value"
+            />
+          </el-select>
+          <el-radio-group v-model="timePreset" size="small" @change="setTimePreset">
+            <el-radio-button value="all">{{ t("rss.manager.items.timePreset.all") }}</el-radio-button>
+            <el-radio-button value="today">{{ t("rss.manager.items.timePreset.today") }}</el-radio-button>
+            <el-radio-button value="week">{{ t("rss.manager.items.timePreset.week") }}</el-radio-button>
+            <el-radio-button value="month">{{ t("rss.manager.items.timePreset.month") }}</el-radio-button>
+          </el-radio-group>
+          <el-date-picker
+            v-model="itemDateRange"
+            type="daterange"
+            range-separator="~"
+            :start-placeholder="t('rss.manager.items.dateRange.from')"
+            :end-placeholder="t('rss.manager.items.dateRange.to')"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            style="width: 220px"
+            @change="
+              timePreset = '';
+              onItemFilterChange();
+            "
+          />
+          <el-select v-model="itemSortKey" style="width: 110px" @change="onItemFilterChange">
+            <el-option :label="t('rss.manager.items.sort.newest')" value="published_parsed" />
+            <el-option :label="t('rss.manager.items.sort.oldest')" value="published_parsed-asc" />
+            <el-option :label="t('rss.manager.items.sort.source')" value="source_name" />
+            <el-option :label="t('rss.manager.items.sort.category')" value="category_path" />
+          </el-select>
+        </template>
       </div>
 
       <div v-if="hasActiveFilters" class="rss-role__active-filters">
@@ -223,17 +240,25 @@
 
       <!-- Card view -->
       <div v-else-if="viewMode === 'card'" v-loading="itemsLoading" class="rss-role__items-grid">
-        <div v-if="!itemsLoading && !filteredItems.length" class="rss-role__items-empty">
-          <template v-if="items.length || hasActiveFilters">
-            <p>{{ t("rss.manager.items.empty.noMatch") }}</p>
-            <p class="rss-role__items-empty-hint">{{ t("rss.manager.items.empty.noMatchHint") }}</p>
-            <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">{{
-              t("rss.manager.items.empty.clearFilters")
-            }}</el-button>
-          </template>
-          <template v-else>
-            <p>{{ t("rss.manager.items.empty.noItems") }}</p>
-          </template>
+        <div
+          v-if="!itemsLoading && !filteredItems.length"
+          class="rss-briefing__chart-empty rss-items__empty-unified"
+        >
+          <div class="rss-briefing__chart-empty-glyph">{{ items.length ? "🔍" : "📭" }}</div>
+          <div class="rss-briefing__chart-empty-title">
+            {{ items.length ? t("rss.manager.items.empty.noMatch") : t("rss.manager.items.empty.noItems") }}
+          </div>
+          <div class="rss-briefing__chart-empty-hint">
+            {{ items.length ? t("rss.manager.items.empty.noMatchHint") : t("rss.manager.items.export.noData") }}
+          </div>
+          <el-button
+            v-if="hasActiveFilters"
+            size="small"
+            type="primary"
+            plain
+            @click="clearFilters"
+            >{{ t("rss.manager.items.empty.clearFilters") }}</el-button
+          >
         </div>
         <el-card
           v-for="item in filteredItems"
@@ -284,18 +309,26 @@
       </div>
 
       <!-- List view -->
-      <div v-else v-loading="itemsLoading" class="rss-role__items-list">
-        <div v-if="!itemsLoading && !filteredItems.length" class="rss-role__items-empty">
-          <template v-if="items.length || hasActiveFilters">
-            <p>{{ t("rss.manager.items.empty.noMatch") }}</p>
-            <p class="rss-role__items-empty-hint">{{ t("rss.manager.items.empty.noMatchHint") }}</p>
-            <el-button v-if="hasActiveFilters" size="small" text type="primary" @click="clearFilters">{{
-              t("rss.manager.items.empty.clearFilters")
-            }}</el-button>
-          </template>
-          <template v-else>
-            <p>{{ t("rss.manager.items.empty.noItems") }}</p>
-          </template>
+      <div v-else v-loading="itemsLoading" class="rss-role__items-list rss-items__list--compact">
+        <div
+          v-if="!itemsLoading && !filteredItems.length"
+          class="rss-briefing__chart-empty rss-items__empty-unified"
+        >
+          <div class="rss-briefing__chart-empty-glyph">{{ items.length ? "🔍" : "📭" }}</div>
+          <div class="rss-briefing__chart-empty-title">
+            {{ items.length ? t("rss.manager.items.empty.noMatch") : t("rss.manager.items.empty.noItems") }}
+          </div>
+          <div class="rss-briefing__chart-empty-hint">
+            {{ items.length ? t("rss.manager.items.empty.noMatchHint") : t("rss.manager.items.export.noData") }}
+          </div>
+          <el-button
+            v-if="hasActiveFilters"
+            size="small"
+            type="primary"
+            plain
+            @click="clearFilters"
+            >{{ t("rss.manager.items.empty.clearFilters") }}</el-button
+          >
         </div>
         <div
           v-for="item in filteredItems"
@@ -337,10 +370,12 @@
       <div class="rss-role__pagination">
         <el-pagination
           v-model:current-page="itemPage"
-          :page-size="itemPageSize"
+          v-model:page-size="itemPageSize"
+          :page-sizes="[50, 100, 200, 500]"
           :total="totalItems"
-          layout="prev,pager,next,total"
+          layout="total, sizes, prev, pager, next, jumper"
           background
+          @size-change="onItemPageSizeChange"
           @current-change="loadItems"
         />
       </div>
@@ -387,6 +422,9 @@ async function loadSeedsForOptions() {
 }
 
 const rolesRef = toRef(props, "selectedRoles");
+
+// ── Advanced filters (collapse/expand) ──
+const advancedFiltersOpen = ref(false);
 
 const seedOptions = computed(() => {
   const roleSet = rolesRef.value.length ? new Set(rolesRef.value) : null;
@@ -451,6 +489,21 @@ async function onBatchDelete() {
   const ok = await batchDelete();
   if (ok) emit("itemsChanged");
 }
+
+function onItemPageSizeChange() {
+  itemPage.value = 1;
+  loadItems();
+}
+
+// Expose focus hooks for global shortcut (Cmd+K → tab.active === 'items')
+defineExpose({
+  focusSearch() {
+    const el = document.querySelector<HTMLElement>(
+      ".rss-role__section .rss-role__toolbar .el-input__inner"
+    );
+    el?.focus?.();
+  }
+});
 
 onMounted(() => {
   loadSeedsForOptions();

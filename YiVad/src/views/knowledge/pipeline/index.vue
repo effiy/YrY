@@ -255,17 +255,17 @@ d="M2 12 L18 12 M14 7 L20 12 L14 17"
       </section>
 
       <!-- Data distribution -->
-      <section v-if="knowledgeData?.size_distribution?.length || knowledgeData?.age_distribution?.length" class="pipeline__section">
+      <section v-if="sizeDistribution.length || ageDistribution.length" class="pipeline__section">
         <h2 class="pipeline__section-title">
           <span class="pipeline__section-icon">|</span>
           {{ t("knowledge.pipeline.distribution.title") }}
         </h2>
         <div class="pipeline__dist-grid">
-          <div v-if="knowledgeData?.size_distribution?.length" class="pipeline__dist-panel">
+          <div v-if="sizeDistribution.length" class="pipeline__dist-panel">
             <h4 class="pipeline__dist-heading">{{ t("knowledge.pipeline.distribution.size") }}</h4>
             <div class="pipeline__dist-bars">
               <div
-                v-for="item in knowledgeData.size_distribution"
+                v-for="item in sizeDistribution"
                 :key="item.label"
                 class="pipeline__dist-row"
               >
@@ -280,11 +280,11 @@ d="M2 12 L18 12 M14 7 L20 12 L14 17"
               </div>
             </div>
           </div>
-          <div v-if="knowledgeData?.age_distribution?.length" class="pipeline__dist-panel">
+          <div v-if="ageDistribution.length" class="pipeline__dist-panel">
             <h4 class="pipeline__dist-heading">{{ t("knowledge.pipeline.distribution.age") }}</h4>
             <div class="pipeline__dist-bars">
               <div
-                v-for="item in knowledgeData.age_distribution"
+                v-for="item in ageDistribution"
                 :key="item.label"
                 class="pipeline__dist-row"
               >
@@ -317,12 +317,35 @@ import type { Stage, CrossCuttingLayer, DecisionRule } from "./constants";
 import { getKnowledgeStats } from "@/api/modules/dashboard";
 import type { KnowledgeStatsData } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
+import { REQUEST_TIMEOUT_MS } from "@/config/timeout";
 
 const { t, te } = useI18n();
 const router = useRouter();
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
 const AUTO_REFRESH_MS = 60_000;
+
+// ── HMR / 多实例防泄漏：清理旧实例的计时器与飞行请求 ──
+const TIMER_REGISTRY_KEY = "__pipelineHub_timers__" as const;
+type Registry = { timers: Set<number>; aborters: Set<AbortController> };
+function getRegistry(): Registry {
+  const w = window as unknown as Record<string, Registry | undefined>;
+  if (!w[TIMER_REGISTRY_KEY]) {
+    w[TIMER_REGISTRY_KEY] = { timers: new Set(), aborters: new Set() };
+  }
+  return w[TIMER_REGISTRY_KEY]!;
+}
+function disposeRegistry() {
+  const reg = getRegistry();
+  for (const tid of reg.timers) {
+    try { clearInterval(tid); } catch { /* noop */ }
+  }
+  for (const ctrl of reg.aborters) {
+    try { ctrl.abort("pipeline-unmount"); } catch { /* noop */ }
+  }
+  reg.timers.clear();
+  reg.aborters.clear();
+}
 
 // ── State ──
 const knowledgeData = ref<KnowledgeStatsData | null>(null);
@@ -331,6 +354,11 @@ const statsReady = ref(false);
 const refreshing = ref(false);
 const lastRefresh = ref<number>(0);
 const refreshTimer = ref<ReturnType<typeof setInterval> | null>(null);
+
+// ── 并发与取消控制 ──
+const fetchAbort = ref<AbortController | null>(null);
+const inflight = ref<Promise<any> | null>(null);
+const componentDead = ref(false);
 
 // ── Colors ──
 const layerColors: Record<string, string> = {
@@ -348,24 +376,65 @@ const stageColors: Record<string, string> = {
 
 const decisionColors = ["#6366f1", "#409eff", "#7c3aed", "#10b981", "#f59e0b", "#22c55e", "#ec4899"];
 
-// ── Data fetching ──
-async function fetchData() {
-  try {
-    refreshing.value = true;
-    const res = await getKnowledgeStats();
-    knowledgeData.value = res.data;
-    lastRefresh.value = Date.now();
-    statsReady.value = true;
-  } catch {
-    // Keep stale data if available
-  } finally {
-    loading.value = false;
-    refreshing.value = false;
+// ── Data fetching (防重入 + AbortSignal + 互消cancel=false) ──
+async function fetchData(force = false) {
+  // 组件已销毁则静默丢弃
+  if (componentDead.value) return;
+  // 防重入：已经在飞行时，直接复用 / 取消后重取（仅 force）
+  if (inflight.value && !force) return inflight.value;
+  if (inflight.value && force && fetchAbort.value) {
+    fetchAbort.value.abort("pipeline-refresh-force");
   }
+  const ctrl = new AbortController();
+  fetchAbort.value = ctrl;
+  getRegistry().aborters.add(ctrl);
+
+  const timeoutMs = REQUEST_TIMEOUT_MS ?? 15_000;
+  const timeoutId = setTimeout(() => ctrl.abort("pipeline-stats-timeout"), timeoutMs);
+  const onAbortClear = () => clearTimeout(timeoutId);
+  ctrl.signal.addEventListener("abort", onAbortClear, { once: true });
+
+  const pCurrent = (async () => {
+    try {
+      refreshing.value = true;
+      const res = await getKnowledgeStats({
+        // 项目约束：signal + timeout 全链路透传
+        signal: ctrl.signal,
+        timeout: timeoutMs,
+        // 禁止 axiosCanceler 的互消 cancel，避免并发刷新互相取消
+        cancel: false,
+        // 统计 API 是后台数据，不展示全局 loading 遮罩
+        loading: false
+      });
+      if (!ctrl.signal.aborted && !componentDead.value) {
+        knowledgeData.value = res.data as any;
+        lastRefresh.value = Date.now();
+        statsReady.value = true;
+        invalidateCache();
+      }
+    } catch (_err) {
+      if (ctrl.signal.aborted || componentDead.value) {
+        // abort / unmount 场景静默，避免误报
+      } else {
+        // 保留 stale data；上层会用 isScanStale / lastRefreshText 展示降级状态
+      }
+    } finally {
+      if (!componentDead.value) {
+        loading.value = false;
+        refreshing.value = false;
+      }
+      getRegistry().aborters.delete(ctrl);
+      ctrl.signal.removeEventListener("abort", onAbortClear);
+      clearTimeout(timeoutId);
+      if (inflight.value === pCurrent) inflight.value = null;
+    }
+  })();
+  inflight.value = pCurrent;
+  return pCurrent;
 }
 
 function refreshData() {
-  fetchData();
+  fetchData(true);
 }
 
 // ── Per-category stats derived from knowledgeData (single pass) ──
@@ -419,10 +488,17 @@ function computeAllCategoryStats(): Record<string, CategoryStats> {
   return out;
 }
 
-const stageStatsCache = reactive<Record<string, CategoryStats>>({});
+// 注意：使用非响应式 map 做结果缓存，避免 Object.assign 触发 reactive 深层依赖
+// 导致 computed / 模板中 ~27 次 stageStats() 调用被依次重算。
+// 真实的失效触发由 statsReady.value + invalidateCache() 的显式删除触发。
+let stageStatsCache: Record<string, CategoryStats> = {};
+let cacheComputedEpoch = 0;
+const cacheInvalidationEpoch = ref(0);
 function stageStats(category: string): CategoryStats {
-  if (!stageStatsCache[category]) {
-    Object.assign(stageStatsCache, computeAllCategoryStats());
+  const epoch = cacheInvalidationEpoch.value;
+  if (cacheComputedEpoch !== epoch) {
+    stageStatsCache = computeAllCategoryStats();
+    cacheComputedEpoch = epoch;
   }
   return stageStatsCache[category] ?? { count: 0, stale: 0, tacit: 0, health: "poor", lastUpdated: "--", lastUpdatedAgo: Infinity };
 }
@@ -558,18 +634,96 @@ const overviewStats = computed(() => {
   ];
 });
 
-// ── Distribution helpers ──
+// ── Distribution helpers + integrity fallback ──
+//
+// 问题诊断：后端偶发返回 total=24278 但 age_distribution 全为 0，或 size_distribution
+// 总和与 total 不匹配。这里基于 knowledgeData.files 的原始条目在前端重算，
+// 仅在后端返回「看起来坏掉的空数组/全零数组」时生效。
+const AGE_BUCKETS: Array<{ label: string; minDays: number; maxDays: number }> = [
+  { label: "≤1d",  minDays: 0,   maxDays: 1 },
+  { label: "1-7d", minDays: 1,   maxDays: 7 },
+  { label: "8-30d", minDays: 7,  maxDays: 30 },
+  { label: "1-6M", minDays: 30,  maxDays: 180 },
+  { label: ">6M",  minDays: 180, maxDays: Infinity }
+];
+
+const SIZE_BUCKETS: Array<{ label: string; minBytes: number; maxBytes: number }> = [
+  { label: "<10KB",   minBytes: 0,        maxBytes: 10 * 1024 },
+  { label: "10-100KB", minBytes: 10 * 1024, maxBytes: 100 * 1024 },
+  { label: "100KB-1MB", minBytes: 100 * 1024, maxBytes: 1024 * 1024 },
+  { label: "1-10MB",  minBytes: 1024 * 1024, maxBytes: 10 * 1024 * 1024 },
+  { label: ">10MB",   minBytes: 10 * 1024 * 1024, maxBytes: Infinity }
+];
+
+function bucketsAllZero<T extends { count: number }>(arr: T[] | undefined | null): boolean {
+  if (!arr || arr.length === 0) return true;
+  return arr.every(item => !item || item.count === 0);
+}
+
+function recomputeAgeDistribution(d: KnowledgeStatsData | null): Array<{ label: string; count: number }> {
+  const now = Date.now();
+  const counts = AGE_BUCKETS.map(b => ({ label: b.label, count: 0 }));
+  for (const f of d?.files ?? []) {
+    const ts = f.updated ? new Date(f.updated).getTime() : NaN;
+    if (!Number.isFinite(ts)) {
+      // 没有 updated 时间的文件归入 >6M 的兜底（不丢入 ≤1d 产生误导）
+      counts[counts.length - 1].count += 1;
+      continue;
+    }
+    const days = Math.max(0, (now - ts) / 86400000);
+    const idx = AGE_BUCKETS.findIndex(b => days >= b.minDays && days < b.maxDays);
+    if (idx >= 0) counts[idx].count += 1;
+  }
+  return counts;
+}
+
+function recomputeSizeDistribution(d: KnowledgeStatsData | null): Array<{ label: string; count: number }> {
+  const counts = SIZE_BUCKETS.map(b => ({ label: b.label, count: 0 }));
+  for (const f of d?.files ?? []) {
+    const bytes = typeof (f as any).size === "number" ? (f as any).size : NaN;
+    let idx: number;
+    if (!Number.isFinite(bytes)) idx = 1; // 未知大小的居中归到 10-100KB
+    else idx = SIZE_BUCKETS.findIndex(b => bytes >= b.minBytes && bytes < b.maxBytes);
+    if (idx < 0) idx = counts.length - 1;
+    counts[idx].count += 1;
+  }
+  return counts;
+}
+
+const ageDistribution = computed<Array<{ label: string; count: number }>>(() => {
+  const d = knowledgeData.value;
+  const raw = d?.age_distribution ?? [];
+  const total = d?.total ?? 0;
+  const rawSum = raw.reduce((a, b) => a + (b?.count ?? 0), 0);
+  // 后端数据看起来坏掉（全 0 或总和与 total 差 2 倍以上）→ 用 files 重算
+  if (total > 0 && (bucketsAllZero(raw) || rawSum === 0 || Math.abs(rawSum - total) > Math.max(total, 10))) {
+    return recomputeAgeDistribution(d);
+  }
+  return raw as any;
+});
+
+const sizeDistribution = computed<Array<{ label: string; count: number }>>(() => {
+  const d = knowledgeData.value;
+  const raw = d?.size_distribution ?? [];
+  const total = d?.total ?? 0;
+  const rawSum = raw.reduce((a, b) => a + (b?.count ?? 0), 0);
+  if (total > 0 && (bucketsAllZero(raw) || rawSum === 0 || Math.abs(rawSum - total) > Math.max(total, 10))) {
+    return recomputeSizeDistribution(d);
+  }
+  return raw as any;
+});
+
 function maxDistCount(items: { count: number }[]): number {
   return Math.max(1, ...items.map(i => i.count));
 }
 
 function sizeDistPct(count: number): number {
-  const max = maxDistCount(knowledgeData.value?.size_distribution ?? []);
+  const max = maxDistCount(sizeDistribution.value);
   return max ? Math.round((count / max) * 100) : 0;
 }
 
 function ageDistPct(count: number): number {
-  const max = maxDistCount(knowledgeData.value?.age_distribution ?? []);
+  const max = maxDistCount(ageDistribution.value);
   return max ? Math.round((count / max) * 100) : 0;
 }
 
@@ -597,7 +751,9 @@ const enrichedLayers = computed<CrossCuttingLayer[]>(() => {
 // ── Decision tree ──
 const DECISION_RULE_KEYS = ["business", "product", "leader", "engineer", "sre", "ai", "curator"] as const;
 const DECISION_ROLE_KEYS = ["executive", "product", "leader", "engineer", "sre", "aier", "curator"] as const;
-const DECISION_ROUTES = ["/executive", "/product", "/leader", "/engineer", "/sre", "/aier", "/curator"];
+// NOTE: Knowledge role pages are mounted under /knowledge/<role> (see authMenuList.json).
+//       A bare "/executive" etc. would fall through to the catch-all 404 route.
+const DECISION_ROUTES = ["/knowledge/executive", "/knowledge/product", "/knowledge/leader", "/knowledge/engineer", "/knowledge/sre", "/knowledge/aier", "/knowledge/curator"];
 const FALLBACK_QUESTIONS = [
   "Business strategy, market, competitors?",
   "Product requirements, user stories, priorities?",
@@ -625,14 +781,18 @@ function goToDecisionRole(i: number) {
 }
 
 // ── Navigation ──
+// IMPORTANT: All knowledge role pages live under the "/knowledge/<role>" prefix
+//   per authMenuList.json. Using bare paths like "/product" used to drop the
+//   user straight into the catch-all 404 route, producing a flood of "404"
+//   on Pipeline clicks (see: Pipeline 404 audit 2026-10-09).
 const stageIdToRoute: Record<string, string> = {
-  requirements: "/product",
-  decisions: "/leader",
-  "design-build": "/engineer",
-  "quality-release": "/sre",
-  business: "/executive",
-  ai: "/aier",
-  governance: "/curator"
+  requirements: "/knowledge/product",
+  decisions: "/knowledge/leader",
+  "design-build": "/knowledge/engineer",
+  "quality-release": "/knowledge/sre",
+  business: "/knowledge/executive",
+  ai: "/knowledge/aier",
+  governance: "/knowledge/curator"
 };
 
 function goToStage(stageId: string) {
@@ -652,21 +812,30 @@ function previewRole(role: string) {
 
 // ── Refresh cache when data changes ──
 function invalidateCache() {
-  for (const k of Object.keys(stageStatsCache)) {
-    delete stageStatsCache[k];
-  }
+  stageStatsCache = {};
+  cacheInvalidationEpoch.value += 1;
 }
 
 // ── Lifecycle ──
 onMounted(async () => {
+  // HMR 防护：每次 onMounted 先清掉 registry 中上次残留的 timer / aborter
+  disposeRegistry();
   await fetchData();
-  refreshTimer.value = setInterval(async () => {
+  const timer = window.setInterval(async () => {
     invalidateCache();
     await fetchData();
   }, AUTO_REFRESH_MS);
+  refreshTimer.value = timer as unknown as ReturnType<typeof setInterval>;
+  getRegistry().timers.add(timer);
 });
 
 onBeforeUnmount(() => {
+  componentDead.value = true;
+  // 先取消当前飞行请求
+  fetchAbort.value?.abort("pipeline-unmount");
+  fetchAbort.value = null;
+  // 清理 interval（含 registry，覆盖 HMR 没触发 unmount 的残留兜底）
+  disposeRegistry();
   if (refreshTimer.value) {
     clearInterval(refreshTimer.value);
     refreshTimer.value = null;

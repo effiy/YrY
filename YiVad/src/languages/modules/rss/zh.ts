@@ -153,20 +153,27 @@ export default {
     },
     manager: {
       breadcrumb: {
-        executive: "Executive",
-        rss: "RSS"
+        executive: "高管视角",
+        rss: "RSS 管理"
       },
       sticky: {
-        allRolesTitle: "全部角色 RSS 管理",
-        singleRoleTitle: "{name} RSS 管理",
-        multiRoleTitle: "{n} 个角色 RSS 管理",
-        allRolesDesc: "聚合全部角色的 RSS 订阅源与文章。",
+        allRolesTitle: "全角色 RSS 管理",
+        singleRoleTitle: "{name} · RSS 管理",
+        multiRoleTitle: "{n} 个角色 · RSS 管理",
+        allRolesDesc: "聚合全部角色的 {feeds} 个订阅源、{articles} 篇文章，今日新增 {today} 篇。",
+        multiRolesDesc: "已选择：{names}{extra, select, 0 {} other { · 等 {extra} 个}}；共 {feeds} 个订阅源 · {articles} 篇文章。",
         feeds: "订阅源",
         articles: "文章",
         today: "今日",
         viewFeeds: "查看订阅源",
         viewArticles: "查看全部文章",
-        backToBriefing: "返回今日简报"
+        backToBriefing: "返回今日简报",
+        backToBriefingEmpty: "今日暂无新文章，点击查看空态引导",
+        todayAddSeeds: "+ 添加种子",
+        sparkTitle: "最近 14 天文章量趋势（点击跳转至大图）",
+        peak: "峰值日",
+        fourteenTotal: "14 日合计",
+        parsingInProgress: "正在抓取并解析所有启用的订阅源，请稍候…"
       },
       sidebar: {
         sections: "功能区",
@@ -183,6 +190,8 @@ export default {
       },
       briefing: {
         title: "📰 每日简报",
+        titleSub: "（共 {count} 篇 / {groups} 组）",
+        jumpSeeds: "去 Feed Sources 添加种子",
         todayLabel: "今日 · {date}",
         goToday: "今日",
         groupBy: {
@@ -205,12 +214,30 @@ export default {
         charts: {
           categoryDist: "分类分布",
           topSources: "Top 来源",
-          volumeTrend: "文章量 · 最近 {n} 天"
+          volumeTrend: "文章量 · 最近 {n} 天",
+          meta: {
+            peak: "峰值",
+            avg: "日均",
+            sum: "合计"
+          },
+          volumeEmptyTitle: "还没有 14 日的数据",
+          volumeEmptyHint: "先到「订阅源」添加种子，点击「全部解析」后这里会生成趋势图。"
         },
         coverage: {
           withSummary: "含摘要",
           withAuthor: "含作者",
           categorized: "已分类"
+        },
+        suggest: {
+          title: "✨ 一键导入角色精选种子",
+          sub: "为当前角色推荐 {n} 个高质量种子，添加后立即解析",
+          addAll: "全部添加并解析",
+          addOne: "一键添加并解析",
+          added: "已添加",
+          addedOk: "已添加「{name}」并开始解析",
+          addFail: "添加失败，请稍后重试",
+          allAdded: "推荐的种子都已添加",
+          addAllOk: "已成功导入 {n}/{total} 个"
         },
         empty: {
           todayIcon: "🗞️",
@@ -347,6 +374,10 @@ export default {
           oldest: "最早",
           source: "来源",
           category: "分类"
+        },
+        advanced: {
+          expand: "高级筛选 ▾",
+          collapse: "收起 ▴"
         },
         activeFilters: {
           search: "搜索：{value}",

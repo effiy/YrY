@@ -31,7 +31,7 @@ export function useItems(selectedRoles: Ref<string[]>, seeds: Ref<any[]>) {
   const timePreset = ref<"all" | "today" | "week" | "month" | "">("all");
   const itemSortKey = ref("published_parsed");
   const itemPage = ref(1);
-  const itemPageSize = 20;
+  const itemPageSize = ref(100);
   const totalItems = ref(0);
   const selectedItems = ref<RssItemDocument[]>([]);
   const exportingItems = ref(false);
@@ -142,7 +142,7 @@ export function useItems(selectedRoles: Ref<string[]>, seeds: Ref<any[]>) {
     itemsLoading.value = true;
     selectedItems.value = [];
     try {
-      const res = await getRssList(buildItemParams(itemPage.value, itemPageSize));
+      const res = await getRssList(buildItemParams(itemPage.value, itemPageSize.value));
       items.value = res.data?.list ?? [];
       totalItems.value = res.data?.total ?? 0;
     } catch {

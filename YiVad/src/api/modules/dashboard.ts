@@ -26,8 +26,31 @@ export function getRssStats(params?: RssStatsParams): Promise<{ code: number; me
   return http.get("/dashboard/rss-stats", params ?? {}) as any;
 }
 
-export function getKnowledgeStats(): Promise<{ code: number; message: string; data: KnowledgeStatsData }> {
-  return http.get("/dashboard/knowledge-stats") as any;
+export interface StatsFetchOptions {
+  /** AbortSignal 用于外部取消（符合项目 AbortSignal 全链路约束） */
+  signal?: AbortSignal;
+  /** 精确超时时间（ms）。当与外层 axios timeout 同时存在时，取最小的值先触发 */
+  timeout?: number;
+  /**
+   * 是否在并发相同 URL 时通过 axiosCanceler 去重 cancel 前序请求。
+   * 默认 true 会对同一 endpoint 的并行请求互相 cancel；对于定时刷新的 API（如 knowledge-stats）
+   * 应显式传入 false 避免刷新请求被 cancel 掉。
+   */
+  cancel?: boolean;
+  /** 是否展示全局 loading 全屏遮罩。默认 true。统计 API 建议设 false。 */
+  loading?: boolean;
+}
+
+export function getKnowledgeStats(
+  opts: StatsFetchOptions = {}
+): Promise<{ code: number; message: string; data: KnowledgeStatsData }> {
+  const { signal, timeout, cancel, loading } = opts;
+  const extra: Record<string, any> = {};
+  if (typeof signal !== "undefined") extra.signal = signal;
+  if (typeof timeout !== "undefined") extra.timeout = timeout;
+  if (typeof cancel !== "undefined") extra.cancel = cancel;
+  if (typeof loading !== "undefined") extra.loading = loading;
+  return http.get("/dashboard/knowledge-stats", {}, extra) as any;
 }
 
 export function getRssSourceHealth(): Promise<{ code: number; message: string; data: RssSourceHealthData }> {

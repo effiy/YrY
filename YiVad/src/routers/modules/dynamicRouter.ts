@@ -8,11 +8,24 @@ import { clearPersistedState } from "@/stores/helper/persist";
 import { useI18n } from "vue-i18n";
 import fallbackMenuJson from "@/assets/json/authMenuList.json";
 import fallbackButtonJson from "@/assets/json/authButtonList.json";
+import { pushReliabilityEvent } from "@/utils/reliability/reliabilityMetrics";
 // Map of all view files under src/views, keyed by their absolute path.
 // Backed by build/views-glob-plugin.ts (replaces vite's `import.meta.glob`).
 import viewsGlob from "@yivad/views-glob";
 
 const modules = viewsGlob as Record<string, () => Promise<any>>;
+
+/**
+ * 诊断计数器（进程级）：统计 v1 拼错组件 / 隐藏菜单未注册组件 / dynamicRouter 历史漂移带来的
+ * resolveComponent 失败次数；每次 initDynamicRouter 后打印到 devtools console。
+ * 生产环境同步推 reliability 事件，便于后续在 SLO 面板发现"新增菜单但忘记建 .vue 文件"这类事故。
+ */
+export const DYNAMIC_ROUTER_DIAG_COUNTERS = {
+  resolveFailed: 0,
+  isFullResolved: 0,
+  layoutResolved: 0,
+  failedEntries: [] as Array<{ key: string; component: string; path: string; reason: "no_component" | "resolve_failed" | "redirect_fallback" }>,
+};
 
 /**
  * Convert a camelCase/PascalCase path segment to kebab-case.
@@ -159,19 +172,89 @@ export const initDynamicRouter = async () => {
         meta: item.meta as any
       } as RouteRecordRaw;
 
+      let registerKind: "redirect" | "component" | "empty" = "empty";
       if (item.component && typeof item.component == "string") {
         const resolved = resolveComponent(item.component);
-        if (resolved) route.component = resolved;
+        if (resolved) {
+          route.component = resolved;
+          registerKind = "component";
+        } else {
+          DYNAMIC_ROUTER_DIAG_COUNTERS.resolveFailed += 1;
+          DYNAMIC_ROUTER_DIAG_COUNTERS.failedEntries.push({
+            key: String(item.key ?? ""),
+            component: item.component,
+            path: item.path ?? "",
+            reason: "resolve_failed",
+          });
+          try {
+            console.warn("[dynamicRouter] resolveComponent 失败：", { key: item.key, component: item.component, path: item.path });
+          } catch { /* noop */ }
+          pushReliabilityEvent({
+            projectKey: "",
+            phase: "store_init",
+            status: "degraded",
+            durationMs: 0,
+            retryCount: 0,
+            errorType: "business",
+            errorMessage: `resolveComponent failed for ${item.component} (${item.path})`,
+            tags: {
+              stage: "dynamicRouter.resolveComponent",
+              subStage: "resolve_failed",
+              menu_key: String(item.key ?? ""),
+              component: String(item.component ?? ""),
+              path: String(item.path ?? ""),
+            },
+          });
+        }
       } else if (item.redirect && !item.component) {
         route.redirect = item.redirect;
+        registerKind = "redirect";
+      } else if (!item.redirect && !item.component && !(item.meta as any)?.isHide) {
+        // 既无 component 也无 redirect 且非隐藏菜单：v1 历史漂移，注册一条空壳也会 404 → 埋点
+        DYNAMIC_ROUTER_DIAG_COUNTERS.resolveFailed += 1;
+        DYNAMIC_ROUTER_DIAG_COUNTERS.failedEntries.push({
+          key: String(item.key ?? ""),
+          component: "",
+          path: item.path ?? "",
+          reason: "no_component",
+        });
+        pushReliabilityEvent({
+          projectKey: "",
+          phase: "store_init",
+          status: "degraded",
+          durationMs: 0,
+          retryCount: 0,
+          errorType: "business",
+          errorMessage: `menu entry without component/redirect: ${item.path}`,
+          tags: {
+            stage: "dynamicRouter.resolveComponent",
+            subStage: "no_component",
+            menu_key: String(item.key ?? ""),
+            path: String(item.path ?? ""),
+          },
+        });
       }
 
       if (item.meta.isFull) {
         router.addRoute(route);
+        if (registerKind === "component") DYNAMIC_ROUTER_DIAG_COUNTERS.isFullResolved += 1;
       } else {
         router.addRoute("layout", route);
+        if (registerKind === "component") DYNAMIC_ROUTER_DIAG_COUNTERS.layoutResolved += 1;
       }
     });
+
+    if (DYNAMIC_ROUTER_DIAG_COUNTERS.resolveFailed > 0) {
+      try {
+        console.info(
+          "[dynamicRouter] 诊断：%s 条 resolve 失败；%s 条 full-route 注册；%s 条 layout-route 注册。",
+          DYNAMIC_ROUTER_DIAG_COUNTERS.resolveFailed,
+          DYNAMIC_ROUTER_DIAG_COUNTERS.isFullResolved,
+          DYNAMIC_ROUTER_DIAG_COUNTERS.layoutResolved,
+          DYNAMIC_ROUTER_DIAG_COUNTERS.failedEntries,
+        );
+      } catch { /* noop */ }
+    }
   } catch (error) {
     // Do not nuke the session for transient/operational failures:
     //   • request canceled by AxiosCanceler (duplicate URL)

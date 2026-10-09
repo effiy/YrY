@@ -173,14 +173,13 @@ export function useUnifiedSearch(
     error.value = error.value || "Search internal timeout (hook watchdog 12s)";
     disposer.reset();
     pushReliabilityEvent({
-      id: `use-unified-search-hook-wd-${Date.now()}`,
       projectKey: "",
       phase: "search_query",
-      stage: "watchdog",
-      subStage: "hook_12s",
+      status: "failed",
+      durationMs: 12_000,
+      retryCount: 0,
       errorType: "timeout",
-      latencyMs: 12_000,
-      tags: {}
+      tags: { stage: "watchdog", subStage: "hook_12s" }
     });
   });
 
@@ -301,14 +300,14 @@ export function useUnifiedSearch(
       results.value = [];
       try {
         pushReliabilityEvent({
-          id: `use-unified-search-err-${Date.now()}`,
           projectKey: "",
           phase: "search_query",
-          stage: "http",
-          subStage: "error",
+          status: "failed",
+          durationMs: 0,
+          retryCount: 0,
           errorType: (e?.name === "TimeoutError" || /timeout/i.test(error.value || "")) ? "timeout" : "network",
-          latencyMs: 0,
-          tags: { msg: error.value || "" }
+          errorMessage: error.value || undefined,
+          tags: { stage: "http", subStage: "error", msg: error.value || "" }
         });
       } catch { /* noop */ }
     } finally {

@@ -468,8 +468,9 @@ export default function TargetArea(props) {
                         {typeof result === 'string' ? (
                             <textarea
                                 ref={textAreaRef}
-                                className={`text-[${appFontSize}px] h-0 resize-none bg-transparent select-text outline-none`}
+                                className='h-0 resize-none bg-transparent select-text outline-none'
                                 readOnly
+                                style={{ fontSize: `${appFontSize}px` }}
                                 value={result}
                             />
                         ) : (
@@ -478,18 +479,25 @@ export default function TargetArea(props) {
                                     result.pronunciations.map((pron) => (
                                         <div key={nanoid()}>
                                             {pron.region && (
-                                                <span className={`text-[${appFontSize}px] mr-[12px] text-default-500`}>
+                                                <span
+                                                    className='mr-[12px] text-default-500'
+                                                    style={{ fontSize: `${appFontSize}px` }}
+                                                >
                                                     {pron.region}
                                                 </span>
                                             )}
                                             {pron.symbol && (
-                                                <span className={`text-[${appFontSize}px] mr-[12px] text-default-500`}>
+                                                <span
+                                                    className='mr-[12px] text-default-500'
+                                                    style={{ fontSize: `${appFontSize}px` }}
+                                                >
                                                     {pron.symbol}
                                                 </span>
                                             )}
                                             {pron.voice && pron.voice !== '' && (
                                                 <HiOutlineVolumeUp
-                                                    className={`text-[${appFontSize}px] inline-block my-auto cursor-pointer`}
+                                                    className='inline-block my-auto cursor-pointer'
+                                                    style={{ fontSize: `${appFontSize}px` }}
                                                     onClick={() => speak(pron.voice)}
                                                 />
                                             )}
@@ -504,19 +512,24 @@ export default function TargetArea(props) {
                                                         {i === 0 ? (
                                                             <>
                                                                 <span
-                                                                    className={`text-[${appFontSize - 2}px] text-default-500 mr-[12px]`}
+                                                                    className='text-default-500 mr-[12px]'
+                                                                    style={{ fontSize: `${appFontSize - 2}px` }}
                                                                 >
                                                                     {group.trait}
                                                                 </span>
-                                                                <span className={`font-bold text-[${appFontSize}px] select-text`}>
+                                                                <span
+                                                                    className='font-bold select-text'
+                                                                    style={{ fontSize: `${appFontSize}px` }}
+                                                                >
                                                                     {explain}
                                                                 </span>
                                                                 <br />
                                                             </>
                                                         ) : (
                                                             <span
-                                                                className={`text-[${appFontSize - 2}px] text-default-500 select-text mr-1`}
                                                                 key={nanoid()}
+                                                                className='text-default-500 select-text mr-1'
+                                                                style={{ fontSize: `${appFontSize - 2}px` }}
                                                             >
                                                                 {explain}
                                                             </span>
@@ -529,22 +542,31 @@ export default function TargetArea(props) {
                                 {result?.associations &&
                                     result.associations.map((a) => (
                                         <div key={nanoid()}>
-                                            <span className={`text-[${appFontSize}px] text-default-500`}>{a}</span>
+                                            <span
+                                                className='text-default-500'
+                                                style={{ fontSize: `${appFontSize}px` }}
+                                            >
+                                                {a}
+                                            </span>
                                         </div>
                                     ))}
                                 {result?.sentence &&
                                     result.sentence.map((s, i) => (
                                         <div key={nanoid()}>
-                                            <span className={`text-[${appFontSize - 2}px] mr-[12px]`}>{i + 1}.</span>
+                                            <span style={{ fontSize: `${appFontSize - 2}px` }} className='mr-[12px]'>
+                                                {i + 1}.
+                                            </span>
                                             {s.source && (
                                                 <span
-                                                    className={`text-[${appFontSize}px] select-text`}
+                                                    className='select-text'
+                                                    style={{ fontSize: `${appFontSize}px` }}
                                                     dangerouslySetInnerHTML={{ __html: s.source }}
                                                 />
                                             )}
                                             {s.target && (
                                                 <div
-                                                    className={`text-[${appFontSize}px] select-text text-default-500`}
+                                                    className='select-text text-default-500'
+                                                    style={{ fontSize: `${appFontSize}px` }}
                                                     dangerouslySetInnerHTML={{ __html: s.target }}
                                                 />
                                             )}
@@ -554,7 +576,11 @@ export default function TargetArea(props) {
                         )}
                         {error !== '' &&
                             error.split('\n').map((v) => (
-                                <p key={v} className={`text-[${appFontSize}px] text-red-500`}>
+                                <p
+                                    key={v}
+                                    className='text-red-500'
+                                    style={{ fontSize: `${appFontSize}px` }}
+                                >
                                     {v}
                                 </p>
                             ))}

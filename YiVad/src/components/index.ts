@@ -36,7 +36,7 @@ export { default as Grid } from "./Grid/index.vue";
 export { default as GridItem } from "./Grid/components/GridItem.vue";
 export { default as HeroDateNav } from "./HeroDateNav/HeroDateNav.vue";
 export { default as ImportExcel } from "./ImportExcel/index.vue";
-export { default as KeyboardShortcuts } from "./KeyboardShortcuts/index.vue";
+export { default as HelpCenterPanel } from "./HelpCenter/HelpCenterPanel.vue";
 export { default as KnowledgeMetaStrip } from "./KnowledgeMetaStrip/KnowledgeMetaStrip.vue";
 export { default as KnowledgePreviewDialog } from "./KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 export { default as Loading } from "./Loading/index.vue";

@@ -20,3 +20,10 @@ export const TIMEOUT_CONFIG = {
   /** RPC calls to the data service */
   rpc: 30_000
 } as const;
+
+/**
+ * Default timeout (ms) for HTTP 请求 — used by the global AbortSignal watchdog.
+ * Components that import REQUEST_TIMEOUT_MS can rely on this bound to TIMEOUT_CONFIG.query
+ * so a global tightening applies everywhere.
+ */
+export const REQUEST_TIMEOUT_MS = TIMEOUT_CONFIG.query;

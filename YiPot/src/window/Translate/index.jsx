@@ -22,97 +22,60 @@ import { info } from 'tauri-plugin-log-api';
  * 与 Recognize 统一的 hook：使用 per-instance ref 管理 listener/timer，
  * 避免旧实现里模块级变量 + 顶层 listen 在 WebView 重建（HMR/关窗后重开）时多次叠加。
  */
-// #region debug-point B:dbg-sender
-const _DBG_EV_T = (() => {
-    const URL = 'http://127.0.0.1:7777/event';
-    const SID = 'yipot-selection-translate-flicker';
-    let _seq = 0;
-    const send = (payload) => {
-        try {
-            fetch(URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sessionId: SID,
-                    runId: 'pre',
-                    ts: Date.now(),
-                    seq: ++_seq,
-                    ...payload,
-                }),
-            }).catch(() => {});
-        } catch {}
-    };
-    return { send };
-})();
-// #endregion
 function useBlurAutoClose(enable) {
     const blurTimerRef = useRef(null);
     const unlistenBlurRef = useRef(null);
     const unlistenFocusRef = useRef(null);
     const unlistenMoveRef = useRef(null);
+    const unlistenResizeRef = useRef(null);
+    // 最后一次「我们主动」触发的窗口变化时间：
+    // - move/resize 自身事件刷新
+    // - 前端每次调用 show/setFocus 成功后也刷新（通过全局事件桥）
+    const lastSelfChangeAtRef = useRef(Date.now());
+    const SELF_CHANGE_SUPPRESS_MS = 500;
 
     useEffect(() => {
+        const onSelfChangeHint = () => {
+            lastSelfChangeAtRef.current = Date.now();
+        };
+        window.addEventListener('__yipot_translate_self_change__', onSelfChangeHint);
         const cleanup = () => {
+            window.removeEventListener('__yipot_translate_self_change__', onSelfChangeHint);
             if (blurTimerRef.current) {
                 clearTimeout(blurTimerRef.current);
                 blurTimerRef.current = null;
             }
-            const olds = [unlistenBlurRef.current, unlistenFocusRef.current, unlistenMoveRef.current];
+            const olds = [
+                unlistenBlurRef.current,
+                unlistenFocusRef.current,
+                unlistenMoveRef.current,
+                unlistenResizeRef.current,
+            ];
             unlistenBlurRef.current = null;
             unlistenFocusRef.current = null;
             unlistenMoveRef.current = null;
+            unlistenResizeRef.current = null;
             olds.forEach((u) => u?.then?.((f) => f?.()).catch(() => {}));
         };
         cleanup();
-        if (!enable) {
-            // #region debug-point B:autoclose-disabled
-            _DBG_EV_T.send({
-                hypothesisId: 'B',
-                location: 'Translate/index.jsx:useBlurAutoClose:disabled',
-                msg: '[DEBUG] blur auto close disabled',
-                data: { enable: false, t: Date.now() },
-            });
-            // #endregion
-            return cleanup;
-        }
+        if (!enable) return cleanup;
 
         // 比 blur 延时多 20ms：彻底吸收平台的瞬时 deactivate/activate
         const BLUR_CLOSE_MS = 300;
 
         unlistenBlurRef.current = listen('tauri://blur', () => {
             if (appWindow.label !== 'translate') return;
+            const now = Date.now();
+            const suppressFor = SELF_CHANGE_SUPPRESS_MS - (now - lastSelfChangeAtRef.current);
+            // 我们主动触发的窗口变化/move/resize/setFocus 都会产生平台层假 blur，
+            // 在 SELF_CHANGE_SUPPRESS_MS 内直接忽略，不 arm close 定时器。
+            if (suppressFor > 0) return;
             if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
             info('Blur (Translate, scheduled close)');
-            const firedAt = Date.now();
-            // #region debug-point B:blur-scheduled
-            _DBG_EV_T.send({
-                hypothesisId: 'B',
-                location: 'Translate/index.jsx:useBlurAutoClose:blur',
-                msg: '[DEBUG] blur scheduled close',
-                data: { delayMs: BLUR_CLOSE_MS, firedAt },
-            });
-            // #endregion
             blurTimerRef.current = setTimeout(async () => {
                 blurTimerRef.current = null;
                 info('Confirm Blur Close (Translate)');
-                // #region debug-point B:blur-fire-close
-                _DBG_EV_T.send({
-                    hypothesisId: 'B',
-                    location: 'Translate/index.jsx:useBlurAutoClose:blur-fire',
-                    msg: '[DEBUG] blur fired close window',
-                    data: { delayMs: BLUR_CLOSE_MS, firedAt, fireAt: Date.now() },
-                });
-                // #endregion
-                await appWindow.close().catch((e) => {
-                    // #region debug-point E:close-err
-                    _DBG_EV_T.send({
-                        hypothesisId: 'E',
-                        location: 'Translate/index.jsx:useBlurAutoClose:blur-close-err',
-                        msg: '[DEBUG] appWindow.close error',
-                        data: { err: String(e) },
-                    });
-                    // #endregion
-                });
+                await appWindow.close().catch(() => {});
             }, BLUR_CLOSE_MS);
         }).catch((e) => {
             info('listen(blur) skipped:' + (e?.message ?? e));
@@ -121,24 +84,25 @@ function useBlurAutoClose(enable) {
 
         unlistenFocusRef.current = listen('tauri://focus', () => {
             info('Focus (Translate, cancel close)');
-            // #region debug-point B:focus-cancel
-            const t = Date.now();
-            const armed = Boolean(blurTimerRef.current);
+            lastSelfChangeAtRef.current = Date.now();
             if (blurTimerRef.current) {
                 clearTimeout(blurTimerRef.current);
                 blurTimerRef.current = null;
             }
-            _DBG_EV_T.send({
-                hypothesisId: 'B',
-                location: 'Translate/index.jsx:useBlurAutoClose:focus',
-                msg: '[DEBUG] focus cancel close',
-                data: { armedBeforeCancel: armed, t },
-            });
-            // #endregion
         }).catch(() => () => {});
 
         unlistenMoveRef.current = listen('tauri://move', () => {
             info('Move (Translate, cancel close)');
+            lastSelfChangeAtRef.current = Date.now();
+            if (blurTimerRef.current) {
+                clearTimeout(blurTimerRef.current);
+                blurTimerRef.current = null;
+            }
+        }).catch(() => () => {});
+
+        unlistenResizeRef.current = listen('tauri://resize', () => {
+            info('Resize (Translate, cancel close)');
+            lastSelfChangeAtRef.current = Date.now();
             if (blurTimerRef.current) {
                 clearTimeout(blurTimerRef.current);
                 blurTimerRef.current = null;

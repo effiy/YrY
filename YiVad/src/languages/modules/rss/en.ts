@@ -155,19 +155,26 @@ export default {
     manager: {
       breadcrumb: {
         executive: "Executive",
-        rss: "RSS"
+        rss: "RSS Manager"
       },
       sticky: {
         allRolesTitle: "All Roles RSS Manager",
-        singleRoleTitle: "{name} RSS Manager",
-        multiRoleTitle: "{n} Roles RSS Manager",
-        allRolesDesc: "Aggregated RSS feeds and articles across all roles.",
+        singleRoleTitle: "{name} · RSS Manager",
+        multiRoleTitle: "{n} Roles · RSS Manager",
+        allRolesDesc: "Aggregated {feeds} feeds · {articles} articles · {today} new today, across all roles.",
+        multiRolesDesc: "Selected: {names}{extra, select, 0 {} other { · +{extra} more}}; total {feeds} feeds · {articles} articles.",
         feeds: "Feeds",
         articles: "Articles",
         today: "Today",
         viewFeeds: "View feed sources",
         viewArticles: "View all articles",
-        backToBriefing: "Back to today's briefing"
+        backToBriefing: "Back to today's briefing",
+        backToBriefingEmpty: "Nothing ingested today — click to see onboarding",
+        todayAddSeeds: "+ Add Sources",
+        sparkTitle: "Article volume trend — last 14 days (click to jump to chart)",
+        peak: "Peak day",
+        fourteenTotal: "14-day total",
+        parsingInProgress: "Parsing all enabled feeds — please wait…"
       },
       sidebar: {
         sections: "Sections",
@@ -184,6 +191,8 @@ export default {
       },
       briefing: {
         title: "📰 Daily Briefing",
+        titleSub: "({count} articles / {groups} groups)",
+        jumpSeeds: "Go to Feed Sources",
         todayLabel: "Today · {date}",
         goToday: "Today",
         groupBy: {
@@ -206,12 +215,30 @@ export default {
         charts: {
           categoryDist: "Category Distribution",
           topSources: "Top Sources",
-          volumeTrend: "Volume · Last {n} Days"
+          volumeTrend: "Volume · Last {n} Days",
+          meta: {
+            peak: "Peak",
+            avg: "Avg/day",
+            sum: "Total"
+          },
+          volumeEmptyTitle: "No 14-day data yet",
+          volumeEmptyHint: 'Go to "Feed Sources", add a few seeds and click Parse All — the trend chart will populate here.'
         },
         coverage: {
           withSummary: "With summary",
           withAuthor: "With author",
           categorized: "Categorized"
+        },
+        suggest: {
+          title: "✨ Curated starter seeds for this role",
+          sub: "{n} high-quality feeds recommended for the current role — added & parsed instantly",
+          addAll: "Add all & Parse",
+          addOne: "Add & Parse",
+          added: "Added",
+          addedOk: '"{name}" added, parsing started',
+          addFail: "Failed to add. Please try again.",
+          allAdded: "All recommended seeds are already added",
+          addAllOk: "{n}/{total} imported successfully"
         },
         empty: {
           todayIcon: "🗞️",
@@ -348,6 +375,10 @@ export default {
           oldest: "Oldest",
           source: "Source",
           category: "Category"
+        },
+        advanced: {
+          expand: "Advanced ▾",
+          collapse: "Collapse ▴"
         },
         activeFilters: {
           search: "Search: {value}",

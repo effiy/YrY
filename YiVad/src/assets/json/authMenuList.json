@@ -521,7 +521,28 @@
           },
           "parent": "/pm",
           "order": 9,
-          "children": []
+          "children": [
+            {
+              "key": "menu_pageDetail",
+              "path": "/page/:key",
+              "name": "pageDetail",
+              "component": "/page/detail",
+              "redirect": "",
+              "parent": "/page",
+              "order": 99,
+              "meta": {
+                "icon": "Document",
+                "title": "Page Detail",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": false,
+                "activeMenu": "/page"
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },
@@ -1051,6 +1072,63 @@
           "children": []
         },
         {
+          "key": "menu_knowledgeProduct",
+          "path": "/knowledge/product",
+          "name": "knowledgeProduct",
+          "component": "/knowledge/role",
+          "redirect": "",
+          "meta": {
+            "icon": "Collection",
+            "title": "Product Manager",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 1,
+          "children": []
+        },
+        {
+          "key": "menu_knowledgeEngineer",
+          "path": "/knowledge/engineer",
+          "name": "knowledgeEngineer",
+          "component": "/knowledge/role",
+          "redirect": "",
+          "meta": {
+            "icon": "Tools",
+            "title": "Engineer",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 2,
+          "children": []
+        },
+        {
+          "key": "menu_knowledgeSre",
+          "path": "/knowledge/sre",
+          "name": "knowledgeSre",
+          "component": "/knowledge/role",
+          "redirect": "",
+          "meta": {
+            "icon": "Monitor",
+            "title": "SRE",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 3,
+          "children": []
+        },
+        {
           "key": "menu_knowledgeGoals",
           "path": "/knowledge/goals",
           "name": "knowledgeGoals",
@@ -1127,6 +1205,66 @@
           "children": []
         },
         {
+          "key": "menu_knowledgeExecutive",
+          "path": "/knowledge/executive",
+          "name": "knowledgeExecutive",
+          "component": "/knowledge/role",
+          "redirect": "",
+          "meta": {
+            "icon": "Trophy",
+            "title": "Executive",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 8,
+          "children": [
+            {
+              "key": "menu_knowledgeExecutiveRssOverview",
+              "path": "/knowledge/executive/rssOverview",
+              "name": "knowledgeExecutiveRssOverview",
+              "component": "/knowledge/executive/rssOverview",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 1,
+              "meta": {
+                "icon": "Notebook",
+                "title": "RSS Overview",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
+            },
+            {
+              "key": "menu_knowledgeExecutiveRssManager",
+              "path": "/knowledge/executive/rssManager",
+              "name": "knowledgeExecutiveRssManager",
+              "component": "/knowledge/executive/rssManager",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 2,
+              "meta": {
+                "icon": "Connection",
+                "title": "RSS Manager",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
           "key": "menu_knowledgeResume",
           "path": "/knowledge/resume",
           "name": "knowledgeResume",
@@ -1184,6 +1322,25 @@
               "children": []
             }
           ]
+        },
+        {
+          "key": "menu_knowledgeCurator",
+          "path": "/knowledge/curator",
+          "name": "knowledgeCurator",
+          "component": "/knowledge/role",
+          "redirect": "",
+          "meta": {
+            "icon": "Reading",
+            "title": "Curator",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          },
+          "parent": "/knowledge",
+          "order": 11,
+          "children": []
         },
         {
           "key": "menu_knowledgeRole",

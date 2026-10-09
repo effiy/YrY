@@ -6,6 +6,8 @@
         t("rss.manager.seeds.resultCount", { filtered: filteredSeeds.length, total: feedsCount })
       }}</span>
       <span class="rss-role__toolbar-right">
+        <el-button :icon="Upload" @click="onImportOpml">{{ t("rss.scheduler.importOpml") }}</el-button>
+        <el-button :icon="Download" @click="onExportOpml">{{ t("rss.scheduler.exportOpml") }}</el-button>
         <el-button type="primary" :icon="Plus" @click="openSeedDialog()">{{ t("rss.manager.seeds.addSource") }}</el-button>
         <el-button :icon="Refresh" @click="onParseAll" :loading="parseAllLoading">{{
           t("rss.manager.seeds.parseAllBtn")
@@ -24,8 +26,69 @@
           style="width: 220px"
         />
       </div>
+
+      <!-- 0 seeds → 引导用户添加推荐种子 -->
+      <div v-if="!seedsLoading && !filteredSeeds.length" class="rss-role__suggest-wrap">
+        <div class="rss-briefing__suggest">
+          <div class="rss-briefing__suggest-head">
+            <div>
+              <div class="rss-briefing__suggest-title">{{ t("rss.manager.briefing.suggest.title") }}</div>
+              <div class="rss-briefing__suggest-sub">
+                {{ t("rss.manager.briefing.suggest.sub", { n: suggest.suggestedSeeds.value.length }) }}
+              </div>
+            </div>
+            <el-button
+              type="primary"
+              size="small"
+              :loading="suggest.addAllLoading.value"
+              :disabled="!suggest.suggestedSeeds.value.length"
+              @click="onSuggestAddAll"
+              >{{ t("rss.manager.briefing.suggest.addAll") }}</el-button
+            >
+          </div>
+          <div class="rss-briefing__suggest-grid">
+            <div
+              v-for="seed in suggest.suggestedSeeds.value"
+              :key="seed.key"
+              class="rss-briefing__suggest-card"
+              :class="{ 'is-added': suggest.suggestedAdded.has(seed.key) }"
+            >
+              <div class="rss-briefing__suggest-card-top">
+                <span class="rss-briefing__suggest-card-cat">
+                  <span
+                    class="rss-role__cat-dot"
+                    :style="{ background: roleColor(seed.category) }"
+                  ></span>
+                  {{ subCategory(seed.category) }}
+                </span>
+                <span v-if="suggest.suggestedAdded.has(seed.key)" class="rss-briefing__suggest-card-added">✓</span>
+              </div>
+              <div class="rss-briefing__suggest-card-name">{{ seed.name }}</div>
+              <div class="rss-briefing__suggest-card-url" :title="seed.url">{{ seed.url }}</div>
+              <el-button
+                size="small"
+                type="primary"
+                plain
+                :disabled="suggest.suggestedAdded.has(seed.key)"
+                :loading="suggest.suggestedLoading.value === seed.key"
+                @click.stop="onSuggestAddOne(seed)"
+                >{{
+                  suggest.suggestedAdded.has(seed.key)
+                    ? t("rss.manager.briefing.suggest.added")
+                    : t("rss.manager.briefing.suggest.addOne")
+                }}</el-button
+              >
+            </div>
+          </div>
+          <div v-if="!suggest.suggestedSeeds.value.length" class="rss-briefing__chart-empty">
+            <div class="rss-briefing__chart-empty-glyph">📡</div>
+            <div class="rss-briefing__chart-empty-title">{{ t("rss.manager.briefing.suggest.allAdded") }}</div>
+          </div>
+        </div>
+      </div>
+
       <el-table
-        v-if="viewMode === 'table'"
+        v-if="viewMode === 'table' && (seedsLoading || filteredSeeds.length)"
         :data="filteredSeeds"
         v-loading="seedsLoading"
         stripe
@@ -37,9 +100,16 @@
         <el-table-column prop="name" :label="t('rss.manager.seeds.table.name')" min-width="140" show-overflow-tooltip />
         <el-table-column :label="t('rss.manager.seeds.table.feedUrl')" min-width="240">
           <template #default="{ row }">
-            <span class="rss-role__seed-url">
+            <a
+              :href="(row as RssSeedDocument).url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="rss-role__seed-url-link"
+              :title="(row as RssSeedDocument).url"
+            >
+              <span class="rss-role__seed-url-glyph">🔗</span>
               <span class="rss-role__seed-url-text">{{ (row as RssSeedDocument).url }}</span>
-            </span>
+            </a>
           </template>
         </el-table-column>
         <el-table-column :label="t('rss.manager.seeds.table.category')" width="150" show-overflow-tooltip>
@@ -117,7 +187,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div v-else class="rss-role__items-grid">
+      <div v-else-if="seedsLoading || filteredSeeds.length" class="rss-role__items-grid">
         <el-card v-for="seed in filteredSeeds" :key="seed.url" class="rss-role__seed-card" shadow="hover">
           <div class="rss-role__seed-card-head">
             <span class="rss-role__seed-card-name">{{ seed.name }}</span>
@@ -191,11 +261,13 @@
 
 <script setup lang="ts">
 import { onMounted, watch, toRef } from "vue";
-import { Search, Plus, Refresh, Link, Delete } from "@element-plus/icons-vue";
+import { Search, Plus, Refresh, Link, Delete, Upload, Download } from "@element-plus/icons-vue";
 import type { RssSeedDocument } from "@/api/modules/rssService";
 import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 import { roleColor as roleColorFn } from "@/views/knowledge/executive/okrData";
 import { useFeeds } from "./useFeeds";
+import { useSeedSuggest } from "./useSeedSuggest";
 import SeedDialog from "./SeedDialog.vue";
 import QuickParseDialog from "./QuickParseDialog.vue";
 
@@ -272,6 +344,7 @@ async function onQuickParse() {
 onMounted(() => {
   loadSeeds();
   loadSeedArticleCounts();
+  suggest.loadSeedsForOptions();
 });
 
 watch(
@@ -279,9 +352,53 @@ watch(
   () => {
     loadSeeds();
     loadSeedArticleCounts();
+    suggest.loadSeedsForOptions();
   },
   { deep: true }
 );
+
+// ── OPML buttons (stub for now) ──
+function onImportOpml() {
+  ElMessage.info(`${t("rss.scheduler.importOpml")} (stub)`);
+}
+function onExportOpml() {
+  ElMessage.info(`${t("rss.scheduler.exportOpml")} (stub)`);
+}
+
+// ── Suggested seeds (0-seed 引导) ──
+const tFn: (key: string, args?: Record<string, unknown>) => string = (k, args) =>
+  (t as unknown as (k: string, a?: Record<string, unknown>) => string)(k, args ?? {});
+
+function errorMessage(e: unknown): string | undefined {
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string") return e;
+  return undefined;
+}
+
+const suggest = useSeedSuggest(rolesRef, {
+  t: tFn,
+  errorMessage,
+  onSeedAdded: async () => {
+    await loadSeeds();
+    await loadSeedArticleCounts();
+    emit("feedsChanged");
+  }
+});
+
+async function onSuggestAddOne(seed: Parameters<typeof suggest.addSuggestedSeed>[0]) {
+  await suggest.addSuggestedSeed(seed);
+}
+async function onSuggestAddAll() {
+  await suggest.addAllSuggestedSeeds(async () => {
+    await loadSeeds();
+    await loadSeedArticleCounts();
+    emit("feedsChanged");
+  });
+}
+
+defineExpose({
+  parseAllLoading
+});
 </script>
 
 <style scoped lang="scss">
@@ -378,11 +495,28 @@ watch(
   align-items: center;
   max-width: 100%;
 }
+.rss-role__seed-url-link {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 100%;
+  color: var(--el-text-color-secondary);
+  text-decoration: none;
+  &:hover {
+    color: var(--el-color-primary);
+    text-decoration: underline;
+  }
+}
+.rss-role__seed-url-glyph {
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.7;
+}
 .rss-role__seed-url-text {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 12px;
-  color: var(--el-text-color-secondary);
   white-space: nowrap;
 }
 .rss-role__date {
@@ -459,5 +593,144 @@ watch(
 }
 :deep(.el-table__body tr:hover > td) {
   background-color: var(--el-color-primary-light-9) !important;
+}
+
+// ── Actions: appear on row hover ──
+:deep(.el-table__body tr .el-button) {
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+:deep(.el-table__body tr:not(:hover) .el-button.el-button--text:not(.is-loading)) {
+  opacity: 0;
+}
+:deep(.el-table__body tr:hover .el-button) {
+  opacity: 1;
+}
+
+// ── 0-seed suggest wrap (镜像 BriefingSection.scss 同名类，避免 scoped 穿透失效) ──
+.rss-role__suggest-wrap {
+  margin-bottom: 12px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest) {
+  margin-top: 8px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-head) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-title) {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-sub) {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.15),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease,
+              background 0.22s ease,
+              opacity 0.22s ease;
+  &:hover {
+    border-color: color-mix(in srgb, var(--el-color-primary) 35%, var(--el-border-color-lighter));
+    box-shadow: 0 10px 26px -18px color-mix(in srgb, var(--el-color-primary) 70%, transparent);
+    transform: translateY(-2px);
+  }
+  &.is-added {
+    opacity: 0.6;
+    border-style: dashed;
+    &::after {
+      content: "✓";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--el-color-success);
+      background: var(--el-color-success-light-9);
+      border-radius: 999px;
+    }
+  }
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-top) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-cat) {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  max-width: 62%;
+  padding: 2px 8px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: var(--el-fill-color-lighter);
+  border-radius: 999px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-name) {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--el-text-color-primary);
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-url) {
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  padding: 20px;
+  background:
+    linear-gradient(90deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 0 / 16px 1px repeat-x,
+    linear-gradient(90deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 100% / 16px 1px repeat-x,
+    linear-gradient(0deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 0 / 1px 16px repeat-y,
+    linear-gradient(0deg, var(--el-fill-color-lighter) 50%, transparent 50%) 100% 0 / 1px 16px repeat-y;
+  color: var(--el-text-color-secondary);
+  border-radius: 12px;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty-glyph) {
+  font-size: 42px;
+  line-height: 1;
+}
+.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty-title) {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
 }
 </style>

@@ -47,7 +47,7 @@ export interface PageHelpSection {
   /** Markdown（渲染须通过 SafeMarkdown 白名单） */
   readonly content: string;
   /** 角色过滤（不填 = 全员可见） */
-  readonly roleFilter?: readonly Array<"admin" | "member" | "guest">;
+  readonly roleFilter?: ReadonlyArray<"admin" | "member" | "guest">;
 }
 
 export interface PageHelpContent {

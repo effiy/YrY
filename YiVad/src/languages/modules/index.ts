@@ -57,6 +57,8 @@ import zhSearch from "./search/zh";
 import enSearch from "./search/en";
 import zhNotification from "./notification/zh";
 import enNotification from "./notification/en";
+import zhHelp from "./help/zh";
+import enHelp from "./help/en";
 
 export const messages = {
   zh: {
@@ -82,7 +84,8 @@ export const messages = {
     ...zhReports,
     ...zhLogin,
     ...zhSearch,
-    ...zhNotification
+    ...zhNotification,
+    ...zhHelp
   },
   en: {
     ...enCommon,
@@ -107,6 +110,7 @@ export const messages = {
     ...enReports,
     ...enLogin,
     ...enSearch,
-    ...enNotification
+    ...enNotification,
+    ...enHelp
   }
 };

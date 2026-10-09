@@ -19,7 +19,7 @@
 
     <slot name="header" />
 
-    <KnowledgeError v-if="error" :message="error" @retry="loadFiles" />
+    <KnowledgeError v-if="error" :message="error" @retry="() => d.refresh()" />
 
     <template v-else>
       <div class="role-page__body">
@@ -89,17 +89,23 @@
 </template>
 
 <script setup lang="ts" name="RoleKnowledgePage">
-import { ref, computed, onMounted, nextTick, reactive } from "vue";
+/* ──────────────────────────────────────────────────────────
+ * NOTE: This component is now a thin fallback.
+ * All 7 real roles use dedicated dashboard pages that import
+ * `useRoleDashboard` and render Red-Lines + Quick-Ref +
+ * 5-Day Onboarding sections. This page is kept only for
+ * unknown/custom category routing.
+ * ────────────────────────────────────────────────────────── */
+import { ref, computed, onMounted, nextTick, reactive, toRefs } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { scanKnowledge, deleteKnowledgeFile } from "@/api/modules/knowledgeService";
 import { confirm } from "@/hooks/useConfirmAction";
-import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import KnowledgeError from "./KnowledgeError.vue";
 import RoleCardView from "./RoleCardView.vue";
 import RoleListView from "./RoleListView.vue";
 import RoleTableView from "./RoleTableView.vue";
+import { useRoleDashboard } from "../composables/useRoleDashboard";
 
 interface Subdir {
   id: string;
@@ -121,41 +127,32 @@ const props = withDefaults(
   { structuralTags: () => [] }
 );
 const { t } = useI18n();
-
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
 
-const allFiles = ref<KnowledgeFileEntry[]>([]);
-const loading = ref(false);
-const error = ref("");
-const collapsedSections = ref(new Set(props.subdirs.slice(1).map(d => d.id)));
-const viewMode = ref<"card" | "list" | "table">("table");
-const cardActiveDomain = ref<string | null>(null);
+/* ── Delegate 100% of data + state to shared composable. ── */
+const categoryRef = computed(() => props.category);
+const d = useRoleDashboard(categoryRef, { pollIntervalMs: 90_000 });
 
-const filters = reactive({
-  title: "",
-  domain: [] as string[],
-  domainText: "",
-  type: "",
-  status: "",
-  lifecycle: "",
-  review: ""
-});
+const {
+  loading, error, filesByDir, fileCounts, flatFiles, filteredFiles,
+  viewMode, collapsedSections, filters, toggleSection
+} = d;
 
+/* ── Local helpers (sidebar interactions) ─────────────── */
 function isStatActive(dir: Subdir): boolean {
   if (viewMode.value === "table") return filters.domain.includes(dir.label);
-  return cardActiveDomain.value === dir.id;
+  return d.cardActiveDomain.value === dir.id;
 }
-
 function scrollTo(id: string) {
   if (viewMode.value === "table" || viewMode.value === "list") {
-    const dir = props.subdirs.find(d => d.id === id);
+    const dir = props.subdirs.find(x => x.id === id);
     if (!dir) return;
     const idx = filters.domain.indexOf(dir.label);
     if (idx >= 0) filters.domain.splice(idx, 1);
     else filters.domain.push(dir.label);
     return;
   }
-  cardActiveDomain.value = cardActiveDomain.value === id ? null : id;
+  d.cardActiveDomain.value = d.cardActiveDomain.value === id ? null : id;
   if (collapsedSections.value.has(id)) toggleSection(id);
   nextTick(() => {
     const el = document.querySelector(`[data-section="${id}"]`);
@@ -163,123 +160,20 @@ function scrollTo(id: string) {
   });
 }
 
-function toggleSection(id: string) {
-  const s = collapsedSections.value;
-  if (s.has(id)) s.delete(id);
-  else s.add(id);
-  collapsedSections.value = new Set(s);
-}
-
-const filesByDir = computed<Record<string, KnowledgeFileEntry[]>>(() => {
-  const map: Record<string, KnowledgeFileEntry[]> = {};
-  for (const dir of props.subdirs) map[dir.id] = [];
-  for (const f of allFiles.value) {
-    const dirName = f.path.replace(new RegExp(`^${props.category}/`), "").split("/")[0];
-    if (map[dirName]) map[dirName].push(f);
-  }
-  for (const dir of props.subdirs) map[dir.id].sort(compareByMaturity);
-  return map;
-});
-
-const flatFiles = computed(() => {
-  const rows: Array<{
-    file: KnowledgeFileEntry;
-    path: string;
-    name: string;
-    title: string;
-    size: number;
-    domain: string;
-    domainIcon: string;
-    domainColor: string;
-  }> = [];
-  for (const dir of props.subdirs) {
-    for (const f of filesByDir.value[dir.id]) {
-      rows.push({
-        file: f,
-        path: f.path,
-        name: f.name,
-        title: f.meta?.title || f.name,
-        size: f.size,
-        domain: dir.label,
-        domainIcon: dir.icon,
-        domainColor: dir.color
-      });
-    }
-  }
-  return rows;
-});
-
-const filteredFiles = computed(() => {
-  return flatFiles.value.filter(row => {
-    const ft = filters.title.toLowerCase();
-    if (ft && !row.title.toLowerCase().includes(ft)) return false;
-    if (filters.domain.length && !filters.domain.includes(row.domain)) return false;
-    const fd = filters.domainText.toLowerCase();
-    if (fd && !row.domain.toLowerCase().includes(fd)) return false;
-    const fty = filters.type.toLowerCase();
-    if (fty && !(row.file.meta?.type || "").toLowerCase().includes(fty)) return false;
-    const fs = filters.status.toLowerCase();
-    if (fs && !(row.file.meta?.status || "").toLowerCase().includes(fs)) return false;
-    const fl = filters.lifecycle.toLowerCase();
-    if (fl && !(row.file.meta?.lifecycle || "").toLowerCase().includes(fl)) return false;
-    const fr = filters.review.toLowerCase();
-    if (fr && !(row.file.meta?.review_cycle || "").toLowerCase().includes(fr)) return false;
-    return true;
-  });
-});
-
-const STATUS_ORDER: Record<string, number> = { stable: 0, active: 0, evolving: 1, draft: 2, deprecated: 3, archived: 3 };
-const LIFECYCLE_ORDER: Record<string, number> = { stable: 0, active: 0, evolving: 1, draft: 2, "in-review": 2, deprecated: 3 };
-
-function compareByMaturity(a: KnowledgeFileEntry, b: KnowledgeFileEntry): number {
-  const sa = STATUS_ORDER[a.meta?.status ?? ""] ?? 99;
-  const sb = STATUS_ORDER[b.meta?.status ?? ""] ?? 99;
-  if (sa !== sb) return sa - sb;
-  const la = LIFECYCLE_ORDER[a.meta?.lifecycle ?? ""] ?? 99;
-  const lb = LIFECYCLE_ORDER[b.meta?.lifecycle ?? ""] ?? 99;
-  if (la !== lb) return la - lb;
-  return a.name.localeCompare(b.name);
-}
-
-const fileCounts = computed<Record<string, number>>(() => {
-  const counts: Record<string, number> = {};
-  for (const dir of props.subdirs) counts[dir.id] = (filesByDir.value[dir.id] || []).length;
-  return counts;
-});
-
-function openFile(file: KnowledgeFileEntry) {
+/* ── Actions ───────────────────────────────────────── */
+function openFile(file: { path: string }) {
   previewDlg.value?.open(file.path);
 }
-
-async function handleDelete(file: KnowledgeFileEntry) {
+async function handleDelete(file: { path: string }) {
   const ok = await confirm(
     t("knowledge.common.deleteFileConfirm", { path: file.path }),
     t("knowledge.common.deleteFileTitle")
   );
   if (!ok) return;
-  try {
-    await deleteKnowledgeFile(file.path);
-    ElMessage.success(t("knowledge.common.fileDeleted"));
-    allFiles.value = allFiles.value.filter(f => f.path !== file.path);
-  } catch {
-    ElMessage.error(t("knowledge.common.fileDeleteFailed"));
-  }
+  const done = await d.removeFile(file as any);
+  if (done) ElMessage.success(t("knowledge.common.fileDeleted"));
+  else ElMessage.error(t("knowledge.common.fileDeleteFailed"));
 }
-
-async function loadFiles() {
-  loading.value = true;
-  error.value = "";
-  try {
-    const res = await scanKnowledge(props.category);
-    allFiles.value = (res.categories?.flatMap(c => c.files) ?? []).filter(f => f.meta?.type !== "rss");
-  } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "Unknown error";
-    allFiles.value = [];
-  } finally {
-    loading.value = false;
-  }
-}
-onMounted(loadFiles);
 </script>
 
 <style scoped lang="scss">

@@ -60,9 +60,6 @@ fn get_current_monitor(x: i32, y: i32) -> Monitor {
 // Creating a window on the mouse monitor
 fn build_window(label: &str, title: &str) -> (Window, bool) {
     use mouse_position::mouse_position::{Mouse, Position};
-    // #region debug-point C:build_window-entry
-    info!("[DEBUG build_window] label={}", label);
-    // #endregion
     let mouse_position = match Mouse::get_mouse_position() {
         Mouse::Position { x, y } => Position { x, y },
         Mouse::Error => {
@@ -84,12 +81,6 @@ fn build_window(label: &str, title: &str) -> (Window, bool) {
     match app_handle.get_window(label) {
         Some(v) => {
             info!("Window existence: {}", label);
-            // #region debug-point D:exists-focus-before
-            info!(
-                "[DEBUG build_window] label={} exists=true, set_focus()",
-                label
-            );
-            // #endregion
             v.set_focus()
                 .unwrap_or_else(|e| warn!("set_focus failed for existing {}: {:?}", label, e));
             (v, true)
@@ -148,19 +139,7 @@ fn translate_window() -> Window {
             Position { x: 0, y: 0 }
         }
     };
-    // #region debug-point C:translate_window-entry
-    info!(
-        "[DEBUG translate_window] mouse_px=({},{}); calling build_window",
-        mouse_position.x, mouse_position.y
-    );
-    // #endregion
     let (window, exists) = build_window("translate", "Translate");
-    // #region debug-point C:translate_window-build
-    info!(
-        "[DEBUG translate_window] build_window returned exists={}",
-        exists
-    );
-    // #endregion
     if exists {
         return window;
     }
@@ -256,14 +235,33 @@ pub fn selection_translate() {
     // Get Selected Text
     let text = get_text();
     if !text.trim().is_empty() {
-        let app_handle = APP.get().unwrap();
-        // Write into State
-        let state: tauri::State<StringWrapper> = app_handle.state();
-        state.0.lock().unwrap().replace_range(.., &text);
+        let app_handle = match APP.get() {
+            Some(h) => h,
+            None => {
+                warn!("selection_translate: APP not initialized, skip state write");
+                let window = translate_window();
+                window
+                    .emit("new_text", text.as_str())
+                    .unwrap_or_else(|e| warn!("selection_translate emit failed: {:?}", e));
+                return;
+            }
+        };
+        // 直接从 Tauri State 拿到 &StringWrapper 指针后，不再持有 State<'_, T> 这个借用，
+        // 避免把 State 的生命周期一直延长到函数尾，导致后面 translate_window()
+        // 再拿 Manager borrow 时报 E0597（"state does not live long enough"）。
+        let wrapper_ptr: *const StringWrapper = app_handle.state::<StringWrapper>().inner();
+        // SAFETY: StringWrapper 是 Tauri 管理的全局单例（app.manage 注册），
+        // 生命周期 ≥ 整个 app 运行期。Mutex 内部同步保护。
+        match unsafe { &*wrapper_ptr }.0.lock() {
+            Ok(mut guard) => guard.replace_range(.., &text),
+            Err(_) => warn!("selection_translate: StringWrapper lock poisoned"),
+        }
     }
 
     let window = translate_window();
-    window.emit("new_text", text).unwrap();
+    window
+        .emit("new_text", text.as_str())
+        .unwrap_or_else(|e| warn!("selection_translate emit new_text failed: {:?}", e));
 }
 
 pub fn input_translate() {

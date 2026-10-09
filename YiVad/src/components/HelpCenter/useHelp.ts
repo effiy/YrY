@@ -44,7 +44,14 @@ export interface HelpOSPublicAPI {
   readonly isEnabled: () => boolean;
 }
 
-const state = reactive<HelpOSState>({
+/* ⚠️ 关键约束：state 字段不是 readonly，因为 HelpOS 内部要修改它；
+ * 对外暴露的 API 通过 `readonlyRef(state)` 做只读视图。
+ * 这里的类型与 PRD §6.1 HelpOSState 对齐，但移除 `readonly` 修饰符（允许内部写）。 */
+type _StateMutable = {
+  -readonly [K in keyof HelpOSState]: HelpOSState[K];
+};
+
+const state = reactive<_StateMutable>({
   open: false,
   activeTab: "shortcuts",
   query: "",
@@ -71,18 +78,9 @@ function computeDefaultTab(): HelpTabId {
   return "shortcuts";
 }
 
-/** 全局安装 HelpOS（在 main.ts 或 layouts/index.vue 调用一次） */
-export function installHelpOS(opts?: { enabled?: () => boolean }): HelpOSPublicAPI {
-  if (installed) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return inject(INJECT_KEY)!;
-  }
-  installed = true;
-
-  const enabledFn: () => boolean = opts?.enabled ?? (() => true);
-
+/* ── 内部 API（闭包持有；安装函数包装后对外 readonly 导出）─────────────── */
+function _create(): HelpOSPublicAPI & { _state: typeof state } {
   const open: HelpOSPublicAPI["open"] = async (tab, seed) => {
-    if (!enabledFn()) return;
     // 运行 before open hooks
     for (const fn of beforeOpenFns) try { await fn(); } catch { /* noop */ }
     state.activeTab = tab ?? computeDefaultTab();
@@ -96,22 +94,18 @@ export function installHelpOS(opts?: { enabled?: () => boolean }): HelpOSPublicA
 
   const close: HelpOSPublicAPI["close"] = () => {
     state.open = false;
-    // 记住 24h 偏好
     try {
       localStorage.setItem(
         "yivad-help-last-tab",
         JSON.stringify({ tab: state.activeTab, at: Date.now() })
       );
     } catch { /* noop */ }
-    // 清理资源（reset：保留容器，后续可继续注册；不 abort 已结束的）
     bag.reset();
     shortcutRegistry.setModalOpen(false);
   };
 
   const setActiveTab: HelpOSPublicAPI["setActiveTab"] = tab => { state.activeTab = tab; };
   const registerPageHelp: HelpOSPublicAPI["registerPageHelp"] = (content, locale = "zh") => {
-    // 动态注入：真实实现会在 page-help-content.ts 中追加；此处仅记录占位。
-    // 开发期调用后立即生效，生产构建期 tree-shake 掉未使用的动态条目。
     (window as any).__YIVAD_PAGE_HELP__ ??= {};
     (window as any).__YIVAD_PAGE_HELP__[locale] ??= [];
     (window as any).__YIVAD_PAGE_HELP__[locale].push(content);
@@ -123,26 +117,47 @@ export function installHelpOS(opts?: { enabled?: () => boolean }): HelpOSPublicA
       if (idx >= 0) beforeOpenFns.splice(idx, 1);
     };
   };
-
-  const api: HelpOSPublicAPI = {
-    open,
-    close,
-    setActiveTab,
+  return {
+    open, close, setActiveTab,
     state: readonlyRef(state) as unknown as HelpOSState,
     registerPageHelp,
     onBeforeOpen,
+    isEnabled: () => true,
+    _state: state
+  };
+}
+
+/** 全局安装 HelpOS（在 main.ts 或 layouts/index.vue 调用一次） */
+let _installedApi: HelpOSPublicAPI | null = null;
+let _installedEnabledFn: () => boolean = () => true;
+
+export function installHelpOS(opts?: { enabled?: () => boolean }): HelpOSPublicAPI {
+  if (installed && _installedApi) return _installedApi;
+  _installedEnabledFn = opts?.enabled ?? (() => true);
+
+  const inner = _create();
+  const enabledFn = _installedEnabledFn;
+  const guarded: HelpOSPublicAPI = {
+    open: (t, s) => { if (!enabledFn()) return; inner.open(t, s); },
+    close: () => inner.close(),
+    setActiveTab: t => inner.setActiveTab(t),
+    state: inner.state,
+    registerPageHelp: (c, l) => inner.registerPageHelp(c, l),
+    onBeforeOpen: fn => inner.onBeforeOpen(fn),
     isEnabled: enabledFn
   };
 
-  provide(INJECT_KEY, api);
-  return api;
+  installed = true;
+  _installedApi = guarded;
+  try { provide(INJECT_KEY, guarded); } catch { /* non-setup context */ }
+  return guarded;
 }
 
 /** 子组件中获取 HelpOS API（若未安装自动 stub） */
 export function useHelp(): HelpOSPublicAPI {
   const existing = getCurrentInstance() ? inject(INJECT_KEY, null) : null;
   if (existing) return existing;
-  // 兜底：全局单例引用（便于 setup 外调用）
+  if (_installedApi) return _installedApi;
   return stubHelpOS;
 }
 
@@ -190,8 +205,18 @@ function isInputLike(target: EventTarget | null): boolean {
 export const helpOSInternalState = state;
 
 /* ── HelpOS 命令面板 aliases（install 后立即注册到 commandPalette quickActions）── */
-export const HELP_COMMAND_ALIASES = [
-  { id: "help.open",      pattern: /^> ?help$/i,            run: (api: HelpOSPublicAPI) => api.open("shortcuts") },
+export const HELP_COMMAND_ALIASES: Readonly<Record<HelpTabId | "help", string>> = {
+  help: "@help",
+  "page-help": "@help",
+  shortcuts: "@shortcuts",
+  faq: "@faq",
+  changelog: "@changelog",
+  feedback: "@feedback"
+} as const;
+
+/* HelpOS 命令面板 aliases（正则+handler 版，兼容 legacy 调用）—— P2 可迁移为上面的 Record */
+export const HELP_COMMAND_ALIAS_RULES = [
+  { id: "help.open",      pattern: /^> ?help$/i,            run: (api: HelpOSPublicAPI) => api.open("page-help") },
   { id: "help.shortcuts", pattern: /^> ?shortcuts$/i,       run: (api: HelpOSPublicAPI) => api.open("shortcuts") },
   { id: "help.changelog", pattern: /^> ?changelog$/i,       run: (api: HelpOSPublicAPI) => api.open("changelog") },
   { id: "help.feedback",  pattern: /^> ?feedback$/i,        run: (api: HelpOSPublicAPI) => api.open("feedback") },
@@ -204,3 +229,22 @@ export const HELP_COMMAND_ALIASES = [
     }
   }
 ] as const;
+
+/* 全局单例引用（供非 provide/inject 上下文的 layouts/index.vue / 命令面板使用） */
+export const helpAPI: HelpOSPublicAPI = new Proxy(
+  {
+    open: (tab?: HelpTabId, seed?: string) => _installedApi?.open(tab, seed),
+    close: () => _installedApi?.close(),
+    setActiveTab: (tab: HelpTabId) => _installedApi?.setActiveTab(tab),
+    get state() { return (_installedApi ?? stubHelpOS).state; },
+    registerPageHelp: (content: any, locale?: "zh" | "en") => _installedApi?.registerPageHelp(content, locale),
+    onBeforeOpen: (fn: () => void | Promise<void>) => _installedApi?.onBeforeOpen(fn) ?? (() => void 0),
+    isEnabled: () => _installedApi?.isEnabled() ?? false
+  },
+  {
+    get(target, prop) {
+      if (_installedApi) return (_installedApi as any)[prop];
+      return (target as any)[prop];
+    }
+  }
+) as HelpOSPublicAPI;

@@ -17,7 +17,7 @@
  *
  * One-shot parse lives in services.rss.feed_service.parse_feed.
  */
-import { callService, queryDocuments, createDocument, updateDocument, deleteDocument } from "./dataService";
+import { callService, queryDocuments, createDocument, updateDocument, deleteDocument, type QueryDocumentsOpts } from "./dataService";
 import type { YiAiEnvelope, QueryDocumentsData } from "@/api/interface/yiAi";
 
 export const RSS_COLLECTION = "rss";
@@ -110,7 +110,8 @@ export interface RssSchedulerStatus {
 // ── Item queries ──
 
 export async function getRssList(
-  params: RssListParams = {}
+  params: RssListParams = {},
+  opts: QueryDocumentsOpts = {}
 ): Promise<YiAiEnvelope<QueryDocumentsData<RssItemDocument> & { pageNum: number; pageSize: number }>> {
   const filter: Record<string, any> = {};
   const search = params.search;
@@ -137,7 +138,7 @@ export async function getRssList(
   if (Object.keys(filter).length > 0) payload.filter = filter;
   if (params.publishedStart !== undefined) payload.publishedStart = params.publishedStart;
   if (params.publishedEnd !== undefined) payload.publishedEnd = params.publishedEnd;
-  const res = await queryDocuments<RssItemDocument>(payload as any);
+  const res = await queryDocuments<RssItemDocument>(payload as any, { timeout: opts.timeout ?? 15_000, signal: opts.signal });
   if (res.code !== 0) throw new Error(res.message || "Failed to load RSS items");
   return {
     ...res,
@@ -158,7 +159,8 @@ export async function getRssItem(key: string): Promise<RssItemDocument | null> {
 // ── Seed queries ──
 
 export async function getSeedList(
-  params: { search?: string; enabled?: boolean; pageNum?: number; pageSize?: number } = {}
+  params: { search?: string; enabled?: boolean; pageNum?: number; pageSize?: number } = {},
+  opts: QueryDocumentsOpts = {}
 ): Promise<YiAiEnvelope<QueryDocumentsData<RssSeedDocument> & { pageNum: number; pageSize: number }>> {
   const filter: Record<string, any> = {};
   if (params.search) {
@@ -175,7 +177,7 @@ export async function getSeedList(
     pageSize,
     orderBy: "updatedAt",
     orderType: "desc"
-  });
+  }, { timeout: opts.timeout ?? 10_000, signal: opts.signal });
   if (res.code !== 0) throw new Error(res.message || "Failed to load RSS seeds");
   return {
     ...res,

@@ -16,7 +16,11 @@ export type ReliabilityMetricPhase =
   | "P2-issues"
   | "P2-modules"
   | "P3-derive"
-  | "P4-readme";
+  | "P4-readme"
+  | "search_query"
+  | "search_navigate"
+  | "store_init"
+  | "page_detail_load";
 
 export type ReliabilityMetricStatus = "success" | "failed" | "degraded" | "cached" | "circuit-open";
 
@@ -24,6 +28,10 @@ export type ReliabilityErrorType = "timeout" | "network" | "business" | "aborted
 
 export interface ReliabilityMetricEvent {
   id: string;
+  /**
+   * 项目业务主键；允许空串（如 page 全局文档不属于任何 project、search 聚合查询未指定项目等）。
+   * 旧代码里写 projectKey.value（computed<string | undefined>）再用 ?? "" 即可。
+   */
   projectKey: string;
   phase: ReliabilityMetricPhase;
   status: ReliabilityMetricStatus;

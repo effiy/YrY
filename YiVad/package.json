@@ -39,6 +39,7 @@
     "cytoscape": "^3.34.0",
     "cytoscape-dagre": "^2.5.0",
     "dayjs": "^1.11.21",
+    "dompurify": "^3.4.16",
     "downsample": "^1.4.0",
     "driver.js": "^1.8.0",
     "echarts": "^6.1.0",
