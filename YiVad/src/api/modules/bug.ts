@@ -76,6 +76,48 @@ export type BugStatus = "open" | "in_progress" | "resolved" | "closed" | "reject
 export type BugType = "functional" | "performance" | "ui" | "security" | "compatibility" | "regression" | "data" | "other";
 export type BugFrequency = "always" | "sometimes" | "rarely" | "once" | "unable";
 
+/** A single status / ownership / classification transition event in a bug's
+ *  lifecycle. Stored chronologically. Optional for backward compatibility —
+ *  when absent, the UI falls back to inferring events from createdAt /
+ *  updatedAt / resolvedAt / closedAt + reopenCount. */
+export interface BugTimelineEvent {
+  /** What happened. "status_change" · "assignee_change" · "priority_change" ·
+   *  "severity_change" · "comment" · "attachment" · "linked_issue" ·
+   *  "linked_pr" · "rollback_triggered" · "reopen" */
+  kind:
+    | "status_change"
+    | "assignee_change"
+    | "priority_change"
+    | "severity_change"
+    | "comment"
+    | "attachment"
+    | "linked_issue"
+    | "linked_pr"
+    | "rollback_triggered"
+    | "reopen"
+    | "custom";
+  /** When it happened (epoch ms). */
+  ts: number;
+  /** Who performed the action — free-text username / email. */
+  by?: string;
+  /** Previous value. Opaque string: for status_change use BugStatus etc. */
+  from?: string;
+  /** New value after the change. */
+  to?: string;
+  /** Optional free-text note or comment body. */
+  note?: string;
+}
+
+/** SLA hours by severity used across the UI — shared const so list and
+ *  detail agree on the thresholds. */
+export const BUG_SLA_HOURS: Record<BugSeverity, number> = {
+  critical: 4,
+  major: 24,
+  minor: 72,
+  trivial: 168,
+};
+
+
 import type { IssuePriority, IssueStatus, IssueType, TagType } from "@/api/modules/issueService";
 
 export const BUG_STATUS_MAP: Record<BugStatus, string> = {
@@ -223,6 +265,12 @@ export interface BugDocument {
   updatedAt: number;
   resolvedAt: number | null;
   closedAt: number | null;
+  /** How many times this bug was reopened. Optional on legacy bugs; the UI
+   *  falls back to 1 if status==='reopened' and resolvedAt!=null, else 0. */
+  reopenCount?: number;
+  /** Ordered lifecycle events. Optional on legacy bugs; the UI falls back to
+   *  synthesising events from the timestamp fields above + status + reopenCount. */
+  timeline?: BugTimelineEvent[];
 }
 
 /** Long-form body — persisted in the markdown file, parsed back by section. */

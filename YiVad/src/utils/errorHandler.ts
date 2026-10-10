@@ -1,6 +1,27 @@
 import type { App } from "vue";
 import { reportError } from "./errorReporter";
 
+/* ── Benign browser warning classifier ─────────────────────────────────── */
+// Chrome / WebKit emit "ResizeObserver loop completed with undelivered
+// notifications" as an uncatchable console-level Error *and* a window error
+// event when a ResizeObserver callback synchronously dirties layout and
+// produces more observer entries than the engine can deliver within the same
+// frame. It is cosmetic, not functional. We suppress it across all three
+// channels: errorHandler, unhandledrejection, and window.onerror.
+const RO_LOOP_HINTS = [
+  "resizeobserver loop completed with undelivered notifications",
+  "resizeobserver loop limit exceeded"
+];
+
+function isResizeObserverLoopMsg(msg: string): boolean {
+  if (!msg) return false;
+  const lower = String(msg).toLowerCase();
+  return RO_LOOP_HINTS.some(h => lower.includes(h));
+}
+function isResizeObserverLoopError(e: Error): boolean {
+  return !!e && (isResizeObserverLoopMsg(e.message) || isResizeObserverLoopMsg((e as any).stack ?? ""));
+}
+
 export interface ErrorContext {
   type: "RENDER" | "API" | "PROMISE" | "SCRIPT" | "UNKNOWN";
   error: Error;
@@ -64,6 +85,12 @@ export function setupGlobalErrorHandler(app: App): void {
     const httpStatus = (error as any).status ?? (error as any).response?.status;
     if (httpStatus !== undefined) return;
 
+    // ── Benign noise filter ──────────────────────────────────────────────
+    // ResizeObserver loop warning: emitted by Element Plus internal layout
+    // observers and ECharts .resize() in tight layout phases. This is a
+    // cosmetic browser warning, never a functional failure.
+    if (isResizeObserverLoopError(error)) return;
+
     const ctx: ErrorContext = {
       type: "RENDER",
       error,
@@ -77,6 +104,10 @@ export function setupGlobalErrorHandler(app: App): void {
   };
 
   app.config.warnHandler = (msg, instance, trace) => {
+    const raw = typeof msg === "string" ? msg : (msg as any)?.message ?? String(msg);
+    // Suppress ResizeObserver noise at warn level too (some devtool layers
+    // re-emit the loop error as a Vue warning).
+    if (isResizeObserverLoopMsg(raw)) return;
     if (import.meta.env.DEV) {
       console.warn(`[Vue Warn] ${msg}`, { component: (instance as any)?.$options?.name, trace });
     }
@@ -86,6 +117,12 @@ export function setupGlobalErrorHandler(app: App): void {
 export function setupUnhandledRejectionHandler(): void {
   window.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
     const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+
+    // Benign browser noise
+    if (isResizeObserverLoopError(error)) {
+      event.preventDefault();
+      return;
+    }
 
     const ctx: ErrorContext = {
       type: "PROMISE",
@@ -101,9 +138,15 @@ export function setupUnhandledRejectionHandler(): void {
 
 export function setupGlobalScriptErrorHandler(): void {
   window.onerror = (message, source, lineno, colno, error) => {
+    const msgStr = typeof message === "string" ? message : (message as any)?.message ?? String(message);
+    // Benign browser noise
+    if (isResizeObserverLoopMsg(msgStr) || (error && isResizeObserverLoopError(error))) {
+      return true; // suppress
+    }
+
     const ctx: ErrorContext = {
       type: "SCRIPT",
-      error: error || new Error(String(message)),
+      error: error || new Error(msgStr),
       url: source,
       timestamp: Date.now()
     };

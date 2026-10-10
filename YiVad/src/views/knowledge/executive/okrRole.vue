@@ -510,6 +510,7 @@ import type { KnowledgeFileEntry } from "@/api/interface/yiAi";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { ElMessage } from "element-plus";
 import { DisposerBag, createTimeoutSignal } from "@/utils/disposer";
+import { createSafeResizeObserver } from "@/utils/index";
 import {
   resolveLink,
   gateBEntityExists,
@@ -1025,17 +1026,15 @@ onMounted(() => {
     renderLineChart();
     renderFunnelChart();
   });
-  if (typeof ResizeObserver !== "undefined") {
-    if (lineChartRef.value) {
-      const ro = new ResizeObserver(() => lineChart.value?.resize?.());
-      ro.observe(lineChartRef.value);
-      lineObserver = ro as any;
-    }
-    if (funnelChartRef.value) {
-      const ro = new ResizeObserver(() => funnelChart.value?.resize?.());
-      ro.observe(funnelChartRef.value);
-      funnelObserver = ro as any;
-    }
+  if (lineChartRef.value) {
+    const ro = createSafeResizeObserver(() => lineChart.value?.resize?.(), { debounceMs: 80 });
+    ro.observe(lineChartRef.value);
+    lineObserver = ro as any;
+  }
+  if (funnelChartRef.value) {
+    const ro = createSafeResizeObserver(() => funnelChart.value?.resize?.(), { debounceMs: 80 });
+    ro.observe(funnelChartRef.value);
+    funnelObserver = ro as any;
   }
 });
 

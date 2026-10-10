@@ -464,6 +464,54 @@ function withoutQuery(path: string): string {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Nav helpers — typed convenience shims. Go through `resolveLink` so any
+    drift is caught by the same gates.                                         */
+/* -------------------------------------------------------------------------- */
+
+export interface NavToKeyResult { ok: boolean; link: string; }
+function _navByType(type: "bug" | "issue" | "project" | "module", key: string, query?: Record<string, any>): NavToKeyResult {
+  const r = resolveLink({ type, key });
+  if (!r.ok) return { ok: false, link: r.fallback };
+  if (!query || Object.keys(query).length === 0) return { ok: true, link: r.link };
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) {
+    if (v === undefined || v === null || v === "") continue;
+    q.append(k, String(v));
+  }
+  const qs = q.toString();
+  return { ok: true, link: qs ? `${r.link}?${qs}` : r.link };
+}
+
+/** Resolve a bug detail URL from a bug key. Accepts optional query for
+ *  window/snapshot sharing. Always goes through `resolveLink` so param
+ *  shape stays in sync with authMenuList (`/bug/:id`). */
+export function linkBug(key: string, query?: Record<string, any>): NavToKeyResult {
+  return _navByType("bug", key, query);
+}
+export function linkIssue(key: string, query?: Record<string, any>): NavToKeyResult {
+  return _navByType("issue", key, query);
+}
+export function linkProject(key: string, query?: Record<string, any>): NavToKeyResult {
+  return _navByType("project", key, query);
+}
+export function linkModule(key: string, query?: Record<string, any>): NavToKeyResult {
+  return _navByType("module", key, query);
+}
+/** Build the bug list URL. Passing a query object lets callers share
+ *  window / filter state via copied links. */
+export function linkBugList(query?: Record<string, any>): string {
+  const base = "/bug";
+  if (!query || Object.keys(query).length === 0) return base;
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) {
+    if (v === undefined || v === null || v === "") continue;
+    q.append(k, String(v));
+  }
+  const qs = q.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Default export — 单入口组件脚本风格（用户协作偏好）                        */
 /* -------------------------------------------------------------------------- */
 
@@ -473,5 +521,10 @@ export default {
   diffRouteTemplatesAgainstAuthMenu,
   gateBEntityExists,
   gateCPostNavigate,
+  linkBug,
+  linkIssue,
+  linkProject,
+  linkModule,
+  linkBugList,
   TEMPLATES
 };

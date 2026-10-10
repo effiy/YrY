@@ -156,3 +156,95 @@ function findItemNested(enumData: any, callValue: any, value: string, children: 
     if (current[children]) return findItemNested(current[children], callValue, value, children);
   }, null);
 }
+
+/* ── Safe ResizeObserver Factory ──────────────────────────────────────── */
+/**
+ * @description Creates a ResizeObserver whose callbacks are deferred to the
+ *              next animation frame and coalesced per-frame, avoiding the
+ *              classic "ResizeObserver loop completed with undelivered
+ *              notifications" error that fires when a callback synchronously
+ *              mutates observed dimensions (e.g. ECharts .resize(), layout
+ *              relayout inside an Element Plus table cell).
+ *
+ *              Usage pattern:
+ *                const ro = createSafeResizeObserver(entries => { ... });
+ *                ro.observe(el);
+ *                // later: ro.disconnect();  // same API as native
+ * @param callback Standard ResizeObserverCallback (invoked inside RAF)
+ * @param options  Optional { debounceMs: 0 } — extra debounce on top of RAF
+ * @returns ResizeObserver-compatible object (observe / unobserve / disconnect)
+ */
+export function createSafeResizeObserver(
+  callback: ResizeObserverCallback,
+  options?: { debounceMs?: number }
+): ResizeObserver {
+  const Unsupported = typeof ResizeObserver === "undefined";
+  const debounceMs = options?.debounceMs ?? 0;
+
+  if (Unsupported) {
+    // Safari < 13.1 / very old browsers: return a silent no-op shim so callers
+    // never have to feature-guard. `any` cast because the shim doesn't need
+    // the full class contract.
+    return {
+      observe() {},
+      unobserve() {},
+      disconnect() {}
+    } as unknown as ResizeObserver;
+  }
+
+  let rafId = 0;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  let pendingEntries: ResizeObserverEntry[] = [];
+  let pendingObserver: ResizeObserver | null = null;
+
+  function flush() {
+    rafId = 0;
+    const entries = pendingEntries;
+    const observer = pendingObserver;
+    pendingEntries = [];
+    pendingObserver = null;
+    if (!entries.length || !observer) return;
+    try {
+      callback(entries, observer);
+    } catch (e) {
+      // ResizeObserver callback errors must never bubble up and break the
+      // renderer loop; swallow + report via console (not errorReporter, since
+      // these are almost always benign layout races).
+      console.warn("[resizeObserver] callback suppressed:", e);
+    }
+  }
+
+  function schedule() {
+    if (rafId) return; // already pending a frame
+    rafId = window.requestAnimationFrame(flush);
+  }
+
+  const observer = new ResizeObserver((entries, innerObs) => {
+    pendingObserver = innerObs;
+    for (const e of entries) pendingEntries.push(e);
+    if (debounceMs > 0) {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(schedule, debounceMs);
+    } else {
+      schedule();
+    }
+  });
+
+  // Wrap so disconnect also cancels in-flight RAF / timer
+  const origDisconnect = observer.disconnect.bind(observer);
+  (observer as any).disconnect = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
+    pendingEntries = [];
+    pendingObserver = null;
+    origDisconnect();
+  };
+
+  return observer;
+}

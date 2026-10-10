@@ -646,3 +646,668 @@
   margin-top: 4px;
 }
 .okr__new-action { margin-left: auto; }
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2 扩展：Head / SLOLight / KPI + Radar     */
+/* ═══════════════════════════════════════════════ */
+.okr__head-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  h1 {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--el-text-color-primary);
+  }
+}
+.okr__head-sub {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  letter-spacing: 0.2px;
+}
+.okr__role-nav { flex-shrink: 0; }
+.okr__kbd-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+  kbd {
+    display: inline-block;
+    min-width: 18px;
+    padding: 1px 5px;
+    margin-right: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    color: #1e293b;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgb(15 23 42 / 8%);
+  }
+  b { font-weight: 700; color: var(--el-text-color-primary); }
+}
+
+/* ── SLOLight 4 灯 ── */
+.okr__slo-bar {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 4%);
+}
+.okr__slo-light {
+  --slo-green: #16a34a;
+  --slo-yellow: #eab308;
+  --slo-red: #dc2626;
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+  &.okr__slo-light--green .okr__slo-dot { background: var(--slo-green); box-shadow: 0 0 0 4px rgba(22,163,74,0.12); }
+  &.okr__slo-light--yellow .okr__slo-dot { background: var(--slo-yellow); box-shadow: 0 0 0 4px rgba(234,179,8,0.14); }
+  &.okr__slo-light--red .okr__slo-dot {
+    background: var(--slo-red);
+    box-shadow: 0 0 0 4px rgba(220,38,38,0.14);
+    animation: slo-pulse 1.2s ease-in-out infinite;
+  }
+}
+@keyframes slo-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(220,38,38,0.14); }
+  50%      { box-shadow: 0 0 0 8px rgba(220,38,38,0.05); }
+}
+.okr__slo-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.okr__slo-body { flex: 1 1 0; min-width: 0; }
+.okr__slo-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr__slo-meta {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-top: 2px;
+}
+.okr__slo-val {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--el-text-color-primary);
+}
+.okr__slo-tgt {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--el-text-color-secondary);
+}
+.okr__slo-actions {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  padding: 0 4px;
+}
+
+/* ── KPI wrap + Radar card 组合布局 ── */
+.okr__kpi-wrap {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  margin-bottom: 16px;
+  @media (width <= 1180px) {
+    grid-template-columns: 1fr;
+  }
+}
+.okr__kpi-row { grid-template-columns: repeat(4, 1fr); }
+@media (width <= 1400px) and (width > 1180px) {
+  .okr__kpi-row { grid-template-columns: repeat(4, 1fr); }
+}
+@media (width <= 800px) { .okr__kpi-row { grid-template-columns: repeat(2, 1fr); } }
+
+.okr-kpi-card__help {
+  display: inline-flex;
+  margin-left: 4px;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: help;
+  vertical-align: -2px;
+  &:hover { color: var(--el-color-primary); }
+}
+.okr-kpi-card__spark {
+  width: 100%;
+  height: 24px;
+  margin-top: 4px;
+}
+.okr-kpi-card__mom-label {
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
+  opacity: 0.85;
+}
+
+.okr__radar-card {
+  border-radius: 14px;
+  :deep(.el-card__body) { padding: 14px; }
+}
+.okr__radar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  h3 {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+.okr__radar-hint {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.okr__radar-box {
+  width: 100%;
+  height: 300px;
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: 北极星卡 5 步门 / 可证伪 / Stats       */
+/* ═══════════════════════════════════════════════ */
+.okr-north__falsify {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  background: #fafbff;
+  border: 1px dashed #c7d2fe;
+  border-radius: 10px;
+}
+.okr-north__f-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.okr-north__f-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.okr-north__f-item b {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.okr-north__f-item em {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--el-text-color-secondary);
+}
+
+.okr-north__gates {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding: 10px 4px 0;
+}
+.okr-north__gate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  &.is-done .okr-north__gate-fill { background: var(--el-color-success); }
+  &.is-active .okr-north__gate-fill {
+    background: linear-gradient(90deg, var(--el-color-primary) 0%, var(--el-color-primary-light-3) 100%);
+  }
+}
+.okr-north__gate-icon { font-size: 12px; }
+.okr-north__gate-bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: var(--el-fill-color-light);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.okr-north__gate-fill {
+  height: 100%;
+  background: var(--el-fill-color-light);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.okr-north__gate-ratio {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+}
+.okr-north__gate-arrow {
+  position: absolute;
+  right: -10px;
+  top: 2px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.okr-north__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--el-border-color-lighter);
+}
+.okr-north__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+.okr-north__stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.okr-north__stat b {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-color-primary);
+}
+.is-ok { color: var(--el-color-success); font-weight: 700; }
+.is-risk { color: var(--el-color-warning); font-weight: 700; }
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: 目标树 头部 / 信心分 / 锚点 / 门行内   */
+/* ═══════════════════════════════════════════════ */
+.okr-goal-tree__head-sub {
+  margin-left: 8px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
+.okr-goal-tree__goal-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+.okr-goal-tree__goal-icon { flex-shrink: 0; font-size: 20px; }
+.okr-goal-tree__goal-main { flex: 1 1 0; min-width: 0; }
+.okr-goal-tree__goal-title-line {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.okr-goal-tree__goal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.okr-goal-tree__goal-badge { font-size: 11px; font-weight: 600; }
+.okr-goal-tree__goal-confidence { font-size: 11px; }
+.okr-goal-tree__goal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  span { white-space: nowrap; }
+}
+.okr-goal-tree__goal-status { flex-shrink: 0; }
+.okr-goal-tree__goal-progress { flex-shrink: 0; }
+
+.okr-goal-tree__goal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px 10px;
+  margin: 0 0 4px 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr-goal-tree__goal-gates {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.okr-goal-tree__goal-gate {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 999px;
+  &.is-done {
+    color: #ffffff;
+    background: var(--el-color-success);
+  }
+  b { font-weight: 800; font-variant-numeric: tabular-nums; }
+  em {
+    font-style: normal;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.85;
+  }
+}
+.okr-goal-tree__goal-anchors {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+}
+.okr-goal-tree__goal-anchor {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+  label {
+    font-weight: 600;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  b { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--el-text-color-primary); }
+}
+
+/* KR 行 5 步门 pill 行内 */
+.okr-goal-tree__kr-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.okr-goal-tree__kr-gate-pill {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 999px;
+  &.is-done {
+    color: #ffffff;
+    background: var(--el-color-success);
+  }
+  em {
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+}
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: 追溯面板 (Sankey / 深链 / 比率标签)    */
+/* ═══════════════════════════════════════════════ */
+.okr__section-sub {
+  margin-left: 4px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+}
+.okr__trace-sankey {
+  box-sizing: border-box;
+  width: 100%;
+  height: 320px;
+  padding: 10px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr__trace-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 12px;
+  @media (width <= 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+.okr__trace-mermaid {
+  min-height: 260px;
+}
+.okr__trace-expand {
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-top: 1px dashed var(--el-border-color-lighter);
+}
+.okr__trace-expand-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--el-border-color-lighter);
+  &:last-child { border-bottom: none; }
+}
+.okr__trace-expand-kr {
+  flex: 1 1 300px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--el-text-color-primary);
+  b { font-weight: 700; color: var(--el-color-primary); margin-right: 4px; }
+}
+.okr__trace-expand-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.okr__trace-expand-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+}
+.okr__trace-goal-cell {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.okr__trace-goal-icon { font-size: 16px; flex-shrink: 0; }
+.okr__trace-goal-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.okr__trace-goal-id {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  font-style: normal;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--el-text-color-secondary);
+}
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: 双图并排 (燃尽图 + 热力图)              */
+/* ═══════════════════════════════════════════════ */
+.okr__charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+  @media (width <= 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+.okr__charts-col { min-width: 0; }
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: Action Items 筛选条 / 可证伪列          */
+/* ═══════════════════════════════════════════════ */
+.okr__filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr__filter-group {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  &--sort { margin-left: auto; }
+}
+.okr__filter-label {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.okr__loading-alert {
+  margin-top: 8px;
+}
+
+/* Card + List 新增：RICE / Falsify 横条 */
+.okr__card-rice { font-size: 11px; }
+.okr__card-falsify {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 0;
+  font-size: 11px;
+}
+.okr__card-f-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-weight: 700;
+  color: #94a3b8;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+  &.is-ok {
+    color: #ffffff;
+    background: var(--el-color-success);
+  }
+}
+.okr__card-falsify em {
+  margin-left: 6px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+.okr__list-rice {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+/* Table: Falsify 列 */
+.okr__tbl-fal {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.okr__tbl-fal-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  background: var(--el-fill-color-light);
+  border-radius: 4px;
+  &.is-ok {
+    color: #ffffff;
+    background: var(--el-color-success);
+  }
+}
+.okr__tbl-fal-pct {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+}
+
+/* ═══════════════════════════════════════════════ */
+/* PRO v2: 新增行动项 Dialog (RICE / 编排 / 锚点)  */
+/* ═══════════════════════════════════════════════ */
+.okr__divider {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.okr__rice-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  margin: -4px 0 6px;
+  text-align: center;
+}
+.okr__rice-preview-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr__rice-preview-hint {
+  font-size: 11px;
+  font-style: normal;
+  color: var(--el-text-color-secondary);
+}
+.okr__form-hint {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+

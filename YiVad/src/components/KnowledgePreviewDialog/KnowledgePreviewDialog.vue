@@ -65,8 +65,11 @@ async function addToReadingList() {
     await createReadingItem({
       title: title.value,
       type: "article",
-      link: currentPath.value,
-      status: "to-read"
+      dimension: "management",
+      ownerRole: "ceo",
+      priority: "medium",
+      noteKey: currentPath.value,
+      status: "queued"
     });
     readingItemExists.value = true;
     ElMessage.success("Added to reading list");

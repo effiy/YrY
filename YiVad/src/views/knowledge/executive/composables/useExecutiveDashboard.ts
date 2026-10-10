@@ -180,7 +180,7 @@ export function useExecutiveDashboard() {
           { pageSize: 1 },
           { timeout: API_TIMEOUT.RSS_SEED, signal: requestCtrl.signal }
         ),
-        getReadingListCounts("", {
+        getReadingListCounts({
           timeout: API_TIMEOUT.READING_COUNTS,
           signal: requestCtrl.signal
         })
@@ -190,9 +190,9 @@ export function useExecutiveDashboard() {
       parseOkrFiles(okrFiles.categories?.flatMap((c) => c.files) ?? []);
       parseRssData(rssRes, rssTodayRes, seedRes);
 
-      readingTotal.value = readingCounts.total;
-      readingInProgress.value = readingCounts.reading;
-      readingDone.value = readingCounts.done;
+      readingTotal.value = readingCounts.data?.total ?? 0;
+      readingInProgress.value = readingCounts.data?.inProgressCount ?? 0;
+      readingDone.value = readingCounts.data?.completedCount ?? 0;
     } catch (e: unknown) {
       // ── Guard 04: Abort 类错误不视为业务错误 ──
       if (e instanceof DOMException && e.name === "AbortError") {

@@ -997,6 +997,7 @@ $gap-lg: 18px;
   flex-direction: column;
   gap: $gap-sm;
   width: 100%;
+  padding: 0 0 20px 0;
 }
 .pipeline__section-title {
   display: flex;

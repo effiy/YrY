@@ -53,6 +53,20 @@
   --rl-rice-fair:   var(--rl-accent);
   --rl-rice-weak:   var(--rl-info);
 
+  /* RICE 四元组语义化颜色（不使用数字），用于 mini-heatmap。 */
+  --rl-rice-reach:       #6366f1;
+  --rl-rice-impact:      #ef4444;
+  --rl-rice-confidence:  #22c55e;
+  --rl-rice-effort:      #f59e0b;
+
+  /* Updated · Heat 三段分级（语义化：fresh 鲜 / mid 中 / stale 旧）。 */
+  --rl-heat-fresh-bg: rgb(from var(--rl-success) r g b / 10%);
+  --rl-heat-fresh-fg: var(--rl-success);
+  --rl-heat-mid-bg:   rgb(from var(--rl-warning) r g b / 10%);
+  --rl-heat-mid-fg:   var(--rl-warning);
+  --rl-heat-stale-bg: rgb(from var(--rl-info)    r g b / 10%);
+  --rl-heat-stale-fg: var(--rl-info);
+
   /* Spacing & radii。 */
   --rl-gap-sm: 8px;
   --rl-gap-md: 12px;
@@ -200,7 +214,7 @@
   .reading-list-page .rl-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* ---------- §3 Dashboard (9 panels) ---------- */
+/* ---------- §3 Dashboard (7 panels v3.3 · 合并后跨列) ---------- */
 .reading-list-page .rl-dashboard {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -223,10 +237,24 @@
   }
   &__hint { font-size: 12px; color: var(--rl-text-placeholder); }
   &__note { margin: 0; font-size: 12px; color: var(--rl-text-secondary); line-height: 1.55; }
+
+  /* v3.3 merged panels: 跨列（内部已有多栏布局，外层给足宽度） */
+  &:has(.rl-distill)      { grid-column: span 12; }
+  &:has(.rl-dim-rice)     { grid-column: span 12; }
+  &:has(.rl-queue)        { grid-column: span 12; }
 }
-/* 响应式栅格：把高信息密度的 9 卡自适应。 */
-@media (max-width: 1380px) { .reading-list-page .rl-card { grid-column: span 6; } }
-@media (max-width: 820px)  { .reading-list-page .rl-card { grid-column: span 12; } }
+/* 响应式：合并面板始终全宽；普通面板 1380px→6-col，820px→12-col */
+@media (max-width: 1380px) {
+  .reading-list-page .rl-card { grid-column: span 6; }
+  .reading-list-page .rl-card:is(
+    :has(.rl-distill),
+    :has(.rl-dim-rice),
+    :has(.rl-queue)
+  ) { grid-column: span 12; }
+}
+@media (max-width: 820px)  {
+  .reading-list-page .rl-card { grid-column: span 12; }
+}
 
 /* 3.1 Knowledge Dimensions */
 .reading-list-page .rl-dimensions { display: grid; gap: 8px; }
@@ -363,112 +391,21 @@
   white-space: nowrap;
 }
 
-/* 3.4 SLO KPI Cards */
-.reading-list-page .rl-slo {
-  display: grid; gap: 8px;
-  &__card {
-    display: grid; gap: 4px;
-    padding: 10px 12px;
-    border-radius: var(--rl-radius-md);
-    border: 1px solid var(--rl-card-border);
-    background: rgb(from var(--rl-card-bg) r g b / 70%);
-
-    header { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
-    h4 { margin: 0; font-size: 13px; font-weight: 700; color: var(--rl-text-primary); }
-    &__id { font-size: 12px; font-weight: 800; letter-spacing: .02em; }
-    &__sub { margin: 0; font-size: 12px; color: var(--rl-text-secondary); }
-    &__row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px;
-      div { display: flex; flex-direction: column; }
-      small { color: var(--rl-text-placeholder); }
-      strong { font-size: 13px; color: var(--rl-text-primary); }
-    }
-    &__link {
-      justify-self: start;
-      font-size: 12px;
-      color: var(--rl-accent);
-      text-decoration: underline dotted;
-      cursor: pointer;
-    }
-    &__dot {
-      width: 10px; height: 10px; border-radius: 999px; display: inline-block;
-      &.is-success { background: var(--rl-success); box-shadow: 0 0 0 3px rgb(from var(--rl-success) r g b / 16%); }
-      &.is-warning { background: var(--rl-warning); box-shadow: 0 0 0 3px rgb(from var(--rl-warning) r g b / 16%); animation: rl-pulse 1.6s ease-in-out infinite; }
-      &.is-danger  { background: var(--rl-danger);  box-shadow: 0 0 0 3px rgb(from var(--rl-danger)  r g b / 16%); }
-    }
-    &.is-success { border-left: 3px solid var(--rl-success); }
-    &.is-warning { border-left: 3px solid var(--rl-warning); }
-    &.is-danger  { border-left: 3px solid var(--rl-danger); }
+/* 3.1+3.3 Merged: Dimensions × RICE 双栏面板（v3.3 合并两独立 panel 为一） */
+.reading-list-page .rl-dim-rice {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 14px;
+  align-items: start;
+  &__dim { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  &__rice {
+    min-width: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    .rl-card__note { margin-top: 2px; }
   }
 }
-
-/* 3.5 Alerts */
-.reading-list-page .rl-alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.reading-list-page .rl-alert {
-  display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: start;
-  padding: 10px 12px;
-  border-radius: var(--rl-radius-md);
-  border: 1px solid var(--rl-card-border);
-
-  &__mark { font-size: 14px; line-height: 1.4; }
-  &__body { display: flex; flex-direction: column; gap: 2px; min-width: 0;
-    strong { font-size: 13px; color: var(--rl-text-primary); }
-    span { font-size: 12px; color: var(--rl-text-secondary); line-height: 1.55; }
-  }
-  &__owner { font-size: 12px; color: var(--rl-accent); white-space: nowrap; }
-
-  &.is-danger  { background: rgb(from var(--rl-danger)  r g b / 8%); border-left: 3px solid var(--rl-danger); }
-  &.is-warning { background: rgb(from var(--rl-warning) r g b / 8%); border-left: 3px solid var(--rl-warning);
-    &__mark { animation: rl-pulsate 1.4s ease-in-out infinite; }
-  }
-  &.is-success { background: rgb(from var(--rl-success) r g b / 8%); border-left: 3px solid var(--rl-success); }
-}
-
-/* 3.6 Cross-book insights */
-.reading-list-page .rl-insights { display: grid; gap: 10px; }
-.reading-list-page .rl-insight {
-  display: grid; gap: 6px;
-  padding: 10px 12px;
-  border-radius: var(--rl-radius-md);
-  border: 1px solid var(--rl-card-border);
-  background: linear-gradient(180deg, rgb(from var(--rl-accent) r g b / 5%), transparent 60%);
-
-  header {
-    display: flex; align-items: center; gap: 8px;
-    strong { font-size: 12px; color: var(--rl-text-regular); font-weight: 800; letter-spacing: .02em; }
-  }
-  &__star { color: var(--rl-warning); font-size: 12px; }
-  p { margin: 0; font-size: 13px; font-weight: 600; color: var(--rl-text-primary); line-height: 1.6; }
-  &__books { font-size: 11px; color: var(--rl-text-placeholder); }
-  &__meta {
-    display: flex; flex-wrap: wrap; gap: 6px 12px;
-    font-size: 12px;
-    span { color: var(--rl-text-secondary); }
-  }
-  &__link { color: var(--rl-accent); text-decoration: underline dotted; cursor: pointer; }
-}
-
-/* 3.7 OKR support matrix */
-.reading-list-page .rl-okr { display: grid; gap: 10px; }
-.reading-list-page .rl-okr__goal {
-  font-size: 13px; font-weight: 700; color: var(--rl-accent);
-  padding: 6px 10px; border-radius: var(--rl-radius-sm);
-  background: rgb(from var(--rl-accent) r g b / 10%);
-}
-.reading-list-page .rl-okr__row {
-  display: grid; grid-template-columns: 1.2fr 2fr auto; gap: 10px; align-items: center;
-  padding: 8px 10px; border-radius: var(--rl-radius-sm);
-  border-bottom: 1px dashed var(--rl-card-border);
-}
-.reading-list-page .rl-okr__kr { display: flex; flex-direction: column; gap: 2px;
-  strong { font-size: 12px; font-weight: 800; color: var(--rl-text-regular); }
-  span { font-size: 12px; color: var(--rl-text-primary); font-weight: 600; line-height: 1.5; }
-}
-.reading-list-page .rl-okr__books { font-size: 12px; color: var(--rl-text-secondary); }
-.reading-list-page .rl-okr__score {
-  font-size: 14px; font-weight: 800; color: var(--rl-success);
-  padding: 2px 8px; border-radius: 999px;
-  background: rgb(from var(--rl-success) r g b / 10%);
+@media (max-width: 820px) {
+  .reading-list-page .rl-dim-rice { grid-template-columns: 1fr; }
 }
 
 /* 3.8 Distill states */
@@ -526,12 +463,105 @@
   border-radius: var(--rl-radius-sm);
   border: 1px dashed var(--rl-card-border);
   font-size: 12px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgb(0 0 0 / 6%);
+    border-color: rgb(from var(--rl-accent) r g b / 40%);
+    background: rgb(from var(--rl-accent) r g b / 4%);
+  }
+  &.is-failed { box-shadow: 0 0 0 2px var(--rl-danger); }
+  &.is-high-prio { border-left: 3px solid var(--rl-danger); }
+  &.is-medium-prio { border-left: 3px solid var(--rl-warning); }
+  &.is-low-prio { border-left: 3px solid var(--rl-info); }
 
   &__key { font-weight: 800; color: var(--rl-accent); min-width: 44px; }
   &__subtitle { color: var(--rl-text-secondary); font-weight: 500; }
   &__rice { font-weight: 800; color: var(--rl-rice-strong); }
   &__meta { color: var(--rl-text-regular); }
-  &__gate { color: var(--rl-text-placeholder); text-align: right; }
+  &__gate {
+    color: var(--rl-text-placeholder); text-align: right;
+    font-weight: 600; font-size: 11px;
+    &.is-linked { color: var(--rl-success); }
+  }
+  &--more {
+    justify-content: center;
+    color: var(--rl-text-placeholder);
+    font-style: italic;
+    border-style: dotted;
+    cursor: default;
+    &:hover { transform: none; box-shadow: none; background: transparent; border-color: var(--rl-card-border); }
+  }
+}
+.reading-list-page .rl-queue__legend {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--rl-radius-sm);
+  background: rgb(from var(--rl-info) r g b / 8%);
+  border: 1px solid rgb(from var(--rl-info) r g b / 20%);
+  font-size: 12px;
+  color: var(--rl-text-secondary);
+  line-height: 1.6;
+  code {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgb(from var(--rl-card-border) r g b / 60%);
+    font-size: 11px;
+  }
+}
+.reading-list-page .rl-queue__empty {
+  padding: 18px 12px 10px;
+  .el-empty { padding: 0; }
+}
+
+/* 3.2 Distribution & 蒸馏 SLA — 三列合并布局（segments / funnel / states） */
+.reading-list-page .rl-distill {
+  display: grid;
+  grid-template-columns: 1.1fr 0.95fr 1.3fr;
+  gap: 14px;
+  align-items: start;
+  min-width: 0;
+
+  &__col { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  &__col--seg     { gap: 12px; }
+  &__col--funnel  { gap: 6px; }
+  &__col--steps .rl-states {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  &__col--steps .rl-states__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "idx  name"
+      "idx  rule"
+      "idx  red";
+    gap: 2px 10px;
+    align-items: start;
+    &__index { grid-area: idx; align-self: center; }
+    &__name  { grid-area: name; margin-top: 0; }
+    &__rule  { grid-area: rule; }
+    &__redline { grid-area: red; }
+  }
+}
+@media (max-width: 1380px) {
+  .reading-list-page .rl-distill { grid-template-columns: 1fr 1fr; }
+  .reading-list-page .rl-distill__col--steps { grid-column: span 2; }
+  .reading-list-page .rl-distill__col--steps .rl-states {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .reading-list-page .rl-distill__col--steps .rl-states__step {
+    display: flex; flex-direction: column;
+  }
+}
+@media (max-width: 820px) {
+  .reading-list-page .rl-distill { grid-template-columns: 1fr; }
+  .reading-list-page .rl-distill__col--steps { grid-column: span 1; }
+  .reading-list-page .rl-distill__col--steps .rl-states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ---------- §4 Filter chips ---------- */
@@ -589,7 +619,12 @@
 }
 
 /* ---------- §5 View (card/list/table) ---------- */
-.reading-list-page .rl-view { padding: 12px 16px 16px; display: grid; gap: 12px; }
+.reading-list-page .rl-view { padding: 12px 16px 16px; display: grid; gap: 12px;
+  /* 关键约束：禁止内部 table 把 view 宽度撑破，横向滚动条在 table 内部消化 */
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
 .reading-list-page .rl-view__header {
   display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
   h2 { margin: 0; font-size: 16px; font-weight: 800; }
@@ -727,10 +762,11 @@
     overflow-y: visible !important;
   }
 
-  // Element Plus 通用虚拟滚动条：禁用 reading-list 页面范围内的纵向条
+  // Element Plus 通用虚拟滚动条：只禁用纵向条，保留横向滚动条（否则 table 宽度会无限拉伸）
   & :deep(.el-scrollbar__wrap) {
     overflow-y: visible !important;
-    overflow-x: hidden !important;
+    /* 横向滚动保留 auto：列宽超出时出现原生横向条，避免 table 撑开外层容器宽度 */
+    overflow-x: auto;
   }
   & :deep(.el-scrollbar__bar.is-vertical) {
     display: none !important;
@@ -751,481 +787,6 @@
 .reading-list-page .rl-muted {
   color: var(--rl-text-placeholder);
   font-size: 12px;
-}
-
-/* ---------- §6 Executive Knowledge Browser ---------- */
-.reading-list-page .rl-kb {
-  display: grid;
-  gap: 10px;
-  padding: 14px 16px 18px;
-}
-.reading-list-page .rl-kb__header {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
-  h2 { margin: 0; font-size: 16px; font-weight: 800; }
-}
-.reading-list-page .rl-kb__header-actions {
-  display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap;
-}
-.reading-list-page .rl-kb__summary { font-size: 12px; color: var(--rl-text-secondary); }
-
-.reading-list-page .rl-kb__body {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 14px;
-  min-height: 520px;
-  align-items: start;
-}
-@media (max-width: 1080px) {
-  .reading-list-page .rl-kb__body {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Sidebar */
-.reading-list-page .rl-kb__sidebar {
-  /*
-   * 原来的 sticky + max-height + overflow-y:auto 会造成侧边栏独立滚动，
-   * 违背"只有最外层一条滚动条"的契约。改为普通跟随滚动即可。
-   */
-  display: grid;
-  gap: 12px;
-  padding: 12px 10px;
-  border-radius: var(--rl-radius-md);
-  background: linear-gradient(180deg, rgb(from var(--rl-card-bg) r g b / 95%), rgb(from var(--rl-card-bg) r g b / 82%));
-  border: 1px solid var(--rl-card-border);
-  overflow: visible;
-}
-.reading-list-page .rl-kb__sidebar-group {
-  display: grid;
-  gap: 6px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--rl-card-border);
-  &:last-child { border-bottom: none; padding-bottom: 0; }
-}
-.reading-list-page .rl-kb__sidebar-head {
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 12px; font-weight: 700; letter-spacing: .02em;
-  color: var(--rl-text-secondary); text-transform: uppercase;
-  padding: 2px 4px;
-}
-.reading-list-page .rl-kb__sidebar-list {
-  display: grid;
-  gap: 3px;
-  &--chips {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-  }
-}
-.reading-list-page .rl-kb__sidebar-item {
-  --rl-kb-color: var(--rl-accent);
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 7px 10px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--rl-text-regular);
-  font-size: 12px; font-weight: 600;
-  cursor: pointer;
-  transition: background .12s ease, color .12s ease, transform .12s ease, border-color .12s ease;
-
-  &:hover {
-    background: rgb(from var(--rl-kb-color) r g b / 8%);
-    color: var(--rl-text-primary);
-    transform: translateY(-1px);
-  }
-
-  &.is-active {
-    background: rgb(from var(--rl-kb-color) r g b / 14%);
-    border-color: rgb(from var(--rl-kb-color) r g b / 30%);
-    color: var(--rl-text-primary);
-  }
-  &.has-data { font-weight: 700; }
-
-  &--chip {
-    display: inline-flex; justify-content: center;
-    padding: 6px 8px;
-    border: 1px solid var(--rl-card-border);
-    border-radius: 999px;
-    background: rgb(from var(--rl-kb-color) r g b / 6%);
-    font-size: 11px;
-    line-height: 1.2;
-    text-align: center;
-    &:hover { background: rgb(from var(--rl-kb-color) r g b / 12%); }
-    &.is-active {
-      color: #fff;
-      background: var(--rl-kb-color);
-      border-color: transparent;
-      box-shadow: 0 6px 16px rgb(from var(--rl-kb-color) r g b / 24%);
-    }
-  }
-}
-.reading-list-page .rl-kb__sidebar-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px;
-  font-size: 13px;
-}
-.reading-list-page .rl-kb__sidebar-label {
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.reading-list-page .rl-kb__sidebar-count {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 20px; height: 18px; padding: 0 6px;
-  font-size: 11px; font-weight: 800;
-  color: var(--rl-kb-color, var(--rl-accent));
-  background: rgb(from var(--rl-kb-color, var(--rl-accent)) r g b / 12%);
-  border-radius: 999px;
-}
-
-/* Content area */
-.reading-list-page .rl-kb__content {
-  display: grid;
-  gap: 10px;
-  min-width: 0;
-}
-.reading-list-page .rl-kb__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 10px;
-  border-radius: var(--rl-radius-md);
-  background: rgb(from var(--rl-accent) r g b / 4%);
-  border: 1px solid var(--rl-card-border);
-}
-.reading-list-page .rl-kb__search { flex: 1 1 240px; min-width: 180px; }
-.reading-list-page .rl-kb__filter { flex: 0 0 150px; }
-.reading-list-page .rl-kb__sort   { flex: 0 0 150px; }
-
-/* ProTable row titles */
-.reading-list-page .rl-kb__file-title {
-  display: flex; align-items: center; gap: 8px;
-  cursor: pointer;
-  min-width: 0;
-  &:hover { color: var(--rl-accent); }
-}
-.reading-list-page .rl-kb__file-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: rgb(from var(--rl-accent) r g b / 8%);
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.reading-list-page .rl-kb__file-title-main {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.reading-list-page .rl-kb__file-name {
-  font-size: 13px; font-weight: 700;
-  color: var(--rl-text-primary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.reading-list-page .rl-kb__file-path {
-  font-size: 11px;
-  color: var(--rl-text-placeholder);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.reading-list-page .rl-kb__file-domain {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 12px; font-weight: 700;
-}
-.reading-list-page .rl-kb__file-size {
-  font-size: 12px; font-variant-numeric: tabular-nums;
-  color: var(--rl-text-regular);
-}
-.reading-list-page .rl-kb__file-updated {
-  font-size: 12px; font-variant-numeric: tabular-nums;
-  color: var(--rl-text-secondary);
-}
-
-/* ---------- §6.1 KPI Stats strip (mirrors StandardRoleDashboard stat cards) ---------- */
-.reading-list-page .rl-kb__stats {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  padding: 0 2px;
-}
-@media (max-width: 1280px) {
-  .reading-list-page .rl-kb__stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-@media (max-width: 720px) {
-  .reading-list-page .rl-kb__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-.reading-list-page .rl-kb-stat,
-.reading-list-page .kb-stat {
-  --kb-accent: var(--rl-accent);
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: var(--rl-radius-md);
-  background: linear-gradient(180deg, rgb(from var(--rl-card-bg) r g b / 98%), rgb(from var(--rl-card-bg) r g b / 90%));
-  border: 1px solid var(--rl-card-border);
-  overflow: hidden;
-  min-height: 72px;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--kb-accent);
-    border-radius: 999px 0 0 999px;
-    opacity: .9;
-  }
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgb(from var(--kb-accent) r g b / 14%);
-    border-color: rgb(from var(--kb-accent) r g b / 30%);
-  }
-  .rl-kb-stat__icon, .kb-stat__icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    background: rgb(from var(--kb-accent) r g b / 12%);
-    color: var(--kb-accent);
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .rl-kb-stat__body, .kb-stat__body {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-  }
-  .rl-kb-stat__value, .kb-stat__value {
-    font-size: 22px; font-weight: 800; letter-spacing: -0.01em;
-    color: var(--rl-text-primary);
-    font-variant-numeric: tabular-nums;
-    line-height: 1.1;
-  }
-  .rl-kb-stat__label, .kb-stat__label {
-    font-size: 11px; font-weight: 600;
-    color: var(--rl-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .rl-kb-stat__sub, .kb-stat__sub {
-    font-size: 11px;
-    color: var(--rl-text-placeholder);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    & em { font-style: italic; color: var(--kb-accent); font-weight: 600; }
-  }
-  .rl-kb-stat__progress, .kb-stat__progress {
-    margin-top: 4px;
-    width: 100%;
-  }
-}
-.reading-list-page .rl-kb-stat--total, .reading-list-page .kb-stat--total,
-.reading-list-page .kb-stat[style*="#1677ff"] { --kb-accent: #3b82f6; }
-.reading-list-page .rl-kb-stat--stable, .reading-list-page .kb-stat--stable,
-.reading-list-page .kb-stat[style*="#10b981"] { --kb-accent: #10b981; }
-.reading-list-page .rl-kb-stat--draft, .reading-list-page .kb-stat--draft,
-.reading-list-page .kb-stat[style*="#f59e0b"] { --kb-accent: #f59e0b; }
-.reading-list-page .rl-kb-stat--review-g  { --kb-accent: #10b981; }
-.reading-list-page .rl-kb-stat--review-y  { --kb-accent: #f59e0b; }
-.reading-list-page .rl-kb-stat--review-r  { --kb-accent: #ef4444; }
-.reading-list-page .rl-kb-stat--deprecated, .reading-list-page .kb-stat--deprecated,
-.reading-list-page .kb-stat[style*="#ef4444"] { --kb-accent: #ef4444; }
-.reading-list-page .rl-kb-stat--tags, .reading-list-page .kb-stat--tags,
-.reading-list-page .kb-stat[style*="#7c3aed"],
-.reading-list-page .kb-stat[style*="#8b5cf6"] { --kb-accent: #8b5cf6; }
-
-/* Header left + SSOT subline */
-.reading-list-page .rl-kb__header-left {
-  display: grid; gap: 2px; min-width: 0;
-  .rl-kb__header-sub {
-    margin-top: 2px;
-    display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    padding: 4px 8px;
-    border-radius: 8px;
-    background: rgb(from var(--rl-accent) r g b / 6%);
-    border: 1px dashed rgb(from var(--rl-accent) r g b / 24%);
-    font-size: 11px;
-    color: var(--rl-text-secondary);
-    code {
-      padding: 1px 6px;
-      border-radius: 4px;
-      background: var(--rl-card-bg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 10.5px;
-      color: var(--rl-accent);
-      border: 1px solid var(--rl-card-border);
-    }
-  }
-}
-
-/* Sidebar enhancements: 2-line label + structural tags group */
-.reading-list-page .rl-kb__sidebar-main {
-  display: grid;
-  gap: 1px;
-  min-width: 0;
-  align-items: center;
-}
-.reading-list-page .rl-kb__sidebar-sub {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--rl-text-placeholder);
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  em { font-style: italic; }
-  &--good { color: rgb(from #10b981 r g b / 85%); }
-  &--warn { color: rgb(from #f59e0b r g b / 85%); }
-}
-.reading-list-page .rl-kb__sidebar-chiprow {
-  display: inline-flex; align-items: center; justify-content: space-between;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--rl-card-border);
-  background: rgb(from var(--rl-accent) r g b / 5%);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
-  white-space: nowrap;
-  &:hover {
-    background: rgb(from var(--rl-accent) r g b / 10%);
-    transform: translateY(-1px);
-  }
-  &.is-active {
-    background: var(--rl-accent);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 6px 16px rgb(from var(--rl-accent) r g b / 24%);
-  }
-  .badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 18px; height: 16px; padding: 0 5px;
-    border-radius: 999px;
-    font-size: 10px; font-weight: 800;
-    background: rgb(from var(--rl-accent) r g b / 14%);
-    color: var(--rl-accent);
-  }
-  &.is-active .badge {
-    background: rgb(255 255 255 / 18%);
-    color: #fff;
-  }
-}
-
-/* Active filter chips row (ExecutiveDashboard pattern) */
-.reading-list-page .rl-kb__chips {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: var(--rl-radius-md);
-  background: rgb(from var(--rl-accent) r g b / 3%);
-  border: 1px dashed rgb(from var(--rl-accent) r g b / 20%);
-  .rl-kb__chips-label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    color: var(--rl-text-secondary);
-    margin-right: 4px;
-    letter-spacing: 0.02em;
-  }
-  .el-tag { font-size: 11px; }
-  .rl-kb__chips-clear {
-    margin-left: auto;
-  }
-}
-
-/* Enriched ProTable cell renderings: Title/Category/Tags/Review/Updated */
-.reading-list-page .rl-kb__file-name-row {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-  &-head {
-    display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    min-width: 0;
-  }
-}
-.reading-list-page .rl-kb__file-okr {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #ec4899, #f97316);
-  color: #fff;
-  letter-spacing: 0.01em;
-  box-shadow: 0 3px 8px rgb(from #ec4899 r g b / 22%);
-  white-space: nowrap;
-  vertical-align: middle;
-  flex-shrink: 0;
-}
-.reading-list-page .rl-kb__file-tag-structural {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: rgb(from #8b5cf6 r g b / 14%);
-  border: 1px solid rgb(from #8b5cf6 r g b / 28%);
-  color: #8b5cf6;
-  white-space: nowrap;
-}
-.reading-list-page .rl-kb__file-benefit {
-  font-size: 11px;
-  color: var(--rl-text-placeholder);
-  font-style: italic;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  padding-right: 4px;
-}
-.reading-list-page .rl-kb__category-cell {
-  display: inline-flex; align-items: center;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--rl-text-primary);
-  .el-tag--plain { font-weight: 700; }
-}
-.reading-list-page .rl-kb__tags-cell {
-  display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px;
-  .el-tag { font-size: 10.5px; padding: 0 6px; height: 18px; line-height: 18px; }
-}
-.reading-list-page .rl-kb__review-cell {
-  display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
-}
-.reading-list-page .rl-kb__review-stale {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #ef4444;
-  animation: rl-kb-pulse 1.6s ease-in-out infinite;
-  @keyframes rl-kb-pulse {
-    0%,100% { opacity: .85; }
-    50%     { opacity: 1;    }
-  }
-}
-.reading-list-page .rl-kb__file-updated-wrap {
-  display: inline-flex; align-items: baseline; gap: 5px;
-}
-.reading-list-page .rl-kb__file-staleness {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--rl-text-placeholder);
-  font-variant-numeric: tabular-nums;
-  &--overdue {
-    color: #ef4444;
-    font-weight: 700;
-  }
-  &--warn {
-    color: #f59e0b;
-  }
 }
 
 /* =============== 联动增强：KB 预览弹框 UI 辅助样式 ===============
@@ -1286,4 +847,159 @@
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.62; transform: scale(0.985); }
 }
+
+/* ================ Table-first 增强（v3.4） ================ */
+.reading-list-page .rl-table-enhance {
+  /* 硬约束：防止内部 table 把外层 .card / .rl-view 无限撑大 */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  & :deep(.card.table-main) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  & :deep(.el-table) {
+    border-radius: var(--rl-radius-md);
+    /* fixed 布局：按 width / minWidth 精确渲染列，不随内容任意拉伸 */
+    table-layout: fixed;
+  }
+  & :deep(.el-table th.el-table__cell) {
+    background: rgb(from var(--rl-card-bg) r g b / 85%);
+    font-weight: 600;
+    color: var(--rl-text-regular);
+  }
+  & .rl-tooltip {
+    max-width: 360px;
+    &__subtitle { color: var(--rl-text-secondary); font-size: 12px; margin-bottom: 4px; font-style: italic; }
+    &__summary  { color: var(--rl-text-primary);   font-size: 13px; line-height: 1.55; }
+    &__tags     { margin-top: 6px; }
+  }
+
+  /* ---------- RICE 单元格：final + R/I/C/E mini heatmap ---------- */
+  & .rl-rice-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-weight: 700;
+    background: rgb(from var(--rl-accent) r g b / 8%);
+    &.rl-rice--elite  { color: var(--rl-rice-elite);  background: rgb(from var(--rl-rice-elite)  r g b / 10%); border-color: rgb(from var(--rl-rice-elite)  r g b / 22%); }
+    &.rl-rice--strong { color: var(--rl-rice-strong); background: rgb(from var(--rl-rice-strong) r g b / 10%); border-color: rgb(from var(--rl-rice-strong) r g b / 22%); }
+    &.rl-rice--fair   { color: var(--rl-rice-fair);   background: rgb(from var(--rl-rice-fair)   r g b / 10%); border-color: rgb(from var(--rl-rice-fair)   r g b / 22%); }
+    &.rl-rice--weak   { color: var(--rl-rice-weak);   background: rgb(from var(--rl-rice-weak)   r g b / 10%); border-color: rgb(from var(--rl-rice-weak)   r g b / 22%); }
+  }
+  & .rl-rice-cell__final { font-size: 14px; }
+  & .rl-rice-mini {
+    display: inline-flex;
+    gap: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px; height: 16px;
+      border-radius: 4px;
+      color: white;
+    }
+    &__reach      { background: var(--rl-rice-reach); }
+    &__impact     { background: var(--rl-rice-impact); }
+    &__confidence { background: var(--rl-rice-confidence); }
+    &__effort     { background: var(--rl-rice-effort); }
+  }
+
+  /* ---------- Status：tag + 迷你进度条 ---------- */
+  & .rl-status-cell {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
+    &__mini-bar {
+      position: relative;
+      height: 4px;
+      border-radius: 4px;
+      background: rgb(from var(--rl-info) r g b / 18%);
+      overflow: hidden;
+      &-fill {
+        position: absolute; left: 0; top: 0; bottom: 0;
+        background: linear-gradient(90deg, var(--rl-accent), var(--rl-success));
+        border-radius: 4px;
+      }
+    }
+  }
+
+  /* ---------- Dimension chip：左侧色条 + 图标 + 中英文 label ---------- */
+  & .rl-dim-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    &__bar { width: 4px; align-self: stretch; min-height: 22px; border-radius: 4px; }
+    &__icon { font-size: 14px; line-height: 1; }
+    &__label { font-size: 13px; color: var(--rl-text-primary); font-weight: 500; }
+  }
+
+  /* ---------- Role chip：色块圆点 + 图标 + label ---------- */
+  & .rl-role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    &__dot {
+      width: 22px; height: 22px;
+      border-radius: 999px;
+      color: white;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 14%);
+    }
+    &__label { font-size: 13px; color: var(--rl-text-primary); font-weight: 500; }
+  }
+
+  /* ---------- OKR 列：悬浮下划线 + 锚点色 ---------- */
+  & .rl-okr-link {
+    color: var(--rl-accent);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+    padding-bottom: 1px;
+    transition: border-color 120ms ease, color 120ms ease;
+    &:hover { color: var(--rl-danger); border-bottom-color: var(--rl-danger); }
+  }
+
+  /* ---------- Scheduled / Updated ---------- */
+  & .rl-scheduled {
+    font-variant-numeric: tabular-nums;
+    color: var(--rl-text-regular);
+  }
+  & .rl-updated-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    &__date { font-variant-numeric: tabular-nums; color: var(--rl-text-regular); font-size: 13px; }
+    .el-tag.is-heat-fresh  { background: var(--rl-heat-fresh-bg);  color: var(--rl-heat-fresh-fg);  border-color: transparent; }
+    .el-tag.is-heat-mid    { background: var(--rl-heat-mid-bg);    color: var(--rl-heat-mid-fg);    border-color: transparent; }
+    .el-tag.is-heat-stale  { background: var(--rl-heat-stale-bg);  color: var(--rl-heat-stale-fg);  border-color: transparent; }
+  }
+
+  /* ---------- Tags row：overflow compact ---------- */
+  & .rl-tags-row { display: inline-flex; align-items: center; }
+  & .rl-tags-tooltip { max-width: 260px; display: flex; flex-wrap: wrap; }
+
+  /* ---------- Table 操作列按钮对齐 ---------- */
+  & .rl-table__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
 

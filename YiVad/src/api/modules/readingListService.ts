@@ -286,10 +286,10 @@ export const READING_META: ReadingMeta = {
     { id: "archived", label: "Archived 已归档", en: "Archived" }
   ],
   riceTiers: [
-    { id: "elite", label: "Tier 1 · 核心", en: "Elite ≥80", min: 80 },
-    { id: "strong", label: "Tier 2 · 稳健", en: "Strong 60–79", min: 60 },
-    { id: "fair", label: "Tier 3 · 观察", en: "Fair 40–59", min: 40 },
-    { id: "weak", label: "Tier 4 · 候选", en: "Weak <40", min: 0 }
+    { id: "elite", label: "Elite 核心 · 必推", en: "Elite ≥80", min: 80 },
+    { id: "strong", label: "Strong 稳健 · 必读", en: "Strong 60–79", min: 60 },
+    { id: "fair", label: "Fair 观察 · 选读", en: "Fair 40–59", min: 40 },
+    { id: "weak", label: "Weak 候选 · 备份", en: "Weak <40", min: 0 }
   ]
 };
 

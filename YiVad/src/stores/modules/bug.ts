@@ -6,13 +6,17 @@
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
-import { getBugList, getBug, createBug, updateBug, deleteBug, readBugContent } from "@/api/modules/bug";
-import type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency } from "@/api/modules/bug";
+import {
+  getBugList, getBug, createBug, updateBug, deleteBug, readBugContent,
+  BUG_SLA_HOURS,
+} from "@/api/modules/bug";
+import type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency, BugTimelineEvent } from "@/api/modules/bug";
 import { nanoid } from "nanoid";
 import { confirm } from "@/hooks/useConfirmAction";
 import { Status } from "@/utils/status";
 
-export type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency };
+export type { BugDocument, BugContent, BugSeverity, BugPriority, BugStatus, BugType, BugFrequency, BugTimelineEvent };
+export { BUG_SLA_HOURS };
 
 function newKey(): string {
   return `bug_${nanoid(12)}`;
@@ -64,7 +68,74 @@ function emptyForm() {
   };
 }
 
-/* ── Dev mock 种子：只有 RSBUILD_ENV_USE_MOCK=true 且后端返回空时启用 ── */
+/* ── Legacy bug enricher — fill optional `reopenCount` + `timeline` on
+      bugs that come from older payloads so the entire UI can treat them as
+      first-class citizens without null-guarding everywhere.           ── */
+const DONE_STA = new Set<string>(["resolved", "closed"]);
+
+function _inferReopenCount(b: BugDocument): number {
+  if (typeof b.reopenCount === "number" && !Number.isNaN(b.reopenCount)) {
+    return Math.max(0, Math.floor(b.reopenCount));
+  }
+  // Heuristic: status==='reopened' and we have a resolvedAt means the bug
+  // was opened → resolved → reopened at least once.
+  if (b.status === "reopened" && b.resolvedAt != null) return 1;
+  // timeline-based inference: count "reopen" events.
+  if (Array.isArray(b.timeline)) {
+    const n = b.timeline.filter(e => e.kind === "reopen").length;
+    if (n > 0) return n;
+  }
+  return 0;
+}
+
+function _inferTimeline(b: BugDocument): BugTimelineEvent[] {
+  if (Array.isArray(b.timeline) && b.timeline.length > 0) {
+    return b.timeline.slice().sort((a, z) => a.ts - z.ts);
+  }
+  const out: BugTimelineEvent[] = [];
+  if (b.createdAt) {
+    out.push({ kind: "status_change", ts: b.createdAt, from: "", to: "open", by: b.reporter || undefined, note: "Bug created" });
+  }
+  // If `status` is no longer open but status_change event is missing, we can
+  // approximate with updatedAt / resolvedAt / closedAt.
+  const inferS = (to: BugStatus, ts: number | null | undefined, note: string) => {
+    if (!ts) return;
+    // Avoid duplicates with the open event at the exact same ts.
+    if (out.length && out[out.length - 1].ts === ts && out[out.length - 1].to === to) return;
+    out.push({ kind: "status_change", ts, to, note });
+  };
+  if (b.status === "in_progress") inferS("in_progress", b.updatedAt, "Bug moved to in progress");
+  if (b.resolvedAt != null) inferS("resolved", b.resolvedAt, "Bug resolved");
+  if (b.closedAt != null) inferS("closed", b.closedAt, "Bug closed");
+  if (b.status === "rejected") inferS("rejected", b.updatedAt, "Bug rejected");
+  if (b.status === "reopened") {
+    inferS("reopened", b.updatedAt || b.createdAt, "Bug reopened");
+    out.push({ kind: "reopen", ts: b.updatedAt || b.createdAt, by: b.assignee || undefined });
+  }
+  return out.sort((a, z) => a.ts - z.ts);
+}
+
+export function enrichBug<T extends BugDocument>(b: T): T {
+  const reopenCount = _inferReopenCount(b);
+  const timeline = _inferTimeline(b);
+  if (b.reopenCount === reopenCount && Array.isArray(b.timeline) && b.timeline.length === timeline.length) {
+    return b;
+  }
+  return { ...b, reopenCount, timeline };
+}
+
+export function enrichBugList(list: BugDocument[]): BugDocument[] {
+  let changed = false;
+  const out: BugDocument[] = new Array(list.length);
+  for (let i = 0; i < list.length; i++) {
+    const before = list[i];
+    const after = enrichBug(before);
+    out[i] = after;
+    if (after !== before) changed = true;
+  }
+  return changed ? out : list;
+}
+
 const _MOCK_BUGS: BugDocument[] = (() => {
   if (import.meta.env.RSBUILD_ENV_USE_MOCK !== "true") return [];
   const now = Date.now();
@@ -179,7 +250,7 @@ export const useBugStore = defineStore("yivad-bug", () => {
     Object.assign(form, emptyForm());
   }
 
-  async function fetchBugs() {
+  async function fetchBugs(_force = false) {
     loading.value = true;
     error.value = null;
     try {
@@ -203,7 +274,7 @@ export const useBugStore = defineStore("yivad-bug", () => {
         const s = _mockSeedBugList();
         list = s.list; t = s.total;
       }
-      bugs.value = list;
+      bugs.value = enrichBugList(list);
       total.value = t;
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : "Failed to load bugs";
@@ -231,7 +302,20 @@ export const useBugStore = defineStore("yivad-bug", () => {
       if (!bug && import.meta.env.RSBUILD_ENV_USE_MOCK === "true") {
         bug = _mockSeedBug(key);
       }
-      selectedBug.value = bug;
+      // Fallback 1：从已加载的 bugs 列表中查找（避免 API/detail 未实现时详情页空白）
+      if (!bug && bugs.value?.length) {
+        const inMem = bugs.value.find(b => b.key === key);
+        if (inMem) bug = inMem;
+      }
+      // Fallback 2：bugs 列表未加载（如列表页用本地 ref 而非 store）时，主动拉一次列表兜底
+      if (!bug && (!bugs.value || bugs.value.length === 0)) {
+        try {
+          await fetchBugs();
+        } catch { /* swallow — 继续 fallback */ }
+        const inMem = bugs.value?.find(b => b.key === key);
+        if (inMem) bug = inMem;
+      }
+      selectedBug.value = bug ? enrichBug(bug) : null;
       if (bug?.contentPath) {
         try {
           selectedBugContent.value = await readBugContent(bug);
@@ -257,14 +341,25 @@ export const useBugStore = defineStore("yivad-bug", () => {
           selectedBugContent.value = _mockBugContent(bug.key);
         }
       } else {
+        // 没有 contentPath：从 bug 标题/描述（或空）生成最低限度的 content，保证详情页非空桩
+        const desc = (bug?.description as string) ||
+          (bug?.title ? `Bug: ${bug.title}` : "No description provided.");
         selectedBugContent.value = {
-          description: "",
+          description: desc,
           stepsToReproduce: [],
           expectedResult: "",
           actualResult: "",
           causeProblem: "",
           solution: ""
         };
+        // Mock 环境 + 空字段时：根据 severity/priority 推断样例内容
+        if (import.meta.env.RSBUILD_ENV_USE_MOCK === "true" && bug) {
+          selectedBugContent.value = _mockBugContent(bug.key);
+          // 覆盖为当前 bug 的真实标题
+          if (bug.title) {
+            selectedBugContent.value.description = desc;
+          }
+        }
       }
     } catch (e: unknown) {
       ElMessage.error(e instanceof Error ? e.message : "Failed to load bug");
