@@ -372,7 +372,7 @@ import { Filter as FilterIcon, Close } from "@element-plus/icons-vue";
 import { ProTable } from "@/components";
 import type { ColumnProps } from "@/components";
 import { STATUS_COLOR } from "./composables/useIssueStats";
-import type { Issue, IssueStatus } from "@/api/modules/issueService";
+import type { IssueStatus } from "@/api/modules/issueService";
 import type { IssueListContext } from "./useIssueList";
 import type { IssueActionsContext } from "./useIssueActions";
 

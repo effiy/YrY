@@ -867,6 +867,16 @@
     /* fixed 布局：按 width / minWidth 精确渲染列，不随内容任意拉伸 */
     table-layout: fixed;
   }
+
+  /* 启用横向滚动条：16 列 2220px 总宽必须通过横向滚动查看 */
+  & :deep(.el-scrollbar__wrap) {
+    overflow-x: auto !important;
+  }
+  & :deep(.el-scrollbar__bar.is-horizontal) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
   & :deep(.el-table th.el-table__cell) {
     background: rgb(from var(--rl-card-bg) r g b / 85%);
     font-weight: 600;

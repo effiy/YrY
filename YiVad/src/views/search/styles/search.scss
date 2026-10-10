@@ -738,6 +738,16 @@
   color: var(--el-color-success);
   opacity: 0.75;
 }
+// 共享 code chip 样式（占位符选择器，@extend 专用）
+%search-code-chip {
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color);
+  border-radius: 4px;
+}
+
 .search-page__item-meta {
   display: flex;
   gap: 8px;
@@ -747,12 +757,7 @@
   color: var(--el-text-color-placeholder);
 
   code {
-    padding: 2px 7px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--el-text-color-secondary);
-    background: var(--el-fill-color);
-    border-radius: 4px;
+    @extend %search-code-chip;
   }
 }
 .search-page__item-subtitle {
@@ -1500,7 +1505,7 @@
   font-weight: 700;
 }
 .search-page__code {
-  @extend .search-page__item-meta code; // 继承已有样式
+  @extend %search-code-chip;
 }
 .search-page__verified-tag {
   display: inline-flex;

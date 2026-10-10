@@ -44,39 +44,6 @@
       </template>
     </el-alert>
 
-    <div v-if="!props.projectKey" class="issue-list__charts-wrap">
-      <button type="button" class="issue-list__charts-toggle" @click="chartsExpanded = !chartsExpanded">
-        <el-icon class="issue-list__charts-arrow" :class="{ 'issue-list__charts-arrow--open': chartsExpanded }">
-          <ArrowRight />
-        </el-icon>
-        <span>{{ $t("common.analytics") }}</span>
-        <span class="issue-list__charts-summary">{{ stats.total }} issues · {{ completionPct }}% done</span>
-        <span v-if="list.hasActiveFilter.value" class="issue-list__charts-filtered">Filtered: {{ filteredIssueCount }}</span>
-        <span class="issue-list__charts-age" :class="{ 'issue-list__charts-age--stale': dataAge > 120 }" :title="lastRefreshed?.toLocaleString() || ''">
-          <el-icon><Timer /></el-icon>
-          {{ dataAge < 60 ? $t("common.justNow") : $t("common.minutesAgo", { n: Math.floor(dataAge / 60) }) }}
-        </span>
-        <el-button link size="small" class="issue-list__charts-refresh" :loading="statsLoading" @click.stop="refreshStats()">
-          <el-icon><Refresh /></el-icon>
-        </el-button>
-      </button>
-      <div v-show="chartsExpanded" class="issue-list__charts-body">
-        <IssueAnalyticsCharts
-          :active-filter="list.filters"
-          :status-donut-option="statusDonutOption"
-          :priority-bar-option="priorityBarOption"
-          :type-bar-option="typeBarOption"
-          :assignee-bar-option="assigneeBarOption"
-          :trend-option="trendOption"
-          :has-active-filter="list.hasActiveFilter.value"
-          :filtered-count="filteredIssueCount"
-          :total-count="stats.total"
-          @chart-click="list.onChartClick"
-          @clear-filter="(dim: 'status' | 'priority' | 'issue_type' | 'assignee') => { list.filters[dim] = ''; refreshTable(); }"
-        />
-      </div>
-    </div>
-
     <RecentlyViewed
       v-if="!props.projectKey"
       :items="recentViewedItems"
@@ -366,8 +333,6 @@ const {
   modulesForIssue,
   projectName,
   loading: statsLoading,
-  lastRefreshed,
-  dataAge,
   error: statsError,
   startPolling,
   refresh: refreshStats,
@@ -381,9 +346,6 @@ watch(statsCardIssuesAll, (val) => {
   sharedCardIssuesAll.value = val;
 }, { immediate: true });
 
-// ── Auto-expand charts when filters become active ──
-const filteredIssueCount = computed(() => allIssues.value.length);
-
 watch(
   () => list.hasActiveFilter.value,
   (active) => {
@@ -394,14 +356,6 @@ watch(
 const recentViewedItems = computed(() =>
   recentlyViewed.value.map(i => ({ key: i.key, title: i.title, color: statusColor(i.status) }))
 );
-
-const { statusDonutOption, priorityBarOption, typeBarOption, assigneeBarOption, trendOption } = useIssueCharts({
-  statusDist,
-  priorityDist,
-  typeDist,
-  assigneeDist,
-  createdByDay,
-});
 
 function statusColor(s: IssueStatus) {
   return STATUS_COLOR[s] || "#909399";
